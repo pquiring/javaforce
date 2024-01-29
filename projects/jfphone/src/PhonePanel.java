@@ -1621,7 +1621,7 @@ Line Colors:
     String msg = JFAWT.getString("Enter Message for:" + fields[1], "");
     if (msg == null) return;
     PhoneLine xline = lines[line];
-    xline.sip.message(fields[1], msg);
+    xline.sip.message(fields[1], msg.split("\r\n"));
     chatAdd(xline.user, msg.split("\r\n"));
   }
 
@@ -1631,7 +1631,7 @@ Line Colors:
     if (!xline.incall) return;
     String msg = JFAWT.getString("Enter Message for:" + xline.to, "");
     if (msg == null) return;
-    xline.sip.message(xline.callid, xline.to, msg);
+    xline.sip.message(xline.callid, xline.to, msg.split("\r\n"));
     chatAdd(xline.user, msg.split("\r\n"));
   }
 

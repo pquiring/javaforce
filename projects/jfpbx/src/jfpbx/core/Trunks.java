@@ -43,7 +43,7 @@ public class Trunks implements Plugin, DialChain {
         cd.pbxsrc.branch = cd.dst.branch;
         cd.pbxsrc.branch = cd.dst.branch;
       }
-      cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
+      cd.sdp = cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
       api.issue(cd, null, true, !src);
       return pid;
     }
@@ -122,7 +122,7 @@ public class Trunks implements Plugin, DialChain {
       cd.pbxsrc.from = cd.dst.from.clone();
     }
     api.connect(cd);
-    cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
+    cd.sdp = cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
     cd.cmd = "INVITE";
     api.reply(cd, 200, "OK", null, true, !src);  //send 200 (NOTE : ACK is ignored (already sent))
   }
@@ -202,7 +202,7 @@ public class Trunks implements Plugin, DialChain {
       cd.pbxdst.to[1] = cd.dialed;
     }
     cd.pbxdst.to[0] = cd.pbxdst.to[1];
-    cd.sip.buildsdp(cd, cd.pbxdst);
+    cd.sdp = cd.sip.buildsdp(cd, cd.pbxdst);
     cd.pbxdst.cseq = cd.src.cseq;
     cd.uri = "sip:" + cd.dialed + "@" + cd.pbxdst.host;
     cd.pbxdst.to[2] = cd.pbxdst.host;

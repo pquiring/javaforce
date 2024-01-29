@@ -271,7 +271,7 @@ public class Service implements SIPServerInterface, PBXAPI {
       if (src) {
         reply(cd, 202, "REFER OK", null, false, true);
         cd.cmd = "NOTIFY";
-        cd.sdp = "SIP/2.0 200 OK";
+        cd.sdp = new String[] {"SIP/2.0 200 OK"};
         issue(cd, "Event: refer\r\n", true, true);
         cd.cmd = "BYE";
         issue(cd, null, false, true);
@@ -280,7 +280,7 @@ public class Service implements SIPServerInterface, PBXAPI {
       } else {
         reply(cd, 202, "REFER OK", null, false, false);
         cd.cmd = "NOTIFY";
-        cd.sdp = "SIP/2.0 200 OK";
+        cd.sdp = new String[] {"SIP/2.0 200 OK"};
         issue(cd, "Event: refer\r\n", true, false);
         cd.cmd = "BYE";
         issue(cd, null, false, false);
@@ -345,7 +345,7 @@ public class Service implements SIPServerInterface, PBXAPI {
             cd.xfer_src = true;
             cd.cmd = "INVITE";
             connect((CallDetailsPBX)cd);
-            ss.buildsdp(cd, cd.pbxsrc);
+            cd.sdp = ss.buildsdp(cd, cd.pbxsrc);
             issue(cd, null, true, true);
           }
           return true;

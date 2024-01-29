@@ -517,7 +517,7 @@ public abstract class SIP {
    * @param msg = SDP text
    * @param log = JFLog log id
    */
-  public static SDP getSDP(String msg[], int log) {
+  public static SDP getSDP(String[] msg, int log) {
     String type = getHeader("Content-Type:", msg);
     if (type == null) type = getHeader("c:", msg);  //short form
     if (type == null || type.indexOf("application/sdp") == -1) return null;
@@ -709,7 +709,7 @@ public abstract class SIP {
     return sdp;
   }
 
-  public static SDP getSDP(String msg[]) {
+  public static SDP getSDP(String[] msg) {
     return getSDP(msg, 0);
   }
 
@@ -1074,109 +1074,13 @@ public abstract class SIP {
   /**
    * Builds SDP packet. (RFC 2327)
    */
-  public void buildsdp(CallDetails cd, CallDetails.SideDetails cdsd) {
+  public String[] buildsdp(CallDetails cd, CallDetails.SideDetails cdsd) {
     //build SDP content
     SDP sdp = cdsd.sdp;
-    String ip = sdp.ip;
-    if (ip == null) {
-      ip = getlocalRTPhost(cd);
+    if (sdp.ip == null) {
+      sdp.ip = getlocalRTPhost(cd);
     }
-    StringBuilder content = new StringBuilder();
-    content.append("v=0\r\n");
-    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + cd.localhost + "\r\n");
-    content.append("s=" + useragent + "\r\n");
-    content.append("c=IN IP4 " + ip + "\r\n");
-    content.append("t=" + sdp.time_start + " " + sdp.time_stop + "\r\n");
-    if (sdp.iceufrag != null) content.append("a=ice-ufrag:" + sdp.iceufrag + "\r\n");
-    if (sdp.icepwd != null) content.append("a=ice-pwd:" + sdp.icepwd + "\r\n");
-    if (sdp.fingerprint != null) content.append("a=fingerprint:sha-256 " + sdp.fingerprint + "\r\n");
-    for(int a=0;a<sdp.streams.length;a++) {
-      SDP.Stream stream = sdp.streams[a];
-      if (stream.codecs.length == 0) continue;
-      Codec rfc2833 = getCodec(stream.codecs, RTP.CODEC_RFC2833);
-      content.append("m=" + stream.getType() + " " + stream.port + " ");
-      if (stream.keyExchange == SDP.KeyExchange.DTLS) {
-        content.append("UDP/TLS/");
-      }
-      content.append("RTP/" + stream.profile);
-      for(int b=0;b<stream.codecs.length;b++) {
-        content.append(" " + stream.codecs[b].id);
-      }
-      if (stream.type == SDP.Type.audio && rfc2833 == null) {
-        rfc2833 = RTP.CODEC_RFC2833;
-        content.append(" " + rfc2833.id);
-      }
-      content.append("\r\n");
-      if (stream.keyExchange == SDP.KeyExchange.SDP && stream.keys != null) {
-        for(int c=0;c<stream.keys.length;c++) {
-          SDP.Key keys = stream.keys[c];
-          byte key_salt[] = new byte[16 + 14];
-          System.arraycopy(keys.key, 0, key_salt, 0, 16);
-          System.arraycopy(keys.salt, 0, key_salt, 16, 14);
-          String keystr = new String(javaforce.Base64.encode(key_salt));
-                                               //keys      | lifetime| mki:length
-          String ln = keys.crypto + " inline:" + keystr + "|2^48" + "|1:32";
-          content.append("a=crypto:" + (c+1) + " ");
-          content.append(ln);
-          content.append("\r\n");
-        }
-      }
-      if (stream.content != null) {
-        content.append("a=content:" + stream.content + "\r\n");
-      }
-      content.append("a=" + stream.getMode() + "\r\n");
-      if (stream.ip != null) {
-        content.append("c=IN IP4 " + stream.ip + "\r\n");
-      }
-      content.append("a=ptime:20\r\n");
-      if (hasCodec(stream.codecs, RTP.CODEC_G711u)) {
-        content.append("a=rtpmap:0 PCMU/8000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_G711a)) {
-        content.append("a=rtpmap:8 PCMA/8000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_GSM)) {
-        content.append("a=rtpmap:3 GSM/8000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_G722)) {
-        content.append("a=rtpmap:9 G722/8000\r\n");  //NOTE:It's really 16000 but an error in RFC claims it as 8000
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_G729a)) {
-        content.append("a=rtpmap:18 G729/8000\r\n");
-        content.append("a=fmtp:18 annexb=no\r\n");
-        content.append("a=silenceSupp:off - - - -\r\n");
-      }
-      if (stream.type == SDP.Type.audio) {
-        content.append("a=rtpmap:" + rfc2833.id + " telephone-event/8000\r\n");
-        content.append("a=fmtp:" + rfc2833.id + " 0-15\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_JPEG)) {
-        content.append("a=rtpmap:26 JPEG/90000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_H263)) {
-        content.append("a=rtpmap:34 H263/90000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_H263_1998)) {
-        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H263_1998).id + " H263-1998/90000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_H263_2000)) {
-        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H263_2000).id + " H263-2000/90000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_H264)) {
-        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H264).id + " H264/90000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_H265)) {
-        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H265).id + " H265/90000\r\n");
-      }
-      if (hasCodec(stream.codecs, RTP.CODEC_VP8)) {
-        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_VP8).id + " VP8/90000\r\n");
-      }
-      JFLog.log("keyexchange=" + stream.keyExchange);
-      if (stream.keyExchange == SDP.KeyExchange.DTLS) {
-        content.append("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
-      }
-    }
-    cd.sdp = content.toString();
+    return sdp.build(cd.localhost);
   }
 
   /** Set resolver to system DNS client. */

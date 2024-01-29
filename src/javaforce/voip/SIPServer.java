@@ -83,13 +83,14 @@ public class SIPServer extends SIP implements SIPInterface {
       req.append(header);
     }
     if ((cd.sdp != null) && (sdp)) {
+      String post = String.join("\r\n",cd.sdp) + "\r\n";
       if (cd.cmd.equals("MESSAGE")) {
         req.append("Content-Type: text/plain\r\n");
       } else {
         req.append("Content-Type: application/sdp\r\n");
       }
-      req.append("Content-Length: " + cd.sdp.length() + "\r\n\r\n");
-      req.append(cd.sdp);
+      req.append("Content-Length: " + post.length() + "\r\n\r\n");
+      req.append(post);
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }
@@ -145,9 +146,10 @@ public class SIPServer extends SIP implements SIPInterface {
       req.append(header);
     }
     if ((cd.sdp != null) && (sdp)) {
+      String post = String.join("\r\n", cd.sdp) + "\r\n";
       req.append("Content-Type: application/sdp\r\n");
-      req.append("Content-Length: " + cd.sdp.length() + "\r\n\r\n");
-      req.append(cd.sdp);
+      req.append("Content-Length: " + post.length() + "\r\n\r\n");
+      req.append(post);
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }
@@ -392,8 +394,8 @@ public class SIPServer extends SIP implements SIPInterface {
               cdsd.sdp = getSDP(msg);
               JFLog.log("src=" + cdsd.sdp);
               //get o1/o2
-              cdsd.o1 = geto(msg, 1);
-              cdsd.o2 = geto(msg, 2);
+              cdsd.sdp.o1 = geto(msg, 1);
+              cdsd.sdp.o2 = geto(msg, 2);
               cd.authorized = (pass != null);
               iface.onInvite(cd, src);
               break;
@@ -452,8 +454,8 @@ public class SIPServer extends SIP implements SIPInterface {
               cdsd.to = replacetag(cdsd.to, getHeader("t:", msg));
               cdpbx.to = cdsd.to.clone();
               cdsd.sdp = getSDP(msg);
-              cdsd.o1 = geto(msg, 1);
-              cdsd.o2 = geto(msg, 2);
+              cdsd.sdp.o1 = geto(msg, 1);
+              cdsd.sdp.o2 = geto(msg, 2);
             }
             else if (cd.cmd.equals("BYE")) {
               setCallDetailsServer(cd.callid, null);

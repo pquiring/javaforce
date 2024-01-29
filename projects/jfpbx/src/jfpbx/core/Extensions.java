@@ -43,7 +43,7 @@ public class Extensions implements Plugin, DialChain {
         cd.pbxdst.branch = cd.dst.branch;
         cd.pbxsrc.branch = cd.dst.branch;
       }
-      cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
+      cd.sdp = cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
       api.issue(cd, null, true, !src);
       return pid;
     }
@@ -80,7 +80,7 @@ public class Extensions implements Plugin, DialChain {
     cd.pbxdst.port = x.remoteport;
     cd.uri = "sip:" + cd.dialed + "@" + cd.pbxdst.host + ":" + cd.pbxdst.port;
     api.connect(cd);
-    cd.sip.buildsdp(cd, cd.pbxdst);
+    cd.sdp = cd.sip.buildsdp(cd, cd.pbxdst);
     api.issue(cd, null, true, false);
     cd.invited = true;
     setTimer(cd, 15000);
@@ -109,7 +109,7 @@ public class Extensions implements Plugin, DialChain {
       cd.pbxsrc.from = cd.dst.from.clone();
     }
     api.connect(cd);
-    cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
+    cd.sdp = cd.sip.buildsdp(cd, src ? cd.pbxdst : cd.pbxsrc);
     cd.cmd = "INVITE";
     api.reply(cd, 200, "OK", null, true, !src);  //send 200 (NOTE : ACK is ignored)
   }
@@ -185,7 +185,7 @@ public class Extensions implements Plugin, DialChain {
     cd.pbxdst.host = x.remoteip;
     cd.pbxdst.port = x.remoteport;
     cd.uri = "sip:" + to + "@" + cd.pbxdst.host + ":" + cd.pbxdst.port;
-    cd.sdp = String.join("\r\n", msg) + "\r\n";
+    cd.sdp = msg;
     api.issue(cd, null, true, false);
     api.log(cd, "DEBUG:MESSAGE:" + to + ":dst=" + cd.pbxdst.host + ":" + cd.pbxdst.port);
     return true;

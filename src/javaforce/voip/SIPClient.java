@@ -244,8 +244,17 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.uri = "sip:" + user + "@" + remotehost;
     cd.src.branch = getbranch();
     cd.src.cseq++;
-    cd.sdp = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"pres:" + user + "@" + remotehost
-            + "\">" + "<tuple id=\"" + gettupleid() + "\"><status><basic>" + state + "</basic></status></tuple></presence>";
+    cd.sdp = new String[] {
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+      "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"pres:" + user + "@" + remotehost + "\">",
+        "<tuple id=\"" + gettupleid() + "\">",
+          "<status>",
+            "<basic>" + state + "</basic>",
+          "</status>",
+        "</tuple>",
+      "</presence>"
+    };
+
     cd.authsent = false;
     cd.src.extra = "Event: presence\r\n";
     cd.src.epass = null;
@@ -466,10 +475,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     if (cdsd.epass != null) {
       req.append(cdsd.epass);
     }
+    String post = null;
     if ((cd.sdp != null) && (sdp)) {
-      if (cd.sdp.startsWith("<?xml")) {
+      post = String.join("\r\n", cd.sdp) + "\r\n";
+      if (post.startsWith("<?xml")) {
         req.append("Content-Type: application/pidf+xml\r\n");
-      } else if (cd.sdp.startsWith("SIP/2.0")) {
+      } else if (post.startsWith("SIP/2.0")) {
         req.append("Content-Type: message/sipfrag;version=2.0\r\n");
       } else {
         if (cmd.equals("MESSAGE")) {
@@ -478,8 +489,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           req.append("Content-Type: application/sdp\r\n");
         }
       }
-      req.append("Content-Length: " + cd.sdp.length() + "\r\n\r\n");
-      req.append(cd.sdp);
+      req.append("Content-Length: " + post.length() + "\r\n\r\n");
+      req.append(post);
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }
@@ -522,9 +533,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     req.append("Allow: INVITE, ACK, CANCEL, BYE, REFER, NOTIFY, OPTIONS, MESSAGE\r\n");
     req.append("User-Agent: JavaForce\r\n");
     if ((cd.sdp != null) && (sdp)) {
+      String post = String.join("\r\n", cd.sdp) + "\r\n";
       req.append("Content-Type: application/sdp\r\n");
-      req.append("Content-Length: " + cd.sdp.length() + "\r\n\r\n");
-      req.append(cd.sdp);
+      req.append("Content-Length: " + post.length() + "\r\n\r\n");
+      req.append(post);
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }
@@ -555,10 +567,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
-    cd.src.o1 = 256;
-    cd.src.o2 = 256;
+    cd.src.sdp.o1 = 256;
+    cd.src.sdp.o2 = 256;
     cd.src.sdp = sdp;
-    buildsdp(cd, cd.src);
+    cd.sdp = buildsdp(cd, cd.src);
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = null;
@@ -631,9 +643,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    */
   public boolean reinvite(String callid, SDP sdp) {
     CallDetails cd = getCallDetails(callid);
-    cd.src.o2++;
     cd.src.sdp = sdp;
-    buildsdp(cd, cd.src);
+    cd.src.sdp.o2++;
+    cd.sdp = buildsdp(cd, cd.src);
     cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.authsent = false;
@@ -704,7 +716,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    *
    * TODO : RFC 4975 for rich text messages.
    */
-  public String message(String to, String msg) {
+  public String message(String to, String[] msg) {
     String callid = getcallid();
     CallDetails cd = getCallDetails(callid);  //new CallDetails
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
@@ -729,7 +741,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    *
    * TODO : RFC 4975 for rich text messages.
    */
-  public String message(String callid, String to, String msg) {
+  public String message(String callid, String to, String[] msg) {
     CallDetails cd = getCallDetails(callid);  //new CallDetails
     if (cd.authstr != null) {
       cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
@@ -756,7 +768,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     caller = false;
     CallDetails cd = getCallDetails(callid);
     cd.src.sdp = sdp;
-    buildsdp(cd, cd.src);
+    cd.sdp = buildsdp(cd, cd.src);
     reply(cd, "INVITE", 200, "OK", true, false);
     //need to swap to/from for BYE (only if accept()ing a call)
     cd.src.to = cd.dst.from.clone();
@@ -774,7 +786,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public boolean reaccept(String callid, SDP sdp) {
     CallDetails cd = getCallDetails(callid);
     cd.src.sdp = sdp;
-    buildsdp(cd, cd.src);
+    cd.sdp = buildsdp(cd, cd.src);
     reply(cd, "INVITE", 200, "OK", true, false);
     //do NOT swap to/from in this case
     //copy all other needed fields
@@ -914,15 +926,15 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
               cd.dst.to = replacetag(cd.dst.to, generatetag());
             }
             //get o1/o2
-            cd.dst.o1 = geto(msg, 1) + 1;
-            cd.dst.o2 = geto(msg, 2) + 1;
+            cd.dst.sdp.o1 = geto(msg, 1) + 1;
+            cd.dst.sdp.o2 = geto(msg, 2) + 1;
             cd.dst.sdp = getSDP(msg);
             switch (iface.onInvite(this, callid, cd.dst.from[0], cd.dst.from[1], cd.dst.sdp)) {
               case 180:  //this is the normal return
                 reply(cd, cmd, 180, "RINGING", false, false);
                 break;
               case 200:  //this was usually a reINVITE to change sdp details
-                buildsdp(cd, cd.src);
+                cd.sdp = buildsdp(cd, cd.src);
                 reply(cd, cmd, 200, "OK", true, false);
                 break;
               case 486:
@@ -1108,9 +1120,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   }
 
   /** Returns the raw SDP from onSuccess() event */
-  public String getSDP(String callid) {
+  public String[] getSDP(String callid) {
     CallDetails cd = getCallDetails(callid);
-    buildsdp(cd, cd.dst);
+    cd.sdp = buildsdp(cd, cd.dst);
     return cd.sdp;
   }
 

@@ -61,7 +61,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
       SDP.Stream astream = cd.src.sdp.getFirstAudioStream();
       cd.audioRelay.change_src(astream);
       cd.pbxsrc.sdp.getFirstAudioStream().codecs = astream.codecs;
-      cd.sip.buildsdp(cd, cd.pbxsrc);
+      cd.sdp = cd.sip.buildsdp(cd, cd.pbxsrc);
       api.reply(cd, 200, "OK", null, true, true);
       return pid;
     }
@@ -93,7 +93,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
       vstream.port = cd.videoRelay.getPort_src();
       vstream.mode = SDP.Mode.inactive;
     }
-    cd.sip.buildsdp(cd, cd.pbxsrc);
+    cd.sdp = cd.sip.buildsdp(cd, cd.pbxsrc);
     cd.invited = true;
     cd.connected = true;
     cd.pbxsrc.to = SIP.replacetag(cd.pbxsrc.to, SIP.generatetag());  //assign tag
@@ -671,7 +671,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
     }
     JFLog.log("IVR:Video Conference:Reinvite " + cd.user + " with " + (sdp.streams.length - 1) + " video streams");
     cd.cmd = "INVITE";
-    cd.sip.buildsdp(cd, cd.pbxsrc);
+    cd.sdp = cd.sip.buildsdp(cd, cd.pbxsrc);
     api.issue(cd, null, true, true);
   }
 

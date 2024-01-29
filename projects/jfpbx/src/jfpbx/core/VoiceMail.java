@@ -69,7 +69,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
       SDP.Stream astream = cd.src.sdp.getFirstAudioStream();
       cd.audioRelay.change_src(astream);
       cd.pbxsrc.sdp.getFirstAudioStream().codecs = cd.src.sdp.getFirstAudioStream().codecs;
-      cd.sip.buildsdp(cd, cd.pbxsrc);
+      cd.sdp = cd.sip.buildsdp(cd, cd.pbxsrc);
       api.reply(cd, 200, "OK", null, true, true);
       return pid;
     }
@@ -90,7 +90,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     SDP.Stream astream = cd.pbxsrc.sdp.addStream(SDP.Type.audio);
     astream.port = cd.audioRelay.getPort_src();
     astream.codecs = cd.src.sdp.getFirstAudioStream().codecs;
-    cd.sip.buildsdp(cd, cd.pbxsrc);
+    cd.sdp = cd.sip.buildsdp(cd, cd.pbxsrc);
     cd.invited = true;
     cd.connected = true;
     cd.pbxsrc.to = SIP.replacetag(cd.pbxsrc.to, SIP.generatetag());  //assign tag

@@ -356,16 +356,15 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
 
   //http://tools.ietf.org/html/rfc5763 - Secure RTP (fingerprint)
 
-  private String convertSDPtoWebSDP(RTC rtc, String sdp) {
-    String lns[] = sdp.split("\r\n");
+  private String convertSDPtoWebSDP(RTC rtc, String[] sdp) {
     StringBuilder out = new StringBuilder();
     boolean fingerprint = false;
     boolean m = false;
     String ip = null;
     int port = -1;
     int id = 1234567890;
-    for(int a=0;a<lns.length;a++) {
-      String ln = lns[a];
+    for(int a=0;a<sdp.length;a++) {
+      String ln = sdp[a];
       if (ln.startsWith("a=content:")) continue;  //unrecognized
       if (ln.startsWith("c=")) {
         //c=IN IP4 <ip>

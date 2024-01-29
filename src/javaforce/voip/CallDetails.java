@@ -24,7 +24,6 @@ public class CallDetails implements Cloneable {
     public String branch;
     public String extra;   //extra headers
     public String epass;   //response to an 403/407 MD5
-    public long o1, o2;
     public SDP sdp;  //sdp as decoded from inbound packets
     public String host;
     public InetAddress addr;
@@ -45,8 +44,8 @@ public class CallDetails implements Cloneable {
   public String callid;
   /** URI is what this call leg is about. */
   public String uri;
-  /** sdp content to be added to outbound packets (TODO : convert to String[]) */
-  public String sdp;
+  /** sdp content to be added to outbound packets */
+  public String[] sdp;
   /** Authorization string */
   public String authstr;
   /** was auth (401/407) tried? */
