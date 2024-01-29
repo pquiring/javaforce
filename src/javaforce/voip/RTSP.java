@@ -266,7 +266,7 @@ public abstract class RTSP {
   }
 
   /** Returns branch in first Via line */
-  protected String getbranch(String msg[]) {
+  protected String getbranch(String[] msg) {
     String vias[] = getvialist(msg);
     if (vias == null || vias.length == 0) return null;
     //Via: SDP/2.0/UDP host:port;branch=...;rport;...
@@ -282,7 +282,7 @@ public abstract class RTSP {
   /**
    * Determines if a SIP message is on hold.
    */
-  protected boolean ishold(String msg[]) {
+  protected boolean ishold(String[] msg) {
     //does msg contain "a=sendonly"?
     for (int a = 0; a < msg.length; a++) {
       if (msg[a].equalsIgnoreCase("a=sendonly")) {
@@ -295,7 +295,7 @@ public abstract class RTSP {
   /**
    * Returns the Via: list in a SIP message as an array.
    */
-  protected String[] getvialist(String msg[]) {
+  protected String[] getvialist(String[] msg) {
     ArrayList<String> vialist = new ArrayList<String>();
     for (int a = 0; a < msg.length; a++) {
       String ln = msg[a];
@@ -314,7 +314,7 @@ public abstract class RTSP {
   /**
    * Returns the Record-Route: list in a SIP message as an array.
    */
-  protected String[] getroutelist(String msg[]) {
+  protected String[] getroutelist(String[] msg) {
     ArrayList<String> routelist = new ArrayList<String>();
     for (int a = 0; a < msg.length; a++) {
       String ln = msg[a];
@@ -351,7 +351,7 @@ public abstract class RTSP {
   /**
    * Returns the URI part of a SIP message.
    */
-  protected String geturi(String msg[]) {
+  protected String geturi(String[] msg) {
     //cmd uri SIP/2.0\r\n
     int idx1 = msg[0].indexOf(' ');
     if (idx1 == -1) {
@@ -520,7 +520,7 @@ public abstract class RTSP {
    *
    * @param msg = SDP text
    */
-  public SDP getSDP(String msg[]) {
+  public SDP getSDP(String[] msg) {
     return SIP.getSDP(msg, log);
   }
 
@@ -583,7 +583,7 @@ public abstract class RTSP {
   /**
    * Returns the requested operation of a SIP message. (INVITE, BYE, etc.)
    */
-  protected String getRequest(String msg[]) {
+  protected String getRequest(String[] msg) {
     int idx = msg[0].indexOf(" ");
     if (idx == -1) {
       return null;
@@ -592,7 +592,7 @@ public abstract class RTSP {
   }
 
   /** Returns URI in SIP msg. (INVITE "uri" SIP/2.0) */
-  protected String getURI(String msg[]) {
+  protected String getURI(String[] msg) {
     String parts[] = msg[0].split(" ");
     return parts[1];
   }
@@ -600,7 +600,7 @@ public abstract class RTSP {
   /**
    * Returns the response number from a SIP reply message. (100, 200, 401, etc.)
    */
-  protected int getResponseType(String msg[]) {
+  protected int getResponseType(String[] msg) {
     if (msg[0].length() < 11) {
       return -1;  //bad msg
     }
@@ -613,7 +613,7 @@ public abstract class RTSP {
   /**
    * Returns a specific header (field) from a SIP message.
    */
-  public static String getHeader(String header, String msg[]) {
+  public static String getHeader(String header, String[] msg) {
     int sl = header.length();
     for (int a = 0; a < msg.length; a++) {
       String ln = msg[a];
@@ -630,7 +630,7 @@ public abstract class RTSP {
   /**
    * Returns a set of specific headers (fields) from a SIP message.
    */
-  public static String[] getHeaders(String header, String msg[]) {
+  public static String[] getHeaders(String header, String[] msg) {
     ArrayList<String> lst = new ArrayList<String>();
     int sl = header.length();
     for (int a = 0; a < msg.length; a++) {
@@ -648,7 +648,7 @@ public abstract class RTSP {
   /**
    * Returns the cseq of a SIP message.
    */
-  protected int getcseq(String msg[]) {
+  protected int getcseq(String[] msg) {
     String cseqstr = getHeader("CSeq:", msg);
     if (cseqstr == null) {
       return -1;
@@ -660,7 +660,7 @@ public abstract class RTSP {
   /**
    * Returns the command at the end of the cseq header in a SIP message.
    */
-  protected String getcseqcmd(String msg[]) {
+  protected String getcseqcmd(String[] msg) {
     String cseqstr = getHeader("CSeq:", msg);
     if (cseqstr == null) {
       return null;
@@ -798,7 +798,7 @@ public abstract class RTSP {
   /**
    * Returns the remote RTP host in a SIP/SDP packet.
    */
-  protected String getremotertphost(String msg[]) {
+  protected String getremotertphost(String[] msg) {
     String c = getHeader("c=", msg);
     if (c == null) {
       return null;
@@ -813,7 +813,7 @@ public abstract class RTSP {
   /**
    * Returns the remote RTP port in a SIP/SDP packet.
    */
-  protected int getremotertpport(String msg[]) {
+  protected int getremotertpport(String[] msg) {
     // m=audio PORT RTP/AVP ...
     String m = getHeader("m=audio ", msg);
     if (m == null) {
@@ -829,7 +829,7 @@ public abstract class RTSP {
   /**
    * Returns the remote Video RTP port in a SIP/SDP packet.
    */
-  protected int getremoteVrtpport(String msg[]) {
+  protected int getremoteVrtpport(String[] msg) {
     // m=video PORT RTP/AVP ...
     String m = getHeader("m=video ", msg);
     if (m == null) {
@@ -845,7 +845,7 @@ public abstract class RTSP {
   /**
    * Returns the 'o' counts in a SIP/SDP packet. idx can be 1 or 2.
    */
-  protected long geto(String msg[], int idx) {
+  protected long geto(String[] msg, int idx) {
     //o=blah o1 o2 ...
     String o = getHeader("o=", msg);
     if (o == null) {
@@ -858,7 +858,7 @@ public abstract class RTSP {
   /**
    * Returns "expires" field from SIP headers.
    */
-  public int getexpires(String msg[]) {
+  public int getexpires(String[] msg) {
     //check Expires field
     String expires = getHeader("Expires:", msg);
     if (expires != null) {
@@ -938,7 +938,7 @@ public abstract class RTSP {
           if (pack.length <= 4) {
             continue;  //keep alive
           }
-          String msg[] = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
+          String[] msg = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
           if (server) {
             WorkerPacket wp = new WorkerPacket(msg, pack.host, pack.port);
             wp.start();

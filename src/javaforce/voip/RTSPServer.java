@@ -180,7 +180,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Processes RTSP messages sent from clients.
    */
-  public void packet(String msg[], String remoteip, int remoteport) {
+  public void packet(String[] msg, String remoteip, int remoteport) {
     String remote = remoteip + ":" + remoteport;
     try {
       RTSPSession sess;

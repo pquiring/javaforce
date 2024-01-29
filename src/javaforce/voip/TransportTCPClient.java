@@ -114,7 +114,7 @@ public class TransportTCPClient implements Transport {
       } while (plen == -1);
       tlen = plen;
       //now find Content-Length:
-      String msg[] = new String(packet.data, 0, plen).split("\r\n");
+      String[] msg = new String(packet.data, 0, plen).split("\r\n");
       String clenstr = SIP.getHeader("Content-Length:", msg);
       if (clenstr == null) SIP.getHeader("l:", msg);
       if (clenstr != null) {
