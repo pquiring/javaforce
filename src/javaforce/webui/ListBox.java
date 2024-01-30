@@ -137,7 +137,6 @@ public class ListBox extends ScrollPanel implements Click {
   }
 
   public void onClick(MouseEvent me, Component cmp) {
-    JFLog.log("ListBox.onClick");
     Cell cell = (Cell)cmp.getParent();
     if (me.ctrlKey) {
       cell.setSelected(!cell.isSelected());

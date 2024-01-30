@@ -1,6 +1,6 @@
 package service;
 
-/**
+/** DVR Service
  *
  * @author pquiring
  */
@@ -76,7 +76,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       startCamera(camera, camera.url, true, same || camera.url_low.length() == 0);
     }
     if (camera.url_low.length() > 0 && !same) {
-      startCamera(camera, camera.url_low, !same, true);
+      startCamera(camera, camera.url_low, camera.url.length() == 0, true);
     }
   }
 

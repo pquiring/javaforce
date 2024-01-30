@@ -163,6 +163,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
   public CameraWorkerVideo(Camera camera, String url, boolean viewer, boolean record) {
+    JFLog.log("CameraWorkerVideo:" + url + ":viewer=" + viewer + ":record=" + record);
     log = nextLog();
     this.url = url;
     this.cleanurl = RTSPURL.cleanURL(url);
@@ -223,18 +224,17 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           folder_size -= rec.size;
           JFLog.log(log, "delete recording:" + rec.file.getName());
         }
-        //update preview
-        if (record && camera.viewing && camera.update_preview) {
-          int px[] = decoded_frame;
-          if (px != null) {
-            preview_image.putPixels(px, 0, 0, decoded_x, decoded_y, 0);
-            ByteArrayOutputStream preview = new ByteArrayOutputStream();
-            preview_image.savePNG(preview);
-            camera.preview = preview.toByteArray();
-            camera.update_preview = false;
-          }
-        }
         do {
+          if (record && camera.viewing && camera.update_preview) {
+            int px[] = decoded_frame;
+            if (px != null) {
+              preview_image.putPixels(px, 0, 0, decoded_x, decoded_y, 0);
+              ByteArrayOutputStream preview = new ByteArrayOutputStream();
+              preview_image.savePNG(preview);
+              camera.preview = preview.toByteArray();
+              camera.update_preview = false;
+            }
+          }
           if (!record) {
             JF.sleep(1000);
             continue;
@@ -252,7 +252,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
             idle = false;
             break;
           }
-          if (frames.empty()) break;
+          if (frames == null || frames.empty()) {
+            break;
+          }
           idle = false;
           int frame_tail = frames.tail;
           if (frames.stop[frame_tail]) {

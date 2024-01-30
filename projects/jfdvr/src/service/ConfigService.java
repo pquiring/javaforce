@@ -256,8 +256,8 @@ public class ConfigService implements WebUIHandler {
     preview_panel.add(row);
     lbl = new Label("Motion Value:");
     row.add(lbl);
-    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 10);
-    row.add(bar);
+    ProgressBar motion_bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 10);
+    row.add(motion_bar);
     Label motion_value = new Label("");
     row.add(motion_value);
 
@@ -348,6 +348,7 @@ public class ConfigService implements WebUIHandler {
           if (camera == null) break;
           camera_name.setText(camera.name);
           camera_url.setText(camera.url);
+          camera_url_low.setText(camera.url_low);
           camera_enabled.setSelected(camera.enabled);
           camera_record_motion.setSelected(camera.record_motion);
           camera_threshold.setPos(camera.record_motion_threshold);
@@ -368,7 +369,7 @@ public class ConfigService implements WebUIHandler {
           Timer timer = new Timer();
           timer.schedule(new TimerTask() {
             public void run() {
-              bar.setValue(camera_cap.motion_value);
+              motion_bar.setValue(camera_cap.motion_value);
               motion_value.setText(Integer.toString((int)camera_cap.motion_value));
               img.refresh();
             }
@@ -410,7 +411,7 @@ public class ConfigService implements WebUIHandler {
       tag_trigger.setText("");
       tag_value.setText("");
       stopTimer(client);
-      bar.setValue(0);
+      motion_bar.setValue(0);
       preview_panel.setVisible(false);
       camera_panel.setVisible(true);
       group_panel.setVisible(false);
