@@ -160,10 +160,12 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     if (sess.accept != null) {
       req.append("Accept: " + sess.accept + "\r\n");
     }
+    String post = null;
     if (sess.sdp != null) {
+      post = String.join("\r\n" + sess.sdp) + "\r\n";
       req.append("Content-Type: application/sdp\r\n");
-      req.append("Content-Length: " + sess.sdp.length() + "\r\n\r\n");
-      req.append(sess.sdp);
+      req.append("Content-Length: " + post.length() + "\r\n\r\n");
+      req.append(post);
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }

@@ -55,7 +55,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     viewers.add(sess);
   }
 
-  public String get_sdp(RTSPSession sess) {
+  public String[] get_sdp(RTSPSession sess) {
     SDP sdp = new SDP();
     SDP.Stream stream = sdp.addStream(SDP.Type.video);
     stream.addCodec(RTP.CODEC_H264);
