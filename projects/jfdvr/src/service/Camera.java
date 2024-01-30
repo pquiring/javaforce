@@ -108,7 +108,10 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
         case id_tag_value: tag_value = readString(); break;
         case id_pos_edge: pos_edge = readBoolean(); break;
         case id_enabled: enabled = readBoolean(); break;
-        case id_end: return;
+        case id_end: {
+          if (name == null) name = "camera";
+          return;
+        }
         default: skipChunk(id); break;
       }
     } while (true);

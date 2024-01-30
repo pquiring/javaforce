@@ -467,6 +467,7 @@ public class ConfigService implements WebUIHandler {
             Config.current.addCamera(camera);
             list.add("Camera:" + _name);
           } else {
+            //update existing camera
             String opt = list.getSelectedItem();
             if (opt == null) return;
             int idx = opt.indexOf(':');
@@ -524,7 +525,7 @@ public class ConfigService implements WebUIHandler {
         }
         case "groups": {
           //save group
-          String _name = camera_name.getText();
+          String _name = group_name.getText();
           _name = cleanName(_name);
           group_name.setText(_name);
           if (_name.length() == 0) {
@@ -543,10 +544,12 @@ public class ConfigService implements WebUIHandler {
               }
             }
             group = (Group)client.getProperty("new_group");
+            if (group == null) break;
             Config.current.addGroup(group);
             list.add("Group:" + _name);
             client.setProperty("new_group", null);
           } else {
+            //update existing group
             String opt = list.getSelectedItem();
             if (opt == null) return;
             int idx = opt.indexOf(':');
@@ -562,15 +565,17 @@ public class ConfigService implements WebUIHandler {
             }
             if (group == null) break;
           }
+          group.name = _name;
           update_group_lists(group, group_list_avail, group_list_selected);
           break;
         }
       }
+      Config.save();
     });
 
     b_group_add_camera.addClickListener((MouseEvent e, Component button) -> {
       String opt = list.getSelectedItem();
-      if (opt == null) return;
+      if (opt == null) opt = "group:new";
       int idx = opt.indexOf(':');
       String opt_type = opt.substring(0, idx);
       String opt_name = opt.substring(idx+1);
@@ -593,7 +598,6 @@ public class ConfigService implements WebUIHandler {
 
       group.add(camera);
       update_group_lists(group, group_list_avail, group_list_selected);
-      Config.save();
     });
 
     b_group_remove_camera.addClickListener((MouseEvent e, Component button) -> {
@@ -621,7 +625,6 @@ public class ConfigService implements WebUIHandler {
 
       group.remove(camera);
       update_group_lists(group, group_list_avail, group_list_selected);
-      Config.save();
     });
 
     PopupPanel popup = new PopupPanel("Confirm");
@@ -676,6 +679,7 @@ public class ConfigService implements WebUIHandler {
           stopTimer(client);
           break;
       }
+      Config.save();
     });
     Button popup_b_cancel = new Button("Cancel");
     popup.add(popup_b_cancel);

@@ -32,7 +32,10 @@ public class Group extends SerialObject {
             cameras[a] = readString();
           }
           break;
-        case id_end: return;
+        case id_end: {
+          if (name == null) name = "group";
+          return;
+        }
         default: skipChunk(id); break;
       }
     } while (true);
