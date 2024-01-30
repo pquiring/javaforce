@@ -209,6 +209,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         String[] type_name = path.split("/");
         String type = type_name[1];
         String name = type_name[2];
+        JFLog.log("query:" + type + "/" + name);
         sess.params = null;
         switch (type) {
           case "list": sess.params = get_list_all(name); break;
@@ -242,6 +243,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private String[] get_list_all(String type) {
+    JFLog.log("query:list:all");
     StringBuilder camlist = new StringBuilder();
     StringBuilder grplist = new StringBuilder();
     camlist.append("cameras: ");
@@ -266,8 +268,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private String[] get_list_group_cameras(String name) {
+    JFLog.log("query:group:" + name);
     Group group = Config.current.getGroup(name);
-    if (group == null) return null;
-    return new String[] {group.getCameraList()};
+    if (group == null) {
+      JFLog.log("group not found:" + name);
+      return null;
+    }
+    String camlist = group.getCameraList();
+    JFLog.log("group:camlist=" + camlist);
+    return new String[] {camlist};
   }
 }
