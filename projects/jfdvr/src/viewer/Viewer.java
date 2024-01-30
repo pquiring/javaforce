@@ -373,6 +373,7 @@ public class Viewer {
     }
 
     private void start_group(String cams) {
+      JFLog.log("start_group:" + cams);
       cameras = cams.split(",");
       int count = cameras.length;
       grid = true;
@@ -414,6 +415,7 @@ public class Viewer {
     }
 
     public void onGetParameter(RTSPClient client, String[] params) {
+      JFLog.log("onGetParameter:" + type);
       switch (type) {
         case "camera":
           //keep-alive

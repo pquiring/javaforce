@@ -562,8 +562,8 @@ public class HTTP {
       String param = params[a];
       int idx = param.indexOf(":");
       if (idx == -1) continue;
-      String key = param.substring(0, idx);
-      String value = param.substring(idx + 1);
+      String key = param.substring(0, idx).trim();
+      String value = param.substring(idx + 1).trim();
       if (key.equals(name)) {
         return value;
       }

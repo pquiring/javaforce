@@ -51,8 +51,9 @@ public class TransportTCPServer implements Transport {
   }
 
   public boolean send(byte[] data, int off, int len, InetAddress host, int port) {
-    String id = host.toString() + ":" + port;
+    String id = host.getHostAddress() + ":" + port;
     Socket socket;
+    JFLog.log("Transport:get:" + id);
     synchronized(clientsLock) {
       socket = clients.get(id);
     }
@@ -60,6 +61,9 @@ public class TransportTCPServer implements Transport {
       if (socket == null) socket = connect(host, port, id);
       OutputStream os = socket.getOutputStream();
       os.write(data, off, len);
+    } catch (SocketException se) {
+      JFLog.log("Connection lost");
+      return false;
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -89,6 +93,7 @@ public class TransportTCPServer implements Transport {
 
   private Socket connect(InetAddress host, int port, String id) throws Exception {
     Socket socket = new Socket(host, port);
+    JFLog.log("Transport:put:" + id);
     synchronized(clientsLock) {
       clients.put(id, socket);
     }
@@ -103,7 +108,8 @@ public class TransportTCPServer implements Transport {
           Socket socket = ss.accept();
           InetAddress host = socket.getInetAddress();
           int port = socket.getPort();
-          String id = host.toString() + ":" + port;
+          String id = host.getHostAddress()+ ":" + port;
+          JFLog.log("Transport:put:" + id);
           synchronized(clientsLock) {
             clients.put(id, socket);
           }
@@ -210,8 +216,13 @@ public class TransportTCPServer implements Transport {
             packets.add(packet);
             packetsLock.notify();
           }
+        } catch (SocketException se) {
+          error = true;
+          active = false;
+          JFLog.log("Connection lost");
         } catch (Exception e) {
           error = true;
+          active = false;
           JFLog.log(e);
         }
       }

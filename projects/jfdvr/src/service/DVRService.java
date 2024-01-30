@@ -202,6 +202,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public void onGetParameter(RTSPServer server, RTSPSession sess, String[] params) {
     try {
       String action = HTTP.getParameter(params, "action");
+      JFLog.log("onGetParameter:uri=" + sess.uri + ":action=" + action);
       if (action.equals("query")) {
         URL url = new URI(sess.uri).toURL();
         String path = url.getPath();  // / type / name
@@ -223,6 +224,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         sess.params = null;
       }
     } catch (Exception e) {
+      JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
