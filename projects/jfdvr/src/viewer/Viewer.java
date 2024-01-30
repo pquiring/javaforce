@@ -394,15 +394,9 @@ public class Viewer {
       int px = 0;
       int py = 0;
       for(int a=0;a<count;a++) {
-        String urlstr = "";
-        URL url = null;
-        try {
-          url = new URI(urlstr).toURL();
-        } catch (Exception e) {
-          JFLog.log("Invalid URL:" + urlstr);
-          continue;
-        }
-        NetworkReader nr = new NetworkReader(url);
+        URL camurl = replacePath(url, "/camera/" + cameras[a]);
+        if (camurl == null) continue;
+        NetworkReader nr = new NetworkReader(camurl);
         nr.setGrid(px, py);
         nr.start();
         networkReaders[a] = nr;
@@ -605,6 +599,21 @@ public class Viewer {
         JFLog.log("play thread exit");
       }
     }
+
+    private URL replacePath(URL url, String path) {
+      String str = url.toString();  //rtsp://user:pass@host:port/path/file
+      try {
+        int idx = str.indexOf('/', 8);
+        if (idx == -1) throw new Exception("invalid");
+        str = str.substring(0, idx);
+        str += path;
+        return new URI(str).toURL();
+      } catch (Exception e) {
+        JFLog.log("Invalid URL:" + str);
+        return null;
+      }
+    }
+
     public class PlayAudioOnlyThread extends Thread {
       public void run() {
         double frameDelay = 1000.0 / ((44100.0 * chs) / (audio_bufsiz));
