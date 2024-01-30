@@ -538,7 +538,6 @@ struct FFContext {
 
   jboolean is_dash;
   jboolean is_mp4;
-  jboolean is_h264;
 
   /** Set to make fps = fps * 1000 / 1001. */
   jboolean config_fps_1000_1001;
@@ -1543,6 +1542,10 @@ static jboolean encoder_init_video(FFContext *ctx) {
 //      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "fast", 0);  //TODO
       break;
     }
+    case AV_CODEC_ID_H265: {
+      printf("codec=H265\n");
+      break;
+    };
     case AV_CODEC_ID_VP9: {
       printf("codec=VP9\n");
       //see https://trac.ffmpeg.org/wiki/Encode/VP9
@@ -1838,9 +1841,6 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   else if (strcmp(codec, "mp4") == 0) {
     ctx->is_mp4 = 1;
   }
-  else if (strcmp(codec, "h264") == 0) {
-    ctx->is_h264 = 1;
-  }
   if (ff_debug_trace) printf("encoder_start\n");
   if (ctx->is_dash) {
     if (single_file) {
@@ -1849,7 +1849,6 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     }
     (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "streaming", 1, 0);
     (*_av_opt_set)(ctx->fmt_ctx->priv_data, "dash_segment_type", "mp4", 0);
-
 //    (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "ldash", 1, 0);  //enable low latency dash
   } else {
     ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);

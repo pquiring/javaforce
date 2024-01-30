@@ -407,6 +407,7 @@ public class ConfigService implements WebUIHandler {
       list.setSelectedIndex(-1);
       camera_name.setText("");
       camera_url.setText("");
+      camera_url_low.setText("");
       controller.setText("");
       tag_trigger.setText("");
       tag_value.setText("");
