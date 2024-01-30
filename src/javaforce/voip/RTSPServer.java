@@ -160,6 +160,9 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     if (sess.accept != null) {
       req.append("Accept: " + sess.accept + "\r\n");
     }
+    if (header != null) {
+      req.append(header);
+    }
     if (sess.sdp != null) {
       String post = String.join("\r\n", sess.sdp) + "\r\n";
       req.append("Content-Type: application/sdp\r\n");
@@ -226,6 +229,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       switch (reply) {
         case -1:
           //request/cmd
+          sess.cmd = cmd;
           switch (cmd) {
             case "OPTIONS":
               String auth = getHeader("Authorization:", msg);
@@ -247,7 +251,9 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               String[] tags = auth.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
               String res = getHeader("response=", tags);
               String nonce = getHeader("nonce=", tags);
-              if ((nonce == null) || (sess.nonce == null) || (!sess.nonce.equals(nonce))) {
+              sess.user = getHeader("username=", tags);
+              JFLog.log("user=" + sess.user);
+              if ((nonce == null) || (sess.nonce == null) || (!sess.nonce.equals(nonce)) || (sess.user == null)) {
                 //send another 401
                 sess.nonce = getnonce();
                 String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + sess.nonce + "\"";
