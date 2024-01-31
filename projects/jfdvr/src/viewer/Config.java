@@ -16,9 +16,13 @@ public class Config {
     nextPort += 2;
     return port;
   }
-  public static String changeURL(String path) {
+  public static URL changeURL(String path) {
     String host = Config.url.getHost();
     int port = Config.url.getPort();
-    return "rtsp://" + host + (port > 0 ? (":" + port) : "") + path;
+    try {
+      return new URI("rtsp://user:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

@@ -16,7 +16,6 @@ import javaforce.media.*;
 public class Viewer {
 
   private final static boolean debug_buffers = false;
-  private boolean wait_next_key_frame;
 
   /**
    * Creates new form MainPanel
@@ -25,43 +24,30 @@ public class Viewer {
     JFLog.enableTimestamp(true);
   }
 
-  private MediaDecoder decoder;
-  private MediaVideoDecoder video_decoder;
-  private long frameCount;
-  private long audioCount;
   private final Object countLock = new Object();
-  private boolean playing, paused, updatingPos, eof, preBuffering;
   private VideoPanel videoPanel;
   private NetworkReader networkReader;
   private String[] cameras;
   private NetworkReader[] networkReaders;  //group cameras
   private Thread playThread;
-  private long fileLength;
-  private int seekPosition;
-  private long mediaLength;
   private int grid_x, grid_y, grid_xy;
+  private boolean playing;
 
   public static boolean debug = false;
 
   /** Play a network source directly. */
   public void play(URL url) {
-    if (playing) {stop(true); return;}
+    playing = true;
     if (url == null) {
       JFAWT.showError("Error", "Invalid URL");
       return;
     }
-    playing = true;
     networkReader = new NetworkReader(url);
     networkReader.start();
   }
 
   public synchronized void stop(boolean wait) {
     if (!playing) {
-      JFLog.log("stop:not playing");
-      return;
-    }
-    if (decoder == null && video_decoder == null) {
-      JFLog.log("stop:no decoder running");
       return;
     }
     playing = false;
@@ -72,19 +58,12 @@ public class Viewer {
       }
       JFLog.log("stop:reader thread done");
     }
-    fps = -1;
   }
 
   public void log(String msg) {
     JFLog.log("" + System.currentTimeMillis() + ":" + msg);
   }
 
-  final int audio_bufsiz = 1024;
-  final int chs = 2;  //currently all formats are converted to stereo
-  float fps = -1;
-  int width, height;
-  int new_width, new_height;
-  boolean resizeVideo;
   Object sizeLock = new Object();
 
   //buffer size in seconds
@@ -92,6 +71,8 @@ public class Viewer {
   //too large causes resizes to take a long time to take effect
   //the problem is that some video files are not interlaced very well
   final int pre_buffer_seconds = 2;
+  private int new_width, new_height;
+  private boolean resizeVideo;
 
   public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface, PacketReceiver {
     private URL url;
@@ -113,6 +94,19 @@ public class Viewer {
     private int gx, gy;
     private AudioBuffer audio_buffer;
     private VideoBuffer video_buffer;
+    private MediaDecoder decoder;
+    private MediaVideoDecoder video_decoder;
+    private long frameCount;
+    private long audioCount;
+    private long fileLength;
+    private int seekPosition;
+    private long mediaLength;
+    private boolean wait_next_key_frame;
+    private boolean updatingPos, preBuffering;
+    private int width, height;
+    private final int audio_bufsiz = 1024;
+    private final int chs = 2;  //currently all formats are converted to stereo
+    private float fps = -1;
 
     private final int buffer_seconds = 4;
 
@@ -138,7 +132,6 @@ public class Viewer {
       width = -1;
       height = -1;
       resizeVideo = false;
-      eof = false;
       preBuffering = true;
 
       try {
@@ -161,12 +154,7 @@ public class Viewer {
           playThread.start();
         }
         lastKeepAlive = System.currentTimeMillis();
-        while (playing && !eof) {
-          if (paused) {
-            JF.sleep(100);  //TODO:use a lock with wait() and notify() instead
-            preBuffering = true;  //pre buffer again after unpause
-            continue;
-          }
+        while (playing) {
           if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
             preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
             int sleep;
@@ -400,7 +388,7 @@ public class Viewer {
       int px = 0;
       int py = 0;
       for(int a=0;a<count;a++) {
-        URL camurl = replacePath(url, "/camera/" + cameras[a]);
+        URL camurl = Config.changeURL("/camera/" + cameras[a]);
         if (camurl == null) continue;
         NetworkReader nr = new NetworkReader(camurl);
         nr.setGrid(px, py);
@@ -549,7 +537,7 @@ public class Viewer {
           }
           if (preBuffering) {
             //wait till buffers are 50% full before starting
-            while (!eof && playing && preBuffering) {
+            while (playing && preBuffering) {
               if (video_buffer.size() >= (fps * pre_buffer_seconds)) break;
               JF.sleep(25);
             }
@@ -557,9 +545,6 @@ public class Viewer {
             for(int a=0;a<2;a++) output.write(samples);  //prime audio output
           }
           samplesToWrite += samplesPerFrame;
-          if (eof) {
-            if ((video_buffer.size() == 0) && (audio_buffer.size() < audio_bufsiz)) break;
-          }
           if (audio_buffer != null) {
             while (audio_buffer.size() >= audio_bufsiz && samplesToWrite >= audio_bufsiz) {
               audio_buffer.get(samples, 0, audio_bufsiz);
@@ -607,20 +592,6 @@ public class Viewer {
       }
     }
 
-    private URL replacePath(URL url, String path) {
-      String str = url.toString();  //rtsp://user:pass@host:port/path/file
-      try {
-        int idx = str.indexOf('/', 8);
-        if (idx == -1) throw new Exception("invalid");
-        str = str.substring(0, idx);
-        str += path;
-        return new URI(str).toURL();
-      } catch (Exception e) {
-        JFLog.log("Invalid URL:" + str);
-        return null;
-      }
-    }
-
     public class PlayAudioOnlyThread extends Thread {
       public void run() {
         double frameDelay = 1000.0 / ((44100.0 * chs) / (audio_bufsiz));
@@ -637,7 +608,7 @@ public class Viewer {
           }
           if (preBuffering) {
             //wait till buffers are 50% full before starting
-            while (!eof && playing && preBuffering) {
+            while (playing && preBuffering) {
               if (audio_buffer.size() >= (44100 * chs * pre_buffer_seconds)) break;
               JF.sleep(25);
             }
@@ -645,9 +616,6 @@ public class Viewer {
             for(int a=0;a<2;a++) output.write(samples);  //prime output
           }
           samplesToWrite += samplesPerFrame;
-          if (eof) {
-            if (audio_buffer.size() < audio_bufsiz) break;
-          }
           while (audio_buffer.size() >= audio_bufsiz && samplesToWrite >= audio_bufsiz) {
             audio_buffer.get(samples, 0, audio_bufsiz);
             output.write(samples);
@@ -688,14 +656,11 @@ public class Viewer {
           }
           if (preBuffering) {
             //wait till buffers are 50% full before starting
-            while (!eof && playing && preBuffering) {
+            while (playing && preBuffering) {
               if (video_buffer.size() >= (fps * pre_buffer_seconds)) break;
               JF.sleep(25);
             }
             preBuffering = false;
-          }
-          if (eof) {
-            if (video_buffer.size() == 0) break;
           }
           if (video_buffer.size() > 0) {
             JFImage img = video_buffer.getNextFrame();

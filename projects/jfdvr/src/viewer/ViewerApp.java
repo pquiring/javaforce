@@ -150,7 +150,7 @@ public class ViewerApp extends javax.swing.JFrame {
 
   public void selectView(String type, String name) {
     try {
-      Config.url = new URI(Config.changeURL("/" + type + "/" + name)).toURL();
+      Config.url = Config.changeURL("/" + type + "/" + name);
       panel = new Viewer();
       panel.play(Config.url);
     } catch (Exception e) {
