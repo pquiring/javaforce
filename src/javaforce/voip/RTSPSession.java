@@ -38,10 +38,9 @@ public class RTSPSession {
   public int reply;
   public String user;
   public boolean auth;
-
-  //RTP session (server only)
   public RTP rtp;
   public RTPChannel channel;
+  public long ts;
 
   //user defined for tracking resource
   public int res_type;  //resource type

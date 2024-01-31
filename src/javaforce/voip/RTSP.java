@@ -26,6 +26,7 @@ public abstract class RTSP {
   protected Transport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
   public int log;
+  public static boolean debug = false;
 
   /**
    * Opens the transport and sets the RTSPInterface callback.
@@ -936,7 +937,7 @@ public abstract class RTSP {
           Packet pack = new Packet();
           pack.data = data;
           if (!transport.receive(pack)) continue;
-          JFLog.log("RTSP:packet:host=" + pack.host);
+          if (debug) JFLog.log("RTSP:packet:host=" + pack.host);
           if (pack.length <= 4) {
             continue;  //keep alive
           }

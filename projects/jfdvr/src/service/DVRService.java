@@ -20,6 +20,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public static RTSPServer rtspServer;
 
   public final static boolean debug = false;
+  public Timer timer;
+
   public static void serviceStart(String args[]) {
     if (dvrService != null) return;
     dvrService = new DVRService();
@@ -49,6 +51,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
     configService.start();
     //enable firewall exception
     setupFirewall();
+    //start keep alive timer
+    timer = new Timer();
+    timer.schedule(new TimerTask() {public void run() {checkKeepAlive();}}, 60 * 1000, 60 * 1000);
     //start RTSP server
     rtspServer = new RTSPServer();
     rtspServer.init(554, this, TransportType.TCP);
@@ -67,6 +72,18 @@ public class DVRService extends Thread implements RTSPServerInterface {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
       list.get(a).cancel();
+    }
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
+    if (rtspServer != null) {
+      rtspServer.uninit();
+      rtspServer = null;
+    }
+    if (configService != null) {
+      configService.stop();
+      configService = null;
     }
   }
 
@@ -200,6 +217,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public void onGetParameter(RTSPServer server, RTSPSession sess, String[] params) {
+    sess.ts = System.currentTimeMillis();
     try {
       String action = HTTP.getParameter(params, "action");
       JFLog.log("onGetParameter:uri=" + sess.uri + ":action=" + action);
@@ -277,5 +295,23 @@ public class DVRService extends Thread implements RTSPServerInterface {
     String camlist = group.getCameraList();
     JFLog.log("group:camlist=" + camlist);
     return new String[] {camlist};
+  }
+
+  private void checkKeepAlive() {
+    long cut = System.currentTimeMillis() - 60 * 1000;
+    for(Camera cam : Config.current.cameras) {
+      synchronized (cam.viewersLock) {
+        int count = cam.viewers.size();
+        for(int i=0;i<count;i++) {
+          RTSPSession sess = cam.viewers.get(i);
+          if (sess.ts < cut) {
+            cam.viewers.remove(sess);
+            count--;
+          } else {
+            i++;
+          }
+        }
+      }
+    }
   }
 }
