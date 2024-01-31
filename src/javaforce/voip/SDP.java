@@ -318,6 +318,9 @@ public class SDP implements Cloneable {
         content.add("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
       }
     }
+    if (framerate != 0.0f) {
+      content.add("a=framerate:" + framerate);
+    }
     return content.toArray(new String[0]);
   }
 }

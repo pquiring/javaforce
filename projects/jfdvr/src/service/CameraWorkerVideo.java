@@ -522,6 +522,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
       return;
     }
+    fps = sdp.framerate;
+    camera.fps = fps;
     //IP/port in SDP is all zeros
     stream.setIP(client.getRemoteIP());
     stream.setPort(-1);
@@ -669,7 +671,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (width == -1 && height == -1) {
         width = decoder.getWidth();
         height = decoder.getHeight();
-        fps = decoder.getFrameRate();
+        if (fps == -1) {
+          fps = decoder.getFrameRate();
+        }
         JFLog.log(log, camera.name + " : detected width/height=" + width + "x" + height);
         JFLog.log(log, camera.name + " : detected FPS=" + fps);
         JFLog.log(log, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
