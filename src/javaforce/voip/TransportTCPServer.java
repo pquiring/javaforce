@@ -33,7 +33,7 @@ public class TransportTCPServer implements Transport {
       ss_active = true;
       new WorkerAccepter().start();
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
       return false;
     }
     return true;
@@ -47,7 +47,7 @@ public class TransportTCPServer implements Transport {
         ss = null;
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
     }
     return true;
   }
@@ -71,11 +71,11 @@ public class TransportTCPServer implements Transport {
       OutputStream os = socket.getOutputStream();
       os.write(data, off, len);
     } catch (SocketException se) {
-      JFLog.log("TransportTCPServer:Connection lost");
+      if (debug) JFLog.log("TransportTCPServer:Connection lost");
       remove(id);
       return false;
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
       remove(id);
       return false;
     }
@@ -126,7 +126,7 @@ public class TransportTCPServer implements Transport {
           }
           new WorkerReader(socket, id, host, port).start();
         } catch (Exception e) {
-          JFLog.log(e);
+          if (debug) JFLog.log(e);
         }
       }
     }
@@ -170,7 +170,7 @@ public class TransportTCPServer implements Transport {
       try {
         is = socket.getInputStream();
       } catch (Exception e) {
-        JFLog.log(e);
+        if (debug) JFLog.log(e);
         return;
       }
       if (debug) JFLog.log("TransportTCPServer:Worker:active");
@@ -233,12 +233,12 @@ public class TransportTCPServer implements Transport {
           worker_error = true;
           worker_active = false;
           remove(id);
-          JFLog.log("TransportTCPServer:Connection lost");
+          if (debug) JFLog.log("TransportTCPServer:Connection lost");
         } catch (Exception e) {
           worker_error = true;
           worker_active = false;
           remove(id);
-          JFLog.log(e);
+          if (debug) JFLog.log(e);
         }
       }
     }

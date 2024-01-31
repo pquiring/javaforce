@@ -25,13 +25,15 @@ public class TransportTCPClient implements Transport {
   protected int localport;
   private boolean error;
 
+  public static boolean debug = false;
+
   public String getName() { return "TCP"; }
 
   public boolean open(String localhost, int localport) {
     this.localhost = localhost;
     this.localport = localport;
     try {
-      JFLog.log("TransportTCPClient.open()");
+      if (debug) JFLog.log("TransportTCPClient.open()");
       socket = new Socket();
       socket.setSoLinger(true, 0);  //allow to reuse socket again without waiting
       socket.bind(new InetSocketAddress(localhost, localport));
@@ -50,7 +52,7 @@ public class TransportTCPClient implements Transport {
         socket = null;
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
     }
     return true;
   }
@@ -63,7 +65,7 @@ public class TransportTCPClient implements Transport {
       os.write(data, off, len);
       os.flush();
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
       return false;
     }
     return true;
@@ -138,14 +140,14 @@ public class TransportTCPClient implements Transport {
       packet.port = remoteport;
     } catch (Exception e) {
       error = true;
-      if (connected) JFLog.log("TransportTCPClient:Connection lost");
+      if (debug) JFLog.log("TransportTCPClient:Connection lost");
       return false;
     }
     return true;
   }
 
   protected void connect(InetAddress host, int port) throws Exception {
-    JFLog.log("Connect:" + host.getHostAddress() + ":" + port);
+    if (debug) JFLog.log("Connect:" + host.getHostAddress() + ":" + port);
     this.remotehost = host;
     this.remoteport = port;
     socket.connect(new InetSocketAddress(host, port), 5000);

@@ -38,7 +38,7 @@ public class TransportTLSServer extends TransportTCPServer {
       ss.bind(new InetSocketAddress(InetAddress.getLocalHost(), localport));
       new WorkerAccepter().start();
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
     }
     return true;
   }
