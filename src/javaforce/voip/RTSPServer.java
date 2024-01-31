@@ -202,7 +202,9 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       }
       String cmd = null;
       if (remoteip.equals("127.0.0.1")) {
-        remoteip = sess.localhost;
+        if (sess.localhost != null) {
+          remoteip = sess.localhost;
+        }
       }
       sess.remotehost = remoteip;
       sess.remoteaddr = InetAddress.getByName(remoteip);
@@ -231,7 +233,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
           //request/cmd
           sess.cmd = cmd;
           switch (cmd) {
-            case "OPTIONS":
+            case "OPTIONS": {
               String auth = getHeader("Authorization:", msg);
               if (auth == null) {
                 //send a 401
@@ -274,37 +276,49 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               sess.auth = true;
               iface.onOptions(this, sess);
               break;
-            case "DESCRIBE":
+            }
+            case "DESCRIBE": {
               if (!sess.auth) {
                 JFLog.log("!auth");
                 break;
               }
               iface.onDescribe(this, sess);
               break;
-            case "SETUP":
+            }
+            case "SETUP": {
               if (!sess.auth) {
                 JFLog.log("!auth");
                 break;
               }
+              //get client RTP ports : Transport: RTP/AVP;unicast;client_port=x-x
+              String transport = getHeader("Transport:", msg);
+              String[] tags = transport.split(";");
+              String client_port = getHeader("client_port=", tags);
+              String[] ports = client_port.split("[-]");
+              sess.channel.stream.port = Integer.valueOf(ports[0]);
               iface.onSetup(this, sess);
               break;
-            case "PLAY":
+            }
+            case "PLAY": {
               if (!sess.auth) {
                 JFLog.log("!auth");
                 break;
               }
               iface.onPlay(this, sess);
               break;
-            case "TEARDOWN":
+            }
+            case "TEARDOWN": {
               if (!sess.auth) {
                 JFLog.log("!auth");
                 break;
               }
               iface.onTeardown(this, sess);
               break;
-            case "GET_PARAMETER":
+            }
+            case "GET_PARAMETER": {
               iface.onGetParameter(this, sess, HTTP.getContent(msg));
               break;
+            }
           }
           break;
       }

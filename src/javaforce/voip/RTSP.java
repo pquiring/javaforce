@@ -936,6 +936,7 @@ public abstract class RTSP {
           Packet pack = new Packet();
           pack.data = data;
           if (!transport.receive(pack)) continue;
+          JFLog.log("RTSP:packet:host=" + pack.host);
           if (pack.length <= 4) {
             continue;  //keep alive
           }
@@ -958,18 +959,18 @@ public abstract class RTSP {
    */
   private class WorkerPacket extends Thread {
 
-    String[] x1;
-    String x2;
-    int x3;
+    private String[] msg;
+    private String host;
+    private int port;
 
-    public WorkerPacket(String[] x1, String x2, int x3) {
-      this.x1 = x1;
-      this.x2 = x2;
-      this.x3 = x3;
+    public WorkerPacket(String[] msg, String host, int port) {
+      this.msg = msg;
+      this.host = host;
+      this.port = port;
     }
 
     public void run() {
-      iface.packet(x1, x2, x3);
+      iface.packet(msg, host, port);
     }
   }
 }

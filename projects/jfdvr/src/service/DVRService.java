@@ -117,7 +117,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private void setupFirewall() {
-    RTP.setPortRange(5000, 10000);
+    RTP.setPortRange(30000, 40000);
     try {
       File firewall_setup = new File(Paths.dataPath + "/firewall.setup");
       if (firewall_setup.exists()) return;

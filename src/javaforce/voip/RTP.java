@@ -43,12 +43,13 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_JPEG = new Codec("JPEG", 26);  //public domain
   public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired
   //dynamic ids (96-127)
-  public final static Codec CODEC_VP8 = new Codec("VP8", 96);  //open source (Google!)
-  public final static Codec CODEC_H264 = new Codec("H264", 97);  //patent encumbered
-  public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 98);  //patent expired
-  public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 99);  //patent expired
-  public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 100);
-  public final static Codec CODEC_H265 = new Codec("H265", 101);  //patent encumbered
+  public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 96);
+  public final static Codec CODEC_VP8 = new Codec("VP8", 100);  //open source (Google!)
+  public final static Codec CODEC_VP9 = new Codec("VP9", 101);  //open source (Google!)
+  public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 110);  //patent expired
+  public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 111);  //patent expired
+  public final static Codec CODEC_H264 = new Codec("H264", 120);  //patent encumbered
+  public final static Codec CODEC_H265 = new Codec("H265", 121);  //patent encumbered
 
   static {
     try {

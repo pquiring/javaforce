@@ -41,6 +41,8 @@ public class Viewer {
   private long mediaLength;
   private int grid_x, grid_y, grid_xy;
 
+  public static boolean debug = false;
+
   /** Play a network source directly. */
   public void play(URL url) {
     if (playing) {stop(true); return;}
@@ -230,11 +232,10 @@ public class Viewer {
         String pass = user_pass.substring(idx + 1);
         rtsp.setUserPass(user, pass);
       }
-      if (type.equals("camera")) {
-        start_camera();
-      } else {
-        //type = group : list cameras
+      if (type.equals("group")) {
         rtsp.get_parameter(url.toString(), new String[] {"action: query"});
+      } else {
+        start_camera();
       }
 
       long now = System.currentTimeMillis();
@@ -322,6 +323,10 @@ public class Viewer {
       video_decoder = new MediaVideoDecoder();
       boolean status;
       fps = sdp.getFrameRate();
+      if (fps <= 0) {
+        JFLog.log("Warning : Invalid framerate");
+        fps = 10;
+      }
       decoded_x = ViewerApp.self.getWidth();
       decoded_y = ViewerApp.self.getHeight();
       decoded_xy = decoded_x * decoded_y;
@@ -333,11 +338,12 @@ public class Viewer {
         av_codec = MediaCoder.AV_CODEC_ID_H264;
         h264 = new RTPH264();
         packets = new PacketBuffer(CodecType.H264);
-      }
-      if (stream.hasCodec(RTP.CODEC_H265)) {
+      } else if (stream.hasCodec(RTP.CODEC_H265)) {
         av_codec = MediaCoder.AV_CODEC_ID_H265;
         h265 = new RTPH265();
         packets = new PacketBuffer(CodecType.H265);
+      } else {
+        JFLog.log("DVR Viewer:No supported codec detected");
       }
       status = video_decoder.start(av_codec, decoded_x, decoded_y);
       if (!status) {
@@ -434,12 +440,13 @@ public class Viewer {
 
     public void rtpPacket(RTPChannel rtp, int codec, byte[] buf, int offset, int length) {
       switch (codec) {
-        case CodecType.H264: rtpH264(rtp, h264, buf, offset, length); break;
-        case CodecType.H265: rtpH264(rtp, h265, buf, offset, length); break;
+        case CodecType.H264: rtpCodec(rtp, h264, buf, offset, length); break;
+        case CodecType.H265: rtpCodec(rtp, h265, buf, offset, length); break;
       }
     }
 
-    public void rtpH264(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
+    public void rtpCodec(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
+      if (debug) JFLog.log("rtpCodec:packet");
       try {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)

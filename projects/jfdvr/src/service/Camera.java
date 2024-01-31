@@ -8,6 +8,7 @@ package service;
 import java.io.*;
 import java.util.*;
 
+import javaforce.*;
 import javaforce.io.*;
 import javaforce.voip.*;
 
@@ -28,6 +29,8 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public String tag_trigger;
   public String tag_value;
   public boolean pos_edge;
+
+  public static boolean debug = false;
 
   public Camera() {
     name = "";
@@ -51,6 +54,8 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public transient volatile boolean update_preview;
   public transient volatile ArrayList<RTSPSession> viewers = new ArrayList<>();
 
+  public Codec codec;
+
   public void add_viewer(RTSPSession sess) {
     viewers.add(sess);
   }
@@ -58,21 +63,26 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public String[] get_sdp(RTSPSession sess) {
     SDP sdp = new SDP();
     SDP.Stream stream = sdp.addStream(SDP.Type.video);
-    stream.addCodec(RTP.CODEC_H264);
+    stream.addCodec(codec);
     sess.rtp = new RTP();
     sess.rtp.init(this);
     sess.rtp.start();
     sess.channel = sess.rtp.createChannel(sdp.getFirstVideoStream());
     sess.channel.start();
+    if (debug) JFLog.log("Camera.get_sdp()remotehost=" + sess.remotehost);
+    sess.channel.stream.setIP(sess.remotehost);
     return sdp.build(sess.localhost);
   }
 
   public void sendPacket(byte[] buf, int offset, int length) {
-    try {
-      for(RTSPSession sess : viewers) {
+    for(RTSPSession sess : viewers) {
+      if (debug) JFLog.log("Camera.sendPacket()" + sess.remotehost + ":" + sess.channel.stream.port);
+      try {
         sess.channel.writeRTP(buf, offset, length);
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-    } catch (Exception e) {}
+    }
   }
 
   public static final short id_name = id_len + 1;

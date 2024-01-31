@@ -18,7 +18,7 @@ public class CodecType {
   public static final int G729 = 13;
   public static final int JPEG = 20;
   public static final int VP8 = 30;
-//  public static final int V9 = 31;
+  public static final int VP9 = 31;
   public static final int H263 = 40;
   public static final int H263_1998 = 41;
   public static final int H263_2000 = 42;

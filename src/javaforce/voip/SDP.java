@@ -310,6 +310,9 @@ public class SDP implements Cloneable {
       if (stream.hasCodec(RTP.CODEC_VP8)) {
         content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_VP8).id + " VP8/90000");
       }
+      if (stream.hasCodec(RTP.CODEC_VP9)) {
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_VP9).id + " VP9/90000");
+      }
       JFLog.log("keyexchange=" + stream.keyExchange);
       if (stream.keyExchange == KeyExchange.DTLS) {
         content.add("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761

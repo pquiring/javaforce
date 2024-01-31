@@ -18,9 +18,10 @@ public class RTPChannel {
   //dynnamic codec payload ids
   private int rfc2833_id = -1;
   private int vp8_id = -1;
-  private int h264_id = -1;
+  private int vp9_id = -1;
   private int h263_1998_id = -1;
   private int h263_2000_id = -1;
+  private int h264_id = -1;
   private int h265_id = -1;
   private char dtmfChar;
   private boolean dtmfSent = false;
@@ -51,6 +52,10 @@ public class RTPChannel {
 
   public int getVP8id() {
     return vp8_id;
+  }
+
+  public int getVP9id() {
+    return vp9_id;
   }
 
   public int getH264id() {
@@ -231,6 +236,11 @@ public class RTPChannel {
       Codec codec_vp8 = stream.getCodec(RTP.CODEC_VP8);
       if (codec_vp8 != null) {
         vp8_id = codec_vp8.id;
+      }
+
+      Codec codec_vp9 = stream.getCodec(RTP.CODEC_VP9);
+      if (codec_vp9 != null) {
+        vp9_id = codec_vp9.id;
       }
 
       Codec codec_h264 = stream.getCodec(RTP.CODEC_H264);
@@ -474,6 +484,8 @@ public class RTPChannel {
         }
       } else if (id == vp8_id) {
         rtp.iface.rtpPacket(this, CodecType.VP8, data, off, len);
+      } else if (id == vp9_id) {
+        rtp.iface.rtpPacket(this, CodecType.VP9, data, off, len);
       } else if (id == h264_id) {
         rtp.iface.rtpPacket(this, CodecType.H264, data, off, len);
       } else if (id == h265_id) {
@@ -482,6 +494,8 @@ public class RTPChannel {
         rtp.iface.rtpPacket(this, CodecType.H263_1998, data, off, len);
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
+      } else {
+        JFLog.log("RTPChannel:unknown codec id:" + id);
       }
     }
   }

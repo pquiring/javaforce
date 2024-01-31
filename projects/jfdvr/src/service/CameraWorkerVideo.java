@@ -529,9 +529,32 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       decoder.stop();
       decoder = null;
     }
+    int av_codec_id = -1;
+    if (stream.hasCodec(RTP.CODEC_H264)) {
+      h264 = new RTPH264();
+      h264.setLog(log);
+      packets_decode = new PacketBuffer(CodecType.H264);
+      packets_decode.setLog(log);
+      packets_encode = new PacketBuffer(CodecType.H264);
+      packets_encode.setLog(log);
+      frames = new Frames(CodecType.H264);
+      camera.codec = stream.getCodec(RTP.CODEC_H264);
+      av_codec_id = MediaCoder.AV_CODEC_ID_H264;
+    }
+    if (stream.hasCodec(RTP.CODEC_H265)) {
+      h265 = new RTPH265();
+      h265.setLog(log);
+      packets_decode = new PacketBuffer(CodecType.H265);
+      packets_decode.setLog(log);
+      packets_encode = new PacketBuffer(CodecType.H265);
+      packets_encode.setLog(log);
+      frames = new Frames(CodecType.H265);
+      camera.codec = stream.getCodec(RTP.CODEC_H265);
+      av_codec_id = MediaCoder.AV_CODEC_ID_H265;
+    }
     decoder = new MediaVideoDecoder();
     boolean status;
-    status = decoder.start(MediaCoder.AV_CODEC_ID_H264, decoded_x, decoded_y);
+    status = decoder.start(av_codec_id, decoded_x, decoded_y);
     if (!status) {
       JFLog.log(log, "Error:MediaVideoDecoder.start() failed");
       return;
@@ -542,24 +565,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     rtp.start();
     channel = rtp.createChannel(stream);
     channel.start();
-    if (stream.hasCodec(RTP.CODEC_H264)) {
-      h264 = new RTPH264();
-      h264.setLog(log);
-      packets_decode = new PacketBuffer(CodecType.H264);
-      packets_decode.setLog(log);
-      packets_encode = new PacketBuffer(CodecType.H264);
-      packets_encode.setLog(log);
-      frames = new Frames(CodecType.H264);
-    }
-    if (stream.hasCodec(RTP.CODEC_H265)) {
-      h265 = new RTPH265();
-      h265.setLog(log);
-      packets_decode = new PacketBuffer(CodecType.H265);
-      packets_decode.setLog(log);
-      packets_encode = new PacketBuffer(CodecType.H265);
-      packets_encode.setLog(log);
-      frames = new Frames(CodecType.H265);
-    }
     client.setup(url, rtp.getlocalrtpport(), 0);
   }
 
@@ -597,20 +602,24 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public void rtpPacket(RTPChannel rtp, int codec, byte[] buf, int offset, int length) {
     switch (codec) {
-      case CodecType.H264: rtpH264(rtp, buf, offset, length); break;
+      case CodecType.H264: rtpCodec(rtp, buf, offset, length); break;
+      case CodecType.H265: rtpCodec(rtp, buf, offset, length); break;
     }
   }
 
-  public void rtpH264(RTPChannel rtp, byte[] buf, int offset, int length) {
+  public void rtpCodec(RTPChannel rtp, byte[] buf, int offset, int length) {
     try {
-      //I frame : 9 ... 5 (key frame)
-      //P frame : 9 ... 1 (diff frame)
       if (viewer) {
         camera.sendPacket(buf, offset, length);
       }
       lastPacket = System.currentTimeMillis();
       if (!record) return;
-      h264.decode(buf, 0, length, this);
+      if (h264 != null) {
+        h264.decode(buf, 0, length, this);
+      }
+      if (h265 != null) {
+        h265.decode(buf, 0, length, this);
+      }
     } catch (Exception e) {
       JFLog.log(log, e);
     }

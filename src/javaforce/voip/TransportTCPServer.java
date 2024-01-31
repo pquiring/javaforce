@@ -23,7 +23,7 @@ public class TransportTCPServer implements Transport {
   private boolean ss_error;
   private static final int mtu = 1460;  //max size of packet
 
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   public String getName() { return "TCP"; }
 
@@ -141,6 +141,7 @@ public class TransportTCPServer implements Transport {
     private boolean worker_active;
     private boolean worker_error;
     public WorkerReader(Socket socket, String id, InetAddress host, int port) {
+      if (debug) JFLog.log("WorkerReader:" + host.getHostAddress() + ":" + port);
       this.socket = socket;
       this.id = id;
       this.host = host;
