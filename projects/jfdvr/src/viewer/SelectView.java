@@ -6,6 +6,7 @@ package viewer;
  */
 
 import java.util.*;
+import java.net.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -34,41 +35,22 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jScrollPane1 = new javax.swing.JScrollPane();
-    groupList = new javax.swing.JList<>();
-    viewGroup = new javax.swing.JButton();
-    jScrollPane2 = new javax.swing.JScrollPane();
-    cameraList = new javax.swing.JList<>();
-    viewCamera = new javax.swing.JButton();
-    jLabel1 = new javax.swing.JLabel();
-    jLabel2 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
     server = new javax.swing.JTextField();
     updateLists = new javax.swing.JButton();
+    split = new javax.swing.JSplitPane();
+    jPanel1 = new javax.swing.JPanel();
+    jScrollPane1 = new javax.swing.JScrollPane();
+    groupList = new javax.swing.JList<>();
+    jLabel1 = new javax.swing.JLabel();
+    viewGroup = new javax.swing.JButton();
+    jPanel2 = new javax.swing.JPanel();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    cameraList = new javax.swing.JList<>();
+    jLabel2 = new javax.swing.JLabel();
+    viewCamera = new javax.swing.JButton();
 
-    groupList.setModel(new DefaultListModel<String>());
-    jScrollPane1.setViewportView(groupList);
-
-    viewGroup.setText("View Group");
-    viewGroup.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        viewGroupActionPerformed(evt);
-      }
-    });
-
-    cameraList.setModel(new DefaultListModel<String>());
-    jScrollPane2.setViewportView(cameraList);
-
-    viewCamera.setText("View Camera");
-    viewCamera.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        viewCameraActionPerformed(evt);
-      }
-    });
-
-    jLabel1.setText("Camera Groups:");
-
-    jLabel2.setText("Cameras:");
+    setPreferredSize(new java.awt.Dimension(1280, 720));
 
     jLabel3.setText("Server:");
 
@@ -79,6 +61,88 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       }
     });
 
+    split.setDividerLocation(640);
+
+    groupList.setModel(new DefaultListModel<String>());
+    jScrollPane1.setViewportView(groupList);
+
+    jLabel1.setText("Groups");
+
+    viewGroup.setText("View Group");
+    viewGroup.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        viewGroupActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(jLabel1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(viewGroup, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(viewGroup)
+          .addComponent(jLabel1))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+
+    split.setLeftComponent(jPanel1);
+
+    cameraList.setModel(new DefaultListModel<String>());
+    jScrollPane2.setViewportView(cameraList);
+
+    jLabel2.setText("Cameras");
+
+    viewCamera.setText("View Camera");
+    viewCamera.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        viewCameraActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+    jPanel2.setLayout(jPanel2Layout);
+    jPanel2Layout.setHorizontalGroup(
+      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 781, Short.MAX_VALUE)
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(viewCamera, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    jPanel2Layout.setVerticalGroup(
+      jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel2)
+          .addComponent(viewCamera))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+
+    split.setRightComponent(jPanel2);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -86,21 +150,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(viewGroup))
-              .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-            .addGap(18, 18, 18)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(viewCamera))
-              .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(0, 0, Short.MAX_VALUE))
+          .addComponent(split, javax.swing.GroupLayout.DEFAULT_SIZE, 1268, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -113,16 +163,8 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(viewGroup)
-          .addComponent(jLabel1)
-          .addComponent(jLabel2)
-          .addComponent(viewCamera))
+        .addComponent(split, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
-          .addComponent(jScrollPane2))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
           .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -144,7 +186,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   }//GEN-LAST:event_viewCameraActionPerformed
 
   private void updateListsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateListsActionPerformed
-    updateLists();
+    getLists();
   }//GEN-LAST:event_updateListsActionPerformed
 
 
@@ -154,9 +196,12 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel2;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JTextField server;
+  private javax.swing.JSplitPane split;
   private javax.swing.JButton updateLists;
   private javax.swing.JButton viewCamera;
   private javax.swing.JButton viewGroup;
@@ -166,13 +211,20 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   public static ArrayList<String> cameras = new ArrayList<>();
   public static ArrayList<String> groups = new ArrayList<>();
 
+  public void setServer(String svr) {
+    server.setText(svr);
+    getLists();
+  }
+
   private void updateLists() {
     DefaultListModel<String> groupModel = (DefaultListModel<String>)groupList.getModel();
+    groupModel.removeAllElements();
     for(String group : groups) {
       groupModel.addElement(group);
     }
 
     DefaultListModel<String> cameraModel = (DefaultListModel<String>)cameraList.getModel();
+    cameraModel.removeAllElements();
     for(String camera : cameras) {
       cameraModel.addElement(camera);
     }
@@ -187,6 +239,13 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
 
   private void getLists() {
     rtsp = new RTSPClient();
+    if (Config.url == null) {
+      try {
+        Config.url = new URI("rtsp://user:pass@" + server.getText()).toURL();
+      } catch (Exception e) {
+        return;
+      }
+    }
     int port = Config.url.getPort();
     if (port == -1) {
       port = 554;  //default RTSP port
@@ -212,19 +271,19 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
 
   public void onGetParameter(RTSPClient client, String[] params) {
     String list = HTTP.getParameter(params, "list");
-    if (list == null) return;
+    if (list == null) {
+      JFLog.log("list==null");
+      return;
+    }
     cameras.clear();
     groups.clear();
-    String[] items = list.split(",");
-    for(String item : items) {
-      int idx = item.indexOf('-');
-      if (idx == -1) continue;
-      String type = item.substring(0, idx);
-      String name = item.substring(idx + 1);
-      switch (type) {
-        case "camera": cameras.add(name); break;
-        case "group": groups.add(name); break;
-      }
+    String[] cams = HTTP.getParameter(params, "cameras").split(",");
+    for(String cam : cams) {
+      cameras.add(cam);
+    }
+    String[] grps = HTTP.getParameter(params, "groups").split(",");
+    for(String grp : grps) {
+      groups.add(grp);
     }
     updateLists();
     rtsp.uninit();

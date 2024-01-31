@@ -42,6 +42,9 @@ public class ViewerApp extends javax.swing.JFrame {
       }
     } else {
       SelectView dialog = new SelectView();
+      if (args.length > 0) {
+        dialog.setServer(args[0]);
+      }
       setPanel(dialog);
     }
   }

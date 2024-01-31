@@ -337,7 +337,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     int remoteport = RTSPURL.getPort(url);
     if (remoteport == -1) remoteport = 554;
     JFLog.log(log, camera.name + " : Connecting : viewer=" + viewer + ",recording=" + record + ",remoteport=" + remoteport);
-    if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
+    if (!client.init(remotehost, remoteport, Config.getLocalPort(), this, TransportType.TCP)) {
       JFLog.log(log, "RTSP init failed");
       client = null;
       return false;
@@ -359,14 +359,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       decoder.stop();
       decoder = null;
     }
-  }
-
-  private static int nextPort = 5000;
-  private static synchronized int getLocalPort() {
-    if (nextPort > 10000) nextPort = 5000;
-    int port = nextPort;
-    nextPort += 2;
-    return port;
   }
 
   private void listFiles() {

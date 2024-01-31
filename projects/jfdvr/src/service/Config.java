@@ -102,6 +102,15 @@ public class Config extends SerialObject implements Serializable {
     return null;
   }
 
+  //RTSP ports for service : 5000-5999
+  private static int nextPort = 5000;
+  public static synchronized int getLocalPort() {
+    if (nextPort >= 6000) nextPort = 5000;
+    int port = nextPort;
+    nextPort += 2;
+    return port;
+  }
+
   public static final short id_cameras = id_array + 1;
   public static final short id_groups = id_array + 2;
   public static final short id_user = id_len + 1;

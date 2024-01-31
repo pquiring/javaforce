@@ -268,7 +268,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private String[] get_list_group_cameras(String name) {
-    JFLog.log("query:group:" + name);
+    JFLog.log("query:list:group:" + name);
     Group group = Config.current.getGroup(name);
     if (group == null) {
       JFLog.log("group not found:" + name);

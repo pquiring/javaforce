@@ -9,9 +9,9 @@ import java.net.*;
 
 public class Config {
   public static URL url;
-  private static int nextPort = 5000;
+  private static int nextPort = 6000;
   public static synchronized int getLocalPort() {
-    if (nextPort > 10000) nextPort = 5000;
+    if (nextPort > 7000) nextPort = 6000;
     int port = nextPort;
     nextPort += 2;
     return port;

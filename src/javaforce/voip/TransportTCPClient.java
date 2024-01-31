@@ -138,7 +138,7 @@ public class TransportTCPClient implements Transport {
       packet.port = remoteport;
     } catch (Exception e) {
       error = true;
-      if (connected) JFLog.log(e);
+      if (connected) JFLog.log("TransportTCPClient:Connection lost");
       return false;
     }
     return true;

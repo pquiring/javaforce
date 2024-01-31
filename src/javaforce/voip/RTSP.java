@@ -927,6 +927,7 @@ public abstract class RTSP {
     public void run() {
       while (active) {
         if (transport.error()) {
+          JFLog.log("RTSP:Transport:Error:" + this);
           active = false;
           break;
         }
