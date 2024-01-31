@@ -23,7 +23,7 @@ public class TransportTCPServer implements Transport {
   private boolean ss_error;
   private static final int mtu = 1460;  //max size of packet
 
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   public String getName() { return "TCP"; }
 
