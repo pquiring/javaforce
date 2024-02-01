@@ -704,6 +704,7 @@ public class Viewer {
     }
   }
   public void refresh() {
-    //TODO
+    stop(true);
+    play(Config.url);
   }
 }
