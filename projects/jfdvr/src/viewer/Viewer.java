@@ -15,8 +15,6 @@ import javaforce.media.*;
 
 public class Viewer {
 
-  private final static boolean debug_buffers = false;
-
   /**
    * Creates new form MainPanel
    */
@@ -29,11 +27,11 @@ public class Viewer {
   private NetworkReader networkReader;
   private String[] cameras;
   private NetworkReader[] networkReaders;  //group cameras
-  private Thread playThread;
   private int grid_x, grid_y, grid_xy;
   private boolean playing;
 
   public static boolean debug = false;
+  private final static boolean debug_buffers = false;
 
   /** Play a network source directly. */
   public void play(URL url) {
@@ -44,6 +42,15 @@ public class Viewer {
     }
     networkReader = new NetworkReader(url);
     networkReader.start();
+    if (videoPanel == null) {
+      videoPanel = new VideoPanel();
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          ViewerApp.setPanel(videoPanel);
+        }
+      });
+      videoPanel.start();
+    }
   }
 
   public synchronized void stop(boolean wait) {
@@ -64,15 +71,10 @@ public class Viewer {
     JFLog.log("" + System.currentTimeMillis() + ":" + msg);
   }
 
-  Object sizeLock = new Object();
-
-  //buffer size in seconds
-  //too small can cause problems
-  //too large causes resizes to take a long time to take effect
-  //the problem is that some video files are not interlaced very well
-  final int pre_buffer_seconds = 2;
+  private final int pre_buffer_seconds = 2;
   private int new_width, new_height;
   private boolean resizeVideo;
+  private Object sizeLock = new Object();
 
   public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface, PacketReceiver {
     private URL url;
@@ -82,7 +84,6 @@ public class Viewer {
     private RTPChannel channel;
     private RTPH264 h264;
     private RTPH265 h265;
-    private SDP sdp;
     private PacketBuffer packets;
     private long lastPacket;
     private long now;
@@ -94,7 +95,6 @@ public class Viewer {
     private int gx, gy;
     private AudioBuffer audio_buffer;
     private VideoBuffer video_buffer;
-    private MediaDecoder decoder;
     private MediaVideoDecoder video_decoder;
     private long frameCount;
     private long audioCount;
@@ -102,11 +102,13 @@ public class Viewer {
     private int seekPosition;
     private long mediaLength;
     private boolean wait_next_key_frame;
-    private boolean updatingPos, preBuffering;
+    private boolean updatingPos;
+    private boolean preBuffering;
     private int width, height;
     private final int audio_bufsiz = 1024;
     private final int chs = 2;  //currently all formats are converted to stereo
     private float fps = -1;
+    private Thread playThread;
 
     private final int buffer_seconds = 4;
 
@@ -140,15 +142,6 @@ public class Viewer {
         fileLength = -1;
         String err = null;
         mediaLength = -1;
-        if (videoPanel == null) {
-          videoPanel = new VideoPanel();
-          java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-              ViewerApp.setPanel(videoPanel);
-            }
-          });
-          videoPanel.start();
-        }
         if (playThread == null) {
           playThread = new PlayVideoOnlyThread();
           playThread.start();
@@ -237,9 +230,9 @@ public class Viewer {
         rtsp.uninit();
         rtsp = null;
       }
-      if (decoder != null) {
-        decoder.stop();
-        decoder = null;
+      if (video_decoder != null) {
+        video_decoder.stop();
+        video_decoder = null;
       }
     }
 
@@ -294,7 +287,6 @@ public class Viewer {
 
     public void onDescribe(RTSPClient client, SDP sdp) {
       JFLog.log("onDescribe");
-      this.sdp = sdp;
       JFLog.log("SDP=" + sdp);
       SDP.Stream stream = sdp.getFirstVideoStream();
       if (stream == null) {
@@ -334,6 +326,7 @@ public class Viewer {
         packets = new PacketBuffer(CodecType.H265);
       } else {
         JFLog.log("DVR Viewer:No supported codec detected");
+        return;
       }
       status = video_decoder.start(av_codec, decoded_x, decoded_y);
       if (!status) {
@@ -448,6 +441,7 @@ public class Viewer {
     }
 
     public void onPacket(Packet packet) {
+      if (debug) JFLog.log("onPacket");
       try {
         if (h264 != null) {
           byte type = h264.get_nal_type(packet.data, 4);
@@ -496,7 +490,7 @@ public class Viewer {
               img.putPixels(decoded_frame, 0, 0, width, height, 0);
               video_buffer.freeNewFrame();
             } else {
-              JFLog.log("Warning : VideoBuffer overflow");
+              if (debug_buffers) JFLog.log("Warning : VideoBuffer overflow");
             }
           }
         }
@@ -676,7 +670,11 @@ public class Viewer {
             }
             skip = 0;
             if (img != null) {
-              videoPanel.setImage(img);
+              if (grid) {
+                videoPanel.setImage(img, gx, gy);
+              } else {
+                videoPanel.setImage(img);
+              }
               video_buffer.freeNextFrame();
             }
           } else {

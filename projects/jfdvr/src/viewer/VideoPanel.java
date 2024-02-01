@@ -81,6 +81,8 @@ public class VideoPanel extends javax.swing.JPanel {
   private boolean zoom;
   private int zx, zy;
 
+  public static boolean debug = false;
+
   private void init() {
     if (img != null) return;
     int x = getWidth();
@@ -137,7 +139,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
   private void update() {
     if (needPainting) {
-      JFLog.log("Video updating too slow");
+      if (debug) JFLog.log("Video updating too slow");
       return;
     }
     needPainting = true;

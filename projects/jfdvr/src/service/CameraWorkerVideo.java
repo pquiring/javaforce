@@ -27,7 +27,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private final static boolean debug_log = false;
 
   private RTSPClient client;
-  private SDP sdp;
   private RTP rtp;
   private RTPChannel channel;
   private RTPH264 h264;
@@ -516,7 +515,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   }
 
   public void onDescribe(RTSPClient client, SDP sdp) {
-    this.sdp = sdp;
     SDP.Stream stream = sdp.getFirstVideoStream();
     if (stream == null) {
       JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
@@ -629,15 +627,13 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public void onPacket(Packet packet) {
     try {
-      int type = packet.data[4] & 0x1f;
-      switch (type) {
-        case 7:  //SPS
-        case 8:  //PPS
-        case 1:  //P frame
-        case 5:  //I frame
-          break;
-        default:
-          return;  //all others ignore
+      if (h264 != null) {
+        byte type = h264.get_nal_type(packet.data, 4);
+        if (!h264.canDecodePacket(type)) return;
+      }
+      if (h265 != null) {
+        byte type = h265.get_nal_type(packet.data, 4);
+        if (!h265.canDecodePacket(type)) return;
       }
       packets_decode.add(packet);
       packets_encode.add(packet);

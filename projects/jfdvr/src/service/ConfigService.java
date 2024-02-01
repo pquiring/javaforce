@@ -499,7 +499,7 @@ public class ConfigService implements WebUIHandler {
           camera.record_motion_after = camera_motion_off_delay.getPos();
           motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
           camera.max_file_size = Integer.valueOf(max_file_size.getText());
-          if (camera.max_file_size < 10) camera.max_file_size = 10;
+          if (camera.max_file_size < 5) camera.max_file_size = 5;
           if (camera.max_file_size > 4096) camera.max_file_size = 4096;
           camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
           if (camera.max_folder_size < 0) camera.max_folder_size = 1;
