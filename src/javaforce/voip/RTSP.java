@@ -12,7 +12,7 @@ import javaforce.*;
  * RFC : http://tools.ietf.org/html/rfc2326.html - RTSP
  */
 
-public abstract class RTSP {
+public abstract class RTSP implements TransportInterface {
   static {
     RTSPURL.register();
   }
@@ -53,7 +53,7 @@ public abstract class RTSP {
           transport = new TransportTLSClient();
         break;
     }
-    if (!transport.open(localhost, localport)) return false;
+    if (!transport.open(localhost, localport, this)) return false;
     worker = new Worker();
     worker.start();
     return true;
@@ -924,7 +924,6 @@ public abstract class RTSP {
    * RTSPInterface.
    */
   private class Worker extends Thread {
-
     public void run() {
       while (active) {
         if (transport.error()) {
@@ -946,7 +945,7 @@ public abstract class RTSP {
             WorkerPacket wp = new WorkerPacket(msg, pack.host, pack.port);
             wp.start();
           } else {
-            iface.packet(msg, pack.host, pack.port);
+            iface.onPacket(RTSP.this, msg, pack.host, pack.port);
           }
         } catch (Exception e) {
           JFLog.log(log, e);
@@ -971,7 +970,15 @@ public abstract class RTSP {
     }
 
     public void run() {
-      iface.packet(msg, host, port);
+      iface.onPacket(RTSP.this, msg, host, port);
     }
+  }
+
+  public void onConnect(String host, int port) {
+    iface.onConnect(this, host, port);
+  }
+
+  public void onDisconnect(String host, int port) {
+    iface.onDisconnect(this, host, port);
   }
 }

@@ -13,7 +13,7 @@ package javaforce.voip;
 import java.net.*;
 
 public interface Transport {
-  public boolean open(String localhost, int localport);
+  public boolean open(String localhost, int localport, TransportInterface iface);
   public boolean close();
   public boolean send(byte[] data, int off, int len, InetAddress host, int port);
   public boolean receive(Packet packet);  //blocking

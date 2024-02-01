@@ -135,12 +135,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   private void setupFirewall() {
     RTP.setPortRange(30000, 40000);
+    if (!JF.isWindows()) return;
+    //setup windows firewall
     try {
       File firewall_setup = new File(Paths.dataPath + "/firewall.setup");
       if (firewall_setup.exists()) return;
       firewall_setup.createNewFile();
-      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_IN\"", "dir=in", "protocol=udp", "localport=5000-10000", "action=allow"});
-      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_OUT\"", "dir=out", "protocol=udp", "localport=5000-10000", "action=allow"});
+      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_IN\"", "dir=in", "protocol=udp", "localport=30000-50000", "action=allow"});
+      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_OUT\"", "dir=out", "protocol=udp", "localport=30000-50000", "action=allow"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -210,6 +212,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public void onTeardown(RTSPServer server, RTSPSession sess) {
     try {
+      sess.ts = 0;
+      checkKeepAlive();
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
       server.reply(sess, 501, "ERROR");
@@ -299,16 +303,18 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   private void checkKeepAlive() {
     long cut = System.currentTimeMillis() - 60 * 1000;
-    for(Camera cam : Config.current.cameras) {
-      synchronized (cam.viewersLock) {
-        int count = cam.viewers.size();
-        for(int i=0;i<count;i++) {
-          RTSPSession sess = cam.viewers.get(i);
-          if (sess.ts < cut) {
-            cam.viewers.remove(sess);
-            count--;
-          } else {
-            i++;
+    synchronized (Config.current.camerasLock) {
+      for(Camera cam : Config.current.cameras) {
+        synchronized (cam.viewersLock) {
+          int count = cam.viewers.size();
+          for(int i=0;i<count;i++) {
+            RTSPSession sess = cam.viewers.get(i);
+            if (sess.ts < cut) {
+              cam.viewers.remove(sess);
+              count--;
+            } else {
+              i++;
+            }
           }
         }
       }

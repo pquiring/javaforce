@@ -13,7 +13,7 @@ import javaforce.*;
  * http://www.iana.org/assignments/sip-parameters/sip-parameters.xhtml#sip-parameters-2
  */
 
-public abstract class SIP {
+public abstract class SIP implements TransportInterface {
   private Worker worker;
   private SIPInterface iface;
   private boolean active = true;
@@ -52,7 +52,7 @@ public abstract class SIP {
           transport = new TransportTLSClient();
         break;
     }
-    if (!transport.open(localhost, localport)) return false;
+    if (!transport.open(localhost, localport, this)) return false;
     worker = new Worker();
     worker.start();
     return true;
@@ -1271,4 +1271,7 @@ public abstract class SIP {
       iface.packet(x1, x2, x3);
     }
   }
+
+  public void onConnect(String host, int port) {}
+  public void onDisconnect(String host, int port) {}
 }

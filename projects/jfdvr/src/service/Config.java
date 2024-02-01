@@ -20,6 +20,9 @@ public class Config extends SerialObject implements Serializable {
   public String user = "dvr";
   public String pass = "password";
 
+  public Object camerasLock = new Object();
+  public Object groupsLock = new Object();
+
   public static void load() {
     String file = Paths.dataPath + "/config.dat";
     try {
@@ -57,31 +60,39 @@ public class Config extends SerialObject implements Serializable {
   }
 
   public void addCamera(Camera camera) {
-    cameras = Arrays.copyOf(cameras, cameras.length + 1);
-    cameras[cameras.length-1] = camera;
+    synchronized (camerasLock) {
+      cameras = Arrays.copyOf(cameras, cameras.length + 1);
+      cameras[cameras.length-1] = camera;
+    }
   }
 
   public void addGroup(Group group) {
-    groups = Arrays.copyOf(groups, groups.length + 1);
-    groups[groups.length-1] = group;
+    synchronized (groupsLock) {
+      groups = Arrays.copyOf(groups, groups.length + 1);
+      groups[groups.length-1] = group;
+    }
   }
 
   public void removeCamera(Camera camera) {
-    int idx = -1;
-    for(int a=0;a<cameras.length;a++) {
-      if (cameras[a] == camera) {idx = a; break;}
+    synchronized (camerasLock) {
+      int idx = -1;
+      for(int a=0;a<cameras.length;a++) {
+        if (cameras[a] == camera) {idx = a; break;}
+      }
+      if (idx == -1) return;
+      cameras = (Camera[])JF.copyOfExcluding(cameras, idx);
     }
-    if (idx == -1) return;
-    cameras = (Camera[])JF.copyOfExcluding(cameras, idx);
   }
 
   public void removeGroup(Group group) {
-    int idx = -1;
-    for(int a=0;a<groups.length;a++) {
-      if (groups[a] == group) {idx = a; break;}
+    synchronized (groupsLock) {
+      int idx = -1;
+      for(int a=0;a<groups.length;a++) {
+        if (groups[a] == group) {idx = a; break;}
+      }
+      if (idx == -1) return;
+      groups = (Group[])JF.copyOfExcluding(groups, idx);
     }
-    if (idx == -1) return;
-    groups = (Group[])JF.copyOfExcluding(groups, idx);
   }
 
   public Camera getCamera(String name) {

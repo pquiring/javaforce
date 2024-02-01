@@ -22,12 +22,14 @@ public class TransportTCPServer implements Transport {
   private boolean ss_active;
   private boolean ss_error;
   private static final int mtu = 1460;  //max size of packet
+  private TransportInterface iface;
 
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   public String getName() { return "TCP"; }
 
-  public boolean open(String localhost, int localport) {
+  public boolean open(String localhost, int localport, TransportInterface iface) {
+    this.iface = iface;
     try {
       ss = new ServerSocket(localport);
       ss_active = true;
@@ -52,31 +54,33 @@ public class TransportTCPServer implements Transport {
     return true;
   }
 
-  private void remove(String id) {
+  private void remove(String host, int port, String id) {
     if (debug) JFLog.log("Transport:remove:" + id);
+    iface.onDisconnect(host, port);
     synchronized(clientsLock) {
       clients.remove(id);
     }
   }
 
-  public boolean send(byte[] data, int off, int len, InetAddress host, int port) {
-    String id = host.getHostAddress() + ":" + port;
+  public boolean send(byte[] data, int off, int len, InetAddress hostaddr, int port) {
+    String host = hostaddr.getHostAddress();
+    String id = host + ":" + port;
     Socket socket;
     if (debug) JFLog.log("Transport:get:" + id);
     synchronized(clientsLock) {
       socket = clients.get(id);
     }
     try {
-      if (socket == null) socket = connect(host, port, id);
+      if (socket == null) socket = connect(hostaddr, port, id);
       OutputStream os = socket.getOutputStream();
       os.write(data, off, len);
     } catch (SocketException se) {
       if (debug) JFLog.log("TransportTCPServer:Connection lost");
-      remove(id);
+      remove(host, port, id);
       return false;
     } catch (Exception e) {
       if (debug) JFLog.log(e);
-      remove(id);
+      remove(host, port, id);
       return false;
     }
     return true;
@@ -102,12 +106,13 @@ public class TransportTCPServer implements Transport {
     }
   }
 
-  private Socket connect(InetAddress host, int port, String id) throws Exception {
-    Socket socket = new Socket(host, port);
+  private Socket connect(InetAddress hostaddr, int port, String id) throws Exception {
+    Socket socket = new Socket(hostaddr, port);
     if (debug) JFLog.log("Transport:put:" + id);
     synchronized(clientsLock) {
       clients.put(id, socket);
     }
+    iface.onConnect(hostaddr.getHostAddress(), port);
     return socket;
   }
 
@@ -136,22 +141,24 @@ public class TransportTCPServer implements Transport {
     private Socket socket;
     private String id;
     private InputStream is;
-    private InetAddress host;
+    private InetAddress hostaddr;
+    private String host;
     private int port;
     private boolean worker_active;
     private boolean worker_error;
-    public WorkerReader(Socket socket, String id, InetAddress host, int port) {
-      if (debug) JFLog.log("WorkerReader:" + host.getHostAddress() + ":" + port);
+    public WorkerReader(Socket socket, String id, InetAddress hostaddr, int port) {
+      if (debug) JFLog.log("WorkerReader:" + hostaddr.getHostAddress() + ":" + port);
       this.socket = socket;
       this.id = id;
-      this.host = host;
+      this.hostaddr = hostaddr;
       this.port = port;
+      host = hostaddr.getHostAddress();
     }
     public void run() {
       worker_active = true;
       //reads packets from client
       process();
-      remove(id);
+      remove(host, port, id);
     }
     private byte[] extra = null;
     private int detectLength(byte[] data, int off, int len) {
@@ -223,7 +230,7 @@ public class TransportTCPServer implements Transport {
             packet.length = tlen;
           }
           //host and port never change
-          packet.host = host.getHostAddress();
+          packet.host = hostaddr.getHostAddress();
           packet.port = port;
 
           synchronized(packetsLock) {
@@ -233,12 +240,12 @@ public class TransportTCPServer implements Transport {
         } catch (SocketException se) {
           worker_error = true;
           worker_active = false;
-          remove(id);
+          remove(host, port, id);
           if (debug) JFLog.log("TransportTCPServer:Connection lost");
         } catch (Exception e) {
           worker_error = true;
           worker_active = false;
-          remove(id);
+          remove(host, port, id);
           if (debug) JFLog.log(e);
         }
       }

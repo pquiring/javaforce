@@ -15,10 +15,12 @@ public class TransportUDP implements Transport {
   private DatagramSocket ds;
   private boolean active = false;
   private boolean error = false;
+  private TransportInterface iface;
 
   public String getName() { return "UDP"; }
 
-  public boolean open(String localhost, int localport) {
+  public boolean open(String localhost, int localport, TransportInterface iface) {
+    //NOTE : iface not used in UDP
     try {
       ds = new DatagramSocket(localport);
       active = true;
@@ -67,5 +69,4 @@ public class TransportUDP implements Transport {
   public boolean error() {
     return error;
   }
-
 }

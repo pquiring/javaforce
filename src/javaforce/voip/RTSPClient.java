@@ -365,7 +365,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Processes RTSP messages sent from the RTSP server.
    */
-  public void packet(String[] msg, String remoteip, int remoteport) {
+  public void onPacket(RTSP rtsp, String[] msg, String remoteip, int remoteport) {
     try {
       if (!remoteip.equals(this.remoteip) || remoteport != this.remoteport) {
         JFLog.log(log, "Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
@@ -442,5 +442,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     } catch (Exception e) {
       JFLog.log(log, e);
     }
+  }
+
+  public void onConnect(RTSP rtsp, String remoteip, int remoteport) {
+  }
+
+  public void onDisconnect(RTSP rtsp, String remoteip, int remoteport) {
   }
 }

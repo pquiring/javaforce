@@ -24,14 +24,16 @@ public class TransportTCPClient implements Transport {
   protected String localhost;
   protected int localport;
   private boolean error;
+  private TransportInterface iface;
 
   public static boolean debug = false;
 
   public String getName() { return "TCP"; }
 
-  public boolean open(String localhost, int localport) {
+  public boolean open(String localhost, int localport, TransportInterface iface) {
     this.localhost = localhost;
     this.localport = localport;
+    this.iface = iface;
     try {
       if (debug) JFLog.log("TransportTCPClient.open()");
       socket = new Socket();
@@ -41,6 +43,13 @@ public class TransportTCPClient implements Transport {
       JFLog.log(e);
       return false;
     }
+    return true;
+  }
+
+  public boolean open(Socket socket) {
+    this.localhost = socket.getLocalAddress().getHostAddress();
+    this.localport = socket.getLocalPort();
+    this.socket = socket;
     return true;
   }
 

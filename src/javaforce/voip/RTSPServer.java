@@ -186,20 +186,25 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     return reply(sess, reply, msg, null);
   }
 
+  private RTSPSession getSession(String id) {
+    RTSPSession sess;
+    synchronized (clientsLock) {
+      sess = clients.get(id);
+      if (sess == null) {
+        sess = new RTSPSession(localhost);
+        clients.put(id, sess);
+      }
+    }
+    return sess;
+  }
+
   /**
    * Processes RTSP messages sent from clients.
    */
-  public void packet(String[] msg, String remoteip, int remoteport) {
-    String remote = remoteip + ":" + remoteport;
+  public void onPacket(RTSP rtsp, String[] msg, String remoteip, int remoteport) {
+    String id = remoteip + ":" + remoteport;
     try {
-      RTSPSession sess;
-      synchronized (clientsLock) {
-        sess = clients.get(remote);
-        if (sess == null) {
-          sess = new RTSPSession(localhost);
-          clients.put(remote, sess);
-        }
-      }
+      RTSPSession sess = getSession(id);
       String cmd = null;
       if (remoteip.equals("127.0.0.1")) {
         if (sess.localhost != null) {
@@ -324,6 +329,18 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       }
     } catch (Exception e) {
       JFLog.log(log, e);
+    }
+  }
+
+  public void onConnect(RTSP rtsp, String remoteip, int remoteport) {
+  }
+
+  public void onDisconnect(RTSP rtsp, String remoteip, int remoteport) {
+    //NOTE : this is only invoked for TCP clients
+    String id = remoteip + ":" + remoteport;
+    iface.onTeardown(this, getSession(id));
+    synchronized (clientsLock) {
+      clients.remove(id);
     }
   }
 }
