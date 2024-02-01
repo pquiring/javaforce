@@ -48,6 +48,8 @@ public class ViewerApp extends javax.swing.JFrame {
       }
       setPanel(dialog);
     }
+    setExtendedState(Frame.MAXIMIZED_BOTH);
+    fullscreen = true;
   }
 
   /**
@@ -60,7 +62,7 @@ public class ViewerApp extends javax.swing.JFrame {
   private void initComponents() {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    setTitle("jMedia");
+    setTitle("jfDVR Viewer");
     setPreferredSize(new java.awt.Dimension(1280, 720));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -99,6 +101,7 @@ public class ViewerApp extends javax.swing.JFrame {
   public static Viewer panel;
   public static ViewerApp self;
   public static Container root;
+  public boolean fullscreen;
 
   private void setPosition() {
     Dimension d = getSize();
@@ -138,7 +141,8 @@ public class ViewerApp extends javax.swing.JFrame {
       "jfDVR/" + service.ConfigService.version + "\n\n" +
       "F1 = Help\n" +
       "F2 = Select View\n" +
-      "F5 = Refresh\n"
+      "F5 = Refresh\n" +
+      "F10 = Full Screen\n"
     );
   }
 
@@ -163,6 +167,15 @@ public class ViewerApp extends javax.swing.JFrame {
     panel.refresh();
   }
 
+  public static void toggleFullscreen() {
+    if (self.fullScreen) {
+      self.setExtendedState(Frame.NORMAL);
+    } else {
+      self.setExtendedState(Frame.MAXIMIZED_BOTH);
+    }
+    self.fullScreen = !self.fullScreen;
+  }
+
   public static void setPanel(JPanel panel) {
     JFLog.log("setPanel:" + panel);
     if (panel == null) {
@@ -173,6 +186,7 @@ public class ViewerApp extends javax.swing.JFrame {
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {toggleFullscreen();}}, KeyEvent.VK_F10);
     panel.revalidate();
   }
 }
