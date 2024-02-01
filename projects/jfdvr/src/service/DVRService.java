@@ -212,8 +212,6 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public void onTeardown(RTSPServer server, RTSPSession sess) {
     try {
-      sess.ts = 0;
-      checkKeepAlive();
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
       server.reply(sess, 501, "ERROR");
@@ -250,6 +248,17 @@ public class DVRService extends Thread implements RTSPServerInterface {
       JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
+  }
+
+  public void onConnect(RTSPServer rtsp, RTSPSession sess) {
+    JFLog.log("onConnect:" + sess);
+    sess.ts = System.currentTimeMillis();
+  }
+
+  public void onDisconnect(RTSPServer rtsp, RTSPSession sess) {
+    JFLog.log("onDisconnect:" + sess);
+    sess.ts = 0;
+    checkKeepAlive();
   }
 
   private String[] camera_get_sdp(String name, RTSPSession sess) {

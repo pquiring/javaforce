@@ -122,14 +122,16 @@ public class TransportTCPServer implements Transport {
       while (ss_active) {
         try {
           Socket socket = ss.accept();
-          InetAddress host = socket.getInetAddress();
+          InetAddress hostaddr = socket.getInetAddress();
+          String host = hostaddr.getHostAddress();
           int port = socket.getPort();
-          String id = host.getHostAddress()+ ":" + port;
+          String id = host + ":" + port;
           if (debug) JFLog.log("Transport:put:" + id);
           synchronized(clientsLock) {
             clients.put(id, socket);
           }
-          new WorkerReader(socket, id, host, port).start();
+          iface.onConnect(host, port);
+          new WorkerReader(socket, id, hostaddr, port).start();
         } catch (Exception e) {
           if (debug) JFLog.log(e);
         }

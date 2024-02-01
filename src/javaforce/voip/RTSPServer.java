@@ -145,7 +145,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
    * Issues a reply to the RTSP client.
    */
   public boolean reply(RTSPSession sess, int code, String msg, String header) {
-    JFLog.log(log, "sessid:" + sess.id + "\r\nissue reply : " + code);
+    JFLog.log(log, "issue reply : " + code + ":" + sess);
     sess.reply = code;
     StringBuilder req = new StringBuilder();
     req.append("RTSP/1.0 " + code + " " + msg + "\r\n");
@@ -186,12 +186,14 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     return reply(sess, reply, msg, null);
   }
 
-  private RTSPSession getSession(String id) {
+  private RTSPSession getSession(String host, int port, String id) {
     RTSPSession sess;
     synchronized (clientsLock) {
       sess = clients.get(id);
       if (sess == null) {
         sess = new RTSPSession(localhost);
+        sess.remotehost = host;
+        sess.remoteport = port;
         clients.put(id, sess);
       }
     }
@@ -204,7 +206,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   public void onPacket(RTSP rtsp, String[] msg, String remoteip, int remoteport) {
     String id = remoteip + ":" + remoteport;
     try {
-      RTSPSession sess = getSession(id);
+      RTSPSession sess = getSession(remoteip, remoteport, id);
       String cmd = null;
       if (remoteip.equals("127.0.0.1")) {
         if (sess.localhost != null) {
@@ -227,11 +229,11 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
 
       int reply = getResponseType(msg);
       if (reply != -1) {
-        JFLog.log(log, "id:" + sess.id + "\r\nreply=" + reply);
+        JFLog.log(log, "nreply=" + reply + ":" + sess);
       } else {
         cmd = getRequest(msg);
         sess.uri = getURI(msg);
-        JFLog.log(log, "id:" + sess.id + "\r\nrequest=" + cmd);
+        JFLog.log(log, "request=" + cmd + ":" + sess);
       }
       switch (reply) {
         case -1:
@@ -333,12 +335,14 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   }
 
   public void onConnect(RTSP rtsp, String remoteip, int remoteport) {
+    String id = remoteip + ":" + remoteport;
+    iface.onConnect(this, getSession(remoteip, remoteport, id));
   }
 
   public void onDisconnect(RTSP rtsp, String remoteip, int remoteport) {
     //NOTE : this is only invoked for TCP clients
     String id = remoteip + ":" + remoteport;
-    iface.onTeardown(this, getSession(id));
+    iface.onDisconnect(this, getSession(remoteip, remoteport, id));
     synchronized (clientsLock) {
       clients.remove(id);
     }
