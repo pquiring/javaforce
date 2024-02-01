@@ -206,6 +206,7 @@ public class SDP implements Cloneable {
       sb.append("Stream=" + streams[a]);
     }
     sb.append("]");
+    sb.append("FPS=" + framerate);
     return sb.toString();
   }
   public Object clone() {

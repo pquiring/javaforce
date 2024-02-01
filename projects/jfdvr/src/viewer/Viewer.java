@@ -312,8 +312,10 @@ public class Viewer {
       boolean status;
       fps = sdp.getFrameRate();
       if (fps <= 0) {
-        JFLog.log("Warning : Invalid framerate");
+        JFLog.log("Warning : Invalid framerate:Using 10fps");
         fps = 10;
+      } else {
+        JFLog.log("FPS=" + fps);
       }
       decoded_x = ViewerApp.self.getWidth();
       decoded_y = ViewerApp.self.getHeight();
@@ -702,5 +704,8 @@ public class Viewer {
       new_height = height;
       resizeVideo = true;
     }
+  }
+  public void refresh() {
+    //TODO
   }
 }

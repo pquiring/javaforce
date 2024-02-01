@@ -30,7 +30,7 @@ public class ViewerApp extends javax.swing.JFrame {
     self = this;
     root = getContentPane();
     setPosition();
-    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F5 = Select View)");
+    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View)");
     RTP.setPortRange(40000, 50000);
     if (args.length > 0 && args[0].startsWith("rtsp://")) {
       String arg = args[0];
@@ -137,7 +137,8 @@ public class ViewerApp extends javax.swing.JFrame {
     JFAWT.showMessage("Help",
       "jfDVR/" + service.ConfigService.version + "\n\n" +
       "F1 = Help\n" +
-      "F5 = Select View\n"
+      "F2 = Select View\n" +
+      "F5 = Refresh\n"
     );
   }
 
@@ -158,6 +159,10 @@ public class ViewerApp extends javax.swing.JFrame {
     }
   }
 
+  public static void refresh() {
+    panel.refresh();
+  }
+
   public static void setPanel(JPanel panel) {
     JFLog.log("setPanel:" + panel);
     if (panel == null) {
@@ -166,7 +171,8 @@ public class ViewerApp extends javax.swing.JFrame {
       self.setContentPane(panel);
     }
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
-    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F5);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
     panel.revalidate();
   }
 }
