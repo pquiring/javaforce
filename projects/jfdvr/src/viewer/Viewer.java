@@ -19,7 +19,7 @@ public class Viewer {
    * Creates new form MainPanel
    */
   public Viewer() {
-    JFLog.enableTimestamp(true);
+//    JFLog.enableTimestamp(true);
   }
 
   private final Object countLock = new Object();

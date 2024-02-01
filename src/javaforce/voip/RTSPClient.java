@@ -252,7 +252,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Issues a command to the RTSP server.
    */
   private boolean issue(RTSPSession sess, String cmd) {
-    JFLog.log(log, "sessid:" + sess.id + "\r\nissue command : " + cmd + " from : " + user + " to : " + remotehost);
+    JFLog.log(log, "issue command : " + cmd + " from : " + user + " to : " + remotehost + ":" + sess);
     sess.remotehost = remoteip;
     sess.remoteport = remoteport;
     sess.cmd = cmd;
@@ -390,11 +390,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
 
       int type = getResponseType(msg);
       if (type != -1) {
-        JFLog.log(log, "id:" + sess.id + "\r\nreply=" + type);
+        JFLog.log(log, "reply=" + type + ":" + sess);
       } else {
         req = getRequest(msg);
         sess.uri = getURI(msg);
-        JFLog.log(log, "id:" + sess.id + "\r\nrequest=" + req);
+        JFLog.log(log, "request=" + req + ":" + sess);
       }
       switch (type) {
         case 200:
