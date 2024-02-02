@@ -14,7 +14,7 @@ import javaforce.webui.event.*;
 import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.12";
+  public static String version = "0.13";
   public WebUIServer server;
   public void start() {
     server = new WebUIServer();
