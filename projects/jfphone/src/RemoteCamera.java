@@ -132,6 +132,22 @@ public class RemoteCamera extends Thread implements PacketReceiver {
     rtpH264.decode(data, pos, pos + len, this);
   }
 
+  public void rtp_h265_data(byte[] data, int pos, int len) {
+    if (!active) {
+      return;
+    }
+    if (decoder == null) {
+      decoder = new MediaVideoDecoder();
+      if (!decoder.start(MediaCoder.AV_CODEC_ID_H265, PhonePanel.vx, PhonePanel.vy)) {
+        JFLog.log("H265 Decoder failed to start");
+        decoder.stop();
+        decoder = null;
+        return;
+      }
+    }
+    rtpH265.decode(data, pos, pos + len, this);
+  }
+
   public void rtp_vp8_data(byte[] data, int pos, int len) {
     if (!active) {
       return;
@@ -146,6 +162,22 @@ public class RemoteCamera extends Thread implements PacketReceiver {
       }
     }
     rtpVP8.decode(data, pos, len, this);
+  }
+
+  public void rtp_vp9_data(byte[] data, int pos, int len) {
+    if (!active) {
+      return;
+    }
+    if (decoder == null) {
+      decoder = new MediaVideoDecoder();
+      if (!decoder.start(MediaCoder.AV_CODEC_ID_VP9, PhonePanel.vx, PhonePanel.vy)) {
+        JFLog.log("VP9 Decoder failed to start");
+        decoder.stop();
+        decoder = null;
+        return;
+      }
+    }
+    rtpVP9.decode(data, pos, len, this);
   }
 
   public void onPacket(Packet packet) {
@@ -181,7 +213,9 @@ public class RemoteCamera extends Thread implements PacketReceiver {
   private RTPH263_1998 rtpH263_1998 = new RTPH263_1998();
   private RTPH263_2000 rtpH263_2000 = new RTPH263_2000();
   private RTPH264 rtpH264 = new RTPH264();
+  private RTPH265 rtpH265 = new RTPH265();
   private RTPVP8 rtpVP8 = new RTPVP8();
+  private RTPVP9 rtpVP9 = new RTPVP9();
   private MediaVideoDecoder decoder;
   private Vector<JFImage> imageList = new Vector<JFImage>();
 }

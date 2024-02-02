@@ -1820,9 +1820,17 @@ Line Colors:
     RemoteCamera camera = findRemoteCamera(channel);
     if (camera != null) camera.rtp_h264_data(data, pos, len);
   }
+  public void rtp_h265_receive(RTPChannel channel, byte data[], int pos, int len) {
+    RemoteCamera camera = findRemoteCamera(channel);
+    if (camera != null) camera.rtp_h265_data(data, pos, len);
+  }
   public void rtp_vp8_receive(RTPChannel channel, byte data[], int pos, int len) {
     RemoteCamera camera = findRemoteCamera(channel);
     if (camera != null) camera.rtp_vp8_data(data, pos, len);
+  }
+  public void rtp_vp9_receive(RTPChannel channel, byte data[], int pos, int len) {
+    RemoteCamera camera = findRemoteCamera(channel);
+    if (camera != null) camera.rtp_vp9_data(data, pos, len);
   }
 
   public String getLineStatus() {

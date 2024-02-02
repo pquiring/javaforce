@@ -491,7 +491,7 @@ public abstract class SIP implements TransportInterface {
   /**
    * Returns string name of codec based on payload id (except dynamic ids 96-127).
    */
-  private static String getCodecName(int id) {
+  public static String getCodecName(int id) {
     switch (id) {
       case 0:
         return "PCMU";
@@ -511,206 +511,8 @@ public abstract class SIP implements TransportInterface {
     return "?";
   }
 
-  /**
-   * Parses the SDP content.
-   *
-   * @param msg = SDP text
-   * @param log = JFLog log id
-   */
-  public static SDP getSDP(String[] msg, int log) {
-    String type = getHeader("Content-Type:", msg);
-    if (type == null) type = getHeader("c:", msg);  //short form
-    if (type == null || type.indexOf("application/sdp") == -1) return null;
-    SDP sdp = new SDP();
-    sdp.setLog(log);
-    SDP.Stream stream = null;
-    int idx;
-    int start = -1;
-    for(int a=0;a<msg.length;a++) {
-      if (msg[a].length() == 0) {start = a+1; break;}
-    }
-    if (start == -1) {
-      JFLog.log(log, "SIP.getSDP() : No SDP found");
-      return null;
-    }
-    int acnt = 1;
-    int vcnt = 1;
-    for(int a=start;a<msg.length;a++) {
-      String ln = msg[a];
-      if (ln.startsWith("c=")) {
-        //c=IN IP4 1.2.3.4
-        idx = ln.indexOf("IP4 ");
-        if (idx == -1) {JFLog.log(log, "SIP.getSDP() : Unsupported c field:" + ln); continue;}
-        String ip = ln.substring(idx+4);
-        if (stream == null) {
-          sdp.ip = ip;
-        } else {
-          stream.ip = ip;
-        }
-      } else if (ln.startsWith("m=")) {
-        //m=audio <port> [UDP/TLS/]RTP/<profile> <codecs>
-        if (stream != null) {
-          if (stream.content == null) {
-            switch (stream.type) {
-              case audio: stream.content = "audio" + (acnt++); break;
-              case video: stream.content = "video" + (vcnt++); break;
-            }
-          }
-        }
-        if (ln.startsWith("m=audio")) {
-          stream = sdp.addStream(SDP.Type.audio);
-        } else if (ln.startsWith("m=video")) {
-          stream = sdp.addStream(SDP.Type.video);
-        } else {
-          JFLog.log("SIP.getSDP() : Unsupported m field:" + ln);
-          stream = sdp.addStream(SDP.Type.other);
-          continue;
-        }
-        //parse static codecs
-        String[] f = ln.split(" ");
-        String[] p = f[2].split("/");
-        //p[] = RTP/AVP
-        //p[] = UDP/TLS/RTP/SRTP
-        int i = 1;
-        if (p[i].equals("TLS")) {
-          stream.keyExchange = SDP.KeyExchange.DTLS;
-          i = 3;
-        }
-        if (p[i].equals("AVP")) {
-          stream.profile = SDP.Profile.AVP;
-        } else if (p[i].equals("AVPF")) {
-          stream.profile = SDP.Profile.AVPF;
-        } else if (p[i].equals("SAVP")) {
-          stream.profile = SDP.Profile.SAVP;
-        } else if (p[i].equals("SAVPF")) {
-          stream.profile = SDP.Profile.SAVPF;
-        } else {
-          stream.profile = SDP.Profile.UNKNOWN;
-          JFLog.log(log, "SIP.getSDP() : Unsupported profile:" + p[i]);
-        }
-        stream.port = JF.atoi(f[1]);
-        for(int b=3;b<f.length;b++) {
-          int id = JF.atoi(f[b]);
-          if (id < 96) {
-            stream.addCodec(new Codec(getCodecName(id), id));
-          }
-        }
-      } else if (ln.startsWith("a=")) {
-        if (ln.startsWith("a=rtpmap:")) {
-          //a=rtpmap:<id> <name>/<bitrate>
-          String[] f = ln.substring(9).split(" ");
-          int id = JF.atoi(f[0]);
-          String[] n = f[1].split("/");
-          if (id >= 96) {
-            stream.addCodec(new Codec(n[0], id));
-          }
-        }
-        else if (ln.startsWith("a=sendrecv")) {
-          if (stream != null) {
-            stream.mode = SDP.Mode.sendrecv;
-          }
-        }
-        else if (ln.startsWith("a=sendonly")) {
-          if (stream != null) {
-            stream.mode = SDP.Mode.sendonly;
-          }
-        }
-        else if (ln.startsWith("a=recvonly")) {
-          if (stream != null) {
-            stream.mode = SDP.Mode.sendonly;
-          }
-        }
-        else if (ln.startsWith("a=inactive")) {
-          if (stream != null) {
-            stream.mode = SDP.Mode.inactive;
-          }
-        }
-        else if (ln.startsWith("a=content:")) {
-          stream.content = ln.substring(10);
-        }
-        else if (ln.startsWith("a=candidate:")) {
-          //            0 1 2   3          4          5     6   7     8     9          10    11
-          //a=candidate:0 1 UDP 2128609535 10.1.1.100 60225 typ host
-          //a=candidate:1 1 UDP 1692467199 x.x.x.x    60225 typ srflx raddr 10.1.1.100 rport 60225
-          //a=candidate:0 2 UDP 2128609534 10.1.1.100 60226 typ host
-          //a=candidate:1 2 UDP 1692467198 x.x.x.x    60226 typ srflx raddr 10.1.1.100 rport 60226
-          String[] f = ln.substring(12).split(" ");
-          if (stream != null && f.length >= 8 && f[0].equals("0") && f[1].equals("1")) {
-            //override ip
-            stream.ip = f[4];
-          }
-        }
-        else if (ln.startsWith("a=ice-ufrag:")) {
-          sdp.iceufrag = ln.substring(12);
-        }
-        else if (ln.startsWith("a=ice-pwd:")) {
-          sdp.icepwd = ln.substring(10);
-        }
-        else if (ln.startsWith("a=fingerprint:sha-256 ")) {
-          sdp.fingerprint = ln.substring(22);
-        }
-        else if (ln.startsWith("a=crypto:")) {
-          //SRTP Keys (replaced by DTLS method)
-          //a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
-          //         # crypto                         base64_key_salt                          life mki
-          stream.keyExchange = SDP.KeyExchange.SDP;
-          String[] f = ln.split(" ");
-          if (!f[2].startsWith("inline:")) {
-            JFLog.log("a=crypto:bad keys(1)");
-            continue;
-          }
-          String base64 = f[2].substring(7);
-          int pipe = base64.indexOf("|");
-          if (pipe != -1) {
-            base64 = base64.substring(0, pipe);
-          }
-          byte[] keys = javaforce.Base64.decode(base64.getBytes());
-          if (keys == null || keys.length != 30) {
-            JFLog.log("a=crypto:bad keys(2)");
-            continue;
-          }
-          byte[] key = Arrays.copyOfRange(keys, 0, 16);
-          byte[] salt = Arrays.copyOfRange(keys, 16, 16 + 14);
-          stream.addKey(f[1], key, salt);
-        }
-        else if (ln.startsWith("a=framerate:")) {
-          sdp.framerate = JF.atof(ln.substring(12));
-        }
-        else {
-          sdp.otherAttributes.add(ln.substring(2));
-        }
-      }
-      else if (ln.startsWith("o=")) {
-        //o=- {count} {count} IN IP4 {host}
-        sdp.owner = ln.substring(2);
-      }
-      else if (ln.startsWith("s=")) {
-        //s=session_name
-        sdp.session = ln.substring(2);
-      }
-      else if (ln.startsWith("t=")) {
-        //t=START STOP
-        String[] f = ln.substring(2).split("[ ]");
-        if (f.length >= 2) {
-          sdp.time_start = Long.valueOf(f[0]);
-          sdp.time_stop = Long.valueOf(f[1]);
-        }
-      }
-      else {
-        sdp.otherParameters.add(ln);
-      }
-    }
-    if ((stream != null) && (stream.content == null)) {
-      switch (stream.type) {
-        case audio: stream.content = "audio" + (acnt++); break;
-        case video: stream.content = "video" + (vcnt++); break;
-      }
-    }
-    return sdp;
-  }
-
   public static SDP getSDP(String[] msg) {
-    return getSDP(msg, 0);
+    return SDP.getSDP(msg, 0);
   }
 
   /**
@@ -801,6 +603,7 @@ public abstract class SIP implements TransportInterface {
 
   /**
    * Returns a specific header (field) from a SIP message.
+   * Also removes any quotes.
    */
   public static String getHeader(String header, String[] msg) {
     int sl = header.length();
@@ -1029,19 +832,6 @@ public abstract class SIP implements TransportInterface {
       return -1;
     }
     return Integer.valueOf(m.substring(0, idx));
-  }
-
-  /**
-   * Returns the 'o' counts in a SIP/SDP packet. idx can be 1 or 2.
-   */
-  protected long geto(String[] msg, int idx) {
-    //o=blah o1 o2 ...
-    String o = getHeader("o=", msg);
-    if (o == null) {
-      return 0;
-    }
-    String[] os = o.split(" ");
-    return Long.valueOf(os[idx]);
   }
 
   /**

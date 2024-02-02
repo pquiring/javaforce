@@ -522,7 +522,7 @@ public abstract class RTSP implements TransportInterface {
    * @param msg = SDP text
    */
   public SDP getSDP(String[] msg) {
-    return SIP.getSDP(msg, log);
+    return SDP.getSDP(msg, log);
   }
 
   /**

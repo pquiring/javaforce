@@ -393,9 +393,6 @@ public class SIPServer extends SIP implements SIPInterface {
               //get SDP details
               cdsd.sdp = getSDP(msg);
               JFLog.log("src=" + cdsd.sdp);
-              //get o1/o2
-              cdsd.sdp.o1 = geto(msg, 1);
-              cdsd.sdp.o2 = geto(msg, 2);
               cd.authorized = (pass != null);
               iface.onInvite(cd, src);
               break;
@@ -454,8 +451,6 @@ public class SIPServer extends SIP implements SIPInterface {
               cdsd.to = replacetag(cdsd.to, getHeader("t:", msg));
               cdpbx.to = cdsd.to.clone();
               cdsd.sdp = getSDP(msg);
-              cdsd.sdp.o1 = geto(msg, 1);
-              cdsd.sdp.o2 = geto(msg, 2);
             }
             else if (cd.cmd.equals("BYE")) {
               setCallDetailsServer(cd.callid, null);

@@ -2782,7 +2782,7 @@ public class EditSettings extends javax.swing.JDialog {
     }
 //video codecs
     if ((Settings.current.videoCodecs == null) || (Settings.current.videoCodecs.length() == 0)) {
-      Settings.current.videoCodecs = "VP8,H264,H263-1998,H263-2000,JPEG";
+      Settings.current.videoCodecs = "VP8,VP9,H264,H265,H263-1998,H263-2000,JPEG";
     }
     disabledVideoCodecsList.clear();
     enabledVideoCodecsList.clear();
@@ -2794,8 +2794,10 @@ public class EditSettings extends javax.swing.JDialog {
       }
       if (codecs[a].equals("H263-1998")) enabledVideoCodecsList.addElement("H.263(1998)");
       if (codecs[a].equals("H263-2000")) enabledVideoCodecsList.addElement("H.263(2000)");
+      if (codecs[a].equals("H265")) enabledVideoCodecsList.addElement("H.265");
       if (codecs[a].equals("H264")) enabledVideoCodecsList.addElement("H.264");
       if (codecs[a].equals("VP8")) enabledVideoCodecsList.addElement("VP8");
+      if (codecs[a].equals("VP9")) enabledVideoCodecsList.addElement("VP9");
     }
     if (!Settings.current.hasVideoCodec(RTP.CODEC_JPEG)) {
       disabledVideoCodecsList.addElement("JPEG");
@@ -2814,8 +2816,14 @@ public class EditSettings extends javax.swing.JDialog {
     if (!Settings.current.hasVideoCodec(RTP.CODEC_H264)) {
       disabledVideoCodecsList.addElement("H.264");
     }
+    if (!Settings.current.hasVideoCodec(RTP.CODEC_H265)) {
+      disabledVideoCodecsList.addElement("H.265");
+    }
     if (!Settings.current.hasVideoCodec(RTP.CODEC_VP8)) {
       disabledVideoCodecsList.addElement("VP8");
+    }
+    if (!Settings.current.hasVideoCodec(RTP.CODEC_VP9)) {
+      disabledVideoCodecsList.addElement("VP9");
     }
 
     disableVideo.setSelected(!Settings.current.nativeVideo);
@@ -3089,7 +3097,9 @@ public class EditSettings extends javax.swing.JDialog {
       if (codec.equals("H.263(1998)")) sb.append("H263-1998");
       if (codec.equals("H.263(2000)")) sb.append("H263-2000");
       if (codec.equals("H.264")) sb.append("H264");
+      if (codec.equals("H.265")) sb.append("H265");
       if (codec.equals("VP8")) sb.append("VP8");
+      if (codec.equals("VP9")) sb.append("VP9");
     }
     return sb.toString();
   }

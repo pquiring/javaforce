@@ -158,6 +158,21 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
           encoder.addVideo(px);
           continue;
         }
+        if (codec.name.equals("H265")) {
+          px = localImage.getPixels();
+          if (encoder == null) {
+            encoder = new MediaEncoder();
+            encoder.setFramesPerKeyFrame(5);
+            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "h265", true, false)) {
+              JFLog.log("H265 encoder failed to start");
+              encoder.stop();
+              encoder = null;
+              continue;
+            }
+          }
+          encoder.addVideo(px);
+          continue;
+        }
         if (codec.name.equals("VP8")) {
           px = localImage.getPixels();
           if (encoder == null) {
@@ -165,6 +180,21 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
             encoder.setFramesPerKeyFrame(5);
             if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "vpx", true, false)) {
               JFLog.log("VP8 encoder failed to start");
+              encoder.stop();
+              encoder = null;
+              continue;
+            }
+          }
+          encoder.addVideo(px);
+          continue;
+        }
+        if (codec.name.equals("VP9")) {
+          px = localImage.getPixels();
+          if (encoder == null) {
+            encoder = new MediaEncoder();
+            encoder.setFramesPerKeyFrame(5);
+            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "vpx", true, false)) {
+              JFLog.log("VP9 encoder failed to start");
               encoder.stop();
               encoder = null;
               continue;
@@ -255,7 +285,9 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
   private RTPH263_1998 rtpH263_1998 = new RTPH263_1998();
   private RTPH263_2000 rtpH263_2000 = new RTPH263_2000();
   private RTPH264 rtpH264 = new RTPH264();
+  private RTPH265 rtpH265 = new RTPH265();
   private RTPVP8 rtpVP8 = new RTPVP8();
+  private RTPVP9 rtpVP9 = new RTPVP9();
   private Object lock = new Object();
   private Vector<byte[]> list = new Vector<byte[]>();
   private MediaEncoder encoder;
@@ -273,10 +305,18 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
       //        printArray("encoded_vp8", bytes, 0, bytes.length);
       //        try { raf.write(bytes); } catch (Exception e) {}
       rtpVP8.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+    } else if (codec.name.equals("VP9")) {
+      //        printArray("encoded_vp9", bytes, 0, bytes.length);
+      //        try { raf.write(bytes); } catch (Exception e) {}
+      rtpVP9.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("H264")) {
       //        printArray("encoded_h264", bytes, 0, bytes.length);
       //        try { raf.write(bytes); } catch (Exception e) {}
       rtpH264.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+    } else if (codec.name.equals("H265")) {
+      //        printArray("encoded_h265", bytes, 0, bytes.length);
+      //        try { raf.write(bytes); } catch (Exception e) {}
+      rtpH265.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("H263-1998")) {
       //        printArray("encoded_1998", bytes, 0, bytes.length);
       rtpH263_1998.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);

@@ -923,10 +923,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             if (gettag(cd.dst.to) == null) {
               cd.dst.to = replacetag(cd.dst.to, generatetag());
             }
-            //get o1/o2
-            cd.dst.sdp.o1 = geto(msg, 1) + 1;
-            cd.dst.sdp.o2 = geto(msg, 2) + 1;
             cd.dst.sdp = getSDP(msg);
+            cd.dst.sdp.o1++;
+            cd.dst.sdp.o2++;
             switch (iface.onInvite(this, callid, cd.dst.from[0], cd.dst.from[1], cd.dst.sdp)) {
               case 180:  //this is the normal return
                 reply(cd, cmd, 180, "RINGING", false, false);

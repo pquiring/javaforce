@@ -107,7 +107,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public abstract void rtp_h263_1998_receive(RTPChannel rtp, byte data[], int pos, int len);
   public abstract void rtp_h263_2000_receive(RTPChannel rtp, byte data[], int pos, int len);
   public abstract void rtp_h264_receive(RTPChannel rtp, byte data[], int pos, int len);
+  public abstract void rtp_h265_receive(RTPChannel rtp, byte data[], int pos, int len);
   public abstract void rtp_vp8_receive(RTPChannel rtp, byte data[], int pos, int len);
+  public abstract void rtp_vp9_receive(RTPChannel rtp, byte data[], int pos, int len);
   public boolean registeringAll = false;
   public boolean doConfig = false;  //do config after register all
 
@@ -537,8 +539,16 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
           addVideoStream(pl, sdp, vstream, RTP.CODEC_H264);
           break;
         }
+        if ((enabledCodecs[a].equals(RTP.CODEC_H265.name)) && (vstream.hasCodec(RTP.CODEC_H265))) {
+          addVideoStream(pl, sdp, vstream, RTP.CODEC_H265);
+          break;
+        }
         if ((enabledCodecs[a].equals(RTP.CODEC_VP8.name)) && (vstream.hasCodec(RTP.CODEC_VP8))) {
           addVideoStream(pl, sdp, vstream, RTP.CODEC_VP8);
+          break;
+        }
+        if ((enabledCodecs[a].equals(RTP.CODEC_VP9.name)) && (vstream.hasCodec(RTP.CODEC_VP9))) {
+          addVideoStream(pl, sdp, vstream, RTP.CODEC_VP9);
           break;
         }
       }
@@ -610,7 +620,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
           if (enabledCodecs[a].equals(RTP.CODEC_H263_1998.name)) stream.addCodec(RTP.CODEC_H263_1998);
           if (enabledCodecs[a].equals(RTP.CODEC_H263_2000.name)) stream.addCodec(RTP.CODEC_H263_2000);
           if (enabledCodecs[a].equals(RTP.CODEC_H264.name)) stream.addCodec(RTP.CODEC_H264);
+          if (enabledCodecs[a].equals(RTP.CODEC_H265.name)) stream.addCodec(RTP.CODEC_H265);
           if (enabledCodecs[a].equals(RTP.CODEC_VP8.name)) stream.addCodec(RTP.CODEC_VP8);
+          if (enabledCodecs[a].equals(RTP.CODEC_VP9.name)) stream.addCodec(RTP.CODEC_VP9);
         }
       }
     }
@@ -1130,7 +1142,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H263_1998)) vcnt++;
       if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H263_2000)) vcnt++;
       if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H264)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H265)) vcnt++;
       if (SIP.hasCodec(vstream.codecs, RTP.CODEC_VP8)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_VP9)) vcnt++;
     }
 
     if ((acnt > 1 || vcnt > 1) && (Settings.current.reinvite)) {
@@ -1536,7 +1550,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       case CodecType.H263_1998: rtpH263_1998(rtp, data, off, len); break;
       case CodecType.H263_2000: rtpH263_2000(rtp, data, off, len); break;
       case CodecType.H264: rtpH264(rtp, data, off, len); break;
+      case CodecType.H265: rtpH265(rtp, data, off, len); break;
       case CodecType.VP8: rtpVP8(rtp, data, off, len); break;
+      case CodecType.VP9: rtpVP9(rtp, data, off, len); break;
       case CodecType.JPEG: rtpJPEG(rtp, data, off, len); break;
     }
   }
@@ -1556,9 +1572,17 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public void rtpH264(RTPChannel rtp, byte data[], int off, int len) {
     rtp_h264_receive(rtp, data, off, len);
   }
+  /** rtpH265() */
+  public void rtpH265(RTPChannel rtp, byte data[], int off, int len) {
+    rtp_h265_receive(rtp, data, off, len);
+  }
   /** rtpVP8() */
   public void rtpVP8(RTPChannel rtp, byte data[], int off, int len) {
     rtp_vp8_receive(rtp, data, off, len);
+  }
+  /** rtpVP9() */
+  public void rtpVP9(RTPChannel rtp, byte data[], int off, int len) {
+    rtp_vp9_receive(rtp, data, off, len);
   }
   /** rtpJPEG() */
   public void rtpJPEG(RTPChannel rtp, byte data[], int off, int len) {
