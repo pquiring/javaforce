@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=DVR Viewer
+Comment=DVR Viewer
+
+Icon=jfdvr
+
+Type=Application
+Categories=AudioVideo
+
+Exec=viewer
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Action=open
+
+Title=jfDVR Viewer
