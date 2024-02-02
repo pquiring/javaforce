@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Jeb 2, 2024 : v0.17 released!
+  - new : added H.265 codec
+
 Jan 22, 2024 : v0.16 released!
   - fix : RTSP compatbility issue
 
