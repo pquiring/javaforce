@@ -1443,9 +1443,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
   FFContext *ctx = getFFContext(e,c);
   if (ctx == NULL) return 0.0f;
   if (ctx->video_codec_ctx == NULL) return 0;
-  if (ctx->video_codec_ctx->time_base.num == 0) return 0;
-  if (ctx->video_codec_ctx->ticks_per_frame == 0) return 0;
-  return ctx->video_codec_ctx->time_base.den / ctx->video_codec_ctx->time_base.num / ctx->video_codec_ctx->ticks_per_frame;
+  if (ctx->video_codec_ctx->framerate.den == 0) return 0;
+  return ctx->video_codec_ctx->framerate.num / ctx->video_codec_ctx->framerate.den;
 }
 
 //encoder codebase
@@ -1933,7 +1932,9 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   if (doVideo) {
     printf("video:codec->time_base=%d/%d stream->time_base=%d/%d\n", ctx->video_codec_ctx->time_base.num, ctx->video_codec_ctx->time_base.den, ctx->video_stream->time_base.num, ctx->video_stream->time_base.den);
     printf("video:bitrate=%d fps=%d\n", ctx->config_video_bit_rate, ctx->fps);
-    printf("video:ticks=%d\n", ctx->video_codec_ctx->ticks_per_frame);
+    if (ctx->video_codec_ctx->framerate.den > 0) {
+      printf("video:framerate=%d\n", ctx->video_codec_ctx->framerate.num / ctx->video_codec_ctx->framerate.den);
+    }
   }
   if (ff_debug_trace) printf("encoder_start\n");
   return JNI_TRUE;
