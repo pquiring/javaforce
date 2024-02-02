@@ -607,7 +607,6 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     }
   }
 
-  @SuppressWarnings("unchecked")
   public void arrangeByName() {
     if (view != VIEW_ICONS) return;
     try {
@@ -616,7 +615,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
       //place Home first
       FileEntry entry;
       Object list[] = panel.getComponents();
-      Arrays.sort(list, new Comparator() {
+      Arrays.sort(list, new Comparator<Object>() {
         public int compare(Object t1, Object t2) {
           if (!(t1 instanceof JFileIcon)) return 1;
           if (!(t2 instanceof JFileIcon)) return -1;
