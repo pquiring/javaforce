@@ -14,17 +14,17 @@ import javaforce.*;
 public class GenMSI {
   private BuildTools tools;
   public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Usage:GenMSI build.xml");
+    if (args.length != 2) {
+      System.out.println("Usage:GenMSI build.xml ffmpeg_folder");
       System.exit(1);
     }
     try {
-      new GenMSI().run(args[0]);
+      new GenMSI().run(args[0], args[1]);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
-  public void run(String buildfile) throws Exception {
+  public void run(String buildfile, String ffmpeg_folder) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
     String home = tools.getProperty("home");
@@ -80,7 +80,7 @@ public class GenMSI {
 
       {
         //create ffmpeg object
-        WixHeat.main(new String[] {home + "/ffmpeg", "ffmpeg.xml", "FFMPEG", "."});
+        WixHeat.main(new String[] {ffmpeg_folder, "ffmpeg.xml", "FFMPEG", "."});
         ShellProcess.Output output = ShellProcess.exec(new String[] {"candle","-o","ffmpeg.obj","ffmpeg.xml"}, true);
         if (output == null) throw new Exception("error");
         System.out.println(output.stdout);

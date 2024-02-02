@@ -48,13 +48,13 @@
 
     <!-- Step 2b: Add the shortcut to your installer package -->
     <DirectoryRef Id="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut" Guid="{657CD942-876A-45D0-B02F-35229EA29F0D}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jf DVR" Description="jf DVR" Target="[URL]"
+      <Component Id="ApplicationShortcut1" Guid="{657CD942-876A-45D0-B02F-35229EA29F0D}">
+        <Shortcut Id="ApplicationStartMenuShortcut1" Name="jf DVR" Description="jf DVR" Target="[URL]"
           WorkingDirectory="APPLICATIONROOTDIRECTORY" Icon="icon.ico"/>
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDVR" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
-      <Component Id="ApplicationShortcut" Guid="{657CD942-876A-45D0-B02F-35229EA29F0E}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDVR Viewer" Description="DVR Viewer" Target="[APPLICATIONROOTDIRECTORY]viewer.exe"
+      <Component Id="ApplicationShortcut2" Guid="{657CD942-876A-45D0-B02F-35229EA29F0E}">
+        <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfDVR Viewer" Description="DVR Viewer" Target="[APPLICATIONROOTDIRECTORY]viewer.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDVRViewer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
@@ -63,7 +63,8 @@
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
-      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="ApplicationShortcut1" />
+      <ComponentRef Id="ApplicationShortcut2" />
       <ComponentGroupRef Id="JRE" />
       <ComponentGroupRef Id="FFMPEG" />
     </Feature>

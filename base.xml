@@ -46,9 +46,9 @@
 
   <target name="ffmpeg">
     <copy todir=".">
-      <fileset dir="${home}/ffmpeg-bin/{ffmpeg-version}" includes="*.dll"/>
-      <fileset dir="${home}/ffmpeg-bin/{ffmpeg-version}" includes="*.so"/>
-      <fileset dir="${home}/ffmpeg-bin/{ffmpeg-version}" includes="*.dylib"/>
+      <fileset dir="${home}/ffmpeg-bin/${ffmpeg-version}" includes="*.dll"/>
+      <fileset dir="${home}/ffmpeg-bin/${ffmpeg-version}" includes="*.so"/>
+      <fileset dir="${home}/ffmpeg-bin/${ffmpeg-version}" includes="*.dylib"/>
     </copy>
   </target>
 
@@ -119,6 +119,7 @@
   <target name="msi" depends="executable" description="create msi package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenMSI" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
+      <arg value="${home}/ffmpeg-bin/${ffmpeg-version}"/>
     </java>
   </target>
 
