@@ -52,8 +52,12 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
 
     setPreferredSize(new java.awt.Dimension(1280, 720));
 
+    jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     jLabel3.setText("Server:");
 
+    server.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+
+    updateLists.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     updateLists.setText("Update Lists");
     updateLists.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -63,11 +67,14 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
 
     split.setDividerLocation(640);
 
+    groupList.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     groupList.setModel(new DefaultListModel<String>());
     jScrollPane1.setViewportView(groupList);
 
+    jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     jLabel1.setText("Groups");
 
+    viewGroup.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     viewGroup.setText("View Group");
     viewGroup.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -97,17 +104,20 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
           .addComponent(viewGroup)
           .addComponent(jLabel1))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
         .addContainerGap())
     );
 
     split.setLeftComponent(jPanel1);
 
+    cameraList.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     cameraList.setModel(new DefaultListModel<String>());
     jScrollPane2.setViewportView(cameraList);
 
+    jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     jLabel2.setText("Cameras");
 
+    viewCamera.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
     viewCamera.setText("View Camera");
     viewCamera.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -137,7 +147,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
           .addComponent(jLabel2)
           .addComponent(viewCamera))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -150,7 +160,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(split, javax.swing.GroupLayout.DEFAULT_SIZE, 1268, Short.MAX_VALUE)
+          .addComponent(split)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -163,7 +173,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(split, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
+        .addComponent(split, javax.swing.GroupLayout.DEFAULT_SIZE, 670, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
