@@ -1,5 +1,18 @@
 What's new...
 
+Feb 2/2024 : JF/51.0
+ - implement H.265 codec
+ - implement RTSPServer
+ - jfDVR/0.13
+   - add RTSPServer to view cameras
+   - add high/low res URLs
+   - add camera groups
+   - add camera/group viewer (with CLI for kiosks)
+ - jfMedia/0.17
+   - now supports H.265
+ - jfPhone/1.26
+   - now supports H.265
+
 Jan 22/2024 : JF/50.1
  - fix RTSP compatibility issue
  - jfMedia/0.16
