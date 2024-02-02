@@ -2,6 +2,14 @@
 
 # install jfLinux onto pre-installed minimal linux
 
+DESKTOP=ask
+if [ "$1" = "--desktop=no" ]; then
+  DESKTOP=no
+fi
+if [ "$1" = "--desktop=yes" ]; then
+  DESKTOP=yes
+fi
+
 function detectos {
   if [ ! -f /etc/os-release ]; then
     echo Unable to detect os
@@ -32,7 +40,7 @@ function detectos {
 
 #check if root
 if [[ $EUID -ne 0 ]]; then
-  echo "This script must be run as root" 
+  echo "This script must be run as root"
   exit 1
 fi
 
@@ -72,10 +80,14 @@ function debian {
   apt update
   apt --yes install javaforce
 
-  read -p "Install jfLinux Desktop Environment? " -n 1 -r
+  if [ $DESKTOP = "ask" ]; then
+    read -p "Install jfLinux Desktop Environment? " -n 1 -r
 
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      DESKTOP=yes
+    fi
+  fi
+  if [ $DESKTOP = "yes" ]; then
     apt --yes install jflogon jfdesktop jfconfig jfapps
     systemctl enable jflogon.service
     systemctl enable jfbusserver.service
@@ -97,10 +109,14 @@ function fedora {
   dnf update
   dnf -y install javaforce
 
-  read -p "Install jfLinux Desktop Environment? " -n 1 -r
+  if [ $DESKTOP = "ask" ]; then
+    read -p "Install jfLinux Desktop Environment? " -n 1 -r
 
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      DESKTOP=yes
+    fi
+  fi
+  if [ $DESKTOP = "yes" ]; then
     dnf -y install jflogon jfdesktop jfconfig jfapps
     systemctl enable jflogon.service
     systemctl enable jfbusserver.service
@@ -136,10 +152,14 @@ function arch {
 
   pacman -S --noconfirm javaforce
 
-  read -p "Install jfLinux Desktop Environment? " -n 1 -r
+  if [ $DESKTOP = "ask" ]; then
+    read -p "Install jfLinux Desktop Environment? " -n 1 -r
 
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      DESKTOP=yes
+    fi
+  fi
+  if [ $DESKTOP = "yes" ]; then
     pacman -S --noconfirm jflogon jfdesktop jfconfig jfapps
     systemctl enable jflogon.service
     systemctl enable jfbusserver.service
