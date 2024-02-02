@@ -6,8 +6,6 @@ package viewer;
  */
 
 import java.awt.*;
-import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
@@ -83,7 +81,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public static boolean debug = false;
 
-  private void init() {
+  private synchronized void init() {
     if (img != null) return;
     int x = getWidth();
     int y = getHeight();
@@ -108,6 +106,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void setImage(JFImage src) {
     init();
+    if (img == null) return;
     if (src.getWidth() == getWidth() && src.getHeight() == getHeight()) {
       img.putJFImage(src, 0, 0);
     } else {
@@ -118,6 +117,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void setImage(JFImage src, int px, int py) {
     init();
+    if (img == null) return;
     if (zoom) {
       if (px != zx || py != zy) return;
       setImage(src);
@@ -134,6 +134,8 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void setImageRect(JFImage src, int x, int y, int w, int h) {
+    init();
+    if (img == null) return;
     img.putJFImageScale(src, x, y, w, h);
   }
 
@@ -162,7 +164,7 @@ public class VideoPanel extends javax.swing.JPanel {
       int iw = img.getWidth();
       int ih = img.getHeight();
       if (((iw != w) || (ih != h))) {
-        JFLog.log("VideoPanel:image scaled");
+        if (debug) JFLog.log("VideoPanel:image scaled");
         JFImage scaled = new JFImage();
         scaled.setImageSize(w, h);
         scaled.getGraphics().drawImage(img.getImage(), 0,0, w,h, 0,0, iw,ih, null);

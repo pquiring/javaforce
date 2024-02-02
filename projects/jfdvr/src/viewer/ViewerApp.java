@@ -27,6 +27,8 @@ public class ViewerApp extends javax.swing.JFrame {
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdvr.png"));
     setIconImage(icon.getImage());
+    cameraicon = new JFImage();
+    cameraicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("camera.png"));
     self = this;
     root = getContentPane();
     setPosition();
@@ -101,6 +103,7 @@ public class ViewerApp extends javax.swing.JFrame {
   public static Viewer panel;
   public static ViewerApp self;
   public static Container root;
+  public static JFImage cameraicon;
   public boolean fullscreen;
 
   private void setPosition() {

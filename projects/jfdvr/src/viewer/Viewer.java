@@ -15,13 +15,6 @@ import javaforce.media.*;
 
 public class Viewer {
 
-  /**
-   * Creates new form MainPanel
-   */
-  public Viewer() {
-//    JFLog.enableTimestamp(true);
-  }
-
   private final Object countLock = new Object();
   private VideoPanel videoPanel;
   private NetworkReader networkReader;
@@ -40,8 +33,6 @@ public class Viewer {
       JFAWT.showError("Error", "Invalid URL");
       return;
     }
-    networkReader = new NetworkReader(url);
-    networkReader.start();
     if (videoPanel == null) {
       videoPanel = new VideoPanel();
       java.awt.EventQueue.invokeLater(new Runnable() {
@@ -51,6 +42,12 @@ public class Viewer {
       });
       videoPanel.start();
     }
+    java.awt.EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        networkReader = new NetworkReader(url);
+        networkReader.start();
+      }
+    });
   }
 
   public synchronized void stop(boolean wait) {
@@ -136,6 +133,8 @@ public class Viewer {
       resizeVideo = false;
       preBuffering = true;
 
+      drawCameraIcon();
+
       try {
         connect();
 
@@ -163,6 +162,7 @@ public class Viewer {
           if (now - lastPacket > 10*1000) {
             JFLog.log(log, "NetworkReader : Reconnecting");
             disconnect();
+            drawCameraIcon();
             if (!connect()) {
               JF.sleep(1000);
               continue;
@@ -197,6 +197,15 @@ public class Viewer {
       }
       if (playing) Viewer.this.stop(false);
       video_decoder = null;
+    }
+
+    private void drawCameraIcon() {
+      if (type.equals("group")) return;
+      if (grid) {
+        videoPanel.setImage(ViewerApp.cameraicon, gx, gy);
+      } else {
+        videoPanel.setImage(ViewerApp.cameraicon);
+      }
     }
 
     public boolean connect() {
@@ -569,7 +578,7 @@ public class Viewer {
               video_buffer.freeNextFrame();
             }
           } else {
-            JFLog.log("Playback too slow - skipping a frame");
+            if (debug) JFLog.log("Playback too slow - skipping a frame");
             skip++;
           }
           current += frameDelay;
