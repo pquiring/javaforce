@@ -113,11 +113,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public void stopCamera(Camera camera) {
-    int cnt = list.size();
-    for(int a=0;a<cnt;a++) {
-      if (list.get(a).getCamera() == camera) {
-        try {list.get(a).cancel();} catch (Exception e) {JFLog.log(e);}
-        list.remove(a);
+    int count = list.size();
+    for(int idx=0;idx<count;) {
+      if (list.get(idx).getCamera() == camera) {
+        try {list.get(idx).cancel();} catch (Exception e) {JFLog.log(e);}
+        list.remove(idx);
+        count--;
+      } else {
+        idx++;
       }
     }
   }
@@ -316,13 +319,13 @@ public class DVRService extends Thread implements RTSPServerInterface {
       for(Camera cam : Config.current.cameras) {
         synchronized (cam.viewersLock) {
           int count = cam.viewers.size();
-          for(int i=0;i<count;i++) {
-            RTSPSession sess = cam.viewers.get(i);
+          for(int idx=0;idx<count;idx++) {
+            RTSPSession sess = cam.viewers.get(idx);
             if (sess.ts < cut) {
               cam.viewers.remove(sess);
               count--;
             } else {
-              i++;
+              idx++;
             }
           }
         }
