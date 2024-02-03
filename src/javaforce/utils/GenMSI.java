@@ -99,7 +99,7 @@ public class GenMSI {
       {
         //create msi file
         String[] cmd = new String[] {"light","-ext","WixUIExtension","-ext","WixFirewallExtension","-ext","WixUtilExtension","-cultures:en-us"
-          ,"-b",home,"-b",jre,"-b",jre + "/bin","-b",home + "/ffmpeg","-dWixUILicenseRtf=" + home + "/license.rtf"
+          ,"-b",home,"-b",jre,"-b",jre + "/bin","-b",ffmpeg_folder,"-dWixUILicenseRtf=" + home + "/license.rtf"
           ,"-o",out,"wix.obj","jre.obj","ffmpeg.obj","msvcrt.obj"};
         if (light_extra.length() > 0) {
           String[] extra = light_extra.split(" ");
