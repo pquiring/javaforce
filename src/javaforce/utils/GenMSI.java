@@ -14,17 +14,17 @@ import javaforce.*;
 public class GenMSI {
   private BuildTools tools;
   public static void main(String[] args) {
-    if (args.length != 2) {
-      System.out.println("Usage:GenMSI build.xml ffmpeg_folder");
+    if (args.length != 1) {
+      System.out.println("Usage:GenMSI build.xml");
       System.exit(1);
     }
     try {
-      new GenMSI().run(args[0], args[1]);
+      new GenMSI().run(args[0]);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
-  public void run(String buildfile, String ffmpeg_folder) throws Exception {
+  public void run(String buildfile) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
     String home = tools.getProperty("home");
@@ -39,6 +39,8 @@ public class GenMSI {
     if (heat_home.length() == 0) heat_home = "jre";
     String candle_extra = tools.getProperty("candle_extra");
     String light_extra = tools.getProperty("light_extra");
+    String ffmpeg_version = tools.getVersion("ffmpeg-version");
+    String ffmpeg_folder = home + "/ffmpeg-bin/" + ffmpeg_version;
 
     switch (apptype) {
       case "client":
