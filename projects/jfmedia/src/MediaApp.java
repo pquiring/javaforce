@@ -5,6 +5,7 @@
  */
 
 import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 
@@ -46,6 +47,27 @@ public class MediaApp extends javax.swing.JFrame {
       }
     }
     setTitle("jfMedia/" + version);
+    setExtendedState(Frame.MAXIMIZED_BOTH);
+    fullscreen = true;
+    JFAWT.assignHotKey(getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
+    JFAWT.assignHotKey(getRootPane(), new Runnable() {public void run() {toggleFullscreen();}}, KeyEvent.VK_F10);
+  }
+
+  public void showHelp() {
+    JFAWT.showMessage("Help",
+      "jfMedia Player/" + version + "\n\n" +
+      "F1 = Help\n" +
+      "F10 = Full Screen\n"
+    );
+  }
+
+  public void toggleFullscreen() {
+    if (fullScreen) {
+      setExtendedState(Frame.NORMAL);
+    } else {
+      setExtendedState(Frame.MAXIMIZED_BOTH);
+    }
+    fullScreen = !fullScreen;
   }
 
   /**
@@ -96,6 +118,7 @@ public class MediaApp extends javax.swing.JFrame {
   public static MediaApp frame;
   public static String args[];
   public static MainPanel panel;
+  public boolean fullscreen;
 
   private void setPosition() {
     Dimension d = getSize();
