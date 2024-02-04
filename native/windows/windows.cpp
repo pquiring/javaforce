@@ -430,7 +430,11 @@ bool loadProperties() {
     printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
     return false;
   }
+#ifdef _JF_CLI_SERVICE
+  strcpy(method, "serviceStart");  //default method name
+#else
   strcpy(method, "main");  //default method name
+#endif
   javahome[0] = 0;  //detect later
   xoptions[0] = 0;
   return true;
@@ -446,7 +450,11 @@ bool loadProperties() {
 
   xoptions[0] = 0;
 
+#ifdef _JF_CLI_SERVICE
+  strcpy(method, "serviceStart");  //default method name
+#else
   strcpy(method, "main");  //default method name
+#endif
   javahome[0] = 0;  //detect later
 
   res = FindResource(NULL, MAKEINTRESOURCE(1), RT_RCDATA);

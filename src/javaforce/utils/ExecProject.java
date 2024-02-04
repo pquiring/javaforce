@@ -45,7 +45,6 @@ public class ExecProject implements ShellProcessListener {
       switch (apptype) {
 //        case "window": exec += "w"; break;  //for debugging purposes do not use 'w' version
       }
-      exec += ".exe";
     }
 
     Properties props = new Properties();
@@ -55,6 +54,15 @@ public class ExecProject implements ShellProcessListener {
 
     String classpath = props.getProperty("CLASSPATH");
     String mainclass = props.getProperty("MAINCLASS");
+    String service = props.getProperty("SERVICE");
+
+    if (service != null) {
+      exec += "s";
+    }
+
+    if (JF.isWindows()) {
+      exec += ".exe";
+    }
 
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);

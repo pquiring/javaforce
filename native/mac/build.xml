@@ -12,6 +12,8 @@
 
     <!-- build native executable -->
     <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin mac.mm -ldl -lpthread -o ../mac64.bin"/>
+
+    <!-- build native cli executable -->
     <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -D_JF_CLI mac.mm -ldl -lpthread -o ../../bin/jfexec"/>
     <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -D_JF_CLI -D_JF_DEBUG mac.mm -ldl -lpthread -o ../../bin/jfexecd"/>
 

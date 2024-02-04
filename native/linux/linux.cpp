@@ -450,7 +450,11 @@ bool loadProperties() {
     printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
     return false;
   }
-  strcpy(method, "main");  //default method name
+#ifdef _JF_SERVICE
+  strcpy(method, "serviceStart");
+#else
+  strcpy(method, "main");
+#endif
   javahome[0] = 0;  //detect later
   xoptions[0] = 0;
   return true;
