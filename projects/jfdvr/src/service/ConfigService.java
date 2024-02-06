@@ -131,6 +131,11 @@ public class ConfigService implements WebUIHandler {
     Button b_help = new Button("Help");
     row.add(b_help);
 
+    Button b_shutdown = new Button("Shutdown");
+    if (System.getProperty("java.debug") != null) {
+      row.add(b_shutdown);
+    }
+
     row = new Row();
     right.add(row);
     InnerPanel camera_panel = new InnerPanel("Camera");
@@ -694,6 +699,11 @@ public class ConfigService implements WebUIHandler {
     b_help.addClickListener((MouseEvent e, Component button) -> {
       client.openURL("http://jfdvr.sourceforge.net/help.html");
     });
+    if (System.getProperty("java.debug") != null) {
+      b_shutdown.addClickListener((MouseEvent e, Component button) -> {
+        DVRService.serviceStop();
+      });
+    }
 
     panel.add(popup);
     split.setDividerPosition(150);
