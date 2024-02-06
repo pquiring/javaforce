@@ -114,6 +114,7 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     Label errmsg = new Label("");
     errmsg.setColor(Color.red);
+    row.add(errmsg);
     right.add(row);
 
     row = new Row();
