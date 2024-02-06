@@ -191,6 +191,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   }
 
   public void run() {
+    setName("CameraWorkerVideo");
+    JFLog.log(log, "CameraWorkerVideo:start");
     boolean idle = false;
     try {
       listFiles();
@@ -310,7 +312,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     } catch (Exception e) {
       JFLog.log(log, e);
     }
-    JFLog.log(log, ":closing");
+    JFLog.log(log ,"CameraWorkerVideo:stop");
     JFLog.close(log);
   }
   public boolean connect() {

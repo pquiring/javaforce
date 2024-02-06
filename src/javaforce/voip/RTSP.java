@@ -925,6 +925,8 @@ public abstract class RTSP implements TransportInterface {
    */
   private class Worker extends Thread {
     public void run() {
+      setName("RTSP.Worker");
+      JFLog.log("RTSP.Worker:start");
       while (active) {
         if (transport.error()) {
           JFLog.log("RTSP:Transport:Error:" + this);
@@ -951,6 +953,7 @@ public abstract class RTSP implements TransportInterface {
           JFLog.log(log, e);
         }
       }
+      JFLog.log("RTSP.Worker:stop");
     }
   }
 

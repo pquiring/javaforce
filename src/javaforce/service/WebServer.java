@@ -41,9 +41,9 @@ public class WebServer {
   }
   public void stop() {
     active = false;
-    try {
-      ss.close();
-    } catch (Exception e) {
+    if (ss != null) {
+      try { ss.close(); } catch (Exception e) {}
+      ss = null;
     }
   }
   private static class Server extends Thread {
@@ -52,6 +52,8 @@ public class WebServer {
       this.web = web;
     }
     public void run() {
+      setName("WebServer.Server");
+      JFLog.log("WebServer.Server:start");
       Socket s;
       while (web.active) {
         try {
@@ -61,6 +63,7 @@ public class WebServer {
           JFLog.log(e);
         }
       }
+      JFLog.log("WebServer.Server:stop");
     }
   }
   private static class Connection extends Thread {
@@ -72,6 +75,8 @@ public class WebServer {
       this.s = s;
     }
     public void run() {
+      setName("WebServer.Connection");
+      JFLog.log("WebServer.Connection:start");
       //read request and pass to WebHandler
       try {
         StringBuilder request = new StringBuilder();
@@ -128,6 +133,7 @@ public class WebServer {
       } catch (Exception e) {
         e.printStackTrace();
       }
+      JFLog.log("WebServer.Connection:stop");
     }
     private boolean isWebSocketRequest(WebRequest req) {
       boolean upgrade = false;

@@ -33,6 +33,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public void run() {
+    setName("DVRService");
     //setup native
     WinNative.load();
     //setup codecs

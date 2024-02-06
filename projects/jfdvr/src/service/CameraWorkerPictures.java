@@ -83,6 +83,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   boolean last_value;
 
   public void run() {
+    setName("CameraWorkerPictures");
     try {
       listFiles();
       if (!parseURL()) return;
