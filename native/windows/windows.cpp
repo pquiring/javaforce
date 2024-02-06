@@ -245,6 +245,7 @@ JavaVMInitArgs *BuildArgs() {
   char *opts[64];
 
 #ifdef _JF_DEBUG
+  opts[nOpts++] = "-Djava.debug=true";
   opts[nOpts++] = "-Dcom.sun.management.jmxremote";
   opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
   opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";

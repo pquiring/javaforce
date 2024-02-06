@@ -24,7 +24,6 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public static void serviceStart(String args[]) {
     if (dvrService != null) return;
-    JFLog.log("jfDVR.serviceStart()");
     dvrService = new DVRService();
     dvrService.start();
   }

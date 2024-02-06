@@ -20,7 +20,7 @@
     <!-- build cli version -->
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecds"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -40,6 +40,7 @@
     <!-- build cli version -->
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexec"/>
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexecd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -62,6 +63,7 @@
     <!-- build cli version -->
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
