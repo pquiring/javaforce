@@ -45,7 +45,6 @@ public class DVRService extends Thread implements RTSPServerInterface {
     //load current config
     Config.load();
     //start config service
-    JFLog.log("APPDATA=" + System.getenv("APPDATA"));
     configService = new ConfigService();
     configService.start();
     //enable firewall exception
@@ -68,22 +67,18 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public ArrayList<CameraWorker> list = new ArrayList<CameraWorker>();
 
   public void cancel() {
-    JFLog.log("DVRService.cancel");
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      JFLog.log("a=" + a);
       try {
         list.get(a).cancel();
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
-    JFLog.log("timer");
     if (timer != null) {
       timer.cancel();
       timer = null;
     }
-    JFLog.log("rtsp");
     if (rtspServer != null) {
       try {
         rtspServer.uninit();
@@ -92,7 +87,6 @@ public class DVRService extends Thread implements RTSPServerInterface {
       }
       rtspServer = null;
     }
-    JFLog.log("webui");
     if (configService != null) {
       try {
         configService.stop();
@@ -293,7 +287,6 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private String[] get_list_all(String type) {
-    JFLog.log("query:list:all");
     StringBuilder camlist = new StringBuilder();
     StringBuilder grplist = new StringBuilder();
     camlist.append("cameras: ");
@@ -318,14 +311,12 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private String[] get_list_group_cameras(String name) {
-    JFLog.log("query:list:group:" + name);
     Group group = Config.current.getGroup(name);
     if (group == null) {
       JFLog.log("group not found:" + name);
       return null;
     }
     String camlist = group.getCameraList();
-    JFLog.log("group:camlist=" + camlist);
     return new String[] {camlist};
   }
 
