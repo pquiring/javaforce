@@ -10,7 +10,6 @@ import java.util.zip.*;
 
 public class WebResponse extends OutputStream {
   OutputStream os;
-  boolean liveStream;
   private ByteArrayOutputStream buf = new ByteArrayOutputStream();
   private int statusCode = 200;
   private String statusString = "OK";
@@ -19,17 +18,14 @@ public class WebResponse extends OutputStream {
   private ArrayList<String> headers = new ArrayList<String>();
 
   public void write(int b) throws IOException {
-    if (liveStream) throw new IOException("");
     buf.write(b);
   }
 
   public void write(byte[] b, int off, int len) throws IOException {
-    if (liveStream) throw new IOException("");
     buf.write(b, off, len);
   }
 
   void writeAll(WebRequest req) throws Exception {
-    if (liveStream) throw new IOException("");
     byte[] data = buf.toByteArray();
     boolean gzip = false;
     if (data.length > 0) {
@@ -94,28 +90,7 @@ public class WebResponse extends OutputStream {
    * @return OutputStream
    */
   public OutputStream getOutputStream() {
-    if (liveStream) return null;
     return this;
-  }
-
-  /** Returns real output stream.
-   * Writes default header without Content-Length;
-   * Send Data in chunked format. See Web.chunkHeader()
-   *
-   * @return OutputStream
-   */
-  public OutputStream getLiveOutputStream() {
-    if (liveStream) return null;
-    if (buf.size() > 0) {
-      return null;
-    }
-    try {
-      writeHeaders(-1, false);
-    } catch (Exception e) {
-      return null;
-    }
-    liveStream = true;
-    return os;
   }
 
   public void setStatus(int sc, String msg) {

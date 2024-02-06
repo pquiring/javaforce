@@ -8,6 +8,7 @@ package javaforce.service;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 import java.security.*;
 import javax.net.ssl.*;
 
@@ -18,6 +19,8 @@ public class WebServer {
   private WebSocketHandler wsapi;
   private ServerSocket ss;
   private boolean active = true;
+  private ArrayList<Connection> clients = new ArrayList<>();
+  private Object clientsLock = new Object();
 
   public static boolean config_enable_gzip = true;
 
@@ -45,6 +48,17 @@ public class WebServer {
       try { ss.close(); } catch (Exception e) {}
       ss = null;
     }
+    //NOTE:this could be Connection thread callback so stop threads in another thread
+    new Thread() {public void run() {
+      while (clients.size() > 0) {
+        synchronized (clientsLock) {
+          if (clients.size() == 0) break;
+          Connection conn = clients.get(0);
+          conn.cancel();
+        }
+        JF.sleep(100);
+      }
+    }}.start();
   }
   private static class Server extends Thread {
     private WebServer web;
@@ -53,17 +67,21 @@ public class WebServer {
     }
     public void run() {
       setName("WebServer.Server");
-      JFLog.log("WebServer.Server:start");
       Socket s;
       while (web.active) {
         try {
           s = web.ss.accept();
-          new Connection(web, s).start();
+          Connection conn = new Connection(web, s);
+          synchronized (web.clientsLock) {
+            web.clients.add(conn);
+          }
+          conn.start();
+        } catch (SocketException e) {
+          JFLog.log("WebServer.Server:disconnected");
         } catch (Exception e) {
           JFLog.log(e);
         }
       }
-      JFLog.log("WebServer.Server:stop");
     }
   }
   private static class Connection extends Thread {
@@ -76,12 +94,11 @@ public class WebServer {
     }
     public void run() {
       setName("WebServer.Connection");
-      JFLog.log("WebServer.Connection:start");
       //read request and pass to WebHandler
       try {
         StringBuilder request = new StringBuilder();
         is = s.getInputStream();
-        while (s.isConnected()) {
+        while (web.active && s.isConnected()) {
           int ch = is.read();
           if (ch == -1) break;
           request.append((char)ch);
@@ -123,17 +140,29 @@ public class WebServer {
             else {
               res.setStatus(501, "Error - Unsupported Method");
             }
-            if (res.liveStream) return;  //stream until client disconnects
             res.writeAll(req);
             if (req.fields0[2].equals("HTTP/1.0")) break;
             request.setLength(0);
           }
         }
-        s.close();
+        if (s != null) {
+          s.close();
+          s = null;
+        }
+      } catch (SocketException e) {
+        JFLog.log("WebServer.Connection:disconnected");
       } catch (Exception e) {
         e.printStackTrace();
       }
-      JFLog.log("WebServer.Connection:stop");
+      synchronized (web.clientsLock) {
+        web.clients.remove(this);
+      }
+    }
+    public void cancel() {
+      if (s != null) {
+        try {s.close();} catch (Exception e) {}
+        s = null;
+      }
     }
     private boolean isWebSocketRequest(WebRequest req) {
       boolean upgrade = false;
@@ -160,7 +189,7 @@ public class WebServer {
         JFLog.log(e);
       }
       byte[] sha1 = md.digest(inKey.getBytes());
-      String base64 = new String(Base64.encode(sha1));
+      String base64 = new String(javaforce.Base64.encode(sha1));
       return base64;
     }
     private void sendWebSocketAccepted(WebRequest req, WebResponse res) {
@@ -198,7 +227,7 @@ public class WebServer {
       //keep reading packets and deliver to WebHandler
       byte[] maskKey = new byte[4];
       try {
-        while (true) {
+        while (web.active) {
           int opcode = socket.is.read();
           if (opcode == -1) throw new Exception("socket error");
           boolean fin = (opcode & 0x80) == 0x80;
@@ -255,6 +284,8 @@ public class WebServer {
           if (opcode > 0x8) continue;  //other control message
           web.wsapi.doWebSocketMessage(socket, data, opcode);
         }
+      } catch (SocketException e) {
+        JFLog.log("WebServer.Websocket:disconnected");
       } catch (Exception e) {
         JFLog.log(e);
       }

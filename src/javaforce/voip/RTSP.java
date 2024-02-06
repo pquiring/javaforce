@@ -71,6 +71,7 @@ public abstract class RTSP implements TransportInterface {
     try {
       worker.join();
     } catch (Exception e) {
+      e.printStackTrace();
     }
     transport = null;
     worker = null;

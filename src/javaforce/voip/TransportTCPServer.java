@@ -51,6 +51,9 @@ public class TransportTCPServer implements Transport {
     } catch (Exception e) {
       if (debug) JFLog.log(e);
     }
+    synchronized(packetsLock) {
+      packetsLock.notify();
+    }
     return true;
   }
 
@@ -90,7 +93,7 @@ public class TransportTCPServer implements Transport {
   private Object packetsLock = new Object();
 
   public boolean receive(Packet packet) {
-    while (true) {
+    while (ss_active) {
       synchronized(packetsLock) {
         if (packets.size() == 0) {
           try{packetsLock.wait();} catch (Exception e) {}
@@ -104,6 +107,7 @@ public class TransportTCPServer implements Transport {
         return true;
       }
     }
+    return false;
   }
 
   private Socket connect(InetAddress hostaddr, int port, String id) throws Exception {
@@ -132,6 +136,8 @@ public class TransportTCPServer implements Transport {
           }
           iface.onConnect(host, port);
           new WorkerReader(socket, id, hostaddr, port).start();
+        } catch (SocketException e) {
+          if (debug) JFLog.log("TransportTCPServer.WorkerAccepter:disconnected");
         } catch (Exception e) {
           if (debug) JFLog.log(e);
         }
@@ -243,7 +249,7 @@ public class TransportTCPServer implements Transport {
           worker_error = true;
           worker_active = false;
           remove(host, port, id);
-          if (debug) JFLog.log("TransportTCPServer:Connection lost");
+          if (debug) JFLog.log("TransportTCPServer:disconnected");
         } catch (Exception e) {
           worker_error = true;
           worker_active = false;

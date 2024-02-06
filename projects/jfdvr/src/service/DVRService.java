@@ -29,7 +29,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public static void serviceStop() {
+    if (dvrService == null) return;
     dvrService.cancel();
+    dvrService = null;
   }
 
   public void run() {
@@ -66,20 +68,37 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public ArrayList<CameraWorker> list = new ArrayList<CameraWorker>();
 
   public void cancel() {
+    JFLog.log("DVRService.cancel");
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      list.get(a).cancel();
+      JFLog.log("a=" + a);
+      try {
+        list.get(a).cancel();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
+    JFLog.log("timer");
     if (timer != null) {
       timer.cancel();
       timer = null;
     }
+    JFLog.log("rtsp");
     if (rtspServer != null) {
-      rtspServer.uninit();
+      try {
+        rtspServer.uninit();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       rtspServer = null;
     }
+    JFLog.log("webui");
     if (configService != null) {
-      configService.stop();
+      try {
+        configService.stop();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       configService = null;
     }
   }
