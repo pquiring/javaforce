@@ -113,6 +113,17 @@ public class Config extends SerialObject implements Serializable {
     return null;
   }
 
+  public void renamedCamera(String oldName, String newName) {
+    for(int a=0;a<groups.length;a++) {
+      Group group = groups[a];
+      for(int b=0;b<group.cameras.length;b++) {
+        if (group.cameras[b].equals(oldName)) {
+          group.cameras[b] = newName;
+        }
+      }
+    }
+  }
+
   //RTSP ports for service : 5000-5999
   private static int nextPort = 5000;
   public static synchronized int getLocalPort() {

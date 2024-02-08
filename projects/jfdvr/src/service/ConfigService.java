@@ -517,6 +517,7 @@ public class ConfigService implements WebUIHandler {
             } else {
               DVRService.dvrService.stopCamera(camera);
             }
+            Config.current.renamedCamera(camera.name, _name);
           }
           camera.name = _name;
           camera.url = _url;
