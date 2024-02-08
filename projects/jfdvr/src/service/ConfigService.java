@@ -493,8 +493,8 @@ public class ConfigService implements WebUIHandler {
               }
             }
             camera = new Camera();
+            list.add(Config.current.cameras.length, "Camera:" + _name);
             Config.current.addCamera(camera);
-            list.add("Camera:" + _name);
           } else {
             //update existing camera
             String opt = list.getSelectedItem();
@@ -579,8 +579,8 @@ public class ConfigService implements WebUIHandler {
             }
             group = (Group)client.getProperty("new_group");
             if (group == null) break;
-            Config.current.addGroup(group);
             list.add("Group:" + _name);
+            Config.current.addGroup(group);
             client.setProperty("new_group", null);
           } else {
             //update existing group
