@@ -437,6 +437,7 @@ public class ConfigService implements WebUIHandler {
       camera_name.setText("");
       camera_url.setText("");
       camera_url_low.setText("");
+      camera_enabled.setSelected(true);
       controller.setText("");
       tag_trigger.setText("");
       tag_value.setText("");
