@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 import javaforce.media.*;
@@ -16,9 +17,16 @@ import javaforce.media.*;
 public class ConfigService implements WebUIHandler {
   public static String version = "0.13";
   public WebUIServer server;
+  private byte[] cameraicon;
+
   public void start() {
     server = new WebUIServer();
     server.start(this, 80, false);
+    try {
+      cameraicon = this.getClass().getClassLoader().getResourceAsStream("camera.png").readAllBytes();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void stop() {
@@ -843,7 +851,11 @@ public class ConfigService implements WebUIHandler {
       return null;
     }
     camera.update_preview = true;
-    return camera.preview;
+    byte[] res = camera.preview;
+    if (res == null) {
+      res = cameraicon;
+    }
+    return res;
   }
 
   public void clientConnected(WebUIClient client) {
