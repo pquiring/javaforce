@@ -7,7 +7,7 @@ Icon=jfdvr
 Type=Application
 Categories=AudioVideo
 
-Exec=viewer
+Exec=jfdvr-viewer
 StartupNotify=false
 Terminal=false
 MimeType=

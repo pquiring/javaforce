@@ -1,7 +1,6 @@
 <project name="viewer" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="viewer"/>
-  <property name="apptype" value="console"/>
+  <property name="app" value="jfdvr-viewer"/>
   <property name="home" value="../.."/>
 
   <import file="${home}/base.xml"/>
