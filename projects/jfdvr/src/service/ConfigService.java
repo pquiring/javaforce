@@ -164,7 +164,7 @@ public class ConfigService implements WebUIHandler {
     row.add(camera_lbl_url);
     TextField camera_url = new TextField("");
     row.add(camera_url);
-    Label camera_lbl_url_desc = new Label("(high quality : viewer)");
+    Label camera_lbl_url_desc = new Label("(high quality : viewer, recording)");
     row.add(camera_lbl_url_desc);
 
     row = new Row();
@@ -502,8 +502,10 @@ public class ConfigService implements WebUIHandler {
               }
             }
             camera = new Camera();
-            list.add(Config.current.cameras.length, "Camera:" + _name);
+            int listIdx = Config.current.cameras.length;
+            list.add(listIdx, "Camera:" + _name);
             Config.current.addCamera(camera);
+            list.setSelectedIndex(listIdx);
           } else {
             //update existing camera
             String opt = list.getSelectedItem();
@@ -588,7 +590,9 @@ public class ConfigService implements WebUIHandler {
             }
             group = (Group)client.getProperty("new_group");
             if (group == null) break;
+            int listIdx = list.count();
             list.add("Group:" + _name);
+            list.setSelectedIndex(listIdx);
             Config.current.addGroup(group);
             client.setProperty("new_group", null);
           } else {
