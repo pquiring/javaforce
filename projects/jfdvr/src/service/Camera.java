@@ -106,13 +106,25 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public static final short id_max_file_size = id_4 + 3;
   public static final short id_max_folder_size = id_4 + 4;
 
+  public String fixURL(String url) {
+    if (false) {
+      int idx = url.indexOf('@');
+      if (idx == -1) {
+        String proto = url.substring(0, 7);  //rtsp://
+        String host_path = url.substring(7);
+        return proto + "camera:camera123@" + host_path;
+      }
+    }
+    return url;
+  }
+
   public void readObject() throws Exception {
     do {
       short id = readShort();
       switch (id) {
         case id_name: name = readString(); break;
-        case id_url: url = readString(); break;
-        case id_url_low: url_low = readString(); break;
+        case id_url: url = fixURL(readString()); break;
+        case id_url_low: url_low = fixURL(readString()); break;
         case id_record_motion: record_motion = readBoolean(); break;
         case id_record_motion_threshold: record_motion_threshold = readInt(); break;
         case id_record_motion_after: record_motion_after = readInt(); break;

@@ -163,6 +163,7 @@ public class ConfigService implements WebUIHandler {
     Label camera_lbl_url = new Label("URL:");
     row.add(camera_lbl_url);
     TextField camera_url = new TextField("");
+    camera_url.setWidth(300);
     row.add(camera_url);
     Label camera_lbl_url_desc = new Label("(high quality : viewer, recording)");
     row.add(camera_lbl_url_desc);
@@ -172,6 +173,7 @@ public class ConfigService implements WebUIHandler {
     Label camera_lbl_url_low = new Label("URL:");
     row.add(camera_lbl_url_low);
     TextField camera_url_low = new TextField("");
+    camera_url_low.setWidth(300);
     row.add(camera_url_low);
     Label camera_lbl_url_low_desc = new Label("(low quality : decoder, motion detection, preview)");
     row.add(camera_lbl_url_low_desc);
