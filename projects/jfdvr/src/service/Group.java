@@ -66,6 +66,20 @@ public class Group extends SerialObject {
     cameras = (String[])JF.copyOfExcluding(cameras, idx);
   }
 
+  public void moveUp(int idx) {
+    String c1 = cameras[idx];
+    String c2 = cameras[idx - 1];
+    cameras[idx] = c2;
+    cameras[idx - 1] = c1;
+  }
+
+  public void moveDown(int idx) {
+    String c1 = cameras[idx];
+    String c2 = cameras[idx + 1];
+    cameras[idx] = c2;
+    cameras[idx + 1] = c1;
+  }
+
   public boolean contains(String camera) {
     for(int a=0;a<cameras.length;a++) {
       if (cameras[a].equals(camera)) {

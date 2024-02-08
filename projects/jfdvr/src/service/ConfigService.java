@@ -75,6 +75,7 @@ public class ConfigService implements WebUIHandler {
     }
     Label lbl;
     Row row, row2;
+    Pad pad;
     int cnt;
 
     client.setProperty("view", "cameras");
@@ -308,7 +309,7 @@ public class ConfigService implements WebUIHandler {
 
     row2 = new Row();
     blk2.add(row2);
-    Pad pad = new Pad();
+    pad = new Pad();
     pad.setHeight(25);
     row2.add(pad);
 
@@ -332,6 +333,28 @@ public class ConfigService implements WebUIHandler {
     ipanel3.add(group_list_selected);
     blk3.add(ipanel3);
     row.add(blk3);
+
+    InlineBlock blk4 = new InlineBlock();
+
+    row2 = new Row();
+    blk4.add(row2);
+    pad = new Pad();
+    pad.setHeight(25);
+    row2.add(pad);
+
+    row2 = new Row();
+    blk4.add(row2);
+    Button b_group_camera_move_up = new Button("Up");
+    b_group_camera_move_up.setWidth(75);
+    row2.add(b_group_camera_move_up);
+
+    row2 = new Row();
+    blk4.add(row2);
+    Button b_group_camera_move_down = new Button("Down");
+    b_group_camera_move_down.setWidth(75);
+    row2.add(b_group_camera_move_down);
+
+    row.add(blk4);
 
     list.addChangedListener((Component x) -> {
       errmsg.setText("");
@@ -444,7 +467,7 @@ public class ConfigService implements WebUIHandler {
           String _name = camera_name.getText();
           _name = cleanName(_name);
           camera_name.setText(_name);
-          if (_name.length() == 0) {
+          if (_name.length() == 0 || _name.equals("new")) {
             errmsg.setText("Invalid Name");
             return;
           }
@@ -534,7 +557,7 @@ public class ConfigService implements WebUIHandler {
           String _name = group_name.getText();
           _name = cleanName(_name);
           group_name.setText(_name);
-          if (_name.length() == 0) {
+          if (_name.length() == 0 || _name.equals("new")) {
             errmsg.setText("Invalid Name");
             return;
           }
@@ -633,6 +656,62 @@ public class ConfigService implements WebUIHandler {
       update_group_lists(group, group_list_avail, group_list_selected);
     });
 
+    b_group_camera_move_up.addClickListener((MouseEvent e, Component button) -> {
+      String opt = list.getSelectedItem();
+      if (opt == null) opt = "group:new";
+      int idx = opt.indexOf(':');
+      String opt_type = opt.substring(0, idx);
+      String opt_name = opt.substring(idx+1);
+
+      Group group = null;
+
+      int group_cnt = Config.current.groups.length;
+      for(int a=0;a<group_cnt;a++) {
+        if (Config.current.groups[a].name.equals(opt_name)) {
+          group = Config.current.groups[a];
+          break;
+        }
+      }
+      if (group == null) {
+        group = (Group)client.getProperty("new_group");
+      }
+
+      int camidx = group_list_selected.getSelectedIndex();
+      if (camidx == 0) return;
+
+      group.moveUp(camidx);
+
+      update_group_lists(group, group_list_avail, group_list_selected);
+    });
+
+    b_group_camera_move_down.addClickListener((MouseEvent e, Component button) -> {
+      String opt = list.getSelectedItem();
+      if (opt == null) opt = "group:new";
+      int idx = opt.indexOf(':');
+      String opt_type = opt.substring(0, idx);
+      String opt_name = opt.substring(idx+1);
+
+      Group group = null;
+
+      int group_cnt = Config.current.groups.length;
+      for(int a=0;a<group_cnt;a++) {
+        if (Config.current.groups[a].name.equals(opt_name)) {
+          group = Config.current.groups[a];
+          break;
+        }
+      }
+      if (group == null) {
+        group = (Group)client.getProperty("new_group");
+      }
+
+      int camidx = group_list_selected.getSelectedIndex();
+      if (camidx == group.cameras.length - 1) return;
+
+      group.moveDown(camidx);
+
+      update_group_lists(group, group_list_avail, group_list_selected);
+    });
+
     PopupPanel popup = new PopupPanel("Confirm");
     popup.setModal(true);
     Label popup_label = new Label("Are you sure?");
@@ -719,13 +798,22 @@ public class ConfigService implements WebUIHandler {
     while (selected.count() > 0) {
       selected.remove(0);
     }
-    int cnt = Config.current.cameras.length;
-    for(int a=0;a<cnt;a++) {
-      Camera camera = Config.current.cameras[a];
-      if (group.contains(camera.name)) {
-        selected.add(camera.name);
-      } else {
-        avail.add(camera.name);
+    {
+      //update selected
+      int cnt = group.cameras.length;
+      for(int a=0;a<cnt;a++) {
+        String camera = group.cameras[a];
+        selected.add(camera);
+      }
+    }
+    {
+      //update available
+      int cnt = Config.current.cameras.length;
+      for(int a=0;a<cnt;a++) {
+        Camera camera = Config.current.cameras[a];
+        if (!group.contains(camera.name)) {
+          avail.add(camera.name);
+        }
       }
     }
   }
