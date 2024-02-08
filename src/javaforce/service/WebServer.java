@@ -23,6 +23,7 @@ public class WebServer {
   private Object clientsLock = new Object();
 
   public static boolean config_enable_gzip = true;
+  public static boolean debug = false;
 
   public boolean start(WebHandler api, int port, boolean secure) {
     this.api = api;
@@ -77,7 +78,7 @@ public class WebServer {
           }
           conn.start();
         } catch (SocketException e) {
-          JFLog.log("WebServer.Server:disconnected");
+          if (debug) JFLog.log("WebServer.Server:disconnected");
         } catch (Exception e) {
           JFLog.log(e);
         }
@@ -150,7 +151,7 @@ public class WebServer {
           s = null;
         }
       } catch (SocketException e) {
-        JFLog.log("WebServer.Connection:disconnected");
+        if (debug) JFLog.log("WebServer.Connection:disconnected");
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -285,7 +286,7 @@ public class WebServer {
           web.wsapi.doWebSocketMessage(socket, data, opcode);
         }
       } catch (SocketException e) {
-        JFLog.log("WebServer.Websocket:disconnected");
+        if (debug) JFLog.log("WebServer.Websocket:disconnected");
       } catch (Exception e) {
         JFLog.log(e);
       }
