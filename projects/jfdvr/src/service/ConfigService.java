@@ -518,6 +518,10 @@ public class ConfigService implements WebUIHandler {
               DVRService.dvrService.stopCamera(camera);
             }
             Config.current.renamedCamera(camera.name, _name);
+            int listIdx = list.getSelectedIndex();
+            list.remove(listIdx);
+            list.add(listIdx, "Camera:" + _name);
+            list.setSelectedIndex(listIdx);
           }
           camera.name = _name;
           camera.url = _url;
@@ -594,6 +598,10 @@ public class ConfigService implements WebUIHandler {
               }
             }
             if (group == null) break;
+            int listIdx = list.getSelectedIndex();
+            list.remove(listIdx);
+            list.add(listIdx, "Group:" + _name);
+            list.setSelectedIndex(listIdx);
           }
           group.name = _name;
           update_group_lists(group, group_list_avail, group_list_selected);

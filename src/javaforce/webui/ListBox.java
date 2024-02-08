@@ -47,6 +47,10 @@ public class ListBox extends ScrollPanel implements Click {
     add(new Label(item));
   }
 
+  public void add(int idx, String item) {
+    add(idx, new Label(item));
+  }
+
   public void add(Component item) {
     init(item);
     super.add(new Cell(item));
