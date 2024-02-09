@@ -30,7 +30,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public String tag_value;
   public boolean pos_edge;
 
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   public Camera() {
     name = "";

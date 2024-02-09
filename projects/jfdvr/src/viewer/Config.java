@@ -16,12 +16,31 @@ public class Config {
     nextPort += 2;
     return port;
   }
-  public static URL changeURL(String path) {
-    String host = Config.url.getHost();
-    int port = Config.url.getPort();
+  public static void createURL(String uri) {
     try {
+      int idx = uri.indexOf('@');
+      if (idx == -1) idx = 7;  //rtsp://
+      url = new URI("rtsp://user:password@" + uri.substring(idx)).toURL();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  public static void changeURL(String path) {
+    try {
+      String host = Config.url.getHost();
+      int port = Config.url.getPort();
+      url = new URI("rtsp://user:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  public static URL newURL(String path) {
+    try {
+      String host = Config.url.getHost();
+      int port = Config.url.getPort();
       return new URI("rtsp://user:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
     } catch (Exception e) {
+      e.printStackTrace();
       return null;
     }
   }

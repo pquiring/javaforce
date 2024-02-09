@@ -38,7 +38,7 @@ public class ViewerApp extends javax.swing.JFrame {
       String arg = args[0];
       panel = new Viewer();
       try {
-        Config.url = new URI(arg).toURL();
+        Config.createURL(arg);
         panel.play(Config.url);
       } catch (Exception e) {
         e.printStackTrace();
@@ -158,7 +158,7 @@ public class ViewerApp extends javax.swing.JFrame {
 
   public void selectView(String type, String name) {
     try {
-      Config.url = Config.changeURL("/" + type + "/" + name);
+      Config.changeURL("/" + type + "/" + name);
       panel = new Viewer();
       panel.play(Config.url);
     } catch (Exception e) {

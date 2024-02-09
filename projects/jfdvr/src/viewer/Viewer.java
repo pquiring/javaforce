@@ -392,7 +392,7 @@ public class Viewer {
       int px = 0;
       int py = 0;
       for(int a=0;a<count;a++) {
-        URL camurl = Config.changeURL("/camera/" + cameras[a]);
+        URL camurl = Config.newURL("/camera/" + cameras[a]);
         if (camurl == null) continue;
         NetworkReader nr = new NetworkReader(camurl);
         nr.setGrid(px, py);
