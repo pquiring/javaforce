@@ -182,6 +182,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void zoom(int x, int y) {
+    if (!grid) return;
     if (zoom) {
       zoom = false;
     } else {

@@ -225,7 +225,6 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
         }
         sess.id = Long.valueOf(sid);
       }
-      sess.headers = msg;
 
       int reply = getResponseType(msg);
       if (reply != -1) {
@@ -261,7 +260,6 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               String res = getHeader("response=", tags);
               String nonce = getHeader("nonce=", tags);
               sess.user = getHeader("username=", tags);
-              JFLog.log("user=" + sess.user);
               if ((nonce == null) || (sess.nonce == null) || (!sess.nonce.equals(nonce)) || (sess.user == null)) {
                 //send another 401
                 sess.nonce = getnonce();
