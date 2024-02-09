@@ -20,7 +20,7 @@ public class Config {
     try {
       int idx = uri.indexOf('@');
       if (idx == -1) idx = 7;  //rtsp://
-      url = new URI("rtsp://user:password@" + uri.substring(idx)).toURL();
+      url = new URI("rtsp://dvr:password@" + uri.substring(idx)).toURL();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -29,7 +29,7 @@ public class Config {
     try {
       String host = Config.url.getHost();
       int port = Config.url.getPort();
-      url = new URI("rtsp://user:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
+      url = new URI("rtsp://dvr:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -38,7 +38,7 @@ public class Config {
     try {
       String host = Config.url.getHost();
       int port = Config.url.getPort();
-      return new URI("rtsp://user:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
+      return new URI("rtsp://dvr:password@" + host + (port > 0 ? (":" + port) : "") + path).toURL();
     } catch (Exception e) {
       e.printStackTrace();
       return null;
