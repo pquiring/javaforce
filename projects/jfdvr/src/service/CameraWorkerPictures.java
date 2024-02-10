@@ -35,13 +35,22 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   private String tag_value = "";
   private String filename;
   private String last_filename;
-  private boolean viewer;
-  private boolean record;
+  private boolean isViewer;
+  private boolean isDecoder;
+  private boolean recording;
 
   private Controller controller;
 
   public Camera getCamera() {
     return camera;
+  }
+
+  public void setRecording(boolean state) {
+    recording = true;
+  }
+
+  public boolean isRecording() {
+    return recording;
   }
 
   private static class Recording {
@@ -57,12 +66,12 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  public CameraWorkerPictures(Camera camera, String url, boolean viewer, boolean record) {
+  public CameraWorkerPictures(Camera camera, String url, boolean isViewer, boolean isDecoder, CameraWorker viewer) {
     log = nextLog();
     this.url = url;
     this.cleanurl = HTTP.cleanURL(url);
-    this.viewer = viewer;
-    this.record = record;
+    this.isViewer = isViewer;
+    this.isDecoder = isDecoder;
     JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", false);
     JFLog.setRetention(log, 5);
     JFLog.log(log, "Camera=" + camera.name);
@@ -70,7 +79,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     path = Paths.videoPath + "/" + camera.name;
     max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
-    if (record) {
+    if (isDecoder) {
       preview_image = new JFImage(preview_x, preview_y);
       captured_image = new JFImage();
     }
@@ -138,7 +147,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
           JFLog.log(log, "delete recording:" + rec.file.getName());
         }
         //update preview
-        if (record && camera.viewing && camera.update_preview) {
+        if (isDecoder && camera.viewing && camera.update_preview) {
           if (captured_image != null) {
             if (!captured_image.loadJPG(last_filename)) {
               JFLog.log("failed to load last image");

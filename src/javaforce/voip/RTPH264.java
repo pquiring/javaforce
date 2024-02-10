@@ -11,9 +11,8 @@ package javaforce.voip;
  * @author pquiring
  */
 
-import java.util.*;
-
 import javaforce.*;
+import javaforce.media.*;
 
 public class RTPH264 extends RTPCodec {
 
@@ -202,13 +201,14 @@ public class RTPH264 extends RTPCodec {
     return lastseqnum + 1;
   }
 
-  public static byte get_nal_type(byte[] rtp, int offset) {
+  private static byte get_fu_type(byte[] rtp, int offset) {
     return (byte)(rtp[offset] & 0x1f);
   }
 
-  public static byte get_fu_type(byte[] rtp, int offset) {
-    return (byte)(rtp[offset] & 0x1f);
+  public static byte get_nal_type(byte[] packet, int offset) {
+    return (byte)(packet[offset] & 0x1f);
   }
+
 
   public static boolean isKeyFrame(byte type) {
     return type == 5;
@@ -222,6 +222,10 @@ public class RTPH264 extends RTPCodec {
     return type == 5 || type == 1;
   }
 
+  public static boolean isSPS(byte type) {
+    return type == 7;
+  }
+
   public static boolean canDecodePacket(byte type) {
     switch (type) {
       case 7:  //SPS
@@ -232,6 +236,18 @@ public class RTPH264 extends RTPCodec {
       default:
         return false;  //all others ignore
     }
+  }
+
+  public static CodecInfo getCodecInfo(Packet sps) {
+    MediaVideoDecoder decoder = new MediaVideoDecoder();
+    decoder.start(MediaCoder.AV_CODEC_ID_H264, 320, 200);
+    decoder.decode(sps.data, sps.offset, sps.length);  //ignore return
+    CodecInfo info = new CodecInfo();
+    info.width = decoder.getWidth();
+    info.height = decoder.getHeight();
+    info.fps = decoder.getFrameRate();
+    decoder.stop();
+    return info;
   }
 }
 

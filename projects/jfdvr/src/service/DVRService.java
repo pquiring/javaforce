@@ -99,27 +99,29 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public void startCamera(Camera camera) {
     boolean same = camera.url.equals(camera.url_low);
+    CameraWorker viewer = null;
     if (camera.url.length() > 0) {
-      startCamera(camera, camera.url, true, same || camera.url_low.length() == 0);
+      viewer = startCamera(camera, camera.url, true, same || camera.url_low.length() == 0, null);
     }
     if (camera.url_low.length() > 0 && !same) {
-      startCamera(camera, camera.url_low, camera.url.length() == 0, true);
+      startCamera(camera, camera.url_low, camera.url.length() == 0, true, viewer);
     }
   }
 
-  public void startCamera(Camera camera, String url, boolean viewer, boolean record) {
+  public CameraWorker startCamera(Camera camera, String url, boolean isViewer, boolean isDecoding, CameraWorker viewer) {
     System.out.println("Start Camera:" + camera.name);
     CameraWorker instance = null;
     switch (url.substring(0,4)) {
-      case "rtsp": instance = new CameraWorkerVideo(camera, url, viewer, record); break;
-      case "http": instance = new CameraWorkerPictures(camera, url, viewer, record); break;
+      case "rtsp": instance = new CameraWorkerVideo(camera, url, isViewer, isDecoding, viewer); break;
+      case "http": instance = new CameraWorkerPictures(camera, url, isViewer, isDecoding, viewer); break;
     }
     if (instance == null) {
       JFLog.log("Error:invalid camera:" + camera.name);
-      return;
+      return null;
     }
     instance.start();
     list.add(instance);
+    return instance;
   }
 
   public void stopCamera(Camera camera) {

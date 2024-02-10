@@ -10,4 +10,6 @@ public interface CameraWorker {
   public void cancel();
   public void reloadConfig();
   public Camera getCamera();
+  public void setRecording(boolean state);
+  public boolean isRecording();
 }
