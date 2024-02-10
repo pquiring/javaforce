@@ -321,6 +321,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     width = -1;
     height = -1;
     fps = -1;
+    f1 = false;
+    f2 = false;
     client = new RTSPClient();
     client.setLog(log);
     String user = null;
@@ -810,18 +812,16 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (width == -1 && height == -1) {
         width = decoder.getWidth();
         height = decoder.getHeight();
-        if (fps == -1) {
-          //should come from SDP
-          fps = decoder.getFrameRate();
-        }
-        JFLog.log(log, camera.name + " : detected width/height=" + width + "x" + height);
-        JFLog.log(log, camera.name + " : detected FPS=" + fps);
-        JFLog.log(log, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
-        if (width == -1 || height == -1) {
+        if (width == -1 || height == -1 || width == 0 || height == 0) {
           width = -1;
           height = -1;
           return;
         }
+        if (fps == -1) {
+          //should come from SDP
+          fps = decoder.getFrameRate();
+        }
+        JFLog.log(log, camera.name + " : detected : sizet=" + width + "x" + height + ":fps=" + fps);
         last_frame = new int[decoded_xy];
       }
       if (camera.record_motion) {
