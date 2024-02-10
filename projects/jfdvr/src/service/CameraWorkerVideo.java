@@ -706,9 +706,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           packets_encode.add(packet);
           if (!packets_encode.haveCompleteFrame()) return;
           fullPacket = packets_encode.getNextFrame();
-          CodecInfo info = RTPH264.getCodecInfo(packet);
+          CodecInfo info = RTPH264.getCodecInfo(fullPacket);
           packets_encode.removeNextFrame();
-          if (info == null) {
+          if (info == null || info.width == 0 || info.height == 0) {
             JFLog.log(log, "Error:Unable to determine stream info");
             return;
           }
@@ -736,8 +736,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           packets_encode.add(packet);
           if (!packets_encode.haveCompleteFrame()) return;
           fullPacket = packets_encode.getNextFrame();
-          CodecInfo info = RTPH265.getCodecInfo(packet);
-          if (info == null) {
+          CodecInfo info = RTPH265.getCodecInfo(fullPacket);
+          packets_encode.removeNextFrame();
+          if (info == null || info.width == 0 || info.height == 0) {
             JFLog.log(log, "Error:Unable to determine stream info");
             return;
           }
