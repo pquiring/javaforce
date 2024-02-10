@@ -13,8 +13,6 @@ package javaforce.voip;
  * @author pquiring
  */
 
-import java.util.*;
-
 public class RTPH263_1998 extends RTPCodec {
 
   private Packet packet;
@@ -25,6 +23,12 @@ public class RTPH263_1998 extends RTPCodec {
   private int seqnum;
   private int timestamp;
   private final int ssrc;
+
+  //RTP/H263 header bits
+  private static final int P = 0x20;  //picture start
+
+  //RTP header bits
+  private static final int M = 0x80;  //M bit
 
   public RTPH263_1998() {
     ssrc = random.nextInt();
@@ -46,11 +50,11 @@ public class RTPH263_1998 extends RTPCodec {
     int len = data.length;
     int packetLength;
     int offset = 0;
-    boolean P;  //was 0,0 stripped off?
+    boolean p;  //was 0,0 stripped off?
     while (len > 0) {
-      P = false;
+      p = false;
       if (len > 2 && data[offset] == 0 && data[offset + 1] == 0) {
-        P = true;
+        p = true;
         offset += 2;
         len -= 2;
       }
@@ -62,7 +66,7 @@ public class RTPH263_1998 extends RTPCodec {
       packet.length = packetLength + 12 + 2;  //12=RTP.length 2=rtp_h263+_header.length
       RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
       //build H.263 header (2 bytes)
-      packet.data[12] = (byte)(P ? 0x04 : 0x00);
+      packet.data[12] = (byte)(p ? 0x20 : 0x00);
 //      packet.data[13] = 0x00;
       System.arraycopy(data, offset, packet.data, 12 + 2, packetLength);
       offset += packetLength;
@@ -74,17 +78,20 @@ public class RTPH263_1998 extends RTPCodec {
   }
 
   /**
-   * Returns last full packet.
+   * Assembles RTP fragments into H263 packets.
    */
-//  public byte[] decode(byte rtp[]) {
   public void decode(byte[] rtp, int offset, int length, PacketReceiver pr) {
     if (rtp.length < 12 + 2) return;  //bad packet
     int h263Length = rtp.length - 12 - 2;
-    boolean P = (rtp[12] & 0x04) == 0x04;
-    int partialLength = packet.length;
+    boolean p = (rtp[12] & P) == P;
     //if P is true a 0,0 is left between last packet and this packet
-    System.arraycopy(rtp, 12 + 2, packet.data, partialLength + (P ? 2 : 0), h263Length);
-    if ((rtp[1] & 0x80) == 0x80) {  //RTP.M flag
+    System.arraycopy(rtp, 12 + 2, packet.data, packet.length + (p ? 2 : 0), h263Length);
+    if (p) {
+      packet.data[packet.length] = 0;
+      packet.data[packet.length + 1] = 0;
+    }
+    packet.length += h263Length;
+    if ((rtp[1] & M) == M) {
       pr.onPacket(packet);
       packet.length = 0;
     }
