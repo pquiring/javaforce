@@ -274,4 +274,7 @@ https://github.com/GStreamer/gstreamer/blob/main/subprojects/gst-plugins-bad/gst
 24-27 [unspecified]
    28 FU
 29-31 [unspecified]
+
+Typical sequence : 7 8 5 1...
+
 */

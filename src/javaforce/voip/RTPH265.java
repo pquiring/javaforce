@@ -277,7 +277,7 @@ public class RTPH265 extends RTPCodec {
 
   public static CodecInfo getCodecInfo(Packet sps) {
     MediaVideoDecoder decoder = new MediaVideoDecoder();
-    decoder.start(MediaCoder.AV_CODEC_ID_H264, 320, 200);
+    decoder.start(MediaCoder.AV_CODEC_ID_H265, 320, 200);
     decoder.decode(sps.data, sps.offset, sps.length);  //ignore return
     CodecInfo info = new CodecInfo();
     info.width = decoder.getWidth();
@@ -311,4 +311,7 @@ https://github.com/GStreamer/gstreamer/blob/main/subprojects/gst-plugins-good/gs
    49 FU (fragment NAL packet)
    50 PACI
 51-63 reserved?
+
+Typical sequence : 32 33 34 19 1...
+
 */

@@ -38,8 +38,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private long file_size;
   private long file_pos;
   private long folder_size;
-  private int width = -1, height = -1;
+  private int width = -1;
+  private int height = -1;
   private float fps = -1;
+  private boolean f1, f2;
   private long now;
   private boolean recording = false;
   private boolean recording_stop = false;
@@ -682,15 +684,35 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   }
 
   private void onPacketViewer(Packet packet) {
+    Packet fullPacket;
     if (debug_encoder) JFLog.log("onPacketViewer");
     try {
       if (width == -1 || height == -1) {
-        //decode width/height from SPS first
+        //decode one frame to get width/height
         if (h264 != null) {
-          byte type = RTPH264.get_nal_type(packet.data, packet.offset);
-          if (!RTPH264.isSPS(type)) return;
+          byte type = RTPH264.get_nal_type(packet.data, packet.offset + 4);
+          if (!f1) {
+            //wait for i frame
+            if (type == 1) {
+              f1 = true;
+            }
+            return;
+          }
+          if (!f2) {
+            //wait for next non i frame
+            if (type == 1) return;
+            f2 = true;
+          }
+          packets_encode.add(packet);
+          if (!packets_encode.haveCompleteFrame()) return;
+          fullPacket = packets_encode.getNextFrame();
           CodecInfo info = RTPH264.getCodecInfo(packet);
-          if (info == null) return;
+          packets_encode.removeNextFrame();
+          if (info == null) {
+            JFLog.log(log, "Error:Unable to determine stream info");
+            return;
+          }
+          JFLog.log("Viewer:dim=" + info.width + "x" + info.height + ":" + info.fps);
           this.width = info.width;
           this.height = info.height;
           if (fps == -1) {
@@ -698,10 +720,28 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           }
         }
         if (h265 != null) {
-          byte type = RTPH265.get_nal_type(packet.data, packet.offset);
-          if (!RTPH265.isSPS(type)) return;
+          byte type = RTPH265.get_nal_type(packet.data, packet.offset + 4);
+          if (!f1) {
+            //wait for i frame
+            if (type == 1) {
+              f1 = true;
+            }
+            return;
+          }
+          if (!f2) {
+            //wait for next non i frame
+            if (type == 1) return;
+            f2 = true;
+          }
+          packets_encode.add(packet);
+          if (!packets_encode.haveCompleteFrame()) return;
+          fullPacket = packets_encode.getNextFrame();
           CodecInfo info = RTPH265.getCodecInfo(packet);
-          if (info == null) return;
+          if (info == null) {
+            JFLog.log(log, "Error:Unable to determine stream info");
+            return;
+          }
+          JFLog.log("Viewer:dim=" + info.width + "x" + info.height + ":" + info.fps);
           this.width = info.width;
           this.height = info.height;
           if (fps == -1) {
@@ -719,7 +759,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (debug_encoder && key_frame) {
         JFLog.log(log, "encoder:key_frame=" + packets_encode.toString());
       }
-      Packet fullPacket;
       while (packets_encode.haveCompleteFrame()) {
         key_frame = packets_encode.isNextFrame_KeyFrame();
         fullPacket = packets_encode.getNextFrame();
