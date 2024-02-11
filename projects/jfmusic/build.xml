@@ -10,6 +10,10 @@
   <property name="version" value="0.9"/>
   <property name="ffmpeg_home" value="${home}/ffmpeg"/>
 
+  <property name="debian.depends" value="ffmpeg"/>
+  <property name="fedora.depends" value="ffmpeg"/>
+  <property name="arch.depends" value="ffmpeg"/>
+
   <property name="project2" value="build-midi"/>
 
   <import file="${home}/base.xml"/>
