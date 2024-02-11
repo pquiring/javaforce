@@ -571,13 +571,13 @@ bool try_jvm() {
       return false;
     }
     strcpy(javahome, java_home);
+    //remove /bin/java from javahome
+    char *_java = strrchr(javahome, '/');
+    *_java = 0;
+    char *_bin = strrchr(javahome, '/');
+    *_bin = 0;
   }
 
-  //remove /bin/java from javahome
-  char *_java = strrchr(javahome, '/');
-  *_java = 0;
-  char *_bin = strrchr(javahome, '/');
-  *_bin = 0;
   strcat(javahome, "/lib");
 
   //open libjvm.so
