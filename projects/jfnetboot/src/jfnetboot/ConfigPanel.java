@@ -556,7 +556,7 @@ public class ConfigPanel extends Panel {
         fos.write(new_config.getBytes());
         fos.close();
         Service.dhcp.close();
-        Service.dhcp = new DHCP();
+        Service.dhcp = new DHCPServer();
         Service.dhcp.setNotify(Service.tftp);
         Service.dhcp.start();
         msg.setText("Saved!");

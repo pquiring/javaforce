@@ -14,7 +14,7 @@ import java.net.*;
 import javaforce.*;
 import javaforce.service.*;
 
-public class TFTP extends Thread implements DHCP.Notify {
+public class TFTP extends Thread implements DHCPServer.Notify {
 
   public static boolean debugMsgs = false;
   public static boolean debugClient = false;
@@ -443,7 +443,7 @@ public class TFTP extends Thread implements DHCP.Notify {
   }
 
   public void dhcpEvent(int type, String mac, String ip, short arch) {
-    if (type == DHCP.DHCPREQUEST) {
+    if (type == DHCPServer.DHCPREQUEST) {
       registerClient(mac, ip, arch);
     }
   }

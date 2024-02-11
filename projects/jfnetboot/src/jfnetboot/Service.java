@@ -12,7 +12,7 @@ import javaforce.service.*;
 public class Service {
   public static TFTP tftp;
   public static ConfigService config;
-  public static DHCP dhcp;
+  public static DHCPServer dhcp;
 
   public static void main(String[] args) {
     serviceStart(args);
@@ -30,7 +30,7 @@ public class Service {
     Clients.init();
     tftp = new TFTP();
     tftp.start();
-    dhcp = new DHCP();
+    dhcp = new DHCPServer();
     dhcp.setNotify(tftp);
     dhcp.start();
     config = new ConfigService();
