@@ -39,14 +39,16 @@ function package {
   echo "<description>$1</description>" >> build.xml
   echo "<property name=\"app\" value=\"$2\"/>" >> build.xml
   echo "<property name=\"version\" value=\"$3\"/>" >> build.xml
+  echo "<property name=\"home\" value=\"..\"/>" >> build.xml
   echo "</project>" >> build.xml
-  java -cp ../javaforce.jar javaforce.utils.Gen$PKG $2 $3 ..
+  java -cp ../javaforce.jar javaforce.utils.Gen$PKG build.xml
   rm files.lst
   rm build.xml
 }
 
 detectos
 
+# Note : these versions must match ..\versions.xml
 package jcifs jfcifs 2.1.34
 package derby jfderby 10.16.1.1
 package sshd-core jfsshd-core 2.10.0
