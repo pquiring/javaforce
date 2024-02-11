@@ -71,7 +71,7 @@ bool loadProperties();
 
 /** Displays the error message in a dialog box. */
 void error(const char *msg) {
-  printf("Failed to start Java\nPlease visit www.java.com and install Java\nError:%s\n", msg);
+  printf("Failed to start Java\nError:%s\n", msg);
   exit(0);
 }
 
@@ -519,6 +519,9 @@ bool loadProperties() {
     else if (strncmp(ln1, "MAINCLASS=", 10) == 0) {
       strcpy(mainclass, ln1 + 10);
     }
+    else if (strncmp(ln1, "JAVA_HOME=", 10) == 0) {
+      strcpy(javahome, ln1 + 10);
+    }
     else if (strncmp(ln1, "METHOD=", 7) == 0) {
       strcpy(method, ln1 + 7);
     }
@@ -553,7 +556,22 @@ bool try_graal() {
 
 bool try_jvm() {
   //get java home
-  strcpy(javahome, resolvelink("/usr/bin/java"));
+
+  //try JAVA_HOME first
+  char* java_home;
+
+  java_home = getenv("JAVA_HOME");
+  if (java_home != NULL) {
+    strcpy(javahome, java_home);
+  } else {
+    //try /usr/bin/java
+    java_home = resolvelink("/usr/bin/java");
+    if (java_home == NULL) {
+      error("Unable to find java");
+      return false;
+    }
+    strcpy(javahome, java_home);
+  }
 
   //remove /bin/java from javahome
   char *_java = strrchr(javahome, '/');

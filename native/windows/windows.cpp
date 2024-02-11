@@ -76,9 +76,9 @@ bool loadProperties();
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
   char fullmsg[2048];
-  sprintf(fullmsg, "Failed to start Java\nPlease visit http://javaforce.sf.net/java for more info\nError:%s", msg);
+  sprintf(fullmsg, "Failed to start Java\nError:%s", msg);
 #ifndef _JF_SERVICE
-  MessageBox(NULL, fullmsg, "Java Virtual Machine Launcher", (MB_OK | MB_ICONSTOP | MB_APPLMODAL));
+  MessageBox(NULL, fullmsg, "Application Loader", (MB_OK | MB_ICONSTOP | MB_APPLMODAL));
 #else
   printf("%s", fullmsg);
 #endif
