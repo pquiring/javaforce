@@ -28,9 +28,9 @@ public class GenPkgInfo {
 
   public static void main(String[] args) {
     if (args == null || args.length < 3) {
-      System.out.println("genpkginfo : build linux package info files");
-      System.out.println("  Usage : jpkginfo distro archtype files.list");
-      System.out.println("    distro = debian fedora");
+      System.out.println("GenPkgInfo : build linux package info files");
+      System.out.println("  Usage : GenPkgInfo distro archtype files.list");
+      System.out.println("    distro = debian fedora arch");
       System.exit(1);
     }
     try {
