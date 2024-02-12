@@ -399,7 +399,7 @@ public class Viewer {
         nr.start();
         networkReaders[a] = nr;
         px++;
-        if (px == gx) {
+        if (px == grid_x) {
           px = 0;
           py++;
         }
