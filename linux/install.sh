@@ -63,19 +63,16 @@ function debian {
   apt -y install wget
 
   #configure JavaForce repository
-  cd /etc/apt/sources.list.d
   if [ ! -f javaforce.list ]; then
     echo Download javaforce.list
-    wget http://javaforce.sf.net/debian/$ARCH/javaforce.list
+    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$ARCH/javaforce.list
     chmod 644 javaforce.list
   fi
-  cd /etc/apt/trusted.gpg.d
   if [ ! -f javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget http://javaforce.sf.net/debian/$ARCH/javaforce.gpg
+    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$ARCH/javaforce.gpg
     chmod 644 javaforce.gpg
   fi
-  cd /
 
   apt update
   apt --yes install javaforce
@@ -98,13 +95,11 @@ function fedora {
   dnf -y install wget
 
   #configure JavaForce repository
-  cd /etc/yum.repos.d
   if [ ! -f javaforce.repo ]; then
     echo Download javaforce.repo
-    wget http://javaforce.sf.net/fedora/$HOSTTYPE/javaforce.repo
+    wget -NP /etc/yum.repos.d http://javaforce.sf.net/fedora/$HOSTTYPE/javaforce.repo
     chmod 644 javaforce.repo
   fi
-  cd /
 
   dnf update
   dnf -y install javaforce
@@ -139,12 +134,12 @@ function arch {
 
   if [ ! -f javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget http://javaforce.sf.net/arch/$HOSTTYPE/javaforce.gpg
+    wget -NP /tmp http://javaforce.sf.net/arch/$HOSTTYPE/javaforce.gpg
     chmod 644 javaforce.gpg
   fi
 
-  pacman-key --add javaforce.gpg
-  #gpg --show-key javaforce.gpg
+  pacman-key --add /tmp/javaforce.gpg
+  #gpg --show-key /tmp/javaforce.gpg
   pacman-key --lsign-key A67121E5285E7FE2290FCCB5DB9C4FA6AFF0CBDC
 
   #update everything
