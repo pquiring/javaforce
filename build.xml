@@ -9,9 +9,9 @@
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
 
-  <property name="debian.depends" value="default-jre        , jfcifs, jfmina, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l-0 , desktop-file-utils, libxcursor1"/>
-  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfmina, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l   , desktop-file-utils"/>
-  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfmina, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, v4l-utils, desktop-file-utils"/>
+  <property name="debian.depends" value="default-jre        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l-0 , desktop-file-utils, libxcursor1"/>
+  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l   , desktop-file-utils"/>
+  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, v4l-utils, desktop-file-utils"/>
 
   <property environment="env"/>
 
@@ -25,7 +25,6 @@
     <include name="log4j-1.2-api.jar"/>
     <include name="log4j-api.jar"/>
     <include name="log4j-core.jar"/>
-    <include name="mina-core.jar"/>
     <include name="slf4j-api.jar"/>
     <include name="slf4j-log4j12.jar"/>
     <include name="sshd-common.jar"/>
@@ -87,7 +86,6 @@
     <antcall target="jar-filters"/>
     <antcall target="jar-llrp"/>
     <antcall target="jar-jdom"/>
-    <antcall target="jar-mina1-core"/>
     <antcall target="jar-sshd-core"/>
     <antcall target="jar-sshd-common"/>
     <antcall target="jar-sshd-sftp"/>
