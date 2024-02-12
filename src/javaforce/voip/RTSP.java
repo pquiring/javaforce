@@ -26,7 +26,7 @@ public abstract class RTSP implements TransportInterface {
   protected Transport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
   public int log;
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   /**
    * Opens the transport and sets the RTSPInterface callback.
@@ -930,7 +930,7 @@ public abstract class RTSP implements TransportInterface {
       if (debug) JFLog.log("RTSP.Worker:start");
       while (active) {
         if (transport.error()) {
-          JFLog.log("RTSP:Transport:Error:" + this);
+          JFLog.log("RTSP:Transport:Error:server=" + server + ":Thread=" + this);
           active = false;
           break;
         }
