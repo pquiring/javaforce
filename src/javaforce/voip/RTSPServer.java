@@ -191,7 +191,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     synchronized (clientsLock) {
       sess = clients.get(id);
       if (sess == null) {
-        sess = new RTSPSession(localhost);
+        sess = new RTSPSession(localhost, localport);
         sess.remotehost = host;
         sess.remoteport = port;
         clients.put(id, sess);

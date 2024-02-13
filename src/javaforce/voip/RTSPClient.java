@@ -18,8 +18,6 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   private String user;  //username
   private String pass;  //password
   private RTSPClientInterface iface;
-  private String localhost;
-  private int localport;
   private static NAT nat = NAT.None;
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
   private static String stunHost, stunUser, stunPass;
@@ -75,7 +73,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       if (nat == NAT.STUN || nat == NAT.ICE) {
         stopSTUN();
       }
-      sess = new RTSPSession(localhost);
+      sess = new RTSPSession(localhost, localport);
       return super.init(localhost, localport, this, false, type);
     } catch (Exception e) {
       if (stun != null) stopSTUN();

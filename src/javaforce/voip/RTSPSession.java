@@ -8,11 +8,13 @@ package javaforce.voip;
 import java.net.*;
 
 public class RTSPSession {
-  public RTSPSession(String localhost) {
+  public RTSPSession(String localhost, int localport) {
     this.localhost = localhost;
+    this.localport = localport;
     extra = "";
   }
   public String localhost;
+  public int localport;
   public int cseq = 2;
   public long id = -1;
   public String uri;
@@ -46,6 +48,6 @@ public class RTSPSession {
   public String res_name;  //resource name
 
   public String toString() {
-    return "RTSPSession:{" + remotehost + ":" + remoteport + ":" + rtp + "}";
+    return "RTSPSession:{local=" + localport + ",remote=" + remotehost + ":" + remoteport + ":" + rtp + "}";
   }
 }

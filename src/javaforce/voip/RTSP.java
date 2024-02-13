@@ -26,8 +26,8 @@ public abstract class RTSP implements TransportInterface {
   private Random r = new Random();
   private boolean server;
   protected Transport transport;
-  private String localhost;
-  private int localport;
+  protected String localhost;
+  protected int localport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
   public int log;
   public static boolean debug = false;

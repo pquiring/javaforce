@@ -258,7 +258,7 @@ public class TransportTCPServer implements Transport {
           worker_error = true;
           worker_active = false;
           removeClient(host, port, id);
-          if (debug) JFLog.log("TransportTCPServer:disconnected");
+          if (debug) JFLog.log("TransportTCPServer:WorkerReader:disconnected");
         } catch (Exception e) {
           worker_error = true;
           worker_active = false;
