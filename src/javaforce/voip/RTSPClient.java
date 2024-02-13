@@ -448,4 +448,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
 
   public void onDisconnect(RTSP rtsp, String remoteip, int remoteport) {
   }
+
+  public String toString() {
+    return "RTSPClient:{remote=" + remotehost + ":" + remoteport + "}";
+  }
 }

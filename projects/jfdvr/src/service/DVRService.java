@@ -13,6 +13,7 @@ import javaforce.*;
 import javaforce.jni.*;
 import javaforce.media.*;
 import javaforce.voip.*;
+import javaforce.webui.*;
 
 public class DVRService extends Thread implements RTSPServerInterface {
   public static DVRService dvrService;
@@ -50,11 +51,18 @@ public class DVRService extends Thread implements RTSPServerInterface {
       //enable debug messages in sub-systems
       RTSP.debug = true;
       TransportTCPServer.debug = true;
+      WebUIServer.debug = true;
       debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
         if (rtspServer == null) return;
         RTSPSession[] sesses = rtspServer.getSessions();
+        debugState.write("*** Server Sessions ************");
         for(RTSPSession sess : sesses) {
           debugState.write(sess.toString());
+        }
+        Object[] workers = list.toArray();
+        debugState.write("*** Camera Sessions ************");
+        for(Object worker : workers) {
+          debugState.write(worker.toString());
         }
       }});
       debugState.start();
