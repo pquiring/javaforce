@@ -9,6 +9,7 @@ public class Packet {
   public byte[] data;
   public int offset;
   public int length;
-  public int port;
+
   public String host;
+  public int port;
 }

@@ -16,7 +16,8 @@ public abstract class RTSP implements TransportInterface {
   static {
     RTSPURL.register();
   }
-  private Worker worker;
+  private WorkerReader worker_reader;
+  private WorkerPacket worker_packet;
   private RTSPInterface iface;
   private boolean active = true;
   private String rinstance;
@@ -54,8 +55,12 @@ public abstract class RTSP implements TransportInterface {
         break;
     }
     if (!transport.open(localhost, localport, this)) return false;
-    worker = new Worker();
-    worker.start();
+    worker_reader = new WorkerReader();
+    worker_reader.start();
+    if (server) {
+      worker_packet = new WorkerPacket();
+      worker_packet.start();
+    }
     return true;
   }
 
@@ -69,12 +74,22 @@ public abstract class RTSP implements TransportInterface {
     active = false;
     transport.close();
     try {
-      worker.join();
+      worker_reader.join();
     } catch (Exception e) {
       e.printStackTrace();
     }
+    worker_reader = null;
+    if (server) {
+      worker_packet.cancel();
+      try {
+        worker_packet.join();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      worker_packet = null;
+    }
     transport = null;
-    worker = null;
+    worker_reader = null;
   }
 
   public void setLog(int id) {
@@ -924,7 +939,7 @@ public abstract class RTSP implements TransportInterface {
    * This thread handles reading incoming SIP packets and dispatches them thru
    * RTSPInterface.
    */
-  private class Worker extends Thread {
+  private class WorkerReader extends Thread {
     public void run() {
       setName("RTSP.Worker");
       if (debug) JFLog.log("RTSP.Worker:start");
@@ -943,11 +958,12 @@ public abstract class RTSP implements TransportInterface {
           if (pack.length <= 4) {
             continue;  //keep alive
           }
-          String[] msg = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
           if (server) {
-            WorkerPacket wp = new WorkerPacket(msg, pack.host, pack.port);
-            wp.start();
+            //RTSPServer
+            worker_packet.add(pack);
           } else {
+            //RTSPClient
+            String[] msg = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
             iface.onPacket(RTSP.this, msg, pack.host, pack.port);
           }
         } catch (Exception e) {
@@ -963,18 +979,34 @@ public abstract class RTSP implements TransportInterface {
    */
   private class WorkerPacket extends Thread {
 
-    private String[] msg;
-    private String host;
-    private int port;
-
-    public WorkerPacket(String[] msg, String host, int port) {
-      this.msg = msg;
-      this.host = host;
-      this.port = port;
-    }
+    private Object queueLock = new Object();
+    private ArrayList<Packet> queue = new ArrayList<>();
 
     public void run() {
-      iface.onPacket(RTSP.this, msg, host, port);
+      while (active) {
+        synchronized (queueLock) {
+          if (queue.size() > 0) {
+            Packet packet = queue.remove(0);
+            String[] msg = new String(packet.data, 0, packet.length).replaceAll("\r", "").split("\n", -1);
+            iface.onPacket(RTSP.this, msg, packet.host, packet.port);
+          } else {
+            try {queueLock.wait();} catch (Exception e) {}
+          }
+        }
+      }
+    }
+
+    public void add(Packet packet) {
+      synchronized (queueLock) {
+        queue.add(packet);
+        queueLock.notify();
+      }
+    }
+
+    public void cancel() {
+      synchronized (queueLock) {
+        queueLock.notify();
+      }
     }
   }
 
