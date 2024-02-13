@@ -952,11 +952,18 @@ public abstract class RTSP implements TransportInterface {
           active = false;
           break;
         }
+        Packet pack = null;
         try {
-          Packet pack = pool.alloc();
-          if (!transport.receive(pack)) continue;
+          pack = pool.alloc();
+          if (!transport.receive(pack)) {
+            pool.free(pack);
+            pack = null;
+            continue;
+          }
           if (debug) JFLog.log("RTSP:packet:host=" + pack.host);
           if (pack.length <= 4) {
+            pool.free(pack);
+            pack = null;
             continue;  //keep alive
           }
           if (server) {
@@ -970,6 +977,9 @@ public abstract class RTSP implements TransportInterface {
           }
         } catch (Exception e) {
           JFLog.log(log, e);
+          if (pack != null) {
+            pool.free(pack);
+          }
         }
       }
       if (debug) JFLog.log("RTSP.Worker:stop");
