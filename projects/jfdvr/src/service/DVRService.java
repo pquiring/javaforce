@@ -20,7 +20,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public static RTSPServer rtspServer;
   public static DebugState debugState;
 
-  public final static boolean debug = false;
+  public final static boolean debug = true;
   public Timer timer;
 
   public static void serviceStart(String args[]) {
@@ -47,6 +47,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
     Config.load();
     //create debug state
     if (debug) {
+      //enable debug messages in sub-systems
+      RTSP.debug = true;
+      TransportTCPServer.debug = true;
       debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
         if (rtspServer == null) return;
         RTSPSession[] sesses = rtspServer.getSessions();

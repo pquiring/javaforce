@@ -30,7 +30,7 @@ public abstract class RTSP implements TransportInterface {
   private int localport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
   public int log;
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   /**
    * Opens the transport and sets the RTSPInterface callback.

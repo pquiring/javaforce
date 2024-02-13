@@ -24,7 +24,7 @@ public class TransportTCPServer implements Transport {
   private static final int mtu = 1460;  //max size of packet
   private TransportInterface iface;
 
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   public String getName() { return "TCP"; }
 

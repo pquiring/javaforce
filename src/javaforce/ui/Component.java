@@ -27,7 +27,7 @@ public class Component implements KeyEvents, MouseEvents {
   protected boolean consumer = true;
 
   public static final Dimension zero = new Dimension();
-  public static final boolean debug = true;
+  public static boolean debug = false;
 
   public Component() {
     Theme theme = Theme.getTheme();
