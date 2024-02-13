@@ -834,6 +834,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     StringBuilder sb = new StringBuilder();
     sb.append("CameraWorker:{");
     sb.append(client);
+    sb.append(",");
+    sb.append(rtp);
     sb.append("}");
     return sb.toString();
   }
