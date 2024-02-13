@@ -26,6 +26,8 @@ public abstract class RTSP implements TransportInterface {
   private Random r = new Random();
   private boolean server;
   protected Transport transport;
+  private String localhost;
+  private int localport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
   public int log;
   public static boolean debug = true;
@@ -56,6 +58,8 @@ public abstract class RTSP implements TransportInterface {
         break;
     }
     if (!transport.open(localhost, localport, this)) return false;
+    this.localhost = localhost;
+    this.localport = localport;
     pool = new PacketPool(mtu);
     worker_reader = new WorkerReader();
     worker_reader.start();
@@ -948,7 +952,7 @@ public abstract class RTSP implements TransportInterface {
       if (debug) JFLog.log("RTSP.Worker:start");
       while (active) {
         if (transport.error()) {
-          JFLog.log("RTSP:Transport:Error:server=" + server + ":Thread=" + this);
+          JFLog.log("RTSP:Transport:Error:server=" + server + ":localport=" + localport);
           active = false;
           break;
         }
@@ -957,13 +961,11 @@ public abstract class RTSP implements TransportInterface {
           pack = pool.alloc();
           if (!transport.receive(pack)) {
             pool.free(pack);
-            pack = null;
             continue;
           }
           if (debug) JFLog.log("RTSP:packet:host=" + pack.host);
           if (pack.length <= 4) {
             pool.free(pack);
-            pack = null;
             continue;  //keep alive
           }
           if (server) {
