@@ -60,7 +60,21 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
 
   public void add_viewer(RTSPSession sess) {
     synchronized (viewersLock) {
-      viewers.add(sess);
+      if (viewers.contains(sess)) {
+        JFLog.log("DVR:Camera:RTSPSession:add_viewer:already exists:" + sess);
+      } else {
+        viewers.add(sess);
+      }
+    }
+  }
+
+  public void remove_viewer(RTSPSession sess) {
+    synchronized (viewersLock) {
+      if (viewers.contains(sess)) {
+        viewers.remove(sess);
+      } else {
+        JFLog.log("DVR:Camera:RTSPSession:remove_viewer:not found:" + sess);
+      }
     }
   }
 

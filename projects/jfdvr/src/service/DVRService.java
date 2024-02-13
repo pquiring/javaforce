@@ -333,7 +333,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
           for(int idx=0;idx<count;idx++) {
             RTSPSession sess = cam.viewers.get(idx);
             if (sess.ts < cut) {
-              cam.viewers.remove(sess);
+              cam.remove_viewer(sess);
               count--;
             } else {
               idx++;
