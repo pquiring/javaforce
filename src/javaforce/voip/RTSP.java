@@ -18,6 +18,7 @@ public abstract class RTSP implements TransportInterface {
   }
   private WorkerReader worker_reader;
   private WorkerPacket worker_packet;
+  private PacketPool pool;
   private RTSPInterface iface;
   private boolean active = true;
   private String rinstance;
@@ -55,6 +56,7 @@ public abstract class RTSP implements TransportInterface {
         break;
     }
     if (!transport.open(localhost, localport, this)) return false;
+    pool = new PacketPool(mtu);
     worker_reader = new WorkerReader();
     worker_reader.start();
     if (server) {
@@ -88,6 +90,7 @@ public abstract class RTSP implements TransportInterface {
       }
       worker_packet = null;
     }
+    pool = null;
     transport = null;
     worker_reader = null;
   }
@@ -950,9 +953,7 @@ public abstract class RTSP implements TransportInterface {
           break;
         }
         try {
-          byte[] data = new byte[mtu];
-          Packet pack = new Packet();
-          pack.data = data;
+          Packet pack = pool.alloc();
           if (!transport.receive(pack)) continue;
           if (debug) JFLog.log("RTSP:packet:host=" + pack.host);
           if (pack.length <= 4) {
@@ -963,8 +964,9 @@ public abstract class RTSP implements TransportInterface {
             worker_packet.add(pack);
           } else {
             //RTSPClient
-            String[] msg = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
+            String[] msg = new String(pack.data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
             iface.onPacket(RTSP.this, msg, pack.host, pack.port);
+            pool.free(pack);
           }
         } catch (Exception e) {
           JFLog.log(log, e);
@@ -989,6 +991,7 @@ public abstract class RTSP implements TransportInterface {
             Packet packet = queue.remove(0);
             String[] msg = new String(packet.data, 0, packet.length).replaceAll("\r", "").split("\n", -1);
             iface.onPacket(RTSP.this, msg, packet.host, packet.port);
+            pool.free(packet);
           } else {
             try {queueLock.wait();} catch (Exception e) {}
           }
