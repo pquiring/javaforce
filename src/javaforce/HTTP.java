@@ -18,7 +18,7 @@ public class HTTP {
   private HashMap<String, String> request_headers = new HashMap<>();
   private HashMap<String, String> reply_headers = new HashMap<>();
   private int code = -1;
-  protected static boolean debug = false;
+  public static boolean debug = false;
   private Progress progress;
 
   public static final String formType = "application/x-www-form-urlencoded";
@@ -158,10 +158,12 @@ public class HTTP {
   public boolean open(String host) {
     return open(host, 80);
   }
+
   public boolean open(String host, int port) {
     this.host = host;
     this.port = port;
     try {
+      if (debug) JFLog.log("HTTP.connect:" + host + ":" + port);
       s = new Socket(host, port);
       os = s.getOutputStream();
       is = s.getInputStream();
@@ -247,7 +249,7 @@ public class HTTP {
   }
 
   private void sendRequest(String req) throws Exception {
-    write(req.getBytes());
+    write(req.getBytes("UTF-8"));
   }
 
   private void sendData(byte[] data) throws Exception {
@@ -448,15 +450,22 @@ public class HTTP {
    * Writes content to OutputStream.
    */
   public boolean get(String url, OutputStream os) {
+    if (debug) {
+      JFLog.log("HTTP.get():" + url);
+    }
     code = -1;
     if (s == null) return false;
     StringBuilder req = new StringBuilder();
     req.append("GET " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
     req.append("Content-Length: 0\r\n");
+    req.append("Accept: */*\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
     req.append("\r\n");
+    if (debug) {
+      JFLog.log("request=" + req.toString());
+    }
     try {
       sendRequest(req.toString());
       return getReply(os);
@@ -493,6 +502,7 @@ public class HTTP {
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
     req.append("Content-Length: " + data.length + "\r\n");
     req.append("Content-Type: " + mimeType + "\r\n");
+    req.append("Accept: */*\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
     req.append("\r\n");

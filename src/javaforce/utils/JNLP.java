@@ -29,7 +29,7 @@ import javaforce.*;
 
 public class JNLP {
   private static boolean debug = false;
-  private static String version = "0.4";
+  private static String version = "0.5";
   public static void main(String[] args) {
     if (args == null || args.length < 1) {
       System.out.println("Desc: JavaForce JNLP Launcher/" + version);
@@ -40,10 +40,21 @@ public class JNLP {
       return;
     }
     boolean wait = true;
-    if (args.length > 1) {
-      if (args[1].equals("--nowait")) {
-        wait = false;
+    for(int idx = 0;idx<args.length;idx++) {
+      String arg = args[idx];
+      switch (arg) {
+        case "--nowait": {
+          wait = false;
+          break;
+        }
+        case "--debug": {
+          debug = true;
+          break;
+        }
       }
+    }
+    if (debug) {
+      System.out.println("JavaForce JNLP Launcher/" + version);
     }
     try {
       XML xml = new XML();
@@ -57,13 +68,16 @@ public class JNLP {
       String codebase = jnlp.getArg("codebase");
       if (codebase == null) throw new Exception("no codebase attr");
       //split codebase into host/uri
+      int port = -1;
       String proto = "";
       if (codebase.startsWith("http://")) {
         proto = "http";
         codebase = codebase.substring(7);
+        port = 80;
       } else if (codebase.startsWith("https://")) {
         proto = "https";
         codebase = codebase.substring(8);
+        port = 443;
       } else {
         throw new Exception("Unknown protocol");
       }
@@ -81,7 +95,6 @@ public class JNLP {
         }
       }
       if (debug) JFLog.log("host=" + host);
-      int port = 80;
       int i1 = host.indexOf(':');
       if (i1 != -1) {
         if (debug) JFLog.log("port=" + host.substring(i1 + 1));
@@ -96,8 +109,10 @@ public class JNLP {
       for(int i2=0;i2<rescnt;i2++) {
         XML.XMLTag child = res.getChildAt(i2);
         switch (child.name) {
+          case "nativelib":
           case "jar":
             String jar = child.getArg("href");
+            if (debug) JFLog.log("jar=" + jar);
             jars.add(jar);
             int i3 = jar.lastIndexOf('/');
             if (i3 != -1) {
@@ -109,6 +124,7 @@ public class JNLP {
           case "property":
             String name = child.getArg("name");
             String value = child.getArg("value");
+            if (debug) JFLog.log("property:" + name + "=" + value);
             cmd.add("-D" + name + "=" + value);
             break;
           default:
@@ -123,11 +139,15 @@ public class JNLP {
       cmd.add(main);
       //download jar files
       for(String jar : jars) {
-        if (debug) break;
         HTTP http = null;
         switch (proto) {
           case "http": http = new HTTP(); break;
           case "https": http = new HTTPS(); break;
+        }
+        if (debug) {
+          JFLog.log("Downloading:" + host + ":" + port + uri + jar);
+          http.debug = true;
+          JFLog.log("http=" + http);
         }
         http.open(host, port);
         byte[] data = http.get(uri + jar);
@@ -165,6 +185,7 @@ JNLP Layout:
 <jnlp codebase="http://..." ...>
   <resources>
     <jar href="relpath/file.jar" .../>
+    <nativelib href="relpath/file.jar" .../>
     <property name="..." value="..."/>
   </resources>
   <application-desc main-class="package.class" .../>
