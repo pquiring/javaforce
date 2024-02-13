@@ -49,4 +49,8 @@ public class PacketPool {
       avail.add(packet);
     }
   }
+
+  public int count() {
+    return avail.size() + inuse.size();
+  }
 }

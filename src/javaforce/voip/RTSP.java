@@ -1032,4 +1032,8 @@ public abstract class RTSP implements TransportInterface {
   public void onDisconnect(String host, int port) {
     iface.onDisconnect(this, host, port);
   }
+
+  public int getPacketPoolSize() {
+    return pool.count();
+  }
 }
