@@ -46,6 +46,6 @@ public class RTSPSession {
   public String res_name;  //resource name
 
   public String toString() {
-    return "RTSPSession{" + remotehost + ":" + remoteport + "}";
+    return "RTSPSession:{" + remotehost + ":" + remoteport + ":" + rtp + "}";
   }
 }

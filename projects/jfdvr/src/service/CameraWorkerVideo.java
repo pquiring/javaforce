@@ -156,16 +156,11 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     public long time;
   }
 
-  private static int next_log = 1;
-  private static synchronized int nextLog() {
-    return next_log++;
-  }
-
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
   public CameraWorkerVideo(Camera camera, String url, boolean isViewer, boolean isDecoding, CameraWorker viewer) {
     JFLog.log("CameraWorkerVideo:" + url + ":viewer=" + isViewer + ":decoding=" + isDecoding);
-    log = nextLog();
+    log = Config.nextLog();
     this.url = url;
     this.isViewer = isViewer;
     this.isDecoding = isDecoding;

@@ -116,13 +116,16 @@ public class SDP implements Cloneable {
     }
     public String toString() {
       StringBuilder sb = new StringBuilder();
-      sb.append(type);
-      sb.append(",");
-      sb.append(mode);
+      sb.append("Stream:{");
+      sb.append("ip=" + getIP());
+      sb.append(",port=" + getPort());
+      sb.append(",type=" + type);
+      sb.append(",mode=" + mode);
       sb.append(",codecs={");
       for(Codec codec : codecs) {
         sb.append(codec);
       }
+      sb.append("}");
       sb.append("}");
       return sb.toString();
     }

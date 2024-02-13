@@ -515,11 +515,12 @@ public class RTP implements STUN.Listener {
   }
 
   public String toString() {
-    int remoteport = -1;
-    RTPChannel channel = getDefaultChannel();
-    if (channel != null) {
-      remoteport = channel.getremoteport();
+    StringBuilder sb = new StringBuilder();
+    sb.append("RTP:{localport=" + localrtpport + ",channels:{");
+    for(RTPChannel ch : channels) {
+      sb.append(ch.toString());
     }
-    return "RTP:{localport=" + localrtpport + ",remoteport=" + remoteport + ",mode=" + rawMode + "}";
+    sb.append("}}");
+    return sb.toString();
   }
 }

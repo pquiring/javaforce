@@ -537,6 +537,6 @@ public class RTPChannel {
   }
 
   public String toString() {
-    return "RTPChannel:{src=" + ssrc_src + ",dst=" + ssrc_dst + ",ip=" + stream.getIP() + ":" + stream.getPort() + "}";
+    return "RTPChannel:{src=" + ssrc_src + ",dst=" + ssrc_dst + "," + stream + "}";
   }
 }

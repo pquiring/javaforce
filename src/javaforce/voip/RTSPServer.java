@@ -200,6 +200,11 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     return sess;
   }
 
+  private static RTSPSession[] RTSPSessionArrayType = new RTSPSession[0];
+  public RTSPSession[] getSessions() {
+    return clients.values().toArray(RTSPSessionArrayType);
+  }
+
   /**
    * Processes RTSP messages sent from clients.
    */

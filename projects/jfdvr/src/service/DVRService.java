@@ -18,6 +18,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public static DVRService dvrService;
   public static ConfigService configService;
   public static RTSPServer rtspServer;
+  public static DebugState debugState;
 
   public final static boolean debug = false;
   public Timer timer;
@@ -44,6 +45,17 @@ public class DVRService extends Thread implements RTSPServerInterface {
     Paths.init();
     //load current config
     Config.load();
+    //create debug state
+    if (debug) {
+      debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
+        if (rtspServer == null) return;
+        RTSPSession[] sesses = rtspServer.getSessions();
+        for(RTSPSession sess : sesses) {
+          debugState.write(sess.toString());
+        }
+      }});
+      debugState.start();
+    }
     //start config service
     configService = new ConfigService();
     configService.start();
@@ -94,6 +106,10 @@ public class DVRService extends Thread implements RTSPServerInterface {
         e.printStackTrace();
       }
       configService = null;
+    }
+    if (debugState != null) {
+      debugState.cancel();
+      debugState = null;
     }
   }
 
