@@ -171,6 +171,17 @@ public class JNLP {
       for(String jar : nativelibs_jars) {
         unzip(jar, ".");
       }
+      //add arguments
+      int argcnt = app.getChildCount();
+      for(int i2=0;i2<argcnt;i2++) {
+        XML.XMLTag child = app.getChildAt(i2);
+        switch (child.name) {
+          case "argument":
+            String arg = child.content;
+            cmd.add(arg);
+            break;
+        }
+      }
       //launch jnlp
       if (debug) {
         JFLog.log("executing jnlp:");
