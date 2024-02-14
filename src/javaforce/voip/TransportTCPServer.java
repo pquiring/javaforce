@@ -117,8 +117,8 @@ public class TransportTCPServer implements Transport {
         if (packets.size() == 0) continue;
         Packet tmp = packets.remove(0);
         System.arraycopy(tmp.data, 0, packet.data, 0, mtu);
-        packet.host = tmp.host;
         packet.length = tmp.length;
+        packet.host = tmp.host;
         packet.port = tmp.port;
         return true;
       }
@@ -250,6 +250,9 @@ public class TransportTCPServer implements Transport {
           packet.host = hostaddr.getHostAddress();
           packet.port = port;
 
+          if (debug) {
+            JFLog.log("TransportTCPServer:got packet from " + host + ":" + port);
+          }
           synchronized(packetsLock) {
             packets.add(packet);
             packetsLock.notify();
@@ -257,12 +260,10 @@ public class TransportTCPServer implements Transport {
         } catch (SocketException se) {
           worker_error = true;
           worker_active = false;
-          removeClient(host, port, id);
           if (debug) JFLog.log("TransportTCPServer:WorkerReader:disconnected");
         } catch (Exception e) {
           worker_error = true;
           worker_active = false;
-          removeClient(host, port, id);
           if (debug) JFLog.log(e);
         }
       }
