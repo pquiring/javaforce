@@ -1062,6 +1062,23 @@ public abstract class SIP implements TransportInterface {
     }
   }
 
+  /** Converts xml style parameters to HTTP style parameters while removing quotes around value.
+   * example in: key1="value1" key2="value2" ...
+   * example out: [key1: value1] [key2: value2]
+   */
+  public static String[] convertParameters(String ln) {
+    String[] params = JF.splitQuoted(ln, ' ');
+    for(int idx = 0;idx<params.length;idx++) {
+      String param = params[idx];
+      int i = param.indexOf('=');
+      if (i == -1) continue;
+      String key = param.substring(0, idx);
+      String value = param.substring(idx+1).replaceAll("\"", "");
+      params[idx] = key + ": " + value;
+    }
+    return params;
+  }
+
   public void onConnect(String host, int port) {}
   public void onDisconnect(String host, int port) {}
 }
