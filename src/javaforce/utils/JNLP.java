@@ -193,12 +193,14 @@ public class JNLP {
     ZipEntry entry = zipIn.getNextEntry();
     // iterates over entries in the zip file
     while (entry != null) {
-      String filePath = destDirectory + File.separator + entry.getName();
+      if (debug) JFLog.log("entry=" + entry.getName());
+      String filePath = destDirectory + '/' + entry.getName().replaceAll("\\\\", "/");
       if (!entry.isDirectory()) {
         // if the entry is a file, extracts it
         extractFile(zipIn, filePath);
       } else {
         // if the entry is a directory, make the directory
+        if (debug) JFLog.log("mkdir:" + filePath);
         File dir = new File(filePath);
         dir.mkdirs();
       }
@@ -208,8 +210,14 @@ public class JNLP {
     zipIn.close();
   }
   private static final int BUFFER_SIZE = 4096;
-  private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+  private static void extractFile(ZipInputStream zipIn, String path_file) throws IOException {
+    if (debug) JFLog.log("extractFile:" + path_file);
+    int idx = path_file.lastIndexOf('/');
+    String path = path_file.substring(0, idx);
+    if (debug) JFLog.log("mkdirs:" + path);
+    File dir = new File(path);
+    dir.mkdirs();
+    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(path_file));
     byte[] bytesIn = new byte[BUFFER_SIZE];
     int read = 0;
     while ((read = zipIn.read(bytesIn)) != -1) {
