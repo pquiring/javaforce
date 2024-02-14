@@ -2,12 +2,13 @@ package javaforce.utils;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.*;
 
 import javaforce.*;
 
 /** JNLP Very Basic Launcher
  *
- * Usage : JNLP file.jnlp [--nowait]
+ * Usage : JNLP file.jnlp [--nowait] [--debug]
  *
  * Supports:
  *  - jnlp,codebase
@@ -29,7 +30,7 @@ import javaforce.*;
 
 public class JNLP {
   private static boolean debug = false;
-  private static String version = "0.5";
+  private static String version = "0.6";
   public static void main(String[] args) {
     if (args == null || args.length < 1) {
       System.out.println("Desc: JavaForce JNLP Launcher/" + version);
@@ -101,8 +102,9 @@ public class JNLP {
         port = Integer.valueOf(host.substring(i1 + 1));
         host = host.substring(0, i1);
       }
-      ArrayList<String> jars = new ArrayList<String>();
-      ArrayList<String> files = new ArrayList<String>();
+      ArrayList<String> res_jars = new ArrayList<String>();
+      ArrayList<String> classpath_jars = new ArrayList<String>();
+      ArrayList<String> nativelibs_jars = new ArrayList<String>();
       ArrayList<String> cmd = new ArrayList<String>();
       cmd.add(System.getProperty("java.home") + "/bin/java");
       int rescnt = res.getChildCount();
@@ -113,13 +115,15 @@ public class JNLP {
           case "jar":
             String jar = child.getArg("href");
             if (debug) JFLog.log("jar=" + jar);
-            jars.add(jar);
+            res_jars.add(jar);
             int i3 = jar.lastIndexOf('/');
             if (i3 != -1) {
-              files.add(jar.substring(i3+1));
-            } else {
-              files.add(jar);
+              jar = jar.substring(i3+1);
             }
+            if (child.name.equals("jar"))
+              classpath_jars.add(jar);
+            else
+              nativelibs_jars.add(jar);
             break;
           case "property":
             String name = child.getArg("name");
@@ -133,12 +137,12 @@ public class JNLP {
         }
       }
       String main = app.getArg("main-class");
-      String classpath = String.join(File.pathSeparator, files);
+      String classpath = String.join(File.pathSeparator, classpath_jars);
       cmd.add("-cp");
       cmd.add(classpath);
       cmd.add(main);
       //download jar files
-      for(String jar : jars) {
+      for(String jar : res_jars) {
         HTTP http = null;
         switch (proto) {
           case "http": http = new HTTP(); break;
@@ -163,6 +167,10 @@ public class JNLP {
         fos.write(data);
         fos.close();
       }
+      //extract nativelib jars
+      for(String jar : nativelibs_jars) {
+        unzip(jar, ".");
+      }
       //launch jnlp
       if (debug) {
         JFLog.log("executing jnlp:");
@@ -175,6 +183,39 @@ public class JNLP {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+  public static void unzip(String zipFilePath, String destDirectory) throws IOException {
+    File destDir = new File(destDirectory);
+    if (!destDir.exists()) {
+      destDir.mkdir();
+    }
+    ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+    ZipEntry entry = zipIn.getNextEntry();
+    // iterates over entries in the zip file
+    while (entry != null) {
+      String filePath = destDirectory + File.separator + entry.getName();
+      if (!entry.isDirectory()) {
+        // if the entry is a file, extracts it
+        extractFile(zipIn, filePath);
+      } else {
+        // if the entry is a directory, make the directory
+        File dir = new File(filePath);
+        dir.mkdirs();
+      }
+      zipIn.closeEntry();
+      entry = zipIn.getNextEntry();
+    }
+    zipIn.close();
+  }
+  private static final int BUFFER_SIZE = 4096;
+  private static void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+    byte[] bytesIn = new byte[BUFFER_SIZE];
+    int read = 0;
+    while ((read = zipIn.read(bytesIn)) != -1) {
+      bos.write(bytesIn, 0, read);
+    }
+    bos.close();
   }
 }
 
