@@ -23,7 +23,9 @@ import javaforce.*;
  * On Windows the --nowait may be required.
  * On Linux the --nowait should not be used.
  *
- * Tested with Inductive Automation : Ignition v7.x
+ * Tested with:
+ *  - Inductive Automation : Ignition v7.x
+ *  - FCA BlueZone716
  *
  * @author pquiring
  */
