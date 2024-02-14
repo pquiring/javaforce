@@ -71,7 +71,6 @@ public class TransportTCPServer implements Transport {
 
   private void addClient(String host, int port, String id, Socket socket) {
     if (debug) JFLog.log("Transport:addClient:" + id);
-    iface.onConnect(host, port);
     synchronized(clientsLock) {
       if (clients.containsKey(id)) {
         JFLog.log("Error:TrannsportTCPServer:addClient:already exists:" + id);
@@ -79,6 +78,7 @@ public class TransportTCPServer implements Transport {
         clients.put(id, socket);
       }
     }
+    iface.onConnect(host, port);
   }
 
   public boolean send(byte[] data, int off, int len, InetAddress hostaddr, int port) {

@@ -108,6 +108,7 @@ public abstract class RTSP implements TransportInterface {
    */
   protected boolean send(InetAddress remote, int remoteport, String datastr) {
     byte[] data = datastr.getBytes();
+    if (debug) JFLog.log("RTSP:send:remote=" + remote.getHostAddress() + ":" + remoteport);
     return transport.send(data, 0, data.length, remote, remoteport);
   }
 

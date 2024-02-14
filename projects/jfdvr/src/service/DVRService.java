@@ -52,6 +52,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       RTSP.debug = true;
       TransportTCPServer.debug = true;
       WebUIServer.debug = true;
+      CameraWorkerVideo.debug = true;
       debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
         if (rtspServer == null) return;
         RTSPSession[] sesses = rtspServer.getSessions();
@@ -266,14 +267,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
     sess.ts = System.currentTimeMillis();
     try {
       String action = HTTP.getParameter(params, "action");
-      JFLog.log("onGetParameter:uri=" + sess.uri + ":action=" + action);
+      if (debug) JFLog.log("onGetParameter:uri=" + sess.uri + ":action=" + action);
       if (action.equals("query")) {
         URL url = new URI(sess.uri).toURL();
         String path = url.getPath();  // / type / name
         String[] type_name = path.split("/");
         String type = type_name[1];
         String name = type_name[2];
-        JFLog.log("query:" + type + "/" + name);
+        if (debug) JFLog.log("DVRService:query:" + type + "/" + name + ":" + sess.remotehost + ":" + sess.remoteport);
         sess.params = null;
         switch (type) {
           case "list": sess.params = get_list_all(name); break;
@@ -284,6 +285,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         server.reply(sess, 200, "OK");
         sess.params = null;
       } else {
+        if (debug) JFLog.log("DVRService:ack keep-alive:" + sess.remotehost + ":" + sess.remoteport);
         sess.params = new String[] {"type: keep-alive"};
         server.reply(sess, 200, "OK");
         sess.params = null;

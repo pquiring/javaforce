@@ -20,12 +20,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private long max_file_size;  //in bytes
   private long max_folder_size;  //in bytes
 
-  private final static boolean debug = false;
-  private final static boolean debug_encoder = false;
-  private final static boolean debug_buffers = false;
-  private final static boolean debug_motion = false;
-  private final static boolean debug_motion_image = false;
-  private final static boolean debug_short_clips = false;
+  public static boolean debug = false;
+  private static boolean debug_encoder = false;
+  private static boolean debug_buffers = false;
+  private static boolean debug_motion = false;
+  private static boolean debug_motion_image = false;
+  private static boolean debug_short_clips = false;
 
   private RTSPClient client;
   private RTP rtp;
@@ -682,7 +682,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void onPacketViewer(Packet packet) {
     Packet fullPacket;
-    if (debug_encoder) JFLog.log("onPacketViewer");
+    if (debug) JFLog.log("onPacketViewer");
     try {
       if (width == -1 || height == -1) {
         //decode one frame to get width/height
