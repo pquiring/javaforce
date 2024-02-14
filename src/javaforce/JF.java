@@ -249,6 +249,22 @@ public class JF {
     }
   }
 
+  public static String getExecExt() {
+    if (isWindows()) {
+      return ".exe";
+    } else {
+      return "";
+    }
+  }
+
+  public static String getScriptExt() {
+    if (isWindows()) {
+      return ".bat";
+    } else {
+      return ".sh";
+    }
+  }
+
   public static void printEnvironment() {
     Map<String, String> env = System.getenv();
 

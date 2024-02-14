@@ -174,9 +174,12 @@ public class JNLP {
       //launch jnlp
       if (debug) {
         JFLog.log("executing jnlp:");
+        FileOutputStream fos = new FileOutputStream("execute" + JF.getScriptExt());
         for(String c : cmd) {
+          fos.write(c.getBytes());
           JFLog.log(c);
         }
+        fos.close();
       }
       Process p = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]));
       if (wait) p.waitFor();
