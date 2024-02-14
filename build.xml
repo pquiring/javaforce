@@ -137,6 +137,7 @@
       <include name="javaforce/HTTPS.java"/>
       <include name="javaforce/XML.java"/>
       <include name="javaforce/utils/JNLP.java"/>
+      <include name="javax/jnlp/*.java"/>
     </javac>
   </target>
 
