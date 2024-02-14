@@ -69,14 +69,14 @@ public class TransportTCPServer implements Transport {
     }
   }
 
-  private void addClient(String host, int port, String id) {
+  private void addClient(String host, int port, String id, Socket socket) {
     if (debug) JFLog.log("Transport:addClient:" + id);
     iface.onConnect(host, port);
     synchronized(clientsLock) {
       if (clients.containsKey(id)) {
         JFLog.log("Error:TrannsportTCPServer:addClient:already exists:" + id);
       } else {
-        clients.remove(id);
+        clients.put(id, socket);
       }
     }
   }
@@ -85,7 +85,7 @@ public class TransportTCPServer implements Transport {
     String host = hostaddr.getHostAddress();
     String id = host + ":" + port;
     Socket socket;
-    if (debug) JFLog.log("Transport:get:" + id);
+    if (debug) JFLog.log("TransportTCPServer:get:" + id);
     synchronized(clientsLock) {
       socket = clients.get(id);
     }
@@ -129,7 +129,7 @@ public class TransportTCPServer implements Transport {
   private Socket connect(InetAddress hostaddr, int port, String id) throws Exception {
     Socket socket = new Socket(hostaddr, port);
     if (debug) JFLog.log("Transport:put:" + id);
-    addClient(hostaddr.getHostAddress(), port, id);
+    addClient(hostaddr.getHostAddress(), port, id, socket);
     return socket;
   }
 
@@ -143,7 +143,7 @@ public class TransportTCPServer implements Transport {
           String host = hostaddr.getHostAddress();
           int port = socket.getPort();
           String id = host + ":" + port;
-          addClient(host, port, id);
+          addClient(host, port, id, socket);
           new WorkerReader(socket, id, hostaddr, port).start();
         } catch (SocketException e) {
           if (debug) JFLog.log("TransportTCPServer.WorkerAccepter:disconnected");
