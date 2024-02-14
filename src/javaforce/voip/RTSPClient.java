@@ -113,9 +113,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   }
 
   /**
-   * Send an empty RTSP message to server. This should be done periodically to
-   * keep firewalls open. Most routers close UDP connections after 60 seconds.
-   * Not sure if needed with TCP/TLS but is done anyways.
+   * Send an empty RTSP message to server.
+   * This MUST be done periodically to keep firewalls open.
+   * Most routers close UDP connections after 60 seconds.
+   * Cameras will disconnect after 60 seconds.
    */
   public void keepalive(String url) {
     get_parameter(RTSPURL.cleanURL(url), null);

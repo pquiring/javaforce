@@ -23,7 +23,7 @@ public class Viewer {
   private int grid_x, grid_y, grid_xy;
   private boolean playing;
 
-  public static boolean debug = false;
+  public static boolean debug = true;
   private final static boolean debug_buffers = false;
 
   /** Play a network source directly. */
@@ -83,7 +83,6 @@ public class Viewer {
     private RTPH265 h265;
     private PacketBuffer packets;
     private long lastPacket;
-    private long now;
     private long lastKeepAlive;
     private int decoded_frame[];
     private int decoded_x, decoded_y, decoded_xy;
@@ -504,7 +503,6 @@ public class Viewer {
           }
         }
         packets.removeNextFrame();
-        now = lastPacket;
       } catch (Exception e) {
         JFLog.log(log, e);
       }
