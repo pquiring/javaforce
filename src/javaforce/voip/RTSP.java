@@ -949,7 +949,7 @@ public abstract class RTSP implements TransportInterface {
   private class WorkerReader extends Thread {
     public void run() {
       setName("RTSP.Worker");
-      if (debug) JFLog.log("RTSP.Worker:start");
+      if (debug) JFLog.log("RTSP.Worker:start:local=" + localport);
       while (active) {
         if (transport.error()) {
           JFLog.log("RTSP:Transport:Error:server=" + server + ":localport=" + localport);
@@ -984,7 +984,7 @@ public abstract class RTSP implements TransportInterface {
           }
         }
       }
-      if (debug) JFLog.log("RTSP.Worker:stop");
+      if (debug) JFLog.log("RTSP.Worker:stop:local=" + localport);
     }
   }
 
