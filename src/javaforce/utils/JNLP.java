@@ -177,6 +177,7 @@ public class JNLP {
         FileOutputStream fos = new FileOutputStream("execute" + JF.getScriptExt());
         for(String c : cmd) {
           fos.write(c.getBytes());
+          fos.write(" ".getBytes());
           JFLog.log(c);
         }
         fos.close();
