@@ -144,19 +144,7 @@ public class Viewer {
           playThread = new PlayVideoOnlyThread();
           playThread.start();
         }
-        lastKeepAlive = System.currentTimeMillis();
         while (playing) {
-          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
-            preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
-            int sleep;
-            if (fps > 0) {
-              sleep = 1000 / (int)fps;
-            } else {
-              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
-            }
-            JF.sleep(sleep);
-            continue;
-          }
           long now = System.currentTimeMillis();
           if (now - lastPacket > 10*1000) {
             JFLog.log(log, "NetworkReader : Reconnecting");
@@ -169,6 +157,17 @@ public class Viewer {
           } else if (now - lastKeepAlive > 30*1000) {
             rtsp.keepalive(url.toString());
             lastKeepAlive = now;
+          }
+          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
+            preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
+            int sleep;
+            if (fps > 0) {
+              sleep = 1000 / (int)fps;
+            } else {
+              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
+            }
+            JF.sleep(sleep);
+            continue;
           }
           JF.sleep(1000);
         }
