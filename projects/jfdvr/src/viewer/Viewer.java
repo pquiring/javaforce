@@ -167,7 +167,7 @@ public class Viewer {
               JF.sleep(1000);
               continue;
             }
-          } else if (now - lastKeepAlive > 55*1000) {
+          } else if (now - lastKeepAlive > 30*1000) {
             rtsp.keepalive(url.toString());
             lastKeepAlive = now;
           }

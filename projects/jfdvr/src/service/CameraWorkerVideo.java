@@ -22,6 +22,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public static boolean debug = false;
   private static boolean debug_encoder = false;
+  private static boolean debug_decoder = false;
   private static boolean debug_buffers = false;
   private static boolean debug_motion = false;
   private static boolean debug_motion_image = false;
@@ -682,7 +683,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void onPacketViewer(Packet packet) {
     Packet fullPacket;
-    if (debug) JFLog.log("onPacketViewer");
+    if (debug_encoder) JFLog.log("onPacketViewer");
     try {
       if (width == -1 || height == -1) {
         //decode one frame to get width/height
@@ -778,7 +779,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   }
 
   private void onPacketDecoder(Packet packet) {
-    if (debug) JFLog.log("onPacketDecoder");
+    if (debug_decoder) JFLog.log("onPacketDecoder");
     try {
       packets_decode.add(packet);
       packets_decode.cleanPackets(true);
