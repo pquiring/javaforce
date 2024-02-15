@@ -796,15 +796,14 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   //too small can cause problems
   //too large causes resizes to take a long time to take effect
   //the problem is that some video files are not interlaced very well
-  final int pre_buffer_seconds = 2;
+  private final int buffer_seconds = 4;
+  private final int pre_buffer_seconds = 2;
 
   public class FileReader extends Thread implements MediaIO {
     private String file;
     private RandomAccessFile raf;
     private long fileRead = 0;
     private byte fileBuf[] = new byte[64*1024];
-
-    private final int buffer_seconds = 4;
 
     public FileReader(String file) {
       this.file = file;
@@ -870,6 +869,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             continue;
           }
           if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
+            //buffers are nearly full - wait for player to consume some
             preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
             int sleep;
             if (fps > 0) {
@@ -904,6 +904,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
               resizeVideo = false;
             }
           }
+          //decode more media
           switch (decoder.read()) {
             case MediaCoder.AUDIO_FRAME:  //audio packet read
               short audio[] = decoder.getAudio();

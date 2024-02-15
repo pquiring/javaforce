@@ -68,6 +68,7 @@ public class Viewer {
     JFLog.log("" + System.currentTimeMillis() + ":" + msg);
   }
 
+  private final int buffer_seconds = 4;
   private final int pre_buffer_seconds = 2;
   private int new_width, new_height;
   private boolean resizeVideo;
@@ -105,8 +106,6 @@ public class Viewer {
     private final int chs = 2;  //currently all formats are converted to stereo
     private float fps = -1;
     private Thread playThread;
-
-    private final int buffer_seconds = 4;
 
     public NetworkReader(URL url) {
       //rtsp://host/type/name
@@ -159,6 +158,7 @@ public class Viewer {
             lastKeepAlive = now;
           }
           if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
+            //buffers are nearly full - wait for player to consume some
             preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
             int sleep;
             if (fps > 0) {
