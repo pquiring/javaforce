@@ -602,46 +602,10 @@ public abstract class SIP implements TransportInterface {
   }
 
   /**
-   * Returns a specific header (field) from a SIP message.
-   * Also removes any quotes.
-   */
-  public static String getHeader(String header, String[] msg) {
-    int sl = header.length();
-    for (int a = 0; a < msg.length; a++) {
-      String ln = msg[a];
-      if (ln.length() < sl) {
-        continue;
-      }
-      if (ln.substring(0, sl).equalsIgnoreCase(header)) {
-        return ln.substring(sl).trim().replaceAll("\"", "");
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Returns a set of specific headers (fields) from a SIP message.
-   */
-  public static String[] getHeaders(String header, String[] msg) {
-    ArrayList<String> lst = new ArrayList<String>();
-    int sl = header.length();
-    for (int a = 0; a < msg.length; a++) {
-      String ln = msg[a];
-      if (ln.length() < sl) {
-        continue;
-      }
-      if (ln.substring(0, sl).equalsIgnoreCase(header)) {
-        lst.add(ln.substring(sl).trim().replaceAll("\"", ""));
-      }
-    }
-    return lst.toArray(new String[0]);
-  }
-
-  /**
    * Returns the cseq of a SIP message.
    */
   protected int getcseq(String[] msg) {
-    String cseqstr = getHeader("CSeq:", msg);
+    String cseqstr = HTTP.getParameter(msg, "CSeq");
     if (cseqstr == null) {
       return -1;
     }
@@ -653,7 +617,7 @@ public abstract class SIP implements TransportInterface {
    * Returns the command at the end of the cseq header in a SIP message.
    */
   protected String getcseqcmd(String[] msg) {
-    String cseqstr = getHeader("CSeq:", msg);
+    String cseqstr = HTTP.getParameter(msg, "CSeq");
     if (cseqstr == null) {
       return null;
     }
@@ -727,20 +691,20 @@ public abstract class SIP implements TransportInterface {
       JFLog.log("err:no digest");
       return null;
     }
-    String[] tags = split(request.substring(7), ',');
+    String[] tags = convertParameters(request.substring(7), ',');
     String auth, nonce = null, qop = null, cnonce = null, nc = null,stale = null;
     String realm = null;
-    auth = getHeader("algorithm=", tags);
+    auth = HTTP.getParameter(tags, "algorithm");
     if (auth != null) {
       if (!auth.equalsIgnoreCase("MD5")) {
         JFLog.log("err:only MD5 auth supported");
         return null;
       }  //unsupported auth type
     }
-    realm = getHeader("realm=", tags);
-    nonce = getHeader("nonce=", tags);
-    qop = getHeader("qop=", tags);  //auth or auth-int
-    stale = getHeader("stale=", tags);  //true|false ???
+    realm = HTTP.getParameter(tags, "realm");
+    nonce = HTTP.getParameter(tags, "nonce");
+    qop = HTTP.getParameter(tags, "qop");  //auth or auth-int
+    stale = HTTP.getParameter(tags, "stale");  //true|false ???
     if (nonce == null) {
       JFLog.log("err:no nonce");
       return null;
@@ -791,7 +755,7 @@ public abstract class SIP implements TransportInterface {
    * Returns the remote RTP host in a SIP/SDP packet.
    */
   protected String getremotertphost(String[] msg) {
-    String c = getHeader("c=", msg);
+    String c = HTTP.getParameter(msg, "c");
     if (c == null) {
       return null;
     }
@@ -805,33 +769,30 @@ public abstract class SIP implements TransportInterface {
   /**
    * Returns the remote RTP port in a SIP/SDP packet.
    */
-  protected int getremotertpport(String[] msg) {
+  protected int getremote_audio_rtp_port(String[] msg) {
     // m=audio PORT RTP/AVP ...
-    String m = getHeader("m=audio ", msg);
-    if (m == null) {
-      return -1;
+    String ms[] = HTTP.getParameters(msg, "m");
+    for(String m : ms) {
+      if (!m.startsWith("audio")) continue;
+      String[] p = m.split(" ");
+      return Integer.valueOf(p[1]);
     }
-    int idx = m.indexOf(' ');
-    if (idx == -1) {
-      return -1;
-    }
-    return Integer.valueOf(m.substring(0, idx));
+    return -1;
   }
 
   /**
    * Returns the remote Video RTP port in a SIP/SDP packet.
    */
-  protected int getremoteVrtpport(String[] msg) {
+  protected int getremote_video_rtp_port(String[] msg) {
     // m=video PORT RTP/AVP ...
-    String m = getHeader("m=video ", msg);
-    if (m == null) {
-      return -1;
+    // m=audio PORT RTP/AVP ...
+    String ms[] = HTTP.getParameters(msg, "m");
+    for(String m : ms) {
+      if (!m.startsWith("video")) continue;
+      String[] p = m.split(" ");
+      return Integer.valueOf(p[1]);
     }
-    int idx = m.indexOf(' ');
-    if (idx == -1) {
-      return -1;
-    }
-    return Integer.valueOf(m.substring(0, idx));
+    return -1;
   }
 
   /**
@@ -839,20 +800,22 @@ public abstract class SIP implements TransportInterface {
    */
   public int getexpires(String[] msg) {
     //check Expires field
-    String expires = getHeader("Expires:", msg);
+    String expires = HTTP.getParameter(msg, "Expires");
     if (expires != null) {
       return JF.atoi(expires);
     }
     //check Contact field
-    String contact = getHeader("Contact:", msg);
+    String contact = HTTP.getParameter(msg, "Contact");
     if (contact == null) {
-      contact = getHeader("c:", msg);
+      contact = HTTP.getParameter(msg, "c");
     }
     if (contact == null) {
       return -1;
     }
-    String[] tags = split(contact);
-    expires = getHeader("expires=", tags);
+    int idx = contact.indexOf('>');
+    if (idx == -1) return -1;
+    String[] tags = convertParameters(contact.substring(idx+1), ';');
+    expires = HTTP.getParameter(tags, "expires");
     if (expires == null) {
       return -1;
     }
@@ -1066,14 +1029,14 @@ public abstract class SIP implements TransportInterface {
    * example in: key1="value1" key2="value2" ...
    * example out: [key1: value1] [key2: value2]
    */
-  public static String[] convertParameters(String ln) {
-    String[] params = JF.splitQuoted(ln, ' ');
+  public static String[] convertParameters(String ln, char delimit) {
+    String[] params = JF.splitQuoted(ln, delimit);
     for(int idx = 0;idx<params.length;idx++) {
       String param = params[idx];
       int i = param.indexOf('=');
       if (i == -1) continue;
-      String key = param.substring(0, idx);
-      String value = param.substring(idx+1).replaceAll("\"", "");
+      String key = param.substring(0, idx).trim();
+      String value = param.substring(idx+1).replaceAll("\"", "").trim();
       params[idx] = key + ": " + value;
     }
     return params;

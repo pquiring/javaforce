@@ -113,90 +113,6 @@ public abstract class RTSP implements TransportInterface {
   }
 
   /**
-   * Splits a To: or From: field in a SIP message into parts.
-   */
-  public static String[] split(String x) {
-    //x = "display name" <sip:user@host ;...   >  ;...
-    //return:    [0]          [1]  [2] [flgs1][:][flgs2]
-    if (x == null) {
-      return new String[] {"null", "null", "null"};
-    }
-    ArrayList<String> parts = new ArrayList<String>();
-    int i1, i2;
-    String x1, x2;
-    i1 = x.indexOf('<');
-    if (i1 == -1) {
-      parts.add("");
-      x1 = x;
-      x2 = "";
-    } else {
-      if (i1 == 0) {
-        parts.add("Unknown Name");
-      } else {
-        parts.add(x.substring(0, i1).trim().replaceAll("\"", ""));
-      }
-      i1++;
-      i2 = x.substring(i1).indexOf('>');
-      if (i2 == -1) {
-        return null;
-      }
-      x1 = x.substring(i1, i1 + i2);
-      x2 = x.substring(i1 + i2 + 1).trim();
-    }
-    i1 = x1.indexOf(':');
-    if (i1 == -1) {
-      return null;
-    }
-    x1 = x1.substring(i1 + 1);  //remove sip:
-    i1 = x1.indexOf('@');
-    if (i1 == -1) {
-      parts.add("");  //no user
-    } else {
-      parts.add(x1.substring(0, i1).trim());  //userid
-      x1 = x1.substring(i1 + 1).trim();
-    }
-    if ((x1.length() > 0) && (x1.charAt(0) == ';')) {
-      x1 = x1.substring(1);
-    }
-    do {
-      i1 = x1.indexOf(';');
-      if (i1 == -1) {
-        x1 = x1.trim();
-        if (x1.length() > 0) {
-          parts.add(x1);
-        }
-        break;
-      }
-      parts.add(x1.substring(0, i1).trim());
-      x1 = x1.substring(i1 + 1).trim();
-    } while (true);
-    if (parts.size() == 2) {
-      parts.add("");  //no host ???
-    }
-    parts.add(":");  //this seperates fields outside of <>
-    if ((x2.length() > 0) && (x2.charAt(0) == ';')) {
-      x2 = x2.substring(1);
-    }
-    do {
-      i1 = x2.indexOf(';');
-      if (i1 == -1) {
-        x2 = x2.trim();
-        if (x2.length() > 0) {
-          parts.add(x2);
-        }
-        break;
-      }
-      parts.add(x2.substring(0, i1).trim());
-      x2 = x2.substring(i1 + 1).trim();
-    } while (true);
-    String[] ret = new String[parts.size()];
-    for (int a = 0; a < parts.size(); a++) {
-      ret[a] = parts.get(a);
-    }
-    return ret;
-  }
-
-  /**
    * Joins a To: or From: field after it was split into parts.
    */
   public static String join(String[] x) {
@@ -400,56 +316,6 @@ public abstract class RTSP implements TransportInterface {
   }
 
   /**
-   * Replaces the 'tag' field from 'newfield' into 'fields'.
-   */
-  public static String[] replacetag(String[] fields, String newfield) {
-    //x = "display name" <sip:user@host;tag=...>;tag=...
-    //           [0]          [1]  [2]  [...] [:][...]
-    if (newfield == null) {
-      return fields;
-    }
-    String[] newfields = split(newfield);
-    int oldtagidx = -1;
-    boolean seperator = false;
-    for (int i = 3; i < fields.length; i++) {
-      if (!seperator) {
-        if (fields[i].equals(":")) {
-          seperator = true;
-        }
-        continue;
-      }
-      if (fields[i].startsWith("tag=")) {
-        oldtagidx = i;
-        break;
-      }
-    }
-    seperator = false;
-    for (int i = 3; i < newfields.length; i++) {
-      if (!seperator) {
-        if (newfields[i].equals(":")) {
-          seperator = true;
-        }
-        continue;
-      }
-      if (newfields[i].startsWith("tag=")) {
-        if (oldtagidx != -1) {
-          fields[oldtagidx] = newfields[i];
-          return fields;
-        } else {
-          //need to add an element to fields and append newfields[i]
-          String[] retfields = new String[fields.length + 1];
-          for (int j = 0; j < fields.length; j++) {
-            retfields[j] = fields[j];
-          }
-          retfields[fields.length] = newfields[i];
-          return retfields;
-        }
-      }
-    }
-    return fields;
-  }
-
-  /**
    * Removes the 'tag' field from 'fields'.
    */
   public static String[] removetag(String[] fields) {
@@ -636,45 +502,10 @@ public abstract class RTSP implements TransportInterface {
   }
 
   /**
-   * Returns a specific header (field) from a SIP message.
-   */
-  public static String getHeader(String header, String[] msg) {
-    int sl = header.length();
-    for (int a = 0; a < msg.length; a++) {
-      String ln = msg[a];
-      if (ln.length() < sl) {
-        continue;
-      }
-      if (ln.substring(0, sl).equalsIgnoreCase(header)) {
-        return ln.substring(sl).trim().replaceAll("\"", "");
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Returns a set of specific headers (fields) from a SIP message.
-   */
-  public static String[] getHeaders(String header, String[] msg) {
-    ArrayList<String> lst = new ArrayList<String>();
-    int sl = header.length();
-    for (int a = 0; a < msg.length; a++) {
-      String ln = msg[a];
-      if (ln.length() < sl) {
-        continue;
-      }
-      if (ln.substring(0, sl).equalsIgnoreCase(header)) {
-        lst.add(ln.substring(sl).trim().replaceAll("\"", ""));
-      }
-    }
-    return lst.toArray(new String[0]);
-  }
-
-  /**
    * Returns the cseq of a SIP message.
    */
   protected int getcseq(String[] msg) {
-    String cseqstr = getHeader("CSeq:", msg);
+    String cseqstr = HTTP.getParameter(msg, "CSeq");
     if (cseqstr == null) {
       return -1;
     }
@@ -686,7 +517,7 @@ public abstract class RTSP implements TransportInterface {
    * Returns the command at the end of the cseq header in a SIP message.
    */
   protected String getcseqcmd(String[] msg) {
-    String cseqstr = getHeader("CSeq:", msg);
+    String cseqstr = HTTP.getParameter(msg, "CSeq");
     if (cseqstr == null) {
       return null;
     }
@@ -760,20 +591,20 @@ public abstract class RTSP implements TransportInterface {
       JFLog.log(log, "err:no digest");
       return null;
     }
-    String[] tags = split(request.substring(7), ',');
+    String[] tags = SIP.convertParameters(request.substring(7), ',');
     String auth, nonce = null, qop = null, cnonce = null, nc = null,stale = null;
     String realm = null;
-    auth = getHeader("algorithm=", tags);
+    auth = HTTP.getParameter(tags, "algorithm");
     if (auth != null) {
       if (!auth.equalsIgnoreCase("MD5")) {
         JFLog.log(log, "err:only MD5 auth supported");
         return null;
       }  //unsupported auth type
     }
-    realm = getHeader("realm=", tags);
-    nonce = getHeader("nonce=", tags);
-    qop = getHeader("qop=", tags);  //auth or auth-int
-    stale = getHeader("stale=", tags);  //true|false ???
+    realm = HTTP.getParameter(tags, "realm");
+    nonce = HTTP.getParameter(tags, "nonce");
+    qop = HTTP.getParameter(tags, "qop");  //auth or auth-int
+    stale = HTTP.getParameter(tags, "stale");  //true|false ???
     if (nonce == null) {
       JFLog.log(log, "err:no nonce");
       return null;
@@ -824,7 +655,7 @@ public abstract class RTSP implements TransportInterface {
    * Returns the remote RTP host in a SIP/SDP packet.
    */
   protected String getremotertphost(String[] msg) {
-    String c = getHeader("c=", msg);
+    String c = HTTP.getParameter(msg, "c");
     if (c == null) {
       return null;
     }
@@ -838,33 +669,30 @@ public abstract class RTSP implements TransportInterface {
   /**
    * Returns the remote RTP port in a SIP/SDP packet.
    */
-  protected int getremotertpport(String[] msg) {
+  protected int getremote_audio_rtp_port(String[] msg) {
     // m=audio PORT RTP/AVP ...
-    String m = getHeader("m=audio ", msg);
-    if (m == null) {
-      return -1;
+    String ms[] = HTTP.getParameters(msg, "m");
+    for(String m : ms) {
+      if (!m.startsWith("audio")) continue;
+      String[] p = m.split(" ");
+      return Integer.valueOf(p[1]);
     }
-    int idx = m.indexOf(' ');
-    if (idx == -1) {
-      return -1;
-    }
-    return Integer.valueOf(m.substring(0, idx));
+    return -1;
   }
 
   /**
    * Returns the remote Video RTP port in a SIP/SDP packet.
    */
-  protected int getremoteVrtpport(String[] msg) {
+  protected int getremote_video_rtp_port(String[] msg) {
     // m=video PORT RTP/AVP ...
-    String m = getHeader("m=video ", msg);
-    if (m == null) {
-      return -1;
+    // m=audio PORT RTP/AVP ...
+    String ms[] = HTTP.getParameters(msg, "m");
+    for(String m : ms) {
+      if (!m.startsWith("video")) continue;
+      String[] p = m.split(" ");
+      return Integer.valueOf(p[1]);
     }
-    int idx = m.indexOf(' ');
-    if (idx == -1) {
-      return -1;
-    }
-    return Integer.valueOf(m.substring(0, idx));
+    return -1;
   }
 
   /**
@@ -872,37 +700,12 @@ public abstract class RTSP implements TransportInterface {
    */
   protected long geto(String[] msg, int idx) {
     //o=blah o1 o2 ...
-    String o = getHeader("o=", msg);
+    String o = HTTP.getParameter(msg, "o");
     if (o == null) {
       return 0;
     }
     String[] os = o.split(" ");
     return Long.valueOf(os[idx]);
-  }
-
-  /**
-   * Returns "expires" field from SIP headers.
-   */
-  public int getexpires(String[] msg) {
-    //check Expires field
-    String expires = getHeader("Expires:", msg);
-    if (expires != null) {
-      return JF.atoi(expires);
-    }
-    //check Contact field
-    String contact = getHeader("Contact:", msg);
-    if (contact == null) {
-      contact = getHeader("c:", msg);
-    }
-    if (contact == null) {
-      return -1;
-    }
-    String[] tags = split(contact);
-    expires = getHeader("expires=", tags);
-    if (expires == null) {
-      return -1;
-    }
-    return JF.atoi(expires);
   }
 
   public abstract String getlocalRTPhost(RTSPSession sess);

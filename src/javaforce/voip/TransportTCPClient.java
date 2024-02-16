@@ -126,8 +126,8 @@ public class TransportTCPClient implements Transport {
       tlen = plen;
       //now find Content-Length:
       String[] msg = new String(packet.data, 0, plen).split("\r\n");
-      String clenstr = SIP.getHeader("Content-Length:", msg);
-      if (clenstr == null) SIP.getHeader("l:", msg);
+      String clenstr = HTTP.getParameter(msg, "Content-Length");
+      if (clenstr == null) HTTP.getParameter(msg, "l");
       if (clenstr != null) {
         int clen = JF.atoi(clenstr);
         tlen += clen;

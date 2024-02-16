@@ -377,7 +377,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       sess.remotehost = remoteip;
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
-      String sid = getHeader("Session:", msg);
+      String sid = HTTP.getParameter(msg, "Session");
       if (sid != null) {
         int idx = sid.indexOf(';');
         if (idx != -1) {
@@ -415,9 +415,9 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
           if (sess.authsent) {
             JFLog.log(log, "Server Error : Double " + type);
           } else {
-            sess.authstr = getHeader("WWW-Authenticate:", msg);
+            sess.authstr = HTTP.getParameter(msg, "WWW-Authenticate");
             if (sess.authstr == null) {
-              sess.authstr = getHeader("Proxy-Authenticate:", msg);
+              sess.authstr = HTTP.getParameter(msg, "Proxy-Authenticate");
             }
             if (sess.authstr == null) {
               JFLog.log(log, "err:401/407 without Authenticate tag");

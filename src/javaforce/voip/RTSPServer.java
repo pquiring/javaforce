@@ -222,7 +222,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       sess.remoteaddr = InetAddress.getByName(remoteip);
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
-      String sid = getHeader("Session:", msg);
+      String sid = HTTP.getParameter(msg, "Session");
       if (sid != null) {
         int idx = sid.indexOf(';');
         if (idx != -1) {
@@ -245,7 +245,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
           sess.cmd = cmd;
           switch (cmd) {
             case "OPTIONS": {
-              String auth = getHeader("Authorization:", msg);
+              String auth = HTTP.getParameter(msg, "Authorization");
               if (auth == null) {
                 //send a 401
                 sess.nonce = getnonce();
@@ -261,10 +261,10 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
                 JFLog.log("invalid Authorization");
                 break;
               }
-              String[] tags = auth.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
-              String res = getHeader("response=", tags);
-              String nonce = getHeader("nonce=", tags);
-              sess.user = getHeader("username=", tags);
+              String[] tags = SIP.convertParameters(auth.substring(7),',');
+              String res = HTTP.getParameter(tags, "response");
+              String nonce = HTTP.getParameter(tags, "nonce");
+              sess.user = HTTP.getParameter(tags, "username");
               if ((nonce == null) || (sess.nonce == null) || (!sess.nonce.equals(nonce)) || (sess.user == null)) {
                 //send another 401
                 sess.nonce = getnonce();
@@ -276,8 +276,17 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
                 reply(sess, 401, "REQ AUTH", challenge);
                 break;
               }
-              String test = getResponse(sess.user, iface.getPassword(sess.user), realm, sess.cmd, getHeader("uri=", tags), sess.nonce, getHeader("qop=", tags),
-                getHeader("nc=", tags), getHeader("cnonce=", tags));
+              String test = getResponse(
+               sess.user,
+               iface.getPassword(sess.user),
+                   realm,
+                sess.cmd,
+                HTTP.getParameter(tags, "uri"),
+              sess.nonce,
+                HTTP.getParameter(tags, "qop"),
+                HTTP.getParameter(tags, "nc"),
+             HTTP.getParameter(tags, "cnonce")
+              );
               sess.nonce = null;  //don't allow value to be reused
               if (!res.equalsIgnoreCase(test)) {
                 reply(sess, 403, "BAD PASSWORD", null);
@@ -301,9 +310,9 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
                 break;
               }
               //get client RTP ports : Transport: RTP/AVP;unicast;client_port=x-x
-              String transport = getHeader("Transport:", msg);
-              String[] tags = transport.split(";");
-              String client_port = getHeader("client_port=", tags);
+              String transport = HTTP.getParameter(msg, "Transport");
+              String[] tags = SIP.convertParameters(transport, ';');
+              String client_port = HTTP.getParameter(tags, "client_port");
               String[] ports = client_port.split("[-]");
               sess.channel.stream.port = Integer.valueOf(ports[0]);
               iface.onSetup(this, sess);

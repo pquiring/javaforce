@@ -339,8 +339,8 @@ public class SDP implements Cloneable {
    * @param log = JFLog log id
    */
   public static SDP getSDP(String[] msg, int log) {
-    String type = SIP.getHeader("Content-Type:", msg);
-    if (type == null) type = SIP.getHeader("c:", msg);  //short form
+    String type = HTTP.getParameter(msg, "Content-Type");
+    if (type == null) type = HTTP.getParameter(msg, "c");  //short form
     if (type == null || type.indexOf("application/sdp") == -1) return null;
     SDP sdp = new SDP();
     sdp.setLog(log);

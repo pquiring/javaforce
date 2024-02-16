@@ -1386,7 +1386,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     JFLog.log("onNotify:event=" + event);
     event = event.toLowerCase();
     if (event.equals("message-summary")) {
-      String msgwait = SIP.getHeader("Messages-Waiting:", msg);
+      String msgwait = HTTP.getParameter(msg, "Messages-Waiting");
       if (msgwait != null) {
         for(int a=0;a<6;a++) {
           PhoneLine pl = lines[a];

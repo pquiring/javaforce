@@ -582,6 +582,28 @@ public class HTTP {
   }
 
   /**
+   * Returns HTTP style parameter(s) from list of parameters.
+   *
+   * @param params = HTTP list of parameters
+   * @param name = name of parameter to return
+   * @return parameter(s)
+   */
+  public static String[] getParameters(String[] params, String name) {
+    ArrayList<String> lst = new ArrayList<>();
+    for(int a=0;a<params.length;a++) {
+      String param = params[a];
+      int idx = param.indexOf(":");
+      if (idx == -1) continue;
+      String key = param.substring(0, idx).trim();
+      String value = param.substring(idx + 1).trim();
+      if (key.equals(name)) {
+        lst.add(value);
+      }
+    }
+    return lst.toArray(JF.StringArrayType);
+  }
+
+  /**
    * Get Content from a HTTP message.
    */
   public static String[] getContent(String[] msg) {
@@ -595,6 +617,6 @@ public class HTTP {
         break;
       }
     }
-    return content.toArray(new String[0]);
+    return content.toArray(JF.StringArrayType);
   }
 }

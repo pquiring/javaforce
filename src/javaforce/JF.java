@@ -1777,4 +1777,6 @@ public class JF {
       'o' , 'p' , 'q' , 'r' , 's' , 't' ,
       'u' , 'v' , 'w' , 'x' , 'y' , 'z'
   };
+
+  public static final String[] StringArrayType = new String[0];
 }

@@ -211,8 +211,8 @@ public class SIPServer extends SIP implements SIPInterface {
   public void packet(String[] msg, String remoteip, int remoteport) {
     try {
       String tmp, cmd = null, epass;
-      String callid = getHeader("Call-ID:", msg);
-      if (callid == null) callid = getHeader("i:", msg);
+      String callid = HTTP.getParameter(msg, "Call-ID");
+      if (callid == null) callid = HTTP.getParameter(msg, "i");
       if (callid == null) {
         JFLog.log("Bad packet (no Call-ID) from:" + remoteip + ":" + remoteport);
         return;
@@ -271,15 +271,15 @@ public class SIPServer extends SIP implements SIPInterface {
         cdsd.port = remoteport;
         cdsd.branch = getbranch(msg);
         //get cd.to
-        tmp = getHeader("To:", msg);
+        tmp = HTTP.getParameter(msg, "To");
         if (tmp == null) {
-          tmp = getHeader("t:", msg);
+          tmp = HTTP.getParameter(msg, "t");
         }
         cdsd.to = split(tmp);
         //get cd.from
-        tmp = getHeader("From:", msg);
+        tmp = HTTP.getParameter(msg, "From");
         if (tmp == null) {
-          tmp = getHeader("f:", msg);
+          tmp = HTTP.getParameter(msg, "f");
         }
         cdsd.from = split(tmp);
         //extract user from cd.from "display" <sip:user@host>;tag=...
@@ -287,9 +287,9 @@ public class SIPServer extends SIP implements SIPInterface {
         //get via list
         cdsd.vialist = getvialist(msg);
         //get uri (it must equal the Contact field)
-        cdsd.contact = getHeader("Contact:", msg);
+        cdsd.contact = HTTP.getParameter(msg, "Contact");
         if (cdsd.contact == null) {
-          cdsd.contact = getHeader("m:", msg);
+          cdsd.contact = HTTP.getParameter(msg, "m");
         }
         cd.cmd = getcseqcmd(msg);
         int reply = getResponseType(msg);
@@ -303,7 +303,7 @@ public class SIPServer extends SIP implements SIPInterface {
           case -1:
             clone(cdsd, cdpbx);
             if (cmd.equalsIgnoreCase("REGISTER")) {
-              String auth = getHeader("Authorization:", msg);
+              String auth = HTTP.getParameter(msg, "Authorization");
               if (auth == null) {
                 //send a 401
                 cd.nonce = getnonce();
@@ -319,9 +319,9 @@ public class SIPServer extends SIP implements SIPInterface {
                 JFLog.log("invalid Authorization");
                 break;
               }
-              String[] tags = auth.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
-              String res = getHeader("response=", tags);
-              String nonce = getHeader("nonce=", tags);
+              String[] tags = convertParameters(auth.substring(7), ',');
+              String res = HTTP.getParameter(tags, "response");
+              String nonce = HTTP.getParameter(tags, "nonce");
               if ((nonce == null) || (cd.nonce == null) || (!cd.nonce.equals(nonce))) {
                 //send another 401
                 cd.nonce = getnonce();
@@ -333,8 +333,9 @@ public class SIPServer extends SIP implements SIPInterface {
                 reply(cd, 401, "REQ AUTH", challenge, false, src);
                 break;
               }
-              String test = getResponse(cd.user, iface.getPassword(cd.user), realm, cd.cmd, getHeader("uri=", tags), cd.nonce, getHeader("qop=", tags),
-                getHeader("nc=", tags), getHeader("cnonce=", tags));
+              String test = getResponse(cd.user, iface.getPassword(cd.user), realm, cd.cmd,
+                HTTP.getParameter(tags, "uri"), cd.nonce, HTTP.getParameter(tags, "qop"),
+                HTTP.getParameter(tags, "nc"), HTTP.getParameter(tags, "cnonce"));
               cd.nonce = null;  //don't allow value to be reused
               if (!res.equalsIgnoreCase(test)) {
                 reply(cd, 403, "BAD PASSWORD", null, false, src);
@@ -354,7 +355,7 @@ public class SIPServer extends SIP implements SIPInterface {
               String pass = iface.getPassword(cd.user);
               if (pass != null) {
                 //do auth only if has a password
-                String resln = getHeader("Proxy-Authorization:", msg);
+                String resln = HTTP.getParameter(msg, "Proxy-Authorization");
                 if ((resln == null) || (cd.nonce == null)) {
                   //send a 407
                   cd.nonce = getnonce();
@@ -365,9 +366,9 @@ public class SIPServer extends SIP implements SIPInterface {
                 if (!resln.regionMatches(true, 0, "digest ", 0, 7)) {
                   break;
                 }
-                String[] tags = resln.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
-                String res = getHeader("response=", tags);
-                String nonce = getHeader("nonce=", tags);
+                String[] tags = convertParameters(resln.substring(7), ',');
+                String res = HTTP.getParameter(tags, "response");
+                String nonce = HTTP.getParameter(tags, "nonce");
                 if ((nonce == null) || (!cd.nonce.equals(nonce))) {
                   //send another 407
                   cd.nonce = getnonce();
@@ -375,7 +376,7 @@ public class SIPServer extends SIP implements SIPInterface {
                   reply(cd, 407, "REQ AUTH", challenge, false, src);
                   break;
                 }
-                String test = getResponse(cd.user, pass, realm, cd.cmd, getHeader("uri=", tags), cd.nonce, null, null, null);
+                String test = getResponse(cd.user, pass, realm, cd.cmd, HTTP.getParameter(tags, "uri"), cd.nonce, null, null, null);
                 cd.nonce = null;  //don't allow value to be reused
                 if (!res.equalsIgnoreCase(test)) {
                   reply(cd, 403, "BAD PASSWORD", null, false, src);
@@ -412,7 +413,7 @@ public class SIPServer extends SIP implements SIPInterface {
               break;
             }
             if (cmd.equalsIgnoreCase("REFER")) {
-              iface.onFeature(cd, cmd, getHeader("Refer-To:", msg), src);
+              iface.onFeature(cd, cmd, HTTP.getParameter(msg, "Refer-To"), src);
               break;
             }
             if (cmd.equalsIgnoreCase("OPTIONS")) {
@@ -447,8 +448,8 @@ public class SIPServer extends SIP implements SIPInterface {
           case 200:
             if (cd.cmd.equals("INVITE")) {
               //update tag
-              cdsd.to = replacetag(cdsd.to, getHeader("To:", msg));
-              cdsd.to = replacetag(cdsd.to, getHeader("t:", msg));
+              cdsd.to = replacetag(cdsd.to, HTTP.getParameter(msg, "To"));
+              cdsd.to = replacetag(cdsd.to, HTTP.getParameter(msg, "t"));
               cdpbx.to = cdsd.to.clone();
               cdsd.sdp = getSDP(msg);
             }
@@ -485,7 +486,7 @@ public class SIPServer extends SIP implements SIPInterface {
               setCallDetailsServer(callid, null);
               break;
             }
-            cd.authstr = getHeader("WWW-Authenticate:", msg);
+            cd.authstr = HTTP.getParameter(msg, "WWW-Authenticate");
             epass = getAuthResponse(cd, trunk.user, trunk.pass, cdpbx.host, cd.cmd, "Authorization:");
             if (epass == null) {
               JFLog.log("err:gen auth failed");
@@ -523,7 +524,7 @@ public class SIPServer extends SIP implements SIPInterface {
               }
               String trunk_user = reg.substring(0, idx1);
               String trunk_pass = reg.substring(idx1 + 1, idx2);
-              cd.authstr = getHeader("Proxy-Authenticate:", msg);
+              cd.authstr = HTTP.getParameter(msg, "Proxy-Authenticate");
               epass = getAuthResponse(cd, trunk_user, trunk_pass, cdpbx.host, cd.cmd, "Proxy-Authorization:");
               if (epass == null) {
                 JFLog.log("err:gen auth failed");

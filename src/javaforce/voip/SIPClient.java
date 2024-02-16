@@ -829,8 +829,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         JFLog.log(log, sip.toString());
       }
       String tmp, req = null;
-      String callid = getHeader("Call-ID:", msg);
-      if (callid == null) callid = getHeader("i:", msg);
+      String callid = HTTP.getParameter(msg, "Call-ID");
+      if (callid == null) callid = HTTP.getParameter(msg, "i");
       if (callid == null) {
         JFLog.log("Bad packet (no Call-ID) from:" + remoteip + ":" + remoteport);
         return;
@@ -845,29 +845,29 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       cd.dst.branch = getbranch(msg);
       cd.headers = msg;
       //get cd.dst.to
-      tmp = getHeader("To:", msg);
+      tmp = HTTP.getParameter(msg, "To");
       if (tmp == null) {
-        tmp = getHeader("t:", msg);
+        tmp = HTTP.getParameter(msg, "t");
       }
       cd.dst.to = split(tmp);
       //get cd.dst.from
-      tmp = getHeader("From:", msg);
+      tmp = HTTP.getParameter(msg, "From");
       if (tmp == null) {
-        tmp = getHeader("f:", msg);
+        tmp = HTTP.getParameter(msg, "f");
       }
       cd.dst.from = split(tmp);
 
       //RFC 3581 - rport
-      String via = getHeader("Via:", msg);
+      String via = HTTP.getParameter(msg, "Via");
       boolean localhost_changed = false;
       if (via == null) {
-        via = getHeader("v:", msg);
+        via = HTTP.getParameter(msg, "v");
       }
       if (via != null) {
-        String[] f = via.split(";");
+        String[] via_params = convertParameters(via, ';');
         if (use_received) {
           //check for received in via header which equals my IP as seen by server
-          String received = getHeader("received=", f);
+          String received = HTTP.getParameter(via_params, "received");
           if (received != null) {
             if (!cd.localhost.equals(received)) {
               localhost = received;
@@ -879,7 +879,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         }
         if (use_rport) {
           //check for rport in via header which equals my port as seen by server
-          String rportstr = getHeader("rport=", f);
+          String rportstr = HTTP.getParameter(via_params, "rport");
           if (rportstr != null && rportstr.length() > 0) {
             int newrport = JF.atoi(rportstr);
             if (rport != newrport) {
@@ -898,9 +898,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       //set contact
 //      cd.dst.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
       //get uri (it must equal the Contact field)
-      cd.dst.contact = getHeader("Contact:", msg);
+      cd.dst.contact = HTTP.getParameter(msg, "Contact");
       if (cd.dst.contact == null) {
-        cd.dst.contact = getHeader("m:", msg);
+        cd.dst.contact = HTTP.getParameter(msg, "m");
       }
       String cmd = getcseqcmd(msg);
       int type = getResponseType(msg);
@@ -959,8 +959,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           }
           if (req.equals("NOTIFY")) {
             reply(cd, cmd, 200, "OK", false, false);
-            String event = getHeader("Event:", msg);
-            if (event == null) event = getHeader("o:", msg);
+            String event = HTTP.getParameter(msg, "Event");
+            if (event == null) event = HTTP.getParameter(msg, "o");
             iface.onNotify(this, callid, event, HTTP.getContent(msg));
             break;
           }
@@ -1042,9 +1042,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
               }
             }
             cd.src.to = src_to;
-            cd.authstr = getHeader("WWW-Authenticate:", msg);
+            cd.authstr = HTTP.getParameter(msg, "WWW-Authenticate");
             if (cd.authstr == null) {
-              cd.authstr = getHeader("Proxy-Authenticate:", msg);
+              cd.authstr = HTTP.getParameter(msg, "Proxy-Authenticate");
             }
             if (cd.authstr == null) {
               JFLog.log("err:401/407 without Authenticate tag");
