@@ -574,7 +574,7 @@ public class HTTP {
       if (idx == -1) continue;
       String key = param.substring(0, idx).trim();
       String value = param.substring(idx + 1).trim();
-      if (key.equals(name)) {
+      if (key.equalsIgnoreCase(name)) {
         return value;
       }
     }
@@ -596,7 +596,7 @@ public class HTTP {
       if (idx == -1) continue;
       String key = param.substring(0, idx).trim();
       String value = param.substring(idx + 1).trim();
-      if (key.equals(name)) {
+      if (key.equalsIgnoreCase(name)) {
         lst.add(value);
       }
     }
