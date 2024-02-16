@@ -146,7 +146,7 @@ public class ShellProcess {
    * See run(String cmd[], boolean redirStderr)
    */
   public String run(List<String> cmd, boolean redirStderr) {
-    return run(cmd.toArray(new String[0]), redirStderr);
+    return run(cmd.toArray(JF.StringArrayType), redirStderr);
   }
 
   /**

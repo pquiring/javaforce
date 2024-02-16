@@ -167,7 +167,7 @@ public class ProxyServer extends Thread {
       for(int a=0;a<args.length;a++) {
         cmd.add(args[a]);
       }
-      Process p = Runtime.getRuntime().exec(cmd.toArray(new String[0]), null, new File(keyPath));
+      Process p = Runtime.getRuntime().exec(cmd.toArray(JF.StringArrayType), null, new File(keyPath));
       p.waitFor();
       return true;
     } catch (Exception e) {

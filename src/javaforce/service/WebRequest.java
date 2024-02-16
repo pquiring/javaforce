@@ -7,6 +7,8 @@ package javaforce.service;
 import java.io.*;
 import java.util.*;
 
+import javaforce.*;
+
 public class WebRequest {
   //public fields
   public String request;
@@ -71,7 +73,7 @@ public class WebRequest {
         }
       }
     }
-    cookies = list.toArray(new String[0]);
+    cookies = list.toArray(JF.StringArrayType);
     String id = getCookie("jsession-id");
     String orgid = id;
     if (id == null) {

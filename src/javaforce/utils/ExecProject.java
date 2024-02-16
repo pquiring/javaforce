@@ -77,7 +77,7 @@ public class ExecProject implements ShellProcessListener {
       cmd.add(classpath.replaceAll("[;]", ":"));
     }
     cmd.add(mainclass);
-    sp.run(cmd.toArray(new String[0]), true);
+    sp.run(cmd.toArray(JF.StringArrayType), true);
   }
 
   public void shellProcessOutput(String str) {

@@ -1,12 +1,10 @@
 package javaforce.media;
 
-import java.util.ArrayList;
-import javaforce.BE;
-import javaforce.JFLog;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Mixer;
-import javax.sound.sampled.TargetDataLine;
+import java.util.*;
+
+import javax.sound.sampled.*;
+
+import javaforce.*;
 
 /**
  * AudioInput.
@@ -33,7 +31,7 @@ public class AudioInput {
       }
       mixers.add(name);
     }
-    return mixers.toArray(new String[0]);
+    return mixers.toArray(JF.StringArrayType);
   }
 
   public boolean start(int chs, int freq, int bits, int frame_size, String device) {

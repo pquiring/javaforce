@@ -325,7 +325,7 @@ public class SDP implements Cloneable {
     if (framerate != 0.0f) {
       content.add("a=framerate:" + framerate);
     }
-    return content.toArray(new String[0]);
+    return content.toArray(JF.StringArrayType);
   }
 
   public static SDP getSDP(String[] msg) {

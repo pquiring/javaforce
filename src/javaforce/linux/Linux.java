@@ -1240,7 +1240,7 @@ public class Linux {
     }
 */
     try {
-      Process p = Runtime.getRuntime().exec(cmd.toArray(new String[0]));
+      Process p = Runtime.getRuntime().exec(cmd.toArray(JF.StringArrayType));
       p.waitFor();
     } catch (Exception e) {
       JFLog.log(e);
@@ -1267,7 +1267,7 @@ public class Linux {
       cmd.add("--off");
     }
     try {
-      Process p = Runtime.getRuntime().exec(cmd.toArray(new String[0]));
+      Process p = Runtime.getRuntime().exec(cmd.toArray(JF.StringArrayType));
       p.waitFor();
     } catch (Exception e) {
       JFLog.log(e);

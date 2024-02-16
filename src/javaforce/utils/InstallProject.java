@@ -49,7 +49,7 @@ public class InstallProject implements ShellProcessListener {
     cmd.add("install");
 
     JFLog.log("Executing ant -file " + buildfile + " install");
-    sp.run(cmd.toArray(new String[0]), true);
+    sp.run(cmd.toArray(JF.StringArrayType), true);
 
     doSubProjects();
   }

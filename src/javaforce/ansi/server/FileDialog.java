@@ -195,7 +195,7 @@ public class FileDialog implements Dialog {
           drives.add("[" + drv + ":]");
         }
       }
-      files = drives.toArray(new String[0]);
+      files = drives.toArray(JF.StringArrayType);
     } else {
       tmp = new File(path).listFiles();
       if (tmp == null) tmp = new File[0];

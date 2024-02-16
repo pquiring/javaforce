@@ -107,7 +107,7 @@ public class GenPkgInfo {
       if (depend.equals("null")) continue;
       depends.add(depend);
     }
-    return depends.toArray(new String[0]);
+    return depends.toArray(JF.StringArrayType);
   }
 
   private void debian() {

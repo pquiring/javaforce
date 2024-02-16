@@ -304,7 +304,7 @@ public abstract class SIP implements TransportInterface {
         continue;
       }
     }
-    return vialist.toArray(new String[0]);
+    return vialist.toArray(JF.StringArrayType);
   }
 
   /**
@@ -319,7 +319,7 @@ public abstract class SIP implements TransportInterface {
         continue;
       }
     }
-    return routelist.toArray(new String[0]);
+    return routelist.toArray(JF.StringArrayType);
   }
 
   /**

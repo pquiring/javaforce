@@ -20,7 +20,7 @@ public class ProxyTest {
       c.connect();
       InputStream is = c.getInputStream();
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
-      String[] keys = c.getHeaderFields().keySet().toArray(new String[0]);
+      String[] keys = c.getHeaderFields().keySet().toArray(JF.StringArrayType);
       for(int a=0;a<keys.length;a++) {
         String value = c.getHeaderField(keys[a]);
         System.out.println(keys[a] + "=" + value);

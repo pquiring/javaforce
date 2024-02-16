@@ -357,7 +357,7 @@ public class DNS {
         }
       }
       if (results.size() == 0) return null;
-      return results.toArray(new String[0]);
+      return results.toArray(JF.StringArrayType);
     } catch (Exception e) {
       JFLog.log(e);
       return null;

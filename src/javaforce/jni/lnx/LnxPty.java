@@ -77,7 +77,7 @@ public class LnxPty {
       if (env[a] == null) break;
       cmdline.add(env[a]);
     }
-    String[] cl = cmdline.toArray(new String[0]);
+    String[] cl = cmdline.toArray(JF.StringArrayType);
     if (debug) {
       for(int a=0;a<cl.length;a++) {
         JFLog.log("cmd=" + cl[a]);
@@ -133,7 +133,7 @@ public class LnxPty {
 
     try {
       //JFNative.load();
-      LnxNative.ptyChildExec(slaveName, cmd, process_args.toArray(new String[0]), process_env.toArray(new String[0]));
+      LnxNative.ptyChildExec(slaveName, cmd, process_args.toArray(JF.StringArrayType), process_env.toArray(JF.StringArrayType));
       System.exit(0);  //should not happen
     } catch (Exception e) {
       e.printStackTrace();
@@ -172,7 +172,7 @@ public class LnxPty {
     ArrayList<String> env = new ArrayList<String>();
     Map<String, String> old = System.getenv();
     Set<String> set = old.keySet();
-    String[] keys = (String[])set.toArray(new String[0]);
+    String[] keys = (String[])set.toArray(JF.StringArrayType);
     for(int a=0;a<keys.length;a++) {
       String key = keys[a];
       env.add(key + "=" + old.get(key));
@@ -197,7 +197,7 @@ public class LnxPty {
       }
     }
     env.add(null);
-    return env.toArray(new String[0]);
+    return env.toArray(JF.StringArrayType);
   }
   public static String[] makeEnvironment() {
     return makeEnvironment(null);

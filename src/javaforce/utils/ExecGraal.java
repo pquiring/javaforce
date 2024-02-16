@@ -61,7 +61,7 @@ public class ExecGraal implements ShellProcessListener {
     cmd.add("--shared");
     cmd.add("--no-fallback");
 
-    sp.run(cmd.toArray(new String[0]), true);
+    sp.run(cmd.toArray(JF.StringArrayType), true);
 
     doSubProjects();
   }
