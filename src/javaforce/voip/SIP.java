@@ -685,7 +685,7 @@ public abstract class SIP implements TransportInterface {
    * Generates a complete header response to a SIP authorization challenge.
    */
   protected String getAuthResponse(CallDetails cd, String user, String pass, String remote, String cmd, String header) {
-    //request = ' Digest algorithm=MD5, realm="asterisk", nonce="value", etc.'
+    //request = 'Digest algorithm=MD5, realm="asterisk", nonce="value", etc.'
     String request = cd.authstr;
     if (!request.regionMatches(true, 0, "Digest ", 0, 7)) {
       JFLog.log("err:no digest");
@@ -697,7 +697,7 @@ public abstract class SIP implements TransportInterface {
     auth = HTTP.getParameter(tags, "algorithm");
     if (auth != null) {
       if (!auth.equalsIgnoreCase("MD5")) {
-        JFLog.log("err:only MD5 auth supported");
+        JFLog.log("err:only MD5 auth supported:auth=" + auth);
         return null;
       }  //unsupported auth type
     }
@@ -1033,10 +1033,10 @@ public abstract class SIP implements TransportInterface {
     String[] params = JF.splitQuoted(ln, delimit);
     for(int idx = 0;idx<params.length;idx++) {
       String param = params[idx];
-      int i = param.indexOf('=');
-      if (i == -1) continue;
-      String key = param.substring(0, idx).trim();
-      String value = param.substring(idx+1).replaceAll("\"", "").trim();
+      int eq = param.indexOf('=');
+      if (eq == -1) continue;
+      String key = param.substring(0, eq).trim();
+      String value = param.substring(eq+1).replaceAll("\"", "").trim();
       params[idx] = key + ": " + value;
     }
     return params;

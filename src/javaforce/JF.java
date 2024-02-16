@@ -1520,7 +1520,7 @@ public class JF {
       String str = new String(ca, off, cnt);
       s.add(str);
     }
-    return s.toArray(new String[0]);
+    return s.toArray(StringArrayType);
   }
 
   public static String readLineQuoted(InputStream is) {
