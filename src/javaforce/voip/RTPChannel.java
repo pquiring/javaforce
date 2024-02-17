@@ -495,7 +495,7 @@ public class RTPChannel {
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
       } else {
-        JFLog.log("RTPChannel:unknown codec id:" + id);
+        JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);
       }
     }
   }
