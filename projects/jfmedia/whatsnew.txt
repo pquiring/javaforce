@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Feb 17, 2024 : v0.18 released!
+  - add fullscreen function
+
 Jeb 2, 2024 : v0.17 released!
   - new : added H.265 codec
 
