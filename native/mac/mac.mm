@@ -204,19 +204,9 @@ JavaVMInitArgs *BuildArgs() {
 
 #include "../common/register.cpp"
 
-//Linux native methods
-static JNINativeMethod javaforce_jni_LnxNative[] = {
-  {"macInit", "()Z", (void *)&Java_javaforce_jni_MacNative_macInit},
-};
-
 /** Register natives embedded with executable. */
 void registerAllNatives(JNIEnv *env) {
-  jclass cls;
-
   registerCommonNatives(env);
-
-  cls = findClass(env, "javaforce/jni/MacNative");
-  registerNatives(env, cls, javaforce_jni_MacNative, sizeof(javaforce_jni_MacNative)/sizeof(JNINativeMethod));
 }
 
 /** Continues loading the JVM in a new Thread. */

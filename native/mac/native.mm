@@ -26,12 +26,6 @@
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MacNative_macInit
-  (JNIEnv *e, jclass c)
-{
-  return JNI_TRUE;
-}
-
 //OpenGL
 
 #include "../common/glfw.cpp"

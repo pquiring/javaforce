@@ -30,9 +30,6 @@ public class JFNative {
       if (JF.isUnix() && !JF.isMac()) {
         LnxNative.load();
       }
-      if (JF.isMac()) {
-        MacNative.load();
-      }
     }
   }
 
