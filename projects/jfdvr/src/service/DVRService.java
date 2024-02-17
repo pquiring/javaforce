@@ -272,6 +272,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     sess.ts = System.currentTimeMillis();
     try {
       String action = HTTP.getParameter(params, "action");
+      if (action == null) action = "keep-alive";
       if (debug) JFLog.log("onGetParameter:uri=" + sess.uri + ":action=" + action);
       if (action.equals("query")) {
         URL url = new URI(sess.uri).toURL();
