@@ -27,9 +27,6 @@ public class JFNative {
     }
     if (!inited) {
       inited = true;
-      if (JF.isWindows()) {
-        WinNative.load();
-      }
       if (JF.isUnix() && !JF.isMac()) {
         LnxNative.load();
       }

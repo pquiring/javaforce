@@ -6,12 +6,6 @@ package javaforce.jni;
  */
 
 public class WinNative {
-  public static void load() {
-    winInit();
-  }
-
-  private static native boolean winInit();
-
   //com port
   public static native long comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.
   public static native void comClose(long handle);

@@ -319,7 +319,6 @@ void AttachJVM() {
 
 //Windows native methods
 static JNINativeMethod javaforce_jni_WinNative[] = {
-  {"winInit", "()Z", (void *)&Java_javaforce_jni_WinNative_winInit},
   {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_WinNative_comOpen},
   {"comClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_comClose},
   {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comRead},

@@ -31,22 +31,6 @@
 
 HMODULE wgl = NULL;
 
-//open DLLs
-
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_winInit
-  (JNIEnv *e, jclass c)
-{
-  if (wgl == NULL) {
-    wgl = LoadLibrary("opengl32.dll");
-    if (wgl == NULL) {
-      printf("LoadLibrary(opengl32.dll) failed\n");
-      return JNI_FALSE;
-    }
-  }
-
-  return JNI_TRUE;
-}
-
 //OpenGL API
 
 #include "../common/glfw.cpp"
@@ -75,7 +59,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
   (JNIEnv *e, jclass c)
 {
   if (funcs[0].func != NULL) return JNI_TRUE;  //already done
-  if (wgl == NULL) return JNI_FALSE;
+  if (wgl == NULL) {
+    wgl = LoadLibrary("opengl32.dll");
+    if (wgl == NULL) {
+      printf("LoadLibrary(opengl32.dll) failed\n");
+      return JNI_FALSE;
+    }
+  }
   void *func;
   for(int a=0;a<GL_NO_FUNCS;a++) {
     func = (void*)wglGetProcAddress(funcs[a].name);  //get OpenGL 1.x function
