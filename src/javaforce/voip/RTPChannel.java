@@ -40,6 +40,8 @@ public class RTPChannel {
   public Coder coder;  //selected audio encoder
   public int log;
 
+  public static boolean debug = false;
+
   protected RTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
     this.rtp = rtp;
     this.ssrc_src = ssrc;
@@ -495,7 +497,7 @@ public class RTPChannel {
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
       } else {
-        JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);
+        if (debug) JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);
       }
     }
   }
