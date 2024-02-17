@@ -31,8 +31,6 @@ public class CopyPath implements KeyEvents {
   }
 
   public static void main(String[] args) {
-    JFNative.load_ffmpeg = false;
-    JFNative.load();
     ANSI.enableConsoleMode();
     ConsoleOutput.install();
     CopyPath.args = args;

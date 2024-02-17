@@ -1,8 +1,6 @@
 package javaforce.jni;
 
-import javaforce.*;
-
-/** Loads the native library.
+/** JFNative
  *
  * @author pquiring
  */
@@ -11,38 +9,6 @@ import java.io.*;
 import java.util.*;
 
 public class JFNative {
-
-  /** Loads JavaForce native library. */
-  @SuppressWarnings("unchecked")
-  public static void load() {
-    if (loaded) return;
-    try {
-      test();
-      loaded = true;
-    } catch (Throwable t) {
-    }
-    if (!loaded) {
-      JFLog.log("Error:JF native methods not found");
-      return;
-    }
-    if (!inited) {
-      inited = true;
-      if (JF.isUnix() && !JF.isMac()) {
-        LnxNative.load();
-      }
-    }
-  }
-
-  /** Indicates if native library is loaded. */
-  public static boolean loaded;
-  /** Indicates if native library is inited. */
-  public static boolean inited;
-  /** Specify if ffmpeg is needed? */
-  public static boolean load_ffmpeg = true;
-
-  private static native void test();
-  private static native void init();
-
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File[] folders, Library[] libs, String ext, int needed) {
     boolean once = false;

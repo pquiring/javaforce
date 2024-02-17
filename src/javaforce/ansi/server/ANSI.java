@@ -48,7 +48,6 @@ public class ANSI {
   }
 
   public static void enableConsoleMode() {
-    JFNative.load_ffmpeg = false;  //speed up startup on Linux
     if (JF.isWindows())
       WinNative.enableConsoleMode();
     else

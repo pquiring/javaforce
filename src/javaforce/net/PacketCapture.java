@@ -356,7 +356,6 @@ public class PacketCapture {
       JFLog.log("      : -t timeout");
       return;
     }
-    JFNative.load();
     if (!init()) {
       JFLog.log("init failed");
       return;

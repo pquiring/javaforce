@@ -1,6 +1,6 @@
 package javaforce.jni;
 
-/** Windows Native Code
+/** Windows Native API
  *
  * @author pquiring
  */

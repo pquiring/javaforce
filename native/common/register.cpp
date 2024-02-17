@@ -1,8 +1,3 @@
-static JNINativeMethod javaforce_jni_JFNative[] = {
-  {"test", "()V", (void *)&Java_javaforce_jni_JFNative_test},
-  {"init", "()V", (void *)&Java_javaforce_jni_JFNative_init},
-};
-
 static JNINativeMethod javaforce_controls_ni_DAQmx[] = {
   {"daqInit", "()Z", (void *)&Java_javaforce_controls_ni_DAQmx_daqInit},
   {"createTask", "()J", (void *)&Java_javaforce_controls_ni_DAQmx_createTask},
@@ -229,10 +224,6 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
 
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
-
-  //JFNative must be first to register. Other classes static{} function will call JFNative.load()
-  cls = findClass(env, "javaforce/jni/JFNative");
-  registerNatives(env, cls, javaforce_jni_JFNative, sizeof(javaforce_jni_JFNative)/sizeof(JNINativeMethod));
 
 #ifndef __FreeBSD__
   cls = findClass(env, "javaforce/controls/ni/DAQmx");

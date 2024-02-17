@@ -44,7 +44,6 @@ public class MonitorService extends Thread {
     Status.active = true;
     Paths.init();
 
-    JFNative.load();
     capture = new PacketCapture();
     if (!capture.init()) {
       JFLog.log("pcap init failed");

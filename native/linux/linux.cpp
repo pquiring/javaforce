@@ -353,9 +353,18 @@ bool JavaThread(void *ignore) {
 
   registerAllNatives(env);
 
-  env->FindClass("javaforce/jni/Startup");
-
-  convertClass(mainclass);
+  //load linux shared libraries
+  cls = env->FindClass("javaforce/jni/LnxNative");
+  if (cls == NULL) {
+    error("Unable to find LnxNative class");
+    return false;
+  }
+  mid = env->GetStaticMethodID(cls, "load", "()V");
+  if (mid == NULL) {
+    error("Unable to find LnxNative.load method");
+    return false;
+  }
+  env->CallStaticVoidMethod(cls, mid);
 
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
@@ -386,6 +395,8 @@ bool JavaThread(void *ignore) {
   }
   env->CallStaticVoidMethod(cls, mid);
 #endif
+
+  convertClass(mainclass);
 
   cls = env->FindClass(mainclass);
   if (cls == NULL) {

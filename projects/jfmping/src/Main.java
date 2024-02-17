@@ -22,7 +22,6 @@ public class Main extends javax.swing.JFrame {
   public Main() {
     initComponents();
     resized();
-    JFNative.load();
     if (!PacketCapture.init()) {
       JFAWT.showError("error", "unable to init packet capture");
       System.exit(1);

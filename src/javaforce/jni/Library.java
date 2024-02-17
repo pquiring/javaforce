@@ -1,6 +1,6 @@
 package javaforce.jni;
 
-/**
+/** Native Library
  *
  * @author pquiring
  */

@@ -21,9 +21,7 @@ import javaforce.controls.*;
 
 public class DAQmx {
   public static void load() {
-    if (loaded) return;
-    JFNative.load();  //ensure native library is loaded
-    if (JFNative.loaded) {
+    if (!loaded) {
       loaded = daqInit();
     }
   }

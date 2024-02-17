@@ -1,6 +1,6 @@
 package javaforce.jni;
 
-/**
+/** Linux Native API
  *
  * @author pquiring
  */
@@ -16,8 +16,7 @@ import javaforce.*;
 import javaforce.linux.*;
 
 public class LnxNative {
-  public static void load() {
-    //TODO : move this to native code
+  private static void load() {
     Library[] libs = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
     if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so", libs.length)) {
       for(int a=0;a<libs.length;a++) {

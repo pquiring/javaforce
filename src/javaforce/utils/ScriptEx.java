@@ -15,8 +15,6 @@ public class ScriptEx {
   public static String[] args;
 
   public static void main(String[] args) {
-    JFNative.load_ffmpeg = false;
-    JFNative.load();
     ScriptEx.args = args;
     ANSI.enableConsoleMode();
     ConsoleOutput.install();
