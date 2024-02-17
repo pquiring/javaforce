@@ -177,6 +177,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private void setupFirewall() {
+    //RTSP-TCP : 554
+    //RTP-UDP : server=30000-40000 client=40000-50000
     RTP.setPortRange(30000, 40000);
     if (!JF.isWindows()) return;
     //setup windows firewall
