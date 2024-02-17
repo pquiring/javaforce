@@ -570,7 +570,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         packets_encode.setLog(log);
         frames = new Frames(CodecType.H264);
       }
-      camera.codec = stream.getCodec(RTP.CODEC_H264);
+      if (isViewer) {
+        camera.codec = stream.getCodec(RTP.CODEC_H264);
+      }
       av_codec_id = MediaCoder.AV_CODEC_ID_H264;
     }
     if (stream.hasCodec(RTP.CODEC_H265)) {
@@ -585,7 +587,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         packets_encode.setLog(log);
         frames = new Frames(CodecType.H265);
       }
-      camera.codec = stream.getCodec(RTP.CODEC_H265);
+      if (isViewer) {
+        camera.codec = stream.getCodec(RTP.CODEC_H265);
+      }
       av_codec_id = MediaCoder.AV_CODEC_ID_H265;
     }
     if (isDecoding) {
