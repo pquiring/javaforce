@@ -206,6 +206,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
+      if (debug) JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -225,6 +226,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       server.reply(sess, 200, "OK");
       sess.sdp = null;
     } catch (Exception e) {
+      if (debug) JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -233,6 +235,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
+      if (debug) JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -251,6 +254,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       }
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
+      if (debug) JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -259,6 +263,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
+      if (debug) JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -291,7 +296,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         sess.params = null;
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(e);
       server.reply(sess, 501, "ERROR");
     }
   }
