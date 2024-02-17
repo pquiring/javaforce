@@ -1885,8 +1885,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #include "../common/ni.cpp"
 #endif
 
-#include "../common/jfnative.cpp"
-
 #include "../common/types.h"
 
 #include "../common/font.cpp"

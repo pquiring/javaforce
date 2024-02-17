@@ -1629,8 +1629,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "../common/ni.cpp"
 
-#include "../common/jfnative.cpp"
-
 #include "../common/types.h"
 
 #include "../common/font.cpp"
