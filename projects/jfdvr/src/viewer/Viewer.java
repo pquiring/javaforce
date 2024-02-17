@@ -24,6 +24,7 @@ public class Viewer {
   private boolean playing;
 
   public static boolean debug = true;
+  public static boolean debug_packets = false;
   private final static boolean debug_buffers = false;
 
   /** Play a network source directly. */
@@ -436,7 +437,7 @@ public class Viewer {
     }
 
     public void rtpCodec(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
-      if (debug) JFLog.log("rtpCodec:packet");
+      if (debug_packets) JFLog.log("rtpCodec:packet");
       try {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
@@ -448,7 +449,7 @@ public class Viewer {
     }
 
     public void onPacket(Packet packet) {
-      if (debug) JFLog.log("onPacket");
+      if (debug_packets) JFLog.log("onPacket");
       try {
         if (h264 != null) {
           byte type = h264.get_nal_type(packet.data, 4);
