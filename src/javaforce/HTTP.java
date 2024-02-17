@@ -578,7 +578,7 @@ public class HTTP {
         return value;
       }
     }
-    return "";
+    return null;
   }
 
   /**

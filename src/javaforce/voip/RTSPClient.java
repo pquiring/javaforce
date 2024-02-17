@@ -383,7 +383,9 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
         if (idx != -1) {
           sid = sid.substring(0, idx);
         }
-        sess.id = Long.valueOf(sid);
+        if (sid.length() > 0) {
+          sess.id = Long.valueOf(sid);
+        }
       }
 
       int type = getResponseType(msg);
