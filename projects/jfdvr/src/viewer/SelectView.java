@@ -280,20 +280,21 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   }
 
   public void onGetParameter(RTSPClient client, String[] params) {
-    String list = HTTP.getParameter(params, "list");
-    if (list == null) {
-      JFLog.log("list==null");
-      return;
-    }
     cameras.clear();
     groups.clear();
-    String[] cams = HTTP.getParameter(params, "cameras").split(",");
-    for(String cam : cams) {
-      cameras.add(cam);
+    String camsstr = HTTP.getParameter(params, "cameras");
+    if (camsstr != null) {
+      String[] cams = camsstr.split(",");
+      for(String cam : cams) {
+        cameras.add(cam);
+      }
     }
-    String[] grps = HTTP.getParameter(params, "groups").split(",");
-    for(String grp : grps) {
-      groups.add(grp);
+    String grpsstr = HTTP.getParameter(params, "groups");
+    if (grpsstr != null) {
+      String[] grps = grpsstr.split(",");
+      for(String grp : grps) {
+        groups.add(grp);
+      }
     }
     updateLists();
     rtsp.uninit();
