@@ -33,6 +33,6 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="jfsocks-client.jar" todir="/usr/share/java"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
   </target>
 </project>

@@ -24,7 +24,7 @@
 
   <target name="jar" depends="compile" description="jar">
     <!-- Build jar file from class files -->
-    <jar destfile="jfnetworkmgr.jar" includes="**/*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="Server"/>
       </manifest>
@@ -32,7 +32,7 @@
   </target>
 
   <target name="install" description="install files for linux">
-    <copy file="jfnetworkmgr.jar" todir="/usr/share/java"/>
-    <copy file="jfnetworkmgr.service" todir="/lib/systemd/system"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 </project>

@@ -24,7 +24,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfvnc.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="Main"/>
       </manifest>
@@ -34,7 +34,7 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jfvnc.jar" todir="/usr/share/java"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

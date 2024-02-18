@@ -24,12 +24,17 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfmping.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="Main"/>
       </manifest>
     </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="${app}.jar" todir="/usr/share/java"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

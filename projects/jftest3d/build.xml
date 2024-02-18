@@ -27,7 +27,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jftest3d.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="jftest3d"/>
       </manifest>
@@ -37,7 +37,7 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jftest3d.jar" todir="/usr/share/java"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="opengl.png" todir="/usr/bin"/>
   </target>
 

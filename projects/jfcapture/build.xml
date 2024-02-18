@@ -27,7 +27,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfcapture.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="CapScreenApp"/>
       </manifest>
@@ -37,7 +37,7 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jfcapture.jar" todir="/usr/share/java"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="jfcapture-screen" todir="/usr/bin"/>
     <chmod file="/usr/bin/jfcapture-screen" perm="+x"/>
     <copy file="jfcapture-window" todir="/usr/bin"/>

@@ -28,7 +28,7 @@
 
   <target name="jar" depends="compile,depjars" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfmedia.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <fileset dir="src" includes="*.png"/>
       <manifest>
@@ -40,10 +40,10 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jfmedia.jar" todir="/usr/share/java"/>
-    <copy file="jfmedia.desktop" todir="/usr/share/applications"/>
-    <copy file="jfmedia.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfmedia.html" todir="/usr/share/jfhelp"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="${app}.desktop" todir="/usr/share/applications"/>
+    <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="${app}.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

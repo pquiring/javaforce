@@ -28,7 +28,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfpbx.jar" includes="**/*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="static" includes="*"/>
       <fileset dir="." includes="*.png"/>
       <fileset dir="." includes="*.ico"/>
@@ -44,7 +44,7 @@
     <mkdir dir="/var/lib/jfpbx/voicemail"/>
     <mkdir dir="/usr/share/sounds/jfpbx/en"/>
 
-    <copy file="jfpbx.html" todir="/usr/share/jfhelp"/>
+    <copy file="${app}.html" todir="/usr/share/jfhelp"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
     <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy todir="/usr/share/sounds/jfpbx/en">

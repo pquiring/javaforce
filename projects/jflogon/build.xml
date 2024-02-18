@@ -27,7 +27,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jflogon.jar" includes="**/*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="Startup"/>
@@ -37,9 +37,9 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="jflogon.jar" todir="/usr/share/java"/>
-    <copy file="jflogon.sh" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon.sh" perm="+x"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="${app}.sh" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/${app}.sh" perm="+x"/>
     <copy file="jflogon-runsession" todir="/usr/sbin"/>
     <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
     <copy file="jflogon-rundomain" todir="/usr/sbin"/>
@@ -49,21 +49,21 @@
     <mkdir dir="/usr/lib/systemd/system-preset/"/>
     <copy file="82-jflogon.preset" todir="/usr/lib/systemd/system-preset"/>
     <mkdir dir="/usr/lib/systemd/system/"/>
-    <copy file="jflogon.service" todir="/usr/lib/systemd/system"/>
+    <copy file="${app}.service" todir="/usr/lib/systemd/system"/>
     <copy file="weston-logon.ini" todir="/etc"/>
     <copy file="weston-session.ini" todir="/etc"/>
   </target>
 
   <!-- sudo ant uninstall -->
   <target name="uninstall">
-    <delete file="/usr/share/java/jflogon.jar"/>
-    <delete file="/usr/sbin/jflogon.sh"/>
+    <delete file="/usr/share/java/${app}.jar"/>
+    <delete file="/usr/sbin/${app}.sh"/>
     <delete file="/usr/sbin/jflogon-runsession"/>
     <delete file="/usr/sbin/jflogon-rundomain"/>
-    <delete file="/usr/sbin/jflogon"/>
+    <delete file="/usr/sbin/${app}"/>
     <delete file="/etc/dhcp/dhclient-script"/>
     <delete file="/usr/lib/systemd/system-preset/82-jflogon.preset"/>
-    <delete file="/usr/lib/systemd/system/jflogon.service"/>
+    <delete file="/usr/lib/systemd/system/${app}.service"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

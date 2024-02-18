@@ -35,7 +35,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfconfig.jar" includes="**/*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="src" includes="**/*.png"/>
       <fileset dir="." includes="*.conf"/>
       <fileset dir="." includes="*.cnf"/>
@@ -48,11 +48,11 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="jfconfig.jar" todir="/usr/share/java"/>
-    <copy file="jfconfig.desktop" todir="/usr/share/applications"/>
-    <copy file="jfconfig.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfconfig.html" todir="/usr/share/jfhelp"/>
-    <copy file="jfconfig-samba.html" todir="/usr/share/jfhelp"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="${app}.desktop" todir="/usr/share/applications"/>
+    <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="${app}.html" todir="/usr/share/jfhelp"/>
+    <copy file="${app}-samba.html" todir="/usr/share/jfhelp"/>
     <copy file="jfopenssl.html" todir="/usr/share/jfhelp"/>
   </target>
 

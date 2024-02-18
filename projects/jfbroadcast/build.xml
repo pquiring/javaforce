@@ -29,7 +29,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfbroadcast.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <fileset dir="." includes="readme.txt"/>
       <manifest>
@@ -41,10 +41,10 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jfbroadcast.jar" todir="/usr/share/java"/>
-    <copy file="jfbroadcast.desktop" todir="/usr/share/applications"/>
-    <copy file="jfbroadcast.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfbroadcast.html" todir="/usr/share/jfhelp"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="${app}.desktop" todir="/usr/share/applications"/>
+    <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="${app}.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="javadoc" description="generate java documentation">

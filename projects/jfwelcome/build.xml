@@ -23,7 +23,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfwelcome.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="Installer"/>
@@ -34,10 +34,10 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jfwelcome.jar" todir="/usr/share/java"/>
-    <copy file="jfwelcome.desktop" todir="/usr/share/applications"/>
-    <copy file="jfwelcome.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfwelcome.html" todir="/usr/share/jfhelp"/>
+    <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="${app}.desktop" todir="/usr/share/applications"/>
+    <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="${app}.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
