@@ -394,7 +394,6 @@ bool JavaThread(void *ignore) {
 
   if (ffmpeg) {
     //load ffmpeg shared libraries
-    printf("ffmpeg init...");
     cls = g_env->FindClass("javaforce/media/MediaCoder");
     if (cls == NULL) {
       error("Unable to find MediaCoder class");
