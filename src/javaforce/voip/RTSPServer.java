@@ -301,15 +301,15 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
                 break;
               }
               String test = getResponse(
-               sess.user,
-               iface.getPassword(sess.user),
-                   realm,
+                sess.user,
+                iface.getPassword(sess.user),
+                realm,
                 sess.cmd,
                 HTTP.getParameter(tags, "uri"),
-              sess.nonce,
+                sess.nonce,
                 HTTP.getParameter(tags, "qop"),
                 HTTP.getParameter(tags, "nc"),
-             HTTP.getParameter(tags, "cnonce")
+                HTTP.getParameter(tags, "cnonce")
               );
               sess.nonce = null;  //don't allow value to be reused
               if (!res.equalsIgnoreCase(test)) {

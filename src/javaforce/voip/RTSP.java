@@ -29,7 +29,7 @@ public abstract class RTSP implements TransportInterface {
   protected String localhost;
   protected int localport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
-  public int log;
+  public static int log;
   public static boolean debug = false;
 
   /**
@@ -102,7 +102,7 @@ public abstract class RTSP implements TransportInterface {
     if (debug) JFLog.log("RTSP.unint() done:" + this);
   }
 
-  public void setLog(int id) {
+  public static void setLog(int id) {
     log = id;
   }
 
@@ -781,7 +781,7 @@ public abstract class RTSP implements TransportInterface {
           } else {
             //RTSPClient
             if (debug) JFLog.log("RTSP:packet send:host=" + pack.host);
-            String[] msg = new String(pack.data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
+            String[] msg = new String(pack.data, 0, pack.length).split("\r\n", -1);
             iface.onPacket(RTSP.this, msg, pack.host, pack.port);
             if (debug) JFLog.log("RTSP:packet free:host=" + pack.host);
             pool.free(pack);
@@ -811,7 +811,8 @@ public abstract class RTSP implements TransportInterface {
         synchronized (queueLock) {
           if (queue.size() > 0) {
             Packet packet = queue.remove(0);
-            String[] msg = new String(packet.data, 0, packet.length).replaceAll("\r", "").split("\n", -1);
+            String[] msg = new String(packet.data, 0, packet.length).split("\r\n", -1);
+
             iface.onPacket(RTSP.this, msg, packet.host, packet.port);
             pool.free(packet);
           } else {
@@ -829,6 +830,7 @@ public abstract class RTSP implements TransportInterface {
     }
 
     public void cancel() {
+      active = false;
       synchronized (queueLock) {
         queueLock.notify();
       }
