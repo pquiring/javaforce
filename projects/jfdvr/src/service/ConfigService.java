@@ -75,12 +75,6 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getRootPanel(WebUIClient client) {
-    if (!MediaCoder.loaded) {
-      MediaCoder.init();
-    }
-    if (!MediaCoder.loaded) {
-      return MediaCoder.downloadWebUI();
-    }
     Label lbl;
     Row row, row2;
     Pad pad;

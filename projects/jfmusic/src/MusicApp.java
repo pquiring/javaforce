@@ -28,14 +28,6 @@ public class MusicApp extends javax.swing.JFrame {
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfmusic.png"));
     setIconImage(icon.getImage());
-    if (!MediaCoder.init()) {
-      if (!MediaCoder.download()) {
-        System.exit(0);
-      }
-      if (!MediaCoder.init()) {
-        System.exit(0);
-      }
-    }
     Library.load();
     Settings.loadSettings();
   }

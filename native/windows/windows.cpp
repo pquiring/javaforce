@@ -67,6 +67,7 @@ char err_msg[1024];
 JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
 bool graal = false;
+bool ffmpeg = false;
 
 /* Prototypes */
 void error(char *msg);
@@ -384,11 +385,28 @@ void registerAllNatives(JNIEnv *env) {
 
 /** Invokes the main method in a new thread. */
 bool JavaThread(void *ignore) {
+  jclass cls = NULL;
+  jmethodID mid = NULL;
+
   CreateJVM();
 
   registerAllNatives(g_env);
 
-  g_env->FindClass("javaforce/jni/Startup");
+  if (ffmpeg) {
+    //load ffmpeg shared libraries
+    printf("ffmpeg init...");
+    cls = g_env->FindClass("javaforce/media/MediaCoder");
+    if (cls == NULL) {
+      error("Unable to find MediaCoder class");
+      return false;
+    }
+    mid = g_env->GetStaticMethodID(cls, "load", "()V");
+    if (mid == NULL) {
+      error("Unable to find MediaCoder.load method");
+      return false;
+    }
+    g_env->CallStaticVoidMethod(cls, mid);
+  }
 
   char **argv = g_argv;
   int argc = g_argc;
@@ -408,6 +426,10 @@ bool loadProperties() {
   //jfexec [-cp] CLASSPATH MAINCLASS
   bool have_classpath = false;
   bool have_mainclass = false;
+
+  javahome[0] = 0;
+  xoptions[0] = 0;
+
   char** argv = g_argv;
   int argc = g_argc;
   for(int a=1;a<argc;a++) {
@@ -416,7 +438,21 @@ bool loadProperties() {
     g_argc--;
     char* arg = argv[a];
     if (arg[0] == 0) continue;
-    if (arg[0] == '-') continue;  //TODO : support -D, etc.
+    if (arg[0] == '-') {
+      if (strcmp(arg, "-ffmpeg") == 0) {
+        ffmpeg = true;
+        continue;
+      }
+      if (arg[1] == 'D') {
+        //-Dkey=value
+        if (xoptions[0] != 0) {
+          strcat(xoptions, " ");
+        }
+        strcat(xoptions, arg);
+        continue;
+      }
+      continue;
+    }
     if (!have_classpath) {
       strcpy(classpath, arg);
       have_classpath = true;
@@ -435,8 +471,6 @@ bool loadProperties() {
 #else
   strcpy(method, "main");  //default method name
 #endif
-  javahome[0] = 0;  //detect later
-  xoptions[0] = 0;
   return true;
 }
 #else
@@ -497,6 +531,9 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
       strcpy(xoptions, ln1 + 8);
+    }
+    else if (strncmp(ln1, "FFMPEG=", 7) == 0) {
+      ffmpeg = true;
     }
 #ifdef _JF_SERVICE
     else if (strncmp(ln1, "SERVICE=", 8) == 0) {

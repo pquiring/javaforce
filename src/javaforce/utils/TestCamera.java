@@ -23,10 +23,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
    * Creates new form TestCamera
    */
   public TestCamera() {
-    if (!MediaCoder.init()) {
-      JFAWT.showError("Error", "FFmpeg init failed");
-      System.exit(1);
-    }
     initComponents();
     pack();
     listCameras();

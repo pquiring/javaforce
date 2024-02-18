@@ -51,6 +51,8 @@ int thread_handle;
 int thread_id;
 char **g_argv;
 int g_argc;
+JavaVM *g_jvm = NULL;
+JNIEnv *g_env = NULL;
 void *jvm_dll;
 void *jawt_dll;
 pthread_t thread;
@@ -63,6 +65,7 @@ char method[MAX_PATH];
 char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
+bool ffmpeg = false;
 
 /* Prototypes */
 void error(const char *msg);
@@ -240,6 +243,19 @@ void FreeArgs(JavaVMInitArgs *args) {
   free(args);
 }
 
+/** Creates a new JVM. */
+bool CreateJVM() {
+  JavaVMInitArgs *args = BuildArgs();
+  if ((*CreateJavaVM)(&g_jvm, (void**)&g_env, args) == -1) {
+    error("Unable to create Java VM");
+    return false;
+  }
+
+//  FreeArgs(args);
+
+  return true;
+}
+
 void printException(JNIEnv *env) {
   jthrowable exc;
   exc = env->ExceptionOccurred();
@@ -341,69 +357,79 @@ void registerAllNatives(JNIEnv *env) {
 
 /** Continues loading the JVM in a new Thread. */
 bool JavaThread(void *ignore) {
-  JavaVM *jvm = NULL;
-  JNIEnv *env = NULL;
   jclass cls = NULL;
   jmethodID mid = NULL;
 
-  if ((*CreateJavaVM)(&jvm, &env, BuildArgs()) == -1) {
-    error("Unable to create Java VM");
-    return false;
-  }
+  CreateJVM();
 
-  registerAllNatives(env);
+  registerAllNatives(g_env);
 
   //load linux shared libraries
-  cls = env->FindClass("javaforce/jni/LnxNative");
+  cls = g_env->FindClass("javaforce/jni/LnxNative");
   if (cls == NULL) {
     error("Unable to find LnxNative class");
     return false;
   }
-  mid = env->GetStaticMethodID(cls, "load", "()V");
+  mid = g_env->GetStaticMethodID(cls, "load", "()V");
   if (mid == NULL) {
     error("Unable to find LnxNative.load method");
     return false;
   }
-  env->CallStaticVoidMethod(cls, mid);
+  g_env->CallStaticVoidMethod(cls, mid);
+
+  if (ffmpeg) {
+    //load ffmpeg shared libraries
+    cls = g_env->FindClass("javaforce/media/MediaCoder");
+    if (cls == NULL) {
+      error("Unable to find MediaCoder class");
+      return false;
+    }
+    mid = g_env->GetStaticMethodID(cls, "load", "()V");
+    if (mid == NULL) {
+      error("Unable to find MediaCoder.load method");
+      return false;
+    }
+    g_env->CallStaticVoidMethod(cls, mid);
+  }
 
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
     //request service shutdown
-    cls = env->FindClass("javaforce/jni/LnxNative");
+    cls = g_env->FindClass("javaforce/jni/LnxNative");
     if (cls == NULL) {
       error("Unable to find LnxNative class");
       return false;
     }
-    mid = env->GetStaticMethodID(cls, "lnxServiceRequestStop", "()V");
+    mid = g_env->GetStaticMethodID(cls, "lnxServiceRequestStop", "()V");
     if (mid == NULL) {
       error("Unable to find lnxServiceRequestStop method");
       return false;
     }
-    env->CallStaticVoidMethod(cls, mid);
+    g_env->CallStaticVoidMethod(cls, mid);
     return true;
   }
   //setup service shutdown
-  cls = env->FindClass("javaforce/jni/LnxNative");
+  cls = g_env->FindClass("javaforce/jni/LnxNative");
   if (cls == NULL) {
     error("Unable to find LnxNative class");
     return false;
   }
-  mid = env->GetStaticMethodID(cls, "lnxServiceInit", "()V");
+  mid = g_env->GetStaticMethodID(cls, "lnxServiceInit", "()V");
   if (mid == NULL) {
     error("Unable to find lnxServiceInit method");
     return false;
   }
-  env->CallStaticVoidMethod(cls, mid);
+  g_env->CallStaticVoidMethod(cls, mid);
 #endif
 
   convertClass(mainclass);
 
-  cls = env->FindClass(mainclass);
+  cls = g_env->FindClass(mainclass);
   if (cls == NULL) {
     error("Unable to find main class");
     return false;
   }
-  mid = env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
+  mid = g_env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
   if (mid == NULL) {
     error("Unable to find main method");
     return false;
@@ -413,8 +439,8 @@ bool JavaThread(void *ignore) {
   //skip argv[0]
   argv++;
   argc--;
-  env->CallStaticVoidMethod(cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
-  jvm->DestroyJavaVM();  //waits till all threads are complete
+  g_env->CallStaticVoidMethod(cls, mid, ExpandStringArray(g_env, ConvertStringArray(g_env, argv, argc)));
+  g_jvm->DestroyJavaVM();  //waits till all threads are complete
   //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
   return true;
 }
@@ -440,6 +466,10 @@ struct Header {
 bool loadProperties() {
   bool have_classpath = false;
   bool have_mainclass = false;
+
+  javahome[0] = 0;
+  xoptions[0] = 0;
+
   char** argv = g_argv;
   int argc = g_argc;
   for(int a=1;a<argc;a++) {
@@ -448,7 +478,21 @@ bool loadProperties() {
     g_argc--;
     char* arg = argv[a];
     if (arg[0] == 0) continue;
-    if (arg[0] == '-') continue;  //TODO : support -D, etc.
+    if (arg[0] == '-') {
+      if (strcmp(arg, "-ffmpeg") == 0) {
+        ffmpeg = true;
+        continue;
+      }
+      if (arg[1] == 'D') {
+        //-Dkey=value
+        if (xoptions[0] != 0) {
+          strcat(xoptions, " ");
+        }
+        strcat(xoptions, arg);
+        continue;
+      }
+      continue;
+    }
     if (!have_classpath) {
       strcpy(classpath, arg);
       have_classpath = true;
@@ -467,8 +511,6 @@ bool loadProperties() {
 #else
   strcpy(method, "main");
 #endif
-  javahome[0] = 0;  //detect later
-  xoptions[0] = 0;
   return true;
 }
 #else
@@ -541,6 +583,9 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
       strcpy(xoptions, ln1 + 8);
+    }
+    else if (strncmp(ln1, "FFMPEG=", 7) == 0) {
+      ffmpeg = true;
     }
     ln1 = ln2;
   }

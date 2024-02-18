@@ -24,7 +24,6 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
       JFAWT.showError("Error", "Another instance of jfPhone is already running!");
       System.exit(0);
     }
-    MediaCoder.init();
     panel = new PhonePanel(this, false);
     addWindowListener(this);
     setResizable(false);

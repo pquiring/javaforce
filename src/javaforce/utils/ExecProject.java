@@ -55,6 +55,7 @@ public class ExecProject implements ShellProcessListener {
     String classpath = props.getProperty("CLASSPATH");
     String mainclass = props.getProperty("MAINCLASS");
     String service = props.getProperty("SERVICE");
+    String ffmpeg = props.getProperty("FFMPEG");
 
     if (service != null) {
       exec += "s";
@@ -70,6 +71,9 @@ public class ExecProject implements ShellProcessListener {
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add(home + File.separator + "bin" + File.separator + exec);
+    if (ffmpeg != null) {
+      cmd.add("-ffmpeg");
+    }
     cmd.add("-cp");
     if (JF.isWindows()) {
       cmd.add(classpath);

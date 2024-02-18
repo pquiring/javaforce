@@ -40,8 +40,6 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public void run() {
     setName("DVRService");
-    //setup codecs
-    MediaCoder.init();
     //init Paths
     Paths.init();
     //load current config

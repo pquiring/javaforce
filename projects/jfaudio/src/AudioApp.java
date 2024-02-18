@@ -71,10 +71,6 @@ public class AudioApp extends javax.swing.JFrame implements KeyEventDispatcher {
    */
   public static void main(String args[]) {
     if (!Paths.testPaths()) return;
-    if (!MediaCoder.init()) {
-      if (!MediaCoder.download()) return;
-      if (!MediaCoder.init()) return;  //try again after download
-    }
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         new AudioApp().setVisible(true);

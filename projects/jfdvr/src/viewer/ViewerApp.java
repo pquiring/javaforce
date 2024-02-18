@@ -100,10 +100,6 @@ public class ViewerApp extends javax.swing.JFrame {
    * @param args the command line arguments
    */
   public static void main(String args[]) {
-    if (!MediaCoder.init()) {
-      if (!MediaCoder.download()) return;
-      if (!MediaCoder.init()) return;  //try again after download
-    }
     ViewerApp.args = args;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
