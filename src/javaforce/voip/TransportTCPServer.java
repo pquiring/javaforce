@@ -97,8 +97,11 @@ public class TransportTCPServer implements Transport {
     synchronized(clientsLock) {
       socket = clients.get(id);
     }
+    if (socket == null) {
+      if (debug) JFLog.log(log, "TransportTCPServer:send:failed");
+      return false;
+    }
     try {
-      if (socket == null) socket = connect(hostaddr, port, id);
       OutputStream os = socket.getOutputStream();
       os.write(data, off, len);
     } catch (SocketException se) {
@@ -146,12 +149,6 @@ public class TransportTCPServer implements Transport {
     } else {
       return false;
     }
-  }
-
-  private Socket connect(InetAddress hostaddr, int port, String id) throws Exception {
-    Socket socket = new Socket(hostaddr, port);
-    addClient(hostaddr.getHostAddress(), port, id, socket);
-    return socket;
   }
 
   protected class WorkerAccepter extends Thread {
