@@ -61,7 +61,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_formMouseMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-    ViewerApp.panel.setVideoSize(getWidth(), getHeight());
+    ViewerApp.viewer.setVideoSize(getWidth(), getHeight());
   }//GEN-LAST:event_formComponentResized
 
   private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked

@@ -5,6 +5,7 @@ package viewer;
  * @author pquiring
  */
 
+import java.util.*;
 import java.net.*;
 
 public class Config {
@@ -43,5 +44,9 @@ public class Config {
       e.printStackTrace();
       return null;
     }
+  }
+  public static void randomPort() {
+    Random r = new Random();
+    nextPort += r.nextInt(1000);
   }
 }

@@ -41,6 +41,6 @@ public class TransportTLSClient extends TransportTCPClient {
     socket.bind(new InetSocketAddress(InetAddress.getLocalHost(), localport));
     os = socket.getOutputStream();
     is = socket.getInputStream();
-    connected = true;
+    active = true;
   }
 }

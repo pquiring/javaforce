@@ -15,6 +15,10 @@ Includes motion detection recording.
 
 Does NOT re-encode video if recording but just saves live stream into mp4 files.
 
+Requirements:
+  Viewer : 6GB memory
+  Server : 12GB memory
+
 Known issues:
  - motion detection still needs work
 

@@ -66,7 +66,16 @@ public class TransportUDP implements Transport {
     return true;
   }
 
+  public boolean disconnect(String host, int port) {
+    return false;
+  }
+
   public boolean error() {
     return error;
+  }
+
+  public String[] getClients() {
+    //not tracked for UDP clients
+    return new String[0];
   }
 }

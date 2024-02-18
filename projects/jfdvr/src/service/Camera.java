@@ -65,6 +65,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
       } else {
         viewers.add(sess);
       }
+      sess.res_user = this;
     }
   }
 
@@ -75,6 +76,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
       } else {
         JFLog.log("DVR:Camera:RTSPSession:remove_viewer:not found:" + sess);
       }
+      sess.res_user = null;
     }
   }
 
@@ -192,4 +194,8 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public void rtpDigit(RTPChannel rtpc, char c) {}
 
   public void rtpInactive(RTPChannel rtpc) {}
+
+  public String toString() {
+    return "Camera:viewers=" + viewers.size() + ":" + name;
+  }
 }

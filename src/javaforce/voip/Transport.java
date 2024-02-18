@@ -17,7 +17,9 @@ public interface Transport {
   public boolean close();
   public boolean send(byte[] data, int off, int len, InetAddress host, int port);
   public boolean receive(Packet packet);  //blocking
+  public boolean disconnect(String host, int port);
   public String getName();
 //  public int getLocalPort();
   public boolean error();
+  public String[] getClients();
 }

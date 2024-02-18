@@ -46,8 +46,9 @@ public class RTSPSession {
   //user defined for tracking resource
   public int res_type;  //resource type
   public String res_name;  //resource name
+  public Object res_user;  //resource object
 
   public String toString() {
-    return "RTSPSession:{local=" + localport + ",remote=" + remotehost + ":" + remoteport + ":" + rtp + "}";
+    return "RTSPSession:{local=" + localport + ",remote=" + remotehost + ":" + remoteport + ":" + rtp + ":" + cmd + "}";
   }
 }

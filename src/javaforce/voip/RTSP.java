@@ -74,12 +74,14 @@ public abstract class RTSP implements TransportInterface {
    * Closes the UDP port and frees resources.
    */
   protected void uninit() {
+    if (debug) JFLog.log("RTSP.unint() start:" + this);
     if (transport == null) {
       return;
     }
     active = false;
     transport.close();
     try {
+      if (debug) JFLog.log("RTSP.uninit() waiting for reader:" + this);
       worker_reader.join();
     } catch (Exception e) {
       e.printStackTrace();
@@ -97,6 +99,7 @@ public abstract class RTSP implements TransportInterface {
     pool = null;
     transport = null;
     worker_reader = null;
+    if (debug) JFLog.log("RTSP.unint() done:" + this);
   }
 
   public void setLog(int id) {
@@ -777,13 +780,16 @@ public abstract class RTSP implements TransportInterface {
             worker_packet.add(pack);
           } else {
             //RTSPClient
+            if (debug) JFLog.log("RTSP:packet send:host=" + pack.host);
             String[] msg = new String(pack.data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
             iface.onPacket(RTSP.this, msg, pack.host, pack.port);
+            if (debug) JFLog.log("RTSP:packet free:host=" + pack.host);
             pool.free(pack);
+            if (debug) JFLog.log("RTSP:packet done:host=" + pack.host);
           }
         } catch (Exception e) {
-          JFLog.log(log, e);
-          if (pack != null) {
+          if (debug) JFLog.log(log, e);
+          if (!server && pack != null) {
             pool.free(pack);
           }
         }

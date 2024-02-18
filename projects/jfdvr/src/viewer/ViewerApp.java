@@ -34,21 +34,22 @@ public class ViewerApp extends javax.swing.JFrame {
     setPosition();
     setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View)");
     RTP.setPortRange(40000, 50000);
+    Config.randomPort();
     if (args.length > 0 && args[0].startsWith("rtsp://")) {
       String arg = args[0];
-      panel = new Viewer();
+      viewer = new Viewer();
       try {
         Config.createURL(arg);
-        panel.play(Config.url);
+        viewer.play(Config.url);
       } catch (Exception e) {
         e.printStackTrace();
       }
     } else {
-      SelectView dialog = new SelectView();
+      selector = new SelectView();
       if (args.length > 0) {
-        dialog.setServer(args[0]);
+        selector.setServer(args[0]);
       }
-      setPanel(dialog);
+      setPanel(selector);
     }
     setExtendedState(Frame.MAXIMIZED_BOTH);
     fullscreen = true;
@@ -66,6 +67,11 @@ public class ViewerApp extends javax.swing.JFrame {
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("jfDVR Viewer");
     setPreferredSize(new java.awt.Dimension(1280, 720));
+    addWindowListener(new java.awt.event.WindowAdapter() {
+      public void windowClosed(java.awt.event.WindowEvent evt) {
+        formWindowClosed(evt);
+      }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -80,6 +86,15 @@ public class ViewerApp extends javax.swing.JFrame {
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
+
+  private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+    if (selector != null) {
+      selector.close();
+    }
+    if (viewer != null) {
+      viewer.stop(true);
+    }
+  }//GEN-LAST:event_formWindowClosed
 
   /**
    * @param args the command line arguments
@@ -100,7 +115,8 @@ public class ViewerApp extends javax.swing.JFrame {
   // End of variables declaration//GEN-END:variables
 
   public static String[] args;
-  public static Viewer panel;
+  public static Viewer viewer;
+  public static SelectView selector;
   public static ViewerApp self;
   public static Container root;
   public static JFImage cameraicon;
@@ -134,9 +150,9 @@ public class ViewerApp extends javax.swing.JFrame {
   }
 
   public static void stopViewer() {
-    if (panel == null) return;
-    panel.stop(true);
-    panel = null;
+    if (viewer == null) return;
+    viewer.stop(true);
+    viewer = null;
   }
 
   public static void showHelp() {
@@ -151,23 +167,27 @@ public class ViewerApp extends javax.swing.JFrame {
 
   public static void selectView() {
     stopViewer();
-    SelectView view = new SelectView();
-    setPanel(view);
-    view.setVisible(true);
+    selector = new SelectView();
+    setPanel(selector);
+    selector.setVisible(true);
   }
 
   public void selectView(String type, String name) {
     try {
       Config.changeURL("/" + type + "/" + name);
-      panel = new Viewer();
-      panel.play(Config.url);
+      viewer = new Viewer();
+      viewer.play(Config.url);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
   public static void refresh() {
-    panel.refresh();
+    if (selector != null) {
+      selector.refresh();
+    } else {
+      viewer.refresh();
+    }
   }
 
   public static void toggleFullscreen() {
@@ -183,9 +203,12 @@ public class ViewerApp extends javax.swing.JFrame {
     JFLog.log("setPanel:" + panel);
     if (panel == null) {
       self.setContentPane(root);
-    } else {
-      self.setContentPane(panel);
+      return;
     }
+    if (panel instanceof SelectView) {
+      viewer = null;
+    }
+    self.setContentPane(panel);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);

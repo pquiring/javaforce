@@ -64,7 +64,7 @@ public class TransportTCPServer implements Transport {
       if (clients.containsKey(id)) {
         clients.remove(id);
       } else {
-        JFLog.log("Error:TrannsportTCPServer:removeClient:not found:" + id);
+        if (debug) JFLog.log("Error:TrannsportTCPServer:removeClient:not found:" + id);
       }
     }
   }
@@ -73,10 +73,13 @@ public class TransportTCPServer implements Transport {
     if (debug) JFLog.log("Transport:addClient:" + id);
     synchronized(clientsLock) {
       if (clients.containsKey(id)) {
-        JFLog.log("Error:TrannsportTCPServer:addClient:already exists:" + id);
-      } else {
-        clients.put(id, socket);
+        if (debug) JFLog.log("Error:TrannsportTCPServer:addClient:already exists:" + id);
+        Socket oldsocket = clients.get(id);
+        if (oldsocket != socket) {
+          try {oldsocket.close();} catch (Exception e) {}
+        }
       }
+      clients.put(id, socket);
     }
     iface.onConnect(host, port);
   }
@@ -95,11 +98,11 @@ public class TransportTCPServer implements Transport {
       os.write(data, off, len);
     } catch (SocketException se) {
       if (debug) JFLog.log("TransportTCPServer:Connection lost");
-      removeClient(host, port, id);
+//      removeClient(host, port, id);
       return false;
     } catch (Exception e) {
       if (debug) JFLog.log(e);
-      removeClient(host, port, id);
+//      removeClient(host, port, id);
       return false;
     }
     return true;
@@ -126,9 +129,22 @@ public class TransportTCPServer implements Transport {
     return false;
   }
 
+  public boolean disconnect(String host, int port) {
+    String id = host + ":" + port;
+    Socket socket;
+    synchronized(clientsLock) {
+      socket = clients.get(id);
+    }
+    if (socket != null) {
+      try {socket.close();} catch (Exception e) {}
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   private Socket connect(InetAddress hostaddr, int port, String id) throws Exception {
     Socket socket = new Socket(hostaddr, port);
-    if (debug) JFLog.log("Transport:put:" + id);
     addClient(hostaddr.getHostAddress(), port, id, socket);
     return socket;
   }
@@ -139,12 +155,16 @@ public class TransportTCPServer implements Transport {
       while (ss_active) {
         try {
           Socket socket = ss.accept();
-          InetAddress hostaddr = socket.getInetAddress();
-          String host = hostaddr.getHostAddress();
-          int port = socket.getPort();
-          String id = host + ":" + port;
-          addClient(host, port, id, socket);
-          new WorkerReader(socket, id, hostaddr, port).start();
+          try {
+            InetAddress hostaddr = socket.getInetAddress();
+            String host = hostaddr.getHostAddress();
+            int port = socket.getPort();
+            String id = host + ":" + port;
+            addClient(host, port, id, socket);
+            new WorkerReader(socket, id, hostaddr, port).start();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         } catch (SocketException e) {
           if (debug) JFLog.log("TransportTCPServer.WorkerAccepter:disconnected");
         } catch (Exception e) {
@@ -174,7 +194,12 @@ public class TransportTCPServer implements Transport {
     public void run() {
       worker_active = true;
       //reads packets from client
-      process();
+      try {
+        process();
+      } catch (Exception e) {
+        if (debug) JFLog.log(e);
+      }
+      worker_active = false;
       removeClient(host, port, id);
     }
     private byte[] extra = null;
@@ -224,7 +249,7 @@ public class TransportTCPServer implements Transport {
               if (read == -1) throw new Exception();
               packet.length += read;
             }
-          } while (plen == -1);
+          } while (worker_active && plen == -1);
           tlen = plen;
           //now find Content-Length:
           String[] msg = new String(packet.data, 0, plen).split("\r\n");
@@ -234,7 +259,7 @@ public class TransportTCPServer implements Transport {
             int clen = JF.atoi(clenstr);
             tlen += clen;
           }
-          while (packet.length < tlen) {
+          while (worker_active && packet.length < tlen) {
             //not enough read (frag?)
             int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
             if (read == -1) throw new Exception();
@@ -268,8 +293,16 @@ public class TransportTCPServer implements Transport {
         }
       }
     }
+    public boolean error() {
+      return worker_error;
+    }
   }
   public boolean error() {
     return ss_error;
+  }
+  public String[] getClients() {
+    synchronized(clientsLock) {
+      return clients.keySet().toArray(JF.StringArrayType);
+    }
   }
 }

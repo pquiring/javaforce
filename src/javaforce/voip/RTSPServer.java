@@ -21,6 +21,8 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   private static String stunHost, stunUser, stunPass;
   private boolean use_qop = false;
   private static final String realm = "javaforce";
+  private boolean active = true;
+  private WorkerKeepAlive keepAlive;
 
   public Object userobj;  //user definable
   public int expires;  //expires
@@ -42,8 +44,10 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     try {
       JFLog.log(log, "localhost = " + localhost);
       if (nat == NAT.STUN || nat == NAT.ICE) {
-        stopSTUN();
+        startSTUN();
       }
+      keepAlive = new WorkerKeepAlive();
+      keepAlive.start();
       return super.init(localhost, localport, this, true, type);
     } catch (Exception e) {
       if (stun != null) stopSTUN();
@@ -56,6 +60,10 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
    * Free all resources.
    */
   public void uninit() {
+    if (nat == NAT.STUN || nat == NAT.ICE) {
+      stopSTUN();
+    }
+    active = false;
     super.uninit();
   }
 
@@ -190,10 +198,19 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     RTSPSession sess;
     synchronized (clientsLock) {
       sess = clients.get(id);
+    }
+    return sess;
+  }
+
+  private RTSPSession createSession(String host, int port, String id) {
+    RTSPSession sess;
+    synchronized (clientsLock) {
+      sess = clients.get(id);
       if (sess == null) {
         sess = new RTSPSession(localhost, localport);
         sess.remotehost = host;
         sess.remoteport = port;
+        sess.ts = System.currentTimeMillis();
         clients.put(id, sess);
       }
     }
@@ -202,7 +219,13 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
 
   private static RTSPSession[] RTSPSessionArrayType = new RTSPSession[0];
   public RTSPSession[] getSessions() {
-    return clients.values().toArray(RTSPSessionArrayType);
+    synchronized (clientsLock) {
+      return clients.values().toArray(RTSPSessionArrayType);
+    }
+  }
+
+  public String[] getTransportClients() {
+    return transport.getClients();
   }
 
   /**
@@ -212,6 +235,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     String id = remoteip + ":" + remoteport;
     try {
       RTSPSession sess = getSession(remoteip, remoteport, id);
+      sess.ts = System.currentTimeMillis();
       String cmd = null;
       if (remoteip.equals("127.0.0.1")) {
         if (sess.localhost != null) {
@@ -348,15 +372,50 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
 
   public void onConnect(RTSP rtsp, String remoteip, int remoteport) {
     String id = remoteip + ":" + remoteport;
-    iface.onConnect(this, getSession(remoteip, remoteport, id));
+    iface.onConnect(this, createSession(remoteip, remoteport, id));
   }
 
   public void onDisconnect(RTSP rtsp, String remoteip, int remoteport) {
     //NOTE : this is only invoked for TCP clients
     String id = remoteip + ":" + remoteport;
-    iface.onDisconnect(this, getSession(remoteip, remoteport, id));
+    RTSPSession sess = getSession(remoteip, remoteport, id);
+    if (sess == null) return;
+    iface.onDisconnect(this, sess);
     synchronized (clientsLock) {
       clients.remove(id);
+    }
+  }
+
+  private byte[] nullmsg = new byte[4];
+
+  public class WorkerKeepAlive extends Thread {
+    public void run() {
+      while (active) {
+        JF.sleep(1000);
+        long now = System.currentTimeMillis();
+        long cut = now - 60 * 1000;
+        String[] clients = transport.getClients();
+        for(String client : clients) {
+          try {
+            int idx = client.indexOf(':');
+            String host = client.substring(0, idx);
+            String portstr = client.substring(idx+1);
+            int port = Integer.valueOf(portstr);
+            RTSPSession sess = getSession(host, port, client);
+            if (sess == null) continue;
+            if (sess.ts < cut) {
+              InetAddress hostaddr = InetAddress.getByName(host);
+              if (false) {
+                transport.send(nullmsg, log, log, hostaddr, port);
+              } else {
+                transport.disconnect(host, port);
+              }
+            }
+          } catch (Exception e) {
+            if (debug) JFLog.log(e);
+          }
+        }
+      }
     }
   }
 }

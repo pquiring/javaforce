@@ -15,7 +15,7 @@ import java.io.*;
 import javaforce.*;
 
 public class TransportTCPClient implements Transport {
-  protected boolean connected = false;
+  protected boolean active = false;
   protected Socket socket;
   protected OutputStream os;
   protected InputStream is;
@@ -54,7 +54,7 @@ public class TransportTCPClient implements Transport {
   }
 
   public boolean close() {
-    connected = false;
+    active = false;
     try {
       if (socket != null) {
         socket.close();
@@ -68,7 +68,7 @@ public class TransportTCPClient implements Transport {
 
   public boolean send(byte[] data, int off, int len, InetAddress host, int port) {
     try {
-      if (!connected) {
+      if (!active) {
         connect(host, port);
       }
       os.write(data, off, len);
@@ -122,7 +122,7 @@ public class TransportTCPClient implements Transport {
           if (read == -1) throw new Exception("Transport read failed");
           packet.length += read;
         }
-      } while (plen == -1);
+      } while (active && plen == -1);
       tlen = plen;
       //now find Content-Length:
       String[] msg = new String(packet.data, 0, plen).split("\r\n");
@@ -132,7 +132,7 @@ public class TransportTCPClient implements Transport {
         int clen = JF.atoi(clenstr);
         tlen += clen;
       }
-      while (packet.length < tlen) {
+      while (active && packet.length < tlen) {
         //not enough read (frag?)
         int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
         if (read == -1) throw new Exception("Transport read failed");
@@ -155,6 +155,10 @@ public class TransportTCPClient implements Transport {
     return true;
   }
 
+  public boolean disconnect(String host, int port) {
+    return false;
+  }
+
   protected void connect(InetAddress host, int port) throws Exception {
     if (debug) JFLog.log("Connect:" + host.getHostAddress() + ":" + port);
     this.remotehost = host;
@@ -162,10 +166,14 @@ public class TransportTCPClient implements Transport {
     socket.connect(new InetSocketAddress(host, port), 5000);
     os = socket.getOutputStream();
     is = socket.getInputStream();
-    connected = true;
+    active = true;
   }
 
   public boolean error() {
     return error;
+  }
+
+  public String[] getClients() {
+    return new String[0];
   }
 }

@@ -14,6 +14,8 @@ import javaforce.voip.*;
 
 public class SelectView extends javax.swing.JPanel implements RTSPClientInterface {
 
+  public static boolean debug = false;
+
   /**
    * Creates new form SelectGroup
    */
@@ -21,6 +23,10 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
     initComponents();
     updateLists();
     initServer();
+    if (debug) {
+      RTSP.debug = true;
+      TransportTCPClient.debug = true;
+    }
     if (server.getText().length() > 0) {
       getLists();
     }
@@ -186,12 +192,14 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   private void viewGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewGroupActionPerformed
     String group = groupList.getSelectedValue();
     if (group == null) return;
+    close();
     ViewerApp.self.selectView("group" ,group);
   }//GEN-LAST:event_viewGroupActionPerformed
 
   private void viewCameraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewCameraActionPerformed
     String camera = cameraList.getSelectedValue();
     if (camera == null) return;
+    close();
     ViewerApp.self.selectView("camera", camera);
   }//GEN-LAST:event_viewCameraActionPerformed
 
@@ -248,6 +256,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   }
 
   private void getLists() {
+    close();
     rtsp = new RTSPClient();
     if (Config.url == null) {
       try {
@@ -297,7 +306,16 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       }
     }
     updateLists();
-    rtsp.uninit();
-    rtsp = null;
+  }
+
+  public void refresh() {
+    updateLists.doClick();
+  }
+
+  public void close() {
+    if (rtsp != null) {
+      rtsp.uninit();
+      rtsp = null;
+    }
   }
 }

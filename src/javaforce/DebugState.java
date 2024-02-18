@@ -54,7 +54,9 @@ public class DebugState extends Thread {
     while (active) {
       sb.setLength(0);
       sb.append(mark);
-      runnable.run();
+      try {
+        runnable.run();
+      } catch (Exception e) {}
       sb.append(mark);
       flush();
       JF.sleep(1000);
