@@ -19,10 +19,12 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public static ConfigService configService;
   public static RTSPServer rtspServer;
   public static DebugState debugState;
+  public static WorkerKeepAlive keepAlive;
+
+  public static boolean active = true;
 
   public final static boolean debug = true;
   public final static boolean debug_sub_systems = false;
-  public Timer timer;
 
   public static void serviceStart(String args[]) {
     if (dvrService != null) return;
@@ -108,9 +110,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
     configService.start();
     //enable firewall exception
     setupFirewall();
-    //start keep alive timer
-    timer = new Timer();
-    timer.schedule(new TimerTask() {public void run() {checkKeepAlive();}}, 60 * 1000, 60 * 1000);
+    //start keep alive thread
+    keepAlive = new WorkerKeepAlive();
+    keepAlive.start();
     //start RTSP server
     rtspServer = new RTSPServer();
     rtspServer.init(554, this, TransportType.TCP);
@@ -134,10 +136,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
         e.printStackTrace();
       }
     }
-    if (timer != null) {
-      timer.cancel();
-      timer = null;
-    }
+    active = false;
+    keepAlive = null;
     if (rtspServer != null) {
       try {
         rtspServer.uninit();
@@ -419,22 +419,31 @@ public class DVRService extends Thread implements RTSPServerInterface {
     return new String[] {camlist};
   }
 
-  private void checkKeepAlive() {
-    long cut = System.currentTimeMillis() - 60 * 1000;
-    synchronized (Config.current.camerasLock) {
-      for(Camera cam : Config.current.cameras) {
-        synchronized (cam.viewersLock) {
-          int count = cam.viewers.size();
-          for(int idx=0;idx<count;idx++) {
-            RTSPSession sess = cam.viewers.get(idx);
-            if (sess.ts < cut) {
-              JFLog.log("DVR:Session expired:" + sess);
-              cam.remove_viewer(sess);
-              count--;
-            } else {
-              idx++;
+  public class WorkerKeepAlive extends Thread {
+    public void run() {
+      while (active) {
+        JF.sleep(1000);
+        long cut = System.currentTimeMillis() - 60 * 1000;
+        try {
+          synchronized (Config.current.camerasLock) {
+            for(Camera cam : Config.current.cameras) {
+              synchronized (cam.viewersLock) {
+                int count = cam.viewers.size();
+                for(int idx=0;idx<count;idx++) {
+                  RTSPSession sess = cam.viewers.get(idx);
+                  if (sess.ts < cut) {
+                    JFLog.log("DVR:Session expired:" + sess);
+                    cam.remove_viewer(sess);
+                    count--;
+                  } else {
+                    idx++;
+                  }
+                }
+              }
             }
           }
+        } catch (Exception e) {
+          if (debug) JFLog.log(e);
         }
       }
     }
