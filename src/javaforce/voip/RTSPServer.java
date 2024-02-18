@@ -344,7 +344,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
             }
             case "PLAY": {
               if (!sess.auth) {
-                JFLog.log("!auth");
+                if (debug) JFLog.log("!auth");
                 break;
               }
               iface.onPlay(this, sess);
@@ -352,7 +352,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
             }
             case "TEARDOWN": {
               if (!sess.auth) {
-                JFLog.log("!auth");
+                if (debug) JFLog.log("!auth");
                 break;
               }
               iface.onTeardown(this, sess);
