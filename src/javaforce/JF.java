@@ -19,7 +19,7 @@ import java.nio.file.*;
 public class JF {
 
   public static String getVersion() {
-    return "52.0";
+    return "52.1";
   }
 
   public static void main(String[] args) {

@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 52.0
+Version 52.1
 
 Description
 ===========

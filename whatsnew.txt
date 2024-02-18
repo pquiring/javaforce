@@ -1,5 +1,9 @@
 What's new...
 
+Feb 18/2024 : JF/52.1
+ - jfDVR/0.15
+   - fixed stability issues
+
 Feb 17/2024 : JF/52.0
  - jfDVR/0.14
    - fix config issues
