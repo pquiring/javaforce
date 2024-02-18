@@ -13,14 +13,39 @@ function detectos {
     debian | ubuntu)
       pkg=deb
       PKG=DEB
+      OS=debian
+      case $HOSTTYPE in
+      x86_64)
+        ARCH=amd64
+        ;;
+      aarch64)
+        ARCH=arm64
+        ;;
+      *)
+        echo Invalid HOSTTYPE!
+        exit
+        ;;
+      esac
       ;;
     fedora)
       pkg=rpm
       PKG=RPM
+      OS=fedora
+      ARCH=$HOSTTYPE
       ;;
     arch)
       pkg=pac
       PKG=PAC
+      OS=arch
+      case $HOSTTYPE in
+      x86_64)
+        ARCH=amd64
+        ;;
+      *)
+        echo Invalid HOSTTYPE!
+        exit
+        ;;
+      esac
       ;;
     *)
       echo Unknown os detected!
@@ -42,12 +67,24 @@ if [ ! -f native/linux64.bin ]; then
   exit
 fi
 
+#install repo
 ant repo
+
+#clean repo
+echo cleaning repo/$OS/$ARCH/\*.$pkg
+rm repo/$OS/$ARCH/*.$pkg
+
+#package javaforce
 ant $pkg
+
+#package projects
 cd projects
 chmod +x package.sh
 ./package.sh
-cd ../lib
+cd ..
+
+#package libs
+cd lib
 chmod +x package.sh
 ./package.sh
 cd ..
