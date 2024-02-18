@@ -23,7 +23,7 @@ public class Viewer {
   private int grid_x, grid_y, grid_xy;
   private boolean playing;
 
-  public static boolean debug = true;
+  public static boolean debug = false;
   public static boolean debug_packets = false;
   private final static boolean debug_buffers = false;
 

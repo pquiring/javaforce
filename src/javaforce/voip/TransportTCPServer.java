@@ -106,11 +106,9 @@ public class TransportTCPServer implements Transport {
       os.write(data, off, len);
     } catch (SocketException se) {
       if (debug) JFLog.log(log,"TransportTCPServer:Connection lost");
-//      removeClient(host, port, id);
       return false;
     } catch (Exception e) {
       if (debug) JFLog.log(log,e);
-//      removeClient(host, port, id);
       return false;
     }
     return true;
