@@ -30,7 +30,6 @@
 #include "../../native/headers/javaforce_ui_Font.h"
 #include "../../native/headers/javaforce_ui_Image.h"
 #include "../../native/headers/javaforce_ui_Window.h"
-#include "../../native/headers/javaforce_jni_JFNative.h"
 #include "../../native/headers/javaforce_jni_LnxNative.h"
 #include "../../native/headers/javaforce_media_Camera.h"
 #include "../../native/headers/javaforce_media_MediaCoder.h"

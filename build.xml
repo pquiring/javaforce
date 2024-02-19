@@ -253,6 +253,7 @@
       <fileset dir="${lib}" includes="javaforce-${version}.jar"/>
       <fileset dir="." includes="*.jar"/>
       <fileset dir="." includes="*.asc"/>
+      <fileset dir="native/headers" includes="*.h"/>
     </delete>
   </target>
 </project>

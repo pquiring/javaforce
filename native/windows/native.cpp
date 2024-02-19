@@ -14,7 +14,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_JFNative.h"
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_gl_GL.h"
 #include "javaforce_media_Camera.h"

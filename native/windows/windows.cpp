@@ -25,7 +25,6 @@
 
 #include "../../native/headers/javaforce_controls_ni_DAQmx.h"
 #include "../../native/headers/javaforce_gl_GL.h"
-#include "../../native/headers/javaforce_jni_JFNative.h"
 #include "../../native/headers/javaforce_jni_WinNative.h"
 #include "../../native/headers/javaforce_media_Camera.h"
 #include "../../native/headers/javaforce_media_MediaCoder.h"
@@ -676,7 +675,7 @@ void __stdcall ServiceControl(int OpCode) {
     case SERVICE_CONTROL_STOP:
       AttachJVM();
       ServiceStatus(SERVICE_STOPPED);
-      InvokeMethod(mainclass, "serviceStop", "()V", NULL);
+      InvokeMethodVoid(mainclass, "serviceStop", "()V", NULL);
       break;
   }
 }
@@ -689,7 +688,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   if (ffmpeg) {
     load_ffmpeg();
   }
-  InvokeMethod(mainclass, "serviceStart", "([Ljava/lang/String;)V", ConvertStringArray(g_env, argc, argv));
+  InvokeMethodVoid(mainclass, "serviceStart", "([Ljava/lang/String;)V", ConvertStringArray(g_env, argc, argv));
   g_jvm->DestroyJavaVM();
 }
 
