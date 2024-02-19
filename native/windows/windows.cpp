@@ -383,6 +383,21 @@ void registerAllNatives(JNIEnv *env) {
   registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
 }
 
+void load_ffmpeg() {
+  //load ffmpeg shared libraries
+  cls = g_env->FindClass("javaforce/media/MediaCoder");
+  if (cls == NULL) {
+    error("Unable to find MediaCoder class");
+    return false;
+  }
+  mid = g_env->GetStaticMethodID(cls, "load", "()V");
+  if (mid == NULL) {
+    error("Unable to find MediaCoder.load method");
+    return false;
+  }
+  g_env->CallStaticVoidMethod(cls, mid);
+}
+
 /** Invokes the main method in a new thread. */
 bool JavaThread(void *ignore) {
   jclass cls = NULL;
@@ -393,18 +408,7 @@ bool JavaThread(void *ignore) {
   registerAllNatives(g_env);
 
   if (ffmpeg) {
-    //load ffmpeg shared libraries
-    cls = g_env->FindClass("javaforce/media/MediaCoder");
-    if (cls == NULL) {
-      error("Unable to find MediaCoder class");
-      return false;
-    }
-    mid = g_env->GetStaticMethodID(cls, "load", "()V");
-    if (mid == NULL) {
-      error("Unable to find MediaCoder.load method");
-      return false;
-    }
-    g_env->CallStaticVoidMethod(cls, mid);
+    load_ffmpeg();
   }
 
   char **argv = g_argv;
@@ -683,7 +687,9 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   registerAllNatives(g_env);
-  g_env->FindClass("javaforce/jni/Startup");
+  if (ffmpeg) {
+    load_ffmpeg();
+  }
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
   g_jvm->DestroyJavaVM();
 }
