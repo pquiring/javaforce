@@ -68,11 +68,14 @@ JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
 bool graal = false;
 bool ffmpeg = false;
+char errmsg[1024];
 
 /* Prototypes */
 void error(char *msg);
 bool JavaThread(void *ignore);
 bool loadProperties();
+bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args);
+jobject InvokeMethodObject(char *_class, char *_method, char *sign, jobject args);
 
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
@@ -127,23 +130,9 @@ ConvertStringArray(JNIEnv *env, int strc, char **strv)
  */
 jobject
 ExpandStringArray(JNIEnv *env, jobject inArray) {
-  jclass cls;
-  jmethodID mid;
   jobject outArray;
 
-  cls = env->FindClass("javaforce/JF");
-  if (cls == NULL) {
-    printException(g_env);
-    error("Unable to find javaforce.JF class");
-    return NULL;
-  }
-  mid = env->GetStaticMethodID(cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
-  if (mid == NULL) {
-    printException(g_env);
-    error("Unable to find javaforce.JF.expandArgs method");
-    return NULL;
-  }
-  outArray = env->CallStaticObjectMethod(cls, mid, inArray);
+  outArray = InvokeMethodObject("javaforce/JF", "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;", inArray);
   env->DeleteLocalRef(inArray);
   return outArray;
 }
@@ -211,24 +200,48 @@ void convertClass(char *cls) {
   }
 }
 
-bool InvokeMethod(char *_method, jobject args, char *sign) {
-  convertClass(mainclass);
-  jclass cls = g_env->FindClass(mainclass);
+/** invokes a static method returning void. */
+bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args) {
+  convertClass(_class);
+  jclass cls = g_env->FindClass(_class);
   if (cls == NULL) {
     printException(g_env);
-    error("Unable to find main class");
+    sprintf(errmsg, "Unable to find %s class", _class);
+    error(errmsg);
     return false;
   }
   jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
   if (mid == NULL) {
     printException(g_env);
-    error("Unable to find main method");
+    sprintf(errmsg, "Unable to find %s method", _method);
+    error(errmsg);
     return false;
   }
 
   g_env->CallStaticVoidMethod(cls, mid, args);
 
   return true;
+}
+
+/** invokes a static method returning Object. */
+jobject InvokeMethodObject(char *_class, char *_method, char *sign, jobject args) {
+  convertClass(_class);
+  jclass cls = g_env->FindClass(_class);
+  if (cls == NULL) {
+    printException(g_env);
+    sprintf(errmsg, "Unable to find %s class", _class);
+    error(errmsg);
+    return NULL;
+  }
+  jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
+  if (mid == NULL) {
+    printException(g_env);
+    sprintf(errmsg, "Unable to find %s method", _method);
+    error(errmsg);
+    return NULL;
+  }
+
+  return g_env->CallStaticObjectMethod(cls, mid, args);
 }
 
 char* MakeString(char* fmt, char* path) {
@@ -384,19 +397,7 @@ void registerAllNatives(JNIEnv *env) {
 }
 
 void load_ffmpeg() {
-  jclass cls = NULL;
-  jmethodID mid = NULL;
-
-  //load ffmpeg shared libraries
-  cls = g_env->FindClass("javaforce/media/MediaCoder");
-  if (cls == NULL) {
-    error("Unable to find MediaCoder class");
-  }
-  mid = g_env->GetStaticMethodID(cls, "load", "()V");
-  if (mid == NULL) {
-    error("Unable to find MediaCoder.load method");
-  }
-  g_env->CallStaticVoidMethod(cls, mid);
+  InvokeMethodVoid("javaforce/media/MediaCoder", "load", "()V", NULL);
 }
 
 /** Invokes the main method in a new thread. */
@@ -414,7 +415,7 @@ bool JavaThread(void *ignore) {
   //skip argv[0]
   argv++;
   argc--;
-  InvokeMethod(method, ExpandStringArray(g_env, ConvertStringArray(g_env, argc, argv)), "([Ljava/lang/String;)V");
+  InvokeMethodVoid(mainclass, method, "([Ljava/lang/String;)V", ExpandStringArray(g_env, ConvertStringArray(g_env, argc, argv)));
 
   g_jvm->DestroyJavaVM();  //waits till all threads are complete
 
@@ -675,7 +676,7 @@ void __stdcall ServiceControl(int OpCode) {
     case SERVICE_CONTROL_STOP:
       AttachJVM();
       ServiceStatus(SERVICE_STOPPED);
-      InvokeMethod("serviceStop", NULL, "()V");
+      InvokeMethod(mainclass, "serviceStop", "()V", NULL);
       break;
   }
 }
@@ -688,7 +689,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   if (ffmpeg) {
     load_ffmpeg();
   }
-  InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
+  InvokeMethod(mainclass, "serviceStart", "([Ljava/lang/String;)V", ConvertStringArray(g_env, argc, argv));
   g_jvm->DestroyJavaVM();
 }
 
