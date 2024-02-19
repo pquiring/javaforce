@@ -194,7 +194,6 @@ void convertClass(char *cls) {
 bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args) {
   convertClass(_class);
   jclass cls = g_env->FindClass(_class);
-  printf("cls:%s=%p\n", _class, cls);
   if (cls == NULL) {
     printException(g_env);
     sprintf(errmsg, "Unable to find %s class", _class);
@@ -202,7 +201,6 @@ bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args) {
     return false;
   }
   jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
-  printf("mid:%s:%s=%p\n", _method, sign, mid);
   if (mid == NULL) {
     printException(g_env);
     sprintf(errmsg, "Unable to find %s method", _method);
@@ -474,7 +472,7 @@ bool loadProperties() {
     }
   }
   if (!have_classpath || !have_mainclass) {
-    printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
+    printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\n");
     return false;
   }
 #ifdef _JF_SERVICE
