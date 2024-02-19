@@ -384,25 +384,23 @@ void registerAllNatives(JNIEnv *env) {
 }
 
 void load_ffmpeg() {
+  jclass cls = NULL;
+  jmethodID mid = NULL;
+
   //load ffmpeg shared libraries
   cls = g_env->FindClass("javaforce/media/MediaCoder");
   if (cls == NULL) {
     error("Unable to find MediaCoder class");
-    return false;
   }
   mid = g_env->GetStaticMethodID(cls, "load", "()V");
   if (mid == NULL) {
     error("Unable to find MediaCoder.load method");
-    return false;
   }
   g_env->CallStaticVoidMethod(cls, mid);
 }
 
 /** Invokes the main method in a new thread. */
 bool JavaThread(void *ignore) {
-  jclass cls = NULL;
-  jmethodID mid = NULL;
-
   CreateJVM();
 
   registerAllNatives(g_env);
