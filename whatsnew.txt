@@ -1,5 +1,10 @@
 What's new...
 
+Feb 19/2024 : JF/52.2
+ - improved native loaders
+   - all shared libraries are now automatically loaded
+   - if a project needs ffmpeg it MUST include "FFMPEG=true" in its cfg file
+
 Feb 18/2024 : JF/52.1
  - jfDVR/0.15
    - fixed stability issues
