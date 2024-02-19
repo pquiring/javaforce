@@ -35,7 +35,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     if (Settings.isJavaScript) initRPC();
     Settings.isWindows = JF.isWindows();
     Settings.isLinux = !Settings.isWindows;
-    Settings.hasFFMPEG = MediaCoder.loaded;
+    Settings.hasFFMPEG = true;
     initDTLS();
   }
 
