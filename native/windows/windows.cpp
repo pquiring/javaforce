@@ -95,7 +95,6 @@ void printException(JNIEnv *env) {
   jthrowable exc;
   exc = env->ExceptionOccurred();
   if (exc == NULL) return;
-  jclass newExcCls;
   env->ExceptionDescribe();
   env->ExceptionClear();
 }

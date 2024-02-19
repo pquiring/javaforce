@@ -65,11 +65,14 @@ char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
 bool ffmpeg = false;
+char errmsg[1024];
 
 /* Prototypes */
 void error(const char *msg);
 bool JavaThread(void *ignore);
 bool loadProperties();
+bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args);
+jobject InvokeMethodObject(char *_class, char *_method, char *sign, jobject args);
 
 /** Displays the error message in a dialog box. */
 void error(const char *msg) {
@@ -77,31 +80,33 @@ void error(const char *msg) {
   exit(0);
 }
 
+void printException(JNIEnv *env) {
+  jthrowable exc;
+  exc = env->ExceptionOccurred();
+  if (exc == NULL) return;
+  env->ExceptionDescribe();
+  env->ExceptionClear();
+}
+
 /** Converts array of C strings into array of Java strings */
-jobjectArray
-ConvertStringArray(JNIEnv *env, char **strv, int strc)
+jobject
+ConvertStringArray(JNIEnv *env, int strc, char **strv)
 {
   jclass cls;
   jobjectArray outArray;
   jstring str;
   int i;
-  int cfgargscnt = 0;
-  int p = 0;
-
-  if (strlen(cfgargs) > 0) {
-    cfgargscnt++;
-  }
 
   cls = env->FindClass("java/lang/String");
-  outArray = env->NewObjectArray(strc + cfgargscnt, cls, 0);
-  for (i = 0; i < cfgargscnt; i++) {
-    str = env->NewStringUTF(cfgargs);
-    env->SetObjectArrayElement(outArray, p++, str);
-    env->DeleteLocalRef(str);
+  if (cls == NULL) {
+    printException(g_env);
+    error("Unable to find String class");
+    return NULL;
   }
+  outArray = env->NewObjectArray(strc, cls, 0);
   for (i = 0; i < strc; i++) {
     str = env->NewStringUTF(*strv++);
-    env->SetObjectArrayElement(outArray, p++, str);
+    env->SetObjectArrayElement(outArray, i, str);
     env->DeleteLocalRef(str);
   }
   return outArray;
@@ -111,14 +116,10 @@ ConvertStringArray(JNIEnv *env, char **strv, int strc)
  * Also releases inArray.
  */
 jobject
-ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
-  jclass cls;
-  jmethodID mid;
+ExpandStringArray(JNIEnv *env, jobject inArray) {
   jobject outArray;
 
-  cls = env->FindClass("javaforce/JF");
-  mid = env->GetStaticMethodID(cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
-  outArray = env->CallStaticObjectMethod(cls, mid, inArray);
+  outArray = InvokeMethodObject("javaforce/JF", "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;", inArray);
   env->DeleteLocalRef(inArray);
   return outArray;
 }
@@ -181,6 +182,59 @@ char *CreateClassPath() {
   return ExpandedClassPath;
 }
 #endif
+
+void convertClass(char *cls) {
+  while (*cls) {
+    if (*cls == '.') *cls = '/';
+    cls++;
+  }
+}
+
+/** invokes a static method returning void. */
+bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args) {
+  convertClass(_class);
+  jclass cls = g_env->FindClass(_class);
+  printf("cls:%s=%p\n", _class, cls);
+  if (cls == NULL) {
+    printException(g_env);
+    sprintf(errmsg, "Unable to find %s class", _class);
+    error(errmsg);
+    return false;
+  }
+  jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
+  printf("mid:%s:%s=%p\n", _method, sign, mid);
+  if (mid == NULL) {
+    printException(g_env);
+    sprintf(errmsg, "Unable to find %s method", _method);
+    error(errmsg);
+    return false;
+  }
+
+  g_env->CallStaticVoidMethod(cls, mid, args);
+
+  return true;
+}
+
+/** invokes a static method returning Object. */
+jobject InvokeMethodObject(char *_class, char *_method, char *sign, jobject args) {
+  convertClass(_class);
+  jclass cls = g_env->FindClass(_class);
+  if (cls == NULL) {
+    printException(g_env);
+    sprintf(errmsg, "Unable to find %s class", _class);
+    error(errmsg);
+    return NULL;
+  }
+  jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
+  if (mid == NULL) {
+    printException(g_env);
+    sprintf(errmsg, "Unable to find %s method", _method);
+    error(errmsg);
+    return NULL;
+  }
+
+  return g_env->CallStaticObjectMethod(cls, mid, args);
+}
 
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
@@ -255,35 +309,8 @@ bool CreateJVM() {
   return true;
 }
 
-void printException(JNIEnv *env) {
-  jthrowable exc;
-  exc = env->ExceptionOccurred();
-  if (exc == NULL) return;
-  jclass newExcCls;
-  env->ExceptionDescribe();
-  env->ExceptionClear();
-}
-
-void convertClass(char *cls) {
-  while (*cls) {
-    if (*cls == '.') *cls = '/';
-    cls++;
-  }
-}
-
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxServiceStop(JNIEnv *env, jclass c) {
-  jclass cls = env->FindClass(mainclass);
-  if (cls == NULL) {
-    error("Unable to find main class");
-    return JNI_FALSE;
-  }
-  jmethodID mid = env->GetStaticMethodID(cls, "serviceStop", "()V");
-  if (mid == NULL) {
-    error("Unable to find serviceStop method");
-    return JNI_FALSE;
-  }
-  env->CallStaticVoidMethod(cls, mid);
-  return JNI_TRUE;
+  return InvokeMethodVoid(mainclass, "serviceStop", "()V", NULL);
 }
 
 #include "../common/register.cpp"
@@ -356,91 +383,36 @@ void registerAllNatives(JNIEnv *env) {
 
 /** Continues loading the JVM in a new Thread. */
 bool JavaThread(void *ignore) {
-  jclass cls = NULL;
-  jmethodID mid = NULL;
-
   CreateJVM();
 
   registerAllNatives(g_env);
 
   //load linux shared libraries
-  cls = g_env->FindClass("javaforce/jni/LnxNative");
-  if (cls == NULL) {
-    error("Unable to find LnxNative class");
-    return false;
-  }
-  mid = g_env->GetStaticMethodID(cls, "load", "()V");
-  if (mid == NULL) {
-    error("Unable to find LnxNative.load method");
-    return false;
-  }
-  g_env->CallStaticVoidMethod(cls, mid);
+  InvokeMethodVoid("javaforce/jni/LnxNative", "load", "()V", NULL);
 
   if (ffmpeg) {
     //load ffmpeg shared libraries
-    cls = g_env->FindClass("javaforce/media/MediaCoder");
-    if (cls == NULL) {
-      error("Unable to find MediaCoder class");
-      return false;
-    }
-    mid = g_env->GetStaticMethodID(cls, "load", "()V");
-    if (mid == NULL) {
-      error("Unable to find MediaCoder.load method");
-      return false;
-    }
-    g_env->CallStaticVoidMethod(cls, mid);
+    InvokeMethodVoid("javaforce/media/MediaCoder", "load", "()V", NULL);
   }
 
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
     //request service shutdown
-    cls = g_env->FindClass("javaforce/jni/LnxNative");
-    if (cls == NULL) {
-      error("Unable to find LnxNative class");
-      return false;
-    }
-    mid = g_env->GetStaticMethodID(cls, "lnxServiceRequestStop", "()V");
-    if (mid == NULL) {
-      error("Unable to find lnxServiceRequestStop method");
-      return false;
-    }
-    g_env->CallStaticVoidMethod(cls, mid);
-    return true;
+    return InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceRequestStop", "()V", NULL);
   }
   //setup service shutdown
-  cls = g_env->FindClass("javaforce/jni/LnxNative");
-  if (cls == NULL) {
-    error("Unable to find LnxNative class");
-    return false;
-  }
-  mid = g_env->GetStaticMethodID(cls, "lnxServiceInit", "()V");
-  if (mid == NULL) {
-    error("Unable to find lnxServiceInit method");
-    return false;
-  }
-  g_env->CallStaticVoidMethod(cls, mid);
+  InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceInit", "()V", NULL);
 #endif
 
-  convertClass(mainclass);
-
-  cls = g_env->FindClass(mainclass);
-  if (cls == NULL) {
-    error("Unable to find main class");
-    return false;
-  }
-  mid = g_env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
-  if (mid == NULL) {
-    error("Unable to find main method");
-    return false;
-  }
   char **argv = g_argv;
   int argc = g_argc;
   //skip argv[0]
   argv++;
   argc--;
-  g_env->CallStaticVoidMethod(cls, mid, ExpandStringArray(g_env, ConvertStringArray(g_env, argv, argc)));
+  InvokeMethodVoid(mainclass, method, "([Ljava/lang/String;)V", ExpandStringArray(g_env, ConvertStringArray(g_env, argc, argv)));
+
   g_jvm->DestroyJavaVM();  //waits till all threads are complete
-  //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
+
   return true;
 }
 
