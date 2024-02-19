@@ -26,8 +26,8 @@ public class EMail {
 
   /** Sets email fields.
    * General format:
-   *   HEADER: (real name)<user@domain>
-   * real name is optional.
+   *   HEADER: (real name)&lt;user@domain&gt;
+   * (real name) is optional.
    */
   public boolean set(String in) {
     int cln = in.indexOf(':');

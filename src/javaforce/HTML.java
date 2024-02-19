@@ -62,7 +62,7 @@ public class HTML {
   /** Generate html.form.select.
    * @param name = element name (optional)
    * @param id = element id (optional)
-   * @param opts = array[value, text]
+   * @param options = array[value, text]
    * @param selected_value = selected value (optional)
    * @param selected_text = selected text (optional)
    * @param show_default = include a null 'Select...' option
