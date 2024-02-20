@@ -2,6 +2,9 @@
 
 # build and package everything for Linux
 
+# recommend running as : package.sh > build.log
+# then search build.log for "error" or "fail"
+
 function detectos {
   if [ ! -f /etc/os-release ]; then
     echo Unable to detect os
