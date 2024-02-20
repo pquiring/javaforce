@@ -27,8 +27,7 @@ Folders
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
  /lib       - generated and dependancies jar files
- /native    - native library and loaders with JNI bindings for FFMPEG, OpenGL, Camera
- /classes   - javaforce compiled files
+ /native    - native loaders with JNI bindings for FFMPEG, OpenGL, Camera
  /projects  - source for all sub-projects
 
 Getting Started
@@ -44,11 +43,12 @@ Checkout Javaforce:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
   ant
-Next build the native library and the native launchers.
+Next build the native launchers.
 
-Building native library and loaders (ffmpeg, OpenGL, Camera)
-------------------------------------------------------------
-Native libraries and loaders are in /native
+Building native loaders with native API (ffmpeg, OpenGL, Camera)
+----------------------------------------------------------------
+Native loaders are in /native
+JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI.
 See readme.txt in each platform folder for more info.
 Windows:Requires Visual C++ in your PATH.
   - you can run 'ant get-bin' to download pre-built binaries for Win64
@@ -66,7 +66,7 @@ FreeBSD is currently not supported (open issue if you would like to see FreeBSD 
 JavaForce Ant tasks:
 --------------------
 get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
-get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native library)
+get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader)
 jre-base : pre-link JRE for creating native packages (msi, dmg)
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support
