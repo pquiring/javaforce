@@ -1,6 +1,14 @@
 Windows Natives/Loader
 ======================
 
+Desc
+----
+
+  - These C++ sources build the Windows launcher and native API used by JavaForce
+  - java.exe is never used to run Java apps within JavaForce
+  - the native API provides features that are currently unavailable in Java
+
+
 Requirements:
 -------------
   - MS Visual C++ compiler (Visual Studio : Full or Build Tools)
@@ -9,8 +17,8 @@ Requirements:
     - Java and Ant in your path
   - ffmpeg headers
 
-Compiling using pre-built ffmpeg headers
-----------------------------------------
+Compiling using pre-built ffmpeg headers/libraries
+--------------------------------------------------
 
   cd ../..
   ant get-ffmpeg-win64-src
@@ -24,7 +32,7 @@ Compiling using pre-built ffmpeg headers
 Compiling using ffmpeg downloaded manually
 ------------------------------------------
 
-  - you'll need to prepare ffmpeg headers and binaries
+  - you'll need to prepare ffmpeg headers and libraries
   - install cygwin.com (install gcc)
     - required just to create ffmpeg headers
   - download ffmpeg sources to ../../ffmpeg-src/${ffmpeg-version}
@@ -44,6 +52,11 @@ Downloading pre-built binaries
 If you have problems compiling you can always download pre-built binaries hosted on sourceforge:
 
   ant get-bin
+
+You still need to download ffmpeg libraries
+
+  cd ../..
+  ant get-ffmpeg-win64-bin
 
 Notes
 -----
