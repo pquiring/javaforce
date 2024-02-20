@@ -51,6 +51,7 @@ static void copyWarning() {
 AVCodec* (*_avcodec_find_decoder)(int codec_id);
 int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
+void (*_avcodec_free_context)(AVCodecContext **ctx);
 void (*_av_init_packet)(AVPacket *pkt);
 void (*_av_packet_free)(AVPacket **pkt);
 void (*_av_packet_free_side_data)(AVPacket *pkt);
@@ -59,7 +60,7 @@ AVCodec* (*_avcodec_find_encoder)(int codec_id);
 //int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
 //int (*_avpicture_free)(AVPicture *pic);
 int (*_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels, int fmt, void* buf, int bufsize, int align);
-int (*_avcodec_close)(AVCodecContext *cc);
+//int (*_avcodec_close)(AVCodecContext *cc);
 const char* (*_avcodec_get_name)(AVCodecID id);
 void (*_av_packet_rescale_ts)(AVPacket *pkt, AVRational src, AVRational dst);
 int (*_avcodec_parameters_to_context)(AVCodecContext *ctx, const AVCodecParameters *par);
@@ -267,6 +268,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_find_decoder, "avcodec_find_decoder");
   getFunction(codec, (void**)&_avcodec_open2, "avcodec_open2");
   getFunction(codec, (void**)&_avcodec_alloc_context3, "avcodec_alloc_context3");
+  getFunction(codec, (void**)&_avcodec_free_context, "avcodec_free_context");
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
   getFunction(codec, (void**)&_av_packet_free, "av_packet_free");
   getFunction(codec, (void**)&_av_packet_free_side_data, "av_packet_free_side_data");
@@ -274,7 +276,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 //  getFunction(codec, (void**)&_avpicture_alloc, "avpicture_alloc");
 //  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
   getFunction(codec, (void**)&_avcodec_fill_audio_frame, "avcodec_fill_audio_frame");
-  getFunction(codec, (void**)&_avcodec_close, "avcodec_close");
+//  getFunction(codec, (void**)&_avcodec_close, "avcodec_close");
   if (!libav_org) {
     getFunction(codec, (void**)&_avcodec_get_name, "avcodec_get_name");  //for debug output only
   }
@@ -901,6 +903,14 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
     (*_avformat_free_context)(ctx->fmt_ctx);
     ctx->fmt_ctx = NULL;
   }
+  if (ctx->video_codec_ctx != NULL) {
+    (*_avcodec_free_context)(&ctx->video_codec_ctx);
+    ctx->video_codec_ctx = NULL;
+  }
+  if (ctx->audio_codec_ctx != NULL) {
+    (*_avcodec_free_context)(&ctx->audio_codec_ctx);
+    ctx->audio_codec_ctx = NULL;
+  }
   if (ctx->frame != NULL) {
     (*_av_frame_free)((void**)&ctx->frame);
     ctx->frame = NULL;
@@ -1244,8 +1254,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     ctx->frame = NULL;
   }
   if (ctx->video_codec_ctx != NULL) {
-    (*_avcodec_close)(ctx->video_codec_ctx);
-    (*_av_free)(ctx->video_codec_ctx);
+    (*_avcodec_free_context)(&ctx->video_codec_ctx);
     ctx->video_codec_ctx = NULL;
   }
   if (ctx->sws_ctx != NULL) {
@@ -2404,17 +2413,6 @@ static void encoder_stop(FFContext *ctx)
     ctx->ff_buffer = NULL;
   }
   if (ff_debug_trace) printf("encoder_stop\n");
-  if (ctx->audio_stream != NULL) {
-    (*_avcodec_close)(ctx->audio_codec_ctx);
-    (*_av_free)(ctx->audio_codec_ctx);
-    ctx->audio_stream = NULL;
-  }
-  if (ctx->video_stream != NULL) {
-    (*_avcodec_close)(ctx->video_codec_ctx);
-    (*_av_free)(ctx->video_codec_ctx);
-    ctx->video_stream = NULL;
-  }
-  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->audio_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->audio_frame);
     ctx->audio_frame = NULL;
@@ -2431,6 +2429,14 @@ static void encoder_stop(FFContext *ctx)
     }
     (*_avformat_free_context)(ctx->fmt_ctx);
     ctx->fmt_ctx = NULL;
+  }
+  if (ctx->video_codec_ctx != NULL) {
+    (*_avcodec_free_context)(&ctx->video_codec_ctx);
+    ctx->video_codec_ctx = NULL;
+  }
+  if (ctx->audio_codec_ctx != NULL) {
+    (*_avcodec_free_context)(&ctx->audio_codec_ctx);
+    ctx->audio_codec_ctx = NULL;
   }
   if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->src_pic != NULL) {

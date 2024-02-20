@@ -2,6 +2,9 @@ package javaforce.utils;
 
 /** TestMedia
  *
+ * To run :
+ *   bin/jfexec -ffmpeg -cp javaforce.jar javaforce.utils.TestMedia
+ *
  * @author pquiring
  */
 
