@@ -188,7 +188,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     boolean idle = false;
     try {
       listFiles();
-      if (!connect()) return;
+      connect();
       while (active) {
         if (idle) {
           JF.sleep(50);
@@ -204,18 +204,20 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
             continue;
           }
           idle = false;
-        } else if (now - lastKeepAlive > 55*1000) {
+        } else if (now - lastKeepAlive > 45*1000) {
           JFLog.log(log, camera.name + " : keep alive");
           client.keepalive(url);
           lastKeepAlive = now;
         }
         //clean up folder
-        while (folder_size > max_folder_size) {
-          Recording rec = files.get(0);
-          files.remove(0);
-          rec.file.delete();
-          folder_size -= rec.size;
-          JFLog.log(log, "delete recording:" + rec.file.getName());
+        if (isViewer) {
+          while (folder_size > max_folder_size) {
+            Recording rec = files.get(0);
+            files.remove(0);
+            rec.file.delete();
+            folder_size -= rec.size;
+            JFLog.log(log, "delete recording:" + rec.file.getName());
+          }
         }
         do {
           if (isDecoding && camera.viewing && camera.update_preview) {
@@ -301,6 +303,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       JFLog.log(log, e);
     }
     try {
+      if (decoder != null) {
+        decoder.stop();
+        decoder = null;
+      }
+    } catch (Exception e) {
+      JFLog.log(log, e);
+    }
+    try {
       if (raf != null) {
         closeFile();
         raf = null;
@@ -325,6 +335,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     String pass = null;
     //rtsp://[user:pass@]host[:port]/uri
     if (!url.startsWith("rtsp://")) {
+      JFLog.log(log, "Error:Invalid URL:" + url);
       return false;
     }
     String user_pass = RTSPURL.getUserInfo(url);
@@ -553,10 +564,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     //IP/port in SDP is all zeros
     stream.setIP(client.getRemoteIP());
     stream.setPort(-1);
-    if (decoder != null) {
-      decoder.stop();
-      decoder = null;
-    }
     int av_codec_id = -1;
     if (stream.hasCodec(RTP.CODEC_H264)) {
       h264 = new RTPH264();
@@ -593,6 +600,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       av_codec_id = MediaCoder.AV_CODEC_ID_H265;
     }
     if (isDecoding) {
+      if (decoder != null) {
+        decoder.stop();
+        decoder = null;
+      }
       decoder = new MediaVideoDecoder();
       if (!decoder.start(av_codec_id, decoded_x, decoded_y)) {
         JFLog.log(log, "Error:MediaVideoDecoder.start() failed");

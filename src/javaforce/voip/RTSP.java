@@ -99,7 +99,7 @@ public abstract class RTSP implements TransportInterface {
     pool = null;
     transport = null;
     worker_reader = null;
-    if (debug) JFLog.log("RTSP.unint() done:" + this);
+    if (debug) JFLog.log("RTSP.uninit() done:" + this);
   }
 
   public static void setLog(int id) {

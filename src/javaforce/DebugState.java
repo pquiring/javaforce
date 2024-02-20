@@ -51,6 +51,7 @@ public class DebugState extends Thread {
   private static String mark = "*********************************************\n";
 
   public void run() {
+    setName("DebugState");
     while (active) {
       sb.setLength(0);
       sb.append(mark);

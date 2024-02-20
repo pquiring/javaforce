@@ -419,6 +419,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public class WorkerKeepAlive extends Thread {
     public void run() {
+      setName("WorkerKeepAlive");
       while (active) {
         JF.sleep(1000);
         long cut = System.currentTimeMillis() - 60 * 1000;
