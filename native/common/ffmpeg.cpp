@@ -1807,7 +1807,7 @@ static jboolean ff_startsWith(const char*str, const char*with) {
   return strncmp(str, with, len) == 0;
 }
 
-static int io_open(struct AVFormatContext *fmt_ctx, AVIOContext **pb, const char *url, int flags, AVDictionary **options) {
+static int io_open(AVFormatContext *fmt_ctx, AVIOContext **pb, const char *url, int flags, AVDictionary **options) {
   FFContext *ctx = (FFContext*)fmt_ctx->opaque;
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
   AVIOContext *io_ctx;
@@ -1822,13 +1822,14 @@ static int io_open(struct AVFormatContext *fmt_ctx, AVIOContext **pb, const char
   return 0;
 }
 
-static int io_close2(struct AVFormatContext *fmt_ctx, AVIOContext *pb) {
+static int io_close2(AVFormatContext *fmt_ctx, AVIOContext *pb) {
   FFContext *ctx = (FFContext*)fmt_ctx->opaque;
+
+  printf("ffmpeg:io_close2:ctx=%p:pb=%p\n", fmt_ctx, pb);
 
   (*_avio_flush)(pb);
   (*_av_free)(pb->buffer);
-
-  printf("ffmpeg:io_close2:ctx=%p:pb=%p\n", fmt_ctx, pb);
+  (*_av_free)(pb);
 
   return 0;
 }
