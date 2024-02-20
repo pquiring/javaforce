@@ -464,7 +464,6 @@ struct FFContext {
 
   //decoder fields
   jobject mio;
-  void *ff_buffer;
   AVFormatContext *fmt_ctx;
   AVIOContext *io_ctx;
 
@@ -827,8 +826,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   ctx->mio = e->NewGlobalRef(mio);
   ctx->GetMediaIO();
 
-  ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
-  ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
+  void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
+  ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
   if (ctx->io_ctx == NULL) return JNI_FALSE;
 //  ctx->io_ctx->direct = 1;
   ctx->fmt_ctx = (*_avformat_alloc_context)();
@@ -896,8 +895,8 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
     (*_av_free)(ctx->io_ctx->buffer);
+    (*_av_free)(ctx->io_ctx);
     ctx->io_ctx = NULL;
-    ctx->ff_buffer = NULL;
   }
   if (ctx->fmt_ctx != NULL) {
     (*_avformat_free_context)(ctx->fmt_ctx);
@@ -1859,8 +1858,8 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     (*_av_opt_set)(ctx->fmt_ctx->priv_data, "dash_segment_type", "mp4", 0);
 //    (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "ldash", 1, 0);  //enable low latency dash
   } else {
-    ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
-    ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
+    void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
+    ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
     if (ctx->io_ctx == NULL) return JNI_FALSE;
   //  ctx->io_ctx->direct = 1;
     printf("io_ctx=%p\n", ctx->io_ctx);
@@ -2409,8 +2408,8 @@ static void encoder_stop(FFContext *ctx)
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
     (*_av_free)(ctx->io_ctx->buffer);
+    (*_av_free)(ctx->io_ctx);
     ctx->io_ctx = NULL;
-    ctx->ff_buffer = NULL;
   }
   if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->audio_frame != NULL) {
