@@ -375,6 +375,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       encoder.stop();
       encoder = null;
     }
+    packets_decode = null;
+    packets_encode = null;
+    frames = null;
   }
 
   private void listFiles() {
