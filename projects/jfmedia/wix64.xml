@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{C9228ACC-4833-4BE2-A121-C7617A2130F2}" Version="0.18" Language="1033" Name="jfMedia" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{C9228ACC-4833-4BE2-A121-C7617A2130F2}" Version="0.19" Language="1033" Name="jfMedia" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

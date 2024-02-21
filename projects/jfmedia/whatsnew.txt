@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Feb 20, 2024 : v0.19 released!
+  - fix : memory leaks
+
 Feb 17, 2024 : v0.18 released!
   - add fullscreen function
 
