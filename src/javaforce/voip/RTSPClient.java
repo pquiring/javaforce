@@ -270,7 +270,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     if (sess.accept != null) {
       req.append("Accept: " + sess.accept + "\r\n");
     }
-    if (sess.id != -1) {
+    if (sess.id != null) {
       req.append("Session: " + sess.id + "\r\n");
     }
     if (sess.params != null) {
@@ -381,16 +381,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       sess.remotehost = remoteip;
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
-      String sid = HTTP.getParameter(msg, "Session");
-      if (sid != null) {
-        int idx = sid.indexOf(';');
-        if (idx != -1) {
-          sid = sid.substring(0, idx);
-        }
-        if (sid.length() > 0) {
-          sess.id = Long.valueOf(sid);
-        }
-      }
+      sess.id = HTTP.getParameter(msg, "Session");
 
       int type = getResponseType(msg);
       if (type != -1) {

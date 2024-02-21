@@ -1209,6 +1209,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       decoded_xy = decoded_x * decoded_y;
       width = decoded_x;
       height = decoded_y;
+      if (fps <= 0) {
+        fps = 24;
+      }
       video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
       int av_codec = -1;
       if (stream.hasCodec(RTP.CODEC_H264)) {

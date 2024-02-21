@@ -246,14 +246,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       sess.remoteaddr = InetAddress.getByName(remoteip);
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
-      String sid = HTTP.getParameter(msg, "Session");
-      if (sid != null) {
-        int idx = sid.indexOf(';');
-        if (idx != -1) {
-          sid = sid.substring(0, idx);
-        }
-        sess.id = Long.valueOf(sid);
-      }
+      sess.id = HTTP.getParameter(msg, "Session");
 
       int reply = getResponseType(msg);
       if (reply != -1) {
