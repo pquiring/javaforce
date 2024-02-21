@@ -1010,6 +1010,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     private final int buffer_seconds = 4;
 
     public NetworkReader(URL url) {
+      JFLog.log("url=" + url.toString());
       this.url = url;
     }
     public void run() {

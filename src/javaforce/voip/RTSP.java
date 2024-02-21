@@ -595,11 +595,11 @@ public abstract class RTSP implements TransportInterface {
       return null;
     }
     String[] tags = SIP.convertParameters(request.substring(7), ',');
-    String auth, nonce = null, qop = null, cnonce = null, nc = null,stale = null;
+    String algo, nonce = null, qop = null, cnonce = null, nc = null, stale = null;
     String realm = null;
-    auth = HTTP.getParameter(tags, "algorithm");
-    if (auth != null) {
-      if (!auth.equalsIgnoreCase("MD5")) {
+    algo = HTTP.getParameter(tags, "algorithm");
+    if (algo != null) {
+      if (!algo.equalsIgnoreCase("MD5")) {
         JFLog.log(log, "err:only MD5 auth supported");
         return null;
       }  //unsupported auth type
@@ -637,11 +637,11 @@ public abstract class RTSP implements TransportInterface {
       }
     }
     sess.nonce = nonce;
-    String response = getResponse(user, pass, realm, cmd, "rtsp://" + remote, nonce, qop, nc, cnonce);
+    String response = getResponse(user, pass, realm, cmd, sess.uri, nonce, qop, nc, cnonce);
     StringBuilder ret = new StringBuilder();
     ret.append(header);
     ret.append(":");
-    ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"rtsp://" + remote + "\", nonce=\"" + nonce + "\"");
+    ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\"" + ", nonce=\"" + nonce + "\"" + ", uri=\"" + sess.uri + "\"");
     if (cnonce != null) {
       ret.append(", cnonce=\"" + cnonce + "\"");
     }
@@ -651,7 +651,10 @@ public abstract class RTSP implements TransportInterface {
       ret.append(", qop=" + qop);
     }
     ret.append(", response=\"" + response + "\"");
-    ret.append(", algorithm=MD5\r\n");
+    if (algo != null) {
+      ret.append(", algorithm=MD5");
+    }
+    ret.append("\r\n");
     return ret.toString();
   }
 

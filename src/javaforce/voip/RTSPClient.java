@@ -258,12 +258,12 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     StringBuilder req = new StringBuilder();
     StringBuilder post = new StringBuilder();
     req.append(cmd + " " + sess.uri + sess.extra + " RTSP/1.0\r\n");
-    req.append("Cseq: " + sess.cseq++ + "\r\n");
-    req.append("User-Agent: " + useragent + "\r\n");
+    req.append("CSeq: " + sess.cseq++ + "\r\n");
     if (sess.authstr != null) {
       sess.epass = getAuthResponse(sess, user, pass, remotehost, sess.cmd, sess.authtype);
       req.append(sess.epass);
     }
+    req.append("User-Agent: " + useragent + "\r\n");
     if (sess.transport != null) {
       req.append(sess.transport);
     }
@@ -300,6 +300,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send OPTIONS request to server.
    */
   public boolean options(String url) {
+    if (debug) JFLog.log("options:" + url);
     sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     return issue(sess, "OPTIONS");
@@ -309,6 +310,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send DESCRIBE request to server.
    */
   public boolean describe(String url) {
+    if (debug) JFLog.log("describe:" + url);
     sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     sess.accept = "application/sdp";
@@ -321,9 +323,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send SETUP request to server (RTSP).
    */
   public boolean setup(String url, int localrtpport, int trackid) {
+    if (debug) JFLog.log("setup:" + url);
     sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
-    sess.uri = RTSPURL.cleanURL(url);
-    sess.extra = "/trackid=" + trackid;
+    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.extra = "trackID=" + trackid;
     boolean result = issue(sess, "SETUP");
     sess.transport = null;
     return result;
@@ -333,8 +336,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send PLAY request to server (RTSP).
    */
   public boolean play(String url) {
-    sess.uri = RTSPURL.cleanURL(url);
-    sess.extra = "/";
+    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.extra = "";
     return issue(sess, "PLAY");
   }
 
@@ -343,17 +346,17 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean teardown(String url) {
     if (sess == null) return false;
-    sess.uri = RTSPURL.cleanURL(url);
-    sess.extra = "/";
+    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.extra = "";
     return issue(sess, "TEARDOWN");
   }
 
   /**
-   * GET_PARAMETER (RTSP) Used as a keepalive.
+   * GET_PARAMETER (RTSP) Used as a keep alive.
    */
   public boolean get_parameter(String url, String[] params) {
-    sess.uri = RTSPURL.cleanURL(url);
-    sess.extra = "/";
+    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.extra = "";
     sess.params = params;
     boolean result = issue(sess, "GET_PARAMETER");
     sess.params = null;
