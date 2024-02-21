@@ -755,7 +755,7 @@ public abstract class RTSP implements TransportInterface {
    */
   private class WorkerReader extends Thread {
     public void run() {
-      setName("RTSP.Worker");
+      setName("RTSP.WorkerReader");
       if (debug) JFLog.log("RTSP.Worker:start:local=" + localport);
       while (active) {
         if (transport.error()) {
@@ -807,6 +807,7 @@ public abstract class RTSP implements TransportInterface {
     private ArrayList<Packet> queue = new ArrayList<>();
 
     public void run() {
+      setName("RTSP.WorkerPacket");
       while (active) {
         synchronized (queueLock) {
           if (queue.size() > 0) {

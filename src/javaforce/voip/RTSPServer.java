@@ -390,6 +390,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
 
   public class WorkerKeepAlive extends Thread {
     public void run() {
+      setName("RTSPServer.WorkerKeepAlive");
       while (active) {
         JF.sleep(1000);
         long now = System.currentTimeMillis();

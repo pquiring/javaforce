@@ -33,6 +33,7 @@ public class MediaApp extends javax.swing.JFrame {
     setPosition();
     if (args.length > 0) {
       String arg = args[0];
+      JFLog.log("arg[]=" + arg);
       if (arg.startsWith("rtsp://")) {
         try {
           panel.play(new URI(arg).toURL());

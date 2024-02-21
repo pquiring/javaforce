@@ -151,6 +151,7 @@ public class TransportTCPServer implements Transport {
 
   protected class WorkerAccepter extends Thread {
     public void run() {
+      setName("TransportTCPServer.WorkerAccepter");
       //accepts inbound connections
       while (ss_active) {
         try {
@@ -192,6 +193,7 @@ public class TransportTCPServer implements Transport {
       host = hostaddr.getHostAddress();
     }
     public void run() {
+      setName("TransportTCPServer.WorkerReader");
       worker_active = true;
       //reads packets from client
       try {

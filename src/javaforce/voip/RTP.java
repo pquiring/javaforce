@@ -414,6 +414,7 @@ public class RTP implements STUN.Listener {
     }
 
     public void run() {
+      setName("RTP.Worker:" + localrtpport);
       byte[] data = new byte[rtp.mtu];
       while (rtp.active) {
         try {
