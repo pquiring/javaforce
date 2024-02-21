@@ -12,7 +12,7 @@ import javaforce.media.*;
  */
 public class VideoApp extends javax.swing.JFrame {
 
-  public static String version = "0.24";
+  public static String version = "0.25";
 
   /**
    * Creates new form VideoApp

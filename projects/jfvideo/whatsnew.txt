@@ -1,5 +1,8 @@
 Whatsnew...
 
+Feb 20, 2024 : v0.25 released!
+  - fix : memory leaks
+
 Mar 18, 2020 : v0.24 released!
   - fix : win64 loader now loads msvcrt dlls properly
 
