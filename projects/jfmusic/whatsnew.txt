@@ -1,6 +1,9 @@
 What's new...
 =============
 
+Feb 20, 2024 : 0.10 released!
+  - fix : memory leaks
+
 May 11, 2020 : 0.9 released!
   - fix : include dls file with application bundle
 

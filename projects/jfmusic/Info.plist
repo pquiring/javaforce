@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 		<string>jfmusic</string>
 	<key>CFBundleGetInfoString</key>
-		<string>jfmusic 0.9</string>
+		<string>jfmusic 0.10</string>
 	<key>CFBundleIconFile</key>
 		<string>jfmusic.icns</string>
 	<key>CFBundleIdentifier</key>
