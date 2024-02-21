@@ -25,6 +25,7 @@ public class RTSPSession {
   public String cmd;
   public boolean authsent;
   public String authstr;
+  public String authtype;
   public String nonce;
   public int nonceCount;
   public String accept;

@@ -260,7 +260,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     req.append(cmd + " " + sess.uri + sess.extra + " RTSP/1.0\r\n");
     req.append("Cseq: " + sess.cseq++ + "\r\n");
     req.append("User-Agent: " + useragent + "\r\n");
-    if (sess.epass != null) {
+    if (sess.authstr != null) {
+      sess.epass = getAuthResponse(sess, user, pass, remotehost, sess.cmd, sess.authtype);
       req.append(sess.epass);
     }
     if (sess.transport != null) {
@@ -418,16 +419,13 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
             JFLog.log(log, "Server Error : Double " + type);
           } else {
             sess.authstr = HTTP.getParameter(msg, "WWW-Authenticate");
+            sess.authtype = "Authorization";
             if (sess.authstr == null) {
               sess.authstr = HTTP.getParameter(msg, "Proxy-Authenticate");
+              sess.authtype = "Proxy-Authorization";
             }
             if (sess.authstr == null) {
               JFLog.log(log, "err:401/407 without Authenticate tag");
-              break;
-            }
-            sess.epass = getAuthResponse(sess, user, pass, remotehost, sess.cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
-            if (sess.epass == null) {
-              JFLog.log(log, "err:gen auth failed");
               break;
             }
             issue(sess, sess.cmd);

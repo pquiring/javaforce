@@ -640,6 +640,7 @@ public abstract class RTSP implements TransportInterface {
     String response = getResponse(user, pass, realm, cmd, "rtsp://" + remote, nonce, qop, nc, cnonce);
     StringBuilder ret = new StringBuilder();
     ret.append(header);
+    ret.append(":");
     ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"rtsp://" + remote + "\", nonce=\"" + nonce + "\"");
     if (cnonce != null) {
       ret.append(", cnonce=\"" + cnonce + "\"");
