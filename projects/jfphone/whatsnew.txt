@@ -1,4 +1,6 @@
 CHANGELOG:
+2-20-2024 : v1.27 released
+  - fix : memory leaks
 2-2-2024 : v1.26 released
   - new : support H.265 codec
 11-6-2023 : v1.25 released
