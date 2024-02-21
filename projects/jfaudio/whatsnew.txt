@@ -1,5 +1,8 @@
 Whats' new....
 
+Feb 20, 2024 - v0.22 released
+  - fix : memory leaks
+
 Oct 12, 2023 - v0.21 released
   - fix : recording issue (buffer too small)
 
