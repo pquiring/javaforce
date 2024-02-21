@@ -105,7 +105,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   /** Frame to be recorded. */
   private static class Frames {
     public Frames(int codecType) {
-      this.log = log;
       packets = new PacketBuffer(codecType);
     }
     public void setLog(int id) {
@@ -172,7 +171,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       this.viewer = this;
     }
     if (viewer == null) {
-      JFLog.log("Error:viewer = null");
+      JFLog.log(log, "Error:viewer = null");
     }
     JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
@@ -359,6 +358,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         client.uninit();
       } catch (Exception e) {}
       client = null;
+    }
+    if (rtp != null) {
+      rtp.uninit();
+      rtp = null;
+    }
+    if (channel != null) {
+      //no uninit
+      channel = null;
     }
     if (decoder != null) {
       decoder.stop();

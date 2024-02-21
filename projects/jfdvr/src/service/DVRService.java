@@ -11,7 +11,6 @@ import java.net.*;
 
 import javaforce.*;
 import javaforce.webui.*;
-import javaforce.media.*;
 import javaforce.voip.*;
 
 public class DVRService extends Thread implements RTSPServerInterface {
@@ -25,6 +24,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public final static boolean debug = true;
   public final static boolean debug_sub_systems = false;
+
+  private int log;
 
   public static void serviceStart(String args[]) {
     if (dvrService != null) return;
@@ -42,6 +43,12 @@ public class DVRService extends Thread implements RTSPServerInterface {
     setName("DVRService");
     //init Paths
     Paths.init();
+    log = Config.nextLog();
+    JFLog.append(JFLog.DEFAULT_LOG, Paths.logsPath + "/system.log", false);  //default log (0)
+    JFLog.append(log, Paths.logsPath + "/service.log", false);
+    JFLog.setRetention(log, 5);
+    JFLog.log(log, "jfDVR/" + ConfigService.version + " starting...");
+    JFLog.log(log, "pid=" + ProcessHandle.current().pid());
     //load current config
     Config.load();
     //create debug state
@@ -170,14 +177,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public CameraWorker startCamera(Camera camera, String url, boolean isViewer, boolean isDecoding, CameraWorker viewer) {
-    JFLog.log("Start Camera:" + camera.name);
+    JFLog.log(log, "Start Camera:" + camera.name);
     CameraWorker instance = null;
     switch (url.substring(0,4)) {
       case "rtsp": instance = new CameraWorkerVideo(camera, url, isViewer, isDecoding, viewer); break;
       case "http": instance = new CameraWorkerPictures(camera, url, isViewer, isDecoding, viewer); break;
     }
     if (instance == null) {
-      JFLog.log("Error:invalid camera:" + camera.name);
+      JFLog.log(log, "Error:invalid camera:" + camera.name);
       return null;
     }
     instance.start();
@@ -189,7 +196,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     int count = list.size();
     for(int idx=0;idx<count;) {
       if (list.get(idx).getCamera() == camera) {
-        try {list.get(idx).cancel();} catch (Exception e) {JFLog.log(e);}
+        try {list.get(idx).cancel();} catch (Exception e) {JFLog.log(log, e);}
         list.remove(idx);
         count--;
       } else {
@@ -202,7 +209,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
       if (list.get(a).getCamera() == camera) {
-        try {list.get(a).reloadConfig();} catch (Exception e) {JFLog.log(e);}
+        try {list.get(a).reloadConfig();} catch (Exception e) {JFLog.log(log, e);}
         return;
       }
     }
@@ -224,7 +231,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTSP_IN\"", "dir=in", "protocol=tcp", "localport=554", "action=allow"});
       Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTSP_OUT\"", "dir=out", "protocol=tcp", "localport=554", "action=allow"});
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
   }
 
@@ -241,7 +248,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -261,7 +268,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       server.reply(sess, 200, "OK");
       sess.sdp = null;
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -270,7 +277,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -289,7 +296,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       }
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -308,7 +315,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       }
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
       server.reply(sess, 501, "ERROR");
     }
   }
@@ -318,14 +325,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       String action = HTTP.getParameter(params, "action");
       if (action == null) action = "keep-alive";
-      if (debug) JFLog.log("onGetParameter:uri=" + sess.uri + ":action=" + action);
+      if (debug) JFLog.log(log, "onGetParameter:uri=" + sess.uri + ":action=" + action);
       if (action.equals("query")) {
         URL url = new URI(sess.uri).toURL();
         String path = url.getPath();  // / type / name
         String[] type_name = path.split("/");
         String type = type_name[1];
         String name = type_name[2];
-        if (debug) JFLog.log("DVRService:query:" + type + "/" + name + ":" + sess.remotehost + ":" + sess.remoteport);
+        if (debug) JFLog.log(log, "DVRService:query:" + type + "/" + name + ":" + sess.remotehost + ":" + sess.remoteport);
         sess.params = null;
         switch (type) {
           case "list": sess.params = get_list_all(name); break;
@@ -336,24 +343,24 @@ public class DVRService extends Thread implements RTSPServerInterface {
         server.reply(sess, 200, "OK");
         sess.params = null;
       } else {
-        if (debug) JFLog.log("DVRService:ack keep-alive:" + sess.remotehost + ":" + sess.remoteport);
+        if (debug) JFLog.log(log, "DVRService:ack keep-alive:" + sess.remotehost + ":" + sess.remoteport);
         sess.params = new String[] {"type: keep-alive"};
         server.reply(sess, 200, "OK");
         sess.params = null;
       }
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
       server.reply(sess, 501, "ERROR");
     }
   }
 
   public void onConnect(RTSPServer rtsp, RTSPSession sess) {
-    JFLog.log("onConnect:" + sess);
+    JFLog.log(log, "onConnect:" + sess);
     sess.ts = System.currentTimeMillis();
   }
 
   public void onDisconnect(RTSPServer rtsp, RTSPSession sess) {
-    JFLog.log("onDisconnect:" + sess);
+    JFLog.log(log, "onDisconnect:" + sess);
     sess.ts = 0;
     try {
       if (sess.res_user != null) {
@@ -361,7 +368,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         cam.remove_viewer(sess);
       }
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debug) JFLog.log(log, e);
     }
   }
 
@@ -410,7 +417,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   private String[] get_list_group_cameras(String name) {
     Group group = Config.current.getGroup(name);
     if (group == null) {
-      JFLog.log("group not found:" + name);
+      JFLog.log(log, "group not found:" + name);
       return null;
     }
     String camlist = group.getCameraList();
@@ -431,7 +438,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
                 for(int idx=0;idx<count;idx++) {
                   RTSPSession sess = cam.viewers.get(idx);
                   if (sess.ts < cut) {
-                    JFLog.log("DVR:Session expired:" + sess);
+                    JFLog.log(log, "DVR:Session expired:" + sess);
                     cam.remove_viewer(sess);
                     count--;
                   } else {
@@ -442,7 +449,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
             }
           }
         } catch (Exception e) {
-          if (debug) JFLog.log(e);
+          if (debug) JFLog.log(log, e);
         }
       }
     }

@@ -296,11 +296,11 @@ public class RTP implements STUN.Listener {
 
   /**
    * Frees resources.
+   *
+   * Same as stop();
    */
   public void uninit() {
     stop();
-    closeSockets();
-    freeWorkers();
   }
 
   private void closeSockets() {

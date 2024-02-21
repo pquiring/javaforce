@@ -1123,6 +1123,11 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         rtsp.uninit();
         rtsp = null;
       }
+      if (rtp != null) {
+        rtp.uninit();
+        rtp = null;
+      }
+      channel = null;
       if (decoder != null) {
         decoder.stop();
         decoder = null;
@@ -1141,6 +1146,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       JFLog.log("close:2");
       if (rtp != null) {
         rtp.stop();
+        rtp.uninit();
         rtp = null;
       }
       channel = null;
