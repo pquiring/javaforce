@@ -1,5 +1,9 @@
 What's new...
 
+Feb 21/2024 : JF/52.3
+ - fixed memory leaks in ffmpeg
+ - re-released all ffmpeg based apps
+
 Feb 19/2024 : JF/52.2
  - improved native loaders
    - all shared libraries are now automatically loaded
