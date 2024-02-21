@@ -142,6 +142,7 @@ public class SDP implements Cloneable {
   public long o1 = 256, o2 = 256;
   public long time_start, time_stop;
   public float framerate;
+  public String control;
   public ArrayList<String> otherAttributes = new ArrayList<String>();  //list of unknown attributes (a=...)
   public ArrayList<String> otherParameters = new ArrayList<String>();  //list of unknown parameters (?=...)
 
@@ -496,6 +497,9 @@ public class SDP implements Cloneable {
         }
         else if (ln.startsWith("a=framerate:")) {
           sdp.framerate = JF.atof(ln.substring(12));
+        }
+        else if (ln.startsWith("a=control:")) {
+          sdp.control = ln.substring(10);
         }
         else {
           sdp.otherAttributes.add(ln.substring(2));

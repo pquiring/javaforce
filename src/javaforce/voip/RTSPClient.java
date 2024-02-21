@@ -322,11 +322,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Send SETUP request to server (RTSP).
    */
-  public boolean setup(String url, int localrtpport, int trackid) {
+  public boolean setup(String url, int localrtpport, String track) {
     if (debug) JFLog.log("setup:" + url);
     sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
     sess.uri = RTSPURL.cleanURL(url) + "/";
-    sess.extra = "trackID=" + trackid;
+    sess.extra = track;
     boolean result = issue(sess, "SETUP");
     sess.transport = null;
     return result;

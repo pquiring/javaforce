@@ -1231,7 +1231,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       rtp.start();
       channel = rtp.createChannel(stream);
       channel.start();
-      client.setup(url.toString(), rtp.getlocalrtpport(), 0);
+      client.setup(url.toString(), rtp.getlocalrtpport(), sdp.control);
     }
 
     public void onSetup(RTSPClient client) {

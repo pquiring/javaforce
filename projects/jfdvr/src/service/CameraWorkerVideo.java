@@ -623,7 +623,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     rtp.start();
     channel = rtp.createChannel(stream);
     channel.start();
-    client.setup(url, rtp.getlocalrtpport(), 0);
+    client.setup(url, rtp.getlocalrtpport(), sdp.control);
   }
 
   public void onSetup(RTSPClient client) {
