@@ -1,3 +1,6 @@
+Feb 20, 2024 : 0.16 released!
+  - fix many memory leaks
+
 Feb 18, 2024 : 0.15 released!
   - finally fixed stability issues
 
