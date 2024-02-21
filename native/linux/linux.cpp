@@ -65,6 +65,7 @@ char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
 bool ffmpeg = false;
+bool debug = false;
 char errmsg[1024];
 
 /* Prototypes */
@@ -242,13 +243,18 @@ JavaVMInitArgs *BuildArgs() {
   int idx;
 
 #ifdef _JF_DEBUG
-  opts[nOpts++] = "-Djava.debug=true";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+  debug = true;
 #endif
+
+  if (debug) {
+    opts[nOpts++] = "-Djava.debug=true";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+  }
+
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";
@@ -555,6 +561,9 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "FFMPEG=", 7) == 0) {
       ffmpeg = true;
+    }
+    else if (strncmp(ln1, "DEBUG=", 6) == 0) {
+      debug = true;
     }
     ln1 = ln2;
   }

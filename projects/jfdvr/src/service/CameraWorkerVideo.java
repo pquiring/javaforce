@@ -448,6 +448,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       }
     }
     System.arraycopy(newFrame, 0, last_frame, 0, decoded_xy);
+    if (viewer == null) {
+      JFLog.log(log, "Error:viewer==null");
+      return;
+    }
     if (changed > camera.record_motion_threshold) {
       last_change_time = now;
       viewer.setRecording(true);
