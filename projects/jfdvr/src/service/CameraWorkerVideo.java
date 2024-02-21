@@ -160,17 +160,20 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
   public CameraWorkerVideo(Camera camera, String url, boolean isViewer, boolean isDecoding, CameraWorker viewer) {
-    JFLog.log("CameraWorkerVideo:" + url + ":viewer=" + isViewer + ":decoding=" + isDecoding);
     log = Config.nextLog();
+    JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", true);
+    JFLog.setRetention(log, 5);
+    JFLog.log(log, "CameraWorkerVideo:" + url + ":viewer=" + isViewer + ":decoding=" + isDecoding);
     this.url = url;
     this.isViewer = isViewer;
     this.isDecoding = isDecoding;
     this.viewer = viewer;
     if (isViewer && isDecoding) {
-      viewer = this;
+      this.viewer = this;
     }
-    JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", true);
-    JFLog.setRetention(log, 5);
+    if (viewer == null) {
+      JFLog.log("Error:viewer = null");
+    }
     JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
     path = Paths.videoPath + "/" + camera.name;
@@ -187,7 +190,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     JFLog.log(log, "CameraWorkerVideo:start");
     boolean idle = false;
     try {
-      listFiles();
+      if (isViewer) {
+        listFiles();
+      }
       connect();
       while (active) {
         if (idle) {
@@ -209,8 +214,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           client.keepalive(url);
           lastKeepAlive = now;
         }
-        //clean up folder
         if (isViewer) {
+          //clean up folder
           while (folder_size > max_folder_size) {
             Recording rec = files.get(0);
             files.remove(0);
@@ -295,22 +300,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       JFLog.log(log, e);
     }
     try {
-      if (encoder != null) {
-        encoder.stop();
-        encoder = null;
-      }
-    } catch (Exception e) {
-      JFLog.log(log, e);
-    }
-    try {
-      if (decoder != null) {
-        decoder.stop();
-        decoder = null;
-      }
-    } catch (Exception e) {
-      JFLog.log(log, e);
-    }
-    try {
       if (raf != null) {
         closeFile();
         raf = null;
@@ -363,12 +352,21 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public void disconnect() {
     if (client != null) {
-      client.uninit();
+      try {
+        client.teardown(url);
+      } catch (Exception e) {}
+      try {
+        client.uninit();
+      } catch (Exception e) {}
       client = null;
     }
     if (decoder != null) {
       decoder.stop();
       decoder = null;
+    }
+    if (encoder != null) {
+      encoder.stop();
+      encoder = null;
     }
   }
 
@@ -514,11 +512,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   //CameraWorker interface
 
   public void cancel() {
-    if (client != null) {
-      client.teardown(url);
-      client.uninit();
-      client = null;
-    }
     active = false;
   }
 

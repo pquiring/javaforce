@@ -170,7 +170,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public CameraWorker startCamera(Camera camera, String url, boolean isViewer, boolean isDecoding, CameraWorker viewer) {
-    System.out.println("Start Camera:" + camera.name);
+    JFLog.log("Start Camera:" + camera.name);
     CameraWorker instance = null;
     switch (url.substring(0,4)) {
       case "rtsp": instance = new CameraWorkerVideo(camera, url, isViewer, isDecoding, viewer); break;
