@@ -141,6 +141,7 @@ public class SDP implements Cloneable {
   }
   public String ip;  //global connection
   public String iceufrag, icepwd, fingerprint;
+  public Stream stream0;
   public Stream[] streams = new Stream[0];
   public String owner;
   public String session;
@@ -148,6 +149,12 @@ public class SDP implements Cloneable {
   public long time_start, time_stop;
   public ArrayList<String> otherAttributes = new ArrayList<String>();  //list of unknown attributes (a=...)
   public ArrayList<String> otherParameters = new ArrayList<String>();  //list of unknown parameters (?=...)
+
+  private Stream createStream0() {
+    //this stream holds any field before an m= line
+    stream0 = new Stream();
+    return stream0;
+  }
 
   public Stream addStream(Type type) {
     JFLog.log(log, "SDP.addStream:" + type);
@@ -347,7 +354,7 @@ public class SDP implements Cloneable {
     if (type == null || type.indexOf("application/sdp") == -1) return null;
     SDP sdp = new SDP();
     sdp.setLog(log);
-    SDP.Stream stream = null;
+    SDP.Stream stream = sdp.createStream0();
     int idx;
     int start = -1;
     for(int a=0;a<msg.length;a++) {
