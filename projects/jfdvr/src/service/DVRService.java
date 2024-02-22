@@ -406,7 +406,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     if (type.equals("group") || type.equals("all")) {
       int cnt = 0;
       for(Group group : Config.current.groups) {
-        if (cnt > 0) camlist.append(",");
+        if (cnt > 0) grplist.append(",");
         grplist.append(group.name);
         cnt++;
       }
