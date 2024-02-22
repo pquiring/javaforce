@@ -1,3 +1,7 @@
+Feb 22, 2024 : 0.19 released!
+  - fixed group listing
+  - rtsp fixes
+
 Feb 22, 2024 : 0.18 released!
   - support more cameras
 
