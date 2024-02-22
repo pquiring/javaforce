@@ -1,6 +1,10 @@
 ChangeLog
 ---------
 
+Feb 22, 2024 : v0.20 released!
+  - support more cameras
+  - H265 fixes
+
 Feb 20, 2024 : v0.19 released!
   - fix : memory leaks
 
