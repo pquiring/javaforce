@@ -322,11 +322,17 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Send SETUP request to server (RTSP).
    */
-  public boolean setup(String url, int localrtpport, String track) {
+  public boolean setup(String url, int localrtpport, String control) {
     if (debug) JFLog.log("setup:" + url);
     sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
-    sess.uri = RTSPURL.cleanURL(url) + "/";
-    sess.extra = track;
+    sess.uri = sess.base;
+    if (control != null && control.length() > 0) {
+      if (sess.uri.endsWith("/")) {
+        sess.extra = control;
+      } else {
+        sess.extra = "/" + control;
+      }
+    }
     boolean result = issue(sess, "SETUP");
     sess.transport = null;
     return result;
@@ -336,7 +342,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send PLAY request to server (RTSP).
    */
   public boolean play(String url) {
-    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.uri = sess.base;
     sess.extra = "";
     return issue(sess, "PLAY");
   }
@@ -346,7 +352,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean teardown(String url) {
     if (sess == null) return false;
-    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.uri = sess.base;
     sess.extra = "";
     return issue(sess, "TEARDOWN");
   }
@@ -355,7 +361,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * GET_PARAMETER (RTSP) Used as a keep alive.
    */
   public boolean get_parameter(String url, String[] params) {
-    sess.uri = RTSPURL.cleanURL(url) + "/";
+    sess.uri = sess.base;
     sess.extra = "";
     sess.params = params;
     boolean result = issue(sess, "GET_PARAMETER");
@@ -402,6 +408,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
           if (sess.cmd.equals("OPTIONS")) {
             iface.onOptions(this);
           } else if (sess.cmd.equals("DESCRIBE")) {
+            sess.base = HTTP.getParameter(msg, "Content-Base");
+            if (sess.base == null) {
+              sess.base = sess.uri;
+            }
             iface.onDescribe(this, getSDP(msg));
           } else if (sess.cmd.equals("SETUP")) {
             iface.onSetup(this);

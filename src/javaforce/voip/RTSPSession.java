@@ -19,6 +19,7 @@ public class RTSPSession {
   public String id;
   public String uri;
   public String extra;
+  public String base;
   public String epass;
   public String transport;
   public String[] sdp;
