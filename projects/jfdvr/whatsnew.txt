@@ -1,3 +1,6 @@
+Feb 22, 2024 : 0.18 released!
+  - support more cameras
+
 Feb 21, 2024 : 0.17 released!
   - fix supporting more cameras
   - fix more leaks

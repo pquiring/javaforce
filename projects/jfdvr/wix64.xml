@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{DAF6D3A4-EAA6-4748-80FD-D1B7AEE46365}" Version="0.17" Language="1033" Name="jfDVR" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{DAF6D3A4-EAA6-4748-80FD-D1B7AEE46365}" Version="0.18" Language="1033" Name="jfDVR" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
