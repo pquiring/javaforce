@@ -153,6 +153,7 @@ public class SDP implements Cloneable {
   private Stream createStream0() {
     //this stream holds any field before an m= line
     stream0 = new Stream();
+    stream0.type = Type.other;
     return stream0;
   }
 
