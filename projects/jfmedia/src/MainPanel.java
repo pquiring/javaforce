@@ -20,6 +20,7 @@ import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements ActionListener {
 
+  private final static boolean debug = false;
   private final static boolean debug_buffers = false;
   private final static boolean debug_motion = false;
   private final static boolean debug_motion_image = false;
@@ -1283,10 +1284,12 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       try {
         if (h264 != null) {
           byte type = h264.get_nal_type(packet.data, 4);
+          if (debug) JFLog.log("H264:NAL=" + type);
           if (!h264.canDecodePacket(type)) return;
         }
         if (h265 != null) {
           byte type = h265.get_nal_type(packet.data, 4);
+          if (debug) JFLog.log("H265:NAL=" + type);
           if (!h265.canDecodePacket(type)) return;
         }
         packets.add(packet);
