@@ -361,7 +361,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * GET_PARAMETER (RTSP) Used as a keep alive.
    */
   public boolean get_parameter(String url, String[] params) {
-    sess.uri = sess.base;
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     sess.params = params;
     boolean result = issue(sess, "GET_PARAMETER");
