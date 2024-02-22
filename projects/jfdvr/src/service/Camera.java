@@ -56,7 +56,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public transient volatile ArrayList<RTSPSession> viewers = new ArrayList<>();
 
   public Codec codec;
-  public float fps = -1;
+  public float fps = -1;  //viewer fps (not decoder)
 
   public void add_viewer(RTSPSession sess) {
     synchronized (viewersLock) {

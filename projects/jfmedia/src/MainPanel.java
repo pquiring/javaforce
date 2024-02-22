@@ -844,9 +844,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           width = getWidth();
           height = getHeight();
           decoder.resize(width, height);
-          if (fps <= 0) {
-            fps = 24;
-          }
           video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
           playThread = new PlayAudioVideoThread();
           playThread.start();
@@ -1210,7 +1207,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       width = decoded_x;
       height = decoded_y;
       if (fps <= 0) {
-        fps = 24;
+        fps = 24;  //does not really matter - used just to calc buffer size
       }
       video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
       int av_codec = -1;
