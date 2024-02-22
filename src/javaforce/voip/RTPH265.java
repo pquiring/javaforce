@@ -141,7 +141,7 @@ public class RTPH265 extends RTPCodec {
     //assumes offset == 0
     if (length < 12 + 3) return;  //bad packet
     int h265Length = length - 12;
-    //NAL header bits (16bits) [12-13]
+    //payload header bits (16bits) [12-13]
     byte nal_type = get_nal_type(rtp, 12);
     //int layer = (rtp[13] >> 3);
     //int tid = (rtp[13] & 0x7);
@@ -180,7 +180,7 @@ public class RTPH265 extends RTPCodec {
         packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
         //NAL header (16 bits)
         packet.data[4] = nal_type;
-        packet.data[5] = rtp[13];  //layer / tid
+        packet.data[5] = 1;  //layer / tid
         lastseqnum = thisseqnum;
       } else {
         if (packet.length == 0) {
@@ -245,19 +245,69 @@ public class RTPH265 extends RTPCodec {
     return (byte)((packet[offset] & 0x7e) >> 1);
   }
 
-  public static boolean isKeyFrame(byte type) {
-    return type == 19 || type == 20;
+  //TODO : find a better way to stitch together sliced frames
+
+  private boolean k_sliced;
+
+  public boolean isKeyFrame(byte type) {
+    switch (type) {
+      case 39:
+        k_sliced = true;
+        return false;
+      case 19:
+      case 20:
+        if (k_sliced) return false;
+        return true;
+      case 35:
+        k_sliced = false;
+        return true;
+      default:
+        k_sliced = false;
+        return false;
+    }
   }
 
-  public static boolean isIFrame(byte type) {
-    return type == 1;
+  private boolean i_sliced;
+
+  public boolean isIFrame(byte type) {
+    switch (type) {
+      case 39:
+        i_sliced = true;
+        return false;
+      case 1:
+        if (i_sliced) return false;
+        return true;
+      case 35:
+        i_sliced = false;
+        return true;
+      default:
+        i_sliced = false;
+        return false;
+    }
   }
 
-  public static boolean isFrame(byte type) {
-    return type == 19 || type == 20 || type == 1;
+  private boolean f_sliced;
+
+  public boolean isFrame(byte type) {
+    switch (type) {
+      case 39:
+        f_sliced = true;
+        return false;
+      case 1:
+      case 19:
+      case 20:
+        if (f_sliced) return false;
+        return true;
+      case 35:
+        f_sliced = false;
+        return true;
+      default:
+        f_sliced = false;
+        return false;
+    }
   }
 
-  public static boolean isSPS(byte type) {
+  public boolean isSPS(byte type) {
     return type == 33;
   }
 
@@ -266,7 +316,9 @@ public class RTPH265 extends RTPCodec {
       case 32:  //VPS
       case 33:  //SPS
       case 34:  //PPS
-      case 1:  //i frame
+      case 35:  //end of slice
+      case 39:  //start of slice
+      case 1:   //i frame
       case 19:  //key frame
       case 20:  //key frame
         return true;
@@ -312,6 +364,8 @@ https://github.com/GStreamer/gstreamer/blob/main/subprojects/gst-plugins-good/gs
    50 PACI
 51-63 reserved?
 
-Typical sequence : 32 33 34 19 1...
+Typical sequence : 32 33 34 19|20 1...
+
+Sliced sequence  : 32 33 34 {39 { 19|20 slices } 35} {39 { 1 slices } 35} ...
 
 */

@@ -210,19 +210,19 @@ public class RTPH264 extends RTPCodec {
   }
 
 
-  public static boolean isKeyFrame(byte type) {
+  public boolean isKeyFrame(byte type) {
     return type == 5;
   }
 
-  public static boolean isIFrame(byte type) {
+  public boolean isIFrame(byte type) {
     return type == 1;
   }
 
-  public static boolean isFrame(byte type) {
+  public boolean isFrame(byte type) {
     return type == 5 || type == 1;
   }
 
-  public static boolean isSPS(byte type) {
+  public boolean isSPS(byte type) {
     return type == 7;
   }
 

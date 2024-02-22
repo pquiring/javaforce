@@ -20,9 +20,15 @@ public class PacketBuffer {
     this.codecType = codecType;
     data = new byte[maxPacketsSize];
     nextFrame.data = new byte[maxPacketsSize];
+    switch(codecType) {
+      case CodecType.H264: h264 = new RTPH264(); break;
+      case CodecType.H265: h265 = new RTPH265(); break;
+    }
   }
   public byte[] data;
   private Packet nextFrame = new Packet();
+  private RTPH264 h264;
+  private RTPH265 h265;
   private int codecType;
   public int[] offset = new int[maxPackets];
   public int[] length = new int[maxPackets];
@@ -101,8 +107,8 @@ public class PacketBuffer {
     int key_frames = 0;
     for(int pos=tail;pos!=head;) {
       switch (codecType) {
-        case CodecType.H264: if (RTPH264.isKeyFrame(type[pos])) key_frames++; break;
-        case CodecType.H265: if (RTPH265.isKeyFrame(type[pos])) key_frames++; break;
+        case CodecType.H264: if (h264.isKeyFrame(type[pos])) key_frames++; break;
+        case CodecType.H265: if (h265.isKeyFrame(type[pos])) key_frames++; break;
       }
       pos++;
       if (pos == maxPackets) pos = 0;
@@ -112,8 +118,8 @@ public class PacketBuffer {
       boolean i_frame = false;
       for(;tail!=head;) {
         switch (codecType) {
-          case CodecType.H264: if (RTPH264.isIFrame(type[head])) i_frame = true; else if (i_frame) return; break;
-          case CodecType.H265: if (RTPH265.isIFrame(type[head])) i_frame = true; else if (i_frame) return; break;
+          case CodecType.H264: if (h264.isIFrame(type[head])) i_frame = true; else if (i_frame) return; break;
+          case CodecType.H265: if (h265.isIFrame(type[head])) i_frame = true; else if (i_frame) return; break;
         }
         int new_tail = tail + 1;
         if (new_tail == maxPackets) new_tail = 0;
@@ -124,8 +130,8 @@ public class PacketBuffer {
   public boolean haveCompleteFrame() {
     for(int pos=tail;pos!=head;) {
       switch (codecType) {
-        case CodecType.H264: if (RTPH264.isFrame(type[pos])) return true; break;
-        case CodecType.H265: if (RTPH265.isFrame(type[pos])) return true; break;
+        case CodecType.H264: if (h264.isFrame(type[pos])) return true; break;
+        case CodecType.H265: if (h265.isFrame(type[pos])) return true; break;
       }
       pos++;
       if (pos == maxPackets) {
@@ -137,12 +143,12 @@ public class PacketBuffer {
   public boolean isNextFrame_KeyFrame() {
     for(int pos=tail;pos!=head;) {
       switch (codecType) {
-        case CodecType.H264: if (RTPH264.isKeyFrame(type[pos])) return true; break;
-        case CodecType.H265: if (RTPH265.isKeyFrame(type[pos])) return true; break;
+        case CodecType.H264: if (h264.isKeyFrame(type[pos])) return true; break;
+        case CodecType.H265: if (h265.isKeyFrame(type[pos])) return true; break;
       }
       switch (codecType) {
-        case CodecType.H264: if (RTPH264.isIFrame(type[pos])) return false; break;
-        case CodecType.H265: if (RTPH265.isIFrame(type[pos])) return false; break;
+        case CodecType.H264: if (h264.isIFrame(type[pos])) return false; break;
+        case CodecType.H265: if (h265.isIFrame(type[pos])) return false; break;
       }
       pos++;
       if (pos == maxPackets) pos = 0;
@@ -162,8 +168,8 @@ public class PacketBuffer {
       next_frame_packets++;
       boolean br = false;
       switch (codecType) {
-        case CodecType.H264: if (RTPH264.isFrame(type[pos])) br = true; break;
-        case CodecType.H265: if (RTPH265.isFrame(type[pos])) br = true; break;
+        case CodecType.H264: if (h264.isFrame(type[pos])) br = true; break;
+        case CodecType.H265: if (h265.isFrame(type[pos])) br = true; break;
       }
       if (br) break;
       pos++;
