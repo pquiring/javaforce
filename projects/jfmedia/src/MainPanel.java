@@ -1200,7 +1200,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
       video_decoder = new MediaVideoDecoder();
       boolean status;
-      fps = sdp.getFrameRate();
+      fps = stream.getFrameRate();
       decoded_x = getWidth();
       decoded_y = getHeight();
       decoded_xy = decoded_x * decoded_y;
@@ -1231,7 +1231,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       rtp.start();
       channel = rtp.createChannel(stream);
       channel.start();
-      client.setup(url.toString(), rtp.getlocalrtpport(), sdp.control);
+      client.setup(url.toString(), rtp.getlocalrtpport(), stream.control);
     }
 
     public void onSetup(RTSPClient client) {

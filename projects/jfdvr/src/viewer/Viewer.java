@@ -310,7 +310,7 @@ public class Viewer {
       }
       video_decoder = new MediaVideoDecoder();
       boolean status;
-      fps = sdp.getFrameRate();
+      fps = stream.getFrameRate();
       if (fps <= 0) {
         JFLog.log("Warning : Invalid framerate:Using 10fps");
         fps = 10;
@@ -346,7 +346,7 @@ public class Viewer {
       rtp.start();
       channel = rtp.createChannel(stream);
       channel.start();
-      client.setup(url.toString(), rtp.getlocalrtpport(), sdp.control);
+      client.setup(url.toString(), rtp.getlocalrtpport(), stream.control);
     }
 
     public void onSetup(RTSPClient client) {

@@ -33,6 +33,8 @@ public class SDP implements Cloneable {
     public Profile profile = Profile.AVP;
     public KeyExchange keyExchange = KeyExchange.NONE;
     public Key[] keys;  //if KeyExchange == SDP
+    public float framerate;
+    public String control;
 
     public String getType() {
       switch (type) {
@@ -89,6 +91,9 @@ public class SDP implements Cloneable {
     public boolean isSecure() {
       return profile == Profile.SAVP || profile == Profile.SAVPF;
     }
+    public float getFrameRate() {
+      return framerate;
+    }
     /**
      * Used to add SRTP keys to SDP (obsoleted by DTLS method)
      * Must set KeyExchange to SDP.
@@ -141,8 +146,6 @@ public class SDP implements Cloneable {
   public String session;
   public long o1 = 256, o2 = 256;
   public long time_start, time_stop;
-  public float framerate;
-  public String control;
   public ArrayList<String> otherAttributes = new ArrayList<String>();  //list of unknown attributes (a=...)
   public ArrayList<String> otherParameters = new ArrayList<String>();  //list of unknown parameters (?=...)
 
@@ -199,9 +202,6 @@ public class SDP implements Cloneable {
   public boolean hasVideo() {
     return getFirstVideoStream() != null;
   }
-  public float getFrameRate() {
-    return framerate;
-  }
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("SDP:" + streams.length + "[");
@@ -210,7 +210,6 @@ public class SDP implements Cloneable {
       sb.append("Stream=" + streams[a]);
     }
     sb.append("]");
-    sb.append("FPS=" + framerate);
     return sb.toString();
   }
   public Object clone() {
@@ -318,13 +317,16 @@ public class SDP implements Cloneable {
       if (stream.hasCodec(RTP.CODEC_VP9)) {
         content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_VP9).id + " VP9/90000");
       }
+      if (stream.framerate != 0.0f) {
+        content.add("a=framerate:" + stream.framerate);
+      }
+      if (stream.control != null) {
+        content.add("a=control:" + stream.control);
+      }
       JFLog.log("keyexchange=" + stream.keyExchange);
       if (stream.keyExchange == KeyExchange.DTLS) {
         content.add("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
       }
-    }
-    if (framerate != 0.0f) {
-      content.add("a=framerate:" + framerate);
     }
     return content.toArray(JF.StringArrayType);
   }
@@ -370,7 +372,7 @@ public class SDP implements Cloneable {
           stream.ip = ip;
         }
       } else if (ln.startsWith("m=")) {
-        //m=audio <port> [UDP/TLS/]RTP/<profile> <codecs>
+        //m=audio/video/application <port> [UDP/TLS/]RTP/<profile> <codecs>
         if (stream != null) {
           if (stream.content == null) {
             switch (stream.type) {
@@ -496,10 +498,10 @@ public class SDP implements Cloneable {
           stream.addKey(f[1], key, salt);
         }
         else if (ln.startsWith("a=framerate:")) {
-          sdp.framerate = JF.atof(ln.substring(12));
+          stream.framerate = JF.atof(ln.substring(12));
         }
         else if (ln.startsWith("a=control:")) {
-          sdp.control = ln.substring(10);
+          stream.control = ln.substring(10);
         }
         else {
           sdp.otherAttributes.add(ln.substring(2));

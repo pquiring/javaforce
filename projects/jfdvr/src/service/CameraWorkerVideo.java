@@ -566,8 +566,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
       return;
     }
-    if (sdp.framerate > 0) {
-      fps = sdp.framerate;
+    if (stream.framerate > 0) {
+      fps = stream.framerate;
       if (isViewer) {
         camera.fps = fps;
       }
@@ -627,7 +627,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     rtp.start();
     channel = rtp.createChannel(stream);
     channel.start();
-    client.setup(url, rtp.getlocalrtpport(), sdp.control);
+    client.setup(url, rtp.getlocalrtpport(), stream.control);
   }
 
   public void onSetup(RTSPClient client) {
