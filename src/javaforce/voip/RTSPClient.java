@@ -382,6 +382,12 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
       sess.id = HTTP.getParameter(msg, "Session");
+      if (sess.id != null) {
+        int idx = sess.id.indexOf(';');
+        if (idx != -1) {
+          sess.id = sess.id.substring(0 ,idx);
+        }
+      }
 
       int type = getResponseType(msg);
       if (type != -1) {

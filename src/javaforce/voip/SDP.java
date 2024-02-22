@@ -509,7 +509,12 @@ public class SDP implements Cloneable {
           stream.framerate = JF.atof(ln.substring(12));
         }
         else if (ln.startsWith("a=control:")) {
-          stream.control = ln.substring(10);
+          String value = ln.substring(10);
+          int i = value.lastIndexOf('/');
+          if (i != -1) {
+            value = value.substring(i + 1);
+          }
+          stream.control = value;
         }
         else {
           sdp.otherAttributes.add(ln.substring(2));
