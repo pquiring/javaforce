@@ -95,14 +95,14 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     return sdp.build(sess.localhost);
   }
 
-  public void sendPacket(byte[] buf, int offset, int length) {
+  public void sendPacket(byte[] buf, int offset, int length, int log) {
     synchronized (viewersLock) {
       for(RTSPSession sess : viewers) {
-        if (debug) JFLog.log("Camera.sendPacket()" + sess.remotehost + ":" + sess.channel.stream.port);
+        if (debug) JFLog.log(log, "Camera.sendPacket()" + sess.remotehost + ":" + sess.channel.stream.port);
         try {
           sess.channel.writeRTP(buf, offset, length);
         } catch (Exception e) {
-          JFLog.log(e);
+          JFLog.log(log, e);
         }
       }
     }

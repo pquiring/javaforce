@@ -139,7 +139,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       }
       connect();
       while (active) {
-        JF.sleep(500);
+        JF.sleep(250);
         long now = System.currentTimeMillis();
         if (now - lastPacket > 10*1000) {
           JFLog.log(log, camera.name + " : Reconnecting");
@@ -300,45 +300,46 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           camera.update_preview = false;
         }
       }
-      if (!packets_decode.haveCompleteFrame()) return;
-      boolean key_frame = packets_decode.isNextFrame_KeyFrame();
-      if (debug_buffers && key_frame) {
-        JFLog.log(log, "packets_decode=" + packets_decode.toString());
-      }
-      if (wait_next_key_frame) {
-        if (!key_frame) {
-          //this is i-frame - discard and wait for key-frame
+      while (packets_decode.haveCompleteFrame()) {
+        boolean key_frame = packets_decode.isNextFrame_KeyFrame();
+        if (debug_buffers && key_frame) {
+          JFLog.log(log, "packets_decode=" + packets_decode.toString());
+        }
+        if (wait_next_key_frame) {
+          if (!key_frame) {
+            //this is i-frame - discard and wait for key-frame
+            packets_decode.reset();
+            return;
+          }
+          wait_next_key_frame = false;
+        }
+        Packet fullPacket = packets_decode.getNextFrame();
+        decoded_frame = decoder.decode(fullPacket.data, fullPacket.offset, fullPacket.length);
+        if (decoded_frame == null) {
+          JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + fullPacket.length);
           packets_decode.reset();
+          //decoding error : delete all frames till next key frame
+          wait_next_key_frame = true;
           return;
         }
-        wait_next_key_frame = false;
-      }
-      Packet fullPacket = packets_decode.getNextFrame();
-      decoded_frame = decoder.decode(fullPacket.data, fullPacket.offset, fullPacket.length);
-      if (decoded_frame == null) {
-        JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + fullPacket.length);
-        packets_decode.reset();
-        //decoding error : delete all frames till next key frame
-        wait_next_key_frame = true;
-        return;
-      }
-      if (width == -1 && height == -1) {
-        width = decoder.getWidth();
-        height = decoder.getHeight();
-        if (width == -1 || height == -1 || width == 0 || height == 0) {
-          width = -1;
-          height = -1;
-          return;
+        if (width == -1 && height == -1) {
+          width = decoder.getWidth();
+          height = decoder.getHeight();
+          if (width == -1 || height == -1 || width == 0 || height == 0) {
+            width = -1;
+            height = -1;
+            return;
+          }
+          if (fps == -1) {
+            //should come from SDP
+            fps = decoder.getFrameRate();
+          }
+          JFLog.log(log, camera.name + " : detected : sizet=" + width + "x" + height + ":fps=" + fps);
+          last_frame = new int[decoded_xy];
         }
-        if (fps == -1) {
-          //should come from SDP
-          fps = decoder.getFrameRate();
+        if (camera.record_motion) {
+          detectMotion(decoded_frame, key_frame);
         }
-        JFLog.log(log, camera.name + " : detected : sizet=" + width + "x" + height + ":fps=" + fps);
-        last_frame = new int[decoded_xy];
-      }
-      if (camera.record_motion) {
-        detectMotion(decoded_frame, key_frame);
       }
     } catch (Exception e) {
       JFLog.log(log, e);
@@ -701,7 +702,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   public void rtpCodec(RTPChannel rtp, byte[] buf, int offset, int length) {
     try {
       if (isEncoder) {
-        camera.sendPacket(buf, offset, length);
+        camera.sendPacket(buf, offset, length, log);
       }
       now = lastPacket = System.currentTimeMillis();
       if (h264 != null) {
