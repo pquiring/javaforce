@@ -1335,7 +1335,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             }
           }
         }
-        packets.removeNextFrame();
         now = lastPacket;
       } catch (Exception e) {
         JFLog.log(log, e);

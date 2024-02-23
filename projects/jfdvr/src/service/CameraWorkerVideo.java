@@ -731,7 +731,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           if (!packets_encode.haveCompleteFrame()) return;
           fullPacket = packets_encode.getNextFrame();
           CodecInfo info = RTPH264.getCodecInfo(fullPacket);
-          packets_encode.removeNextFrame();
           if (info == null || info.width == 0 || info.height == 0) {
             JFLog.log(log, "Error:Unable to determine stream info");
             return;
@@ -762,7 +761,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           if (!packets_encode.haveCompleteFrame()) return;
           fullPacket = packets_encode.getNextFrame();
           CodecInfo info = RTPH265.getCodecInfo(fullPacket);
-          packets_encode.removeNextFrame();
           if (info == null || info.width == 0 || info.height == 0) {
             JFLog.log(log, "Error:Unable to determine stream info");
             return;
@@ -794,7 +792,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           frames.add(fullPacket, key_frame);
           frameCount++;
         }
-        packets_encode.removeNextFrame();
       }
       if (recording_stop) {
         frames.stop();
@@ -832,7 +829,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         wait_next_key_frame = true;
         return;
       }
-      packets_decode.removeNextFrame();
       if (width == -1 && height == -1) {
         width = decoder.getWidth();
         height = decoder.getHeight();

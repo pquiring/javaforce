@@ -29,7 +29,7 @@ public abstract class RTSP implements TransportInterface {
   protected String localhost;
   protected int localport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
-  public static int log;
+  public int log;
   public static boolean debug = false;
 
   /**
@@ -102,7 +102,7 @@ public abstract class RTSP implements TransportInterface {
     if (debug) JFLog.log("RTSP.uninit() done:" + this);
   }
 
-  public static void setLog(int id) {
+  public void setLog(int id) {
     log = id;
   }
 

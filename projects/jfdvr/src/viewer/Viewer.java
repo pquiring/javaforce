@@ -502,7 +502,6 @@ public class Viewer {
             }
           }
         }
-        packets.removeNextFrame();
       } catch (Exception e) {
         JFLog.log(log, e);
       }
