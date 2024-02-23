@@ -246,77 +246,80 @@ public class RTPH265 extends RTPCodec {
     return (byte)(rtp[offset] & 0x2f);
   }
 
+  /** Returns NAL unit type.
+   */
   public static byte get_nal_type(byte[] packet, int offset) {
     return (byte)((packet[offset] & 0x7e) >> 1);
   }
 
-  //TODO : find a better way to stitch together sliced frames
-  //first byte after NAL header includes a first_slice_segment_in_pic_flag (0x80)
-  //this could be used to properly stitch together slices into whole frame
-  //would need to restructure functions below
-
-  private boolean k_sliced;
-
-  public boolean isKeyFrame(byte type) {
+  /** Returns NAL unit and first_slice_segment_in_pic_flag.
+   */
+  public static byte get_nal_type_slice_flag(byte[] packet, int offset) {
+    byte type = (byte)((packet[offset] & 0x7e) >> 1);
     switch (type) {
-      case 39:
-        k_sliced = true;
-        return false;
-      case 19:
-      case 20:
-        if (k_sliced) return false;
-        return true;
-      case 35:
-        k_sliced = false;
-        return true;
-      default:
-        k_sliced = false;
-        return false;
-    }
-  }
-
-  private boolean i_sliced;
-
-  public boolean isIFrame(byte type) {
-    switch (type) {
-      case 39:
-        i_sliced = true;
-        return false;
-      case 1:
-        if (i_sliced) return false;
-        return true;
-      case 35:
-        i_sliced = false;
-        return true;
-      default:
-        i_sliced = false;
-        return false;
-    }
-  }
-
-  private boolean f_sliced;
-
-  public boolean isFrame(byte type) {
-    switch (type) {
-      case 39:
-        f_sliced = true;
-        return false;
       case 1:
       case 19:
       case 20:
-        if (f_sliced) return false;
-        return true;
-      case 35:
-        f_sliced = false;
-        return true;
+        if ((packet[offset+2] & 0x80) != 0) {
+          type |= 0x80;  //first_slice_segment_in_pic_flag
+        }
+    }
+    return type;
+  }
+
+  /** Returns true only in last slice of key-frame. */
+  public boolean isKeyFrame(byte this_type, byte next_type) {
+    if (next_type == 0) return false;
+//    boolean this_first_slice = (this_type & 0x80) != 0;
+    this_type &= 0x3f;
+    boolean next_first_slice = (next_type & 0x80) != 0;
+    next_type &= 0x3f;
+    switch (this_type) {
+      case 19:
+      case 20:
+        if (next_type != this_type) return true;
+        if (next_first_slice) return true;
+        return false;
       default:
-        f_sliced = false;
         return false;
     }
   }
 
-  public boolean isSPS(byte type) {
-    return type == 33;
+  /** Returns true if any i-frame. */
+  public boolean isIFrame(byte this_type, byte next_type) {
+//    if (next_type == 0) return false;
+//    boolean this_first_slice = (this_type & 0x80) != 0;
+    this_type &= 0x3f;
+//    boolean next_first_slice = (next_type & 0x80) != 0;
+//    next_type &= 0x3f;
+    switch (this_type) {
+      case 1:
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /** Returns true only in last slice of key-frame or i-frame. */
+  public boolean isFrame(byte this_type, byte next_type) {
+    if (next_type == 0) return false;
+    boolean this_first_slice = (this_type & 0x80) != 0;
+    this_type &= 0x3f;
+    boolean next_first_slice = (next_type & 0x80) != 0;
+    next_type &= 0x3f;
+    switch (this_type) {
+      case 1:
+        if (next_type != this_type) return true;
+        if (next_first_slice) return true;
+        return false;
+      case 19:
+      case 20:
+        if (next_type != this_type) return true;
+        if (next_first_slice) return true;
+        return false;
+      default:
+        return false;
+    }
   }
 
   public static boolean canDecodePacket(byte type) {
@@ -324,8 +327,6 @@ public class RTPH265 extends RTPCodec {
       case 32:  //VPS
       case 33:  //SPS
       case 34:  //PPS
-      case 35:  //end of slice
-      case 39:  //start of slice
       case 1:   //i frame
       case 19:  //key frame
       case 20:  //key frame

@@ -88,7 +88,7 @@ public class PacketBuffer {
     length[head] = packet.length;
     switch (codecType) {
       case CodecType.H264: type[head] = RTPH264.get_nal_type(packet.data, packet.offset + 4); break;
-      case CodecType.H265: type[head] = RTPH265.get_nal_type(packet.data, packet.offset + 4); break;
+      case CodecType.H265: type[head] = RTPH265.get_nal_type_slice_flag(packet.data, packet.offset + 4); break;
     }
     nextOffset += packet.length;
     int new_head = head + 1;
@@ -104,24 +104,39 @@ public class PacketBuffer {
     if (new_tail == maxPackets) new_tail = 0;
     tail = new_tail;
   }
+  private byte get_this_type(int offset) {
+    if (offset == head) return 0;
+    return type[offset];
+  }
+  private byte get_next_type(int offset) {
+    offset++;
+    if (offset == maxPackets) offset = 0;
+    if (offset == head) return 0;
+    return type[offset];
+  }
   public void cleanPackets(boolean mark) {
-    //only keep back to the last keyFrame (type 5)
+    //only keep back to the last keyFrame
     int key_frames = 0;
     for(int pos=tail;pos!=head;) {
+      byte this_type = get_this_type(pos);
+      byte next_type = get_next_type(pos);
       switch (codecType) {
-        case CodecType.H264: if (h264.isKeyFrame(type[pos])) key_frames++; break;
-        case CodecType.H265: if (h265.isKeyFrame(type[pos])) key_frames++; break;
+        case CodecType.H264: if (h264.isKeyFrame(this_type)) key_frames++; break;
+        case CodecType.H265: if (h265.isKeyFrame(this_type, next_type)) key_frames++; break;
       }
       pos++;
       if (pos == maxPackets) pos = 0;
     }
     if (key_frames <= 1) return;
     if (mark) {
+      //remove packets from tail until after a set of i-frames
       boolean i_frame = false;
       for(;tail!=head;) {
+        byte this_type = get_this_type(tail);
+        byte next_type = get_next_type(tail);
         switch (codecType) {
-          case CodecType.H264: if (h264.isIFrame(type[head])) i_frame = true; else if (i_frame) return; break;
-          case CodecType.H265: if (h265.isIFrame(type[head])) i_frame = true; else if (i_frame) return; break;
+          case CodecType.H264: if (h264.isIFrame(this_type)) i_frame = true; else if (i_frame) return; break;
+          case CodecType.H265: if (h265.isIFrame(this_type, next_type)) i_frame = true; else if (i_frame) return; break;
         }
         int new_tail = tail + 1;
         if (new_tail == maxPackets) new_tail = 0;
@@ -131,9 +146,11 @@ public class PacketBuffer {
   }
   public boolean haveCompleteFrame() {
     for(int pos=tail;pos!=head;) {
+      byte this_type = get_this_type(pos);
+      byte next_type = get_next_type(pos);
       switch (codecType) {
-        case CodecType.H264: if (h264.isFrame(type[pos])) return true; break;
-        case CodecType.H265: if (h265.isFrame(type[pos])) return true; break;
+        case CodecType.H264: if (h264.isFrame(this_type)) return true; break;
+        case CodecType.H265: if (h265.isFrame(this_type, next_type)) return true; break;
       }
       pos++;
       if (pos == maxPackets) {
@@ -142,52 +159,49 @@ public class PacketBuffer {
     }
     return false;
   }
+
   public boolean isNextFrame_KeyFrame() {
     for(int pos=tail;pos!=head;) {
+      byte this_type = get_this_type(pos);
+      byte next_type = get_next_type(pos);
       switch (codecType) {
-        case CodecType.H264: if (h264.isKeyFrame(type[pos])) return true; break;
-        case CodecType.H265: if (h265.isKeyFrame(type[pos])) return true; break;
-      }
-      switch (codecType) {
-        case CodecType.H264: if (h264.isIFrame(type[pos])) return false; break;
-        case CodecType.H265: if (h265.isIFrame(type[pos])) return false; break;
+        case CodecType.H264:
+          if (h264.isKeyFrame(this_type)) return true;
+          if (h264.isIFrame(this_type)) return false;
+          break;
+        case CodecType.H265:
+          if (h265.isKeyFrame(this_type, next_type)) return true;
+          if (h265.isIFrame(this_type, next_type)) return false;
+          break;
       }
       pos++;
       if (pos == maxPackets) pos = 0;
     }
     return false;
   }
+
   public Packet getNextFrame() {
-    next_frame_packets = 0;
     if (!haveCompleteFrame()) {
       JFLog.log(log, "Error : getNextFrame() called but don't have one ???");
       return null;
     }
     nextFrame.length = 0;
-    for(int pos=tail;pos!=head;) {
-      System.arraycopy(data, offset[pos], nextFrame.data, nextFrame.length, length[pos]);
-      nextFrame.length += length[pos];
-      next_frame_packets++;
-      boolean br = false;
+    for(;tail!=head;) {
+      System.arraycopy(data, offset[tail], nextFrame.data, nextFrame.length, length[tail]);
+      nextFrame.length += length[tail];
+      byte this_type = get_this_type(tail);
+      byte next_type = get_next_type(tail);
+      boolean done = false;
       switch (codecType) {
-        case CodecType.H264: if (h264.isFrame(type[pos])) br = true; break;
-        case CodecType.H265: if (h265.isFrame(type[pos])) br = true; break;
+        case CodecType.H264: if (h264.isFrame(this_type)) done = true; break;
+        case CodecType.H265: if (h265.isFrame(this_type, next_type)) done = true; break;
       }
-      if (br) break;
-      pos++;
-      if (pos == maxPackets) pos = 0;
+      tail++;
+      if (tail == maxPackets) tail = 0;
+      if (done) break;
     }
     return nextFrame;
   }
-  public void removeNextFrame() {
-    while (next_frame_packets > 0) {
-      int new_tail = tail + 1;
-      if (new_tail == maxPackets) new_tail = 0;
-      tail = new_tail;
-      next_frame_packets--;
-    }
-  }
-  public int next_frame_packets;
   public String toString() {
     return "Packets:tail=" + tail + ":head=" + head;
   }
