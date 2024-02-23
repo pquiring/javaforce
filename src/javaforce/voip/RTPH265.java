@@ -13,6 +13,8 @@ import javaforce.media.*;
 
 public class RTPH265 extends RTPCodec {
 
+  private static boolean debug = true;
+
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) = 1446 bytes payload per packet
   private static final int mtu = 1446;
   private int seqnum;
@@ -151,6 +153,7 @@ public class RTPH265 extends RTPCodec {
       System.arraycopy(rtp, 12, packet.data, 4, h265Length);
       packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
       packet.length = 4 + h265Length;
+      if (debug) log(packet);
       pr.onPacket(packet);
       lastseqnum = thisseqnum;
       packet.length = 0;
@@ -200,6 +203,7 @@ public class RTPH265 extends RTPCodec {
         System.arraycopy(rtp, 12 + 3, packet.data, packet.length, h265Length);
         packet.length += h265Length;
         if (last) {
+          if (debug) log(packet);
           pr.onPacket(packet);
           packet.length = 0;
         }
@@ -215,6 +219,7 @@ public class RTPH265 extends RTPCodec {
         h265Length -= 2;
         packet.length = len;
         System.arraycopy(rtp, offset, packet.data, 0, len);
+        if (debug) log(packet);
         pr.onPacket(packet);
         offset += len;
         h265Length -= len;
@@ -337,6 +342,11 @@ public class RTPH265 extends RTPCodec {
     info.fps = decoder.getFrameRate();
     decoder.stop();
     return info;
+  }
+
+  private void log(Packet packet) {
+    //0x00 0x00 0x00 0x01 NAL[16] PIC[8]
+    JFLog.log(String.format("H265:%x,%x,%x", packet.data[4], packet.data[5], packet.data[6]));
   }
 }
 
