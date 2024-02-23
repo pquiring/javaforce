@@ -1003,6 +1003,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     private int decoded_frame[];
     private int decoded_x, decoded_y, decoded_xy;
     private int log = 0;
+    private boolean shown_info;
 
     private final int buffer_seconds = 4;
 
@@ -1039,11 +1040,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         playThread = new PlayVideoOnlyThread();
         playThread.start();
         while (playing && !eof) {
-          if (paused) {
-            JF.sleep(100);  //TODO:use a lock with wait() and notify() instead
-            preBuffering = true;  //pre buffer again after unpause
-            continue;
-          }
           long now = System.currentTimeMillis();
           if (now - lastPacket > 20*1000) {
             JFLog.log(log, "NetworkReader : Reconnecting");
@@ -1056,18 +1052,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             rtsp.keepalive(url.toString());
             lastKeepAlive = now;
           }
-          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
-            preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
-            int sleep;
-            if (fps > 0) {
-              sleep = 1000 / (int)fps;
-            } else {
-              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
-            }
-            JF.sleep(sleep);
-            continue;
-          }
-          JF.sleep(1000);
+          JF.sleep(500);
         }
         JFLog.log("NetworkReader:closing");
         close(true);
@@ -1284,9 +1269,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         packets.add(packet);
         if (!packets.haveCompleteFrame()) return;
         boolean key_frame = packets.isNextFrame_KeyFrame();
-        if (debug_buffers && key_frame) {
-          JFLog.log(log, "packets_decode=" + packets.toString());
-        }
         Packet nextPacket = packets.getNextFrame();
         decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
         if (decoded_frame == null) {
@@ -1295,12 +1277,12 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           packets.reset();
           return;
         } else {
-          if (false) {
+          if (!shown_info) {
             int video_width = video_decoder.getWidth();
             int video_height = video_decoder.getHeight();
             float video_fps = video_decoder.getFrameRate();
-            JFLog.log(log, "Note : detected width/height=" + video_width + "x" + video_height);
-            JFLog.log(log, "Note : detected FPS=" + video_fps);
+            JFLog.log(log, "Note : size=" + video_width + "x" + video_height + ":fps=" + video_fps);
+            shown_info = true;
           }
           if (width > 0 && height > 0) {
             JFImage img = video_buffer.getNewFrame();
