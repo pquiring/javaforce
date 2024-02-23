@@ -322,6 +322,10 @@ public class RTPH265 extends RTPCodec {
     }
   }
 
+  public boolean isStart(byte type) {
+    return type == 32;
+  }
+
   public static boolean canDecodePacket(byte type) {
     switch (type) {
       case 32:  //VPS

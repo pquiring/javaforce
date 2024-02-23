@@ -55,7 +55,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
   private JFImage preview_image;
-  private boolean wait_next_key_frame;
   private int log;
   private boolean isEncoder;  //viewing, recording
   private boolean isDecoder;  //decoding, preview, motion detection
@@ -148,7 +147,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       while (active) {
         JF.sleep(250);
         long now = System.currentTimeMillis();
-        if (now - lastPacket > 10*1000) {
+        if (now - lastPacket > 20*1000) {
           JFLog.log(log, camera.name + " : Reconnecting");
           disconnect();
           if (!connect()) {
@@ -312,21 +311,11 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         if (debug_buffers && key_frame) {
           JFLog.log(log, "packets_decode=" + packets_decode.toString());
         }
-        if (wait_next_key_frame) {
-          if (!key_frame) {
-            //this is i-frame - discard and wait for key-frame
-            packets_decode.reset();
-            return;
-          }
-          wait_next_key_frame = false;
-        }
         Packet fullPacket = packets_decode.getNextFrame();
         decoded_frame = decoder.decode(fullPacket.data, fullPacket.offset, fullPacket.length);
         if (decoded_frame == null) {
           JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + fullPacket.length);
           packets_decode.reset();
-          //decoding error : delete all frames till next key frame
-          wait_next_key_frame = true;
           return;
         }
         if (width == -1 && height == -1) {
@@ -752,7 +741,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     if (debug_encoder) JFLog.log(log, "onPacketEncoder");
     try {
       packets_encode.add(packet);
-      packets_encode.cleanPackets(true);
     } catch (Exception e) {
       JFLog.log(log, e);
     }
@@ -762,7 +750,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     if (debug_decoder) JFLog.log(log, "onPacketDecoder");
     try {
       packets_decode.add(packet);
-      packets_decode.cleanPackets(true);
     } catch (Exception e) {
       JFLog.log(log, e);
     }

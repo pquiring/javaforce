@@ -114,36 +114,6 @@ public class PacketBuffer {
     if (offset == head) return 0;
     return type[offset];
   }
-  public void cleanPackets(boolean mark) {
-    //only keep back to the last keyFrame
-    int key_frames = 0;
-    for(int pos=tail;pos!=head;) {
-      byte this_type = get_this_type(pos);
-      byte next_type = get_next_type(pos);
-      switch (codecType) {
-        case CodecType.H264: if (h264.isKeyFrame(this_type)) key_frames++; break;
-        case CodecType.H265: if (h265.isKeyFrame(this_type, next_type)) key_frames++; break;
-      }
-      pos++;
-      if (pos == maxPackets) pos = 0;
-    }
-    if (key_frames <= 1) return;
-    if (mark) {
-      //remove packets from tail until after a set of i-frames
-      boolean i_frame = false;
-      for(;tail!=head;) {
-        byte this_type = get_this_type(tail);
-        byte next_type = get_next_type(tail);
-        switch (codecType) {
-          case CodecType.H264: if (h264.isIFrame(this_type)) i_frame = true; else if (i_frame) return; break;
-          case CodecType.H265: if (h265.isIFrame(this_type, next_type)) i_frame = true; else if (i_frame) return; break;
-        }
-        int new_tail = tail + 1;
-        if (new_tail == maxPackets) new_tail = 0;
-        tail = new_tail;
-      }
-    }
-  }
   public boolean haveCompleteFrame() {
     for(int pos=tail;pos!=head;) {
       byte this_type = get_this_type(pos);

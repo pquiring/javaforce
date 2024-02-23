@@ -26,7 +26,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private final static boolean debug_motion_image = false;
   private final static boolean debug_short_clips = false;
   private final static boolean debug_log = false;
-  private boolean wait_next_key_frame;
 
   /**
    * Creates new form MainPanel
@@ -1046,14 +1045,14 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             continue;
           }
           long now = System.currentTimeMillis();
-          if (now - lastPacket > 10*1000) {
+          if (now - lastPacket > 20*1000) {
             JFLog.log(log, "NetworkReader : Reconnecting");
             disconnect();
             if (!connect()) {
               JF.sleep(1000);
               continue;
             }
-          } else if (now - lastKeepAlive > 30*1000) {
+          } else if (now - lastKeepAlive > 45*1000) {
             rtsp.keepalive(url.toString());
             lastKeepAlive = now;
           }
@@ -1293,26 +1292,16 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           if (!h265.canDecodePacket(type)) return;
         }
         packets.add(packet);
-        packets.cleanPackets(true);
         if (!packets.haveCompleteFrame()) return;
         boolean key_frame = packets.isNextFrame_KeyFrame();
         if (debug_buffers && key_frame) {
           JFLog.log(log, "packets_decode=" + packets.toString());
-        }
-        if (wait_next_key_frame) {
-          if (!key_frame) {
-            packets.reset();
-            return;
-          }
-          wait_next_key_frame = false;
         }
         Packet nextPacket = packets.getNextFrame();
         decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
         if (decoded_frame == null) {
           JFLog.log(log, "Error:newFrame == null:packet.length=" + nextPacket.length);
           packets.reset();
-          //decoding error : delete all frames till next key frame
-          wait_next_key_frame = true;
           return;
         } else {
           if (false) {

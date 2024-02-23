@@ -226,7 +226,7 @@ public class RTPH264 extends RTPCodec {
     return type == 5 || type == 1;
   }
 
-  public boolean isSPS(byte type) {
+  public boolean isStart(byte type) {
     return type == 7;
   }
 
