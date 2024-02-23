@@ -2,9 +2,9 @@ package javaforce.voip;
 
 /** PacketBuffer
  *
- * Combines H265 packets into full frames.
+ * Combines H264/H265 packets into full frames.
  *
- * Passing partial frames to FFMPEG will fail.
+ * For H265 sometimes a frame is split into slices.
  *
  */
 

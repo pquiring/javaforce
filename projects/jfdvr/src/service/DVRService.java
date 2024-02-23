@@ -54,11 +54,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
     //create debug state
     if (debug) {
       if (debug_sub_systems) {
-        JFLog.init(777, Paths.logsPath + "/debug-sub-systems.log", true);
         TransportTCPServer.debug = true;
-        TransportTCPServer.setLog(777);
         RTSP.debug = true;
-        RTSP.setLog(777);
         WebUIServer.debug = true;
         CameraWorkerVideo.debug = true;
       }
