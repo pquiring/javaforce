@@ -11,6 +11,8 @@ public class PacketPool {
 
   private int mtu;
 
+  private static final int max_packets = 64;
+
   private Object availLock = new Object();
   private ArrayList<Packet> avail = new ArrayList<>();
 
@@ -27,6 +29,9 @@ public class PacketPool {
       if (avail.size() > 0) {
         packet = avail.remove(0);
       } else {
+        if (inuse.size() > max_packets) {
+          return null;
+        }
         packet = new Packet();
         packet.data = new byte[mtu];
       }

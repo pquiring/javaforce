@@ -275,7 +275,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
                 break;
               }
               if (!auth.regionMatches(true, 0, "digest ", 0, 7)) {
-                JFLog.log("invalid Authorization");
+                JFLog.log(log, "invalid Authorization");
                 break;
               }
               String[] tags = SIP.convertParameters(auth.substring(7),',');
@@ -315,7 +315,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
             }
             case "DESCRIBE": {
               if (!sess.auth) {
-                JFLog.log("!auth");
+                JFLog.log(log, "!auth");
                 break;
               }
               iface.onDescribe(this, sess);
@@ -323,7 +323,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
             }
             case "SETUP": {
               if (!sess.auth) {
-                JFLog.log("!auth");
+                JFLog.log(log, "!auth");
                 break;
               }
               //get client RTP ports : Transport: RTP/AVP;unicast;client_port=x-x
@@ -337,7 +337,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
             }
             case "PLAY": {
               if (!sess.auth) {
-                if (debug) JFLog.log("!auth");
+                if (debug) JFLog.log(log, "!auth");
                 break;
               }
               iface.onPlay(this, sess);
@@ -345,7 +345,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
             }
             case "TEARDOWN": {
               if (!sess.auth) {
-                if (debug) JFLog.log("!auth");
+                if (debug) JFLog.log(log, "!auth");
                 break;
               }
               iface.onTeardown(this, sess);
@@ -406,7 +406,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               }
             }
           } catch (Exception e) {
-            if (debug) JFLog.log(e);
+            if (debug) JFLog.log(log, e);
           }
         }
       }

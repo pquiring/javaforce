@@ -74,14 +74,14 @@ public abstract class RTSP implements TransportInterface {
    * Closes the UDP port and frees resources.
    */
   protected void uninit() {
-    if (debug) JFLog.log("RTSP.unint() start:" + this);
+    if (debug) JFLog.log(log, "RTSP.unint() start:" + this);
     if (transport == null) {
       return;
     }
     active = false;
     transport.close();
     try {
-      if (debug) JFLog.log("RTSP.uninit() waiting for reader:" + this);
+      if (debug) JFLog.log(log, "RTSP.uninit() waiting for reader:" + this);
       worker_reader.join();
     } catch (Exception e) {
       e.printStackTrace();
@@ -99,7 +99,7 @@ public abstract class RTSP implements TransportInterface {
     pool = null;
     transport = null;
     worker_reader = null;
-    if (debug) JFLog.log("RTSP.uninit() done:" + this);
+    if (debug) JFLog.log(log, "RTSP.uninit() done:" + this);
   }
 
   public void setLog(int id) {
@@ -111,7 +111,7 @@ public abstract class RTSP implements TransportInterface {
    */
   protected boolean send(InetAddress remote, int remoteport, String datastr) {
     byte[] data = datastr.getBytes();
-    if (debug) JFLog.log("RTSP:send:remote=" + remote.getHostAddress() + ":" + remoteport);
+    if (debug) JFLog.log(log, "RTSP:send:remote=" + remote.getHostAddress() + ":" + remoteport);
     return transport.send(data, 0, data.length, remote, remoteport);
   }
 
@@ -744,7 +744,7 @@ public abstract class RTSP implements TransportInterface {
     try {
       ip = InetAddress.getByName(host).getHostAddress();
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
       return null;
     }
     JFLog.log(log, "dns:" + host + "=" + ip);
@@ -760,21 +760,26 @@ public abstract class RTSP implements TransportInterface {
   private class WorkerReader extends Thread {
     public void run() {
       setName("RTSP.WorkerReader");
-      if (debug) JFLog.log("RTSP.Worker:start:local=" + localport);
+      if (debug) JFLog.log(log, "RTSP.Worker:start:local=" + localport);
       while (active) {
         if (transport.error()) {
-          JFLog.log("RTSP:Transport:Error:server=" + server + ":localport=" + localport);
+          JFLog.log(log, "RTSP:Transport:Error:server=" + server + ":localport=" + localport);
           active = false;
           break;
         }
         Packet pack = null;
         try {
           pack = pool.alloc();
+          if (pack == null) {
+            JFLog.log(log, "RTSP:PacketPool full");
+            JF.sleep(1000);
+            continue;
+          }
           if (!transport.receive(pack)) {
             pool.free(pack);
             continue;
           }
-          if (debug) JFLog.log("RTSP:packet:host=" + pack.host);
+          if (debug) JFLog.log(log, "RTSP:packet:host=" + pack.host);
           if (pack.length <= 4) {
             pool.free(pack);
             continue;  //keep alive
@@ -784,12 +789,12 @@ public abstract class RTSP implements TransportInterface {
             worker_packet.add(pack);
           } else {
             //RTSPClient
-            if (debug) JFLog.log("RTSP:packet send:host=" + pack.host);
+            if (debug) JFLog.log(log, "RTSP:packet send:host=" + pack.host);
             String[] msg = new String(pack.data, 0, pack.length).split("\r\n", -1);
             iface.onPacket(RTSP.this, msg, pack.host, pack.port);
-            if (debug) JFLog.log("RTSP:packet free:host=" + pack.host);
+            if (debug) JFLog.log(log, "RTSP:packet free:host=" + pack.host);
             pool.free(pack);
-            if (debug) JFLog.log("RTSP:packet done:host=" + pack.host);
+            if (debug) JFLog.log(log, "RTSP:packet done:host=" + pack.host);
           }
         } catch (Exception e) {
           if (debug) JFLog.log(log, e);
@@ -798,7 +803,7 @@ public abstract class RTSP implements TransportInterface {
           }
         }
       }
-      if (debug) JFLog.log("RTSP.Worker:stop:local=" + localport);
+      if (debug) JFLog.log(log, "RTSP.Worker:stop:local=" + localport);
     }
   }
 

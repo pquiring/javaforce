@@ -300,7 +300,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send OPTIONS request to server.
    */
   public boolean options(String url) {
-    if (debug) JFLog.log("options:" + url);
+    if (debug) JFLog.log(log, "options:" + url);
     sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     return issue(sess, "OPTIONS");
@@ -310,7 +310,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send DESCRIBE request to server.
    */
   public boolean describe(String url) {
-    if (debug) JFLog.log("describe:" + url);
+    if (debug) JFLog.log(log, "describe:" + url);
     sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     sess.accept = "application/sdp";
@@ -323,7 +323,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send SETUP request to server (RTSP).
    */
   public boolean setup(String url, int localrtpport, String control) {
-    if (debug) JFLog.log("setup:" + url);
+    if (debug) JFLog.log(log, "setup:" + url);
     sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
     sess.uri = sess.base;
     if (control != null && control.length() > 0) {
