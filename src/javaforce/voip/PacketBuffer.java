@@ -14,7 +14,7 @@ public class PacketBuffer {
   private static final int maxPacketsSize = 16 * 1024 * 1024;
   private static final int maxPackets = 256;
 
-  public boolean debug = true;
+  public boolean debug = false;
 
   /** PacketBuffer
    *
