@@ -15,7 +15,7 @@ import javaforce.webui.event.*;
 import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.19";
+  public static String version = "0.20";
   public WebUIServer server;
   private byte[] cameraicon;
 
