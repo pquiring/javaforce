@@ -2,7 +2,9 @@ package javaforce.voip;
 
 /** PacketBuffer
  *
- * Combines RTP fragments into H264 or H265 packets.
+ * Combines H265 packets into full frames.
+ *
+ * Passing partial frames to FFMPEG will fail.
  *
  */
 
