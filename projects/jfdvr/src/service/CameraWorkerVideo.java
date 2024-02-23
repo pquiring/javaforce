@@ -154,33 +154,11 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           lastKeepAlive = now;
         }
         if (isEncoder) {
-          //clean up folder
-          while (folder_size > max_folder_size) {
-            Recording rec = files.get(0);
-            files.remove(0);
-            rec.file.delete();
-            folder_size -= rec.size;
-            JFLog.log(log, "delete recording:" + rec.file.getName());
-          }
+          doEncoder();
         }
-        do {
-          if (isDecoder && camera.viewing && camera.update_preview) {
-            int px[] = decoded_frame;
-            if (px != null) {
-              preview_image.putPixels(px, 0, 0, decoded_x, decoded_y, 0);
-              ByteArrayOutputStream preview = new ByteArrayOutputStream();
-              preview_image.savePNG(preview);
-              camera.preview = preview.toByteArray();
-              camera.update_preview = false;
-            }
-          }
-          if (isEncoder) {
-            doEncoder();
-          }
-          if (isDecoder) {
-            doDecoder();
-          }
-        } while (true);
+        if (isDecoder) {
+          doDecoder();
+        }
       }
     } catch (Exception e) {
       JFLog.log(log, e);
@@ -205,6 +183,15 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private void doEncoder() {
     //this should be a thread
     try {
+      //clean up folder
+      while (folder_size > max_folder_size) {
+        Recording rec = files.get(0);
+        files.remove(0);
+        rec.file.delete();
+        folder_size -= rec.size;
+        JFLog.log(log, "delete recording:" + rec.file.getName());
+      }
+      if (packets_encode == null) return;
       if (width == -1 || height == -1) {
         //decode one frame to get width/height
         if (h264 != null) {
@@ -259,6 +246,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         }
       }
     } catch (Exception e) {
+      JFLog.log(log, e);
     }
   }
 
@@ -301,6 +289,17 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private void doDecoder() {
     //this should be a thread
     try {
+      if (packets_decode == null) return;
+      if (camera.viewing && camera.update_preview) {
+        int px[] = decoded_frame;
+        if (px != null) {
+          preview_image.putPixels(px, 0, 0, decoded_x, decoded_y, 0);
+          ByteArrayOutputStream preview = new ByteArrayOutputStream();
+          preview_image.savePNG(preview);
+          camera.preview = preview.toByteArray();
+          camera.update_preview = false;
+        }
+      }
       if (!packets_decode.haveCompleteFrame()) return;
       boolean key_frame = packets_decode.isNextFrame_KeyFrame();
       if (debug_buffers && key_frame) {
