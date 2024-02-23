@@ -13,7 +13,7 @@ import javaforce.media.*;
 
 public class RTPH265 extends RTPCodec {
 
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) = 1446 bytes payload per packet
   private static final int mtu = 1446;
