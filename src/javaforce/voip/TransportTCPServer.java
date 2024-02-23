@@ -25,11 +25,11 @@ public class TransportTCPServer implements Transport {
   private TransportInterface iface;
 
   public static boolean debug = false;
-  public static int log;
+  public int log;
 
   public String getName() { return "TCP"; }
 
-  public static void setLog(int id) {
+  public void setLog(int id) {
     log = id;
   }
 
