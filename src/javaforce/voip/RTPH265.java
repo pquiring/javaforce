@@ -251,6 +251,9 @@ public class RTPH265 extends RTPCodec {
   }
 
   //TODO : find a better way to stitch together sliced frames
+  //first byte after NAL header includes a first_slice_segment_in_pic_flag (0x80)
+  //this could be used to properly stitch together slices into whole frame
+  //would need to restructure functions below
 
   private boolean k_sliced;
 
