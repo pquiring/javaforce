@@ -270,6 +270,7 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
   }
   opts[nOpts++] = MakeString("-Djava.app.home=%s", exepath);
+  opts[nOpts++] = MakeString("-Dvisualvm.display.name=%s", mainclass);
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";
     opts[nOpts++] = MakeString("-Djava.home=%s", exepath);

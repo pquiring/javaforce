@@ -235,6 +235,13 @@ jobject InvokeMethodObject(char *_class, char *_method, char *sign, jobject args
   return g_env->CallStaticObjectMethod(cls, mid, args);
 }
 
+char* MakeString(char* fmt, char* path) {
+  int len = strlen(fmt) - 2 + strlen(path) + 1;
+  char* str = (char*)malloc(len);
+  sprintf(str, fmt, path);
+  return str;
+}
+
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
@@ -256,6 +263,7 @@ JavaVMInitArgs *BuildArgs() {
   }
 
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
+  opts[nOpts++] = MakeString("-Dvisualvm.display.name=%s", mainclass);
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";
     opts[nOpts++] = (char*)"-Djava.home=/usr/bin";
