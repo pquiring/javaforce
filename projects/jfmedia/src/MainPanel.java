@@ -1281,16 +1281,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
 
     public void onPacket(Packet packet) {
       try {
-        if (h264 != null) {
-          byte type = h264.get_nal_type(packet.data, 4);
-          if (debug) JFLog.log("H264:NAL=" + type);
-          if (!h264.canDecodePacket(type)) return;
-        }
-        if (h265 != null) {
-          byte type = h265.get_nal_type(packet.data, 4);
-          if (debug) JFLog.log("H265:NAL=" + type);
-          if (!h265.canDecodePacket(type)) return;
-        }
         packets.add(packet);
         if (!packets.haveCompleteFrame()) return;
         boolean key_frame = packets.isNextFrame_KeyFrame();
@@ -1301,6 +1291,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
         if (decoded_frame == null) {
           JFLog.log(log, "Error:newFrame == null:packet.length=" + nextPacket.length);
+          JFLog.log(log, "NALs=" + packets.get_nal_list());
           packets.reset();
           return;
         } else {

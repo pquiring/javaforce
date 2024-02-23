@@ -14,6 +14,8 @@ public class PacketBuffer {
   private static final int maxPacketsSize = 16 * 1024 * 1024;
   private static final int maxPackets = 256;
 
+  public boolean debug = true;
+
   /** PacketBuffer
    *
    * @param codecType = H264 or H265
@@ -32,6 +34,7 @@ public class PacketBuffer {
   private RTPH264 h264;
   private RTPH265 h265;
   private int codecType;
+  private boolean started;
   public int[] offset = new int[maxPackets];
   public int[] length = new int[maxPackets];
   public byte[] type = new byte[maxPackets];
@@ -46,6 +49,7 @@ public class PacketBuffer {
     head = 0;
     tail = 0;
     nextOffset = 0;
+    started = false;
   }
   private boolean calcOffset(int nextLength) {
     if (nextOffset + nextLength >= maxPacketsSize) {
@@ -56,7 +60,7 @@ public class PacketBuffer {
       next_head = 0;
     }
     if (next_head == tail) {
-      JFLog.log(log, "Error : Buffer Overflow (# of packets exceeded)");
+      JFLog.log(log, "PacketBuffer : Error : Buffer Overflow (# of packets exceeded)");
       reset();
       return false;
     }
@@ -69,18 +73,36 @@ public class PacketBuffer {
       if (_tail == maxPackets) _tail = 0;
     }
     if (total_length + nextLength > maxPacketsSize) {
-      JFLog.log(log, "Error : Buffer Overflow (# of bytes exceeded)");
+      JFLog.log(log, "PacketBuffer : Error : Buffer Overflow (# of bytes exceeded)");
       reset();
       return false;
     }
     return true;
   }
   public void add(Packet packet) {
+    byte nal_type = 0;
+    if (h264 != null) {
+      nal_type = h264.get_nal_type(packet.data, 4);
+      if (!h264.canDecodePacket(nal_type)) return;
+      if (!started) {
+        if (!h264.isStart(nal_type)) return;
+        started = true;
+      }
+    }
+    else if (h265 != null) {
+      nal_type = h265.get_nal_type(packet.data, 4);
+      if (!h265.canDecodePacket(nal_type)) return;
+      if (!started) {
+        if (!h265.isStart(nal_type)) return;
+        started = true;
+      }
+    }
+    if (debug) JFLog.log(log, "packet=" + nal_type);
     if (!calcOffset(packet.length)) return;
     try {
       System.arraycopy(packet.data, packet.offset, data, nextOffset, packet.length);
     } catch (Exception e) {
-      JFLog.log(log, "Error:arraycopy(src," + packet.offset + ",dst," + nextOffset + "," + packet.length + ")");
+      JFLog.log(log, "PacketBuffer : Error : arraycopy(src," + packet.offset + ",dst," + nextOffset + "," + packet.length + ")");
       JFLog.log(log, e);
       return;
     }
@@ -97,7 +119,7 @@ public class PacketBuffer {
   }
   public void removePacket() {
     if (tail == head) {
-      JFLog.log(log, "Error:Packets Buffer underflow");
+      JFLog.log(log, "PacketBuffer : Error : Packets Buffer underflow");
       return;
     }
     int new_tail = tail + 1;
@@ -150,11 +172,15 @@ public class PacketBuffer {
     return false;
   }
 
+  private int nal_size;
+  private byte[] nal_list = new byte[64];
+
   public Packet getNextFrame() {
     if (!haveCompleteFrame()) {
-      JFLog.log(log, "Error : getNextFrame() called but don't have one ???");
+      JFLog.log(log, "PacketBuffer : Error : getNextFrame() called but don't have one ???");
       return null;
     }
+    nal_size = 0;
     nextFrame.length = 0;
     for(;tail!=head;) {
       System.arraycopy(data, offset[tail], nextFrame.data, nextFrame.length, length[tail]);
@@ -166,13 +192,28 @@ public class PacketBuffer {
         case CodecType.H264: if (h264.isFrame(this_type)) done = true; break;
         case CodecType.H265: if (h265.isFrame(this_type, next_type)) done = true; break;
       }
+      if (nal_size < nal_list.length) {
+        nal_list[nal_size++] = this_type;
+      }
       tail++;
       if (tail == maxPackets) tail = 0;
       if (done) break;
     }
     return nextFrame;
   }
+
+  public String get_nal_list() {
+    StringBuilder sb = new StringBuilder();
+    sb.append('{');
+    for(int a=0;a<nal_size;a++) {
+      if (a > 0) sb.append(',');
+      sb.append(Integer.toString(nal_list[a] & 0xff, 16));
+    }
+    sb.append('}');
+    return sb.toString();
+  }
+
   public String toString() {
-    return "Packets:tail=" + tail + ":head=" + head;
+    return "PacketBuffer:tail=" + tail + ":head=" + head;
   }
 }

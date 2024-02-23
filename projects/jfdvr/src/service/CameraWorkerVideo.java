@@ -315,6 +315,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         decoded_frame = decoder.decode(fullPacket.data, fullPacket.offset, fullPacket.length);
         if (decoded_frame == null) {
           JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + fullPacket.length);
+          JFLog.log(log, "NALs=" + packets_decode.get_nal_list());
           packets_decode.reset();
           return;
         }

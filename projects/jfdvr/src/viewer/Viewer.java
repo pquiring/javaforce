@@ -442,14 +442,6 @@ public class Viewer {
     public void onPacket(Packet packet) {
       if (debug_packets) JFLog.log("onPacket");
       try {
-        if (h264 != null) {
-          byte type = h264.get_nal_type(packet.data, 4);
-          if (!h264.canDecodePacket(type)) return;
-        }
-        if (h265 != null) {
-          byte type = h265.get_nal_type(packet.data, 4);
-          if (!h265.canDecodePacket(type)) return;
-        }
         packets.add(packet);
         if (!packets.haveCompleteFrame()) return;
         boolean key_frame = packets.isNextFrame_KeyFrame();
@@ -460,6 +452,7 @@ public class Viewer {
         decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
         if (decoded_frame == null) {
           JFLog.log(log, "Error:newFrame == null:packet.length=" + nextPacket.length + ":" + name);
+          JFLog.log(log, "NALs=" + packets.get_nal_list());
           packets.reset();
           return;
         } else {
