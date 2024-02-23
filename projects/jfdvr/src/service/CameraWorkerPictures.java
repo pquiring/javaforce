@@ -35,7 +35,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   private String tag_value = "";
   private String filename;
   private String last_filename;
-  private boolean isViewer;
+  private boolean isEncoder;
   private boolean isDecoder;
   private boolean recording;
 
@@ -43,6 +43,10 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   public Camera getCamera() {
     return camera;
+  }
+
+  public int getLog() {
+    return log;
   }
 
   public void setRecording(boolean state) {
@@ -66,14 +70,18 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  public CameraWorkerPictures(Camera camera, String url, boolean isViewer, boolean isDecoder, CameraWorker viewer) {
-    log = nextLog();
+  public CameraWorkerPictures(Camera camera, String url, boolean isEncoder, boolean isDecoder, CameraWorker viewer) {
     this.url = url;
     this.cleanurl = HTTP.cleanURL(url);
-    this.isViewer = isViewer;
+    this.isEncoder = isEncoder;
     this.isDecoder = isDecoder;
-    JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", false);
-    JFLog.setRetention(log, 5);
+    if (isEncoder) {
+      log = nextLog();
+      JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", false);
+      JFLog.setRetention(log, 5);
+    } else {
+
+    }
     JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
     path = Paths.videoPath + "/" + camera.name;

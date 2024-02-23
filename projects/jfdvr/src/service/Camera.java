@@ -31,6 +31,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public boolean pos_edge;
 
   public static boolean debug = false;
+  private int log;
 
   public Camera() {
     name = "";
@@ -58,6 +59,10 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public Codec codec;
   public float fps = -1;  //viewer fps (not decoder)
 
+  public void setLog(int id) {
+    log = id;
+  }
+
   public void add_viewer(RTSPSession sess) {
     synchronized (viewersLock) {
       if (viewers.contains(sess)) {
@@ -81,6 +86,10 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   }
 
   public String[] get_sdp(RTSPSession sess) {
+    if (codec == null) {
+      JFLog.log(log, "Error:Camera not ready");
+      return null;
+    }
     SDP sdp = new SDP();
     SDP.Stream stream = sdp.addStream(SDP.Type.video);
     stream.framerate = fps;
@@ -95,7 +104,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     return sdp.build(sess.localhost);
   }
 
-  public void sendPacket(byte[] buf, int offset, int length, int log) {
+  public void sendPacket(byte[] buf, int offset, int length) {
     synchronized (viewersLock) {
       for(RTSPSession sess : viewers) {
         if (debug) JFLog.log(log, "Camera.sendPacket()" + sess.remotehost + ":" + sess.channel.stream.port);

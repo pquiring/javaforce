@@ -145,9 +145,10 @@ public class Viewer {
           playThread.start();
         }
         while (playing) {
+          JF.sleep(1000);
           long now = System.currentTimeMillis();
           if (now - lastPacket > 10*1000) {
-            JFLog.log(log, "NetworkReader : Reconnecting");
+            JFLog.log(log, "NetworkReader : Reconnecting : " + url);
             disconnect();
             drawCameraIcon();
             if (!connect()) {
@@ -158,19 +159,10 @@ public class Viewer {
             rtsp.keepalive(url.toString());
             lastKeepAlive = now;
           }
-          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
-            //buffers are nearly full - wait for player to consume some
-            preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
-            int sleep;
-            if (fps > 0) {
-              sleep = 1000 / (int)fps;
-            } else {
-              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
-            }
-            JF.sleep(sleep);
-            continue;
+          if (type.equals("group") && cameras != null) {
+            //group no longer need to run
+            break;
           }
-          JF.sleep(1000);
         }
         JFLog.log("NetworkReader:closing");
         close(true);
