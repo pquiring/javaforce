@@ -1,5 +1,10 @@
 What's new...
 
+Feb 23/2024 : JF/52.4
+ - many improvements to RTSP support
+ - jfDVR/0.20
+ - jfMedia/0.21
+
 Feb 21/2024 : JF/52.3
  - fixed memory leaks in ffmpeg
  - re-released all ffmpeg based apps
