@@ -136,6 +136,7 @@ public class PacketBuffer {
     if (offset == head) return 0;
     return type[offset];
   }
+
   public boolean haveCompleteFrame() {
     for(int pos=tail;pos!=head;) {
       byte this_type = get_this_type(pos);
@@ -195,8 +196,9 @@ public class PacketBuffer {
       if (nal_size < nal_list.length) {
         nal_list[nal_size++] = this_type;
       }
-      tail++;
-      if (tail == maxPackets) tail = 0;
+      int new_tail = tail + 1;
+      if (new_tail == maxPackets) new_tail = 0;
+      tail = new_tail;
       if (done) break;
     }
     return nextFrame;
