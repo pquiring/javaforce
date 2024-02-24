@@ -7,7 +7,7 @@ Description
 ===========
 JavaForce (JF) is a Java library featuring:
 
-  - VoIP stack
+  - SIP/VoIP/RTSP
   - native bindings for FFMPEG, OpenGL and Camera
   - PLC I/O
   - custom native launchers for console apps, desktop apps and system services
