@@ -81,7 +81,7 @@ public class LnxNative {
    * Only supported command is "stop".  (see lnxServiceRequestStop())
    * Socket file is stored at /usr/lib/systemd/system/{service}.socket
    *
-   * Note : unix sockets requires Java 16.
+   * Note : unix sockets requires Java 16 (JEP 380).
    */
   private static void lnxServiceInit() {
     new Thread() {
