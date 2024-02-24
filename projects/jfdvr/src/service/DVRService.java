@@ -2,6 +2,13 @@ package service;
 
 /** DVR Service
  *
+ * Known GC issue:
+ *   JF uses GetPrimitiveArrayCritical extensively for better performance
+ *   but this can lead to GC crashes.
+ *   Currently the WorkerKeepAlive thread is invoking System.gc()
+ *   every 30 seconds to avoid crashes and seem to be working.
+ *   Also increasing min heap size has helped too.
+ *
  * @author pquiring
  */
 
@@ -429,7 +436,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         JF.sleep(1000);
         cnt++;
         if (cnt > 30) {
-          //perform gc every 30 seconds
+          //perform gc every 30 seconds to avoid system crashes
           cnt = 0;
           System.gc();
         }
