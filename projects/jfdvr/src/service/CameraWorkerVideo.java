@@ -43,6 +43,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private float fps = -1;
   private long now;
   private boolean recording = false;
+  private boolean recording_start = false;
   private int frameCount = 0;
   private boolean active = true;
   private PacketBuffer packets_decode;
@@ -237,8 +238,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         Packet packet = packets_encode.getNextFrame();
         if (debug_encoder) JFLog.log(log, "encoder:add full packet");
         if (recording) {
-          recordFrame(packet, key_frame);
-          frameCount++;
+          if (!recording_start) {
+            //only start recording at a key frame so playback start immediately
+            recording_start = key_frame;
+          }
+          if (recording_start) {
+            recordFrame(packet, key_frame);
+            frameCount++;
+          }
         }
         cnt++;
         if (cnt == 256) break;
@@ -568,6 +575,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       recording = true;
     } else {
       recording = false;
+      recording_start = false;
     }
   }
 

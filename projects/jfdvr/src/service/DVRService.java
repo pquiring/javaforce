@@ -8,6 +8,7 @@ package service;
  *   Currently the WorkerKeepAlive thread is invoking System.gc()
  *   every 30 seconds to avoid crashes and seem to be working.
  *   Also increasing min heap size has helped too.
+ *   Other options are using a different GC like ZGC or Shenandoah (untested).
  *
  * @author pquiring
  */
