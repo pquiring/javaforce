@@ -266,7 +266,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       }
       if (encoder == null) {
         if (width == -1 || height == -1 || fps == -1) {
-          JFLog.log(log, "Unable to start encoder:res=" + width + "x" + height + ",fps=" + fps);
+          JFLog.log(log, "Unable to start encoder:size not defined yet");
           return;
         }
         encoder = new MediaEncoder();

@@ -422,10 +422,17 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public class WorkerKeepAlive extends Thread {
+    private int cnt;
     public void run() {
       setName("WorkerKeepAlive");
       while (active) {
         JF.sleep(1000);
+        cnt++;
+        if (cnt > 30) {
+          //perform gc every 30 seconds
+          cnt = 0;
+          System.gc();
+        }
         long cut = System.currentTimeMillis() - 60 * 1000;
         try {
           synchronized (Config.current.camerasLock) {
