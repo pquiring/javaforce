@@ -466,14 +466,16 @@ bool loadProperties() {
         ffmpeg = true;
         continue;
       }
-      if (arg[1] == 'D') {
-        //-Dkey=value
-        if (xoptions[0] != 0) {
-          strcat(xoptions, " ");
-        }
-        strcat(xoptions, arg);
+      if (strcmp(arg, "-cp") == 0) {
         continue;
       }
+      if (strcmp(arg, "-classpath") == 0) {
+        continue;
+      }
+      if (xoptions[0] != 0) {
+        strcat(xoptions, " ");
+      }
+      strcat(xoptions, arg);
       continue;
     }
     if (!have_classpath) {
