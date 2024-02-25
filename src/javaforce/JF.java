@@ -10,6 +10,7 @@ import java.security.*;
 import java.security.cert.*;
 import java.nio.file.Files;
 import java.nio.file.*;
+import java.lang.management.*;
 
 /**
  * A collection of useful static methods.
@@ -1779,4 +1780,30 @@ public class JF {
   };
 
   public static final String[] StringArrayType = new String[0];
+
+  /** Returns active garbage collector.
+   *
+   * Values: G1, ZGC
+   *
+   * @return active GC name
+   */
+  public static String detectGC() {
+    try {
+      List<GarbageCollectorMXBean> gcMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
+
+      for (GarbageCollectorMXBean gcMxBean : gcMxBeans) {
+        String name = gcMxBean.getName();
+        if (name == null) continue;
+        int idx = name.indexOf(' ');
+        if (idx != -1) {
+          name = name.substring(0, idx);
+        }
+        return name;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+    return null;
+  }
 }
