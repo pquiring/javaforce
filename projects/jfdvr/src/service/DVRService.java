@@ -9,6 +9,7 @@ package service;
  *   every 30 seconds to avoid crashes and seem to be working.
  *   Also increasing min heap size has helped too.
  *   Other options are using a different GC like ZGC or Shenandoah (untested).
+ *    - ZGC is crashing almost immediately
  *
  * @author pquiring
  */
@@ -32,7 +33,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public final static boolean debug = true;
   public final static boolean debug_sub_systems = false;
-  public final static boolean fix_gc = false;
+  public final static boolean fix_gc = true;
 
   private int log;
 
