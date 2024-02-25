@@ -257,7 +257,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void recordFrame(Packet packet, boolean key_frame) {
     try {
-      if (file_size > max_file_size) {
+      if (file_size > max_file_size && key_frame) {
         JFLog.log(log, camera.name + " : max file size");
         if (encoder != null) {
           encoder.stop();
