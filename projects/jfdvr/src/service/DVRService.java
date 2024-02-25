@@ -33,7 +33,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public final static boolean debug = true;
   public final static boolean debug_sub_systems = false;
-  public final static boolean fix_gc = true;
+  public final static boolean fix_gc = false;
 
   private int log;
 
