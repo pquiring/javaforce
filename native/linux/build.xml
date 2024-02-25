@@ -7,7 +7,7 @@
   <target name="linux" description="create linux native so for x64">
     <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/x86_64-linux-gnu -I ../headers native.cpp -c -o native.o -fPIC"/>
-    <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw.o -fPIC"/>
+    <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw-null.c -c -o glfw-null.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
@@ -31,7 +31,7 @@
   <target name="freebsd" description="create linux native so for x64/freebsd">
     <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/freebsd -I ${java.home}/include -I ../headers native.cpp -c -o native.o -fPIC"/>
-    <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC"/>
+    <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw-null.c -c -o glfw-null.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
@@ -52,7 +52,7 @@
   <target name="arm64" description="create linux native so for arm64">
     <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/aarch64-linux-gnu -I ../headers native.cpp -c -o native.o -fPIC"/>
-    <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw.o -fPIC"/>
+    <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw-null.c -c -o glfw-null.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
