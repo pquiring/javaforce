@@ -7,7 +7,9 @@ package javaforce.utils;
  * GC Options:
  *
  * -XX:+UseG1GC                 #default
- * -XX:+UseZGC -XX:-ZUncommit   #fast
+ * -XX:+UseZGC                  #fast (JDK15) (JEP377)
+ *   -XX:-ZUncommit               #disable uncommit
+ *   -XX:+ZGenerational           #enable generational collection (JDK21) (JEP439)
  * -XX:+UseShenandoahGC         #RedHat only
  * -XX:+UseSerialGC             #slow
  * -XX:+UseParallelGC           #slow
