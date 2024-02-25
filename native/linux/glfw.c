@@ -5,6 +5,7 @@
 #define _GLFW_HAS_XINPUT
 
 //common
+#include "../glfw/src/platform.c"
 #include "../glfw/src/context.c"
 #include "../glfw/src/init.c"
 #include "../glfw/src/input.c"
@@ -18,6 +19,8 @@
 #include "../glfw/src/x11_init.c"
 #include "../glfw/src/x11_monitor.c"
 #undef _POSIX_C_SOURCE
+#include "../glfw/src/posix_module.c"
+#include "../glfw/src/posix_poll.c"
 #include "../glfw/src/posix_time.c"
 #include "../glfw/src/posix_thread.c"
 #include "../glfw/src/x11_window.c"

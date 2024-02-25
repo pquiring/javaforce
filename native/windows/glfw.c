@@ -3,6 +3,7 @@
 #define _GLFW_USE_OPENGL
 
 //common
+#include "../glfw/src/platform.c"
 #include "../glfw/src/context.c"
 #include "../glfw/src/init.c"
 #include "../glfw/src/input.c"
@@ -19,4 +20,5 @@
 #include "../glfw/src/win32_thread.c"
 #include "../glfw/src/win32_window.c"
 #include "../glfw/src/win32_joystick.c"
+#include "../glfw/src/win32_module.c"
 #include "../glfw/src/wgl_context.c"

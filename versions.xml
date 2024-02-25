@@ -3,7 +3,7 @@
   <!-- JavaForce version -->
   <property name="javaforce-version" value="52.4"/>
   <!-- native dependancies versions -->
-  <property name="glfw-version" value="3.3.1"/>
+  <property name="glfw-version" value="3.4"/>
   <property name="ffmpeg-version" value="5.1.2"/>
   <!-- Maven Java Dependancies versions -->
   <property name="twelvemonkeys-version" value="3.9.4"/>
