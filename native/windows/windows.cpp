@@ -23,19 +23,19 @@
 
 #include <jni.h>
 
-#include "../../native/headers/javaforce_controls_ni_DAQmx.h"
-#include "../../native/headers/javaforce_gl_GL.h"
-#include "../../native/headers/javaforce_jni_WinNative.h"
-#include "../../native/headers/javaforce_media_Camera.h"
-#include "../../native/headers/javaforce_media_MediaCoder.h"
-#include "../../native/headers/javaforce_media_MediaDecoder.h"
-#include "../../native/headers/javaforce_media_MediaEncoder.h"
-#include "../../native/headers/javaforce_media_MediaVideoDecoder.h"
-#include "../../native/headers/javaforce_media_VideoBuffer.h"
-#include "../../native/headers/javaforce_ui_Font.h"
-#include "../../native/headers/javaforce_ui_Image.h"
-#include "../../native/headers/javaforce_ui_Window.h"
-#include "../../native/headers/javaforce_net_PacketCapture.h"
+#include "javaforce_controls_ni_DAQmx.h"
+#include "javaforce_gl_GL.h"
+#include "javaforce_jni_WinNative.h"
+#include "javaforce_media_Camera.h"
+#include "javaforce_media_MediaCoder.h"
+#include "javaforce_media_MediaDecoder.h"
+#include "javaforce_media_MediaEncoder.h"
+#include "javaforce_media_MediaVideoDecoder.h"
+#include "javaforce_media_VideoBuffer.h"
+#include "javaforce_ui_Font.h"
+#include "javaforce_ui_Image.h"
+#include "javaforce_ui_Window.h"
+#include "javaforce_net_PacketCapture.h"
 
 /* Global variables */
 HKEY key, subkey;

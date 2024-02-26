@@ -8,14 +8,15 @@
     <!-- build native library -->
     <exec command="gcc ${opt} -I ${env.FFMPEG_HOME} -I ${java.home} -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers native.mm -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.m -c -o glfw.o -fPIC"/>
-	  <exec command="ar r native.a native.o glfw.o"/>
+    <exec command="gcc ${opt} -I ../glfw/include glfw-null.m -c -o glfw-null.o -fPIC"/>
+	  <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
     <!-- build native executable -->
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin mac.mm -ldl -lpthread -o ../mac64.bin"/>
+    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers mac.mm -ldl -lpthread -o ../mac64.bin"/>
 
     <!-- build native cli executable -->
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -D_JF_CLI mac.mm -ldl -lpthread -o ../../bin/jfexec"/>
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -D_JF_CLI -D_JF_DEBUG mac.mm -ldl -lpthread -o ../../bin/jfexecd"/>
+    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI mac.mm -ldl -lpthread -o ../../bin/jfexec"/>
+    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI -D_JF_DEBUG mac.mm -ldl -lpthread -o ../../bin/jfexecd"/>
 
     <delete file="native.o"/>
     <delete file="glfw.o"/>

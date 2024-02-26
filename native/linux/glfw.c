@@ -16,20 +16,21 @@
 #include "../glfw/src/osmesa_context.c"
 
 //linux
+#include "../glfw/src/glx_context.c"
 #include "../glfw/src/x11_init.c"
 #include "../glfw/src/x11_monitor.c"
-#undef _POSIX_C_SOURCE
-#include "../glfw/src/posix_module.c"
-#include "../glfw/src/posix_poll.c"
-#include "../glfw/src/posix_time.c"
-#include "../glfw/src/posix_thread.c"
 #include "../glfw/src/x11_window.c"
 #include "../glfw/src/xkb_unicode.c"
-#include "../glfw/src/glx_context.c"
-
 #ifndef __FreeBSD__
 #include "../glfw/src/linux_joystick.c"
 #else
 int _glfwPlatformPollJoystick(_GLFWjoystick* ptr, int mode) {return 0;}
 void _glfwPlatformUpdateGamepadGUID(char* guid) {}
 #endif
+
+//posix
+#undef _POSIX_C_SOURCE
+#include "../glfw/src/posix_module.c"
+#include "../glfw/src/posix_poll.c"
+#include "../glfw/src/posix_time.c"
+#include "../glfw/src/posix_thread.c"
