@@ -29,7 +29,6 @@ void _glfwPlatformUpdateGamepadGUID(char* guid) {}
 #endif
 
 //posix
-#undef _POSIX_C_SOURCE
 #include "../glfw/src/posix_module.c"
 #include "../glfw/src/posix_poll.c"
 #include "../glfw/src/posix_time.c"
