@@ -94,9 +94,16 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     SDP.Stream stream = sdp.addStream(SDP.Type.video);
     stream.framerate = fps;
     stream.addCodec(codec);
+    if (sess.rtp != null) {
+      sess.rtp.uninit();
+      sess.rtp = null;
+    }
     sess.rtp = new RTP();
     sess.rtp.init(this);
     sess.rtp.start();
+    if (sess.channel != null) {
+      sess.channel = null;
+    }
     sess.channel = sess.rtp.createChannel(sdp.getFirstVideoStream());
     sess.channel.start();
     if (debug) JFLog.log("Camera.get_sdp()remotehost=" + sess.remotehost);

@@ -372,6 +372,10 @@ public class DVRService extends Thread implements RTSPServerInterface {
         Camera cam = (Camera)sess.res_user;
         cam.remove_viewer(sess);
       }
+      if (sess.rtp != null) {
+        sess.rtp.uninit();
+        sess.rtp = null;
+      }
     } catch (Exception e) {
       if (debug) JFLog.log(log, e);
     }
