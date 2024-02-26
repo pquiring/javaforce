@@ -1,5 +1,13 @@
 What's new...
 
+Feb 26/2024 : JF/52.5
+ - jfDVR/0.21
+   - finally fixed stability issues (v0.13-v0.20 were unstable)
+     the problem was my old nemesis the garbage collector
+     switching to the ZGC has seemed to fix the issue
+   - many minor fixes
+ - upgraded to GLFW/3.4
+
 Feb 23/2024 : JF/52.4
  - many improvements to RTSP support
  - jfDVR/0.20
