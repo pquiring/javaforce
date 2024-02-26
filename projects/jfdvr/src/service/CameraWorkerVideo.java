@@ -246,6 +246,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
             recordFrame(packet, key_frame);
             frameCount++;
           }
+        } else {
+          if (raf != null) {
+            closeFile();
+          }
         }
         cnt++;
         if (cnt == 256) break;
