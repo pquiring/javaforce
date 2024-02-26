@@ -2,14 +2,6 @@ package service;
 
 /** DVR Service
  *
- * Known GC issue:
- *   JF uses GetPrimitiveArrayCritical extensively for better performance
- *   but this can lead to GC crashes.
- *   Currently the WorkerKeepAlive thread is invoking System.gc()
- *   every 30 seconds to avoid crashes and seem to be working.
- *   Also increasing min heap size has helped too.
- *   Other options are using a different GC like ZGC or Shenandoah (untested).
- *
  * @author pquiring
  */
 
@@ -32,6 +24,13 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public final static boolean debug = true;
   public final static boolean debug_sub_systems = false;
+
+  /** The G1 GC is known to crash under heavy loads.
+   * Invoke System.gc() every 30 seconds seems to avoid GC deadlocks.
+   * Switching to the ZGC is another fix that seems to work.
+   *
+   * This flag when enabled will perform the gc() every 30 seconds.
+   */
   public final static boolean fix_gc = false;
 
   private int log;
