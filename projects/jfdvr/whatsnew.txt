@@ -1,3 +1,7 @@
+Feb 27, 2024 : 0.22 released!
+  - fix RTP thread leak
+  - fix end of recording
+
 Feb 26, 2024 : 0.21 released!
   - finally fixed stability issues (v0.13-v0.20 were unstable)
     the problem was my old nemesis the garbage collector
