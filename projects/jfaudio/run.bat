@@ -1,1 +1,1 @@
-java -cp javaforce.jar;jfaudio.jar AudioApp %1
+..\..\bin\jfexec -ffmpeg -cp javaforce.jar;jfaudio.jar AudioApp %1

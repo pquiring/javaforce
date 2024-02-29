@@ -58,8 +58,19 @@ public class MediaCoder {
       JFLog.log("MediaCoder.load() failed");
       System.exit(1);
     }
-    ffmpeg_init(libs[0].path, libs[1].path, libs[2].path, libs[3].path
-      , libs[4].path, libs[5].path, libs[6].path, libav_org ? libs[8].path : libs[7].path, libav_org);
+    if (!ffmpeg_init(
+      libs[0].path,
+      libs[1].path,
+      libs[2].path,
+      libs[3].path,
+      libs[4].path,
+      libs[5].path,
+      libs[6].path,
+      libav_org ? libs[8].path : libs[7].path,
+      libav_org))
+    {
+      System.exit(1);
+    }
   }
   private static native boolean ffmpeg_init(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample, boolean libav_org);
   public static native void ffmpeg_set_logging(boolean state);

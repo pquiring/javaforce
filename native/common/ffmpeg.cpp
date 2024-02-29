@@ -214,7 +214,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   , const char* utilFile, const char* scaleFile, const char* postFile, const char* resampleFile)
 {
   //load libraries (order is important)
-  printf("ffmpeg init...\n");
+  printf("ffmpeg init...");
 
   util = loadLibrary(utilFile);
   if (util == NULL) {
@@ -369,13 +369,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
     } v8;
   } version;
 
-  version.v32 = (*_avutil_version)();
-  printf("avutil_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
-  version.v32 = (*_avcodec_version)();
-  printf("avcodec_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
-  version.v32 = (*_avformat_version)();
-  printf("avformat_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
-
   //enable debugging
   if (ff_debug_log) {
     (*_av_log_set_level)(AV_LOG_TRACE);
@@ -396,6 +389,17 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   channel_layout_4.nb_channels = 4;
   channel_layout_4.u.mask = AV_CH_LAYOUT_QUAD;
   channel_layout_4.opaque = NULL;
+
+  printf("ok\r\n");
+
+#ifdef _JF_DEBUG
+  version.v32 = (*_avutil_version)();
+  printf("avutil_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
+  version.v32 = (*_avcodec_version)();
+  printf("avcodec_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
+  version.v32 = (*_avformat_version)();
+  printf("avformat_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
+#endif
 
   return JNI_TRUE;
 }
