@@ -27,19 +27,8 @@ public class WebServerRedir implements WebHandler {
   }
 
   public void doGet(WebRequest req, WebResponse res) {
-    String url = req.getURL();
-    int idx = url.indexOf(':');
-    if (idx == -1) {
-      idx = url.indexOf('/');
-      if (idx == -1) {
-        idx = url.length();
-        url += ":";
-      } else {
-        url = url.substring(0, idx) + ":" + url.substring(idx);
-      }
-    }
-    url = url.substring(0, idx) + ":" + redir + url.substring(idx);
-    res.sendRedirect(url);
+    String host = req.getHost();
+    res.sendRedirect("https://" + host + ":" + redir);
   }
 
   public void doPost(WebRequest req, WebResponse res) {
