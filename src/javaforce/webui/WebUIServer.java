@@ -34,12 +34,32 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   /** Enable transaction id in WebSocket messages for debugging. */
   public static boolean debug_tid = false;
 
+  /** Start WebUI Server on non-secure port. */
+  public void start(WebUIHandler handler, int port) {
+    start(handler, port, null);
+  }
+
+  /** Start WebUI Server on secure or non-secure port.
+   * Random keys are generated for secure port.
+   * Highly deprecated, use start() with KeyMgmt keys instead.
+   */
+  @Deprecated
   public void start(WebUIHandler handler, int port, boolean secure) {
     this.handler = handler;
     if (web != null) stop();
     web = new WebServer();
     web.setWebSocketHandler(this);
     web.start(this, port, secure);
+    JFLog.log("WebUI Server starting on port " + port + "...");
+  }
+
+  /** Start WebUI Server on secure port using provided SSL keys. */
+  public void start(WebUIHandler handler, int port, KeyMgmt keys) {
+    this.handler = handler;
+    if (web != null) stop();
+    web = new WebServer();
+    web.setWebSocketHandler(this);
+    web.start(this, port, keys);
     JFLog.log("WebUI Server starting on port " + port + "...");
   }
 

@@ -67,11 +67,7 @@ public class WebServer {
     this.api = api;
     try {
       if (keys != null) {
-        if (keys.getKeyStore() == null) {
-          ss = JF.createServerSocketSSL(port);
-        } else {
-          ss = JF.createServerSocketSSL(port, keys);
-        }
+        ss = JF.createServerSocketSSL(port, keys);
       } else {
         ss = new ServerSocket(port);
       }

@@ -16,7 +16,7 @@ public class web implements WebHandler {
   public static void main(String[] args) {
     System.out.println("Starting web server on port 80...");
     WebServer server = new WebServer();
-    server.start(new web(), 80, false);
+    server.start(new web(), 80);
   }
 
   public void doPost(WebRequest req, WebResponse res) {
@@ -53,8 +53,8 @@ public class web implements WebHandler {
         OutputStream os = res.getOutputStream();
         os.write(sb.toString().getBytes());
       } catch (Exception e) {
-        JFLog.log(e);        
-      }  
+        JFLog.log(e);
+      }
     } else {
       //send file
       if (url.startsWith("/")) url = url.substring(1);

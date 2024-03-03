@@ -15,7 +15,7 @@ public class WebServerRedir implements WebHandler {
     if (port == redir) return false;
     this.redir = redir;
     server = new WebServer();
-    server.start(this, port, false);
+    server.start(this, port);
     return true;
   }
 
