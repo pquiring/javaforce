@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class TabPanel extends Column {
+public class TabPanel extends Panel {
   private Column tabs;
   private Row row;
   private int idx;
