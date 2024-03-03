@@ -49,7 +49,7 @@ public class Main implements WebUIHandler {
     APIService.main();
     //start webui server
     server = new WebUIServer();
-    server.start(new Main(), 80, false);
+    server.start(new Main(), 80);
   }
 
   public Panel getRootPanel(WebUIClient client) {

@@ -21,7 +21,7 @@ public class ConfigService implements WebUIHandler {
 
   public void start() {
     server = new WebUIServer();
-    server.start(this, 80, false);
+    server.start(this, 80);
     try {
       cameraicon = this.getClass().getClassLoader().getResourceAsStream("camera.png").readAllBytes();
     } catch (Exception e) {

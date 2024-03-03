@@ -14,7 +14,7 @@ public class App implements WebUIHandler {
   public static void serviceStart(String args[]) {
     Service.start();
     server = new WebUIServer();
-    server.start(new App(), 80, false);
+    server.start(new App(), 80);
   }
 
   public static void serviceStop() {

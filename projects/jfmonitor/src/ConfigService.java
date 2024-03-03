@@ -19,7 +19,7 @@ public class ConfigService implements WebUIHandler {
 
   public void start() {
     server = new WebUIServer();
-    server.start(this, Settings.current.web_port, false);
+    server.start(this, Settings.current.web_port);
   }
 
   public void stop() {
