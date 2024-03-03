@@ -1,7 +1,9 @@
 package javaforce;
 
 /**
- * Key Management API - just some members to load OpenSSL cert.
+ * Key Management class.
+ *
+ * Contains a Java keystore and password.
  *
  * @author pquiring
  *
@@ -73,6 +75,31 @@ public class KeyMgmt {
     } catch (Exception e) {
       JFLog.log(e);
       return false;
+    }
+  }
+
+  /** Creates new keystore with private/public keys (valid for 10 years).
+   *
+   * @param file = file name
+   * @param alias = key pair alias
+   * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
+   * @param password = keystore/key password, required for open()
+   */
+  public static KeyMgmt create(String file, String alias, String dname, String password) {
+    KeyMgmt.keytool(new String[] {
+      "-genkey", "-debug", "-alias", alias, "-keypass", password, "-storepass", password,
+      "-keystore", file, "-validity", "3650", "-dname", dname,
+      "-keyalg" , "RSA", "-keysize", "2048"}
+    );
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      KeyMgmt keys = new KeyMgmt();
+      keys.open(fis, password.toCharArray());
+      fis.close();
+      return keys;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
     }
   }
 

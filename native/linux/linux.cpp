@@ -263,6 +263,7 @@ JavaVMInitArgs *BuildArgs() {
   }
 
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
+  opts[nOpts++] = MakeString("-Djava.app.name=%s", mainclass);
   opts[nOpts++] = MakeString("-Dvisualvm.display.name=%s", mainclass);
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";

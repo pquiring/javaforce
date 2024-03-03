@@ -25,11 +25,53 @@ public class WebServer {
   public static boolean config_enable_gzip = true;
   public static boolean debug = false;
 
+  /** Start web server on non-secure port. */
+  public boolean start(WebHandler api, int port) {
+    return start(api, port, null);
+  }
+
+  /** Start web server on non-secure or secure port.
+   * Random keys are generated for secure ports.
+   * This method is highly deprecated, please use start() with KeyMgmt keys.
+   */
+  @Deprecated
   public boolean start(WebHandler api, int port, boolean secure) {
+    if (secure) {
+      KeyMgmt keys = null;
+      try {
+        String dname = "CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA";
+        String keyfile = JF.getConfigPath() + "/" + System.getProperty("java.app.name") + ".key";
+        String password = "password";
+        if (new File(keyfile).exists()) {
+          //load existing keys
+          keys = new KeyMgmt();
+          FileInputStream fis = new FileInputStream(keyfile);
+          keys.open(fis, password.toCharArray());
+          fis.close();
+        } else {
+          //generate random keys
+          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+        return false;
+      }
+      return start(api, port, keys);
+    } else {
+      return start(api, port, null);
+    }
+  }
+
+  /** Start web server on secure port using provided keys. */
+  public boolean start(WebHandler api, int port, KeyMgmt keys) {
     this.api = api;
     try {
-      if (secure) {
-        ss = SSLServerSocketFactory.getDefault().createServerSocket(port);
+      if (keys != null) {
+        if (keys.getKeyStore() == null) {
+          ss = JF.createServerSocketSSL(port);
+        } else {
+          ss = JF.createServerSocketSSL(port, keys);
+        }
       } else {
         ss = new ServerSocket(port);
       }

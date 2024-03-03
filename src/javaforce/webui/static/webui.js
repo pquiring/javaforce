@@ -49,7 +49,14 @@ function wsclose(event) {
 }
 
 function connect() {
-  ws = new WebSocket("ws://" + location.host + "/webui");
+  var url;
+  if (location.protocol === "https:") {
+    url = "wss://" + location.host + "/webui";
+  } else {
+    url = "ws://" + location.host + "/webui";
+  }
+  console.log("url=" + url);
+  ws = new WebSocket(url);
   //WebSocket binaryType default is Blob but converting it to TypedArray is very SLOW, so ask to get data in ArrayBuffer format instead
   ws.binaryType = "arraybuffer";
   ws.onopen = wsopen;
