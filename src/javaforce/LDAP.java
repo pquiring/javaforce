@@ -110,7 +110,7 @@ public class LDAP {
     }
   }
 
-  /** Queries group to determine if user is a member.
+  /** Queries user to determine if they are a member of a group.
    * Must login() first.
    *
    * @param domain_dn = domain as dn (distinguished name) (ie: DC=example,DC=com)
