@@ -33,7 +33,7 @@ public class Test implements WebUIHandler {
     }
     initResources();
     WebUIServer server = new WebUIServer();
-    server.start(this, 8080, false);
+    server.start(this, 8080);
     Worker worker = new Worker();
     worker.start();
   }

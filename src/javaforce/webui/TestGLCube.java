@@ -17,7 +17,7 @@ public class TestGLCube implements WebUIHandler {
   }
 
   public static void main(String[] args) {
-    new WebUIServer().start(new TestGLCube(), 8080, false);
+    new WebUIServer().start(new TestGLCube(), 8080);
   }
 
   public void clientConnected(WebUIClient client) {

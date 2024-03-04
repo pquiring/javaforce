@@ -26,7 +26,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     initComponents();
     pack();
     listCameras();
-    new WebUIServer().start(this, 8080, false);
+    new WebUIServer().start(this, 8080);
     encoder_dash = new MediaEncoder();
     encoder_dash.setProfileLevel(MediaCoder.PROFILE_MAIN);
     encoder_h264 = new MediaEncoder();

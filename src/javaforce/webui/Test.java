@@ -24,7 +24,7 @@ public class Test implements WebUIHandler {
   }
 
   public static void main(String[] args) {
-    new WebUIServer().start(new Test(), 8080, false);
+    new WebUIServer().start(new Test(), 8080);
   }
 
   public void clientConnected(WebUIClient client) {}
