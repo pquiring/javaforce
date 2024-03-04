@@ -56,10 +56,22 @@ public class KeyMgmt {
    * Open an existing keystore (Note: use null for InputStream to create a blank keystore)
    */
   public boolean open(InputStream is, char[] pwd) {
-    this.password = pwd;
+    password = pwd;
     try {
       keyStore = KeyStore.getInstance("JKS", "SUN");
       keyStore.load(is, pwd);
+      return true;
+    } catch (Exception e) {
+      keyStore = null;
+      password = null;
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public boolean save(OutputStream os) {
+    try {
+      keyStore.store(os, password);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -120,9 +132,13 @@ public class KeyMgmt {
       certs = (java.security.cert.Certificate[]) c.toArray();
 
       // set key / cert pair
+      keyStore = KeyStore.getInstance("JKS", "SUN");
       keyStore.setKeyEntry(alias, ff, pwd, certs);
+      password = pwd;
       return true;
     } catch (Exception e) {
+      keyStore = null;
+      password = null;
       JFLog.log(e);
       return false;
     }
@@ -164,9 +180,9 @@ public class KeyMgmt {
     }
   }
 
-  public java.security.Key getKEY(String alias, char[] password) {
+  public java.security.Key getKEY(String alias, char[] pwd) {
     try {
-      return keyStore.getKey(alias, password);
+      return keyStore.getKey(alias, pwd);
     } catch (Exception e) {
       return null;
     }
@@ -188,6 +204,10 @@ public class KeyMgmt {
       JFLog.log(e);
       return null;
     }
+  }
+
+  public boolean isValid() {
+    return keyStore != null && password != null;
   }
 
   public KeyStore getKeyStore() {
