@@ -1,5 +1,10 @@
 What's new...
 
+Mar 4/2024 : JF/52.6
+ - jfDVR/0.22
+   - fixed some thread leaks
+ - added LDAP.memberOf()
+
 Feb 26/2024 : JF/52.5
  - jfDVR/0.21
    - finally fixed stability issues (v0.13-v0.20 were unstable)
