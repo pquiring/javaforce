@@ -106,4 +106,57 @@ public class Compression {
     decompress.end();
     return wrote;
   }
+
+  /** Serialize and compress an object to a file. */
+  public static boolean serialize(String file, Object obj) {
+    try {
+      FileOutputStream fos = new FileOutputStream(file);
+      boolean res = serialize(fos, obj);
+      fos.close();
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+  /** Serialize and compress an object to an OutputStream. */
+  public static boolean serialize(OutputStream os, Object obj) {
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(obj);
+      ByteArrayInputStream biis = new ByteArrayInputStream(baos.toByteArray());
+      Compression.compress(biis, os, baos.size());
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+  /** Decompress and deserialize a file to an Object. */
+  public static Object deserialize(String file) {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      Object obj = deserialize(fis, new File(file).length());
+      fis.close();
+      return obj;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+  /** Decompress and deserialize an InputStream to an Object. */
+  public static Object deserialize(InputStream is, long length) {
+    try {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      Compression.decompress(is, baos, length);
+      ByteArrayInputStream biis = new ByteArrayInputStream(baos.toByteArray());
+      ObjectInputStream ois = new ObjectInputStream(biis);
+      Object obj = ois.readObject();
+      return obj;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
 }
