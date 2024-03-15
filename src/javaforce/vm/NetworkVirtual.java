@@ -56,8 +56,14 @@ public class NetworkVirtual implements Serializable {
     return ncreateport(this.name, NetworkPort.createXML(this.name, name, vlan));
   }
 
+  private native static boolean nstart(String name);
+  /** Start virtual interface. */
+  public boolean start() {
+    return nstart(name);
+  }
+
   private native static boolean nremove(String name);
-  /** Remove this virtual interface from physical interface. */
+  /** Remove this virtual interface. */
   public boolean remove() {
     return nremove(name);
   }

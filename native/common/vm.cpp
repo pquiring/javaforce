@@ -49,6 +49,7 @@ void* (*_virNetworkLookupByName)(void* conn, const char* name);
 int (*_virNetworkGetUUIDString)(void* net, char* uuid);
 const char* (*_virNetworkGetName)(void* net);
 const char* (*_virNetworkGetBridgeName)(void* net);
+int (*_virNetworkCreate)(void* net);
 int (*_virNetworkFree)(void* net);
 
 //network (port)
@@ -113,6 +114,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virNetworkGetUUIDString, "virNetworkGetUUIDString");
   getFunction(virt, (void**)&_virNetworkGetName, "virNetworkGetName");
   getFunction(virt, (void**)&_virNetworkGetBridgeName, "virNetworkGetBridgeName");
+  getFunction(virt, (void**)&_virNetworkCreate, "virNetworkCreate");
   getFunction(virt, (void**)&_virNetworkFree, "virNetworkFree");
 
   //network (port)
@@ -743,6 +745,32 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_ncreateport
   return JNI_FALSE;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nstart
+  (JNIEnv *e, jclass o, jstring name)
+{
+  void* conn = connect();
+  if (conn == NULL) return NULL;
+
+  const char* cname = e->GetStringUTFChars(name, NULL);
+
+  void* net = (*_virNetworkLookupByName)(conn, cname);
+
+  e->ReleaseStringUTFChars(name, cname);
+
+  if (net == NULL) {
+    disconnect(conn);
+    return JNI_FALSE;
+  }
+
+  int res = (*_virNetworkCreate)(net);
+
+  (*_virNetworkFree)(net);
+
+  disconnect(conn);
+
+  return res == 0;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nremove
   (JNIEnv *e, jclass o, jstring name)
 {
@@ -903,6 +931,7 @@ static JNINativeMethod javaforce_vm_NetworkVirtual[] = {
   {"ncreatevirt", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreatevirt},
   {"ncreateport", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreateport},
   {"ngetbridge", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_ngetbridge},
+  {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nstart},
   {"nremove", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
   {"nassign", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nassign},
 };
