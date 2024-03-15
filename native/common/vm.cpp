@@ -48,6 +48,7 @@ int (*_virConnectListAllNetworks)(void* conn, void*** nets, int flags);
 void* (*_virNetworkLookupByName)(void* conn, const char* name);
 int (*_virNetworkGetUUIDString)(void* net, char* uuid);
 const char* (*_virNetworkGetName)(void* net);
+const char* (*_virNetworkBridgeGetName)(void* net);
 int (*_virNetworkFree)(void* net);
 
 //network (port)
@@ -111,6 +112,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virNetworkLookupByName, "virNetworkLookupByName");
   getFunction(virt, (void**)&_virNetworkGetUUIDString, "virNetworkGetUUIDString");
   getFunction(virt, (void**)&_virNetworkGetName, "virNetworkGetName");
+  getFunction(virt, (void**)&_virNetworkBridgeGetName, "virNetworkGetBridgeName");
   getFunction(virt, (void**)&_virNetworkFree, "virNetworkFree");
 
   //network (port)
@@ -714,7 +716,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistVirt
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virNetworkGetName)(nets[idx]);
-    printf("net_virt:%s\n", name);
+    const char* bridge = (*_virNetworkGetBridgeName)(nets[idx]);
+    printf("net_virt:%s:%s\n", name, bridge);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     (*_virNetworkFree)(nets[idx]);
   }
