@@ -112,7 +112,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virNetworkLookupByName, "virNetworkLookupByName");
   getFunction(virt, (void**)&_virNetworkGetUUIDString, "virNetworkGetUUIDString");
   getFunction(virt, (void**)&_virNetworkGetName, "virNetworkGetName");
-  getFunction(virt, (void**)&_virNetworkBridgeGetName, "virNetworkGetBridgeName");
+  getFunction(virt, (void**)&_virNetworkGetBridgeName, "virNetworkGetBridgeName");
   getFunction(virt, (void**)&_virNetworkFree, "virNetworkFree");
 
   //network (port)
