@@ -836,13 +836,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nassign
   return JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nremove
-  (JNIEnv *e, jclass o, jstring name)
-{
-  //TODO:remove network port
-  return JNI_FALSE;
-}
-
 //NetworkPort
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkPort_nremove
