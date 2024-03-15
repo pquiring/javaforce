@@ -56,6 +56,7 @@ public class ExecProject implements ShellProcessListener {
     String mainclass = props.getProperty("MAINCLASS");
     String service = props.getProperty("SERVICE");
     String ffmpeg = props.getProperty("FFMPEG");
+    String vm = props.getProperty("VM");
 
     if (service != null) {
       exec += "s";
@@ -73,6 +74,9 @@ public class ExecProject implements ShellProcessListener {
     cmd.add(home + File.separator + "bin" + File.separator + exec);
     if (ffmpeg != null) {
       cmd.add("-ffmpeg");
+    }
+    if (vm != null) {
+      cmd.add("-vm");
     }
     cmd.add("-cp");
     if (JF.isWindows()) {
