@@ -133,7 +133,7 @@ static void* connect(const char* host) {
 }
 
 static void* connect() {
-  return connect("localhost");
+  return connect("/system");
 }
 
 static void disconnect(void* ptr) {
