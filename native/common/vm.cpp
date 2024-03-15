@@ -748,6 +748,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
 
   const char* cname = e->GetStringUTFChars(name, NULL);
 
+  printf("listPort for %s\n", cname);
+
   void* net = (*_virNetworkLookupByName)(conn, cname);
 
   e->ReleaseStringUTFChars(name, cname);
