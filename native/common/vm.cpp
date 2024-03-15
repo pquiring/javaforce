@@ -47,6 +47,7 @@ void* (*_virNetworkDefineXML)(void* conn, const char* xml);
 int (*_virConnectListAllNetworks)(void* conn, void*** nets, int flags);
 void* (*_virNetworkLookupByName)(void* conn, const char* name);
 int (*_virNetworkGetUUIDString)(void* net, char* uuid);
+const char* (*_virNetworkGetName)(void* net);
 int (*_virNetworkFree)(void* net);
 
 //network (port)
@@ -109,6 +110,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virConnectListAllNetworks, "virConnectListAllNetworks");
   getFunction(virt, (void**)&_virNetworkLookupByName, "virNetworkLookupByName");
   getFunction(virt, (void**)&_virNetworkGetUUIDString, "virNetworkGetUUIDString");
+  getFunction(virt, (void**)&_virNetworkGetName, "virNetworkGetName");
   getFunction(virt, (void**)&_virNetworkFree, "virNetworkFree");
 
   //network (port)
@@ -709,13 +711,11 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistVirt
     return NULL;
   }
 
-  char uuid[VIR_UUID_STRING_BUFLEN];  //includes space for NULL
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
-    uuid[0] = 0;
-    (*_virNetworkGetUUIDString)(nets[idx], uuid);
-    printf("net_virt:%s\n", uuid);
-    e->SetObjectArrayElement(array, idx, e->NewStringUTF(uuid));
+    const char* name = (*_virNetworkGetName)(nets[idx]);
+    printf("net_virt:%s\n", name);
+    e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     (*_virNetworkFree)(nets[idx]);
   }
 

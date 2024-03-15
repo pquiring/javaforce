@@ -27,7 +27,7 @@ public class NetworkInterface implements Serializable {
   }
 
   private native static String[] nlistVirt(String name);
-  /** List virtual network interfaces bridged with this interface. */
+  /** List virtual network interfaces. */
   public NetworkVirtual[] listVirtual() {
     String[] list = nlistVirt(name);
     NetworkVirtual[] nics = new NetworkVirtual[list.length];
