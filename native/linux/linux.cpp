@@ -395,6 +395,7 @@ void registerAllNatives(JNIEnv *env) {
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
 }
 
+extern void vm_init();
 extern void vm_register(JNIEnv *env);
 
 /** Continues loading the JVM in a new Thread. */
@@ -412,6 +413,7 @@ bool JavaThread(void *ignore) {
   }
 
   if (vm) {
+    vm_init();
     vm_register(g_env);
   }
 
