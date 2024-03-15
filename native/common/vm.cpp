@@ -310,7 +310,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsuspend
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nresume
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nrestore
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -871,7 +871,7 @@ static JNINativeMethod javaforce_vm_Storage[] = {
   {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstart},
   {"nstop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstop},
   {"ngetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_vm_Storage_ngetState},
-  {"nformat", "(Ljava/lang/String;I)Z", (void *)&Java_javaforce_vm_Storage_format},
+  {"format", "(Ljava/lang/String;I)Z", (void *)&Java_javaforce_vm_Storage_format},
 };
 
 static JNINativeMethod javaforce_vm_VirtualMachine[] = {
@@ -884,7 +884,7 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"npoweroff", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_npoweroff},
   {"nrestart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestart},
   {"nsuspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsuspend},
-  {"nresume", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nresume},
+  {"nrestore", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestore},
   {"nget", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nget},
   {"migrate", "(Ljava/lang/String;Ljava/lang/String;Ljavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_migrate},
 };
