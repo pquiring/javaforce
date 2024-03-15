@@ -25,13 +25,9 @@ public class Device implements Serializable {
     if (list == null) list = new String[0];
     Device[] dlist = new Device[list.length];
     for(int idx=0;idx<list.length;idx++) {
-      String item = list[idx];
-      String[] nti = item.split("|");
-      if (nti.length != 2) continue;
       Device dev = new Device();
-      dev.name = nti[0];
+      dev.name = list[idx];
       dev.type = type;
-      dev.path = nti[2];
       dlist[idx] = dev;
     }
     return dlist;
