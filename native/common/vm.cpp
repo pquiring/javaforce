@@ -48,7 +48,7 @@ int (*_virConnectListAllNetworks)(void* conn, void*** nets, int flags);
 void* (*_virNetworkLookupByName)(void* conn, const char* name);
 int (*_virNetworkGetUUIDString)(void* net, char* uuid);
 const char* (*_virNetworkGetName)(void* net);
-const char* (*_virNetworkBridgeGetName)(void* net);
+const char* (*_virNetworkGetBridgeName)(void* net);
 int (*_virNetworkFree)(void* net);
 
 //network (port)
