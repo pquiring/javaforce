@@ -61,7 +61,10 @@ int (*_virNodeDeviceFree)(void* dev);
 
 void vm_init() {
   virt = loadLibrary("/usr/lib/x86_64-linux-gnu/libvirt.so");
-  if (virt == NULL) return;
+  if (virt == NULL) {
+    printf("VM:Error:Unable to open libvirt.so\n");
+    return;
+  }
 
   //common
   getFunction(virt, (void**)&_virConnectOpen, "virConnectOpen");
