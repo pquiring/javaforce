@@ -128,7 +128,9 @@ static void* connect(const char* host) {
   char url[1024];
   sprintf(url, "qemu://%s", host);
   void* conn = (*_virConnectOpen)(url);
-  printf("VM:connect() failed\n");
+  if (conn == NULL) {
+    printf("VM:connect() failed\n");
+  }
   return conn;
 }
 
