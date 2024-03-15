@@ -749,7 +749,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nstart
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
-  if (conn == NULL) return NULL;
+  if (conn == NULL) return JNI_FALSE;
 
   const char* cname = e->GetStringUTFChars(name, NULL);
 
