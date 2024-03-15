@@ -396,6 +396,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nlist
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* desc = (*_virDomainGetMetadata)(doms[idx], VIR_DOMAIN_METADATA_DESCRIPTION, NULL, VIR_DOMAIN_AFFECT_CURRENT);
+    printf("VM:%s\n", desc);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(desc));
     free((void*)desc);
     (*_virDomainFree)(doms[idx]);
@@ -499,6 +500,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Storage_nlist
   for(int idx=0;idx<count;idx++) {
     uuid[0] = 0;
     (*_virStoragePoolGetUUIDString)(pools[idx], uuid);
+    printf("Storage:%s\n", uuid);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(uuid));
     (*_virStoragePoolFree)(pools[idx]);
   }
@@ -679,6 +681,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistPhys
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virInterfaceGetName)(ifaces[idx]);
+    printf("net_iface:%s\n", name);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     (*_virInterfaceFree)(ifaces[idx]);
   }
@@ -711,6 +714,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistVirt
   for(int idx=0;idx<count;idx++) {
     uuid[0] = 0;
     (*_virNetworkGetUUIDString)(nets[idx], uuid);
+    printf("net_virt:%s\n", uuid);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(uuid));
     (*_virNetworkFree)(nets[idx]);
   }
@@ -769,6 +773,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
   for(int idx=0;idx<count;idx++) {
     uuid[0] = 0;
     (*_virNetworkGetUUIDString)(nets[idx], uuid);
+    printf("net_pool:%s\n", uuid);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(uuid));
     (*_virNetworkPortFree)(nets[idx]);
   }
@@ -840,6 +845,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virNodeDeviceGetName)(devs[idx]);
+    printf("Device:%s\n", name);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     free((void*)name);
     (*_virNodeDeviceFree)(devs[idx]);
