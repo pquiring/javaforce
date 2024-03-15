@@ -19,6 +19,18 @@ public class NetworkVirtual implements Serializable {
 
   private native static String ngetbridge(String name);
 
+  private native static String[] nlistVirt();
+  /** List virtual network interfaces. */
+  public static NetworkVirtual[] listVirtual() {
+    String[] list = nlistVirt();
+    if (list == null) list = new String[0];
+    NetworkVirtual[] nics = new NetworkVirtual[list.length];
+    for(int idx = 0;idx<list.length;idx++) {
+      nics[idx] = new NetworkVirtual(list[idx]);
+    }
+    return nics;
+  }
+
   private native static String[] nlistPort(String name);
   /** List network port groups bound to this interface. */
   public NetworkPort[] listPort() {
@@ -32,10 +44,16 @@ public class NetworkVirtual implements Serializable {
     return nics;
   }
 
-  private native static boolean ncreate(String parent, String xml);
+  private native static boolean ncreatevirt(String name, String xml);
+  /** Create virtual interface. */
+  public static boolean createVirtual(String name, String bridge) {
+    return ncreatevirt(name, NetworkVirtual.createXML(name, createXML(name, bridge)));
+  }
+
+  private native static boolean ncreateport(String name, String xml);
   /** Create network port group (VLAN) bound to this virtual interface. */
   public boolean createPort(String name, int vlan) {
-    return ncreate(this.name, NetworkPort.createXML(this.name, name, vlan));
+    return ncreateport(this.name, NetworkPort.createXML(this.name, name, vlan));
   }
 
   private native static boolean nremove(String name);
@@ -50,11 +68,11 @@ public class NetworkVirtual implements Serializable {
     return nassign(name, ip, mask);
   }
 
-  protected static String createXML(String parent, String name) {
+  protected static String createXML(String name, String bridge) {
     StringBuilder xml = new StringBuilder();
     xml.append("<network>");
     xml.append("<name>" + name + "</name>");
-    xml.append("<bridge>" + parent + "</bridge>");
+    xml.append("<bridge>" + bridge + "</bridge>");
     xml.append("</network>");
     return xml.toString();
   }

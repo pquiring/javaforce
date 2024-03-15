@@ -697,8 +697,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistPhys
   return array;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistVirt
-  (JNIEnv *e, jclass o, jstring name)
+JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistVirt
+  (JNIEnv *e, jclass o)
 {
   void* conn = connect();
   if (conn == NULL) return NULL;
@@ -729,14 +729,21 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistVirt
   return array;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkInterface_ncreate
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_ncreatevirt
   (JNIEnv *e, jclass o, jstring name, jstring xml)
 {
   //TODO:create network virtual
   return JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkInterface_nremove
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_ncreateport
+  (JNIEnv *e, jclass o, jstring name, jstring xml)
+{
+  //TODO:create network virtual port
+  return JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nremove
   (JNIEnv *e, jclass o, jstring name)
 {
   //TODO:remove network virtual
@@ -829,13 +836,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nassign
   return JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_ncreate
-  (JNIEnv *e, jclass o, jstring name, jstring xml)
-{
-  //TODO:create network port
-  return JNI_FALSE;
-}
-
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nremove
   (JNIEnv *e, jclass o, jstring name)
 {
@@ -902,14 +902,14 @@ static JNINativeMethod javaforce_vm_Disk[] = {
 
 static JNINativeMethod javaforce_vm_NetworkInterface[] = {
   {"nlistPhys", "()[Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkInterface_nlistPhys},
-  {"nlistVirt", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkInterface_nlistVirt},
-  {"ncreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkInterface_ncreate},
 };
 
 static JNINativeMethod javaforce_vm_NetworkVirtual[] = {
+  {"nlistVirt", "()[Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_nlistVirt},
   {"nlistPort", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_nlistPort},
+  {"ncreatevirt", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreatevirt},
+  {"ncreateport", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreateport},
   {"ngetbridge", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_ngetbridge},
-  {"ncreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreate},
   {"nremove", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
   {"nassign", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nassign},
 };

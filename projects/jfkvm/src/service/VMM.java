@@ -27,8 +27,8 @@ public class VMM {
     return NetworkInterface.listPhysical();
   }
 
-  public NetworkVirtual[] listNetworkVirtual(NetworkInterface iface) {
-    return iface.listVirtual();
+  public NetworkVirtual[] listNetworkVirtual() {
+    return NetworkVirtual.listVirtual();
   }
 
   public NetworkPort[] listNetworkPort(NetworkVirtual virt) {

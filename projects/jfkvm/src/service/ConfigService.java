@@ -240,14 +240,11 @@ public class ConfigService implements WebUIHandler {
     row.add(size);
     ComboBox network_port = new ComboBox();
     row.add(network_port);
-    NetworkInterface[] nics_phys = vmm.listNetworkInterface();
-    for(NetworkInterface nic_phys : nics_phys) {
-      NetworkVirtual[] nics_virts = vmm.listNetworkVirtual(nic_phys);
-      for(NetworkVirtual nic_virt : nics_virts) {
-        NetworkPort[] groups = vmm.listNetworkPort(nic_virt);
-        for(NetworkPort group : groups) {
-          network_port.add(group.name, group.name);
-        }
+    NetworkVirtual[] nics_virts = vmm.listNetworkVirtual();
+    for(NetworkVirtual nic_virt : nics_virts) {
+      NetworkPort[] groups = vmm.listNetworkPort(nic_virt);
+      for(NetworkPort group : groups) {
+        network_port.add(group.name, group.name);
       }
     }
 
@@ -1136,6 +1133,7 @@ public class ConfigService implements WebUIHandler {
       phys.add(phys_list);
       NetworkInterface[] nics_phys = vmm.listNetworkInterface();
       for(NetworkInterface nic : nics_phys) {
+        if (nic.name.equals("lo")) continue;
         phys_list.add(nic.name);
       }
       //TODO : button methods
@@ -1155,12 +1153,9 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       virt.add(list);
-      NetworkInterface[] nics_phys = vmm.listNetworkInterface();
-      for(NetworkInterface nic_phys : nics_phys) {
-        NetworkVirtual[] nics_virt = vmm.listNetworkVirtual(nic_phys);
-        for(NetworkVirtual nic : nics_virt) {
-          list.add(nic.name);
-        }
+      NetworkVirtual[] nics_virt = vmm.listNetworkVirtual();
+      for(NetworkVirtual nic : nics_virt) {
+        list.add(nic.name);
       }
       //TODO : button methods
     }
@@ -1179,14 +1174,11 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       ports.add(list);
-      NetworkInterface[] nics_phys = vmm.listNetworkInterface();
-      for(NetworkInterface nic_phys : nics_phys) {
-        NetworkVirtual[] nics_virt = vmm.listNetworkVirtual(nic_phys);
-        for(NetworkVirtual nic_virt : nics_virt) {
-          NetworkPort[] nics_port = vmm.listNetworkPort(nic_virt);
-          for(NetworkPort nic_port : nics_port) {
-            list.add(nic_port.name);
-          }
+      NetworkVirtual[] nics_virt = vmm.listNetworkVirtual();
+      for(NetworkVirtual nic_virt : nics_virt) {
+        NetworkPort[] nics_port = vmm.listNetworkPort(nic_virt);
+        for(NetworkPort nic_port : nics_port) {
+          list.add(nic_port.name);
         }
       }
       //TODO : button methods
