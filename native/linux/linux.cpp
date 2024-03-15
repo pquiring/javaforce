@@ -65,6 +65,7 @@ char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
 bool ffmpeg = false;
+bool vm = false;
 bool debug = false;
 char errmsg[1024];
 
@@ -394,6 +395,8 @@ void registerAllNatives(JNIEnv *env) {
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
 }
 
+extern void vm_register(JNIEnv *env);
+
 /** Continues loading the JVM in a new Thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();
@@ -406,6 +409,10 @@ bool JavaThread(void *ignore) {
   if (ffmpeg) {
     //load ffmpeg shared libraries
     InvokeMethodVoid("javaforce/media/MediaCoder", "load", "()V", NULL);
+  }
+
+  if (vm) {
+    vm_register(g_env);
   }
 
 #ifdef _JF_SERVICE
@@ -465,6 +472,10 @@ bool loadProperties() {
     if (arg[0] == '-') {
       if (strcmp(arg, "-ffmpeg") == 0) {
         ffmpeg = true;
+        continue;
+      }
+      if (strcmp(arg, "-vm") == 0) {
+        vm = true;
         continue;
       }
       if (strcmp(arg, "-cp") == 0) {
@@ -572,6 +583,9 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "FFMPEG=", 7) == 0) {
       ffmpeg = true;
+    }
+    else if (strncmp(ln1, "VM=", 3) == 0) {
+      vm = true;
     }
     else if (strncmp(ln1, "DEBUG=", 6) == 0) {
       debug = true;
