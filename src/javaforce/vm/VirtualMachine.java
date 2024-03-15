@@ -7,16 +7,13 @@ import java.io.*;
 public class VirtualMachine implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private VirtualMachine(String pool, String name, String uuid) {
+  private VirtualMachine(String pool, String name) {
     this.pool = pool;
     this.name = name;
-    if (uuid == null) uuid = UUID.generate();
-    this.uuid = uuid;
   }
 
   private String pool;
   private String name;
-  private String uuid;
 
   public static final int STATE_OFF = 0;
   public static final int STATE_ON = 1;
@@ -25,7 +22,6 @@ public class VirtualMachine implements Serializable {
 
   public String getPool() {return pool;}
   public String getName() {return name;}
-  public String getUUID() {return uuid;}
 
   public String getConfigFile() {
     return "/volumes/" + pool + "/" + name + "/" + name + ".jfvm";
@@ -74,7 +70,7 @@ public class VirtualMachine implements Serializable {
 
   private static VirtualMachine getByDesc(String desc) {
     String[] fs = desc.split(";");
-    String name = null, pool = null, uuid = null;
+    String name = null, pool = null;
     for(int a=0;a<fs.length;a++) {
       String f = fs[a];
       int i = f.indexOf('=');
@@ -84,10 +80,9 @@ public class VirtualMachine implements Serializable {
       switch (key) {
         case "pool": pool = value; break;
         case "name": name = value; break;
-        case "uuid": uuid = value; break;
       }
     }
-    return new VirtualMachine(pool, name, uuid);
+    return new VirtualMachine(pool, name);
   }
 
   //virConnectListAllDomains & virDomainGetUUID & virDomainGetName & virDomainGetDesc
@@ -112,9 +107,9 @@ public class VirtualMachine implements Serializable {
 
   //virDomainDefineXML
   private native static boolean nregister(String xml);
-  public static VirtualMachine register(Hardware hardware) {
-    if (!nregister(createXML(hardware))) return null;
-    return new VirtualMachine(hardware.pool, hardware.name, hardware.uuid);
+  public static VirtualMachine register(Hardware hardware, NetworkProvider provider) {
+    if (!nregister(createXML(hardware, provider))) return null;
+    return new VirtualMachine(hardware.pool, hardware.name);
   }
 
   //virDomainUndefine
@@ -143,17 +138,16 @@ public class VirtualMachine implements Serializable {
    *
    * @return XML
    */
-  private static String createXML(Hardware hardware) {
+  private static String createXML(Hardware hardware, NetworkProvider provider) {
     StringBuilder xml = new StringBuilder();
     xml.append("<domain type='kvm'>");
     xml.append("<name>" + hardware.name + "</name>");
-    xml.append("<uuid>" + hardware.uuid + "</uuid>");
+    xml.append("<uuid>" + UUID.generate() + "</uuid>");
     xml.append("<genid>" + hardware.genid + "<genid>");
     xml.append("<title>" + hardware.name + "</title>");
     xml.append("<description>");  //desc is used for metadata
       xml.append("pool=" + hardware.pool);
       xml.append(";name=" + hardware.name);
-      xml.append(";uuid=" + hardware.uuid);
     xml.append("</description>");
     if (hardware.os == Hardware.OS_WINDOWS) {
       xml.append("<clock offset='localtime'/>");
@@ -209,7 +203,9 @@ public class VirtualMachine implements Serializable {
       }
       if (hardware.networks != null) {
         for(Network nic : hardware.networks) {
-          xml.append(nic.toXML());
+          int vlan = provider.getVLAN(nic.network);
+          String bridge = provider.getBridge(nic.network);
+          xml.append(nic.toXML(bridge, vlan));
         }
       }
       if (hardware.devices != null) {

@@ -1,6 +1,8 @@
 package javaforce.vm;
 
-/** Network port group (VLAN).
+/** Network port group.
+ *
+ * These are not persistent.
  *
  */
 
@@ -29,7 +31,7 @@ public class NetworkPort implements Serializable {
     StringBuilder xml = new StringBuilder();
     xml.append("<portgroup>");
     xml.append("<name>" + name + "</name>");
-    xml.append("<vlan>" + vlan + "</vlan>");
+    xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     xml.append("</portgroup>");
     return xml.toString();
   }

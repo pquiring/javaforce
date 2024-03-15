@@ -2,6 +2,8 @@ package javaforce.vm;
 
 /** Network virtual interface.
  *
+ * Used by VM Host.
+ *
  */
 
 import java.io.*;
@@ -11,6 +13,9 @@ public class NetworkVirtual implements Serializable {
 
   public String name;
   public String bridge;
+  public String mac;
+  public String ip;
+  public String netmask;
 
   protected NetworkVirtual(String name) {
     this.name = name;
@@ -46,8 +51,8 @@ public class NetworkVirtual implements Serializable {
 
   private native static boolean ncreatevirt(String name, String xml);
   /** Create virtual interface. */
-  public static boolean createVirtual(String name, String bridge) {
-    return ncreatevirt(name, NetworkVirtual.createXML(name, createXML(name, bridge)));
+  public static boolean createVirtual(String name, String bridge, String mac, String ip, String netmask, int vlan) {
+    return ncreatevirt(name, NetworkVirtual.createXML(name, bridge, mac, ip, netmask, vlan));
   }
 
   private native static boolean ncreateport(String name, String xml);
@@ -74,11 +79,16 @@ public class NetworkVirtual implements Serializable {
     return nassign(name, ip, mask);
   }
 
-  protected static String createXML(String name, String bridge) {
+  protected static String createXML(String name, String bridge, String mac, String ip, String netmask, int vlan) {
     StringBuilder xml = new StringBuilder();
     xml.append("<network>");
     xml.append("<name>" + name + "</name>");
-    xml.append("<bridge>" + bridge + "</bridge>");
+    xml.append("<uuid>" + UUID.generate() + "</uuid>");
+    xml.append("<forward mode='bridge'/>");
+    xml.append("<bridge name='" + bridge + "'/>");
+    xml.append("<mac address='" + mac + "'/>");
+    xml.append("<ip address='" + ip + "' netmask='" + netmask + "'/>");
+    xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     xml.append("</network>");
     return xml.toString();
   }

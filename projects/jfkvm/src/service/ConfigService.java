@@ -742,9 +742,11 @@ public class ConfigService implements WebUIHandler {
     net_ops.add(b_net_delete);
     ListBox net_list = new ListBox();
     networks.add(net_list);
+    int idx = 0;
     for(Network nic : hardware.networks) {
       //TODO : add more details
-      net_list.add(nic.name);
+      net_list.add("eth" + idx);
+      idx++;
     }
     //devices
     InnerPanel devices = new InnerPanel("Devices");

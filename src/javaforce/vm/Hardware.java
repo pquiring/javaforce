@@ -14,7 +14,6 @@ public class Hardware implements Serializable {
 
   public String pool;
   public String name;
-  public String uuid;
   public String genid;
   public int os;
   public int cores;
@@ -37,7 +36,6 @@ public class Hardware implements Serializable {
   public Hardware(String pool, String name, int os, int cores, Size memory) {
     this.pool = pool;
     this.name = name;
-    this.uuid = UUID.generate();
     this.genid = UUID.generate();
     this.os = os;
     this.cores = cores;

@@ -13,7 +13,7 @@ public class Network implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String name;
-  public String port;
+  public String network;
   public String model;
   public String mac;
 
@@ -26,13 +26,16 @@ public class Network implements Serializable {
   public static final String MODEL_VMXNET3 = "vmxnet3";
 
   /** Create XML for VirtualMachine XML. */
-  public String toXML() {
+  public String toXML(String bridge, int vlan) {
     StringBuilder xml = new StringBuilder();
     xml.append("<network>");
     xml.append("<name>" + name + "</name>");
-    xml.append("<networkport>" + port + "</networkport>");
+    xml.append("<uuid>" + UUID.generate() + "</uuid>");
+    xml.append("<forward mode='bridge'/>");
+    xml.append("<bridge name='" + bridge + "'/>");
     xml.append("<model>" + model + "</model>");
-    xml.append("<mac>" + model + "</mac>");
+    xml.append("<mac address='" + mac + "'/>");
+    xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     xml.append("</network>");
     return xml.toString();
   }
