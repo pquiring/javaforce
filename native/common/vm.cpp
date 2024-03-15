@@ -431,7 +431,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nget
   return ret;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_migrate
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
   (JNIEnv *e, jobject o, jstring name, jstring desthost, jobject status)
 {
   void* conn = connect();
@@ -889,7 +889,7 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"nsuspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsuspend},
   {"nrestore", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestore},
   {"nget", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nget},
-  {"migrate", "(Ljava/lang/String;Ljava/lang/String;Ljavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_migrate},
+  {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;Ljavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
 };
 
 #include "register.h"
