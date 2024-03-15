@@ -792,7 +792,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
   return array;
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_vm_NetworkVirtual_getbridge
+JNIEXPORT jstring JNICALL Java_javaforce_vm_NetworkVirtual_ngetbridge
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
