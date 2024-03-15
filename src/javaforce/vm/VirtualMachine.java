@@ -94,6 +94,7 @@ public class VirtualMachine implements Serializable {
   private native static String[] nlist();
   public static VirtualMachine[] list() {
     String[] list = nlist();
+    if (list == null) list = new String[0];
     VirtualMachine[] vms = new VirtualMachine[list.length];
     for(int idx = 0;idx<list.length;idx++) {
       vms[idx] = getByDesc(list[idx]);

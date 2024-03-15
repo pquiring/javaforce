@@ -19,6 +19,7 @@ public class NetworkInterface implements Serializable {
   /** List server physical network interfaces. */
   public static NetworkInterface[] listPhysical() {
     String[] list = nlistPhys();
+    if (list == null) list = new String[0];
     NetworkInterface[] nics = new NetworkInterface[list.length];
     for(int idx = 0;idx<list.length;idx++) {
       nics[idx] = new NetworkInterface(list[idx]);
@@ -30,6 +31,7 @@ public class NetworkInterface implements Serializable {
   /** List virtual network interfaces. */
   public NetworkVirtual[] listVirtual() {
     String[] list = nlistVirt(name);
+    if (list == null) list = new String[0];
     NetworkVirtual[] nics = new NetworkVirtual[list.length];
     for(int idx = 0;idx<list.length;idx++) {
       nics[idx] = new NetworkVirtual(name, list[idx]);

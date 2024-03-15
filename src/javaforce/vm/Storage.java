@@ -44,6 +44,7 @@ public class Storage implements Serializable {
   /** Returns list of UUID for Storage units registered. */
   public static String[] list() {
     String[] list = nlist();
+    if (list == null) list = new String[0];
     return list;
   }
 

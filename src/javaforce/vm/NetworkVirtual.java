@@ -22,6 +22,7 @@ public class NetworkVirtual implements Serializable {
   /** List network port groups bound to this interface. */
   public NetworkPort[] listPort() {
     String[] list = nlistPort(name);
+    if (list == null) list = new String[0];
     NetworkPort[] nics = new NetworkPort[list.length];
     for(int idx = 0;idx<list.length;idx++) {
       String[] pp = list[idx].split(";");
