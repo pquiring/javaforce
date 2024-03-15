@@ -11,11 +11,11 @@ public class NetworkPort implements Serializable {
 
   protected NetworkPort(String parent, String name, int vlan) {
     this.parent = parent;
+    this.name = name;
     this.vlan = vlan;
   }
 
   public String name;
-  public String uuid;
   public String parent;  //bound to virtual network
   public int vlan;
 

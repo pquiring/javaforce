@@ -10,13 +10,14 @@ public class NetworkVirtual implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String name;
-  public String uuid;
-  public String parent;  //bridged to physical network
+  public String bridge;
 
-  protected NetworkVirtual(String parent, String name) {
-    this.parent = parent;
+  protected NetworkVirtual(String name) {
     this.name = name;
+    this.bridge = ngetbridge(name);
   }
+
+  private native static String ngetbridge(String name);
 
   private native static String[] nlistPort(String name);
   /** List network port groups bound to this interface. */
@@ -37,10 +38,10 @@ public class NetworkVirtual implements Serializable {
     return ncreate(this.name, NetworkPort.createXML(this.name, name, vlan));
   }
 
-  private native static boolean nremove(String parent, String name);
+  private native static boolean nremove(String name);
   /** Remove this virtual interface from physical interface. */
   public boolean remove() {
-    return nremove(parent, name);
+    return nremove(name);
   }
 
   private native static boolean nassign(String name, String ip, String mask);

@@ -34,7 +34,7 @@ public class NetworkInterface implements Serializable {
     if (list == null) list = new String[0];
     NetworkVirtual[] nics = new NetworkVirtual[list.length];
     for(int idx = 0;idx<list.length;idx++) {
-      nics[idx] = new NetworkVirtual(name, list[idx]);
+      nics[idx] = new NetworkVirtual(list[idx]);
     }
     return nics;
   }

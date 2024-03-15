@@ -792,6 +792,36 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
   return array;
 }
 
+JNIEXPORT jstring JNICALL Java_javaforce_vm_NetworkVirtual_getbridge
+  (JNIEnv *e, jclass o, jstring name)
+{
+  void* conn = connect();
+  if (conn == NULL) return NULL;
+
+  const char* cname = e->GetStringUTFChars(name, NULL);
+
+  printf("listPort for %s\n", cname);
+
+  void* net = (*_virNetworkLookupByName)(conn, cname);
+
+  e->ReleaseStringUTFChars(name, cname);
+
+  if (net == NULL) {
+    disconnect(conn);
+    return NULL;
+  }
+
+  const char* cbridge = (*_virNetworkGetBridgeName)(net);
+
+  jstring bridge = e->NewStringUTF(cbridge);
+
+  (*_virNetworkFree)(net);
+
+  disconnect(conn);
+
+  return bridge;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nassign
   (JNIEnv *e, jclass o, jstring name, jstring ip, jstring mask)
 {
@@ -878,6 +908,7 @@ static JNINativeMethod javaforce_vm_NetworkInterface[] = {
 
 static JNINativeMethod javaforce_vm_NetworkVirtual[] = {
   {"nlistPort", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_nlistPort},
+  {"ngetbridge", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_ngetbridge},
   {"ncreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreate},
   {"nremove", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
   {"nassign", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nassign},
