@@ -910,7 +910,7 @@ static JNINativeMethod javaforce_vm_NetworkVirtual[] = {
   {"nlistPort", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_nlistPort},
   {"ngetbridge", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_ngetbridge},
   {"ncreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreate},
-  {"nremove", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
+  {"nremove", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
   {"nassign", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nassign},
 };
 
