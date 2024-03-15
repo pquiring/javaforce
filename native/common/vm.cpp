@@ -127,7 +127,9 @@ void vm_init() {
 static void* connect(const char* host) {
   char url[1024];
   sprintf(url, "qemu://%s", host);
-  return (*_virConnectOpen)(url);
+  void* conn = (*_virConnectOpen)(url);
+  printf("VM:connect() failed\n");
+  return conn;
 }
 
 static void* connect() {
@@ -385,6 +387,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nlist
 
   if (count < 0) {
     disconnect(conn);
+    printf("VM:VirtualMachine_nlist() failed : count=%d\n", count);
     return NULL;
   }
 
@@ -485,6 +488,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Storage_nlist
 
   if (count < 0) {
     disconnect(conn);
+    printf("VM:Storage_nlist() failed : count=%d\n", count);
     return NULL;
   }
 
@@ -666,6 +670,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistPhys
 
   if (count < 0) {
     disconnect(conn);
+    printf("VM:NetworkInterface_nlistPhys() failed : count=%d\n", count);
     return NULL;
   }
 
@@ -695,6 +700,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistVirt
 
   if (count < 0) {
     disconnect(conn);
+    printf("VM:NetworkInterface_nlistVirt() failed : count=%d\n", count);
     return NULL;
   }
 
@@ -752,6 +758,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
   if (count < 0) {
     (*_virNetworkFree)(net);
     disconnect(conn);
+    printf("VM:NetworkVirtual_nlistPort() failed : count=%d\n", count);
     return NULL;
   }
 
@@ -824,6 +831,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
 
   if (count < 0) {
     disconnect(conn);
+    printf("VM:Device_nlist() failed : count=%d\n", count);
     return NULL;
   }
 
