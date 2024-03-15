@@ -849,7 +849,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
     const char* name = (*_virNodeDeviceGetName)(devs[idx]);
     printf("Device:%s\n", name);
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
-    free((void*)name);
+    //free((void*)name);
     (*_virNodeDeviceFree)(devs[idx]);
   }
 
