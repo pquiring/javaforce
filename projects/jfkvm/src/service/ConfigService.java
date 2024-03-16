@@ -6,6 +6,7 @@ package service;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -1141,7 +1142,7 @@ public class ConfigService implements WebUIHandler {
       //TODO : button methods
     }
 
-    //virt (bridges)
+    //bridges (virtual switches)
     {
       Panel virt = new Panel();
       panel.addTab(virt, "Virtual Switches");
@@ -1153,7 +1154,7 @@ public class ConfigService implements WebUIHandler {
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
-      virt.add(new Label("NOTE : os bridges are required for VLAN tagging guest networks. Please remove br bridges if present."));
+      virt.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
       ListBox list = new ListBox();
       virt.add(list);
       NetworkBridge[] nics = NetworkBridge.list();
@@ -1177,7 +1178,7 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       ports.add(list);
-      NetworkVLAN[] nics = Config.current.networks_vlans;
+      ArrayList<NetworkVLAN> nics = Config.current.vlans;
       for(NetworkVLAN nic : nics) {
         list.add(nic.name + ":" + nic.vlan);
       }
@@ -1187,7 +1188,7 @@ public class ConfigService implements WebUIHandler {
     //vm host/server nics
     {
       Panel vmnics = new Panel();
-      panel.addTab(vmnics, "VM Server NICs");
+      panel.addTab(vmnics, "Server Virtual NICs");
       ToolBar tools = new ToolBar();
       vmnics.add(tools);
       Button create = new Button("Create");
@@ -1198,7 +1199,7 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       vmnics.add(list);
-      NetworkVirtual[] nics = Config.current.networks_virt;
+      ArrayList<NetworkVirtual> nics = Config.current.nics;
       for(NetworkVirtual nic : nics) {
         list.add(nic.name);
       }

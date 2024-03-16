@@ -79,7 +79,7 @@ public class VMM implements VMProvider {
   }
 
   public int getVLAN(String network) {
-    for(NetworkVLAN vlan : Config.current.networks_vlans) {
+    for(NetworkVLAN vlan : Config.current.vlans) {
       if (vlan.name.equals(network)) {
         return vlan.vlan;
       }
@@ -89,7 +89,7 @@ public class VMM implements VMProvider {
 
   public NetworkBridge getBridge(String network) {
     String bridge_name = null;
-    for(NetworkVLAN vlan : Config.current.networks_vlans) {
+    for(NetworkVLAN vlan : Config.current.vlans) {
       if (vlan.name.equals(network)) {
         bridge_name = vlan.bridge;
         break;

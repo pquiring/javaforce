@@ -88,6 +88,7 @@ public class NetworkVirtual implements Serializable {
     xml.append("<bridge name='" + bridge + "'/>");
     xml.append("<mac address='" + mac + "'/>");
     xml.append("<ip address='" + ip + "' netmask='" + netmask + "'/>");
+    //TODO : validate bridge is 'os' type
     xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     xml.append("</network>");
     return xml.toString();
