@@ -24,7 +24,7 @@ public class Config implements Serializable {
 
   //networking config
   public NetworkInterface[] network_ifaces = new NetworkInterface[0];  //physical interfaces (eth0, eth1)
-  public NetworkBridge[] network_bridges = new NetworkBridge[0];  //bridges (virbr0)
+//  public NetworkBridge[] network_bridges = new NetworkBridge[0];  //bridges (virbr0)
   public NetworkVLAN[] networks_vlans = new NetworkVLAN[0];  //network vlan groups (port groups)
   public NetworkVirtual[] networks_virt = new NetworkVirtual[0];  //vm kernel nics
 
@@ -45,9 +45,11 @@ public class Config implements Serializable {
     if (network_ifaces == null) {
       network_ifaces = new NetworkInterface[0];
     }
+/*
     if (network_bridges == null) {
       network_bridges = new NetworkBridge[0];
     }
+*/
     if (networks_vlans == null) {
       networks_vlans = new NetworkVLAN[0];
     }

@@ -1153,11 +1153,12 @@ public class ConfigService implements WebUIHandler {
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
+      virt.add(new Label("NOTE : os bridges are required for VLAN tagging guest networks. Please remove br bridges if present."));
       ListBox list = new ListBox();
       virt.add(list);
-      NetworkBridge[] nics = Config.current.network_bridges;
+      NetworkBridge[] nics = NetworkBridge.list();
       for(NetworkBridge nic : nics) {
-        list.add(nic.name);
+        list.add(nic.name + ":" + nic.type + ":" + nic.iface);
       }
       //TODO : button methods
     }
