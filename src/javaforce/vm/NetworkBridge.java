@@ -6,6 +6,14 @@ package javaforce.vm;
  *
  * https://docs.openvswitch.org/en/latest/howto/libvirt/
  *
+ * delete old bridge:
+ *   brctl delbr virbr0
+ *
+ * setup Open vSwitch Bridge:
+ *   ovs-vsctl add-br ovsbr
+ *   ovs-vsctl add-port ovsbr eth0
+ *   ovs-vsctl show
+ *
  * @author pquiring
  */
 

@@ -107,7 +107,7 @@ public class VirtualMachine implements Serializable {
 
   //virDomainDefineXML
   private native static boolean nregister(String xml);
-  public static VirtualMachine register(Hardware hardware, NetworkProvider provider) {
+  public static VirtualMachine register(Hardware hardware, VMProvider provider) {
     if (!nregister(createXML(hardware, provider))) return null;
     return new VirtualMachine(hardware.pool, hardware.name);
   }
@@ -137,7 +137,7 @@ public class VirtualMachine implements Serializable {
    *
    * @return XML
    */
-  private static String createXML(Hardware hardware, NetworkProvider provider) {
+  private static String createXML(Hardware hardware, VMProvider provider) {
     StringBuilder xml = new StringBuilder();
     xml.append("<domain type='kvm'>");
     xml.append("<name>" + hardware.name + "</name>");
@@ -158,7 +158,7 @@ public class VirtualMachine implements Serializable {
         xml.append(" firmware='efi'");
       }
       xml.append(">");
-      xml.append("<type arch='x86_64'>hvm</type>");
+      xml.append("<type arch='x86_64' machine='pc-i440fx-7.2'>hvm</type>");
       if (hardware.bios_secure) {
         xml.append("<loader secure='yes'/>");
       }
@@ -178,22 +178,40 @@ public class VirtualMachine implements Serializable {
       xml.append("<pae/>");
     xml.append("</features>");
 /*
-  <on_poweroff>destroy</on_poweroff>
-  <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
+    xml.append("<on_poweroff>destroy</on_poweroff>");
+    xml.append("<on_reboot>restart</on_reboot>");
+    xml.append("<on_crash>destroy</on_crash>");
 */
     xml.append("<devices>");
+      //usb controller
+      xml.append("<controller type='usb' index='0' model='piix3-uhci'>");
+      xml.append("<alias name='usb'/>");
+      xml.append("<address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>");
+      xml.append("</controller>");
+      //pci bus
+      xml.append("<controller type='pci' index='0' model='pci-root'>");
+      xml.append("<alias name='pci.0'/>");
+      xml.append("</controller>");
+      //scsi controller
+      xml.append("<controller>");
+      xml.append("<alias name='scsi0'/>");
+      xml.append("<address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>");
+      xml.append("</controller>");
       //keyboard
       xml.append("<input type='keyboard' bus='usb'/>");
       //mouse
       xml.append("<input type='mouse' bus='usb'/>");
+      //audio
+      xml.append("<audio id='1' type='none'/>");
       //video card
       xml.append("<video>");
         xml.append("<model type='vmvga' vram='16384' heads='1'/>");
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='-1' autoport='yes' sharePolicy='allow-exclusive'/>");
+      xml.append("<graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
+      xml.append("<listen type='address' address='127.0.0.1'/>");
+      xml.append("</graphics>");
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       if (hardware.disks != null) {
         for(Disk drive : hardware.disks) {
@@ -241,12 +259,15 @@ public class VirtualMachine implements Serializable {
     hw.disks = new Disk[] {disk};
     hw.networks = new Network[] {nw};
     hw.devices = new Device[0];
-    System.out.println(createXML(hw, new NetworkProvider() {
+    System.out.println(createXML(hw, new VMProvider() {
       public int getVLAN(String name) {
         return 1;
       }
       public String getBridge(String name) {
         return "virbr0";
+      }
+      public int getVNCPort() {
+        return 5901;
       }
     }));
   }
