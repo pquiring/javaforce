@@ -17,7 +17,8 @@ public class Disk implements Serializable {
   public int provision;
   public Size size;
   public int boot_order;  //0=none 1=first etc.
-  public String target_dev, target_bus;
+  public String target_dev = "sda";
+  public String target_bus = "scsi";
 
   public static final int TYPE_QCOW2 = 1;
   public static final int TYPE_VMDK = 2;

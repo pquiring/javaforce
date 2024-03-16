@@ -158,7 +158,7 @@ public class VirtualMachine implements Serializable {
         xml.append(" firmware='efi'");
       }
       xml.append(">");
-      xml.append("<type arch='x86_64' machine='pc-i440fx-7.2'>hvm</type>");
+      xml.append("<type arch='x86_64' machine='" + hardware.machine + "'>hvm</type>");
       if (hardware.bios_secure) {
         xml.append("<loader secure='yes'/>");
       }
@@ -183,20 +183,9 @@ public class VirtualMachine implements Serializable {
     xml.append("<on_crash>destroy</on_crash>");
 */
     xml.append("<devices>");
-      //usb controller
-      xml.append("<controller type='usb' index='0' model='piix3-uhci'>");
-      xml.append("<alias name='usb'/>");
-      xml.append("<address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>");
-      xml.append("</controller>");
-      //pci bus
-      xml.append("<controller type='pci' index='0' model='pci-root'>");
-      xml.append("<alias name='pci.0'/>");
-      xml.append("</controller>");
-      //scsi controller
-      xml.append("<controller>");
-      xml.append("<alias name='scsi0'/>");
-      xml.append("<address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>");
-      xml.append("</controller>");
+      for(Controller c : hardware.controllers) {
+        xml.append(c.toString());
+      }
       //keyboard
       xml.append("<input type='keyboard' bus='usb'/>");
       //mouse
@@ -209,7 +198,7 @@ public class VirtualMachine implements Serializable {
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='-1' autoport='yes' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
+      xml.append("<graphics type='vnc' port='" + provider.getVNCPort(hardware.name) + "' autoport='yes' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
       xml.append("<listen type='address' address='127.0.0.1'/>");
       xml.append("</graphics>");
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
@@ -249,13 +238,7 @@ public class VirtualMachine implements Serializable {
     nw.network = "servers";
     nw.model = "vmxnet3";
     nw.mac = "00:11:22:33:44:55";
-    Hardware hw = new Hardware();
-    hw.pool = "pool";
-    hw.name = "example";
-    hw.genid = UUID.generate();
-    hw.os = Hardware.OS_WINDOWS;
-    hw.cores = 4;
-    hw.memory = new Size(4, Size.GB);
+    Hardware hw = new Hardware("pool", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
     hw.disks = new Disk[] {disk};
     hw.networks = new Network[] {nw};
     hw.devices = new Device[0];
@@ -266,7 +249,7 @@ public class VirtualMachine implements Serializable {
       public String getBridge(String name) {
         return "virbr0";
       }
-      public int getVNCPort() {
+      public int getVNCPort(String name) {
         return 5901;
       }
     }));

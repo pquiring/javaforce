@@ -8,7 +8,10 @@ package javaforce.vm;
  */
 
 public interface VMProvider {
+  /** Provide VLAN for Network. */
   public int getVLAN(String name);
+  /** Provide Bridge (virtual switch) for Network. */
   public String getBridge(String name);
-  public int getVNCPort();
+  /** Provide free VNC port for Virtual Machine (5901-5999). */
+  public int getVNCPort(String name);
 }

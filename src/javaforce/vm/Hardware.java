@@ -1,6 +1,16 @@
 package javaforce.vm;
 
-/** Hardware setup for a Virtual Machine
+/** Hardware setup for a Virtual Machine.
+ *
+ * Supported hardware:
+ *   machine : kvm -machine ?
+ *     pc alias = pc-i440fx-7.2
+ *     q35 alias = pc-q35-7.2
+ *   usb : kvm -device ? | grep usb
+ *     piix3-uhci
+ *     piix4-uhci
+ *     ich9-uhci6
+ *
  *
  * @author pquiring
  */
@@ -21,6 +31,8 @@ public class Hardware implements Serializable {
   public Disk[] disks;
   public Network[] networks;
   public Device[] devices;
+  public String machine = "pc";
+  public Controller[] controllers;
 
   public boolean auto_start;
   public boolean bios_efi;
@@ -30,7 +42,16 @@ public class Hardware implements Serializable {
   public static final int OS_WINDOWS = 2;
 
   public Hardware() {
-    //TODO
+    pool = "default";
+    name = "default";
+    genid = UUID.generate();
+    os = OS_LINUX;
+    cores = 2;
+    memory = new Size(1, Size.GB);
+    disks = new Disk[0];
+    networks = new Network[0];
+    devices = new Device[0];
+    controllers = new Controller[0];
   }
 
   public Hardware(String pool, String name, int os, int cores, Size memory) {
@@ -43,6 +64,7 @@ public class Hardware implements Serializable {
     disks = new Disk[0];
     networks = new Network[0];
     devices = new Device[0];
+    controllers = new Controller[0];
   }
 
   public static Hardware load(String file) {
