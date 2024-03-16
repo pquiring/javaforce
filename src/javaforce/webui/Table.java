@@ -5,7 +5,9 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Table extends Container {
+import javaforce.webui.event.*;
+
+public class Table extends Container implements Click {
   private int cellWidth, cellHeight, cols, rows;
   private boolean border;
   public Table(int cellWidth, int cellHeight, int cols, int rows) {
@@ -16,24 +18,50 @@ public class Table extends Container {
     setClass("table");
     setSize();
   }
-  private static class Cell extends Container {
-    private Table table;
+  private class Cell extends Block {
     public int x,y,spanx,spany;
-    public Cell(Table table, Component comp) {
-      this.table = table;
+    private boolean border;
+    public Cell(Component comp, boolean border) {
+      this.border = border;
       setClass("cell");
       add(comp);
+      if (border) {
+        addClass("border");
+      }
     }
     public String html() {
-      setSize(spanx * table.cellWidth, spany * table.cellHeight);
+      setSize(spanx * cellWidth, spany * cellHeight);
       //setPosition(x * width, y * height);
-      setStyle("left", Integer.toString(x * table.cellWidth));
-      setStyle("top", Integer.toString(y * table.cellHeight));
+      setStyle("left", Integer.toString(x * cellWidth));
+      setStyle("top", Integer.toString(y * cellHeight));
       StringBuilder sb = new StringBuilder();
       sb.append("<div" + getAttrs() + ">");
       sb.append(get(0).html());
       sb.append("</div>");
       return sb.toString();
+    }
+    public void setBorder(boolean state) {
+      border = state;
+      if (border) {
+        addClass("border");
+      } else {
+        removeClass("border");
+      }
+    }
+    public Component getComponent() {
+      return get(0);
+    }
+    private boolean selected;
+    public void setSelected(boolean state) {
+      selected = state;
+      if (state) {
+        getComponent().sendEvent("addclass", new String[] {"cls=selected"});
+      } else {
+        getComponent().sendEvent("delclass", new String[] {"cls=selected"});
+      }
+    }
+    public boolean isSelected() {
+      return selected;
     }
   }
   private void setSize() {
@@ -64,13 +92,16 @@ public class Table extends Container {
     add(comp,x,y,1,1);
   }
   public void add(Component comp, int x, int y, int spanx, int spany) {
-    String html;
-    Cell cell = new Cell(this, comp);
+    Cell cell = new Cell(comp, border);
     cell.x = x;
     cell.y = y;
     cell.spanx = spanx;
     cell.spany = spany;
     add(cell);
+    init(comp);
+  }
+  private void init(Component cmp) {
+    cmp.addClickListener(this);
   }
   public void addRow() {
     rows++;
@@ -142,5 +173,39 @@ public class Table extends Container {
   }
   public int getColumns() {
     return cols;
+  }
+  private Cell getCell(int idx) {
+    return (Cell)get(idx);
+  }
+  public int getSelectedRow() {
+    int cnt = count();
+    for(int idx=0;idx<cnt;idx++) {
+      Cell cell = getCell(idx);
+      if (cell.isSelected()) return cell.y;
+    }
+    return -1;
+  }
+  public int getSelectedColumn() {
+    int cnt = count();
+    for(int idx=0;idx<cnt;idx++) {
+      Cell cell = getCell(idx);
+      if (cell.isSelected()) return cell.x;
+    }
+    return -1;
+  }
+  public void onClick(MouseEvent me, Component cmp) {
+    Cell cell = (Cell)cmp.getParent();
+    if (cell.y == 0) return;  //header row
+    if (me.ctrlKey) {
+      cell.setSelected(!cell.isSelected());
+    } else {
+      //clear all other items
+      int cnt = count();
+      for(int idx=0;idx<cnt;idx++) {
+        Cell o = getCell(idx);
+        o.setSelected(o == cell);
+      }
+    }
+    onChanged(null);
   }
 }

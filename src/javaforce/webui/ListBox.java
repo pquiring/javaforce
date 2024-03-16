@@ -5,12 +5,11 @@ package javaforce.webui;
  * @author pquiring
  */
 
-import javaforce.*;
 import javaforce.webui.event.*;
 
 public class ListBox extends ScrollPanel implements Click {
 
-  private static class Cell extends Block {
+  private class Cell extends Block {
     public Cell(Component cmp) {
       add(cmp);
     }
