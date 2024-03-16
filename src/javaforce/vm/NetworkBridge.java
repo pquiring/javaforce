@@ -93,9 +93,17 @@ UUID
     return list.toArray(new NetworkBridge[0]);
   }
 
+  public static final int TYPE_OS = 1;
+  public static final int TYPE_BR = 2;
+  public static final int TYPE_ALL = 3;
+
   public static NetworkBridge[] list() {
+    return list(TYPE_ALL);
+  }
+
+  public static NetworkBridge[] list(int flags) {
     ArrayList<NetworkBridge> list_all = new ArrayList<>();
-    {
+    if ((flags & TYPE_BR) != 0) {
       NetworkBridge[] list = list_br();
       if (list != null) {
         for(int a=0;a<list.length;a++) {
@@ -103,7 +111,7 @@ UUID
         }
       }
     }
-    {
+    if ((flags & TYPE_OS) != 0) {
       NetworkBridge[] list = list_os();
       if (list != null) {
         for(int a=0;a<list.length;a++) {

@@ -75,7 +75,9 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel disk_popup;
 
-    public PopupPanel network_popup;
+    public PopupPanel vm_network_popup;
+
+    public PopupPanel network_network_popup;
 
     public PopupPanel device_usb_popup;
     public PopupPanel device_pci_popup;
@@ -108,8 +110,11 @@ public class ConfigService implements WebUIHandler {
     ui.disk_popup = diskPopupPanel(ui);
     panel.add(ui.disk_popup);
 
-    ui.network_popup = networkPopupPanel(ui);
-    panel.add(ui.network_popup);
+    ui.vm_network_popup = vm_network_PopupPanel(ui);
+    panel.add(ui.vm_network_popup);
+
+    ui.network_network_popup = network_networkvlan_PopupPanel(ui);
+    panel.add(ui.network_network_popup);
 
     ui.device_usb_popup = device_usb_PopupPanel(ui);
     panel.add(ui.device_usb_popup);
@@ -219,7 +224,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private PopupPanel networkPopupPanel(UI ui) {
+  private PopupPanel vm_network_PopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Network");
     panel.setPosition(256, 128);
     panel.setModal(true);
@@ -230,23 +235,19 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Model"));
     ComboBox type = new ComboBox();
     row.add(type);
-    type.add("virtio", "virtio");
     type.add("vmxnet3", "vmxnet3");
+    type.add("virtio", "virtio");
     type.add("e1000", "e1000");
+    type.add("e1000e", "e1000e");
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Size"));
-    TextField size = new TextField("Port");
-    row.add(size);
-    ComboBox network_port = new ComboBox();
-    row.add(network_port);
-    NetworkVirtual[] nics_virts = vmm.listNetworkVirtual();
-    for(NetworkVirtual nic_virt : nics_virts) {
-      NetworkPort[] groups = vmm.listNetworkPort(nic_virt);
-      for(NetworkPort group : groups) {
-        network_port.add(group.name, group.name);
-      }
+    row.add(new Label("Network"));
+    ComboBox networks = new ComboBox();
+    row.add(networks);
+    ArrayList<NetworkVLAN> nics = Config.current.vlans;
+    for(NetworkVLAN nic : nics) {
+      networks.add(nic.name, nic.name);
     }
 
     ToolBar tools = new ToolBar();
@@ -257,6 +258,68 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     //TODO : add button methods
+
+    return panel;
+  }
+
+  private PopupPanel network_networkvlan_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Network VLAN");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name"));
+    TextField name = new TextField("");
+    row.add(name);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Switch"));
+    ComboBox bridge = new ComboBox();
+    row.add(bridge);
+    NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+    for(NetworkBridge nic : nics) {
+      bridge.add(nic.name, nic.name);
+    }
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VLAN"));
+    TextField vlan = new TextField("");
+    row.add(vlan);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Create");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    accept.addClickListener((me, cmp) -> {
+      String _name = vmm.cleanName(vlan.getText());
+      if (_name.length() == 0) {
+        name.setText(_name);
+        name.setBackColor(Color.red);
+        return;
+      }
+      String _bridge = bridge.getSelectedText();
+      if (_bridge == null || _bridge.length() == 0) {
+        bridge.setBackColor(Color.red);
+        return;
+      }
+      int _vlan = JF.atoi(vlan.getText());
+      if (_vlan < 0 || _vlan > 4095) {
+        vlan.setBackColor(Color.red);
+        return;
+      }
+      Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
+      ui.network_network_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.network_network_popup.setVisible(false);
+    });
 
     return panel;
   }
@@ -796,7 +859,7 @@ public class ConfigService implements WebUIHandler {
     });
     b_net_add.addClickListener((me, cmp) -> {
       //TODO : setup panel
-      ui.network_popup.setVisible(true);
+      ui.vm_network_popup.setVisible(true);
     });
     b_net_delete.addClickListener((me, cmp) -> {
       String network_name = "";  //TODO
@@ -915,7 +978,7 @@ public class ConfigService implements WebUIHandler {
 
     next.addClickListener((me, cmp) -> {
       String storagename = vmm.cleanName(name.getText());
-      if (storagename.length() < 3) {
+      if (storagename.length() == 0) {
         name.setText(storagename);
         name.setBackColor(Color.red);
         return;
@@ -1123,8 +1186,14 @@ public class ConfigService implements WebUIHandler {
 
   private Panel networkPanel() {
     TabPanel panel = new TabPanel();
+    networkPanel_networks(panel);
+    networkPanel_bridges(panel);
+    networkPanel_nics(panel);
+    networkPanel_phys(panel);
+    return panel;
+  }
 
-    //phys
+  private void networkPanel_phys(TabPanel panel) {
     {
       Panel phys = new Panel();
       panel.addTab(phys, "Physical NICs");
@@ -1141,7 +1210,9 @@ public class ConfigService implements WebUIHandler {
       }
       //TODO : button methods
     }
+  }
 
+  private void networkPanel_bridges(TabPanel panel) {
     //bridges (virtual switches)
     {
       Panel virt = new Panel();
@@ -1163,7 +1234,9 @@ public class ConfigService implements WebUIHandler {
       }
       //TODO : button methods
     }
+  }
 
+  private void networkPanel_networks(TabPanel panel) {
     //network VLANs
     {
       Panel ports = new Panel();
@@ -1184,7 +1257,9 @@ public class ConfigService implements WebUIHandler {
       }
       //TODO : button methods
     }
+  }
 
+  private void networkPanel_nics(TabPanel panel) {
     //vm host/server nics
     {
       Panel vmnics = new Panel();
@@ -1205,8 +1280,6 @@ public class ConfigService implements WebUIHandler {
       }
       //TODO : button methods
     }
-
-    return panel;
   }
 
   public byte[] getResource(String url) {

@@ -13,4 +13,10 @@ public class NetworkVLAN implements Serializable {
   public String name;
   public String bridge;
   public int vlan;
+
+  public NetworkVLAN(String name, String bridge, int vlan) {
+    this.name = name;
+    this.bridge = bridge;
+    this.vlan = vlan;
+  }
 }

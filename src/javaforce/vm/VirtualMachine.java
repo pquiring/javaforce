@@ -242,10 +242,7 @@ public class VirtualMachine implements Serializable {
     disk.target_dev = "sda";
     disk.target_bus = "scsi";
     //disk...
-    Network nw = new Network();
-    nw.network = "servers";
-    nw.model = "vmxnet3";
-    nw.mac = "00:11:22:33:44:55";
+    Network nw = new Network("servers", "vmxnet3");
     Hardware hw = new Hardware("pool", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
     hw.disks = new Disk[] {disk};
     hw.networks = new Network[] {nw};

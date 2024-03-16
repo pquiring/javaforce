@@ -21,11 +21,11 @@ public class Config implements Serializable {
   public String iqn;
 
   //storage pools
-  public ArrayList<Storage> pools = new ArrayList();
+  public ArrayList<Storage> pools = new ArrayList<>();
 
   //networking config
-  public ArrayList<NetworkVLAN> vlans = new ArrayList();  //network vlan groups (port groups)
-  public ArrayList<NetworkVirtual> nics = new ArrayList();  //vm kernel nics
+  public ArrayList<NetworkVLAN> vlans = new ArrayList<>();  //network vlan groups (port groups)
+  public ArrayList<NetworkVirtual> nics = new ArrayList<>();  //vm kernel nics
 
   public Config() {
     valid();
@@ -39,13 +39,13 @@ public class Config implements Serializable {
       iqn = IQN.generate(fqn);
     }
     if (pools == null) {
-      pools = new ArrayList();
+      pools = new ArrayList<>();
     }
     if (vlans == null) {
-      vlans = new ArrayList();
+      vlans = new ArrayList<>();
     }
     if (nics == null) {
-      nics = new ArrayList();
+      nics = new ArrayList<>();
     }
   }
 
@@ -73,5 +73,10 @@ public class Config implements Serializable {
       JFLog.log(e);
       return false;
     }
+  }
+
+  public void addNetworkVLAN(NetworkVLAN network) {
+    vlans.add(network);
+    save();
   }
 }

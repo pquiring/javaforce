@@ -16,6 +16,12 @@ public class Network implements Serializable {
   public String model;
   public String mac;
 
+  public Network(String network, String model) {
+    this.network = network;
+    this.model = model;
+    mac = MAC.generate();
+  }
+
   public static final String MODEL_E1000 = "e1000";
   public static final String MODEL_E1000E = "e1000e";
   public static final String MODEL_NET2K = "net2k_pci";
