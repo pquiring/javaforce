@@ -15,45 +15,44 @@ public class Config implements Serializable {
   public static Config current;
 
   //config settings
-  public String password = null;
-  public String fqn = "localhost.localdomain";
-  public String iqn = IQN.generate("localhost.localdomain");
+  public String password;
+  public String fqn;
+  public String iqn;
 
-  //public VirtualMachine[] machines = new VirtualMachine[0];
+  //storage pools
   public Storage[] pools = new Storage[0];
-/*
-  public NetworkInterface[] networks_phys = new NetworkInterface[0];
-  public NetworkVirtual[] networks_virt = new NetworkVirtual[0];
-  public NetworkPort[] networks_port = new NetworkPort[0];
-*/
-  public Network[] networks_host = new Network[0];
+
+  //networking config
+  public NetworkInterface[] network_ifaces = new NetworkInterface[0];  //physical interfaces (eth0, eth1)
+  public NetworkBridge[] network_bridges = new NetworkBridge[0];  //bridges (virbr0)
+  public NetworkVLAN[] networks_vlans = new NetworkVLAN[0];  //network vlan groups (port groups)
+  public NetworkVirtual[] networks_virt = new NetworkVirtual[0];  //vm kernel nics
 
   public Config() {
     valid();
   }
 
   private void valid() {
-/*
-    if (machines == null) {
-      machines = new VirtualMachine[0];
+    if (fqn == null) {
+      fqn = "localhost.localdomain";
     }
-*/
+    if (iqn == null) {
+      iqn = IQN.generate(fqn);
+    }
     if (pools == null) {
       pools = new Storage[0];
     }
-/*
-    if (networks_phys == null) {
-      network_phys = new NetworkInterface[0];
+    if (network_ifaces == null) {
+      network_ifaces = new NetworkInterface[0];
+    }
+    if (network_bridges == null) {
+      network_bridges = new NetworkBridge[0];
+    }
+    if (networks_vlans == null) {
+      networks_vlans = new NetworkVLAN[0];
     }
     if (networks_virt == null) {
       networks_virt = new NetworkVirtual[0];
-    }
-    if (networks_port == null) {
-      networks_port = new NetworkPort[0];
-    }
-*/
-    if (networks_host == null) {
-      networks_host = new Network[0];
     }
   }
 

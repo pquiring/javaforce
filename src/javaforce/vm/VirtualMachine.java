@@ -132,9 +132,8 @@ public class VirtualMachine implements Serializable {
 
   /** Generate XML for a new VM.
    *
-   * @param pool = pool where VM is stored
-   * @param name = VM name
    * @param hardware = VM hardware setup
+   * @param provider = network provider to lookup network details
    *
    * @return XML
    */
@@ -143,7 +142,7 @@ public class VirtualMachine implements Serializable {
     xml.append("<domain type='kvm'>");
     xml.append("<name>" + hardware.name + "</name>");
     xml.append("<uuid>" + UUID.generate() + "</uuid>");
-    xml.append("<genid>" + hardware.genid + "<genid>");
+    xml.append("<genid>" + hardware.genid + "</genid>");
     xml.append("<title>" + hardware.name + "</title>");
     xml.append("<description>");  //desc is used for metadata
       xml.append("pool=" + hardware.pool);
@@ -194,7 +193,7 @@ public class VirtualMachine implements Serializable {
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='-1' autoport='yes' sharePolicy='allow-exclusive'>/");
+      xml.append("<graphics type='vnc' port='-1' autoport='yes' sharePolicy='allow-exclusive'/>");
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       if (hardware.disks != null) {
         for(Disk drive : hardware.disks) {
@@ -216,5 +215,39 @@ public class VirtualMachine implements Serializable {
     xml.append("</devices>");
     xml.append("</domain>");
     return xml.toString();
+  }
+
+  public static void main(String[] args) {
+    VirtualMachine vm = new VirtualMachine("pool", "example");
+    Disk disk = new Disk();
+    disk.pool = "pool";
+    disk.vmname = "example";
+    disk.name = "disk";
+    disk.type = Disk.TYPE_VMDK;
+    disk.target_dev = "sda";
+    disk.target_bus = "scsi";
+    //disk...
+    Network nw = new Network();
+    nw.network = "servers";
+    nw.model = "vmxnet3";
+    nw.mac = "00:11:22:33:44:55";
+    Hardware hw = new Hardware();
+    hw.pool = "pool";
+    hw.name = "example";
+    hw.genid = UUID.generate();
+    hw.os = Hardware.OS_WINDOWS;
+    hw.cores = 4;
+    hw.memory = new Size(4, Size.GB);
+    hw.disks = new Disk[] {disk};
+    hw.networks = new Network[] {nw};
+    hw.devices = new Device[0];
+    System.out.println(createXML(hw, new NetworkProvider() {
+      public int getVLAN(String name) {
+        return 1;
+      }
+      public String getBridge(String name) {
+        return "virbr0";
+      }
+    }));
   }
 }

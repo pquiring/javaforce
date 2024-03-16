@@ -47,7 +47,7 @@ public class Disk implements Serializable {
     StringBuilder xml = new StringBuilder();
     xml.append("<disk type='file' device='disk'>");
     xml.append("<source file='" + getPath() + "'>");
-    xml.append("</source");
+    xml.append("</source>");
     xml.append("<target dev='" + target_dev + "' bus='" + target_bus + "'/>");
     if (boot_order > 0) {
       xml.append("<boot order='" + boot_order + "'/>");

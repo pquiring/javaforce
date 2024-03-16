@@ -12,7 +12,6 @@ import java.io.*;
 public class Network implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public String name;
   public String network;
   public String model;
   public String mac;
@@ -28,15 +27,13 @@ public class Network implements Serializable {
   /** Create XML for VirtualMachine XML. */
   public String toXML(String bridge, int vlan) {
     StringBuilder xml = new StringBuilder();
-    xml.append("<network>");
-    xml.append("<name>" + name + "</name>");
-    xml.append("<uuid>" + UUID.generate() + "</uuid>");
-    xml.append("<forward mode='bridge'/>");
-    xml.append("<bridge name='" + bridge + "'/>");
-    xml.append("<model>" + model + "</model>");
+    xml.append("<interface type='bridge'>");
+    xml.append("<source bridge='" + bridge + "'/>");
+    xml.append("<virtualport type='openvswitch'/>");
+    xml.append("<model type='" + model + "'/>");
     xml.append("<mac address='" + mac + "'/>");
     xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
-    xml.append("</network>");
+    xml.append("</interface>");
     return xml.toString();
   }
 }

@@ -1133,15 +1133,15 @@ public class ConfigService implements WebUIHandler {
       tools.add(phys_view);
       ListBox phys_list = new ListBox();
       phys.add(phys_list);
-      NetworkInterface[] nics_phys = vmm.listNetworkInterface();
-      for(NetworkInterface nic : nics_phys) {
+      NetworkInterface[] nics = vmm.listNetworkInterface();
+      for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
         phys_list.add(nic.name);
       }
       //TODO : button methods
     }
 
-    //virt
+    //virt (bridges)
     {
       Panel virt = new Panel();
       panel.addTab(virt, "Virtual Switches");
@@ -1155,17 +1155,17 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       virt.add(list);
-      NetworkVirtual[] nics_virt = vmm.listNetworkVirtual();
-      for(NetworkVirtual nic : nics_virt) {
+      NetworkBridge[] nics = Config.current.network_bridges;
+      for(NetworkBridge nic : nics) {
         list.add(nic.name);
       }
       //TODO : button methods
     }
 
-    //ports
+    //network VLANs
     {
       Panel ports = new Panel();
-      panel.addTab(ports, "Port Groups");
+      panel.addTab(ports, "Networks");
       ToolBar tools = new ToolBar();
       ports.add(tools);
       Button create = new Button("Create");
@@ -1176,12 +1176,9 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       ports.add(list);
-      NetworkVirtual[] nics_virt = vmm.listNetworkVirtual();
-      for(NetworkVirtual nic_virt : nics_virt) {
-        NetworkPort[] nics_port = vmm.listNetworkPort(nic_virt);
-        for(NetworkPort nic_port : nics_port) {
-          list.add(nic_port.name);
-        }
+      NetworkVLAN[] nics = Config.current.networks_vlans;
+      for(NetworkVLAN nic : nics) {
+        list.add(nic.name + ":" + nic.vlan);
       }
       //TODO : button methods
     }
@@ -1200,8 +1197,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       ListBox list = new ListBox();
       vmnics.add(list);
-      Network[] nics = Config.current.networks_host;
-      for(Network nic : nics) {
+      NetworkVirtual[] nics = Config.current.networks_virt;
+      for(NetworkVirtual nic : nics) {
         list.add(nic.name);
       }
       //TODO : button methods
