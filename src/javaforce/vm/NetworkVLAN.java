@@ -11,6 +11,6 @@ public class NetworkVLAN implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String name;
-  public String virt;  //virtual vlan
+  public String bridge;
   public int vlan;
 }

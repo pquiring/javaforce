@@ -7,13 +7,15 @@ import java.io.*;
 public class VirtualMachine implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private VirtualMachine(String pool, String name) {
+  private VirtualMachine(String pool, String name, int vnc) {
     this.pool = pool;
     this.name = name;
+    this.vnc = vnc;
   }
 
   private String pool;
   private String name;
+  private int vnc;
 
   public static final int STATE_OFF = 0;
   public static final int STATE_ON = 1;
@@ -22,6 +24,7 @@ public class VirtualMachine implements Serializable {
 
   public String getPool() {return pool;}
   public String getName() {return name;}
+  public int getVNC() {return vnc;}
 
   public String getConfigFile() {
     return "/volumes/" + pool + "/" + name + "/" + name + ".jfvm";
@@ -70,7 +73,9 @@ public class VirtualMachine implements Serializable {
 
   private static VirtualMachine getByDesc(String desc) {
     String[] fs = desc.split(";");
-    String name = null, pool = null;
+    String pool = null;
+    String name = null;
+    int vnc = 0;
     for(int a=0;a<fs.length;a++) {
       String f = fs[a];
       int i = f.indexOf('=');
@@ -80,9 +85,10 @@ public class VirtualMachine implements Serializable {
       switch (key) {
         case "pool": pool = value; break;
         case "name": name = value; break;
+        case "vnc": vnc = Integer.valueOf(value); break;
       }
     }
-    return new VirtualMachine(pool, name);
+    return new VirtualMachine(pool, name, vnc);
   }
 
   //virConnectListAllDomains & virDomainGetUUID & virDomainGetName & virDomainGetDesc
@@ -107,9 +113,9 @@ public class VirtualMachine implements Serializable {
 
   //virDomainDefineXML
   private native static boolean nregister(String xml);
-  public static VirtualMachine register(Hardware hardware, VMProvider provider) {
-    if (!nregister(createXML(hardware, provider))) return null;
-    return new VirtualMachine(hardware.pool, hardware.name);
+  public static boolean register(Hardware hardware, VMProvider provider) {
+    if (!nregister(createXML(hardware, provider))) return false;
+    return true;
   }
 
   //virDomainUndefine
@@ -138,6 +144,7 @@ public class VirtualMachine implements Serializable {
    * @return XML
    */
   private static String createXML(Hardware hardware, VMProvider provider) {
+    int vncport = provider.getVNCPort(hardware.name);
     StringBuilder xml = new StringBuilder();
     xml.append("<domain type='kvm'>");
     xml.append("<name>" + hardware.name + "</name>");
@@ -147,6 +154,7 @@ public class VirtualMachine implements Serializable {
     xml.append("<description>");  //desc is used for metadata
       xml.append("pool=" + hardware.pool);
       xml.append(";name=" + hardware.name);
+      xml.append(";vnc=" + vncport);
     xml.append("</description>");
     if (hardware.os == Hardware.OS_WINDOWS) {
       xml.append("<clock offset='localtime'/>");
@@ -198,7 +206,7 @@ public class VirtualMachine implements Serializable {
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='" + provider.getVNCPort(hardware.name) + "' autoport='yes' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
+      xml.append("<graphics type='vnc' port='" + vncport + "' autoport='yes' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
       xml.append("<listen type='address' address='127.0.0.1'/>");
       xml.append("</graphics>");
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
@@ -210,7 +218,7 @@ public class VirtualMachine implements Serializable {
       if (hardware.networks != null) {
         for(Network nic : hardware.networks) {
           int vlan = provider.getVLAN(nic.network);
-          String bridge = provider.getBridge(nic.network);
+          NetworkBridge bridge = provider.getBridge(nic.network);
           xml.append(nic.toXML(bridge, vlan));
         }
       }
@@ -225,7 +233,7 @@ public class VirtualMachine implements Serializable {
   }
 
   public static void main(String[] args) {
-    VirtualMachine vm = new VirtualMachine("pool", "example");
+    VirtualMachine vm = new VirtualMachine("pool", "example", 5901);
     Disk disk = new Disk();
     disk.pool = "pool";
     disk.vmname = "example";
@@ -246,8 +254,8 @@ public class VirtualMachine implements Serializable {
       public int getVLAN(String name) {
         return 1;
       }
-      public String getBridge(String name) {
-        return "virbr0";
+      public NetworkBridge getBridge(String name) {
+        return new NetworkBridge("virbr0", "os", "eth0");
       }
       public int getVNCPort(String name) {
         return 5901;

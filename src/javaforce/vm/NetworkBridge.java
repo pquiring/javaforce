@@ -24,7 +24,7 @@ import javaforce.*;
 public class NetworkBridge implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private NetworkBridge(String name, String type, String iface) {
+  protected NetworkBridge(String name, String type, String iface) {
     this.name = name;
     this.type = type;
     this.iface = iface;

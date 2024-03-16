@@ -5,10 +5,10 @@ package service;
  * @author pquiring
  */
 
-import javaforce.JF;
+import javaforce.*;
 import javaforce.vm.*;
 
-public class VMM {
+public class VMM implements VMProvider {
   public String[] listVMs() {
     VirtualMachine[] vms = VirtualMachine.list();
     String[] names = new String[vms.length];
@@ -76,5 +76,53 @@ public class VMM {
 
   public String cleanName(String name) {
     return JF.filter(name, JF.filter_alpha_numeric);
+  }
+
+  public int getVLAN(String network) {
+    for(NetworkVLAN vlan : Config.current.networks_vlans) {
+      if (vlan.name.equals(network)) {
+        return vlan.vlan;
+      }
+    }
+    return 0;
+  }
+
+  public NetworkBridge getBridge(String network) {
+    String bridge_name = null;
+    for(NetworkVLAN vlan : Config.current.networks_vlans) {
+      if (vlan.name.equals(network)) {
+        bridge_name = vlan.bridge;
+        break;
+      }
+    }
+    if (bridge_name == null) {
+      JFLog.log("ERROR:NetworkVLAN not found:" + network);
+      return null;
+    }
+    NetworkBridge[] bridges = NetworkBridge.list();
+    for(NetworkBridge bridge : bridges) {
+      if (bridge.name.equals(bridge_name)) {
+        return bridge;
+      }
+    }
+    JFLog.log("ERROR:NetworkVLAN not found:" + network);
+    return null;
+  }
+
+  public int getVNCPort(String vmname) {
+    int port = 5900;
+    VirtualMachine[] vms = VirtualMachine.list();
+    boolean ok;
+    do {
+      port++;
+      ok = true;
+      for(VirtualMachine vm : vms) {
+        if (vm.getVNC() == port) {
+          ok = false;
+          break;
+        }
+      }
+    } while (!ok);
+    return port;
   }
 }

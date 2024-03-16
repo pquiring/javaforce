@@ -25,14 +25,16 @@ public class Network implements Serializable {
   public static final String MODEL_VMXNET3 = "vmxnet3";
 
   /** Create XML for VirtualMachine XML. */
-  public String toXML(String bridge, int vlan) {
+  public String toXML(NetworkBridge bridge, int vlan) {
     StringBuilder xml = new StringBuilder();
     xml.append("<interface type='bridge'>");
-    xml.append("<source bridge='" + bridge + "'/>");
-    xml.append("<virtualport type='openvswitch'/>");
+    xml.append("<source bridge='" + bridge.name + "'/>");
+    if (bridge.type.equals("os")) {
+      xml.append("<virtualport type='openvswitch'/>");
+      xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
+    }
     xml.append("<model type='" + model + "'/>");
     xml.append("<mac address='" + mac + "'/>");
-    xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     xml.append("</interface>");
     return xml.toString();
   }
