@@ -94,4 +94,14 @@ public class Config implements Serializable {
     nics.remove(network);
     save();
   }
+
+  public void addStorage(Storage pool) {
+    pools.add(pool);
+    save();
+  }
+
+  public void removeStorage(Storage pool) {
+    pools.remove(pool);
+    save();
+  }
 }

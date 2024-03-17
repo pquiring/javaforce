@@ -1395,13 +1395,13 @@ public class ConfigService implements WebUIHandler {
       }
       switch (type.getSelectedValue()) {
         case "nfs":
-          ui.setRightPanel(nfs_StoragePanel(new Storage(Storage.TYPE_NFS, storagename, null), ui));
+          ui.setRightPanel(nfs_StoragePanel(new Storage(Storage.TYPE_NFS, storagename, null), true, ui));
           break;
         case "iscsi":
-          ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, storagename, null), ui));
+          ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, storagename, null), true, ui));
           break;
         case "local":
-          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL, storagename, null), ui));
+          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL, storagename, null), true, ui));
           break;
       }
     });
@@ -1414,14 +1414,14 @@ public class ConfigService implements WebUIHandler {
 
   private Panel editStoragePanel(Storage store, UI ui) {
     switch (store.type) {
-      case Storage.TYPE_NFS: return nfs_StoragePanel(store, ui);
-      case Storage.TYPE_ISCSI: return iscsi_StoragePanel(store, ui);
-      case Storage.TYPE_LOCAL: return local_StoragePanel(store, ui);
+      case Storage.TYPE_NFS: return nfs_StoragePanel(store, false, ui);
+      case Storage.TYPE_ISCSI: return iscsi_StoragePanel(store, false, ui);
+      case Storage.TYPE_LOCAL: return local_StoragePanel(store, false, ui);
     }
     return null;
   }
 
-  private Panel nfs_StoragePanel(Storage store, UI ui) {
+  private Panel nfs_StoragePanel(Storage store, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1448,12 +1448,28 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : button methods
+    accept.addClickListener((me, cmp) -> {
+      String _host = host.getText();
+      String _path = path.getText();
+      store.host = _host;
+      store.path = _path;
+      if (!store.register()) {
+        return;
+      }
+      if (create) {
+        Config.current.addStorage(store);
+      }
+      Config.current.save();
+      ui.setRightPanel(storagePanel(ui));
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(storagePanel(ui));
+    });
 
     return panel;
   }
 
-  private Panel iscsi_StoragePanel(Storage store, UI ui) {
+  private Panel iscsi_StoragePanel(Storage store, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1486,12 +1502,30 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : button methods
+    accept.addClickListener((me, cmp) -> {
+      String _host = host.getText();
+      String _target = target.getText();
+      String _init = initiator.getText();
+      store.host = _host;
+      store.target = _target;
+      store.initiator = _init;
+      if (!store.register()) {
+        return;
+      }
+      if (create) {
+        Config.current.addStorage(store);
+      }
+      Config.current.save();
+      ui.setRightPanel(storagePanel(ui));
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(storagePanel(ui));
+    });
 
     return panel;
   }
 
-  private Panel local_StoragePanel(Storage store, UI ui) {
+  private Panel local_StoragePanel(Storage store, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1512,7 +1546,25 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : button methods
+    accept.addClickListener((me, cmp) -> {
+      String _dev = dev.getText();
+      if (!new File(_dev).exists()) {
+        dev.setBackColor(Color.red);
+        return;
+      }
+      store.path = _dev;
+      if (!store.register()) {
+        return;
+      }
+      if (create) {
+        Config.current.addStorage(store);
+      }
+      Config.current.save();
+      ui.setRightPanel(storagePanel(ui));
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(storagePanel(ui));
+    });
 
     return panel;
   }
