@@ -99,4 +99,16 @@ public class Hardware implements Serializable {
   public void removeNetwork(Network network) {
     networks.remove(network);
   }
+
+  public void addDisk(Disk disk) {
+    disks.add(disk);
+  }
+
+  public void removeDisk(Disk disk) {
+    disks.remove(disk);
+  }
+
+  public String getNextDiskName() {
+    return "disk" + disks.size();
+  }
 }

@@ -74,7 +74,10 @@ public class ConfigService implements WebUIHandler {
     public Storage browse_store;
     public String browse_path;
 
-    public PopupPanel disk_popup;
+    public PopupPanel vm_disk_popup;
+    public Runnable vm_disk_init;
+    public Disk vm_disk;
+    public Runnable vm_disk_complete;
 
     public PopupPanel vm_network_popup;
     public Runnable vm_network_init;
@@ -123,8 +126,8 @@ public class ConfigService implements WebUIHandler {
     ui.browse_popup = browseStoragePopupPanel(ui);
     panel.add(ui.browse_popup);
 
-    ui.disk_popup = vm_disk_PopupPanel(ui);
-    panel.add(ui.disk_popup);
+    ui.vm_disk_popup = vm_disk_PopupPanel(ui);
+    panel.add(ui.vm_disk_popup);
 
     ui.vm_network_popup = vm_network_PopupPanel(ui);
     panel.add(ui.vm_network_popup);
@@ -213,7 +216,7 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Name"));
-    TextField name = new TextField("sda");
+    TextField name = new TextField("");
     row.add(name);
 
     row = new Row();
@@ -221,8 +224,8 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Format"));
     ComboBox type = new ComboBox();
     row.add(type);
-    type.add("qcow2", "qcow2");
     type.add("vmdk", "vmdk");
+    type.add("qcow2", "qcow2");
 
     row = new Row();
     panel.add(row);
@@ -230,6 +233,8 @@ public class ConfigService implements WebUIHandler {
     TextField size = new TextField("100");
     row.add(size);
     ComboBox size_units = new ComboBox();
+    //size_units.add("B", "B");
+    //size_units.add("KB", "KB");
     size_units.add("MB", "MB");
     size_units.add("GB", "GB");
     row.add(size_units);
@@ -241,7 +246,62 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
+    ui.vm_disk_init = new Runnable() {
+      public void run() {
+        if (ui.vm_disk == null) {
+          //create
+          name.setText(ui.hardware.getNextDiskName());
+          type.setSelectedIndex(0);
+          size.setText("100");
+          size_units.setSelectedIndex(1);
+        } else {
+          //update
+          name.setText(ui.vm_disk.name);
+          switch (ui.vm_disk.type) {
+            case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
+            case Disk.TYPE_QCOW2: type.setSelectedIndex(1); break;
+          }
+          size.setText(Integer.toString(ui.vm_disk.size.size));
+          size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
+        }
+      }
+    };
+
     //TODO : button methods
+    accept.addClickListener((me, cmp) -> {
+      String _name = vmm.cleanName(name.getText());
+      if (_name.length() == 0) {
+        name.setText(_name);
+        name.setBackColor(Color.red);
+        return;
+      }
+      String _size_str = vmm.cleanNumber(size.getText());
+      if (_size_str.length() == 0) {
+        size.setText(_size_str);
+        size.setBackColor(Color.red);
+        return;
+      }
+      int _size = Integer.valueOf(_size_str);
+      int _size_unit = size_units.getSelectedIndex() + 2;
+      if (ui.vm_disk == null) {
+        //create
+        Disk disk = new Disk();
+        disk.pool = ui.hardware.pool;
+        disk.name = _name;
+        disk.type = type.getSelectedIndex();
+        disk.size = new Size(_size, _size_unit);
+        ui.hardware.addDisk(disk);
+      } else {
+        //update
+        Disk disk = ui.vm_disk;
+        disk.name = _name;
+        disk.type = type.getSelectedIndex();
+        disk.size = new Size(_size, _size_unit);
+      }
+      if (ui.vm_disk_complete != null) {
+        ui.vm_disk_complete.run();
+      }
+    });
 
     return panel;
   }
@@ -409,7 +469,7 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
-      String _name = vmm.cleanName(vlan.getText());
+      String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
         name.setBackColor(Color.red);
@@ -420,7 +480,13 @@ public class ConfigService implements WebUIHandler {
         bridge.setBackColor(Color.red);
         return;
       }
-      int _vlan = JF.atoi(vlan.getText());
+      String _vlan_str = vmm.cleanNumber(vlan.getText());
+      if (_vlan_str.length() == 0) {
+        vlan.setText(_vlan_str);
+        vlan.setBackColor(Color.red);
+        return;
+      }
+      int _vlan = Integer.valueOf(_vlan_str);
       if (_vlan < 0 || _vlan > 4095) {
         vlan.setBackColor(Color.red);
         return;
@@ -620,7 +686,13 @@ public class ConfigService implements WebUIHandler {
         netmask.setBackColor(Color.red);
         return;
       }
-      int _vlan = JF.atoi(vlan.getText());
+      String _vlan_str = vmm.cleanNumber(vlan.getText());
+      if (_vlan_str.length() == 0) {
+        vlan.setText(_vlan_str);
+        vlan.setBackColor(Color.red);
+        return;
+      }
+      int _vlan = Integer.valueOf(_vlan_str);
       if (_vlan < 0 || _vlan > 4095) {
         vlan.setBackColor(Color.red);
         return;
@@ -1165,8 +1237,9 @@ public class ConfigService implements WebUIHandler {
     row.add(b_cancel);
 
     b_disk_create.addClickListener((me, cmp) -> {
-      //TODO : setup panel
-      ui.disk_popup.setVisible(true);
+      ui.vm_disk = null;
+      ui.vm_disk_init.run();
+      ui.vm_disk_popup.setVisible(true);
     });
     b_disk_add.addClickListener((me, cmp) -> {
       //TODO : setup panel

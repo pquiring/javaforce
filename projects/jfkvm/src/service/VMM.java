@@ -78,6 +78,10 @@ public class VMM implements VMProvider {
     return JF.filter(name, JF.filter_alpha_numeric);
   }
 
+  public String cleanNumber(String name) {
+    return JF.filter(name, JF.filter_numeric);
+  }
+
   public int getVLAN(String network) {
     for(NetworkVLAN vlan : Config.current.vlans) {
       if (vlan.name.equals(network)) {
