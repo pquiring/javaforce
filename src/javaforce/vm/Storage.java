@@ -80,15 +80,15 @@ public class Storage implements Serializable {
   /** Format local partition or iscsi disk. */
   public native boolean format(String path, int type);
 
-  private String getMountPath() {
+  public String getPath() {
     return "/volumes/" + name;
   }
 
   private String createXML() {
     switch (type) {
-      case TYPE_ISCSI: return createXML_iSCSI(name, host, target, initiator, getMountPath(), user, pass);
-      case TYPE_NFS: return createXML_NFS(name, host, path, getMountPath());
-      case TYPE_LOCAL: return createXML_Local(name, host, path, getMountPath());
+      case TYPE_ISCSI: return createXML_iSCSI(name, host, target, initiator, getPath(), user, pass);
+      case TYPE_NFS: return createXML_NFS(name, host, path, getPath());
+      case TYPE_LOCAL: return createXML_Local(name, host, path, getPath());
     }
     return null;
   }

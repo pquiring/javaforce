@@ -70,8 +70,7 @@ public class ConfigService implements WebUIHandler {
     public Runnable confirm_action;
 
     public PopupPanel browse_popup;
-    public Runnable browse_load;
-    public Storage browse_store;
+    public Runnable browse_init;
     public String browse_path;
 
     public PopupPanel vm_disk_popup;
@@ -199,6 +198,7 @@ public class ConfigService implements WebUIHandler {
       if (ui.confirm_action != null) {
         ui.confirm_action.run();
       }
+      ui.confirm_popup.setVisible(false);
     });
     Button popup_b_cancel = new Button("Cancel");
     panel.add(popup_b_cancel);
@@ -814,7 +814,7 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.device_usb_init = new Runnable() {
+    ui.device_pci_init = new Runnable() {
       public void run() {
         String _sel = null;
         if (ui.device != null) {
@@ -850,10 +850,10 @@ public class ConfigService implements WebUIHandler {
       if (ui.device_complete != null) {
         ui.device_complete.run();
       }
-      ui.device_usb_popup.setVisible(false);
+      ui.device_pci_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
-      ui.device_usb_popup.setVisible(false);
+      ui.device_pci_popup.setVisible(false);
     });
 
     return panel;
@@ -1100,7 +1100,6 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Start VM : " + name);
       ui.confirm_action = new Runnable() {
         public void run() {
-          ui.confirm_popup.setVisible(false);
           Task task = new Task("Start") {
             public void doTask() {
               VirtualMachine vm = VirtualMachine.get(name);
@@ -1130,7 +1129,6 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Stop VM : " + name);
       ui.confirm_action = new Runnable() {
         public void run() {
-          ui.confirm_popup.setVisible(false);
           Task task = new Task("Stop") {
             public void doTask() {
               VirtualMachine vm = VirtualMachine.get(name);
@@ -1160,7 +1158,6 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Power Off VM : " + name);
       ui.confirm_action = new Runnable() {
         public void run() {
-          ui.confirm_popup.setVisible(false);
           Task task = new Task("Power Off") {
             public void doTask() {
               VirtualMachine vm = VirtualMachine.get(name);
@@ -1189,7 +1186,6 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Unregister VM : " + name);
       ui.confirm_action = new Runnable() {
         public void run() {
-          ui.confirm_popup.setVisible(false);
           Task task = new Task("Unregister") {
             public void doTask() {
               VirtualMachine vm = VirtualMachine.get(name);
@@ -1321,17 +1317,19 @@ public class ConfigService implements WebUIHandler {
       ui.vm_disk_popup.setVisible(true);
     });
     b_disk_add.addClickListener((me, cmp) -> {
-      //TODO : setup panel
+      ui.browse_path = ui.hardware.getPath();
+      ui.browse_init.run();
       ui.browse_popup.setVisible(true);
     });
     b_disk_delete.addClickListener((me, cmp) -> {
-      String disk_name = "";  //TODO
+      int idx = disk_list.getSelectedIndex();
+      if (idx == -1) return;
+      Disk disk = ui.hardware.disks.get(idx);
       ui.confirm_button.setText("Delete");
-      ui.confirm_message.setText("Delete Disk : " + disk_name);
+      ui.confirm_message.setText("Delete Disk : " + disk.name);
       ui.confirm_action = new Runnable() {
         public void run() {
-          //TODO
-          ui.confirm_popup.setVisible(false);
+          ui.hardware.removeDisk(disk);
         }
       };
       ui.confirm_popup.setVisible(true);
@@ -1370,13 +1368,14 @@ public class ConfigService implements WebUIHandler {
       ui.device_pci_popup.setVisible(true);
     });
     b_dev_delete.addClickListener((me, cmp) -> {
-      String device_name = "";  //TODO
+      int idx = dev_list.getSelectedIndex();
+      if (idx == -1) return;
+      Device device = ui.hardware.devices.get(idx);
       ui.confirm_button.setText("Delete");
-      ui.confirm_message.setText("Delete Device : " + device_name);
+      ui.confirm_message.setText("Delete Device : " + device.name);
       ui.confirm_action = new Runnable() {
         public void run() {
-          //TODO
-          ui.confirm_popup.setVisible(false);
+          ui.hardware.removeDevice(device);
         }
       };
       ui.confirm_popup.setVisible(true);
@@ -1419,8 +1418,8 @@ public class ConfigService implements WebUIHandler {
       String name = list.getSelectedItem();
       if (name == null) return;
       Storage pool = vmm.getPoolByName(name);
-      ui.browse_store = pool;
-      ui.browse_load.run();
+      ui.browse_path = pool.getPath();
+      ui.browse_init.run();
       ui.browse_popup.setVisible(true);
     });
     format.addClickListener((me, cmp) -> {
@@ -1670,46 +1669,51 @@ public class ConfigService implements WebUIHandler {
     ListBox list = new ListBox();
     panel.add(list);
 
-    ui.browse_load = new Runnable() { public void run() {
-      //TODO : list folder
-      path.setText(ui.browse_path);
-      list.removeAll();
-      File[] files = new File(ui.browse_path).listFiles();
-      for(File file : files) {
-        String name = file.getName();
-        if (file.isDirectory()) {
-          list.add("/" + name);
-        } else {
-          list.add(name);
+    ui.browse_init = new Runnable() {
+      public void run() {
+        path.setText(ui.browse_path);
+        list.removeAll();
+        File[] files = new File(ui.browse_path).listFiles();
+        for(File file : files) {
+          String name = file.getName();
+          if (file.isDirectory()) {
+            list.add("/" + name);
+          } else {
+            list.add(name);
+          }
         }
       }
-    }};
+    };
     ui.browse_path = "/volumes";
 
     refresh.addClickListener((me, cmp) -> {
-      ui.browse_load.run();
+      ui.browse_init.run();
     });
     cdup.addClickListener((me, cmp) -> {
       int idx = ui.browse_path.lastIndexOf('/');
       if (idx == -1 || idx == 0) return;
       ui.browse_path = ui.browse_path.substring(0, idx);
-      ui.browse_load.run();
+      ui.browse_init.run();
     });
     delete.addClickListener((me, cmp) -> {
       String item = list.getSelectedItem();
       if (item == null) return;
       if (item.startsWith("/")) {
         ui.confirm_message.setText("Delete folder:" + item);
-        ui.confirm_action = new Runnable() {public void run() {
-          new File(ui.browse_path + item).delete();
-          ui.browse_load.run();
-        }};
+        ui.confirm_action = new Runnable() {
+          public void run() {
+            new File(ui.browse_path + item).delete();
+            ui.browse_init.run();
+          }
+        };
       } else {
         ui.confirm_message.setText("Delete file:" + item);
-        ui.confirm_action = new Runnable() {public void run() {
-          new File(ui.browse_path + "/" + item).delete();
-          ui.browse_load.run();
-        }};
+        ui.confirm_action = new Runnable() {
+          public void run() {
+            new File(ui.browse_path + "/" + item).delete();
+            ui.browse_init.run();
+          }
+        };
       }
     });
     list.addClickListener((me, cmp) -> {
@@ -1717,7 +1721,7 @@ public class ConfigService implements WebUIHandler {
       if (item == null) return;
       if (item.startsWith("/")) {
         ui.browse_path += item;
-        ui.browse_load.run();
+        ui.browse_init.run();
       }
     });
 
@@ -1782,7 +1786,7 @@ public class ConfigService implements WebUIHandler {
       });
       edit.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
-        //TODO
+        //TODO : edit virtual switch (bridge): edit/remove nics, etc.
       });
       delete.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
@@ -1873,24 +1877,29 @@ public class ConfigService implements WebUIHandler {
       edit.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        //TODO
+        //TODO : edit virtual nic
         NetworkVirtual nic = nics.get(idx);
         ui.network_virtual = nic;
         ui.network_virtual_complete = new Runnable() {
           public void run() {
-             //TODO
+             //TODO : edit virt nic
           }
         };
         //ui.network_virtual_popup.setVisible(true);
       });
       delete.addClickListener((me, cmp) -> {
-        //TODO : confirm action
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
         NetworkVirtual nic = nics.get(idx);
-        list.remove(idx);
-        nic.remove();
-        Config.current.removeNetworkVirtual(nic);
+        ui.confirm_button.setText("Delete");
+        ui.confirm_message.setText("Delete NIC : " + nic.name);
+        ui.confirm_action = new Runnable() {
+          public void run() {
+            list.remove(idx);
+            nic.remove();
+            Config.current.removeNetworkVirtual(nic);
+          }
+        };
       });
     }
   }

@@ -92,6 +92,10 @@ public class Hardware implements Serializable {
     }
   }
 
+  public String getPath() {
+    return "/volumes/" + pool + "/" + name;
+  }
+
   public void addNetwork(Network network) {
     networks.add(network);
   }
