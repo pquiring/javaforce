@@ -886,7 +886,7 @@ public class ConfigService implements WebUIHandler {
     b_net_delete.addClickListener((me, cmp) -> {
       String network_name = "";  //TODO
       ui.confirm_button.setText("Delete");
-      ui.confirm_message.setText("Delete Disk : " + network_name);
+      ui.confirm_message.setText("Delete Network : " + network_name);
       ui.confirm_action = new Runnable() {
         public void run() {
           //TODO
@@ -1277,9 +1277,33 @@ public class ConfigService implements WebUIHandler {
       for(NetworkVLAN nic : nics) {
         list.add(nic.name + ":" + nic.vlan);
       }
-      //TODO : button methods
+
       create.addClickListener((me, cmp) -> {
+        ui.networkvlan = null;
+        ui.networkvlan_init.run();
         ui.networkvlan_popup.setVisible(true);
+      });
+      edit.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        ui.networkvlan = nics.get(idx);
+        ui.networkvlan_init.run();
+        ui.networkvlan_popup.setVisible(true);
+      });
+      delete.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkVLAN nic = nics.get(idx);
+        ui.confirm_action = new Runnable() {
+          public void run() {
+            int idx = list.getSelectedIndex();
+            NetworkVLAN nic = nics.get(idx);
+            Config.current.removeNetworkVLAN(nic);
+          }
+        };
+        ui.confirm_button.setText("Delete");
+        ui.confirm_message.setText("Delete VLAN:" + nic.name);
+        ui.confirm_popup.setVisible(true);
       });
     }
   }
