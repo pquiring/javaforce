@@ -7,6 +7,7 @@ package javaforce.vm;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.net.*;
 
 public class NetworkInterface implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -77,7 +78,8 @@ public class NetworkInterface implements Serializable {
         int slash = ip_mask.indexOf('/');
         if (slash == -1) continue;
         nic.ip = ip_mask.substring(0, slash);
-        nic.mac = ip_mask.substring(slash + 1);
+        int cidr = Integer.valueOf(ip_mask.substring(slash + 1));
+        nic.netmask = Subnet4.fromCIDR(cidr);
       }
     }
   }

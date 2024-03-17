@@ -16,6 +16,20 @@ public class Subnet4 {
     //TODO : check bits
     return true;
   }
+  public static String fromCIDR(int cidr) {
+    int mask = 0x80000000;
+    cidr--;
+    while (cidr > 0) {
+      mask >>= 1;
+      cidr--;
+    }
+    return String.format("%d.%d.%d.%d",
+      (mask & 0xff000000) >>> 24,
+      (mask & 0xff0000) >> 16,
+      (mask & 0xff00) >> 8,
+      (mask & 0xff)
+    );
+  };
   public boolean setIP(String str) {
     return ip.setIP(str);
   }
@@ -62,5 +76,8 @@ public class Subnet4 {
     net.setMask("255.255.255.0");
     test(net, "192.168.1.5");
     test(net, "192.168.5.5");
+    JFLog.log("CIDR/26=" + fromCIDR(26));
+    JFLog.log("CIDR/24=" + fromCIDR(24));
+    JFLog.log("CIDR/16=" + fromCIDR(16));
   }
 }
