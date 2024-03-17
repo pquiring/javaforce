@@ -78,6 +78,7 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel vm_network_popup;
     public Runnable vm_network_init;
     public Network vm_network;
+    public Runnable vm_network_complete;
 
     public PopupPanel networkvlan_popup;
     public Runnable networkvlan_init;
@@ -315,11 +316,14 @@ public class ConfigService implements WebUIHandler {
       String _model = models.getSelectedValue();
       String _network = networks.getSelectedValue();
       if (ui.vm_network == null) {
-        ui.hardware.addNetwork(new Network(_network, _model, _mac));
+        ui.vm_network = new Network(_network, _model, _mac);
       } else {
         ui.vm_network.model = models.getSelectedValue();
         ui.vm_network.network = networks.getSelectedValue();
         ui.vm_network.mac = _mac;
+      }
+      if (ui.vm_network_complete != null) {
+        ui.vm_network_complete.run();
       }
       ui.vm_network_popup.setVisible(false);
     });
@@ -892,15 +896,14 @@ public class ConfigService implements WebUIHandler {
     networks.add(net_ops);
     Button b_net_add = new Button("Add");
     net_ops.add(b_net_add);
+    Button b_net_edit = new Button("Edit");
+    net_ops.add(b_net_edit);
     Button b_net_delete = new Button("Delete");
     net_ops.add(b_net_delete);
     ListBox net_list = new ListBox();
     networks.add(net_list);
-    int idx = 0;
     for(Network nic : hardware.networks) {
-      //TODO : add more details
-      net_list.add("eth" + idx);
-      idx++;
+      net_list.add("net:" + nic.network);
     }
     //devices
     InnerPanel devices = new InnerPanel("Devices");
@@ -949,19 +952,26 @@ public class ConfigService implements WebUIHandler {
     });
     b_net_add.addClickListener((me, cmp) -> {
       ui.vm_network = null;
+      ui.vm_network_complete = new Runnable() {
+        public void run() {
+          hardware.addNetwork(ui.vm_network);
+          net_list.add(ui.vm_network.network);
+        }
+      };
+      ui.vm_network_popup.setVisible(true);
+    });
+    b_net_edit.addClickListener((me, cmp) -> {
+      int idx = net_list.getSelectedIndex();
+      if (idx == -1) return;
+      ui.vm_network = hardware.networks.get(idx);
+      ui.vm_network_complete = null;
       ui.vm_network_popup.setVisible(true);
     });
     b_net_delete.addClickListener((me, cmp) -> {
-      String network_name = "";  //TODO
-      ui.confirm_button.setText("Delete");
-      ui.confirm_message.setText("Delete Network : " + network_name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          //TODO
-          ui.confirm_popup.setVisible(false);
-        }
-      };
-      ui.confirm_popup.setVisible(true);
+      int idx = net_list.getSelectedIndex();
+      if (idx == -1) return;
+      net_list.remove(idx);
+      hardware.removeNetwork(hardware.networks.get(idx));
     });
     b_dev_add_usb.addClickListener((me, cmp) -> {
       //TODO : setup panel
