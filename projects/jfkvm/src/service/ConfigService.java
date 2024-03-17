@@ -77,7 +77,9 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel vm_network_popup;
 
-    public PopupPanel network_network_popup;
+    public PopupPanel networkvlan_popup;
+    public Runnable networkvlan_init;
+    public NetworkVLAN networkvlan;
 
     public PopupPanel device_usb_popup;
     public PopupPanel device_pci_popup;
@@ -113,8 +115,8 @@ public class ConfigService implements WebUIHandler {
     ui.vm_network_popup = vm_network_PopupPanel(ui);
     panel.add(ui.vm_network_popup);
 
-    ui.network_network_popup = network_networkvlan_PopupPanel(ui);
-    panel.add(ui.network_network_popup);
+    ui.networkvlan_popup = network_networkvlan_PopupPanel(ui);
+    panel.add(ui.networkvlan_popup);
 
     ui.device_usb_popup = device_usb_PopupPanel(ui);
     panel.add(ui.device_usb_popup);
@@ -279,10 +281,6 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Switch"));
     ComboBox bridge = new ComboBox();
     row.add(bridge);
-    NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
-    for(NetworkBridge nic : nics) {
-      bridge.add(nic.name, nic.name);
-    }
 
     row = new Row();
     panel.add(row);
@@ -296,6 +294,30 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    ui.networkvlan_init = new Runnable() {
+      public void run() {
+        bridge.clear();
+        NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+        for(NetworkBridge nic : nics) {
+          bridge.add(nic.name, nic.name);
+        }
+        if (ui.networkvlan == null) {
+          name.setText("");
+          vlan.setText("0");
+        } else {
+          name.setText(ui.networkvlan.name);
+          vlan.setText(Integer.toString(ui.networkvlan.vlan));
+          int idx = 0;
+          for(NetworkBridge nic : nics) {
+            if (nic.name.equals(ui.networkvlan.bridge)) {
+              bridge.setSelectedIndex(idx);
+              break;
+            }
+          }
+        }
+      }
+    };
 
     accept.addClickListener((me, cmp) -> {
       String _name = vmm.cleanName(vlan.getText());
@@ -315,10 +337,10 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
-      ui.network_network_popup.setVisible(false);
+      ui.networkvlan_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
-      ui.network_network_popup.setVisible(false);
+      ui.networkvlan_popup.setVisible(false);
     });
 
     return panel;
@@ -501,7 +523,7 @@ public class ConfigService implements WebUIHandler {
       ui.split.setRightComponent(storagePanel(ui));
     });
     networks.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(networkPanel());
+      ui.split.setRightComponent(networkPanel(ui));
     });
     return panel;
   }
@@ -1184,16 +1206,16 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel networkPanel() {
+  private Panel networkPanel(UI ui) {
     TabPanel panel = new TabPanel();
-    networkPanel_networks(panel);
-    networkPanel_bridges(panel);
-    networkPanel_nics(panel);
-    networkPanel_phys(panel);
+    networkPanel_networkvlans(panel, ui);
+    networkPanel_bridges(panel, ui);
+    networkPanel_nics(panel, ui);
+    networkPanel_phys(panel, ui);
     return panel;
   }
 
-  private void networkPanel_phys(TabPanel panel) {
+  private void networkPanel_phys(TabPanel panel, UI ui) {
     {
       Panel phys = new Panel();
       panel.addTab(phys, "Physical NICs");
@@ -1212,7 +1234,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  private void networkPanel_bridges(TabPanel panel) {
+  private void networkPanel_bridges(TabPanel panel, UI ui) {
     //bridges (virtual switches)
     {
       Panel virt = new Panel();
@@ -1236,7 +1258,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  private void networkPanel_networks(TabPanel panel) {
+  private void networkPanel_networkvlans(TabPanel panel, UI ui) {
     //network VLANs
     {
       Panel ports = new Panel();
@@ -1256,10 +1278,13 @@ public class ConfigService implements WebUIHandler {
         list.add(nic.name + ":" + nic.vlan);
       }
       //TODO : button methods
+      create.addClickListener((me, cmp) -> {
+        ui.networkvlan_popup.setVisible(true);
+      });
     }
   }
 
-  private void networkPanel_nics(TabPanel panel) {
+  private void networkPanel_nics(TabPanel panel, UI ui) {
     //vm host/server nics
     {
       Panel vmnics = new Panel();
