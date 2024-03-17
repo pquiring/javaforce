@@ -98,8 +98,12 @@ public class ConfigService implements WebUIHandler {
     public NetworkVirtual network_virtual;
     public Runnable network_virtual_complete;
 
+    public Device device;
     public PopupPanel device_usb_popup;
+    public Runnable device_usb_init;
     public PopupPanel device_pci_popup;
+    public Runnable device_pci_init;
+    public Runnable device_complete;
 
     public Hardware hardware;  //editing VM hardware
 
@@ -736,12 +740,8 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Device"));
-    ComboBox type = new ComboBox();
-    row.add(type);
-    String[] groups = vmm.listDevices(Device.TYPE_USB);
-    for(String group : groups) {
-      type.add(group, group);
-    }
+    ComboBox device = new ComboBox();
+    row.add(device);
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -750,7 +750,47 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : button methods
+    ui.device_usb_init = new Runnable() {
+      public void run() {
+        String _sel = null;
+        if (ui.device != null) {
+          _sel = ui.device.path;
+        }
+        String[] groups = vmm.listDevices(Device.TYPE_USB);
+        int idx = 0;
+        int _sel_idx = -1;
+        for(String group : groups) {
+          if (group.equals(_sel)) {
+            _sel_idx = idx;
+          }
+          device.add(group, group);
+          idx++;
+        }
+        if (_sel_idx != -1) {
+          device.setSelectedIndex(_sel_idx);
+        }
+      }
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      String _device = device.getSelectedValue();
+      if (_device == null || _device.length() == 0) {
+        return;
+      }
+      if (ui.device == null) {
+        ui.device = new Device();
+        ui.device.type = Device.TYPE_USB;
+        ui.hardware.addDevice(ui.device);
+      }
+      ui.device.path = _device;
+      if (ui.device_complete != null) {
+        ui.device_complete.run();
+      }
+      ui.device_usb_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.device_usb_popup.setVisible(false);
+    });
 
     return panel;
   }
@@ -764,12 +804,8 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Device"));
-    ComboBox type = new ComboBox();
-    row.add(type);
-    String[] groups = vmm.listDevices(Device.TYPE_PCI);
-    for(String group : groups) {
-      type.add(group, group);
-    }
+    ComboBox device = new ComboBox();
+    row.add(device);
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -778,7 +814,47 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : button methods
+    ui.device_usb_init = new Runnable() {
+      public void run() {
+        String _sel = null;
+        if (ui.device != null) {
+          _sel = ui.device.path;
+        }
+        String[] groups = vmm.listDevices(Device.TYPE_PCI);
+        int idx = 0;
+        int _sel_idx = -1;
+        for(String group : groups) {
+          if (group.equals(_sel)) {
+            _sel_idx = idx;
+          }
+          device.add(group, group);
+          idx++;
+        }
+        if (_sel_idx != -1) {
+          device.setSelectedIndex(_sel_idx);
+        }
+      }
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      String _device = device.getSelectedValue();
+      if (_device == null || _device.length() == 0) {
+        return;
+      }
+      if (ui.device == null) {
+        ui.device = new Device();
+        ui.device.type = Device.TYPE_PCI;
+        ui.hardware.addDevice(ui.device);
+      }
+      ui.device.path = _device;
+      if (ui.device_complete != null) {
+        ui.device_complete.run();
+      }
+      ui.device_usb_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.device_usb_popup.setVisible(false);
+    });
 
     return panel;
   }
@@ -1284,11 +1360,13 @@ public class ConfigService implements WebUIHandler {
       hardware.removeNetwork(hardware.networks.get(idx));
     });
     b_dev_add_usb.addClickListener((me, cmp) -> {
-      //TODO : setup panel
+      ui.device = null;
+      ui.device_usb_init.run();
       ui.device_usb_popup.setVisible(true);
     });
     b_dev_add_pci.addClickListener((me, cmp) -> {
-      //TODO : setup panel
+      ui.device = null;
+      ui.device_pci_init.run();
       ui.device_pci_popup.setVisible(true);
     });
     b_dev_delete.addClickListener((me, cmp) -> {

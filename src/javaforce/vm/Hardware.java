@@ -111,4 +111,13 @@ public class Hardware implements Serializable {
   public String getNextDiskName() {
     return "disk" + disks.size();
   }
+
+  public void addDevice(Device device) {
+    devices.add(device);
+  }
+
+  public void removeDevice(Device device) {
+    devices.remove(device);
+  }
 }
+
