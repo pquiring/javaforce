@@ -76,6 +76,8 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel disk_popup;
 
     public PopupPanel vm_network_popup;
+    public Runnable vm_network_init;
+    public Network vm_network;
 
     public PopupPanel networkvlan_popup;
     public Runnable networkvlan_init;
@@ -109,7 +111,7 @@ public class ConfigService implements WebUIHandler {
     ui.browse_popup = browseStoragePopupPanel(ui);
     panel.add(ui.browse_popup);
 
-    ui.disk_popup = diskPopupPanel(ui);
+    ui.disk_popup = vm_disk_PopupPanel(ui);
     panel.add(ui.disk_popup);
 
     ui.vm_network_popup = vm_network_PopupPanel(ui);
@@ -184,7 +186,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private PopupPanel diskPopupPanel(UI ui) {
+  private PopupPanel vm_disk_PopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Disk");
     panel.setPosition(256, 128);
     panel.setModal(true);
@@ -221,10 +223,17 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : add button methods
+    //TODO : button methods
 
     return panel;
   }
+
+  private static String[] nic_models = {
+    "vmxnet3",
+    "virtio",
+    "e1000",
+    "e1000e",
+  };
 
   private PopupPanel vm_network_PopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Network");
@@ -235,22 +244,24 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Model"));
-    ComboBox type = new ComboBox();
-    row.add(type);
-    type.add("vmxnet3", "vmxnet3");
-    type.add("virtio", "virtio");
-    type.add("e1000", "e1000");
-    type.add("e1000e", "e1000e");
+    ComboBox models = new ComboBox();
+    row.add(models);
+    for(String model : nic_models) {
+      models.add(model, model);
+    }
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Network"));
     ComboBox networks = new ComboBox();
     row.add(networks);
-    ArrayList<NetworkVLAN> nics = Config.current.vlans;
-    for(NetworkVLAN nic : nics) {
-      networks.add(nic.name, nic.name);
-    }
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("MAC"));
+    TextField mac = new TextField("");
+    row.add(mac);
+    row.add(new Label("(leave blank to generate)"));
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -259,7 +270,63 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : add button methods
+    ui.vm_network_init = new Runnable() {
+      public void run() {
+        networks.clear();
+        ArrayList<NetworkVLAN> nics = Config.current.vlans;
+        for(NetworkVLAN nic : nics) {
+          networks.add(nic.name, nic.name);
+        }
+        if (ui.vm_network == null) {
+          models.setSelectedIndex(0);
+          networks.setSelectedIndex(0);
+        } else {
+          int idx = 0;
+          for(String model : nic_models) {
+            if (model.equals(ui.vm_network.model)) {
+              models.setSelectedIndex(idx);
+              break;
+            }
+            idx++;
+          }
+          idx = 0;
+          for(NetworkVLAN nic : nics) {
+            if (nic.name.equals(ui.vm_network.network)) {
+              networks.setSelectedIndex(idx);
+              break;
+            }
+            idx++;
+          }
+          mac.setText(ui.vm_network.mac);
+        }
+      }
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      String _mac = mac.getText();
+      if (_mac.length() > 0) {
+        if (!MAC.valid(_mac)) {
+          mac.setBackColor(Color.red);
+          return;
+        }
+      } else {
+        _mac = MAC.generate();
+      }
+      String _model = models.getSelectedValue();
+      String _network = networks.getSelectedValue();
+      if (ui.vm_network == null) {
+        ui.hardware.addNetwork(new Network(_network, _model, _mac));
+      } else {
+        ui.vm_network.model = models.getSelectedValue();
+        ui.vm_network.network = networks.getSelectedValue();
+        ui.vm_network.mac = _mac;
+      }
+      ui.vm_network_popup.setVisible(false);
+    });
+
+    cancel.addClickListener((me, cmp) -> {
+      ui.vm_network_popup.setVisible(false);
+    });
 
     return panel;
   }
@@ -314,6 +381,7 @@ public class ConfigService implements WebUIHandler {
               bridge.setSelectedIndex(idx);
               break;
             }
+            idx++;
           }
         }
       }
@@ -369,7 +437,7 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : add button methods
+    //TODO : button methods
 
     return panel;
   }
@@ -397,7 +465,7 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    //TODO : add button methods
+    //TODO : button methods
 
     return panel;
   }
@@ -880,7 +948,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     b_net_add.addClickListener((me, cmp) -> {
-      //TODO : setup panel
+      ui.vm_network = null;
       ui.vm_network_popup.setVisible(true);
     });
     b_net_delete.addClickListener((me, cmp) -> {

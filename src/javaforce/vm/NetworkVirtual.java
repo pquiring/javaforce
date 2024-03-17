@@ -51,8 +51,8 @@ public class NetworkVirtual implements Serializable {
 
   private native static boolean ncreatevirt(String name, String xml);
   /** Create virtual interface. */
-  public static boolean createVirtual(String name, String bridge, String mac, String ip, String netmask, int vlan) {
-    return ncreatevirt(name, NetworkVirtual.createXML(name, bridge, mac, ip, netmask, vlan));
+  public static boolean createVirtual(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
+    return ncreatevirt(name, createXML(name, bridge, mac, ip, netmask, vlan));
   }
 
   private native static boolean ncreateport(String name, String xml);
@@ -79,17 +79,18 @@ public class NetworkVirtual implements Serializable {
     return nassign(name, ip, mask);
   }
 
-  protected static String createXML(String name, String bridge, String mac, String ip, String netmask, int vlan) {
+  protected static String createXML(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
     StringBuilder xml = new StringBuilder();
     xml.append("<network>");
     xml.append("<name>" + name + "</name>");
     xml.append("<uuid>" + UUID.generate() + "</uuid>");
     xml.append("<forward mode='bridge'/>");
-    xml.append("<bridge name='" + bridge + "'/>");
+    xml.append("<bridge name='" + bridge.name + "'/>");
     xml.append("<mac address='" + mac + "'/>");
     xml.append("<ip address='" + ip + "' netmask='" + netmask + "'/>");
-    //TODO : validate bridge is 'os' type
-    xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
+    if (bridge.type.equals("os")) {
+      xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
+    }
     xml.append("</network>");
     return xml.toString();
   }

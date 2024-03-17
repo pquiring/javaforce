@@ -16,6 +16,7 @@ package javaforce.vm;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -28,11 +29,11 @@ public class Hardware implements Serializable {
   public int os;
   public int cores;
   public Size memory;
-  public Disk[] disks;
-  public Network[] networks;
-  public Device[] devices;
+  public ArrayList<Disk> disks;
+  public ArrayList<Network> networks;
+  public ArrayList<Device> devices;
   public String machine = "pc";
-  public Controller[] controllers;
+  public ArrayList<Controller> controllers;
 
   public boolean auto_start;
   public boolean bios_efi;
@@ -48,10 +49,10 @@ public class Hardware implements Serializable {
     os = OS_LINUX;
     cores = 2;
     memory = new Size(1, Size.GB);
-    disks = new Disk[0];
-    networks = new Network[0];
-    devices = new Device[0];
-    controllers = new Controller[0];
+    disks = new ArrayList<>();
+    networks = new ArrayList<>();
+    devices = new ArrayList<>();
+    controllers = new ArrayList<>();
   }
 
   public Hardware(String pool, String name, int os, int cores, Size memory) {
@@ -61,10 +62,10 @@ public class Hardware implements Serializable {
     this.os = os;
     this.cores = cores;
     this.memory = memory;
-    disks = new Disk[0];
-    networks = new Network[0];
-    devices = new Device[0];
-    controllers = new Controller[0];
+    disks = new ArrayList<>();
+    networks = new ArrayList<>();
+    devices = new ArrayList<>();
+    controllers = new ArrayList<>();
   }
 
   public static Hardware load(String file) {
@@ -89,5 +90,13 @@ public class Hardware implements Serializable {
       JFLog.log(e);
       return false;
     }
+  }
+
+  public void addNetwork(Network network) {
+    networks.add(network);
+  }
+
+  public void removeNetwork(Network network) {
+    networks.remove(network);
   }
 }

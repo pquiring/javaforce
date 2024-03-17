@@ -18,4 +18,20 @@ public class MAC {
     }
     return sb.toString();
   }
+  public static boolean valid(String mac) {
+    //xx:xx:xx:xx:xx:xx
+    if (mac.length() != 17) return false;
+    String[] f = mac.split("[:]");
+    if (f.length != 6) return false;
+    for(int a=0;a<6;a++) {
+      String o = f[a];
+      if (o.length() != 2) return false;
+      try {
+        Integer.valueOf(o, 16);
+      } catch (Exception e) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

@@ -16,10 +16,10 @@ public class Network implements Serializable {
   public String model;
   public String mac;
 
-  public Network(String network, String model) {
+  public Network(String network, String model, String mac) {
     this.network = network;
     this.model = model;
-    mac = MAC.generate();
+    this.mac = mac;
   }
 
   public static final String MODEL_E1000 = "e1000";

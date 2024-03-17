@@ -242,11 +242,10 @@ public class VirtualMachine implements Serializable {
     disk.target_dev = "sda";
     disk.target_bus = "scsi";
     //disk...
-    Network nw = new Network("servers", "vmxnet3");
+    Network nw = new Network("servers", "vmxnet3", MAC.generate());
     Hardware hw = new Hardware("pool", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
-    hw.disks = new Disk[] {disk};
-    hw.networks = new Network[] {nw};
-    hw.devices = new Device[0];
+    hw.disks.add(disk);
+    hw.networks.add(nw);
     System.out.println(createXML(hw, new VMProvider() {
       public int getVLAN(String name) {
         return 1;
