@@ -80,9 +80,14 @@ public class ConfigService implements WebUIHandler {
     public Network vm_network;
     public Runnable vm_network_complete;
 
-    public PopupPanel networkvlan_popup;
-    public Runnable networkvlan_init;
-    public NetworkVLAN networkvlan;
+    public PopupPanel network_vlan_popup;
+    public Runnable network_vlan_init;
+    public NetworkVLAN network_vlan;
+
+    public PopupPanel network_bridge_popup;
+    public Runnable network_bridge_init;
+    public NetworkBridge network_bridge;
+    public Runnable network_bridge_complete;
 
     public PopupPanel device_usb_popup;
     public PopupPanel device_pci_popup;
@@ -118,8 +123,11 @@ public class ConfigService implements WebUIHandler {
     ui.vm_network_popup = vm_network_PopupPanel(ui);
     panel.add(ui.vm_network_popup);
 
-    ui.networkvlan_popup = network_networkvlan_PopupPanel(ui);
-    panel.add(ui.networkvlan_popup);
+    ui.network_vlan_popup = network_vlan_PopupPanel(ui);
+    panel.add(ui.network_vlan_popup);
+
+    ui.network_bridge_popup = network_bridge_PopupPanel(ui);
+    panel.add(ui.network_bridge_popup);
 
     ui.device_usb_popup = device_usb_PopupPanel(ui);
     panel.add(ui.device_usb_popup);
@@ -335,7 +343,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private PopupPanel network_networkvlan_PopupPanel(UI ui) {
+  private PopupPanel network_vlan_PopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Network VLAN");
     panel.setPosition(256, 128);
     panel.setModal(true);
@@ -366,22 +374,22 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.networkvlan_init = new Runnable() {
+    ui.network_vlan_init = new Runnable() {
       public void run() {
         bridge.clear();
         NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
         for(NetworkBridge nic : nics) {
           bridge.add(nic.name, nic.name);
         }
-        if (ui.networkvlan == null) {
+        if (ui.network_vlan == null) {
           name.setText("");
           vlan.setText("0");
         } else {
-          name.setText(ui.networkvlan.name);
-          vlan.setText(Integer.toString(ui.networkvlan.vlan));
+          name.setText(ui.network_vlan.name);
+          vlan.setText(Integer.toString(ui.network_vlan.vlan));
           int idx = 0;
           for(NetworkBridge nic : nics) {
-            if (nic.name.equals(ui.networkvlan.bridge)) {
+            if (nic.name.equals(ui.network_vlan.bridge)) {
               bridge.setSelectedIndex(idx);
               break;
             }
@@ -409,10 +417,83 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
-      ui.networkvlan_popup.setVisible(false);
+      ui.network_vlan_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
-      ui.networkvlan_popup.setVisible(false);
+      ui.network_vlan_popup.setVisible(false);
+    });
+
+    return panel;
+  }
+
+  private PopupPanel network_bridge_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Network Bridge");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name"));
+    TextField name = new TextField("");
+    row.add(name);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Physical NIC"));
+    ComboBox iface = new ComboBox();
+    row.add(iface);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Create");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    ui.network_bridge_init = new Runnable() {
+      public void run() {
+        iface.clear();
+        NetworkInterface[] nics = NetworkInterface.listPhysical();
+        for(NetworkInterface nic : nics) {
+          iface.add(nic.name, nic.name);
+        }
+        if (ui.network_bridge == null) {
+          name.setText("");
+        } else {
+          name.setText(ui.network_bridge.name);
+          int idx = 0;
+          for(NetworkInterface nic : nics) {
+            if (nic.name.equals(ui.network_bridge.iface)) {
+              iface.setSelectedIndex(idx);
+              break;
+            }
+            idx++;
+          }
+        }
+      }
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      String _name = vmm.cleanName(name.getText());
+      if (_name.length() == 0) {
+        name.setText(_name);
+        name.setBackColor(Color.red);
+        return;
+      }
+      String _iface = iface.getSelectedText();
+      if (_iface == null || _iface.length() == 0) {
+        iface.setBackColor(Color.red);
+        return;
+      }
+      NetworkBridge.create(_name, _iface);
+      if (ui.network_bridge_complete != null) {
+        ui.network_bridge_complete.run();
+      }
+      ui.network_bridge_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.network_bridge_popup.setVisible(false);
     });
 
     return panel;
@@ -1286,7 +1367,7 @@ public class ConfigService implements WebUIHandler {
 
   private Panel networkPanel(UI ui) {
     TabPanel panel = new TabPanel();
-    networkPanel_networkvlans(panel, ui);
+    networkPanel_vlans(panel, ui);
     networkPanel_bridges(panel, ui);
     networkPanel_nics(panel, ui);
     networkPanel_phys(panel, ui);
@@ -1332,11 +1413,36 @@ public class ConfigService implements WebUIHandler {
       for(NetworkBridge nic : nics) {
         list.add(nic.name + ":" + nic.type + ":" + nic.iface);
       }
-      //TODO : button methods
+
+      create.addClickListener((me, cmp) -> {
+        ui.network_bridge = null;
+        ui.network_bridge_complete = new Runnable() {
+          public void run() {
+            list.removeAll();
+            NetworkBridge[] nics = NetworkBridge.list();
+            for(NetworkBridge nic : nics) {
+              list.add(nic.name + ":" + nic.type + ":" + nic.iface);
+            }
+          }
+        };
+      });
+      edit.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        //TODO
+      });
+      delete.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkBridge nic = nics[idx];
+        if (nic.remove()) {
+          list.remove(idx);
+          list.setSelectedIndex(-1);
+        }
+      });
     }
   }
 
-  private void networkPanel_networkvlans(TabPanel panel, UI ui) {
+  private void networkPanel_vlans(TabPanel panel, UI ui) {
     //network VLANs
     {
       Panel ports = new Panel();
@@ -1357,16 +1463,16 @@ public class ConfigService implements WebUIHandler {
       }
 
       create.addClickListener((me, cmp) -> {
-        ui.networkvlan = null;
-        ui.networkvlan_init.run();
-        ui.networkvlan_popup.setVisible(true);
+        ui.network_vlan = null;
+        ui.network_vlan_init.run();
+        ui.network_vlan_popup.setVisible(true);
       });
       edit.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        ui.networkvlan = nics.get(idx);
-        ui.networkvlan_init.run();
-        ui.networkvlan_popup.setVisible(true);
+        ui.network_vlan = nics.get(idx);
+        ui.network_vlan_init.run();
+        ui.network_vlan_popup.setVisible(true);
       });
       delete.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
