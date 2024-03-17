@@ -21,12 +21,9 @@ public class IQN {
     iqn.append('.');
     //reverse dns
     iqn.append("net.sourceforge.jfkvm");
+    iqn.append(':');
     //fqn
-    String[] pts = fqn.split("[.]");
-    for(String pt : pts) {
-      iqn.append('.');
-      iqn.append(pt);
-    }
+    iqn.append(fqn);
     iqn.append(':');
     int id32 = rand.nextInt(0x7fffffff);
     iqn.append(Integer.toString(id32));
