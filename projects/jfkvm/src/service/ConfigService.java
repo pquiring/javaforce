@@ -267,7 +267,6 @@ public class ConfigService implements WebUIHandler {
       }
     };
 
-    //TODO : button methods
     accept.addClickListener((me, cmp) -> {
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
@@ -301,6 +300,10 @@ public class ConfigService implements WebUIHandler {
       if (ui.vm_disk_complete != null) {
         ui.vm_disk_complete.run();
       }
+      ui.vm_disk_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.vm_disk_popup.setVisible(false);
     });
 
     return panel;
@@ -1604,18 +1607,13 @@ public class ConfigService implements WebUIHandler {
     {
       Panel phys = new Panel();
       panel.addTab(phys, "Physical NICs");
-      ToolBar tools = new ToolBar();
-      phys.add(tools);
-      Button phys_view = new Button("View");
-      tools.add(phys_view);
       ListBox phys_list = new ListBox();
       phys.add(phys_list);
       NetworkInterface[] nics = vmm.listNetworkInterface();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
-        phys_list.add(nic.name);
+        phys_list.add(nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac);
       }
-      //TODO : button methods
     }
   }
 
