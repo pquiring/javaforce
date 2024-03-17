@@ -10,6 +10,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
+import javaforce.net.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -89,6 +90,11 @@ public class ConfigService implements WebUIHandler {
     public NetworkBridge network_bridge;
     public Runnable network_bridge_complete;
 
+    public PopupPanel network_virtual_popup;
+    public Runnable network_virtual_init;
+    public NetworkVirtual network_virtual;
+    public Runnable network_virtual_complete;
+
     public PopupPanel device_usb_popup;
     public PopupPanel device_pci_popup;
 
@@ -128,6 +134,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.network_bridge_popup = network_bridge_PopupPanel(ui);
     panel.add(ui.network_bridge_popup);
+
+    ui.network_virtual_popup = network_virtual_PopupPanel(ui);
+    panel.add(ui.network_virtual_popup);
 
     ui.device_usb_popup = device_usb_PopupPanel(ui);
     panel.add(ui.device_usb_popup);
@@ -494,6 +503,150 @@ public class ConfigService implements WebUIHandler {
     });
     cancel.addClickListener((me, cmp) -> {
       ui.network_bridge_popup.setVisible(false);
+    });
+
+    return panel;
+  }
+
+  private PopupPanel network_virtual_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Virtual Network");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name"));
+    TextField name = new TextField("");
+    row.add(name);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Switch"));
+    ComboBox bridge = new ComboBox();
+    row.add(bridge);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("MAC"));
+    TextField mac = new TextField("");
+    row.add(mac);
+    row.add(new Label("(leave blank to generate)"));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("IP"));
+    TextField ip = new TextField("");
+    row.add(ip);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Netmask"));
+    TextField netmask = new TextField("");
+    row.add(netmask);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VLAN"));
+    TextField vlan = new TextField("");
+    row.add(vlan);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Create");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    ui.network_virtual_init = new Runnable() {
+      public void run() {
+        bridge.clear();
+        NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+        for(NetworkBridge nic : nics) {
+          bridge.add(nic.name, nic.name);
+        }
+        if (ui.network_virtual == null) {
+          name.setText("");
+          mac.setText("");
+          ip.setText("192.168.1.2");
+          netmask.setText("255.255.255.0");
+          vlan.setText("0");
+        } else {
+          name.setText(ui.network_virtual.name);
+          mac.setText(ui.network_virtual.mac);
+          ip.setText(ui.network_virtual.ip);
+          netmask.setText(ui.network_virtual.netmask);
+          vlan.setText(Integer.toString(ui.network_virtual.vlan));
+          int idx = 0;
+          for(NetworkBridge nic : nics) {
+            if (nic.name.equals(ui.network_virtual.bridge)) {
+              bridge.setSelectedIndex(idx);
+              break;
+            }
+            idx++;
+          }
+        }
+      }
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      String _name = vmm.cleanName(ip.getText());
+      if (_name.length() == 0) {
+        name.setText(_name);
+        name.setBackColor(Color.red);
+        return;
+      }
+      String _bridge = bridge.getSelectedText();
+      if (_bridge == null || _bridge.length() == 0) {
+        bridge.setBackColor(Color.red);
+        return;
+      }
+      String _mac = mac.getText();
+      if (_mac.length() > 0) {
+        if (!MAC.valid(_mac)) {
+          mac.setBackColor(Color.red);
+          return;
+        }
+      } else {
+        _mac = MAC.generate();
+      }
+      String _ip = ip.getText();
+      if (!IP4.isIP(_ip)) {
+        ip.setBackColor(Color.red);
+        return;
+      }
+      String _netmask = netmask.getText();
+      if (!Subnet4.isSubnet(_netmask)) {
+        netmask.setBackColor(Color.red);
+        return;
+      }
+      int _vlan = JF.atoi(vlan.getText());
+      if (_vlan < 0 || _vlan > 4095) {
+        vlan.setBackColor(Color.red);
+        return;
+      }
+      NetworkBridge sel_bridge = null;
+      NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+      for(NetworkBridge nic : nics) {
+        if (nic.name.equals(_bridge)) {
+          sel_bridge = nic;
+          break;
+        }
+      }
+      if (sel_bridge == null) {
+        JFLog.log("Error:No bridge to create virtual network");
+        return;
+      }
+      if (!NetworkVirtual.createVirtual(_name, sel_bridge, _mac, _ip, _netmask, _vlan)) {
+        JFLog.log("Error:Failed to create virtual network");
+        return;
+      }
+      NetworkVirtual nic = new NetworkVirtual(_name, _bridge, _mac, _ip, _netmask, _vlan);
+      Config.current.addNetworkVirtual(nic);
+      ui.network_virtual_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.network_virtual_popup.setVisible(false);
     });
 
     return panel;
@@ -1493,7 +1646,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   private void networkPanel_nics(TabPanel panel, UI ui) {
-    //vm host/server nics
+    //server nics
     {
       Panel vmnics = new Panel();
       panel.addTab(vmnics, "Server Virtual NICs");
@@ -1511,7 +1664,33 @@ public class ConfigService implements WebUIHandler {
       for(NetworkVirtual nic : nics) {
         list.add(nic.name);
       }
-      //TODO : button methods
+      create.addClickListener((me, cmp) -> {
+        ui.network_virtual = null;
+        ui.network_virtual_complete = null;
+        ui.network_virtual_popup.setVisible(true);
+      });
+      edit.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        //TODO
+        NetworkVirtual nic = nics.get(idx);
+        ui.network_virtual = nic;
+        ui.network_virtual_complete = new Runnable() {
+          public void run() {
+             //TODO
+          }
+        };
+        //ui.network_virtual_popup.setVisible(true);
+      });
+      delete.addClickListener((me, cmp) -> {
+        //TODO : confirm action
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkVirtual nic = nics.get(idx);
+        list.remove(idx);
+        nic.remove();
+        Config.current.removeNetworkVirtual(nic);
+      });
     }
   }
 

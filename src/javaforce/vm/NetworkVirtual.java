@@ -16,10 +16,20 @@ public class NetworkVirtual implements Serializable {
   public String mac;
   public String ip;
   public String netmask;
+  public int vlan;
 
   protected NetworkVirtual(String name) {
     this.name = name;
     this.bridge = ngetbridge(name);
+  }
+
+  public NetworkVirtual(String name, String bridge, String mac, String ip, String netmask, int vlan) {
+    this.name = name;
+    this.bridge = bridge;
+    this.mac = mac;
+    this.ip = ip;
+    this.netmask = netmask;
+    this.vlan = vlan;
   }
 
   private native static String ngetbridge(String name);

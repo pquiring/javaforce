@@ -79,8 +79,19 @@ public class Config implements Serializable {
     vlans.add(network);
     save();
   }
+
   public void removeNetworkVLAN(NetworkVLAN network) {
     vlans.remove(network);
+    save();
+  }
+
+  public void addNetworkVirtual(NetworkVirtual network) {
+    nics.add(network);
+    save();
+  }
+
+  public void removeNetworkVirtual(NetworkVirtual network) {
+    nics.remove(network);
     save();
   }
 }

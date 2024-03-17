@@ -11,6 +11,11 @@ import javaforce.*;
 
 public class Subnet4 {
   private IP4 ip = new IP4(), mask = new IP4();
+  public static boolean isSubnet(String str) {
+    if (!IP4.isIP(str)) return false;
+    //TODO : check bits
+    return true;
+  }
   public boolean setIP(String str) {
     return ip.setIP(str);
   }
