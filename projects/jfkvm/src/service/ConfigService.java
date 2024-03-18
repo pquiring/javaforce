@@ -124,7 +124,6 @@ public class ConfigService implements WebUIHandler {
       return loginPanel();
     }
     Panel panel = new Panel();
-    panel.setResizeChild(false);
     UI ui = new UI();
     ui.user = user;
 
