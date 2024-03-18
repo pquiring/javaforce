@@ -189,23 +189,32 @@ public class ConfigService implements WebUIHandler {
     PopupPanel panel = new PopupPanel("Confirm");
     panel.setPosition(256, 128);
     panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
     Label popup_msg = new Label("Message");
-    panel.add(popup_msg);
+    row.add(popup_msg);
+
+    row = new Row();
+    panel.add(row);
     Label popup_label = new Label("Are you sure?");
-    panel.add(popup_label);
+    row.add(popup_label);
+
+    row = new Row();
+    panel.add(row);
     Button popup_b_action = new Button("Action");
-    panel.add(popup_b_action);
+    row.add(popup_b_action);
+    Button popup_b_cancel = new Button("Cancel");
+    row.add(popup_b_cancel);
+
     popup_b_action.addClickListener((MouseEvent e, Component button) -> {
-      if (ui == null || ui.user == null) return;
       if (ui.confirm_action != null) {
         ui.confirm_action.run();
       }
       ui.confirm_popup.setVisible(false);
     });
-    Button popup_b_cancel = new Button("Cancel");
-    panel.add(popup_b_cancel);
     popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
-      if (ui == null || ui.user == null) return;
       panel.setVisible(false);
     });
     ui.confirm_message = popup_msg;
