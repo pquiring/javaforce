@@ -1898,6 +1898,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
+        ui.network_bridge_init.run();
         ui.network_bridge_popup.setVisible(true);
       });
       edit.addClickListener((me, cmp) -> {
