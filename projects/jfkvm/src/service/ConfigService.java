@@ -219,6 +219,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("Name"));
     TextField name = new TextField("");
     row.add(name);
@@ -272,16 +278,17 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
-        name.setBackColor(Color.red);
+        errmsg.setText("Error:invalid name");
         return;
       }
       String _size_str = vmm.cleanNumber(size.getText());
       if (_size_str.length() == 0) {
         size.setText(_size_str);
-        size.setBackColor(Color.red);
+        errmsg.setText("Error:invalid size");
         return;
       }
       int _size = Integer.valueOf(_size_str);
@@ -325,6 +332,12 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -391,7 +404,7 @@ public class ConfigService implements WebUIHandler {
       String _mac = mac.getText();
       if (_mac.length() > 0) {
         if (!MAC.valid(_mac)) {
-          mac.setBackColor(Color.red);
+          errmsg.setText("Error:invalid mac");
           return;
         }
       } else {
@@ -424,6 +437,12 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -479,23 +498,23 @@ public class ConfigService implements WebUIHandler {
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
-        name.setBackColor(Color.red);
+        errmsg.setText("Error:invalid name");
         return;
       }
       String _bridge = bridge.getSelectedText();
       if (_bridge == null || _bridge.length() == 0) {
-        bridge.setBackColor(Color.red);
+        errmsg.setText("Error:invalid bridge");
         return;
       }
       String _vlan_str = vmm.cleanNumber(vlan.getText());
       if (_vlan_str.length() == 0) {
         vlan.setText(_vlan_str);
-        vlan.setBackColor(Color.red);
+        errmsg.setText("Error:invalid VLAN");
         return;
       }
       int _vlan = Integer.valueOf(_vlan_str);
       if (_vlan < 0 || _vlan > 4095) {
-        vlan.setBackColor(Color.red);
+        errmsg.setText("Error:invalid VLAN");
         return;
       }
       Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
@@ -513,6 +532,12 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -560,12 +585,12 @@ public class ConfigService implements WebUIHandler {
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
-        name.setBackColor(Color.red);
+        errmsg.setText("Error:invalid name");
         return;
       }
       String _iface = iface.getSelectedText();
       if (_iface == null || _iface.length() == 0) {
-        iface.setBackColor(Color.red);
+        errmsg.setText("Error:invalid interface");
         return;
       }
       NetworkBridge.create(_name, _iface);
@@ -586,6 +611,12 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -666,18 +697,18 @@ public class ConfigService implements WebUIHandler {
       String _name = vmm.cleanName(ip.getText());
       if (_name.length() == 0) {
         name.setText(_name);
-        name.setBackColor(Color.red);
+        errmsg.setText("Error:invalid name");
         return;
       }
       String _bridge = bridge.getSelectedText();
       if (_bridge == null || _bridge.length() == 0) {
-        bridge.setBackColor(Color.red);
+        errmsg.setText("Error:invalid bridge");
         return;
       }
       String _mac = mac.getText();
       if (_mac.length() > 0) {
         if (!MAC.valid(_mac)) {
-          mac.setBackColor(Color.red);
+          errmsg.setText("Error:invalid mac");
           return;
         }
       } else {
@@ -685,23 +716,23 @@ public class ConfigService implements WebUIHandler {
       }
       String _ip = ip.getText();
       if (!IP4.isIP(_ip)) {
-        ip.setBackColor(Color.red);
+        errmsg.setText("Error:invalid IP4");
         return;
       }
       String _netmask = netmask.getText();
       if (!Subnet4.isSubnet(_netmask)) {
-        netmask.setBackColor(Color.red);
+        errmsg.setText("Error:invalid NetMask4");
         return;
       }
       String _vlan_str = vmm.cleanNumber(vlan.getText());
       if (_vlan_str.length() == 0) {
         vlan.setText(_vlan_str);
-        vlan.setBackColor(Color.red);
+        errmsg.setText("Error:invalid VLAN");
         return;
       }
       int _vlan = Integer.valueOf(_vlan_str);
       if (_vlan < 0 || _vlan > 4095) {
-        vlan.setBackColor(Color.red);
+        errmsg.setText("Error:invalid VLAN");
         return;
       }
       NetworkBridge sel_bridge = null;
@@ -869,8 +900,9 @@ public class ConfigService implements WebUIHandler {
     Row row;
     Label header = new Label("jfKVM has not been setup yet, please supply the admin password.");
     inner.add(header);
-    Label msg = new Label("");
-    inner.add(msg);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    inner.add(errmsg);
 
     row = new Row();
     inner.add(row);
@@ -890,21 +922,24 @@ public class ConfigService implements WebUIHandler {
     row.add(login);
 
     login.addClickListener( (MouseEvent m, Component c) -> {
+      errmsg.setText("");
       if (Config.current.password != null) {
-        msg.setText("Already configured, please refresh!");
-        msg.setColor(Color.red);
+        errmsg.setText("Already configured, please refresh!");
         return;
       }
       String passTxt1 = password.getText();
       String passTxt2 = confirm.getText();
-      if (passTxt1.length() >= 8 && passTxt1.equals(passTxt2)) {
-        Config.current.password = passTxt1;
-        Config.current.save();
-        client.setPanel(getRootPanel(client));
-      } else {
-        msg.setText("Password too short (min 8)");
-        msg.setColor(Color.red);
+      if (passTxt1.length() < 8 || passTxt2.length() < 8) {
+        errmsg.setText("Password too short (min 8)");
+        return;
       }
+      if (!passTxt1.equals(passTxt2)) {
+        errmsg.setText("Passwords do not match");
+        return;
+      }
+      Config.current.password = passTxt1;
+      Config.current.save();
+      client.setPanel(getRootPanel(client));
     });
     panel.add(inner);
     return panel;
@@ -1216,6 +1251,11 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     ui.hardware = hardware;
     Row row;
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
     //name [   ]
     row = new Row();
     panel.add(row);
@@ -1386,7 +1426,7 @@ public class ConfigService implements WebUIHandler {
 
     b_save.addClickListener((me, cmp) -> {
       if (!VirtualMachine.register(vm, hardware, vmm)) {
-        //TODO : show error
+        errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       ui.split.setRightComponent(vmsPanel(ui));
