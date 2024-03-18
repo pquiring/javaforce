@@ -1397,8 +1397,8 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("CPU Cores"));
-    TextField cpus = new TextField(Integer.toString(hardware.cores));
-    row.add(cpus);
+    TextField cores = new TextField(Integer.toString(hardware.cores));
+    row.add(cores);
     //firmware [BIOS/UEFI]
     row = new Row();
     panel.add(row);
@@ -1549,17 +1549,18 @@ public class ConfigService implements WebUIHandler {
       }
       int mem_units = memory_units.getSelectedIndex() + 2;
       hardware.memory = new Size(mem, mem_units);
-      _size_str = vmm.cleanNumber(cpus.getText());
+      _size_str = vmm.cleanNumber(cores.getText());
       if (_size_str.length() == 0) {
-        cpus.setText(_size_str);
+        cores.setText(_size_str);
         errmsg.setText("Error:invalid cores");
         return;
       }
-      hardware.cores = Integer.valueOf(_size_str);
-      if (hardware.cores == 0) {
+      int _cores = Integer.valueOf(_size_str);
+      if (_cores == 0) {
         errmsg.setText("Error:invalid cores");
         return;
       }
+      hardware.cores = _cores;
       hardware.bios_efi = firmware.getSelectedIndex() == 1;
       if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
