@@ -84,6 +84,7 @@ public class WebUIClient {
             if (args[a].startsWith("w=")) width = Integer.valueOf(args[a].substring(2));
             if (args[a].startsWith("h=")) height = Integer.valueOf(args[a].substring(2));
           }
+          JFLog.log("size=" + width + "x" + height);
           if (resized != null) {
             resized.onResized(null, width, height);
           }

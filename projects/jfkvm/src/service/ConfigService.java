@@ -1897,6 +1897,13 @@ public class ConfigService implements WebUIHandler {
       }
 
       create.addClickListener((me, cmp) -> {
+        if (NetworkBridge.list(NetworkBridge.TYPE_OS).length == 0) {
+          ui.confirm_action = null;
+          ui.confirm_button.setText("Ok");
+          ui.confirm_message.setText("Must create bridge (virtual switch) first.");
+          ui.confirm_popup.setVisible(true);
+          return;
+        }
         ui.network_vlan = null;
         ui.network_vlan_init.run();
         ui.network_vlan_popup.setVisible(true);
