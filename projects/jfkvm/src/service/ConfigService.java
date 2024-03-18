@@ -300,6 +300,7 @@ public class ConfigService implements WebUIHandler {
         disk.name = _name;
         disk.type = type.getSelectedIndex();
         disk.size = new Size(_size, _size_unit);
+        //TODO : create disk file (vmdk/qcow2)
         ui.hardware.addDisk(disk);
       } else {
         //update
@@ -1555,6 +1556,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("Name:" + store.name));
 
     row = new Row();
@@ -1582,6 +1589,7 @@ public class ConfigService implements WebUIHandler {
       store.host = _host;
       store.path = _path;
       if (!store.register()) {
+        errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       if (create) {
@@ -1600,6 +1608,12 @@ public class ConfigService implements WebUIHandler {
   private Panel iscsi_StoragePanel(Storage store, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -1638,6 +1652,7 @@ public class ConfigService implements WebUIHandler {
       store.target = _target;
       store.initiator = _init;
       if (!store.register()) {
+        errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       if (create) {
@@ -1656,6 +1671,12 @@ public class ConfigService implements WebUIHandler {
   private Panel local_StoragePanel(Storage store, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -1682,6 +1703,7 @@ public class ConfigService implements WebUIHandler {
       }
       store.path = _dev;
       if (!store.register()) {
+        errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       if (create) {
