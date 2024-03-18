@@ -1104,10 +1104,9 @@ public class ConfigService implements WebUIHandler {
     tools.add(unreg);
 
     ListBox list = new ListBox();
-    //TODO : add more details
-    String[] vms = vmm.listVMs();
-    for(String vm : vms) {
-      list.add(vm);
+    VirtualMachine[] vms = VirtualMachine.list();
+    for(VirtualMachine vm : vms) {
+      list.add(vm.name + ":" + vm.getStateString());
     }
 
     create.addClickListener((me, cmp) -> {
@@ -1119,12 +1118,10 @@ public class ConfigService implements WebUIHandler {
     edit.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      String vmname = list.getSelectedItem();
-      String pool = vmm.getVMPool(vmname);
-      VirtualMachine vm = vmm.getVMByName(vmname);
-      Hardware hardware = vmm.loadHardware(pool, vmname);
+      VirtualMachine vm = vms[idx];
+      Hardware hardware = vm.loadHardware();
       if (hardware == null) {
-        JFLog.log("Error:Failed to load config for vm:" + vmname);
+        JFLog.log("Error:Failed to load config for vm:" + vm.name);
         return;
       }
       ui.split.setRightComponent(vmEditPanel(vm, hardware, ui));

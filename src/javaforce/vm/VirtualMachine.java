@@ -23,8 +23,8 @@ public class VirtualMachine implements Serializable {
     vnc = -1;  //update during register
   }
 
-  private String pool;
-  private String name;
+  public String pool;
+  public String name;
   private String uuid;  //only valid while registered
   private int vnc;
 
@@ -93,6 +93,17 @@ public class VirtualMachine implements Serializable {
   private native static int ngetState(String name);
   public int getState() {
     return ngetState(name);
+  }
+
+  public String getStateString() {
+    int state = getState();
+    switch (state) {
+      case STATE_OFF: return "off";
+      case STATE_ON: return "on";
+      case STATE_SUSPEND: return "suspended";
+      case STATE_ERROR: return "error";
+    }
+    return "???";
   }
 
   private static VirtualMachine getByDesc(String desc) {
