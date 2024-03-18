@@ -123,6 +123,7 @@ public class ConfigService implements WebUIHandler {
       return loginPanel();
     }
     Panel panel = new Panel();
+    panel.setResizeChild(false);
     UI ui = new UI();
     ui.user = user;
 
@@ -204,7 +205,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Button popup_b_action = new Button("Action");
+    Button popup_b_action = new Button("Okay");
     row.add(popup_b_action);
 
     popup_b_action.addClickListener((MouseEvent e, Component button) -> {
