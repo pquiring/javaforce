@@ -18,6 +18,7 @@ public class PopupPanel extends Panel {
     modal = false;
     block = new Block();
     block.setClass("modal");
+    block.initInvisible();
     setPosition(0, 0);
   }
   /** Modal windows block all other windows underneath it. */
