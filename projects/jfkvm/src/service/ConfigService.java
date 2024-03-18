@@ -641,6 +641,34 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
+      //ensure name is unique
+      {
+        NetworkInterface[] nics = NetworkInterface.listPhysical();
+        for(NetworkInterface nic : nics) {
+          if (nic.name.equals(_name)) {
+            errmsg.setText("Error:name not unique");
+            return;
+          }
+        }
+      }
+      {
+        NetworkBridge[] nics = NetworkBridge.list();
+        for(NetworkBridge nic : nics) {
+          if (nic == ui.network_bridge) continue;
+          if (nic.name.equals(_name)) {
+            errmsg.setText("Error:name not unique");
+            return;
+          }
+        }
+      }
+      {
+        for(NetworkVirtual nic : Config.current.nics) {
+          if (nic.name.equals(_name)) {
+            errmsg.setText("Error:name not unique");
+            return;
+          }
+        }
+      }
       String _iface = iface.getSelectedText();
       if (_iface == null || _iface.length() == 0) {
         errmsg.setText("Error:invalid interface");
@@ -752,11 +780,31 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       //ensure name is unique
-      for(NetworkVirtual nic : Config.current.nics) {
-        if (nic == ui.network_virtual) continue;
-        if (nic.name.equals(_name)) {
-          errmsg.setText("Error:name not unique");
-          return;
+      {
+        NetworkInterface[] nics = NetworkInterface.listPhysical();
+        for(NetworkInterface nic : nics) {
+          if (nic.name.equals(_name)) {
+            errmsg.setText("Error:name not unique");
+            return;
+          }
+        }
+      }
+      {
+        NetworkBridge[] nics = NetworkBridge.list();
+        for(NetworkBridge nic : nics) {
+          if (nic.name.equals(_name)) {
+            errmsg.setText("Error:name not unique");
+            return;
+          }
+        }
+      }
+      {
+        for(NetworkVirtual nic : Config.current.nics) {
+          if (nic == ui.network_virtual) continue;
+          if (nic.name.equals(_name)) {
+            errmsg.setText("Error:name not unique");
+            return;
+          }
         }
       }
       String _bridge = bridge.getSelectedText();
