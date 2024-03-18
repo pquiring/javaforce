@@ -1076,7 +1076,9 @@ public class ConfigService implements WebUIHandler {
     }
 
     create.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(vmEditPanel(new Hardware(), true, ui));
+      Hardware hw = new Hardware();
+      VirtualMachine vm = new VirtualMachine(hw);
+      ui.split.setRightComponent(vmEditPanel(vm, hw, ui));
     });
 
     edit.addClickListener((me, cmp) -> {
@@ -1084,12 +1086,13 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       String vmname = list.getSelectedItem();
       String pool = vmm.getVMPool(vmname);
+      VirtualMachine vm = vmm.getVMByName(vmname);
       Hardware hardware = vmm.loadHardware(pool, vmname);
       if (hardware == null) {
         JFLog.log("Error:Failed to load config for vm:" + vmname);
         return;
       }
-      ui.split.setRightComponent(vmEditPanel(hardware, false, ui));
+      ui.split.setRightComponent(vmEditPanel(vm, hardware, ui));
     });
 
     start.addClickListener((me, cmp) -> {
@@ -1209,7 +1212,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel vmEditPanel(Hardware hardware, boolean create, UI ui) {
+  private Panel vmEditPanel(VirtualMachine vm, Hardware hardware, UI ui) {
     Panel panel = new Panel();
     ui.hardware = hardware;
     Row row;
@@ -1379,6 +1382,17 @@ public class ConfigService implements WebUIHandler {
         }
       };
       ui.confirm_popup.setVisible(true);
+    });
+
+    b_save.addClickListener((me, cmp) -> {
+      if (!VirtualMachine.register(vm, hardware, vmm)) {
+        //TODO : show error
+        return;
+      }
+      ui.split.setRightComponent(vmsPanel(ui));
+    });
+    b_cancel.addClickListener((me, cmp) -> {
+      ui.split.setRightComponent(vmsPanel(ui));
     });
 
     return panel;
@@ -1817,7 +1831,7 @@ public class ConfigService implements WebUIHandler {
       ports.add(list);
       ArrayList<NetworkVLAN> nics = Config.current.vlans;
       for(NetworkVLAN nic : nics) {
-        list.add(nic.name + ":" + nic.vlan);
+        list.add(nic.name + ":" + nic.vlan + ":" + nic.getUsage());
       }
 
       create.addClickListener((me, cmp) -> {

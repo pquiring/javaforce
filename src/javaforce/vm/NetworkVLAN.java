@@ -19,4 +19,19 @@ public class NetworkVLAN implements Serializable {
     this.bridge = bridge;
     this.vlan = vlan;
   }
+
+  public int getUsage() {
+    int count = 0;
+    VirtualMachine[] vms = VirtualMachine.list();
+    for(VirtualMachine vm : vms) {
+      Hardware hw = vm.loadHardware();
+      if (hw == null) continue;
+      for(Network nic : hw.networks) {
+        if (nic.network.equals(name)) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
 }
