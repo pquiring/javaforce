@@ -537,6 +537,14 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
+      //ensure name is unique
+      for(NetworkVLAN nic : Config.current.vlans) {
+        if (nic == ui.network_vlan) continue;
+        if (nic.name.equals(_name)) {
+          errmsg.setText("Error:name not unique");
+          return;
+        }
+      }
       String _bridge = bridge.getSelectedText();
       if (_bridge == null || _bridge.length() == 0) {
         errmsg.setText("Error:invalid bridge");
@@ -1937,6 +1945,11 @@ public class ConfigService implements WebUIHandler {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
         NetworkVLAN nic = Config.current.vlans.get(idx);
+        if (nic.getUsage() > 0) {
+          ui.message_message.setText("Network is in use");
+          ui.message_popup.setVisible(true);
+          return;
+        }
         ui.confirm_action = () -> {
           int idx1 = list.getSelectedIndex();
           NetworkVLAN nic1 = Config.current.vlans.get(idx1);
