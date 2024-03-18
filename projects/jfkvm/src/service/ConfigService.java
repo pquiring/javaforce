@@ -439,6 +439,7 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _mac = mac.getText();
       if (_mac.length() > 0) {
         if (!MAC.valid(_mac)) {
@@ -531,6 +532,7 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
@@ -635,6 +637,7 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
@@ -773,6 +776,7 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _name = vmm.cleanName(ip.getText());
       if (_name.length() == 0) {
         name.setText(_name);
@@ -1360,9 +1364,10 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Storage Pool"));
     ComboBox pool = new ComboBox();
     row.add(pool);
-    String[] pools = vmm.listPools();
-    for(String p : pools) {
-      pool.add(p, p);
+    Storage[] pools = vmm.listPools();
+    for(Storage p : pools) {
+      String _name = p.name;
+      pool.add(_name, _name);
     }
     //memory [   ] [MB/GB]
     row = new Row();
@@ -1512,6 +1517,9 @@ public class ConfigService implements WebUIHandler {
     });
 
     b_save.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      //TODO : get values
+      hardware.pool = pool.getSelectedValue();
       if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
@@ -1541,9 +1549,10 @@ public class ConfigService implements WebUIHandler {
     Button delete = new Button("Delete");
     tools.add(delete);
     ListBox list = new ListBox();
-    String[] pools = vmm.listPools();
-    for(String pool : pools) {
-      list.add(pool);
+    Storage[] pools = vmm.listPools();
+    for(Storage pool : pools) {
+      String _name = pool.name;
+      list.add(_name);
     }
 
     add.addClickListener((me, cmp) -> {
@@ -1581,6 +1590,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(desc);
     Row row;
 
+    row = new Row();
+    panel.add(row);
+    TextField errmsg = new TextField("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     //name
     row = new Row();
     panel.add(row);
@@ -1605,21 +1620,29 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     next.addClickListener((me, cmp) -> {
-      String storagename = vmm.cleanName(name.getText());
-      if (storagename.length() == 0) {
-        name.setText(storagename);
-        name.setBackColor(Color.red);
+      errmsg.setText("");
+      String _name = vmm.cleanName(name.getText());
+      if (_name.length() == 0) {
+        name.setText(_name);
+        errmsg.setText("Error:invalid name");
         return;
+      }
+      Storage[] pools = vmm.listPools();
+      for(Storage pool : pools) {
+        if (pool.name.equals(_name)) {
+          errmsg.setText("Error:name is not unique");
+          return;
+        }
       }
       switch (type.getSelectedValue()) {
         case "nfs":
-          ui.setRightPanel(nfs_StoragePanel(new Storage(Storage.TYPE_NFS, storagename, null), true, ui));
+          ui.setRightPanel(nfs_StoragePanel(new Storage(Storage.TYPE_NFS, _name, null), true, ui));
           break;
         case "iscsi":
-          ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, storagename, null), true, ui));
+          ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, _name, null), true, ui));
           break;
         case "local":
-          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL, storagename, null), true, ui));
+          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL, _name, null), true, ui));
           break;
       }
     });
@@ -1673,6 +1696,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _host = host.getText();
       String _path = path.getText();
       store.host = _host;
@@ -1734,6 +1758,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _host = host.getText();
       String _target = target.getText();
       String _init = initiator.getText();
@@ -1785,6 +1810,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       String _dev = dev.getText();
       if (!new File(_dev).exists()) {
         dev.setBackColor(Color.red);

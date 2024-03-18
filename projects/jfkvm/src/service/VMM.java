@@ -9,8 +9,8 @@ import javaforce.*;
 import javaforce.vm.*;
 
 public class VMM implements VMProvider {
-  public String[] listPools() {
-    return Storage.list();
+  public Storage[] listPools() {
+    return Config.current.pools.toArray(new Storage[0]);
   }
 
   public NetworkInterface[] listNetworkInterface() {
