@@ -89,6 +89,7 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel network_vlan_popup;
     public Runnable network_vlan_init;
     public NetworkVLAN network_vlan;
+    public Runnable network_vlan_complete;
 
     public PopupPanel network_bridge_popup;
     public Runnable network_bridge_init;
@@ -560,6 +561,9 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
+      if (ui.network_vlan_complete != null) {
+        ui.network_vlan_complete.run();
+      }
       ui.network_vlan_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
@@ -1855,10 +1859,10 @@ public class ConfigService implements WebUIHandler {
 
   private void networkPanel_phys(TabPanel panel, UI ui) {
     {
-      Panel phys = new Panel();
-      panel.addTab(phys, "Physical NICs");
+      Panel tab = new Panel();
+      panel.addTab(tab, "Physical NICs");
       ListBox phys_list = new ListBox();
-      phys.add(phys_list);
+      tab.add(phys_list);
       NetworkInterface[] nics = vmm.listNetworkInterface();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
@@ -1870,19 +1874,19 @@ public class ConfigService implements WebUIHandler {
   private void networkPanel_bridges(TabPanel panel, UI ui) {
     //bridges (virtual switches)
     {
-      Panel virt = new Panel();
-      panel.addTab(virt, "Virtual Switches");
+      Panel tab = new Panel();
+      panel.addTab(tab, "Virtual Switches");
       ToolBar tools = new ToolBar();
-      virt.add(tools);
+      tab.add(tools);
       Button create = new Button("Create");
       tools.add(create);
       Button edit = new Button("Edit");
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
-      virt.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
+      tab.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
       ListBox list = new ListBox();
-      virt.add(list);
+      tab.add(list);
       NetworkBridge[] nics = NetworkBridge.list();
       for(NetworkBridge nic : nics) {
         list.add(nic.name + ":" + nic.type + ":" + nic.iface);
@@ -1921,10 +1925,10 @@ public class ConfigService implements WebUIHandler {
   private void networkPanel_vlans(TabPanel panel, UI ui) {
     //network VLANs
     {
-      Panel ports = new Panel();
-      panel.addTab(ports, "Networks");
+      Panel tab = new Panel();
+      panel.addTab(tab, "Networks");
       ToolBar tools = new ToolBar();
-      ports.add(tools);
+      tab.add(tools);
       Button create = new Button("Create");
       tools.add(create);
       Button edit = new Button("Edit");
@@ -1932,11 +1936,15 @@ public class ConfigService implements WebUIHandler {
       Button delete = new Button("Delete");
       tools.add(delete);
       ListBox list = new ListBox();
-      ports.add(list);
-      ArrayList<NetworkVLAN> nics = Config.current.vlans;
-      for(NetworkVLAN nic : nics) {
-        list.add(nic.name + ":" + nic.vlan + ":" + nic.getUsage());
-      }
+      tab.add(list);
+
+      ui.network_vlan_complete = () -> {
+        list.removeAll();
+        for(NetworkVLAN nic : Config.current.vlans) {
+          list.add(nic.name + ":" + nic.vlan + ":" + nic.getUsage());
+        }
+      };
+      ui.network_vlan_complete.run();
 
       create.addClickListener((me, cmp) -> {
         if (NetworkBridge.list(NetworkBridge.TYPE_OS).length == 0) {
@@ -1951,19 +1959,20 @@ public class ConfigService implements WebUIHandler {
       edit.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        ui.network_vlan = nics.get(idx);
+        ui.network_vlan = Config.current.vlans.get(idx);
         ui.network_vlan_init.run();
         ui.network_vlan_popup.setVisible(true);
       });
       delete.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkVLAN nic = nics.get(idx);
+        NetworkVLAN nic = Config.current.vlans.get(idx);
         ui.confirm_action = new Runnable() {
           public void run() {
             int idx = list.getSelectedIndex();
-            NetworkVLAN nic = nics.get(idx);
+            NetworkVLAN nic = Config.current.vlans.get(idx);
             Config.current.removeNetworkVLAN(nic);
+            ui.network_vlan_complete.run();
           }
         };
         ui.confirm_button.setText("Delete");
@@ -1976,10 +1985,10 @@ public class ConfigService implements WebUIHandler {
   private void networkPanel_nics(TabPanel panel, UI ui) {
     //server nics
     {
-      Panel vmnics = new Panel();
-      panel.addTab(vmnics, "Server Virtual NICs");
+      Panel tab = new Panel();
+      panel.addTab(tab, "Server Virtual NICs");
       ToolBar tools = new ToolBar();
-      vmnics.add(tools);
+      tab.add(tools);
       Button create = new Button("Create");
       tools.add(create);
       Button edit = new Button("Edit");
@@ -1987,7 +1996,7 @@ public class ConfigService implements WebUIHandler {
       Button delete = new Button("Delete");
       tools.add(delete);
       ListBox list = new ListBox();
-      vmnics.add(list);
+      tab.add(list);
       ArrayList<NetworkVirtual> nics = Config.current.nics;
       for(NetworkVirtual nic : nics) {
         list.add(nic.name);
