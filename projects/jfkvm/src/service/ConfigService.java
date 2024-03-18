@@ -559,7 +559,13 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid VLAN");
         return;
       }
-      Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
+      if (ui.network_vlan == null) {
+        Config.current.addNetworkVLAN(new NetworkVLAN(_name, _bridge, _vlan));
+      } else {
+        ui.network_vlan.name = _name;
+        ui.network_vlan.bridge = _bridge;
+        ui.network_vlan.vlan = _vlan;
+      }
       if (ui.network_vlan_complete != null) {
         ui.network_vlan_complete.run();
       }
