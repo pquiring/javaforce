@@ -173,12 +173,14 @@ public class ConfigService implements WebUIHandler {
       });
 */
 
-    return top_bot;
+    return panel;
   }
 
   private Panel tasksPanel(UI ui) {
     Panel panel = new Panel();
     panel.add(new Label("Tasks panel"));
+
+    //TODO : create list of running tasks
 
     return panel;
   }
@@ -1279,6 +1281,7 @@ public class ConfigService implements WebUIHandler {
     ComboBox memory_units = new ComboBox();
     memory_units.add("MB", "MB");
     memory_units.add("GB", "GB");
+    memory_units.setSelectedIndex(1);
     row.add(memory_units);
     //cpus [   ]
     row = new Row();
@@ -1445,7 +1448,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(add);
     Button edit = new Button("Edit");
     tools.add(edit);
-    Button browse = new Button("Edit");
+    Button browse = new Button("Browse");
     tools.add(browse);
     Button format = new Button("Format");
     tools.add(format);
