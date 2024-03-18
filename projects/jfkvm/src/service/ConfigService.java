@@ -605,6 +605,7 @@ public class ConfigService implements WebUIHandler {
         iface.clear();
         NetworkInterface[] nics = NetworkInterface.listPhysical();
         for(NetworkInterface nic : nics) {
+          if (nic.name.equals("lo")) continue;
           iface.add(nic.name, nic.name);
         }
         if (ui.network_bridge == null) {
