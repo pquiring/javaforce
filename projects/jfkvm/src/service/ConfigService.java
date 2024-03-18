@@ -297,24 +297,22 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.vm_disk_init = new Runnable() {
-      public void run() {
-        if (ui.vm_disk == null) {
-          //create
-          name.setText(ui.hardware.getNextDiskName());
-          type.setSelectedIndex(0);
-          size.setText("100");
-          size_units.setSelectedIndex(1);
-        } else {
-          //update
-          name.setText(ui.vm_disk.name);
-          switch (ui.vm_disk.type) {
-            case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
-            case Disk.TYPE_QCOW2: type.setSelectedIndex(1); break;
-          }
-          size.setText(Integer.toString(ui.vm_disk.size.size));
-          size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
+    ui.vm_disk_init = () -> {
+      if (ui.vm_disk == null) {
+        //create
+        name.setText(ui.hardware.getNextDiskName());
+        type.setSelectedIndex(0);
+        size.setText("100");
+        size_units.setSelectedIndex(1);
+      } else {
+        //update
+        name.setText(ui.vm_disk.name);
+        switch (ui.vm_disk.type) {
+          case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
+          case Disk.TYPE_QCOW2: type.setSelectedIndex(1); break;
         }
+        size.setText(Integer.toString(ui.vm_disk.size.size));
+        size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
       }
     };
 
@@ -410,35 +408,33 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.vm_network_init = new Runnable() {
-      public void run() {
-        networks.clear();
-        ArrayList<NetworkVLAN> nics = Config.current.vlans;
+    ui.vm_network_init = () -> {
+      networks.clear();
+      ArrayList<NetworkVLAN> nics = Config.current.vlans;
+      for(NetworkVLAN nic : nics) {
+        networks.add(nic.name, nic.name);
+      }
+      if (ui.vm_network == null) {
+        models.setSelectedIndex(0);
+        networks.setSelectedIndex(0);
+      } else {
+        int idx = 0;
+        for(String model : nic_models) {
+          if (model.equals(ui.vm_network.model)) {
+            models.setSelectedIndex(idx);
+            break;
+          }
+          idx++;
+        }
+        idx = 0;
         for(NetworkVLAN nic : nics) {
-          networks.add(nic.name, nic.name);
-        }
-        if (ui.vm_network == null) {
-          models.setSelectedIndex(0);
-          networks.setSelectedIndex(0);
-        } else {
-          int idx = 0;
-          for(String model : nic_models) {
-            if (model.equals(ui.vm_network.model)) {
-              models.setSelectedIndex(idx);
-              break;
-            }
-            idx++;
+          if (nic.name.equals(ui.vm_network.network)) {
+            networks.setSelectedIndex(idx);
+            break;
           }
-          idx = 0;
-          for(NetworkVLAN nic : nics) {
-            if (nic.name.equals(ui.vm_network.network)) {
-              networks.setSelectedIndex(idx);
-              break;
-            }
-            idx++;
-          }
-          mac.setText(ui.vm_network.mac);
+          idx++;
         }
+        mac.setText(ui.vm_network.mac);
       }
     };
 
@@ -506,32 +502,30 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button accept = new Button("Create");
+    Button accept = new Button("Okay");
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.network_vlan_init = new Runnable() {
-      public void run() {
-        bridge.clear();
-        NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+    ui.network_vlan_init = () -> {
+      bridge.clear();
+      NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+      for(NetworkBridge nic : nics) {
+        bridge.add(nic.name, nic.name);
+      }
+      if (ui.network_vlan == null) {
+        name.setText("");
+        vlan.setText("0");
+      } else {
+        name.setText(ui.network_vlan.name);
+        vlan.setText(Integer.toString(ui.network_vlan.vlan));
+        int idx = 0;
         for(NetworkBridge nic : nics) {
-          bridge.add(nic.name, nic.name);
-        }
-        if (ui.network_vlan == null) {
-          name.setText("");
-          vlan.setText("0");
-        } else {
-          name.setText(ui.network_vlan.name);
-          vlan.setText(Integer.toString(ui.network_vlan.vlan));
-          int idx = 0;
-          for(NetworkBridge nic : nics) {
-            if (nic.name.equals(ui.network_vlan.bridge)) {
-              bridge.setSelectedIndex(idx);
-              break;
-            }
-            idx++;
+          if (nic.name.equals(ui.network_vlan.bridge)) {
+            bridge.setSelectedIndex(idx);
+            break;
           }
+          idx++;
         }
       }
     };
@@ -565,6 +559,7 @@ public class ConfigService implements WebUIHandler {
         ui.network_vlan.name = _name;
         ui.network_vlan.bridge = _bridge;
         ui.network_vlan.vlan = _vlan;
+        Config.current.save();
       }
       if (ui.network_vlan_complete != null) {
         ui.network_vlan_complete.run();
@@ -609,26 +604,24 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.network_bridge_init = new Runnable() {
-      public void run() {
-        iface.clear();
-        NetworkInterface[] nics = NetworkInterface.listPhysical();
+    ui.network_bridge_init = () -> {
+      iface.clear();
+      NetworkInterface[] nics = NetworkInterface.listPhysical();
+      for(NetworkInterface nic : nics) {
+        if (nic.name.equals("lo")) continue;
+        iface.add(nic.name, nic.name);
+      }
+      if (ui.network_bridge == null) {
+        name.setText("");
+      } else {
+        name.setText(ui.network_bridge.name);
+        int idx = 0;
         for(NetworkInterface nic : nics) {
-          if (nic.name.equals("lo")) continue;
-          iface.add(nic.name, nic.name);
-        }
-        if (ui.network_bridge == null) {
-          name.setText("");
-        } else {
-          name.setText(ui.network_bridge.name);
-          int idx = 0;
-          for(NetworkInterface nic : nics) {
-            if (nic.name.equals(ui.network_bridge.iface)) {
-              iface.setSelectedIndex(idx);
-              break;
-            }
-            idx++;
+          if (nic.name.equals(ui.network_bridge.iface)) {
+            iface.setSelectedIndex(idx);
+            break;
           }
+          idx++;
         }
       }
     };
@@ -714,33 +707,31 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.network_virtual_init = new Runnable() {
-      public void run() {
-        bridge.clear();
-        NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+    ui.network_virtual_init = () -> {
+      bridge.clear();
+      NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
+      for(NetworkBridge nic : nics) {
+        bridge.add(nic.name, nic.name);
+      }
+      if (ui.network_virtual == null) {
+        name.setText("");
+        mac.setText("");
+        ip.setText("192.168.1.2");
+        netmask.setText("255.255.255.0");
+        vlan.setText("0");
+      } else {
+        name.setText(ui.network_virtual.name);
+        mac.setText(ui.network_virtual.mac);
+        ip.setText(ui.network_virtual.ip);
+        netmask.setText(ui.network_virtual.netmask);
+        vlan.setText(Integer.toString(ui.network_virtual.vlan));
+        int idx = 0;
         for(NetworkBridge nic : nics) {
-          bridge.add(nic.name, nic.name);
-        }
-        if (ui.network_virtual == null) {
-          name.setText("");
-          mac.setText("");
-          ip.setText("192.168.1.2");
-          netmask.setText("255.255.255.0");
-          vlan.setText("0");
-        } else {
-          name.setText(ui.network_virtual.name);
-          mac.setText(ui.network_virtual.mac);
-          ip.setText(ui.network_virtual.ip);
-          netmask.setText(ui.network_virtual.netmask);
-          vlan.setText(Integer.toString(ui.network_virtual.vlan));
-          int idx = 0;
-          for(NetworkBridge nic : nics) {
-            if (nic.name.equals(ui.network_virtual.bridge)) {
-              bridge.setSelectedIndex(idx);
-              break;
-            }
-            idx++;
+          if (nic.name.equals(ui.network_virtual.bridge)) {
+            bridge.setSelectedIndex(idx);
+            break;
           }
+          idx++;
         }
       }
     };
@@ -833,25 +824,23 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.device_usb_init = new Runnable() {
-      public void run() {
-        String _sel = null;
-        if (ui.device != null) {
-          _sel = ui.device.path;
+    ui.device_usb_init = () -> {
+      String _sel = null;
+      if (ui.device != null) {
+        _sel = ui.device.path;
+      }
+      String[] groups = vmm.listDevices(Device.TYPE_USB);
+      int idx = 0;
+      int _sel_idx = -1;
+      for(String group : groups) {
+        if (group.equals(_sel)) {
+          _sel_idx = idx;
         }
-        String[] groups = vmm.listDevices(Device.TYPE_USB);
-        int idx = 0;
-        int _sel_idx = -1;
-        for(String group : groups) {
-          if (group.equals(_sel)) {
-            _sel_idx = idx;
-          }
-          device.add(group, group);
-          idx++;
-        }
-        if (_sel_idx != -1) {
-          device.setSelectedIndex(_sel_idx);
-        }
+        device.add(group, group);
+        idx++;
+      }
+      if (_sel_idx != -1) {
+        device.setSelectedIndex(_sel_idx);
       }
     };
 
@@ -897,25 +886,23 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.device_pci_init = new Runnable() {
-      public void run() {
-        String _sel = null;
-        if (ui.device != null) {
-          _sel = ui.device.path;
+    ui.device_pci_init = () -> {
+      String _sel = null;
+      if (ui.device != null) {
+        _sel = ui.device.path;
+      }
+      String[] groups = vmm.listDevices(Device.TYPE_PCI);
+      int idx = 0;
+      int _sel_idx = -1;
+      for(String group : groups) {
+        if (group.equals(_sel)) {
+          _sel_idx = idx;
         }
-        String[] groups = vmm.listDevices(Device.TYPE_PCI);
-        int idx = 0;
-        int _sel_idx = -1;
-        for(String group : groups) {
-          if (group.equals(_sel)) {
-            _sel_idx = idx;
-          }
-          device.add(group, group);
-          idx++;
-        }
-        if (_sel_idx != -1) {
-          device.setSelectedIndex(_sel_idx);
-        }
+        device.add(group, group);
+        idx++;
+      }
+      if (_sel_idx != -1) {
+        device.setSelectedIndex(_sel_idx);
       }
     };
 
@@ -1185,24 +1172,22 @@ public class ConfigService implements WebUIHandler {
       String name = list.getSelectedItem();
       ui.confirm_button.setText("Start");
       ui.confirm_message.setText("Start VM : " + name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          Task task = new Task("Start") {
-            public void doTask() {
-              VirtualMachine vm = VirtualMachine.get(name);
-              if (vm == null) {
-                setResult("Error:VM not found:" + name);
-                return;
-              }
-              if (vm.start()) {
-                setResult("Completed");
-              } else {
-                setResult("Error occured, see logs.");
-              }
+      ui.confirm_action = () -> {
+        Task task = new Task("Start") {
+          public void doTask() {
+            VirtualMachine vm = VirtualMachine.get(name);
+            if (vm == null) {
+              setResult("Error:VM not found:" + name);
+              return;
             }
-          };
-          KVMService.tasks.addTask(task);
-        }
+            if (vm.start()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1214,24 +1199,22 @@ public class ConfigService implements WebUIHandler {
       String name = list.getSelectedItem();
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop VM : " + name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          Task task = new Task("Stop") {
-            public void doTask() {
-              VirtualMachine vm = VirtualMachine.get(name);
-              if (vm == null) {
-                setResult("Error:VM not found:" + name);
-                return;
-              }
-              if (vm.stop()) {
-                setResult("Completed");
-              } else {
-                setResult("Error occured, see logs.");
-              }
+      ui.confirm_action = () -> {
+        Task task = new Task("Stop") {
+          public void doTask() {
+            VirtualMachine vm = VirtualMachine.get(name);
+            if (vm == null) {
+              setResult("Error:VM not found:" + name);
+              return;
             }
-          };
-          KVMService.tasks.addTask(task);
-        }
+            if (vm.stop()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1243,24 +1226,22 @@ public class ConfigService implements WebUIHandler {
       String name = list.getSelectedItem();
       ui.confirm_button.setText("Power Off");
       ui.confirm_message.setText("Power Off VM : " + name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          Task task = new Task("Power Off") {
-            public void doTask() {
-              VirtualMachine vm = VirtualMachine.get(name);
-              if (vm == null) {
-                setResult("Error:VM not found:" + name);
-                return;
-              }
-              if (vm.poweroff()) {
-                setResult("Completed");
-              } else {
-                setResult("Error occured, see logs.");
-              }
+      ui.confirm_action = () -> {
+        Task task = new Task("Power Off") {
+          public void doTask() {
+            VirtualMachine vm = VirtualMachine.get(name);
+            if (vm == null) {
+              setResult("Error:VM not found:" + name);
+              return;
             }
-          };
-          KVMService.tasks.addTask(task);
-        }
+            if (vm.poweroff()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1271,24 +1252,22 @@ public class ConfigService implements WebUIHandler {
       String name = list.getSelectedItem();
       ui.confirm_button.setText("Unregister");
       ui.confirm_message.setText("Unregister VM : " + name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          Task task = new Task("Unregister") {
-            public void doTask() {
-              VirtualMachine vm = VirtualMachine.get(name);
-              if (vm == null) {
-                setResult("Error:VM not found:" + name);
-                return;
-              }
-              if (vm.unregister()) {
-                setResult("Completed");
-              } else {
-                setResult("Error occured, see logs.");
-              }
+      ui.confirm_action = () -> {
+        Task task = new Task("Unregister") {
+          public void doTask() {
+            VirtualMachine vm = VirtualMachine.get(name);
+            if (vm == null) {
+              setResult("Error:VM not found:" + name);
+              return;
             }
-          };
-          KVMService.tasks.addTask(task);
-        }
+            if (vm.unregister()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1420,20 +1399,16 @@ public class ConfigService implements WebUIHandler {
       Disk disk = ui.hardware.disks.get(idx);
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Disk : " + disk.name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          ui.hardware.removeDisk(disk);
-        }
+      ui.confirm_action = () -> {
+        ui.hardware.removeDisk(disk);
       };
       ui.confirm_popup.setVisible(true);
     });
     b_net_add.addClickListener((me, cmp) -> {
       ui.vm_network = null;
-      ui.vm_network_complete = new Runnable() {
-        public void run() {
-          hardware.addNetwork(ui.vm_network);
-          net_list.add(ui.vm_network.network);
-        }
+      ui.vm_network_complete = () -> {
+        hardware.addNetwork(ui.vm_network);
+        net_list.add(ui.vm_network.network);
       };
       ui.vm_network_popup.setVisible(true);
     });
@@ -1466,10 +1441,8 @@ public class ConfigService implements WebUIHandler {
       Device device = ui.hardware.devices.get(idx);
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Device : " + device.name);
-      ui.confirm_action = new Runnable() {
-        public void run() {
-          ui.hardware.removeDevice(device);
-        }
+      ui.confirm_action = () -> {
+        ui.hardware.removeDevice(device);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1794,18 +1767,16 @@ public class ConfigService implements WebUIHandler {
     ListBox list = new ListBox();
     panel.add(list);
 
-    ui.browse_init = new Runnable() {
-      public void run() {
-        path.setText(ui.browse_path);
-        list.removeAll();
-        File[] files = new File(ui.browse_path).listFiles();
-        for(File file : files) {
-          String name = file.getName();
-          if (file.isDirectory()) {
-            list.add("/" + name);
-          } else {
-            list.add(name);
-          }
+    ui.browse_init = () -> {
+      path.setText(ui.browse_path);
+      list.removeAll();
+      File[] files = new File(ui.browse_path).listFiles();
+      for(File file : files) {
+        String name = file.getName();
+        if (file.isDirectory()) {
+          list.add("/" + name);
+        } else {
+          list.add(name);
         }
       }
     };
@@ -1825,19 +1796,15 @@ public class ConfigService implements WebUIHandler {
       if (item == null) return;
       if (item.startsWith("/")) {
         ui.confirm_message.setText("Delete folder:" + item);
-        ui.confirm_action = new Runnable() {
-          public void run() {
-            new File(ui.browse_path + item).delete();
-            ui.browse_init.run();
-          }
+        ui.confirm_action = () -> {
+          new File(ui.browse_path + item).delete();
+          ui.browse_init.run();
         };
       } else {
         ui.confirm_message.setText("Delete file:" + item);
-        ui.confirm_action = new Runnable() {
-          public void run() {
-            new File(ui.browse_path + "/" + item).delete();
-            ui.browse_init.run();
-          }
+        ui.confirm_action = () -> {
+          new File(ui.browse_path + "/" + item).delete();
+          ui.browse_init.run();
         };
       }
     });
@@ -1899,13 +1866,11 @@ public class ConfigService implements WebUIHandler {
 
       create.addClickListener((me, cmp) -> {
         ui.network_bridge = null;
-        ui.network_bridge_complete = new Runnable() {
-          public void run() {
-            list.removeAll();
-            NetworkBridge[] nics = NetworkBridge.list();
-            for(NetworkBridge nic : nics) {
-              list.add(nic.name + ":" + nic.type + ":" + nic.iface);
-            }
+        ui.network_bridge_complete = () -> {
+          list.removeAll();
+          NetworkBridge[] nics1 = NetworkBridge.list();
+          for (NetworkBridge nic : nics1) {
+            list.add(nic.name + ":" + nic.type + ":" + nic.iface);
           }
         };
         ui.network_bridge_init.run();
@@ -1972,13 +1937,11 @@ public class ConfigService implements WebUIHandler {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
         NetworkVLAN nic = Config.current.vlans.get(idx);
-        ui.confirm_action = new Runnable() {
-          public void run() {
-            int idx = list.getSelectedIndex();
-            NetworkVLAN nic = Config.current.vlans.get(idx);
-            Config.current.removeNetworkVLAN(nic);
-            ui.network_vlan_complete.run();
-          }
+        ui.confirm_action = () -> {
+          int idx1 = list.getSelectedIndex();
+          NetworkVLAN nic1 = Config.current.vlans.get(idx1);
+          Config.current.removeNetworkVLAN(nic1);
+          ui.network_vlan_complete.run();
         };
         ui.confirm_button.setText("Delete");
         ui.confirm_message.setText("Delete VLAN:" + nic.name);
@@ -2017,10 +1980,8 @@ public class ConfigService implements WebUIHandler {
         //TODO : edit virtual nic
         NetworkVirtual nic = nics.get(idx);
         ui.network_virtual = nic;
-        ui.network_virtual_complete = new Runnable() {
-          public void run() {
-             //TODO : edit virt nic
-          }
+        ui.network_virtual_complete = () -> {
+          //TODO : edit virt nic
         };
         //ui.network_virtual_popup.setVisible(true);
       });
@@ -2030,12 +1991,10 @@ public class ConfigService implements WebUIHandler {
         NetworkVirtual nic = nics.get(idx);
         ui.confirm_button.setText("Delete");
         ui.confirm_message.setText("Delete NIC : " + nic.name);
-        ui.confirm_action = new Runnable() {
-          public void run() {
-            list.remove(idx);
-            nic.remove();
-            Config.current.removeNetworkVirtual(nic);
-          }
+        ui.confirm_action = () -> {
+          list.remove(idx);
+          nic.remove();
+          Config.current.removeNetworkVirtual(nic);
         };
       });
     }
