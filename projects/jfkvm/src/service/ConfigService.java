@@ -64,6 +64,9 @@ public class ConfigService implements WebUIHandler {
     public SplitPanel split;
     public Panel tasks;
 
+    public PopupPanel message_popup;
+    public Label message_message;
+
     public PopupPanel confirm_popup;
     public Label confirm_message;
     public Button confirm_button;
@@ -122,6 +125,9 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     UI ui = new UI();
     ui.user = user;
+
+    ui.message_popup = messagePopupPanel(ui);
+    panel.add(ui.message_popup);
 
     ui.confirm_popup = confirmPopupPanel(ui);
     panel.add(ui.confirm_popup);
@@ -182,6 +188,29 @@ public class ConfigService implements WebUIHandler {
 
     //TODO : create list of running tasks
 
+    return panel;
+  }
+
+  private PopupPanel messagePopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Message");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label popup_msg = new Label("Message");
+    row.add(popup_msg);
+
+    row = new Row();
+    panel.add(row);
+    Button popup_b_action = new Button("Action");
+    row.add(popup_b_action);
+
+    popup_b_action.addClickListener((MouseEvent e, Component button) -> {
+      ui.message_popup.setVisible(false);
+    });
+    ui.message_message = popup_msg;
     return panel;
   }
 
@@ -1907,10 +1936,8 @@ public class ConfigService implements WebUIHandler {
 
       create.addClickListener((me, cmp) -> {
         if (NetworkBridge.list(NetworkBridge.TYPE_OS).length == 0) {
-          ui.confirm_action = null;
-          ui.confirm_button.setText("Ok");
-          ui.confirm_message.setText("Must create bridge (virtual switch) first.");
-          ui.confirm_popup.setVisible(true);
+          ui.message_message.setText("Must create bridge (virtual switch) first.");
+          ui.message_popup.setVisible(true);
           return;
         }
         ui.network_vlan = null;
