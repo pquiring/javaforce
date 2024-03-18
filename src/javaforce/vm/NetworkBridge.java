@@ -58,7 +58,7 @@ virbr0\t8000.xxxxxxxxxxxx\tno\teth0...
   private static NetworkBridge[] list_os() {
     ShellProcess p = new ShellProcess();
     p.keepOutput(true);
-    String output = p.run(new String[] {"/usr/sbin/brctl", "show"}, true);
+    String output = p.run(new String[] {"/usr/bin/ovs-vsctl", "show"}, true);
     if (output == null) return null;
     /*
 UUID
@@ -127,13 +127,13 @@ UUID
       //create bridge
       ShellProcess p = new ShellProcess();
       p.keepOutput(true);
-      p.run(new String[] {"/usr/sbin/ovs-vsctl", "add-br", name}, true);
+      p.run(new String[] {"/usr/bin/ovs-vsctl", "add-br", name}, true);
     }
     {
       //add nic to bridge
       ShellProcess p = new ShellProcess();
       p.keepOutput(true);
-      p.run(new String[] {"/usr/sbin/ovs-vsctl", "add-port", name, nic}, true);
+      p.run(new String[] {"/usr/bin/ovs-vsctl", "add-port", name, nic}, true);
     }
     return true;
   }
@@ -147,7 +147,7 @@ UUID
   private void remove_os() {
     ShellProcess p = new ShellProcess();
     p.keepOutput(true);
-    p.run(new String[] {"/usr/sbin/ovs-vsctl", "del-br", name}, true);
+    p.run(new String[] {"/usr/bin/ovs-vsctl", "del-br", name}, true);
   }
 
   public boolean remove() {
