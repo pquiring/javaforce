@@ -751,6 +751,14 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
+      //ensure name is unique
+      for(NetworkVirtual nic : Config.current.nics) {
+        if (nic == ui.network_virtual) continue;
+        if (nic.name.equals(_name)) {
+          errmsg.setText("Error:name not unique");
+          return;
+        }
+      }
       String _bridge = bridge.getSelectedText();
       if (_bridge == null || _bridge.length() == 0) {
         errmsg.setText("Error:invalid bridge");
