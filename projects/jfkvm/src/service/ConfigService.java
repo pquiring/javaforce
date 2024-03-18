@@ -331,6 +331,10 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int _size = Integer.valueOf(_size_str);
+      if (_size == 0) {
+        errmsg.setText("Error:invalid size");
+        return;
+      }
       int _size_unit = size_units.getSelectedIndex() + 2;
       if (ui.vm_disk == null) {
         //create
@@ -1365,26 +1369,35 @@ public class ConfigService implements WebUIHandler {
     ComboBox pool = new ComboBox();
     row.add(pool);
     Storage[] pools = vmm.listPools();
+    int selpool = -1;
+    int poolidx = 0;
     for(Storage p : pools) {
       String _name = p.name;
       pool.add(_name, _name);
+      if (_name.equals(hardware.pool)) {
+        selpool = poolidx;
+      }
+      poolidx++;
+    }
+    if (selpool != -1) {
+      pool.setSelectedIndex(selpool);
     }
     //memory [   ] [MB/GB]
     row = new Row();
     panel.add(row);
     row.add(new Label("Memory"));
-    TextField memory = new TextField("4");
+    TextField memory = new TextField(Integer.toString(hardware.memory.size));
     row.add(memory);
     ComboBox memory_units = new ComboBox();
     memory_units.add("MB", "MB");
     memory_units.add("GB", "GB");
-    memory_units.setSelectedIndex(1);
+    memory_units.setSelectedIndex(hardware.memory.unit - 2);
     row.add(memory_units);
     //cpus [   ]
     row = new Row();
     panel.add(row);
     row.add(new Label("CPU Cores"));
-    TextField cpus = new TextField("2");
+    TextField cpus = new TextField(Integer.toString(hardware.cores));
     row.add(cpus);
     //firmware [BIOS/UEFI]
     row = new Row();
@@ -1393,6 +1406,9 @@ public class ConfigService implements WebUIHandler {
     ComboBox firmware = new ComboBox();
     firmware.add("BIOS", "BIOS");
     firmware.add("UEFI", "UEFI");
+    if (hardware.bios_efi) {
+      firmware.setSelectedIndex(1);
+    }
     row.add(firmware);
     //disks
     InnerPanel disks = new InnerPanel("Disks");
@@ -1518,8 +1534,33 @@ public class ConfigService implements WebUIHandler {
 
     b_save.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      //TODO : get values
+      hardware.name = name.getText();
       hardware.pool = pool.getSelectedValue();
+      String _size_str = vmm.cleanNumber(memory.getText());
+      if (_size_str.length() == 0) {
+        memory.setText(_size_str);
+        errmsg.setText("Error:invalid memory size");
+        return;
+      }
+      int mem = Integer.valueOf(_size_str);
+      if (mem == 0) {
+        errmsg.setText("Error:invalid memory size");
+        return;
+      }
+      int mem_units = memory_units.getSelectedIndex() + 2;
+      hardware.memory = new Size(mem, mem_units);
+      _size_str = vmm.cleanNumber(cpus.getText());
+      if (_size_str.length() == 0) {
+        cpus.setText(_size_str);
+        errmsg.setText("Error:invalid cores");
+        return;
+      }
+      hardware.cores = Integer.valueOf(_size_str);
+      if (hardware.cores == 0) {
+        errmsg.setText("Error:invalid cores");
+        return;
+      }
+      hardware.bios_efi = firmware.getSelectedIndex() == 1;
       if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
