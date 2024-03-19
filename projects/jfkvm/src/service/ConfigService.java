@@ -1700,6 +1700,7 @@ public class ConfigService implements WebUIHandler {
     type.add("nfs", "NFS");
     type.add("iscsi", "iSCSI");
     type.add("local", "Local");
+    row.add(type);
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
