@@ -947,7 +947,7 @@ static JNINativeMethod javaforce_vm_Storage[] = {
   {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstart},
   {"nstop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstop},
   {"ngetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_vm_Storage_ngetState},
-  {"format", "(Ljava/lang/String;I)Z", (void *)&Java_javaforce_vm_Storage_format},
+  {"format", "(Ljava/lang/String;I)Z", (void *)&Java_javaforce_vm_Storage_nformat},
 };
 
 static JNINativeMethod javaforce_vm_VirtualMachine[] = {
