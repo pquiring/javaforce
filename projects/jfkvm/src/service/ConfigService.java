@@ -1215,6 +1215,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(unreg);
 
     ListBox list = new ListBox();
+    panel.add(list);
     VirtualMachine[] vms = VirtualMachine.list();
     for(VirtualMachine vm : vms) {
       list.add(vm.name + ":" + vm.getStateString());
@@ -1638,6 +1639,7 @@ public class ConfigService implements WebUIHandler {
     Button delete = new Button("Delete");
     tools.add(delete);
     ListBox list = new ListBox();
+    panel.add(list);
     Storage[] pools = vmm.listPools();
     for(Storage pool : pools) {
       String _name = pool.name;
@@ -1797,8 +1799,9 @@ public class ConfigService implements WebUIHandler {
       }
       if (create) {
         Config.current.addStorage(store);
+      } else {
+        Config.current.save();
       }
-      Config.current.save();
       ui.setRightPanel(storagePanel(ui));
     });
     cancel.addClickListener((me, cmp) -> {
