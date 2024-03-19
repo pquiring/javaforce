@@ -31,9 +31,10 @@ public class Storage implements Serializable {
   public String path;  //nfs, local (device)
   private String user, pass;  //iscsi chap (TODO)
 
-  public static final int TYPE_LOCAL = 1;
-  public static final int TYPE_NFS = 2;
-  public static final int TYPE_ISCSI = 3;
+  public static final int TYPE_LOCAL_PART = 1;  //local partition
+  public static final int TYPE_LOCAL_DISK = 2;  //local disk
+  public static final int TYPE_NFS = 3;
+  public static final int TYPE_ISCSI = 4;
 
   public static final int STATE_OFF = 0;
   public static final int STATE_ON = 1;
@@ -90,11 +91,11 @@ public class Storage implements Serializable {
 
   public static final int TYPE_EXT4 = 1;
 
-  /** Format local partition or iscsi disk. */
+  /** Format local partition or iscsi target. */
   private native boolean nformat(String path, int type);
   public boolean format(int type) {
     switch (type) {
-      case TYPE_LOCAL:
+      case TYPE_LOCAL_PART:
         if (type != TYPE_EXT4) return false;
         ShellProcess sp = new ShellProcess();
         sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", path}, true);
@@ -111,12 +112,13 @@ public class Storage implements Serializable {
     switch (type) {
       case TYPE_ISCSI: return createXML_iSCSI(name, host, target, initiator, getPath(), user, pass);
       case TYPE_NFS: return createXML_NFS(name, host, path, getPath());
-      case TYPE_LOCAL: return createXML_Local(name, host, path, getPath());
+      case TYPE_LOCAL_PART: return createXML_Local_Part(name, path, getPath());
+      case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, path, getPath());
     }
     return null;
   }
 
-  public static String createXML_iSCSI(String name, String host, String target, String initiator, String mountPath, String chap_user, String chap_pass) {
+  private static String createXML_iSCSI(String name, String host, String target, String initiator, String mountPath, String chap_user, String chap_pass) {
     StringBuilder sb = new StringBuilder();
     sb.append("<pool type=\"iscsi-direct\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
@@ -141,13 +143,14 @@ public class Storage implements Serializable {
     return sb.toString();
   }
 
-  public static String createXML_NFS(String name, String host, String srcPath, String mountPath) {
+  private static String createXML_NFS(String name, String host, String srcPath, String mountPath) {
     StringBuilder sb = new StringBuilder();
     sb.append("<pool type=\"netfs\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
     sb.append("  <source>");
     sb.append("    <host name=\"" + host + "\"/>");
     sb.append("    <device path=\"" + srcPath + "\"/>");
+    sb.append("    <format type='nfs'/>");
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>" + mountPath + "</path>");
@@ -161,15 +164,34 @@ public class Storage implements Serializable {
     return sb.toString();
   }
 
-  public static String createXML_Local(String name, String host, String localDevice, String mountPath) {
+  private static String createXML_Local_Part(String name, String localDevice, String mountPath) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<pool type=\"logical\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("<pool type=\"fs\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
     sb.append("  <source>");
     sb.append("    <device path=\"" + localDevice + "\"/>");
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>" + mountPath + "</path>");
+    sb.append("  </target>");
+    sb.append("  <fs:mount_opts>");
+    sb.append("    <fs:option name='noexec'/>");
+    sb.append("    <fs:option name='nosuid'/>");
+    sb.append("    <fs:option name='nodev'/>");
+    sb.append("  </fs:mount_opts>");
+    sb.append("</pool>");
+    return sb.toString();
+  }
+
+  private static String createXML_Local_Disk(String name, String localDevice, String mountPath) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<pool type=\"disk\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("  <name>" + name + "</name>");
+    sb.append("  <source>");
+    sb.append("    <device path=\"" + localDevice + "\"/>");
+    sb.append("  </source>");
+    sb.append("  <target>");
+    sb.append("    <path>/dev</path>");
     sb.append("  </target>");
     sb.append("  <fs:mount_opts>");
     sb.append("    <fs:option name='noexec'/>");
@@ -217,9 +239,17 @@ public class Storage implements Serializable {
             JFLog.log("res=" + res);
             break;
           }
-          case "local": {
+          case "part": {
             if (args.length < 5) usage();
-            Storage store = new Storage(TYPE_LOCAL, args[1], null);
+            Storage store = new Storage(TYPE_LOCAL_PART, args[1], null);
+            store.path = args[2];
+            boolean res = store.register();
+            JFLog.log("res=" + res);
+            break;
+          }
+          case "disk": {
+            if (args.length < 5) usage();
+            Storage store = new Storage(TYPE_LOCAL_DISK, args[1], null);
             store.path = args[2];
             boolean res = store.register();
             JFLog.log("res=" + res);

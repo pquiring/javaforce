@@ -1667,7 +1667,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools[idx];
       switch (pool.type) {
-        case Storage.TYPE_LOCAL:
+        case Storage.TYPE_LOCAL_PART:
           ui.confirm_button.setText("Format");
           ui.confirm_message.setText("Format storage pool");
           ui.confirm_action = () -> {
@@ -1753,7 +1753,7 @@ public class ConfigService implements WebUIHandler {
           ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, _name, null), true, ui));
           break;
         case "local":
-          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL, _name, null), true, ui));
+          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL_PART, _name, null), true, ui));
           break;
       }
     });
@@ -1768,7 +1768,7 @@ public class ConfigService implements WebUIHandler {
     switch (store.type) {
       case Storage.TYPE_NFS: return nfs_StoragePanel(store, false, ui);
       case Storage.TYPE_ISCSI: return iscsi_StoragePanel(store, false, ui);
-      case Storage.TYPE_LOCAL: return local_StoragePanel(store, false, ui);
+      case Storage.TYPE_LOCAL_PART: return local_StoragePanel(store, false, ui);
     }
     return null;
   }
