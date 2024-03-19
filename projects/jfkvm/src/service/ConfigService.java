@@ -1885,7 +1885,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
-    Button cdup = new Button("UP");  //TODO : icons
+    Button cdup = new Button("&#x21e7;");  //unicode up arrow
     tools.add(cdup);
     Button delete = new Button("Delete");
     tools.add(delete);
