@@ -1995,6 +1995,10 @@ public class ConfigService implements WebUIHandler {
       path.setText(ui.browse_path);
       list.removeAll();
       File[] files = new File(ui.browse_path).listFiles();
+      if (files == null) {
+        //TODO : handle error
+        files = new File[0];
+      }
       for(File file : files) {
         String name = file.getName();
         if (file.isDirectory()) {
