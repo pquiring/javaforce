@@ -1754,7 +1754,7 @@ public class ConfigService implements WebUIHandler {
     return null;
   }
 
-  private Panel nfs_StoragePanel(Storage store, boolean create, UI ui) {
+  private Panel nfs_StoragePanel(Storage pool, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1766,19 +1766,25 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Name:" + store.name));
+    row.add(new Label("Name:" + pool.name));
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Host:"));
     TextField host = new TextField("");
     row.add(host);
+    if (pool.host != null) {
+      host.setText(pool.host);
+    }
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Source Path:"));
     TextField path = new TextField("");
     row.add(path);
+    if (pool.path != null) {
+      path.setText(pool.path);
+    }
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1791,14 +1797,15 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       String _host = host.getText();
       String _path = path.getText();
-      store.host = _host;
-      store.path = _path;
-      if (!store.register()) {
+      //TODO : validate fields
+      pool.host = _host;
+      pool.path = _path;
+      if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       if (create) {
-        Config.current.addStorage(store);
+        Config.current.addStorage(pool);
       } else {
         Config.current.save();
       }
@@ -1811,7 +1818,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel iscsi_StoragePanel(Storage store, boolean create, UI ui) {
+  private Panel iscsi_StoragePanel(Storage pool, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1823,25 +1830,34 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Name:" + store.name));
+    row.add(new Label("Name:" + pool.name));
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Host:"));
     TextField host = new TextField("");
     row.add(host);
+    if (pool.host != null) {
+      host.setText(pool.host);
+    }
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Target IQN:"));
     TextField target = new TextField("");
     row.add(target);
+    if (pool.target != null) {
+      target.setText(pool.target);
+    }
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Initiator IQN:"));
     TextField initiator = new TextField("");
     row.add(initiator);
+    if (pool.initiator != null) {
+      initiator.setText(pool.initiator);
+    }
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1855,15 +1871,16 @@ public class ConfigService implements WebUIHandler {
       String _host = host.getText();
       String _target = target.getText();
       String _init = initiator.getText();
-      store.host = _host;
-      store.target = _target;
-      store.initiator = _init;
-      if (!store.register()) {
+      //TODO : validate fields
+      pool.host = _host;
+      pool.target = _target;
+      pool.initiator = _init;
+      if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       if (create) {
-        Config.current.addStorage(store);
+        Config.current.addStorage(pool);
       }
       Config.current.save();
       ui.setRightPanel(storagePanel(ui));
@@ -1875,7 +1892,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel local_StoragePanel(Storage store, boolean create, UI ui) {
+  private Panel local_StoragePanel(Storage pool, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1887,13 +1904,16 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Name:" + store.name));
+    row.add(new Label("Name:" + pool.name));
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Device:"));
     TextField dev = new TextField("");
     row.add(dev);
+    if (pool.path != null) {
+      dev.setText(pool.path);
+    }
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1905,17 +1925,21 @@ public class ConfigService implements WebUIHandler {
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
       String _dev = dev.getText();
+      if (_dev.length() == 0) {
+        errmsg.setText("Error:device invalid");
+        return;
+      }
       if (!new File(_dev).exists()) {
         errmsg.setText("Error:device not found");
         return;
       }
-      store.path = _dev;
-      if (!store.register()) {
+      pool.path = _dev;
+      if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
       if (create) {
-        Config.current.addStorage(store);
+        Config.current.addStorage(pool);
       }
       Config.current.save();
       ui.setRightPanel(storagePanel(ui));
