@@ -195,6 +195,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nunregister
   (*_virDomainFree)(dom);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   return res == 0;
 }
 
@@ -219,6 +223,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nstart
 
   (*_virDomainFree)(dom);
   disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
 
   return res == 0;
 }
@@ -245,6 +253,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nstop
   (*_virDomainFree)(dom);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   return res == 0;
 }
 
@@ -269,6 +281,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_npoweroff
 
   (*_virDomainFree)(dom);
   disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
 
   return res == 0;
 }
@@ -295,6 +311,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nrestart
   (*_virDomainFree)(dom);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   return res == 0;
 }
 
@@ -320,6 +340,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsuspend
   (*_virDomainFree)(dom);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   return res == 0;
 }
 
@@ -344,6 +368,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nrestore
 
   (*_virDomainFree)(dom);
   disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
 
   return res == 0;
 }
@@ -371,6 +399,10 @@ JNIEXPORT jint JNICALL Java_javaforce_vm_VirtualMachine_ngetState
 
   (*_virDomainFree)(dom);
   disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
 
   if (res != 0) return -1;
 
@@ -563,6 +595,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nunregister
   (*_virStoragePoolFree)(pool);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   return res == 0;
 }
 
@@ -588,6 +624,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nstart
   (*_virStoragePoolFree)(pool);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   return res == 0;
 }
 
@@ -612,6 +652,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nstop
 
   (*_virStoragePoolFree)(pool);
   disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
 
   return res == 0;
 }
@@ -639,7 +683,12 @@ JNIEXPORT jint JNICALL Java_javaforce_vm_Storage_ngetState
   (*_virStoragePoolFree)(pool);
   disconnect(conn);
 
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
   if (res != 0) return -1;
+
   switch (info.state) {
     case VIR_STORAGE_POOL_INACTIVE: return 0;
     case VIR_STORAGE_POOL_RUNNING: return 1;
@@ -765,8 +814,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nstart
   int res = (*_virNetworkCreate)(net);
 
   (*_virNetworkFree)(net);
-
   disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
 
   return res == 0;
 }
