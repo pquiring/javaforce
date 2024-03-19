@@ -29,7 +29,7 @@ void* (*_virStoragePoolDefineXML)(void* conn, const char* xml, int flags);
 int (*_virStoragePoolFree)(void* pool);
 int (*_virStoragePoolUndefine)(void* pool);
 void* (*_virStoragePoolLookupByName)(void* conn, const char* name);
-int (*_virStoragePoolCreate)(void* pool);
+int (*_virStoragePoolCreate)(void* pool, int flags);
 int (*_virStoragePoolDestroy)(void* pool);
 int (*_virStoragePoolGetInfo)(void* pool, virStoragePoolInfo* info);
 int (*_virConnectListAllStoragePools)(void* conn, void*** pools, int flags);
@@ -619,7 +619,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nstart
     return JNI_FALSE;
   }
 
-  int res = (*_virStoragePoolCreate)(pool);
+  int res = (*_virStoragePoolCreate)(pool, 0);
 
   (*_virStoragePoolFree)(pool);
   disconnect(conn);
