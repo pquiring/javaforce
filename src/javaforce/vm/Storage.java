@@ -50,7 +50,9 @@ public class Storage implements Serializable {
 
   private native static boolean nregister(String xml);
   public boolean register() {
-    return nregister(createXML());
+    String xml = createXML();
+    JFLog.log("Storage.xml=" + xml);
+    return nregister(xml);
   }
 
   private native static boolean nunregister(String name);

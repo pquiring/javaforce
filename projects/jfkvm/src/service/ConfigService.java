@@ -1903,7 +1903,7 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       String _dev = dev.getText();
       if (!new File(_dev).exists()) {
-        dev.setBackColor(Color.red);
+        errmsg.setText("Error:device not found");
         return;
       }
       store.path = _dev;

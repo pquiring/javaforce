@@ -4,6 +4,8 @@ package javaforce.vm;
 
 import java.io.*;
 
+import javaforce.*;
+
 public class VirtualMachine implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -151,7 +153,9 @@ public class VirtualMachine implements Serializable {
   //virDomainDefineXML
   private native static boolean nregister(String xml);
   public static boolean register(VirtualMachine vm, Hardware hardware, VMProvider provider) {
-    return nregister(createXML(vm, hardware, provider));
+    String xml = createXML(vm, hardware, provider);
+    JFLog.log("VirtualMachine.xml=" + xml);
+    return nregister(xml);
   }
 
   //virDomainUndefine

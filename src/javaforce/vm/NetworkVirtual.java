@@ -8,6 +8,8 @@ package javaforce.vm;
 
 import java.io.*;
 
+import javaforce.*;
+
 public class NetworkVirtual implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -62,13 +64,17 @@ public class NetworkVirtual implements Serializable {
   private native static boolean ncreatevirt(String name, String xml);
   /** Create virtual interface. */
   public static boolean createVirtual(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
-    return ncreatevirt(name, createXML(name, bridge, mac, ip, netmask, vlan));
+    String xml = createXML(name, bridge, mac, ip, netmask, vlan);
+    JFLog.log("NetworkVirtual.xml=" + xml);
+    return ncreatevirt(name, xml);
   }
 
   private native static boolean ncreateport(String name, String xml);
   /** Create network port group (VLAN) bound to this virtual interface. */
   public boolean createPort(String name, int vlan) {
-    return ncreateport(this.name, NetworkPort.createXML(this.name, name, vlan));
+    String xml = NetworkPort.createXML(this.name, name, vlan);
+    JFLog.log("NetworkPort.xml=" + xml);
+    return ncreateport(this.name, xml);
   }
 
   private native static boolean nstart(String name);
