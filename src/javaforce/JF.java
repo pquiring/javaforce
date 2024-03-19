@@ -1246,31 +1246,6 @@ public class JF {
     }
   }
 
-  public static ServerSocket createServerSocketSSL(int port) {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
-    // Let us create the factory where we can set some parameters for the connection
-    try {
-      SSLContext ctx = SSLContext.getInstance("TLSv1.3");
-      ctx.init(null, trustAllCerts, new SecureRandom());
-      SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
-      SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket(port);
-//      ssl.setEnabledProtocols(protocols);
-//      ssl.setEnabledCipherSuites(cipher_suites);
-      return ssl;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
-  }
-
   /** Upgrades existing socket to SSL. */
   public static Socket connectSSL(Socket socket, boolean server) {
     TrustManager[] trustAllCerts = new TrustManager[] {
