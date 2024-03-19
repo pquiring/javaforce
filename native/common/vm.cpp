@@ -648,7 +648,7 @@ JNIEXPORT jint JNICALL Java_javaforce_vm_Storage_ngetState
   return 3;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_format
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nformat
   (JNIEnv *e, jobject o, jstring path, jint type)
 {
   //type : 1=EXT4

@@ -91,7 +91,17 @@ public class Storage implements Serializable {
   public static final int TYPE_EXT4 = 1;
 
   /** Format local partition or iscsi disk. */
-  public native boolean format(String path, int type);
+  private native boolean nformat(String path, int type);
+  public boolean format(int type) {
+    switch (type) {
+      case TYPE_LOCAL:
+        if (type != TYPE_EXT4) return false;
+        ShellProcess sp = new ShellProcess();
+        sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", path}, true);
+        return true;
+    }
+    return false;
+  }
 
   public String getPath() {
     return "/volumes/" + name;

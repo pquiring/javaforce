@@ -1593,6 +1593,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
+      //TODO : create disks (task thread)
       vm.saveHardware(hardware);
       ui.split.setRightComponent(vmsPanel(ui));
     });
@@ -1662,8 +1663,28 @@ public class ConfigService implements WebUIHandler {
       ui.split.setRightComponent(storagePanel(ui));
     });
     format.addClickListener((me, cmp) -> {
-      //TODO : format storage pool (iscsi/local only)
-      //start task
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
+      switch (pool.type) {
+        case Storage.TYPE_LOCAL:
+          ui.confirm_button.setText("Format");
+          ui.confirm_message.setText("Format storage pool");
+          ui.confirm_action = () -> {
+            //TODO : create task thread
+            pool.format(Storage.TYPE_EXT4);
+          };
+          ui.confirm_popup.setVisible(true);
+          break;
+        case Storage.TYPE_ISCSI:
+          ui.message_message.setText("TODO : iSCSI format");
+          ui.message_popup.setVisible(true);
+          break;
+        case Storage.TYPE_NFS:
+          ui.message_message.setText("Can not format NFS storage");
+          ui.message_popup.setVisible(true);
+          break;
+      }
     });
     delete.addClickListener((me, cmp) -> {
       //TODO : delete storage
