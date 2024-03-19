@@ -519,7 +519,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Storage_nlist
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nregister
-  (JNIEnv *e, jobject o, jstring name, jstring xml)
+  (JNIEnv *e, jobject o, jstring xml)
 {
   void* conn = connect();
   if (conn == NULL) return JNI_FALSE;
