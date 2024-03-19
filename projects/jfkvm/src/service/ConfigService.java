@@ -1223,7 +1223,7 @@ public class ConfigService implements WebUIHandler {
     create.addClickListener((me, cmp) -> {
       Hardware hw = new Hardware();
       VirtualMachine vm = new VirtualMachine(hw);
-      ui.split.setRightComponent(vmEditPanel(vm, hw, ui));
+      ui.split.setRightComponent(vmAddPanel(vm, hw, ui));
     });
 
     edit.addClickListener((me, cmp) -> {
@@ -1347,15 +1347,16 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel vmEditPanel(VirtualMachine vm, Hardware hardware, UI ui) {
+  private Panel vmAddPanel(VirtualMachine vm, Hardware hardware, UI ui) {
     Panel panel = new Panel();
-    ui.hardware = hardware;
     Row row;
+
     row = new Row();
     panel.add(row);
     Label errmsg = new Label("");
     errmsg.setColor(Color.red);
     row.add(errmsg);
+
     //name [   ]
     row = new Row();
     panel.add(row);
@@ -1369,19 +1370,65 @@ public class ConfigService implements WebUIHandler {
     ComboBox pool = new ComboBox();
     row.add(pool);
     Storage[] pools = vmm.listPools();
-    int selpool = -1;
-    int poolidx = 0;
     for(Storage p : pools) {
       String _name = p.name;
       pool.add(_name, _name);
-      if (_name.equals(hardware.pool)) {
-        selpool = poolidx;
+    }
+
+    //next / cancel
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button b_next = new Button("Next");
+    tools.add(b_next);
+    Button b_cancel = new Button("Cancel");
+    tools.add(b_cancel);
+
+    b_next.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      String _name = vmm.cleanName(name.getText());
+      if (_name.length() == 0) {
+        errmsg.setText("Error:invalid name");
+        return;
       }
-      poolidx++;
-    }
-    if (selpool != -1) {
-      pool.setSelectedIndex(selpool);
-    }
+      String _pool = pool.getSelectedValue();
+      if (_pool == null || _pool.length() == 0) {
+        errmsg.setText("Error:invalid storage pool");
+        return;
+      }
+      hardware.name = _name;
+      hardware.pool = _pool;
+      File file = new File(hardware.getPath());
+      if (file.exists()) {
+        errmsg.setText("Error:folder already exists in storage pool with that name");
+        return;
+      }
+      file.mkdirs();
+      ui.split.setRightComponent(vmEditPanel(vm, hardware, ui));
+    });
+    b_cancel.addClickListener((me, cmp) -> {
+      ui.split.setRightComponent(vmsPanel(ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmEditPanel(VirtualMachine vm, Hardware hardware, UI ui) {
+    Panel panel = new Panel();
+    ui.hardware = hardware;
+    Row row;
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+    //name [   ]
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name:" + hardware.name));
+    //pool [  v]
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Storage Pool:" + hardware.pool));
     //memory [   ] [MB/GB]
     row = new Row();
     panel.add(row);
@@ -1460,13 +1507,14 @@ public class ConfigService implements WebUIHandler {
       //TODO : add more details
       dev_list.add(dev.name);
     }
+
     //save / cancel
-    row = new Row();
-    panel.add(row);
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
     Button b_save = new Button("Save");
-    row.add(b_save);
+    tools.add(b_save);
     Button b_cancel = new Button("Cancel");
-    row.add(b_cancel);
+    tools.add(b_cancel);
 
     b_disk_create.addClickListener((me, cmp) -> {
       ui.vm_disk = null;
@@ -1534,8 +1582,6 @@ public class ConfigService implements WebUIHandler {
 
     b_save.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      hardware.name = name.getText();
-      hardware.pool = pool.getSelectedValue();
       String _size_str = vmm.cleanNumber(memory.getText());
       if (_size_str.length() == 0) {
         memory.setText(_size_str);
@@ -1566,6 +1612,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
+      vm.saveHardware(hardware);
       ui.split.setRightComponent(vmsPanel(ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
