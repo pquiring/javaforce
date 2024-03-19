@@ -1634,17 +1634,24 @@ public class ConfigService implements WebUIHandler {
     tools.add(edit);
     Button browse = new Button("Browse");
     tools.add(browse);
+    Button start = new Button("Start");
+    tools.add(start);
+    Button stop = new Button("Stop");
+    tools.add(stop);
     Button format = new Button("Format");
     tools.add(format);
     Button delete = new Button("Delete");
     tools.add(delete);
     ListBox list = new ListBox();
     panel.add(list);
-    Storage[] pools = vmm.listPools();
-    for(Storage pool : pools) {
-      String _name = pool.name;
-      list.add(_name);
-    }
+    Runnable list_pools = () -> {
+      Storage[] pools = vmm.listPools();
+      for(Storage pool : pools) {
+        String _name = pool.name;
+        list.add(_name + ":" + pool.getStateString());
+      }
+    };
+    list_pools.run();
 
     add.addClickListener((me, cmp) -> {
       ui.split.setRightComponent(addStoragePanel(ui));
@@ -1662,6 +1669,20 @@ public class ConfigService implements WebUIHandler {
       ui.browse_path = pool.getPath();
       ui.browse_init.run();
       ui.browse_popup.setVisible(true);
+    });
+    start.addClickListener((me, cmp) -> {
+      String name = list.getSelectedItem();
+      if (name == null) return;
+      Storage pool = vmm.getPoolByName(name);
+      pool.start();
+      list_pools.run();
+    });
+    stop.addClickListener((me, cmp) -> {
+      String name = list.getSelectedItem();
+      if (name == null) return;
+      Storage pool = vmm.getPoolByName(name);
+      pool.stop();
+      list_pools.run();
     });
     format.addClickListener((me, cmp) -> {
       //TODO : format storage pool (iscsi/local only)
@@ -1924,6 +1945,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     row.add(new Label("Name:" + pool.name));
 
+    //TODO : only list know partitions and exclude system partitions
     row = new Row();
     panel.add(row);
     row.add(new Label("Device:"));

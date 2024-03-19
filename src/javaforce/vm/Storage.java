@@ -77,6 +77,17 @@ public class Storage implements Serializable {
     return ngetState(name);
   }
 
+  public String getStateString() {
+    int state = getState();
+    switch (state) {
+      case STATE_OFF: return "off";
+      case STATE_ON: return "on";
+      case STATE_BUILD: return "building";
+      case STATE_ERROR: return "error";
+    }
+    return "???";
+  }
+
   public static final int TYPE_EXT4 = 1;
 
   /** Format local partition or iscsi disk. */
