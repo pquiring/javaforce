@@ -187,6 +187,7 @@ public class Storage implements Serializable {
     sb.append("  <name>" + name + "</name>");
     sb.append("  <source>");
     sb.append("    <device path=\"" + localDevice + "\"/>");
+    sb.append("    <format type='ext4'/>");
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>" + mountPath + "</path>");
@@ -206,6 +207,7 @@ public class Storage implements Serializable {
     sb.append("  <name>" + name + "</name>");
     sb.append("  <source>");
     sb.append("    <device path=\"" + localDevice + "\"/>");
+    sb.append("    <format type='raw'/>");
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>/dev</path>");
