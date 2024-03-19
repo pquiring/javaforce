@@ -1797,7 +1797,14 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       String _host = host.getText();
       String _path = path.getText();
-      //TODO : validate fields
+      if (_host.length() == 0) {
+        errmsg.setText("Error:host invalid");
+        return;
+      }
+      if (_path.length() == 0) {
+        errmsg.setText("Error:path invalid");
+        return;
+      }
       pool.host = _host;
       pool.path = _path;
       if (!pool.register()) {
@@ -1871,7 +1878,18 @@ public class ConfigService implements WebUIHandler {
       String _host = host.getText();
       String _target = target.getText();
       String _init = initiator.getText();
-      //TODO : validate fields
+      if (_host.length() == 0) {
+        errmsg.setText("Error:host invalid");
+        return;
+      }
+      if (_target.length() == 0) {
+        errmsg.setText("Error:target iqn invalid");
+        return;
+      }
+      if (_init.length() == 0) {
+        errmsg.setText("Error:initiator iqn invalid");
+        return;
+      }
       pool.host = _host;
       pool.target = _target;
       pool.initiator = _init;
