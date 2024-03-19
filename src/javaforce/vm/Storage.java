@@ -64,6 +64,7 @@ public class Storage implements Serializable {
   //virDomainCreate
   private native static boolean nstart(String name);
   public boolean start() {
+    new File(getPath()).mkdir();
     return nstart(name);
   }
 
@@ -89,6 +90,21 @@ public class Storage implements Serializable {
     return "???";
   }
 
+  /** Mount pool.  This should NOT be required but start() is not working yet. */
+  public boolean mount() {
+    new File(getPath()).mkdir();
+    ShellProcess sp = new ShellProcess();
+    sp.run(new String[] {"/usr/bin/mount", path, getPath()}, true);
+    return true;
+  }
+
+  /** Unmount pool.  This should NOT be required but stop() is not working yet. */
+  public boolean unmount() {
+    ShellProcess sp = new ShellProcess();
+    sp.run(new String[] {"/usr/bin/umount", path}, true);
+    return true;
+  }
+
   public static final int TYPE_EXT4 = 1;
 
   /** Format local partition or iscsi target. */
@@ -104,6 +120,7 @@ public class Storage implements Serializable {
     return false;
   }
 
+  /** Returns mount path. */
   public String getPath() {
     return "/volumes/" + name;
   }

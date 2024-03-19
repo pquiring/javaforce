@@ -1619,6 +1619,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button("Stop");
     tools.add(stop);
+    Button mount = new Button("Mount");
+    tools.add(mount);
+    Button unmount = new Button("Unmount");
+    tools.add(unmount);
     Button format = new Button("Format");
     tools.add(format);
     Button delete = new Button("Delete");
@@ -1661,6 +1665,25 @@ public class ConfigService implements WebUIHandler {
       Storage pool = pools[idx];
       pool.stop();
       ui.split.setRightComponent(storagePanel(ui));
+    });
+    mount.addClickListener((me, cmp) -> {
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
+      pool.mount();
+      ui.split.setRightComponent(storagePanel(ui));
+    });
+    unmount.addClickListener((me, cmp) -> {
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
+      ui.confirm_button.setText("Unmount");
+      ui.confirm_message.setText("Unmount storage pool:" + pool.name);
+      ui.confirm_action = () -> {
+        pool.unmount();
+        ui.split.setRightComponent(storagePanel(ui));
+      };
+      ui.confirm_popup.setVisible(true);
     });
     format.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
