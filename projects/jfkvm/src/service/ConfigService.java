@@ -1681,7 +1681,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    TextField errmsg = new TextField("");
+    Label errmsg = new Label("");
     errmsg.setColor(Color.red);
     row.add(errmsg);
 
