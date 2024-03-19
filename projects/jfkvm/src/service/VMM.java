@@ -36,23 +36,6 @@ public class VMM implements VMProvider {
     return names;
   }
 
-  public VirtualMachine getVMByName(String name) {
-    return VirtualMachine.get(name);
-  }
-
-  public String getVMPool(String vmname) {
-    VirtualMachine vm = VirtualMachine.get(vmname);
-    if (vm == null) return null;
-    return vm.getPool();
-  }
-
-  public Storage getPoolByName(String name) {
-    for(Storage pool : Config.current.pools) {
-      if (pool.name.equals(name)) return pool;
-    }
-    return null;
-  }
-
   public String cleanName(String name) {
     return JF.filter(name, JF.filter_alpha_numeric);
   }

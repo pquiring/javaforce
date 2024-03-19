@@ -1242,17 +1242,12 @@ public class ConfigService implements WebUIHandler {
     start.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      String name = list.getSelectedItem();
+      VirtualMachine vm = vms[idx];
       ui.confirm_button.setText("Start");
-      ui.confirm_message.setText("Start VM : " + name);
+      ui.confirm_message.setText("Start VM : " + vm.name);
       ui.confirm_action = () -> {
         Task task = new Task("Start") {
           public void doTask() {
-            VirtualMachine vm = VirtualMachine.get(name);
-            if (vm == null) {
-              setResult("Error:VM not found:" + name);
-              return;
-            }
             if (vm.start()) {
               setResult("Completed");
             } else {
@@ -1269,17 +1264,12 @@ public class ConfigService implements WebUIHandler {
     stop.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      String name = list.getSelectedItem();
+      VirtualMachine vm = vms[idx];
       ui.confirm_button.setText("Stop");
-      ui.confirm_message.setText("Stop VM : " + name);
+      ui.confirm_message.setText("Stop VM : " + vm.name);
       ui.confirm_action = () -> {
         Task task = new Task("Stop") {
           public void doTask() {
-            VirtualMachine vm = VirtualMachine.get(name);
-            if (vm == null) {
-              setResult("Error:VM not found:" + name);
-              return;
-            }
             if (vm.stop()) {
               setResult("Completed");
             } else {
@@ -1296,17 +1286,12 @@ public class ConfigService implements WebUIHandler {
     poweroff.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      String name = list.getSelectedItem();
+      VirtualMachine vm = vms[idx];
       ui.confirm_button.setText("Power Off");
-      ui.confirm_message.setText("Power Off VM : " + name);
+      ui.confirm_message.setText("Power Off VM : " + vm.name);
       ui.confirm_action = () -> {
         Task task = new Task("Power Off") {
           public void doTask() {
-            VirtualMachine vm = VirtualMachine.get(name);
-            if (vm == null) {
-              setResult("Error:VM not found:" + name);
-              return;
-            }
             if (vm.poweroff()) {
               setResult("Completed");
             } else {
@@ -1322,17 +1307,12 @@ public class ConfigService implements WebUIHandler {
     unreg.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      String name = list.getSelectedItem();
+      VirtualMachine vm = vms[idx];
       ui.confirm_button.setText("Unregister");
-      ui.confirm_message.setText("Unregister VM : " + name);
+      ui.confirm_message.setText("Unregister VM : " + vm.name);
       ui.confirm_action = () -> {
         Task task = new Task("Unregister") {
           public void doTask() {
-            VirtualMachine vm = VirtualMachine.get(name);
-            if (vm == null) {
-              setResult("Error:VM not found:" + name);
-              return;
-            }
             if (vm.unregister()) {
               setResult("Completed");
             } else {
@@ -1644,45 +1624,42 @@ public class ConfigService implements WebUIHandler {
     tools.add(delete);
     ListBox list = new ListBox();
     panel.add(list);
-    Runnable list_pools = () -> {
-      Storage[] pools = vmm.listPools();
-      for(Storage pool : pools) {
-        String _name = pool.name;
-        list.add(_name + ":" + pool.getStateString());
-      }
-    };
-    list_pools.run();
+    Storage[] pools = vmm.listPools();
+    for(Storage pool : pools) {
+      String _name = pool.name;
+      list.add(_name + ":" + pool.getStateString());
+    }
 
     add.addClickListener((me, cmp) -> {
       ui.split.setRightComponent(addStoragePanel(ui));
     });
     edit.addClickListener((me, cmp) -> {
-      String name = list.getSelectedItem();
-      if (name == null) return;
-      Storage pool = vmm.getPoolByName(name);
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
       ui.split.setRightComponent(editStoragePanel(pool, ui));
     });
     browse.addClickListener((me, cmp) -> {
-      String name = list.getSelectedItem();
-      if (name == null) return;
-      Storage pool = vmm.getPoolByName(name);
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
       ui.browse_path = pool.getPath();
       ui.browse_init.run();
       ui.browse_popup.setVisible(true);
     });
     start.addClickListener((me, cmp) -> {
-      String name = list.getSelectedItem();
-      if (name == null) return;
-      Storage pool = vmm.getPoolByName(name);
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
       pool.start();
-      list_pools.run();
+      ui.split.setRightComponent(storagePanel(ui));
     });
     stop.addClickListener((me, cmp) -> {
-      String name = list.getSelectedItem();
-      if (name == null) return;
-      Storage pool = vmm.getPoolByName(name);
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = pools[idx];
       pool.stop();
-      list_pools.run();
+      ui.split.setRightComponent(storagePanel(ui));
     });
     format.addClickListener((me, cmp) -> {
       //TODO : format storage pool (iscsi/local only)
