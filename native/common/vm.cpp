@@ -25,7 +25,7 @@ char* (*_virDomainGetMetadata)(void* dom, int type, const char* uri, int flags);
 void* (*_virDomainMigrate3)(void* dom, void* dconn, void* params, int nparams, int flags);
 
 //storage
-void* (*_virStoragePoolDefineXML)(void* conn, const char* xml);
+void* (*_virStoragePoolDefineXML)(void* conn, const char* xml, int flags);
 int (*_virStoragePoolFree)(void* pool);
 int (*_virStoragePoolUndefine)(void* pool);
 void* (*_virStoragePoolLookupByName)(void* conn, const char* name);
@@ -526,7 +526,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nregister
 
   const char* cxml = e->GetStringUTFChars(xml, NULL);
 
-  void* pool = (*_virStoragePoolDefineXML)(conn, cxml);
+  void* pool = (*_virStoragePoolDefineXML)(conn, cxml, 0);
 
   e->ReleaseStringUTFChars(xml, cxml);
 
