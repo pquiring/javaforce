@@ -1696,6 +1696,7 @@ public class ConfigService implements WebUIHandler {
           ui.confirm_action = () -> {
             //TODO : create task thread
             pool.format(Storage.TYPE_EXT4);
+            ui.split.setRightComponent(storagePanel(ui));
           };
           ui.confirm_popup.setVisible(true);
           break;
@@ -1710,8 +1711,16 @@ public class ConfigService implements WebUIHandler {
       }
     });
     delete.addClickListener((me, cmp) -> {
-      //TODO : delete storage
-      //start task
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage pool = Config.current.pools.get(idx);
+      ui.confirm_button.setText("Format");
+      ui.confirm_message.setText("Format storage pool");
+      ui.confirm_action = () -> {
+        pool.unregister();
+        ui.split.setRightComponent(storagePanel(ui));
+      };
+      ui.confirm_popup.setVisible(true);
     });
 
     return panel;

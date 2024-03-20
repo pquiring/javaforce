@@ -127,23 +127,24 @@ public class Storage implements Serializable {
 
   private String createXML() {
     switch (type) {
-      case TYPE_ISCSI: return createXML_iSCSI(name, host, target, initiator, getPath(), user, pass);
-      case TYPE_NFS: return createXML_NFS(name, host, path, getPath());
-      case TYPE_LOCAL_PART: return createXML_Local_Part(name, path, getPath());
-      case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, path, getPath());
+      case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, initiator, getPath(), user, pass);
+      case TYPE_NFS: return createXML_NFS(name, uuid, host, path, getPath());
+      case TYPE_LOCAL_PART: return createXML_Local_Part(name, uuid, path, getPath());
+      case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, uuid, path, getPath());
     }
     return null;
   }
 
-  private static String createXML_iSCSI(String name, String host, String target, String initiator, String mountPath, String chap_user, String chap_pass) {
+  private static String createXML_iSCSI(String name, String uuid, String host, String target, String initiator, String mountPath, String chap_user, String chap_pass) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<pool type=\"iscsi-direct\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("<pool type='iscsi-direct' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
+    sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
-    sb.append("    <host name=\"" + host + "\"/>");
-    sb.append("    <device path=\"" + target + "\"/>");
+    sb.append("    <host name='" + host + "'/>");
+    sb.append("    <device path='" + target + "'/>");
     sb.append("    <initiator>");
-    sb.append("      <iqn name=\"" + initiator + "\"/>");
+    sb.append("      <iqn name='" + initiator + "'/>");
     sb.append("    </initiator>");
     if (chap_user != null && chap_pass != null) {
       //TODO : pass libsecret object with actual 'pass'
@@ -160,13 +161,14 @@ public class Storage implements Serializable {
     return sb.toString();
   }
 
-  private static String createXML_NFS(String name, String host, String srcPath, String mountPath) {
+  private static String createXML_NFS(String name, String uuid, String host, String srcPath, String mountPath) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<pool type=\"netfs\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("<pool type='netfs' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
+    sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
-    sb.append("    <host name=\"" + host + "\"/>");
-    sb.append("    <device path=\"" + srcPath + "\"/>");
+    sb.append("    <host name='" + host + "'/>");
+    sb.append("    <device path='" + srcPath + "'/>");
     sb.append("    <format type='nfs'/>");
     sb.append("  </source>");
     sb.append("  <target>");
@@ -181,12 +183,13 @@ public class Storage implements Serializable {
     return sb.toString();
   }
 
-  private static String createXML_Local_Part(String name, String localDevice, String mountPath) {
+  private static String createXML_Local_Part(String name, String uuid, String localDevice, String mountPath) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<pool type=\"fs\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("<pool type='fs' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
+    sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
-    sb.append("    <device path=\"" + localDevice + "\"/>");
+    sb.append("    <device path='" + localDevice + "'/>");
     sb.append("    <format type='ext4'/>");
     sb.append("  </source>");
     sb.append("  <target>");
@@ -201,12 +204,13 @@ public class Storage implements Serializable {
     return sb.toString();
   }
 
-  private static String createXML_Local_Disk(String name, String localDevice, String mountPath) {
+  private static String createXML_Local_Disk(String name, String uuid, String localDevice, String mountPath) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<pool type=\"disk\" xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("<pool type='disk' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
+    sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
-    sb.append("    <device path=\"" + localDevice + "\"/>");
+    sb.append("    <device path='" + localDevice + "'/>");
     sb.append("    <format type='raw'/>");
     sb.append("  </source>");
     sb.append("  <target>");
