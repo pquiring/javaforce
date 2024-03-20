@@ -1619,10 +1619,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button("Stop");
     tools.add(stop);
+/*
     Button mount = new Button("Mount");
     tools.add(mount);
     Button unmount = new Button("Unmount");
     tools.add(unmount);
+*/
     Button format = new Button("Format");
     tools.add(format);
     Button delete = new Button("Delete");
@@ -1666,6 +1668,7 @@ public class ConfigService implements WebUIHandler {
       pool.stop();
       ui.split.setRightComponent(storagePanel(ui));
     });
+/*
     mount.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
@@ -1685,6 +1688,7 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_popup.setVisible(true);
     });
+*/
     format.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
@@ -1753,7 +1757,8 @@ public class ConfigService implements WebUIHandler {
     ComboBox type = new ComboBox();
     type.add("nfs", "NFS");
     type.add("iscsi", "iSCSI");
-    type.add("local", "Local");
+    type.add("local_part", "Local Partition");
+//    type.add("local_disk", "Local Disk");  //TODO
     row.add(type);
 
     ToolBar tools = new ToolBar();
@@ -1785,7 +1790,7 @@ public class ConfigService implements WebUIHandler {
         case "iscsi":
           ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, _name, null), true, ui));
           break;
-        case "local":
+        case "local_part":
           ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL_PART, _name, null), true, ui));
           break;
       }
