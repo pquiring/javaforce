@@ -87,6 +87,7 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel browse_popup;
     public Runnable browse_init;
+    public Label browse_errmsg;
     public String browse_path;
     public String browse_select;
     public String[] browse_filters;
@@ -1724,9 +1725,19 @@ public class ConfigService implements WebUIHandler {
       ui.browse_init.run();
       ui.browse_complete = () -> {
         if (ui.browse_select.endsWith(".jfvm")) {
-          //TODO : register VM
+          Hardware hardware = Hardware.load(ui.browse_select);
+          if (hardware == null) {
+            ui.browse_errmsg.setText("Failed to load VM, see logs.");
+            return;
+          }
+          VirtualMachine vm = new VirtualMachine(hardware);
+          if (!VirtualMachine.register(vm, hardware, vmm)) {
+            ui.browse_errmsg.setText("Failed to register VM, see logs.");
+            return;
+          }
           ui.browse_popup.setVisible(false);
         } else {
+          ui.browse_popup.setVisible(false);
           //TODO : no action
         }
       };
@@ -2110,6 +2121,13 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    row.add(errmsg);
+    ui.browse_errmsg = errmsg;
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button refresh = new Button("Refresh");
@@ -2133,6 +2151,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(list);
 
     ui.browse_init = () -> {
+      errmsg.setText("");
       path.setText(ui.browse_path);
       list.removeAll();
       File[] files = new File(ui.browse_path).listFiles();
