@@ -1714,10 +1714,11 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       Storage pool = Config.current.pools.get(idx);
-      ui.confirm_button.setText("Format");
-      ui.confirm_message.setText("Format storage pool");
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete storage pool");
       ui.confirm_action = () -> {
         pool.unregister();
+        Config.current.removeStorage(pool);
         ui.split.setRightComponent(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);
