@@ -254,7 +254,7 @@ public class VirtualMachine implements Serializable {
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       if (hardware.disks != null) {
         for(Disk drive : hardware.disks) {
-          xml.append(drive.toXML(hardware));
+          xml.append(drive.getHardwareXML(hardware));
         }
       }
       if (hardware.networks != null) {

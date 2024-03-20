@@ -44,6 +44,15 @@ public class VMM implements VMProvider {
     return JF.filter(name, JF.filter_numeric);
   }
 
+  public Storage getPoolByName(String name) {
+    for(Storage pool : Config.current.pools) {
+      if (pool.name.equals(name)) {
+        return pool;
+      }
+    }
+    return null;
+  }
+
   public int getVLAN(String network) {
     for(NetworkVLAN vlan : Config.current.vlans) {
       if (vlan.name.equals(network)) {

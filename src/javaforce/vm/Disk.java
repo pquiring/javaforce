@@ -21,28 +21,29 @@ public class Disk implements Serializable {
   public static final int TYPE_VMDK = 0;
   public static final int TYPE_QCOW2 = 1;
 
+  public static final int PROVISION_THICK = 0;
   public static final int PROVISION_THIN = 1;
-  public static final int PROVISION_THICK = 2;
 
-  public String getExt() {
+  public String getType() {
     switch (type) {
-      case TYPE_QCOW2: return ".qcow2";
-      case TYPE_VMDK: return ".vmdk";
+      case TYPE_QCOW2: return "qcow2";
+      case TYPE_VMDK: return "vmdk";
     }
     return "";
   }
 
   public String getPath(Hardware hardware) {
-    return "/volumes/" + pool + "/" + hardware.name + "/" + name + getExt();
+    return "/volumes/" + pool + "/" + hardware.name + "/" + name + '.' + getType();
   }
 
-  private native static boolean ncreate(int type, int provision, long size, String fullpath);
+  private native static boolean ncreate(String name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
-  protected boolean create(Hardware hardware, int provision) {
-    return ncreate(type, provision, size.toLong(), getPath(hardware));
+  public boolean create(Hardware hardware, Storage pool, int provision) {
+    String xml = getCreateXML(hardware, provision);
+    return ncreate(pool.name, xml);
   }
 
-  public String toXML(Hardware hardware) {
+  public String getHardwareXML(Hardware hardware) {
     StringBuilder xml = new StringBuilder();
     xml.append("<disk type='file' device='disk'>");
     xml.append("<source file='" + getPath(hardware) + "'>");
@@ -52,6 +53,31 @@ public class Disk implements Serializable {
       xml.append("<boot order='" + boot_order + "'/>");
     }
     xml.append("</disk>");
+    return xml.toString();
+  }
+
+  private String getCreateXML(Hardware hardware, int provision) {
+    StringBuilder xml = new StringBuilder();
+    xml.append("<volume type='file'>");
+    xml.append("<name>" + name + "</name>");
+    xml.append("<allocation unit='" + size.getUnitChar() + "iB'>");
+    switch (provision) {
+      case PROVISION_THICK:
+        xml.append(size.size);
+        break;
+      case PROVISION_THIN:
+        xml.append("0");
+        break;
+    }
+    xml.append("</allocation>");
+    xml.append("<capacity unit='" + size.getUnitChar() + "iB'>");
+    xml.append(size.size);
+    xml.append("</capacity>");
+    xml.append("<target>");
+    xml.append("<path>" + getPath(hardware) + "</path>");
+    xml.append("<format type='" + getType() + "'/>");
+    xml.append("</target>");
+    xml.append("</volume>");
     return xml.toString();
   }
 }

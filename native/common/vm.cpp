@@ -34,6 +34,8 @@ int (*_virStoragePoolDestroy)(void* pool);
 int (*_virStoragePoolGetInfo)(void* pool, virStoragePoolInfo* info);
 int (*_virConnectListAllStoragePools)(void* conn, void*** pools, int flags);
 int (*_virStoragePoolGetUUIDString)(void* pool, char* buf);
+void* (*_virStorageVolCreateXML)(void* pool, const char* xml, int flags);
+int (*_virStorageVolFree)(void* vol);
 
 //disk
 
@@ -99,6 +101,8 @@ void vm_init() {
   getFunction(virt, (void**)&_virStoragePoolGetInfo, "virStoragePoolGetInfo");
   getFunction(virt, (void**)&_virConnectListAllStoragePools, "virConnectListAllStoragePools");
   getFunction(virt, (void**)&_virStoragePoolGetUUIDString, "virStoragePoolGetUUIDString");
+  getFunction(virt, (void**)&_virStorageVolCreateXML, "virStorageVolCreateXML");
+  getFunction(virt, (void**)&_virStorageVolFree, "virStorageVolFree");
 
   //disk
 
@@ -708,11 +712,35 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nformat
 //Disk
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_Disk_ncreate
-  (JNIEnv *e, jclass o, jint type, jint prov, jlong size, jstring path)
+  (JNIEnv *e, jclass o, jstring name, jstring xml)
 {
-  //type : 1=QCOW2 2=VMDK
-  //prov : 1=THIN 2=THICK
-  return JNI_FALSE;
+  void* conn = connect();
+  if (conn == NULL) return JNI_FALSE;
+
+  const char* cname = e->GetStringUTFChars(name, NULL);
+
+  void* pool = (*_virStoragePoolLookupByName)(conn, cname);
+
+  e->ReleaseStringUTFChars(name, cname);
+
+  if (pool == NULL) {
+    disconnect(conn);
+    return JNI_FALSE;
+  }
+
+  const char* cxml = e->GetStringUTFChars(xml, NULL);
+
+  void* vol = (*_virStorageVolCreateXML)(pool, cxml, 0);
+
+  e->ReleaseStringUTFChars(xml, cxml);
+
+  if (vol != NULL) {
+    (*_virStorageVolFree)(vol);
+  }
+
+  disconnect(conn);
+
+  return vol != NULL;
 }
 
 //Network
@@ -970,7 +998,7 @@ static JNINativeMethod javaforce_vm_Device[] = {
 };
 
 static JNINativeMethod javaforce_vm_Disk[] = {
-  {"ncreate", "(IIJLjava/lang/String;)Z", (void *)&Java_javaforce_vm_Disk_ncreate},
+  {"ncreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Disk_ncreate},
 };
 
 static JNINativeMethod javaforce_vm_NetworkInterface[] = {

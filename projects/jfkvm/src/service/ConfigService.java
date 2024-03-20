@@ -290,6 +290,15 @@ public class ConfigService implements WebUIHandler {
     size_units.add("GB", "GB");
     row.add(size_units);
 
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Provision"));
+    ComboBox provision = new ComboBox();
+    provision.add("thick", "Thick");
+    provision.add("thin", "Thin");
+    row.add(provision);
+    provision.setSelectedIndex(0);
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button accept = new Button("Create");
@@ -338,19 +347,17 @@ public class ConfigService implements WebUIHandler {
       int _size_unit = size_units.getSelectedIndex() + 2;
       if (ui.vm_disk == null) {
         //create
-        Disk disk = new Disk();
-        disk.pool = ui.hardware.pool;
-        disk.name = _name;
-        disk.type = type.getSelectedIndex();
-        disk.size = new Size(_size, _size_unit);
-        //TODO : create disk file (vmdk/qcow2)
-        ui.hardware.addDisk(disk);
+        ui.vm_disk = new Disk();
+        ui.vm_disk.pool = ui.hardware.pool;
+        ui.vm_disk.name = _name;
+        ui.vm_disk.type = type.getSelectedIndex();
+        ui.vm_disk.size = new Size(_size, _size_unit);
+        ui.vm_disk.create(ui.hardware, vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex());
       } else {
-        //update
-        Disk disk = ui.vm_disk;
-        disk.name = _name;
-        disk.type = type.getSelectedIndex();
-        disk.size = new Size(_size, _size_unit);
+        //update (is not possible ???)
+        ui.vm_disk.name = _name;
+        ui.vm_disk.type = type.getSelectedIndex();
+        ui.vm_disk.size = new Size(_size, _size_unit);
       }
       if (ui.vm_disk_complete != null) {
         ui.vm_disk_complete.run();
@@ -924,7 +931,6 @@ public class ConfigService implements WebUIHandler {
       if (ui.device == null) {
         ui.device = new Device();
         ui.device.type = Device.TYPE_USB;
-        ui.hardware.addDevice(ui.device);
       }
       ui.device.path = _device;
       if (ui.device_complete != null) {
@@ -986,7 +992,6 @@ public class ConfigService implements WebUIHandler {
       if (ui.device == null) {
         ui.device = new Device();
         ui.device.type = Device.TYPE_PCI;
-        ui.hardware.addDevice(ui.device);
       }
       ui.device.path = _device;
       if (ui.device_complete != null) {
@@ -1500,12 +1505,17 @@ public class ConfigService implements WebUIHandler {
     b_disk_create.addClickListener((me, cmp) -> {
       ui.vm_disk = null;
       ui.vm_disk_init.run();
+      ui.vm_disk_complete = () -> {
+        ui.hardware.addDisk(ui.vm_disk);
+        disk_list.add(ui.vm_disk.name);
+      };
       ui.vm_disk_popup.setVisible(true);
     });
     b_disk_add.addClickListener((me, cmp) -> {
       ui.browse_path = ui.hardware.getPath();
       ui.browse_init.run();
       ui.browse_popup.setVisible(true);
+      //TODO : allow browser to add existing disk image
     });
     b_disk_delete.addClickListener((me, cmp) -> {
       int idx = disk_list.getSelectedIndex();
@@ -1515,6 +1525,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Delete Disk : " + disk.name);
       ui.confirm_action = () -> {
         ui.hardware.removeDisk(disk);
+        disk_list.remove(idx);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1542,11 +1553,19 @@ public class ConfigService implements WebUIHandler {
     b_dev_add_usb.addClickListener((me, cmp) -> {
       ui.device = null;
       ui.device_usb_init.run();
+      ui.device_complete = () -> {
+        ui.hardware.addDevice(ui.device);
+        dev_list.add(ui.device.name);
+      };
       ui.device_usb_popup.setVisible(true);
     });
     b_dev_add_pci.addClickListener((me, cmp) -> {
       ui.device = null;
       ui.device_pci_init.run();
+      ui.device_complete = () -> {
+        ui.hardware.addDevice(ui.device);
+        dev_list.add(ui.device.name);
+      };
       ui.device_pci_popup.setVisible(true);
     });
     b_dev_delete.addClickListener((me, cmp) -> {
@@ -1557,6 +1576,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Delete Device : " + device.name);
       ui.confirm_action = () -> {
         ui.hardware.removeDevice(device);
+        dev_list.remove(idx);
       };
       ui.confirm_popup.setVisible(true);
     });
