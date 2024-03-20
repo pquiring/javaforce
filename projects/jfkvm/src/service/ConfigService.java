@@ -1247,7 +1247,7 @@ public class ConfigService implements WebUIHandler {
         JFLog.log("Error:Failed to load config for vm:" + vm.name);
         return;
       }
-      ui.split.setRightComponent(vmEditPanel(vm, hardware, ui));
+      ui.split.setRightComponent(vmEditPanel(vm, hardware, false, ui));
     });
 
     start.addClickListener((me, cmp) -> {
@@ -1404,7 +1404,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       file.mkdirs();
-      ui.split.setRightComponent(vmEditPanel(vm, hardware, ui));
+      ui.split.setRightComponent(vmEditPanel(vm, hardware, true, ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
       ui.split.setRightComponent(vmsPanel(ui));
@@ -1413,7 +1413,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel vmEditPanel(VirtualMachine vm, Hardware hardware, UI ui) {
+  private Panel vmEditPanel(VirtualMachine vm, Hardware hardware, boolean create, UI ui) {
     Panel panel = new Panel();
     ui.hardware = hardware;
     Row row;
@@ -1638,11 +1638,11 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
-      //TODO : create disks (task thread)
       vm.saveHardware(hardware);
       ui.split.setRightComponent(vmsPanel(ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
+      JF.deletePathEx(hardware.getPath());
       ui.split.setRightComponent(vmsPanel(ui));
     });
 
