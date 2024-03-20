@@ -1347,18 +1347,18 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Name"));
-    TextField name = new TextField(hardware.name);
-    row.add(name);
+    TextField vm_name = new TextField(hardware.name);
+    row.add(vm_name);
     //pool [  v]
     row = new Row();
     panel.add(row);
     row.add(new Label("Storage Pool"));
-    ComboBox pool = new ComboBox();
-    row.add(pool);
+    ComboBox vm_pool = new ComboBox();
+    row.add(vm_pool);
     Storage[] pools = vmm.listPools();
     for(Storage p : pools) {
       String _name = p.name;
-      pool.add(_name, _name);
+      vm_pool.add(_name, _name);
     }
 
     //next / cancel
@@ -1371,18 +1371,27 @@ public class ConfigService implements WebUIHandler {
 
     b_next.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      String _name = vmm.cleanName(name.getText());
-      if (_name.length() == 0) {
+      String _vm_name = vmm.cleanName(vm_name.getText());
+      if (_vm_name.length() == 0) {
         errmsg.setText("Error:invalid name");
         return;
       }
-      String _pool = pool.getSelectedValue();
-      if (_pool == null || _pool.length() == 0) {
+      String _vm_pool = vm_pool.getSelectedValue();
+      if (_vm_pool == null || _vm_pool.length() == 0) {
         errmsg.setText("Error:invalid storage pool");
         return;
       }
-      hardware.name = _name;
-      hardware.pool = _pool;
+      Storage pool = vmm.getPoolByName(_vm_pool);
+      if (pool == null) {
+        errmsg.setText("Error:pool does not exist");
+        return;
+      }
+      if (!new File(pool.getPath()).exists()) {
+        errmsg.setText("Error:pool not mounted");
+        return;
+      }
+      hardware.name = _vm_name;
+      hardware.pool = _vm_pool;
       File file = new File(hardware.getPath());
       if (file.exists()) {
         errmsg.setText("Error:folder already exists in storage pool with that name");
