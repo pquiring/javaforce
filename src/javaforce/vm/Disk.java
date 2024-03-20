@@ -65,8 +65,17 @@ public class Disk implements Serializable {
           break;
         }
         case TYPE_QCOW2: {
-          //TODO : provision types
-          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), getPath(hardware), size.getSize()}, true);
+          String preallocation = "";
+          switch (provision) {
+            case PROVISION_THICK:
+              preallocation = "metadata";  //or "full" which is slower
+              break;
+            default:
+            case PROVISION_THIN:
+              preallocation = "off";
+              break;
+          }
+          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), "-o", "preallocation=" + preallocation, getPath(hardware), size.getSize()}, true);
           break;
         }
       }
