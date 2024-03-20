@@ -7,6 +7,8 @@ package javaforce.vm;
 
 import java.io.*;
 
+import javaforce.*;
+
 public class Disk implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -36,10 +38,11 @@ public class Disk implements Serializable {
     return "/volumes/" + pool + "/" + hardware.name + "/" + name + '.' + getType();
   }
 
-  private native static boolean ncreate(String name, String xml);
+  private native static boolean ncreate(String pool_name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
   public boolean create(Hardware hardware, Storage pool, int provision) {
     String xml = getCreateXML(hardware, provision);
+    JFLog.log("Disk.xml=" + xml);
     return ncreate(pool.name, xml);
   }
 
