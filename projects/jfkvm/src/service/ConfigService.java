@@ -352,7 +352,10 @@ public class ConfigService implements WebUIHandler {
         ui.vm_disk.name = _name;
         ui.vm_disk.type = type.getSelectedIndex();
         ui.vm_disk.size = new Size(_size, _size_unit);
-        ui.vm_disk.create(ui.hardware, vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex());
+        if (!ui.vm_disk.create(ui.hardware, vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex())) {
+          errmsg.setText("Error:Failed to create disk");
+          return;
+        }
       } else {
         //update (is not possible ???)
         ui.vm_disk.name = _name;
