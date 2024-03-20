@@ -1642,7 +1642,9 @@ public class ConfigService implements WebUIHandler {
       ui.split.setRightComponent(vmsPanel(ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
-      JF.deletePathEx(hardware.getPath());
+      if (create) {
+        JF.deletePathEx(hardware.getPath());
+      }
       ui.split.setRightComponent(vmsPanel(ui));
     });
 
