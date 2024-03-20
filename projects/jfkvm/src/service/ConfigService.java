@@ -1165,16 +1165,16 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Host FQN"));
-    TextField host = new TextField(Config.current.fqn);
-    row.add(host);
+    TextField fqn = new TextField(Config.current.fqn);
+    row.add(fqn);
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Default iSCSI Initiator IQN"));
-    TextField client_iqn = new TextField(Config.current.iqn);
-    row.add(client_iqn);
-    Button client_iqn_generate = new Button("Generate");
-    row.add(client_iqn_generate);
+    TextField iqn = new TextField(Config.current.iqn);
+    row.add(iqn);
+    Button iqn_generate = new Button("Generate");
+    row.add(iqn_generate);
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1187,15 +1187,15 @@ public class ConfigService implements WebUIHandler {
     row.add(msg);
 
     save.addClickListener((me, cmp) -> {
-      Config.current.fqn = client_iqn.getText();
-      Config.current.iqn = client_iqn.getText();
+      Config.current.fqn = fqn.getText();
+      Config.current.iqn = iqn.getText();
       Config.current.save();
       msg.setText("Settings saved!");
     });
 
-    client_iqn_generate.addClickListener((me, cmp) -> {
-      Config.current.fqn = client_iqn.getText();
-      client_iqn.setText(IQN.generate(Config.current.fqn));
+    iqn_generate.addClickListener((me, cmp) -> {
+      Config.current.fqn = fqn.getText();
+      iqn.setText(IQN.generate(Config.current.fqn));
       msg.setText("Client IQN regenerated");
     });
 
