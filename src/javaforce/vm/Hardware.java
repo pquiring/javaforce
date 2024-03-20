@@ -123,5 +123,9 @@ public class Hardware implements Serializable {
   public void removeDevice(Device device) {
     devices.remove(device);
   }
-}
 
+  public void validate() {
+    //TODO : ensure all hardware is valid
+    //each disk needs a unique hardware name, etc.
+  }
+}

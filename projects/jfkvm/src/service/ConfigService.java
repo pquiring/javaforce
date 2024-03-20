@@ -20,6 +20,19 @@ public class ConfigService implements WebUIHandler {
   private KeyMgmt keys;
   private VMM vmm;
 
+  private static final String[] filter_disks = new String[] {
+    "*.[.]vmdk",
+    "*.[.]qcow2",
+    "*.[.]iso",
+  };
+
+  private static final String[] filter_all = new String[] {
+    "*.[.]vmdk",
+    "*.[.]qcow2",
+    "*.[.]iso",
+    "*.[.]jfvm"
+  };
+
   public void start() {
     initSecureWebKeys();
     server = new WebUIServer();
@@ -75,6 +88,9 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel browse_popup;
     public Runnable browse_init;
     public String browse_path;
+    public String browse_select;
+    public String[] browse_filters;
+    public Runnable browse_complete;
 
     public PopupPanel vm_disk_popup;
     public Runnable vm_disk_init;
@@ -1530,9 +1546,14 @@ public class ConfigService implements WebUIHandler {
     });
     b_disk_add.addClickListener((me, cmp) -> {
       ui.browse_path = ui.hardware.getPath();
+      ui.browse_filters = filter_disks;
       ui.browse_init.run();
+      ui.browse_complete = () -> {
+        //TODO : need to create Disk : name, pool, etc.
+        //TODO : ensure name is unique
+        ui.browse_popup.setVisible(false);
+      };
       ui.browse_popup.setVisible(true);
-      //TODO : allow browser to add existing disk image
     });
     b_disk_edit.addClickListener((me, cmp) -> {
       int idx = disk_list.getSelectedIndex();
@@ -1634,6 +1655,7 @@ public class ConfigService implements WebUIHandler {
       }
       hardware.cores = _cores;
       hardware.bios_efi = firmware.getSelectedIndex() == 1;
+      hardware.validate();
       if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
@@ -1698,7 +1720,16 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools[idx];
       ui.browse_path = pool.getPath();
+      ui.browse_filters = filter_all;
       ui.browse_init.run();
+      ui.browse_complete = () -> {
+        if (ui.browse_select.endsWith(".jfvm")) {
+          //TODO : register VM
+          ui.browse_popup.setVisible(false);
+        } else {
+          //TODO : no action
+        }
+      };
       ui.browse_popup.setVisible(true);
     });
     start.addClickListener((me, cmp) -> {
@@ -2085,6 +2116,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
     Button cdup = new Button("&#x21e7;");  //unicode up arrow
     tools.add(cdup);
+    Button select = new Button("Select");
+    tools.add(select);
+    Button upload = new Button("Upload");
+//    tools.add(upload);
     Button delete = new Button("Delete");
     tools.add(delete);
 
@@ -2110,7 +2145,12 @@ public class ConfigService implements WebUIHandler {
         if (file.isDirectory()) {
           list.add("/" + name);
         } else {
-          list.add(name);
+          for(String filter : ui.browse_filters) {
+            if (name.matches(filter)) {
+              list.add(name);
+              break;
+            }
+          }
         }
       }
     };
@@ -2124,6 +2164,9 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1 || idx == 0) return;
       ui.browse_path = ui.browse_path.substring(0, idx);
       ui.browse_init.run();
+    });
+    upload.addClickListener((me, cmp) -> {
+      //TODO : upload files - use filezilla for now
     });
     delete.addClickListener((me, cmp) -> {
       String item = list.getSelectedItem();
@@ -2149,6 +2192,10 @@ public class ConfigService implements WebUIHandler {
         ui.browse_path += item;
         ui.browse_init.run();
       }
+    });
+    select.addClickListener((me, cmp) -> {
+      ui.browse_select = ui.browse_path + "/" + list.getSelectedItem();
+      ui.browse_complete.run();
     });
 
     return panel;
