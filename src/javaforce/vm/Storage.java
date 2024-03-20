@@ -71,7 +71,11 @@ public class Storage implements Serializable {
   //virDomainShutdown()
   private native static boolean nstop(String name);
   public boolean stop() {
-    return nstop(name);
+    boolean res = nstop(name);
+    if (res) {
+      new File(getPath()).delete();
+    }
+    return res;
   }
 
   private native static int ngetState(String name);
