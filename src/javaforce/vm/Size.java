@@ -37,6 +37,16 @@ public class Size implements Serializable {
     return 'B';
   }
 
+  /** Return size as : 1G */
+  public String getSize() {
+    return String.format("%d%c", size, getUnitChar());
+  }
+
+    /** Return size as : 1GiB */
+  public String getSize_iB() {
+    return String.format("%d%ciB", size, getUnitChar());
+  }
+
   private static final long _KB = 1024L;
   private static final long _MB = 1024L * 1024L;
   private static final long _GB = 1024L * 1024L * 1024L;

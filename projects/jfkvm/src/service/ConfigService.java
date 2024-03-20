@@ -310,16 +310,20 @@ public class ConfigService implements WebUIHandler {
       if (ui.vm_disk == null) {
         //create
         name.setText(ui.hardware.getNextDiskName());
+        name.setReadonly(false);
         type.setSelectedIndex(0);
+        type.setReadonly(false);
         size.setText("100");
         size_units.setSelectedIndex(1);
       } else {
         //update
         name.setText(ui.vm_disk.name);
+        name.setReadonly(true);
         switch (ui.vm_disk.type) {
           case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
           case Disk.TYPE_QCOW2: type.setSelectedIndex(1); break;
         }
+        type.setReadonly(true);
         size.setText(Integer.toString(ui.vm_disk.size.size));
         size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
       }
@@ -357,10 +361,9 @@ public class ConfigService implements WebUIHandler {
           return;
         }
       } else {
-        //update (is not possible ???)
-        ui.vm_disk.name = _name;
-        ui.vm_disk.type = type.getSelectedIndex();
+        //update (only size can be changed)
         ui.vm_disk.size = new Size(_size, _size_unit);
+        ui.vm_disk.resize(ui.hardware, vmm.getPoolByName(ui.hardware.pool));
       }
       if (ui.vm_disk_complete != null) {
         ui.vm_disk_complete.run();
@@ -1464,6 +1467,8 @@ public class ConfigService implements WebUIHandler {
     disk_ops.add(b_disk_create);
     Button b_disk_add = new Button("Add");
     disk_ops.add(b_disk_add);
+    Button b_disk_edit = new Button("Edit");
+    disk_ops.add(b_disk_edit);
     Button b_disk_delete = new Button("Delete");
     disk_ops.add(b_disk_delete);
     ListBox disk_list = new ListBox();
@@ -1528,6 +1533,14 @@ public class ConfigService implements WebUIHandler {
       ui.browse_init.run();
       ui.browse_popup.setVisible(true);
       //TODO : allow browser to add existing disk image
+    });
+    b_disk_edit.addClickListener((me, cmp) -> {
+      int idx = disk_list.getSelectedIndex();
+      if (idx == -1) return;
+      ui.vm_disk = ui.hardware.disks.get(idx);
+      ui.vm_disk_init.run();
+      ui.vm_disk_complete = null;
+      ui.vm_disk_popup.setVisible(true);
     });
     b_disk_delete.addClickListener((me, cmp) -> {
       int idx = disk_list.getSelectedIndex();

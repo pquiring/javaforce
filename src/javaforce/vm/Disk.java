@@ -41,9 +41,58 @@ public class Disk implements Serializable {
   private native static boolean ncreate(String pool_name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
   public boolean create(Hardware hardware, Storage pool, int provision) {
-    String xml = getCreateXML(hardware, provision);
-    JFLog.log("Disk.xml=" + xml);
-    return ncreate(pool.name, xml);
+    if (false) {
+      //use libvirt (not working per docs)
+      String xml = getCreateXML(hardware, provision);
+      JFLog.log("Disk.xml=" + xml);
+      return ncreate(pool.name, xml);
+    } else {
+      //use qemu-img
+      ShellProcess sp = new ShellProcess();
+      switch (type) {
+        case TYPE_VMDK: {
+          String subformat = "";
+          switch (provision) {
+            case PROVISION_THICK:
+              subformat = "monolithicFlat";
+              break;
+            default:
+            case PROVISION_THIN:
+              subformat = "monolithicSparse";
+              break;
+          }
+          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), "-o", "subformat=" + subformat, getPath(hardware), size.getSize()}, true);
+          break;
+        }
+        case TYPE_QCOW2: {
+          //TODO : provision types
+          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), getPath(hardware), size.getSize()}, true);
+          break;
+        }
+      }
+      return sp.getErrorLevel() == 0;
+    }
+  }
+
+  public boolean resize(Hardware hardware, Storage pool) {
+    if (false) {
+      //use libvirt (not working per docs)
+      String xml = getCreateXML(hardware, 0);
+      JFLog.log("Disk.xml=" + xml);
+      return ncreate(pool.name, xml);
+    } else {
+      //use qemu-img
+      ShellProcess sp = new ShellProcess();
+      switch (type) {
+        case TYPE_VMDK:
+          sp.run(new String[] {"/usr/bin/qemu-img", "resize", getPath(hardware), size.getSize()}, true);
+          break;
+        case TYPE_QCOW2:
+          sp.run(new String[] {"/usr/bin/qemu-img", "resize", getPath(hardware), size.getSize()}, true);
+          break;
+      }
+      return sp.getErrorLevel() == 0;
+    }
   }
 
   public String getHardwareXML(Hardware hardware) {
