@@ -24,6 +24,7 @@ public class Tasks extends Thread {
     synchronized (lock) {
       taskList.add(task);
     }
+    task.start();
   }
 
   public void completed(Task task) {
