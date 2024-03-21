@@ -455,6 +455,7 @@ public class ConfigService implements WebUIHandler {
       if (ui.vm_network == null) {
         models.setSelectedIndex(0);
         networks.setSelectedIndex(0);
+        mac.setText("");
       } else {
         int idx = 0;
         for(String model : nic_models) {
@@ -1601,6 +1602,7 @@ public class ConfigService implements WebUIHandler {
         hardware.addNetwork(ui.vm_network);
         net_list.add(ui.vm_network.network);
       };
+      ui.vm_network_init.run();
       ui.vm_network_popup.setVisible(true);
     });
     b_net_edit.addClickListener((me, cmp) -> {
@@ -1608,6 +1610,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       ui.vm_network = hardware.networks.get(idx);
       ui.vm_network_complete = null;
+      ui.vm_network_init.run();
       ui.vm_network_popup.setVisible(true);
     });
     b_net_delete.addClickListener((me, cmp) -> {
