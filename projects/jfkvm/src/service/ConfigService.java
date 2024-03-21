@@ -331,6 +331,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     ui.vm_disk_init = () -> {
+      errmsg.setText("");
       if (ui.vm_disk == null) {
         //create
         name.setText(ui.hardware.getNextDiskName());
@@ -343,6 +344,7 @@ public class ConfigService implements WebUIHandler {
         size_units.setReadonly(false);
         provision.setSelectedIndex(0);
         boot_order.setText("0");
+        accept.setText("Create");
       } else {
         //update
         name.setText(ui.vm_disk.name);
@@ -364,6 +366,7 @@ public class ConfigService implements WebUIHandler {
         }
         provision.setSelectedIndex(0);
         boot_order.setText(Integer.toString(ui.vm_disk.boot_order));
+        accept.setText("Edit");
       }
     };
 
@@ -381,9 +384,11 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
-      if (ui.hardware.hasDisk(_name)) {
-        errmsg.setText("Error:disk name already exists");
-        return;
+      if (create) {
+        if (ui.hardware.hasDisk(_name)) {
+          errmsg.setText("Error:disk name already exists");
+          return;
+        }
       }
       String _size_str = vmm.cleanNumber(size.getText());
       if (_size_str.length() == 0) {
