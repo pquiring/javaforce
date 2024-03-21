@@ -1441,6 +1441,8 @@ public class ConfigService implements WebUIHandler {
       }
       hardware.name = _vm_name;
       hardware.pool = _vm_pool;
+      vm.name = _vm_name;
+      vm.pool = _vm_pool;
       File file = new File(hardware.getPath());
       if (file.exists()) {
         errmsg.setText("Error:folder already exists in storage pool with that name");
