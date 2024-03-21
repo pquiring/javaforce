@@ -491,15 +491,17 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     ui.vm_network_init = () -> {
+      boolean create = ui.vm_network == null;
       networks.clear();
       ArrayList<NetworkVLAN> nics = Config.current.vlans;
       for(NetworkVLAN nic : nics) {
         networks.add(nic.name, nic.name);
       }
-      if (ui.vm_network == null) {
+      if (create) {
         models.setSelectedIndex(0);
         networks.setSelectedIndex(0);
         mac.setText("");
+        accept.setText("Create");
       } else {
         int idx = 0;
         for(String model : nic_models) {
@@ -518,6 +520,7 @@ public class ConfigService implements WebUIHandler {
           idx++;
         }
         mac.setText(ui.vm_network.mac);
+        accept.setText("Edit");
       }
     };
 
@@ -586,20 +589,22 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button accept = new Button("Okay");
+    Button accept = new Button("Create");
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
     ui.network_vlan_init = () -> {
+      boolean create = ui.network_vlan == null;
       bridge.clear();
       NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
       for(NetworkBridge nic : nics) {
         bridge.add(nic.name, nic.name);
       }
-      if (ui.network_vlan == null) {
+      if (create) {
         name.setText("");
         vlan.setText("0");
+        accept.setText("Create");
       } else {
         name.setText(ui.network_vlan.name);
         vlan.setText(Integer.toString(ui.network_vlan.vlan));
@@ -611,6 +616,7 @@ public class ConfigService implements WebUIHandler {
           }
           idx++;
         }
+        accept.setText("Edit");
       }
     };
 
@@ -698,14 +704,16 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     ui.network_bridge_init = () -> {
+      boolean create = ui.network_bridge == null;
       iface.clear();
       NetworkInterface[] nics = NetworkInterface.listPhysical();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
         iface.add(nic.name, nic.name);
       }
-      if (ui.network_bridge == null) {
+      if (create) {
         name.setText("");
+        accept.setText("Create");
       } else {
         name.setText(ui.network_bridge.name);
         int idx = 0;
@@ -716,6 +724,7 @@ public class ConfigService implements WebUIHandler {
           }
           idx++;
         }
+        accept.setText("Edit");
       }
     };
 
@@ -830,17 +839,19 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     ui.network_virtual_init = () -> {
+      boolean create = ui.network_virtual == null;
       bridge.clear();
       NetworkBridge[] nics = NetworkBridge.list(NetworkBridge.TYPE_OS);
       for(NetworkBridge nic : nics) {
         bridge.add(nic.name, nic.name);
       }
-      if (ui.network_virtual == null) {
+      if (create) {
         name.setText("");
         mac.setText("");
         ip.setText("192.168.1.2");
         netmask.setText("255.255.255.0");
         vlan.setText("0");
+        accept.setText("Create");
       } else {
         name.setText(ui.network_virtual.name);
         mac.setText(ui.network_virtual.mac);
@@ -855,6 +866,7 @@ public class ConfigService implements WebUIHandler {
           }
           idx++;
         }
+        accept.setText("Edit");
       }
     };
 
@@ -976,9 +988,14 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     ui.device_usb_init = () -> {
+      boolean create = ui.device == null;
       String _sel = null;
-      if (ui.device != null) {
+      if (create) {
+        _sel = "";
+        accept.setText("Create");
+      } else {
         _sel = ui.device.path;
+        accept.setText("Edit");
       }
       String[] groups = vmm.listDevices(Device.TYPE_USB);
       int idx = 0;
@@ -1037,9 +1054,14 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     ui.device_pci_init = () -> {
+      boolean create = ui.device == null;
       String _sel = null;
-      if (ui.device != null) {
+      if (create) {
+        _sel = "";
+        accept.setText("Create");
+      } else {
         _sel = ui.device.path;
+        accept.setText("Edit");
       }
       String[] groups = vmm.listDevices(Device.TYPE_PCI);
       int idx = 0;
@@ -1194,16 +1216,16 @@ public class ConfigService implements WebUIHandler {
     networks.setWidth(size);
     list.add(networks);
     host.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(hostPanel());
+      ui.setRightPanel(hostPanel());
     });
     vms.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(vmsPanel(ui));
+      ui.setRightPanel(vmsPanel(ui));
     });
     stores.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(storagePanel(ui));
+      ui.setRightPanel(storagePanel(ui));
     });
     networks.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(networkPanel(ui));
+      ui.setRightPanel(networkPanel(ui));
     });
     return panel;
   }
@@ -1282,7 +1304,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(create);
     Button edit = new Button("Edit");
     tools.add(edit);
-    //TODO : add refresh
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
     Button start = new Button("Start");
     tools.add(start);
     Button stop = new Button("Stop");
@@ -1302,7 +1325,7 @@ public class ConfigService implements WebUIHandler {
     create.addClickListener((me, cmp) -> {
       Hardware hw = new Hardware();
       VirtualMachine vm = new VirtualMachine(hw);
-      ui.split.setRightComponent(vmAddPanel(vm, hw, ui));
+      ui.setRightPanel(vmAddPanel(vm, hw, ui));
     });
 
     edit.addClickListener((me, cmp) -> {
@@ -1314,7 +1337,11 @@ public class ConfigService implements WebUIHandler {
         JFLog.log("Error:Failed to load config for vm:" + vm.name);
         return;
       }
-      ui.split.setRightComponent(vmEditPanel(vm, hardware, false, ui));
+      ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
+    });
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(vmsPanel(ui));
     });
 
     start.addClickListener((me, cmp) -> {
@@ -1473,10 +1500,10 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       file.mkdirs();
-      ui.split.setRightComponent(vmEditPanel(vm, hardware, true, ui));
+      ui.setRightPanel(vmEditPanel(vm, hardware, true, ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(vmsPanel(ui));
+      ui.setRightPanel(vmsPanel(ui));
     });
 
     return panel;
@@ -1739,13 +1766,13 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       vm.saveHardware(hardware);
-      ui.split.setRightComponent(vmsPanel(ui));
+      ui.setRightPanel(vmsPanel(ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
       if (create) {
         JF.deletePathEx(hardware.getPath());
       }
-      ui.split.setRightComponent(vmsPanel(ui));
+      ui.setRightPanel(vmsPanel(ui));
     });
 
     return panel;
@@ -1785,13 +1812,13 @@ public class ConfigService implements WebUIHandler {
     }
 
     add.addClickListener((me, cmp) -> {
-      ui.split.setRightComponent(addStoragePanel(ui));
+      ui.setRightPanel(addStoragePanel(ui));
     });
     edit.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       Storage pool = pools[idx];
-      ui.split.setRightComponent(editStoragePanel(pool, ui));
+      ui.setRightPanel(editStoragePanel(pool, ui));
     });
     browse.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
@@ -1825,14 +1852,14 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools[idx];
       pool.start();
-      ui.split.setRightComponent(storagePanel(ui));
+      ui.setRightPanel(storagePanel(ui));
     });
     stop.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       Storage pool = pools[idx];
       pool.stop();
-      ui.split.setRightComponent(storagePanel(ui));
+      ui.setRightPanel(storagePanel(ui));
     });
 /*
     mount.addClickListener((me, cmp) -> {
@@ -1840,7 +1867,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools[idx];
       pool.mount();
-      ui.split.setRightComponent(storagePanel(ui));
+      ui.setRightPanel(storagePanel(ui));
     });
     unmount.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
@@ -1850,7 +1877,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Unmount storage pool:" + pool.name);
       ui.confirm_action = () -> {
         pool.unmount();
-        ui.split.setRightComponent(storagePanel(ui));
+        ui.setRightPanel(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1866,7 +1893,7 @@ public class ConfigService implements WebUIHandler {
           ui.confirm_action = () -> {
             //TODO : create task thread
             pool.format(Storage.TYPE_EXT4);
-            ui.split.setRightComponent(storagePanel(ui));
+            ui.setRightPanel(storagePanel(ui));
           };
           ui.confirm_popup.setVisible(true);
           break;
@@ -1889,7 +1916,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         pool.unregister();
         Config.current.removeStorage(pool);
-        ui.split.setRightComponent(storagePanel(ui));
+        ui.setRightPanel(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);
     });
