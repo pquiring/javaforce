@@ -316,6 +316,12 @@ public class ConfigService implements WebUIHandler {
     row.add(provision);
     provision.setSelectedIndex(0);
 
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Boot Order"));
+    TextField boot_order = new TextField("0");
+    row.add(boot_order);
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button accept = new Button("Create");
@@ -332,6 +338,8 @@ public class ConfigService implements WebUIHandler {
         type.setReadonly(false);
         size.setText("100");
         size_units.setSelectedIndex(1);
+        provision.setSelectedIndex(0);
+        boot_order.setText("0");
       } else {
         //update
         name.setText(ui.vm_disk.name);
@@ -343,6 +351,8 @@ public class ConfigService implements WebUIHandler {
         type.setReadonly(true);
         size.setText(Integer.toString(ui.vm_disk.size.size));
         size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
+        provision.setSelectedIndex(0);
+        boot_order.setText(Integer.toString(ui.vm_disk.boot_order));
       }
     };
 
@@ -370,6 +380,13 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int _size_unit = size_units.getSelectedIndex() + 2;
+      String _boot_order_str = vmm.cleanNumber(boot_order.getText());
+      if (_boot_order_str.length() == 0) {
+        boot_order.setText(_boot_order_str);
+        errmsg.setText("Error:invalid boot order");
+        return;
+      }
+      int _boot_order = Integer.valueOf(_boot_order_str);
       if (ui.vm_disk == null) {
         //create
         ui.vm_disk = new Disk();
@@ -378,14 +395,16 @@ public class ConfigService implements WebUIHandler {
         ui.vm_disk.name = _name;
         ui.vm_disk.type = type.getSelectedIndex();
         ui.vm_disk.size = new Size(_size, _size_unit);
+        ui.vm_disk.boot_order = _boot_order;
         if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex())) {
           errmsg.setText("Error:Failed to create disk");
           return;
         }
       } else {
-        //update (only size can be changed)
+        //update (only size and boot order can be changed)
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.resize(vmm.getPoolByName(ui.hardware.pool));
+        ui.vm_disk.boot_order = _boot_order;
       }
       if (ui.vm_disk_complete != null) {
         ui.vm_disk_complete.run();
