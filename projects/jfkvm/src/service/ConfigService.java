@@ -294,6 +294,7 @@ public class ConfigService implements WebUIHandler {
     row.add(type);
     type.add("vmdk", "vmdk");
     type.add("qcow2", "qcow2");
+    type.add("iso", "iso");
 
     row = new Row();
     panel.add(row);
@@ -338,6 +339,8 @@ public class ConfigService implements WebUIHandler {
         type.setReadonly(false);
         size.setText("100");
         size_units.setSelectedIndex(1);
+        size.setReadonly(false);
+        size_units.setReadonly(false);
         provision.setSelectedIndex(0);
         boot_order.setText("0");
       } else {
@@ -347,10 +350,18 @@ public class ConfigService implements WebUIHandler {
         switch (ui.vm_disk.type) {
           case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
           case Disk.TYPE_QCOW2: type.setSelectedIndex(1); break;
+          case Disk.TYPE_ISO: type.setSelectedIndex(2); break;
         }
         type.setReadonly(true);
         size.setText(Integer.toString(ui.vm_disk.size.size));
         size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
+        if (ui.vm_disk.type == Disk.TYPE_ISO) {
+          size.setReadonly(true);
+          size_units.setReadonly(true);
+        } else {
+          size.setReadonly(false);
+          size_units.setReadonly(false);
+        }
         provision.setSelectedIndex(0);
         boot_order.setText(Integer.toString(ui.vm_disk.boot_order));
       }
@@ -358,6 +369,12 @@ public class ConfigService implements WebUIHandler {
 
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
+      boolean create = ui.vm_disk == null;
+      int _type = type.getSelectedIndex();
+      if (create && type.getSelectedIndex() == 2) {
+        errmsg.setText("Error:can not create iso files");
+        return;
+      }
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
@@ -375,9 +392,11 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int _size = Integer.valueOf(_size_str);
-      if (_size == 0) {
-        errmsg.setText("Error:invalid size");
-        return;
+      if (_type != Disk.TYPE_ISO) {
+        if (_size == 0) {
+          errmsg.setText("Error:invalid size");
+          return;
+        }
       }
       int _size_unit = size_units.getSelectedIndex() + 2;
       String _boot_order_str = vmm.cleanNumber(boot_order.getText());
@@ -387,13 +406,13 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int _boot_order = Integer.valueOf(_boot_order_str);
-      if (ui.vm_disk == null) {
+      if (create) {
         //create
         ui.vm_disk = new Disk();
         ui.vm_disk.pool = ui.hardware.pool;
         ui.vm_disk.folder = ui.hardware.name;
         ui.vm_disk.name = _name;
-        ui.vm_disk.type = type.getSelectedIndex();
+        ui.vm_disk.type = _type;
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.boot_order = _boot_order;
         if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex())) {
