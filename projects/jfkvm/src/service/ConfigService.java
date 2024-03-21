@@ -1550,8 +1550,18 @@ public class ConfigService implements WebUIHandler {
       ui.browse_filters = filter_disks;
       ui.browse_init.run();
       ui.browse_complete = () -> {
-        //TODO : need to create Disk : name, pool, etc.
-        //TODO : ensure name is unique
+        String[] p = ui.browse_select.split("/");
+        // /volumes/pool/vm/disk.vmdk
+        //0/1      /2   /3 /4
+        if (p.length != 5) {
+          errmsg.setText("Error:Disk in unusual location");
+          ui.browse_popup.setVisible(false);
+          return;
+        }
+        Disk disk = new Disk();
+        disk.name = removeExt(p[4]);
+        disk.pool = p[2];
+        ui.hardware.addDisk(disk);
         ui.browse_popup.setVisible(false);
       };
       ui.browse_popup.setVisible(true);
@@ -2403,6 +2413,13 @@ public class ConfigService implements WebUIHandler {
         };
       });
     }
+  }
+
+  private String removeExt(String file) {
+    //remove ext from disk filename
+    int idx = file.lastIndexOf('.');
+    if (idx == -1) return file;
+    return file.substring(0, idx);
   }
 
   public byte[] getResource(String url) {
