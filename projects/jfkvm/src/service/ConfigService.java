@@ -1592,6 +1592,7 @@ public class ConfigService implements WebUIHandler {
         disk.pool = p[2];
         disk.folder = p[3];
         disk.type = Disk.getType(getExt(p[4]));
+        disk.size = new Size(0, 0);  //unknown size
         if (disk.type == -1) {
           ui.browse_errmsg.setText("Error:unknown disk type");
           return;
