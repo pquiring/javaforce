@@ -22,6 +22,7 @@ public class Disk implements Serializable {
 
   public static final int TYPE_VMDK = 0;
   public static final int TYPE_QCOW2 = 1;
+  public static final int TYPE_ISO = 2;
 
   public static final int PROVISION_THICK = 0;
   public static final int PROVISION_THIN = 1;
@@ -30,8 +31,18 @@ public class Disk implements Serializable {
     switch (type) {
       case TYPE_QCOW2: return "qcow2";
       case TYPE_VMDK: return "vmdk";
+      case TYPE_ISO: return "iso";
     }
     return "";
+  }
+
+  public static int getType(String ext) {
+    switch (ext) {
+      case "qcow2": return TYPE_QCOW2;
+      case "vmdk": return TYPE_VMDK;
+      case "iso": return TYPE_ISO;
+    }
+    return -1;
   }
 
   public String getPath(Hardware hardware) {

@@ -1566,6 +1566,11 @@ public class ConfigService implements WebUIHandler {
         Disk disk = new Disk();
         disk.name = removeExt(p[4]);
         disk.pool = p[2];
+        disk.type = Disk.getType(getExt(p[4]));
+        if (disk.type == -1) {
+          ui.browse_errmsg.setText("Error:unknown disk type");
+          return;
+        }
         if (ui.hardware.hasDisk(disk.name)) {
           ui.browse_errmsg.setText("Error:disk name already exists");
           return;
@@ -2432,6 +2437,13 @@ public class ConfigService implements WebUIHandler {
     int idx = file.lastIndexOf('.');
     if (idx == -1) return file;
     return file.substring(0, idx);
+  }
+
+  private String getExt(String file) {
+    //get ext from disk filename
+    int idx = file.lastIndexOf('.');
+    if (idx == -1) return file;
+    return file.substring(idx + 1);
   }
 
   public byte[] getResource(String url) {
