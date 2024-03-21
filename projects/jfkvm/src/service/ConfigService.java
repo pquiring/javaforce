@@ -354,6 +354,10 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
+      if (ui.hardware.hasDisk(_name)) {
+        errmsg.setText("Error:disk name already exists");
+        return;
+      }
       String _size_str = vmm.cleanNumber(size.getText());
       if (_size_str.length() == 0) {
         size.setText(_size_str);
@@ -1561,7 +1565,12 @@ public class ConfigService implements WebUIHandler {
         Disk disk = new Disk();
         disk.name = removeExt(p[4]);
         disk.pool = p[2];
+        if (ui.hardware.hasDisk(disk.name)) {
+          ui.browse_errmsg.setText("Error:disk name already exists");
+          return;
+        }
         ui.hardware.addDisk(disk);
+        disk_list.add(disk.name);
         ui.browse_popup.setVisible(false);
       };
       ui.browse_popup.setVisible(true);

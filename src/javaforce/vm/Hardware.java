@@ -116,6 +116,13 @@ public class Hardware implements Serializable {
     return "disk" + disks.size();
   }
 
+  public boolean hasDisk(String name) {
+    for(Disk disk : disks) {
+      if (disk.name.equals(name)) return true;
+    }
+    return false;
+  }
+
   public void addDevice(Device device) {
     devices.add(device);
   }
