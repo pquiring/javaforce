@@ -254,7 +254,7 @@ public class VirtualMachine implements Serializable {
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       if (hardware.disks != null) {
         for(Disk drive : hardware.disks) {
-          xml.append(drive.getHardwareXML(hardware));
+          xml.append(drive.getHardwareXML());
         }
       }
       if (hardware.networks != null) {
@@ -278,6 +278,7 @@ public class VirtualMachine implements Serializable {
     VirtualMachine vm = new VirtualMachine("pool", "example", UUID.generate(), 5901);
     Disk disk = new Disk();
     disk.pool = "pool";
+    disk.folder = "example";
     disk.name = "disk";
     disk.type = Disk.TYPE_VMDK;
     disk.target_dev = "sda";

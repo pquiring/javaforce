@@ -374,17 +374,18 @@ public class ConfigService implements WebUIHandler {
         //create
         ui.vm_disk = new Disk();
         ui.vm_disk.pool = ui.hardware.pool;
+        ui.vm_disk.folder = ui.hardware.name;
         ui.vm_disk.name = _name;
         ui.vm_disk.type = type.getSelectedIndex();
         ui.vm_disk.size = new Size(_size, _size_unit);
-        if (!ui.vm_disk.create(ui.hardware, vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex())) {
+        if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex())) {
           errmsg.setText("Error:Failed to create disk");
           return;
         }
       } else {
         //update (only size can be changed)
         ui.vm_disk.size = new Size(_size, _size_unit);
-        ui.vm_disk.resize(ui.hardware, vmm.getPoolByName(ui.hardware.pool));
+        ui.vm_disk.resize(vmm.getPoolByName(ui.hardware.pool));
       }
       if (ui.vm_disk_complete != null) {
         ui.vm_disk_complete.run();
@@ -1238,6 +1239,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(create);
     Button edit = new Button("Edit");
     tools.add(edit);
+    //TODO : add refresh
     Button start = new Button("Start");
     tools.add(start);
     Button stop = new Button("Stop");
@@ -1558,6 +1560,7 @@ public class ConfigService implements WebUIHandler {
         String[] p = ui.browse_select.split("/");
         // /volumes/pool/vm/disk.vmdk
         //0/1      /2   /3 /4
+        //TODO : support deeper disk folder location
         if (p.length != 5) {
           errmsg.setText("Error:Disk in unusual location");
           ui.browse_popup.setVisible(false);
@@ -1566,6 +1569,7 @@ public class ConfigService implements WebUIHandler {
         Disk disk = new Disk();
         disk.name = removeExt(p[4]);
         disk.pool = p[2];
+        disk.folder = p[3];
         disk.type = Disk.getType(getExt(p[4]));
         if (disk.type == -1) {
           ui.browse_errmsg.setText("Error:unknown disk type");

@@ -13,6 +13,7 @@ public class Disk implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String pool;  //storage pool
+  public String folder;  //usually vm name
   public String name;  //filename
   public int type;
   public Size size;
@@ -45,16 +46,16 @@ public class Disk implements Serializable {
     return -1;
   }
 
-  public String getPath(Hardware hardware) {
-    return "/volumes/" + pool + "/" + hardware.name + "/" + name + '.' + getType();
+  public String getPath() {
+    return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
   }
 
   private native static boolean ncreate(String pool_name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
-  public boolean create(Hardware hardware, Storage pool, int provision) {
+  public boolean create(Storage pool, int provision) {
     if (false) {
       //use libvirt (not working per docs)
-      String xml = getCreateXML(hardware, provision);
+      String xml = getCreateXML(provision);
       JFLog.log("Disk.xml=" + xml);
       return ncreate(pool.name, xml);
     } else {
@@ -72,7 +73,7 @@ public class Disk implements Serializable {
               subformat = "monolithicSparse";
               break;
           }
-          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), "-o", "subformat=" + subformat, getPath(hardware), size.getSize()}, true);
+          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), "-o", "subformat=" + subformat, getPath(), size.getSize()}, true);
           break;
         }
         case TYPE_QCOW2: {
@@ -86,7 +87,7 @@ public class Disk implements Serializable {
               preallocation = "off";
               break;
           }
-          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), "-o", "preallocation=" + preallocation, getPath(hardware), size.getSize()}, true);
+          sp.run(new String[] {"/usr/bin/qemu-img", "create", "-f", getType(), "-o", "preallocation=" + preallocation, getPath(), size.getSize()}, true);
           break;
         }
       }
@@ -94,10 +95,10 @@ public class Disk implements Serializable {
     }
   }
 
-  public boolean resize(Hardware hardware, Storage pool) {
+  public boolean resize(Storage pool) {
     if (false) {
       //use libvirt (not working per docs)
-      String xml = getCreateXML(hardware, 0);
+      String xml = getCreateXML(0);
       JFLog.log("Disk.xml=" + xml);
       return ncreate(pool.name, xml);
     } else {
@@ -105,20 +106,20 @@ public class Disk implements Serializable {
       ShellProcess sp = new ShellProcess();
       switch (type) {
         case TYPE_VMDK:
-          sp.run(new String[] {"/usr/bin/qemu-img", "resize", getPath(hardware), size.getSize()}, true);
+          sp.run(new String[] {"/usr/bin/qemu-img", "resize", getPath(), size.getSize()}, true);
           break;
         case TYPE_QCOW2:
-          sp.run(new String[] {"/usr/bin/qemu-img", "resize", getPath(hardware), size.getSize()}, true);
+          sp.run(new String[] {"/usr/bin/qemu-img", "resize", getPath(), size.getSize()}, true);
           break;
       }
       return sp.getErrorLevel() == 0;
     }
   }
 
-  public String getHardwareXML(Hardware hardware) {
+  public String getHardwareXML() {
     StringBuilder xml = new StringBuilder();
     xml.append("<disk type='file' device='disk'>");
-    xml.append("<source file='" + getPath(hardware) + "'>");
+    xml.append("<source file='" + getPath() + "'>");
     xml.append("</source>");
     xml.append("<target dev='" + target_dev + "' bus='" + target_bus + "'/>");
     if (boot_order > 0) {
@@ -128,7 +129,7 @@ public class Disk implements Serializable {
     return xml.toString();
   }
 
-  private String getCreateXML(Hardware hardware, int provision) {
+  private String getCreateXML(int provision) {
     StringBuilder xml = new StringBuilder();
     xml.append("<volume type='file'>");
     xml.append("<name>" + name + "</name>");
@@ -146,7 +147,7 @@ public class Disk implements Serializable {
     xml.append(size.size);
     xml.append("</capacity>");
     xml.append("<target>");
-    xml.append("<path>" + getPath(hardware) + "</path>");
+    xml.append("<path>" + getPath() + "</path>");
     xml.append("<format type='" + getType() + "'/>");
     xml.append("</target>");
     xml.append("</volume>");
