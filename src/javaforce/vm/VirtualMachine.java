@@ -217,7 +217,7 @@ public class VirtualMachine implements Serializable {
         xml.append("<source file='/volumes/" + hardware.pool + "/" + hardware.name + "/" + hardware.name + ".nvram'/>");
         xml.append("</nvram>");
       }
-      xml.append("<boot dev='hd'/>");
+//      xml.append("<boot dev='hd'/>");  //use Disk.boot_order instead
       xml.append("<bootmenu enable='yes' timeout='3000'/>");
       xml.append("<smbios mode='emulate'/>");
     xml.append("</os>");
