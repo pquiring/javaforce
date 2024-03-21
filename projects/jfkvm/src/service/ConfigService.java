@@ -21,16 +21,16 @@ public class ConfigService implements WebUIHandler {
   private VMM vmm;
 
   private static final String[] filter_disks = new String[] {
-    "*.[.]vmdk",
-    "*.[.]qcow2",
-    "*.[.]iso",
+    ".*[.]vmdk",
+    ".*[.]qcow2",
+    ".*[.]iso",
   };
 
   private static final String[] filter_all = new String[] {
-    "*.[.]vmdk",
-    "*.[.]qcow2",
-    "*.[.]iso",
-    "*.[.]jfvm"
+    ".*[.]vmdk",
+    ".*[.]qcow2",
+    ".*[.]iso",
+    ".*[.]jfvm"
   };
 
   public void start() {
