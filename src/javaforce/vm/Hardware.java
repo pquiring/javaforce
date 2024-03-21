@@ -113,7 +113,18 @@ public class Hardware implements Serializable {
   }
 
   public String getNextDiskName() {
-    return "disk" + disks.size();
+    int num = disks.size();
+    do {
+      String name = "disk" + num;
+      boolean ok = true;
+      for(Disk disk : disks) {
+        if (disk.name.equals(name)) {
+          ok = false;
+        }
+      }
+      if (ok) return name;
+      num++;
+    } while (true);
   }
 
   public boolean hasDisk(String name) {
@@ -132,7 +143,10 @@ public class Hardware implements Serializable {
   }
 
   public void validate() {
-    //TODO : ensure all hardware is valid
-    //each disk needs a unique hardware name, etc.
+    int idx = 0;
+    for(Disk disk : disks) {
+      disk.target_dev = String.format("sd%c", 'a' + idx);
+      idx++;
+    }
   }
 }
