@@ -10,7 +10,7 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.1"/>
 
-  <property name="debian.depends" value="libvirt-dev,libvirt-daemon,openvswitch-switch"/>
+  <property name="debian.depends" value="libvirt-dev,libvirt-daemon-system,openvswitch-switch"/>
   <property name="fedora.depends" value="libvirt-devel,libvirt-daemon,openvswitch"/>
   <property name="arch.depends" value="libvirt,openvswitch"/>
 
