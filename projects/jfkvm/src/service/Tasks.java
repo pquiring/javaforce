@@ -28,6 +28,7 @@ public class Tasks extends Thread {
   }
 
   public void completed(Task task) {
+    JFLog.log("Task completed:" + task.action + ":result=" + task.result);
     synchronized (lock) {
       taskList.remove(task);
     }
