@@ -186,6 +186,7 @@ public class VirtualMachine implements Serializable {
    */
   private static String createXML(VirtualMachine vm, Hardware hardware, VMProvider provider) {
     vm.vnc = provider.getVNCPort(hardware.name);
+    String hostname = provider.getServerHostname();
     StringBuilder xml = new StringBuilder();
     xml.append("<domain type='kvm'>");
     xml.append("<name>" + hardware.name + "</name>");
@@ -248,8 +249,8 @@ public class VirtualMachine implements Serializable {
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
-      xml.append("<listen type='address' address='127.0.0.1'/>");
+      xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' listen='" + hostname + "' sharePolicy='allow-exclusive'>");
+      xml.append("<listen type='address' address='" + hostname + "'/>");
       xml.append("</graphics>");
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       if (hardware.disks != null) {
@@ -297,6 +298,9 @@ public class VirtualMachine implements Serializable {
       }
       public int getVNCPort(String name) {
         return 5901;
+      }
+      public String getServerHostname() {
+        return "127.0.0.1";
       }
     }));
   }

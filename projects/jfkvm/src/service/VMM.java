@@ -100,4 +100,8 @@ public class VMM implements VMProvider {
     } while (!ok);
     return port;
   }
+
+  public String getServerHostname() {
+    return Config.current.fqn;
+  }
 }

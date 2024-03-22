@@ -14,4 +14,6 @@ public interface VMProvider {
   public NetworkBridge getBridge(String name);
   /** Provide free VNC port for Virtual Machine (5901-5999). */
   public int getVNCPort(String name);
+  /** Provides server host name */
+  public String getServerHostname();
 }

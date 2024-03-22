@@ -33,6 +33,10 @@ public class ConfigService implements WebUIHandler {
     ".*[.]jfvm"
   };
 
+  private static final String[] filter_vmx = new String[] {
+    ".*[.]vmx",
+  };
+
   public void start() {
     initSecureWebKeys();
     server = new WebUIServer();
@@ -1363,7 +1367,7 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      ui.message_message.setText("Open VNC client to 127.0.0.1:" + vm.getVNC());
+      ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC());
       ui.message_popup.setVisible(true);
     });
 
