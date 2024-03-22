@@ -411,6 +411,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int _boot_order = Integer.valueOf(_boot_order_str);
+      int _provision = provision.getSelectedIndex();
       if (create) {
         //create
         ui.vm_disk = new Disk();
@@ -420,7 +421,7 @@ public class ConfigService implements WebUIHandler {
         ui.vm_disk.type = _type;
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.boot_order = _boot_order;
-        if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), provision.getSelectedIndex())) {
+        if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), _provision)) {
           errmsg.setText("Error:Failed to create disk");
           return;
         }

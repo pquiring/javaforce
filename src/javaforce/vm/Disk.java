@@ -50,6 +50,16 @@ public class Disk implements Serializable {
     return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
   }
 
+  private String getPath2() {
+    if (type == TYPE_VMDK) {
+      String flat = "/volumes/" + pool + "/" + folder + "/" + name + "-flat." + getType();
+      if (new File(flat).exists()) {
+        return flat;
+      }
+    }
+    return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
+  }
+
   private native static boolean ncreate(String pool_name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
   public boolean create(Storage pool, int provision) {
@@ -119,7 +129,7 @@ public class Disk implements Serializable {
   public String getHardwareXML() {
     StringBuilder xml = new StringBuilder();
     xml.append("<disk type='file' device='disk'>");
-    xml.append("<source file='" + getPath() + "'>");
+    xml.append("<source file='" + getPath2() + "'>");
     xml.append("</source>");
     xml.append("<target dev='" + target_dev + "' bus='" + target_bus + "'/>");
     if (boot_order > 0) {
