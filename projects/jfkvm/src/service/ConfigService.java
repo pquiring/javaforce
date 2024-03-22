@@ -1854,6 +1854,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(add);
     Button edit = new Button("Edit");
     tools.add(edit);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
     Button browse = new Button("Browse");
     tools.add(browse);
     Button start = new Button("Start");
@@ -1886,6 +1888,9 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools[idx];
       ui.setRightPanel(editStoragePanel(pool, ui));
+    });
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(storagePanel(ui));
     });
     browse.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
