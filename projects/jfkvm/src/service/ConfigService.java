@@ -1298,6 +1298,14 @@ public class ConfigService implements WebUIHandler {
 
   private Panel vmsPanel(UI ui) {
     TabPanel panel = new TabPanel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button create = new Button("Create");
@@ -1350,6 +1358,10 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
+      if (vm.getState() != 0) {
+        errmsg.setText("Error:VM is already powered on.");
+        return;
+      }
       ui.confirm_button.setText("Start");
       ui.confirm_message.setText("Start VM : " + vm.name);
       ui.confirm_action = () -> {
@@ -1372,6 +1384,10 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
+      if (vm.getState() == 0) {
+        errmsg.setText("Error:VM is already stopped.");
+        return;
+      }
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop VM : " + vm.name);
       ui.confirm_action = () -> {
@@ -1394,6 +1410,10 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
+      if (vm.getState() == 0) {
+        errmsg.setText("Error:VM is not live.");
+        return;
+      }
       ui.confirm_button.setText("Restart");
       ui.confirm_message.setText("Restart VM : " + vm.name);
       ui.confirm_action = () -> {
@@ -1416,6 +1436,10 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
+      if (vm.getState() == 0) {
+        errmsg.setText("Error:VM is already powered down.");
+        return;
+      }
       ui.confirm_button.setText("Power Off");
       ui.confirm_message.setText("Power Off VM : " + vm.name);
       ui.confirm_action = () -> {
@@ -1437,6 +1461,10 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
+      if (vm.getState() != 0) {
+        errmsg.setText("Error:Can not unregister a live VM.");
+        return;
+      }
       ui.confirm_button.setText("Unregister");
       ui.confirm_message.setText("Unregister VM : " + vm.name);
       ui.confirm_action = () -> {
