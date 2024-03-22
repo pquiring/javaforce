@@ -37,7 +37,9 @@ public class Network implements Serializable {
     xml.append("<source bridge='" + bridge.name + "'/>");
     if (bridge.type.equals("os")) {
       xml.append("<virtualport type='openvswitch'/>");
-      xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
+      if (vlan != 0) {
+        xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
+      }
     }
     xml.append("<model type='" + model + "'/>");
     xml.append("<mac address='" + mac + "'/>");
