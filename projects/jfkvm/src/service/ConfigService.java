@@ -1470,6 +1470,10 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         Task task = new Task("Unregister") {
           public void doTask() {
+            if (vm.getState() != 0) {
+              setResult("Error:Can not unregister a live VM.");
+              return;
+            }
             if (vm.unregister()) {
               setResult("Completed");
             } else {
