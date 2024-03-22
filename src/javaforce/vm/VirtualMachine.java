@@ -248,7 +248,7 @@ public class VirtualMachine implements Serializable {
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='yes' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
+      xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' listen='127.0.0.1' sharePolicy='allow-exclusive'>");
       xml.append("<listen type='address' address='127.0.0.1'/>");
       xml.append("</graphics>");
   //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
