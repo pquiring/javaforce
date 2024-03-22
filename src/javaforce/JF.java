@@ -1310,6 +1310,19 @@ public class JF {
     return sb.toString();
   }
 
+  /** Return n'th index of char ch in str. Returns -1 if not found. */
+  public static int indexOf(String str, char ch, int n) {
+    if (n < 1) return -1;
+    char[] cstr = str.toCharArray();
+    for(int idx=0;idx<cstr.length;idx++) {
+      if (cstr[idx] == ch) {
+        n--;
+        if (n == 0) return idx;
+      }
+    }
+    return -1;
+  }
+
   /** Expand arguments.
    *  Performs argument globbing (wildcards).
    *  Used by native launcher.

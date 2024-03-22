@@ -1696,20 +1696,15 @@ public class ConfigService implements WebUIHandler {
       ui.browse_filters = filter_disks;
       ui.browse_init.run();
       ui.browse_complete = () -> {
-        String[] p = ui.browse_select.split("/");
-        // /volumes/pool/vm/disk.vmdk
-        //0/1      /2   /3 /4
-        //TODO : support deeper disk folder location
-        if (p.length != 5) {
-          errmsg.setText("Error:Disk in unusual location");
-          ui.browse_popup.setVisible(false);
-          return;
-        }
+        String path_file = ui.browse_select;
+        String pool = getPool(path_file);
+        String folder = getFolder(path_file);
+        String file = getFile(path_file);
         Disk disk = new Disk();
-        disk.name = removeExt(p[4]);
-        disk.pool = p[2];
-        disk.folder = p[3];
-        disk.type = Disk.getType(getExt(p[4]));
+        disk.name = removeExt(file);
+        disk.pool = pool;
+        disk.folder = folder;
+        disk.type = Disk.getType(getExt(file));
         disk.size = new Size(0, 0);  //unknown size
         if (disk.type == -1) {
           ui.browse_errmsg.setText("Error:unknown disk type");
@@ -2581,17 +2576,42 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
+  private String getPool(String path_file) {
+    // /volumes/pool/path/file
+    int i1 = JF.indexOf(path_file, '/', 2);
+    if (i1 == -1) return null;
+    int i2 = JF.indexOf(path_file, '/', 3);
+    if (i2 == -1) return null;
+    return path_file.substring(i1 + 1, i2);
+  }
+
+  private String getFolder(String path_file) {
+    // /volumes/pool/path/file
+    int i1 = JF.indexOf(path_file, '/', 3);
+    if (i1 == -1) return null;
+    int i2 = path_file.lastIndexOf('/');
+    if (i2 == -1) return null;
+    return path_file.substring(i1 + 1, i2);
+  }
+
+  private String getFile(String path_file) {
+    // /volumes/pool/path/file
+    int idx = path_file.lastIndexOf('/');
+    if (idx == -1) return null;
+    return path_file.substring(idx + 1);
+  }
+
   private String removeExt(String file) {
     //remove ext from disk filename
     int idx = file.lastIndexOf('.');
-    if (idx == -1) return file;
+    if (idx == -1) return null;
     return file.substring(0, idx);
   }
 
   private String getExt(String file) {
     //get ext from disk filename
     int idx = file.lastIndexOf('.');
-    if (idx == -1) return file;
+    if (idx == -1) return null;
     return file.substring(idx + 1);
   }
 
