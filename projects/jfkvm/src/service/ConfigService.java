@@ -1311,6 +1311,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button create = new Button("Create");
     tools.add(create);
+    //TODO : add "Convert" button to convert existing vmware machine
     Button edit = new Button("Edit");
     tools.add(edit);
     Button refresh = new Button("Refresh");
