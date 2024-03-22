@@ -1310,6 +1310,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button("Stop");
     tools.add(stop);
+    Button restart = new Button("Restart");
+    tools.add(restart);
     Button poweroff = new Button("PowerOff");
     tools.add(poweroff);
     Button unreg = new Button("Unregister");
@@ -1376,6 +1378,28 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Stop") {
           public void doTask() {
             if (vm.stop()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    //restart
+    restart.addClickListener((me, cmp) -> {
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      VirtualMachine vm = vms[idx];
+      ui.confirm_button.setText("Restart");
+      ui.confirm_message.setText("Restart VM : " + vm.name);
+      ui.confirm_action = () -> {
+        Task task = new Task("Restart") {
+          public void doTask() {
+            if (vm.restart()) {
               setResult("Completed");
             } else {
               setResult("Error occured, see logs.");

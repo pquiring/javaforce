@@ -28,7 +28,9 @@ public class Tasks extends Thread {
   }
 
   public void completed(Task task) {
-
+    synchronized (lock) {
+      taskList.remove(task);
+    }
   }
 
   public void run() {
