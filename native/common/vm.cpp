@@ -281,7 +281,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_npoweroff
     return JNI_FALSE;
   }
 
-  int res = (*_virDomainShutdown)(dom);
+  int res = (*_virDomainDestroy)(dom);
 
   (*_virDomainFree)(dom);
   disconnect(conn);
