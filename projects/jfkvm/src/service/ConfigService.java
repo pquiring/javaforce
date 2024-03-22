@@ -1314,6 +1314,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(edit);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
+    Button console = new Button("Console");
+    tools.add(console);
     Button start = new Button("Start");
     tools.add(start);
     Button stop = new Button("Stop");
@@ -1352,6 +1354,15 @@ public class ConfigService implements WebUIHandler {
 
     refresh.addClickListener((me, cmp) -> {
       ui.setRightPanel(vmsPanel(ui));
+    });
+
+    console.addClickListener((me, cmp) -> {
+      //TODO : redir external ports to internal ports
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      VirtualMachine vm = vms[idx];
+      ui.message_message.setText("Open VNC client to 127.0.0.1:" + vm.getVNC());
+      ui.message_popup.setVisible(true);
     });
 
     start.addClickListener((me, cmp) -> {
