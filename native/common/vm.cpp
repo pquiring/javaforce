@@ -16,7 +16,7 @@ void* (*_virDomainLookupByName)(void* conn, const char* name);
 int (*_virDomainCreate)(void* dom);
 int (*_virDomainShutdown)(void* dom);
 int (*_virDomainDestroy)(void* dom);
-int (*_virDomainReset)(void* dom);
+int (*_virDomainReset)(void* dom, int flags);
 int (*_virDomainSuspend)(void* dom);
 int (*_virDomainResume)(void* dom);
 int (*_virDomainGetState)(void* dom, int* state, int* reason, int flags);
@@ -310,7 +310,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nrestart
     return JNI_FALSE;
   }
 
-  int res = (*_virDomainReset)(dom);
+  int res = (*_virDomainReset)(dom, 0);
 
   (*_virDomainFree)(dom);
   disconnect(conn);
