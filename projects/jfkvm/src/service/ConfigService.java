@@ -2,8 +2,6 @@ package service;
 
 /** Config Service
  *
- * TODO : show link state of all nics
- *
  * @author pquiring
  */
 
@@ -1391,7 +1389,6 @@ public class ConfigService implements WebUIHandler {
     });
 
     console.addClickListener((me, cmp) -> {
-      //TODO : redir external ports to internal ports
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
@@ -1556,7 +1553,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Storage Pool"));
     ComboBox vm_pool = new ComboBox();
     row.add(vm_pool);
-    Storage[] pools = vmm.listPools();
+    ArrayList<Storage> pools = Config.current.pools;
     for(Storage p : pools) {
       String _name = p.name;
       vm_pool.add(_name, _name);
@@ -1968,7 +1965,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(delete);
     ListBox list = new ListBox();
     panel.add(list);
-    Storage[] pools = vmm.listPools();
+    ArrayList<Storage> pools = Config.current.pools;
     for(Storage pool : pools) {
       String _name = pool.name;
       list.add(_name + ":" + pool.getStateString());
@@ -1980,7 +1977,7 @@ public class ConfigService implements WebUIHandler {
     edit.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       ui.setRightPanel(editStoragePanel(pool, ui));
     });
     refresh.addClickListener((me, cmp) -> {
@@ -1989,7 +1986,7 @@ public class ConfigService implements WebUIHandler {
     browse.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       ui.browse_path = pool.getPath();
       ui.browse_filters = filter_all;
       ui.browse_init.run();
@@ -2016,14 +2013,14 @@ public class ConfigService implements WebUIHandler {
     start.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       pool.start();
       ui.setRightPanel(storagePanel(ui));
     });
     stop.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       pool.stop();
       ui.setRightPanel(storagePanel(ui));
     });
@@ -2051,7 +2048,7 @@ public class ConfigService implements WebUIHandler {
     format.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       switch (pool.type) {
         case Storage.TYPE_LOCAL_PART:
           ui.confirm_button.setText("Format");
@@ -2135,7 +2132,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
-      Storage[] pools = vmm.listPools();
+      ArrayList<Storage> pools = Config.current.pools;
       for(Storage pool : pools) {
         if (pool.name.equals(_name)) {
           errmsg.setText("Error:name is not unique");

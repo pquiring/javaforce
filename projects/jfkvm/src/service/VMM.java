@@ -9,10 +9,6 @@ import javaforce.*;
 import javaforce.vm.*;
 
 public class VMM implements VMProvider {
-  public Storage[] listPools() {
-    return Config.current.pools.toArray(new Storage[0]);
-  }
-
   //type = DEVICE.TYPE_...
   public String[] listDevices(int type) {
     Device[] devs = Device.list(type);  //what is "Devs"...?
@@ -38,6 +34,7 @@ public class VMM implements VMProvider {
         return pool;
       }
     }
+    JFLog.log("Error:pool not found:" + name);
     return null;
   }
 
@@ -47,6 +44,7 @@ public class VMM implements VMProvider {
         return vlan.vlan;
       }
     }
+    JFLog.log("Error:network not found:" + network);
     return 0;
   }
 
