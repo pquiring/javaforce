@@ -2526,7 +2526,10 @@ public class ConfigService implements WebUIHandler {
       Button link_down = new Button("Link DOWN");
       tools.add(link_down);
 
-      Table table = new Table(new int[] {75, 50, 50, 20}, 20, 0, 0);
+      row = new Row();
+      tab.add(row);
+      Table table = new Table(new int[] {75, 50, 50, 20}, 20, 4, 0);
+      row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
       table.setHeader(true);
