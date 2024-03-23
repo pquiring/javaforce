@@ -13,18 +13,6 @@ public class VMM implements VMProvider {
     return Config.current.pools.toArray(new Storage[0]);
   }
 
-  public NetworkInterface[] listNetworkInterface() {
-    return NetworkInterface.listPhysical();
-  }
-
-  public NetworkVirtual[] listNetworkVirtual() {
-    return NetworkVirtual.listVirtual();
-  }
-
-  public NetworkPort[] listNetworkPort(NetworkVirtual virt) {
-    return virt.listPort();
-  }
-
   //type = DEVICE.TYPE_...
   public String[] listDevices(int type) {
     Device[] devs = Device.list(type);  //what is "Devs"...?

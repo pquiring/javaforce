@@ -2505,10 +2505,11 @@ public class ConfigService implements WebUIHandler {
       ListBox list = new ListBox();
       tab.add(list);
 
-      NetworkInterface[] nics = vmm.listNetworkInterface();
+      NetworkInterface[] nics = NetworkInterface.listPhysical();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
-        list.add(nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac);
+        String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
+        list.add(val);
       }
 
       refresh.addClickListener((me, cmp) -> {
@@ -2696,7 +2697,8 @@ public class ConfigService implements WebUIHandler {
 
       ArrayList<NetworkVirtual> nics = Config.current.nics;
       for(NetworkVirtual nic : nics) {
-        list.add(nic.name);
+        String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
+        list.add(val);
       }
 
       refresh.addClickListener((me, cmp) -> {
