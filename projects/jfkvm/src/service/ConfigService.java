@@ -4,7 +4,6 @@ package service;
  *
  * TODO : setup tasks
  *
- * TODO : use Table instead of ListBox
  * BUG : create virt nic does not work.
  *
  * @author pquiring
@@ -651,7 +650,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
       }
-      String _bridge = bridge.getSelectedText();
+      String _bridge = bridge.getSelectedValue();
       if (_bridge == null || _bridge.length() == 0) {
         errmsg.setText("Error:invalid bridge");
         return;
@@ -796,7 +795,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       }
-      String _iface = iface.getSelectedText();
+      String _iface = iface.getSelectedValue();
       if (_iface == null || _iface.length() == 0) {
         errmsg.setText("Error:invalid interface");
         return;
@@ -942,7 +941,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       }
-      String _bridge = bridge.getSelectedText();
+      String _bridge = bridge.getSelectedValue();
       if (_bridge == null || _bridge.length() == 0) {
         errmsg.setText("Error:invalid bridge");
         return;
@@ -2813,6 +2812,7 @@ public class ConfigService implements WebUIHandler {
       create.addClickListener((me, cmp) -> {
         ui.network_virtual = null;
         ui.network_virtual_complete = null;
+        ui.network_virtual_init.run();
         ui.network_virtual_popup.setVisible(true);
       });
 
