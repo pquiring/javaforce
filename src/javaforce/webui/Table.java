@@ -256,6 +256,7 @@ public class Table extends Container implements Click {
   }
   public void removeRow(int row) {
     int cnt = count();
+    if (has_header) row++;
     for(int a=0;a<cnt;) {
       Cell cell = (Cell)get(a);
       Component c = cell.get(0);
@@ -340,7 +341,7 @@ public class Table extends Container implements Click {
     int cnt = count();
     for(int idx=0;idx<cnt;idx++) {
       Cell cell = getCell(idx);
-      if (cell.isSelected()) return cell.y;
+      if (cell.isSelected()) return has_header ? cell.y - 1 : cell.y;
     }
     return -1;
   }
