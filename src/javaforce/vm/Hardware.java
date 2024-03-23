@@ -30,7 +30,7 @@ public class Hardware implements Serializable {
   public int cores;
   public Size memory;
   public String machine = "pc";
-  public String video = "vmvga";
+  public String video = "vga";
   public int vram = 16384;
   public ArrayList<Disk> disks;
   public ArrayList<Network> networks;
@@ -158,7 +158,7 @@ public class Hardware implements Serializable {
       machine = "pc";
     }
     if (video == null) {
-      video = "vmvga";
+      video = "vga";
     }
     if (vram <= 0) {
       vram = 16384;
