@@ -719,8 +719,23 @@ public class ConfigService implements WebUIHandler {
       boolean create = ui.network_bridge == null;
       iface.clear();
       NetworkInterface[] nics = NetworkInterface.listPhysical();
+      NetworkBridge[] bridges = NetworkBridge.list();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
+        boolean ok = true;
+        for(NetworkVirtual vnic : Config.current.nics) {
+          if (vnic.name.equals(nic.name)) {
+            ok = false;
+            break;
+          }
+        }
+        for(NetworkBridge bnic : bridges) {
+          if (bnic.name.equals(nic.name)) {
+            ok = false;
+            break;
+          }
+        }
+        if (!ok) continue;
         String val = nic.name;
         iface.add(val, val);
       }
@@ -783,7 +798,9 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int idx = _iface.indexOf(':');
-      _iface = _iface.substring(0, idx);
+      if (idx != -1) {
+        _iface = _iface.substring(0, idx);
+      }
       NetworkBridge.create(_name, _iface);
       if (ui.network_bridge_complete != null) {
         ui.network_bridge_complete.run();
