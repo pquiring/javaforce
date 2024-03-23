@@ -145,10 +145,14 @@ public class Hardware implements Serializable {
   }
 
   public void validate() {
-    int idx = 0;
-    for(Disk disk : disks) {
-      disk.target_dev = String.format("sd%c", 'a' + idx);
-      idx++;
+    if (genid == null) {
+      genid = UUID.generate();
+    }
+    if (os == 0) {
+      os = OS_LINUX;
+    }
+    if (cores == 0) {
+      cores = 2;
     }
     if (machine == null) {
       machine = "pc";
@@ -158,6 +162,26 @@ public class Hardware implements Serializable {
     }
     if (vram <= 0) {
       vram = 16384;
+    }
+    if (memory == null) {
+      memory = new Size(1, Size.GB);
+    }
+    if (disks == null) {
+      disks = new ArrayList<>();
+    }
+    if (networks == null) {
+      networks = new ArrayList<>();
+    }
+    if (devices == null) {
+      devices = new ArrayList<>();
+    }
+    if (controllers == null) {
+      controllers = new ArrayList<>();
+    }
+    int idx = 0;
+    for(Disk disk : disks) {
+      disk.target_dev = String.format("sd%c", 'a' + idx);
+      idx++;
     }
   }
 }

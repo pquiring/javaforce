@@ -1587,6 +1587,7 @@ public class ConfigService implements WebUIHandler {
   private Panel vmEditPanel(VirtualMachine vm, Hardware hardware, boolean create, UI ui) {
     Panel panel = new Panel();
     ui.hardware = hardware;
+    hardware.validate();
     Row row;
     row = new Row();
     panel.add(row);
