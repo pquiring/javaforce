@@ -2753,17 +2753,22 @@ public class ConfigService implements WebUIHandler {
       Button delete = new Button("Delete");
       tools.add(delete);
 
-      ListBox list = new ListBox();
-      tab.add(list);
+      row = new Row();
+      tab.add(row);
+      Table table = new Table(new int[] {100, 200, 150, 50}, 20, 4, 0);
+      row.add(table);
+      table.setSelectionMode(Table.SELECT_ROW);
+      table.setBorder(true);
+      table.setHeader(true);
 
       Runnable init;
 
       init = () -> {
-        list.removeAll();
+        table.removeAll();
+        table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "Link"});
         ui.nics_virt = Config.current.nics;
         for(NetworkVirtual nic : ui.nics_virt) {
-          String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
-          list.add(val);
+          table.addRow(new String[] {nic.name, nic.ip + "/" + nic.netmask, nic.mac, nic.state});
         }
       };
       init.run();
@@ -2773,7 +2778,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_up.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
         NetworkVirtual.link_up(nic.name);
@@ -2781,7 +2786,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_down.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
         NetworkVirtual.link_down(nic.name);
@@ -2795,7 +2800,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       edit.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         //TODO : edit virtual nic
         NetworkVirtual nic = ui.nics_virt.get(idx);
@@ -2807,13 +2812,13 @@ public class ConfigService implements WebUIHandler {
       });
 
       delete.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
         ui.confirm_button.setText("Delete");
         ui.confirm_message.setText("Delete NIC : " + nic.name);
         ui.confirm_action = () -> {
-          list.remove(idx);
+          table.removeRow(idx);
           nic.remove();
           Config.current.removeNetworkVirtual(nic);
         };
