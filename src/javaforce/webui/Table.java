@@ -254,6 +254,40 @@ public class Table extends Container implements Click {
     }
     return null;
   }
+  public void removeRow(int row) {
+    int cnt = count();
+    for(int a=0;a<cnt;) {
+      Cell cell = (Cell)get(a);
+      Component c = cell.get(0);
+      if (cell.y == row) {
+        remove(c);
+        cnt--;
+      } else {
+        if (cell.y > row) {
+          cell.y--;
+        }
+        a++;
+      }
+    }
+    rows--;
+  }
+  public void removeColumn(int col) {
+    int cnt = count();
+    for(int a=0;a<cnt;) {
+      Cell cell = (Cell)get(a);
+      Component c = cell.get(0);
+      if (cell.x == col) {
+        remove(c);
+        cnt--;
+      } else {
+        if (cell.x > col) {
+          cell.x--;
+        }
+        a++;
+      }
+    }
+    cols--;
+  }
   public void removeAll() {
     super.removeAll();
     rows = 0;

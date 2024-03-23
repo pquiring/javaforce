@@ -2495,12 +2495,12 @@ public class ConfigService implements WebUIHandler {
     TabPanel panel = new TabPanel();
     networkPanel_vlans(panel, ui);
     networkPanel_bridges(panel, ui);
-    networkPanel_nics(panel, ui);
-    networkPanel_phys(panel, ui);
+    networkPanel_virt(panel, ui);
+    networkPanel_iface(panel, ui);
     return panel;
   }
 
-  private void networkPanel_phys(TabPanel panel, UI ui) {
+  private void networkPanel_iface(TabPanel panel, UI ui) {
     {
       Panel tab = new Panel();
       panel.addTab(tab, "Physical NICs");
@@ -2538,7 +2538,7 @@ public class ConfigService implements WebUIHandler {
 
       init = () -> {
         table.removeAll();
-        table.addRow(new String[] {"Name", "IP/NETMASK", "MAC", "Link"});
+        table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "Link"});
         ui.nics_iface = NetworkInterface.listPhysical();
         for(NetworkInterface nic : ui.nics_iface) {
           if (nic.name.equals("lo")) continue;
@@ -2591,16 +2591,22 @@ public class ConfigService implements WebUIHandler {
       tab.add(row);
       row.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
 
-      ListBox list = new ListBox();
-      tab.add(list);
+      row = new Row();
+      tab.add(row);
+      Table table = new Table(new int[] {100, 50, 100}, 20, 3, 0);
+      row.add(table);
+      table.setSelectionMode(Table.SELECT_ROW);
+      table.setBorder(true);
+      table.setHeader(true);
 
       Runnable init;
 
       init = () -> {
-        list.removeAll();
+        table.removeAll();
+        table.addRow(new String[] {"Name", "Type", "Interface"});
         ui.nics_bridge = NetworkBridge.list();
         for(NetworkBridge nic : ui.nics_bridge) {
-          list.add(nic.name + ":" + nic.type + ":" + nic.iface);
+          table.addRow(new String[] {nic.name, nic.type, nic.iface});
         }
       };
       init.run();
@@ -2612,26 +2618,25 @@ public class ConfigService implements WebUIHandler {
       create.addClickListener((me, cmp) -> {
         ui.network_bridge = null;
         ui.network_bridge_complete = () -> {
-          list.removeAll();
+          table.removeAll();
           NetworkBridge[] nics1 = NetworkBridge.list();
           for (NetworkBridge nic : nics1) {
-            list.add(nic.name + ":" + nic.type + ":" + nic.iface);
+            table.addRow(new String[] {nic.name + ":" + nic.type + ":" + nic.iface});
           }
         };
         ui.network_bridge_init.run();
         ui.network_bridge_popup.setVisible(true);
       });
       edit.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         //TODO : edit virtual switch (bridge): edit/remove nics, etc.
       });
       delete.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkBridge nic = ui.nics_bridge[idx];
         if (nic.remove()) {
-          list.remove(idx);
-          list.setSelectedIndex(-1);
+          table.removeRow(idx);
         }
       });
     }
@@ -2706,7 +2711,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  private void networkPanel_nics(TabPanel panel, UI ui) {
+  private void networkPanel_virt(TabPanel panel, UI ui) {
     //server nics
     {
       Panel tab = new Panel();
