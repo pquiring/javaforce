@@ -66,12 +66,15 @@ public class NetworkInterface implements Serializable {
           }
         }
         if (nic != null) {
-          String[] ss = ln.split("[ ]");
-          for(String s : ss) {
-            switch (s) {
-              case "UP": nic.state = "up"; break;
-              case "DOWN": nic.state = "down"; break;
-              case "UNKNOWN": nic.state = "unknown"; break;
+          nic.state = "down";
+          int i1 = ln.indexOf('<');
+          int i2 = ln.indexOf('>');
+          if (i1 > 0 && i2 > 0) {
+            String[] ss = ln.substring(i1+1,i2).split("[,]");
+            for(String s : ss) {
+              switch (s) {
+                case "UP": nic.state = "up"; break;
+              }
             }
           }
         }
