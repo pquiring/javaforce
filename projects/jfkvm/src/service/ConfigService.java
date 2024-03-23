@@ -2,6 +2,8 @@ package service;
 
 /** Config Service
  *
+ * TODO : show link state of all nics
+ *
  * @author pquiring
  */
 
@@ -1627,6 +1629,56 @@ public class ConfigService implements WebUIHandler {
       firmware.setSelectedIndex(1);
     }
     row.add(firmware);
+    //machine type
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Machine"));
+    ComboBox machine = new ComboBox();
+    row.add(machine);
+    machine.add("pc", "pc");
+    machine.add("q35", "q35");
+    switch (hardware.machine) {
+      default:
+      case "pc":
+        machine.setSelectedIndex(0);
+        break;
+      case "q35":
+        machine.setSelectedIndex(1);
+        break;
+    }
+    //video card / vram
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Video"));
+    ComboBox video = new ComboBox();
+    row.add(video);
+    video.add("vmvga", "vmvga");
+    video.add("vga", "vga");
+    video.add("cirrus", "cirrus");
+    video.add("virtio", "virtio");
+    video.add("bochs", "bochs");
+    switch (hardware.video) {
+      default:
+      case "vmvga":
+        video.setSelectedIndex(0);
+        break;
+      case "vga":
+        video.setSelectedIndex(1);
+        break;
+      case "cirrus":
+        video.setSelectedIndex(2);
+        break;
+      case "virtio":
+        video.setSelectedIndex(3);
+        break;
+      case "bochs":
+        video.setSelectedIndex(4);
+        break;
+    }
+    row.add(new Label("VRAM (kB)"));
+    TextField vram = new TextField("");
+    row.add(vram);
+    vram.setText(Integer.toString(hardware.vram));
     //disks
     InnerPanel disks = new InnerPanel("Disks");
     panel.add(disks);
@@ -1828,6 +1880,20 @@ public class ConfigService implements WebUIHandler {
       }
       hardware.cores = _cores;
       hardware.bios_efi = firmware.getSelectedIndex() == 1;
+      hardware.machine = machine.getSelectedValue();
+      hardware.video = video.getSelectedValue();
+      _size_str = vmm.cleanNumber(vram.getText());
+      if (_size_str.length() == 0) {
+        cores.setText(_size_str);
+        errmsg.setText("Error:invalid vram");
+        return;
+      }
+      int _vram = Integer.valueOf(_size_str);
+      if (_vram == 0) {
+        errmsg.setText("Error:invalid vram");
+        return;
+      }
+      hardware.vram = _vram;
       hardware.validate();
       if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");

@@ -29,10 +29,12 @@ public class Hardware implements Serializable {
   public int os;
   public int cores;
   public Size memory;
+  public String machine = "pc";
+  public String video = "vmvga";
+  public int vram = 16384;
   public ArrayList<Disk> disks;
   public ArrayList<Network> networks;
   public ArrayList<Device> devices;
-  public String machine = "pc";
   public ArrayList<Controller> controllers;
 
   public boolean auto_start;
@@ -147,6 +149,15 @@ public class Hardware implements Serializable {
     for(Disk disk : disks) {
       disk.target_dev = String.format("sd%c", 'a' + idx);
       idx++;
+    }
+    if (machine == null) {
+      machine = "pc";
+    }
+    if (video == null) {
+      video = "vmvga";
+    }
+    if (vram <= 0) {
+      vram = 16384;
     }
   }
 }

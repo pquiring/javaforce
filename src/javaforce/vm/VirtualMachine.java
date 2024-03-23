@@ -245,7 +245,7 @@ public class VirtualMachine implements Serializable {
       xml.append("<audio id='1' type='none'/>");
       //video card
       xml.append("<video>");
-        xml.append("<model type='vmvga' vram='16384' heads='1'/>");
+      xml.append("<model type='" + hardware.video + "' vram='" + hardware.vram + "' heads='1'/>");
   //      xml.append("<driver name='qemu'/>");
       xml.append("</video>");
       //remote viewing
