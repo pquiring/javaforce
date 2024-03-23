@@ -985,11 +985,11 @@ public class ConfigService implements WebUIHandler {
         }
       }
       if (sel_bridge == null) {
-        JFLog.log("Error:No bridge to create virtual network");
+        errmsg.setText("Error:No bridge to create virtual network");
         return;
       }
       if (!NetworkVirtual.createVirtual(_name, sel_bridge, _mac, _ip, _netmask, _vlan)) {
-        JFLog.log("Error:Failed to create virtual network");
+        errmsg.setText("Error:Failed to create virtual network");
         return;
       }
       NetworkVirtual nic = new NetworkVirtual(_name, _bridge, _mac, _ip, _netmask, _vlan);
@@ -1389,7 +1389,7 @@ public class ConfigService implements WebUIHandler {
       VirtualMachine vm = vms[idx];
       Hardware hardware = vm.loadHardware();
       if (hardware == null) {
-        JFLog.log("Error:Failed to load config for vm:" + vm.name);
+        errmsg.setText("Error:Failed to load config for vm:" + vm.name);
         return;
       }
       ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
