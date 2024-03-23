@@ -254,6 +254,11 @@ public class Table extends Container implements Click {
     }
     return null;
   }
+  public void removeAll() {
+    super.removeAll();
+    rows = 0;
+    setSize();
+  }
   public void setSpans(int x,int y,int spanx, int spany) {
     if (cellWidths != null) {
       //TODO

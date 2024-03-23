@@ -2528,17 +2528,17 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {75, 50, 50, 20}, 20, 4, 0);
+      Table table = new Table(new int[] {100, 100, 100, 50}, 20, 4, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
       table.setHeader(true);
-      table.addRow(new String[] {"Name", "IP/NETMASK", "MAC", "Link"});
 
       Runnable init;
 
       init = () -> {
         table.removeAll();
+        table.addRow(new String[] {"Name", "IP/NETMASK", "MAC", "Link"});
         ui.nics_iface = NetworkInterface.listPhysical();
         for(NetworkInterface nic : ui.nics_iface) {
           if (nic.name.equals("lo")) continue;
