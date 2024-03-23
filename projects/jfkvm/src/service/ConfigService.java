@@ -1372,6 +1372,7 @@ public class ConfigService implements WebUIHandler {
     table.setBorder(true);
     table.setHeader(true);
 
+    table.addRow(new String[] {"Name", "State"});
     VirtualMachine[] vms = VirtualMachine.list();
     for(VirtualMachine vm : vms) {
       table.addRow(new String[] {vm.name, vm.getStateString()});
@@ -1949,6 +1950,7 @@ public class ConfigService implements WebUIHandler {
 
   private Panel storagePanel(UI ui) {
     Panel panel = new Panel();
+    Row row;
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1974,19 +1976,27 @@ public class ConfigService implements WebUIHandler {
     tools.add(format);
     Button delete = new Button("Delete");
     tools.add(delete);
-    ListBox list = new ListBox();
-    panel.add(list);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {100, 50}, 20, 2, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    table.addRow(new String[] {"Name", "State"});
     ArrayList<Storage> pools = Config.current.pools;
     for(Storage pool : pools) {
       String _name = pool.name;
-      list.add(_name + ":" + pool.getStateString());
+      table.addRow(new String[] {_name, pool.getStateString()});
     }
 
     add.addClickListener((me, cmp) -> {
       ui.setRightPanel(addStoragePanel(ui));
     });
     edit.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       ui.setRightPanel(editStoragePanel(pool, ui));
@@ -1995,7 +2005,7 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(storagePanel(ui));
     });
     browse.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       ui.browse_path = pool.getPath();
@@ -2022,14 +2032,14 @@ public class ConfigService implements WebUIHandler {
       ui.browse_popup.setVisible(true);
     });
     start.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       pool.start();
       ui.setRightPanel(storagePanel(ui));
     });
     stop.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       pool.stop();
@@ -2037,14 +2047,14 @@ public class ConfigService implements WebUIHandler {
     });
 /*
     mount.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools[idx];
       pool.mount();
       ui.setRightPanel(storagePanel(ui));
     });
     unmount.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools[idx];
       ui.confirm_button.setText("Unmount");
@@ -2057,7 +2067,7 @@ public class ConfigService implements WebUIHandler {
     });
 */
     format.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       switch (pool.type) {
@@ -2082,7 +2092,7 @@ public class ConfigService implements WebUIHandler {
       }
     });
     delete.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = Config.current.pools.get(idx);
       ui.confirm_button.setText("Delete");
