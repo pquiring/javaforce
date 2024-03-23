@@ -133,6 +133,11 @@ public class ConfigService implements WebUIHandler {
 
     public Hardware hardware;  //editing VM hardware
 
+    public NetworkInterface[] nics_iface;
+    public NetworkBridge[] nics_bridge;
+    public ArrayList<NetworkVirtual> nics_virt;
+    public NetworkVLAN[] nics_vlans;
+
     public void setRightPanel(Panel panel) {
       split.setRightComponent(panel);
     }
@@ -2505,21 +2510,27 @@ public class ConfigService implements WebUIHandler {
       ListBox list = new ListBox();
       tab.add(list);
 
-      NetworkInterface[] nics = NetworkInterface.listPhysical();
-      for(NetworkInterface nic : nics) {
-        if (nic.name.equals("lo")) continue;
-        String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
-        list.add(val);
-      }
+      Runnable init;
+
+      init = () -> {
+        list.removeAll();
+        ui.nics_iface = NetworkInterface.listPhysical();
+        for(NetworkInterface nic : ui.nics_iface) {
+          if (nic.name.equals("lo")) continue;
+          String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
+          list.add(val);
+        }
+      };
+      init.run();
 
       refresh.addClickListener((me, cmp) -> {
-        ui.setRightPanel(networkPanel(ui));
+        init.run();
       });
 
       link_up.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkInterface nic = nics[idx];
+        NetworkInterface nic = ui.nics_iface[idx];
         NetworkInterface.link_up(nic.name);
         msg.setText("Link UP:" + nic.name);
       });
@@ -2527,7 +2538,7 @@ public class ConfigService implements WebUIHandler {
       link_down.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkInterface nic = nics[idx];
+        NetworkInterface nic = ui.nics_iface[idx];
         NetworkInterface.link_down(nic.name);
         msg.setText("Link DOWN:" + nic.name);
       });
@@ -2559,13 +2570,19 @@ public class ConfigService implements WebUIHandler {
       ListBox list = new ListBox();
       tab.add(list);
 
-      NetworkBridge[] nics = NetworkBridge.list();
-      for(NetworkBridge nic : nics) {
-        list.add(nic.name + ":" + nic.type + ":" + nic.iface);
-      }
+      Runnable init;
+
+      init = () -> {
+        list.removeAll();
+        ui.nics_bridge = NetworkBridge.list();
+        for(NetworkBridge nic : ui.nics_bridge) {
+          list.add(nic.name + ":" + nic.type + ":" + nic.iface);
+        }
+      };
+      init.run();
 
       refresh.addClickListener((me, cmp) -> {
-        ui.setRightPanel(networkPanel(ui));
+        init.run();
       });
 
       create.addClickListener((me, cmp) -> {
@@ -2587,7 +2604,7 @@ public class ConfigService implements WebUIHandler {
       delete.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkBridge nic = nics[idx];
+        NetworkBridge nic = ui.nics_bridge[idx];
         if (nic.remove()) {
           list.remove(idx);
           list.setSelectedIndex(-1);
@@ -2603,6 +2620,8 @@ public class ConfigService implements WebUIHandler {
       panel.addTab(tab, "Networks");
       ToolBar tools = new ToolBar();
       tab.add(tools);
+      Button refresh = new Button("Refresh");
+      tools.add(refresh);
       Button create = new Button("Create");
       tools.add(create);
       Button edit = new Button("Edit");
@@ -2619,6 +2638,10 @@ public class ConfigService implements WebUIHandler {
         }
       };
       ui.network_vlan_complete.run();
+
+      refresh.addClickListener((me, cmp) -> {
+        ui.network_vlan_complete.run();
+      });
 
       create.addClickListener((me, cmp) -> {
         if (NetworkBridge.list(NetworkBridge.TYPE_OS).length == 0) {
@@ -2695,20 +2718,26 @@ public class ConfigService implements WebUIHandler {
       ListBox list = new ListBox();
       tab.add(list);
 
-      ArrayList<NetworkVirtual> nics = Config.current.nics;
-      for(NetworkVirtual nic : nics) {
-        String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
-        list.add(val);
-      }
+      Runnable init;
+
+      init = () -> {
+        list.removeAll();
+        ui.nics_virt = Config.current.nics;
+        for(NetworkVirtual nic : ui.nics_virt) {
+          String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
+          list.add(val);
+        }
+      };
+      init.run();
 
       refresh.addClickListener((me, cmp) -> {
-        ui.setRightPanel(networkPanel(ui));
+        init.run();
       });
 
       link_up.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkVirtual nic = nics.get(idx);
+        NetworkVirtual nic = ui.nics_virt.get(idx);
         NetworkVirtual.link_up(nic.name);
         msg.setText("Link UP:" + nic.name);
       });
@@ -2716,7 +2745,7 @@ public class ConfigService implements WebUIHandler {
       link_down.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkVirtual nic = nics.get(idx);
+        NetworkVirtual nic = ui.nics_virt.get(idx);
         NetworkVirtual.link_down(nic.name);
         msg.setText("Link DOWN:" + nic.name);
       });
@@ -2731,7 +2760,7 @@ public class ConfigService implements WebUIHandler {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
         //TODO : edit virtual nic
-        NetworkVirtual nic = nics.get(idx);
+        NetworkVirtual nic = ui.nics_virt.get(idx);
         ui.network_virtual = nic;
         ui.network_virtual_complete = () -> {
           //TODO : edit virt nic
@@ -2742,7 +2771,7 @@ public class ConfigService implements WebUIHandler {
       delete.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
-        NetworkVirtual nic = nics.get(idx);
+        NetworkVirtual nic = ui.nics_virt.get(idx);
         ui.confirm_button.setText("Delete");
         ui.confirm_message.setText("Delete NIC : " + nic.name);
         ui.confirm_action = () -> {
