@@ -2,6 +2,10 @@ package service;
 
 /** Config Service
  *
+ * TODO : setup tasks
+ *
+ * TODO : use Table instead of ListBox
+ *
  * @author pquiring
  */
 

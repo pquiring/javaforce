@@ -5,11 +5,22 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.webui.event.*;
 
 public class Table extends Container implements Click {
   private int cellWidth, cellHeight, cols, rows;
   private boolean border;
+  private boolean has_header;
+  private int sel_mode;
+  private int[] cellWidths;
+
+  public static final int SELECT_CELL = 0;
+  public static final int SELECT_ROW = 1;
+  public static final int SELECT_COLUMN = 2;
+
+  /** Create a table with uniform cells. */
   public Table(int cellWidth, int cellHeight, int cols, int rows) {
     this.cellWidth = cellWidth;  //X
     this.cellHeight = cellHeight;  //Y
@@ -17,6 +28,33 @@ public class Table extends Container implements Click {
     this.rows = rows;  //Y
     setClass("table");
     setSize();
+  }
+  /** Create a table with different widths per column. */
+  public Table(int[] cellWidths, int cellHeight, int cols, int rows) {
+    this.cellWidths = cellWidths;  //X
+    this.cellHeight = cellHeight;  //Y
+    this.cols = cellWidths.length;  //X
+    this.rows = rows;  //Y
+    setClass("table");
+    setSize();
+  }
+  private int getColWidth(int col) {
+    if (cellWidths == null) {
+      return cellWidth;
+    } else {
+      return cellWidths[col];
+    }
+  }
+  private int getColPosition(int col) {
+    if (cellWidths == null) {
+      return col * cellWidth;
+    } else {
+      int total = 0;
+      for(int x = 0;x<col;x++) {
+        total += cellWidths[x];
+      }
+      return total;
+    }
   }
   private class Cell extends Block {
     public int x,y,spanx,spany;
@@ -30,9 +68,9 @@ public class Table extends Container implements Click {
       }
     }
     public String html() {
-      setSize(spanx * cellWidth, spany * cellHeight);
+      setSize(spanx * getColWidth(x), spany * cellHeight);
       //setPosition(x * width, y * height);
-      setStyle("left", Integer.toString(x * cellWidth));
+      setStyle("left", Integer.toString(getColPosition(x)));
       setStyle("top", Integer.toString(y * cellHeight));
       StringBuilder sb = new StringBuilder();
       sb.append("<div" + getAttrs() + ">");
@@ -64,9 +102,25 @@ public class Table extends Container implements Click {
       return selected;
     }
   }
+  private int getTotalWidth() {
+    if (cellWidths == null) {
+      return cellWidth * cols;
+    } else {
+      int total = 0;
+      for(int a=0;a<cellWidths.length;a++) {
+        total += cellWidths[a];
+      }
+      return total;
+    }
+  }
+  private int getTotalHeight() {
+    return cellHeight * rows;
+  }
   private void setSize() {
-    setSize(cellWidth * cols, cellHeight * rows);
-    sendEvent("setsize", new String [] {"w=" + (cellWidth * cols), "h=" + (cellHeight * rows)});
+    int totalWidth = getTotalWidth();
+    int totalHeight = getTotalHeight();
+    setSize(totalWidth, totalHeight);
+    sendEvent("setsize", new String [] {"w=" + totalWidth, "h=" + totalHeight});
   }
   public void setBorder(boolean state) {
     border = state;
@@ -75,6 +129,19 @@ public class Table extends Container implements Click {
     } else {
       removeClass("border");
     }
+  }
+  /** Sets selection mode : SELECT_... */
+  public void setSelectionMode(int mode) {
+    this.sel_mode = mode;
+  }
+  public int getSelectionMode() {
+    return sel_mode;
+  }
+  public void setHeader(boolean state) {
+    has_header = state;
+  }
+  public boolean getHeader() {
+    return has_header;
   }
   public String html() {
     StringBuilder sb = new StringBuilder();
@@ -107,9 +174,40 @@ public class Table extends Container implements Click {
     rows++;
     setSize();
   }
+  public void addRow(Component[] cmps) {
+    int x = 0;
+    int y = rows;
+    addRow();
+    for(Component c : cmps) {
+      add(c, x, y);
+      x++;
+    }
+  }
   public void addColumn() {
+    if (cellWidths != null) {
+      return;
+    }
     cols++;
     setSize();
+  }
+  public void addColumn(int width) {
+    if (cellWidths == null) {
+      return;
+    }
+    int idx = cellWidths.length;
+    cellWidths = Arrays.copyOf(cellWidths, cellWidths.length + 1);
+    cellWidths[idx] = width;
+    cols++;
+    setSize();
+  }
+  public void addColumn(Component[] cmps) {
+    int x = cols;
+    int y = 0;
+    addColumn();
+    for(Component c : cmps) {
+      add(c, x, y);
+      y++;
+    }
   }
   /** Sets number of columns and rows. */
   public void setTableSize(int cols, int rows) {
@@ -139,6 +237,10 @@ public class Table extends Container implements Click {
     return null;
   }
   public void setSpans(int x,int y,int spanx, int spany) {
+    if (cellWidths != null) {
+      //TODO
+      return;
+    }
     Cell cell = getCell(x,y,false);
     if (cell == null) return;
     cell.spanx = spanx;
@@ -195,15 +297,63 @@ public class Table extends Container implements Click {
   }
   public void onClick(MouseEvent me, Component cmp) {
     Cell cell = (Cell)cmp.getParent();
-    if (cell.y == 0) return;  //header row
+    if (has_header && cell.y == 0) return;
     if (me.ctrlKey) {
-      cell.setSelected(!cell.isSelected());
+      switch (sel_mode) {
+        case SELECT_CELL:
+          cell.setSelected(!cell.isSelected());
+          break;
+        case SELECT_ROW: {
+          int y = cell.y;
+          int cnt = count();
+          for(int idx=0;idx<cnt;idx++) {
+            Cell o = getCell(idx);
+            if (cell.y == y) {
+              o.setSelected(!o.isSelected());
+            }
+          }
+          break;
+        }
+        case SELECT_COLUMN: {
+          int x = cell.x;
+          int cnt = count();
+          for(int idx=0;idx<cnt;idx++) {
+            Cell o = getCell(idx);
+            if (cell.x == x) {
+              o.setSelected(!o.isSelected());
+            }
+          }
+          break;
+        }
+      }
     } else {
-      //clear all other items
-      int cnt = count();
-      for(int idx=0;idx<cnt;idx++) {
-        Cell o = getCell(idx);
-        o.setSelected(o == cell);
+      switch (sel_mode) {
+        case SELECT_CELL: {
+          int cnt = count();
+          for(int idx=0;idx<cnt;idx++) {
+            Cell o = getCell(idx);
+            o.setSelected(o == cell);
+          }
+          break;
+        }
+        case SELECT_ROW: {
+          int y = cell.y;
+          int cnt = count();
+          for(int idx=0;idx<cnt;idx++) {
+            Cell o = getCell(idx);
+            o.setSelected(o.y == y);
+          }
+          break;
+        }
+        case SELECT_COLUMN: {
+          int x = cell.x;
+          int cnt = count();
+          for(int idx=0;idx<cnt;idx++) {
+            Cell o = getCell(idx);
+            o.setSelected(o.x == x);
+          }
+          break;
+        }
       }
     }
     onChanged(null);
