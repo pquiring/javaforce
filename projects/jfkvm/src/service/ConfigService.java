@@ -5,6 +5,7 @@ package service;
  * TODO : setup tasks
  *
  * TODO : use Table instead of ListBox
+ * BUG : create virt nic does not work.
  *
  * @author pquiring
  */
@@ -1363,11 +1364,17 @@ public class ConfigService implements WebUIHandler {
     Button unreg = new Button("Unregister");
     tools.add(unreg);
 
-    ListBox list = new ListBox();
-    panel.add(list);
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {100, 50}, 20, 2, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
     VirtualMachine[] vms = VirtualMachine.list();
     for(VirtualMachine vm : vms) {
-      list.add(vm.name + ":" + vm.getStateString());
+      table.addRow(new String[] {vm.name, vm.getStateString()});
     }
 
     create.addClickListener((me, cmp) -> {
@@ -1377,7 +1384,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     edit.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       Hardware hardware = vm.loadHardware();
@@ -1393,7 +1400,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     console.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC());
@@ -1401,7 +1408,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     start.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       if (vm.getState() != 0) {
@@ -1427,7 +1434,7 @@ public class ConfigService implements WebUIHandler {
 
     //stop
     stop.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       if (vm.getState() == 0) {
@@ -1453,7 +1460,7 @@ public class ConfigService implements WebUIHandler {
 
     //restart
     restart.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       if (vm.getState() == 0) {
@@ -1479,7 +1486,7 @@ public class ConfigService implements WebUIHandler {
 
     //poweroff
     poweroff.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       if (vm.getState() == 0) {
@@ -1504,7 +1511,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     unreg.addClickListener((me, cmp) -> {
-      int idx = list.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
       if (vm.getState() != 0) {
