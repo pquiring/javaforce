@@ -16,6 +16,7 @@ public class NetworkInterface implements Serializable {
   public String ip;
   public String netmask;
   public String mac;
+  public String state;  //UP/DOWN
 
   protected NetworkInterface(String name) {
     this.name = name;
@@ -34,16 +35,16 @@ public class NetworkInterface implements Serializable {
     return nics;
   }
 
-  private static void getInfo(NetworkInterface[] nics) {
+  protected static void getInfo(NetworkInterface[] nics) {
     ShellProcess p = new ShellProcess();
     p.keepOutput(true);
     String output = p.run(new String[] {"/usr/bin/ip", "addr"}, true);
     if (output == null) return;
     /*
-1: eth0: <...>
+1: eth0: <...> state UP/DOWN
     link/ether 00:11:22:33:44:55 brd ff:ff:ff:ff:ff:ff ...
     inet 192.168.1.2/24 ...
-2: eth2: <...>
+2: eth2: <...> state UP/DOWN
     link/ether 00:11:22:33:44:55 brd ff:ff:ff:ff:ff:ff ...
     inet 192.168.2.2/24 ...
     */
@@ -55,13 +56,23 @@ public class NetworkInterface implements Serializable {
       if (ln.length() == 0) continue;
       String start = Integer.toString(idx) + ":";
       if (ln.startsWith(start)) {
-        String[] f = ln.split("[:]");
-        String name = f[1].trim();
+        String[] fs = ln.split("[:]");
+        String name = fs[1].trim();
         nic = null;
         for(NetworkInterface n : nics) {
           if (n.name.equals(name)) {
             nic = n;
             break;
+          }
+        }
+        if (nic != null) {
+          String[] ss = ln.split("[ ]");
+          for(String s : ss) {
+            switch (s) {
+              case "UP": nic.state = "up"; break;
+              case "DOWN": nic.state = "down"; break;
+              case "UNKNOWN": nic.state = "unknown"; break;
+            }
           }
         }
         idx++;
@@ -82,5 +93,19 @@ public class NetworkInterface implements Serializable {
         nic.netmask = Subnet4.fromCIDR(cidr);
       }
     }
+  }
+
+  private static boolean link(String name, String dir) {
+    ShellProcess sp = new ShellProcess();
+    sp.run(new String[] {"ip", "link", "set", name, dir}, true);
+    return sp.getErrorLevel() == 0;
+  }
+
+  public static boolean link_up(String name) {
+    return link(name, "up");
+  }
+
+  public static boolean link_down(String name) {
+    return link(name, "down");
   }
 }

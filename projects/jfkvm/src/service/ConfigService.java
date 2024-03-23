@@ -716,7 +716,8 @@ public class ConfigService implements WebUIHandler {
       NetworkInterface[] nics = NetworkInterface.listPhysical();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
-        iface.add(nic.name, nic.name);
+        String val = nic.name;
+        iface.add(val, val);
       }
       if (create) {
         name.setText("");
@@ -776,6 +777,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid interface");
         return;
       }
+      int idx = _iface.indexOf(':');
+      _iface = _iface.substring(0, idx);
       NetworkBridge.create(_name, _iface);
       if (ui.network_bridge_complete != null) {
         ui.network_bridge_complete.run();
@@ -2477,13 +2480,56 @@ public class ConfigService implements WebUIHandler {
     {
       Panel tab = new Panel();
       panel.addTab(tab, "Physical NICs");
-      ListBox phys_list = new ListBox();
-      tab.add(phys_list);
+      Row row;
+
+      row = new Row();
+      tab.add(row);
+      Label errmsg = new Label("");
+      row.add(errmsg);
+      errmsg.setColor(Color.red);
+
+      row = new Row();
+      tab.add(row);
+      Label msg = new Label("");
+      row.add(msg);
+
+      ToolBar tools = new ToolBar();
+      tab.add(tools);
+      Button refresh = new Button("Refresh");
+      tools.add(refresh);
+      Button link_up = new Button("Link UP");
+      tools.add(link_up);
+      Button link_down = new Button("Link DOWN");
+      tools.add(link_down);
+
+      ListBox list = new ListBox();
+      tab.add(list);
+
       NetworkInterface[] nics = vmm.listNetworkInterface();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
-        phys_list.add(nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac);
+        list.add(nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac);
       }
+
+      refresh.addClickListener((me, cmp) -> {
+        ui.setRightPanel(networkPanel(ui));
+      });
+
+      link_up.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkInterface nic = nics[idx];
+        NetworkInterface.link_up(nic.name);
+        msg.setText("Link UP:" + nic.name);
+      });
+
+      link_down.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkInterface nic = nics[idx];
+        NetworkInterface.link_down(nic.name);
+        msg.setText("Link DOWN:" + nic.name);
+      });
     }
   }
 
@@ -2492,21 +2538,34 @@ public class ConfigService implements WebUIHandler {
     {
       Panel tab = new Panel();
       panel.addTab(tab, "Virtual Switches");
+      Row row;
+
       ToolBar tools = new ToolBar();
       tab.add(tools);
+      Button refresh = new Button("Refresh");
+      tools.add(refresh);
       Button create = new Button("Create");
       tools.add(create);
       Button edit = new Button("Edit");
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
-      tab.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
+
+      row = new Row();
+      tab.add(row);
+      row.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
+
       ListBox list = new ListBox();
       tab.add(list);
+
       NetworkBridge[] nics = NetworkBridge.list();
       for(NetworkBridge nic : nics) {
         list.add(nic.name + ":" + nic.type + ":" + nic.iface);
       }
+
+      refresh.addClickListener((me, cmp) -> {
+        ui.setRightPanel(networkPanel(ui));
+      });
 
       create.addClickListener((me, cmp) -> {
         ui.network_bridge = null;
@@ -2604,25 +2663,68 @@ public class ConfigService implements WebUIHandler {
     {
       Panel tab = new Panel();
       panel.addTab(tab, "Server Virtual NICs");
+      Row row;
+
+      row = new Row();
+      tab.add(row);
+      Label errmsg = new Label("");
+      row.add(errmsg);
+      errmsg.setColor(Color.red);
+
+      row = new Row();
+      tab.add(row);
+      Label msg = new Label("");
+      row.add(msg);
+
       ToolBar tools = new ToolBar();
       tab.add(tools);
+      Button refresh = new Button("Refresh");
+      tools.add(refresh);
+      Button link_up = new Button("Link UP");
+      tools.add(link_up);
+      Button link_down = new Button("Link DOWN");
+      tools.add(link_down);
       Button create = new Button("Create");
       tools.add(create);
       Button edit = new Button("Edit");
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
+
       ListBox list = new ListBox();
       tab.add(list);
+
       ArrayList<NetworkVirtual> nics = Config.current.nics;
       for(NetworkVirtual nic : nics) {
         list.add(nic.name);
       }
+
+      refresh.addClickListener((me, cmp) -> {
+        ui.setRightPanel(networkPanel(ui));
+      });
+
+      link_up.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkVirtual nic = nics.get(idx);
+        NetworkVirtual.link_up(nic.name);
+        msg.setText("Link UP:" + nic.name);
+      });
+
+      link_down.addClickListener((me, cmp) -> {
+        int idx = list.getSelectedIndex();
+        if (idx == -1) return;
+        NetworkVirtual nic = nics.get(idx);
+        NetworkVirtual.link_down(nic.name);
+        msg.setText("Link DOWN:" + nic.name);
+      });
+
       create.addClickListener((me, cmp) -> {
         ui.network_virtual = null;
         ui.network_virtual_complete = null;
         ui.network_virtual_popup.setVisible(true);
       });
+
       edit.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;
@@ -2634,6 +2736,7 @@ public class ConfigService implements WebUIHandler {
         };
         //ui.network_virtual_popup.setVisible(true);
       });
+
       delete.addClickListener((me, cmp) -> {
         int idx = list.getSelectedIndex();
         if (idx == -1) return;

@@ -4,6 +4,8 @@ package javaforce.vm;
  *
  * These are not persistent.
  *
+ * This class is not used within jfKVM.
+ *
  */
 
 import java.io.*;

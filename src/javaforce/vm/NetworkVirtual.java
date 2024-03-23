@@ -10,23 +10,19 @@ import java.io.*;
 
 import javaforce.*;
 
-public class NetworkVirtual implements Serializable {
+public class NetworkVirtual extends NetworkInterface implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public String name;
   public String bridge;
-  public String mac;
-  public String ip;
-  public String netmask;
   public int vlan;
 
   protected NetworkVirtual(String name) {
-    this.name = name;
+    super(name);
     this.bridge = ngetbridge(name);
   }
 
   public NetworkVirtual(String name, String bridge, String mac, String ip, String netmask, int vlan) {
-    this.name = name;
+    super(name);
     this.bridge = bridge;
     this.mac = mac;
     this.ip = ip;
@@ -45,6 +41,7 @@ public class NetworkVirtual implements Serializable {
     for(int idx = 0;idx<list.length;idx++) {
       nics[idx] = new NetworkVirtual(list[idx]);
     }
+    getInfo(nics);
     return nics;
   }
 
@@ -93,6 +90,9 @@ public class NetworkVirtual implements Serializable {
   /** Assign IP address to virtual interface. */
   public boolean assign(String ip, String mask) {
     return nassign(name, ip, mask);
+  }
+
+  private static void getInfo(NetworkVirtual[] nics) {
   }
 
   protected static String createXML(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
