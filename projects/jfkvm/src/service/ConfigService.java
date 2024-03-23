@@ -2810,6 +2810,10 @@ public class ConfigService implements WebUIHandler {
       });
 
       create.addClickListener((me, cmp) -> {
+        if (NetworkBridge.list().length == 0) {
+          errmsg.setText("Error:No bridges exist");
+          return;
+        }
         ui.network_virtual = null;
         ui.network_virtual_complete = null;
         ui.network_virtual_init.run();
