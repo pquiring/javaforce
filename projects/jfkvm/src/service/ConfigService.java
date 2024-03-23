@@ -2526,18 +2526,20 @@ public class ConfigService implements WebUIHandler {
       Button link_down = new Button("Link DOWN");
       tools.add(link_down);
 
-      ListBox list = new ListBox();
-      tab.add(list);
+      Table table = new Table(new int[] {75, 50, 50, 20}, 20, 0, 0);
+      table.setSelectionMode(Table.SELECT_ROW);
+      table.setBorder(true);
+      table.setHeader(true);
+      table.addRow(new String[] {"Name", "IP/NETMASK", "MAC", "Link"});
 
       Runnable init;
 
       init = () -> {
-        list.removeAll();
+        table.removeAll();
         ui.nics_iface = NetworkInterface.listPhysical();
         for(NetworkInterface nic : ui.nics_iface) {
           if (nic.name.equals("lo")) continue;
-          String val = nic.name + ":" + nic.ip + "/" + nic.netmask + ":" + nic.mac + ":" + nic.state;
-          list.add(val);
+          table.addRow(new String[] {nic.name, nic.ip + "/" + nic.netmask, nic.mac, nic.state});
         }
       };
       init.run();
@@ -2547,7 +2549,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_up.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkInterface nic = ui.nics_iface[idx];
         NetworkInterface.link_up(nic.name);
@@ -2555,7 +2557,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_down.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkInterface nic = ui.nics_iface[idx];
         NetworkInterface.link_down(nic.name);

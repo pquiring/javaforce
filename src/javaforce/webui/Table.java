@@ -183,6 +183,15 @@ public class Table extends Container implements Click {
       x++;
     }
   }
+  public void addRow(String[] strs) {
+    int x = 0;
+    int y = rows;
+    addRow();
+    for(String s : strs) {
+      add(new Label(s), x, y);
+      x++;
+    }
+  }
   public void addColumn() {
     if (cellWidths != null) {
       return;
@@ -206,6 +215,15 @@ public class Table extends Container implements Click {
     addColumn();
     for(Component c : cmps) {
       add(c, x, y);
+      y++;
+    }
+  }
+  public void addColumn(String[] strs) {
+    int x = cols;
+    int y = 0;
+    addColumn();
+    for(String s : strs) {
+      add(new Label(s), x, y);
       y++;
     }
   }
