@@ -2647,6 +2647,8 @@ public class ConfigService implements WebUIHandler {
     {
       Panel tab = new Panel();
       panel.addTab(tab, "Networks");
+      Row row;
+
       ToolBar tools = new ToolBar();
       tab.add(tools);
       Button refresh = new Button("Refresh");
@@ -2657,13 +2659,20 @@ public class ConfigService implements WebUIHandler {
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
-      ListBox list = new ListBox();
-      tab.add(list);
+
+      row = new Row();
+      tab.add(row);
+      Table table = new Table(new int[] {100, 50, 50}, 20, 3, 0);
+      row.add(table);
+      table.setSelectionMode(Table.SELECT_ROW);
+      table.setBorder(true);
+      table.setHeader(true);
 
       ui.network_vlan_complete = () -> {
-        list.removeAll();
+        table.removeAll();
+        table.addRow(new String[] {"Name", "VLAN", "Usage"});
         for(NetworkVLAN nic : Config.current.vlans) {
-          list.add(nic.name + ":" + nic.vlan + ":" + nic.getUsage());
+          table.addRow(new String[] {nic.name, Integer.toString(nic.vlan), Integer.toString(nic.getUsage())});
         }
       };
       ui.network_vlan_complete.run();
@@ -2683,14 +2692,14 @@ public class ConfigService implements WebUIHandler {
         ui.network_vlan_popup.setVisible(true);
       });
       edit.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         ui.network_vlan = Config.current.vlans.get(idx);
         ui.network_vlan_init.run();
         ui.network_vlan_popup.setVisible(true);
       });
       delete.addClickListener((me, cmp) -> {
-        int idx = list.getSelectedIndex();
+        int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkVLAN nic = Config.current.vlans.get(idx);
         if (nic.getUsage() > 0) {
@@ -2699,7 +2708,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.confirm_action = () -> {
-          int idx1 = list.getSelectedIndex();
+          int idx1 = table.getSelectedRow();
           NetworkVLAN nic1 = Config.current.vlans.get(idx1);
           Config.current.removeNetworkVLAN(nic1);
           ui.network_vlan_complete.run();
