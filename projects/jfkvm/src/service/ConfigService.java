@@ -722,6 +722,7 @@ public class ConfigService implements WebUIHandler {
       NetworkBridge[] bridges = NetworkBridge.list();
       for(NetworkInterface nic : nics) {
         if (nic.name.equals("lo")) continue;
+        if (nic.name.equals("ovs-system")) continue;
         boolean ok = true;
         for(NetworkVirtual vnic : Config.current.nics) {
           if (vnic.name.equals(nic.name)) {
