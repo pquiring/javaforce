@@ -2891,6 +2891,7 @@ public class ConfigService implements WebUIHandler {
             errmsg.setText("Error:Failed to remove Virtual nic:" + nic.name);
           }
         };
+        ui.confirm_popup.setVisible(true);
       });
     }
   }

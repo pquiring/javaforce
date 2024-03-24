@@ -1012,6 +1012,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nassign
   (JNIEnv *e, jclass o, jstring name, jstring ip, jstring mask)
 {
   //TODO:assign IP address to virt nic
+  //ip address add dev {name} {ip/mask}
   return JNI_FALSE;
 }
 
