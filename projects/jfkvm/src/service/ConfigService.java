@@ -2884,8 +2884,8 @@ public class ConfigService implements WebUIHandler {
         ui.confirm_button.setText("Delete");
         ui.confirm_message.setText("Delete Virtual nic : " + nic.name);
         ui.confirm_action = () -> {
-          table.removeRow(idx);
           if (nic.remove()) {
+            table.removeRow(idx);
             Config.current.removeNetworkVirtual(nic);
           } else {
             errmsg.setText("Error:Failed to remove Virtual nic:" + nic.name);
