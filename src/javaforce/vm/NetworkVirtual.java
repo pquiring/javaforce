@@ -96,6 +96,7 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
 //    xml.append("<mac address='" + mac + "'/>");  //not supported
 //    xml.append("<ip address='" + ip + "' netmask='" + netmask + "'/>");  //not supported
     if (bridge.type.equals("os")) {
+      xml.append("<virtualport type='openvswitch'/>");
       xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     }
     xml.append("</network>");
