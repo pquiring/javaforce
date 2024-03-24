@@ -94,7 +94,7 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
     xml.append("<forward mode='bridge'/>");
     xml.append("<bridge name='" + bridge.name + "'/>");
 //    xml.append("<mac address='" + mac + "'/>");  //not supported
-    xml.append("<ip address='" + ip + "' netmask='" + netmask + "'/>");
+//    xml.append("<ip address='" + ip + "' netmask='" + netmask + "'/>");  //not supported
     if (bridge.type.equals("os")) {
       xml.append("<vlan><tag id='" + vlan + "'></tag></vlan>");
     }
