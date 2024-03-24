@@ -841,12 +841,14 @@ public class ConfigService implements WebUIHandler {
     ComboBox bridge = new ComboBox();
     row.add(bridge);
 
+/*
     row = new Row();
     panel.add(row);
     row.add(new Label("MAC"));
     TextField mac = new TextField("");
     row.add(mac);
     row.add(new Label("(leave blank to generate)"));
+*/
 
     row = new Row();
     panel.add(row);
@@ -882,14 +884,14 @@ public class ConfigService implements WebUIHandler {
       }
       if (create) {
         name.setText("");
-        mac.setText("");
+//        mac.setText("");
         ip.setText("192.168.1.2");
         netmask.setText("255.255.255.0");
         vlan.setText("0");
         accept.setText("Create");
       } else {
         name.setText(ui.network_virtual.name);
-        mac.setText(ui.network_virtual.mac);
+//        mac.setText(ui.network_virtual.mac);
         ip.setText(ui.network_virtual.ip);
         netmask.setText(ui.network_virtual.netmask);
         vlan.setText(Integer.toString(ui.network_virtual.vlan));
@@ -946,6 +948,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid bridge");
         return;
       }
+/*
       String _mac = mac.getText();
       if (_mac.length() > 0) {
         if (!MAC.valid(_mac)) {
@@ -955,6 +958,8 @@ public class ConfigService implements WebUIHandler {
       } else {
         _mac = MAC.generate();
       }
+*/
+      String _mac = "";  //not supported
       String _ip = ip.getText();
       if (!IP4.isIP(_ip)) {
         errmsg.setText("Error:invalid IP4");
