@@ -50,12 +50,11 @@ public class NetworkInterface implements Serializable {
     */
     String[] lns = output.split("\n");
     NetworkInterface nic = null;
-    int idx = 1;
     for(int a=0;a<lns.length;a++) {
       String ln = lns[a].trim();
       if (ln.length() == 0) continue;
-      String start = Integer.toString(idx) + ":";
-      if (ln.startsWith(start)) {
+      char start = ln.charAt(0);
+      if (start >= '0' && start <= '9') {
         String[] fs = ln.split("[:]");
         String name = fs[1].trim();
         nic = null;
@@ -78,7 +77,6 @@ public class NetworkInterface implements Serializable {
             }
           }
         }
-        idx++;
       }
       if (nic != null && ln.startsWith("link/ether")) {
         //MAC

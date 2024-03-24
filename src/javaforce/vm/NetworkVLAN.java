@@ -1,6 +1,6 @@
 package javaforce.vm;
 
-/** Network Bridge
+/** Network VLAN used by guest VM's.
  *
  * @author pquiring
  */
