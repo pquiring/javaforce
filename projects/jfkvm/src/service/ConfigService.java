@@ -2800,6 +2800,8 @@ public class ConfigService implements WebUIHandler {
 
       refresh.addClickListener((me, cmp) -> {
         init.run();
+        errmsg.setText("");
+        msg.setText("");
       });
 
       link_up.addClickListener((me, cmp) -> {
@@ -2807,6 +2809,7 @@ public class ConfigService implements WebUIHandler {
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
         NetworkVirtual.link_up(nic.name);
+        errmsg.setText("");
         msg.setText("Link UP:" + nic.name);
       });
 
@@ -2815,10 +2818,13 @@ public class ConfigService implements WebUIHandler {
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
         NetworkVirtual.link_down(nic.name);
+        errmsg.setText("");
         msg.setText("Link DOWN:" + nic.name);
       });
 
       create.addClickListener((me, cmp) -> {
+        errmsg.setText("");
+        msg.setText("");
         if (NetworkBridge.list().length == 0) {
           errmsg.setText("Error:No bridges exist");
           return;
@@ -2832,43 +2838,58 @@ public class ConfigService implements WebUIHandler {
       edit.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
-        //TODO : edit virtual nic
+        errmsg.setText("");
+        msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
         ui.network_virtual = nic;
+        ui.network_virtual_init.run();
         ui.network_virtual_complete = () -> {
-          //TODO : edit virt nic
+          Config.current.save();
         };
-        //ui.network_virtual_popup.setVisible(true);
+        ui.network_virtual_popup.setVisible(true);
       });
 
       start.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
+        errmsg.setText("");
+        msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
         if (!nic.start()) {
           errmsg.setText("Error:Failed to start nic:" + nic.name);
+        } else {
+          msg.setText("Started Virtual nic:" + nic.name);
         }
       });
 
       stop.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
+        errmsg.setText("");
+        msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
         if (!nic.stop()) {
           errmsg.setText("Error:Failed to stop nic:" + nic.name);
+        } else {
+          msg.setText("Stopped Virtual nic:" + nic.name);
         }
       });
 
       delete.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
+        errmsg.setText("");
+        msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
         ui.confirm_button.setText("Delete");
-        ui.confirm_message.setText("Delete NIC : " + nic.name);
+        ui.confirm_message.setText("Delete Virtual nic : " + nic.name);
         ui.confirm_action = () -> {
           table.removeRow(idx);
-          nic.remove();
-          Config.current.removeNetworkVirtual(nic);
+          if (nic.remove()) {
+            Config.current.removeNetworkVirtual(nic);
+          } else {
+            errmsg.setText("Error:Failed to remove Virtual nic:" + nic.name);
+          }
         };
       });
     }
