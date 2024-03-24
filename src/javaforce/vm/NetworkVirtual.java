@@ -15,23 +15,19 @@ public class NetworkVirtual extends NetworkConfig implements Serializable {
 
   private static final boolean libvirt = false;  //not working
 
-  public NetworkConfig config;  //stored config
   public String bridge;
   public int vlan;
 
   protected NetworkVirtual(String name) {
     super(name);
     this.bridge = ngetbridge(name);
-    config = new NetworkConfig(name);
   }
 
   public NetworkVirtual(String name, String bridge, String mac, String ip, String netmask, int vlan) {
     super(name);
-    config = new NetworkConfig(name);
-    config.name = name;
-    config.mac = mac;
-    config.ip = ip;
-    config.netmask = netmask;
+    this.mac = mac;
+    this.ip = ip;
+    this.netmask = netmask;
     this.bridge = bridge;
     this.vlan = vlan;
   }
@@ -89,13 +85,9 @@ public class NetworkVirtual extends NetworkConfig implements Serializable {
       }
       NetworkVirtual nic = new NetworkVirtual(name, bridge.name, mac, ip, netmask, vlan);
       nic.link_up();
-      nic.config.set_ip();
+      nic.set_ip();
       return nic;
     }
-  }
-
-  public boolean set_ip() {
-    return config.set_ip();
   }
 
   private native static boolean ncreateport(String name, String xml);
