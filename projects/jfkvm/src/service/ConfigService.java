@@ -2566,7 +2566,7 @@ public class ConfigService implements WebUIHandler {
         ui.nics_iface = NetworkInterface.listPhysical();
         for(NetworkInterface nic : ui.nics_iface) {
           if (nic.name.equals("lo")) continue;
-          table.addRow(new String[] {nic.name, nic.ip + "/" + nic.netmask, nic.mac, nic.state});
+          table.addRow(nic.getState());
         }
       };
       init.run();
@@ -2645,7 +2645,7 @@ public class ConfigService implements WebUIHandler {
           table.removeAll();
           NetworkBridge[] nics1 = NetworkBridge.list();
           for (NetworkBridge nic : nics1) {
-            table.addRow(new String[] {nic.name + ":" + nic.type + ":" + nic.iface});
+            table.addRow(new String[] {nic.name, nic.type, nic.iface});
           }
         };
         ui.network_bridge_init.run();
@@ -2799,7 +2799,7 @@ public class ConfigService implements WebUIHandler {
         ui.nics_virt = Config.current.nics;
         NetworkInterface.getInfo(ui.nics_virt.toArray(new NetworkInterface[0]));
         for(NetworkVirtual nic : ui.nics_virt) {
-          table.addRow(new String[] {nic.name, nic.ip + "/" + nic.netmask, nic.mac, nic.state});
+          table.addRow(nic.getState());
         }
       };
       init.run();

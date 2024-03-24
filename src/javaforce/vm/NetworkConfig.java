@@ -18,10 +18,15 @@ public class NetworkConfig implements Serializable {
   public String netmask;
   public String mac;
 
-  public transient String state;
+  public transient NetworkState state;
 
   public NetworkConfig(String name) {
     this.name = name;
+    state = new NetworkState();
+  }
+
+  public String[] getState() {
+    return new String[] {name, state.ip + "/" + state.netmask, state.mac, state.link};
   }
 
   public static void getInfo(NetworkConfig[] nics) {
@@ -29,6 +34,9 @@ public class NetworkConfig implements Serializable {
     p.keepOutput(true);
     String output = p.run(new String[] {"/usr/bin/ip", "addr"}, true);
     if (output == null) return;
+    for(NetworkConfig nic : nics) {
+      nic.state = new NetworkState();
+    }
     /*
 1: eth0: <...> state UP/DOWN
     link/ether 00:11:22:33:44:55 brd ff:ff:ff:ff:ff:ff ...
@@ -54,14 +62,14 @@ public class NetworkConfig implements Serializable {
           }
         }
         if (nic != null) {
-          nic.state = "down";
+          nic.state.link = "down";
           int i1 = ln.indexOf('<');
           int i2 = ln.indexOf('>');
           if (i1 > 0 && i2 > 0) {
             String[] ss = ln.substring(i1+1,i2).split("[,]");
             for(String s : ss) {
               switch (s) {
-                case "UP": nic.state = "up"; break;
+                case "UP": nic.state.link = "up"; break;
               }
             }
           }
@@ -70,7 +78,7 @@ public class NetworkConfig implements Serializable {
       if (nic != null && ln.startsWith("link/ether")) {
         //MAC
         String[] f = ln.split("[ ]");
-        nic.mac = f[1];
+        nic.state.mac = f[1];
       }
       if (nic != null && ln.startsWith("inet ")) {
         //IP4/NETMASK
@@ -78,9 +86,9 @@ public class NetworkConfig implements Serializable {
         String ip_mask = f[1];
         int slash = ip_mask.indexOf('/');
         if (slash == -1) continue;
-        nic.ip = ip_mask.substring(0, slash);
+        nic.state.ip = ip_mask.substring(0, slash);
         int cidr = Integer.valueOf(ip_mask.substring(slash + 1));
-        nic.netmask = Subnet4.fromCIDR(cidr);
+        nic.state.netmask = Subnet4.fromCIDR(cidr);
       }
     }
   }

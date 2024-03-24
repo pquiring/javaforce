@@ -9,8 +9,6 @@ package javaforce.vm;
 
 import java.io.*;
 
-import javaforce.*;
-
 public class Network implements Serializable {
   private static final long serialVersionUID = 1L;
 

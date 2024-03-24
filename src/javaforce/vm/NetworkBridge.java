@@ -30,7 +30,6 @@ public class NetworkBridge extends NetworkConfig implements Serializable {
     this.iface = iface;
   }
 
-  public String name;  //virbr0
   public String type;  //br or os
   public String iface;  //physical nic
 
