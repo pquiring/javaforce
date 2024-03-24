@@ -88,6 +88,7 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
         p.keepOutput(true);
         p.run(new String[] {"/usr/bin/ip", "addr", "add", ip + "/" + netmask, "dev", name}, true);
       }
+      link_up(name);
       return true;
     }
   }
