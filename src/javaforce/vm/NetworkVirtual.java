@@ -58,12 +58,12 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
     return nics;
   }
 
-  private native static boolean ncreatevirt(String name, String xml);
+  private native static boolean ncreatevirt(String xml);
   /** Create virtual interface. */
   public static boolean createVirtual(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
     String xml = createXML(name, bridge, mac, ip, netmask, vlan);
     JFLog.log("NetworkVirtual.xml=" + xml);
-    return ncreatevirt(name, xml);
+    return ncreatevirt(xml);
   }
 
   private native static boolean ncreateport(String name, String xml);
@@ -84,15 +84,6 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
   /** Remove this virtual interface. */
   public boolean remove() {
     return nremove(name);
-  }
-
-  private native static boolean nassign(String name, String ip, String mask);
-  /** Assign IP address to virtual interface. */
-  public boolean assign(String ip, String mask) {
-    return nassign(name, ip, mask);
-  }
-
-  private static void getInfo(NetworkVirtual[] nics) {
   }
 
   protected static String createXML(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
