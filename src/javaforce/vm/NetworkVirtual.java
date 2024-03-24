@@ -13,6 +13,8 @@ import javaforce.*;
 public class NetworkVirtual extends NetworkInterface implements Serializable {
   private static final long serialVersionUID = 1L;
 
+  private static final boolean libvirt = false;  //not working
+
   public String bridge;
   public int vlan;
 
@@ -35,61 +37,101 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
   private native static String[] nlistVirt();
   /** List virtual network interfaces. */
   public static NetworkVirtual[] listVirtual() {
-    String[] list = nlistVirt();
-    if (list == null) list = new String[0];
-    NetworkVirtual[] nics = new NetworkVirtual[list.length];
-    for(int idx = 0;idx<list.length;idx++) {
-      nics[idx] = new NetworkVirtual(list[idx]);
+    if (libvirt) {
+      String[] list = nlistVirt();
+      if (list == null) list = new String[0];
+      NetworkVirtual[] nics = new NetworkVirtual[list.length];
+      for(int idx = 0;idx<list.length;idx++) {
+        nics[idx] = new NetworkVirtual(list[idx]);
+      }
+      getInfo(nics);
+      return nics;
+    } else {
+      return null;
     }
-    getInfo(nics);
-    return nics;
   }
 
   private native static String[] nlistPort(String name);
   /** List network port groups bound to this interface. */
   public NetworkPort[] listPort() {
-    String[] list = nlistPort(name);
-    if (list == null) list = new String[0];
-    NetworkPort[] nics = new NetworkPort[list.length];
-    for(int idx = 0;idx<list.length;idx++) {
-      String[] pp = list[idx].split(";");
-      nics[idx] = new NetworkPort(this.name, pp[0], Integer.valueOf(pp[1]));
+    if (libvirt) {
+      String[] list = nlistPort(name);
+      if (list == null) list = new String[0];
+      NetworkPort[] nics = new NetworkPort[list.length];
+      for(int idx = 0;idx<list.length;idx++) {
+        String[] pp = list[idx].split(";");
+        nics[idx] = new NetworkPort(this.name, pp[0], Integer.valueOf(pp[1]));
+      }
+      return nics;
+    } else {
+      return null;
     }
-    return nics;
   }
 
   private native static boolean ncreatevirt(String xml);
   /** Create virtual interface. */
   public static boolean createVirtual(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
-    String xml = createXML(name, bridge, mac, ip, netmask, vlan);
-    JFLog.log("NetworkVirtual.xml=" + xml);
-    return ncreatevirt(xml);
+    if (libvirt) {
+      String xml = createXML(name, bridge, mac, ip, netmask, vlan);
+      JFLog.log("NetworkVirtual.xml=" + xml);
+      return ncreatevirt(xml);
+    } else {
+      {
+        //create fake bridge with vlan
+        ShellProcess p = new ShellProcess();
+        p.keepOutput(true);
+        p.run(new String[] {"/usr/bin/ovs-vsctl", "add-br", name, bridge.name, Integer.toString(vlan)}, true);
+      }
+      {
+        //assign ip address
+        ShellProcess p = new ShellProcess();
+        p.keepOutput(true);
+        p.run(new String[] {"/usr/bin/ip", "addr", "add", ip + "/" + netmask, "dev", name}, true);
+      }
+      return true;
+    }
   }
 
   private native static boolean ncreateport(String name, String xml);
   /** Create network port group (VLAN) bound to this virtual interface. */
   public boolean createPort(String name, int vlan) {
-    String xml = NetworkPort.createXML(this.name, name, vlan);
-    JFLog.log("NetworkPort.xml=" + xml);
-    return ncreateport(this.name, xml);
+    if (libvirt) {
+      String xml = NetworkPort.createXML(this.name, name, vlan);
+      JFLog.log("NetworkPort.xml=" + xml);
+      return ncreateport(this.name, xml);
+    } else {
+      return false;
+    }
   }
 
   private native static boolean nstart(String name);
   /** Start virtual interface. */
   public boolean start() {
+    if (!libvirt) return false;
     return nstart(name);
   }
 
   private native static boolean nstop(String name);
   /** Stop virtual interface. */
   public boolean stop() {
+    if (!libvirt) return false;
     return nstop(name);
   }
 
   private native static boolean nremove(String name);
   /** Remove this virtual interface. */
   public boolean remove() {
-    return nremove(name);
+    if (libvirt) {
+      return nremove(name);
+    } else {
+      {
+        //delete bridge
+        ShellProcess p = new ShellProcess();
+        p.keepOutput(true);
+        p.run(new String[] {"/usr/bin/ovs-vsctl", "del-br", name}, true);
+      }
+      return true;
+    }
   }
 
   protected static String createXML(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {

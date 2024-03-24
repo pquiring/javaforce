@@ -2771,10 +2771,12 @@ public class ConfigService implements WebUIHandler {
       tools.add(create);
       Button edit = new Button("Edit");
       tools.add(edit);
+/*
       Button start = new Button("Start");
       tools.add(start);
       Button stop = new Button("Stop");
       tools.add(stop);
+*/
       Button delete = new Button("Delete");
       tools.add(delete);
 
@@ -2849,6 +2851,7 @@ public class ConfigService implements WebUIHandler {
         ui.network_virtual_popup.setVisible(true);
       });
 
+/*
       start.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
@@ -2874,6 +2877,7 @@ public class ConfigService implements WebUIHandler {
           msg.setText("Stopped Virtual nic:" + nic.name);
         }
       });
+*/
 
       delete.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
