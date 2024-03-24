@@ -4,7 +4,10 @@ package service;
  *
  * TODO : setup tasks
  *
- * BUG : edit/delete virt nic does not work.
+ * TODO : make network changes persistent
+ *   - this depends on OS network mgr in use
+ *
+ * BUG : edit virt nic does not work.
  *
  * @author pquiring
  */
