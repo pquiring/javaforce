@@ -907,7 +907,7 @@ public class ConfigService implements WebUIHandler {
 
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      String _name = vmm.cleanName(ip.getText());
+      String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
         errmsg.setText("Error:invalid name");
