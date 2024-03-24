@@ -135,6 +135,7 @@ UUID
       p.keepOutput(true);
       p.run(new String[] {"/usr/bin/ovs-vsctl", "add-port", name, nic}, true);
     }
+    NetworkInterface.link_up(name);
     return true;
   }
 
