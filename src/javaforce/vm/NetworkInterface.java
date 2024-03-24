@@ -16,7 +16,7 @@ public class NetworkInterface implements Serializable {
   public String ip;
   public String netmask;
   public String mac;
-  public String state;  //UP/DOWN
+  public transient String state;  //UP/DOWN
 
   protected NetworkInterface(String name) {
     this.name = name;
@@ -35,7 +35,7 @@ public class NetworkInterface implements Serializable {
     return nics;
   }
 
-  protected static void getInfo(NetworkInterface[] nics) {
+  public static void getInfo(NetworkInterface[] nics) {
     ShellProcess p = new ShellProcess();
     p.keepOutput(true);
     String output = p.run(new String[] {"/usr/bin/ip", "addr"}, true);

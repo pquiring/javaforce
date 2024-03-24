@@ -2794,6 +2794,7 @@ public class ConfigService implements WebUIHandler {
         table.removeAll();
         table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "Link"});
         ui.nics_virt = Config.current.nics;
+        NetworkInterface.getInfo(ui.nics_virt.toArray(new NetworkInterface[0]));
         for(NetworkVirtual nic : ui.nics_virt) {
           table.addRow(new String[] {nic.name, nic.ip + "/" + nic.netmask, nic.mac, nic.state});
         }
