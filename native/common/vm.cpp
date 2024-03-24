@@ -51,6 +51,7 @@ int (*_virNetworkGetUUIDString)(void* net, char* uuid);
 const char* (*_virNetworkGetName)(void* net);
 const char* (*_virNetworkGetBridgeName)(void* net);
 int (*_virNetworkCreate)(void* net);
+int (*_virNetworkDestroy)(void* net);
 int (*_virNetworkFree)(void* net);
 void* (*_virNetworkDefineXML)(void* conn, const char* xml);
 int (*_virNetworkUndefine)(void* net);
@@ -119,6 +120,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virNetworkGetName, "virNetworkGetName");
   getFunction(virt, (void**)&_virNetworkGetBridgeName, "virNetworkGetBridgeName");
   getFunction(virt, (void**)&_virNetworkCreate, "virNetworkCreate");
+  getFunction(virt, (void**)&_virNetworkDestroy, "virNetworkDestroy");
   getFunction(virt, (void**)&_virNetworkFree, "virNetworkFree");
   getFunction(virt, (void**)&_virNetworkDefineXML, "virNetworkDefineXML");
   getFunction(virt, (void**)&_virNetworkUndefine, "virNetworkUndefine");
@@ -869,6 +871,35 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nstart
   return res == 0;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nstop
+  (JNIEnv *e, jclass o, jstring name)
+{
+  void* conn = connect();
+  if (conn == NULL) return JNI_FALSE;
+
+  const char* cname = e->GetStringUTFChars(name, NULL);
+
+  void* net = (*_virNetworkLookupByName)(conn, cname);
+
+  e->ReleaseStringUTFChars(name, cname);
+
+  if (net == NULL) {
+    disconnect(conn);
+    return JNI_FALSE;
+  }
+
+  int res = (*_virNetworkDestroy)(net);
+
+  (*_virNetworkFree)(net);
+  disconnect(conn);
+
+  if (res < 0) {
+    printf("Error:%d\n", res);
+  }
+
+  return res == 0;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nremove
   (JNIEnv *e, jclass o, jstring name)
 {
@@ -1052,6 +1083,7 @@ static JNINativeMethod javaforce_vm_NetworkVirtual[] = {
   {"ncreateport", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_ncreateport},
   {"ngetbridge", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_NetworkVirtual_ngetbridge},
   {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nstart},
+  {"nstop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nstop},
   {"nremove", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
 //  {"nassign", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nassign},
 };

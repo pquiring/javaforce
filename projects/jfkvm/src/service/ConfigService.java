@@ -4,7 +4,7 @@ package service;
  *
  * TODO : setup tasks
  *
- * BUG : create virt nic does not work.
+ * BUG : edit/delete virt nic does not work.
  *
  * @author pquiring
  */
@@ -2771,6 +2771,10 @@ public class ConfigService implements WebUIHandler {
       tools.add(create);
       Button edit = new Button("Edit");
       tools.add(edit);
+      Button start = new Button("Start");
+      tools.add(start);
+      Button stop = new Button("Stop");
+      tools.add(stop);
       Button delete = new Button("Delete");
       tools.add(delete);
 
@@ -2835,6 +2839,24 @@ public class ConfigService implements WebUIHandler {
           //TODO : edit virt nic
         };
         //ui.network_virtual_popup.setVisible(true);
+      });
+
+      start.addClickListener((me, cmp) -> {
+        int idx = table.getSelectedRow();
+        if (idx == -1) return;
+        NetworkVirtual nic = ui.nics_virt.get(idx);
+        if (!nic.start()) {
+          errmsg.setText("Error:Failed to start nic:" + nic.name);
+        }
+      });
+
+      stop.addClickListener((me, cmp) -> {
+        int idx = table.getSelectedRow();
+        if (idx == -1) return;
+        NetworkVirtual nic = ui.nics_virt.get(idx);
+        if (!nic.stop()) {
+          errmsg.setText("Error:Failed to stop nic:" + nic.name);
+        }
       });
 
       delete.addClickListener((me, cmp) -> {

@@ -80,6 +80,12 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
     return nstart(name);
   }
 
+  private native static boolean nstop(String name);
+  /** Stop virtual interface. */
+  public boolean stop() {
+    return nstop(name);
+  }
+
   private native static boolean nremove(String name);
   /** Remove this virtual interface. */
   public boolean remove() {
