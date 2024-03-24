@@ -996,11 +996,11 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:No bridge to create virtual network");
         return;
       }
-      if (!NetworkVirtual.createVirtual(_name, sel_bridge, _mac, _ip, _netmask, _vlan)) {
+      NetworkVirtual nic = NetworkVirtual.createVirtual(_name, sel_bridge, _mac, _ip, _netmask, _vlan);
+      if (nic == null) {
         errmsg.setText("Error:Failed to create virtual network");
         return;
       }
-      NetworkVirtual nic = new NetworkVirtual(_name, _bridge, _mac, _ip, _netmask, _vlan);
       Config.current.addNetworkVirtual(nic);
       ui.network_virtual_popup.setVisible(false);
     });
@@ -2579,7 +2579,7 @@ public class ConfigService implements WebUIHandler {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkInterface nic = ui.nics_iface[idx];
-        NetworkInterface.link_up(nic.name);
+        nic.link_up();
         msg.setText("Link UP:" + nic.name);
       });
 
@@ -2587,7 +2587,7 @@ public class ConfigService implements WebUIHandler {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkInterface nic = ui.nics_iface[idx];
-        NetworkInterface.link_down(nic.name);
+        nic.link_down();
         msg.setText("Link DOWN:" + nic.name);
       });
     }
@@ -2814,7 +2814,7 @@ public class ConfigService implements WebUIHandler {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
-        NetworkVirtual.link_up(nic.name);
+        nic.link_up();
         errmsg.setText("");
         msg.setText("Link UP:" + nic.name);
       });
@@ -2823,7 +2823,7 @@ public class ConfigService implements WebUIHandler {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
-        NetworkVirtual.link_down(nic.name);
+        nic.link_down();
         errmsg.setText("");
         msg.setText("Link DOWN:" + nic.name);
       });

@@ -21,11 +21,11 @@ import java.util.*;
 
 import javaforce.*;
 
-public class NetworkBridge implements Serializable {
+public class NetworkBridge extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;
 
   protected NetworkBridge(String name, String type, String iface) {
-    this.name = name;
+    super(name);
     this.type = type;
     this.iface = iface;
   }
@@ -122,7 +122,7 @@ UUID
     return list_all.toArray(new NetworkBridge[0]);
   }
 
-  public static boolean create(String name, String nic) {
+  public static NetworkBridge create(String name, String iface) {
     {
       //create bridge
       ShellProcess p = new ShellProcess();
@@ -133,10 +133,11 @@ UUID
       //add nic to bridge
       ShellProcess p = new ShellProcess();
       p.keepOutput(true);
-      p.run(new String[] {"/usr/bin/ovs-vsctl", "add-port", name, nic}, true);
+      p.run(new String[] {"/usr/bin/ovs-vsctl", "add-port", name, iface}, true);
     }
-    NetworkInterface.link_up(name);
-    return true;
+    NetworkBridge nic = new NetworkBridge(name, "os", iface);
+    nic.link_up();
+    return nic;
   }
 
   private void remove_br() {

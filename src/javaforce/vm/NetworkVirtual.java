@@ -10,25 +10,29 @@ import java.io.*;
 
 import javaforce.*;
 
-public class NetworkVirtual extends NetworkInterface implements Serializable {
+public class NetworkVirtual extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private static final boolean libvirt = false;  //not working
 
+  public NetworkConfig config;  //stored config
   public String bridge;
   public int vlan;
 
   protected NetworkVirtual(String name) {
     super(name);
     this.bridge = ngetbridge(name);
+    config = new NetworkConfig(name);
   }
 
   public NetworkVirtual(String name, String bridge, String mac, String ip, String netmask, int vlan) {
     super(name);
+    config = new NetworkConfig(name);
+    config.name = name;
+    config.mac = mac;
+    config.ip = ip;
+    config.netmask = netmask;
     this.bridge = bridge;
-    this.mac = mac;
-    this.ip = ip;
-    this.netmask = netmask;
     this.vlan = vlan;
   }
 
@@ -70,11 +74,12 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
 
   private native static boolean ncreatevirt(String xml);
   /** Create virtual interface. */
-  public static boolean createVirtual(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
+  public static NetworkVirtual createVirtual(String name, NetworkBridge bridge, String mac, String ip, String netmask, int vlan) {
     if (libvirt) {
       String xml = createXML(name, bridge, mac, ip, netmask, vlan);
       JFLog.log("NetworkVirtual.xml=" + xml);
-      return ncreatevirt(xml);
+      if (!ncreatevirt(xml)) return null;
+      return new NetworkVirtual(name);
     } else {
       {
         //create fake bridge with vlan
@@ -82,15 +87,15 @@ public class NetworkVirtual extends NetworkInterface implements Serializable {
         p.keepOutput(true);
         p.run(new String[] {"/usr/bin/ovs-vsctl", "add-br", name, bridge.name, Integer.toString(vlan)}, true);
       }
-      {
-        //assign ip address
-        ShellProcess p = new ShellProcess();
-        p.keepOutput(true);
-        p.run(new String[] {"/usr/bin/ip", "addr", "add", ip + "/" + netmask, "dev", name}, true);
-      }
-      link_up(name);
-      return true;
+      NetworkVirtual nic = new NetworkVirtual(name, bridge.name, mac, ip, netmask, vlan);
+      nic.link_up();
+      nic.config.set_ip();
+      return nic;
     }
+  }
+
+  public boolean set_ip() {
+    return config.set_ip();
   }
 
   private native static boolean ncreateport(String name, String xml);
