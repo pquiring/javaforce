@@ -68,7 +68,13 @@ public class VMM implements VMProvider {
         disk.folder = folder;
         disk.name = disk_name.substring(0, idx);
         disk.type = Disk.TYPE_VMDK;
-        disk.size = new Size(file.length());
+        String flat_name = full_folder + "/" + disk.name + "-flat.vmdk";
+        File flat_file = new File(flat_name);
+        if (flat_file.exists()) {
+          disk.size = new Size(flat_file.length());
+        } else {
+          disk.size = new Size(file.length());
+        }
         hw.addDisk(disk);
       }
     }
