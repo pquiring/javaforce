@@ -99,7 +99,8 @@ public class ConfigService implements WebUIHandler {
     public Runnable browse_init;
     public Label browse_errmsg;
     public String browse_path;
-    public String browse_select;
+    public Button browse_button;
+    public String browse_file;
     public String[] browse_filters;
     public Runnable browse_complete;
 
@@ -1922,7 +1923,7 @@ public class ConfigService implements WebUIHandler {
       ui.browse_filters = filter_disks;
       ui.browse_init.run();
       ui.browse_complete = () -> {
-        String path_file = ui.browse_select;
+        String path_file = ui.browse_file;
         String pool = getPool(path_file);
         String folder = getFolder(path_file);
         String file = getFile(path_file);
@@ -1944,6 +1945,7 @@ public class ConfigService implements WebUIHandler {
         disk_list.add(disk.toString());
         ui.browse_popup.setVisible(false);
       };
+      ui.browse_button.setText("Select");
       ui.browse_popup.setVisible(true);
     });
     b_disk_edit.addClickListener((me, cmp) -> {
@@ -2147,12 +2149,12 @@ public class ConfigService implements WebUIHandler {
       ui.browse_filters = filter_all;
       ui.browse_init.run();
       ui.browse_complete = () -> {
-        if (ui.browse_select.endsWith(".jfvm")) {
+        if (ui.browse_file.endsWith(".jfvm")) {
           ui.browse_popup.setVisible(false);
           ui.confirm_button.setText("Register");
-          ui.confirm_message.setText("Register VM : " + ui.browse_select);
+          ui.confirm_message.setText("Register VM : " + ui.browse_file);
           ui.confirm_action = () -> {
-            Hardware hardware = Hardware.load(ui.browse_select);
+            Hardware hardware = Hardware.load(ui.browse_file);
             if (hardware == null) {
               ui.message_message.setText("Failed to load VM, see logs.");
               ui.message_popup.setVisible(true);
@@ -2171,6 +2173,7 @@ public class ConfigService implements WebUIHandler {
           ui.browse_popup.setVisible(false);
         }
       };
+      ui.browse_button.setText("Register");
       ui.browse_popup.setVisible(true);
     });
     start.addClickListener((me, cmp) -> {
@@ -2566,6 +2569,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(cdup);
     Button select = new Button("Select");
     tools.add(select);
+    ui.browse_button = select;
     Button upload = new Button("Upload");
 //    tools.add(upload);
     Button delete = new Button("Delete");
@@ -2643,7 +2647,7 @@ public class ConfigService implements WebUIHandler {
       }
     });
     select.addClickListener((me, cmp) -> {
-      ui.browse_select = ui.browse_path + "/" + list.getSelectedItem();
+      ui.browse_file = ui.browse_path + "/" + list.getSelectedItem();
       ui.browse_complete.run();
     });
 
