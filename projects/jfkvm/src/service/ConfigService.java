@@ -197,7 +197,7 @@ public class ConfigService implements WebUIHandler {
     ui.split = left_right;
     left_right.setDividerPosition(leftSize);
     left_right.setLeftComponent(leftPanel(ui, leftSize));
-    left_right.setRightComponent(rightPanel());
+    left_right.setRightComponent(welcomePanel(ui));
 
     Panel tasks = tasksPanel(ui);
 
@@ -1246,6 +1246,9 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     ListBox list = new ListBox();
     panel.add(list);
+    Button welcome = new Button("Welcome");
+    welcome.setWidth(size);
+    list.add(welcome);
     Button host = new Button("Host");
     host.setWidth(size);
     list.add(host);
@@ -1258,6 +1261,9 @@ public class ConfigService implements WebUIHandler {
     Button networks = new Button("Network");
     networks.setWidth(size);
     list.add(networks);
+    welcome.addClickListener((me, cmp) -> {
+      ui.setRightPanel(welcomePanel(ui));
+    });
     host.addClickListener((me, cmp) -> {
       ui.setRightPanel(hostPanel(ui));
     });
@@ -1273,9 +1279,40 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel rightPanel() {
+  private Panel welcomePanel(UI ui) {
     Panel panel = new Panel();
     panel.add(new Label("jfKVM/" + version));
+    ToolBar tools = new ToolBar();
+    Button help = new Button("Help");
+    tools.add(help);
+    panel.add(tools);
+    TextArea msg = new TextArea(
+      "Welcome to jfKVM!\n" +
+      "\n" +
+      "Please note this is minimally tested software and not recommended for production environments!\n" +
+      "\n" +
+      "Features supported:\n" +
+      " - Linux and Windows guests\n" +
+      " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
+      " - Networking : bridge, guests on VLANs\n" +
+      " - import vmware machines\n" +
+      "\n" +
+      "Not supported:\n" +
+      " - VMFS storage pools\n" +
+      "\n" +
+      "Not tested yet:\n" +
+      " - NFS or iSCSI storage pools\n" +
+      "\n" +
+      "Thanks to Broadcom for the motiation to create this project! &#x263a;\n"  //unicode smiley face
+    );
+    msg.setMaxWidth();
+    msg.setHeight(500);
+    panel.add(msg);
+
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help.html");
+    });
+
     return panel;
   }
 
