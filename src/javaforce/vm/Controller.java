@@ -22,6 +22,22 @@ public class Controller implements Serializable {
   public String slot = "0x01";
   public String function = "0x0";
 
+  public Controller(String type, String model) {
+    this.type = type;
+    this.model = model;
+    addr_type = null;
+  }
+
+  public Controller(String type, String model, String addr_type, String domain, String bus, String slot, String function) {
+    this.type = type;
+    this.model = model;
+    this.addr_type = addr_type;
+    this.domain = domain;
+    this.bus = bus;
+    this.slot = slot;
+    this.function = function;
+  }
+
   public String toXML() {
     StringBuilder xml = new StringBuilder();
     xml.append("<controller type='" + type + "' index='0' model='" + model + "'>");
