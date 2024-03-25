@@ -50,7 +50,9 @@ public class Startup extends Thread {
       //start storage systems
        ArrayList<Storage> pools = Config.current.pools;
        for(Storage pool : pools) {
-         pool.start();
+         if (pool.getState() == Storage.STATE_OFF) {
+           pool.start();
+         }
        }
     } catch (Exception e) {
       JFLog.log(e);
