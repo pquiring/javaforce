@@ -1283,9 +1283,11 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     panel.add(new Label("jfKVM/" + version));
     ToolBar tools = new ToolBar();
+    panel.add(tools);
     Button help = new Button("Help");
     tools.add(help);
-    panel.add(tools);
+    Button support = new Button("Support");
+    tools.add(support);
     TextArea msg = new TextArea(
       "Welcome to jfKVM!\n" +
       "\n" +
@@ -1304,7 +1306,9 @@ public class ConfigService implements WebUIHandler {
       "Not tested yet:\n" +
       " - NFS or iSCSI storage pools\n" +
       "\n" +
-      "Thanks to Broadcom for the motivation to create this project! &#x263a;\n"  //unicode smiley face
+      "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
+      "" +
+      "By : Peter Quiring"
     );
     msg.setMaxWidth();
     msg.setMaxHeight();
@@ -1313,6 +1317,9 @@ public class ConfigService implements WebUIHandler {
 
     help.addClickListener((me, cmp) -> {
       cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help.html");
+    });
+    support.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://github.com/pquiring/javaforce/issues");
     });
 
     return panel;
