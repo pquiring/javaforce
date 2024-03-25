@@ -1824,8 +1824,11 @@ public class ConfigService implements WebUIHandler {
     ListBox disk_list = new ListBox();
     disks.add(disk_list);
     for(Disk disk : hardware.disks) {
-      //TODO : add more details
-      disk_list.add(disk.name);
+      if (disk.type == Disk.TYPE_ISO) {
+        disk_list.add(disk.name + ":iso");
+      } else {
+        disk_list.add(disk.name + ":" + disk.size.toString());
+      }
     }
     //networks
     InnerPanel networks = new InnerPanel("Network");
@@ -1857,8 +1860,7 @@ public class ConfigService implements WebUIHandler {
     ListBox dev_list = new ListBox();
     devices.add(dev_list);
     for(Device dev : hardware.devices) {
-      //TODO : add more details
-      dev_list.add(dev.name);
+      dev_list.add(dev.toString());
     }
 
     //save / cancel

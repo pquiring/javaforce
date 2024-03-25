@@ -64,6 +64,10 @@ public class Size implements Serializable {
     return size;
   }
 
+  public String toString() {
+    return getSize();
+  }
+
   public String toMemoryXML() {
     return "<memory unit='" + getUnitChar() + "iB'>" + size + "</memory>";
   }

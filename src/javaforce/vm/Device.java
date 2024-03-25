@@ -33,6 +33,18 @@ public class Device implements Serializable {
     return dlist;
   }
 
+  public String getType() {
+    switch (type) {
+      case TYPE_PCI: return "pci";
+      case TYPE_USB: return "usb";
+    }
+    return "???";
+  }
+
+  public String toString() {
+    return name + ":" + getType();
+  }
+
   public String toXML() {
     StringBuilder xml = new StringBuilder();
     xml.append("<device>");
