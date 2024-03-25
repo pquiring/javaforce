@@ -192,14 +192,5 @@ public class Hardware implements Serializable {
       }
       idx++;
     }
-    if (os == OS_WINDOWS) {
-      for(Controller c : controllers) {
-        if (c.type.equals("scsi")) {
-          if (c.model.equals("buslogic")) {
-            c.model = "lsilogic";
-          }
-        }
-      }
-    }
   }
 }
