@@ -1794,4 +1794,31 @@ public class JF {
     }
     return null;
   }
+
+  public static final String date_delimit = "-";
+
+  public static final String date_format = "%04d-%02d-%02d";  //YYYY-MM-DD
+
+  public static final String time_delimit = ":";
+
+  public static final String time_format = "%02d:%02d:%02d";  //HH:MM:SS
+
+  public static int days[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+
+  public static String Date2String(Calendar c) {
+    return String.format(date_format
+      , c.get(Calendar.YEAR)
+      , c.get(Calendar.MONTH)+1
+      , c.get(Calendar.DAY_OF_MONTH)
+    );
+  }
+
+  public static String Time2String(Calendar c) {
+    return String.format(time_format
+      , c.get(Calendar.HOUR_OF_DAY)
+      , c.get(Calendar.MINUTE)
+      , c.get(Calendar.SECOND)
+    );
+  }
+
 }

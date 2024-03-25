@@ -10,12 +10,18 @@ package service;
  */
 
 import javaforce.*;
+import javaforce.webui.*;
 
 public class Task extends Thread {
-  private long start;
+  protected long ts_start;
+  protected long ts_stop;
+  protected long ts_delta;
 
   public String action;
   public String result;
+
+  public Panel tasks;
+  public TaskUI taskui;
 
   public Task(String action) {
     this.action = action;
@@ -23,7 +29,6 @@ public class Task extends Thread {
 
   public final void run() {
     try {
-      start = System.currentTimeMillis();
       doTask();
     } catch (Exception e) {
       JFLog.log(e);

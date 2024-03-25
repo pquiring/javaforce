@@ -10,6 +10,7 @@ package service;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.webui.*;
 
 public class Tasks extends Thread {
   private Object lock = new Object();
@@ -20,14 +21,30 @@ public class Tasks extends Thread {
     active = false;
   }
 
-  public void addTask(Task task) {
+  private void addUI(Task task) {
+    task.taskui = new TaskUI(task);
+    task.tasks.add(task.taskui);
+  }
+
+  public void addTask(Panel ui_tasks, Task task) {
+    task.tasks = ui_tasks;
+    task.ts_start = System.currentTimeMillis();
+    addUI(task);
     synchronized (lock) {
       taskList.add(task);
     }
     task.start();
   }
 
+  private void updateUI(Task task) {
+    task.taskui.update(task);
+  }
+
+
   public void completed(Task task) {
+    task.ts_stop = System.currentTimeMillis();
+    task.ts_delta = task.ts_stop - task.ts_start;
+    updateUI(task);
     JFLog.log("Task completed:" + task.action + ":result=" + task.result);
     synchronized (lock) {
       taskList.remove(task);

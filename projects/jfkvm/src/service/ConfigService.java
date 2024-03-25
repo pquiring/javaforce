@@ -1545,7 +1545,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(task);
+        KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1571,7 +1571,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(task);
+        KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1597,7 +1597,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(task);
+        KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1623,7 +1623,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(task);
+        KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -1653,7 +1653,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(task);
+        KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
