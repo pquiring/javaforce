@@ -2,7 +2,11 @@ package service;
 
 /** Config Service
  *
- * TODO : setup tasks
+ * TODO : convert many ops into tasks
+ *
+ * TODO : convert vmx to jfvm
+ *
+ * TODO : migrate : data and compute
  *
  * @author pquiring
  */
