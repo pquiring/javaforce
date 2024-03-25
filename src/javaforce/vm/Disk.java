@@ -163,4 +163,12 @@ public class Disk implements Serializable {
     xml.append("</volume>");
     return xml.toString();
   }
+
+  public String toString() {
+    if (type == Disk.TYPE_ISO) {
+      return name + ":iso";
+    } else {
+      return name + ":" + size.toString();
+    }
+  }
 }

@@ -1856,11 +1856,7 @@ public class ConfigService implements WebUIHandler {
     ListBox disk_list = new ListBox();
     disks.add(disk_list);
     for(Disk disk : hardware.disks) {
-      if (disk.type == Disk.TYPE_ISO) {
-        disk_list.add(disk.name + ":iso");
-      } else {
-        disk_list.add(disk.name + ":" + disk.size.toString());
-      }
+      disk_list.add(disk.toString());
     }
     //networks
     InnerPanel networks = new InnerPanel("Network");
@@ -1908,7 +1904,7 @@ public class ConfigService implements WebUIHandler {
       ui.vm_disk_init.run();
       ui.vm_disk_complete = () -> {
         ui.hardware.addDisk(ui.vm_disk);
-        disk_list.add(ui.vm_disk.name);
+        disk_list.add(ui.vm_disk.toString());
       };
       ui.vm_disk_popup.setVisible(true);
     });
@@ -1936,7 +1932,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.hardware.addDisk(disk);
-        disk_list.add(disk.name);
+        disk_list.add(disk.toString());
         ui.browse_popup.setVisible(false);
       };
       ui.browse_popup.setVisible(true);
@@ -1989,7 +1985,7 @@ public class ConfigService implements WebUIHandler {
       ui.device_usb_init.run();
       ui.device_complete = () -> {
         ui.hardware.addDevice(ui.device);
-        dev_list.add(ui.device.name);
+        dev_list.add(ui.device.toString());
       };
       ui.device_usb_popup.setVisible(true);
     });
@@ -1998,7 +1994,7 @@ public class ConfigService implements WebUIHandler {
       ui.device_pci_init.run();
       ui.device_complete = () -> {
         ui.hardware.addDevice(ui.device);
-        dev_list.add(ui.device.name);
+        dev_list.add(ui.device.toString());
       };
       ui.device_pci_popup.setVisible(true);
     });

@@ -29,11 +29,11 @@ public class TaskUI extends Row {
     end.setBorder(true);
     add(end);
     delta = new Label("--:--:--");
-    delta.setWidth(200);
+    delta.setWidth(100);
     delta.setBorder(true);
     add(delta);
     result = new Label("...");
-    result.setWidth(100);
+    result.setWidth(300);
     result.setBorder(true);
     add(result);
   }
