@@ -1296,6 +1296,7 @@ public class ConfigService implements WebUIHandler {
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
       " - Networking : bridge, guests on VLANs\n" +
       " - import vmware machines\n" +
+      " - autostart machines" +
       "\n" +
       "Not supported:\n" +
       " - VMFS storage pools\n" +
@@ -1307,6 +1308,7 @@ public class ConfigService implements WebUIHandler {
     );
     msg.setMaxWidth();
     msg.setHeight(500);
+    msg.setFontSize(20);
     panel.add(msg);
 
     help.addClickListener((me, cmp) -> {
