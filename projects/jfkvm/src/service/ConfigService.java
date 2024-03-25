@@ -1307,7 +1307,7 @@ public class ConfigService implements WebUIHandler {
       "Thanks to Broadcom for the motiation to create this project! &#x263a;\n"  //unicode smiley face
     );
     msg.setMaxWidth();
-    msg.setHeight(500);
+    msg.setMaxHeight();
     msg.setFontSize(20);
     panel.add(msg);
 
