@@ -547,7 +547,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nlist
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* desc = (*_virDomainGetMetadata)(doms[idx], VIR_DOMAIN_METADATA_DESCRIPTION, NULL, VIR_DOMAIN_AFFECT_CURRENT);
+#ifdef VM_DEBUG
     printf("VM:%s\n", desc);
+#endif
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(desc));
     free((void*)desc);
     (*_virDomainFree)(doms[idx]);
@@ -651,7 +653,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Storage_nlist
   for(int idx=0;idx<count;idx++) {
     uuid[0] = 0;
     (*_virStoragePoolGetUUIDString)(pools[idx], uuid);
+#ifdef VM_DEBUG
     printf("Storage:%s\n", uuid);
+#endif
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(uuid));
     (*_virStoragePoolFree)(pools[idx]);
   }
@@ -873,7 +877,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkInterface_nlistPhys
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virInterfaceGetName)(ifaces[idx]);
+#ifdef VM_DEBUG
     printf("net_iface:%s\n", name);
+#endif
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     (*_virInterfaceFree)(ifaces[idx]);
   }
@@ -905,7 +911,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistVirt
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virNetworkGetName)(nets[idx]);
     const char* bridge = (*_virNetworkGetBridgeName)(nets[idx]);
+#ifdef VM_DEBUG
     printf("net_virt:%s:%s\n", name, bridge);
+#endif
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     (*_virNetworkFree)(nets[idx]);
   }
@@ -1042,7 +1050,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
 
   const char* cname = e->GetStringUTFChars(name, NULL);
 
+#ifdef VM_DEBUG
   printf("listPort for %s\n", cname);
+#endif
 
   void* net = (*_virNetworkLookupByName)(conn, cname);
 
@@ -1069,7 +1079,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_NetworkVirtual_nlistPort
   for(int idx=0;idx<count;idx++) {
     uuid[0] = 0;
     (*_virNetworkGetUUIDString)(nets[idx], uuid);
+#ifdef VM_DEBUG
     printf("net_pool:%s\n", uuid);
+#endif
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(uuid));
     (*_virNetworkPortFree)(nets[idx]);
   }
@@ -1090,8 +1102,6 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_NetworkVirtual_ngetbridge
   if (conn == NULL) return NULL;
 
   const char* cname = e->GetStringUTFChars(name, NULL);
-
-  printf("listPort for %s\n", cname);
 
   void* net = (*_virNetworkLookupByName)(conn, cname);
 
@@ -1158,7 +1168,9 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virNodeDeviceGetName)(devs[idx]);
+#ifdef VM_DEBUG
     printf("Device:%s\n", name);
+#endif
     e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
     (*_virNodeDeviceFree)(devs[idx]);
   }
