@@ -50,6 +50,10 @@ public class VMM implements VMProvider {
     hw.name = name;
     //find disks
     File[] files = new File(full).listFiles();
+    if (files == null) {
+      JFLog.log("Error:files==null:" + full);
+      return null;
+    }
     for(File file : files) {
       String disk_name = file.getName();
       if (disk_name.endsWith("-flat.vmdk")) continue;
