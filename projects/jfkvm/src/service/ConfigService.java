@@ -1291,12 +1291,16 @@ public class ConfigService implements WebUIHandler {
     TextArea msg = new TextArea(
       "Welcome to jfKVM!\n" +
       "\n" +
+      "jfKVM is a Virtual Machine Management System (libvirt)\n" +
+      "Designed to be a drop-in replacement for VMWare ESXi hypervisor.\n" +
+      "\n" +
       "Please note this is minimally tested software and not recommended for production environments!\n" +
       "\n" +
       "Features supported:\n" +
       " - Linux and Windows guests\n" +
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
       " - Networking : bridge, guests on VLANs\n" +
+      " - Storage Pools : Local Disk Partition, NFS, iSCSI\n" +
       " - import vmware machines\n" +
       " - autostart machines\n" +
       "\n" +
@@ -1306,9 +1310,12 @@ public class ConfigService implements WebUIHandler {
       "Not tested yet:\n" +
       " - NFS or iSCSI storage pools\n" +
       "\n" +
+      "ToDo:\n" +
+      " - migration\n" +
+      "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
-      "" +
-      "By : Peter Quiring"
+      "\n" +
+      "By : Peter Quiring\n"
     );
     msg.setMaxWidth();
     msg.setMaxHeight();
