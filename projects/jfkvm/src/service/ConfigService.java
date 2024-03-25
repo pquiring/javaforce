@@ -36,10 +36,7 @@ public class ConfigService implements WebUIHandler {
     ".*[.]vmdk",
     ".*[.]qcow2",
     ".*[.]iso",
-    ".*[.]jfvm"
-  };
-
-  private static final String[] filter_vmx = new String[] {
+    ".*[.]jfvm",
     ".*[.]vmx",
   };
 
@@ -1470,7 +1467,6 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button create = new Button("Create");
     tools.add(create);
-    //TODO : add "Convert" button to convert existing vmware machine
     //TODO : add "Migrate" button to migrate data/vm to another system
     Button edit = new Button("Edit");
     tools.add(edit);
@@ -2167,6 +2163,21 @@ public class ConfigService implements WebUIHandler {
               return;
             }
             Config.current.addVirtualMachine(vm);
+          };
+          ui.confirm_popup.setVisible(true);
+        } else if (ui.browse_file.endsWith(".vmx")) {
+          ui.browse_popup.setVisible(false);
+          ui.confirm_button.setText("Convert");
+          ui.confirm_message.setText("Convert VM : " + ui.browse_file);
+          ui.confirm_action = () -> {
+            Hardware hardware = vmm.convertVMX(ui.browse_file, getPool(ui.browse_file), getFolder(ui.browse_file), getFile(ui.browse_file));
+            if (hardware != null) {
+              VirtualMachine vm = new VirtualMachine(hardware);
+              ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
+            } else {
+              ui.message_message.setText("Failed to convert VM, see logs.");
+              ui.message_popup.setVisible(true);
+            }
           };
           ui.confirm_popup.setVisible(true);
         } else {

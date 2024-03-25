@@ -5,6 +5,8 @@ package service;
  * @author pquiring
  */
 
+import java.io.*;
+
 import javaforce.*;
 import javaforce.vm.*;
 
@@ -36,6 +38,32 @@ public class VMM implements VMProvider {
     }
     JFLog.log("Error:pool not found:" + name);
     return null;
+  }
+
+  /** Convert vmx to jfvm. */
+  public Hardware convertVMX(String full, String pool, String folder, String vmx) {
+    int idx = vmx.indexOf('.');
+    if (idx == -1) return null;
+    String name = vmx.substring(0, idx);
+    Hardware hw = new Hardware();
+    hw.pool = pool;
+    hw.name = name;
+    //find disks
+    File[] files = new File(full).listFiles();
+    for(File file : files) {
+      String disk_name = file.getName();
+      if (disk_name.endsWith("-flat.vmdk")) continue;
+      if (disk_name.endsWith(".vmdk")) {
+        Disk disk = new Disk();
+        disk.pool = pool;
+        disk.folder = folder;
+        disk.name = disk_name;
+        disk.type = Disk.TYPE_VMDK;
+        disk.size = new Size(file.length());
+        hw.addDisk(disk);
+      }
+    }
+    return hw;
   }
 
   public int getVLAN(String network) {
