@@ -188,6 +188,8 @@ public class WebServer {
           s.close();
           s = null;
         }
+      } catch (SSLHandshakeException ssl) {
+        if (debug) JFLog.log("WebServer.Connection:SSL error");
       } catch (SocketException e) {
         if (debug) JFLog.log("WebServer.Connection:disconnected");
       } catch (Exception e) {
