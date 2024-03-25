@@ -1283,6 +1283,7 @@ public class ConfigService implements WebUIHandler {
     TabPanel panel = new TabPanel();
     panel.addTab(hostInfoPanel(), "Info");
     panel.addTab(hostConfigPanel(), "Settings");
+    panel.addTab(hostAutoStartPanel(), "Auto Start");
     return panel;
   }
 
@@ -1334,6 +1335,93 @@ public class ConfigService implements WebUIHandler {
       Config.current.fqn = fqn.getText();
       iqn.setText(IQN.generate(Config.current.fqn));
       msg.setText("Client IQN regenerated");
+    });
+
+    return panel;
+  }
+
+  private Panel hostAutoStartPanel() {
+    Panel panel = new Panel();
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button save = new Button("Save");
+    tools.add(save);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {100, 50}, 20, 2, 0);
+    row.add(table);
+//    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    table.addRow(new String[] {"Name", "Order"});
+    VirtualMachine[] vms = VirtualMachine.list();
+    TextField[] tfs = new TextField[vms.length];
+    {
+      ArrayList<String> auto_start_vms = Config.current.auto_start_vms;
+      int vmidx = 0;
+      for(VirtualMachine vm : vms) {
+        int order = 0;
+        int auto_start_idx = 0;
+        for(String auto_start_name : auto_start_vms) {
+          if (vm.name.equals(auto_start_name)) {
+            order = auto_start_idx + 1;
+            break;
+          }
+        }
+        tfs[vmidx] = new TextField(Integer.toString(order));
+        table.addRow(new Component[] {new Label(vm.name), tfs[vmidx]});
+        vmidx++;
+      }
+    }
+
+    row = new Row();
+    panel.add(row);
+    Label msg = new Label("");
+    row.add(msg);
+
+    save.addClickListener((me, cmp) -> {
+      int idx = 0;
+      ArrayList<String> auto_start_vms = new ArrayList<>();
+      ArrayList<Integer> auto_start_order = new ArrayList<>();
+      for(TextField tf : tfs) {
+        String _value = vmm.cleanNumber(tf.getText());
+        if (_value.length() == 0) {
+          _value = "0";
+        }
+        tf.setText(_value);
+        int order = Integer.valueOf(_value);
+        if (order > 0) {
+          auto_start_vms.add(vms[idx].name);
+          auto_start_order.add(order);
+        }
+        idx++;
+      }
+      //sort by auto_start_order
+      for(int i1=0;i1<auto_start_vms.size()-1;i1++) {
+        for(int i2=i1+1;i2<auto_start_vms.size();i2++) {
+          int o1 = auto_start_order.get(i1);
+          int o2 = auto_start_order.get(i2);
+          if (o1 > o2) {
+            //swap i1 & i2
+            String n1 = auto_start_vms.get(i1);
+            String n2 = auto_start_vms.get(i2);
+            auto_start_vms.set(i1, n2);
+            auto_start_vms.set(i2, n1);
+            auto_start_order.set(i1, o2);
+            auto_start_order.set(i2, o1);
+          }
+        }
+      }
+
+      //save list to config
+      Config.current.auto_start_vms = auto_start_vms;
+
+      Config.current.save();
+      msg.setText("Settings saved!");
     });
 
     return panel;
