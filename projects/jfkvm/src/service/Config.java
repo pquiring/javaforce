@@ -124,6 +124,7 @@ public class Config implements Serializable {
     //remove from auto start vms
     if (auto_start_vms.contains(vm.name)) {
       auto_start_vms.remove(vm.name);
+      save();
     }
   }
 }
