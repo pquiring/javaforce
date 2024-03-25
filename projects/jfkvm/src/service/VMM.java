@@ -62,10 +62,11 @@ public class VMM implements VMProvider {
       String disk_name = file.getName();
       if (disk_name.endsWith("-flat.vmdk")) continue;
       if (disk_name.endsWith(".vmdk")) {
+        int idx = disk_name.indexOf('.');
         Disk disk = new Disk();
         disk.pool = pool;
         disk.folder = folder;
-        disk.name = disk_name;
+        disk.name = disk_name.substring(0, idx);
         disk.type = Disk.TYPE_VMDK;
         disk.size = new Size(file.length());
         hw.addDisk(disk);
