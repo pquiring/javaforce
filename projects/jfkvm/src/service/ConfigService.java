@@ -2688,6 +2688,7 @@ public class ConfigService implements WebUIHandler {
         ui.nics_iface = NetworkInterface.listPhysical();
         for(NetworkInterface nic : ui.nics_iface) {
           if (nic.name.equals("lo")) continue;
+          if (nic.name.equals("ovs-system")) continue;
           table.addRow(nic.getState());
         }
       };
