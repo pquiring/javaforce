@@ -192,5 +192,18 @@ public class Hardware implements Serializable {
       }
       idx++;
     }
+    if (os == OS_WINDOWS) {
+      //lsilogic scsi controller is not compatible - try buslogic
+      boolean have_ctrl = false;
+      for(Controller c : controllers) {
+        if (c.type.equals("scsi")) {
+          c.model = "buslogic";
+          have_ctrl = true;
+        }
+      }
+      if (!have_ctrl) {
+        controllers.add(new Controller("scsi", "buslogic"));
+      }
+    }
   }
 }

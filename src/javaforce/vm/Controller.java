@@ -41,7 +41,7 @@ public class Controller implements Serializable {
   public String toXML() {
     StringBuilder xml = new StringBuilder();
     xml.append("<controller type='" + type + "' index='0' model='" + model + "'>");
-    if (!type.endsWith("-root")) {
+    if (addr_type != null && !type.endsWith("-root")) {
       xml.append("<address type='pci' domain='" + domain + "' bus='" + bus + "' slot='" + slot + "' function='" + function + "'/>");
     }
     xml.append("</controller>");
