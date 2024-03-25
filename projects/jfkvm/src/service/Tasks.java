@@ -53,7 +53,7 @@ public class Tasks extends Thread {
     synchronized (lock) {
       taskList.remove(task);
     }
-    task.taskui.remove(task.taskui);
+    task.tasks.remove(task.taskui);
   }
 
   private static final long ts_cut_time = 5 * 60 * 1000;
