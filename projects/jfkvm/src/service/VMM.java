@@ -42,16 +42,20 @@ public class VMM implements VMProvider {
 
   /** Convert vmx to jfvm. */
   public Hardware convertVMX(String full, String pool, String folder, String vmx) {
-    int idx = vmx.indexOf('.');
-    if (idx == -1) return null;
-    String name = vmx.substring(0, idx);
+    JFLog.log("convertVMX:" + pool + "," + folder + "," + vmx);
+    if (folder.indexOf('/') != -1) {
+      JFLog.log("Please place VM into one deep folder in storage pool.");
+      return null;
+    }
+    String name = folder;
     Hardware hw = new Hardware();
     hw.pool = pool;
     hw.name = name;
     //find disks
-    File[] files = new File(full).listFiles();
+    String full_folder = pool + "/" + folder;
+    File[] files = new File(full_folder).listFiles();
     if (files == null) {
-      JFLog.log("Error:files==null:" + full);
+      JFLog.log("Error:files==null:" + full_folder);
       return null;
     }
     for(File file : files) {
