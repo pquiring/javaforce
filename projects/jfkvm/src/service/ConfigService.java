@@ -215,7 +215,7 @@ public class ConfigService implements WebUIHandler {
 
   private Panel tasksPanel(UI ui) {
     Panel panel = new Panel();
-    panel.add(new Label("Tasks panel"));
+    panel.add(new Label("Tasks"));
 
     Panel tasks = new Panel();
     panel.add(tasks);
