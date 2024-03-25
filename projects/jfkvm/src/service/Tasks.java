@@ -25,7 +25,7 @@ public class Tasks extends Thread {
 
   private void addUI(Task task) {
     task.taskui = new TaskUI(task);
-    task.tasks.add(task.taskui);
+    task.tasks.add(0, task.taskui);  //add at top of panel
   }
 
   public void addTask(Panel ui_tasks, Task task) {

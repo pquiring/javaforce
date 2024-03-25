@@ -197,10 +197,10 @@ public class ConfigService implements WebUIHandler {
     left_right.setLeftComponent(leftPanel(ui, leftSize));
     left_right.setRightComponent(rightPanel());
 
-    ui.tasks = tasksPanel(ui);
+    Panel tasks = tasksPanel(ui);
 
     top_bot.setTopComponent(left_right);
-    top_bot.setBottomComponent(ui.tasks);
+    top_bot.setBottomComponent(tasks);
 
 /*
     b_help.addClickListener((MouseEvent e, Component button) -> {
@@ -215,7 +215,10 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     panel.add(new Label("Tasks panel"));
 
-    //TODO : create list of running tasks
+    Panel tasks = new Panel();
+    panel.add(tasks);
+
+    ui.tasks = tasks;
 
     return panel;
   }
