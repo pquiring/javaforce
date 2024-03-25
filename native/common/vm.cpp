@@ -177,7 +177,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_total_1memory
 
   (*_virNodeGetMemoryStats)(conn, VIR_NODE_MEMORY_STATS_ALL_CELLS, NULL, &nparams, 0);
 
-  params = malloc(sizeof(virNodeMemoryStats) * nparams);
+  params = (virNodeMemoryStats*)malloc(sizeof(virNodeMemoryStats) * nparams);
   memset(params, 0, sizeof(virNodeMemoryStats) * nparams);
 
   (*_virNodeGetMemoryStats)(conn, VIR_NODE_MEMORY_STATS_ALL_CELLS, params, &nparams, 0);
@@ -217,7 +217,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_cpu_1load
 
   (*_virNodeGetCPUStats)(conn, VIR_NODE_CPU_STATS_ALL_CPUS, NULL, &nparams, 0);
 
-  params = malloc(sizeof(virNodeCPUStats) * nparams);
+  params = (virNodeCPUStats*)malloc(sizeof(virNodeCPUStats) * nparams);
   memset(params, 0, sizeof(virNodeCPUStats) * nparams);
 
   (*_virNodeGetCPUStats)(conn, VIR_NODE_CPU_STATS_ALL_CPUS, params, &nparams, 0);
