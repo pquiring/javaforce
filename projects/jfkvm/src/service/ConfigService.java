@@ -1536,6 +1536,7 @@ public class ConfigService implements WebUIHandler {
               return;
             }
             if (vm.unregister()) {
+              Config.current.removeVirtualMachine(vm);
               setResult("Completed");
             } else {
               setResult("Error occured, see logs.");
@@ -1943,6 +1944,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       vm.saveHardware(hardware);
+      Config.current.addVirtualMachine(vm);
       ui.setRightPanel(vmsPanel(ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
@@ -2030,6 +2032,7 @@ public class ConfigService implements WebUIHandler {
             ui.browse_errmsg.setText("Failed to register VM, see logs.");
             return;
           }
+          Config.current.addVirtualMachine(vm);
           ui.browse_popup.setVisible(false);
         } else {
           ui.browse_popup.setVisible(false);

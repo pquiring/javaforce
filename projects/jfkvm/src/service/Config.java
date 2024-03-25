@@ -19,6 +19,8 @@ public class Config implements Serializable {
   public String password;
   public String fqn;
   public String iqn;
+  public int auto_start_delay = 60;
+  public ArrayList<String> auto_start_vms = new ArrayList<>();
 
   //storage pools
   public ArrayList<Storage> pools = new ArrayList<>();
@@ -46,6 +48,15 @@ public class Config implements Serializable {
     }
     if (nics == null) {
       nics = new ArrayList<>();
+    }
+    if (auto_start_delay < 30) {
+      auto_start_delay = 30;
+    }
+    if (auto_start_delay > 600) {
+      auto_start_delay = 600;
+    }
+    if (auto_start_vms == null) {
+      auto_start_vms = new ArrayList<>();
     }
   }
 
@@ -103,5 +114,16 @@ public class Config implements Serializable {
   public void removeStorage(Storage pool) {
     pools.remove(pool);
     save();
+  }
+
+  public void addVirtualMachine(VirtualMachine vm) {
+    //no-op
+  }
+
+  public void removeVirtualMachine(VirtualMachine vm) {
+    //remove from auto start vms
+    if (auto_start_vms.contains(vm.name)) {
+      auto_start_vms.remove(vm.name);
+    }
   }
 }

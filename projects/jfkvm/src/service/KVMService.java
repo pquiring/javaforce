@@ -34,6 +34,8 @@ public class KVMService extends Thread {
     Paths.init();
     //load config
     Config.load();
+    //startup services
+    new Startup().start();
     //starts tasks service
     tasks = new Tasks();
     tasks.start();
