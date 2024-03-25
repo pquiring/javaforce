@@ -1762,6 +1762,15 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Storage Pool:" + hardware.pool));
+    //operating system type
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("OS Type"));
+    ComboBox os_type = new ComboBox();
+    os_type.add("Linux", "Linux");
+    os_type.add("Windows", "Windows");
+    os_type.setSelectedIndex(hardware.os);
+    row.add(os_type);
     //memory [   ] [MB/GB]
     row = new Row();
     panel.add(row);
@@ -2013,6 +2022,8 @@ public class ConfigService implements WebUIHandler {
 
     b_save.addClickListener((me, cmp) -> {
       errmsg.setText("");
+      int _os = os_type.getSelectedIndex();
+      hardware.os = _os;
       String _size_str = vmm.cleanNumber(memory.getText());
       if (_size_str.length() == 0) {
         memory.setText(_size_str);

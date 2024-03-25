@@ -41,8 +41,8 @@ public class Hardware implements Serializable {
   public boolean bios_efi;
   public boolean bios_secure;
 
-  public static final int OS_LINUX = 1;
-  public static final int OS_WINDOWS = 2;
+  public static final int OS_LINUX = 0;
+  public static final int OS_WINDOWS = 1;
 
   public Hardware() {
     pool = "default";
