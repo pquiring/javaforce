@@ -235,7 +235,7 @@ public class VirtualMachine implements Serializable {
 */
     xml.append("<devices>");
       for(Controller c : hardware.controllers) {
-        xml.append(c.toString());
+        xml.append(c.toXML());
       }
       //keyboard
       xml.append("<input type='keyboard' bus='usb'/>");
