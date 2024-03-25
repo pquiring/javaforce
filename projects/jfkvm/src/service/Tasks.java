@@ -4,6 +4,8 @@ package service;
  *
  * Tasks run in the background and their results are displayed to any logged in user.
  *
+ * TODO : broadcast to other users
+ *
  * @author pquiring
  */
 
@@ -40,21 +42,39 @@ public class Tasks extends Thread {
     task.taskui.update(task);
   }
 
-
   public void completed(Task task) {
     task.ts_stop = System.currentTimeMillis();
     task.ts_delta = task.ts_stop - task.ts_start;
     updateUI(task);
     JFLog.log("Task completed:" + task.action + ":result=" + task.result);
+  }
+
+  public void removeTask(Task task) {
     synchronized (lock) {
       taskList.remove(task);
     }
+    task.taskui.remove(task.taskui);
   }
 
+  private static final long ts_cut_time = 5 * 60 * 1000;
+
   public void run() {
-    //TODO monitor tasks and update clients
     while (active) {
       JF.sleep(1000);
+      long ts_now = System.currentTimeMillis();
+      long ts_cut = ts_now - ts_cut_time;
+      ArrayList<Task> remove = new ArrayList<>();
+      synchronized (lock) {
+        for(Task task : taskList) {
+          if (task.ts_stop == 0) continue;
+          if (task.ts_stop < ts_cut) {
+            remove.add(task);
+          }
+        }
+        for(Task task : remove) {
+          removeTask(task);
+        }
+      }
     }
   }
 }

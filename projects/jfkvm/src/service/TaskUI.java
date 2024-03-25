@@ -36,8 +36,6 @@ public class TaskUI extends Row {
     result.setWidth(100);
     result.setBorder(true);
     add(result);
-
-    task.tasks.add(this);
   }
 
   public void update(Task task) {
