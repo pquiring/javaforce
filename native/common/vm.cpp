@@ -4,9 +4,14 @@
 
 JF_LIB_HANDLE virt;
 
+#define VM_DEBUG
+
 //common
 void* (*_virConnectOpen)(const char* name);
 int (*_virConnectClose)(void* conn);
+unsigned long long (*_virNodeGetFreeMemory)(void* conn);
+int (*_virNodeGetCPUStats)(void* conn, int cpu, void* params, int* nparams, int flags);
+int (*_virNodeGetMemoryStats)(void* conn, int cell, void* params, int* nparams, int flags);
 
 //domains
 void* (*_virDomainDefineXML)(void* conn, const char* xml);
@@ -76,6 +81,9 @@ void vm_init() {
   //common
   getFunction(virt, (void**)&_virConnectOpen, "virConnectOpen");
   getFunction(virt, (void**)&_virConnectClose, "virConnectClose");
+  getFunction(virt, (void**)&_virNodeGetFreeMemory, "virNodeGetFreeMemory");
+  getFunction(virt, (void**)&_virNodeGetCPUStats, "virNodeGetCPUStats");
+  getFunction(virt, (void**)&_virNodeGetMemoryStats, "virNodeGetMemoryStats");
 
   //domains
   getFunction(virt, (void**)&_virDomainDefineXML, "virDomainDefineXML");
@@ -155,6 +163,76 @@ static void* connect() {
 static void disconnect(void* ptr) {
   (*_virConnectClose)(ptr);
 }
+
+//VMHost
+
+JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_total_1memory
+  (JNIEnv *e, jclass o)
+{
+  void* conn = connect();
+  if (conn == NULL) return 0;
+
+  virNodeMemoryStats* params;
+  int nparams = 0;
+
+  (*_virNodeGetMemoryStats)(conn, VIR_NODE_MEMORY_STATS_ALL_CELLS, NULL, &nparams, 0);
+
+  params = malloc(sizeof(virNodeMemoryStats) * nparams);
+  memset(params, 0, sizeof(virNodeMemoryStats) * nparams);
+
+  (*_virNodeGetMemoryStats)(conn, VIR_NODE_MEMORY_STATS_ALL_CELLS, params, &nparams, 0);
+
+  disconnect(conn);
+
+#ifdef VM_DEBUG
+  for(int a=0;a<nparams;a++) {
+    printf("RAMStat:%s:%lld\n", params[a].field, params[a].value);
+  }
+#endif
+
+  return 0;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_free_1memory
+  (JNIEnv *e, jclass o)
+{
+  void* conn = connect();
+  if (conn == NULL) return 0;
+
+  jlong value = (*_virNodeGetFreeMemory)(conn);
+
+  disconnect(conn);
+
+  return value;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_cpu_1load
+  (JNIEnv *e, jclass o)
+{
+  void* conn = connect();
+  if (conn == NULL) return 0;
+
+  virNodeCPUStats* params;
+  int nparams = 0;
+
+  (*_virNodeGetCPUStats)(conn, VIR_NODE_CPU_STATS_ALL_CPUS, NULL, &nparams, 0);
+
+  params = malloc(sizeof(virNodeCPUStats) * nparams);
+  memset(params, 0, sizeof(virNodeCPUStats) * nparams);
+
+  (*_virNodeGetCPUStats)(conn, VIR_NODE_CPU_STATS_ALL_CPUS, params, &nparams, 0);
+
+  disconnect(conn);
+
+#ifdef VM_DEBUG
+  for(int a=0;a<nparams;a++) {
+    printf("CPUStat:%s:%lld\n", params[a].field, params[a].value);
+  }
+#endif
+
+  return 0;
+}
+
 
 //VirtualMachine
 
@@ -1065,6 +1143,12 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   return array;
 }
 
+static JNINativeMethod javaforce_vm_VMHost[] = {
+  {"total_memory", "()J", (void *)&Java_javaforce_vm_VMHost_total_1memory},
+  {"free_memory", "()J", (void *)&Java_javaforce_vm_VMHost_free_1memory},
+  {"cpu_load", "()J", (void *)&Java_javaforce_vm_VMHost_cpu_1load},
+};
+
 static JNINativeMethod javaforce_vm_Device[] = {
   {"nlist", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_vm_Device_nlist},
 };
@@ -1123,6 +1207,9 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
 void vm_register(JNIEnv *env) {
   //register java natives
   jclass cls;
+
+  cls = findClass(env, "javaforce/vm/VMHost");
+  registerNatives(env, cls, javaforce_vm_VMHost, sizeof(javaforce_vm_VMHost)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/vm/Device");
   registerNatives(env, cls, javaforce_vm_Device, sizeof(javaforce_vm_Device)/sizeof(JNINativeMethod));

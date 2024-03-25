@@ -26,6 +26,28 @@ public class Size implements Serializable {
     this.unit = unit;
   }
 
+  public Size(long value) {
+    if (value >= _PB) {
+      size = (int)(value / _PB);
+      unit = PB;
+    } else if (value >= _TB) {
+      size = (int)(value / _TB);
+      unit = TB;
+    } else if (value >= _GB) {
+      size = (int)(value / _GB);
+      unit = GB;
+    } else if (value >= _MB) {
+      size = (int)(value / _MB);
+      unit = MB;
+    } else if (value >= _KB) {
+      size = (int)(value / _KB);
+      unit = KB;
+    } else {
+      size = (int)value;
+      unit = B;
+    }
+  }
+
   public char getUnitChar() {
     switch (unit) {
       case KB: return 'K';

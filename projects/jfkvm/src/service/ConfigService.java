@@ -1288,8 +1288,31 @@ public class ConfigService implements WebUIHandler {
   private Panel hostInfoPanel() {
     Panel panel = new Panel();
     panel.add(new Label("jfKVM/" + version));
-    //see : https://libvirt.org/html/libvirt-libvirt-host.html
-    //TODO : add more details (cpu load, memory load, etc.)
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Memory Total:"));
+    Size total_memory = new Size(VMHost.total_memory());
+    row.add(new Label(total_memory.toString()));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Free Total:"));
+    Size free_memory = new Size(VMHost.free_memory());
+    row.add(new Label(free_memory.toString()));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("CPU Load:"));
+    Size cpu_load = new Size(VMHost.cpu_load());
+    row.add(new Label(cpu_load.toString()));
+
     return panel;
   }
 
