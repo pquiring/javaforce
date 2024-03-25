@@ -2148,21 +2148,27 @@ public class ConfigService implements WebUIHandler {
       ui.browse_init.run();
       ui.browse_complete = () -> {
         if (ui.browse_select.endsWith(".jfvm")) {
-          Hardware hardware = Hardware.load(ui.browse_select);
-          if (hardware == null) {
-            ui.browse_errmsg.setText("Failed to load VM, see logs.");
-            return;
-          }
-          VirtualMachine vm = new VirtualMachine(hardware);
-          if (!VirtualMachine.register(vm, hardware, vmm)) {
-            ui.browse_errmsg.setText("Failed to register VM, see logs.");
-            return;
-          }
-          Config.current.addVirtualMachine(vm);
           ui.browse_popup.setVisible(false);
+          ui.confirm_button.setText("Register");
+          ui.confirm_message.setText("Register VM : " + ui.browse_select);
+          ui.confirm_action = () -> {
+            Hardware hardware = Hardware.load(ui.browse_select);
+            if (hardware == null) {
+              ui.message_message.setText("Failed to load VM, see logs.");
+              ui.message_popup.setVisible(true);
+              return;
+            }
+            VirtualMachine vm = new VirtualMachine(hardware);
+            if (!VirtualMachine.register(vm, hardware, vmm)) {
+              ui.message_message.setText("Failed to register VM, see logs.");
+              ui.message_popup.setVisible(true);
+              return;
+            }
+            Config.current.addVirtualMachine(vm);
+          };
+          ui.confirm_popup.setVisible(true);
         } else {
           ui.browse_popup.setVisible(false);
-          //TODO : no action
         }
       };
       ui.browse_popup.setVisible(true);
