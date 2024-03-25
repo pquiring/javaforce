@@ -185,7 +185,7 @@ public class Hardware implements Serializable {
         if (disk.type == Disk.TYPE_ISO) {
           disk.target_bus = "ide";
         } else {
-          disk.target_bus = "scsi";
+          disk.target_bus = "sata";
         }
       } else {
         disk.target_bus = "scsi";
@@ -193,16 +193,12 @@ public class Hardware implements Serializable {
       idx++;
     }
     if (os == OS_WINDOWS) {
-      //lsilogic scsi controller is not compatible - try buslogic
-      boolean have_ctrl = false;
       for(Controller c : controllers) {
         if (c.type.equals("scsi")) {
-          c.model = "buslogic";
-          have_ctrl = true;
+          if (c.model.equals("buslogic")) {
+            c.model = "lsilogic";
+          }
         }
-      }
-      if (!have_ctrl) {
-        controllers.add(new Controller("scsi", "buslogic"));
       }
     }
   }
