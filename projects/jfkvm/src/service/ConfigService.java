@@ -1296,7 +1296,7 @@ public class ConfigService implements WebUIHandler {
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
       " - Networking : bridge, guests on VLANs\n" +
       " - import vmware machines\n" +
-      " - autostart machines" +
+      " - autostart machines\n" +
       "\n" +
       "Not supported:\n" +
       " - VMFS storage pools\n" +
@@ -1304,7 +1304,7 @@ public class ConfigService implements WebUIHandler {
       "Not tested yet:\n" +
       " - NFS or iSCSI storage pools\n" +
       "\n" +
-      "Thanks to Broadcom for the motiation to create this project! &#x263a;\n"  //unicode smiley face
+      "Thanks to Broadcom for the motivation to create this project! &#x263a;\n"  //unicode smiley face
     );
     msg.setMaxWidth();
     msg.setMaxHeight();
