@@ -1257,7 +1257,7 @@ public class ConfigService implements WebUIHandler {
     networks.setWidth(size);
     list.add(networks);
     host.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel());
+      ui.setRightPanel(hostPanel(ui));
     });
     vms.addClickListener((me, cmp) -> {
       ui.setRightPanel(vmsPanel(ui));
@@ -1277,15 +1277,15 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel hostPanel() {
+  private Panel hostPanel(UI ui) {
     TabPanel panel = new TabPanel();
-    panel.addTab(hostInfoPanel(), "Info");
-    panel.addTab(hostConfigPanel(), "Settings");
-    panel.addTab(hostAutoStartPanel(), "Auto Start");
+    panel.addTab(hostInfoPanel(ui), "Info");
+    panel.addTab(hostConfigPanel(ui), "Settings");
+    panel.addTab(hostAutoStartPanel(ui), "Auto Start");
     return panel;
   }
 
-  private Panel hostInfoPanel() {
+  private Panel hostInfoPanel(UI ui) {
     Panel panel = new Panel();
     panel.add(new Label("jfKVM/" + version));
     Row row;
@@ -1310,13 +1310,17 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("CPU Load:"));
-    Size cpu_load = new Size(VMHost.cpu_load());
-    row.add(new Label(cpu_load.toString()));
+    long cpu_load = VMHost.cpu_load();
+    row.add(new Label(Long.toString(cpu_load) + '%'));
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(hostPanel(ui));
+    });
 
     return panel;
   }
 
-  private Panel hostConfigPanel() {
+  private Panel hostConfigPanel(UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1360,7 +1364,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel hostAutoStartPanel() {
+  private Panel hostAutoStartPanel(UI ui) {
     Panel panel = new Panel();
     Row row;
 
