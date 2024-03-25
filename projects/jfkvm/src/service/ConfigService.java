@@ -2,10 +2,8 @@ package service;
 
 /** Config Service
  *
+ * TODO : add more details to info panel
  * TODO : setup tasks
- *
- * TODO : make network changes persistent
- *   - this depends on OS network mgr in use
  *
  * BUG : edit virt nic does not work.
  *
@@ -1297,7 +1295,6 @@ public class ConfigService implements WebUIHandler {
 
   private Panel hostConfigPanel() {
     Panel panel = new Panel();
-    panel.add(new Label("jfKVM/" + version));
     Row row;
 
     row = new Row();
