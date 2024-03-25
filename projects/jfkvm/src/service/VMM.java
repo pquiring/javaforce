@@ -52,7 +52,7 @@ public class VMM implements VMProvider {
     hw.pool = pool;
     hw.name = name;
     //find disks
-    String full_folder = pool + "/" + folder;
+    String full_folder = "/volumes/" + pool + "/" + folder;
     File[] files = new File(full_folder).listFiles();
     if (files == null) {
       JFLog.log("Error:files==null:" + full_folder);
