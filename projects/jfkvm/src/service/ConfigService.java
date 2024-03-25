@@ -2,10 +2,7 @@ package service;
 
 /** Config Service
  *
- * TODO : add more details to info panel
  * TODO : setup tasks
- *
- * BUG : edit virt nic does not work.
  *
  * @author pquiring
  */
@@ -1466,6 +1463,7 @@ public class ConfigService implements WebUIHandler {
     Button create = new Button("Create");
     tools.add(create);
     //TODO : add "Convert" button to convert existing vmware machine
+    //TODO : add "Migrate" button to migrate data/vm to another system
     Button edit = new Button("Edit");
     tools.add(edit);
     Button refresh = new Button("Refresh");
@@ -2723,8 +2721,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(refresh);
       Button create = new Button("Create");
       tools.add(create);
-      Button edit = new Button("Edit");
-      tools.add(edit);
+//      Button edit = new Button("Edit");
+//      tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
 
@@ -2768,10 +2766,12 @@ public class ConfigService implements WebUIHandler {
         ui.network_bridge_init.run();
         ui.network_bridge_popup.setVisible(true);
       });
+/*
       edit.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         //TODO : edit virtual switch (bridge): edit/remove nics, etc.
       });
+*/
       delete.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
@@ -2889,8 +2889,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(link_down);
       Button create = new Button("Create");
       tools.add(create);
-      Button edit = new Button("Edit");
-      tools.add(edit);
+//      Button edit = new Button("Edit");
+//      tools.add(edit);
 /*
       Button start = new Button("Start");
       tools.add(start);
@@ -2958,6 +2958,7 @@ public class ConfigService implements WebUIHandler {
         ui.network_virtual_popup.setVisible(true);
       });
 
+/*
       edit.addClickListener((me, cmp) -> {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
@@ -2971,6 +2972,7 @@ public class ConfigService implements WebUIHandler {
         };
         ui.network_virtual_popup.setVisible(true);
       });
+*/
 
 /*
       start.addClickListener((me, cmp) -> {
