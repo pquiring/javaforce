@@ -126,9 +126,16 @@ public class Disk implements Serializable {
     }
   }
 
+  private String getDeviceType() {
+    switch (type) {
+      case TYPE_ISO: return "cdrom";
+      default: return "disk";
+    }
+  }
+
   public String getHardwareXML() {
     StringBuilder xml = new StringBuilder();
-    xml.append("<disk type='file' device='disk'>");
+    xml.append("<disk type='file' device='" + getDeviceType() + "'>");
     xml.append("<source file='" + getPath2() + "'>");
     xml.append("</source>");
     xml.append("<target dev='" + target_dev + "' bus='" + target_bus + "'/>");
