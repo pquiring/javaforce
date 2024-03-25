@@ -1,0 +1,3 @@
+/usr/bin/jfkvm
+/usr/share/java/jfkvm.java
+/lib/systemd/system/jfkvm.service

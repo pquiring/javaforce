@@ -1,0 +1,10 @@
+[Unit]
+Description=jfKVM
+
+[Service]
+ExecStart=/usr/bin/jfkvm
+ExecStop=/usr/bin/jfkvm --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
