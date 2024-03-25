@@ -1543,7 +1543,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Start");
       ui.confirm_message.setText("Start VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Start") {
+        Task task = new Task("Start VM : " + vm.name) {
           public void doTask() {
             if (vm.start()) {
               setResult("Completed");
@@ -1569,7 +1569,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Stop") {
+        Task task = new Task("Stop VM : " + vm.name) {
           public void doTask() {
             if (vm.stop()) {
               setResult("Completed");
@@ -1595,7 +1595,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Restart");
       ui.confirm_message.setText("Restart VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Restart") {
+        Task task = new Task("Restart VM : " + vm.name) {
           public void doTask() {
             if (vm.restart()) {
               setResult("Completed");
@@ -1621,7 +1621,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Power Off");
       ui.confirm_message.setText("Power Off VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Power Off") {
+        Task task = new Task("Power Off VM : " + vm.name) {
           public void doTask() {
             if (vm.poweroff()) {
               setResult("Completed");
@@ -1646,7 +1646,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Unregister");
       ui.confirm_message.setText("Unregister VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Unregister") {
+        Task task = new Task("Unregister VM : " + vm.name) {
           public void doTask() {
             if (vm.getState() != 0) {
               setResult("Error:Can not unregister a live VM.");

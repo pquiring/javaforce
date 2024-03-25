@@ -16,7 +16,7 @@ public class TaskUI extends Row {
     Calendar cal = Calendar.getInstance();
     setBorder(true);
     action = new Label(task.action);
-    action.setWidth(150);
+    action.setWidth(300);
     action.setBorder(true);
     add(action);
     cal.setTimeInMillis(task.ts_start);
@@ -29,7 +29,7 @@ public class TaskUI extends Row {
     end.setBorder(true);
     add(end);
     delta = new Label("--:--:--");
-    delta.setWidth(100);
+    delta.setWidth(200);
     delta.setBorder(true);
     add(delta);
     result = new Label("...");
