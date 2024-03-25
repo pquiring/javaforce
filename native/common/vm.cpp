@@ -4,7 +4,7 @@
 
 JF_LIB_HANDLE virt;
 
-#define VM_DEBUG
+//#define VM_DEBUG
 
 //common
 void* (*_virConnectOpen)(const char* name);
@@ -188,7 +188,19 @@ JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_total_1memory
   for(int a=0;a<nparams;a++) {
     printf("RAMStat:%s:%lld\n", params[a].field, params[a].value);
   }
+/*
+RAMStat:total:16201572
+RAMStat:free:14622268
+RAMStat:buffers:123404
+RAMStat:cached:531576
+*/
 #endif
+
+  for(int i=0;i<nparams;i++) {
+    if (strcmp(params[i].field, "total") == 0) {
+      return params[i].value * 1024LL;
+    }
+  }
 
   return 0;
 }
@@ -228,9 +240,24 @@ JNIEXPORT jlong JNICALL Java_javaforce_vm_VMHost_cpu_1load
   for(int a=0;a<nparams;a++) {
     printf("CPUStat:%s:%lld\n", params[a].field, params[a].value);
   }
+/*
+CPUStat:kernel:   130330000000
+CPUStat:user:     191880000000
+CPUStat:idle:  179262550000000
+CPUStat:iowait:   231530000000
+*/
 #endif
 
-  return 0;
+  jlong total = 0;
+  jlong inuse = 0;
+  for(int i=0;i<nparams;i++) {
+    total += params[i].value;
+    if (strcmp(params[i].field, "idle") != 0) {
+      inuse += params[i].value;
+    }
+  }
+
+  return (inuse / total) * 100LL;
 }
 
 
