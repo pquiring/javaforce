@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfKVM</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfKVM</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Installing jfKVM:
+=================
+
+Requirements:
+-------------
+  Server with two NICs and two storage disks.
+    Two network cards:
+      - one for management interface (web based)
+      - one for virtual machines and server virtual network interfaces
+    Two storage disks:
+      - one for linux distro (recommend Debian)
+      - another for local storage pool
+
+Installation:
+-------------
+
+  wget https://raw.githubusercontent.com/pquiring/javaforce/master/linux/install.sh
+  chmod +x install.sh
+  ./install.sh --desktop=no
+#install jfkvm using distro package tool
+  apt install jfkvm
+  systemctl enable jfkvm
+  systemctl start jfkvm
+
+Point your favorite browser to your server IP and get started.
+First you'll need to create your admin password and then login.
+
+Basic Settings:
+---------------
+  Click on Host : Settings
+  Fill in FQN and IQN and click Save.
+  The FQN is important for VNC to work later (you can use server IP address).
+
+Virtual Switch:
+---------------
+  Now you'll need to create a virtual switch (or bridge) under Network : Virtual Switches.
+  Note that if an existing 'br' switch is present you should delete it and create an 'os' type (openvswitch).
+  The bridge iface should be your second network card that is used by the virtual machines.
+
+Networks:
+---------
+  Next create Network VLANs that virtual machines will use under Network : Networks.
+
+Storage:
+--------
+  Next you should partition your second disk using fdisk, create a large parition in ext4 format.
+    fdisk /dev/sdb
+    mkfs -t ext4 /dev/sdb1
+  Under Storage click on Add and select the partition you just created.
+  NFS and iSCSI are also available but untested at this time.
+  Creating Storage pools using folders is NOT supported.
+
+Now you are ready to create or import Virtual Machines!
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfKVM">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfKVM/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfKVM">GitHub</a>
+
+</pre>
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>
