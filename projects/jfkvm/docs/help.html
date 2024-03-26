@@ -11,10 +11,45 @@
 
 <pre>
 
-jfKVM : VM Management System (using libvirt).
+jfKVM:
+=====
+
+Virual Machine Management System (libvirt).
+
+Desc:
+-----
+
+jfKVM is a Virtual Machine Management System (libvirt)
+Designed to be a drop-in replacement for VMWare ESXi hypervisor.
+
+Please note this is minimally tested software and not recommended for production environments!
+
+Features supported:
+ - Linux and Windows guests
+ - Disks : vmdk, qcow2, iso (thick and thin provisioning)
+ - Networking : bridge, guests on VLANs
+ - Storage Pools : Local Disk Partition, NFS, iSCSI
+ - import vmware machines
+ - autostart machines
+
+Not supported:
+ - VMFS storage pools
+ - vmdk file split into multiple 2GB extents
+
+Not tested yet:
+ - NFS or iSCSI storage pools
+
+ToDo:
+ - migration
+ - VNC security (currently no password)
+
+Thanks to Broadcom for the motivation to create this project! &#x263a;
+
+By : Peter Quiring
 
 Help:
-=====
+-----
+
 <a href="help_install.html">Software Installation</a>
 <a href="help_create.html">Creating Virtual Machines</a>
 <a href="help_convert.html">Converting VMWare systems</a>
