@@ -1,4 +1,4 @@
-//FFMPEG : Compatible with ffmpeg.org and libav.org
+//FFMPEG
 
 //Requires FFMPEG/5.1.x or better
 
@@ -19,7 +19,6 @@
 #define AUDIO_FRAME 1
 #define VIDEO_FRAME 2
 
-static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
 
 static jboolean ff_debug_log = JNI_FALSE;
@@ -84,6 +83,7 @@ int (*_av_find_best_stream)(AVFormatContext *ic,int type,int wanted_stream_nb,in
 AVIOContext* (*_avio_alloc_context)(void* buffer,int buffer_size,int write_flag,void* opaque
   ,void* read,void* write,void* seek);
 AVFormatContext* (*_avformat_alloc_context)();
+int (*_avformat_alloc_output_context2)(AVFormatContext** fmt_ctx, AVOutputFormat* ofmt, const char* name, const char* filename);
 int (*_avio_close)(void* ctx);
 void (*_avformat_free_context)(AVFormatContext *s);
 int (*_avformat_open_input)(void** ps,const char* filename,void* fmt,void* options);
@@ -144,14 +144,6 @@ int (*_swr_init)(void* ctx);
 int64_t (*_swr_get_delay)(void* ctx,int64_t base);
 int (*_swr_convert)(void* ctx,uint8_t* out_arg[],int out_count,uint8_t* in_arg[],int in_count);
 void (*_swr_free)(void** ctx);
-
-//avresample functions (libav.org)  //[DEPRECATED]
-void* (*_avresample_alloc_context)();
-int (*_avresample_open)(void* ctx);
-int (*_avresample_free)(void* ctx);
-int64_t (*_avresample_get_delay)(void* ctx);
-int (*_avresample_convert)(void* ctx,uint8_t* out_arg[],int out_plane_size, int out_count,uint8_t* in_arg[]
-  , int in_plane_size, int in_count);
 
 //swscale functions
 void* (*_sws_getContext)(int srcW,int srcH,int srcFormat,int dstW,int dstH,int dstFormat
@@ -277,9 +269,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 //  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
   getFunction(codec, (void**)&_avcodec_fill_audio_frame, "avcodec_fill_audio_frame");
 //  getFunction(codec, (void**)&_avcodec_close, "avcodec_close");
-  if (!libav_org) {
-    getFunction(codec, (void**)&_avcodec_get_name, "avcodec_get_name");  //for debug output only
-  }
+  getFunction(codec, (void**)&_avcodec_get_name, "avcodec_get_name");  //for debug output only
   getFunction(codec, (void**)&_av_packet_rescale_ts, "av_packet_rescale_ts");
   getFunction(codec, (void**)&_avcodec_parameters_to_context, "avcodec_parameters_to_context");
   getFunction(codec, (void**)&_avcodec_parameters_from_context, "avcodec_parameters_from_context");
@@ -293,6 +283,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(format, (void**)&_av_find_best_stream, "av_find_best_stream");
   getFunction(format, (void**)&_avio_alloc_context, "avio_alloc_context");
   getFunction(format, (void**)&_avformat_alloc_context, "avformat_alloc_context");
+  getFunction(format, (void**)&_avformat_alloc_output_context2, "avformat_alloc_output_context2");
   getFunction(format, (void**)&_avio_close, "avio_close");
   getFunction(format, (void**)&_avformat_free_context, "avformat_free_context");
   getFunction(format, (void**)&_avformat_open_input, "avformat_open_input");
@@ -346,20 +337,12 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(scale, (void**)&_sws_scale, "sws_scale");
   getFunction(scale, (void**)&_sws_freeContext, "sws_freeContext");
 
-  if (!libav_org) {
-    getFunction(resample, (void**)&_swr_alloc, "swr_alloc");
-    getFunction(resample, (void**)&_swr_alloc_set_opts2, "swr_alloc_set_opts2");
-    getFunction(resample, (void**)&_swr_init, "swr_init");
-    getFunction(resample, (void**)&_swr_get_delay, "swr_get_delay");
-    getFunction(resample, (void**)&_swr_convert, "swr_convert");
-    getFunction(resample, (void**)&_swr_free, "swr_free");
-  } else {
-    getFunction(resample, (void**)&_avresample_alloc_context, "avresample_alloc_context");
-    getFunction(resample, (void**)&_avresample_open, "avresample_open");
-    getFunction(resample, (void**)&_avresample_free, "avresample_free");
-    getFunction(resample, (void**)&_avresample_get_delay, "avresample_get_delay");
-    getFunction(resample, (void**)&_avresample_convert, "avresample_convert");
-  }
+  getFunction(resample, (void**)&_swr_alloc, "swr_alloc");
+  getFunction(resample, (void**)&_swr_alloc_set_opts2, "swr_alloc_set_opts2");
+  getFunction(resample, (void**)&_swr_init, "swr_init");
+  getFunction(resample, (void**)&_swr_get_delay, "swr_get_delay");
+  getFunction(resample, (void**)&_swr_convert, "swr_convert");
+  getFunction(resample, (void**)&_swr_free, "swr_free");
 
   //print version info
   union {
@@ -405,10 +388,9 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
-  (JNIEnv *e, jclass c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale, jboolean _libav_org)
+  (JNIEnv *e, jclass c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale)
 {
   if (loaded) return loaded;
-  libav_org = _libav_org;
 
   const char *codecFile = e->GetStringUTFChars(jcodec, NULL);
 
@@ -760,10 +742,7 @@ static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_heigh
     ctx->audio_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->audio_stream_idx];
     ctx->audio_codec_ctx = ctx->codec_ctx;
     //create audio conversion context
-    if (libav_org)
-      ctx->swr_ctx = (*_avresample_alloc_context)();
-    else
-      ctx->swr_ctx = (*_swr_alloc)();
+    ctx->swr_ctx = (*_swr_alloc)();
     if (new_chs == -1) new_chs = ctx->audio_codec_ctx->ch_layout.nb_channels;
     AVChannelLayout new_layout;
     switch (new_chs) {
@@ -777,25 +756,13 @@ static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_heigh
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
     if (new_freq == -1) new_freq = ctx->src_rate;
-    if (libav_org) {
-      (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",     ctx->audio_codec_ctx->ch_layout.nb_channels, 0);
-      (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->src_rate, 0);
-      (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  ctx->audio_codec_ctx->sample_fmt, 0);
-      (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",    new_chs, 0);
-      (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       new_freq, 0);
-      (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->dst_sample_fmt, 0);
-    } else {
-      (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
-        &new_layout, ctx->dst_sample_fmt, new_freq,
-        &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
-        0, NULL);
-    }
+    (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
+      &new_layout, ctx->dst_sample_fmt, new_freq,
+      &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
+      0, NULL);
 
     int ret;
-    if (libav_org)
-      ret = (*_avresample_open)(ctx->swr_ctx);
-    else
-      ret = (*_swr_init)(ctx->swr_ctx);
+    ret = (*_swr_init)(ctx->swr_ctx);
     if (ret < 0) {
       printf("resample init failed:%d\n", ret);
     }
@@ -931,10 +898,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
     ctx->sws_ctx = NULL;
   }
   if (ctx->swr_ctx != NULL) {
-    if (libav_org)
-      (*_avresample_free)(&ctx->swr_ctx);
-    else
-      (*_swr_free)(&ctx->swr_ctx);
+    (*_swr_free)(&ctx->swr_ctx);
     ctx->swr_ctx = NULL;
   }
   if (ctx->jaudio != NULL) {
@@ -1005,23 +969,13 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   //    int unpadded_linesize = frame.nb_samples * avutil.av_get_bytes_per_sample(audio_codec_ctx.sample_fmt);
       //convert to new format
       int dst_nb_samples;
-      if (libav_org) {
-        dst_nb_samples = (int)(*_av_rescale_rnd)((*_avresample_get_delay)(ctx->swr_ctx)
-          + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
-      } else {
-        dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
-          + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
-      }
+      dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
+        + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
       if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
         , dst_nb_samples, ctx->dst_sample_fmt, 1)) < 0) return NULL_FRAME;
       int converted_nb_samples = 0;
-      if (libav_org) {
-        converted_nb_samples = (*_avresample_convert)(ctx->swr_ctx, ctx->audio_dst_data, 0, dst_nb_samples
-          , ctx->frame->extended_data, 0, ctx->frame->nb_samples);
-      } else {
-        converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
-          , ctx->frame->extended_data, ctx->frame->nb_samples);
-      }
+      converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
+        , ctx->frame->extended_data, ctx->frame->nb_samples);
       if (converted_nb_samples < 0) {
         printf("FFMPEG:Resample failed!\n");
         return NULL_FRAME;
@@ -1744,53 +1698,17 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     return JNI_TRUE;
   }
   //create audio conversion context
-  if (libav_org)
-    ctx->swr_ctx = (*_avresample_alloc_context)();
-  else
-    ctx->swr_ctx = (*_swr_alloc)();
-  if (libav_org) {
-    (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",      ctx->chs, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->freq, 0);
-    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  AV_SAMPLE_FMT_S16, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",     ctx->chs, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->audio_codec_ctx->sample_rate, 0);
-    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
-  } else {
-    (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
-      &ctx->audio_codec_ctx->ch_layout, ctx->audio_codec_ctx->sample_fmt, ctx->audio_codec_ctx->sample_rate,  //output
-      &ctx->audio_codec_ctx->ch_layout, AV_SAMPLE_FMT_S16, ctx->freq,  //input
-      0, NULL);
-  }
+  ctx->swr_ctx = (*_swr_alloc)();
+  (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
+    &ctx->audio_codec_ctx->ch_layout, ctx->audio_codec_ctx->sample_fmt, ctx->audio_codec_ctx->sample_rate,  //output
+    &ctx->audio_codec_ctx->ch_layout, AV_SAMPLE_FMT_S16, ctx->freq,  //input
+    0, NULL);
 
-  if (libav_org)
-    ret = (*_avresample_open)(ctx->swr_ctx);
-  else
-    ret = (*_swr_init)(ctx->swr_ctx);
+  ret = (*_swr_init)(ctx->swr_ctx);
   if (ret < 0) {
     printf("resample init failed:%d\n", ret);
   }
   return JNI_TRUE;
-}
-
-//libav.org does not provide this function : easy to implement
-//see http://ffmpeg.org/doxygen/trunk/mux_8c_source.html#l00148
-static AVFormatContext *_avformat_alloc_output_context2(const char *codec) {
-  AVFormatContext *fmt_ctx = (*_avformat_alloc_context)();
-  fmt_ctx->oformat = (*_av_guess_format)(codec, NULL, NULL);
-  if (fmt_ctx->oformat == NULL) {
-    printf("av_guess_format() failed! (codec=%s)\n", codec);
-    return NULL;
-  }
-  if (fmt_ctx->oformat->priv_data_size > 0) {
-    fmt_ctx->priv_data = (*_av_mallocz)(fmt_ctx->oformat->priv_data_size);
-    if (fmt_ctx->oformat->priv_class != NULL) {
-      *(const AVClass**)fmt_ctx->priv_data = fmt_ctx->oformat->priv_class;
-      (*_av_opt_set_defaults)(fmt_ctx->priv_data);
-    }
-  } else {
-    fmt_ctx->priv_data = NULL;
-  }
-  return fmt_ctx;
 }
 
 static int read_null(FFContext *ctx, void*buf, int size) {
@@ -1841,7 +1759,8 @@ static int io_close2(AVFormatContext *fmt_ctx, AVIOContext *pb) {
 static jboolean single_file = JNI_FALSE;  //not working
 
 static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVideo, jboolean doAudio, void*read, void*write, void*seek) {
-  ctx->fmt_ctx = _avformat_alloc_output_context2(codec);
+  printf("context2=%p\n", _avformat_alloc_output_context2);
+  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, codec, NULL);
   if (ctx->fmt_ctx == NULL) {
     printf("Error:Unable to find codec:%s\n", codec);
     return JNI_FALSE;
@@ -2031,12 +1950,8 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
     }
     ctx->audio_src_data[0] = (uint8_t*)samples_data;
     int ret;
-    if (libav_org)
-      ret = (*_avresample_convert)(ctx->swr_ctx, ctx->audio_dst_data, 0, nb_samples
-        , ctx->audio_src_data, 0, nb_samples);
-    else
-      ret = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples
-        , ctx->audio_src_data, nb_samples);
+    ret = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples
+      , ctx->audio_src_data, nb_samples);
   } else {
     ctx->audio_dst_data[0] = (uint8_t*)samples_data;
   }
@@ -2453,10 +2368,7 @@ static void encoder_stop(FFContext *ctx)
   }
   if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->swr_ctx != NULL) {
-    if (libav_org)
-      (*_avresample_free)(&ctx->swr_ctx);
-    else
-      (*_swr_free)(&ctx->swr_ctx);
+    (*_swr_free)(&ctx->swr_ctx);
     ctx->swr_ctx = NULL;
   }
   if (ff_debug_trace) printf("encoder_stop\n");

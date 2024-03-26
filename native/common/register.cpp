@@ -127,7 +127,7 @@ static JNINativeMethod javaforce_media_Camera[] = {
 };
 
 static JNINativeMethod javaforce_media_MediaCoder[] = {
-  {"ffmpeg_init", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)Z", (void *)&Java_javaforce_media_MediaCoder_ffmpeg_1init},
+  {"ffmpeg_init", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_media_MediaCoder_ffmpeg_1init},
   {"ffmpeg_set_logging", "(Z)V", (void *)&Java_javaforce_media_MediaCoder_ffmpeg_1set_1logging},
 };
 

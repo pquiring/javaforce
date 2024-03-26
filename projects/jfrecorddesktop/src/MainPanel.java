@@ -1003,7 +1003,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       webport = 80;
     }
     broadcaster = new WebServer();
-    broadcaster.start(this, webport, false);
+    broadcaster.start(this, webport);
   }
 
   public void broadcaster_stop() {
