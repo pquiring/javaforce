@@ -652,7 +652,7 @@ bool try_jvm() {
 
   //open libjawt.so (otherwise Linux can't find it later)
   strcpy(dll, javahome);
-  strcat(dll, "/libjawt.so");
+  strcat(dll, "/lib/libjawt.so");
 
   jawt_dll = dlopen(dll, RTLD_NOW);
   if (jawt_dll == NULL) {
