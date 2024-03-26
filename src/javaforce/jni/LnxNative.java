@@ -48,6 +48,10 @@ public class LnxNative {
     if (new File("/usr/lib/aarch64-linux-gnu").exists()) {
       return "/usr/lib/aarch64-linux-gnu";
     }
+    if (new File("/usr/lib64").exists()) {
+      //Fedora
+      return "/usr/lib64";
+    }
     JFLog.log("Warning:Arch Lib folder not found!");
     return "/usr/lib";
   }
