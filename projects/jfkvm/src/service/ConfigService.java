@@ -1306,6 +1306,7 @@ public class ConfigService implements WebUIHandler {
       "\n" +
       "Not supported:\n" +
       " - VMFS storage pools\n" +
+      " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
       "Not tested yet:\n" +
       " - NFS or iSCSI storage pools\n" +
