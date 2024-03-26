@@ -18,7 +18,7 @@ To install on a minimal Linux system follow these steps:
   Fedora Server netinst
   Arch minimal Profile
 2) From command prompt type:
-  wget https://raw.githubusercontent.com/pquiring/javaforce/master/linux/install.sh
+  wget http://pquiring.github.io/javaforce/linux/install.sh
   chmod +x install.sh
   ./install.sh
 
