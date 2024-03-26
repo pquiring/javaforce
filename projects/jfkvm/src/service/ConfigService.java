@@ -1321,7 +1321,7 @@ public class ConfigService implements WebUIHandler {
     );
     msg.setMaxWidth();
     msg.setMaxHeight();
-    msg.setFontSize(18);
+    msg.setFontSize(16);
     panel.add(msg);
 
     help.addClickListener((me, cmp) -> {
