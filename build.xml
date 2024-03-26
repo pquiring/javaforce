@@ -5,7 +5,6 @@
   <property name="apptype" value="console"/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
-  <property name="build-jnlp" location="classes-jnlp"/>
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
 
@@ -126,29 +125,6 @@
       </fileset>
     </jar>
     <copy file="javaforce.jar" tofile="${lib}/javaforce-${version}.jar"/>
-  </target>
-
-  <target name="compile-jnlp" description="compile the source">
-    <!-- Compile the java code from ${src} into ${build-jnlp} -->
-    <mkdir dir="${build-jnlp}"/>
-    <javac srcdir="${src}" destdir="${build-jnlp}" target="1.8" source="1.8" debug="true" includeantruntime="false">
-      <include name="javaforce/JF.java"/>
-      <include name="javaforce/HTTP.java"/>
-      <include name="javaforce/HTTPS.java"/>
-      <include name="javaforce/XML.java"/>
-      <include name="javaforce/utils/JNLP.java"/>
-      <include name="javax/jnlp/*.java"/>
-    </javac>
-  </target>
-
-  <target name="jnlp" depends="compile-jnlp" description="build jnlp jar file">
-    <!-- build jnlp jar file from class files -->
-    <jar destfile="${lib}/jnlp.jar" includes="**/*.class" basedir="${build-jnlp}">
-      <manifest>
-        <attribute name="Main-Class" value="javaforce.utils.JNLP"/>
-      </manifest>
-    </jar>
-    <copy file="${lib}/jnlp.jar" todir="."/>
   </target>
 
   <target name="repo" description="download repo files">
