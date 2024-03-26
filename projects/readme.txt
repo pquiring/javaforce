@@ -25,6 +25,7 @@ jfhelp - Help System for jfLinux
 jfhex - Hex Editor
 jfhexbig - Hex Editor (Sector based for Large files)
 jfinstall - Installer for jfLinux
+jfkvm - Virtual Machine Management System (libvirt)
 jflogon - Logon Manager for jfLinux
 jfmedia - Multi-Media Player for jfLinux
 jfmodbusserver - MODBUS Server for Raspberry PI
