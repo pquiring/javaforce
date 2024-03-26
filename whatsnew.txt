@@ -1,5 +1,13 @@
 What's new...
 
+Mar 26/2024 : JF/53.0
+ - jfKVM/0.1
+   - after weeks of work and over 250 commits latest project is ready
+   - jfKVM is a Virtual Machine Management System
+   - drop in replacement for VMWare ESXi hypervisor
+   - see docs for more info
+   - want to thank Broadcom for the motivation to build this ;)
+
 Mar 4/2024 : JF/52.6
  - jfDVR/0.22
    - fixed some thread leaks
