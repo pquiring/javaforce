@@ -656,6 +656,7 @@ bool try_jvm() {
 
   jawt_dll = dlopen(dll, RTLD_NOW);
   if (jawt_dll == NULL) {
+    //if this fails most likely X11 libraries are not installed so user is most likely not running AWT app anyways
     printf("Warning:Unable to open libjawt.so\n");
   }
   return true;
