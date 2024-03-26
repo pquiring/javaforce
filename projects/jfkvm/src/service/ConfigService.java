@@ -1311,6 +1311,7 @@ public class ConfigService implements WebUIHandler {
       "\n" +
       "ToDo:\n" +
       " - migration\n" +
+      " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
       "\n" +
