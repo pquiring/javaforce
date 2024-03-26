@@ -23,14 +23,17 @@ Requirements:
     Two storage disks:
       - one for linux distro (recommend Debian)
       - another for local storage pool
+  Distros: Debian, Fedora or Arch.
+    - only Debian is tested
 
 Installation:
 -------------
 
+Install a server based Linux distro then run these commands as root:
   wget https://raw.githubusercontent.com/pquiring/javaforce/master/linux/install.sh
   chmod +x install.sh
   ./install.sh --desktop=no
-#install jfkvm using distro package tool
+Install jfkvm using distro package tool:
   apt install jfkvm
   systemctl enable jfkvm
   systemctl start jfkvm
@@ -59,7 +62,7 @@ Storage:
   Next you should partition your second disk using fdisk, create a large parition in ext4 format.
     fdisk /dev/sdb
     mkfs -t ext4 /dev/sdb1
-  Under Storage click on Add and select the partition you just created.
+  Under Storage click on Add select Local Partition type and select the partition you just created.
   NFS and iSCSI are also available but untested at this time.
   Creating Storage pools using folders is NOT supported.
 
