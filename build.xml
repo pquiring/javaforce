@@ -8,9 +8,11 @@
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
 
+  <!-- libxcursor dep helps load libjawt.so which the loader attempts to load during startup -->
+
   <property name="debian.depends" value="default-jre        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l-0 , desktop-file-utils, libxcursor1"/>
-  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l   , desktop-file-utils"/>
-  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, v4l-utils, desktop-file-utils"/>
+  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l   , desktop-file-utils, libXcursor"/>
+  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, v4l-utils, desktop-file-utils, libxcursor"/>
 
   <property environment="env"/>
 
