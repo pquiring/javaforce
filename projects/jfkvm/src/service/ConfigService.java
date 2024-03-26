@@ -4,8 +4,6 @@ package service;
  *
  * TODO : convert many ops into tasks
  *
- * TODO : convert vmx to jfvm
- *
  * TODO : migrate : data and compute
  *
  * @author pquiring
@@ -2847,7 +2845,6 @@ public class ConfigService implements WebUIHandler {
       create.addClickListener((me, cmp) -> {
         ui.network_bridge = null;
         ui.network_bridge_complete = () -> {
-          table.removeAll();
           NetworkBridge[] nics1 = NetworkBridge.list();
           for (NetworkBridge nic : nics1) {
             table.addRow(new String[] {nic.name, nic.type, nic.iface});
@@ -2866,9 +2863,17 @@ public class ConfigService implements WebUIHandler {
         int idx = table.getSelectedRow();
         if (idx == -1) return;
         NetworkBridge nic = ui.nics_bridge[idx];
-        if (nic.remove()) {
-          table.removeRow(idx);
-        }
+        ui.confirm_action = () -> {
+          if (nic.remove()) {
+            table.removeRow(idx);
+          } else {
+            ui.message_message.setText("Failed to remove bridge, see logs.");
+            ui.message_popup.setVisible(true);
+          }
+        };
+        ui.confirm_button.setText("Delete");
+        ui.confirm_message.setText("Delete Bridge:" + nic.name);
+        ui.confirm_popup.setVisible(true);
       });
     }
   }
