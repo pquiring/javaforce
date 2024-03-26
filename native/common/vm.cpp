@@ -1123,14 +1123,6 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_NetworkVirtual_ngetbridge
   return bridge;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkVirtual_nassign
-  (JNIEnv *e, jclass o, jstring name, jstring ip, jstring mask)
-{
-  //TODO:assign IP address to virt nic
-  //ip address add dev {name} {ip/mask}
-  return JNI_FALSE;
-}
-
 //NetworkPort
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkPort_nremove
@@ -1139,7 +1131,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkPort_nremove
   //TODO
   return JNI_FALSE;
 }
-
 
 //Device
 
@@ -1209,7 +1200,6 @@ static JNINativeMethod javaforce_vm_NetworkVirtual[] = {
   {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nstart},
   {"nstop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nstop},
   {"nremove", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nremove},
-//  {"nassign", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_NetworkVirtual_nassign},
 };
 
 static JNINativeMethod javaforce_vm_NetworkPort[] = {
