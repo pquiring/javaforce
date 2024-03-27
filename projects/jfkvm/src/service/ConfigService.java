@@ -3562,6 +3562,7 @@ public class ConfigService implements WebUIHandler {
 
   public byte[] getResource(String url) {
     //url = /user/keyfile?token=...
+    JFLog.log("url=" + url);
     String uri;
     String paramstr;
     int qidx = url.indexOf('?');
@@ -3594,7 +3595,7 @@ public class ConfigService implements WebUIHandler {
         }
       }
       if (token == null) {
-        JFLog.log("token key not supplied");
+        JFLog.log("token not supplied");
         return null;
       }
       if (token.equals(Config.current.token)) {
