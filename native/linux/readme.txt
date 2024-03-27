@@ -1,7 +1,8 @@
 Debian/Ubuntu:
 
   Required packages:
-    deps.sh
+    chmod +x deps.sh
+    sudo ./deps.sh
 
   Compile:
     ant linux
@@ -9,7 +10,8 @@ Debian/Ubuntu:
 Fedora:
 
   Required packages:
-    deps.sh
+    chmod +x deps.sh
+    sudo ./deps.sh
 
   Compile:
     ant linux
@@ -17,7 +19,8 @@ Fedora:
 Arch:
 
   Required packages :
-    deps.sh
+    chmod +x deps.sh
+    sudo ./deps.sh
 
   Compile:
     ant linux
@@ -25,7 +28,8 @@ Arch:
 FreeBSD:
 
   Required packages :
-    deps.sh
+    chmod +x deps.sh
+    sudo ./deps.sh
 
   Compile:
     ant freebsd
@@ -33,7 +37,8 @@ FreeBSD:
 Raspberry Pi (Debian) (64bit):
 
   Required packages:
-    deps.sh
+    chmod +x deps.sh
+    sudo ./deps.sh
 
   Compile:
     ant arm64
