@@ -2364,6 +2364,12 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       if (compute.isSelected()) {
+        //check if vm storage is local
+        Storage pool = vmm.getPoolByName(vm.pool);
+        if (pool == null || pool.type == Storage.TYPE_LOCAL_PART || pool.type == Storage.TYPE_LOCAL_DISK) {
+          errmsg.setText("Error:Can not compute migrate VM with local storage");
+          return;
+        }
         ui.setRightPanel(vmMigrateComputePanel(vm, ui));
         return;
       }
