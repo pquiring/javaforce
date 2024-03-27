@@ -103,7 +103,7 @@ public class Config implements Serializable {
     return token;
   }
 
-  public String[] getRemoteHosts() {
+  public static String[] getRemoteHosts() {
     ArrayList<String> hosts = new ArrayList<>();
     File file = new File(Paths.clusterPath);
     File[] files = file.listFiles();

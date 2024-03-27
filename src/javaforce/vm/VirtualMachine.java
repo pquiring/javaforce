@@ -171,7 +171,7 @@ public class VirtualMachine implements Serializable {
   }
 
   /** Offline only VM storage migration. */
-  public boolean migrateData(String vmname, String destpool, Status status) {
+  public boolean migrateData(String destpool, Status status) {
     //TODO : move vm folder to new pool
     return false;
   }

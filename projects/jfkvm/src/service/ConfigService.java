@@ -4,8 +4,6 @@ package service;
  *
  * TODO : convert many ops into tasks
  *
- * TODO : migrate : data and compute
- *
  * @author pquiring
  */
 
@@ -1583,7 +1581,7 @@ public class ConfigService implements WebUIHandler {
     row.add(hosts);
 
     try {
-      String[] host_list = Config.current.getRemoteHosts();
+      String[] host_list = Config.getRemoteHosts();
       for(String host : host_list) {
         hosts.add(host);
       }
@@ -1702,7 +1700,6 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button create = new Button("Create");
     tools.add(create);
-    //TODO : add "Migrate" button to migrate data/vm to another system
     Button edit = new Button("Edit");
     tools.add(edit);
     Button refresh = new Button("Refresh");
@@ -1717,6 +1714,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(restart);
     Button poweroff = new Button("PowerOff");
     tools.add(poweroff);
+    Button migrate = new Button("Migrate");
+    tools.add(migrate);
     Button unreg = new Button("Unregister");
     tools.add(unreg);
 
@@ -1865,6 +1864,13 @@ public class ConfigService implements WebUIHandler {
         KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
+    });
+
+    migrate.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      VirtualMachine vm = vms[idx];
+      ui.setRightPanel(vmMigratePanel(vm, ui));
     });
 
     unreg.addClickListener((me, cmp) -> {
@@ -2310,6 +2316,207 @@ public class ConfigService implements WebUIHandler {
       if (create) {
         JF.deletePathEx(hardware.getPath());
       }
+      ui.setRightPanel(vmsPanel(ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmMigratePanel(VirtualMachine vm, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VM:" + vm.name));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Select Data or Compute migration"));
+
+    row = new Row();
+    CheckBox data = new CheckBox("Data Migration");
+    row.add(data);
+
+    row = new Row();
+    CheckBox compute = new CheckBox("Compute Migration");
+    row.add(compute);
+
+    row = new Row();
+    Button next = new Button("Next");
+    row.add(next);
+
+    data.addClickListener((me, cmp) -> {
+      compute.setSelected(false);
+    });
+    compute.addClickListener((me, cmp) -> {
+      data.setSelected(false);
+    });
+    next.addClickListener((me, cmp) -> {
+      if (data.isSelected()) {
+        ui.setRightPanel(vmMigrateDataPanel(vm, ui));
+        return;
+      }
+      if (compute.isSelected()) {
+        ui.setRightPanel(vmMigrateComputePanel(vm, ui));
+        return;
+      }
+      errmsg.setText("You must make a selection");
+    });
+
+    return panel;
+  }
+
+  private Panel vmMigrateDataPanel(VirtualMachine vm, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+    ArrayList<Storage> pools = Config.current.pools;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Select a storage pool"));
+
+    row = new Row();
+    ListBox list = new ListBox();
+    row.add(list);
+    for(Storage pool : pools) {
+      list.add(pool.name);
+    }
+
+    row = new Row();
+    Button next = new Button("Next");
+    row.add(next);
+
+    next.addClickListener((me, cmp) -> {
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage dest = pools.get(idx);
+      if (dest.name.equals(vm.pool)) {
+        errmsg.setText("That VM is already in that storage pool");
+        return;
+      }
+      ui.setRightPanel(vmMigrateDataStartPanel(vm, dest, ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmMigrateDataStartPanel(VirtualMachine vm, Storage dest, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VM:" + vm.name));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Source:" + vm.pool));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Dest:" + dest.name));
+
+    row = new Row();
+    Button start = new Button("Start");
+    row.add(start);
+
+    //TODO : confirm move is possible (check storage requirements)
+
+    start.addClickListener((me, cmp) -> {
+      Task task = new Task("Migrate VM : " + vm.name) {
+        public void doTask() {
+          if (vmm.migrateData(vm, dest)) {
+            setResult("Completed");
+          } else {
+            setResult("Error occured, see logs.");
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
+      ui.setRightPanel(vmsPanel(ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmMigrateComputePanel(VirtualMachine vm, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+    String[] hosts = Config.getRemoteHosts();
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Select a remote host"));
+
+    row = new Row();
+    ListBox list = new ListBox();
+    row.add(list);
+    for(String host : hosts) {
+      list.add(host);
+    }
+
+    row = new Row();
+    Button next = new Button("Next");
+    row.add(next);
+
+    next.addClickListener((me, cmp) -> {
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      String dest = hosts[idx];
+      ui.setRightPanel(vmMigrateComputeStartPanel(vm, dest, ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmMigrateComputeStartPanel(VirtualMachine vm, String remote, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VM:" + vm.name));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Dest:" + remote));
+
+    row = new Row();
+    Button start = new Button("Start");
+    row.add(start);
+
+    //TODO : confirm move is possible (check cpu,memory,network,device requirements)
+
+    start.addClickListener((me, cmp) -> {
+      Task task = new Task("Migrate VM : " + vm.name) {
+        public void doTask() {
+          if (vmm.migrateCompute(vm, remote)) {
+            setResult("Completed");
+          } else {
+            setResult("Error occured, see logs.");
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
       ui.setRightPanel(vmsPanel(ui));
     });
 
@@ -3354,7 +3561,7 @@ public class ConfigService implements WebUIHandler {
     }
     String[] params = paramstr.split("[&]");
     if (uri.equals("/user/keyfile")) {
-      File file = new File("/root/cluster/localhost");  // from /root/.ssh/id_dsa
+      File file = new File("/root/cluster/localhost");
       if (!file.exists()) {
         JFLog.log("ssh client key not found");
         return null;

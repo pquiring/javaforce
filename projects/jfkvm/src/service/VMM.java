@@ -81,6 +81,14 @@ public class VMM implements VMProvider {
     return hw;
   }
 
+  public boolean migrateData(VirtualMachine vm, Storage dest) {
+    return vm.migrateData(dest.name, null);
+  }
+
+  public boolean migrateCompute(VirtualMachine vm, String remote) {
+    return vm.migrateCompute(remote, null);
+  }
+
   public int getVLAN(String network) {
     for(NetworkVLAN vlan : Config.current.vlans) {
       if (vlan.name.equals(network)) {
