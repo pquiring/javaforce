@@ -10,12 +10,16 @@ package service;
  */
 
 import javaforce.*;
+import javaforce.vm.*;
 import javaforce.webui.*;
 
-public class Task extends Thread {
+public class Task extends Thread implements Status {
   protected long ts_start;
   protected long ts_stop;
   protected long ts_delta;
+
+  public int percent;
+  public boolean successful;
 
   public String action;
   public String result;
@@ -41,5 +45,17 @@ public class Task extends Thread {
 
   public void setResult(String msg) {
     result = msg;
+  }
+
+  public void setStatus(String msg) {
+    result = msg;
+  }
+
+  public void setPercent(int value) {
+    percent = value;
+  }
+
+  public void setResult(boolean result) {
+    successful = result;
   }
 }

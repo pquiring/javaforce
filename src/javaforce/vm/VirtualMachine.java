@@ -3,6 +3,7 @@ package javaforce.vm;
 /** Virtual Machine registered with libvirt. */
 
 import java.io.*;
+import java.nio.file.*;
 
 import javaforce.*;
 
@@ -172,8 +173,58 @@ public class VirtualMachine implements Serializable {
 
   /** Offline only VM storage migration. */
   public boolean migrateData(String destpool, Status status) {
-    //TODO : move vm folder to new pool
-    return false;
+    if (status == null) {
+      status = Status.null_status;
+    }
+    String src_folder = "/volumes/" + pool + "/" + name;
+    String dest_folder = "/volumes/" + destpool + "/" + name;
+    File src_file = new File(src_folder);
+    if (!src_file.exists()) {
+      status.setStatus("Source folder not found");
+      status.setResult(false);
+      return false;
+    }
+    File dest_file = new File(dest_folder);
+    if (dest_file.exists()) {
+      status.setStatus("Dest folder already exists");
+      status.setResult(false);
+      return false;
+    }
+    dest_file.mkdir();
+    if (!dest_file.exists()) {
+      status.setStatus("Unable to create Dest folder");
+      status.setResult(false);
+      return false;
+    }
+    File[] files = src_file.listFiles();
+    if (files == null || files.length == 0) {
+      status.setStatus("No files found");
+      status.setResult(false);
+      return false;
+    }
+    int done = 0;
+    int todo = files.length;
+    status.setPercent(0);
+    status.setStatus("Moving files...");
+    for(File file : files) {
+      if (file.isDirectory()) continue;
+      String name = file.getName();
+      Path src_path = file.toPath();
+      Path dest_path = new File(dest_folder + "/" + name).toPath();
+      try {
+        Files.move(src_path, dest_path);
+      } catch (Exception e) {
+        JFLog.log(e);
+        status.setStatus("Move failed, see logs.");
+        status.setResult(false);
+        return false;
+      }
+      status.setPercent((done * 100) / todo);
+    }
+    status.setPercent(100);
+    status.setStatus("Done");
+    status.setResult(true);
+    return true;
   }
 
   /** Generate XML to register a new VM or replace existing one.
