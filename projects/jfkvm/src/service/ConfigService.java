@@ -1681,13 +1681,13 @@ public class ConfigService implements WebUIHandler {
     remove.addClickListener((me, cmp) -> {
       int idx = hosts.getSelectedIndex();
       if (idx == -1) return;
-      ui.confirm_message.setText("Generate Keys");
+      ui.confirm_message.setText("Remove Host:" + hosts.getSelectedItem());
       ui.confirm_action = () -> {
         String host = hosts.getSelectedItem();
         Config.current.removeHost(host);
         ui.setRightPanel(hostPanel(ui, 3));
       };
-      ui.confirm_button.setText("Generate");
+      ui.confirm_button.setText("Remove");
       ui.confirm_popup.setVisible(true);
     });
 
