@@ -82,7 +82,7 @@ public class GenRPM {
       }
       JF.deletePathEx(tmpdir);
       new File("rpm.spec").delete();
-      rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
+      rt.exec(new String[] {"mv", JF.getUserPath() + "/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
       System.out.println(out + " created!");
       if (new File(home + "/repo/fedora/readme.txt").exists()) {
         if (!JF.moveFile(out, home + "/repo/fedora/" + archext + "/" + out)) throw new Exception("move failed");
