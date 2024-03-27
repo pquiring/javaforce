@@ -1,17 +1,15 @@
 Debian/Ubuntu:
 
   Required packages:
-    ant deb
+    deps.sh
 
   Compile:
     ant linux
 
 Fedora:
 
-  Note : You will need to setup rpmfusion.org to get access to ffmpeg
-
   Required packages:
-    ant rpm
+    deps.sh
 
   Compile:
     ant linux
@@ -19,7 +17,7 @@ Fedora:
 Arch:
 
   Required packages :
-    ant pac
+    deps.sh
 
   Compile:
     ant linux
@@ -27,14 +25,15 @@ Arch:
 FreeBSD:
 
   Required packages :
-    ant pkg
+    deps.sh
 
   Compile:
     ant freebsd
 
 Raspberry Pi (Debian) (64bit):
 
-  Same packages as Debian above.
+  Required packages:
+    deps.sh
 
   Compile:
     ant arm64
