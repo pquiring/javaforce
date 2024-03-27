@@ -61,15 +61,23 @@ public class TabPanel extends Panel {
     sendOnResize();
   }
   public void setTabIndex(int idx) {
-//    sendEvent("settab", new String[] {"tabs=" + tabs.id, "row=" + row.id, "idx=" + idx});
+    if (idx == this.idx) return;
     Label currentLbl = (Label)row.get(this.idx);
-    currentLbl.setClass("tabinactive");
+    currentLbl.removeClass("tabactive");
+    currentLbl.addClass("tabinactive");
+
     Label newLbl = (Label)row.get(idx);
-    newLbl.setClass("tabactive");
+    newLbl.removeClass("tabinactive");
+    newLbl.addClass("tabactive");
+
     Panel currentPanel = (Panel)tabs.get(this.idx);
-    currentPanel.setClass("tabcontenthidden");
+    currentPanel.removeClass("tabcontentshown");
+    currentPanel.addClass("tabcontenthidden");
+
     Panel newPanel = (Panel)tabs.get(idx);
-    newPanel.setClass("tabcontentshown");
+    newPanel.removeClass("tabcontenthidden");
+    newPanel.addClass("tabcontentshown");
+
     this.idx = idx;
   }
   public int getTabIndex() {
