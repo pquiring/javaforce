@@ -1,5 +1,11 @@
 What's new...
 
+Mar 27/2024 : JF/53.1
+ - fix ffmpeg support
+   - use avformat_alloc_output_context2() instead of custom function which fixes support for ffmpeg 6.1.1
+   - removed libav.org support
+ - moved jnlp to utils/jnlp
+
 Mar 26/2024 : JF/53.0
  - jfKVM/0.1
    - after weeks of work and over 250 commits latest project is ready
