@@ -164,7 +164,7 @@ static void* connect() {
 
 static void* connect_remote(const char* host) {
   char url[1024];
-  sprintf(url, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/hosts/%s", host, host);
+  sprintf(url, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/cluster/%s", host, host);
   void* conn = (*_virConnectOpen)(url);
   if (conn == NULL) {
     printf("VM:connect_remote(%s) failed\n", host);
