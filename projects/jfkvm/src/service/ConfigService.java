@@ -10,7 +10,7 @@ package service;
  */
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -23,6 +23,8 @@ public class ConfigService implements WebUIHandler {
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
+  private Thread remote_connect_thread;
+  private String remote_connect_status;
 
   private static final String[] filter_disks = new String[] {
     ".*[.]vmdk",
@@ -1263,7 +1265,7 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(welcomePanel(ui));
     });
     host.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui));
+      ui.setRightPanel(hostPanel(ui, 0));
     });
     vms.addClickListener((me, cmp) -> {
       ui.setRightPanel(vmsPanel(ui));
@@ -1334,11 +1336,13 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel hostPanel(UI ui) {
+  private Panel hostPanel(UI ui, int idx) {
     TabPanel panel = new TabPanel();
     panel.addTab(hostInfoPanel(ui), "Info");
     panel.addTab(hostConfigPanel(ui), "Settings");
     panel.addTab(hostAutoStartPanel(ui), "Auto Start");
+    panel.addTab(hostCluster(ui), "Cluster");
+    panel.setTabIndex(idx);
     return panel;
   }
 
@@ -1371,7 +1375,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label(Long.toString(cpu_load) + '%'));
 
     refresh.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui));
+      ui.setRightPanel(hostPanel(ui, 0));
     });
 
     return panel;
@@ -1503,6 +1507,182 @@ public class ConfigService implements WebUIHandler {
 
       Config.current.save();
       msg.setText("Settings saved!");
+    });
+
+    return panel;
+  }
+
+  private Panel hostCluster(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    if (remote_connect_status == null) {
+      remote_connect_status = "";
+    }
+    row = new Row();
+    panel.add(row);
+    Label msg = new Label(remote_connect_status);
+    row.add(msg);
+    remote_connect_status = null;
+
+    row = new Row();
+    panel.add(row);
+    Button refresh = new Button("Refresh");
+    row.add(refresh);
+    Button help = new Button("Help");
+    row.add(help);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Local Key:"));
+    Button local_key_generate = new Button("Generate");
+    row.add(local_key_generate);
+    Label local_key_status = new Label(Config.current.getKeyStatus());
+    row.add(local_key_status);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Local Token:"));
+    TextField local_token = new TextField(Config.current.getToken());
+    local_token.setReadonly(true);
+    row.add(local_token);
+    Button local_token_generate = new Button("Generate");
+    row.add(local_token_generate);
+    Button local_token_delete = new Button("Delete");
+    row.add(local_token_delete);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Remote Host:"));
+    TextField remote_host = new TextField("");
+    row.add(remote_host);
+    row.add(new Label("Remote Token:"));
+    TextField remote_token = new TextField("");
+    row.add(remote_token);
+    Button connect = new Button("Connect");
+    row.add(connect);
+
+    row = new Row();
+    panel.add(row);
+    Button remove = new Button("Remove Host");
+    row.add(remove);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Remote Hosts:"));
+
+    row = new Row();
+    panel.add(row);
+    ListBox hosts = new ListBox();
+    row.add(hosts);
+
+    try {
+      String[] host_list = Config.current.getRemoteHosts();
+      for(String host : host_list) {
+        hosts.add(host);
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(hostPanel(ui, 3));
+    });
+
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_cluster.html");
+    });
+
+    local_key_generate.addClickListener((me, cmp) -> {
+      if (Config.current.isKeyValid()) {
+        errmsg.setText("Key is already valid");
+        return;
+      }
+      if (remote_connect_thread != null) {
+        errmsg.setText("Busy!");
+        return;
+      }
+      remote_connect_status = "Generating...";
+      remote_connect_thread = new Thread() {
+        public void run() {
+          try {
+            ShellProcess sp = new ShellProcess();
+            sp.run(new String[] {"ssh-keygen", "-b", "2048", "-t", "rsa", "-f", Paths.clusterPath + "/localhost", "-q", "-N", "\"\""}, true);
+            if (sp.getErrorLevel() != 0) {
+              errmsg.setText("Failed to generate key");
+              return;
+            }
+            new File("/root/.ssh").mkdir();
+            new File("/root/.ssh/authorized_keys").delete();
+            sp.run(new String[] {"mv", Paths.clusterPath + "/localhost.pub", "/root/.ssh/authorized_keys"}, true);
+          } catch (Exception e) {
+            remote_connect_status = "Generate keys failed, check logs.";
+            JFLog.log(e);
+          }
+          remote_connect_thread = null;
+        }
+      };
+      remote_connect_thread.start();
+      msg.setText("Generating...click Refresh to check status");
+    });
+
+    local_token_generate.addClickListener((me, cmp) -> {
+      Config.current.token = UUID.generate();
+      Config.current.save();
+      ui.setRightPanel(hostPanel(ui, 3));
+    });
+
+    local_token_delete.addClickListener((me, cmp) -> {
+      Config.current.token = null;
+      Config.current.save();
+      ui.setRightPanel(hostPanel(ui, 3));
+    });
+
+    connect.addClickListener((me, cmp) -> {
+      //download to clusterPath
+      String _remote_host = remote_host.getText();
+      String _remote_token = remote_token.getText();
+      if (remote_connect_thread != null) {
+        errmsg.setText("Busy!");
+        return;
+      }
+      remote_connect_status = "Connecting...";
+      remote_connect_thread = new Thread() {
+        public void run() {
+          try {
+            HTTPS https = new HTTPS();
+            https.open(_remote_host);
+            byte[] data = https.get("/user/keyfile?token=" + _remote_token);
+            Config.current.saveHost(_remote_host, data);
+            remote_connect_status = "Connected to host:" + _remote_host;
+          } catch (Exception e) {
+            remote_connect_status = "Connection failed, check logs.";
+            JFLog.log(e);
+          }
+          remote_connect_thread = null;
+        }
+      };
+      remote_connect_thread.start();
+      msg.setText("Connecting...click Refresh to check status");
+    });
+
+    remove.addClickListener((me, cmp) -> {
+      int idx = hosts.getSelectedIndex();
+      if (idx == -1) return;
+      ui.confirm_message.setText("Generate Keys");
+      ui.confirm_action = () -> {
+        String host = hosts.getSelectedItem();
+        Config.current.removeHost(host);
+        ui.setRightPanel(hostPanel(ui, 3));
+      };
+      ui.confirm_button.setText("Generate");
+      ui.confirm_popup.setVisible(true);
     });
 
     return panel;
@@ -3161,13 +3341,56 @@ public class ConfigService implements WebUIHandler {
   }
 
   public byte[] getResource(String url) {
-    //url = /user/hash/component_id/count
-    String pts[] = url.split("/");
-    String hash = pts[2];
-    WebUIClient client = server.getClient(hash);
-    if (client == null) {
-      JFLog.log("ConfigServer.getResouce() : WebUIClient not found for hash:" + hash);
-      return null;
+    //url = /user/keyfile?token=...
+    String uri;
+    String paramstr;
+    int qidx = url.indexOf('?');
+    if (qidx != -1) {
+      uri = url.substring(0, qidx);
+      paramstr = url.substring(qidx + 1);
+    } else {
+      uri = url;
+      paramstr = "";
+    }
+    String[] params = paramstr.split("[&]");
+    if (uri.equals("/user/keyfile")) {
+      File file = new File("/root/cluster/localhost");  // from /root/.ssh/id_dsa
+      if (!file.exists()) {
+        JFLog.log("ssh client key not found");
+        return null;
+      }
+      if (Config.current.token == null) {
+        JFLog.log("token not setup");
+        return null;
+      }
+      String token = null;
+      for(String param : params) {
+        int idx = param.indexOf('=');
+        if (idx == -1) continue;
+        String key = param.substring(0, idx);
+        String value = param.substring(idx + 1);
+        switch (key) {
+          case "token": token = value; break;
+        }
+      }
+      if (token == null) {
+        JFLog.log("token key not supplied");
+        return null;
+      }
+      if (token.equals(Config.current.token)) {
+        //send ssh key
+        try {
+          FileInputStream fis = new FileInputStream(file);
+          byte[] data = fis.readAllBytes();
+          fis.close();
+          return data;
+        } catch (Exception e) {
+          JFLog.log(e);
+          return null;
+        }
+      } else {
+        JFLog.log("token does not match");
+      }
     }
     return null;
   }

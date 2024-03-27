@@ -19,6 +19,7 @@ public class Config implements Serializable {
   public String password;
   public String fqn;
   public String iqn;
+  public String token;
   public int auto_start_delay = 60;
   public ArrayList<String> auto_start_vms = new ArrayList<>();
 
@@ -83,6 +84,55 @@ public class Config implements Serializable {
     } catch (Exception e) {
       JFLog.log(e);
       return false;
+    }
+  }
+
+  public String getKeyStatus() {
+    File file1 = new File(Paths.clusterPath + "/localhost");
+    File file2 = new File("/root/.ssh/authorized_keys");
+    return "client key exists:" + file1.exists() + ",server key exists:" + file2.exists();
+  }
+
+  public boolean isKeyValid() {
+    File file1 = new File(Paths.clusterPath + "/localhost");
+    File file2 = new File("/root/.ssh/authorized_keys");
+    return file1.exists() && file2.exists();
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public String[] getRemoteHosts() {
+    ArrayList<String> hosts = new ArrayList<>();
+    File file = new File(Paths.clusterPath);
+    File[] files = file.listFiles();
+    if (files == null) files = new File[0];
+    for(File host_file : files) {
+      String host = host_file.getName();
+      if (host.equals("localhost")) continue;
+      hosts.add(host);
+    }
+    return hosts.toArray(JF.StringArrayType);
+  }
+
+  public void saveHost(String hostname, byte[] key) {
+    try {
+      File file = new File(Paths.clusterPath + "/" + hostname);
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(key);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  public void removeHost(String hostname) {
+    try {
+      File file = new File(Paths.clusterPath + "/" + hostname);
+      file.delete();
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 

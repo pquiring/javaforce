@@ -146,6 +146,8 @@ void vm_init() {
 
 //common code
 
+//see https://libvirt.org/uri.html
+
 static void* connect(const char* host) {
   char url[1024];
   sprintf(url, "qemu://%s", host);
@@ -158,6 +160,16 @@ static void* connect(const char* host) {
 
 static void* connect() {
   return connect("/system");
+}
+
+static void* connect_remote(const char* host) {
+  char url[1024];
+  sprintf(url, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/hosts/%s", host, host);
+  void* conn = (*_virConnectOpen)(url);
+  if (conn == NULL) {
+    printf("VM:connect_remote(%s) failed\n", host);
+  }
+  return conn;
 }
 
 static void disconnect(void* ptr) {
@@ -260,6 +272,23 @@ CPUStat:iowait:   231530000000
   return (inuse / total) * 100LL;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_connect
+  (JNIEnv *e, jclass o, jstring remote)
+{
+  const char* cremote = e->GetStringUTFChars(remote, NULL);
+
+  void* conn = connect_remote(cremote);
+
+  e->ReleaseStringUTFChars(remote, cremote);
+
+  if (conn == NULL) {
+    return JNI_FALSE;
+  }
+
+  disconnect(conn);
+
+  return JNI_TRUE;
+}
 
 //VirtualMachine
 
@@ -609,7 +638,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
 
   const char* cdesthost = e->GetStringUTFChars(desthost, NULL);
 
-  void* dconn = connect(cdesthost);
+  void* dconn = connect_remote(cdesthost);
 
   e->ReleaseStringUTFChars(desthost, cdesthost);
 
@@ -1177,6 +1206,7 @@ static JNINativeMethod javaforce_vm_VMHost[] = {
   {"total_memory", "()J", (void *)&Java_javaforce_vm_VMHost_total_1memory},
   {"free_memory", "()J", (void *)&Java_javaforce_vm_VMHost_free_1memory},
   {"cpu_load", "()J", (void *)&Java_javaforce_vm_VMHost_cpu_1load},
+  {"connect", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VMHost_connect},
 };
 
 static JNINativeMethod javaforce_vm_Device[] = {
