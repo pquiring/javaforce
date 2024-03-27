@@ -10,9 +10,9 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.1"/>
 
-  <property name="debian.depends" value="libvirt-dev,libvirt-daemon-system,openvswitch-switch"/>
-  <property name="fedora.depends" value="libvirt-devel,libvirt-daemon,openvswitch"/>
-  <property name="arch.depends" value="libvirt,openvswitch"/>
+  <property name="debian.depends" value="libvirt-dev,libvirt-daemon-system,openvswitch-switch,bridge-utils"/>
+  <property name="fedora.depends" value="libvirt-devel,libvirt-daemon,openvswitch,bridge-utils"/>
+  <property name="arch.depends" value="libvirt,openvswitch,bridge-utils"/>
 
   <import file="${home}/base.xml"/>
 
