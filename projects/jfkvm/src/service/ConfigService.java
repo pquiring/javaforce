@@ -2349,14 +2349,17 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Select Data or Compute migration"));
 
     row = new Row();
+    panel.add(row);
     CheckBox data = new CheckBox("Data Migration");
     row.add(data);
 
     row = new Row();
+    panel.add(row);
     CheckBox compute = new CheckBox("Compute Migration");
     row.add(compute);
 
     row = new Row();
+    panel.add(row);
     Button next = new Button("Next");
     row.add(next);
 
@@ -2403,6 +2406,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Select a storage pool"));
 
     row = new Row();
+    panel.add(row);
     ListBox list = new ListBox();
     row.add(list);
     for(Storage pool : pools) {
@@ -2410,6 +2414,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     row = new Row();
+    panel.add(row);
     Button next = new Button("Next");
     row.add(next);
 
@@ -2444,6 +2449,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Dest:" + dest.name));
 
     row = new Row();
+    panel.add(row);
     Button start = new Button("Start");
     row.add(start);
 
@@ -2482,6 +2488,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Select a remote host"));
 
     row = new Row();
+    panel.add(row);
     ListBox list = new ListBox();
     row.add(list);
     for(String host : hosts) {
@@ -2489,6 +2496,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     row = new Row();
+    panel.add(row);
     Button next = new Button("Next");
     row.add(next);
 
@@ -2515,6 +2523,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Dest:" + remote));
 
     row = new Row();
+    panel.add(row);
     Button start = new Button("Start");
     row.add(start);
 
