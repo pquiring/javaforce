@@ -86,7 +86,7 @@ public class VMM implements VMProvider {
   }
 
   public boolean migrateCompute(VirtualMachine vm, String remote) {
-    return vm.migrateCompute(remote, null);
+    return vm.migrateCompute(remote, vm.getState() != VirtualMachine.STATE_OFF, null);
   }
 
   public int getVLAN(String network) {
