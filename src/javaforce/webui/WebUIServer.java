@@ -85,6 +85,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public void doGet(WebRequest req, WebResponse res) {
     String url = req.getURL();
+    String url_params = url + "?" + req.getQueryString();
     byte[] data = null;
 /*
     if (url.endsWith(".html")) {
@@ -118,10 +119,10 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         res.setContentType(r.mime);
       }
     } else if (url.startsWith("/user/")) {
-      data = handler.getResource(url);
+      data = handler.getResource(url_params);
       res.addHeader("Cache-Control: no-store");
     } else if (url.startsWith("/api/")) {
-      data = handler.getResource(url);
+      data = handler.getResource(url_params);
       res.addHeader("Cache-Control: no-store");
     } else {
       if (url.equals("/favicon.ico")) {
