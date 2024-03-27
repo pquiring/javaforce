@@ -165,10 +165,10 @@ public class VirtualMachine implements Serializable {
     return nunregister(name);
   }
 
-  private native static boolean nmigrate(String name, String desthost, Status status);
+  private native static boolean nmigrate(String name, String desthost, boolean live, Status status);
   /** Live/offline VM migration. */
-  public boolean migrateCompute(String desthost, Status status) {
-    return nmigrate(name, desthost, status);
+  public boolean migrateCompute(String desthost, boolean live, Status status) {
+    return nmigrate(name, desthost, live, status);
   }
 
   /** Offline only VM storage migration. */

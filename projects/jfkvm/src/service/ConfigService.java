@@ -2371,6 +2371,7 @@ public class ConfigService implements WebUIHandler {
     });
     next.addClickListener((me, cmp) -> {
       if (data.isSelected()) {
+        //TODO : check vm disks if local : load Hardware config
         ui.setRightPanel(vmMigrateDataPanel(vm, ui));
         return;
       }
@@ -2381,6 +2382,7 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Error:Can not compute migrate VM with local storage");
           return;
         }
+        //TODO : check vm disks if local : load Hardware config
         ui.setRightPanel(vmMigrateComputePanel(vm, ui));
         return;
       }
@@ -2438,6 +2440,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("VM:" + vm.name));
 
     row = new Row();
@@ -2456,6 +2464,10 @@ public class ConfigService implements WebUIHandler {
     //TODO : confirm move is possible (check storage requirements)
 
     start.addClickListener((me, cmp) -> {
+      if (vm.getState() != VirtualMachine.STATE_OFF) {
+        errmsg.setText("Can not data migrate live VM");
+        return;
+      }
       Task task = new Task("Migrate VM : " + vm.name) {
         public void doTask() {
           if (vmm.migrateData(vm, dest)) {

@@ -27,7 +27,7 @@ int (*_virDomainResume)(void* dom);
 int (*_virDomainGetState)(void* dom, int* state, int* reason, int flags);
 int (*_virConnectListAllDomains)(void* conn, void*** doms, int flags);
 char* (*_virDomainGetMetadata)(void* dom, int type, const char* uri, int flags);
-void* (*_virDomainMigrate3)(void* dom, void* dconn, void* params, int nparams, int flags);
+void* (*_virDomainMigrate3ToURI3)(void* dom, const char* duri, void* params, int nparams, int flags);
 
 //storage
 void* (*_virStoragePoolDefineXML)(void* conn, const char* xml, int flags);
@@ -99,7 +99,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virDomainGetState, "virDomainGetState");
   getFunction(virt, (void**)&_virConnectListAllDomains, "virConnectListAllDomains");
   getFunction(virt, (void**)&_virDomainGetMetadata, "virDomainGetMetadata");
-  getFunction(virt, (void**)&_virDomainMigrate3, "virDomainMigrate3");
+  getFunction(virt, (void**)&_virDomainMigrate3ToURI3, "virDomainMigrate3ToURI3");
 
   //storage
   getFunction(virt, (void**)&_virStoragePoolDefineXML, "virStoragePoolDefineXML");
@@ -162,9 +162,13 @@ static void* connect() {
   return connect("/system");
 }
 
+static void create_remote_uri(char* out, const char *host) {
+  sprintf(url, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/cluster/%s", host, host);
+}
+
 static void* connect_remote(const char* host) {
   char url[1024];
-  sprintf(url, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/cluster/%s", host, host);
+  create_remote_url(url, host);
   void* conn = (*_virConnectOpen)(url);
   if (conn == NULL) {
     printf("VM:connect_remote(%s) failed\n", host);
@@ -620,8 +624,9 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nget
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
-  (JNIEnv *e, jobject o, jstring name, jstring desthost, jobject status)
+  (JNIEnv *e, jobject o, jstring name, jstring desthost, jboolean live, jobject status)
 {
+  char durl[1024];
   void* conn = connect();
   if (conn == NULL) return JNI_FALSE;
 
@@ -638,25 +643,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
 
   const char* cdesthost = e->GetStringUTFChars(desthost, NULL);
 
-  void* dconn = connect_remote(cdesthost);
+  create_remote_url(durl, cdesthost);
 
   e->ReleaseStringUTFChars(desthost, cdesthost);
 
-  if (dconn == NULL) {
-    disconnect(conn);
-    return JNI_FALSE;
+  int flags = VIR_MIGRATE_PEER2PEER | VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_UNDEFINE_SOURCE | VIR_MIGRATE_PERSIST_DEST;
+  if (live) {
+    flags |= VIR_MIGRATE_LIVE;
+  } else {
+    flags |= VIR_MIGRATE_OFFLINE;
   }
 
-  void* ddom = (*_virDomainMigrate3)(dom, dconn, NULL, 0, 0);
+  int res = (*_virDomainMigrate3ToURI3)(dom, durl, NULL, 0, flags);
 
   (*_virDomainFree)(dom);
-  disconnect(dconn);
   disconnect(conn);
 
-  if (ddom == NULL) return JNI_FALSE;
-  (*_virDomainFree)(ddom);
-
-  return JNI_TRUE;
+  return res == 0;
 }
 
 //Storage
@@ -1258,7 +1261,7 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"nsuspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsuspend},
   {"nrestore", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestore},
   {"nget", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nget},
-  {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;Ljavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
+  {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
 };
 
 #include "register.h"
