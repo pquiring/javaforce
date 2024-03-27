@@ -172,7 +172,7 @@ public class Storage implements Serializable {
     sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
     sb.append("    <host name='" + host + "'/>");
-    sb.append("    <device path='" + srcPath + "'/>");
+    sb.append("    <dir path='" + srcPath + "'/>");
     sb.append("    <format type='nfs'/>");
     sb.append("  </source>");
     sb.append("  <target>");
