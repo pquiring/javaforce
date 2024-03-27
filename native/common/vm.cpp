@@ -27,7 +27,7 @@ int (*_virDomainResume)(void* dom);
 int (*_virDomainGetState)(void* dom, int* state, int* reason, int flags);
 int (*_virConnectListAllDomains)(void* conn, void*** doms, int flags);
 char* (*_virDomainGetMetadata)(void* dom, int type, const char* uri, int flags);
-void* (*_virDomainMigrate3ToURI3)(void* dom, const char* duri, void* params, int nparams, int flags);
+int (*_virDomainMigrateToURI3)(void* dom, const char* duri, void* params, int nparams, int flags);
 
 //storage
 void* (*_virStoragePoolDefineXML)(void* conn, const char* xml, int flags);
@@ -99,7 +99,7 @@ void vm_init() {
   getFunction(virt, (void**)&_virDomainGetState, "virDomainGetState");
   getFunction(virt, (void**)&_virConnectListAllDomains, "virConnectListAllDomains");
   getFunction(virt, (void**)&_virDomainGetMetadata, "virDomainGetMetadata");
-  getFunction(virt, (void**)&_virDomainMigrate3ToURI3, "virDomainMigrate3ToURI3");
+  getFunction(virt, (void**)&_virDomainMigrateToURI3, "virDomainMigrateToURI3");
 
   //storage
   getFunction(virt, (void**)&_virStoragePoolDefineXML, "virStoragePoolDefineXML");
@@ -163,12 +163,12 @@ static void* connect() {
 }
 
 static void create_remote_uri(char* out, const char *host) {
-  sprintf(url, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/cluster/%s", host, host);
+  sprintf(out, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/cluster/%s", host, host);
 }
 
 static void* connect_remote(const char* host) {
   char url[1024];
-  create_remote_url(url, host);
+  create_remote_uri(url, host);
   void* conn = (*_virConnectOpen)(url);
   if (conn == NULL) {
     printf("VM:connect_remote(%s) failed\n", host);
@@ -643,7 +643,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
 
   const char* cdesthost = e->GetStringUTFChars(desthost, NULL);
 
-  create_remote_url(durl, cdesthost);
+  create_remote_uri(durl, cdesthost);
 
   e->ReleaseStringUTFChars(desthost, cdesthost);
 
@@ -654,7 +654,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
     flags |= VIR_MIGRATE_OFFLINE;
   }
 
-  int res = (*_virDomainMigrate3ToURI3)(dom, durl, NULL, 0, flags);
+  int res = (*_virDomainMigrateToURI3)(dom, durl, NULL, 0, flags);
 
   (*_virDomainFree)(dom);
   disconnect(conn);
