@@ -1650,6 +1650,10 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Busy!");
         return;
       }
+      if (_remote_host.equals(Config.current.fqn) || _remote_host.equals("localhost")) {
+        errmsg.setText("Can not connect to localhost");
+        return;
+      }
       remote_connect_status = "Connecting...";
       remote_connect_thread = new Thread() {
         public void run() {
@@ -1657,8 +1661,11 @@ public class ConfigService implements WebUIHandler {
             HTTPS https = new HTTPS();
             https.open(_remote_host);
             byte[] data = https.get("/user/keyfile?token=" + _remote_token);
-            Config.current.saveHost(_remote_host, data);
-            remote_connect_status = "Connected to host:" + _remote_host;
+            if (Config.current.saveHost(_remote_host, data)) {
+              remote_connect_status = "Connected to host:" + _remote_host;
+            } else {
+              remote_connect_status = "Connection failed, check logs.";
+            }
           } catch (Exception e) {
             remote_connect_status = "Connection failed, check logs.";
             JFLog.log(e);

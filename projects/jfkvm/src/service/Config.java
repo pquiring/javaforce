@@ -116,14 +116,17 @@ public class Config implements Serializable {
     return hosts.toArray(JF.StringArrayType);
   }
 
-  public void saveHost(String hostname, byte[] key) {
+  public boolean saveHost(String hostname, byte[] key) {
+    if (key == null || key.length == 0) return false;
     try {
       File file = new File(Paths.clusterPath + "/" + hostname);
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(key);
       fos.close();
+      return true;
     } catch (Exception e) {
       JFLog.log(e);
+      return false;
     }
   }
 
