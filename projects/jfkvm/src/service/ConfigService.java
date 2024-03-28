@@ -2467,10 +2467,15 @@ public class ConfigService implements WebUIHandler {
             //update pool
             vm.pool = dest.name;
             hw.pool = dest.name;
-            if (!vm.saveHardware(hw)) {
-              setResult("Error occured, see logs.");
+            if (vm.saveHardware(hw)) {
+              //now re-register after changes made
+              if (VirtualMachine.register(vm, hw, true, vmm)) {
+                setResult("Completed");
+              } else {
+                setResult("Error occured, see logs.");
+              }
             } else {
-              setResult("Completed");
+              setResult("Error occured, see logs.");
             }
           } else {
             setResult("Error occured, see logs.");
