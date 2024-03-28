@@ -1,5 +1,10 @@
 What's new...
 
+Mar 28/2024 : JF/53.2
+  - jfKVM/0.2
+    - migration support
+    - NFS support
+
 Mar 27/2024 : JF/53.1
  - fix ffmpeg support
    - use avformat_alloc_output_context2() instead of custom function which fixes support for ffmpeg 6.1.1
