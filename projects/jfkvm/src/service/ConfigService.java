@@ -2463,10 +2463,18 @@ public class ConfigService implements WebUIHandler {
             setResult("Error occured, see logs.");
             return;
           }
+          String src_pool = vm.pool;
+          String dest_pool = dest.name;
           if (vmm.migrateData(vm, dest)) {
             //update pool
-            vm.pool = dest.name;
-            hw.pool = dest.name;
+            vm.pool = dest_pool;
+            hw.pool = dest_pool;
+            //update disks that were moved
+            for(Disk disk : hw.disks) {
+              if (disk.pool.equals(src_pool)) {
+                disk.pool = dest_pool;
+              }
+            }
             if (vm.saveHardware(hw)) {
               //now re-register after changes made
               if (VirtualMachine.register(vm, hw, true, vmm)) {
