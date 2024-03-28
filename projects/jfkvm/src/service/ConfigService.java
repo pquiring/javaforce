@@ -1309,10 +1309,9 @@ public class ConfigService implements WebUIHandler {
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
       "Not tested yet:\n" +
-      " - NFS or iSCSI storage pools\n" +
+      " - iSCSI storage pools\n" +
       "\n" +
       "ToDo:\n" +
-      " - migration\n" +
       " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
