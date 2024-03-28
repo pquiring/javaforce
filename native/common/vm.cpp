@@ -647,9 +647,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nmigrate
 
   e->ReleaseStringUTFChars(desthost, cdesthost);
 
-  int flags = VIR_MIGRATE_PEER2PEER | VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_UNDEFINE_SOURCE | VIR_MIGRATE_PERSIST_DEST;
+  int flags = VIR_MIGRATE_PEER2PEER | VIR_MIGRATE_UNDEFINE_SOURCE | VIR_MIGRATE_PERSIST_DEST;
   if (live) {
-    flags |= VIR_MIGRATE_LIVE;
+    flags |= VIR_MIGRATE_LIVE | VIR_MIGRATE_TUNNELLED;
   } else {
     flags |= VIR_MIGRATE_OFFLINE;
   }
