@@ -118,14 +118,15 @@ public class Config implements Serializable {
 
   public boolean saveHost(String hostname, byte[] key) {
     if (key == null || key.length == 0) return false;
+    String fullfile = Paths.clusterPath + "/" + hostname;
     try {
-      File file = new File(Paths.clusterPath + "/" + hostname);
+      File file = new File(fullfile);
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(key);
       fos.close();
       //adjust permissions
-      file.setReadable(true, true);
-      file.setWritable(true, true);
+      ShellProcess sp = new ShellProcess();
+      sp.run(new String[] {"chmod", "600", fullfile}, false);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
