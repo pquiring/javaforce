@@ -1316,6 +1316,7 @@ public class ConfigService implements WebUIHandler {
       " - live migration not working\n" +
       "\n" +
       "ToDo:\n" +
+      " - resize disks\n" +
       " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
