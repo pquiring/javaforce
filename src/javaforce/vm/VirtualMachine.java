@@ -153,8 +153,8 @@ public class VirtualMachine implements Serializable {
 
   //virDomainDefineXML
   private native static boolean nregister(String xml);
-  public static boolean register(VirtualMachine vm, Hardware hardware, VMProvider provider) {
-    String xml = createXML(vm, hardware, provider);
+  public static boolean register(VirtualMachine vm, Hardware hardware, boolean vnc, VMProvider provider) {
+    String xml = createXML(vm, hardware, vnc, provider);
     JFLog.log("VirtualMachine.xml=" + xml);
     return nregister(xml);
   }
@@ -235,8 +235,8 @@ public class VirtualMachine implements Serializable {
    *
    * @return XML
    */
-  private static String createXML(VirtualMachine vm, Hardware hardware, VMProvider provider) {
-    vm.vnc = provider.getVNCPort(hardware.name);
+  private static String createXML(VirtualMachine vm, Hardware hardware, boolean vnc, VMProvider provider) {
+    vm.vnc = vnc ? provider.getVNCPort(hardware.name) : -1;
     String hostname = provider.getServerHostname();
     StringBuilder xml = new StringBuilder();
     xml.append("<domain type='kvm'>");
@@ -297,13 +297,15 @@ public class VirtualMachine implements Serializable {
       //video card
       xml.append("<video>");
       xml.append("<model type='" + hardware.video + "' vram='" + hardware.vram + "' heads='1'/>");
-  //      xml.append("<driver name='qemu'/>");
+//        xml.append("<driver name='qemu'/>");
       xml.append("</video>");
+//      xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       //remote viewing
-      xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' listen='" + hostname + "' sharePolicy='allow-exclusive'>");
-      xml.append("<listen type='address' address='" + hostname + "'/>");
-      xml.append("</graphics>");
-  //    xml.append("<acceleration accel3d='no' accel2d='yes'/>");
+      if (vm.vnc != -1) {
+        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' listen='" + hostname + "' sharePolicy='allow-exclusive'>");
+        xml.append("<listen type='address' address='" + hostname + "'/>");
+        xml.append("</graphics>");
+      }
       if (hardware.disks != null) {
         for(Disk drive : hardware.disks) {
           xml.append(drive.getHardwareXML());
@@ -340,7 +342,7 @@ public class VirtualMachine implements Serializable {
     Hardware hw = new Hardware("pool", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
     hw.disks.add(disk);
     hw.networks.add(nw);
-    System.out.println(createXML(vm, hw, new VMProvider() {
+    System.out.println(createXML(vm, hw, true, new VMProvider() {
       public int getVLAN(String name) {
         return 1;
       }

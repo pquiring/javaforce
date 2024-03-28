@@ -2293,7 +2293,7 @@ public class ConfigService implements WebUIHandler {
       }
       hardware.vram = _vram;
       hardware.validate();
-      if (!VirtualMachine.register(vm, hardware, vmm)) {
+      if (!VirtualMachine.register(vm, hardware, true, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
@@ -2525,8 +2525,18 @@ public class ConfigService implements WebUIHandler {
     start.addClickListener((me, cmp) -> {
       Task task = new Task("Migrate VM : " + vm.name) {
         public void doTask() {
+          //first we need to remove vnc port since it may conflict with other host
+          Hardware hw = vm.loadHardware();
+          if (hw == null) {
+            setResult("Error:Unable to load hardware config");
+            return;
+          }
+          if (!VirtualMachine.register(vm, hw, false, vmm)) {
+            setResult("Error occured, see logs.");
+            return;
+          }
           if (vmm.migrateCompute(vm, remote)) {
-            setResult("Completed");
+            setResult("Completed, edit VM on new host to enable VNC.");
           } else {
             setResult("Error occured, see logs.");
           }
@@ -2615,7 +2625,7 @@ public class ConfigService implements WebUIHandler {
               return;
             }
             VirtualMachine vm = new VirtualMachine(hardware);
-            if (!VirtualMachine.register(vm, hardware, vmm)) {
+            if (!VirtualMachine.register(vm, hardware, true, vmm)) {
               ui.message_message.setText("Failed to register VM, see logs.");
               ui.message_popup.setVisible(true);
               return;
