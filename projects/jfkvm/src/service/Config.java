@@ -144,6 +144,7 @@ public class Config implements Serializable {
       known_hosts.write(output.getBytes());
       known_hosts.close();
       hosts.put(hostname, token);
+      save();
       return true;
     } catch (Exception e) {
       JFLog.log(e);
