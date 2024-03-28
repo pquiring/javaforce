@@ -20,7 +20,7 @@ import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "0.1";
-  public static boolean debug = false;
+  public static boolean debug = true;
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
@@ -2538,7 +2538,7 @@ public class ConfigService implements WebUIHandler {
             return;
           }
           if (vmm.migrateCompute(vm, remote)) {
-            setResult("Completed, edit VM on new host to enable VNC.");
+            setResult("Completed");
             //notify other host of transfer
             notify_host(remote, "migratevm", vm.name);
           } else {
