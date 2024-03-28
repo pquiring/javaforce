@@ -30,6 +30,7 @@ Features supported:
  - Networking : bridge, guests on VLANs
  - Storage Pools : Local Disk Partition, NFS, iSCSI
  - import vmware machines
+ - data and compute migration
  - autostart machines
 
 Not supported:
@@ -37,10 +38,13 @@ Not supported:
  - vmdk file split into multiple 2GB extents
 
 Not tested yet:
- - NFS or iSCSI storage pools
+ - iSCSI storage pools
+
+Known issues:
+ - live migration not working
 
 ToDo:
- - migration
+ - resize disks
  - VNC security (currently no password)
 
 Thanks to Broadcom for the motivation to create this project! &#x263a;

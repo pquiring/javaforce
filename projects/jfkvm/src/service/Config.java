@@ -139,6 +139,7 @@ public class Config implements Serializable {
       sp.run(new String[] {"/usr/bin/ssh-keygen", "-R", hostname}, false);
       //add host to known_hosts
       String output = sp.run(new String[] {"/usr/bin/ssh-keyscan", "-H", hostname}, false);
+      //TODO : only keep lines that start with |
       //append output to known_hosts
       FileOutputStream known_hosts = new FileOutputStream("/root/.ssh/known_hosts", true);
       known_hosts.write(output.getBytes());
