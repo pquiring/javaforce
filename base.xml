@@ -131,6 +131,7 @@
   </target>
 
   <target name="installapproot">
+    <!-- this will run "install" target in project as root including sub-projects -->
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.InstallProject" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
