@@ -1,6 +1,8 @@
 2024-03-28 : 0.2 released!
   - implement data and compute migration
+    - live migration not working
   - fix and test NFS storage support
+  - add clustering support (required for compute migration)
 
 2024-03-26 : 0.1 released!
   - init public release

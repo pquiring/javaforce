@@ -19,7 +19,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.1";
+  public static String version = "0.2";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
