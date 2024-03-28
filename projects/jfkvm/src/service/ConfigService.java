@@ -1612,7 +1612,7 @@ public class ConfigService implements WebUIHandler {
         public void run() {
           try {
             ShellProcess sp = new ShellProcess();
-            sp.run(new String[] {"ssh-keygen", "-b", "2048", "-t", "rsa", "-f", Paths.clusterPath + "/localhost", "-q", "-N", "\"\""}, true);
+            sp.run(new String[] {"ssh-keygen", "-b", "2048", "-t", "rsa", "-f", Paths.clusterPath + "/localhost", "-q", "-N", ""}, true);
             if (sp.getErrorLevel() != 0) {
               errmsg.setText("Failed to generate key");
               return;

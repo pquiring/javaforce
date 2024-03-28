@@ -163,7 +163,7 @@ static void* connect() {
 }
 
 static void create_remote_uri(char* out, const char *host) {
-  sprintf(out, "qemu+ssh://root@%s/system?no_verify=1&keyfile=/root/cluster/%s", host, host);
+  sprintf(out, "qemu+ssh://root@%s/system?no_verify=1&no_tty=1&keyfile=/root/cluster/%s", host, host);
 }
 
 static void* connect_remote(const char* host) {

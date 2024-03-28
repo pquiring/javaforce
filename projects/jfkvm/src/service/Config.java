@@ -118,15 +118,23 @@ public class Config implements Serializable {
 
   public boolean saveHost(String hostname, byte[] key) {
     if (key == null || key.length == 0) return false;
-    String fullfile = Paths.clusterPath + "/" + hostname;
+    String keyfile = Paths.clusterPath + "/" + hostname;
     try {
-      File file = new File(fullfile);
+      File file = new File(keyfile);
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(key);
       fos.close();
       //adjust permissions
       ShellProcess sp = new ShellProcess();
-      sp.run(new String[] {"chmod", "600", fullfile}, false);
+      sp.run(new String[] {"/usr/bin/chmod", "600", keyfile}, false);
+      //remove any previous entries from known_hosts
+      sp.run(new String[] {"/usr/bin/ssh-keygen", "-R", hostname}, false);
+      //add host to known_hosts
+      String output = sp.run(new String[] {"/usr/bin/ssh-keyscan", "-H", hostname}, false);
+      //append output to known_hosts
+      FileOutputStream known_hosts = new FileOutputStream("/root/.ssh/known_hosts", true);
+      known_hosts.write(output.getBytes());
+      known_hosts.close();
       return true;
     } catch (Exception e) {
       JFLog.log(e);
