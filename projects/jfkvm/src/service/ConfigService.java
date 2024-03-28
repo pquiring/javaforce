@@ -3586,7 +3586,7 @@ public class ConfigService implements WebUIHandler {
     try {
       HTTPS https = new HTTPS();
       https.open(host);
-      https.get("/api/notfiy?msg=" + msg + "&name=" + name + "&token=" + token);
+      https.get("/api/notify?msg=" + msg + "&name=" + name + "&token=" + token);
       https.close();
       return true;
     } catch (Exception e) {
@@ -3596,7 +3596,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public byte[] getResource(String url) {
-    //url = /api/keyfile?token=...
+    //url = /api/...
     if (debug) {
       JFLog.log("url=" + url);
     }
@@ -3671,6 +3671,7 @@ public class ConfigService implements WebUIHandler {
         if (token.equals(Config.current.token)) {
           switch (msg) {
             case "migratevm": {
+              if (name == null) return "error".getBytes();
               VirtualMachine[] vms = VirtualMachine.list();
               for(VirtualMachine vm : vms) {
                 if (vm.name.equals(name)) {
