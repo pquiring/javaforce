@@ -98,9 +98,7 @@ public class Config implements Serializable {
   }
 
   public String getKeyStatus() {
-    File file1 = new File(Paths.clusterPath + "/localhost");
-    File file2 = new File("/root/.ssh/authorized_keys");
-    return "client key exists:" + file1.exists() + ",server key exists:" + file2.exists();
+    if (isKeyValid()) return "Valid"; else return "Not found";
   }
 
   public boolean isKeyValid() {

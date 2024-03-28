@@ -1534,7 +1534,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Local Key:"));
     Button local_key_generate = new Button("Generate");
     row.add(local_key_generate);
-    Label local_key_status = new Label(Config.current.getKeyStatus());
+    Label local_key_status = new Label("Status:" + Config.current.getKeyStatus());
     row.add(local_key_status);
 
     row = new Row();
@@ -1600,6 +1600,9 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Generate Key") {
         public void doTask() {
           try {
+            try {new File("/root/cluster/localhost").delete();} catch (Exception e) {}
+            try {new File("/root/cluster/localhost.pub").delete();} catch (Exception e) {}
+            try {new File("/root/.ssh/authorized_keys").delete();} catch (Exception e) {}
             ShellProcess sp = new ShellProcess();
             sp.run(new String[] {"ssh-keygen", "-b", "2048", "-t", "rsa", "-f", Paths.clusterPath + "/localhost", "-q", "-N", ""}, true);
             if (sp.getErrorLevel() != 0) {
