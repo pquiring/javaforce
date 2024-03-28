@@ -1643,7 +1643,7 @@ public class ConfigService implements WebUIHandler {
           try {
             HTTPS https = new HTTPS();
             https.open(_remote_host);
-            byte[] data = https.get("/user/keyfile?token=" + _remote_token);
+            byte[] data = https.get("/api/keyfile?token=" + _remote_token);
             if (Config.current.saveHost(_remote_host, data, _remote_token)) {
               setStatus("Connected to host:" + _remote_host);
             } else {
@@ -3584,7 +3584,7 @@ public class ConfigService implements WebUIHandler {
     try {
       HTTPS https = new HTTPS();
       https.open(host);
-      https.get("/user/notfiy?msg=" + msg + "&name=" + name + "&token=" + token);
+      https.get("/api/notfiy?msg=" + msg + "&name=" + name + "&token=" + token);
       https.close();
       return true;
     } catch (Exception e) {
@@ -3594,7 +3594,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public byte[] getResource(String url) {
-    //url = /user/keyfile?token=...
+    //url = /api/keyfile?token=...
     if (debug) {
       JFLog.log("url=" + url);
     }
@@ -3610,7 +3610,7 @@ public class ConfigService implements WebUIHandler {
     }
     String[] params = paramstr.split("[&]");
     switch (uri) {
-      case "/user/keyfile": {
+      case "/api/keyfile": {
         File file = new File("/root/cluster/localhost");
         if (!file.exists()) {
           JFLog.log("ssh client key not found");
@@ -3650,7 +3650,7 @@ public class ConfigService implements WebUIHandler {
         }
         break;
       }
-      case "/user/notify": {
+      case "/api/notify": {
         String token = null;
         String msg = null;
         String name = null;
