@@ -3692,6 +3692,9 @@ public class ConfigService implements WebUIHandler {
         }
         break;
       }
+      case "/api/getver": {
+        return version.getBytes();
+      }
     }
     return null;
   }
