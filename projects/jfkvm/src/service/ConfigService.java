@@ -2456,7 +2456,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Can not data migrate live VM");
         return;
       }
-      Task task = new Task("Migrate VM : " + vm.name) {
+      Task task = new Task("Data Migrate VM : " + vm.name) {
         public void doTask() {
           Hardware hw = vm.loadHardware();
           if (hw == null) {
@@ -2555,7 +2555,7 @@ public class ConfigService implements WebUIHandler {
     //TODO : confirm move is possible (check cpu,memory,network,device requirements)
 
     start.addClickListener((me, cmp) -> {
-      Task task = new Task("Migrate VM : " + vm.name) {
+      Task task = new Task("Compute Migrate VM : " + vm.name) {
         public void doTask() {
           //first we need to remove vnc port since it may conflict with other host
           Hardware hw = vm.loadHardware();
