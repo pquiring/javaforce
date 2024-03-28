@@ -20,7 +20,7 @@ import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "0.1";
-  public static boolean debug = true;
+  public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
