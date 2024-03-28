@@ -1558,12 +1558,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Remote Host:"));
-    TextField remote_host = new TextField("");
-    row.add(remote_host);
     row.add(new Label("Remote Token:"));
     TextField remote_token = new TextField("");
     row.add(remote_token);
+    row.add(new Label("Remote Host:"));
+    TextField remote_host = new TextField("");
+    row.add(remote_host);
     Button connect = new Button("Connect");
     row.add(connect);
 
