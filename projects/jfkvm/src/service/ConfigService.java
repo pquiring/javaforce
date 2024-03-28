@@ -22,8 +22,7 @@ public class ConfigService implements WebUIHandler {
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
-  private Thread remote_connect_thread;
-  private String remote_connect_status;
+  private boolean genkey;
 
   private static final String[] filter_disks = new String[] {
     ".*[.]vmdk",
@@ -1521,15 +1520,6 @@ public class ConfigService implements WebUIHandler {
     errmsg.setColor(Color.red);
     row.add(errmsg);
 
-    if (remote_connect_status == null) {
-      remote_connect_status = "";
-    }
-    row = new Row();
-    panel.add(row);
-    Label msg = new Label(remote_connect_status);
-    row.add(msg);
-    remote_connect_status = null;
-
     row = new Row();
     panel.add(row);
     Button refresh = new Button("Refresh");
@@ -1603,13 +1593,12 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Key is already valid");
         return;
       }
-      if (remote_connect_thread != null) {
+      if (genkey) {
         errmsg.setText("Busy!");
         return;
       }
-      remote_connect_status = "Generating...";
-      remote_connect_thread = new Thread() {
-        public void run() {
+      Task task = new Task("Generate Key") {
+        public void doTask() {
           try {
             ShellProcess sp = new ShellProcess();
             sp.run(new String[] {"ssh-keygen", "-b", "2048", "-t", "rsa", "-f", Paths.clusterPath + "/localhost", "-q", "-N", ""}, true);
@@ -1620,15 +1609,15 @@ public class ConfigService implements WebUIHandler {
             new File("/root/.ssh").mkdir();
             new File("/root/.ssh/authorized_keys").delete();
             sp.run(new String[] {"mv", Paths.clusterPath + "/localhost.pub", "/root/.ssh/authorized_keys"}, true);
+            setStatus("Complete");
           } catch (Exception e) {
-            remote_connect_status = "Generate keys failed, check logs.";
+            setStatus("Error:Generate keys failed, check logs.");
             JFLog.log(e);
           }
-          remote_connect_thread = null;
+          genkey = false;
         }
       };
-      remote_connect_thread.start();
-      msg.setText("Generating...click Refresh to check status");
+      KVMService.tasks.addTask(ui.tasks, task);
     });
 
     local_token_generate.addClickListener((me, cmp) -> {
@@ -1647,35 +1636,28 @@ public class ConfigService implements WebUIHandler {
       //download to clusterPath
       String _remote_host = remote_host.getText();
       String _remote_token = remote_token.getText();
-      if (remote_connect_thread != null) {
-        errmsg.setText("Busy!");
-        return;
-      }
-      if (_remote_host.equals(Config.current.fqn) || _remote_host.equals("localhost")) {
+      if (_remote_host.equals(Config.current.fqn) || _remote_host.equals("localhost") || _remote_host.equals("127.0.0.1")) {
         errmsg.setText("Can not connect to localhost");
         return;
       }
-      remote_connect_status = "Connecting...";
-      remote_connect_thread = new Thread() {
-        public void run() {
+      Task task = new Task("Connect to host:" + _remote_host) {
+        public void doTask() {
           try {
             HTTPS https = new HTTPS();
             https.open(_remote_host);
             byte[] data = https.get("/user/keyfile?token=" + _remote_token);
             if (Config.current.saveHost(_remote_host, data)) {
-              remote_connect_status = "Connected to host:" + _remote_host;
+              setStatus("Connected to host:" + _remote_host);
             } else {
-              remote_connect_status = "Connection failed, check logs.";
+              setStatus("Connection failed, check logs.");
             }
           } catch (Exception e) {
-            remote_connect_status = "Connection failed, check logs.";
+            setStatus("Connection failed, check logs.");
             JFLog.log(e);
           }
-          remote_connect_thread = null;
         }
       };
-      remote_connect_thread.start();
-      msg.setText("Connecting...click Refresh to check status");
+      KVMService.tasks.addTask(ui.tasks, task);
     });
 
     remove.addClickListener((me, cmp) -> {
