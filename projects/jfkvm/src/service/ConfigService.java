@@ -2659,6 +2659,17 @@ public class ConfigService implements WebUIHandler {
               ui.message_popup.setVisible(true);
               return;
             }
+            if (!hardware.pool.equals(pool.name)) {
+              //user has manaully moved this vm files
+              hardware.pool = pool.name;
+              //check disks too
+              for(Disk disk : hardware.disks) {
+                if (!disk.exists() && disk.exists(pool.name)) {
+                  //disk has moved
+                  disk.pool = pool.name;
+                }
+              }
+            }
             VirtualMachine vm = new VirtualMachine(hardware);
             if (!VirtualMachine.register(vm, hardware, true, vmm)) {
               ui.message_message.setText("Failed to register VM, see logs.");

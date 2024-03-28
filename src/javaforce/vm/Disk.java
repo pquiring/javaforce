@@ -50,6 +50,19 @@ public class Disk implements Serializable {
     return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
   }
 
+  /** Get path using a different pool. */
+  public String getPath(String pool) {
+    return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
+  }
+
+  public boolean exists() {
+    return new File(getPath()).exists();
+  }
+
+  public boolean exists(String pool) {
+    return new File(getPath(pool)).exists();
+  }
+
   private String getPath2() {
     if (type == TYPE_VMDK) {
       String flat = "/volumes/" + pool + "/" + folder + "/" + name + "-flat." + getType();
