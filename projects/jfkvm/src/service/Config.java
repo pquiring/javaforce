@@ -123,6 +123,9 @@ public class Config implements Serializable {
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(key);
       fos.close();
+      //adjust permissions
+      file.setReadable(true, true);
+      file.setWritable(true, true);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
