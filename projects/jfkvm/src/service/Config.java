@@ -6,7 +6,8 @@ package service;
  */
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -30,6 +31,9 @@ public class Config implements Serializable {
   public ArrayList<NetworkVLAN> vlans = new ArrayList<>();  //network vlan groups (port groups)
   public ArrayList<NetworkVirtual> nics = new ArrayList<>();  //vm kernel nics
 
+  //remove host tokens : host, token
+  public HashMap<String, String> hosts = new HashMap<>();
+
   public Config() {
     valid();
   }
@@ -50,6 +54,9 @@ public class Config implements Serializable {
     if (nics == null) {
       nics = new ArrayList<>();
     }
+    if (hosts == null) {
+      hosts = new HashMap<>();
+    }
     if (auto_start_delay < 30) {
       auto_start_delay = 30;
     }
@@ -58,6 +65,9 @@ public class Config implements Serializable {
     }
     if (auto_start_vms == null) {
       auto_start_vms = new ArrayList<>();
+    }
+    if (token == null) {
+      token = UUID.generate();
     }
   }
 
@@ -116,7 +126,7 @@ public class Config implements Serializable {
     return hosts.toArray(JF.StringArrayType);
   }
 
-  public boolean saveHost(String hostname, byte[] key) {
+  public boolean saveHost(String hostname, byte[] key, String token) {
     if (key == null || key.length == 0) return false;
     String keyfile = Paths.clusterPath + "/" + hostname;
     try {
@@ -135,6 +145,7 @@ public class Config implements Serializable {
       FileOutputStream known_hosts = new FileOutputStream("/root/.ssh/known_hosts", true);
       known_hosts.write(output.getBytes());
       known_hosts.close();
+      hosts.put(hostname, token);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -142,10 +153,16 @@ public class Config implements Serializable {
     }
   }
 
+  public String getHostToken(String hostname) {
+    return hosts.get(hostname);
+  }
+
   public void removeHost(String hostname) {
     try {
       File file = new File(Paths.clusterPath + "/" + hostname);
       file.delete();
+      hosts.remove(hostname);
+      save();
     } catch (Exception e) {
       JFLog.log(e);
     }

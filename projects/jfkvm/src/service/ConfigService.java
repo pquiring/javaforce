@@ -4,6 +4,8 @@ package service;
  *
  * TODO : convert many ops into tasks
  *
+ * TODO : re-enable vnc on new host after compute migration
+ *
  * @author pquiring
  */
 
@@ -1543,8 +1545,6 @@ public class ConfigService implements WebUIHandler {
     row.add(local_token);
     Button local_token_generate = new Button("Generate");
     row.add(local_token_generate);
-    Button local_token_delete = new Button("Delete");
-    row.add(local_token_delete);
 
     row = new Row();
     panel.add(row);
@@ -1620,15 +1620,14 @@ public class ConfigService implements WebUIHandler {
     });
 
     local_token_generate.addClickListener((me, cmp) -> {
-      Config.current.token = UUID.generate();
-      Config.current.save();
-      ui.setRightPanel(hostPanel(ui, 3));
-    });
-
-    local_token_delete.addClickListener((me, cmp) -> {
-      Config.current.token = null;
-      Config.current.save();
-      ui.setRightPanel(hostPanel(ui, 3));
+      ui.confirm_message.setText("Regenerate token will disconnect other hosts.");
+      ui.confirm_button.setText("Generate");
+      ui.confirm_action = () -> {
+        Config.current.token = UUID.generate();
+        Config.current.save();
+        ui.setRightPanel(hostPanel(ui, 3));
+      };
+      ui.confirm_popup.setVisible(true);
     });
 
     connect.addClickListener((me, cmp) -> {
@@ -1645,11 +1644,12 @@ public class ConfigService implements WebUIHandler {
             HTTPS https = new HTTPS();
             https.open(_remote_host);
             byte[] data = https.get("/user/keyfile?token=" + _remote_token);
-            if (Config.current.saveHost(_remote_host, data)) {
+            if (Config.current.saveHost(_remote_host, data, _remote_token)) {
               setStatus("Connected to host:" + _remote_host);
             } else {
               setStatus("Connection failed, check logs.");
             }
+            https.close();
           } catch (Exception e) {
             setStatus("Connection failed, check logs.");
             JFLog.log(e);
@@ -2537,6 +2537,8 @@ public class ConfigService implements WebUIHandler {
           }
           if (vmm.migrateCompute(vm, remote)) {
             setResult("Completed, edit VM on new host to enable VNC.");
+            //notify other host of transfer
+            notify_host(remote, "migratevm", vm.name);
           } else {
             setResult("Error occured, see logs.");
           }
@@ -3573,6 +3575,24 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
+  private boolean notify_host(String host, String msg, String name) {
+    String token = Config.current.getHostToken(host);
+    if (token == null) {
+      JFLog.log("Host token not found:" + host);
+      return false;
+    }
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      https.get("/user/notfiy?msg=" + msg + "&name=" + name + "&token=" + token);
+      https.close();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   public byte[] getResource(String url) {
     //url = /user/keyfile?token=...
     if (debug) {
@@ -3589,43 +3609,85 @@ public class ConfigService implements WebUIHandler {
       paramstr = "";
     }
     String[] params = paramstr.split("[&]");
-    if (uri.equals("/user/keyfile")) {
-      File file = new File("/root/cluster/localhost");
-      if (!file.exists()) {
-        JFLog.log("ssh client key not found");
-        return null;
-      }
-      if (Config.current.token == null) {
-        JFLog.log("token not setup");
-        return null;
-      }
-      String token = null;
-      for(String param : params) {
-        int idx = param.indexOf('=');
-        if (idx == -1) continue;
-        String key = param.substring(0, idx);
-        String value = param.substring(idx + 1);
-        switch (key) {
-          case "token": token = value; break;
-        }
-      }
-      if (token == null) {
-        JFLog.log("token not supplied");
-        return null;
-      }
-      if (token.equals(Config.current.token)) {
-        //send ssh key
-        try {
-          FileInputStream fis = new FileInputStream(file);
-          byte[] data = fis.readAllBytes();
-          fis.close();
-          return data;
-        } catch (Exception e) {
-          JFLog.log(e);
+    switch (uri) {
+      case "/user/keyfile": {
+        File file = new File("/root/cluster/localhost");
+        if (!file.exists()) {
+          JFLog.log("ssh client key not found");
           return null;
         }
-      } else {
-        JFLog.log("token does not match");
+        if (Config.current.token == null) {
+          JFLog.log("token not setup");
+          return null;
+        }
+        String token = null;
+        for(String param : params) {
+          int idx = param.indexOf('=');
+          if (idx == -1) continue;
+          String key = param.substring(0, idx);
+          String value = param.substring(idx + 1);
+          switch (key) {
+            case "token": token = value; break;
+          }
+        }
+        if (token == null) {
+          JFLog.log("token not supplied");
+          return null;
+        }
+        if (token.equals(Config.current.token)) {
+          //send ssh key
+          try {
+            FileInputStream fis = new FileInputStream(file);
+            byte[] data = fis.readAllBytes();
+            fis.close();
+            return data;
+          } catch (Exception e) {
+            JFLog.log(e);
+            return null;
+          }
+        } else {
+          JFLog.log("token does not match");
+        }
+        break;
+      }
+      case "/user/notify": {
+        String token = null;
+        String msg = null;
+        String name = null;
+        for(String param : params) {
+          int idx = param.indexOf('=');
+          if (idx == -1) continue;
+          String key = param.substring(0, idx);
+          String value = param.substring(idx + 1);
+          switch (key) {
+            case "token": token = value; break;
+            case "msg": msg = value; break;
+            case "name": name = value; break;
+          }
+        }
+        if (msg == null) return null;
+        if (token.equals(Config.current.token)) {
+          switch (msg) {
+            case "migratevm": {
+              VirtualMachine[] vms = VirtualMachine.list();
+              for(VirtualMachine vm : vms) {
+                if (vm.name.equals(name)) {
+                  Hardware hw = vm.loadHardware();
+                  if (hw == null) return "error".getBytes();
+                  //reassign local vnc port
+                  if (VirtualMachine.register(vm, hw, true, vmm)) {
+                    return "okay".getBytes();
+                  }
+                  return "error".getBytes();
+                }
+              }
+              break;
+            }
+          }
+        } else {
+          return null;
+        }
+        break;
       }
     }
     return null;
