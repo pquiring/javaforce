@@ -176,27 +176,27 @@ public class VirtualMachine implements Serializable {
     if (status == null) {
       status = Status.null_status;
     }
-    String src_folder = "/volumes/" + pool + "/" + name;
-    String dest_folder = "/volumes/" + destpool + "/" + name;
-    File src_file = new File(src_folder);
-    if (!src_file.exists()) {
+    String _src_folder = "/volumes/" + pool + "/" + name;
+    String _dest_folder = "/volumes/" + destpool + "/" + name;
+    File src_folder = new File(_src_folder);
+    if (!src_folder.exists()) {
       status.setStatus("Source folder not found");
       status.setResult(false);
       return false;
     }
-    File dest_file = new File(dest_folder);
-    if (dest_file.exists()) {
+    File dest_folder = new File(_dest_folder);
+    if (dest_folder.exists()) {
       status.setStatus("Dest folder already exists");
       status.setResult(false);
       return false;
     }
-    dest_file.mkdir();
-    if (!dest_file.exists()) {
+    dest_folder.mkdir();
+    if (!dest_folder.exists()) {
       status.setStatus("Unable to create Dest folder");
       status.setResult(false);
       return false;
     }
-    File[] files = src_file.listFiles();
+    File[] files = src_folder.listFiles();
     if (files == null || files.length == 0) {
       status.setStatus("No files found");
       status.setResult(false);
@@ -210,7 +210,7 @@ public class VirtualMachine implements Serializable {
       if (file.isDirectory()) continue;
       String name = file.getName();
       Path src_path = file.toPath();
-      Path dest_path = new File(dest_folder + "/" + name).toPath();
+      Path dest_path = new File(_dest_folder + "/" + name).toPath();
       try {
         Files.move(src_path, dest_path);
       } catch (Exception e) {
@@ -221,6 +221,7 @@ public class VirtualMachine implements Serializable {
       }
       status.setPercent((done * 100) / todo);
     }
+    src_folder.delete();
     status.setPercent(100);
     status.setStatus("Done");
     status.setResult(true);

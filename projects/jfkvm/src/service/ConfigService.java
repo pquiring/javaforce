@@ -1302,6 +1302,7 @@ public class ConfigService implements WebUIHandler {
       " - Networking : bridge, guests on VLANs\n" +
       " - Storage Pools : Local Disk Partition, NFS, iSCSI\n" +
       " - import vmware machines\n" +
+      " - offline migration\n" +
       " - autostart machines\n" +
       "\n" +
       "Not supported:\n" +
@@ -1310,6 +1311,9 @@ public class ConfigService implements WebUIHandler {
       "\n" +
       "Not tested yet:\n" +
       " - iSCSI storage pools\n" +
+      "\n" +
+      "Known issues:\n" +
+      " - live migration not working\n" +
       "\n" +
       "ToDo:\n" +
       " - VNC security (currently no password)\n" +
@@ -2453,8 +2457,20 @@ public class ConfigService implements WebUIHandler {
       }
       Task task = new Task("Migrate VM : " + vm.name) {
         public void doTask() {
+          Hardware hw = vm.loadHardware();
+          if (hw == null) {
+            setResult("Error occured, see logs.");
+            return;
+          }
           if (vmm.migrateData(vm, dest)) {
-            setResult("Completed");
+            //update pool
+            vm.pool = dest.name;
+            hw.pool = dest.name;
+            if (!vm.saveHardware(hw)) {
+              setResult("Error occured, see logs.");
+            } else {
+              setResult("Completed");
+            }
           } else {
             setResult("Error occured, see logs.");
           }
