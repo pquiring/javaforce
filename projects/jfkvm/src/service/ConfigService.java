@@ -1615,7 +1615,7 @@ public class ConfigService implements WebUIHandler {
             new File("/root/.ssh").mkdir();
             new File("/root/.ssh/authorized_keys").delete();
             sp.run(new String[] {"mv", Paths.clusterPath + "/localhost.pub", "/root/.ssh/authorized_keys"}, true);
-            setStatus("Complete");
+            setStatus("Completed");
           } catch (Exception e) {
             setStatus("Error:Generate keys failed, check logs.");
             JFLog.log(e);
@@ -2479,6 +2479,7 @@ public class ConfigService implements WebUIHandler {
               //now re-register after changes made
               if (VirtualMachine.register(vm, hw, true, vmm)) {
                 setResult("Completed");
+                //TODO : refresh list
               } else {
                 setResult("Error occured, see logs.");
               }
