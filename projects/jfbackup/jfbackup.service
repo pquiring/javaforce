@@ -1,0 +1,11 @@
+[Unit]
+Description=Backup Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfbackup
+ExecStop=/usr/bin/jfbackup --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

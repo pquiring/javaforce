@@ -1,0 +1,11 @@
+[Unit]
+Description=Network Monitor Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfmonitor
+ExecStop=/usr/bin/jfmonitor --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

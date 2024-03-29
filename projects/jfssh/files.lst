@@ -1,4 +1,4 @@
-/usr/bin/jfssh
+/usr/bin/jfsshcfg
 /usr/bin/jfsshsvc
 /lib/systemd/system/jfssh.service
 
