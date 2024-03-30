@@ -38,4 +38,8 @@
       <fileset dir="." includes="**/*.jar"/>
     </delete>
   </target>
+
+  <target name="install" depends="" description="install files">
+    <copy file="jfplc.jar" todir="/usr/share/java"/>
+  </target>
 </project>

@@ -2,4 +2,4 @@
 /usr/bin/jfftpsvc
 /usr/share/applications/jfftpcfg.desktop
 /usr/share/icons/hicolor/48x48/apps/jfftpcfg.png
-/lib/systemd/system/jfftp.service
+/lib/systemd/system/jfftpcfg.service
