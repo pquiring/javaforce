@@ -1,5 +1,5 @@
 /usr/bin/jfsshcfg
 /usr/bin/jfsshsvc
-/lib/systemd/system/jfssh.service
+/lib/systemd/system/jfsshcfg.service
 
 
