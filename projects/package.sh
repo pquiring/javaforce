@@ -31,10 +31,7 @@ function detectos {
 }
 
 function build {
-  if [ "$1" == "jphonelite-android" ]; then
-    return
-  fi
-  if [ "$1" == "jfrdp" ]; then
+  if [ "$1" == "jfbackup" ]; then
     return
   fi
   cd $1
