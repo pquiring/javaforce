@@ -1,0 +1,3 @@
+/usr/bin/jfbackup
+/lib/systemd/system/jfbackup.service
+/usr/share/java/jfbackup.jar
