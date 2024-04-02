@@ -3458,7 +3458,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50}, 20, 6, 0);
+      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, 20, 6, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
