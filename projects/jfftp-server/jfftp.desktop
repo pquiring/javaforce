@@ -2,12 +2,12 @@
 Name=FTP Server Config
 Comment=Manage your ftp server.
 
-Icon=jfftpcfg
+Icon=jfftp
 
 Type=Application
 Categories=Utility
 
-Exec=jfftpcfg
+Exec=jfftp
 StartupNotify=false
 Terminal=false
 MimeType=
