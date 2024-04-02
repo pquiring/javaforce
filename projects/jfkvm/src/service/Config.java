@@ -57,6 +57,7 @@ public class Config implements Serializable {
     if (hosts == null) {
       hosts = new HashMap<>();
     }
+    upgradeHosts();
     if (auto_start_delay < 30) {
       auto_start_delay = 30;
     }
@@ -175,6 +176,25 @@ public class Config implements Serializable {
 
   public Host[] getHosts() {
     return hosts.keySet().toArray(new Host[0]);
+  }
+
+  private void upgradeHosts() {
+    //up to version 0.3 the host was a String of token
+    String[] keys = hosts.keySet().toArray(JF.StringArrayType);
+    int upgraded = 0;
+    for(String key : keys) {
+      Object value = hosts.get(key);
+      if (value instanceof String) {
+        Host host = new Host();
+        host.token = (String)value;
+        hosts.put(key, host);  //replace value
+        upgraded++;
+      }
+    }
+    if (upgraded > 0) {
+      JFLog.log("NOTE:Upgraded " + upgraded + " hosts");
+      save();
+    }
   }
 
   public void addNetworkVLAN(NetworkVLAN network) {
