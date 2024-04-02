@@ -3458,7 +3458,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50}, 20, 4, 0);
+      Table table = new Table(new int[] {100, 200, 150, 50}, 20, 6, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3468,7 +3468,7 @@ public class ConfigService implements WebUIHandler {
 
       init = () -> {
         table.removeAll();
-        table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "Link"});
+        table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "VLAN", "Bridge", "Link"});
         ui.nics_virt = Config.current.nics;
         NetworkVirtual.getInfo(ui.nics_virt.toArray(new NetworkVirtual[0]));
         for(NetworkVirtual nic : ui.nics_virt) {

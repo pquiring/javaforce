@@ -25,6 +25,7 @@ public class NetworkConfig implements Serializable {
     state = new NetworkState();
   }
 
+  /** Return [name, ip/mask, mac, link] */
   public String[] getState() {
     return new String[] {name, state.ip + "/" + state.netmask, state.mac, state.link};
   }

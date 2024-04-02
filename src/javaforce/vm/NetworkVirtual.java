@@ -32,6 +32,11 @@ public class NetworkVirtual extends NetworkConfig implements Serializable {
     this.vlan = vlan;
   }
 
+  /** Return [name, ip/mask, mac, vlan, bridge, link] */
+  public String[] getState() {
+    return new String[] {name, state.ip + "/" + state.netmask, state.mac, Integer.toString(vlan), bridge, state.link};
+  }
+
   private native static String ngetbridge(String name);
 
   private native static String[] nlistVirt();
