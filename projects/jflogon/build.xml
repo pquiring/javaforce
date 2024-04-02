@@ -46,8 +46,6 @@
     <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
     <copy file="dhclient-script" todir="/etc/dhcp"/>
     <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
-    <mkdir dir="/usr/lib/systemd/system-preset/"/>
-    <copy file="82-jflogon.preset" todir="/usr/lib/systemd/system-preset"/>
     <mkdir dir="/usr/lib/systemd/system/"/>
     <copy file="${app}.service" todir="/usr/lib/systemd/system"/>
     <copy file="weston-logon.ini" todir="/etc"/>
@@ -62,7 +60,6 @@
     <delete file="/usr/sbin/jflogon-rundomain"/>
     <delete file="/usr/sbin/${app}"/>
     <delete file="/etc/dhcp/dhclient-script"/>
-    <delete file="/usr/lib/systemd/system-preset/82-jflogon.preset"/>
     <delete file="/usr/lib/systemd/system/${app}.service"/>
   </target>
 
