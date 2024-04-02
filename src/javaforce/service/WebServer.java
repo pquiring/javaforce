@@ -71,6 +71,9 @@ public class WebServer {
       } else {
         ss = new ServerSocket(port);
       }
+      if (ss == null) {
+        throw new Exception("Failed to start server on port:" + port);
+      }
       new Server(this).start();
     } catch (Exception e) {
       JFLog.log(e);
