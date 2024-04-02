@@ -305,6 +305,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    row.add(new Label("Path"));
+    TextField path = new TextField("");
+    row.add(path);
+    path.setReadonly(true);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("Format"));
     ComboBox type = new ComboBox();
     row.add(type);
@@ -352,6 +359,7 @@ public class ConfigService implements WebUIHandler {
         //create
         name.setText(ui.hardware.getNextDiskName());
         name.setReadonly(false);
+        path.setText(ui.hardware.getPath());
         type.setSelectedIndex(0);
         type.setReadonly(false);
         size.setText("100");
@@ -365,6 +373,7 @@ public class ConfigService implements WebUIHandler {
         //update
         name.setText(ui.vm_disk.name);
         name.setReadonly(true);
+        path.setText(ui.vm_disk.getPath());
         switch (ui.vm_disk.type) {
           case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
           case Disk.TYPE_QCOW2: type.setSelectedIndex(1); break;
