@@ -1,3 +1,10 @@
+2024-04-02 : 0.3 released!
+  - show NetworkVirtual VLAN and Bridge info
+  - show Disk Path info
+  - live migration is not working due to VNC port binding
+    - this will take some major changes to address this issue
+    - a port will have to be allocated that is unique for all servers in the cluster
+
 2024-03-28 : 0.2 released!
   - implement data and compute migration
     - live migration not working
