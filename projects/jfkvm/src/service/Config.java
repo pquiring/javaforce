@@ -186,9 +186,17 @@ public class Config implements Serializable {
       Object value = hosts.get(key);
       if (value instanceof String) {
         Host host = new Host();
+        host.host = key;
         host.token = (String)value;
         hosts.put(key, host);  //replace value
         upgraded++;
+      }
+      if (value instanceof Host) {
+        Host host = (Host)value;
+        if (host.host == null) {
+          host.host = key;
+          upgraded++;
+        }
       }
     }
     if (upgraded > 0) {
