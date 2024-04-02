@@ -74,18 +74,11 @@ fi
 ant repo
 
 #clean repo
-echo cleaning repo/$OS/$ARCH/\*.$pkg
-rm repo/$OS/$ARCH/*.$pkg
-
-#fedora fixes
-if [ "$OS" = "fedora" ]; then
-  sudo chmod 755 /etc/dhcp
-fi
-
-#arch fixes
-if [ "$OS" = "arch" ]; then
-  rm repo/$OS/$ARCH/*.sig
-fi
+echo cleaning repo/$OS/$ARCH/
+cd repo/$OS/$ARCH
+chmod +X clean.sh
+./clean.sh
+cd ../../..
 
 #package javaforce
 ant $pkg
