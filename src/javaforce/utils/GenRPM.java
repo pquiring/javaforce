@@ -80,8 +80,10 @@ public class GenRPM {
       if (debug) {
         System.out.println(new String(JF.readAll(p.getInputStream())));
       }
-      JF.deletePathEx(tmpdir);
-      new File("rpm.spec").delete();
+      if (!debug) {
+        JF.deletePathEx(tmpdir);
+        new File("rpm.spec").delete();
+      }
       rt.exec(new String[] {"mv", JF.getUserPath() + "/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
       System.out.println(out + " created!");
       if (new File(home + "/repo/fedora/readme.txt").exists()) {
