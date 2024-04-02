@@ -16,7 +16,13 @@ public class HTTPS extends HTTP {
     this.host = host;
     this.port = port;
     try {
-      s = JF.connectSSL(host, port);
+      if (!super.open(host, port)) {
+        throw new Exception("Connect failed");
+      }
+      s = JF.connectSSL(s);
+      if (s == null) {
+        throw new Exception("SSL Upgrade failed");
+      }
       os = s.getOutputStream();
       is = s.getInputStream();
     } catch (Exception e) {

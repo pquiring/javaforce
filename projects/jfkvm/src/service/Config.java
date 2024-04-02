@@ -31,8 +31,8 @@ public class Config implements Serializable {
   public ArrayList<NetworkVLAN> vlans = new ArrayList<>();  //network vlan groups (port groups)
   public ArrayList<NetworkVirtual> nics = new ArrayList<>();  //vm kernel nics
 
-  //remove host tokens : host, token
-  public HashMap<String, String> hosts = new HashMap<>();
+  //remote hosts
+  public HashMap<String, Host> hosts = new HashMap<>();
 
   public Config() {
     valid();
@@ -144,7 +144,10 @@ public class Config implements Serializable {
       FileOutputStream known_hosts = new FileOutputStream("/root/.ssh/known_hosts", true);
       known_hosts.write(output.getBytes());
       known_hosts.close();
-      hosts.put(hostname, token);
+      Host host = new Host();
+      host.host = hostname;
+      host.token = token;
+      hosts.put(hostname, host);
       save();
       return true;
     } catch (Exception e) {
@@ -154,7 +157,9 @@ public class Config implements Serializable {
   }
 
   public String getHostToken(String hostname) {
-    return hosts.get(hostname);
+    Host host = hosts.get(hostname);
+    if (host == null) return null;
+    return host.token;
   }
 
   public void removeHost(String hostname) {
@@ -166,6 +171,10 @@ public class Config implements Serializable {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public Host[] getHosts() {
+    return hosts.keySet().toArray(new Host[0]);
   }
 
   public void addNetworkVLAN(NetworkVLAN network) {

@@ -20,6 +20,7 @@ public class HTTP {
   private int code = -1;
   public static boolean debug = false;
   private Progress progress;
+  private static int timeout = 30000;
 
   public static final String formType = "application/x-www-form-urlencoded";
 
@@ -155,6 +156,11 @@ public class HTTP {
     }
   }
 
+  /** Set connect/read timeout in ms (default = 30000) */
+  public static void setTimeout(int timeout) {
+    HTTP.timeout = timeout;
+  }
+
   public boolean open(String host) {
     return open(host, 80);
   }
@@ -164,11 +170,17 @@ public class HTTP {
     this.port = port;
     try {
       if (debug) JFLog.log("HTTP.connect:" + host + ":" + port);
-      s = new Socket(host, port);
+      s = new Socket();
+      s.connect(new InetSocketAddress(host, port), timeout);
       os = s.getOutputStream();
       is = s.getInputStream();
     } catch (Exception e) {
       JFLog.log(e);
+      if (s != null) {
+        try {s.close();} catch (Exception e2) {}
+        s = null;
+      }
+      s = null;
       return false;
     }
     return true;

@@ -59,6 +59,8 @@ public class Tasks extends Thread {
   private static final long ts_cut_time = 5 * 60 * 1000;
 
   public void run() {
+    int secs60 = 0;
+    HTTP.setTimeout(5000);
     while (active) {
       JF.sleep(1000);
       long ts_now = System.currentTimeMillis();
@@ -75,6 +77,42 @@ public class Tasks extends Thread {
           removeTask(task);
         }
       }
+      secs60++;
+      if (secs60 > 60) {
+        if (!check_hosts) {
+          new CheckHosts().start();
+        }
+        secs60 = 0;
+      }
+    }
+  }
+
+  public boolean check_hosts;
+
+  public class CheckHosts extends Thread {
+    //run every minute
+    public void run() {
+      check_hosts = true;
+      try {
+        Host[] hosts = Config.current.getHosts();
+        for(Host host : hosts) {
+          try {
+            HTTPS https = new HTTPS();
+            https.open(host.host);
+            byte[] res = https.get("/api/getver");
+            if (res == null) throw new Exception("offline");
+            String version = new String(res);
+            host.version = Float.valueOf(version);
+            host.online = true;
+          } catch (Exception e) {
+            JFLog.log(e);
+            host.online = false;
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      check_hosts = false;
     }
   }
 }
