@@ -1580,13 +1580,19 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    ListBox hosts = new ListBox();
-    row.add(hosts);
+    Table table = new Table(new int[] {100, 50, 50}, 20, 3, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    table.addRow(new String[] {"Host", "Version", "Online"});
+
+    Host[] hosts = Config.current.getHosts();
 
     try {
-      String[] host_list = Config.getRemoteHosts();
-      for(String host : host_list) {
-        hosts.add(host);
+      for(Host host : hosts) {
+        table.addRow(host.getState());
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -1675,11 +1681,11 @@ public class ConfigService implements WebUIHandler {
     });
 
     remove.addClickListener((me, cmp) -> {
-      int idx = hosts.getSelectedIndex();
+      int idx = table.getSelectedRow();
       if (idx == -1) return;
-      ui.confirm_message.setText("Remove Host:" + hosts.getSelectedItem());
+      ui.confirm_message.setText("Remove Host:" + hosts[idx].host);
       ui.confirm_action = () -> {
-        String host = hosts.getSelectedItem();
+        String host = hosts[idx].host;
         Config.current.removeHost(host);
         ui.setRightPanel(hostPanel(ui, 3));
       };

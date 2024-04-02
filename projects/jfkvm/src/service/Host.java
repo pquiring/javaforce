@@ -16,4 +16,8 @@ public class Host implements Serializable {
   //transient data
   public transient boolean online;
   public transient float version;
+
+  public String[] getState() {
+    return new String[] {host, String.format("%.1f", version), Boolean.toString(online)};
+  }
 }
