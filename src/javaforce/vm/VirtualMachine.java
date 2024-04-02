@@ -3,6 +3,7 @@ package javaforce.vm;
 /** Virtual Machine registered with libvirt. */
 
 import java.io.*;
+import java.util.*;
 import java.nio.file.*;
 
 import javaforce.*;
@@ -22,7 +23,7 @@ public class VirtualMachine implements Serializable {
     //new vm
     pool = hardware.pool;
     name = hardware.name;
-    uuid = UUID.generate();
+    uuid = UUID.randomUUID().toString();
     vnc = -1;  //update during register
   }
 
@@ -330,7 +331,7 @@ public class VirtualMachine implements Serializable {
   }
 
   public static void main(String[] args) {
-    VirtualMachine vm = new VirtualMachine("pool", "example", UUID.generate(), 5901);
+    VirtualMachine vm = new VirtualMachine("pool", "example", UUID.randomUUID().toString(), 5901);
     Disk disk = new Disk();
     disk.pool = "pool";
     disk.folder = "example";

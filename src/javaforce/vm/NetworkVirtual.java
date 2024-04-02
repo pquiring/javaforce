@@ -7,6 +7,7 @@ package javaforce.vm;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -141,7 +142,7 @@ public class NetworkVirtual extends NetworkConfig implements Serializable {
     StringBuilder xml = new StringBuilder();
     xml.append("<network>");
     xml.append("<name>" + name + "</name>");
-    xml.append("<uuid>" + UUID.generate() + "</uuid>");
+    xml.append("<uuid>" + UUID.randomUUID().toString() + "</uuid>");
     xml.append("<forward mode='bridge'/>");
     xml.append("<bridge name='" + bridge.name + "'/>");
 //    xml.append("<mac address='" + mac + "'/>");  //not supported

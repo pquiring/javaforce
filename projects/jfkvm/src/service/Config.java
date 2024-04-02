@@ -6,8 +6,7 @@ package service;
  */
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -73,7 +72,7 @@ public class Config implements Serializable {
       auto_start_vms = new ArrayList<>();
     }
     if (token == null) {
-      token = UUID.generate();
+      token = UUID.randomUUID().toString();
     }
     if (vnc_start < 1024) {
       vnc_start = 10000;

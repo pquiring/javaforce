@@ -8,8 +8,7 @@ package service;
  */
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -1643,7 +1642,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Regenerate token will disconnect other hosts.");
       ui.confirm_button.setText("Generate");
       ui.confirm_action = () -> {
-        Config.current.token = UUID.generate();
+        Config.current.token = UUID.randomUUID().toString();
         Config.current.save();
         ui.setRightPanel(hostPanel(ui, 3));
       };
