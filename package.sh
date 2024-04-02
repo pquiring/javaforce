@@ -82,6 +82,11 @@ if [ "$OS" = "fedora" ]; then
   sudo chmod 755 /etc/dhcp
 fi
 
+#arch fixes
+if [ "$OS" = "arch" ]; then
+  rm repo/$OS/$ARCH/*.sig
+fi
+
 #package javaforce
 ant $pkg
 
