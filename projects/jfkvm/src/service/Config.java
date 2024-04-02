@@ -175,7 +175,7 @@ public class Config implements Serializable {
   }
 
   public Host[] getHosts() {
-    return hosts.keySet().toArray(new Host[0]);
+    return hosts.values().toArray(new Host[0]);
   }
 
   private void upgradeHosts() {
