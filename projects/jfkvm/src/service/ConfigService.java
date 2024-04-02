@@ -9,6 +9,7 @@ package service;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -3651,6 +3652,10 @@ public class ConfigService implements WebUIHandler {
     if (debug) {
       JFLog.log("url=" + url);
     }
+    if (!url.startsWith("/api/")) {
+      return null;
+    }
+    url = url.substring(5);
     String uri;
     String paramstr;
     int qidx = url.indexOf('?');
@@ -3662,8 +3667,16 @@ public class ConfigService implements WebUIHandler {
       paramstr = "";
     }
     String[] params = paramstr.split("[&]");
+    Properties props = new Properties();
+    for(String param : params) {
+      int idx = param.indexOf('=');
+      if (idx == -1) continue;
+      String key = param.substring(0, idx);
+      String value = param.substring(idx + 1);
+      props.setProperty(key, value);
+    }
     switch (uri) {
-      case "/api/keyfile": {
+      case "keyfile": {
         File file = new File("/root/cluster/localhost");
         if (!file.exists()) {
           JFLog.log("ssh client key not found");
@@ -3673,77 +3686,40 @@ public class ConfigService implements WebUIHandler {
           JFLog.log("token not setup");
           return null;
         }
-        String token = null;
-        for(String param : params) {
-          int idx = param.indexOf('=');
-          if (idx == -1) continue;
-          String key = param.substring(0, idx);
-          String value = param.substring(idx + 1);
-          switch (key) {
-            case "token": token = value; break;
-          }
-        }
+        String token = props.getProperty("token");
         if (token == null) {
           JFLog.log("token not supplied");
           return null;
         }
-        if (token.equals(Config.current.token)) {
-          //send ssh key
-          try {
-            FileInputStream fis = new FileInputStream(file);
-            byte[] data = fis.readAllBytes();
-            fis.close();
-            return data;
-          } catch (Exception e) {
-            JFLog.log(e);
-            return null;
-          }
-        } else {
-          JFLog.log("token does not match");
-        }
-        break;
-      }
-      case "/api/notify": {
-        String token = null;
-        String msg = null;
-        String name = null;
-        for(String param : params) {
-          int idx = param.indexOf('=');
-          if (idx == -1) continue;
-          String key = param.substring(0, idx);
-          String value = param.substring(idx + 1);
-          switch (key) {
-            case "token": token = value; break;
-            case "msg": msg = value; break;
-            case "name": name = value; break;
-          }
-        }
-        if (msg == null) return null;
-        if (token.equals(Config.current.token)) {
-          switch (msg) {
-            case "migratevm": {
-              return "okay".getBytes();
-            }
-          }
-        } else {
+        if (!token.equals(Config.current.token)) return null;
+        //send ssh key
+        try {
+          FileInputStream fis = new FileInputStream(file);
+          byte[] data = fis.readAllBytes();
+          fis.close();
+          return data;
+        } catch (Exception e) {
+          JFLog.log(e);
           return null;
         }
-        break;
       }
-      case "/api/getver": {
-        return version.getBytes();
-      }
-      case "/api/checkvncport": {
-        String port = null;
-        for(String param : params) {
-          int idx = param.indexOf('=');
-          if (idx == -1) continue;
-          String key = param.substring(0, idx);
-          String value = param.substring(idx + 1);
-          switch (key) {
-            case "port": port = value; break;
+      case "notify": {
+        String token = props.getProperty("token");
+        String msg = props.getProperty("msg");
+        if (msg == null) return null;
+        if (!token.equals(Config.current.token)) return null;
+        switch (msg) {
+          case "migratevm": {
+            return "okay".getBytes();
           }
         }
+        break;
+      }
+      case "getver": {
+        return version.getBytes();
+      }
+      case "checkvncport": {
+        String port = props.getProperty("port");
         String res = "free";
         if (vmm.vnc_port_inuse_local(JF.atoi(port))) {
           res = "inuse";
