@@ -172,6 +172,7 @@ public class HTTP {
       if (debug) JFLog.log("HTTP.connect:" + host + ":" + port);
       s = new Socket();
       s.connect(new InetSocketAddress(host, port), timeout);
+      s.setSoTimeout(timeout);
       os = s.getOutputStream();
       is = s.getInputStream();
     } catch (Exception e) {
