@@ -153,8 +153,8 @@ public class VirtualMachine implements Serializable {
 
   //virDomainDefineXML
   private native static boolean nregister(String xml);
-  public static boolean register(VirtualMachine vm, Hardware hardware, boolean vnc, VMProvider provider) {
-    String xml = createXML(vm, hardware, vnc, provider);
+  public static boolean register(VirtualMachine vm, Hardware hardware, VMProvider provider) {
+    String xml = createXML(vm, hardware, provider);
     JFLog.log("VirtualMachine.xml=" + xml);
     return nregister(xml);
   }
@@ -236,8 +236,8 @@ public class VirtualMachine implements Serializable {
    *
    * @return XML
    */
-  private static String createXML(VirtualMachine vm, Hardware hardware, boolean vnc, VMProvider provider) {
-    vm.vnc = vnc ? provider.getVNCPort(hardware.name) : -1;
+  private static String createXML(VirtualMachine vm, Hardware hardware, VMProvider provider) {
+    vm.vnc = provider.getVNCPort(hardware.name);
     String hostname = provider.getServerHostname();
     StringBuilder xml = new StringBuilder();
     xml.append("<domain type='kvm'>");
@@ -303,8 +303,8 @@ public class VirtualMachine implements Serializable {
 //      xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       //remote viewing
       if (vm.vnc != -1) {
-        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' listen='" + hostname + "' sharePolicy='allow-exclusive'>");
-        xml.append("<listen type='address' address='" + hostname + "'/>");
+        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive'>");
+        xml.append("<listen type='address' address='0.0.0.0'/>");
         xml.append("</graphics>");
       }
       if (hardware.disks != null) {
@@ -343,7 +343,7 @@ public class VirtualMachine implements Serializable {
     Hardware hw = new Hardware("pool", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
     hw.disks.add(disk);
     hw.networks.add(nw);
-    System.out.println(createXML(vm, hw, true, new VMProvider() {
+    System.out.println(createXML(vm, hw, new VMProvider() {
       public int getVLAN(String name) {
         return 1;
       }

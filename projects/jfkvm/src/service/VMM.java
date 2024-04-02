@@ -6,6 +6,7 @@ package service;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
@@ -89,6 +90,48 @@ public class VMM implements VMProvider {
     return vm.migrateCompute(remote, vm.getState() != VirtualMachine.STATE_OFF, null);
   }
 
+  /** Check if VNC port is in use by local VMs. */
+  public boolean vnc_port_inuse_local(int port) {
+    VirtualMachine[] vms = VirtualMachine.list();
+    for(VirtualMachine vm : vms) {
+      if (vm.getVNC() == port) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Check if VNC port is in use by VMs within remote host. */
+  public boolean vnc_port_inuse_remote(int port) {
+    try {
+      Host[] hosts = Config.current.getHosts();
+      for(Host host : hosts) {
+        if (!host.online) continue;
+        if (vnc_port_inuse_remote(host, port)) return true;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+
+  /** Check if VNC port is in use by VMs within remote host. */
+  public boolean vnc_port_inuse_remote(Host host, int port) {
+    try {
+      if (!host.online) return false;
+      HTTPS https = new HTTPS();
+      https.open(host.host);
+      byte[] res = https.get("/api/checkvncport?port=" + port);
+      String str = new String(res);
+      if (str.equals("inuse")) {
+        return true;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+
   public int getVLAN(String network) {
     for(NetworkVLAN vlan : Config.current.vlans) {
       if (vlan.name.equals(network)) {
@@ -122,20 +165,25 @@ public class VMM implements VMProvider {
   }
 
   public int getVNCPort(String vmname) {
-    int port = 5900;
-    VirtualMachine[] vms = VirtualMachine.list();
-    boolean ok;
-    do {
-      port++;
-      ok = true;
-      for(VirtualMachine vm : vms) {
-        if (vm.getVNC() == port) {
-          ok = false;
-          break;
-        }
+    //return random port not in use by any host
+    Random r = new Random();
+    int port = Config.current.vnc_start;
+    port += r.nextInt(Config.current.vnc_length);
+    int vnc_end = Config.current.vnc_start + Config.current.vnc_length;
+    while (true) {
+      if (port == vnc_end) {
+        port = Config.current.vnc_start;
       }
-    } while (!ok);
-    return port;
+      if (vnc_port_inuse_local(port)) {
+        port++;
+        continue;
+      }
+      if (vnc_port_inuse_remote(port)) {
+        port++;
+        continue;
+      }
+      return port;
+    }
   }
 
   public String getServerHostname() {

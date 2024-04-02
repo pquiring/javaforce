@@ -112,6 +112,7 @@ public class Tasks extends Thread {
       } catch (Exception e) {
         JFLog.log(e);
       }
+      Config.current.validateHosts();
       check_hosts = false;
     }
   }

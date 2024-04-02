@@ -34,6 +34,10 @@ public class Config implements Serializable {
   //remote hosts
   public HashMap<String, Host> hosts = new HashMap<>();
 
+  //vnc port range (10000 - 60000)
+  public int vnc_start  = 10000;
+  public int vnc_length = 50000;
+
   public Config() {
     valid();
   }
@@ -58,6 +62,7 @@ public class Config implements Serializable {
       hosts = new HashMap<>();
     }
     upgradeHosts();
+    validateHosts();
     if (auto_start_delay < 30) {
       auto_start_delay = 30;
     }
@@ -69,6 +74,12 @@ public class Config implements Serializable {
     }
     if (token == null) {
       token = UUID.generate();
+    }
+    if (vnc_start < 1024) {
+      vnc_start = 10000;
+    }
+    if (vnc_length <= 0) {
+      vnc_length = 20000;
     }
   }
 
@@ -110,19 +121,6 @@ public class Config implements Serializable {
 
   public String getToken() {
     return token;
-  }
-
-  public static String[] getRemoteHosts() {
-    ArrayList<String> hosts = new ArrayList<>();
-    File file = new File(Paths.clusterPath);
-    File[] files = file.listFiles();
-    if (files == null) files = new File[0];
-    for(File host_file : files) {
-      String host = host_file.getName();
-      if (host.equals("localhost")) continue;
-      hosts.add(host);
-    }
-    return hosts.toArray(JF.StringArrayType);
   }
 
   public boolean saveHost(String hostname, byte[] key, String token) {
@@ -203,6 +201,10 @@ public class Config implements Serializable {
       JFLog.log("NOTE:Upgraded " + upgraded + " hosts");
       save();
     }
+  }
+
+  public void validateHosts() {
+    //TODO : ensure we have ssh key
   }
 
   public void addNetworkVLAN(NetworkVLAN network) {

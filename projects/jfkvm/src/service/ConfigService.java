@@ -4,8 +4,6 @@ package service;
  *
  * TODO : convert many ops into tasks
  *
- * TODO : re-enable vnc on new host after compute migration
- *
  * @author pquiring
  */
 
@@ -2314,7 +2312,7 @@ public class ConfigService implements WebUIHandler {
       }
       hardware.vram = _vram;
       hardware.validate();
-      if (!VirtualMachine.register(vm, hardware, true, vmm)) {
+      if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
         return;
       }
@@ -2491,7 +2489,7 @@ public class ConfigService implements WebUIHandler {
             }
             if (vm.saveHardware(hw)) {
               //now re-register after changes made
-              if (VirtualMachine.register(vm, hw, true, vmm)) {
+              if (VirtualMachine.register(vm, hw, vmm)) {
                 setResult("Completed");
                 //TODO : refresh list
               } else {
@@ -2515,7 +2513,7 @@ public class ConfigService implements WebUIHandler {
   private Panel vmMigrateComputePanel(VirtualMachine vm, UI ui) {
     Panel panel = new Panel();
     Row row;
-    String[] hosts = Config.getRemoteHosts();
+    Host[] hosts = Config.current.getHosts();
 
     row = new Row();
     panel.add(row);
@@ -2531,8 +2529,8 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     ListBox list = new ListBox();
     row.add(list);
-    for(String host : hosts) {
-      list.add(host);
+    for(Host host : hosts) {
+      list.add(host.host);
     }
 
     row = new Row();
@@ -2543,14 +2541,14 @@ public class ConfigService implements WebUIHandler {
     next.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
-      String dest = hosts[idx];
+      Host dest = hosts[idx];
       ui.setRightPanel(vmMigrateComputeStartPanel(vm, dest, ui));
     });
 
     return panel;
   }
 
-  private Panel vmMigrateComputeStartPanel(VirtualMachine vm, String remote, UI ui) {
+  private Panel vmMigrateComputeStartPanel(VirtualMachine vm, Host remote, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -2560,7 +2558,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Dest:" + remote));
+    row.add(new Label("Dest:" + remote.host));
 
     row = new Row();
     panel.add(row);
@@ -2572,22 +2570,19 @@ public class ConfigService implements WebUIHandler {
     start.addClickListener((me, cmp) -> {
       Task task = new Task("Compute Migrate VM : " + vm.name) {
         public void doTask() {
-          //first we need to remove vnc port since it may conflict with other host
-          Hardware hw = vm.loadHardware();
-          if (hw == null) {
-            setResult("Error:Unable to load hardware config");
-            return;
-          }
-          if (!VirtualMachine.register(vm, hw, false, vmm)) {
+          //check if remote host is using vnc port
+          int vnc=vm.getVNC();
+          if (vmm.vnc_port_inuse_remote(vnc)) {
+            JFLog.log("VNC Port in use on remote host");
             setResult("Error occured, see logs.");
-            return;
-          }
-          if (vmm.migrateCompute(vm, remote)) {
-            setResult("Completed");
-            //notify other host of transfer
-            notify_host(remote, "migratevm", vm.name);
           } else {
-            setResult("Error occured, see logs.");
+            if (vmm.migrateCompute(vm, remote.host)) {
+              setResult("Completed");
+              //notify other host of transfer
+              notify_host(remote, "migratevm", vm.name);
+            } else {
+              setResult("Error occured, see logs.");
+            }
           }
         }
       };
@@ -2685,7 +2680,7 @@ public class ConfigService implements WebUIHandler {
               }
             }
             VirtualMachine vm = new VirtualMachine(hardware);
-            if (!VirtualMachine.register(vm, hardware, true, vmm)) {
+            if (!VirtualMachine.register(vm, hardware, vmm)) {
               ui.message_message.setText("Failed to register VM, see logs.");
               ui.message_popup.setVisible(true);
               return;
@@ -3633,15 +3628,15 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
-  private boolean notify_host(String host, String msg, String name) {
-    String token = Config.current.getHostToken(host);
+  private boolean notify_host(Host host, String msg, String name) {
+    String token = host.token;
     if (token == null) {
       JFLog.log("Host token not found:" + host);
       return false;
     }
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      https.open(host.host);
       https.get("/api/notify?msg=" + msg + "&name=" + name + "&token=" + token);
       https.close();
       return true;
@@ -3727,20 +3722,7 @@ public class ConfigService implements WebUIHandler {
         if (token.equals(Config.current.token)) {
           switch (msg) {
             case "migratevm": {
-              if (name == null) return "error".getBytes();
-              VirtualMachine[] vms = VirtualMachine.list();
-              for(VirtualMachine vm : vms) {
-                if (vm.name.equals(name)) {
-                  Hardware hw = vm.loadHardware();
-                  if (hw == null) return "error".getBytes();
-                  //reassign local vnc port
-                  if (VirtualMachine.register(vm, hw, true, vmm)) {
-                    return "okay".getBytes();
-                  }
-                  return "error".getBytes();
-                }
-              }
-              break;
+              return "okay".getBytes();
             }
           }
         } else {
@@ -3750,6 +3732,23 @@ public class ConfigService implements WebUIHandler {
       }
       case "/api/getver": {
         return version.getBytes();
+      }
+      case "/api/checkvncport": {
+        String port = null;
+        for(String param : params) {
+          int idx = param.indexOf('=');
+          if (idx == -1) continue;
+          String key = param.substring(0, idx);
+          String value = param.substring(idx + 1);
+          switch (key) {
+            case "port": port = value; break;
+          }
+        }
+        String res = "free";
+        if (vmm.vnc_port_inuse_local(JF.atoi(port))) {
+          res = "inuse";
+        }
+        return res.getBytes();
       }
     }
     return null;
