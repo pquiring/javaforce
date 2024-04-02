@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=SSH Server Config
+Comment=Manage your SSH server.
+
+Icon=jfssh
+
+Type=Application
+Categories=Utility
+
+Exec=jfssh
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=SSH Server Config
