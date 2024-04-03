@@ -33,7 +33,7 @@
             IgnoreFailure="yes"
             Profile="all" />
         </File>
-        <File Id="jfftpcfg.exe" Source="jfftpcfg.exe"/>
+        <File Id="jfftp_server.exe" Source="jfftp-server.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
@@ -50,7 +50,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{CD9CC532-A506-45FD-835E-E947471B8A00}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTPServer" Description="FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftpcfg.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTPServer" Description="FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftp-server.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

@@ -28,6 +28,12 @@ public class InstallProject implements ShellProcessListener {
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
 
     String app = tools.getProperty("app");
+    String apptype = tools.getProperty("apptype");
+
+    switch (apptype) {
+      case "client": app = app + "-client"; break;
+      case "server": app = app + "-server"; break;
+    }
 
     //cp ${app}.bin /usr/bin/${app}
     JFLog.log("Installing executable:" + app + ".bin to /usr/bin");

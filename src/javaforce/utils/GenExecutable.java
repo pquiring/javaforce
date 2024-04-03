@@ -46,6 +46,8 @@ public class GenExecutable {
           case "console": type = "c"; break;
           case "s":  //legacy
           case "service": type = "s"; break;
+          case "client": app = app + "-client"; break;
+          case "server": app = app + "-server"; break;
         }
         if (!JF.copyFile(home + "/native/win64" + type + ".exe", app + ".exe")) {
           throw new Exception("copy error:" + app + ".exe");
@@ -56,12 +58,18 @@ public class GenExecutable {
         WinPE.main(new String[] {app + ".exe", ico, cfg});
       } else if (JF.isMac()) {
         //mac
+        switch (apptype) {
+          case "client": app = app + "-client"; break;
+          case "server": app = app + "-server"; break;
+        }
         JF.copyFile(home + "/native/mac64.bin", app);
       } else {
         //linux
         switch (apptype) {
           case "s":  //legacy
           case "service": type = "s"; break;
+          case "client": app = app + "-client"; break;
+          case "server": app = app + "-server"; break;
         }
         JF.copyFile(home + "/native/linux64" + type + ".bin", app + ".bin");
         ResourceManager.main(new String[] {app + ".bin", cfg});

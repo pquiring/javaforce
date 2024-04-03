@@ -7,7 +7,7 @@ Icon=jfftp
 Type=Application
 Categories=Utility
 
-Exec=jfftp
+Exec=jfftp-client
 StartupNotify=false
 Terminal=false
 MimeType=

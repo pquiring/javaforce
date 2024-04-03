@@ -1,4 +1,4 @@
-/usr/bin/jfftp
+/usr/bin/jfftp-server
 /usr/bin/jfftpsvc
 /usr/share/applications/jfftp.desktop
 /usr/share/icons/hicolor/48x48/apps/jfftp.png
