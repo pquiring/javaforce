@@ -1,5 +1,9 @@
 What's new...
 
+Apr 3/2024 : JF/53.4
+  - jfKVM/0.4
+    - fixed live migration
+
 Apr 2/2024 : JF/53.3
   - jfKVM/0.3
     - show more info for virtual nics and disks
