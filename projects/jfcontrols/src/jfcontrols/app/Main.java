@@ -5,10 +5,11 @@ package jfcontrols.app;
  * @author pquiring
  */
 
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 
 import jfcontrols.api.*;
@@ -25,8 +26,10 @@ public class Main implements WebUIHandler {
   public static boolean debug_scantime = false;
   public static String msgs = "";
   public static WebUIServer server;
+  public static WebServerRedir redirService;
+  public static KeyMgmt keys;
 
-  public static void main(String args[]) {
+  public static void serviceStart(String[] args) {
     if (args != null && args.length > 0) {
       for(int a=0;a<args.length;a++) {
         if (args[a].equals("debug")) {
@@ -47,9 +50,53 @@ public class Main implements WebUIHandler {
     FunctionService.main();
     //start api server
     APIService.main();
+    //init https keys
+    initSecureWebKeys();
     //start webui server
     server = new WebUIServer();
-    server.start(new Main(), 80);
+    server.start(new Main(), 443, keys);
+    //start redir service
+    redirService = new WebServerRedir();
+    redirService.start(80, 443);
+  }
+
+  public static void serviceStop() {
+    stop();
+//    Database.stop();
+    loader = null;
+    System.gc();
+    if (server != null) {
+      server.stop();
+      server = null;
+    }
+    if (redirService != null) {
+      redirService.stop();
+      redirService = null;
+    }
+  }
+
+  private static void initSecureWebKeys() {
+    String dname = "CN=jfcontrols.sourceforge.net, O=server, OU=webserver, C=CA";
+    String keyfile = Paths.dataPath + "/jfcontrols.key";
+    String password = "password";
+    if (new File(keyfile).exists()) {
+      //load existing keys
+      keys = new KeyMgmt();
+      try {
+        FileInputStream fis = new FileInputStream(keyfile);
+        keys.open(fis, password.toCharArray());
+        fis.close();
+      } catch (Exception e) {
+        if (!keys.isValid()) {
+          //generate random keys
+          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+        }
+        JFLog.log(e);
+      }
+    } else {
+      //generate random keys
+      keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+    }
   }
 
   public Panel getRootPanel(WebUIClient client) {
@@ -121,16 +168,5 @@ public class Main implements WebUIHandler {
 
   public static void trace() {
     try { throw new Exception(); } catch (Exception e) { JFLog.log(e); }
-  }
-
-  public static void serviceStart(String args[]) {
-    main(args);
-  }
-
-  public static void serviceStop() {
-    stop();
-//    Database.stop();
-    loader = null;
-    System.gc();
   }
 }
