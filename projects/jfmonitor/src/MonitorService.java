@@ -36,6 +36,14 @@ public class MonitorService extends Thread {
     if (client != null) {
       client.close();
     }
+    if (configService != null) {
+      try {
+        configService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      configService = null;
+    }
     if (redirService != null) {
       try {
         redirService.stop();

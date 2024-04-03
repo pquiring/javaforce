@@ -16,17 +16,43 @@ import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
   public WebUIServer server;
+  public KeyMgmt keys;
   public Client client;
 
   public void start() {
+    initSecureWebKeys();
     server = new WebUIServer();
-    server.start(this, Settings.current.web_port, false);
+    server.start(this, 443, keys);
   }
 
   public void stop() {
     if (server == null) return;
     server.stop();
     server = null;
+  }
+
+  private void initSecureWebKeys() {
+    String dname = "CN=jfbackup.sourceforge.net, O=server, OU=webserver, C=CA";
+    String keyfile = Paths.dataPath + "/jfbackup.key";
+    String password = "password";
+    if (new File(keyfile).exists()) {
+      //load existing keys
+      keys = new KeyMgmt();
+      try {
+        FileInputStream fis = new FileInputStream(keyfile);
+        keys.open(fis, password.toCharArray());
+        fis.close();
+      } catch (Exception e) {
+        if (!keys.isValid()) {
+          //generate random keys
+          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+        }
+        JFLog.log(e);
+      }
+    } else {
+      //generate random keys
+      keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+    }
   }
 
   public Panel getRootPanel(WebUIClient webclient) {

@@ -5,9 +5,11 @@
 
 import javaforce.*;
 import javaforce.jni.*;
+import javaforce.service.*;
 
 public class BackupService extends Thread {
   public static ConfigService configService;
+  public static WebServerRedir redirService;
   public static BackupService backupService;
   public static TaskScheduler taskScheduler;
   public static Server server;
@@ -35,6 +37,22 @@ public class BackupService extends Thread {
     if (client != null) {
       client.close();
     }
+    if (configService != null) {
+      try {
+        configService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      configService = null;
+    }
+    if (redirService != null) {
+      try {
+        redirService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      redirService = null;
+    }
   }
 
   public void run() {
@@ -42,13 +60,15 @@ public class BackupService extends Thread {
     Paths.init();
     //load current config
     Config.load();
-    Settings.load();
     //load tapes config
     Tapes.load();
     //start config service
     JFLog.log("APPDATA=" + System.getenv("APPDATA"));
     configService = new ConfigService();
     configService.start();
+    //start redir service
+    redirService = new WebServerRedir();
+    redirService.start(80, 443);
     //start client or server thread
     switch (Config.current.mode) {
       case "client": startClient(); break;
