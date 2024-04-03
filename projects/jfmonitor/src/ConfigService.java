@@ -32,7 +32,7 @@ public class ConfigService implements WebUIHandler {
 
   private void initSecureWebKeys() {
     String dname = "CN=jfmonitor.sourceforge.net, O=server, OU=webserver, C=CA";
-    String keyfile = Paths.dataPath + "/jfkvm.key";
+    String keyfile = Paths.dataPath + "/jfmonitor.key";
     String password = "password";
     if (new File(keyfile).exists()) {
       //load existing keys
