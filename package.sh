@@ -40,15 +40,7 @@ function detectos {
       pkg=pac
       PKG=PAC
       OS=arch
-      case $HOSTTYPE in
-      x86_64)
-        ARCH=amd64
-        ;;
-      *)
-        echo Invalid HOSTTYPE!
-        exit
-        ;;
-      esac
+      ARCH=$HOSTTYPE
       ;;
     *)
       echo Unknown os detected!
