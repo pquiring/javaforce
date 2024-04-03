@@ -1,3 +1,6 @@
+2024-04-03 : 0.4 released!
+  - fixed live migration
+
 2024-04-02 : 0.3 released!
   - show NetworkVirtual VLAN and Bridge info
   - show Disk Path info

@@ -119,6 +119,7 @@ public class VMM implements VMProvider {
   public boolean vnc_port_inuse_remote(Host host, int port) {
     try {
       if (!host.online) return false;
+      if (host.version < 0.4) return false;
       HTTPS https = new HTTPS();
       https.open(host.host);
       byte[] res = https.get("/api/checkvncport?port=" + port);

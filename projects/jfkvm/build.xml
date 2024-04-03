@@ -8,7 +8,7 @@
   <property name="home" location="../.."/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base"/>
-  <property name="version" value="0.3"/>
+  <property name="version" value="0.4"/>
 
   <property name="debian.depends" value="libvirt-dev,libvirt-daemon-system,openvswitch-switch,bridge-utils,nfs-common"/>
   <property name="fedora.depends" value="libvirt-devel,libvirt-daemon,openvswitch,bridge-utils,nfs-utils"/>

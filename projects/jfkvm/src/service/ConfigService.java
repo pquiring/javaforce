@@ -17,7 +17,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.3";
+  public static String version = "0.4";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
@@ -1309,7 +1309,8 @@ public class ConfigService implements WebUIHandler {
       " - Networking : bridge, guests on VLANs\n" +
       " - Storage Pools : Local Disk Partition, NFS, iSCSI\n" +
       " - import vmware machines\n" +
-      " - offline migration\n" +
+      " - live/offline compute migration\n" +
+      " - offline data migration\n" +
       " - autostart machines\n" +
       "\n" +
       "Not supported:\n" +
@@ -1318,9 +1319,6 @@ public class ConfigService implements WebUIHandler {
       "\n" +
       "Not tested yet:\n" +
       " - iSCSI storage pools\n" +
-      "\n" +
-      "Known issues:\n" +
-      " - live migration not working\n" +
       "\n" +
       "ToDo:\n" +
       " - VNC security (currently no password)\n" +
