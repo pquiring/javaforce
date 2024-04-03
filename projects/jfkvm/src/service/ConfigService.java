@@ -1349,7 +1349,8 @@ public class ConfigService implements WebUIHandler {
     panel.addTab(hostInfoPanel(ui), "Info");
     panel.addTab(hostConfigPanel(ui), "Settings");
     panel.addTab(hostAutoStartPanel(ui), "Auto Start");
-    panel.addTab(hostCluster(ui), "Cluster");
+    panel.addTab(hostClusterPanel(ui), "Cluster");
+    panel.addTab(hostAdminPanel(ui), "Admin");
     panel.setTabIndex(idx);
     return panel;
   }
@@ -1520,7 +1521,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel hostCluster(UI ui) {
+  private Panel hostClusterPanel(UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -1687,6 +1688,73 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_button.setText("Remove");
       ui.confirm_popup.setVisible(true);
+    });
+
+    return panel;
+  }
+
+  private Panel hostAdminPanel(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Current Password"));
+    TextField old_pass = new TextField("");
+    row.add(old_pass);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("New Password"));
+    TextField new_pass = new TextField("");
+    row.add(new_pass);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Confirm Password"));
+    TextField cfm_pass = new TextField("");
+    row.add(cfm_pass);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button save = new Button("Save");
+    tools.add(save);
+
+    row = new Row();
+    panel.add(row);
+    Label msg = new Label("");
+    row.add(msg);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    save.addClickListener((me, cmp) -> {
+      msg.setText("");
+      errmsg.setText("");
+      String _old = old_pass.getText();
+      String _new = new_pass.getText();
+      String _cfm = cfm_pass.getText();
+      if (_new.length() < 8) {
+        errmsg.setText("Password too short (min 8)");
+        return;
+      }
+      if (!_new.equals(_cfm)) {
+        errmsg.setText("Passwords do not match");
+        return;
+      }
+      if (!_old.equals(Config.current.password)) {
+        errmsg.setText("Wrong current password!");
+        return;
+      }
+      old_pass.setText("");
+      new_pass.setText("");
+      cfm_pass.setText("");
+      Config.current.password = _new;
+      Config.current.save();
+      msg.setText("Password saved!");
     });
 
     return panel;
