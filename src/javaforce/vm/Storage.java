@@ -6,7 +6,6 @@ package javaforce.vm;
  */
 
 import java.io.*;
-import java.util.*;
 
 import javaforce.*;
 
@@ -17,7 +16,7 @@ public class Storage implements Serializable {
     this.type = type;
     this.name = name;
     if (uuid == null) {
-      this.uuid = UUID.randomUUID().toString();
+      this.uuid = JF.generateUUID();
     } else {
       this.uuid = uuid;
     }

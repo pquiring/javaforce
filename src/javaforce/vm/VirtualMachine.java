@@ -23,7 +23,7 @@ public class VirtualMachine implements Serializable {
     //new vm
     pool = hardware.pool;
     name = hardware.name;
-    uuid = UUID.randomUUID().toString();
+    uuid = JF.generateUUID();
     vnc = -1;  //update during register
   }
 
@@ -331,7 +331,7 @@ public class VirtualMachine implements Serializable {
   }
 
   public static void main(String[] args) {
-    VirtualMachine vm = new VirtualMachine("pool", "example", UUID.randomUUID().toString(), 5901);
+    VirtualMachine vm = new VirtualMachine("pool", "example", JF.generateUUID(), 5901);
     Disk disk = new Disk();
     disk.pool = "pool";
     disk.folder = "example";

@@ -1640,7 +1640,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Regenerate token will disconnect other hosts.");
       ui.confirm_button.setText("Generate");
       ui.confirm_action = () -> {
-        Config.current.token = UUID.randomUUID().toString();
+        Config.current.token = JF.generateUUID();
         Config.current.save();
         ui.setRightPanel(hostPanel(ui, 3));
       };

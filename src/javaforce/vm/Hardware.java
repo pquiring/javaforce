@@ -47,7 +47,7 @@ public class Hardware implements Serializable {
   public Hardware() {
     pool = "default";
     name = "default";
-    genid = UUID.randomUUID().toString();
+    genid = JF.generateUUID();
     os = OS_LINUX;
     cores = 2;
     memory = new Size(1, Size.GB);
@@ -60,7 +60,7 @@ public class Hardware implements Serializable {
   public Hardware(String pool, String name, int os, int cores, Size memory) {
     this.pool = pool;
     this.name = name;
-    this.genid = UUID.randomUUID().toString();
+    this.genid = JF.generateUUID();
     this.os = os;
     this.cores = cores;
     this.memory = memory;
@@ -146,7 +146,7 @@ public class Hardware implements Serializable {
 
   public void validate() {
     if (genid == null) {
-      genid = UUID.randomUUID().toString();
+      genid = JF.generateUUID();
     }
     if (os == 0) {
       os = OS_LINUX;

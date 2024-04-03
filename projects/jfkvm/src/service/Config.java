@@ -72,7 +72,7 @@ public class Config implements Serializable {
       auto_start_vms = new ArrayList<>();
     }
     if (token == null) {
-      token = UUID.randomUUID().toString();
+      token = JF.generateUUID();
     }
     if (vnc_start < 1024) {
       vnc_start = 10000;

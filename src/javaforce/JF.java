@@ -1814,4 +1814,8 @@ public class JF {
     );
   }
 
+  /** Returns a random UUID. */
+  public static String generateUUID() {
+    return UUID.randomUUID().toString();
+  }
 }
