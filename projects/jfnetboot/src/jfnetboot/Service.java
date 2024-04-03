@@ -6,12 +6,12 @@ package jfnetboot;
  */
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.service.*;
 
 public class Service {
   public static TFTP tftp;
-  public static ConfigService config;
+  public static ConfigService configService;
+  public static WebServerRedir redirService;
   public static DHCPServer dhcp;
 
   public static void main(String[] args) {
@@ -33,13 +33,12 @@ public class Service {
     dhcp = new DHCPServer();
     dhcp.setNotify(tftp);
     dhcp.start();
-    config = new ConfigService();
-    config.init();
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
+    //start config service
+    configService = new ConfigService();
+    configService.start();
+    //start redir service
+    redirService = new WebServerRedir();
+    redirService.start(80, 443);
   }
 
   public static void serviceStop() {
@@ -49,5 +48,21 @@ public class Service {
       dhcp = null;
     }
     Clients.close();
+    if (configService != null) {
+      try {
+        configService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      configService = null;
+    }
+    if (redirService != null) {
+      try {
+        redirService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      redirService = null;
+    }
   }
 }
