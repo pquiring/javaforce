@@ -1,2 +1,3 @@
 /usr/share/java/jfmonitor.jar
+/usr/bin/jfmonitor
 /lib/systemd/system/jfmonitor.service
