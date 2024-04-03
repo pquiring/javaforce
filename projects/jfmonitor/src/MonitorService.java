@@ -4,11 +4,12 @@
  */
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.service.*;
 import javaforce.net.*;
 
 public class MonitorService extends Thread {
   public static ConfigService configService;
+  public static WebServerRedir redirService;
   public static MonitorService monitorService;
   public static APIService apiService;
   public static Server server;
@@ -18,15 +19,12 @@ public class MonitorService extends Thread {
   private static PacketCapture capture;
 
   public static void serviceStart(String args[]) {
-    main(args);
-  }
-  public static void serviceStop() {
-    monitorService.cancel();
-  }
-  public static void main(String args[]) {
     if (monitorService != null) return;
     monitorService = new MonitorService();
     monitorService.start();
+  }
+  public static void serviceStop() {
+    monitorService.cancel();
   }
 
   public void cancel() {
@@ -37,6 +35,14 @@ public class MonitorService extends Thread {
     }
     if (client != null) {
       client.close();
+    }
+    if (redirService != null) {
+      try {
+        redirService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      redirService = null;
     }
   }
 
@@ -54,10 +60,12 @@ public class MonitorService extends Thread {
 
     //load current config
     Config.load();
-    Settings.load();
     //start config service
     configService = new ConfigService();
     configService.start();
+    //start redir service
+    redirService = new WebServerRedir();
+    redirService.start(80, 443);
     //start api service
     apiService = new APIService();
     apiService.start();
