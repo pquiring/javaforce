@@ -2814,7 +2814,11 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       if (pool.type != Storage.TYPE_ISCSI) {
-        errmsg.setText("Can only mount iSCSI storage pools");
+        errmsg.setText("Can only mount iSCSI storage pools, use start for other types");
+        return;
+      }
+      if (pool.getState() != Storage.STATE_ON) {
+        errmsg.setText("Error:Pool not running");
         return;
       }
       Task task = new Task("Mount Pool : " + pool.name) {
@@ -2833,7 +2837,11 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       if (pool.type != Storage.TYPE_ISCSI) {
-        errmsg.setText("Can only mount iSCSI storage pools");
+        errmsg.setText("Can only unmount iSCSI storage pools, use stop for other types");
+        return;
+      }
+      if (pool.getState() != Storage.STATE_ON) {
+        errmsg.setText("Error:Pool not running");
         return;
       }
       ui.confirm_button.setText("Unmount");

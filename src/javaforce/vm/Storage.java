@@ -6,6 +6,7 @@ package javaforce.vm;
  */
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 import javaforce.*;
@@ -145,12 +146,27 @@ public class Storage implements Serializable {
     return null;
   }
 
+  private String resolveLinks(String file) {
+    Path path = new File(file).toPath();
+    if (Files.isSymbolicLink(path)) {
+      try {
+        return Files.readSymbolicLink(path).toString();
+      } catch (Exception e) {
+        JFLog.log(e);
+        return file;
+      }
+    } else {
+      return file;
+    }
+  }
+
   /** Mount iSCSI pool. start() will already mount other types. */
   public boolean mount() {
     if (type != TYPE_ISCSI) return false;
     new File(getPath()).mkdir();
     ShellProcess sp = new ShellProcess();
-    sp.run(new String[] {"/usr/bin/mount", getDevice(), getPath()}, true);
+    String output = sp.run(new String[] {"/usr/bin/mount", getDevice(), getPath()}, true);
+    JFLog.log(output);
     return sp.getErrorLevel() == 0;
   }
 
@@ -158,13 +174,15 @@ public class Storage implements Serializable {
   public boolean unmount() {
     if (type != TYPE_ISCSI) return false;
     ShellProcess sp = new ShellProcess();
-    sp.run(new String[] {"/usr/bin/umount", getDevice()}, true);
+    String output = sp.run(new String[] {"/usr/bin/umount", getDevice()}, true);
+    JFLog.log(output);
     new File(getPath()).delete();
     return sp.getErrorLevel() == 0;
   }
 
   public boolean mounted() {
     String dev = getDevice();
+    dev = resolveLinks(dev);
     try {
       FileInputStream fis = new FileInputStream("/proc/mounts");
       byte[] data = fis.readAllBytes();
@@ -191,12 +209,14 @@ public class Storage implements Serializable {
     switch (type) {
       case TYPE_LOCAL_PART: {
         ShellProcess sp = new ShellProcess();
-        sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", path}, true);
+        String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", path}, true);
+        JFLog.log(output);
         return sp.getErrorLevel() == 0;
       }
       case TYPE_ISCSI: {
         ShellProcess sp = new ShellProcess();
-        sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", getDevice()}, true);
+        String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", getDevice()}, true);
+        JFLog.log(output);
         return sp.getErrorLevel() == 0;
       }
     }
