@@ -22,6 +22,17 @@ public class Storage implements Serializable {
     }
   }
 
+  public Storage(int type, String name, String uuid, String initiator) {
+    this.type = type;
+    this.name = name;
+    if (uuid == null) {
+      this.uuid = JF.generateUUID();
+    } else {
+      this.uuid = uuid;
+    }
+    this.initiator = initiator;
+  }
+
   public int type;
   public String name;
   public String uuid;
