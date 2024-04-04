@@ -1622,6 +1622,8 @@ public class JF {
   public static String filter_hex = "[0-9a-fA-F]";
   /** Filter regex for any letter or number. */
   public static String filter_alpha_numeric = "[a-zA-Z0-9]";
+  /** Filter regex for any letter or number or hyphen or underscore. */
+  public static String filter_id = "[a-zA-Z0-9-_]";
 
   /** Filters a string using a regex that is matched against each character.
    * See filter_alpha, filter_alpha_number, etc.

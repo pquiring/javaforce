@@ -24,7 +24,7 @@ public class VMM implements VMProvider {
   }
 
   public String cleanName(String name) {
-    return JF.filter(name, JF.filter_alpha_numeric);
+    return JF.filter(name, JF.filter_id);
   }
 
   public String cleanNumber(String name) {
@@ -82,8 +82,12 @@ public class VMM implements VMProvider {
     return hw;
   }
 
-  public boolean migrateData(VirtualMachine vm, Storage dest) {
-    return vm.migrateData(dest.name, null);
+  public boolean cloneData(VirtualMachine vm, Storage dest, String new_name, Status status) {
+    return vm.cloneData(dest, new_name, status);
+  }
+
+  public boolean migrateData(VirtualMachine vm, Storage dest, Status status) {
+    return vm.migrateData(dest, status);
   }
 
   public boolean migrateCompute(VirtualMachine vm, String remote) {

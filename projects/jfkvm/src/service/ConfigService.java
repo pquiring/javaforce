@@ -1788,6 +1788,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(restart);
     Button poweroff = new Button("PowerOff");
     tools.add(poweroff);
+    Button clone = new Button("Clone");
+    tools.add(clone);
     Button migrate = new Button("Migrate");
     tools.add(migrate);
     Button unreg = new Button("Unregister");
@@ -1940,6 +1942,13 @@ public class ConfigService implements WebUIHandler {
         KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
+    });
+
+    clone.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      VirtualMachine vm = vms[idx];
+      ui.setRightPanel(vmCloneDataPanel(vm, ui));
     });
 
     migrate.addClickListener((me, cmp) -> {
@@ -2549,7 +2558,7 @@ public class ConfigService implements WebUIHandler {
           }
           String src_pool = vm.pool;
           String dest_pool = dest.name;
-          if (vmm.migrateData(vm, dest)) {
+          if (vmm.migrateData(vm, dest, this)) {
             //update pool
             vm.pool = dest_pool;
             hw.pool = dest_pool;
@@ -2655,6 +2664,113 @@ public class ConfigService implements WebUIHandler {
             } else {
               setResult("Error occured, see logs.");
             }
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
+      ui.setRightPanel(vmsPanel(ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmCloneDataPanel(VirtualMachine vm, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+    ArrayList<Storage> pools = Config.current.pools;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    Calendar cal = Calendar.getInstance();
+    String name_yyyy_mm = String.format("%s-%04d-%02d", vm.name, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("New Name"));
+    TextField new_name = new TextField(name_yyyy_mm);
+    row.add(new_name);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Select a storage pool"));
+
+    row = new Row();
+    panel.add(row);
+    ListBox list = new ListBox();
+    row.add(list);
+    for(Storage pool : pools) {
+      list.add(pool.name);
+    }
+
+    row = new Row();
+    panel.add(row);
+    Button next = new Button("Next");
+    row.add(next);
+
+    next.addClickListener((me, cmp) -> {
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      Storage dest = pools.get(idx);
+      if (dest.name.equals(vm.pool)) {
+        errmsg.setText("That VM is already in that storage pool");
+        return;
+      }
+      String _new_name = vmm.cleanName(new_name.getText());
+      if (_new_name.length() == 0) {
+        new_name.setText(_new_name);
+        errmsg.setText("Invalid new name");
+        return;
+      }
+      ui.setRightPanel(vmCloneDataStartPanel(vm, dest, _new_name, ui));
+    });
+
+    return panel;
+  }
+
+  private Panel vmCloneDataStartPanel(VirtualMachine vm, Storage dest, String new_name, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VM:" + vm.name));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Source:" + vm.pool));
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Dest:" + dest.name));
+
+    row = new Row();
+    panel.add(row);
+    Button start = new Button("Start");
+    row.add(start);
+
+    //TODO : confirm clone is possible (check storage requirements)
+
+    start.addClickListener((me, cmp) -> {
+      if (vm.getState() != VirtualMachine.STATE_OFF) {
+        errmsg.setText("Can not data clone live VM");
+        return;
+      }
+      Task task = new Task("Data Clone VM : " + vm.name) {
+        public void doTask() {
+          if (vmm.cloneData(vm, dest, new_name, this)) {
+            setResult("Completed");
+          } else {
+            setResult("Error occured, see logs.");
           }
         }
       };

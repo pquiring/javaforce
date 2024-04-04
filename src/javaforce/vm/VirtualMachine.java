@@ -173,12 +173,12 @@ public class VirtualMachine implements Serializable {
   }
 
   /** Offline only VM storage migration. */
-  public boolean migrateData(String destpool, Status status) {
+  public boolean migrateData(Storage destpool, Status status) {
     if (status == null) {
       status = Status.null_status;
     }
     String _src_folder = "/volumes/" + pool + "/" + name;
-    String _dest_folder = "/volumes/" + destpool + "/" + name;
+    String _dest_folder = "/volumes/" + destpool.name + "/" + name;
     File src_folder = new File(_src_folder);
     if (!src_folder.exists()) {
       status.setStatus("Source folder not found");
@@ -224,7 +224,63 @@ public class VirtualMachine implements Serializable {
     }
     src_folder.delete();
     status.setPercent(100);
-    status.setStatus("Done");
+    status.setStatus("Completed");
+    status.setResult(true);
+    return true;
+  }
+
+  /** Offline only VM storage clone. */
+  public boolean cloneData(Storage destpool, String newname, Status status) {
+    if (status == null) {
+      status = Status.null_status;
+    }
+    String _src_folder = "/volumes/" + pool + "/" + name;
+    String _dest_folder = "/volumes/" + destpool.name + "/" + newname;
+    File src_folder = new File(_src_folder);
+    if (!src_folder.exists()) {
+      status.setStatus("Source folder not found");
+      status.setResult(false);
+      return false;
+    }
+    File dest_folder = new File(_dest_folder);
+    if (dest_folder.exists()) {
+      status.setStatus("Dest folder already exists");
+      status.setResult(false);
+      return false;
+    }
+    dest_folder.mkdir();
+    if (!dest_folder.exists()) {
+      status.setStatus("Unable to create Dest folder");
+      status.setResult(false);
+      return false;
+    }
+    File[] files = src_folder.listFiles();
+    if (files == null || files.length == 0) {
+      status.setStatus("No files found");
+      status.setResult(false);
+      return false;
+    }
+    int done = 0;
+    int todo = files.length;
+    status.setPercent(0);
+    status.setStatus("Copying files...");
+    for(File file : files) {
+      if (file.isDirectory()) continue;
+      String name = file.getName();
+      Path src_path = file.toPath();
+      Path dest_path = new File(_dest_folder + "/" + name).toPath();
+      try {
+        Files.copy(src_path, dest_path);
+      } catch (Exception e) {
+        JFLog.log(e);
+        status.setStatus("Clone failed, see logs.");
+        status.setResult(false);
+        return false;
+      }
+      status.setPercent((done * 100) / todo);
+    }
+    status.setPercent(100);
+    status.setStatus("Completed");
     status.setResult(true);
     return true;
   }
