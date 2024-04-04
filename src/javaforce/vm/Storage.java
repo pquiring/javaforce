@@ -148,14 +148,18 @@ public class Storage implements Serializable {
 
   private String resolveLinks(String file) {
     Path path = new File(file).toPath();
+    JFLog.log("resolve:" + file);
     if (Files.isSymbolicLink(path)) {
       try {
-        return Files.readSymbolicLink(path).toString();
+        String resolved = Files.readSymbolicLink(path).toString();
+        JFLog.log("target:" + resolved);
+        return resolved;
       } catch (Exception e) {
         JFLog.log(e);
         return file;
       }
     } else {
+      JFLog.log("normal:" + file);
       return file;
     }
   }
