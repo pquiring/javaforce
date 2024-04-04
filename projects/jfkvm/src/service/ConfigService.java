@@ -2677,10 +2677,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button("Stop");
     tools.add(stop);
+/*
     Button mount = new Button("Mount iSCSI");
     tools.add(mount);
     Button unmount = new Button("Unmount iSCSI");
     tools.add(unmount);
+*/
     Button format = new Button("Format");
     tools.add(format);
     Button delete = new Button("Delete");
@@ -2788,6 +2790,12 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Start Pool : " + pool.name) {
         public void doTask() {
           if (pool.start()) {
+            if (pool.type == Storage.TYPE_ISCSI) {
+              if (!pool.mount()) {
+                setResult("Error occured, see logs.");
+                return;
+              }
+            }
             setResult("Completed");
           } else {
             setResult("Error occured, see logs.");
@@ -2802,6 +2810,14 @@ public class ConfigService implements WebUIHandler {
       Storage pool = pools.get(idx);
       Task task = new Task("Stop Pool : " + pool.name) {
         public void doTask() {
+          if (pool.type == Storage.TYPE_ISCSI) {
+            if (pool.mounted()) {
+              if (!pool.unmount()) {
+                setResult("Error occured, see logs.");
+                return;
+              }
+            }
+          }
           if (pool.stop()) {
             setResult("Completed");
           } else {
@@ -2811,6 +2827,7 @@ public class ConfigService implements WebUIHandler {
       };
       KVMService.tasks.addTask(ui.tasks, task);
     });
+/*
     mount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
@@ -2862,6 +2879,7 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_popup.setVisible(true);
     });
+*/
     format.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
