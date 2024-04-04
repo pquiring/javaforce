@@ -2556,26 +2556,10 @@ public class ConfigService implements WebUIHandler {
             setResult("Error occured, see logs.");
             return;
           }
-          String src_pool = vm.pool;
-          String dest_pool = dest.name;
-          if (vmm.migrateData(vm, dest, this)) {
-            //update pool
-            vm.pool = dest_pool;
-            hw.pool = dest_pool;
-            //update disks that were moved
-            for(Disk disk : hw.disks) {
-              if (disk.pool.equals(src_pool)) {
-                disk.pool = dest_pool;
-              }
-            }
-            if (vm.saveHardware(hw)) {
-              //now re-register after changes made
-              if (VirtualMachine.register(vm, hw, vmm)) {
-                setResult("Completed");
-                //TODO : refresh list
-              } else {
-                setResult("Error occured, see logs.");
-              }
+          if (vmm.migrateData(vm, hw, dest, this)) {
+            if (VirtualMachine.register(vm, hw, vmm)) {
+              setResult("Completed");
+              //TODO : refresh list
             } else {
               setResult("Error occured, see logs.");
             }
@@ -2768,6 +2752,7 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Data Clone VM : " + vm.name) {
         public void doTask() {
           if (vmm.cloneData(vm, dest, new_name, this)) {
+            //TODO : register new vm
             setResult("Completed");
           } else {
             setResult("Error occured, see logs.");
