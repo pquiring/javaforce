@@ -53,6 +53,11 @@ public class Startup extends Thread {
          if (pool.getState() == Storage.STATE_OFF) {
            pool.start();
          }
+          if (pool.type == Storage.TYPE_ISCSI) {
+            if (!pool.is_mounted()) {
+              pool.mount();
+            }
+          }
        }
     } catch (Exception e) {
       JFLog.log(e);

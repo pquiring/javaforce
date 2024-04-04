@@ -2677,12 +2677,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button("Stop");
     tools.add(stop);
-/*
-    Button mount = new Button("Mount");
+    Button mount = new Button("Mount iSCSI");
     tools.add(mount);
-    Button unmount = new Button("Unmount");
+    Button unmount = new Button("Unmount iSCSI");
     tools.add(unmount);
-*/
     Button format = new Button("Format");
     tools.add(format);
     Button delete = new Button("Delete");
@@ -2790,18 +2788,17 @@ public class ConfigService implements WebUIHandler {
       pool.stop();
       ui.setRightPanel(storagePanel(ui));
     });
-/*
     mount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       pool.mount();
       ui.setRightPanel(storagePanel(ui));
     });
     unmount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
-      Storage pool = pools[idx];
+      Storage pool = pools.get(idx);
       ui.confirm_button.setText("Unmount");
       ui.confirm_message.setText("Unmount storage pool:" + pool.name);
       ui.confirm_action = () -> {
@@ -2810,25 +2807,30 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_popup.setVisible(true);
     });
-*/
     format.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       switch (pool.type) {
         case Storage.TYPE_LOCAL_PART:
+        case Storage.TYPE_ISCSI:
           ui.confirm_button.setText("Format");
           ui.confirm_message.setText("Format storage pool");
           ui.confirm_action = () -> {
-            //TODO : create task thread
-            pool.format(Storage.TYPE_EXT4);
-            ui.setRightPanel(storagePanel(ui));
+            Task task = new Task("Format Storage Pool:" + pool.name) {
+              public void doTask() {
+                try {
+                  pool.format(Storage.FORMAT_EXT4);
+                  setStatus("Completed");
+                } catch (Exception e) {
+                  JFLog.log(e);
+                  setStatus("Error occured, check logs.");
+                }
+              }
+            };
+            KVMService.tasks.addTask(ui.tasks, task);
           };
           ui.confirm_popup.setVisible(true);
-          break;
-        case Storage.TYPE_ISCSI:
-          ui.message_message.setText("TODO : iSCSI format");
-          ui.message_popup.setVisible(true);
           break;
         case Storage.TYPE_NFS:
           ui.message_message.setText("Can not format NFS storage");

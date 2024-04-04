@@ -94,32 +94,52 @@ public class Storage implements Serializable {
     return "???";
   }
 
-  /** Mount pool.  This should NOT be required but start() is not working yet. */
+  /** Get iSCSI device. */
+  private String getDevice() {
+    if (type != TYPE_ISCSI) return null;
+    return "/dev/disk/by-path/" + target;
+  }
+
+  /** Mount iSCSI pool. */
   public boolean mount() {
+    if (type != TYPE_ISCSI) return false;
     new File(getPath()).mkdir();
     ShellProcess sp = new ShellProcess();
-    sp.run(new String[] {"/usr/bin/mount", path, getPath()}, true);
-    return true;
+    sp.run(new String[] {"/usr/bin/mount", getDevice(), getPath()}, true);
+    return sp.getErrorLevel() == 0;
   }
 
-  /** Unmount pool.  This should NOT be required but stop() is not working yet. */
+  /** Unmount iSCSI pool. */
   public boolean unmount() {
+    if (type != TYPE_ISCSI) return false;
     ShellProcess sp = new ShellProcess();
-    sp.run(new String[] {"/usr/bin/umount", path}, true);
-    return true;
+    sp.run(new String[] {"/usr/bin/umount", getDevice()}, true);
+    new File(getPath()).delete();
+    return sp.getErrorLevel() == 0;
   }
 
-  public static final int TYPE_EXT4 = 1;
+  public boolean is_mounted() {
+    if (type != TYPE_ISCSI) return getState() == STATE_ON;
+    //TODO : improve detection : see /proc/mounts
+    return new File(getPath()).exists();
+  }
 
-  /** Format local partition or iscsi target. */
-  private native boolean nformat(String path, int type);
-  public boolean format(int type) {
+  public static final int FORMAT_EXT4 = 1;
+
+  /** Format local partition or iSCSI target. */
+  public boolean format(int fmt) {
+    if (fmt != FORMAT_EXT4) return false;
     switch (type) {
-      case TYPE_LOCAL_PART:
-        if (type != TYPE_EXT4) return false;
+      case TYPE_LOCAL_PART: {
         ShellProcess sp = new ShellProcess();
         sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", path}, true);
-        return true;
+        return sp.getErrorLevel() == 0;
+      }
+      case TYPE_ISCSI: {
+        ShellProcess sp = new ShellProcess();
+        sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", getDevice()}, true);
+        return sp.getErrorLevel() == 0;
+      }
     }
     return false;
   }
@@ -159,7 +179,7 @@ public class Storage implements Serializable {
     }
     sb.append("  </source>");
     sb.append("  <target>");
-    sb.append("    <path>" + mountPath + "</path>");
+    sb.append("    <path>/dev/disk/by-path</path>");
     sb.append("  </target>");
     sb.append("</pool>");
     return sb.toString();
