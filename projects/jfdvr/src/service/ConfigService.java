@@ -5,23 +5,24 @@ package service;
  * @author pquiring
  */
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.*;
+import java.util.*;
 
 import javaforce.*;
-import javaforce.awt.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
-import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "0.22";
   public WebUIServer server;
+  private KeyMgmt keys;
   private byte[] cameraicon;
 
   public void start() {
+    initSecureWebKeys();
     server = new WebUIServer();
-    server.start(this, 80);
+    server.start(this, 443, keys);
     try {
       cameraicon = this.getClass().getClassLoader().getResourceAsStream("camera.png").readAllBytes();
     } catch (Exception e) {
@@ -33,6 +34,30 @@ public class ConfigService implements WebUIHandler {
     if (server == null) return;
     server.stop();
     server = null;
+  }
+
+  private void initSecureWebKeys() {
+    String dname = "CN=jfdvr.sourceforge.net, O=server, OU=webserver, C=CA";
+    String keyfile = Paths.dataPath + "/jfdvr.key";
+    String password = "password";
+    if (new File(keyfile).exists()) {
+      //load existing keys
+      keys = new KeyMgmt();
+      try {
+        FileInputStream fis = new FileInputStream(keyfile);
+        keys.open(fis, password.toCharArray());
+        fis.close();
+      } catch (Exception e) {
+        if (!keys.isValid()) {
+          //generate random keys
+          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+        }
+        JFLog.log(e);
+      }
+    } else {
+      //generate random keys
+      keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+    }
   }
 
   private String cleanName(String name) {

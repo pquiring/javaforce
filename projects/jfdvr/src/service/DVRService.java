@@ -10,12 +10,14 @@ import java.io.*;
 import java.net.*;
 
 import javaforce.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.voip.*;
 
 public class DVRService extends Thread implements RTSPServerInterface {
   public static DVRService dvrService;
   public static ConfigService configService;
+  public static WebServerRedir redirService;
   public static RTSPServer rtspServer;
   public static DebugState debugState;
   public static WorkerKeepAlive keepAlive;
@@ -118,6 +120,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
     //start config service
     configService = new ConfigService();
     configService.start();
+    //start redir service
+    redirService = new WebServerRedir();
+    redirService.start(80, 443);
     //enable firewall exception
     setupFirewall();
     //start keep alive thread
@@ -163,6 +168,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
         e.printStackTrace();
       }
       configService = null;
+    }
+    if (redirService != null) {
+      try {
+        redirService.stop();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      redirService = null;
     }
     if (debugState != null) {
       debugState.cancel();
