@@ -2557,12 +2557,7 @@ public class ConfigService implements WebUIHandler {
             return;
           }
           if (vmm.migrateData(vm, hw, dest, this)) {
-            if (VirtualMachine.register(vm, hw, vmm)) {
-              setResult("Completed");
-              //TODO : refresh list
-            } else {
-              setResult("Error occured, see logs.");
-            }
+            setResult("Completed");
           } else {
             setResult("Error occured, see logs.");
           }
