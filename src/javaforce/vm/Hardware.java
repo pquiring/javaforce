@@ -37,7 +37,7 @@ public class Hardware implements Serializable {
   public ArrayList<Device> devices;
   public ArrayList<Controller> controllers;
 
-  public boolean auto_start;
+  public boolean auto_start;  //not used
   public boolean bios_efi;
   public boolean bios_secure;
 
