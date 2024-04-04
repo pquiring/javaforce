@@ -2777,15 +2777,31 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
-      pool.start();
-      ui.setRightPanel(storagePanel(ui));
+      Task task = new Task("Start Pool : " + pool.name) {
+        public void doTask() {
+          if (pool.start()) {
+            setResult("Completed");
+          } else {
+            setResult("Error occured, see logs.");
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
     });
     stop.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
-      pool.stop();
-      ui.setRightPanel(storagePanel(ui));
+      Task task = new Task("Stop Pool : " + pool.name) {
+        public void doTask() {
+          if (pool.stop()) {
+            setResult("Completed");
+          } else {
+            setResult("Error occured, see logs.");
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
     });
     mount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
