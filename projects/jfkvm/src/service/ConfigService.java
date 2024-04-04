@@ -2685,6 +2685,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(format);
     Button delete = new Button("Delete");
     tools.add(delete);
+    Button help = new Button("Help");
+    tools.add(help);
 
     row = new Row();
     panel.add(row);
@@ -2903,6 +2905,9 @@ public class ConfigService implements WebUIHandler {
         ui.setRightPanel(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);
+    });
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_storage.html");
     });
 
     return panel;
