@@ -106,7 +106,7 @@ public class VMM implements VMProvider {
     try {
       Host[] hosts = Config.current.getHosts();
       for(Host host : hosts) {
-        if (!host.online) continue;
+        if (!host.isValid()) continue;
         if (vnc_port_inuse_remote(host, port)) return true;
       }
     } catch (Exception e) {
@@ -118,8 +118,7 @@ public class VMM implements VMProvider {
   /** Check if VNC port is in use by VMs within remote host. */
   public boolean vnc_port_inuse_remote(Host host, int port) {
     try {
-      if (!host.online) return false;
-      if (host.version < 0.4) return false;
+      if (!host.isValid(0.4f)) return false;
       HTTPS https = new HTTPS();
       https.open(host.host);
       byte[] res = https.get("/api/checkvncport?port=" + port);

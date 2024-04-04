@@ -200,7 +200,6 @@ public class Config implements Serializable {
   }
 
   public void validateHosts() {
-    //TODO : ensure we have ssh key
   }
 
   public void addNetworkVLAN(NetworkVLAN network) {

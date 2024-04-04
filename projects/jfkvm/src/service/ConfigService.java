@@ -1577,13 +1577,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50, 50}, 20, 3, 0);
+    Table table = new Table(new int[] {100, 50, 50, 50}, 20, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Host", "Version", "Online"});
+    table.addRow(new String[] {"Host", "Version", "Online", "Valid"});
 
     Host[] hosts = Config.current.getHosts();
 

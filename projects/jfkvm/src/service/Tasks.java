@@ -9,6 +9,7 @@ package service;
  * @author pquiring
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -59,7 +60,7 @@ public class Tasks extends Thread {
   private static final long ts_cut_time = 5 * 60 * 1000;
 
   public void run() {
-    int secs60 = 0;
+    int secs60 = 60;
     HTTP.setTimeout(5000);
     while (active) {
       JF.sleep(1000);
@@ -97,6 +98,8 @@ public class Tasks extends Thread {
         Host[] hosts = Config.current.getHosts();
         for(Host host : hosts) {
           try {
+            String keyfile = Paths.clusterPath + "/" + host.host;
+            host.valid = new File(keyfile).exists();
             HTTPS https = new HTTPS();
             https.open(host.host);
             byte[] res = https.get("/api/getver");
