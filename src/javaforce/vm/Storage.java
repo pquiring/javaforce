@@ -128,13 +128,19 @@ public class Storage implements Serializable {
     return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted())};
   }
 
+  private String getiSCSIPath() {
+    // ip-HOST:3260-iscsi-TARGET-lun-#
+    int lun = 1;  //TODO : how to determine lun?
+    return String.format("ip-%s:3260-iscsi-%s-lun-%d", host, target, lun);
+  }
+
   /** Get device name. */
   private String getDevice() {
     switch (type) {
       case TYPE_LOCAL_PART: return path;
       case TYPE_LOCAL_DISK: return path;
       case TYPE_NFS: return host + ":" + path;
-      case TYPE_ISCSI: return "/dev/disk/by-path/" + target;
+      case TYPE_ISCSI: return "/dev/disk/by-path/" + getiSCSIPath();
     }
     return null;
   }
@@ -174,7 +180,7 @@ public class Storage implements Serializable {
       JFLog.log(e);
       return false;
     }
-    return new File(getPath()).exists();
+    return false;
   }
 
   public static final int FORMAT_EXT4 = 1;
