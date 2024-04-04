@@ -173,7 +173,7 @@ public class VirtualMachine implements Serializable {
   }
 
   /** Offline only VM storage migration. */
-  public boolean migrateData(Storage dest_pool, Hardware hw, Status status) {
+  public boolean migrateData(Storage dest_pool, Hardware hw, Status status, VMProvider provider) {
     if (status == null) {
       status = Status.null_status;
     }
@@ -240,6 +240,11 @@ public class VirtualMachine implements Serializable {
       status.setResult(false);
       return false;
     }
+    if (!register(this, hw, provider)) {
+      status.setStatus("Clone failed, see logs.");
+      status.setResult(false);
+      return false;
+    }
 
     status.setPercent(100);
     status.setStatus("Completed");
@@ -248,7 +253,7 @@ public class VirtualMachine implements Serializable {
   }
 
   /** Offline only VM storage clone. */
-  public boolean cloneData(Storage dest_pool, String new_name, Status status) {
+  public boolean cloneData(Storage dest_pool, String new_name, Status status, VMProvider provider) {
     if (status == null) {
       status = Status.null_status;
     }
@@ -317,6 +322,11 @@ public class VirtualMachine implements Serializable {
       }
     }
     if (!clone.saveHardware(hw)) {
+      status.setStatus("Clone failed, see logs.");
+      status.setResult(false);
+      return false;
+    }
+    if (!register(clone, hw, provider)) {
       status.setStatus("Clone failed, see logs.");
       status.setResult(false);
       return false;

@@ -83,11 +83,11 @@ public class VMM implements VMProvider {
   }
 
   public boolean cloneData(VirtualMachine vm, Storage dest, String new_name, Status status) {
-    return vm.cloneData(dest, new_name, status);
+    return vm.cloneData(dest, new_name, status, this);
   }
 
   public boolean migrateData(VirtualMachine vm, Hardware hw, Storage dest, Status status) {
-    return vm.migrateData(dest, hw, status);
+    return vm.migrateData(dest, hw, status, this);
   }
 
   public boolean migrateCompute(VirtualMachine vm, String remote) {

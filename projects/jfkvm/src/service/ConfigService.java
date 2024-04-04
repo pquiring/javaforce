@@ -2752,7 +2752,6 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Data Clone VM : " + vm.name) {
         public void doTask() {
           if (vmm.cloneData(vm, dest, new_name, this)) {
-            //TODO : register new vm
             setResult("Completed");
           } else {
             setResult("Error occured, see logs.");
