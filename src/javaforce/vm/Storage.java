@@ -100,7 +100,18 @@ public class Storage implements Serializable {
   }
 
   public static boolean setSystemIQN(String iqn) {
-    //TODO
+    if (iqn.equals(getSystemIQN())) return true;  //no change
+    try {
+      FileOutputStream fos = new FileOutputStream("/etc/iscsi/initiatorname.iscsi");
+      fos.write("##Modifed by JavaForce\n".getBytes());
+      fos.write(("InitiatorName= " + iqn + "\n").getBytes());
+      fos.close();
+      ShellProcess sp = new ShellProcess();
+      sp.run(new String[] {"/usr/bin/systemctl", "restart", "iscsid"}, true);
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     return false;
   }
 
