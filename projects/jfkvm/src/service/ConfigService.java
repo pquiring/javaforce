@@ -2715,14 +2715,14 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       Storage dest = pools.get(idx);
-      if (dest.name.equals(vm.pool)) {
-        errmsg.setText("That VM is already in that storage pool");
-        return;
-      }
       String _new_name = vmm.cleanName(new_name.getText());
       if (_new_name.length() == 0) {
         new_name.setText(_new_name);
         errmsg.setText("Invalid new name");
+        return;
+      }
+      if (vm.name.equals(_new_name)) {
+        errmsg.setText("New name can not be the same");
         return;
       }
       ui.setRightPanel(vmCloneDataStartPanel(vm, dest, _new_name, ui));
