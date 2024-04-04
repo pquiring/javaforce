@@ -40,6 +40,7 @@ function build {
 }
 
 detectos
+
 for i in *; do
   if [ -d $i ]; then
     build $i
