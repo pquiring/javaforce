@@ -1,15 +1,15 @@
-<project name="scriptex" default="executable" basedir=".">
-  <description>scriptex</description>
+<project name="jfopen" default="executable" basedir=".">
+  <description>jfopen</description>
   <!-- set global properties for this build -->
-  <property name="app" value="scriptex"/>
+  <property name="app" value="jfopen"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/scriptex.cfg"/>
+  <property name="cfg" value="cfg/jfopen.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

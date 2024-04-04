@@ -1,15 +1,15 @@
-<project name="jfresmgr" default="executable" basedir=".">
-  <description>jfresmgr</description>
+<project name="jfsshd" default="executable" basedir=".">
+  <description>jfsshd</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfresmgr"/>
+  <property name="app" value="jfsshd"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jfresmgr.cfg"/>
+  <property name="cfg" value="cfg/jfsshd.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

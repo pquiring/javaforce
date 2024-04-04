@@ -1,15 +1,15 @@
-<project name="jf-monitor-dir" default="executable" basedir=".">
-  <description>jf-monitor-dir</description>
+<project name="jfsudo" default="executable" basedir=".">
+  <description>jfsudo</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jf-monitor-dir"/>
+  <property name="app" value="jfsudo"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jf-monitor-dir.cfg"/>
+  <property name="cfg" value="cfg/jfsudo.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

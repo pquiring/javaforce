@@ -1,15 +1,15 @@
-<project name="jfrm" default="executable" basedir=".">
-  <description>jfrm</description>
+<project name="filesplitter" default="executable" basedir=".">
+  <description>filesplitter</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfrm"/>
+  <property name="app" value="filesplitter"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jfrm.cfg"/>
+  <property name="cfg" value="cfg/filesplitter.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

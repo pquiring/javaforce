@@ -1,0 +1,59 @@
+<project name="jfutils" default="help" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
+  <description>JavaForce Utils</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfutils"/>
+  <property name="home" value=".."/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="install" description="install files">
+    <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-imageconvert.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-findreplace.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-pngalpha.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jf-update-desktop-database.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsmbget.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfservice.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jf-monitor-dir.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-web.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfcp.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfmv.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfrm.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfver.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfresmgr.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsshd.xml" target="installapp" inheritAll="false"/>
+  </target>
+
+  <target name="utils" depends="jar" description="build exe for utils">
+    <ant antfile="build-copypath.xml" inheritAll="false"/>
+    <ant antfile="build-findreplace.xml" inheritAll="false"/>
+    <ant antfile="build-filesplitter.xml" inheritAll="false"/>
+    <ant antfile="build-imageconvert.xml" inheritAll="false"/>
+    <ant antfile="build-pngalpha.xml" inheritAll="false"/>
+    <ant antfile="build-scriptex.xml" inheritAll="false"/>
+    <ant antfile="build-web.xml" inheritAll="false"/>
+    <ant antfile="build-vss.xml" inheritAll="false"/>
+    <ant antfile="build-jfsshd.xml" inheritAll="false"/>
+    <zip destfile="jfUtilities-${javaforce-version}.zip">
+      <fileset dir=".">
+        <include name="*.exe"/>
+      </fileset>
+      <fileset dir="jre_base/bin">
+        <include name="*.dll"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="depjars">
+  </target>
+
+  <target name="jar">
+  </target>
+
+  <target name="help" description="display help">
+  </target>
+</project>

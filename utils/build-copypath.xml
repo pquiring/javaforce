@@ -1,15 +1,15 @@
-<project name="jfservice" default="executable" basedir=".">
-  <description>jfservice</description>
+<project name="copypath" default="executable" basedir=".">
+  <description>copypath</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfservice"/>
+  <property name="app" value="copypath"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jfservice.cfg"/>
+  <property name="cfg" value="cfg/copypath.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

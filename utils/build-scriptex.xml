@@ -1,15 +1,15 @@
-<project name="jf-update-desktop-database" default="executable" basedir=".">
-  <description>jf-update-desktop-database</description>
+<project name="scriptex" default="executable" basedir=".">
+  <description>scriptex</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jf-update-desktop-database"/>
+  <property name="app" value="scriptex"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jf-update-desktop-database.cfg"/>
+  <property name="cfg" value="cfg/scriptex.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

@@ -1,15 +1,15 @@
-<project name="vss" default="executable" basedir=".">
-  <description>vss</description>
+<project name="findreplace" default="executable" basedir=".">
+  <description>findreplace</description>
   <!-- set global properties for this build -->
-  <property name="app" value="vss"/>
+  <property name="app" value="findreplace"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/vss.cfg"/>
+  <property name="cfg" value="cfg/findreplace.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

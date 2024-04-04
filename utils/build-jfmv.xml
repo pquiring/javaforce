@@ -1,15 +1,15 @@
-<project name="jfver" default="executable" basedir=".">
-  <description>jfver</description>
+<project name="jfmv" default="executable" basedir=".">
+  <description>jfmv</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfver"/>
+  <property name="app" value="jfmv"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jfver.cfg"/>
+  <property name="cfg" value="cfg/jfmv.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>

@@ -78,6 +78,11 @@ find -name "*.class" | xargs rm
 #package javaforce
 ant $pkg
 
+#package utils
+cd utils
+ant $pkg
+cd ..
+
 #package projects
 cd projects
 chmod +x package.sh

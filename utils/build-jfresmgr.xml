@@ -1,15 +1,15 @@
-<project name="jfsudo" default="executable" basedir=".">
-  <description>jfsudo</description>
+<project name="jfresmgr" default="executable" basedir=".">
+  <description>jfresmgr</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfsudo"/>
+  <property name="app" value="jfresmgr"/>
   <property name="apptype" value="console"/>
-  <property name="cfg" value="cfg/jfsudo.cfg"/>
+  <property name="cfg" value="cfg/jfresmgr.cfg"/>
   <property name="ico" value="javaforce.ico"/>
-  <property name="home" value="."/>
+  <property name="home" value=".."/>
 
   <property environment="env"/>
 
-  <import file="base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
   </target>
