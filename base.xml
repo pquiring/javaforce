@@ -137,6 +137,18 @@
     </java>
   </target>
 
+  <target name="uninstallapp" depends="">
+    <sequential>
+      <exec command="sudo ant -f ${ant.file} uninstallapproot"/>
+    </sequential>
+  </target>
+
+  <target name="uninstallapproot">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.UninstallProject" fork="true" jvm="${home}/bin/jfexec">
+      <arg value="${ant.file}"/>
+    </java>
+  </target>
+
   <target name="deb" depends="installapp" description="create deb package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
