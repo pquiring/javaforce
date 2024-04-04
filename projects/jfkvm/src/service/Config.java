@@ -18,7 +18,7 @@ public class Config implements Serializable {
   //config settings
   public String password;
   public String fqn;
-  public String iqn;
+  private String iqn;
   public String token;
   public int auto_start_delay = 60;
   public ArrayList<String> auto_start_vms = new ArrayList<>();
@@ -44,9 +44,6 @@ public class Config implements Serializable {
   private void valid() {
     if (fqn == null) {
       fqn = "localhost.localdomain";
-    }
-    if (iqn == null) {
-      iqn = IQN.generate(fqn);
     }
     if (pools == null) {
       pools = new ArrayList<>();

@@ -1402,8 +1402,8 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Default iSCSI Initiator IQN"));
-    TextField iqn = new TextField(Config.current.iqn);
+    row.add(new Label("iSCSI Initiator IQN"));
+    TextField iqn = new TextField(Storage.getSystemIQN());
     row.add(iqn);
     Button iqn_generate = new Button("Generate");
     row.add(iqn_generate);
@@ -1420,7 +1420,7 @@ public class ConfigService implements WebUIHandler {
 
     save.addClickListener((me, cmp) -> {
       Config.current.fqn = fqn.getText();
-      Config.current.iqn = iqn.getText();
+      Storage.setSystemIQN(iqn.getText());
       Config.current.save();
       msg.setText("Settings saved!");
     });
@@ -2911,7 +2911,7 @@ public class ConfigService implements WebUIHandler {
           ui.setRightPanel(nfs_StoragePanel(new Storage(Storage.TYPE_NFS, _name, null), true, ui));
           break;
         case "iscsi":
-          ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, _name, null, Config.current.iqn), true, ui));
+          ui.setRightPanel(iscsi_StoragePanel(new Storage(Storage.TYPE_ISCSI, _name, null), true, ui));
           break;
         case "local_part":
           ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL_PART, _name, null), true, ui));
@@ -3040,11 +3040,9 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     row.add(new Label("Initiator IQN:"));
-    TextField initiator = new TextField("");
+    TextField initiator = new TextField(Storage.getSystemIQN());
+    initiator.setReadonly(true);
     row.add(initiator);
-    if (pool.initiator != null) {
-      initiator.setText(pool.initiator);
-    }
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -3072,7 +3070,6 @@ public class ConfigService implements WebUIHandler {
       }
       pool.host = _host;
       pool.target = _target;
-      pool.initiator = _init;
       if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
         return;

@@ -6,6 +6,7 @@ package javaforce.vm;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -22,23 +23,12 @@ public class Storage implements Serializable {
     }
   }
 
-  public Storage(int type, String name, String uuid, String initiator) {
-    this.type = type;
-    this.name = name;
-    if (uuid == null) {
-      this.uuid = JF.generateUUID();
-    } else {
-      this.uuid = uuid;
-    }
-    this.initiator = initiator;
-  }
-
   public int type;
   public String name;
   public String uuid;
 
   public String host;  //nfs, iscsi
-  public String target, initiator;  //iscsi
+  public String target;  //iscsi
   public String path;  //nfs, local (device)
   private String user, pass;  //iscsi chap (TODO)
 
@@ -92,6 +82,25 @@ public class Storage implements Serializable {
   private native static int ngetState(String name);
   public int getState() {
     return ngetState(name);
+  }
+
+  public static String getSystemIQN() {
+    // /etc/iscsi/initiatorname.iscsi
+    try {
+      FileInputStream fis = new FileInputStream("/etc/iscsi/initiatorname.iscsi");
+      Properties props = new Properties();
+      props.load(fis);
+      fis.close();
+      return props.getProperty("InitiatorName");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return null;
+  }
+
+  public static boolean setSystemIQN(String iqn) {
+    //TODO
+    return false;
   }
 
   public String getStateString() {
@@ -195,7 +204,7 @@ public class Storage implements Serializable {
 
   private String createXML() {
     switch (type) {
-      case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, initiator, getPath(), user, pass);
+      case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, user, pass);
       case TYPE_NFS: return createXML_NFS(name, uuid, host, path, getPath());
       case TYPE_LOCAL_PART: return createXML_Local_Part(name, uuid, path, getPath());
       case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, uuid, path, getPath());
@@ -203,17 +212,14 @@ public class Storage implements Serializable {
     return null;
   }
 
-  private static String createXML_iSCSI(String name, String uuid, String host, String target, String initiator, String mountPath, String chap_user, String chap_pass) {
+  private static String createXML_iSCSI(String name, String uuid, String host, String target, String chap_user, String chap_pass) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<pool type='iscsi-direct' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("<pool type='iscsi' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
     sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
     sb.append("    <host name='" + host + "'/>");
     sb.append("    <device path='" + target + "'/>");
-    sb.append("    <initiator>");
-    sb.append("      <iqn name='" + initiator + "'/>");
-    sb.append("    </initiator>");
     if (chap_user != null && chap_pass != null) {
       //TODO : pass libsecret object with actual 'pass'
       //SEE : https://libvirt.org/formatsecret.html
@@ -316,7 +322,6 @@ public class Storage implements Serializable {
             Storage store = new Storage(TYPE_ISCSI, args[1], null);
             store.host = args[2];
             store.target = args[3];
-            store.initiator = args[4];
             boolean res = store.register();
             JFLog.log("res=" + res);
             break;
