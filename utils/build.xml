@@ -6,6 +6,8 @@
 
   <import file="${home}/base.xml"/>
 
+  <property name="version" value="${javaforce-version}"/>
+
   <target name="install" description="install files">
     <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
