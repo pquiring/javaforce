@@ -2688,6 +2688,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
     Table table = new Table(new int[] {100, 75, 50, 75}, 20, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
@@ -2807,18 +2813,42 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
-      pool.mount();
-      ui.setRightPanel(storagePanel(ui));
+      if (pool.type != Storage.TYPE_ISCSI) {
+        errmsg.setText("Can only mount iSCSI storage pools");
+        return;
+      }
+      Task task = new Task("Mount Pool : " + pool.name) {
+        public void doTask() {
+          if (pool.mount()) {
+            setResult("Completed");
+          } else {
+            setResult("Error occured, see logs.");
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
     });
     unmount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
+      if (pool.type != Storage.TYPE_ISCSI) {
+        errmsg.setText("Can only mount iSCSI storage pools");
+        return;
+      }
       ui.confirm_button.setText("Unmount");
       ui.confirm_message.setText("Unmount storage pool:" + pool.name);
       ui.confirm_action = () -> {
-        pool.unmount();
-        ui.setRightPanel(storagePanel(ui));
+        Task task = new Task("Unmount Pool : " + pool.name) {
+          public void doTask() {
+            if (pool.unmount()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
