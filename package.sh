@@ -72,6 +72,9 @@ chmod +X clean.sh
 ./clean.sh
 cd ../../..
 
+#force rebuild everything
+find -name "*.class" | xargs rm
+
 #package javaforce
 ant $pkg
 
