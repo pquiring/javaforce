@@ -230,12 +230,12 @@ public class VirtualMachine implements Serializable {
   }
 
   /** Offline only VM storage clone. */
-  public boolean cloneData(Storage destpool, String newname, Status status) {
+  public boolean cloneData(Storage destpool, String new_name, Status status) {
     if (status == null) {
       status = Status.null_status;
     }
     String _src_folder = "/volumes/" + pool + "/" + name;
-    String _dest_folder = "/volumes/" + destpool.name + "/" + newname;
+    String _dest_folder = "/volumes/" + destpool.name + "/" + new_name;
     File src_folder = new File(_src_folder);
     if (!src_folder.exists()) {
       status.setStatus("Source folder not found");
@@ -278,6 +278,30 @@ public class VirtualMachine implements Serializable {
         return false;
       }
       status.setPercent((done * 100) / todo);
+    }
+    VirtualMachine clone = new VirtualMachine(destpool.name, new_name, null, -1);
+    Hardware hw = clone.loadHardware();
+    if (hw == null) {
+      status.setStatus("Clone failed, see logs.");
+      status.setResult(false);
+      return false;
+    }
+    //update name
+    hw.name = new_name;
+    if (!pool.equals(destpool.name)) {
+      //also moved to a new storage pool - update pool and disks
+      hw.pool = destpool.name;
+      //update disks that were copied
+      for(Disk disk : hw.disks) {
+        if (disk.pool.equals(pool)) {
+          disk.pool = destpool.name;
+        }
+      }
+    }
+    if (!clone.saveHardware(hw)) {
+      status.setStatus("Clone failed, see logs.");
+      status.setResult(false);
+      return false;
     }
     status.setPercent(100);
     status.setStatus("Completed");
