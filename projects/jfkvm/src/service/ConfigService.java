@@ -2039,7 +2039,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:pool does not exist");
         return;
       }
-      if (!new File(pool.getPath()).exists()) {
+      if (!pool.mounted()) {
         errmsg.setText("Error:pool not mounted");
         return;
       }
@@ -2683,12 +2683,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button("Stop");
     tools.add(stop);
-/*
-    Button mount = new Button("Mount iSCSI");
+    Button mount = new Button("Mount");
     tools.add(mount);
-    Button unmount = new Button("Unmount iSCSI");
+    Button unmount = new Button("Unmount");
     tools.add(unmount);
-*/
     Button format = new Button("Format");
     tools.add(format);
     Button delete = new Button("Delete");
@@ -2796,12 +2794,14 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Start Pool : " + pool.name) {
         public void doTask() {
           if (pool.start()) {
+/* // do not auto mount - may need to format first
             if (pool.type == Storage.TYPE_ISCSI) {
               if (!pool.mount()) {
                 setResult("Error occured, see logs.");
                 return;
               }
             }
+*/
             setResult("Completed");
           } else {
             setResult("Error occured, see logs.");
@@ -2833,7 +2833,6 @@ public class ConfigService implements WebUIHandler {
       };
       KVMService.tasks.addTask(ui.tasks, task);
     });
-/*
     mount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
@@ -2885,7 +2884,6 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_popup.setVisible(true);
     });
-*/
     format.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
