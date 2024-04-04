@@ -846,14 +846,6 @@ JNIEXPORT jint JNICALL Java_javaforce_vm_Storage_ngetState
   return 3;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_Storage_nformat
-  (JNIEnv *e, jobject o, jstring path, jint type)
-{
-  //type : 1=EXT4
-  //TODO:format storage pool
-  return JNI_FALSE;
-}
-
 //Disk
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_Disk_ncreate
@@ -1246,7 +1238,6 @@ static JNINativeMethod javaforce_vm_Storage[] = {
   {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstart},
   {"nstop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstop},
   {"ngetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_vm_Storage_ngetState},
-  {"nformat", "(Ljava/lang/String;I)Z", (void *)&Java_javaforce_vm_Storage_nformat},
 };
 
 static JNINativeMethod javaforce_vm_VirtualMachine[] = {
