@@ -1792,6 +1792,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(migrate);
     Button unreg = new Button("Unregister");
     tools.add(unreg);
+    Button help = new Button("Help");
+    tools.add(help);
 
     row = new Row();
     panel.add(row);
@@ -1975,6 +1977,10 @@ public class ConfigService implements WebUIHandler {
         KVMService.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
+    });
+
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_vm.html");
     });
 
     return panel;
