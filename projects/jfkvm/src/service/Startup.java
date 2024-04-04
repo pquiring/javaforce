@@ -54,7 +54,7 @@ public class Startup extends Thread {
            pool.start();
          }
           if (pool.type == Storage.TYPE_ISCSI) {
-            if (!pool.is_mounted()) {
+            if (!pool.mounted()) {
               pool.mount();
             }
           }

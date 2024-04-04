@@ -94,13 +94,32 @@ public class Storage implements Serializable {
     return "???";
   }
 
-  /** Get iSCSI device. */
-  private String getDevice() {
-    if (type != TYPE_ISCSI) return null;
-    return "/dev/disk/by-path/" + target;
+  public String getTypeString() {
+    switch (type) {
+      case TYPE_LOCAL_PART: return "LocalPart";
+      case TYPE_LOCAL_DISK: return "LocalDisk";
+      case TYPE_NFS: return "NFS";
+      case TYPE_ISCSI: return "iSCSI";
+    }
+    return "???";
   }
 
-  /** Mount iSCSI pool. */
+  public String[] getStates() {
+    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted())};
+  }
+
+  /** Get device name. */
+  private String getDevice() {
+    switch (type) {
+      case TYPE_LOCAL_PART: return path;
+      case TYPE_LOCAL_DISK: return path;
+      case TYPE_NFS: return host + ":" + path;
+      case TYPE_ISCSI: return "/dev/disk/by-path/" + target;
+    }
+    return null;
+  }
+
+  /** Mount iSCSI pool. start() will already mount other types. */
   public boolean mount() {
     if (type != TYPE_ISCSI) return false;
     new File(getPath()).mkdir();
@@ -109,7 +128,7 @@ public class Storage implements Serializable {
     return sp.getErrorLevel() == 0;
   }
 
-  /** Unmount iSCSI pool. */
+  /** Unmount iSCSI pool. stop() will already unmount other types. */
   public boolean unmount() {
     if (type != TYPE_ISCSI) return false;
     ShellProcess sp = new ShellProcess();
@@ -118,9 +137,23 @@ public class Storage implements Serializable {
     return sp.getErrorLevel() == 0;
   }
 
-  public boolean is_mounted() {
-    if (type != TYPE_ISCSI) return getState() == STATE_ON;
-    //TODO : improve detection : see /proc/mounts
+  public boolean mounted() {
+    String dev = getDevice();
+    try {
+      FileInputStream fis = new FileInputStream("/proc/mounts");
+      byte[] data = fis.readAllBytes();
+      fis.close();
+      String[] lns = new String(data).split("\n");
+      for(String ln : lns) {
+        //device mount ext4 rw,nosuid,nodev,noexec,relatime 0 0
+        if (ln.length() == 0) continue;
+        String[] fs = ln.split("[ ]");
+        if (fs[0].equals(dev)) return true;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
     return new File(getPath()).exists();
   }
 

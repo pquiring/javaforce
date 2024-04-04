@@ -2688,17 +2688,16 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50}, 20, 2, 0);
+    Table table = new Table(new int[] {100, 50, 50, 50}, 20, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Name", "State"});
+    table.addRow(new String[] {"Name", "Type", "State", "Mounted"});
     ArrayList<Storage> pools = Config.current.pools;
     for(Storage pool : pools) {
-      String _name = pool.name;
-      table.addRow(new String[] {_name, pool.getStateString()});
+      table.addRow(pool.getStates());
     }
 
     add.addClickListener((me, cmp) -> {
