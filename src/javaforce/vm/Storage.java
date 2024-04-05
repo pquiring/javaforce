@@ -217,12 +217,14 @@ public class Storage implements Serializable {
   }
 
   public static final int FORMAT_EXT4 = 1;  //local only
-  public static final int FORMAT_GFS2 = 2;  //remote distributed
+  public static final int FORMAT_GFS2 = 2;  //remote distributed (red hat)
+  public static final int FORMAT_OCFS2 = 3;  //remote distributed (oracle)
 
-  private String getFormatString(int fmt) {
+  public static String getFormatString(int fmt) {
     switch (fmt) {
       case FORMAT_EXT4: return "ext4";
       case FORMAT_GFS2: return "gfs2";
+      case FORMAT_OCFS2: return "ocfs2";
     }
     return null;
   }
@@ -230,6 +232,7 @@ public class Storage implements Serializable {
   /** Format local partition or iSCSI target. */
   public boolean format(int fmt) {
     if (type == TYPE_NFS) return false;  //can not format NFS
+    if (fmt < 1 || fmt > 3) return false;
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}, true);
     JFLog.log(output);
@@ -245,6 +248,7 @@ public class Storage implements Serializable {
     switch (fmt) {
       case FORMAT_EXT4: return true;
       case FORMAT_GFS2: return new File("/usr/sbin/mkfs.gfs2").exists();
+      case FORMAT_OCFS2: return new File("/usr/sbin/mkfs.ocfs2").exists();
     }
     return false;
   }

@@ -2982,8 +2982,8 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Storage pool = pools.get(idx);
       if (pool.type == Storage.TYPE_ISCSI) {
-        if (!Storage.format_supported(Storage.FORMAT_GFS2)) {
-          ui.message_message.setText("GFS2 support not present");
+        if (!Storage.format_supported(Storage.FORMAT_GFS2) && !Storage.format_supported(Storage.FORMAT_OCFS2)) {
+          ui.message_message.setText("Can not format iSCSI storage because no Cluster FS support is loaded (GFS2 or OCFS2)");
           ui.message_popup.setVisible(true);
           return;
         }
@@ -3438,7 +3438,28 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Format:" + (pool.type == Storage.TYPE_ISCSI ? "gfs2" : "ext4")));
+    row.add(new Label("Select Format:"));
+
+    row = new Row();
+    panel.add(row);
+    CheckBox ext4 = new CheckBox("ext4");
+    if (pool.type == Storage.TYPE_LOCAL_PART) {
+      row.add(ext4);
+    }
+
+    row = new Row();
+    panel.add(row);
+    CheckBox gfs2 = new CheckBox("gfs2");
+    if (pool.type == Storage.TYPE_ISCSI) {
+      row.add(gfs2);
+    }
+
+    row = new Row();
+    panel.add(row);
+    CheckBox ocfs2 = new CheckBox("ocfs2");
+    if (pool.type == Storage.TYPE_ISCSI) {
+      row.add(ocfs2);
+    }
 
     row = new Row();
     panel.add(row);
@@ -3447,14 +3468,34 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     row.add(cancel);
 
+    ext4.addClickListener((me, cmp) -> {
+      gfs2.setSelected(false);
+      ocfs2.setSelected(false);
+    });
+
+    gfs2.addClickListener((me, cmp) -> {
+      ext4.setSelected(false);
+      ocfs2.setSelected(false);
+    });
+
+    ocfs2.addClickListener((me, cmp) -> {
+      ext4.setSelected(false);
+      gfs2.setSelected(false);
+    });
+
     format.addClickListener((me, cmp) -> {
+      int _fmt = -1;
+      if (ext4.isSelected()) _fmt = Storage.FORMAT_EXT4;
+      if (gfs2.isSelected()) _fmt = Storage.FORMAT_GFS2;
+      if (ocfs2.isSelected()) _fmt = Storage.FORMAT_OCFS2;
+      int fmt = _fmt;
       ui.confirm_button.setText("Format");
-      ui.confirm_message.setText("Format storage pool");
+      ui.confirm_message.setText("Format storage pool:" + pool.name + " with " + Storage.getFormatString(fmt));
       ui.confirm_action = () -> {
-        Task task = new Task("Format Storage Pool:" + pool.name) {
+        Task task = new Task("Format Storage Pool:" + pool.name + " with " + Storage.getFormatString(fmt)) {
           public void doTask() {
             try {
-              if (pool.format(pool.type == Storage.TYPE_ISCSI ? Storage.FORMAT_GFS2 : Storage.FORMAT_EXT4)) {
+              if (pool.format(fmt)) {
                 setStatus("Completed");
               } else {
                 setStatus("Error occured, check logs.");
