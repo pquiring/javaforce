@@ -58,7 +58,7 @@ struct bpf_program {
 
 //functions
 
-JF_LIB_HANDLE lib_packet;
+JF_LIB_HANDLE lib_packet;  //Windows only
 JF_LIB_HANDLE library;
 
 int (*pcap_init)(int opts, char* errbuf);
@@ -77,15 +77,21 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   (JNIEnv *e, jclass cls, jstring lib1, jstring lib2)
 {
   char err[PCAP_ERRBUF_SIZE];
-  const char *clib1 = e->GetStringUTFChars(lib1, NULL);
-  const char *clib2 = e->GetStringUTFChars(lib2, NULL);
 
-  lib_packet = loadLibrary(clib1);
-  if (lib_packet == NULL) {
-    printf("Error:library not found:%s\n", clib1);
-    return JNI_FALSE;
+  if (lib1 != NULL) {
+    //Windows only
+    const char *clib1 = e->GetStringUTFChars(lib1, NULL);
+    lib_packet = loadLibrary(clib1);
+    e->ReleaseStringUTFChars(lib1, clib1);
+    if (lib_packet == NULL) {
+      printf("Error:library not found:%s\n", clib1);
+      return JNI_FALSE;
+    }
   }
+
+  const char *clib2 = e->GetStringUTFChars(lib2, NULL);
   library = loadLibrary(clib2);
+  e->ReleaseStringUTFChars(lib2, clib2);
   if (library == NULL) {
     printf("Error:library not found:%s\n", clib2);
     return JNI_FALSE;
@@ -100,9 +106,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   getFunction(library, (void**)(&pcap_setfilter), "pcap_setfilter");
   getFunction(library, (void**)(&pcap_dispatch), "pcap_dispatch");
   getFunction(library, (void**)(&pcap_sendpacket), "pcap_sendpacket");
-
-  e->ReleaseStringUTFChars(lib1, clib1);
-  e->ReleaseStringUTFChars(lib2, clib2);
 
   if (pcap_open_live == NULL) {
     library = NULL;
