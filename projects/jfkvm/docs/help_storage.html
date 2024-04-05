@@ -35,6 +35,13 @@ Mount = mount storage pool (only iSCSI pools need to be manually mounted)
 Unmount = unmount storage pool (only iSCSI pools need to be manually unmounted)
 Format = format local partition or iSCSI pools to ext4 format
 
+Note:
+-----
+ - iSCSI is currently formatted ext4 which does NOT allow concurrent access.
+   Only one server can access the iSCSI LUN at a time.
+   VMFS is not supported.
+   Will need to upgrade to GlusterFS.
+
 </pre>
 <br><br>
 

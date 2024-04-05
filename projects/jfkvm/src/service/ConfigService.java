@@ -1317,10 +1317,11 @@ public class ConfigService implements WebUIHandler {
       " - VMFS storage pools\n" +
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
-      "Not tested yet:\n" +
-      " - iSCSI storage pools\n" +
-      "\n" +
+      "Known issues:\n" +
+      " - iSCSI currently uses ext4 which does NOT support concurrent access,\n" +
+      "   so only one server can connect to an iSCSI LUN at a time!\n" +
       "ToDo:\n" +
+      " - implement GlusterFS for iSCSI storage to support concurrent access\n" +
       " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
