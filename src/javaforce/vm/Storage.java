@@ -249,6 +249,14 @@ public class Storage implements Serializable {
     return false;
   }
 
+  public static long getDeviceSize(String dev) {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", dev}, true);
+    output = JF.filter(output, JF.filter_numeric);
+    if (output.length() == 0) return -1;
+    return Long.valueOf(output);
+  }
+
   private String createXML() {
     switch (type) {
       case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, user, pass);
