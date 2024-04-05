@@ -2993,32 +2993,7 @@ public class ConfigService implements WebUIHandler {
         ui.message_popup.setVisible(true);
         return;
       }
-      if (false) {
-        ui.setRightPanel(storageFormatPanel(pool, ui));
-      } else {
-        switch (pool.type) {
-          case Storage.TYPE_LOCAL_PART:
-          case Storage.TYPE_ISCSI:
-            ui.confirm_button.setText("Format");
-            ui.confirm_message.setText("Format storage pool");
-            ui.confirm_action = () -> {
-              Task task = new Task("Format Storage Pool:" + pool.name) {
-                public void doTask() {
-                  try {
-                    pool.format(pool.type == Storage.TYPE_ISCSI ? Storage.FORMAT_GFS2 : Storage.FORMAT_EXT4);
-                    setStatus("Completed");
-                  } catch (Exception e) {
-                    JFLog.log(e);
-                    setStatus("Error occured, check logs.");
-                  }
-                }
-              };
-              KVMService.tasks.addTask(ui.tasks, task);
-            };
-            ui.confirm_popup.setVisible(true);
-            break;
-        }
-      }
+      ui.setRightPanel(storageFormatPanel(pool, ui));
     });
     delete.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
@@ -3450,56 +3425,53 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Name"));
-    TextField new_name = new TextField(pool.name);
-    row.add(new_name);
+    row.add(new Label("Name:" + pool.name));
+
+    Size size = pool.getDeviceSize();
+    if (size == null) {
+      size = new Size(0);
+    }
 
     row = new Row();
     panel.add(row);
-    CheckBox ext4 = new CheckBox("ext4");
-    row.add(ext4);
+    row.add(new Label("Size:" + size.toString()));
 
     row = new Row();
     panel.add(row);
-    CheckBox gfs2 = new CheckBox("gfs2");
-    row.add(gfs2);
+    row.add(new Label("Format:" + (pool.type == Storage.TYPE_ISCSI ? "gfs2" : "ext4")));
 
     row = new Row();
     panel.add(row);
     Button format = new Button("Format");
     row.add(format);
+    Button cancel = new Button("Cancel");
+    row.add(cancel);
 
     format.addClickListener((me, cmp) -> {
-      int _fmt = -1;
-      if (ext4.isSelected()) _fmt = Storage.FORMAT_EXT4;
-      if (gfs2.isSelected()) _fmt = Storage.FORMAT_GFS2;
-      if (_fmt == -1) {
-        errmsg.setText("Please select a format");
-        return;
-      }
-      int fmt = _fmt;
-      switch (pool.type) {
-        case Storage.TYPE_LOCAL_PART:
-        case Storage.TYPE_ISCSI:
-          ui.confirm_button.setText("Format");
-          ui.confirm_message.setText("Format storage pool");
-          ui.confirm_action = () -> {
-            Task task = new Task("Format Storage Pool:" + pool.name) {
-              public void doTask() {
-                try {
-                  pool.format(fmt);
-                  setStatus("Completed");
-                } catch (Exception e) {
-                  JFLog.log(e);
-                  setStatus("Error occured, check logs.");
-                }
+      ui.confirm_button.setText("Format");
+      ui.confirm_message.setText("Format storage pool");
+      ui.confirm_action = () -> {
+        Task task = new Task("Format Storage Pool:" + pool.name) {
+          public void doTask() {
+            try {
+              if (pool.format(pool.type == Storage.TYPE_ISCSI ? Storage.FORMAT_GFS2 : Storage.FORMAT_EXT4)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Error occured, check logs.");
               }
-            };
-            KVMService.tasks.addTask(ui.tasks, task);
-          };
-          ui.setRightPanel(storagePanel(ui));
-          break;
-      }
+            } catch (Exception e) {
+              JFLog.log(e);
+              setStatus("Error occured, check logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(ui.tasks, task);
+        ui.setRightPanel(storagePanel(ui));
+      };
+    });
+
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(storagePanel(ui));
     });
 
     return panel;

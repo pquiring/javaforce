@@ -249,12 +249,12 @@ public class Storage implements Serializable {
     return false;
   }
 
-  public static long getDeviceSize(String dev) {
+  public Size getDeviceSize() {
     ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", dev}, true);
+    String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", getDevice()}, true);
     output = JF.filter(output, JF.filter_numeric);
-    if (output.length() == 0) return -1;
-    return Long.valueOf(output);
+    if (output.length() == 0) return null;
+    return new Size(Long.valueOf(output));
   }
 
   private String createXML() {
