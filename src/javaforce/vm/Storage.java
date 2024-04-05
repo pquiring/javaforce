@@ -5,7 +5,7 @@ package javaforce.vm;
  *  Pools are mounted in /volumes
  *
  * https://en.wikipedia.org/wiki/Clustered_file_system
- * 
+ *
  */
 
 import java.io.*;
@@ -216,31 +216,37 @@ public class Storage implements Serializable {
     return false;
   }
 
-  public static final int FORMAT_EXT4 = 1;
+  public static final int FORMAT_EXT4 = 1;  //local only
+  public static final int FORMAT_GFS2 = 2;  //remote distributed
+
+  private String getFormatString(int fmt) {
+    switch (fmt) {
+      case FORMAT_EXT4: return "ext4";
+      case FORMAT_GFS2: return "gfs2";
+    }
+    return null;
+  }
 
   /** Format local partition or iSCSI target. */
   public boolean format(int fmt) {
-    if (fmt != FORMAT_EXT4) return false;
-    switch (type) {
-      case TYPE_LOCAL_PART: {
-        ShellProcess sp = new ShellProcess();
-        String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", path}, true);
-        JFLog.log(output);
-        return sp.getErrorLevel() == 0;
-      }
-      case TYPE_ISCSI: {
-        ShellProcess sp = new ShellProcess();
-        String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", "ext4", getDevice()}, true);
-        JFLog.log(output);
-        return sp.getErrorLevel() == 0;
-      }
-    }
-    return false;
+    if (type == TYPE_NFS) return false;  //can not format NFS
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}, true);
+    JFLog.log(output);
+    return sp.getErrorLevel() == 0;
   }
 
   /** Returns mount path. */
   public String getPath() {
     return "/volumes/" + name;
+  }
+
+  public static boolean format_supported(int fmt) {
+    switch (fmt) {
+      case FORMAT_EXT4: return true;
+      case FORMAT_GFS2: return new File("/usr/sbin/mkfs.gfs2").exists();
+    }
+    return false;
   }
 
   private String createXML() {

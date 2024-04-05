@@ -1317,9 +1317,6 @@ public class ConfigService implements WebUIHandler {
       " - VMFS storage pools\n" +
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
-      "Known issues:\n" +
-      " - iSCSI currently uses ext4 which does NOT support concurrent access,\n" +
-      "   so only one server can connect to an iSCSI LUN at a time!\n" +
       "ToDo:\n" +
       " - implement GlusterFS for iSCSI storage to support concurrent access\n" +
       " - VNC security (currently no password)\n" +
@@ -2984,6 +2981,12 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
+      if (pool.type == Storage.TYPE_ISCSI) {
+        if (!Storage.format_supported(Storage.FORMAT_GFS2)) {
+          errmsg.setText("GFS2 not supported!");
+          return;
+        }
+      }
       switch (pool.type) {
         case Storage.TYPE_LOCAL_PART:
         case Storage.TYPE_ISCSI:
@@ -2993,7 +2996,7 @@ public class ConfigService implements WebUIHandler {
             Task task = new Task("Format Storage Pool:" + pool.name) {
               public void doTask() {
                 try {
-                  pool.format(Storage.FORMAT_EXT4);
+                  pool.format(pool.type == Storage.TYPE_ISCSI ? Storage.FORMAT_GFS2 : Storage.FORMAT_EXT4);
                   setStatus("Completed");
                 } catch (Exception e) {
                   JFLog.log(e);
