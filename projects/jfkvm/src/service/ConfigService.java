@@ -1184,7 +1184,7 @@ public class ConfigService implements WebUIHandler {
     login.addClickListener( (MouseEvent m, Component c) -> {
       errmsg.setText("");
       if (Config.current.password != null) {
-        errmsg.setText("Already configured, please refresh!");
+        errmsg.setText("Already configured, please refresh");
         return;
       }
       String passTxt1 = password.getText();
@@ -1420,7 +1420,7 @@ public class ConfigService implements WebUIHandler {
       Config.current.fqn = fqn.getText();
       Storage.setSystemIQN(iqn.getText());
       Config.current.save();
-      msg.setText("Settings saved!");
+      msg.setText("Settings saved");
     });
 
     iqn_generate.addClickListener((me, cmp) -> {
@@ -1513,7 +1513,7 @@ public class ConfigService implements WebUIHandler {
       Config.current.auto_start_vms = auto_start_vms;
 
       Config.current.save();
-      msg.setText("Settings saved!");
+      msg.setText("Settings saved");
     });
 
     return panel;
@@ -1607,7 +1607,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       if (genkey) {
-        errmsg.setText("Busy!");
+        errmsg.setText("Busy");
         return;
       }
       Task task = new Task("Generate Key") {
@@ -1744,7 +1744,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       if (!_old.equals(Config.current.password)) {
-        errmsg.setText("Wrong current password!");
+        errmsg.setText("Wrong current password");
         return;
       }
       old_pass.setText("");
@@ -1752,7 +1752,7 @@ public class ConfigService implements WebUIHandler {
       cfm_pass.setText("");
       Config.current.password = _new;
       Config.current.save();
-      msg.setText("Password saved!");
+      msg.setText("Password saved");
     });
 
     return panel;
@@ -2983,35 +2983,41 @@ public class ConfigService implements WebUIHandler {
       Storage pool = pools.get(idx);
       if (pool.type == Storage.TYPE_ISCSI) {
         if (!Storage.format_supported(Storage.FORMAT_GFS2)) {
-          errmsg.setText("GFS2 not supported!");
+          ui.message_message.setText("GFS2 support not present");
+          ui.message_popup.setVisible(true);
           return;
         }
       }
-      switch (pool.type) {
-        case Storage.TYPE_LOCAL_PART:
-        case Storage.TYPE_ISCSI:
-          ui.confirm_button.setText("Format");
-          ui.confirm_message.setText("Format storage pool");
-          ui.confirm_action = () -> {
-            Task task = new Task("Format Storage Pool:" + pool.name) {
-              public void doTask() {
-                try {
-                  pool.format(pool.type == Storage.TYPE_ISCSI ? Storage.FORMAT_GFS2 : Storage.FORMAT_EXT4);
-                  setStatus("Completed");
-                } catch (Exception e) {
-                  JFLog.log(e);
-                  setStatus("Error occured, check logs.");
+      if (pool.type == Storage.TYPE_NFS) {
+        ui.message_message.setText("Can not format NFS storage");
+        ui.message_popup.setVisible(true);
+        return;
+      }
+      if (false) {
+        ui.setRightPanel(storageFormatPanel(pool, ui));
+      } else {
+        switch (pool.type) {
+          case Storage.TYPE_LOCAL_PART:
+          case Storage.TYPE_ISCSI:
+            ui.confirm_button.setText("Format");
+            ui.confirm_message.setText("Format storage pool");
+            ui.confirm_action = () -> {
+              Task task = new Task("Format Storage Pool:" + pool.name) {
+                public void doTask() {
+                  try {
+                    pool.format(pool.type == Storage.TYPE_ISCSI ? Storage.FORMAT_GFS2 : Storage.FORMAT_EXT4);
+                    setStatus("Completed");
+                  } catch (Exception e) {
+                    JFLog.log(e);
+                    setStatus("Error occured, check logs.");
+                  }
                 }
-              }
+              };
+              KVMService.tasks.addTask(ui.tasks, task);
             };
-            KVMService.tasks.addTask(ui.tasks, task);
-          };
-          ui.confirm_popup.setVisible(true);
-          break;
-        case Storage.TYPE_NFS:
-          ui.message_message.setText("Can not format NFS storage");
-          ui.message_popup.setVisible(true);
-          break;
+            ui.confirm_popup.setVisible(true);
+            break;
+        }
       }
     });
     delete.addClickListener((me, cmp) -> {
@@ -3427,6 +3433,73 @@ public class ConfigService implements WebUIHandler {
     select.addClickListener((me, cmp) -> {
       ui.browse_file = ui.browse_path + "/" + list.getSelectedItem();
       ui.browse_complete.run();
+    });
+
+    return panel;
+  }
+
+  private Panel storageFormatPanel(Storage pool, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name"));
+    TextField new_name = new TextField(pool.name);
+    row.add(new_name);
+
+    row = new Row();
+    panel.add(row);
+    CheckBox ext4 = new CheckBox("ext4");
+    row.add(ext4);
+
+    row = new Row();
+    panel.add(row);
+    CheckBox gfs2 = new CheckBox("gfs2");
+    row.add(gfs2);
+
+    row = new Row();
+    panel.add(row);
+    Button format = new Button("Format");
+    row.add(format);
+
+    format.addClickListener((me, cmp) -> {
+      int _fmt = -1;
+      if (ext4.isSelected()) _fmt = Storage.FORMAT_EXT4;
+      if (gfs2.isSelected()) _fmt = Storage.FORMAT_GFS2;
+      if (_fmt == -1) {
+        errmsg.setText("Please select a format");
+        return;
+      }
+      int fmt = _fmt;
+      switch (pool.type) {
+        case Storage.TYPE_LOCAL_PART:
+        case Storage.TYPE_ISCSI:
+          ui.confirm_button.setText("Format");
+          ui.confirm_message.setText("Format storage pool");
+          ui.confirm_action = () -> {
+            Task task = new Task("Format Storage Pool:" + pool.name) {
+              public void doTask() {
+                try {
+                  pool.format(fmt);
+                  setStatus("Completed");
+                } catch (Exception e) {
+                  JFLog.log(e);
+                  setStatus("Error occured, check logs.");
+                }
+              }
+            };
+            KVMService.tasks.addTask(ui.tasks, task);
+          };
+          ui.setRightPanel(storagePanel(ui));
+          break;
+      }
     });
 
     return panel;
