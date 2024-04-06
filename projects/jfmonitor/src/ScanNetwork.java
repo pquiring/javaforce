@@ -13,7 +13,7 @@ public class ScanNetwork {
   private String first;
   private String last;
 
-  private static final boolean debug = false;
+  private static final boolean debug = true;
 
   public static byte[] scan(String nifip, String first, String last) {
     ScanNetwork scan = new ScanNetwork();
@@ -37,6 +37,7 @@ public class ScanNetwork {
     long id = cap.start(nif, nifip);
     cap.compile(id, "arp");
     byte[] mac;
+    byte[] ip_self = PacketCapture.decode_ip(nifip);
     byte[] ip_first = PacketCapture.decode_ip(first);
     byte[] ip_last = PacketCapture.decode_ip(last);
     int length = PacketCapture.get_ip_range_length(ip_first, ip_last);
@@ -57,7 +58,13 @@ public class ScanNetwork {
         if (debug) {
           JFLog.log("ARP:" + PacketCapture.build_ip(ip_first));
         }
-        mac = cap.arp(id, PacketCapture.build_ip(ip_first), 2000);
+        if (PacketCapture.compare_ip(ip_first, ip_self)) {
+          //do not query self
+          //TODO : get MAC of self
+          mac = null;
+        } else {
+          mac = cap.arp(id, PacketCapture.build_ip(ip_first), 2000);
+        }
         ok = mac != null;
         JF.sleep(250);  //avoid hammering the network
         if (ok) {
