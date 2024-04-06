@@ -81,21 +81,25 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   if (lib1 != NULL) {
     //Windows only
     const char *clib1 = e->GetStringUTFChars(lib1, NULL);
+    printf("Loading:%s\n", clib1);
     lib_packet = loadLibrary(clib1);
-    e->ReleaseStringUTFChars(lib1, clib1);
     if (lib_packet == NULL) {
       printf("Error:library not found:%s\n", clib1);
+      e->ReleaseStringUTFChars(lib1, clib1);
       return JNI_FALSE;
     }
+    e->ReleaseStringUTFChars(lib1, clib1);
   }
 
   const char *clib2 = e->GetStringUTFChars(lib2, NULL);
+  printf("Loading:%s\n", clib2);
   library = loadLibrary(clib2);
-  e->ReleaseStringUTFChars(lib2, clib2);
   if (library == NULL) {
     printf("Error:library not found:%s\n", clib2);
+    e->ReleaseStringUTFChars(lib2, clib2);
     return JNI_FALSE;
   }
+  e->ReleaseStringUTFChars(lib2, clib2);
 
   getFunction(library, (void**)(&pcap_init), "pcap_init");
   getFunction(library, (void**)(&pcap_open_live), "pcap_open_live");
