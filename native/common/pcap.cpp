@@ -70,6 +70,7 @@ int (*pcap_compile)(pcap_t *p, struct bpf_program *fp, const char *str, int opti
 int (*pcap_setfilter)(pcap_t *p, struct bpf_program *fp);
 int (*pcap_dispatch)(pcap_t *p, int cnt, pcap_handler handler, struct user_pkt_t* user);
 int (*pcap_sendpacket)(pcap_t *p, void* ptr, int length);
+int (*pcap_setnonblock)(pcap_t *p, int nonblock, char *errbuf);
 
 #define PCAP_ERRBUF_SIZE 256
 
@@ -110,6 +111,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   getFunction(library, (void**)(&pcap_setfilter), "pcap_setfilter");
   getFunction(library, (void**)(&pcap_dispatch), "pcap_dispatch");
   getFunction(library, (void**)(&pcap_sendpacket), "pcap_sendpacket");
+  getFunction(library, (void**)(&pcap_setnonblock), "pcap_setnonblock");
 
   if (pcap_open_live == NULL) {
     library = NULL;
@@ -203,7 +205,13 @@ JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
   e->ReleaseStringUTFChars(dev, cdev);
 
   if (handle == 0) {
-    printf("Error:pcal_open_live:%s\n", err);
+    printf("Error:pcap_open_live:%s\n", err);
+  } else {
+    //setup non-blocking mode
+    int res = (*pcap_setnonblock)((pcap_t*)handle, 1, err);
+    if (res == -1) {
+      printf("Error:pcap_setnonblock:%s\n", err);
+    }
   }
 
   return handle;
