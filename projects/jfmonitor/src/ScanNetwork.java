@@ -57,7 +57,7 @@ public class ScanNetwork {
         if (debug) {
           JFLog.log("ARP:" + PacketCapture.build_ip(ip_first));
         }
-          mac = cap.arp(id, PacketCapture.build_ip(ip_first), 2000);
+        mac = cap.arp(id, PacketCapture.build_ip(ip_first), 2000);
         ok = mac != null;
         JF.sleep(250);  //avoid hammering the network
         if (ok) {

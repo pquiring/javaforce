@@ -162,8 +162,9 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");
-    split.setDividerPosition(120);
-    Panel left = serverLeftPanel();
+    int leftSize = 128;
+    split.setDividerPosition(leftSize);
+    Panel left = serverLeftPanel(leftSize);
     Panel right = null;
     String screen = (String)webclient.getProperty("screen");
     if (screen == null) screen = "";
@@ -187,7 +188,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverLeftPanel() {
+  public Panel serverLeftPanel(int leftSize) {
     Panel panel = new Panel();
     //left side
     ListBox list = new ListBox();
@@ -195,6 +196,7 @@ public class ConfigService implements WebUIHandler {
     //add menu options
     Button opt1 = new Button("Status");
     list.add(opt1);
+    opt1.setWidth(leftSize);
     opt1.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "status");
@@ -202,6 +204,7 @@ public class ConfigService implements WebUIHandler {
     });
     Button opt2 = new Button("Network Monitor");
     list.add(opt2);
+    opt2.setWidth(leftSize);
     opt2.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "monitor_network");
@@ -209,6 +212,7 @@ public class ConfigService implements WebUIHandler {
     });
     Button opt3 = new Button("Storage Monitor");
     list.add(opt3);
+    opt3.setWidth(leftSize);
     opt3.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "monitor_storage");
@@ -216,6 +220,7 @@ public class ConfigService implements WebUIHandler {
     });
     Button opt4 = new Button("Setup Network");
     list.add(opt4);
+    opt4.setWidth(leftSize);
     opt4.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "config_network");
@@ -224,6 +229,7 @@ public class ConfigService implements WebUIHandler {
 /*
     Button opt5 = new Button("Setup Storage");
     list.add(opt5);
+    opt5.setWidth(leftSize);
     opt5.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "config_storage");
@@ -232,6 +238,7 @@ public class ConfigService implements WebUIHandler {
 */
     Button opt6 = new Button("Configure");
     list.add(opt6);
+    opt6.setWidth(leftSize);
     opt6.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "config");
@@ -239,6 +246,7 @@ public class ConfigService implements WebUIHandler {
     });
     Button opt7 = new Button("Logs");
     list.add(opt7);
+    opt7.setWidth(leftSize);
     opt7.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "logs");
