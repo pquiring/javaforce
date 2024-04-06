@@ -138,6 +138,7 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     row.add(new Label("Password:"));
     TextField password = new TextField("");
+    password.setPassword(true);
     row.add(password);
     Button login = new Button("Login");
     row.add(login);
@@ -956,6 +957,7 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       row.add(new Label("Server Password:"));
       TextField pass = new TextField("");
+      pass.setPassword(true);
       pass.setName("password");
 //      password.setPassword(true);  //login may be blocked - need to create HTTPS server instead
       row.add(pass);
@@ -1042,6 +1044,7 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       row.add(new Label("Server Password:"));
       TextField pass = new TextField("");
+      pass.setPassword(true);
       pass.setName("password");
 //      password.setPassword(true);  //login may be blocked - need to create HTTPS server
       row.add(pass);
@@ -1050,6 +1053,7 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       row.add(new Label("Confirm Password:"));
       TextField confirm = new TextField("");
+      confirm.setPassword(true);
       confirm.setName("password");
 //      password.setPassword(true);  //login may be blocked - need to create HTTPS server
       row.add(confirm);
