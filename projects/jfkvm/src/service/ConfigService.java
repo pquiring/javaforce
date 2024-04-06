@@ -1168,12 +1168,14 @@ public class ConfigService implements WebUIHandler {
     inner.add(row);
     row.add(new Label("Password:"));
     TextField password = new TextField("");
+    password.setPassword(true);
     row.add(password);
 
     row = new Row();
     inner.add(row);
     row.add(new Label("Confirm:"));
     TextField confirm = new TextField("");
+    confirm.setPassword(true);
     row.add(confirm);
 
     row = new Row();
@@ -1226,6 +1228,7 @@ public class ConfigService implements WebUIHandler {
     inner.add(row);
     row.add(new Label("Password:"));
     TextField password = new TextField("");
+    password.setPassword(true);
     row.add(password);
 
     row = new Row();
