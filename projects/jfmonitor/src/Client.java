@@ -159,7 +159,10 @@ public class Client extends Thread {
     StringBuilder sb = new StringBuilder();
     for(FileStore fs : FileSystems.getDefault().getFileStores()) {
       if (fs.isReadOnly()) continue;  //do NOT report CD-ROMs, etc.
-      //TODO : get better name that includes mount point
+      if (JF.isUnix()) {
+        //only include devices in /dev
+        if (!fs.name().startsWith("/dev")) continue;
+      }
       sb.append(fs.name());
       sb.append(",");
       sb.append(fs.getTotalSpace());
