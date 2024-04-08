@@ -2990,11 +2990,28 @@ public class ConfigService implements WebUIHandler {
           ui.message_popup.setVisible(true);
           return;
         }
+        if (pool.getState() != Storage.STATE_ON) {
+          ui.message_message.setText("iSCSI must be on to format");
+          ui.message_popup.setVisible(true);
+          return;
+        }
+        if (pool.mounted()) {
+          ui.message_message.setText("iSCSI must not be mounted to format");
+          ui.message_popup.setVisible(true);
+          return;
+        }
       }
       if (pool.type == Storage.TYPE_NFS) {
         ui.message_message.setText("Can not format NFS storage");
         ui.message_popup.setVisible(true);
         return;
+      }
+      if (pool.type == Storage.TYPE_LOCAL_PART) {
+        if (pool.getState() != Storage.STATE_OFF) {
+          ui.message_message.setText("Local Partition must be off to format");
+          ui.message_popup.setVisible(true);
+          return;
+        }
       }
       ui.setRightPanel(storageFormatPanel(pool, ui));
     });
