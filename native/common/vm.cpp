@@ -1163,7 +1163,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkPort_nremove
 JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   (JNIEnv *e, jclass o, jint type)
 {
-  char devstr[1024];
+  char devstr[4*1024];
   void* conn = connect();
   if (conn == NULL) return NULL;
 

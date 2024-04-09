@@ -1310,7 +1310,8 @@ public class ConfigService implements WebUIHandler {
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
       "ToDo:\n" +
-      " - implement GlusterFS for iSCSI storage to support concurrent access\n" +
+      " - test adding host device to guest VM\n" +
+      " - implement GlusterFS to create vSAN type storage\n" +
       " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
