@@ -453,6 +453,9 @@ bool loadProperties() {
       if (strcmp(arg, "-cp") == 0) {
         continue;
       }
+      if (strcmp(arg, "-vm") == 0) {
+        continue;
+      }
       if (strcmp(arg, "-classpath") == 0) {
         continue;
       }
@@ -460,7 +463,6 @@ bool loadProperties() {
         strcat(xoptions, " ");
       }
       strcat(xoptions, arg);
-      continue;
       continue;
     }
     if (!have_classpath) {
