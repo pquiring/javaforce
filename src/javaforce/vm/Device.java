@@ -7,12 +7,17 @@ package javaforce.vm;
 
 import java.io.*;
 
+import javaforce.*;
+
 public class Device extends Address implements Serializable {
   private static final long serialVersionUID = 1L;
+
+  public static boolean debug = true;
 
   public int type;
   public String name;
   public String path;
+  public String xml;
 
   public static final int TYPE_USB = 1;
   public static final int TYPE_PCI = 2;
@@ -25,9 +30,18 @@ public class Device extends Address implements Serializable {
     if (list == null) list = new String[0];
     Device[] dlist = new Device[list.length];
     for(int idx=0;idx<list.length;idx++) {
+      String devstr = list[idx];
+      int eq = devstr.indexOf('=');
+      if (eq == -1) continue;
+      String name = devstr.substring(0, idx);
+      String xml = devstr.substring(idx + 1);
       Device dev = new Device();
-      dev.name = list[idx];
       dev.type = type;
+      dev.name = name;
+      dev.xml = xml;
+      if (debug) {
+        JFLog.log("Device:" + dev);
+      }
       dlist[idx] = dev;
     }
     return dlist;
@@ -42,7 +56,7 @@ public class Device extends Address implements Serializable {
   }
 
   public String toString() {
-    return name + ":" + getType();
+    return name + ":" + getType() + "=" + xml;
   }
 
   public String toXML() {

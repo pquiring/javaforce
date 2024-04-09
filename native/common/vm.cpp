@@ -69,6 +69,7 @@ int (*_virNetworkPortFree)(void* net);
 //device
 int (*_virConnectListAllNodeDevices)(void* conn, void*** devs, int flags);
 const char* (*_virNodeDeviceGetName)(void* dev);
+char* (*_virNodeDeviceGetXMLDesc)(void* dev, int flags);
 int (*_virNodeDeviceFree)(void* dev);
 
 void vm_init() {
@@ -141,6 +142,7 @@ void vm_init() {
   //device
   getFunction(virt, (void**)&_virConnectListAllNodeDevices, "virConnectListAllNodeDevices");
   getFunction(virt, (void**)&_virNodeDeviceGetName, "virNodeDeviceGetName");
+  getFunction(virt, (void**)&_virNodeDeviceGetXMLDesc, "virNodeDeviceGetXMLDesc");
   getFunction(virt, (void**)&_virNodeDeviceFree, "virNodeDeviceFree");
 }
 
@@ -1161,6 +1163,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_NetworkPort_nremove
 JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   (JNIEnv *e, jclass o, jint type)
 {
+  char devstr[1024];
   void* conn = connect();
   if (conn == NULL) return NULL;
 
@@ -1183,10 +1186,12 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   jobjectArray array = e->NewObjectArray(count, e->FindClass("java/lang/String"), e->NewStringUTF(""));
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virNodeDeviceGetName)(devs[idx]);
+    char* xml = (*_virNodeDeviceGetXMLDesc)(devs[idx], 0);
 #ifdef VM_DEBUG
-    printf("Device:%s\n", name);
+    printf("Device:%s=%s\n", name, xml);
 #endif
-    e->SetObjectArrayElement(array, idx, e->NewStringUTF(name));
+    sprintf(devstr, "%s=%s", name, xml);
+    e->SetObjectArrayElement(array, idx, e->NewStringUTF(devstr));
     (*_virNodeDeviceFree)(devs[idx]);
   }
 
