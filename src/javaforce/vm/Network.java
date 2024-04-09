@@ -9,7 +9,7 @@ package javaforce.vm;
 
 import java.io.*;
 
-public class Network implements Serializable {
+public class Network extends PCIAddress implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String network;
@@ -29,6 +29,10 @@ public class Network implements Serializable {
   public static final String MODEL_VIRTIO = "virtio-net-pci";
   public static final String MODEL_i82801 = "i82801";
   public static final String MODEL_VMXNET3 = "vmxnet3";
+
+  public String toString() {
+    return "Network{" + network + "," + model + "," + mac + "}";
+  }
 
   /** Create XML for VirtualMachine XML. */
   public String toXML(NetworkBridge bridge, int vlan) {

@@ -9,18 +9,12 @@ package javaforce.vm;
 
 import java.io.*;
 
-public class Controller implements Serializable {
+public class Controller extends PCIAddress implements Serializable {
   private static final long serialVersionUID = 1L;
 
   //type
   public String type;
   public String model;
-  //address
-  public String addr_type = "pci";
-  public String domain = "0x0000";
-  public String bus = "0x00";
-  public String slot = "0x01";
-  public String function = "0x0";
 
   public Controller(String type, String model) {
     this.type = type;
