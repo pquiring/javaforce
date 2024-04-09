@@ -41,6 +41,7 @@ public class Address {
   }
 
   public String getAddressXML() {
+    if (addr_type == null) return "";
     StringBuilder xml = new StringBuilder();
     switch (addr_type) {
       case "pci":
