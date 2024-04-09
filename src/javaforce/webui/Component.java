@@ -631,7 +631,7 @@ public abstract class Component {
   }
 
   protected void onClick(String[] args, MouseEvent me) {
-    JFLog.log("onClick:" + this + ":" + click.length);
+    if (WebUIServer.debug) JFLog.log("onClick:" + this + ":" + click.length);
     for(int a=0;a<click.length;a++) {
       click[a].onClick(me, this);
     }
