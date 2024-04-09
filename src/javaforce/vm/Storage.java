@@ -234,7 +234,17 @@ public class Storage implements Serializable {
     if (type == TYPE_NFS) return false;  //can not format NFS
     if (fmt < 1 || fmt > 3) return false;
     ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}, true);
+    String output = null;
+    switch (fmt) {
+      default:
+      case FORMAT_EXT4:
+      case FORMAT_OCFS2:
+        output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}, true);
+        break;
+      case FORMAT_GFS2:
+        output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-p", "lock_dlm", "-t", "jfkvm:" + name, "-j", "3", getDevice()}, true);
+        break;
+    }
     JFLog.log(output);
     return sp.getErrorLevel() == 0;
   }

@@ -2797,6 +2797,7 @@ public class ConfigService implements WebUIHandler {
     table.addRow(new String[] {"Name", "Type", "State", "Mounted"});
     ArrayList<Storage> pools = Config.current.pools;
     for(Storage pool : pools) {
+      //TODO : this can block if pool is remote and offline
       table.addRow(pool.getStates());
     }
 
