@@ -28,5 +28,7 @@ public class Paths {
     new File(logsPath).mkdirs();
     new File(volsPath).mkdirs();
     new File(clusterPath).mkdirs();
+    JFLog.append(logsPath + "/jfkvm.log", true);
+    JFLog.setRetention(30);
   }
 }
