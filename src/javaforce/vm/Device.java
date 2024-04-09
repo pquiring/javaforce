@@ -61,7 +61,7 @@ public class Device extends Address implements Serializable {
   }
 
   public String toString() {
-    return name + ":" + getType() + "=" + xml;
+    return name + ":" + desc;
   }
 
   private void decode_address() {
