@@ -23,7 +23,7 @@ public class PacketCapture {
   public static native boolean ninit(String lib1, String lib2);
 
   /** Load native libraries. */
-  public static boolean init(boolean nonblocking) {
+  public static boolean init() {
     if (JF.isWindows()) {
       String windir = System.getenv("windir").replaceAll("\\\\", "/");
       {
@@ -359,7 +359,7 @@ public class PacketCapture {
       JFLog.log("      : -t timeout");
       return;
     }
-    if (!init(true)) {
+    if (!init()) {
       JFLog.log("init failed");
       return;
     }
