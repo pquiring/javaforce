@@ -12,6 +12,7 @@ public class Device extends Address implements Serializable {
 
   public int type;
   public String name;
+  public String path;
 
   public static final int TYPE_USB = 1;
   public static final int TYPE_PCI = 2;
