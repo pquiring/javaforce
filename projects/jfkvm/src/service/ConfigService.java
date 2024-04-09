@@ -3494,10 +3494,15 @@ public class ConfigService implements WebUIHandler {
     });
 
     format.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int _fmt = -1;
       if (ext4.isSelected()) _fmt = Storage.FORMAT_EXT4;
       if (gfs2.isSelected()) _fmt = Storage.FORMAT_GFS2;
       if (ocfs2.isSelected()) _fmt = Storage.FORMAT_OCFS2;
+      if (_fmt == -1) {
+        errmsg.setText("Please select a format");
+        return;
+      }
       int fmt = _fmt;
       ui.confirm_button.setText("Format");
       ui.confirm_message.setText("Format storage pool:" + pool.name + " with " + Storage.getFormatString(fmt));
@@ -3519,6 +3524,7 @@ public class ConfigService implements WebUIHandler {
         KVMService.tasks.addTask(ui.tasks, task);
         ui.setRightPanel(storagePanel(ui));
       };
+      ui.confirm_popup.setVisible(true);
     });
 
     cancel.addClickListener((me, cmp) -> {
