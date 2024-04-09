@@ -5,7 +5,11 @@ package javaforce.vm;
  * @author pquiring
 */
 
-public class Address {
+import java.io.*;
+
+public class Address implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   public String addr_type;
   public String domain;
   public String bus;

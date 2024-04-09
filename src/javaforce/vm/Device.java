@@ -1,18 +1,17 @@
 package javaforce.vm;
 
-/** Device (USB or PCI).
+/** Host Device (USB or PCI).
  *
  * @author pquiring
  */
 
 import java.io.*;
 
-public class Device implements Serializable {
+public class Device extends Address implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public String name;
   public int type;
-  public String path;
+  public String name;
 
   public static final int TYPE_USB = 1;
   public static final int TYPE_PCI = 2;
@@ -47,10 +46,11 @@ public class Device implements Serializable {
 
   public String toXML() {
     StringBuilder xml = new StringBuilder();
-    xml.append("<device>");
-    xml.append("<name>" + name + "</name>");
-    xml.append("<path>" + path + "</path>");
-    xml.append("</device>");
+    xml.append("<hostdev mode='subsystem' type='" + getType() + "'>");
+    xml.append("<source>");
+    xml.append(getAddressXML());
+    xml.append("</source>");
+    xml.append("</hostdev>");
     return xml.toString();
   }
 }
