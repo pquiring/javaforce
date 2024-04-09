@@ -233,23 +233,40 @@ public class Storage implements Serializable {
   public boolean format(int fmt) {
     if (type == TYPE_NFS) return false;  //can not format NFS
     if (fmt < 1 || fmt > 3) return false;
-    ShellProcess sp = new ShellProcess();
-    sp.addRegexResponse(".*y[/]n.*", "y\n", true);
-    ShellProcess.log = true;
-    ShellProcess.logPrompt = true;
-    String output = null;
+    String filename = "/root/format-" + System.currentTimeMillis() + ".sh";
+    File file = new File(filename);
+    StringBuffer script = new StringBuffer();
+    script.append("#!/bin/bash\n");
+    script.append("yes | ");
     switch (fmt) {
       default:
       case FORMAT_EXT4:
       case FORMAT_OCFS2:
-        output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}, true);
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}) {
+          script.append(str);
+          script.append(" ");
+        }
         break;
       case FORMAT_GFS2:
-        output = sp.run(new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-p", "lock_dlm", "-t", "jfkvm:" + name, "-j", "3", getDevice()}, true);
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-p", "lock_dlm", "-t", "jfkvm:" + name, "-j", "3", getDevice()}) {
+          script.append(str);
+          script.append(" ");
+        }
         break;
     }
+    try {
+      FileOutputStream fos = new FileOutputStream(filename);
+      fos.write(script.toString().getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/bin/bash", filename}, true);
     JFLog.log(output);
-    return sp.getErrorLevel() == 0;
+    file.delete();
+    return sp.getErrorLevel() == 0;  //BUG : this is errorlevel of bash, not the script
   }
 
   /** Returns mount path. */
