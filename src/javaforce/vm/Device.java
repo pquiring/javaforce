@@ -33,8 +33,8 @@ public class Device extends Address implements Serializable {
       String devstr = list[idx];
       int eq = devstr.indexOf('=');
       if (eq == -1) continue;
-      String name = devstr.substring(0, idx);
-      String xml = devstr.substring(idx + 1);
+      String name = devstr.substring(0, eq);
+      String xml = devstr.substring(eq + 1);
       Device dev = new Device();
       dev.type = type;
       dev.name = name;
