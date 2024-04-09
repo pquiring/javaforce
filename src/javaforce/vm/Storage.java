@@ -234,6 +234,7 @@ public class Storage implements Serializable {
     if (type == TYPE_NFS) return false;  //can not format NFS
     if (fmt < 1 || fmt > 3) return false;
     ShellProcess sp = new ShellProcess();
+    sp.addRegexResponse(".*y[/]n.*", "y\n", true);
     String output = null;
     switch (fmt) {
       default:
