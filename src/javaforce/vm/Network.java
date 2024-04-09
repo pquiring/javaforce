@@ -9,7 +9,7 @@ package javaforce.vm;
 
 import java.io.*;
 
-public class Network extends PCIAddress implements Serializable {
+public class Network extends Address implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String network;
