@@ -52,7 +52,11 @@ public class WebUIClient {
   public void setPanel(Panel root) {
     this.root = root;
     initPanel();
-    dispatchEvent("", "load", null);
+    try {
+      dispatchEvent("", "load", null);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
   public void refresh() {
     root = null;
