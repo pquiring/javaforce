@@ -1,17 +1,17 @@
 package javaforce.vm;
 
-/** Address {PCI}
+/** Address {PCI, USB}
  *
  * @author pquiring
 */
 
 public class Address {
-  //address
   public String addr_type;
   public String domain;
   public String bus;
   public String slot;
   public String function;
+  public String port;
 
   public Address() {
   }
@@ -30,10 +30,25 @@ public class Address {
     this.function = function;
   }
 
+  /** USB Address
+   * @param bus = 1
+   * @param port = 1
+   */
+  public Address(String bus, String port) {
+    addr_type = "usb";
+    this.bus = bus;
+    this.port = port;
+  }
+
   public String getAddressXML() {
     StringBuilder xml = new StringBuilder();
-    if (domain != null) {
-      xml.append("<address type='" + addr_type + "' domain='" + domain + "' bus='" + bus + "' slot='" + slot + "' function='" + function + "'/>");
+    switch (addr_type) {
+      case "pci":
+        xml.append("<address type='" + addr_type + "' domain='" + domain + "' bus='" + bus + "' slot='" + slot + "' function='" + function + "'/>");
+        break;
+      case "usb":
+        xml.append("<address type='" + addr_type + "' bus='" + bus + "' slot='" + slot + "'/>");
+        break;
     }
     return xml.toString();
   }
