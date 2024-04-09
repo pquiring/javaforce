@@ -262,6 +262,7 @@ public class Storage implements Serializable {
       JFLog.log(e);
       return false;
     }
+    file.setExecutable(true);
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/bash", filename}, true);
     JFLog.log(output);
