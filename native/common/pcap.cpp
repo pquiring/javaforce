@@ -75,7 +75,7 @@ int (*pcap_setnonblock)(pcap_t *p, int nonblock, char *errbuf);
 #define PCAP_ERRBUF_SIZE 256
 
 JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
-  (JNIEnv *e, jclass cls, jstring lib1, jstring lib2)
+  (JNIEnv *e, jclass cls, jstring lib1, jstring lib2, jboolean nonblocking)
 {
   char err[PCAP_ERRBUF_SIZE];
 
@@ -194,7 +194,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfa
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
-  (JNIEnv *e, jclass obj, jstring dev)
+  (JNIEnv *e, jclass obj, jstring dev, jboolean nonblocking)
 {
   if (library == NULL) return 0;
   char err[PCAP_ERRBUF_SIZE];
@@ -207,10 +207,12 @@ JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
   if (handle == 0) {
     printf("Error:pcap_open_live:%s\n", err);
   } else {
-    //setup non-blocking mode
-    int res = (*pcap_setnonblock)((pcap_t*)handle, 1, err);
-    if (res == -1) {
-      printf("Error:pcap_setnonblock:%s\n", err);
+    if (nonblocking) {
+      //setup non-blocking mode
+      int res = (*pcap_setnonblock)((pcap_t*)handle, 1, err);
+      if (res == -1) {
+        printf("Error:pcap_setnonblock:%s\n", err);
+      }
     }
   }
 

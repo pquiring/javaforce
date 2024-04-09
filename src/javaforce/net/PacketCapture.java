@@ -23,7 +23,7 @@ public class PacketCapture {
   public static native boolean ninit(String lib1, String lib2);
 
   /** Load native libraries. */
-  public static boolean init() {
+  public static boolean init(boolean nonblocking) {
     if (JF.isWindows()) {
       String windir = System.getenv("windir").replaceAll("\\\\", "/");
       {
@@ -78,16 +78,21 @@ public class PacketCapture {
     return null;
   }
 
-  private static native long nstart(String local_interface);
+  private static native long nstart(String local_interface, boolean nonblocking);
 
   private byte[] local_mac;
   private byte[] local_ip;
 
   /** Start process on local interface. */
-  public long start(String local_interface, String local_ip) {
+  public long start(String local_interface, String local_ip, boolean nonblocking) {
     this.local_ip = decode_ip(local_ip);
     this.local_mac = get_mac(local_ip);
-    return nstart(local_interface);
+    return nstart(local_interface, nonblocking);
+  }
+
+  /** Start process on local interface with blocking mode enabled. */
+  public long start(String local_interface, String local_ip) {
+    return start(local_interface, local_ip, true);
   }
 
   /** Stop processing. */
@@ -354,7 +359,7 @@ public class PacketCapture {
       JFLog.log("      : -t timeout");
       return;
     }
-    if (!init()) {
+    if (!init(true)) {
       JFLog.log("init failed");
       return;
     }
