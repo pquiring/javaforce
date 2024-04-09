@@ -235,6 +235,8 @@ public class Storage implements Serializable {
     if (fmt < 1 || fmt > 3) return false;
     ShellProcess sp = new ShellProcess();
     sp.addRegexResponse(".*y[/]n.*", "y\n", true);
+    ShellProcess.log = true;
+    ShellProcess.logPrompt = true;
     String output = null;
     switch (fmt) {
       default:
