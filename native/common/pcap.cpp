@@ -75,7 +75,7 @@ int (*pcap_setnonblock)(pcap_t *p, int nonblock, char *errbuf);
 #define PCAP_ERRBUF_SIZE 256
 
 JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
-  (JNIEnv *e, jclass cls, jstring lib1, jstring lib2, jboolean nonblocking)
+  (JNIEnv *e, jclass cls, jstring lib1, jstring lib2)
 {
   char err[PCAP_ERRBUF_SIZE];
 
