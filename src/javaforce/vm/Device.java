@@ -16,8 +16,8 @@ public class Device extends Address implements Serializable {
 
   public int type;
   public String name;
-  public String path;
-  public String xml;
+  public String desc;
+  public transient String xml;
 
   public static final int TYPE_USB = 1;
   public static final int TYPE_PCI = 2;
@@ -42,6 +42,11 @@ public class Device extends Address implements Serializable {
       if (debug) {
         JFLog.log("Device:" + dev);
       }
+      try {
+        dev.decode_address();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
       dlist[idx] = dev;
     }
     return dlist;
@@ -57,6 +62,46 @@ public class Device extends Address implements Serializable {
 
   public String toString() {
     return name + ":" + getType() + "=" + xml;
+  }
+
+  private void decode_address() {
+    XML _xml = new XML();
+    ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes());
+    _xml.read(bais);
+    switch (type) {
+      case TYPE_USB: {
+        /* <device><name>...</name><devnode type='dev'>/dev/bus/usb/###/###<devnode><path>/sys/devices/pci####:##/####:##:##.#/usb#/#-#</path><capability><bus>..</bus><device>..</device></capability></device> */
+        XML.XMLTag caps = _xml.getTag(new String[] {"device", "capability"});
+        XML.XMLTag[] tags = caps.getChildren();
+        for(XML.XMLTag tag : tags) {
+          String name = tag.getName();
+          String content = tag.getContent();
+          switch (name) {
+            case "bus": bus = content; break;
+            case "device": port = content; break;
+            case "product": desc = content; break;
+          }
+        }
+        break;
+      }
+      case TYPE_PCI: {
+        /* <device><name>...</name><path>/sys/devices/pci####:##/####:##:##.#</path><capability><domain>....</domain><bus>..</bus><slot>..</slot><function>.</function></capability></device> */
+        XML.XMLTag caps = _xml.getTag(new String[] {"device", "capability"});
+        XML.XMLTag[] tags = caps.getChildren();
+        for(XML.XMLTag tag : tags) {
+          String name = tag.getName();
+          String content = tag.getContent();
+          switch (name) {
+            case "domain": domain = content; break;
+            case "bus": bus = content; break;
+            case "slot": slot = content; break;
+            case "function": function = content; break;
+            case "product": desc = content; break;
+          }
+        }
+        break;
+      }
+    }
   }
 
   public String toXML() {

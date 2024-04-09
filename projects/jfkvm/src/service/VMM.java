@@ -12,17 +12,6 @@ import javaforce.*;
 import javaforce.vm.*;
 
 public class VMM implements VMProvider {
-  //type = DEVICE.TYPE_...
-  public String[] listDevices(int type) {
-    Device[] devs = Device.list(type);  //what is "Devs"...?
-    String[] names = new String[devs.length];
-    int idx = 0;
-    for(Device dev : devs) {
-      names[idx++] = dev.name;
-    }
-    return names;
-  }
-
   public String cleanName(String name) {
     return JF.filter(name, JF.filter_id);
   }

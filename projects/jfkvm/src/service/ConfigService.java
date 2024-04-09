@@ -124,6 +124,7 @@ public class ConfigService implements WebUIHandler {
     public NetworkVirtual network_virtual;
     public Runnable network_virtual_complete;
 
+    public Device[] devices;
     public Device device;
     public PopupPanel device_usb_popup;
     public Runnable device_usb_init;
@@ -1044,17 +1045,17 @@ public class ConfigService implements WebUIHandler {
         _sel = "";
         accept.setText("Create");
       } else {
-        _sel = ui.device.path;
+        _sel = ui.device.name;
         accept.setText("Edit");
       }
-      String[] groups = vmm.listDevices(Device.TYPE_USB);
+      ui.devices = Device.list(Device.TYPE_USB);
       int idx = 0;
       int _sel_idx = -1;
-      for(String group : groups) {
-        if (group.equals(_sel)) {
+      for(Device dev: ui.devices) {
+        if (dev.name.equals(_sel)) {
           _sel_idx = idx;
         }
-        device.add(group, group);
+        device.add(dev.name, dev.name + ":" + dev.desc);
         idx++;
       }
       if (_sel_idx != -1) {
@@ -1063,15 +1064,9 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
-      String _device = device.getSelectedValue();
-      if (_device == null || _device.length() == 0) {
-        return;
-      }
-      if (ui.device == null) {
-        ui.device = new Device();
-        ui.device.type = Device.TYPE_USB;
-      }
-      ui.device.path = _device;
+      int idx = device.getSelectedIndex();
+      if (idx == -1) return;
+      ui.device = ui.devices[idx];
       if (ui.device_complete != null) {
         ui.device_complete.run();
       }
@@ -1110,17 +1105,17 @@ public class ConfigService implements WebUIHandler {
         _sel = "";
         accept.setText("Create");
       } else {
-        _sel = ui.device.path;
+        _sel = ui.device.name;
         accept.setText("Edit");
       }
-      String[] groups = vmm.listDevices(Device.TYPE_PCI);
+      ui.devices = Device.list(Device.TYPE_PCI);
       int idx = 0;
       int _sel_idx = -1;
-      for(String group : groups) {
-        if (group.equals(_sel)) {
+      for(Device dev: ui.devices) {
+        if (dev.name.equals(_sel)) {
           _sel_idx = idx;
         }
-        device.add(group, group);
+        device.add(dev.name, dev.name + ":" + dev.desc);
         idx++;
       }
       if (_sel_idx != -1) {
@@ -1129,15 +1124,9 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
-      String _device = device.getSelectedValue();
-      if (_device == null || _device.length() == 0) {
-        return;
-      }
-      if (ui.device == null) {
-        ui.device = new Device();
-        ui.device.type = Device.TYPE_PCI;
-      }
-      ui.device.path = _device;
+      int idx = device.getSelectedIndex();
+      if (idx == -1) return;
+      ui.device = ui.devices[idx];
       if (ui.device_complete != null) {
         ui.device_complete.run();
       }
