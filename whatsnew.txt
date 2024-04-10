@@ -1,5 +1,20 @@
 What's new...
 
+Apr 10/2024 : JF/54.0
+ - jfKVM/0.5
+   - implement iSCSI support (gfs2 or ocfs2) (but still not working yet)
+   - add clone VM
+   - add Admin panel to change admin password
+ - jfMonitor/0.7
+   - secure web interface
+   - setup non-blocking mode
+   - fixed Linux support
+ - jfBackup/0.24
+   - secure web interface
+ - jfDVR/0.23
+   - secure web interface
+ - moved many utils into /utils
+
 Apr 3/2024 : JF/53.4
   - jfKVM/0.4
     - fixed live migration
