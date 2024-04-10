@@ -67,6 +67,9 @@ UUID
         Port virbr0
             Interface virbr0
                 Type: internal
+        Port vnet1
+            tag: 123
+            Interface vnet1
     ovs_version: "3.1.0"
     */
     String[] lns = output.split("\n");
@@ -78,6 +81,9 @@ UUID
       if (ln.length() == 0) continue;
       if (ln.startsWith("Bridge ")) {
         br = ln.substring(7);
+        continue;
+      }
+      if (ln.startsWith("Port ")) {
         continue;
       }
       if (ln.startsWith("Interface ")) {

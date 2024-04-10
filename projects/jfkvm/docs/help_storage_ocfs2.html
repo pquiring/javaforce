@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfKVM</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfKVM : Storage</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+OCFS2 Storage:
+==============
+
+Desc:
+-----
+Shared Disk File system for iSCSI storage pools.
+
+Instructions:
+-------------
+
+Add the iSCSI target to each server.
+Start the iSCSI on both servers but format the pool from one server only.
+
+On each server create /etc/ocfs2/cluster.conf
+  node:
+    number = 0
+    name = host1
+    ip_address = 192.168.1.2
+    ip_port = 7777
+    cluster = ocfs2
+
+  node:
+    number = 1
+    name = host2
+    ip_address = 192.168.1.3
+    ip_port = 7777
+    cluster = ocfs2
+
+  cluster:
+    node_count = 2
+    heartbeat_mode = local
+    name = ocfs2
+
+config service:
+  /etc/init.d/o2cb configure
+Debian way:
+  dpkg-reconfigure ocfs2-tools
+
+  Load O2CB driver on boot (y/n) [y]: y
+  Cluster stack backing O2CB [o2cb]: ENTER
+  Cluster to start on boot (Enter "none" to clear) [ocfs2]: ENTER
+  Specify heartbeat dead threshold (=7) [31]: ENTER
+  Specify network idle timeout in ms (=5000) [30000]: ENTER
+  Specify network keepalive delay in ms (=1000) [2000]: ENTER
+  Specify network reconnect delay in ms (=2000) [2000]: ENTER
+
+start cluster:
+  o2cb register-cluster ocfs2
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfkvm">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfkvm">GitHub</a>
+
+</pre>
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>
