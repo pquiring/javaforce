@@ -16,7 +16,7 @@ OCFS2 Storage:
 
 Desc:
 -----
-Shared Disk File system for iSCSI storage pools.
+Shared Disk File system for iSCSI storage pools (Oracle).
 
 Instructions:
 -------------
@@ -44,7 +44,7 @@ On each server create /etc/ocfs2/cluster.conf
     heartbeat_mode = local
     name = ocfs2
 
-config service:
+config service on each server:
   /etc/init.d/o2cb configure
 Debian way:
   dpkg-reconfigure ocfs2-tools
@@ -57,8 +57,10 @@ Debian way:
   Specify network keepalive delay in ms (=1000) [2000]: ENTER
   Specify network reconnect delay in ms (=2000) [2000]: ENTER
 
-start cluster:
+start cluster on each server:
   o2cb register-cluster ocfs2
+
+Now you should be able to mount the volume on both servers.
 
 </pre>
 <br><br>
