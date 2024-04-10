@@ -1,3 +1,10 @@
+2024-04-10 : 0.5 released!
+  - iSCSI format works but still unable to mount
+    - search for gfs2 or ocfs2 setup guides online for help
+  - add clone VM
+  - add Admin panel to change admin password
+  - many ui updates
+
 2024-04-03 : 0.4 released!
   - fixed live migration
 

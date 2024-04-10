@@ -17,7 +17,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.4";
+  public static String version = "0.5";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
@@ -1310,7 +1310,7 @@ public class ConfigService implements WebUIHandler {
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
       "ToDo:\n" +
-      " - iSCSI format/mount not working yet (requires manual setup)\n" +
+      " - iSCSI mount not working yet (requires manual setup : search for gfs2 or ocfs2 setup guides)\n" +
       " - test adding host device to guest VM\n" +
       " - implement GlusterFS to create vSAN type storage\n" +
       " - VNC security (currently no password)\n" +
