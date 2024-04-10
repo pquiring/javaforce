@@ -1,3 +1,6 @@
+Apr 10/2024 : 0.24 released
+  - secure ui interface
+
 June 30/2021 : 0.23 released
   - new : added button to unmount drives on client side
   - fix : improve logging

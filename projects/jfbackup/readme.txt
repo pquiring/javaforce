@@ -42,5 +42,5 @@ Source Code : https://github.com/pquiring/javaforce/tree/master/projects/jfbacku
 Author : Peter Quiring
 eMail : pquiring at gmail dot com
 
-Version : 0.23
-Date : 6/30/2021
+Version : 0.24
+Date : 4/10/2024
