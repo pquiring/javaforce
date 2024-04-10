@@ -33,13 +33,13 @@ Features supported:
  - live/offline compute migration
  - offline data migration
  - autostart machines
+ - iSCSI now supports ocfs2 (requires special setup : see Storage below) (gfs2 not tested but implemented)
 
 Not supported:
  - VMFS storage pools
  - vmdk file split into multiple 2GB extents
 
 ToDo:
- - iSCSI format/mount not working yet (requires manual setup)
  - test adding host device to guest VM
  - implement GlusterFS to create vSAN type storage
  - VNC security (currently no password)
