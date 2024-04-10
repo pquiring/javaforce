@@ -2290,7 +2290,7 @@ public class ConfigService implements WebUIHandler {
       ui.vm_network = null;
       ui.vm_network_complete = () -> {
         hardware.addNetwork(ui.vm_network);
-        net_list.add(ui.vm_network.network);
+        net_list.add("net:" + ui.vm_network.network);
       };
       ui.vm_network_init.run();
       ui.vm_network_popup.setVisible(true);
