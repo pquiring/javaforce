@@ -1,3 +1,7 @@
+Apr 10/2024 : 0.7 released
+  - secured ui interface
+  - fixed linux support
+
 Apr 17/2023 : 0.6 released
   - fixed webui issues
   - added web API port to firewall exception rules
