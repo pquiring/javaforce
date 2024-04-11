@@ -1437,7 +1437,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50}, 22, 2, 0);
+    Table table = new Table(new int[] {100, 50}, 21, 2, 0);
     row.add(table);
 //    table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -1569,7 +1569,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 100, 50, 50, 50}, 22, 5, 0);
+    Table table = new Table(new int[] {100, 100, 50, 50, 50}, 21, 5, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -1791,7 +1791,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50}, 22, 2, 0);
+    Table table = new Table(new int[] {100, 50}, 21, 2, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -2789,7 +2789,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 75, 50, 75}, 22, 4, 0);
+    Table table = new Table(new int[] {100, 75, 50, 75}, 21, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -3573,7 +3573,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50}, 22, 4, 0);
+      Table table = new Table(new int[] {100, 200, 150, 50}, 21, 4, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3639,7 +3639,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 50, 100}, 22, 3, 0);
+      Table table = new Table(new int[] {100, 50, 100}, 21, 3, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3717,7 +3717,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 50, 50}, 22, 3, 0);
+      Table table = new Table(new int[] {100, 50, 50}, 21, 3, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3816,7 +3816,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, 22, 6, 0);
+      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, 21, 6, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
