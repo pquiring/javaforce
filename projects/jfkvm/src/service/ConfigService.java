@@ -2443,9 +2443,15 @@ public class ConfigService implements WebUIHandler {
       data.setSelected(false);
     });
     next.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      Hardware hw = vm.loadHardware();
+      if (hw == null) {
+        errmsg.setText("Error:Failed to load VM hardware");
+        return;
+      }
       if (data.isSelected()) {
         //TODO : check vm disks if local : load Hardware config
-        ui.setRightPanel(vmMigrateDataPanel(vm, ui));
+        ui.setRightPanel(vmMigrateDataPanel(vm, hw, ui));
         return;
       }
       if (compute.isSelected()) {
@@ -2456,7 +2462,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         //TODO : check vm disks if local : load Hardware config
-        ui.setRightPanel(vmMigrateComputePanel(vm, ui));
+        ui.setRightPanel(vmMigrateComputePanel(vm, hw, ui));
         return;
       }
       errmsg.setText("You must make a selection");
@@ -2465,7 +2471,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel vmMigrateDataPanel(VirtualMachine vm, UI ui) {
+  private Panel vmMigrateDataPanel(VirtualMachine vm, Hardware hw, UI ui) {
     Panel panel = new Panel();
     Row row;
     ArrayList<Storage> pools = Config.current.pools;
@@ -2562,7 +2568,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel vmMigrateComputePanel(VirtualMachine vm, UI ui) {
+  private Panel vmMigrateComputePanel(VirtualMachine vm, Hardware hw, UI ui) {
     Panel panel = new Panel();
     Row row;
     Host[] hosts = Config.current.getHosts();
@@ -2591,18 +2597,29 @@ public class ConfigService implements WebUIHandler {
     row.add(next);
 
     next.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = list.getSelectedIndex();
       if (idx == -1) return;
       Host dest = hosts[idx];
-      ui.setRightPanel(vmMigrateComputeStartPanel(vm, dest, ui));
+      if (!dest.online) {
+        errmsg.setText("Remote Host is offline");
+        return;
+      }
+      ui.setRightPanel(vmMigrateComputeStartPanel(vm, hw, dest, ui));
     });
 
     return panel;
   }
 
-  private Panel vmMigrateComputeStartPanel(VirtualMachine vm, Host remote, UI ui) {
+  private Panel vmMigrateComputeStartPanel(VirtualMachine vm, Hardware hw, Host remote, UI ui) {
     Panel panel = new Panel();
     Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -2620,21 +2637,40 @@ public class ConfigService implements WebUIHandler {
     //TODO : confirm move is possible (check cpu,memory,network,device requirements)
 
     start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      //perform checks before starting
+      //check if remote host is using vnc port
+      int vnc=vm.getVNC();
+      if (vmm.vnc_port_inuse_remote(vnc)) {
+        errmsg.setText("Error:VNC Port in use on remote host");
+        return;
+      }
+      //check networks are compatible
+      for(Network nw : hw.networks) {
+        int remote_vlan = remote.getNetworkVLAN(nw.network);
+        if (remote_vlan == -1) {
+          errmsg.setText("Error:Network not found on remote host:" + nw.network);
+          return;
+        }
+        NetworkVLAN local_nw = Config.current.getNetworkVLAN(nw.network);
+        if (local_nw == null) {
+          errmsg.setText("Error:Network not found on local host:" + nw.network);
+          return;
+        }
+        int local_vlan = local_nw.vlan;
+        if (local_vlan != remote_vlan) {
+          errmsg.setText("Error:Network VLAN does not match:" + nw.network);
+          return;
+        }
+      }
       Task task = new Task("Compute Migrate VM : " + vm.name) {
         public void doTask() {
-          //check if remote host is using vnc port
-          int vnc=vm.getVNC();
-          if (vmm.vnc_port_inuse_remote(vnc)) {
-            JFLog.log("VNC Port in use on remote host");
-            setResult("Error occured, see logs.");
+          if (vmm.migrateCompute(vm, remote.host)) {
+            setResult("Completed");
+            //notify other host of transfer
+            remote.notify("migratevm", vm.name);
           } else {
-            if (vmm.migrateCompute(vm, remote.host)) {
-              setResult("Completed");
-              //notify other host of transfer
-              remote.notify("migratevm", vm.name);
-            } else {
-              setResult("Error occured, see logs.");
-            }
+            setResult("Error occured, see logs.");
           }
         }
       };
