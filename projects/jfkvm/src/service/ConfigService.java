@@ -2450,7 +2450,6 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       if (data.isSelected()) {
-        //TODO : check vm disks if local : load Hardware config
         ui.setRightPanel(vmMigrateDataPanel(vm, hw, ui));
         return;
       }
@@ -2507,13 +2506,13 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("That VM is already in that storage pool");
         return;
       }
-      ui.setRightPanel(vmMigrateDataStartPanel(vm, dest, ui));
+      ui.setRightPanel(vmMigrateDataStartPanel(vm, hw, dest, ui));
     });
 
     return panel;
   }
 
-  private Panel vmMigrateDataStartPanel(VirtualMachine vm, Storage dest, UI ui) {
+  private Panel vmMigrateDataStartPanel(VirtualMachine vm, Hardware hw, Storage dest, UI ui) {
     Panel panel = new Panel();
     Row row;
 
@@ -2641,7 +2640,7 @@ public class ConfigService implements WebUIHandler {
       //perform checks before starting
       //check if remote host is using vnc port
       int vnc=vm.getVNC();
-      if (vmm.vnc_port_inuse_remote(vnc)) {
+      if (vmm.vnc_port_inuse_remote(remote, vnc)) {
         errmsg.setText("Error:VNC Port in use on remote host");
         return;
       }
