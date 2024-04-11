@@ -148,9 +148,6 @@ public class Hardware implements Serializable {
     if (genid == null) {
       genid = JF.generateUUID();
     }
-    if (os == 0) {
-      os = OS_LINUX;
-    }
     if (cores == 0) {
       cores = 2;
     }
