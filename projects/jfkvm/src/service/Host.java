@@ -77,6 +77,7 @@ public class Host implements Serializable {
       https.open(host);
       byte[] data = https.get("/api/gethostname");
       https.close();
+      if (data == null || data.length == 0) return null;
       return new String(data);
     } catch (Exception e) {
       JFLog.log(e);

@@ -102,6 +102,7 @@ public class Tasks extends Thread {
             host.online = true;
             if (host.hostname == null) {
               host.hostname = host.getHostname();
+              Config.current.save();
             }
           } catch (Exception e) {
             JFLog.log(e);

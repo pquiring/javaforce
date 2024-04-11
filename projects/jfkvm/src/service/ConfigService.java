@@ -1304,13 +1304,13 @@ public class ConfigService implements WebUIHandler {
       " - live/offline compute migration\n" +
       " - offline data migration\n" +
       " - autostart machines\n" +
+      " - iSCSI requires manual setup (see online help for more info)\n" +
       "\n" +
       "Not supported:\n" +
       " - VMFS storage pools\n" +
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
       "ToDo:\n" +
-      " - iSCSI mount not working yet (requires manual setup : search for gfs2 or ocfs2 setup guides)\n" +
       " - test adding host device to guest VM\n" +
       " - implement GlusterFS to create vSAN type storage\n" +
       " - VNC security (currently no password)\n" +
