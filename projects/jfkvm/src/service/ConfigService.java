@@ -2676,6 +2676,10 @@ public class ConfigService implements WebUIHandler {
           return;
         }
       }
+      if (hw.devices.size() > 0) {
+        errmsg.setText("Error:Can not migrate VM with host devices");
+        return;
+      }
       Task task = new Task("Compute Migrate VM : " + vm.name) {
         public void doTask() {
           if (vmm.migrateCompute(vm, remote.host)) {
