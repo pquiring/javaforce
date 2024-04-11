@@ -167,6 +167,11 @@ public class VMM implements VMProvider {
       if (port == vnc_end) {
         port = Config.current.vnc_start;
       }
+      if (port == 21064) {
+        //used by dlm (gfs2)
+        port++;
+        continue;
+      }
       if (vnc_port_inuse_local(port)) {
         port++;
         continue;
