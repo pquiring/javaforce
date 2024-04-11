@@ -2456,11 +2456,26 @@ public class ConfigService implements WebUIHandler {
       if (compute.isSelected()) {
         //check if vm storage is local
         Storage pool = vmm.getPoolByName(vm.pool);
-        if (pool == null || pool.type == Storage.TYPE_LOCAL_PART || pool.type == Storage.TYPE_LOCAL_DISK) {
+        if (pool == null) {
+          errmsg.setText("Error:Storage not found for VM");
+          return;
+        }
+        if (pool.type == Storage.TYPE_LOCAL_PART || pool.type == Storage.TYPE_LOCAL_DISK) {
           errmsg.setText("Error:Can not compute migrate VM with local storage");
           return;
         }
-        //TODO : check vm disks if local : load Hardware config
+        //check if vm disks are local
+        for(Disk disk : hw.disks) {
+          Storage disk_store = vmm.getPoolByName(disk.pool);
+          if (disk_store == null) {
+            errmsg.setText("Error:Storage not found for disk:" + disk.name);
+            return;
+          }
+          if (disk_store.type == Storage.TYPE_LOCAL_PART || disk_store.type == Storage.TYPE_LOCAL_DISK) {
+            errmsg.setText("Error:Can not compute migrate VM with disk using local storage:" + disk.name);
+            return;
+          }
+        }
         ui.setRightPanel(vmMigrateComputePanel(vm, hw, ui));
         return;
       }
@@ -2539,13 +2554,12 @@ public class ConfigService implements WebUIHandler {
     Button start = new Button("Start");
     row.add(start);
 
-    //TODO : confirm move is possible (check storage requirements)
-
     start.addClickListener((me, cmp) -> {
       if (vm.getState() != VirtualMachine.STATE_OFF) {
         errmsg.setText("Can not data migrate live VM");
         return;
       }
+      //TODO : confirm move is possible (check storage requirements)
       Task task = new Task("Data Migrate VM : " + vm.name) {
         public void doTask() {
           Hardware hw = vm.loadHardware();
