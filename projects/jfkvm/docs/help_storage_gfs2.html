@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfKVM</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfKVM : Storage</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+GFS2 Storage:
+==============
+
+Desc:
+-----
+Shared Disk File system for iSCSI storage pools (Red Hat).
+
+Instructions:
+-------------
+
+NOTE : THESE ARE UNTESTED INSTRUCTIONS !!!
+
+Add the iSCSI target to each server.
+
+Start the iSCSI on both servers but format the pool from one server only.
+
+Required packages:
+  pacemaker - cluster resource manager
+  pcs - Pacemaker Configuration System
+  lvm2 - Linux Logical Volume Manager
+
+apt install pacemaker pcs lvm2
+
+setup cluster:
+--------------
+https://www.redhat.com/sysadmin/rhel-pacemaker-cluster
+
+# Create the 'hacluster' user
+passwd hacluster
+
+# start pacemaker
+systemctl enable pcsd.service
+systemctl start pcsd.service
+
+# connect to other nodes
+pcs cluster auth node1.example.com node2.example.com
+
+# create cluster
+pcs cluster setup --name gfs2 node1 node2
+
+# start cluster
+pcs cluster start --all
+
+# Enable the cluster to auto-start after reboot
+pcs cluster enable --all
+
+setup gfs2:
+-----------
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/global_file_system_2/ch-clustsetup-gfs2
+
+# set pacemaker no-quorum-policy to freeze
+pcs property set no-quorum-policy=freeze
+
+# Set up a dlm resource. This is a required dependency for clvmd and gfs2
+pcs resource create dlm ocf:pacemaker:controld op monitor interval=30s on-fail=fence clone interleave=true ordered=true
+
+# enable the cluster
+/usr/sbin/lvmconf --enable-cluster
+
+# Set up clvmd as a cluster resource.
+pcs resource create clvmd ocf:heartbeat:clvm op monitor interval=30s on-fail=fence clone interleave=true ordered=true
+
+# Set up clvmd and dlm dependency and start up order. clvmd must start after dlm and must run on the same node as dlm
+pcs constraint order start dlm-clone then clvmd-clone
+pcs constraint colocation add clvmd-clone with dlm-clone
+
+# Create the clustered logical volume (where ? is the iSCSI target mapped to a device - might need to use /dev/disk/by-path/??? since the /dev/sd? is mapped on demand and might change)
+pvcreate /dev/sd?
+vgcreate -Ay -cy gfs2_vg /dev/sd?
+lvcreate -L5G -n gfs2_lv gfs2_vg
+
+# format the filesystem
+mkfs.gfs2 -j2 -p lock_dlm -t cluster:gfs2 /dev/gfs2_vg/gfs2_lv
+
+# Configure a clusterfs resource.
+pcs resource create clusterfs Filesystem device="/dev/gfs2_vg/gfs2_lv" directory="/volumes/gfs2" fstype="gfs2" options="noatime" op monitor interval=10s on-fail=fence clone interleave=true
+
+# Set up GFS2 and clvmd dependency and startup order. GFS2 must start after clvmd and must run on the same node as clvmd.
+pcs constraint order start clvmd-clone then clusterfs-clone
+pcs constraint colocation add clusterfs-clone with clvmd-clone
+
+# Now you should be able to mount the volume on both servers.
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfkvm">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfkvm">GitHub</a>
+
+</pre>
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>
