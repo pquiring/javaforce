@@ -5,6 +5,10 @@ package javaforce.vm;
  * @author pquiring
  */
 
+import java.io.*;
+
+import javaforce.*;
+
 public class VMHost {
   public static native long total_memory();
   public static native long free_memory();
@@ -16,4 +20,16 @@ public class VMHost {
    *
    */
   public static native boolean connect(String remote);
+
+  public static String getHostname() {
+    try {
+      FileInputStream fis = new FileInputStream("/etc/hostname");
+      String hostname = new String(fis.readAllBytes()).trim();
+      fis.close();
+      return hostname;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return "localhost";
+    }
+  }
 }

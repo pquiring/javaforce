@@ -9,7 +9,6 @@ package service;
  * @author pquiring
  */
 
-import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -98,15 +97,12 @@ public class Tasks extends Thread {
         Host[] hosts = Config.current.getHosts();
         for(Host host : hosts) {
           try {
-            String keyfile = Paths.clusterPath + "/" + host.host;
-            host.valid = new File(keyfile).exists();
-            HTTPS https = new HTTPS();
-            https.open(host.host);
-            byte[] res = https.get("/api/getver");
-            if (res == null) throw new Exception("offline");
-            String version = new String(res);
-            host.version = Float.valueOf(version);
+            if (!host.checkValid()) throw new Exception("invalid");
+            if (!host.getVersion()) throw new Exception("offline");
             host.online = true;
+            if (host.hostname == null) {
+              host.hostname = host.getHostname();
+            }
           } catch (Exception e) {
             JFLog.log(e);
             host.online = false;

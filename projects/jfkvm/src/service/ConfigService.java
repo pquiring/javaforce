@@ -1437,7 +1437,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50}, 20, 2, 0);
+    Table table = new Table(new int[] {100, 50}, 22, 2, 0);
     row.add(table);
 //    table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -1569,13 +1569,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50, 50, 50}, 20, 4, 0);
+    Table table = new Table(new int[] {100, 100, 50, 50, 50}, 22, 5, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Host", "Version", "Online", "Valid"});
+    table.addRow(new String[] {"Host", "Hostname", "Version", "Online", "Valid"});
 
     Host[] hosts = Config.current.getHosts();
 
@@ -1791,7 +1791,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50}, 20, 2, 0);
+    Table table = new Table(new int[] {100, 50}, 22, 2, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -2631,7 +2631,7 @@ public class ConfigService implements WebUIHandler {
             if (vmm.migrateCompute(vm, remote.host)) {
               setResult("Completed");
               //notify other host of transfer
-              notify_host(remote, "migratevm", vm.name);
+              remote.notify("migratevm", vm.name);
             } else {
               setResult("Error occured, see logs.");
             }
@@ -2789,7 +2789,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 75, 50, 75}, 20, 4, 0);
+    Table table = new Table(new int[] {100, 75, 50, 75}, 22, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -3573,7 +3573,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50}, 20, 4, 0);
+      Table table = new Table(new int[] {100, 200, 150, 50}, 22, 4, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3639,7 +3639,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 50, 100}, 20, 3, 0);
+      Table table = new Table(new int[] {100, 50, 100}, 22, 3, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3717,7 +3717,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 50, 50}, 20, 3, 0);
+      Table table = new Table(new int[] {100, 50, 50}, 22, 3, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3816,7 +3816,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, 20, 6, 0);
+      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, 22, 6, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -3976,24 +3976,6 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
-  private boolean notify_host(Host host, String msg, String name) {
-    String token = host.token;
-    if (token == null) {
-      JFLog.log("Host token not found:" + host);
-      return false;
-    }
-    try {
-      HTTPS https = new HTTPS();
-      https.open(host.host);
-      https.get("/api/notify?msg=" + msg + "&name=" + name + "&token=" + token);
-      https.close();
-      return true;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return false;
-    }
-  }
-
   public byte[] getResource(String url) {
     //url = /api/...
     if (debug) {
@@ -4064,6 +4046,9 @@ public class ConfigService implements WebUIHandler {
       }
       case "getver": {
         return version.getBytes();
+      }
+      case "gethostname": {
+        return VMHost.getHostname().getBytes();
       }
       case "checkvncport": {
         String port = props.getProperty("port");

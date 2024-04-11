@@ -18,7 +18,6 @@ public class Config implements Serializable {
   //config settings
   public String password;
   public String fqn;
-  private String iqn;  //not used
   public String token;
   public int auto_start_delay = 60;
   public ArrayList<String> auto_start_vms = new ArrayList<>();
@@ -142,6 +141,10 @@ public class Config implements Serializable {
       Host host = new Host();
       host.host = hostname;
       host.token = token;
+      host.online = true;
+      host.valid = true;
+      host.getVersion();
+      host.hostname = host.getHostname();
       hosts.put(hostname, host);
       save();
       //update ocfs2 cluster
