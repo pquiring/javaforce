@@ -28,14 +28,14 @@ Start the iSCSI on both servers but format the pool from one server only.
 On each server create /etc/ocfs2/cluster.conf
   node:
     number = 0
-    name = host1
+    name = hostname1
     ip_address = 192.168.1.2
     ip_port = 7777
     cluster = ocfs2
 
   node:
     number = 1
-    name = host2
+    name = hostname2
     ip_address = 192.168.1.3
     ip_port = 7777
     cluster = ocfs2
@@ -44,6 +44,8 @@ On each server create /etc/ocfs2/cluster.conf
     node_count = 2
     heartbeat_mode = local
     name = ocfs2
+
+Note : The name is each node must be the hostname (not the full domain name)
 
 config service on each server:
   /etc/init.d/o2cb configure
