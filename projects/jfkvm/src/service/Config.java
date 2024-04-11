@@ -144,6 +144,10 @@ public class Config implements Serializable {
       host.token = token;
       hosts.put(hostname, host);
       save();
+      //update ocfs2 cluster
+      if (Storage.format_supported(Storage.FORMAT_OCFS2)) {
+        update_ocfs2();
+      }
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -241,6 +245,14 @@ public class Config implements Serializable {
     if (auto_start_vms.contains(vm.name)) {
       auto_start_vms.remove(vm.name);
       save();
+    }
+  }
+
+  public void update_ocfs2() {
+    try {
+      //TODO
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 }

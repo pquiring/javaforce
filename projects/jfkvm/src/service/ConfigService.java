@@ -3462,14 +3462,14 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     panel.add(row);
     CheckBox gfs2 = new CheckBox("gfs2");
-    if (pool.type == Storage.TYPE_ISCSI) {
+    if (pool.type == Storage.TYPE_ISCSI && Storage.format_supported(Storage.FORMAT_GFS2)) {
       row.add(gfs2);
     }
 
     row = new Row();
     panel.add(row);
     CheckBox ocfs2 = new CheckBox("ocfs2");
-    if (pool.type == Storage.TYPE_ISCSI) {
+    if (pool.type == Storage.TYPE_ISCSI && Storage.format_supported(Storage.FORMAT_OCFS2)) {
       row.add(ocfs2);
     }
 
