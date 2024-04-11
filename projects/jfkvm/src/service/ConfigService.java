@@ -4058,6 +4058,15 @@ public class ConfigService implements WebUIHandler {
         }
         return res.getBytes();
       }
+      case "getnetworkvlan": {
+        String token = props.getProperty("token");
+        String network = props.getProperty("network");
+        if (network == null) return null;
+        if (!token.equals(Config.current.token)) return null;
+        NetworkVLAN vlan = Config.current.getNetworkVLAN(network);
+        if (vlan == null) return "-1".getBytes();
+        return Integer.toString(vlan.vlan).getBytes();
+      }
     }
     return null;
   }

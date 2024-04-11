@@ -219,6 +219,15 @@ public class Config implements Serializable {
     save();
   }
 
+  public NetworkVLAN getNetworkVLAN(String name) {
+    for(NetworkVLAN vlan : vlans) {
+      if (vlan.name.equalsIgnoreCase(name)) {
+        return vlan;
+      }
+    }
+    return null;
+  }
+
   public void addNetworkVirtual(NetworkVirtual network) {
     nics.add(network);
     save();

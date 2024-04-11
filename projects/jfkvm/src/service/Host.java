@@ -84,4 +84,19 @@ public class Host implements Serializable {
       return host;
     }
   }
+
+  public int getNetworkVLAN(String name) {
+    if (!isValid(0.6f)) return -1;
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      byte[] data = https.get("/api/getnetworkvlan?network=" + name + "&token=" + token);
+      https.close();
+      if (data == null || data.length == 0) return -1;
+      return Integer.valueOf(new String(data));
+    } catch (Exception e) {
+      JFLog.log(e);
+      return -1;
+    }
+  }
 }
