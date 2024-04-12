@@ -1,5 +1,13 @@
 What's new...
 
+Apr 12/2024 : JF/54.1
+ - jfKVM/0.6
+   - update docs for iSCSI
+   - add Host.hostname
+   - add checks for migration
+   - UI updates
+ - fix Linux deps
+
 Apr 10/2024 : JF/54.0
  - jfKVM/0.5
    - implement iSCSI support (gfs2 or ocfs2) (but still not working yet)

@@ -20,7 +20,7 @@ import java.lang.management.*;
 public class JF {
 
   public static String getVersion() {
-    return "54.0";
+    return "54.1";
   }
 
   public static void main(String[] args) {

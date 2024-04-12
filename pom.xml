@@ -7,7 +7,7 @@
 
   <groupId>io.github.pquiring</groupId>
   <artifactId>javaforce</artifactId>
-  <version>54.0</version>
+  <version>54.1</version>
 
   <scm>
     <url>https://github.com/pquiring/javaforce</url>
