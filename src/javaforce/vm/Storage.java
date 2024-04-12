@@ -141,7 +141,7 @@ public class Storage implements Serializable {
 
   public String[] getStates() {
     String size, free;
-    if (getState() == STATE_ON) {
+    if (getState() == STATE_ON && mounted()) {
       size = getDeviceSize().toString();
       free = getFreeSize().toString();
     } else {
@@ -301,7 +301,7 @@ public class Storage implements Serializable {
       return new Size(Long.valueOf(output));
     } else {
       try {
-        File file = new File(getDevice());
+        File file = new File(getPath());
         return new Size(file.getTotalSpace());
       } catch (Exception e) {
         JFLog.log(e);
@@ -312,7 +312,7 @@ public class Storage implements Serializable {
 
   public Size getFreeSize() {
     try {
-      File file = new File(getDevice());
+      File file = new File(getPath());
       return new Size(file.getFreeSpace());
     } catch (Exception e) {
       JFLog.log(e);
