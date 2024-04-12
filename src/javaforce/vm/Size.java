@@ -59,6 +59,10 @@ public class Size implements Serializable {
     return 'B';
   }
 
+  public boolean greaterThan(Size other) {
+    return this.toLong() > other.toLong();
+  }
+
   /** Return size as : 1G */
   public String getSize() {
     return String.format("%d%c", size, getUnitChar());

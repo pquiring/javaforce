@@ -2559,7 +2559,12 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Can not data migrate live VM");
         return;
       }
-      //TODO : confirm move is possible (check storage requirements)
+      Size src = vmm.getPoolByName(vm.pool).getFolderSize(vm.name);
+      Size dest_free = dest.getFreeSize();
+      if (src.greaterThan(dest_free)) {
+        errmsg.setText("Insufficent space available in dest storage pool");
+        return;
+      }
       Task task = new Task("Data Migrate VM : " + vm.name) {
         public void doTask() {
           Hardware hw = vm.loadHardware();

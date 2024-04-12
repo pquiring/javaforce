@@ -267,7 +267,7 @@ public class Storage implements Serializable {
     String output = sp.run(new String[] {"/usr/bin/bash", filename}, true);
     JFLog.log(output);
     file.delete();
-    return sp.getErrorLevel() == 0;  //BUG : this is errorlevel of bash, not the script
+    return sp.getErrorLevel() == 0;
   }
 
   /** Returns mount path. */
@@ -285,11 +285,42 @@ public class Storage implements Serializable {
   }
 
   public Size getDeviceSize() {
-    ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", getDevice()}, true);
-    output = JF.filter(output, JF.filter_numeric);
-    if (output.length() == 0) return null;
-    return new Size(Long.valueOf(output));
+    if (false) {
+      ShellProcess sp = new ShellProcess();
+      String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", getDevice()}, true);
+      output = JF.filter(output, JF.filter_numeric);
+      if (output.length() == 0) return null;
+      return new Size(Long.valueOf(output));
+    } else {
+      try {
+        File file = new File(getDevice());
+        return new Size(file.getTotalSpace());
+      } catch (Exception e) {
+        JFLog.log(e);
+        return new Size(0);
+      }
+    }
+  }
+
+  public Size getFreeSize() {
+    try {
+      File file = new File(getDevice());
+      return new Size(file.getFreeSpace());
+    } catch (Exception e) {
+      JFLog.log(e);
+      return new Size(0);
+    }
+  }
+
+  /** Gets size of files in folder (not recursive) */
+  public Size getFolderSize(String folder) {
+    File[] files = new File(getPath() + "/" + folder).listFiles();
+    long total = 0;
+    for(File file : files) {
+      if (file.isDirectory()) continue;
+      total += file.length();
+    }
+    return new Size(total);
   }
 
   private String createXML() {
