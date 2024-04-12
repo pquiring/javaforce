@@ -12,7 +12,7 @@ import javaforce.*;
 public class Host implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public static boolean debug = true;  //disable version checks during development
+  public static boolean debug = false;  //disable version checks during development
 
   public String token;
   public String host;  //domain name or ip

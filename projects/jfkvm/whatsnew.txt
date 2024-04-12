@@ -1,3 +1,9 @@
+2024-04-12 : 0.6 released!
+  - update docs for iSCSI
+  - add Host.hostname
+  - add checks for migration
+  - UI updates
+
 2024-04-10 : 0.5 released!
   - iSCSI format works but still unable to mount
     - search for gfs2 or ocfs2 setup guides online for help
