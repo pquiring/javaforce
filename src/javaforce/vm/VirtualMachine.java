@@ -110,6 +110,10 @@ public class VirtualMachine implements Serializable {
     return "???";
   }
 
+  public String[] getStates() {
+    return new String[] {name, getStateString(), pool};
+  }
+
   private static VirtualMachine getByDesc(String desc) {
     String[] fs = desc.split(";");
     String pool = null;
