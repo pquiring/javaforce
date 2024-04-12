@@ -45,8 +45,7 @@ First you'll need to create your admin password and then login.
 Basic Settings:
 ---------------
   Click on Host : Settings
-  Fill in FQN and IQN and click Save.
-  The FQN is important for VNC to work later (you can use server IP address).
+  Fill in FQN (server domain name or IP address) and click Save.
 
 Virtual Switch:
 ---------------
@@ -60,12 +59,16 @@ Networks:
 
 Storage:
 --------
-  Next you should partition your second disk using fdisk, create a large parition in ext4 format.
+  Next you should partition your second disk using fdisk.
     fdisk /dev/sdb
-    mkfs -t ext4 /dev/sdb1
   Under Storage click on Add, select Local Partition type and enter the partition you just created.
-  NFS and iSCSI are also available but untested at this time.
-  Creating Storage pools using folders is NOT supported.
+  Click on Format and select ext4 format.
+  Click on Start and your storage pool is ready.
+
+Remote Storage:
+---------------
+  NFS is supported.
+  iSCSI is supported but requires special setup (see Storage).
 
 Now you are ready to create or import Virtual Machines!
 
