@@ -89,6 +89,7 @@ public class Storage implements Serializable {
   }
 
   private native static String ngetUUID(String name);
+  /** Get libvirt UUID (does NOT match Linux device UUID) */
   public String getUUID() {
     return ngetUUID(name);
   }
