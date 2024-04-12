@@ -97,4 +97,11 @@ public class Size implements Serializable {
   public String toMemoryXML() {
     return "<memory unit='" + getUnitChar() + "iB'>" + size + "</memory>";
   }
+
+  public static void main(String[] args) {
+    long val = 12 * TB;
+    val += 3 * GB;
+    Size size = new Size(val);
+    System.out.println("size=" + size);
+  }
 }
