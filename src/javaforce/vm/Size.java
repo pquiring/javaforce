@@ -99,8 +99,8 @@ public class Size implements Serializable {
   }
 
   public static void main(String[] args) {
-    long val = 12 * TB;
-    val += 3 * GB;
+    long val = 12 * _TB;
+    val += 3 * _GB;
     Size size = new Size(val);
     System.out.println("size=" + size);
   }
