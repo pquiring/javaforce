@@ -2560,7 +2560,9 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Size src = vmm.getPoolByName(vm.pool).getFolderSize(vm.name);
+      JFLog.log("Data Migration:Src size=" + src);
       Size dest_free = dest.getFreeSize();
+      JFLog.log("Data Migration:Dest size=" + dest_free);
       if (src.greaterThan(dest_free)) {
         errmsg.setText("Insufficent space available in dest storage pool");
         return;

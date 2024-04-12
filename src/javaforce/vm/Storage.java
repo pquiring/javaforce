@@ -141,11 +141,16 @@ public class Storage implements Serializable {
 
   public String[] getStates() {
     String size, free;
-    if (getState() == STATE_ON && mounted()) {
-      size = getDeviceSize().toString();
+    boolean on = getState() == STATE_ON;
+    if (on && mounted()) {
+      size = getTotalSize().toString();
       free = getFreeSize().toString();
     } else {
-      size = "n/a";
+      if (on) {
+        size = getDeviceSize().toString();
+      } else {
+        size = "n/a";
+      }
       free = "n/a";
     }
     return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted()), size, free};
@@ -292,24 +297,27 @@ public class Storage implements Serializable {
     return false;
   }
 
+  /** Get device size. */
   public Size getDeviceSize() {
-    if (false) {
-      ShellProcess sp = new ShellProcess();
-      String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", getDevice()}, true);
-      output = JF.filter(output, JF.filter_numeric);
-      if (output.length() == 0) return null;
-      return new Size(Long.valueOf(output));
-    } else {
-      try {
-        File file = new File(getPath());
-        return new Size(file.getTotalSpace());
-      } catch (Exception e) {
-        JFLog.log(e);
-        return new Size(0);
-      }
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", getDevice()}, true);
+    output = JF.filter(output, JF.filter_numeric);
+    if (output.length() == 0) return null;
+    return new Size(Long.valueOf(output));
+  }
+
+  /** Get mounted file system total size. */
+  public Size getTotalSize() {
+    try {
+      File file = new File(getPath());
+      return new Size(file.getTotalSpace());
+    } catch (Exception e) {
+      JFLog.log(e);
+      return new Size(0);
     }
   }
 
+  /** Get mounted file system free size. */
   public Size getFreeSize() {
     try {
       File file = new File(getPath());
