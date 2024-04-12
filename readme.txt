@@ -85,10 +85,10 @@ executable : build native launcher
      "window" for Window GUI apps (default)
      "console" for console apps (alias "c")
      "service" for service apps (alias "s")
-     "server" for service config GUI apps (same as "window" type plus adds "-server" to package names)
-     "client" for client config GUI apps (same as "window" type plus adds "-client" to package names)
+     "server" for service config GUI apps (same as "window" type plus adds "-server" to executable and package names)
+     "client" for client config GUI apps (same as "window" type plus adds "-client" to executable and package names)
 ffmpeg : copy ffmpeg libraries to project folder
-install : install files before package creation (Linux only) (requires root)
+installapp : install files before package creation (Linux only)
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
  - linux packaging requires files.lst
