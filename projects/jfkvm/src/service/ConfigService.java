@@ -2847,13 +2847,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 75, 50, 75}, 21, 4, 0);
+    Table table = new Table(new int[] {100, 75, 50, 75, 50, 50}, 21, 6, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Name", "Type", "State", "Mounted"});
+    table.addRow(new String[] {"Name", "Type", "State", "Mounted", "Size", "Free"});
     ArrayList<Storage> pools = Config.current.pools;
     for(Storage pool : pools) {
       //TODO : this can block if pool is remote and offline

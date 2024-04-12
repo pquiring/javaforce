@@ -140,7 +140,15 @@ public class Storage implements Serializable {
   }
 
   public String[] getStates() {
-    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted())};
+    String size, free;
+    if (getState() == STATE_ON) {
+      size = getDeviceSize().toString();
+      free = getFreeSize().toString();
+    } else {
+      size = "n/a";
+      free = "n/a";
+    }
+    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted()), size, free};
   }
 
   private String getiSCSIPath() {

@@ -68,7 +68,7 @@ public class Size implements Serializable {
     return String.format("%d%c", size, getUnitChar());
   }
 
-    /** Return size as : 1GiB */
+  /** Return size as : 1GiB */
   public String getSize_iB() {
     return String.format("%d%ciB", size, getUnitChar());
   }
