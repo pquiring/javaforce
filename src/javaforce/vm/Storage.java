@@ -88,6 +88,11 @@ public class Storage implements Serializable {
     return ngetState(name);
   }
 
+  private native static String ngetUUID(String name);
+  public String getUUID() {
+    return ngetUUID(name);
+  }
+
   public static String getSystemIQN() {
     // /etc/iscsi/initiatorname.iscsi
     try {

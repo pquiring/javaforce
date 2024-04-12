@@ -848,6 +848,34 @@ JNIEXPORT jint JNICALL Java_javaforce_vm_Storage_ngetState
   return 3;
 }
 
+JNIEXPORT jstring JNICALL Java_javaforce_vm_Storage_ngetUUID
+  (JNIEnv *e, jclass o, jstring name)
+{
+  void* conn = connect();
+  if (conn == NULL) return NULL;
+
+  const char* cname = e->GetStringUTFChars(name, NULL);
+
+  void* pool = (*_virStoragePoolLookupByName)(conn, cname);
+
+  e->ReleaseStringUTFChars(name, cname);
+
+  if (pool == NULL) {
+    disconnect(conn);
+    return NULL;
+  }
+
+  char uuid[VIR_UUID_STRING_BUFLEN];  //includes space for NULL
+  uuid[0] = 0;
+  (*_virStoragePoolGetUUIDString)(pool, uuid);
+
+  (*_virStoragePoolFree)(pool);
+
+  disconnect(conn);
+
+  return e->NewStringUTF(uuid);
+}
+
 //Disk
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_Disk_ncreate
@@ -1243,6 +1271,7 @@ static JNINativeMethod javaforce_vm_Storage[] = {
   {"nstart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstart},
   {"nstop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Storage_nstop},
   {"ngetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_vm_Storage_ngetState},
+  {"ngetUUID", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_Storage_ngetUUID},
 };
 
 static JNINativeMethod javaforce_vm_VirtualMachine[] = {
