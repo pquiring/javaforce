@@ -3362,6 +3362,13 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:device not found");
         return;
       }
+      //convert /dev/sd? to /dev/disk/by-uuid/UUID
+      String uuid = Storage.getDiskUUID(_dev);
+      if (uuid == null) {
+        errmsg.setText("Error:Unable to find disk UUID");
+        return;
+      }
+      _dev = "/dev/disk/by-uuid/" + uuid;
       pool.path = _dev;
       if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");

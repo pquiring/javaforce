@@ -179,7 +179,7 @@ public class Storage implements Serializable {
     return null;
   }
 
-  private String resolveLinks(String file) {
+  private static String resolveLinks(String file) {
     Path path = new File(file).toPath();
     if (Files.isSymbolicLink(path)) {
       try {
@@ -192,6 +192,40 @@ public class Storage implements Serializable {
     } else {
       return file;
     }
+  }
+
+  /** Returns UUID of a disk device in /dev. */
+  public static String getDiskUUID(String dev) {
+    //lsblk available options : UUID, PARTUUID (Linux uses UUID in /dev/disk/by-uuid)
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/bin/lsblk", "-o", "UUID", dev}, true);
+    if (sp.getErrorLevel() != 0) {
+      JFLog.log("Error:" + output);
+      return null;
+    }
+    /*
+    UUID
+    8-4-4-4-12
+    */
+    String[] lns = output.split("\n");
+    return lns[1].trim();
+  }
+
+  public static String[] listLocalParts() {
+    //lsblk -l -o NAME,TYPE,SIZE,MOUNTPOINTS
+    /*
+NAME TYPE  SIZE MOUNTPOINTS
+sda  disk  100G
+sda1 part  512M /boot/efi
+sda2 part 98.5G /
+sda3 part  976M [SWAP]
+sdb  disk 10.8T
+sdb1 part 10.8T /volumes/sdb1
+sdd  disk    1T /volumes/ocfs2
+sde  disk    1T
+sr0  rom  1024M
+    */
+    return null;
   }
 
   /** Mount iSCSI pool. start() will already mount other types. */
