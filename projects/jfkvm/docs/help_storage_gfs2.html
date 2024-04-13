@@ -77,7 +77,8 @@ pcs resource create clvmd ocf:heartbeat:clvm op monitor interval=30s on-fail=fen
 pcs constraint order start dlm-clone then clvmd-clone
 pcs constraint colocation add clvmd-clone with dlm-clone
 
-# Create the clustered logical volume (where ? is the iSCSI target mapped to a device - might need to use /dev/disk/by-path/??? since the /dev/sd? is mapped on demand and might change)
+# Create the clustered logical volume (where ? is the iSCSI target mapped to a device)
+# Should use /dev/disk/by-path/??? since the /dev/sd? is mapped on demand and can change
 pvcreate /dev/sd?
 vgcreate -Ay -cy gfs2_vg /dev/sd?
 lvcreate -L5G -n gfs2_lv gfs2_vg
@@ -88,7 +89,8 @@ mkfs.gfs2 -j2 -p lock_dlm -t cluster:gfs2 /dev/gfs2_vg/gfs2_lv
 # Configure a clusterfs resource.
 pcs resource create clusterfs Filesystem device="/dev/gfs2_vg/gfs2_lv" directory="/volumes/gfs2" fstype="gfs2" options="noatime" op monitor interval=10s on-fail=fence clone interleave=true
 
-# Set up GFS2 and clvmd dependency and startup order. GFS2 must start after clvmd and must run on the same node as clvmd.
+# Set up GFS2 and clvmd dependency and startup order.
+# GFS2 must start after clvmd and must run on the same node as clvmd.
 pcs constraint order start clvmd-clone then clusterfs-clone
 pcs constraint colocation add clusterfs-clone with clvmd-clone
 
