@@ -234,7 +234,7 @@ sr0  rom  1024M
     String[] lns = output.split("\n");
     ArrayList<String> parts = new ArrayList<>();
     for(int a=1;a<lns.length;a++) {
-      String[] fs = lns[a].split("[ ]*");  //greedy space
+      String[] fs = lns[a].split("[ ]+");
       //NAME,TYPE,SIZE,MOUNTPOINTS
       String name = fs[0];
       String type = fs[1];
