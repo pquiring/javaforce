@@ -12,7 +12,7 @@ public interface VMProvider {
   public int getVLAN(String name);
   /** Provide Bridge (virtual switch) for Network. */
   public NetworkBridge getBridge(String name);
-  /** Provide free VNC port for Virtual Machine (5901-5999). */
+  /** Provide free VNC port for Virtual Machine. */
   public int getVNCPort(String name);
   /** Provides server host name */
   public String getServerHostname();
