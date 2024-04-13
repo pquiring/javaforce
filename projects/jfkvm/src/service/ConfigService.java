@@ -3350,6 +3350,9 @@ public class ConfigService implements WebUIHandler {
       }
       dev.add(part, part);
     }
+    if (dev.getCount() == 0) {
+      errmsg.setText("Error:No available partitions found");
+    }
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -3359,6 +3362,9 @@ public class ConfigService implements WebUIHandler {
     tools.add(cancel);
 
     accept.addClickListener((me, cmp) -> {
+      if (dev.getCount() == 0) {
+        return;
+      }
       errmsg.setText("");
       String _dev = dev.getSelectedValue();
       if (_dev.length() == 0) {

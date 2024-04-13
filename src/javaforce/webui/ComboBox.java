@@ -48,6 +48,10 @@ public class ComboBox extends Component {
     texts.clear();
   }
 
+  public int getCount() {
+    return values.size();
+  }
+
   public int getSelectedIndex() {
     return index;
   }
