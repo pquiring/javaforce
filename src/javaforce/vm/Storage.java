@@ -212,7 +212,6 @@ public class Storage implements Serializable {
   }
 
   public static String[] listLocalParts() {
-    //lsblk -l -o NAME,TYPE,SIZE,MOUNTPOINTS
     /*
 NAME TYPE  SIZE MOUNTPOINTS
 sda  disk  100G
@@ -225,7 +224,25 @@ sdd  disk    1T /volumes/ocfs2
 sde  disk    1T
 sr0  rom  1024M
     */
-    return null;
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/bin/lsblk", "-l", "-o", "NAME,TYPE,SIZE,MOUNTPOINTS"}, true);
+    if (sp.getErrorLevel() != 0) {
+      JFLog.log("Error:" + output);
+      return null;
+    }
+    String[] lns = output.split("\n");
+    ArrayList<String> parts = new ArrayList<>();
+    for(int a=1;a<lns.length;a++) {
+      String[] fs = lns[a].split("[ ]*");  //greedy space
+      //NAME,TYPE,SIZE,MOUNTPOINTS
+      if (fs.length > 3) continue;  //already mounted
+      String name = fs[0];
+      String type = fs[1];
+      String size = fs[2];
+      if (!type.equals("part")) continue;  //not a partition
+      parts.add(name);
+    }
+    return parts.toArray(JF.StringArrayType);
   }
 
   /** Mount iSCSI pool. start() will already mount other types. */

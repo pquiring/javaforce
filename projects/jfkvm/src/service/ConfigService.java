@@ -3334,14 +3334,21 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     row.add(new Label("Name:" + pool.name));
 
-    //TODO : only list know partitions and exclude system partitions
     row = new Row();
     panel.add(row);
     row.add(new Label("Device:"));
-    TextField dev = new TextField("");
+    ComboBox dev = new ComboBox();
     row.add(dev);
     if (pool.path != null) {
-      dev.setText(pool.path);
+      dev.add(pool.path, pool.path);
+    }
+    String[] parts = Storage.listLocalParts();
+    for(String part : parts) {
+      part = "/dev/" + part;
+      if (pool.path != null) {
+        if (pool.path.equals(part)) continue;
+      }
+      dev.add(part, part);
     }
 
     ToolBar tools = new ToolBar();
@@ -3353,7 +3360,7 @@ public class ConfigService implements WebUIHandler {
 
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      String _dev = dev.getText();
+      String _dev = dev.getSelectedValue();
       if (_dev.length() == 0) {
         errmsg.setText("Error:device invalid");
         return;
