@@ -2941,6 +2941,16 @@ public class ConfigService implements WebUIHandler {
       Storage pool = pools.get(idx);
       Task task = new Task("Start Pool : " + pool.name) {
         public void doTask() {
+          if (pool.type == Storage.TYPE_ISCSI) {
+            if (pool.user != null && pool.user.length() > 0) {
+              Password password = Password.load(pool.name);
+              if (password == null) {
+                setResult("Error occured, see logs.");
+                return;
+              }
+              Secret.create(pool.name, password.password);
+            }
+          }
           if (pool.start()) {
 /* // do not auto mount - may need to format first
             if (pool.type == Storage.TYPE_ISCSI) {
@@ -3277,6 +3287,26 @@ public class ConfigService implements WebUIHandler {
     initiator.setReadonly(true);
     row.add(initiator);
 
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Chap User:"));
+    TextField user = new TextField("");
+    row.add(user);
+    if (pool.user != null) {
+      user.setText(pool.user);
+    }
+
+    Password password = Password.load(pool.name);
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Chap Password:"));
+    TextField pass = new TextField("");
+    pass.setPassword(true);
+    row.add(pass);
+    if (password != null) {
+      pass.setText(password.password);
+    }
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button accept = new Button("Accept");
@@ -3289,6 +3319,8 @@ public class ConfigService implements WebUIHandler {
       String _host = host.getText();
       String _target = target.getText();
       String _init = initiator.getText();
+      String _user = user.getText();
+      String _pass = pass.getText();
       if (_host.length() == 0) {
         errmsg.setText("Error:host invalid");
         return;
@@ -3303,6 +3335,17 @@ public class ConfigService implements WebUIHandler {
       }
       pool.host = _host;
       pool.target = _target;
+      pool.user = _user;
+      if (_user.length() > 0) {
+        Password _password = new Password(pool.name, _pass);
+        if (!_password.save()) {
+          errmsg.setText("Error Occured : View Logs for details");
+          return;
+        }
+        Secret.create(pool.name, _pass);
+      } else {
+        Password.delete(pool.name);
+      }
       if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
         return;

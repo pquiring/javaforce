@@ -51,6 +51,16 @@ public class Startup extends Thread {
        ArrayList<Storage> pools = Config.current.pools;
        for(Storage pool : pools) {
          if (pool.getState() == Storage.STATE_OFF) {
+          if (pool.type == Storage.TYPE_ISCSI) {
+            if (pool.user != null && pool.user.length() > 0) {
+              Password password = Password.load(pool.name);
+              if (password == null) {
+                JFLog.log("Error occured, see logs.");
+                continue;
+              }
+              Secret.create(pool.name, password.password);
+            }
+          }
            pool.start();
          }
           if (pool.type == Storage.TYPE_ISCSI) {

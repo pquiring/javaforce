@@ -72,6 +72,11 @@ const char* (*_virNodeDeviceGetName)(void* dev);
 char* (*_virNodeDeviceGetXMLDesc)(void* dev, int flags);
 int (*_virNodeDeviceFree)(void* dev);
 
+//secret
+void*	(*_virSecretDefineXML)(void* conn, const char * xml, int flags);
+int	(*_virSecretFree)(void* secret);
+int	(*_virSecretSetValue)(void* secret, const char * value, size_t value_size, int flags);
+
 void vm_init() {
   virt = loadLibrary("/usr/lib/x86_64-linux-gnu/libvirt.so");
   if (virt == NULL) {
@@ -144,6 +149,11 @@ void vm_init() {
   getFunction(virt, (void**)&_virNodeDeviceGetName, "virNodeDeviceGetName");
   getFunction(virt, (void**)&_virNodeDeviceGetXMLDesc, "virNodeDeviceGetXMLDesc");
   getFunction(virt, (void**)&_virNodeDeviceFree, "virNodeDeviceFree");
+
+  //secret
+  getFunction(virt, (void**)&_virSecretDefineXML, "virSecretDefineXML");
+  getFunction(virt, (void**)&_virSecretFree, "virSecretFree");
+  getFunction(virt, (void**)&_virSecretSetValue, "virSecretSetValue");
 }
 
 //common code
@@ -1230,6 +1240,36 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_Device_nlist
   return array;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_Secret_ncreate
+  (JNIEnv *e, jclass o, jstring xml, jstring passwd)
+{
+  void* conn = connect();
+  if (conn == NULL) return JNI_FALSE;
+
+  const char* cxml = e->GetStringUTFChars(xml, NULL);
+
+  void* secret = (*_virSecretDefineXML)(conn, cxml);
+
+  e->ReleaseStringUTFChars(xml, cxml);
+
+  if (secret == NULL) {
+    disconnect(conn);
+    return JNI_FALSE;
+  }
+
+  const char* cpasswd = e->GetStringUTFChars(passwd, NULL);
+
+  int res = (*_virSecretSetValue)(secret, cpasswd, 0);
+
+  e->ReleaseStringUTFChars(passwd, cpasswd);
+
+  (*_virSecretFree)(secret);
+
+  disconnect(conn);
+
+  return res == 0;
+}
+
 static JNINativeMethod javaforce_vm_VMHost[] = {
   {"total_memory", "()J", (void *)&Java_javaforce_vm_VMHost_total_1memory},
   {"free_memory", "()J", (void *)&Java_javaforce_vm_VMHost_free_1memory},
@@ -1289,6 +1329,10 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
 };
 
+static JNINativeMethod javaforce_vm_Secret[] = {
+  {"ncreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_Secret_ncreate},
+};
+
 #include "register.h"
 
 void vm_register(JNIEnv *env) {
@@ -1318,4 +1362,7 @@ void vm_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/vm/VirtualMachine");
   registerNatives(env, cls, javaforce_vm_VirtualMachine, sizeof(javaforce_vm_VirtualMachine)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/vm/Secret");
+  registerNatives(env, cls, javaforce_vm_Secret, sizeof(javaforce_vm_Secret)/sizeof(JNINativeMethod));
 }

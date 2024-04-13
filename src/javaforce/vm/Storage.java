@@ -34,7 +34,8 @@ public class Storage implements Serializable {
   public String host;  //nfs, iscsi
   public String target;  //iscsi
   public String path;  //nfs, local (device)
-  private String user, pass;  //iscsi chap (TODO)
+  public String user;
+  //public String pass;  //saved as Secret (stored in /root/secret/name)
 
   public static final int TYPE_LOCAL_PART = 1;  //local partition
   public static final int TYPE_LOCAL_DISK = 2;  //local disk
@@ -398,7 +399,7 @@ sr0  rom  1024M
 
   private String createXML() {
     switch (type) {
-      case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, user, pass);
+      case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, user);
       case TYPE_NFS: return createXML_NFS(name, uuid, host, path, getPath());
       case TYPE_LOCAL_PART: return createXML_Local_Part(name, uuid, path, getPath());
       case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, uuid, path, getPath());
@@ -406,7 +407,7 @@ sr0  rom  1024M
     return null;
   }
 
-  private static String createXML_iSCSI(String name, String uuid, String host, String target, String chap_user, String chap_pass) {
+  private static String createXML_iSCSI(String name, String uuid, String host, String target, String chap_user) {
     StringBuilder sb = new StringBuilder();
     sb.append("<pool type='iscsi' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
@@ -414,11 +415,9 @@ sr0  rom  1024M
     sb.append("  <source>");
     sb.append("    <host name='" + host + "'/>");
     sb.append("    <device path='" + target + "'/>");
-    if (chap_user != null && chap_pass != null) {
-      //TODO : pass libsecret object with actual 'pass'
-      //SEE : https://libvirt.org/formatsecret.html
+    if (chap_user != null) {
       sb.append("      <auth type='chap' username='" + chap_user + "'>");
-      sb.append("        <secret usage='libvirtiscsi'/>");
+      sb.append("        <secret type='iscsi' usage='" + name + "'/>");
       sb.append("      </auth>");
     }
     sb.append("  </source>");
