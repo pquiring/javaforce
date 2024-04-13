@@ -73,9 +73,9 @@ char* (*_virNodeDeviceGetXMLDesc)(void* dev, int flags);
 int (*_virNodeDeviceFree)(void* dev);
 
 //secret
-void*	(*_virSecretDefineXML)(void* conn, const char * xml, int flags);
+void*	(*_virSecretDefineXML)(void* conn, const char* xml, int flags);
 int	(*_virSecretFree)(void* secret);
-int	(*_virSecretSetValue)(void* secret, const char * value, size_t value_size, int flags);
+int	(*_virSecretSetValue)(void* secret, const char* value, size_t value_size, int flags);
 
 void vm_init() {
   virt = loadLibrary("/usr/lib/x86_64-linux-gnu/libvirt.so");
@@ -1248,7 +1248,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Secret_ncreate
 
   const char* cxml = e->GetStringUTFChars(xml, NULL);
 
-  void* secret = (*_virSecretDefineXML)(conn, cxml);
+  void* secret = (*_virSecretDefineXML)(conn, cxml, 0);
 
   e->ReleaseStringUTFChars(xml, cxml);
 
@@ -1259,7 +1259,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_Secret_ncreate
 
   const char* cpasswd = e->GetStringUTFChars(passwd, NULL);
 
-  int res = (*_virSecretSetValue)(secret, cpasswd, 0);
+  int res = (*_virSecretSetValue)(secret, cpasswd, strlen(cpasswd), 0);
 
   e->ReleaseStringUTFChars(passwd, cpasswd);
 
