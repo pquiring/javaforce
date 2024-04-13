@@ -3344,7 +3344,6 @@ public class ConfigService implements WebUIHandler {
     }
     String[] parts = Storage.listLocalParts();
     for(String part : parts) {
-      part = "/dev/" + part;
       if (pool.path != null) {
         if (pool.path.equals(part)) continue;
       }
