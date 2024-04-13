@@ -76,23 +76,32 @@ UUID
     ArrayList<NetworkBridge> list = new ArrayList<>();
     String br = null;
     String nic = null;
+    boolean tag = false;
     for(int a=1;a<lns.length;a++) {
       String ln = lns[a].trim();
       if (ln.length() == 0) continue;
       if (ln.startsWith("Bridge ")) {
+        tag = false;
         br = ln.substring(7);
         continue;
       }
       if (ln.startsWith("Port ")) {
+        tag = false;
         continue;
+      }
+      if (ln.startsWith("tag:")) {
+        tag = true;
       }
       if (ln.startsWith("Interface ")) {
         if (br == null) continue;
+        if (tag) continue;
         nic = ln.substring(10);
         if (nic.equals(br)) continue;
+        if (nic.startsWith("vnet")) continue;
         list.add(new NetworkBridge(br, "os", nic));
         br = null;
         nic = null;
+        tag = false;
       }
     }
     return list.toArray(new NetworkBridge[0]);
