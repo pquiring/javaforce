@@ -230,7 +230,6 @@ sr0  rom  1024M
       JFLog.log("Error:" + output);
       return null;
     }
-    JFLog.log("output=" + output);
     String[] lns = output.split("\n");
     ArrayList<String> parts = new ArrayList<>();
     for(int a=1;a<lns.length;a++) {
@@ -239,7 +238,6 @@ sr0  rom  1024M
       String name = fs[0];
       String type = fs[1];
       String size = fs[2];
-      JFLog.log("dev:" + name + "," + type + "," + size + ":" + fs.length);
       if (fs.length > 3) continue;  //already mounted
       if (!type.equals("part")) continue;  //not a partition
       parts.add("/dev/" + name);
