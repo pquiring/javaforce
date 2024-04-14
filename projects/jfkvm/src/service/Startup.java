@@ -53,7 +53,7 @@ public class Startup extends Thread {
          if (pool.getState() == Storage.STATE_OFF) {
           if (pool.type == Storage.TYPE_ISCSI) {
             if (pool.user != null && pool.user.length() > 0) {
-              Password password = Password.load(pool.name);
+              Password password = Password.load(Password.TYPE_STORAGE, pool.name);
               if (password == null) {
                 JFLog.log("Error occured, see logs.");
                 continue;

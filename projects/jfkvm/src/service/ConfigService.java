@@ -145,7 +145,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getRootPanel(WebUIClient client) {
-    if (Config.current.password == null) {
+    if (Config.current.passwd == null) {
       return installPanel(client);
     }
     String user = (String)client.getProperty("user");
@@ -1174,7 +1174,7 @@ public class ConfigService implements WebUIHandler {
 
     login.addClickListener( (MouseEvent m, Component c) -> {
       errmsg.setText("");
-      if (Config.current.password != null) {
+      if (Config.current.passwd != null) {
         errmsg.setText("Already configured, please refresh");
         return;
       }
@@ -1188,8 +1188,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Passwords do not match");
         return;
       }
-      Config.current.password = passTxt1;
-      Config.current.save();
+      Config.passwd = new Password(Password.TYPE_SYSTEM, "jfkvm", passTxt1);
+      Config.passwd.save();
       client.setPanel(getRootPanel(client));
     });
     panel.add(inner);
@@ -1229,7 +1229,7 @@ public class ConfigService implements WebUIHandler {
       String userTxt = username.getText();
       String passTxt = password.getText();
       WebUIClient webclient = c.getClient();
-      if (passTxt.equals(Config.current.password)) {
+      if (passTxt.equals(Config.current.passwd.password)) {
         webclient.setProperty("user", userTxt);
         webclient.setPanel(getRootPanel(webclient));
       } else {
@@ -1737,15 +1737,15 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Passwords do not match");
         return;
       }
-      if (!_old.equals(Config.current.password)) {
+      if (!_old.equals(Config.current.passwd.password)) {
         errmsg.setText("Wrong current password");
         return;
       }
       old_pass.setText("");
       new_pass.setText("");
       cfm_pass.setText("");
-      Config.current.password = _new;
-      Config.current.save();
+      Config.passwd.password = _new;
+      Config.passwd.save();
       msg.setText("Password saved");
     });
 
@@ -2943,7 +2943,7 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           if (pool.type == Storage.TYPE_ISCSI) {
             if (pool.user != null && pool.user.length() > 0) {
-              Password password = Password.load(pool.name);
+              Password password = Password.load(Password.TYPE_STORAGE, pool.name);
               if (password == null) {
                 setResult("Error occured, see logs.");
                 return;
@@ -3296,7 +3296,7 @@ public class ConfigService implements WebUIHandler {
       user.setText(pool.user);
     }
 
-    Password password = Password.load(pool.name);
+    Password password = Password.load(Password.TYPE_STORAGE, pool.name);
     row = new Row();
     panel.add(row);
     row.add(new Label("Chap Password:"));
@@ -3337,7 +3337,7 @@ public class ConfigService implements WebUIHandler {
       pool.target = _target;
       pool.user = _user;
       if (_user.length() > 0) {
-        Password _password = new Password(pool.name, _pass);
+        Password _password = new Password(Password.TYPE_STORAGE, pool.name, _pass);
         if (!_password.save()) {
           errmsg.setText("Error Occured : View Logs for details");
           return;
