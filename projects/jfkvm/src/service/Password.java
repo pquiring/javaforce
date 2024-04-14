@@ -56,9 +56,9 @@ public class Password implements Serializable {
     return null;
   }
 
-  public static void delete(String name) {
+  public static void delete(int type, String name) {
     try {
-      String file = Paths.secretPath + "/" + name;
+      String file = Paths.secretPath + "/" + getTypeString(type) + name;
       new File(file).delete();
     } catch (Exception e) {
       JFLog.log(e);

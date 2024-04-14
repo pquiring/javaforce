@@ -3344,7 +3344,7 @@ public class ConfigService implements WebUIHandler {
         }
         Secret.create(pool.name, _pass);
       } else {
-        Password.delete(pool.name);
+        Password.delete(Password.TYPE_STORAGE, pool.name);
       }
       if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
