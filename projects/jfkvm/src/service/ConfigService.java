@@ -145,7 +145,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getRootPanel(WebUIClient client) {
-    if (Config.current.passwd == null) {
+    if (Config.passwd == null) {
       return installPanel(client);
     }
     String user = (String)client.getProperty("user");
@@ -1174,7 +1174,7 @@ public class ConfigService implements WebUIHandler {
 
     login.addClickListener( (MouseEvent m, Component c) -> {
       errmsg.setText("");
-      if (Config.current.passwd != null) {
+      if (Config.passwd != null) {
         errmsg.setText("Already configured, please refresh");
         return;
       }
@@ -1229,7 +1229,7 @@ public class ConfigService implements WebUIHandler {
       String userTxt = username.getText();
       String passTxt = password.getText();
       WebUIClient webclient = c.getClient();
-      if (passTxt.equals(Config.current.passwd.password)) {
+      if (passTxt.equals(Config.passwd.password)) {
         webclient.setProperty("user", userTxt);
         webclient.setPanel(getRootPanel(webclient));
       } else {
@@ -1737,7 +1737,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Passwords do not match");
         return;
       }
-      if (!_old.equals(Config.current.passwd.password)) {
+      if (!_old.equals(Config.passwd.password)) {
         errmsg.setText("Wrong current password");
         return;
       }
