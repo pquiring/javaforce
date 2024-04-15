@@ -16,8 +16,6 @@ public class Config implements Serializable {
   public static Config current;
 
   //config settings
-  @Deprecated
-  private String password;  //insecure - remove in v0.8
   public String fqn;
   public String token;
   public int auto_start_delay = 60;
@@ -79,16 +77,8 @@ public class Config implements Serializable {
     if (vnc_length <= 0) {
       vnc_length = 20000;
     }
-    if (password != null) {
-      //convert password to new secure Password object
-      passwd = new Password(Password.TYPE_SYSTEM, "jfkvm", password);
-      passwd.save();
-      password = null;
-      save();
-    } else {
-      //load new password
-      passwd = Password.load(Password.TYPE_SYSTEM, "jfkvm");
-    }
+    //load password
+    passwd = Password.load(Password.TYPE_SYSTEM, "jfkvm");
   }
 
   public static boolean load() {
