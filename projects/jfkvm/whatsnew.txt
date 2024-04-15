@@ -1,3 +1,6 @@
+2024-04-15 : 0.7 released!
+  - add iSCSI chap auth support
+
 2024-04-12 : 0.6 released!
   - update docs for iSCSI
   - add Host.hostname
