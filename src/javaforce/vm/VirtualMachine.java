@@ -411,10 +411,10 @@ public class VirtualMachine implements Serializable {
       //video card
       xml.append("<video>");
       xml.append("<model type='" + hardware.video + "' vram='" + hardware.vram + "' heads='1'>");
+      xml.append("</model>");
       if (hardware.video_3d_accel) {
         xml.append("<acceleration accel3d='yes'/>");
       }
-      xml.append("</model>");
       xml.append("</video>");
       //remote viewing
       if (vm.vnc != -1) {
