@@ -1,5 +1,9 @@
 What's new...
 
+Apr 15/2024 : JF/54.2
+ - jfKVM/0.7
+   - add iSCSI chap auth support
+
 Apr 12/2024 : JF/54.1
  - jfKVM/0.6
    - update docs for iSCSI
