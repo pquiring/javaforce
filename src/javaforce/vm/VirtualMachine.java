@@ -410,10 +410,12 @@ public class VirtualMachine implements Serializable {
       xml.append("<audio id='1' type='none'/>");
       //video card
       xml.append("<video>");
-      xml.append("<model type='" + hardware.video + "' vram='" + hardware.vram + "' heads='1'/>");
-//        xml.append("<driver name='qemu'/>");
+      xml.append("<model type='" + hardware.video + "' vram='" + hardware.vram + "' heads='1'>");
+      if (hardware.video_3d_accel) {
+        xml.append("<acceleration accel3d='yes'/>");
+      }
+      xml.append("</model>");
       xml.append("</video>");
-//      xml.append("<acceleration accel3d='no' accel2d='yes'/>");
       //remote viewing
       if (vm.vnc != -1) {
         xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive'>");

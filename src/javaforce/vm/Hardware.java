@@ -37,9 +37,9 @@ public class Hardware implements Serializable {
   public ArrayList<Device> devices;
   public ArrayList<Controller> controllers;
 
-  public boolean auto_start;  //not used
   public boolean bios_efi;
   public boolean bios_secure;
+  public boolean video_3d_accel;
 
   public static final int OS_LINUX = 0;
   public static final int OS_WINDOWS = 1;

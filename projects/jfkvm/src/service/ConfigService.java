@@ -2168,6 +2168,13 @@ public class ConfigService implements WebUIHandler {
     TextField vram = new TextField("");
     row.add(vram);
     vram.setText(Integer.toString(hardware.vram));
+    row = new Row();
+    panel.add(row);
+    CheckBox video_3d_accel = new CheckBox("Video 3D Accel");
+    row.add(video_3d_accel);
+    if (hardware.video_3d_accel) {
+      video_3d_accel.setSelected(true);
+    }
     //disks
     InnerPanel disks = new InnerPanel("Disks");
     panel.add(disks);
@@ -2384,6 +2391,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       hardware.vram = _vram;
+      hardware.video_3d_accel = video_3d_accel.isSelected();
       hardware.validate();
       if (!VirtualMachine.register(vm, hardware, vmm)) {
         errmsg.setText("Error Occured : View Logs for details");
