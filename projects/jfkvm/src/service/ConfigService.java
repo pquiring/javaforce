@@ -2980,24 +2980,29 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
-      Task task = new Task("Stop Pool : " + pool.name) {
-        public void doTask() {
-          if (pool.type == Storage.TYPE_ISCSI) {
-            if (pool.mounted()) {
-              if (!pool.unmount()) {
-                setResult("Error occured, see logs.");
-                return;
+      ui.confirm_button.setText("Stop");
+      ui.confirm_message.setText("Stop storage pool:" + pool.name);
+      ui.confirm_action = () -> {
+        Task task = new Task("Stop Pool : " + pool.name) {
+          public void doTask() {
+            if (pool.type == Storage.TYPE_ISCSI) {
+              if (pool.mounted()) {
+                if (!pool.unmount()) {
+                  setResult("Error occured, see logs.");
+                  return;
+                }
               }
             }
+            if (pool.stop()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
           }
-          if (pool.stop()) {
-            setResult("Completed");
-          } else {
-            setResult("Error occured, see logs.");
-          }
-        }
+        };
+        KVMService.tasks.addTask(ui.tasks, task);
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      ui.confirm_popup.setVisible(true);
     });
     mount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
