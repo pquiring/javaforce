@@ -41,7 +41,6 @@ public class Startup extends Thread {
       ArrayList<NetworkVirtual> nics = Config.current.nics;
       for(NetworkVirtual nic : nics) {
         nic.start();
-        nic.link_up();
       }
     } catch (Exception e) {
       JFLog.log(e);
