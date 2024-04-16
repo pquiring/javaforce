@@ -28,6 +28,8 @@
     <ant antfile="build-jfver.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfresmgr.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsshd.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jbus-call.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jbus-client.xml" target="installapp" inheritAll="false"/>
   </target>
 
   <target name="utils" depends="jar" description="build exe for utils">

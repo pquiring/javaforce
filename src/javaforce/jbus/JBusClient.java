@@ -23,6 +23,7 @@ public class JBusClient extends Thread {
   public String pack;
   private Object obj;
   private Class<?> cls;
+  private Dispatch dispatch;
   private Socket s;
   private InputStream is;
   private OutputStream os;
@@ -42,6 +43,11 @@ public class JBusClient extends Thread {
     this.pack = pack;
     this.obj = obj;
     cls = obj.getClass();
+  }
+
+  /** Setup alternative message dispatch. */
+  public void setDispatch(Dispatch dispatch) {
+    this.dispatch = dispatch;
   }
 
   /** Enable logging exceptions to console. */
@@ -101,6 +107,9 @@ public class JBusClient extends Thread {
     //general format : org.package.func(args)
     //supported args : "String", int
     if (cls == null) {
+      if (dispatch != null) {
+        dispatch.onMessage(cmd);
+      }
       return;  //not accepting calls
     }
     int b1 = cmd.indexOf("(");

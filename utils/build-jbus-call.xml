@@ -1,0 +1,26 @@
+<project name="jbus-call" default="executable" basedir=".">
+  <description>jbus-call</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jbuscall"/>
+  <property name="apptype" value="console"/>
+  <property name="cfg" value="cfg/jbus-call.cfg"/>
+  <property name="ico" value="javaforce.ico"/>
+  <property name="home" value=".."/>
+
+  <property environment="env"/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+  </target>
+</project>
