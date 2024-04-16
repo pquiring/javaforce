@@ -29,6 +29,8 @@ Folders
  /lib       - generated and dependancies jar files
  /native    - native loaders with JNI bindings for FFMPEG, OpenGL, Camera
  /projects  - source for all sub-projects
+ /iso       - scripts to build jfLinux iso (outdated)
+ /linux     - scripts to install JavaForce repo (preferred method for Linux)
  /utils     - utility apps (jnlp)
 
 Getting Started
