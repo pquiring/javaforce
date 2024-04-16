@@ -3981,6 +3981,7 @@ public class ConfigService implements WebUIHandler {
         if (idx == -1) return;
         NetworkVirtual nic = ui.nics_virt.get(idx);
         nic.link_up();
+        nic.set_ip();
         errmsg.setText("");
         msg.setText("Link UP:" + nic.name);
       });
