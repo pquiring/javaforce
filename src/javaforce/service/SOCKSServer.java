@@ -13,6 +13,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.net.ssl.*;
+
 import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
@@ -89,6 +91,18 @@ public class SOCKSServer extends Thread {
     public String toString() {
       return from.toString() + " -> " + to.toString();
     }
+  }
+
+  private static void log(Exception e) {
+    if (e instanceof SocketException) {
+      JFLog.log("Connection lost (SocketException)");
+      return;
+    }
+    if (e instanceof SSLException) {
+      JFLog.log("Connection lost (SSLException)");
+      return;
+    }
+    JFLog.log(e);
   }
 
   private static class ForwardRemote {
@@ -201,7 +215,7 @@ public class SOCKSServer extends Thread {
           addSession(sess);
           sess.start();
         } catch (Exception e) {
-          JFLog.log(e);
+          log(e);
         }
       }
     } catch (Exception e) {
@@ -583,7 +597,7 @@ public class SOCKSServer extends Thread {
           default: throw new Exception("bad request:not SOCKS4/5 request");
         }
       } catch (Exception e) {
-        if (!(e instanceof SocketException)) JFLog.log(e);
+        log(e);
         if (!connected) {
           byte[] reply = null;
           switch (req[0]) {
@@ -706,7 +720,7 @@ public class SOCKSServer extends Thread {
         pd1.join();
         pd2.join();
       } catch (Exception e) {
-        JFLog.log(e);
+        log(e);
       }
       if (ss != null) {
         try { ss.close(); } catch (Exception e2) {}
@@ -889,7 +903,7 @@ public class SOCKSServer extends Thread {
         pd1.join();
         pd2.join();
       } catch (Exception e) {
-        JFLog.log(e);
+        log(e);
       }
       if (ss != null) {
         try { ss.close(); } catch (Exception e2) {}
@@ -918,11 +932,11 @@ public class SOCKSServer extends Thread {
             pd2.start();
             //TODO : join ProxyData threads
           } catch (Exception e) {
-            if (!(e instanceof SocketException)) JFLog.log(e);
+            log(e);
           }
         }
       } catch (Exception e) {
-        if (!(e instanceof SocketException)) JFLog.log(e);
+        log(e);
         JF.sleep(1000);
       }
     }
@@ -964,7 +978,7 @@ public class SOCKSServer extends Thread {
             //TODO : join ProxyData threads
             wait = false;
           } catch (Exception e) {
-            if (!(e instanceof SocketException)) JFLog.log(e);
+            log(e);
             JF.sleep(1000);
           }
           if (wait) {
@@ -983,7 +997,7 @@ public class SOCKSServer extends Thread {
           }
         }
       } catch (Exception e) {
-        if (!(e instanceof SocketException)) JFLog.log(e);
+        log(e);
       }
     }
     public void close() {
@@ -1015,7 +1029,7 @@ public class SOCKSServer extends Thread {
           }
         }
       } catch (Exception e) {
-        if (!(e instanceof SocketException)) JFLog.log(e);
+        log(e);
       }
       try {sRead.close();} catch (Exception e) {}
       try {sWrite.close();} catch (Exception e) {}
