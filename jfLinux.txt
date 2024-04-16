@@ -1,29 +1,21 @@
 jfLinux
 =======
 
+These instructions are rather old.
+
 debian/ubuntu
 -------------
 To create the jfLinux image follow these steps:
-  - specify arch
-    - export ARCH=x32 | x64 | a32 | a64
   - build JavaForce
     - cd /
     - ant jar
   - build native files
     - cd /native/linux
-    - ant deb
-    - ant $ARCH
-    - cd /stubs/linux
-    - ant ${ARCH:1:2}
-  - install jfdeb (packager)
-    - cd /projects/jfdeb
-    - ant install
-  - install/package JavaForce
+    - deps.sh
+    - ant linux
+  - package all apps
     - cd /
-    - buildDebian.sh $ARCH
-  - build all projects
-    - cd /projects
-    - buildAllDebian.sh $ARCH
+    - package.sh
   - see /repo/debian/readme.txt for uploading packages
   - run /iso/debian/jfLinux.sh to build image
 This creates the Debian based image.
@@ -48,6 +40,6 @@ Debian: default-jdk ant gnupg gcc dpkg-dev
 
 Fedora: java ant gnupg gcc rpm-sign createrepo livecd-tools
 
-Arch: jdk8-openjdk apache-ant gcc
+Arch: jdk17-openjdk apache-ant gcc
 
 Enjoy!
