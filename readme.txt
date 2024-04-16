@@ -53,12 +53,6 @@ Building native loaders with native API (ffmpeg, OpenGL, Camera)
 Native loaders are in /native
 JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI.
 See readme.txt in each platform folder for more info.
-Windows:Requires Visual C++ in your PATH.
-  - you can run 'ant get-bin' to download pre-built binaries for Win64
-Linux:Debian/Ubuntu:run 'ant deb' to install required devel packages.
-Linux:RedHat/Fedora:run 'ant rpm' to install required devel packages.
-Linux:Arch:run 'ant pac' to install required devel packages.
-Linux:FreeBSD:run 'ant pkg' to install required devel packages.
 
 Building jfLinux
 ----------------
@@ -89,7 +83,7 @@ executable : build native launcher
      "service" for service apps (alias "s")
      "server" for service config GUI apps (same as "window" type plus adds "-server" to executable and package names)
      "client" for client config GUI apps (same as "window" type plus adds "-client" to executable and package names)
-ffmpeg : copy ffmpeg libraries to project folder
+ffmpeg : copy ffmpeg libraries to project folder (Windows only)
 installapp : install files before package creation (Linux only)
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
