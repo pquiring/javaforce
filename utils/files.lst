@@ -14,3 +14,5 @@
 /usr/bin/jfver
 /usr/bin/jfpty
 /usr/bin/imageconvert
+/usr/bin/jbus-call
+/usr/bin/jbus-client
