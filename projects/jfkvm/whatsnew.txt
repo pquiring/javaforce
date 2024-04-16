@@ -1,3 +1,6 @@
+2024-04-16 : 0.8 released!
+  - assign ip address to NetworkVirtual after reboot or on link_up()
+
 2024-04-15 : 0.7 released!
   - add iSCSI chap auth support
 
