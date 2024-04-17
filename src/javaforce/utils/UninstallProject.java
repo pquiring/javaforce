@@ -17,7 +17,7 @@ public class UninstallProject implements ShellProcessListener {
       System.exit(1);
     }
     try {
-      new InstallProject().run(args[0]);
+      new UninstallProject().run(args[0]);
     } catch (Exception e) {
       JFLog.log(e);
     }
