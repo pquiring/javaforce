@@ -11,4 +11,9 @@ chmod +x uninstall.sh
 ./uninstall.sh
 cd ..
 
+#uninstall utils
+cd utils
+ant uninstallapp
+cd ..
+
 echo Uninstall Complete!
