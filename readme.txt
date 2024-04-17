@@ -8,7 +8,7 @@ Description
 JavaForce (JF) is a Java library featuring:
 
   - SIP/VoIP/RTSP
-  - native bindings for FFMPEG, OpenGL and Camera
+  - native bindings for FFmpeg, OpenGL and Camera
   - PLC I/O
   - custom native launchers for console apps, desktop apps and system services
   - tasks to package apps (msi, deb, rpm, etc.)
@@ -27,7 +27,7 @@ Folders
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
  /lib       - generated and dependancies jar files
- /native    - native loaders with JNI bindings for FFMPEG, OpenGL, Camera
+ /native    - native loaders with JNI bindings for FFmpeg, OpenGL, Camera
  /projects  - source for all sub-projects
  /iso       - scripts to build jfLinux iso (outdated)
  /linux     - scripts to install JavaForce repo (preferred method for Linux)
@@ -48,7 +48,7 @@ Checkout Javaforce:
   ant
 Next build the native launchers.
 
-Building native loaders with native API (ffmpeg, OpenGL, Camera)
+Building native loaders with native API (FFmpeg, OpenGL, Camera)
 ----------------------------------------------------------------
 Native loaders are in /native
 JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI.
@@ -146,9 +146,8 @@ Requirements
   - JDK 17+
   - Apache Ant 1.10+
   - Linux : gcc
-  - Windows : Visual C++ build tools, wixtoolset v4+, AMD64
-  - Mac : AMD64
-  - FFMpeg 5.1+ sources(headers) + shared libraries
+  - Windows : VC++, wixtoolset 4+
+  - FFmpeg 5.1+
   - glfw for OpenGL support
 
 License
