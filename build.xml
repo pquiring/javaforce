@@ -139,11 +139,6 @@
     <copy file="bctls.jar" todir="/usr/share/java"/>
     <copy file="bcutil.jar" todir="/usr/share/java"/>
     <copy file="filters.jar" todir="/usr/share/java"/>
-
-    <copy file="lnxbin/jbus-call" todir="/usr/bin"/>
-    <chmod file="/usr/bin/jbus-call" perm="+x"/>
-    <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
-    <chmod file="/usr/bin/jbus-client" perm="+x"/>
   </target>
 
   <target name="jre-base" description="build JRE for bundled JRE builds with only base">
