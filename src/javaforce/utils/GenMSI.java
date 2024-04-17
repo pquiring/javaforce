@@ -57,8 +57,8 @@ public class GenMSI {
 
     try {
       {
-        //create wix object
-        String[] cmd = new String[] {"candle","-ext","WixFirewallExtension","-ext","WixUtilExtension","-o","wix.obj","wix64.xml"};
+        //create wix object [v3]
+        String[] cmd = new String[] {"wix","build","-arch","x64","-ext","WixToolset.UI.wixext","-ext","WixToolset.Firewall.wixext","-ext","WixToolset.Util.wixext","-o","wix.wixlib","wix64.xml"};
         if (candle_extra.length() > 0) {
           String[] extra = candle_extra.split(" ");
           for(String x : extra) {
@@ -74,7 +74,7 @@ public class GenMSI {
       {
         //create jre object
         WixHeat.main(new String[] {jre, "jre.xml", "JRE", heat_home});
-        ShellProcess.Output output = ShellProcess.exec(new String[] {"candle","-o","jre.obj","jre.xml"}, true);
+        ShellProcess.Output output = ShellProcess.exec(new String[] {"wix","build","-arch","x64","-o","jre.wixlib","jre.xml"}, true);
         if (output == null) throw new Exception("error");
         System.out.println(output.stdout);
         if (output.errorLevel > 0) throw new Exception("error");
@@ -83,7 +83,7 @@ public class GenMSI {
       {
         //create ffmpeg object
         WixHeat.main(new String[] {ffmpeg_folder, "ffmpeg.xml", "FFMPEG", "."});
-        ShellProcess.Output output = ShellProcess.exec(new String[] {"candle","-o","ffmpeg.obj","ffmpeg.xml"}, true);
+        ShellProcess.Output output = ShellProcess.exec(new String[] {"wix","build","-arch","x64","-o","ffmpeg.wixlib","ffmpeg.xml"}, true);
         if (output == null) throw new Exception("error");
         System.out.println(output.stdout);
         if (output.errorLevel > 0) throw new Exception("error");
@@ -92,7 +92,7 @@ public class GenMSI {
       {
         //create msvcrt object
         WixHeat.main(new String[] {home + "/jre_base/bin", "msvcrt.xml", "MSVCRT", ".", "**/api*.dll", "**/msvc*.dll", "**/ucrtbase.dll", "**/vcruntime*.dll"});
-        ShellProcess.Output output = ShellProcess.exec(new String[] {"candle","-o","msvcrt.obj","msvcrt.xml"}, true);
+        ShellProcess.Output output = ShellProcess.exec(new String[] {"wix","build","-arch","x64","-o","msvcrt.wixlib","msvcrt.xml"}, true);
         if (output == null) throw new Exception("error");
         System.out.println(output.stdout);
         if (output.errorLevel > 0) throw new Exception("error");
@@ -100,9 +100,11 @@ public class GenMSI {
 
       {
         //create msi file
-        String[] cmd = new String[] {"light","-ext","WixUIExtension","-ext","WixFirewallExtension","-ext","WixUtilExtension","-cultures:en-us"
-          ,"-b",home,"-b",jre,"-b",jre + "/bin","-b",ffmpeg_folder,"-dWixUILicenseRtf=" + home + "/license.rtf"
-          ,"-o",out,"wix.obj","jre.obj","ffmpeg.obj","msvcrt.obj"};
+        //see https://wixtoolset.org/docs/fourthree/faqs/
+        //see https://wixtoolset.org/docs/tools/wixexe/
+        String[] cmd = new String[] {"wix","build","-arch","x64","-ext","WixToolset.UI.wixext","-ext","WixToolset.Firewall.wixext","-ext","WixToolset.Util.wixext","-culture","en-us"
+          ,"-b",home,"-b",jre,"-b",jre + "/bin","-b",ffmpeg_folder,"-bv", "WixUILicenseRtf=" + home + "/license.rtf"
+          ,"-o",out,"wix.wixlib","jre.wixlib","ffmpeg.wixlib","msvcrt.wixlib"};
         if (light_extra.length() > 0) {
           String[] extra = light_extra.split(" ");
           for(String x : extra) {
@@ -117,12 +119,12 @@ public class GenMSI {
 
       {
         //cleanup
-        new File("wix.obj").delete();
-        new File("jre.obj").delete();
+        new File("wix.wixlib").delete();
+        new File("jre.wixlib").delete();
         new File("jre.xml").delete();
-        new File("ffmpeg.obj").delete();
+        new File("ffmpeg.wixlib").delete();
         new File("ffmpeg.xml").delete();
-        new File("msvcrt.obj").delete();
+        new File("msvcrt.wixlib").delete();
         new File("msvcrt.xml").delete();
         new File(pdb).delete();
         if (new File(home + "/repo/windows/amd64/readme.txt").exists()) {

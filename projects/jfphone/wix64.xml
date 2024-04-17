@@ -1,56 +1,50 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.27" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.27" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
-    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfphone.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfphone.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfphone"/>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfphone" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfPhone"/> -->
-      </Directory>
-    </Directory>
+<!--      <Directory Id="ApplicationProgramsFolder" Name="jfPhone"/> -->
+    </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{65edc291-9a12-4f6c-844b-0e0258f29ee3}" Win64="yes">
-        <File Id="jfphone.jar" Source="jfphone.jar" KeyPath="yes"/>
-        <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="bcprov.jar" Source="bcprov.jar"/>
-        <File Id="bctls.jar" Source="bctls.jar"/>
-        <File Id="bcutil.jar" Source="bcutil.jar"/>
-        <File Id="jfphone.exe" Source="jfphone.exe"/>
-        <File Id="run.bat" Source="run.bat"/>
+      <Component Id="appfiles" Guid="{65edc291-9a12-4f6c-844b-0e0258f29ee3}" Bitness="always64">
+        <File Id="jfphone.jar" Source="jfphone.jar" KeyPath="yes" />
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="bcprov.jar" Source="bcprov.jar" />
+        <File Id="bctls.jar" Source="bctls.jar" />
+        <File Id="bcutil.jar" Source="bcutil.jar" />
+        <File Id="jfphone.exe" Source="jfphone.exe" />
       </Component>
     </DirectoryRef>
 
-    <!-- Step 2b: Add the shortcut to your installer package -->
+    <!-- Step 3: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <DirectoryRef Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{87bc46ee-4e99-449f-9748-f037877b4255}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPhone" Description="VoIP/SIP Phone" Target="[APPLICATIONROOTDIRECTORY]jfphone.exe"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPhone" Description="VoIP/SIP Phone" Target="[APPLICATIONROOTDIRECTORY]jfphone.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfPhone" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
-    <!-- Step 3: Tell WiX to install the files -->
+    <!-- Step 4: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentGroupRef Id="JRE" />
       <ComponentGroupRef Id="FFMPEG" />
     </Feature>
-  </Product>
+  </Package>
 </Wix>

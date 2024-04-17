@@ -35,8 +35,8 @@ public class WixHeat {
   private static String cmp;
 
   private static void outHeader() {
-    out.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-    out.append("<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\n");
+//    out.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    out.append("<Wix xmlns=\"http://wixtoolset.org/schemas/v4/wxs\">\n");
   }
 
   private static void addFolder(String parent, String path) throws Exception {
@@ -106,7 +106,7 @@ public class WixHeat {
 
     out.append("<Fragment>\n");
     out.append("    <DirectoryRef Id=\"" + did + "\">\n");
-    out.append("        <Component Id=\"" + cid + "\" Guid=\"{8A8E15CB-3AA6-4D96-AD6D-5241AD" + Integer.toHexString(baseguid) + guid++ + "}\" Win64=\"yes\">\n");
+    out.append("        <Component Id=\"" + cid + "\" Guid=\"{8A8E15CB-3AA6-4D96-AD6D-5241AD" + Integer.toHexString(baseguid) + guid++ + "}\" Bitness=\"always64\">\n");
     int cnt = wixfiles.size();
     for(int a=0;a<cnt;a++) {
       Entry e = wixfiles.get(a);

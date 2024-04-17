@@ -95,9 +95,17 @@ pac : build Arch pac file (after install)
  - linux packaging requires files.lst
 msi : build Windows msi file with JRE bundled
  - msi creation requires:
-  - wixtoolset v3 in path (http://wixtoolset.org)
+  - wixtoolset v4+ in path (http://wixtoolset.org)
+  - install wix tool (requires dotnet 6+)
+    dotnet tool install --global wix
   - wix64.xml file
   - jre pre-linked for native packaging (see above)
+  - install wix extensions:
+    wix extension add -g WixToolset.UI.wixext
+    wix extension add -g WixToolset.Firewall.wixext
+    wix extension add -g WixToolset.Util.wixext
+  - older wix3 files must be upgraded:
+    wix convert wix64.xml
 dmg : build Mac dmg file using hdiutil (mac only)
  - dmg creation requires:
   - jre prep for native packaging (see above)
@@ -138,7 +146,7 @@ Requirements
   - JDK 17+
   - Apache Ant 1.10+
   - Linux : gcc
-  - Windows : Visual C++ build tools, wixtoolset v3, AMD64
+  - Windows : Visual C++ build tools, wixtoolset v4+, AMD64
   - Mac : AMD64
   - FFMpeg 5.1+ sources(headers) + shared libraries
   - glfw for OpenGL support
