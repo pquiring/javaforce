@@ -57,8 +57,8 @@ public class GenMSI {
 
     try {
       {
-        //create wix object [v3]
-        String[] cmd = new String[] {"wix","build","-arch","x64","-ext","WixToolset.UI.wixext","-ext","WixToolset.Firewall.wixext","-ext","WixToolset.Util.wixext","-o","wix.wixlib","wix64.xml"};
+        //create wix object
+        String[] cmd = new String[] {"wix","build","-arch","x64","-ext","WixToolset.UI.wixext","-ext","WixToolset.Firewall.wixext","-ext","WixToolset.Util.wixext","-o","app.wixlib","wix64.xml"};
         if (candle_extra.length() > 0) {
           String[] extra = candle_extra.split(" ");
           for(String x : extra) {
@@ -119,7 +119,7 @@ public class GenMSI {
 
       {
         //cleanup
-        new File("wix.wixlib").delete();
+        new File("app.wixlib").delete();
         new File("jre.wixlib").delete();
         new File("jre.xml").delete();
         new File("ffmpeg.wixlib").delete();

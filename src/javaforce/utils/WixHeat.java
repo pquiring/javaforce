@@ -35,7 +35,6 @@ public class WixHeat {
   private static String cmp;
 
   private static void outHeader() {
-//    out.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     out.append("<Wix xmlns=\"http://wixtoolset.org/schemas/v4/wxs\">\n");
   }
 
