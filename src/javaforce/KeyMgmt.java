@@ -1,13 +1,15 @@
 package javaforce;
 
 /**
- * Key Management class.
+ * Key Management.
  *
- * Contains a Java keystore and password.
+ * Contains a keystore and its password.
  *
- * crt = public certificate
  * key = private key (password protected)
+ * crt = public certificate
  * csr = PKCS10 cert sign request
+ *
+ * see https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html
  *
  * @author pquiring
  *
@@ -17,7 +19,6 @@ package javaforce;
 import java.security.CodeSigner;
 import java.security.KeyStore;
 import java.security.KeyFactory;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.Key;
 import java.security.KeyPair;
@@ -27,15 +28,12 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.Signature;
 import java.security.Timestamp;
-import java.security.UnrecoverableEntryException;
-import java.security.UnrecoverableKeyException;
 import java.security.Principal;
 import java.security.Provider;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CRL;
 import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.io.*;
 import java.util.*;
@@ -45,8 +43,8 @@ public class KeyMgmt {
   private static boolean keytool = true;  //use keytool
 
   private KeyStore keyStore = null;
-  private char[] password = null;
-  private String keyfile = "keystore.ks";
+  private char[] storePass = null;
+  private String keyFile = "keystore.ks";
 
   /** Executes keytool directly */
   public static boolean keytool(String[] args) {
@@ -87,21 +85,43 @@ public class KeyMgmt {
     }
   }
 
+  public KeyMgmt(String keyfile, String storepass) {
+    try {
+      this.keyFile = keyfile;
+      this.storePass = storepass.toCharArray();
+      open();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  public void setFile(String keyfile) {
+    this.keyFile = keyfile;
+  }
+
+  public void setKeyStorePass(String storepass) {
+    this.storePass = storepass.toCharArray();
+  }
+
+  /** Create an empty keystore and save it. */
+  public void create() {
+    open(null);
+    save();
+  }
+
   /**
    * Open a keystore
    */
-  public boolean open(String file, char[] pwd) {
-    password = pwd;
+  public boolean open() {
     try {
       keyStore = KeyStore.getInstance("JKS", "SUN");
-      FileInputStream fis = new FileInputStream(file);
-      keyStore.load(fis, pwd);
+      FileInputStream fis = new FileInputStream(keyFile);
+      keyStore.load(fis, storePass);
       fis.close();
-      keyfile = file;
       return true;
     } catch (Exception e) {
       keyStore = null;
-      password = null;
+      storePass = null;
       JFLog.log(e);
       return false;
     }
@@ -110,15 +130,51 @@ public class KeyMgmt {
   /**
    * Open a keystore
    */
-  public boolean open(InputStream is, char[] pwd) {
-    password = pwd;
+  public boolean open(String file, String keystorepass) {
+    storePass = keystorepass.toCharArray();
     try {
       keyStore = KeyStore.getInstance("JKS", "SUN");
-      keyStore.load(is, pwd);
+      FileInputStream fis = new FileInputStream(file);
+      keyStore.load(fis, keystorepass.toCharArray());
+      fis.close();
+      keyFile = file;
       return true;
     } catch (Exception e) {
       keyStore = null;
-      password = null;
+      storePass = null;
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /**
+   * Open a keystore
+   */
+  public boolean open(InputStream is, String keystorepass) {
+    storePass = keystorepass.toCharArray();
+    try {
+      keyStore = KeyStore.getInstance("JKS", "SUN");
+      keyStore.load(is, storePass);
+      return true;
+    } catch (Exception e) {
+      keyStore = null;
+      storePass = null;
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /**
+   * Open a keystore
+   */
+  public boolean open(InputStream is) {
+    try {
+      keyStore = KeyStore.getInstance("JKS", "SUN");
+      keyStore.load(is, storePass);
+      return true;
+    } catch (Exception e) {
+      keyStore = null;
+      storePass = null;
       JFLog.log(e);
       return false;
     }
@@ -127,9 +183,9 @@ public class KeyMgmt {
   /** Save keystore. */
   public boolean save() {
     try {
-      if (keyfile == null) keyfile = "keystore.ks";
-      FileOutputStream fos = new FileOutputStream(keyfile);
-      keyStore.store(fos, password);
+      if (keyFile == null) keyFile = "keystore.ks";
+      FileOutputStream fos = new FileOutputStream(keyFile);
+      keyStore.store(fos, storePass);
       fos.close();
       return true;
     } catch (Exception e) {
@@ -141,8 +197,8 @@ public class KeyMgmt {
   /** Save keystore. */
   public boolean save(OutputStream os) {
     try {
-      if (keyfile == null) keyfile = "keystore.ks";
-      keyStore.store(os, password);
+      if (keyFile == null) keyFile = "keystore.ks";
+      keyStore.store(os, storePass);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -150,11 +206,11 @@ public class KeyMgmt {
     }
   }
 
-  /** Save keystore with a new keystore password. */
-  public boolean save(OutputStream os, char[] pwd) {
-    this.password = pwd;
+  /** Save keystore with a new keystorepass. */
+  public boolean save(OutputStream os, String keystorepass) {
+    this.storePass = keystorepass.toCharArray();
     try {
-      keyStore.store(os, pwd);
+      keyStore.store(os, storePass);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -162,30 +218,45 @@ public class KeyMgmt {
     }
   }
 
-  /** Creates new keystore with private/public keys (valid for 10 years).
+  /** Creates new keystore with private/public keys.
    *
-   * @param file = file name
+   * @param storefile = file name
+   * @param storepass = keystorepass
    * @param alias = key pair alias
    * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
-   * @param password = keystore/key password, required for open()
+   * @param keypass = keystore and keypass
    */
-  public static KeyMgmt create(String file, String alias, String dname, String password) {
+  public static KeyMgmt create(String storefile, String storepass, String alias, KeyParams params, String keypass) {
     if (keytool) {
-      KeyMgmt.keytool(new String[] {
-        "-genkey",
-        "-alias", alias,
-        "-keypass", password,
-        "-storepass", password,
-        "-keystore", file,
-        "-validity", "3650",
-        "-dname", dname,
-        "-keyalg", "RSA",
-        "-keysize", "2048"
-      });
+      ArrayList<String> cmd = new ArrayList<>();
+      cmd.add("-genkey");
+      cmd.add("-keystore");
+      cmd.add(storefile);
+      cmd.add("-storepass");
+      cmd.add(storepass);
+      cmd.add("-keypass");
+      cmd.add(keypass);
+      cmd.add("-alias");
+      cmd.add(alias);
+      cmd.add("-validity");
+      cmd.add(params.validity);
+      cmd.add("-dname");
+      cmd.add(params.dname);
+      cmd.add("-keyalg");
+      cmd.add("RSA");
+      cmd.add("-keysize");
+      cmd.add("2048");
+      if (params.exts != null) {
+        for(String ext : params.exts) {
+          cmd.add("-ext");
+          cmd.add(ext);
+        }
+      }
+      keytool(cmd.toArray(JF.StringArrayType));
       try {
-        FileInputStream fis = new FileInputStream(file);
+        FileInputStream fis = new FileInputStream(storefile);
         KeyMgmt keys = new KeyMgmt();
-        keys.open(fis, password.toCharArray());
+        keys.open(fis, keypass);
         fis.close();
         return keys;
       } catch (Exception e) {
@@ -202,7 +273,7 @@ public class KeyMgmt {
         PrivateKey prikey = pair.getPrivate();
         PublicKey pubkey = pair.getPublic();
         //TODO : convert pubkey to self signed certificate
-        keys.keyStore.setKeyEntry(alias, prikey, password.toCharArray(), new Certificate[] {null /* cert chain */});
+        keys.keyStore.setKeyEntry(alias, prikey, keypass.toCharArray(), new Certificate[] {null /* cert chain */});
         return keys;
       } catch (Exception e) {
         JFLog.log(e);
@@ -211,39 +282,48 @@ public class KeyMgmt {
     }
   }
 
-  /** Creates new private/public keys (valid for 10 years) and sign by existing key/pair.
+  /** Creates new private/public keys.
    *
    * @param alias = new key pair alias
    * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
-   * @param password = keystore/key password
-   * @param signerAlias = existing keypair to sign with
-   * @param signerPassword = signer key password
+   * @param keypass = keypass
    */
-  public KeyMgmt create(String alias, String dname, String password, String signerAlias, String signerPassword) {
+  public boolean create(String alias, KeyParams params, String keypass) {
     if (keytool) {
       save();
-      KeyMgmt.keytool(new String[] {
-        "-genkey",
-        "-alias", alias,
-        "-keypass", password,
-        "-storepass", password,
-        "-keystore", keyfile,
-        "-validity", "3650",
-        "-dname", dname,
-        "-keyalg", "RSA",
-        "-keysize", "2048",
-        "-signer", signerAlias,
-        "-signerkeypass", signerPassword
-      });
+      ArrayList<String> cmd = new ArrayList<>();
+      cmd.add("-genkey");
+      cmd.add("-alias");
+      cmd.add(alias);
+      cmd.add("-keypass");
+      cmd.add(keypass);
+      cmd.add("-storepass");
+      cmd.add(getKeyStorePass());
+      cmd.add("-keystore");
+      cmd.add(keyFile);
+      cmd.add("-validity");
+      cmd.add(params.validity);
+      cmd.add("-dname");
+      cmd.add(params.dname);
+      cmd.add("-keyalg");
+      cmd.add("RSA");
+      cmd.add("-keysize");
+      cmd.add("2048");
+      if (params.exts != null) {
+        for(String ext : params.exts) {
+          cmd.add("-ext");
+          cmd.add(ext);
+        }
+      }
       try {
-        FileInputStream fis = new FileInputStream(keyfile);
+        FileInputStream fis = new FileInputStream(keyFile);
         KeyMgmt keys = new KeyMgmt();
-        keys.open(fis, password.toCharArray());
+        keys.open(fis, keypass);
         fis.close();
-        return keys;
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
-        return null;
+        return false;
       }
     } else {
       try {
@@ -256,53 +336,142 @@ public class KeyMgmt {
         PublicKey pubkey = pair.getPublic();
         //TODO : convert pubkey to self signed certificate
         //unfortunately keytool uses a lot of private api
-        keys.keyStore.setKeyEntry(alias, prikey, password.toCharArray(), new Certificate[] {null /* cert */});
-        return keys;
+        keys.keyStore.setKeyEntry(alias, prikey, keypass.toCharArray(), new Certificate[] {null /* cert */});
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
-        return null;
+        return false;
       }
     }
   }
 
-  /** Create sign request. */
-  public boolean createSignRequest(String alias, String out_file_csr) {
-    String password = getPasswordString();
+  /** Creates new private/public keys and sign by existing key/pair.
+   *
+   * @param alias = new key pair alias
+   * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
+   * @param keypass = key password
+   * @param signerAlias = existing key to sign with
+   * @param signerKeyPass = signer key password
+   */
+  public boolean create(String alias, KeyParams params, String keypass, String signerAlias, String signerKeyPass) {
+    if (keytool) {
+      save();
+      ArrayList<String> cmd = new ArrayList<>();
+      cmd.add("-genkey");
+      cmd.add("-alias");
+      cmd.add(alias);
+      cmd.add("-keypass");
+      cmd.add(keypass);
+      cmd.add("-storepass");
+      cmd.add(getKeyStorePass());
+      cmd.add("-keystore");
+      cmd.add(keyFile);
+      cmd.add("-validity");
+      cmd.add(params.validity);
+      cmd.add("-dname");
+      cmd.add(params.dname);
+      cmd.add("-keyalg");
+      cmd.add("RSA");
+      cmd.add("-keysize");
+      cmd.add("2048");
+      cmd.add("-signer");
+      cmd.add(signerAlias);
+      cmd.add("-signerkeypass");
+      cmd.add(signerKeyPass);
+      if (params.exts != null) {
+        for(String ext : params.exts) {
+          cmd.add("-ext");
+          cmd.add(ext);
+        }
+      }
+      keytool(cmd.toArray(JF.StringArrayType));
+      try {
+        FileInputStream fis = new FileInputStream(keyFile);
+        KeyMgmt keys = new KeyMgmt();
+        keys.open(fis, keypass);
+        fis.close();
+        return true;
+      } catch (Exception e) {
+        JFLog.log(e);
+        return false;
+      }
+    } else {
+      try {
+        KeyMgmt keys = new KeyMgmt();
+        keys.keyStore = KeyStore.getInstance("JKS", "SUN");
+        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+        gen.initialize(2048);
+        KeyPair pair = gen.generateKeyPair();
+        PrivateKey prikey = pair.getPrivate();
+        PublicKey pubkey = pair.getPublic();
+        //TODO : convert pubkey to self signed certificate
+        //unfortunately keytool uses a lot of private api
+        keys.keyStore.setKeyEntry(alias, prikey, keypass.toCharArray(), new Certificate[] {null /* cert */});
+        return true;
+      } catch (Exception e) {
+        JFLog.log(e);
+        return false;
+      }
+    }
+  }
+
+  /** Create cert sign request (csr). */
+  public boolean createCertSignRequest(String alias, String keypass, String out_file_csr) {
     save();
-    KeyMgmt.keytool(new String[] {
-      "-certreq",
-      "-keystore", keyfile,
-      "-alias", alias,
-      "-keypass", password,
-      "-storepass", password,
-      "-keyalg" , "RSA",
-      "-keysize", "2048",
-      "-file", out_file_csr
-    });
-    return false;
+
+    ArrayList<String> cmd = new ArrayList<>();
+    cmd.add("-certreq");
+    cmd.add("-alias");
+    cmd.add(alias);
+    cmd.add("-keypass");
+    cmd.add(getKeyStorePass());
+    cmd.add("-storepass");
+    cmd.add(keypass);
+    cmd.add("-keystore");
+    cmd.add(keyFile);
+    cmd.add("-keyalg");
+    cmd.add("RSA");
+    cmd.add("-keysize");
+    cmd.add("2048");
+    cmd.add("-file");
+    cmd.add(out_file_csr);
+
+    keytool(cmd.toArray(JF.StringArrayType));
+
+    return true;
   }
 
   /** Sign cert request. */
-  public boolean signRequest(String alias, String dname, String in_file_csr, String out_file_crt) {
-    String password = getPasswordString();
+  public boolean signRequest(String alias, String keypass, String in_file_csr, String out_file_crt) {
     save();
-    KeyMgmt.keytool(new String[] {
-      "-gencert",
-      "-alias", alias,
-      "-keypass", password,
-      "-storepass", password,
-      "-keystore", keyfile,
-      "-validity", "3650",
-      "-dname", dname,
-      "-sigalg", "RSA",
-      "-keysize", "2048",
-      "-infile", in_file_csr,
-      "-outfile", out_file_crt
-    });
-    return false;
+    ArrayList<String> cmd = new ArrayList<>();
+    cmd.add("-gencert");
+    cmd.add("-alias");
+    cmd.add(alias);
+    cmd.add("-storepass");
+    cmd.add(getKeyStorePass());
+    cmd.add("-keypass");
+    cmd.add(keypass);
+    cmd.add("-keystore");
+    cmd.add(keyFile);
+    cmd.add("-keyalg");
+    cmd.add("RSA");
+    cmd.add("-keysize");
+    cmd.add("2048");
+
+    cmd.add("-sigalg");
+    cmd.add("RSA");
+    cmd.add("-infile");
+    cmd.add(in_file_csr);
+    cmd.add("-outfile");
+    cmd.add(out_file_crt);
+
+    keytool(cmd.toArray(JF.StringArrayType));
+
+    return true;
   }
 
-  public boolean loadKEYandCRT(String alias, InputStream keyStream, InputStream certStream, char[] pwd) {
+  public boolean loadKEYandCRT(String alias, InputStream keyStream, InputStream certStream, String keypass) {
     try {
       // loading Key
       KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -319,13 +488,11 @@ public class KeyMgmt {
       certs = (Certificate[]) c.toArray();
 
       // set key / cert pair
-      keyStore = KeyStore.getInstance("JKS", "SUN");
-      keyStore.setKeyEntry(alias, ff, pwd, certs);
-      password = pwd;
+      keyStore.setKeyEntry(alias, ff, keypass.toCharArray(), certs);
       return true;
     } catch (Exception e) {
       keyStore = null;
-      password = null;
+      storePass = null;
       JFLog.log(e);
       return false;
     }
@@ -359,6 +526,35 @@ public class KeyMgmt {
     }
   }
 
+  public KeyStore.Entry getEntry(String alias) {
+    try {
+      return keyStore.getEntry(alias, new KeyStore.PasswordProtection(storePass));
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public boolean setEntry(String alias, KeyStore.Entry entry) {
+    try {
+      keyStore.setEntry(alias, entry, new KeyStore.PasswordProtection(storePass));
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public boolean deleteEntry(String alias) {
+    try {
+      keyStore.deleteEntry(alias);
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   /** Get public certificate. */
   public Certificate getCRT(String alias) {
     try {
@@ -368,13 +564,41 @@ public class KeyMgmt {
     }
   }
 
-  /** Get private key w/ password. */
-  public Key getKEY(String alias, char[] pwd) {
+  public boolean exportCRT(String alias, String fileout) {
     try {
-      return keyStore.getKey(alias, pwd);
+      Certificate crt = getCRT(alias);
+      byte[] data = crt.getEncoded();
+      FileOutputStream fos = new FileOutputStream(fileout);
+      fos.write(data);
+      fos.close();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+
+  /** Get private key w/ key password. */
+  public Key getKEY(String alias, String keypass) {
+    try {
+      return keyStore.getKey(alias, keypass.toCharArray());
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public boolean exportKEY(String alias, String keypass, String fileout) {
+    try {
+      Key key = getKEY(alias, keypass);
+      byte[] data = key.getEncoded();
+      FileOutputStream fos = new FileOutputStream(fileout);
+      fos.write(data);
+      fos.close();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
   }
 
   public static String fingerprintSHA256(byte[] key) {
@@ -396,18 +620,36 @@ public class KeyMgmt {
   }
 
   public boolean isValid() {
-    return keyStore != null && password != null;
+    return keyStore != null && storePass != null;
   }
 
   public KeyStore getKeyStore() {
     return keyStore;
   }
 
-  public char[] getPassword() {
-    return password;
+  public String getKeyStorePass() {
+    return new String(storePass);
   }
 
-  public String getPasswordString() {
-    return new String(password);
+  public int getCount() {
+    try {
+      return keyStore.size();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return 0;
+    }
+  }
+
+  public boolean verify(String alias) {
+    Certificate root = getCRT("root");
+    PublicKey key = root.getPublicKey();
+    Certificate cert = getCRT(alias);
+    try {
+      cert.verify(key);
+      return true;
+    } catch (Exception e) {
+      //JFLog.log(e);
+      return false;
+    }
   }
 }

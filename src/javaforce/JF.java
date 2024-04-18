@@ -1146,7 +1146,7 @@ public class JF {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       KeyStore ks = keys.getKeyStore();
-      kmf.init(ks, keys.getPassword());
+      kmf.init(ks, keys.getKeyStorePass().toCharArray());
       ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       Socket raw = new Socket(host, port);
@@ -1177,7 +1177,7 @@ public class JF {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       KeyStore ks = keys.getKeyStore();
-      kmf.init(ks, keys.getPassword());
+      kmf.init(ks, keys.getKeyStorePass().toCharArray());
       ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
       SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
       SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket(port);
@@ -1206,7 +1206,7 @@ public class JF {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       KeyStore ks = keys.getKeyStore();
-      kmf.init(ks, keys.getPassword());
+      kmf.init(ks, keys.getKeyStorePass().toCharArray());
       ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
       SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
       SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket();

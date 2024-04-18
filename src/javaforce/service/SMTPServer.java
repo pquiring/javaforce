@@ -315,7 +315,7 @@ public class SMTPServer extends Thread {
           KeyMgmt keys = new KeyMgmt();
           if (new File(getKeyFile()).exists()) {
             FileInputStream fis = new FileInputStream(getKeyFile());
-            keys.open(fis, "password".toCharArray());
+            keys.open(fis, "password");
             fis.close();
           } else {
             JFLog.log("Warning:Server SSL Keys not generated!");
