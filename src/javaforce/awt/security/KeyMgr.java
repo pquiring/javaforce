@@ -493,6 +493,7 @@ public class KeyMgr extends javax.swing.JDialog {
     String alias = (String)model.getValueAt(row, 0);
     if (alias == null || alias.equals(root)) return;
 
+    keys.setRootAlias(root);
     if (keys.verify(alias)) {
       JFAWT.showMessage("Verify", "Key is verified!");
     } else {

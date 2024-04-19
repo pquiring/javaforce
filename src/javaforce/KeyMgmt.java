@@ -45,6 +45,7 @@ public class KeyMgmt {
   private KeyStore keyStore = null;
   private char[] storePass = null;
   private String keyFile = "keystore.ks";
+  private String root = "root";
 
   /** Executes keytool directly */
   public static boolean keytool(String[] args) {
@@ -101,6 +102,10 @@ public class KeyMgmt {
 
   public void setKeyStorePass(String storepass) {
     this.storePass = storepass.toCharArray();
+  }
+
+  public void setRootAlias(String alias) {
+    root = alias;
   }
 
   /** Create an empty keystore and save it. */
@@ -642,8 +647,9 @@ public class KeyMgmt {
   }
 
   public boolean verify(String alias) {
-    Certificate root = getCRT("root");
-    PublicKey key = root.getPublicKey();
+    Certificate rootcert = getCRT(root);
+    if (rootcert == null) return false;
+    PublicKey key = rootcert.getPublicKey();
     Certificate cert = getCRT(alias);
     try {
       cert.verify(key);

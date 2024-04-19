@@ -177,6 +177,7 @@ public class SOCKSServer extends Thread {
       if (secure) {
         JFLog.log("CreateServerSocketSSL");
         KeyMgmt keys = new KeyMgmt();
+        keys.setRootAlias("jfsocks");
         if (new File(getKeyFile()).exists()) {
           FileInputStream fis = new FileInputStream(getKeyFile());
           keys.open(fis, "password");
