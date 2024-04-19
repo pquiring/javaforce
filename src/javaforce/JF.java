@@ -488,6 +488,18 @@ public class JF {
     }
   }
 
+  public static byte[] readFile(String file) {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      byte[] data = fis.readAllBytes();
+      fis.close();
+      return data;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   public static int read(InputStream in, byte[] buf, int pos, int len) {
     try {
       return in.read(buf, pos, len);
@@ -611,6 +623,18 @@ public class JF {
   public static boolean write(OutputStream out, byte data[], int offset, int length) {
     try {
       out.write(data, offset, length);
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public static boolean writeFile(String file, byte[] data) {
+    try {
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(data);
+      fos.close();
       return true;
     } catch (Exception e) {
       JFLog.log(e);

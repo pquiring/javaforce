@@ -9,6 +9,7 @@ Supports:
  - IP4
  - domain names
  - Secure SSL
+ - SSL client verify (most secure socks implementation on the planet)
  - SOCKS5 auth type 0x02 only (plain text:therefore use secure mode if using authentication)
  - allowed IP networks/IP addresses list
  - forward non-socks related local ports to another IP:port

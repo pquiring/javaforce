@@ -185,6 +185,7 @@ public class SOCKSServer extends Thread {
         ss = JF.createServerSocketSSL(keys);
         if (secure_verify) {
           JF.clientKeys = keys;
+          JF.clientKeysAlias = "jfsocks";
           ((SSLServerSocket)ss).setNeedClientAuth(true);
         }
       } else {
@@ -1107,9 +1108,30 @@ public class SOCKSServer extends Thread {
         "-keyalg" , "RSA", "-keysize", "2048"
       })) {
         JFLog.log("Generated Keys");
-        socks.busClient.call(pack, "getKeys", socks.busClient.quote("OK"));
+        socks.busClient.call(pack, "genKeysStatus", socks.busClient.quote("OK"));
       } else {
-        socks.busClient.call(pack, "getKeys", socks.busClient.quote("ERROR"));
+        socks.busClient.call(pack, "genKeysStatus", socks.busClient.quote("ERROR"));
+      }
+    }
+
+    public void getKeys(String pack) {
+      byte[] data;
+      try {
+        FileInputStream fis = new FileInputStream(getKeyFile());
+        data = fis.readAllBytes();
+        fis.close();
+        socks.busClient.call(pack, "giveKeys", socks.busClient.encodeByteArray(data));
+      } catch (Exception e) {
+        socks.busClient.call(pack, "giveKeys", socks.busClient.quote(""));
+      }
+    }
+
+    public void setKeys(String pack, String data) {
+      byte[] keys = JBusClient.decodeByteArray(data);
+      if (JF.writeFile(getKeyFile(), keys)) {
+        socks.busClient.call(pack, "setKeysStatus", socks.busClient.quote("OK"));
+      } else {
+        socks.busClient.call(pack, "setKeysStatus", socks.busClient.quote("ERROR"));
       }
     }
   }

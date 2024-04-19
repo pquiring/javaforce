@@ -247,4 +247,31 @@ public class JBusClient extends Thread {
       return null;
     }
   }
+
+  /** Encode byte[] as a String. */
+  public static String encodeByteArray(byte[] ba) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("\"");
+    for(int a=0;a<ba.length;a++) {
+      sb.append(String.format("%02x", ba[a] & 0xff));
+    }
+    sb.append("\"");
+    return sb.toString();
+  }
+
+  /** Decode String as byte[] */
+  public static byte[] decodeByteArray(String str) {
+    if (str.length() == 0) return new byte[0];
+    if (str.charAt(0) == '\"') {
+      str = str.substring(1, str.length() - 1);
+    }
+    int len = str.length() / 2;
+    if (len * 2 != str.length()) return new byte[0];
+    byte[] ba = new byte[len];
+    for(int a=0;a<len;a++) {
+      int pos = a*2;
+      ba[a] = (byte)(Integer.parseInt(str.substring(pos, pos+2), 16));
+    }
+    return null;
+  }
 }

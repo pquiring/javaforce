@@ -221,13 +221,37 @@ public class SOCKSApp extends javax.swing.JFrame {
         }
       });
     }
-    public void getKeys(String status) {
+    public void genKeysStatus(String status) {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
           if (status.equals("OK")) {
             JFAWT.showMessage("GenKeys", "OK");
           } else {
             JFAWT.showError("GenKeys", "Error");
+          }
+        }
+      });
+    }
+    public void giveKeys(String str) {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          String tmpfile = JF.getUserPath() + "/.jfsocks-edit.key";
+          byte[] data = JBusClient.decodeByteArray(str);
+          JF.writeFile(tmpfile, data);
+          KeyMgr keymgr = new KeyMgr(tmpfile, "password");
+          keymgr.setVisible(true);
+          data = JF.readFile(tmpfile);
+          busClient.call(SOCKSServer.busPack, "setKeys", JBusClient.encodeByteArray(data));
+        }
+      });
+    }
+    public void setKeysStatus(String status) {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          if (status.equals("OK")) {
+            JFAWT.showMessage("SetKeys", "OK");
+          } else {
+            JFAWT.showError("SetKeys", "Error");
           }
         }
       });
@@ -247,11 +271,6 @@ public class SOCKSApp extends javax.swing.JFrame {
   }
 
   private void keymgr() {
-    if (!new File(getKeyFile()).exists()) {
-      JFAWT.showError("Error", "Key Store does not exist");
-      return;
-    }
-    KeyMgr keymgr = new KeyMgr(getKeyFile(), "password");
-    keymgr.setVisible(true);
+    busClient.call(SOCKSServer.busPack, "getKeys", "\"" + busClient.pack + "\"");
   }
 }
