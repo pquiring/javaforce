@@ -241,7 +241,7 @@ public class SOCKSApp extends javax.swing.JFrame {
           KeyMgr keymgr = new KeyMgr(tmpfile, "password");
           keymgr.setVisible(true);
           data = JF.readFile(tmpfile);
-          busClient.call(SOCKSServer.busPack, "setKeys", JBusClient.encodeByteArray(data));
+          busClient.call(SOCKSServer.busPack, "setKeys", "\"" + busClient.pack + "\"" + "," + JBusClient.encodeByteArray(data));
         }
       });
     }
