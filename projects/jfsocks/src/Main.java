@@ -485,7 +485,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     remote_port.setEnabled(state);
   }
 
-  public static class Server extends Thread {
+  public class Server extends Thread {
     public ServerSocket ss;
     public boolean active;
     public void run() {
@@ -536,7 +536,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     JFLog.log(sb.toString());
   }
 
-  public static class Client extends Thread {
+  public class Client extends Thread {
     public Socket c, s;
     //public InputStream cis;
     //public OutputStream cos;
@@ -668,7 +668,11 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         pd1.join();
         pd2.join();
       } catch (Exception e) {
-        e.printStackTrace();
+        JFLog.log(e);
+        JFAWT.showError("Error", "Connection Lost");
+        java.awt.EventQueue.invokeLater( () -> {
+          connect();
+        });
       }
     }
   }
@@ -850,6 +854,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
       return;
     }
     KeyMgr keymgr = new KeyMgr(getKeyFile(), "password");
+    keymgr.setRootAlias("jfsocks");
     keymgr.setVisible(true);
   }
 }

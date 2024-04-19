@@ -239,6 +239,7 @@ public class SOCKSApp extends javax.swing.JFrame {
           byte[] data = JBusClient.decodeByteArray(str);
           JF.writeFile(tmpfile, data);
           KeyMgr keymgr = new KeyMgr(tmpfile, "password");
+          keymgr.setRootAlias("jfsocks");
           keymgr.setVisible(true);
           data = JF.readFile(tmpfile);
           busClient.call(SOCKSServer.busPack, "setKeys", "\"" + busClient.pack + "\"" + "," + JBusClient.encodeByteArray(data));

@@ -94,16 +94,18 @@ public class SOCKSServer extends Thread {
     }
   }
 
-  private static void log(Exception e) {
+  /** Logs an exception and returns false if it was a Socket Exception. */
+  private static boolean log(Exception e) {
     if (e instanceof SocketException) {
       JFLog.log("Connection lost (SocketException)");
-      return;
+      return false;
     }
     if (e instanceof SSLException) {
       JFLog.log("Connection lost (SSLException)");
-      return;
+      return false;
     }
     JFLog.log(e);
+    return true;
   }
 
   private static class ForwardRemote {
@@ -607,8 +609,7 @@ public class SOCKSServer extends Thread {
           default: throw new Exception("bad request:not SOCKS4/5 request");
         }
       } catch (Exception e) {
-        log(e);
-        if (!connected) {
+        if (log(e) && !connected) {
           byte[] reply = null;
           switch (req[0]) {
             case 0x04:

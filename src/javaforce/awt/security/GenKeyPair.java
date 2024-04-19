@@ -11,6 +11,7 @@ import javaforce.awt.*;
 public class GenKeyPair extends javax.swing.JDialog {
 
   private KeyMgmt keys;
+  private String root = "root";
 
   /**
    * Creates new form GenKeyPair
@@ -25,6 +26,10 @@ public class GenKeyPair extends javax.swing.JDialog {
       alias.setEnabled(false);
     }
     JFAWT.centerWindow(this);
+  }
+
+  public void setRootAlias(String alias) {
+    root = alias;
   }
 
   /**
@@ -175,7 +180,7 @@ public class GenKeyPair extends javax.swing.JDialog {
       "san=" + san.getText()
     };
     if (sign_root.isSelected()) {
-      keys.create(alias.getText(), params, keys.getKeyStorePass(), "root", keys.getKeyStorePass());
+      keys.create(alias.getText(), params, keys.getKeyStorePass(), root, keys.getKeyStorePass());
     } else {
       keys.create(alias.getText(), params, keys.getKeyStorePass());
     }

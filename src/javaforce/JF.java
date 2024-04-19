@@ -1130,6 +1130,7 @@ public class JF {
           PublicKey key = root.getPublicKey();
           try {
             certs[0].verify(key);
+            JFLog.log("Client verified");
           } catch (Exception e) {
             JFLog.log("Client not verified");
             throw new CertificateException();

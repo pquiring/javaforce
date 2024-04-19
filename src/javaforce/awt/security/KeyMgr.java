@@ -22,6 +22,7 @@ public class KeyMgr extends javax.swing.JDialog {
 
   private KeyMgmt keys;
   private DefaultTableModel model;
+  private String root = "root";
   private static boolean debug = false;
 
   /**
@@ -57,6 +58,10 @@ public class KeyMgr extends javax.swing.JDialog {
     bar3.setFloatable(false);
     bar4.setFloatable(false);
     bar5.setFloatable(false);
+  }
+
+  public void setRootAlias(String alias) {
+    root = alias;
   }
 
   /**
@@ -461,8 +466,9 @@ public class KeyMgr extends javax.swing.JDialog {
     repaint();
   }
 
-  private void do_gen(boolean root) {
-    GenKeyPair dialog = new GenKeyPair(null, true, keys, root);
+  private void do_gen(boolean gen_root) {
+    GenKeyPair dialog = new GenKeyPair(null, true, keys, gen_root);
+    dialog.setRootAlias(root);
     dialog.setVisible(true);
     reload();
   }
@@ -485,7 +491,7 @@ public class KeyMgr extends javax.swing.JDialog {
     int row = table.getSelectedRow();
     if (row == -1) return;
     String alias = (String)model.getValueAt(row, 0);
-    if (alias == null || alias.equals("root")) return;
+    if (alias == null || alias.equals(root)) return;
 
     if (keys.verify(alias)) {
       JFAWT.showMessage("Verify", "Key is verified!");
