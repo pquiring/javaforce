@@ -37,26 +37,27 @@ public class ConfigService implements WebUIHandler {
   }
 
   private void initSecureWebKeys() {
-    String dname = "CN=jfdvr.sourceforge.net, O=server, OU=webserver, C=CA";
     String keyfile = Paths.dataPath + "/jfdvr.key";
     String password = "password";
+    KeyParams params = new KeyParams();
+    params.dname = "CN=jfdvr.sourceforge.net, O=server, OU=webserver, C=CA";;
     if (new File(keyfile).exists()) {
       //load existing keys
       keys = new KeyMgmt();
       try {
         FileInputStream fis = new FileInputStream(keyfile);
-        keys.open(fis, password.toCharArray());
+        keys.open(fis, password);
         fis.close();
       } catch (Exception e) {
         if (!keys.isValid()) {
           //generate random keys
-          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+          keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
         }
         JFLog.log(e);
       }
     } else {
       //generate random keys
-      keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+      keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
     }
   }
 

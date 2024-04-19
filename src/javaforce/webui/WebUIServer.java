@@ -56,6 +56,10 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     }
   }
 
+  public void setClientVerify(boolean state) {
+    web.setClientVerify(state);
+  }
+
   public byte[] getResource(String name) {
     InputStream is = getClass().getClassLoader().getResourceAsStream(name);
     if (is == null) {

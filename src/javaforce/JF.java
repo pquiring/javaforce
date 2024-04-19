@@ -11,6 +11,7 @@ import java.security.cert.*;
 import java.nio.file.Files;
 import java.nio.file.*;
 import java.lang.management.*;
+import java.security.cert.Certificate;
 
 /**
  * A collection of useful static methods.
@@ -1094,23 +1095,56 @@ public class JF {
 
   private static boolean initedHttps = false;
 
+  private static TrustManager[] trustMgrs = new TrustManager[] {
+    new X509TrustManager() {
+      public X509Certificate[] getAcceptedIssuers() {
+        return new X509Certificate[0];
+      }
+      public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+        if (clientKeys != null) {
+          Certificate root = clientKeys.getCRT("root");
+          PublicKey key = root.getPublicKey();
+          try {
+            certs[0].verify(key);
+          } catch (Exception e) {
+            JFLog.log("Client not verified");
+            throw new CertificateException();
+          }
+        }
+      }
+      public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+        if (serverKeys != null) {
+          Certificate root = serverKeys.getCRT("root");
+          PublicKey key = root.getPublicKey();
+          try {
+            certs[0].verify(key);
+          } catch (Exception e) {
+            JFLog.log("Client not verified");
+            throw new CertificateException();
+          }
+        }
+      }
+    }
+  };
+
+  /** Client keystore to verify client identity.
+   * Alias = "root"
+   */
+  private static KeyMgmt clientKeys;
+
+  /** Server keystore to verify server identity.
+   * Alias = "root"
+   */
+  private static KeyMgmt serverKeys;
+
   /** This allows connections to untrusted hosts when using https:// with URLConnection. */
   public static void initHttps() {
     if (initedHttps) return;
     initedHttps = true;
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("SSL");
-      ctx.init(null, trustAllCerts, new SecureRandom());
+      ctx.init(null, trustMgrs, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       HttpsURLConnection.setDefaultSSLSocketFactory(sslsocketfactory);
     } catch (Exception e) {
@@ -1132,22 +1166,13 @@ public class JF {
   private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
 
   public static Socket connectSSL(String host, int port, KeyMgmt keys) {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       KeyStore ks = keys.getKeyStore();
       kmf.init(ks, keys.getKeyStorePass().toCharArray());
-      ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
+      ctx.init(kmf.getKeyManagers(), trustMgrs, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       Socket raw = new Socket(host, port);
       SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(raw, raw.getInetAddress().getHostAddress(), raw.getPort(), true);
@@ -1163,22 +1188,13 @@ public class JF {
 
   //creates SSL socket bound to port
   public static ServerSocket createServerSocketSSL(int port, KeyMgmt keys) {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       KeyStore ks = keys.getKeyStore();
       kmf.init(ks, keys.getKeyStorePass().toCharArray());
-      ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
+      ctx.init(kmf.getKeyManagers(), trustMgrs, new SecureRandom());
       SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
       SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket(port);
 //      ssl.setEnabledProtocols(protocols);
@@ -1192,22 +1208,13 @@ public class JF {
 
   //creates unbound SSL socket
   public static ServerSocket createServerSocketSSL(KeyMgmt keys) {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
       KeyStore ks = keys.getKeyStore();
       kmf.init(ks, keys.getKeyStorePass().toCharArray());
-      ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
+      ctx.init(kmf.getKeyManagers(), trustMgrs, new SecureRandom());
       SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
       SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket();
 //      ssl.setEnabledProtocols(protocols);
@@ -1220,19 +1227,10 @@ public class JF {
   }
 
   public static Socket connectSSL(String host, int port) {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
-      ctx.init(null, trustAllCerts, new SecureRandom());
+      ctx.init(null, trustMgrs, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       Socket raw = new Socket(host, port);
       SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(raw, raw.getInetAddress().getHostAddress(), raw.getPort(), true);
@@ -1248,19 +1246,10 @@ public class JF {
 
   /** Upgrades existing socket to SSL. */
   public static Socket connectSSL(Socket socket) {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-      }
-    };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
-      ctx.init(null, trustAllCerts, new SecureRandom());
+      ctx.init(null, trustMgrs, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
       ssl.setUseClientMode(true);

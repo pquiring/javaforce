@@ -70,6 +70,12 @@ public class WebServer {
       }
     }}.start();
   }
+
+  public void setClientVerify(boolean state) {
+    SSLServerSocket ssl = (SSLServerSocket)ss;
+    ssl.setNeedClientAuth(state);
+  }
+
   private static class Server extends Thread {
     private WebServer web;
     public Server(WebServer web) {
