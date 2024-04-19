@@ -15,26 +15,27 @@ public class App implements WebUIHandler {
   public static WebServerRedir redirService;
 
   private static void initSecureWebKeys() {
-    String dname = "CN=jfkvm.sourceforge.net, O=server, OU=webserver, C=CA";
-    String keyfile = Service.dataPath + "/jfkvm.key";
+    String keyfile = Service.dataPath + "/jfdataloggerplus.key";
     String password = "password";
+    KeyParams params = new KeyParams();
+    params.dname = "CN=jfdataloggerplus.sourceforge.net, O=server, OU=webserver, C=CA";;
     if (new File(keyfile).exists()) {
       //load existing keys
       keys = new KeyMgmt();
       try {
         FileInputStream fis = new FileInputStream(keyfile);
-        keys.open(fis, password.toCharArray());
+        keys.open(fis, password);
         fis.close();
       } catch (Exception e) {
         if (!keys.isValid()) {
           //generate random keys
-          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+          keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
         }
         JFLog.log(e);
       }
     } else {
       //generate random keys
-      keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+      keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
     }
   }
 

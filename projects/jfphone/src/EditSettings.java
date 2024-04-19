@@ -3177,12 +3177,12 @@ public class EditSettings extends javax.swing.JDialog {
     }
     KeyMgmt key = new KeyMgmt();
     try {
-      key.open(new FileInputStream(fn), "password".toCharArray());
+      key.open(new FileInputStream(fn), "password");
       if (key.getCRT("jfphone") == null) {
         keyStatus.setText("missing certificate");
         return;
       }
-      if (key.getKEY("jfphone", "password".toCharArray()) == null) {
+      if (key.getKEY("jfphone", "password") == null) {
         keyStatus.setText("missing private key");
         return;
       }

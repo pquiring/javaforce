@@ -20,7 +20,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
 
   public void init() {
     try {
-      char password[] = "password".toCharArray();
+      String password = "password";
       FileInputStream fis = new FileInputStream(Paths.etc + "jfpbx.key");
       KeyMgmt key = new KeyMgmt();
       key.open(fis, password);

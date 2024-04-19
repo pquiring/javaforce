@@ -25,17 +25,18 @@ public class WebConfig implements WebHandler {
   public static boolean hideAdmin, disableWebRTC;
   private WebRTC webrtc;
   private WebServer http, https;
+  private KeyMgmt keys;
 
   public boolean start() {
     JFLog.log("Starting Web Server on port " + http_port);
     http = new WebServer();
-    http.start(this, http_port, false);
+    http.start(this, http_port);
     if (new File(Paths.etc + "jfpbx.key").exists()) {
       System.setProperty("javax.net.ssl.keyStore", Paths.etc + "jfpbx.key");
       System.setProperty("javax.net.ssl.keyStorePassword", "password");
       JFLog.log("Starting Web Server on port " + https_port + " (secure)");
       https = new WebServer();
-      https.start(this, https_port, true);
+      https.start(this, https_port, keys);
       if (!disableWebRTC) startWebRTC();
     }
     return true;
@@ -60,6 +61,31 @@ public class WebConfig implements WebHandler {
     if (webrtc != null) {
 //      webrtc.stop();
       webrtc = null;
+    }
+  }
+
+  private void initSecureWebKeys() {
+    String keyfile = Paths.etc + "/jfpbx.key";
+    String password = "password";
+    KeyParams params = new KeyParams();
+    params.dname = "CN=jfpbx.sourceforge.net, O=server, OU=webserver, C=CA";;
+    if (new File(keyfile).exists()) {
+      //load existing keys
+      keys = new KeyMgmt();
+      try {
+        FileInputStream fis = new FileInputStream(keyfile);
+        keys.open(fis, password);
+        fis.close();
+      } catch (Exception e) {
+        if (!keys.isValid()) {
+          //generate random keys
+          keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
+        }
+        JFLog.log(e);
+      }
+    } else {
+      //generate random keys
+      keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
     }
   }
 

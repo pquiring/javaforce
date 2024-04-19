@@ -1882,7 +1882,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   private static byte crt[], privateKey[];
   private static String fingerprintSHA256;
   protected void initDTLS() {
-    char password[] = "password".toCharArray();
+    String password = "password";
     try {
       FileInputStream fis = new FileInputStream(JF.getUserPath() + "/.jfphone.key");
       KeyMgmt key = new KeyMgmt();
