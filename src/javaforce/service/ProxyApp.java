@@ -158,7 +158,6 @@ public class ProxyApp extends javax.swing.JFrame {
       viewer.setTitle("Proxy Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

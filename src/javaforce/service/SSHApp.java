@@ -173,7 +173,6 @@ public class SSHApp extends javax.swing.JFrame {
       viewer.setTitle("SSH Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

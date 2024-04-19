@@ -157,7 +157,6 @@ public class DNSApp extends javax.swing.JFrame {
       viewer.setTitle("DNS Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

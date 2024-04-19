@@ -1102,7 +1102,7 @@ public class JF {
       }
       public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
         if (clientKeys != null) {
-          Certificate root = clientKeys.getCRT("root");
+          Certificate root = clientKeys.getCRT(clientKeysAlias);
           PublicKey key = root.getPublicKey();
           try {
             certs[0].verify(key);
@@ -1114,7 +1114,7 @@ public class JF {
       }
       public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
         if (serverKeys != null) {
-          Certificate root = serverKeys.getCRT("root");
+          Certificate root = serverKeys.getCRT(serverKeysAlias);
           PublicKey key = root.getPublicKey();
           try {
             certs[0].verify(key);
@@ -1130,12 +1130,16 @@ public class JF {
   /** Client keystore to verify client identity.
    * Alias = "root"
    */
-  private static KeyMgmt clientKeys;
+  public static KeyMgmt clientKeys;
+
+  public static String clientKeysAlias = "root";
 
   /** Server keystore to verify server identity.
    * Alias = "root"
    */
-  private static KeyMgmt serverKeys;
+  public static KeyMgmt serverKeys;
+
+  public static String serverKeysAlias = "root";
 
   /** This allows connections to untrusted hosts when using https:// with URLConnection. */
   public static void initHttps() {

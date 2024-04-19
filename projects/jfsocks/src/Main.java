@@ -13,6 +13,7 @@ import java.awt.event.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.awt.security.*;
 
 public class Main extends javax.swing.JFrame implements ActionListener {
 
@@ -22,7 +23,6 @@ public class Main extends javax.swing.JFrame implements ActionListener {
   public Main() {
     initComponents();
     JFAWT.centerWindow(this);
-    genkeys.setVisible(false);  //SSL keys not needed on client side
     JFImage appicon = new JFImage();
     appicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks.png"));
     setIconImage(appicon.getImage());
@@ -75,6 +75,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     profiles = new javax.swing.JComboBox<>();
     save = new javax.swing.JButton();
     delete = new javax.swing.JButton();
+    keymgr = new javax.swing.JButton();
 
     jLabel7.setText("jLabel7");
 
@@ -184,6 +185,13 @@ public class Main extends javax.swing.JFrame implements ActionListener {
       }
     });
 
+    keymgr.setText("Key Manager");
+    keymgr.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        keymgrActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -192,7 +200,8 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(keymgr)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(genkeys)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(connect))
@@ -287,7 +296,8 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(connect)
-          .addComponent(genkeys))
+          .addComponent(genkeys)
+          .addComponent(keymgr))
         .addContainerGap())
     );
 
@@ -314,6 +324,10 @@ public class Main extends javax.swing.JFrame implements ActionListener {
   private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
     deleteProfile();
   }//GEN-LAST:event_deleteActionPerformed
+
+  private void keymgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keymgrActionPerformed
+    keymgr();
+  }//GEN-LAST:event_keymgrActionPerformed
 
   /**
    * @param args the command line arguments
@@ -346,6 +360,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JButton keymgr;
   private javax.swing.JTextField local_port;
   private javax.swing.JTextField pass;
   private javax.swing.JComboBox<String> profiles;
@@ -540,12 +555,12 @@ public class Main extends javax.swing.JFrame implements ActionListener {
           KeyMgmt keys = new KeyMgmt();
           if (new File(getKeyFile()).exists()) {
             FileInputStream fis = new FileInputStream(getKeyFile());
-            keys.open(fis, "password".toCharArray());
+            keys.open(fis, "password");
             fis.close();
           } else {
             JFLog.log("Warning:Client SSL keys not generated!");
           }
-          s = JF.connectSSL(profile.socks_server, profile.socks_port/*, keys*/);
+          s = JF.connectSSL(profile.socks_server, profile.socks_port, keys);
         } else {
           s = new Socket(profile.socks_server, profile.socks_port);
         }
@@ -827,5 +842,14 @@ public class Main extends javax.swing.JFrame implements ActionListener {
       config.profiles[0] = new Profile();
       profiles.addItem(config.profiles[0].name);
     }
+  }
+
+  private void keymgr() {
+    if (!new File(getKeyFile()).exists()) {
+      JFAWT.showError("Error", "Key Store does not exist");
+      return;
+    }
+    KeyMgr keymgr = new KeyMgr(getKeyFile(), "password");
+    keymgr.setVisible(true);
   }
 }

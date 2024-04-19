@@ -9,12 +9,13 @@ import java.io.*;
 
 import javaforce.*;
 
-public class ViewLog extends javax.swing.JFrame {
+public class ViewLog extends javax.swing.JDialog {
 
   /**
    * Creates new form ViewLog
    */
   public ViewLog(String file) {
+    super((javax.swing.JFrame)null, true);
     initComponents();
     init();
     try {
@@ -27,12 +28,14 @@ public class ViewLog extends javax.swing.JFrame {
   }
 
   public ViewLog(InputStream is) {
+    super((javax.swing.JFrame)null, true);
     initComponents();
     init();
     load(JF.readAll(is));
   }
 
   public ViewLog(byte[] txt) {
+    super((javax.swing.JFrame)null, true);
     initComponents();
     init();
     load(txt);

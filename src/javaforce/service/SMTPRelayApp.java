@@ -173,7 +173,6 @@ public class SMTPRelayApp extends javax.swing.JFrame {
       viewer.setTitle("SMTPRelay Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

@@ -18,28 +18,31 @@ import javax.swing.table.*;
 import javaforce.*;
 import javaforce.awt.*;
 
-public class KeyMgr extends javax.swing.JFrame {
+public class KeyMgr extends javax.swing.JDialog {
 
   private KeyMgmt keys;
   private DefaultTableModel model;
   private static boolean debug = false;
 
   /**
-   * Creates new form JFKeyMgr
+   * Creates new form KeyMgr
    */
   public KeyMgr(KeyMgmt keys) {
+    super((javax.swing.JFrame)null, true);
     this.keys = keys;
     initComponents();
     init();
   }
 
   /**
-   * Creates new form JFKeyMgr
+   * Creates new form KeyMgr
    */
   public KeyMgr(String keystore, String password) {
+    super((javax.swing.JFrame)null, true);
     keys = new KeyMgmt();
     keys.setFile(keystore);
     keys.setKeyStorePass(password);
+    keys.open();
     initComponents();
     init();
   }
@@ -458,7 +461,7 @@ public class KeyMgr extends javax.swing.JFrame {
   }
 
   private void do_gen(boolean root) {
-    GenKeyPair dialog = new GenKeyPair(this, true, keys, root);
+    GenKeyPair dialog = new GenKeyPair(null, true, keys, root);
     dialog.setVisible(true);
     reload();
   }

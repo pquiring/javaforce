@@ -158,7 +158,6 @@ public class STUNApp extends javax.swing.JFrame {
       viewer.setTitle("STUN Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

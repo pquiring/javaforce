@@ -159,7 +159,6 @@ public class DHCPApp extends javax.swing.JFrame {
       viewer.setTitle("DHCP Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   private void test() {

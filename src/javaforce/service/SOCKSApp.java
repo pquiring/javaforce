@@ -8,10 +8,12 @@ package javaforce.service;
  */
 
 import java.util.*;
+import java.io.*;
 import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.awt.security.*;
 import javaforce.jbus.*;
 
 public class SOCKSApp extends javax.swing.JFrame {
@@ -60,6 +62,7 @@ public class SOCKSApp extends javax.swing.JFrame {
     viewLog = new javax.swing.JButton();
     gen_keys = new javax.swing.JButton();
     help = new javax.swing.JButton();
+    keymgr = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("SOCKS Server");
@@ -101,6 +104,13 @@ public class SOCKSApp extends javax.swing.JFrame {
       }
     });
 
+    keymgr.setText("Key Manager");
+    keymgr.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        keymgrActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -111,6 +121,8 @@ public class SOCKSApp extends javax.swing.JFrame {
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(viewLog)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(keymgr)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(gen_keys)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -134,7 +146,8 @@ public class SOCKSApp extends javax.swing.JFrame {
           .addComponent(save)
           .addComponent(viewLog)
           .addComponent(gen_keys)
-          .addComponent(help))
+          .addComponent(help)
+          .addComponent(keymgr))
         .addContainerGap())
     );
 
@@ -159,6 +172,10 @@ public class SOCKSApp extends javax.swing.JFrame {
     showHelp();
   }//GEN-LAST:event_helpActionPerformed
 
+  private void keymgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keymgrActionPerformed
+    keymgr();
+  }//GEN-LAST:event_keymgrActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -177,6 +194,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   private javax.swing.JButton help;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
+  private javax.swing.JButton keymgr;
   private javax.swing.JButton save;
   private javax.swing.JButton viewLog;
   // End of variables declaration//GEN-END:variables
@@ -189,7 +207,6 @@ public class SOCKSApp extends javax.swing.JFrame {
       viewer.setTitle("SOCKS Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;
@@ -225,4 +242,16 @@ public class SOCKSApp extends javax.swing.JFrame {
     JFAWT.openURL("http://jfsocks.sf.net/help.html");
   }
 
+  public static String getKeyFile() {
+    return JF.getConfigPath() + "/jfsocks.key";
+  }
+
+  private void keymgr() {
+    if (!new File(getKeyFile()).exists()) {
+      JFAWT.showError("Error", "Key Store does not exist");
+      return;
+    }
+    KeyMgr keymgr = new KeyMgr(getKeyFile(), "password");
+    keymgr.setVisible(true);
+  }
 }

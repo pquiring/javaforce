@@ -189,7 +189,6 @@ public class POP3App extends javax.swing.JFrame {
       viewer.setTitle("POP3 Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

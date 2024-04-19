@@ -53,6 +53,7 @@ public class SOCKSServer extends Thread {
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
+  private static boolean secure_verify = false;
   private static ArrayList<String> user_pass_list;
   private static ArrayList<Subnet4> subnet_dest_list;
   private static ArrayList<Subnet4> subnet_src_list;
@@ -182,6 +183,10 @@ public class SOCKSServer extends Thread {
           JFLog.log("Warning:Server SSL Keys not generated!");
         }
         ss = JF.createServerSocketSSL(keys);
+        if (secure_verify) {
+          JF.clientKeys = keys;
+          ((SSLServerSocket)ss).setNeedClientAuth(true);
+        }
       } else {
         ss = new ServerSocket();
       }
@@ -255,6 +260,7 @@ public class SOCKSServer extends Thread {
     + "#bind=192.168.100.2\n"
     + "#bindcmd=192.168.110.2\n"
     + "secure=false\n"
+    + "#secure.verify=false\n"
     + "socks4=true\n"
     + "socks5=false\n"
     + "socks.bind=false\n"
@@ -319,6 +325,9 @@ public class SOCKSServer extends Thread {
                 break;
               case "secure":
                 secure = value.equals("true");
+                break;
+              case "secure.verify":
+                secure_verify = value.equals("true");
                 break;
               case "socks4":
                 socks4 = value.equals("true");

@@ -189,7 +189,6 @@ public class FTPApp extends javax.swing.JFrame {
       viewer.setTitle("FTP Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

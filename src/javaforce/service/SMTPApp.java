@@ -189,7 +189,6 @@ public class SMTPApp extends javax.swing.JFrame {
       viewer.setTitle("SMTP Log");
     }
     viewer.setVisible(true);
-    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;
