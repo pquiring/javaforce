@@ -104,7 +104,7 @@ public class GenMSI {
         //see https://wixtoolset.org/docs/tools/wixexe/
         String[] cmd = new String[] {"wix","build","-arch","x64","-ext","WixToolset.UI.wixext","-ext","WixToolset.Firewall.wixext","-ext","WixToolset.Util.wixext","-culture","en-us"
           ,"-b",home,"-b",jre,"-b",jre + "/bin","-b",ffmpeg_folder,"-bv", "WixUILicenseRtf=" + home + "/license.rtf"
-          ,"-o",out,"wix.wixlib","jre.wixlib","ffmpeg.wixlib","msvcrt.wixlib"};
+          ,"-o",out,"app.wixlib","jre.wixlib","ffmpeg.wixlib","msvcrt.wixlib"};
         if (light_extra.length() > 0) {
           String[] extra = light_extra.split(" ");
           for(String x : extra) {
