@@ -1,11 +1,17 @@
 Whats new ???
 
+Apr 19, 2024 : 0.14
+  - new : added secure.verify
+    - when using secure, the client SSL certificate must be signed by Socks Server keys
+    - most secure socks implementation on the planet!
+    - see online help for more info
+
 Mar 24, 2023 : 0.13
   - change bind and forwardremote default timeouts
 
 Mar 22, 2023 : 0.12
   - new : added src.ipnet, src.ip options to allow only desired clients
-  - change : ipnet, ip are changed to dest.ipnet, dest.ip 
+  - change : ipnet, ip are changed to dest.ipnet, dest.ip
     - options to specify where clients can connect to
 
 Feb 6, 2023 : 0.11
