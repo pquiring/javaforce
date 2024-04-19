@@ -315,6 +315,7 @@ public class KeyMgmt {
           cmd.add(ext);
         }
       }
+      keytool(cmd.toArray(JF.StringArrayType));
       try {
         FileInputStream fis = new FileInputStream(keyFile);
         KeyMgmt keys = new KeyMgmt();

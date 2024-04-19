@@ -1122,6 +1122,7 @@ public class SOCKSServer extends Thread {
         fis.close();
         socks.busClient.call(pack, "giveKeys", socks.busClient.encodeByteArray(data));
       } catch (Exception e) {
+        JFLog.log(e);
         socks.busClient.call(pack, "giveKeys", socks.busClient.quote(""));
       }
     }

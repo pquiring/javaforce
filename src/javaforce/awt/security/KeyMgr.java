@@ -429,6 +429,7 @@ public class KeyMgr extends javax.swing.JDialog {
         break;
       }
     }
+    System.exit(0);
   }
 
   private static void usage() {

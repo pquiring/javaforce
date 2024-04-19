@@ -266,12 +266,15 @@ public class JBusClient extends Thread {
       str = str.substring(1, str.length() - 1);
     }
     int len = str.length() / 2;
-    if (len * 2 != str.length()) return new byte[0];
+    if (len * 2 != str.length()) {
+      JFLog.log("JBusClient.decodeByteArray:Error:str.length()=" + str.length());
+      return new byte[0];
+    }
     byte[] ba = new byte[len];
     for(int a=0;a<len;a++) {
       int pos = a*2;
       ba[a] = (byte)(Integer.parseInt(str.substring(pos, pos+2), 16));
     }
-    return null;
+    return ba;
   }
 }
