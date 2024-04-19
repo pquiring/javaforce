@@ -1,11 +1,25 @@
-jfSOCKS : Help<br>
-<br>
-Options:<br>
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfKVM</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfSOCKS</div>
+  </div>
+  <div class=content>
+
+<pre>
+jfSOCKS
+=======
+
+Options:
 <ul>
 <li>port=port to listen on (default = 1080)</li>
 <li>bind=local IP address to bind to for SOCKS service (default = all interfaces)</li>
 <li>bindcmd=local IP address to bind to when client requests bind command (default = all interfaces)</li>
 <li>secure=enable SSL secure mode (true or false) (default = false)</li>
+<li>secure.verify=enable secure client key verify (true or false) (default = false)</li>
 <li>socks4=enable SOCKS4 support (true of false) (default = true)</li>
 <li>socks5=enable SOCKS5 support (true or false) (default = false)</li>
 <li>socks.bind=enable SOCKS bind command (true or false) (default = false)</li>
@@ -17,7 +31,7 @@ Options:<br>
 <li>forwardremote=forwards a remote port on a remote SOCKS server to another IP:port (ie: user:pass@192.168.100.1:80,0.0.0.0,80,192.168.200.1:80) (multiple lines allowed)</li>
 <li>forwardremote.timeout=forward remote timeout in ms (default 3600000 : 1 hour)
 </ul>
-Notes:<br>
+Notes:
 <ul>
 <li>Make sure to enable secure mode if using authentication.  Credentials are sent in plain text.</li>
 <li>If using secure mode you must click on "Generate SSL Keys" once to generate self-signed keys for SSL server.</li>
@@ -25,18 +39,18 @@ Notes:<br>
 <li>If no ipnet or ip options are specified client can connect to any IP address</li>
 <li>The forwardlocal option is not SOCKS related but is useful for creating simple firewalls (the first IP must be a local interface to bind to or 0.0.0.0 to bind to all interfaces)</lu>
 </ul>
-<br>
-Detailed Options:<br>
-<br>
-forwardlocal is a non-SOCKS related port forwarding option.<br>
-forwardlocal=server:port,redir_host:port<br>
+
+Detailed Options:
+
+forwardlocal is a non-SOCKS related port forwarding option.
+forwardlocal=server:port,redir_host:port
 <ul>
 <li>server:port = bind address:port (0.0.0.0 = all interfaces)</li>
 <li>redir_host:port = host to redirect to</li>
 </ul>
-<br>
-forwardremote listens on a port on remote SOCKS server (bind) and then redirects anything that connects to this port to the redir_host.<br>
-forwardremote=[user:pass@]server:port,client_host,bind_port,redir_host:port[,secure]<br>
+
+forwardremote listens on a port on remote SOCKS server (bind) and then redirects anything that connects to this port to the redir_host.
+forwardremote=[user:pass@]server:port,client_host,bind_port,redir_host:port[,secure]
 <ul>
 <li>server:port = socks4/5 server to connect to</li>
 <li>client_host = host allowed to connect to SOCKS port (0.0.0.0 = any host)</li>
@@ -44,4 +58,22 @@ forwardremote=[user:pass@]server:port,client_host,bind_port,redir_host:port[,sec
 <li>redir_host:port = where to forward connection to</li>
 <li>secure = true | false (SOCKS server is SSL) (default = false)</li>
 </ul>
-forwardremote.timeout will force the connection to be re-established if no connection is made in timeout ms.<br>
+forwardremote.timeout will force the connection to be re-established if no connection is made in timeout ms.
+
+secure.verify checks the clients SSL keys are signed by the server SSL keys.
+To set this up follow these steps:
+<ul>
+<li>Run the server config tool.
+<li>Click on Generate Keys to create server SSL Keys.
+<li>Click on Key Manager
+<li>Click on Generate Client Keys, change name to "client" and check "Sign key with root" and click Ok
+<li>Select the "client" row
+<li>Click on "Export Key/Cert to Keystore" to export the key/cert pair to a new keystore.
+<li>Copy/overwrite this exported keystore to client system into user home folder / .jfsocks.key  (Windows:%USERPROFILE% Linux:~)
+<li>Now the SOCKS Client App will use the new keys.
+</ul>
+
+</pre>
+
+  </body>
+</html>
