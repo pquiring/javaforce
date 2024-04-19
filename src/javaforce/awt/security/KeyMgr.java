@@ -82,6 +82,7 @@ public class KeyMgr extends javax.swing.JDialog {
     table = new javax.swing.JTable();
     bar4 = new javax.swing.JToolBar();
     export_ks = new javax.swing.JButton();
+    jButton2 = new javax.swing.JButton();
     export_key = new javax.swing.JButton();
     export_crt = new javax.swing.JButton();
     bar5 = new javax.swing.JToolBar();
@@ -178,6 +179,17 @@ public class KeyMgr extends javax.swing.JDialog {
       }
     });
     bar4.add(export_ks);
+
+    jButton2.setText("Export Key/Cert to KeyStore");
+    jButton2.setFocusable(false);
+    jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2ActionPerformed(evt);
+      }
+    });
+    bar4.add(jButton2);
 
     export_key.setText("Export Key");
     export_key.setFocusable(false);
@@ -390,6 +402,10 @@ public class KeyMgr extends javax.swing.JDialog {
     details();
   }//GEN-LAST:event_detailsActionPerformed
 
+  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    export_alias();
+  }//GEN-LAST:event_jButton2ActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JToolBar bar1;
   private javax.swing.JToolBar bar2;
@@ -406,6 +422,7 @@ public class KeyMgr extends javax.swing.JDialog {
   private javax.swing.JButton import_key;
   private javax.swing.JButton import_ks;
   private javax.swing.JButton jButton1;
+  private javax.swing.JButton jButton2;
   private javax.swing.JButton jButton4;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JButton reload;
@@ -630,6 +647,27 @@ public class KeyMgr extends javax.swing.JDialog {
       txt.append(crt.toString());
       ViewLog log = new ViewLog(txt.toString().getBytes());
       log.setVisible(true);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  public void export_alias() {
+    int row = table.getSelectedRow();
+    if (row == -1) return;
+    String alias = (String)model.getValueAt(row, 0);
+    if (alias == null) return;
+    String file = JFAWT.getSaveFile("export.ks");
+    if (file == null) return;
+    try{
+      KeyMgmt export = new KeyMgmt();
+      export.setFile(file);
+      export.setKeyStorePass(keys.getKeyStorePass());
+      KeyStore.Entry entry = keys.getEntry(alias);
+      export.setEntry(alias, entry);
+      FileOutputStream fos = new FileOutputStream(file);
+      export.save(fos);
+      fos.close();
     } catch (Exception e) {
       JFLog.log(e);
     }

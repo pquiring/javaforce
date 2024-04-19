@@ -43,7 +43,7 @@ public class KeyMgmt {
   private static boolean keytool = true;  //use keytool
 
   private KeyStore keyStore = null;
-  private char[] storePass = null;
+  private char[] storePass = new char[0];
   private String keyFile = "keystore.ks";
   private String root = "root";
 
@@ -80,7 +80,7 @@ public class KeyMgmt {
 
   public KeyMgmt() {
     try {
-      keyStore = KeyStore.getInstance("JKS", "SUN");
+      open(null);
     } catch (Exception e) {
       JFLog.log(e);
     }

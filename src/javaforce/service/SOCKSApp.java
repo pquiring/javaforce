@@ -264,7 +264,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   }
 
   private void showHelp() {
-    JFAWT.openURL("http://jfsocks.sf.net/help.html");
+    JFAWT.openURL("http://pquiring.github.io/javaforce/projects/jfsocks/docs/help.html");
   }
 
   public static String getKeyFile() {
