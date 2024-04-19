@@ -1,49 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{99CE8370-51AC-4729-8CCE-B2BBE8CA027F}" Version="0.9" Language="1033" Name="jfFTP" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{99CE8370-51AC-4729-8CCE-B2BBE8CA027F}" Version="0.9" Language="1033" Name="jfFTP" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
-    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfftp.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfftp.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftp"/>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftp" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <Directory Id="ApplicationProgramsFolder" Name="jfFTP"/> -->
-      </Directory>
-    </Directory>
+    </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{71FE1D1E-FE5F-44EB-8EA8-3815BC36D3DC}" Win64="yes">
-        <File Id="jfftp.jar" Source="jfftp.jar" KeyPath="yes"/>
-        <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="jcifs.jar" Source="jcifs.jar"/>
-        <File Id="sshdcore.jar" Source="sshd-core.jar"/>
-        <File Id="sshdcommon.jar" Source="sshd-common.jar"/>
-        <File Id="sshdsftp.jar" Source="sshd-sftp.jar"/>
-        <File Id="jfftp_client.exe" Source="jfftp-client.exe"/>
+      <Component Id="appfiles" Guid="{71FE1D1E-FE5F-44EB-8EA8-3815BC36D3DC}" Bitness="always64">
+        <File Id="jfftp.jar" Source="jfftp.jar" KeyPath="yes" />
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="jcifs.jar" Source="jcifs.jar" />
+        <File Id="sshdcore.jar" Source="sshd-core.jar" />
+        <File Id="sshdcommon.jar" Source="sshd-common.jar" />
+        <File Id="sshdsftp.jar" Source="sshd-sftp.jar" />
+        <File Id="jfftp_client.exe" Source="jfftp-client.exe" />
       </Component>
     </DirectoryRef>
 
     <!-- Step 2b: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <DirectoryRef Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{32616FEB-4683-46F0-8121-B15CAF6799F9}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="FTP Client" Target="[APPLICATIONROOTDIRECTORY]jfftp-client.exe"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="FTP Client" Target="[APPLICATIONROOTDIRECTORY]jfftp-client.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfFTP" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfFTP" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
@@ -51,5 +46,6 @@
       <ComponentGroupRef Id="JRE" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
-  </Product>
+
+    </Package>
 </Wix>

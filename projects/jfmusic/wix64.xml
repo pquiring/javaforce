@@ -1,59 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{AC151149-6CA1-42D5-A883-C1825E18BA26}" Version="0.10" Language="1033" Name="jfMusic" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{AC151149-6CA1-42D5-A883-C1825E18BA26}" Version="0.10" Language="1033" Name="jfMusic" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
-    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfmusic.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfmusic.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfmusic"/>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfmusic" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <Directory Id="ApplicationProgramsFolder" Name="jfMusic"/> -->
-      </Directory>
-    </Directory>
+    </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{6F5087E0-3FD0-4DD3-9E70-557FA883A5AD}" Win64="yes">
-        <File Id="jfmusic.jar" Source="jfmusic.jar" KeyPath="yes"/>
-        <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="jfmusic.exe" Source="jfmusic.exe"/>
-        <File Id="jfmidi.exe" Source="jfmidi.exe"/>
-        <File Id="FurElise.mproj" Source="examples/FurElise.mproj"/>
-        <File Id="gm.dls" Source="gm.dls"/>
+      <Component Id="appfiles" Guid="{6F5087E0-3FD0-4DD3-9E70-557FA883A5AD}" Bitness="always64">
+        <File Id="jfmusic.jar" Source="jfmusic.jar" KeyPath="yes" />
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="jfmusic.exe" Source="jfmusic.exe" />
+        <File Id="jfmidi.exe" Source="jfmidi.exe" />
+        <File Id="FurElise.mproj" Source="examples/FurElise.mproj" />
+        <File Id="gm.dls" Source="gm.dls" />
       </Component>
     </DirectoryRef>
 
     <!-- Step 2b: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <DirectoryRef Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut1" Guid="{3018F2E3-6C80-47CD-BAF3-2AA8EF34B44F}">
-        <Shortcut Id="ApplicationStartMenuShortcut1" Name="jfMusic" Description="Music Editor" Target="[APPLICATIONROOTDIRECTORY]jfmusic.exe"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <Shortcut Id="ApplicationStartMenuShortcut1" Name="jfMusic" Description="Music Editor" Target="[APPLICATIONROOTDIRECTORY]jfmusic.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfMusic" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfMusic" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <DirectoryRef Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut2" Guid="{BC6C0979-3F52-4DD4-B91F-DBEE137878C7}">
-        <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfMidiKeyboard" Description="Midi Keyboard" Target="[APPLICATIONROOTDIRECTORY]jfmidi.exe"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfMidiKeyboard" Description="Midi Keyboard" Target="[APPLICATIONROOTDIRECTORY]jfmidi.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfMusic" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfMusic" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
@@ -63,5 +57,6 @@
       <ComponentGroupRef Id="JRE" />
       <ComponentGroupRef Id="FFMPEG" />
     </Feature>
-  </Product>
+
+    </Package>
 </Wix>

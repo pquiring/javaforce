@@ -1,48 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{3B9FE65B-98CD-42B1-BA7D-2841C2C0B32B}" Version="0.6" Language="1033" Name="jfTorrent" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{3B9FE65B-98CD-42B1-BA7D-2841C2C0B32B}" Version="0.6" Language="1033" Name="jfTorrent" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
-    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jftorrent.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+    <Icon Id="icon.ico" SourceFile="jftorrent.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jftorrent"/>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jftorrent" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <Directory Id="ApplicationProgramsFolder" Name="jfTorrent"/> -->
-      </Directory>
-    </Directory>
+    </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{2B3945E4-19A6-43E0-8BF6-5D3D3C179F5D}" Win64="yes">
-        <File Id="jftorrent.jar" Source="jftorrent.jar" KeyPath="yes"/>
-        <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="jftorrent.exe" Source="jftorrent.exe"/>
-        <File Id="run.bat" Source="run.bat"/>
-        <File Id="runMaker.bat" Source="runMaker.bat"/>
-        <File Id="runTracker.bat" Source="runTracker.bat"/>
+      <Component Id="appfiles" Guid="{2B3945E4-19A6-43E0-8BF6-5D3D3C179F5D}" Bitness="always64">
+        <File Id="jftorrent.jar" Source="jftorrent.jar" KeyPath="yes" />
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="jftorrent.exe" Source="jftorrent.exe" />
+        <File Id="run.bat" Source="run.bat" />
+        <File Id="runMaker.bat" Source="runMaker.bat" />
+        <File Id="runTracker.bat" Source="runTracker.bat" />
       </Component>
     </DirectoryRef>
 
     <!-- Step 2b: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <DirectoryRef Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{628BA10A-882E-4D34-B1D8-B5E352B3E6F2}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfTorrent" Description="Torrent Editor" Target="[APPLICATIONROOTDIRECTORY]jftorrent.exe"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfTorrent" Description="Torrent Editor" Target="[APPLICATIONROOTDIRECTORY]jftorrent.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfTorrent" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfTorrent" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
@@ -50,5 +45,6 @@
       <ComponentGroupRef Id="JRE" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
-  </Product>
+
+    </Package>
 </Wix>

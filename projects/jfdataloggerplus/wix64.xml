@@ -1,50 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="*" UpgradeCode="{741FCC9E-8DEC-415E-A05E-1115FEA9FA32}" Version="0.12" Language="1033" Name="jfDataLoggerPlus" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{741FCC9E-8DEC-415E-A05E-1115FEA9FA32}" Version="0.12" Language="1033" Name="jfDataLoggerPlus" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
-    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
     <SetProperty Id="URL" Value="http://localhost" Sequence="execute" Before="CreateShortcuts" />
-    <Icon Id="icon.ico" SourceFile="jfdataloggerplus.ico"/>
-    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfdataloggerplus.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdataloggerplus"/>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
-      </Directory>
-    </Directory>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdataloggerplus" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+    </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{B46DFA5A-DDA1-417F-A1EF-15A1277E1753}" Win64="yes">
-        <File Id="jfdataloggerplus.exe" Source="jfdataloggerplus.exe" KeyPath="yes"/>
-        <File Id="jfdataloggerplus.jar" Source="jfdataloggerplus.jar"/>
-        <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="derby.jar" Source="derby.jar"/>
-        <ServiceInstall Id="ServiceInstaller"
-          Type="ownProcess"
-          Name="jfDataLoggerPlus"
-          DisplayName="jfDataLoggerPlus"
-          Description="jfDataLoggerPlus"
-          Start="auto"
-          ErrorControl="normal" />
+      <Component Id="appfiles" Guid="{B46DFA5A-DDA1-417F-A1EF-15A1277E1753}" Bitness="always64">
+        <File Id="jfdataloggerplus.exe" Source="jfdataloggerplus.exe" KeyPath="yes" />
+        <File Id="jfdataloggerplus.jar" Source="jfdataloggerplus.jar" />
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="derby.jar" Source="derby.jar" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfDataLoggerPlus" DisplayName="jfDataLoggerPlus" Description="jfDataLoggerPlus" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDataLoggerPlus" Wait="yes" />
       </Component>
     </DirectoryRef>
 
     <!-- Step 2b: Add the shortcut to your installer package -->
-    <DirectoryRef Id="ProgramMenuFolder">
+    <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{15C38B97-E5A7-4DBA-8BC1-A599BBB1BBDC}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jf Data Logger Plus" Description="jf Data Logger Plus" Target="[URL]"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY" Icon="icon.ico"/>
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDataLoggerPlus" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jf Data Logger Plus" Description="jf Data Logger Plus" Target="[URL]" WorkingDirectory="APPLICATIONROOTDIRECTORY" Icon="icon.ico" />
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDataLoggerPlus" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
 
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
@@ -52,5 +41,6 @@
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentGroupRef Id="JRE" />
     </Feature>
-  </Product>
+
+    </Package>
 </Wix>
