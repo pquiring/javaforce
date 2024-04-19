@@ -483,6 +483,8 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     local_port.setEnabled(state);
     remote_host.setEnabled(state);
     remote_port.setEnabled(state);
+    genkeys.setEnabled(state);
+    keymgr.setEnabled(state);
   }
 
   public class Server extends Thread {
