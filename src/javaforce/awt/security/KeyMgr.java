@@ -69,6 +69,7 @@ public class KeyMgr extends javax.swing.JFrame {
     bar1 = new javax.swing.JToolBar();
     gen_root = new javax.swing.JButton();
     gen_client = new javax.swing.JButton();
+    details = new javax.swing.JButton();
     jScrollPane2 = new javax.swing.JScrollPane();
     table = new javax.swing.JTable();
     bar4 = new javax.swing.JToolBar();
@@ -116,6 +117,17 @@ public class KeyMgr extends javax.swing.JFrame {
       }
     });
     bar1.add(gen_client);
+
+    details.setText("View Details");
+    details.setFocusable(false);
+    details.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    details.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    details.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        detailsActionPerformed(evt);
+      }
+    });
+    bar1.add(details);
 
     table.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
@@ -366,12 +378,17 @@ public class KeyMgr extends javax.swing.JFrame {
     import_key();
   }//GEN-LAST:event_import_keyActionPerformed
 
+  private void detailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailsActionPerformed
+    details();
+  }//GEN-LAST:event_detailsActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JToolBar bar1;
   private javax.swing.JToolBar bar2;
   private javax.swing.JToolBar bar3;
   private javax.swing.JToolBar bar4;
   private javax.swing.JToolBar bar5;
+  private javax.swing.JButton details;
   private javax.swing.JButton export_crt;
   private javax.swing.JButton export_key;
   private javax.swing.JButton export_ks;
@@ -585,5 +602,25 @@ public class KeyMgr extends javax.swing.JFrame {
       JFLog.log(e);
     }
     reload();
+  }
+
+  public void details() {
+    int row = table.getSelectedRow();
+    if (row == -1) return;
+    String alias = (String)model.getValueAt(row, 0);
+    if (alias == null) return;
+    KeyStore ks = keys.getKeyStore();
+    char[] pwd = keys.getKeyStorePass().toCharArray();
+    try {
+      StringBuilder txt = new StringBuilder();
+      Certificate crt = ks.getCertificate(alias);
+      Key key = ks.getKey(alias, pwd);
+      txt.append(key.toString());
+      txt.append(crt.toString());
+      ViewLog log = new ViewLog(txt.toString().getBytes());
+      log.setVisible(true);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }
