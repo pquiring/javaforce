@@ -1,5 +1,14 @@
 What's new...
 
+Apr 19/2024 : JF/56.0
+ - new : javaforce.awt.security.KeyMgr
+   - Desktop UI key management tool
+ - jfSOCKS/0.14
+   - SOCKS server now includes secure.verify option
+   - verifies clients SSL kes are signed with server SSL keys
+   - most secure SOCKS implementation on the planet
+   - see help for more info
+
 Apr 17/2024 : JF/55.0
  - upgraded to wix/4+ for generated MSI packages
    - see readme.txt for more info
