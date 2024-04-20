@@ -485,7 +485,7 @@ public class KeyMgr extends javax.swing.JDialog {
 
   private void do_gen(boolean gen_root) {
     if (keys.contains(root)) {
-      if (!JFAWT.showConfirm("Replace root keys", "Replacing root keys will invalidate all client keys!\rAre you sure?")) {
+      if (!JFAWT.showConfirm("Replace root keys", "Replacing root keys will invalidate all client keys!\r\nAre you sure?")) {
         return;
       }
     }
