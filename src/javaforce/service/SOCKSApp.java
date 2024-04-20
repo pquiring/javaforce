@@ -62,7 +62,7 @@ public class SOCKSApp extends javax.swing.JFrame {
     viewLog = new javax.swing.JButton();
     gen_keys = new javax.swing.JButton();
     help = new javax.swing.JButton();
-    keymgr = new javax.swing.JButton();
+    key_mgr = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("SOCKS Server");
@@ -104,10 +104,10 @@ public class SOCKSApp extends javax.swing.JFrame {
       }
     });
 
-    keymgr.setText("Key Manager");
-    keymgr.addActionListener(new java.awt.event.ActionListener() {
+    key_mgr.setText("Key Manager");
+    key_mgr.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        keymgrActionPerformed(evt);
+        key_mgrActionPerformed(evt);
       }
     });
 
@@ -122,7 +122,7 @@ public class SOCKSApp extends javax.swing.JFrame {
           .addGroup(layout.createSequentialGroup()
             .addComponent(viewLog)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(keymgr)
+            .addComponent(key_mgr)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(gen_keys)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -147,7 +147,7 @@ public class SOCKSApp extends javax.swing.JFrame {
           .addComponent(viewLog)
           .addComponent(gen_keys)
           .addComponent(help)
-          .addComponent(keymgr))
+          .addComponent(key_mgr))
         .addContainerGap())
     );
 
@@ -172,9 +172,9 @@ public class SOCKSApp extends javax.swing.JFrame {
     showHelp();
   }//GEN-LAST:event_helpActionPerformed
 
-  private void keymgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keymgrActionPerformed
+  private void key_mgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_key_mgrActionPerformed
     keymgr();
-  }//GEN-LAST:event_keymgrActionPerformed
+  }//GEN-LAST:event_key_mgrActionPerformed
 
   /**
    * @param args the command line arguments
@@ -194,12 +194,14 @@ public class SOCKSApp extends javax.swing.JFrame {
   private javax.swing.JButton help;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JButton keymgr;
+  private javax.swing.JButton key_mgr;
   private javax.swing.JButton save;
   private javax.swing.JButton viewLog;
   // End of variables declaration//GEN-END:variables
 
   public ViewLog viewer;
+  public JBusClient busClient;
+  public KeyMgr keymgr;
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
@@ -208,8 +210,6 @@ public class SOCKSApp extends javax.swing.JFrame {
     }
     viewer.setVisible(true);
   }
-
-  public JBusClient busClient;
 
   public class JBusMethods {
     public void getConfig(String cfg) {
@@ -235,12 +235,14 @@ public class SOCKSApp extends javax.swing.JFrame {
     public void giveKeys(String str) {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
+          if (keymgr != null) return;
           String tmpfile = JF.getUserPath() + "/.jfsocks-edit.key";
           byte[] data = JBusClient.decodeByteArray(str);
           JF.writeFile(tmpfile, data);
-          KeyMgr keymgr = new KeyMgr(tmpfile, "password");
+          keymgr = new KeyMgr(tmpfile, "password");
           keymgr.setRootAlias("jfsocks");
           keymgr.setVisible(true);
+          keymgr = null;
           data = JF.readFile(tmpfile);
           busClient.call(SOCKSServer.busPack, "setKeys", "\"" + busClient.pack + "\"" + "," + JBusClient.encodeByteArray(data));
         }
@@ -272,6 +274,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   }
 
   private void keymgr() {
+    if (keymgr != null) return;
     busClient.call(SOCKSServer.busPack, "getKeys", "\"" + busClient.pack + "\"");
   }
 }
