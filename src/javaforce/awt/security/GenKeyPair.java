@@ -30,6 +30,7 @@ public class GenKeyPair extends javax.swing.JDialog {
 
   public void setRootAlias(String alias) {
     root = alias;
+    sign_root.setText("Sign with root (" + alias + ")");
   }
 
   /**

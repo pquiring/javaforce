@@ -484,6 +484,11 @@ public class KeyMgr extends javax.swing.JDialog {
   }
 
   private void do_gen(boolean gen_root) {
+    if (keys.contains(root)) {
+      if (!JFAWT.showConfirm("Replace root keys", "Replacing root keys will invalidate all client keys!\rAre you sure?")) {
+        return;
+      }
+    }
     GenKeyPair dialog = new GenKeyPair(null, true, keys, gen_root);
     dialog.setRootAlias(root);
     dialog.setVisible(true);

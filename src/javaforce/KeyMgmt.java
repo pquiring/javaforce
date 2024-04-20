@@ -659,4 +659,13 @@ public class KeyMgmt {
       return false;
     }
   }
+
+  public boolean contains(String alias) {
+    try {
+      return keyStore.containsAlias(alias);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
 }
