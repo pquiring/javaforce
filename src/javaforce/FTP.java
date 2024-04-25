@@ -248,7 +248,7 @@ public class FTP {
     putData(is);
     wait4Response();
     if (!getLastResponse().startsWith("226")) {
-      throw new Exception("bad listing");
+      throw new Exception("bad put");
     }
   }
 
@@ -260,7 +260,7 @@ public class FTP {
     fis.close();
     wait4Response();
     if (!getLastResponse().startsWith("226")) {
-      throw new Exception("bad listing");
+      throw new Exception("bad put");
     }
   }
 
