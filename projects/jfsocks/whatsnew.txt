@@ -1,5 +1,8 @@
 Whats new ???
 
+Apr 26, 2024 : 0.15
+  - fix : UI improvements
+
 Apr 19, 2024 : 0.14
   - new : added secure.verify
     - when using secure, the client SSL certificate must be signed by Socks Server keys
