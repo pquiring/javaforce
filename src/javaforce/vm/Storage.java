@@ -72,7 +72,14 @@ public class Storage implements Serializable {
   private native static boolean nstart(String name);
   public boolean start() {
     new File(getPath()).mkdir();
-    return nstart(name);
+    if (type == TYPE_GLUSTER) {
+      new File(getBrick()).mkdir();
+    }
+    boolean res = nstart(name);
+    if (type == TYPE_GLUSTER && mounted()) {
+      new File(getVolume()).mkdir();
+    }
+    return res;
   }
 
   //virDomainShutdown()
@@ -271,7 +278,7 @@ sr0  rom  1024M
     }
     cmd.add(dev);
     cmd.add(mount);
-    new File(getPath()).mkdir();
+    new File(mount).mkdir();
     ShellProcess sp = new ShellProcess();
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
@@ -565,7 +572,7 @@ sr0  rom  1024M
     sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
     sb.append("    <device path='" + localDevice + "'/>");
-    sb.append("    <format type='ext4'/>");
+    sb.append("    <format type='xfs'/>");
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>" + brickPath + "</path>");
