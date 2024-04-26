@@ -23,7 +23,7 @@ Options:
 <li>socks4=enable SOCKS4 support (true of false) (default = true)</li>
 <li>socks5=enable SOCKS5 support (true or false) (default = false)</li>
 <li>socks.bind=enable SOCKS bind command (true or false) (default = false)</li>
-<li>socks.bind.timeout=bind timeout in ms (default 120000 : 2 mins)
+<li>socks.bind.timeout=bind timeout in ms (default 120000 : 2 mins)</li>
 <li>auth=specify one user:pass for SOCKS5 authentication (multiple lines allowed)</li>
 <li>ipnet=specify allowed subnet client can connect to (IP/SUBNET) (ie: 192.168.0.0/255.255.255.0) (multiple lines allowed)</li>
 <li>ip=specify allowed IP address client can connect to (IP) (ie: 192.168.0.7) (multiple lines allowed)</li>
@@ -63,14 +63,14 @@ forwardremote.timeout will force the connection to be re-established if no conne
 secure.verify checks the clients SSL keys are signed by the server SSL keys.
 To set this up follow these steps:
 <ul>
-<li>Run the server config tool.
-<li>Click on Generate Keys to create server SSL Keys.
-<li>Click on Key Manager
-<li>Click on Generate Client Keys, change name to "client" and check "Sign key with root" and click Ok
-<li>Select the "client" row
-<li>Click on "Export Key/Cert to Keystore" to export the key/cert pair to a new keystore.
-<li>Copy/overwrite this exported keystore to client system into user home folder / .jfsocks.key  (Windows:%USERPROFILE% Linux:~)
-<li>Now the SOCKS Client App will use the new keys.
+<li>Run the server config tool.</li>
+<li>Click on Generate Keys to create server SSL Keys.</li>
+<li>Click on Key Manager</li>
+<li>Click on Generate Client Keys, change name to "client" and check "Sign key with root" and click Ok</li>
+<li>Select the "client" row</li>
+<li>Click on "Export Key/Cert to Keystore" to export the key/cert pair to a new keystore.</li>
+<li>Copy/overwrite this exported keystore to client system into user home folder / .jfsocks.key  (Windows:%USERPROFILE% Linux:~)</li>
+<li>Now the SOCKS Client App will use the new keys.</li>
 </ul>
 
 </pre>
