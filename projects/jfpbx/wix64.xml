@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.33" Language="1033" Name="jfPBX" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.34" Language="1033" Name="jfPBX" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />

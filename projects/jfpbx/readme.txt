@@ -1,4 +1,4 @@
-jfPBX/0.33
+jfPBX/0.34
 ==========
 
 Welcome to jfpbx.
