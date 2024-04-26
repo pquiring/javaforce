@@ -1,5 +1,13 @@
 What's new...
 
+Apr 26/2024 : JF/56.1
+ - VoIP/SDP
+   - fix parsing
+ - jfSOCKS/0.15
+   - fix : UI issues
+ - jfPhone/1.28
+ - jfPBX/0.34
+
 Apr 19/2024 : JF/56.0
  - new : javaforce.awt.security.KeyMgr
    - Desktop UI key management tool
