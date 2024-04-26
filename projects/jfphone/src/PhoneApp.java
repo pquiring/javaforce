@@ -13,6 +13,7 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
     if (args.length > 0) {
       if (args[0].equals("debug")) {
         //enable debug channels
+        BasePhone.debug = true;
         RTP.debug = true;
         RTPChannel.debug = true;
       }

@@ -331,7 +331,11 @@ public class RTP implements STUN.Listener {
    * Create a new RTP channel with a specified ssrc id.
    */
   public RTPChannel createChannel(int ssrc, SDP.Stream stream) {
-    JFLog.log(log, "RTP.createChannel()" + stream.getIP() + ":" + stream.port);
+    JFLog.log(log, "RTP.createChannel():remote=" + stream.getIP() + ":" + stream.port);
+    if (stream.getIP() == null) {
+      JFLog.log("RTP.createChannel():Error:remote == null");
+      return null;
+    }
     RTPChannel channel = null;
     switch (stream.profile) {
       case AVP:

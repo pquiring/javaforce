@@ -468,6 +468,9 @@ public class Audio {
           } else if (lines[a].dtmf != 'x') {
             lines[a].audioRTP.getDefaultChannel().writeDTMF(lines[a].dtmf, false);
           } else {
+            if (BasePhone.debug) {
+              JFLog.log("Audio:writeRTP");
+            }
             lines[a].audioRTP.getDefaultChannel().writeRTP(encoded,0,encoded.length);
           }
         }

@@ -26,6 +26,8 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
 
   public static String version = "1.27";
 
+  public static boolean debug = false;
+
   public void initBasePhone(GUI gui, WindowController wc) {
     JFLog.init(JF.getUserPath() + "/.jfphone.log", true);
     this.gui = gui;
@@ -723,7 +725,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     try {
       SDP.Stream astream = pl.sdp.getFirstAudioStream();
       SDP.Stream vstream = pl.sdp.getFirstVideoStream();
-      JFLog.log("note:callInviteSuccess():remotertpport=" + astream.port + ",remoteVrtport=" + (vstream != null ? vstream.port : -1));
+      JFLog.log("callInviteSuccess():remote Audio port=" + astream.port + ",remote Video port=" + (vstream != null ? vstream.port : -1));
       if ( (!astream.hasCodec(RTP.CODEC_G729a) || !Settings.current.hasAudioCodec(RTP.CODEC_G729a))
         && (!astream.hasCodec(RTP.CODEC_G711u) || !Settings.current.hasAudioCodec(RTP.CODEC_G711u))
         && (!astream.hasCodec(RTP.CODEC_G711a) || !Settings.current.hasAudioCodec(RTP.CODEC_G711a))

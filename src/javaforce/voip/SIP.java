@@ -832,6 +832,9 @@ public abstract class SIP implements TransportInterface {
     SDP sdp = cdsd.sdp;
     if (sdp.ip == null) {
       sdp.ip = getlocalRTPhost(cd);
+      if (sdp.ip == null) {
+        JFLog.log("SIP:Error:SDP.ip == null");
+      }
     }
     return sdp.build(cd.localhost);
   }

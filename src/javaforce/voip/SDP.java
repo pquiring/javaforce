@@ -212,10 +212,12 @@ public class SDP implements Cloneable {
   }
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("SDP:" + streams.length + "[");
+    sb.append("SDP:");
+    sb.append("ip=" + ip);
+    sb.append(",Streams:" + streams.length + "[");
     for(int a=0;a<streams.length;a++) {
       if (a > 0) sb.append(",");
-      sb.append("Stream=" + streams[a]);
+      sb.append(streams[a]);
     }
     sb.append("]");
     return sb.toString();
@@ -369,15 +371,18 @@ public class SDP implements Cloneable {
     int vcnt = 1;
     for(int a=start;a<msg.length;a++) {
       String ln = msg[a];
+      if (RTP.debug) {
+        JFLog.log("SDP:" + ln);
+      }
       if (ln.startsWith("c=")) {
         //c=IN IP4 1.2.3.4
         idx = ln.indexOf("IP4 ");
         if (idx == -1) {JFLog.log(log, "SIP.getSDP() : Unsupported c field:" + ln); continue;}
         String ip = ln.substring(idx+4);
-        if (stream == null) {
-          sdp.ip = ip;
+        if (stream == sdp.stream0) {
+          sdp.ip = ip;  //global ip
         } else {
-          stream.ip = ip;
+          stream.ip = ip;  //stream specific ip [rare]
         }
       } else if (ln.startsWith("m=")) {
         //m=audio/video/application <port> [UDP/TLS/]RTP/<profile> <codecs>
@@ -557,6 +562,9 @@ public class SDP implements Cloneable {
         case audio: stream.content = "audio" + (acnt++); break;
         case video: stream.content = "video" + (vcnt++); break;
       }
+    }
+    if (RTP.debug) {
+      JFLog.log("SDP=" + sdp);
     }
     return sdp;
   }

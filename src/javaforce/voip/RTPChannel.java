@@ -96,6 +96,9 @@ public class RTPChannel {
       JFLog.log(log, "RTPChannel.writeRTP() : stream without send");
       return;
     }
+    if (debug) {
+      JFLog.log("RTPChannel.writeRTP:" + stream.getIP() + ":" + stream.getPort());
+    }
     try {
       if (RTP.useTURN) {
         rtp.stun1.sendData(turn1ch, data, off, len);
