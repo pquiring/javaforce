@@ -1,4 +1,6 @@
 CHANGELOG:
+4-26-2024 : v1.28 released
+  - fix : SDP parsing
 2-20-2024 : v1.27 released
   - fix : memory leaks
 2-2-2024 : v1.26 released
