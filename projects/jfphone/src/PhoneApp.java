@@ -4,12 +4,19 @@ import java.awt.event.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.media.MediaCoder;
+import javaforce.voip.*;
 
 /** Entry point for jfPhone application. */
 
 public class PhoneApp extends JFrame implements WindowListener, WindowController {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
+    if (args.length > 0) {
+      if (args[0].equals("debug")) {
+        //enable debug channels
+        RTP.debug = true;
+        RTPChannel.debug = true;
+      }
+    }
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         new PhoneApp().setVisible(true);
