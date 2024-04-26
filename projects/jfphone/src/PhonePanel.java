@@ -1220,7 +1220,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
 
   /** Select a new line. */
 
-  public void selectLine(int newline) {
+  public synchronized void selectLine(int newline) {
     if (line != -1 && lines[line].xfer) {
       for (int a=0;a<6;a++) lineButtons[a].setSelected(false);
       lineButtons[line].setSelected(true);
@@ -1260,7 +1260,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
 
   /** Update the number to be dialed, status and buttons for current selected line. */
 
-  public void updateLine() {
+  public synchronized void updateLine() {
     PhoneLine pl = lines[line];
     end.setSelected(false);
     if (pl.incall) {
