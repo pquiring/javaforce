@@ -10,9 +10,10 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.8"/>
 
-  <property name="debian.depends" value="libvirt-dev  ,libvirt-daemon-system,openvswitch-switch,bridge-utils,nfs-common,open-iscsi           ,gfs2-utils,ocfs2-tools"/>
-  <property name="fedora.depends" value="libvirt-devel,libvirt-daemon       ,openvswitch       ,bridge-utils,nfs-utils ,iscsi-initiator-utils,gfs2-utils,ocfs2-tools"/>
-  <property name="arch.depends"   value="libvirt                            ,openvswitch       ,bridge-utils,nfs-utils ,open-iscsi"/>  <!-- AUR gfs2-utils & ocfs2-tools support -->
+  <property name="debian.depends" value="libvirt-dev  ,libvirt-daemon-system,openvswitch-switch,bridge-utils,nfs-common,open-iscsi           ,gfs2-utils,ocfs2-tools,glusterfs-server"/>
+  <property name="fedora.depends" value="libvirt-devel,libvirt-daemon       ,openvswitch       ,bridge-utils,nfs-utils ,iscsi-initiator-utils,gfs2-utils,ocfs2-tools,glusterfs-server"/>
+  <property name="arch.depends"   value="libvirt                            ,openvswitch       ,bridge-utils,nfs-utils ,open-iscsi                                  ,glusterfs"/>
+    <!-- AUR gfs2-utils & ocfs2-tools support -->
 
   <import file="${home}/base.xml"/>
 

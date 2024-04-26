@@ -182,6 +182,24 @@ public class Config implements Serializable {
     return hosts.values().toArray(new Host[0]);
   }
 
+  public String[] getHostNames() {
+    String[] names = new String[hosts.size()];
+    Host[] hosts = getHosts();
+    int idx = 0;
+    for(Host host : hosts) {
+      names[idx++] = host.hostname;
+    }
+    return names;
+  }
+
+  public boolean gluster_ready() {
+    Host[] hosts = getHosts();
+    for(Host host : hosts) {
+      if (!host.online || !host.gluster) return false;
+    }
+    return true;
+  }
+
   private void upgradeHosts() {
     //up to version 0.3 the host was a String of token
     String[] keys = hosts.keySet().toArray(JF.StringArrayType);

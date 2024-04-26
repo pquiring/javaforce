@@ -1561,6 +1561,8 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Button gluster = new Button("Gluster Probe");
+    row.add(gluster);
     Button remove = new Button("Remove Host");
     row.add(remove);
 
@@ -1570,13 +1572,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 100, 50, 50, 50}, 21, 5, 0);
+    Table table = new Table(new int[] {100, 100, 50, 50, 50, 50}, 21, 6, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Host", "Hostname", "Version", "Online", "Valid"});
+    table.addRow(new String[] {"Host", "Hostname", "Version", "Online", "Valid", "Gluster"});
 
     Host[] hosts = Config.current.getHosts();
 
@@ -1668,6 +1670,14 @@ public class ConfigService implements WebUIHandler {
         }
       };
       KVMService.tasks.addTask(ui.tasks, task);
+    });
+
+    gluster.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      String host = hosts[idx].host;
+      Storage.gluster_probe(host);
+      KVMService.tasks.check_now();
     });
 
     remove.addClickListener((me, cmp) -> {
@@ -2845,6 +2855,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(unmount);
     Button format = new Button("Format");
     tools.add(format);
+    Button create_volume = new Button("Create Gluster Volume");
+    tools.add(create_volume);
     Button delete = new Button("Delete");
     tools.add(delete);
     Button help = new Button("Help");
@@ -3091,6 +3103,36 @@ public class ConfigService implements WebUIHandler {
       }
       ui.setRightPanel(storageFormatPanel(pool, ui));
     });
+    create_volume.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      if (!Config.current.gluster_ready()) {
+        errmsg.setText("Not all hosts are probed with Gluster");
+        return;
+      }
+      Storage pool = Config.current.pools.get(idx);
+      ui.confirm_button.setText("Create Volume");
+      ui.confirm_message.setText("Create Gluster Volume");
+      ui.confirm_action = () -> {
+        Task task = new Task("Create Gluster Volume:" + pool.name) {
+          public void doTask() {
+            try {
+              if (pool.gluster_create_volume(Config.current.getHostNames())) {
+                setStatus("Completed");
+              } else {
+                setStatus("Error occured, check logs.");
+              }
+            } catch (Exception e) {
+              JFLog.log(e);
+              setStatus("Error occured, check logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(ui.tasks, task);
+        ui.setRightPanel(storagePanel(ui));
+      };
+      ui.confirm_popup.setVisible(true);
+    });
     delete.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
@@ -3139,6 +3181,7 @@ public class ConfigService implements WebUIHandler {
     type.add("iscsi", "iSCSI");
     type.add("local_part", "Local Partition");
 //    type.add("local_disk", "Local Disk");  //TODO
+    type.add("gluster", "Gluster");
     row.add(type);
 
     ToolBar tools = new ToolBar();
@@ -3172,6 +3215,9 @@ public class ConfigService implements WebUIHandler {
           break;
         case "local_part":
           ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_LOCAL_PART, _name, null), true, ui));
+          break;
+        case "gluster":
+          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_GLUSTER, _name, null), true, ui));
           break;
       }
     });
@@ -3438,6 +3484,9 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       _dev = "/dev/disk/by-uuid/" + uuid;
+      if (pool.type == Storage.TYPE_GLUSTER) {
+        pool.host = VMHost.getHostname();
+      }
       pool.path = _dev;
       if (!pool.register()) {
         errmsg.setText("Error Occured : View Logs for details");
@@ -3597,6 +3646,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    CheckBox xfs = new CheckBox("xfs");
+    if (pool.type == Storage.TYPE_GLUSTER) {
+      row.add(xfs);
+    }
+
+    row = new Row();
+    panel.add(row);
     CheckBox gfs2 = new CheckBox("gfs2");
     if (pool.type == Storage.TYPE_ISCSI && Storage.format_supported(Storage.FORMAT_GFS2)) {
       row.add(gfs2);
@@ -3637,6 +3693,7 @@ public class ConfigService implements WebUIHandler {
       if (ext4.isSelected()) _fmt = Storage.FORMAT_EXT4;
       if (gfs2.isSelected()) _fmt = Storage.FORMAT_GFS2;
       if (ocfs2.isSelected()) _fmt = Storage.FORMAT_OCFS2;
+      if (xfs.isSelected()) _fmt = Storage.FORMAT_XFS;
       if (_fmt == -1) {
         errmsg.setText("Please select a format");
         return;

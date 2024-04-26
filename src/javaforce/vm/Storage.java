@@ -31,16 +31,17 @@ public class Storage implements Serializable {
   public String name;
   public String uuid;
 
-  public String host;  //nfs, iscsi
+  public String host;  //nfs, iscsi, gluster
   public String target;  //iscsi
-  public String path;  //nfs, local (device)
+  public String path;  //nfs, local, gluster (device)
   public String user;
-  //public String pass;  //saved as Secret (stored in /root/secret/name)
+  //public String pass;  //saved as Secret (stored in /root/secret)
 
   public static final int TYPE_LOCAL_PART = 1;  //local partition
   public static final int TYPE_LOCAL_DISK = 2;  //local disk
   public static final int TYPE_NFS = 3;
   public static final int TYPE_ISCSI = 4;
+  public static final int TYPE_GLUSTER = 5;
 
   public static final int STATE_OFF = 0;
   public static final int STATE_ON = 1;
@@ -176,6 +177,7 @@ public class Storage implements Serializable {
       case TYPE_LOCAL_DISK: return path;
       case TYPE_NFS: return host + ":" + path;
       case TYPE_ISCSI: return "/dev/disk/by-path/" + getiSCSIPath();
+      case TYPE_GLUSTER: return path;
     }
     return null;
   }
@@ -249,9 +251,29 @@ sr0  rom  1024M
   /** Mount iSCSI pool. start() will already mount other types. */
   public boolean mount() {
     if (type != TYPE_ISCSI) return false;
+    String dev = null;
+    String mount = null;
+    ArrayList<String> cmd = new ArrayList<>();
+    cmd.add("/usr/bin/mount");
+    switch (type) {
+      case TYPE_ISCSI: {
+        dev = getDevice();
+        mount = getPath();
+        break;
+      }
+      case TYPE_GLUSTER: {
+        dev = host + ":" + name;
+        mount = getPath();
+        cmd.add("-t");
+        cmd.add("glusterfs");
+        break;
+      }
+    }
+    cmd.add(dev);
+    cmd.add(mount);
     new File(getPath()).mkdir();
     ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/bin/mount", getDevice(), getPath()}, true);
+    String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
     return sp.getErrorLevel() == 0;
   }
@@ -290,12 +312,14 @@ sr0  rom  1024M
   public static final int FORMAT_EXT4 = 1;  //local only
   public static final int FORMAT_GFS2 = 2;  //remote distributed (red hat)
   public static final int FORMAT_OCFS2 = 3;  //remote distributed (oracle)
+  public static final int FORMAT_XFS = 4;  //gluster only
 
   public static String getFormatString(int fmt) {
     switch (fmt) {
       case FORMAT_EXT4: return "ext4";
       case FORMAT_GFS2: return "gfs2";
       case FORMAT_OCFS2: return "ocfs2";
+      case FORMAT_XFS: return "xfs";
     }
     return null;
   }
@@ -324,6 +348,12 @@ sr0  rom  1024M
           script.append(" ");
         }
         break;
+      case FORMAT_XFS:
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}) {
+          script.append(str);
+          script.append(" ");
+        }
+        break;
     }
     try {
       FileOutputStream fos = new FileOutputStream(filename);
@@ -346,11 +376,22 @@ sr0  rom  1024M
     return "/volumes/" + name;
   }
 
+  /** Returns gluster brick path. */
+  public String getBrick() {
+    return "/gluster/volumes/" + name;
+  }
+
+  /** Returns gluster volume path within brick path. */
+  public String getVolume() {
+    return "/gluster/volumes/" + name + "/" + name;
+  }
+
   public static boolean format_supported(int fmt) {
     switch (fmt) {
       case FORMAT_EXT4: return true;
       case FORMAT_GFS2: return new File("/usr/sbin/mkfs.gfs2").exists();
       case FORMAT_OCFS2: return new File("/usr/sbin/mkfs.ocfs2").exists();
+      case FORMAT_XFS: return new File("/usr/sbin/mkfs.xfs").exists();
     }
     return false;
   }
@@ -397,12 +438,37 @@ sr0  rom  1024M
     return new Size(total);
   }
 
+  public static boolean gluster_probe(String host) {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/sbin/gluster", "peer", "probe", host}, true);
+    JFLog.log(output);
+    return sp.getErrorLevel() == 0;
+  }
+
+  public boolean gluster_create_volume(String[] hosts) {
+    ShellProcess sp = new ShellProcess();
+    ArrayList<String> cmd = new ArrayList<>();
+    cmd.add("/usr/sbin/gluster");
+    cmd.add("volume");
+    cmd.add("create");
+    cmd.add(name);
+    cmd.add("replica");
+    cmd.add(Integer.toString(hosts.length));
+    for(String host : hosts) {
+      cmd.add(host + ":" + getVolume());
+    }
+    String output = sp.run(cmd.toArray(JF.StringArrayType), true);
+    JFLog.log(output);
+    return sp.getErrorLevel() == 0;
+  }
+
   private String createXML() {
     switch (type) {
       case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, user);
       case TYPE_NFS: return createXML_NFS(name, uuid, host, path, getPath());
       case TYPE_LOCAL_PART: return createXML_Local_Part(name, uuid, path, getPath());
       case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, uuid, path, getPath());
+      case TYPE_GLUSTER: return createXML_Gluster(name, uuid, path, getBrick());
     }
     return null;
   }
@@ -482,6 +548,27 @@ sr0  rom  1024M
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>/dev</path>");
+    sb.append("  </target>");
+    sb.append("  <fs:mount_opts>");
+    sb.append("    <fs:option name='noexec'/>");
+    sb.append("    <fs:option name='nosuid'/>");
+    sb.append("    <fs:option name='nodev'/>");
+    sb.append("  </fs:mount_opts>");
+    sb.append("</pool>");
+    return sb.toString();
+  }
+
+  private static String createXML_Gluster(String name, String uuid, String localDevice, String brickPath) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<pool type='fs' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("  <name>" + name + "</name>");
+    sb.append("  <uuid>" + uuid + "</uuid>");
+    sb.append("  <source>");
+    sb.append("    <device path='" + localDevice + "'/>");
+    sb.append("    <format type='ext4'/>");
+    sb.append("  </source>");
+    sb.append("  <target>");
+    sb.append("    <path>" + brickPath + "</path>");
     sb.append("  </target>");
     sb.append("  <fs:mount_opts>");
     sb.append("    <fs:option name='noexec'/>");

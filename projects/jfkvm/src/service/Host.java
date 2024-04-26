@@ -22,9 +22,10 @@ public class Host implements Serializable {
   public transient boolean online;
   public transient boolean valid;
   public transient float version;
+  public transient boolean gluster;
 
   public String[] getState() {
-    return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid)};
+    return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid), Boolean.toString(gluster)};
   }
 
   public boolean isValid(float min_ver) {

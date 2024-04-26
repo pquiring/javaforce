@@ -57,9 +57,10 @@ public class Tasks extends Thread {
   }
 
   private static final long ts_cut_time = 5 * 60 * 1000;
+  private Object secs_lock = new Object();
+  private int secs60 = 60;
 
   public void run() {
-    int secs60 = 60;
     HTTP.setTimeout(5000);
     while (active) {
       JF.sleep(1000);
@@ -77,22 +78,48 @@ public class Tasks extends Thread {
           removeTask(task);
         }
       }
-      secs60++;
-      if (secs60 > 60) {
-        if (!check_hosts) {
-          new CheckHosts().start();
+      synchronized (secs_lock) {
+        secs60++;
+        if (secs60 > 60) {
+          if (!check_hosts) {
+            new CheckHosts().start();
+          }
+          secs60 = 0;
         }
-        secs60 = 0;
       }
+    }
+  }
+
+  public void check_now() {
+    synchronized (secs_lock) {
+      secs60 = 60;
     }
   }
 
   public boolean check_hosts;
 
+  private String[] gluster_hosts = new String[0];
+
   public class CheckHosts extends Thread {
     //run every minute
     public void run() {
       check_hosts = true;
+      try {
+        //get gluster status
+        ShellProcess sp = new ShellProcess();
+        String out = sp.run(new String[] {"/usr/sbin/gluster", "peer", "status"}, true);
+        String[] lns = out.split("\n");
+        ArrayList<String> hosts = new ArrayList<>();
+        for(String ln : lns) {
+          if (ln.startsWith("Hostname:")) {
+            ln = ln.substring(9);
+            hosts.add(ln.trim());
+          }
+        }
+        gluster_hosts = hosts.toArray(JF.StringArrayType);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
       try {
         Host[] hosts = Config.current.getHosts();
         for(Host host : hosts) {
@@ -104,9 +131,12 @@ public class Tasks extends Thread {
               host.hostname = host.getHostname();
               Config.current.save();
             }
+            host.gluster = getGlusterState(host.hostname);
           } catch (Exception e) {
             JFLog.log(e);
             host.online = false;
+            host.valid = false;
+            host.gluster = false;
           }
         }
       } catch (Exception e) {
@@ -115,5 +145,12 @@ public class Tasks extends Thread {
       Config.current.validateHosts();
       check_hosts = false;
     }
+  }
+
+  private boolean getGlusterState(String host) {
+    for(String gluster_host : gluster_hosts) {
+      if (gluster_host.equals(host)) return true;
+    }
+    return false;
   }
 }
