@@ -108,7 +108,11 @@ public class Device extends Address implements Serializable {
 
   public String toXML() {
     StringBuilder xml = new StringBuilder();
-    xml.append("<hostdev mode='subsystem' type='" + getType() + "'>");
+    xml.append("<hostdev mode='subsystem' type='" + getType() + "'");
+    if (type == TYPE_PCI) {
+      xml.append(" managed='yes'");  //allow libvirt to detach/reattach automatically
+    }
+    xml.append(">");
     xml.append("<source>");
     xml.append(getAddressXML());
     xml.append("</source>");
