@@ -336,46 +336,34 @@ sr0  rom  1024M
   public boolean format(int fmt) {
     if (type == TYPE_NFS) return false;  //can not format NFS
     if (fmt < 1 || fmt > 3) return false;
-    String filename = "/root/format-" + System.currentTimeMillis() + ".sh";
-    File file = new File(filename);
-    StringBuffer script = new StringBuffer();
-    script.append("#!/bin/bash\n");
-    script.append("yes | ");
+    ArrayList<String> cmd = new ArrayList<>();
     switch (fmt) {
       default:
+        return false;
       case FORMAT_EXT4:
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-F", getDevice()}) {
+          cmd.add(str);
+        }
+        break;
       case FORMAT_OCFS2:
-        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}) {
-          script.append(str);
-          script.append(" ");
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-F", getDevice()}) {
+          cmd.add(str);
         }
         break;
       case FORMAT_GFS2:
-        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-p", "lock_dlm", "-t", "jfkvm:" + name, "-j", "3", getDevice()}) {
-          script.append(str);
-          script.append(" ");
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-O", "-p", "lock_dlm", "-t", "jfkvm:" + name, "-j", "3", getDevice()}) {
+          cmd.add(str);
         }
         break;
       case FORMAT_XFS:
-        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), getDevice()}) {
-          script.append(str);
-          script.append(" ");
+        for(String str : new String[] {"/usr/sbin/mkfs", "-t", getFormatString(fmt), "-f", getDevice()}) {
+          cmd.add(str);
         }
         break;
     }
-    try {
-      FileOutputStream fos = new FileOutputStream(filename);
-      fos.write(script.toString().getBytes());
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-      return false;
-    }
-    file.setExecutable(true);
     ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/bin/bash", filename}, true);
+    String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
-    file.delete();
     return sp.getErrorLevel() == 0;
   }
 
