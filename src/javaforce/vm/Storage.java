@@ -443,7 +443,7 @@ sr0  rom  1024M
     return sp.getErrorLevel() == 0;
   }
 
-  public boolean gluster_create_volume(String[] hosts) {
+  public boolean gluster_volume_create(String[] hosts) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<>();
     cmd.add("/usr/sbin/gluster");
@@ -455,6 +455,20 @@ sr0  rom  1024M
     for(String host : hosts) {
       cmd.add(host + ":" + getVolume());
     }
+    cmd.add("force");
+    JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
+    String output = sp.run(cmd.toArray(JF.StringArrayType), true);
+    JFLog.log(output);
+    return sp.getErrorLevel() == 0;
+  }
+
+  public boolean gluster_volume_start() {
+    ShellProcess sp = new ShellProcess();
+    ArrayList<String> cmd = new ArrayList<>();
+    cmd.add("/usr/sbin/gluster");
+    cmd.add("volume");
+    cmd.add("start");
+    cmd.add(name);
     JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);

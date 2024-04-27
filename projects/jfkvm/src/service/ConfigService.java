@@ -2874,8 +2874,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(unmount);
     Button format = new Button("Format");
     tools.add(format);
-    Button create_volume = new Button("Create Gluster Volume");
-    tools.add(create_volume);
+    Button gluster_volume_create = new Button("Gluster Volume Create");
+    tools.add(gluster_volume_create);
+    Button gluster_volume_start = new Button("Gluster Volume Start");
+    tools.add(gluster_volume_start);
     Button delete = new Button("Delete");
     tools.add(delete);
     Button help = new Button("Help");
@@ -3142,7 +3144,7 @@ public class ConfigService implements WebUIHandler {
       }
       ui.setRightPanel(storageFormatPanel(pool, ui));
     });
-    create_volume.addClickListener((me, cmp) -> {
+    gluster_volume_create.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       if (!Config.current.gluster_ready()) {
@@ -3150,13 +3152,43 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Storage pool = Config.current.pools.get(idx);
-      ui.confirm_button.setText("Create Volume");
+      ui.confirm_button.setText("Create Gluster Volume");
       ui.confirm_message.setText("Create Gluster Volume");
       ui.confirm_action = () -> {
         Task task = new Task("Create Gluster Volume:" + pool.name) {
           public void doTask() {
             try {
-              if (pool.gluster_create_volume(Config.current.getHostNames())) {
+              if (pool.gluster_volume_create(Config.current.getHostNames())) {
+                setStatus("Completed");
+              } else {
+                setStatus("Error occured, check logs.");
+              }
+            } catch (Exception e) {
+              JFLog.log(e);
+              setStatus("Error occured, check logs.");
+            }
+          }
+        };
+        KVMService.tasks.addTask(ui.tasks, task);
+        ui.setRightPanel(storagePanel(ui));
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    gluster_volume_start.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      if (!Config.current.gluster_ready()) {
+        errmsg.setText("Not all hosts are probed with Gluster");
+        return;
+      }
+      Storage pool = Config.current.pools.get(idx);
+      ui.confirm_button.setText("Start Gluster Volume");
+      ui.confirm_message.setText("Start Gluster Volume");
+      ui.confirm_action = () -> {
+        Task task = new Task("Start Gluster Volume:" + pool.name) {
+          public void doTask() {
+            try {
+              if (pool.gluster_volume_start()) {
                 setStatus("Completed");
               } else {
                 setStatus("Error occured, check logs.");
