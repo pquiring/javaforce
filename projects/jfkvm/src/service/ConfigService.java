@@ -1676,8 +1676,22 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       String host = hosts[idx].host;
-      Storage.gluster_probe(host);
-      KVMService.tasks.check_now();
+      Task task = new Task("Gluster Probe host:" + host) {
+        public void doTask() {
+          try {
+            if (Storage.gluster_probe(host)) {
+              KVMService.tasks.check_now();
+              setStatus("Completed");
+            } else {
+              setStatus("Probe failed, check logs.");
+            }
+          } catch (Exception e) {
+            setStatus("Probe failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
     });
 
     remove.addClickListener((me, cmp) -> {
