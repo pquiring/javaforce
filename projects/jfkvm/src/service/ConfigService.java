@@ -1675,11 +1675,16 @@ public class ConfigService implements WebUIHandler {
     gluster.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
-      String host = hosts[idx].host;
-      Task task = new Task("Gluster Probe host:" + host) {
+      Host host = hosts[idx];
+      String host_host = host.host;
+      if (!host.online) {
+        errmsg.setText("Host is not online");
+        return;
+      }
+      Task task = new Task("Gluster Probe host:" + host_host) {
         public void doTask() {
           try {
-            if (Storage.gluster_probe(host)) {
+            if (Storage.gluster_probe(host_host)) {
               KVMService.tasks.check_now();
               setStatus("Completed");
             } else {

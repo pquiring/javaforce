@@ -131,7 +131,7 @@ public class Tasks extends Thread {
               host.hostname = host.getHostname();
               Config.current.save();
             }
-            host.gluster = getGlusterState(host.hostname);
+            host.gluster = getGlusterState(host.host);
           } catch (Exception e) {
             JFLog.log(e);
             host.online = false;
