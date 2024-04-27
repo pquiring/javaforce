@@ -73,11 +73,11 @@ public class Storage implements Serializable {
   public boolean start() {
     new File(getPath()).mkdir();
     if (type == TYPE_GLUSTER) {
-      new File(getBrick()).mkdir();
+      new File(getBrick()).mkdirs();
     }
     boolean res = nstart(name);
     if (type == TYPE_GLUSTER && mounted()) {
-      new File(getVolume()).mkdir();
+      new File(getVolume()).mkdirs();
     }
     return res;
   }
