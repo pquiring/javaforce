@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfKVM</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfKVM : Storage</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Gluster Storage:
+==============
+
+Desc:
+-----
+Replicated Disk File system for storage pools (Red Hat).
+
+Instructions:
+-------------
+
+First go to the <a href="help_cluster.html">Cluster</a> screen and perform a 'Gluster Probe' for each server from each server.
+
+Add a new Storage Pool, select Gluster and an available partition on each server.
+
+Format the pool on each server (xfs).
+
+Start the pool on each server.
+
+From one server perform a 'Gluster Create Volume'.
+
+From one server perform a 'Gluster Start Pool'.
+
+Now you should be able to mount the pool on all servers.
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfkvm">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfkvm">GitHub</a>
+
+</pre>
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>
