@@ -3211,7 +3211,10 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete storage pool");
       ui.confirm_action = () -> {
-        pool.unregister();
+        if (!pool.unregister()) {
+          errmsg.setText("Failed to delete pool");
+          return;
+        }
         Config.current.removeStorage(pool);
         ui.setRightPanel(storagePanel(ui));
       };
