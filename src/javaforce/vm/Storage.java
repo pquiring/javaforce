@@ -307,10 +307,14 @@ sr0  rom  1024M
   public boolean mounted() {
     String dev = null;
     switch (type) {
-      default: dev = getDevice(); break;
-      case TYPE_GLUSTER: dev = getDevice2(); break;
+      default:
+        dev = getDevice();
+        dev = resolveLinks(dev);
+        break;
+      case TYPE_GLUSTER:
+        dev = getDevice2();
+      break;
     }
-    dev = resolveLinks(dev);
     try {
       FileInputStream fis = new FileInputStream("/proc/mounts");
       byte[] data = fis.readAllBytes();
