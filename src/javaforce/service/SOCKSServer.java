@@ -59,6 +59,7 @@ public class SOCKSServer extends Thread {
   private static ArrayList<Subnet4> subnet_src_list;
   private static ArrayList<ForwardLocal> forward_local_list;
   private static ArrayList<ForwardRemote> forward_remote_list;
+  private static KeyMgmt keys = new KeyMgmt();
 
   public SOCKSServer() {
   }
@@ -176,7 +177,6 @@ public class SOCKSServer extends Thread {
       busClient.start();
       if (secure) {
         JFLog.log("CreateServerSocketSSL");
-        KeyMgmt keys = new KeyMgmt();
         keys.setRootAlias("jfsocks");
         if (new File(getKeyFile()).exists()) {
           FileInputStream fis = new FileInputStream(getKeyFile());
@@ -969,7 +969,7 @@ public class SOCKSServer extends Thread {
           try {
             Socket from = null;
             if (forward.secure) {
-              from = JF.connectSSL(forward.socks.toIP4String(), forward.socks.port);
+              from = JF.connectSSL(forward.socks.toIP4String(), forward.socks.port, keys);
             } else {
               from = new Socket(forward.socks.toInetAddress(), forward.socks.port);
             }

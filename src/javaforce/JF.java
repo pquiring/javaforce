@@ -1166,7 +1166,10 @@ public class JF {
 
   public static String serverKeysAlias = "root";
 
-  /** This allows connections to untrusted hosts when using https:// with URLConnection. */
+  /** This allows connections to untrusted hosts when using https:// with URLConnection.
+   * Use initHttps(KeyMgmt keys) instead.
+   */
+  @Deprecated
   public static void initHttps() {
     if (initedHttps) return;
     initedHttps = true;
@@ -1191,8 +1194,32 @@ public class JF {
     HttpsURLConnection.setDefaultHostnameVerifier(hv);
   }
 
-  private static final String[] protocols = new String[] {"TLSv1.3"};
-  private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
+  public static void initHttps(KeyMgmt keys) {
+    if (initedHttps) return;
+    initedHttps = true;
+    // Let us create the factory where we can set some parameters for the connection
+    try {
+      SSLContext ctx = SSLContext.getInstance("SSL");
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      KeyStore ks = keys.getKeyStore();
+      kmf.init(ks, keys.getKeyStorePass().toCharArray());
+      ctx.init(kmf.getKeyManagers(), trustMgrs, new SecureRandom());
+      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
+      HttpsURLConnection.setDefaultSSLSocketFactory(sslsocketfactory);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    //trust any hostname
+    HostnameVerifier hv = new HostnameVerifier() {
+      public boolean verify(String urlHostName, SSLSession session) {
+        if (!urlHostName.equalsIgnoreCase(session.getPeerHost())) {
+          System.out.println("Warning: URL host '" + urlHostName + "' is different to SSLSession host '" + session.getPeerHost() + "'.");
+        }
+        return true;
+      }
+    };
+    HttpsURLConnection.setDefaultHostnameVerifier(hv);
+  }
 
   public static Socket connectSSL(String host, int port, KeyMgmt keys) {
     // Let us create the factory where we can set some parameters for the connection
@@ -1255,6 +1282,8 @@ public class JF {
     }
   }
 
+  /** Use connectSSL(String, int, KeyMgmt) instead. */
+  @Deprecated
   public static Socket connectSSL(String host, int port) {
     // Let us create the factory where we can set some parameters for the connection
     try {
@@ -1274,11 +1303,33 @@ public class JF {
   }
 
   /** Upgrades existing socket to SSL. */
+  @Deprecated
   public static Socket connectSSL(Socket socket) {
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext ctx = SSLContext.getInstance("TLSv1.3");
       ctx.init(null, trustMgrs, new SecureRandom());
+      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
+      SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
+      ssl.setUseClientMode(true);
+//      ssl.setEnabledProtocols(protocols);
+//      ssl.setEnabledCipherSuites(cipher_suites);
+      ssl.startHandshake();
+      return ssl;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public static Socket connectSSL(Socket socket, KeyMgmt keys) {
+    // Let us create the factory where we can set some parameters for the connection
+    try {
+      SSLContext ctx = SSLContext.getInstance("TLSv1.3");
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      KeyStore ks = keys.getKeyStore();
+      kmf.init(ks, keys.getKeyStorePass().toCharArray());
+      ctx.init(kmf.getKeyManagers(), trustMgrs, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
       ssl.setUseClientMode(true);
