@@ -182,13 +182,15 @@ public class Config implements Serializable {
     return hosts.values().toArray(new Host[0]);
   }
 
+  /** Returns all hosts FQN including self. */
   public String[] getHostNames() {
-    String[] names = new String[hosts.size()];
+    String[] names = new String[hosts.size() + 1];
     Host[] hosts = getHosts();
     int idx = 0;
     for(Host host : hosts) {
-      names[idx++] = host.hostname;
+      names[idx++] = host.host;
     }
+    names[idx] = fqn;
     return names;
   }
 
