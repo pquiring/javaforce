@@ -335,7 +335,7 @@ sr0  rom  1024M
   /** Format local partition or iSCSI target. */
   public boolean format(int fmt) {
     if (type == TYPE_NFS) return false;  //can not format NFS
-    if (fmt < 1 || fmt > 3) return false;
+    if (fmt < 1 || fmt > 4) return false;
     ArrayList<String> cmd = new ArrayList<>();
     switch (fmt) {
       default:
