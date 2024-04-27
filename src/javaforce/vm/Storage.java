@@ -190,6 +190,13 @@ public class Storage implements Serializable {
     return null;
   }
 
+  private String getDevice2() {
+    switch (type) {
+      case TYPE_GLUSTER: return host + ":/" + name;
+    }
+    return null;
+  }
+
   private static String resolveLinks(String file) {
     Path path = new File(file).toPath();
     if (Files.isSymbolicLink(path)) {
@@ -256,7 +263,7 @@ sr0  rom  1024M
     return parts.toArray(JF.StringArrayType);
   }
 
-  /** Mount iSCSI pool. start() will already mount other types. */
+  /** Mount iSCSI/Gluster pools. start() will already mount other types. */
   public boolean mount() {
     if (type != TYPE_ISCSI) return false;
     String dev = null;
@@ -270,7 +277,7 @@ sr0  rom  1024M
         break;
       }
       case TYPE_GLUSTER: {
-        dev = host + ":" + name;
+        dev = getDevice2();
         mount = getPath();
         cmd.add("-t");
         cmd.add("glusterfs");
@@ -298,7 +305,11 @@ sr0  rom  1024M
   }
 
   public boolean mounted() {
-    String dev = getDevice();
+    String dev = null;
+    switch (type) {
+      default: dev = getDevice(); break;
+      case TYPE_GLUSTER: dev = getDevice2(); break;
+    }
     dev = resolveLinks(dev);
     try {
       FileInputStream fis = new FileInputStream("/proc/mounts");
