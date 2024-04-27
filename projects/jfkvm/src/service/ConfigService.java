@@ -3017,7 +3017,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         Task task = new Task("Stop Pool : " + pool.name) {
           public void doTask() {
-            if (pool.type == Storage.TYPE_ISCSI) {
+            if (pool.type == Storage.TYPE_ISCSI || pool.type == Storage.TYPE_GLUSTER) {
               if (pool.mounted()) {
                 if (!pool.unmount()) {
                   setResult("Error occured, see logs.");
@@ -3040,8 +3040,8 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
-      if (pool.type != Storage.TYPE_ISCSI) {
-        errmsg.setText("Can only mount iSCSI storage pools, use start for other types");
+      if (pool.type != Storage.TYPE_ISCSI && pool.type != Storage.TYPE_GLUSTER) {
+        errmsg.setText("Can only mount iSCSI/Gluster storage pools, use start for other types");
         return;
       }
       if (pool.getState() != Storage.STATE_ON) {
@@ -3063,8 +3063,8 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       Storage pool = pools.get(idx);
-      if (pool.type != Storage.TYPE_ISCSI) {
-        errmsg.setText("Can only unmount iSCSI storage pools, use stop for other types");
+      if (pool.type != Storage.TYPE_ISCSI && pool.type != Storage.TYPE_GLUSTER) {
+        errmsg.setText("Can only unmount iSCSI/Gluster storage pools, use stop for other types");
         return;
       }
       if (pool.getState() != Storage.STATE_ON) {
@@ -3272,6 +3272,7 @@ public class ConfigService implements WebUIHandler {
       case Storage.TYPE_NFS: return nfs_StoragePanel(store, false, ui);
       case Storage.TYPE_ISCSI: return iscsi_StoragePanel(store, false, ui);
       case Storage.TYPE_LOCAL_PART: return local_StoragePanel(store, false, ui);
+      case Storage.TYPE_GLUSTER: return local_StoragePanel(store, false, ui);
     }
     return null;
   }
