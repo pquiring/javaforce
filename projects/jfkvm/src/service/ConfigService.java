@@ -12,6 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
+import javaforce.linux.*;
 import javaforce.net.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
@@ -1344,6 +1345,7 @@ public class ConfigService implements WebUIHandler {
     panel.addTab(hostAutoStartPanel(ui), "Auto Start");
     panel.addTab(hostClusterPanel(ui), "Cluster");
     panel.addTab(hostAdminPanel(ui), "Admin");
+    panel.addTab(hostServicesPanel(ui), "Services");
     panel.setTabIndex(idx);
     return panel;
   }
@@ -1777,6 +1779,110 @@ public class ConfigService implements WebUIHandler {
       Config.passwd.password = _new;
       Config.passwd.save();
       msg.setText("Password saved");
+    });
+
+    return panel;
+  }
+
+  private static String[] services = {"glusterd", "libvirtd"};
+
+  private Panel hostServicesPanel(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button start = new Button("Start");
+    tools.add(start);
+    Button stop = new Button("Stop");
+    tools.add(stop);
+    Button enable = new Button("Enable");
+    tools.add(enable);
+    Button disable = new Button("Disable");
+    tools.add(disable);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {100, 50, 50}, 21, 3, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    table.addRow(new String[] {"Name", "Enabled", "Active"});
+    for(String service : services) {
+      table.addRow(ServiceControl.getStates(service));
+    }
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(hostPanel(ui, 5));
+    });
+
+    start.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      Task task = new Task("Start Service") {
+        public void doTask() {
+          try {
+            ServiceControl.start(services[idx]);
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error occured, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
+    });
+    stop.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      Task task = new Task("Stop Service") {
+        public void doTask() {
+          try {
+            ServiceControl.stop(services[idx]);
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error occured, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
+    });
+    enable.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      Task task = new Task("Enable Service") {
+        public void doTask() {
+          try {
+            ServiceControl.enable(services[idx]);
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error occured, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
+    });
+    disable.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      Task task = new Task("Disable Service") {
+        public void doTask() {
+          try {
+            ServiceControl.disable(services[idx]);
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error occured, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      KVMService.tasks.addTask(ui.tasks, task);
     });
 
     return panel;
