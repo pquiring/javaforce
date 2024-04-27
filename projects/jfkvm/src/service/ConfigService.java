@@ -3089,7 +3089,10 @@ public class ConfigService implements WebUIHandler {
     });
     format.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Select a storage pool");
+        return;
+      }
       Storage pool = pools.get(idx);
       if (pool.type == Storage.TYPE_ISCSI) {
         if (!Storage.format_supported(Storage.FORMAT_GFS2) && !Storage.format_supported(Storage.FORMAT_OCFS2)) {
@@ -3116,6 +3119,23 @@ public class ConfigService implements WebUIHandler {
       if (pool.type == Storage.TYPE_LOCAL_PART) {
         if (pool.getState() != Storage.STATE_OFF) {
           ui.message_message.setText("Local Partition must be off to format");
+          ui.message_popup.setVisible(true);
+          return;
+        }
+      }
+      if (pool.type == Storage.TYPE_GLUSTER) {
+        if (!Storage.format_supported(Storage.FORMAT_XFS)) {
+          ui.message_message.setText("Can not format Gluster storage because xfs is not loaded");
+          ui.message_popup.setVisible(true);
+          return;
+        }
+        if (pool.getState() != Storage.STATE_OFF) {
+          ui.message_message.setText("Gluster must be off to format");
+          ui.message_popup.setVisible(true);
+          return;
+        }
+        if (pool.mounted()) {
+          ui.message_message.setText("Gluster must not be mounted to format");
           ui.message_popup.setVisible(true);
           return;
         }
