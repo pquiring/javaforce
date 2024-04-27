@@ -62,6 +62,9 @@ public class Startup extends Thread {
           }
            pool.start();
           }
+          if (pool.type == Storage.TYPE_GLUSTER) {
+            pool.gluster_volume_start();
+          }
           if (pool.type == Storage.TYPE_ISCSI || pool.type == Storage.TYPE_GLUSTER) {
             if (!pool.mounted()) {
               pool.mount();
