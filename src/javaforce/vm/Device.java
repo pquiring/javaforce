@@ -70,6 +70,7 @@ public class Device extends Address implements Serializable {
     _xml.read(bais);
     switch (type) {
       case TYPE_USB: {
+        addr_type = "usb";
         /* <device><name>...</name><devnode type='dev'>/dev/bus/usb/###/###<devnode><path>/sys/devices/pci####:##/####:##:##.#/usb#/#-#</path><capability><bus>..</bus><device>..</device></capability></device> */
         XML.XMLTag caps = _xml.getTag(new String[] {"device", "capability"});
         XML.XMLTag[] tags = caps.getChildren();
@@ -85,6 +86,7 @@ public class Device extends Address implements Serializable {
         break;
       }
       case TYPE_PCI: {
+        addr_type = "pci";
         /* <device><name>...</name><path>/sys/devices/pci####:##/####:##:##.#</path><capability><domain>....</domain><bus>..</bus><slot>..</slot><function>.</function></capability></device> */
         XML.XMLTag caps = _xml.getTag(new String[] {"device", "capability"});
         XML.XMLTag[] tags = caps.getChildren();
