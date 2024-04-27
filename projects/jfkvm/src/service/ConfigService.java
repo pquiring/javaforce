@@ -3560,7 +3560,7 @@ public class ConfigService implements WebUIHandler {
         _dev = "/dev/disk/by-uuid/" + uuid;
       }
       if (pool.type == Storage.TYPE_GLUSTER) {
-        pool.host = VMHost.getHostname();
+        pool.host = Config.current.fqn;
       }
       pool.path = _dev;
       if (!pool.register()) {
