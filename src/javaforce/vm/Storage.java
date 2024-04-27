@@ -265,7 +265,7 @@ sr0  rom  1024M
 
   /** Mount iSCSI/Gluster pools. start() will already mount other types. */
   public boolean mount() {
-    if (type != TYPE_ISCSI) return false;
+    if (type != TYPE_ISCSI && type != TYPE_GLUSTER) return false;
     String dev = null;
     String mount = null;
     ArrayList<String> cmd = new ArrayList<>();
@@ -296,7 +296,7 @@ sr0  rom  1024M
 
   /** Unmount iSCSI pool. stop() will already unmount other types. */
   public boolean unmount() {
-    if (type != TYPE_ISCSI) return false;
+    if (type != TYPE_ISCSI && type != TYPE_GLUSTER) return false;
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/umount", getDevice()}, true);
     JFLog.log(output);
