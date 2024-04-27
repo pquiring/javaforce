@@ -281,6 +281,7 @@ sr0  rom  1024M
     cmd.add(mount);
     new File(mount).mkdir();
     ShellProcess sp = new ShellProcess();
+    JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
     return sp.getErrorLevel() == 0;
@@ -362,6 +363,7 @@ sr0  rom  1024M
         break;
     }
     ShellProcess sp = new ShellProcess();
+    JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
     return sp.getErrorLevel() == 0;
@@ -453,6 +455,7 @@ sr0  rom  1024M
     for(String host : hosts) {
       cmd.add(host + ":" + getVolume());
     }
+    JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
     return sp.getErrorLevel() == 0;
