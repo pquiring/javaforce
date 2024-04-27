@@ -150,6 +150,7 @@ public class Storage implements Serializable {
       case TYPE_LOCAL_DISK: return "LocalDisk";
       case TYPE_NFS: return "NFS";
       case TYPE_ISCSI: return "iSCSI";
+      case TYPE_GLUSTER: return "Gluster";
     }
     return "???";
   }
