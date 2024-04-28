@@ -1,7 +1,7 @@
 <project name="jbus-call" default="executable" basedir=".">
   <description>jbus-call</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jbuscall"/>
+  <property name="app" value="jbus-call"/>
   <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jbus-call.cfg"/>
   <property name="ico" value="javaforce.ico"/>

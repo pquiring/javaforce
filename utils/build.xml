@@ -8,7 +8,7 @@
 
   <property name="version" value="${javaforce-version}"/>
 
-  <target name="install" description="install files">
+  <target name="buildall" description="build all utils">
     <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
@@ -52,7 +52,10 @@
     </zip>
   </target>
 
-  <target name="depjars">
+  <target name="install">
+  </target>
+
+  <target name="depjars" depends="buildall">
   </target>
 
   <target name="jar">
