@@ -1,5 +1,13 @@
 What's new...
 
+Apr 27/2024 : JF/57.0
+ - jfKVM/0.9
+   - Gluster replicated disks (vSAN)
+   - fixed host device in guest vm
+   - added services panel
+ - jfSOCKS/0.16
+   - fixed forward secure services use configured SSL keys
+
 Apr 26/2024 : JF/56.1
  - VoIP/SDP
    - fix parsing
