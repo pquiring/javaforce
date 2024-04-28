@@ -1780,7 +1780,11 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private static String[] services = {"glusterd", "libvirtd"};
+  private static String[] services = {
+    "glusterd",
+    "libvirtd",
+    "iscsid",
+  };
 
   private Panel hostServicesPanel(UI ui) {
     Panel panel = new Panel();
