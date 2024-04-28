@@ -1,5 +1,8 @@
 Whats new ???
 
+Apr 27, 2024 : 0.16
+  - new : forward secure services use configured SSL keys
+
 Apr 26, 2024 : 0.15
   - fix : UI improvements
 
