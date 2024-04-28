@@ -68,7 +68,7 @@ ant repo
 #clean repo
 echo cleaning repo/$OS/$ARCH/
 cd repo/$OS/$ARCH
-chmod +X clean.sh
+chmod +x clean.sh
 ./clean.sh
 cd ../../..
 
