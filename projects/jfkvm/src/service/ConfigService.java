@@ -2,8 +2,6 @@ package service;
 
 /** Config Service
  *
- * TODO : convert many ops into tasks
- *
  * @author pquiring
  */
 
@@ -1301,7 +1299,7 @@ public class ConfigService implements WebUIHandler {
       " - Linux and Windows guests\n" +
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
       " - Networking : bridge, guests on VLANs\n" +
-      " - Storage Pools : Local Disk Partition, NFS, iSCSI\n" +
+      " - Storage Pools : Local Disk Partition, NFS, iSCSI Shared Disks, Gluster Replicated Disks (vSAN)\n" +
       " - import vmware machines\n" +
       " - live/offline compute migration\n" +
       " - offline data migration\n" +
@@ -1313,8 +1311,6 @@ public class ConfigService implements WebUIHandler {
       " - vmdk file split into multiple 2GB extents\n" +
       "\n" +
       "ToDo:\n" +
-      " - test adding host device to guest VM\n" +
-      " - implement GlusterFS to create vSAN type storage\n" +
       " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
