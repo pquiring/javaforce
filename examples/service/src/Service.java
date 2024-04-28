@@ -40,10 +40,6 @@ public class Service extends Thread implements WebHandler {
     }
   }
 
-  public static void main(String args[]) {
-    serviceStart(args);
-  }
-
   public void cancel() {
     active = false;
   }
@@ -84,15 +80,6 @@ public class Service extends Thread implements WebHandler {
     } catch (Exception e) {
       JFLog.log(e);
     }
-  }
-
-  private static SQL getSQL(String database) {
-    SQL sql = new SQL();
-    if (!sql.connect(SQL.msSQL ,"jdbc:sqlserver://sfsmsmes01:1433;databaseName=" + database + ";user=sfs;password=Manager-10")) {
-      JFLog.log(sql.lastException);
-      return null;
-    }
-    return sql;
   }
 
   public void run() {
