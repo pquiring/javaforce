@@ -55,8 +55,9 @@ public class ServiceControl {
         continue;
       }
       if (ln.startsWith("Active:")) {
-        ln = ln.substring(7);
+        ln = ln.substring(7).trim();
         active = ln.startsWith("active");
+        continue;
       }
     }
     return enabled;
@@ -78,8 +79,9 @@ public class ServiceControl {
         continue;
       }
       if (ln.startsWith("Active:")) {
-        ln = ln.substring(7);
+        ln = ln.substring(7).trim();
         active = ln.startsWith("active");
+        continue;
       }
     }
     return active;
@@ -102,8 +104,9 @@ public class ServiceControl {
         continue;
       }
       if (ln.startsWith("Active:")) {
-        ln = ln.substring(7);
+        ln = ln.substring(7).trim();
         active = ln.startsWith("active");
+        continue;
       }
     }
     String[] state = new String[3];
