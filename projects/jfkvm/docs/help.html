@@ -30,7 +30,7 @@ Features supported:
  - Linux and Windows guests
  - Disks : vmdk, qcow2, iso (thick and thin provisioning)
  - Networking : bridge, guests on VLANs (openvswitch)
- - Storage Pools : Local Disk Partition, NFS, iSCSI
+ - Storage Pools : Local Disk Partition, NFS, iSCSI Shared Disks, Gluster Replicated Disks (vSAN)
  - import vmware machines
  - live/offline compute migration
  - offline data migration/clone
@@ -42,8 +42,6 @@ Not supported:
  - vmdk file split into multiple 2GB extents
 
 ToDo:
- - test adding host device to guest VM
- - implement GlusterFS to create vSAN type storage
  - VNC security (currently no password)
 
 Thanks to Broadcom for the motivation to create this project! &#x263a;
