@@ -91,8 +91,8 @@ public class ServiceControl {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "status", name}, true);
     JFLog.log(output);
-    boolean enabled = false;
-    boolean active = false;
+    String enabled = "n/a";
+    String active = "n/a";
     String[] lns = output.split("\n");
     for(String ln : lns) {
       ln = ln.trim();
@@ -100,19 +100,27 @@ public class ServiceControl {
         int i1 = ln.indexOf(';');
         int i2 = ln.indexOf(';', i1 + 1);
         String state = ln.substring(i1 + 1, i2);
-        enabled = state.trim().equals("enabled");
+        if (state.trim().equals("enabled")) {
+          enabled = "true";
+        } else {
+          enabled = "false";
+        }
         continue;
       }
       if (ln.startsWith("Active:")) {
         ln = ln.substring(7).trim();
-        active = ln.startsWith("active");
+        if (ln.startsWith("active")) {
+          active = "true";
+        } else {
+          active = "false";
+        }
         continue;
       }
     }
-    String[] state = new String[3];
-    state[0] = name;
-    state[1] = Boolean.toString(enabled);
-    state[2] = Boolean.toString(active);
-    return state;
+    String[] states = new String[3];
+    states[0] = name;
+    states[1] = enabled;
+    states[2] = active;
+    return states;
   }
 }
