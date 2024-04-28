@@ -1,3 +1,8 @@
+2024-04-27 : 0.9 released!
+  - add : Gluster replicated disks
+  - fix : host device on guest
+  - add : Services panel
+
 2024-04-16 : 0.8 released!
   - assign ip address to NetworkVirtual after reboot or on link_up()
 
