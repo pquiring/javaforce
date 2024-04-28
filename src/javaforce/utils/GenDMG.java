@@ -56,8 +56,7 @@ public class GenDMG {
       System.out.println("Error:Info.plist not found");
       System.exit(1);
     }
-    if (!new File("macfiles.lst").exists()) {
-      System.out.println("Error:macfiles.lst not found");
+    if (!BuildTools.checkFiles("macfiles.lst")) {
       System.exit(1);
     }
     if (!new File(icon).exists()) {

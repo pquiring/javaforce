@@ -32,8 +32,7 @@ public class GenPAC {
     if (new File("files-pac.lst").exists()) {
       files = "files-pac.lst";
     }
-    if (!new File(files).exists()) {
-      System.out.println("Error:files.lst not found");
+    if (!BuildTools.checkFiles(files)) {
       System.exit(1);
     }
     String arch = getArch();

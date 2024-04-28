@@ -77,4 +77,28 @@ public class BuildTools {
   public static void chmod_x(String file) {
     new File(file).setExecutable(true);
   }
+  public static boolean checkFiles(String files_lst) {
+    try {
+      File files = new File(files_lst);
+      if (!files.exists()) {
+        JFLog.log("Error:" + files_lst + " not found");
+        return false;
+      }
+      FileInputStream fis = new FileInputStream(files);
+      byte[] lst = fis.readAllBytes();
+      String[] lns = new String(lst).replaceAll("\r","").split("\n");
+      for(String ln : lns) {
+        if (ln.length() == 0) continue;
+        File file = new File(ln);
+        if (!file.exists()) {
+          JFLog.log("Error:File not found:" + ln);
+          return false;
+        }
+      }
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
 }

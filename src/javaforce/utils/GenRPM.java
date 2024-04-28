@@ -31,8 +31,7 @@ public class GenRPM {
     if (new File("files-fedora.lst").exists()) {
       files = "files-fedora.lst";
     }
-    if (!new File(files).exists()) {
-      System.out.println("Error:files.lst not found");
+    if (!BuildTools.checkFiles(files)) {
       System.exit(1);
     }
     String arch = getArch();
