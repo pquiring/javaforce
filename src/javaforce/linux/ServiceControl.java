@@ -106,7 +106,7 @@ public class ServiceControl {
         switch (state) {
           case "enabled": enabled = "true"; break;
           case "disabled": enabled = "false"; break;
-          case "generated": enabled = "generated"; break;
+          default: enabled = state; break;
         }
         continue;
       }
