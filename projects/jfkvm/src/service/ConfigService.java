@@ -1784,6 +1784,8 @@ public class ConfigService implements WebUIHandler {
     "glusterd",
     "libvirtd",
     "iscsid",
+    "pcsd",
+    "ocfs2",
   };
 
   private Panel hostServicesPanel(UI ui) {

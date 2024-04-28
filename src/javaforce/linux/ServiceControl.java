@@ -99,11 +99,14 @@ public class ServiceControl {
       if (ln.startsWith("Loaded:")) {
         int i1 = ln.indexOf(';');
         int i2 = ln.indexOf(';', i1 + 1);
-        String state = ln.substring(i1 + 1, i2);
-        if (state.trim().equals("enabled")) {
-          enabled = "true";
-        } else {
-          enabled = "false";
+        if (i2 == -1) {
+          i2 = ln.indexOf(')', i1 + 1);
+        }
+        String state = ln.substring(i1 + 1, i2).trim();
+        switch (state) {
+          case "enabled": enabled = "true"; break;
+          case "disabled": enabled = "false"; break;
+          case "generated": enabled = "generated"; break;
         }
         continue;
       }
