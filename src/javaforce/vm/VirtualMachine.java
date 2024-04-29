@@ -424,7 +424,7 @@ public class VirtualMachine implements Serializable {
       xml.append("</video>");
       //remote viewing
       if (vm.vnc != -1) {
-        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive' password='" + provider.getVNCPassword() + "'>");
+        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive' passwd='" + provider.getVNCPassword() + "'>");
         xml.append("<listen type='address' address='0.0.0.0'/>");
         xml.append("</graphics>");
       }
