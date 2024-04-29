@@ -1,5 +1,9 @@
 What's new...
 
+Apr 29/2024 : JF/57.1
+ - jfKVM/0.91 (RC1)
+   - add : VNC password
+
 Apr 27/2024 : JF/57.0
  - jfKVM/0.9
    - Gluster replicated disks (vSAN)
