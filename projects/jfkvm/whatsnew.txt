@@ -1,3 +1,6 @@
+2024-04-29 : 0.91 (RC1) released!
+  - new : added VNC password
+
 2024-04-27 : 0.9 released!
   - add : Gluster replicated disks
   - fix : host device on guest

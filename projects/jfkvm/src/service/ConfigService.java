@@ -16,7 +16,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.9";
+  public static String version = "0.91";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
@@ -1309,9 +1309,6 @@ public class ConfigService implements WebUIHandler {
       "Not supported:\n" +
       " - VMFS storage pools\n" +
       " - vmdk file split into multiple 2GB extents\n" +
-      "\n" +
-      "ToDo:\n" +
-      " - VNC security (currently no password)\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
       "\n" +
