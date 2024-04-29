@@ -1387,6 +1387,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("Host FQN"));
     TextField fqn = new TextField(Config.current.fqn);
     row.add(fqn);
@@ -1399,6 +1405,12 @@ public class ConfigService implements WebUIHandler {
     Button iqn_generate = new Button("Generate");
     row.add(iqn_generate);
 
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VNC Password"));
+    TextField vnc_password = new TextField(Config.current.vnc_password);
+    row.add(vnc_password);
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button save = new Button("Save");
@@ -1410,10 +1422,37 @@ public class ConfigService implements WebUIHandler {
     row.add(msg);
 
     save.addClickListener((me, cmp) -> {
+      String new_vnc_password = vmm.cleanName(vnc_password.getText());
+      if (new_vnc_password.length() != 8) {
+        vnc_password.setText(new_vnc_password);
+        errmsg.setText("Error:VNC Password must be 8 chars");
+        return;
+      }
+      errmsg.setText("");
+      String old_vnc_password = Config.current.vnc_password;
       Config.current.fqn = fqn.getText();
+      Config.current.vnc_password = new_vnc_password;
       Storage.setSystemIQN(iqn.getText());
       Config.current.save();
       msg.setText("Settings saved");
+      if (!new_vnc_password.equals(old_vnc_password)) {
+        //re-register all VMs
+        int fail_count = 0;
+        VirtualMachine[] vms = VirtualMachine.list();
+        for(VirtualMachine vm : vms) {
+          Hardware hw = vm.loadHardware();
+          if (hw == null) {
+            fail_count++;
+            continue;
+          }
+          if (!vm.reregister(hw, vmm)) {
+            fail_count++;
+          }
+        }
+        if (fail_count > 0) {
+          errmsg.setText("Warning:Unable to re-register some VMs. VNC Password change may not be updated!");
+        }
+      }
     });
 
     iqn_generate.addClickListener((me, cmp) -> {
@@ -1967,7 +2006,11 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC());
+      if (vm.getState() != VirtualMachine.STATE_ON) {
+        errmsg.setText("VM is not active");
+        return;
+      }
+      ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC() + "<br>Password:" + Config.current.vnc_password);
       ui.message_popup.setVisible(true);
     });
 

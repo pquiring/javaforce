@@ -164,6 +164,12 @@ public class VirtualMachine implements Serializable {
     return nregister(xml);
   }
 
+  public boolean reregister(Hardware hardware, VMProvider provider) {
+    String xml = createXML(this, hardware, provider);
+    JFLog.log("VirtualMachine.xml=" + xml);
+    return nregister(xml);
+  }
+
   //virDomainUndefine
   private native static boolean nunregister(String name);
   public boolean unregister() {
@@ -418,7 +424,7 @@ public class VirtualMachine implements Serializable {
       xml.append("</video>");
       //remote viewing
       if (vm.vnc != -1) {
-        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive'>");
+        xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive' password='" + provider.getVNCPassword() + "'>");
         xml.append("<listen type='address' address='0.0.0.0'/>");
         xml.append("</graphics>");
       }
@@ -467,6 +473,9 @@ public class VirtualMachine implements Serializable {
       }
       public int getVNCPort(String name) {
         return 5901;
+      }
+      public String getVNCPassword() {
+        return "password";
       }
       public String getServerHostname() {
         return "127.0.0.1";

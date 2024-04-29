@@ -184,6 +184,10 @@ public class VMM implements VMProvider {
     }
   }
 
+  public String getVNCPassword() {
+    return Config.current.vnc_password;
+  }
+
   public String getServerHostname() {
     return Config.current.fqn;
   }

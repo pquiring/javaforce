@@ -35,6 +35,8 @@ public class Config implements Serializable {
   public int vnc_start  = 10000;
   public int vnc_length = 50000;
 
+  public String vnc_password = "password";
+
   public static Password passwd;
 
   public Config() {
@@ -76,6 +78,9 @@ public class Config implements Serializable {
     }
     if (vnc_length <= 0) {
       vnc_length = 20000;
+    }
+    if (vnc_password == null) {
+      vnc_password = generate_password();
     }
     //load password
     passwd = Password.load(Password.TYPE_SYSTEM, "jfkvm");
@@ -289,5 +294,25 @@ public class Config implements Serializable {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public String generate_password() {
+    StringBuilder sb = new StringBuilder();
+    Random r = new Random();
+    for(int a=0;a<8;a++) {
+      int cls = r.nextInt(3);
+      switch (cls) {
+        case 0:  //number
+          sb.append((char)('0' + r.nextInt(10)));
+          break;
+        case 1:  //lower case
+          sb.append((char)('a' + r.nextInt(26)));
+          break;
+        case 2:  //upper case
+          sb.append((char)('A' + r.nextInt(26)));
+          break;
+      }
+    }
+    return sb.toString();
   }
 }
