@@ -132,7 +132,11 @@ public class SOCKS {
         if (read < 0) throw new Exception("bad read");
         if (read > 0) totalread += read;
       }
-      return reply[1] == 0x00;
+      boolean ok = reply[1] == 0x00;
+      if (!ok) {
+        JFLog.log("SOCKS:bind:denied.");
+      }
+      return ok;
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -169,7 +173,10 @@ public class SOCKS {
         if (read < 0) throw new Exception("bad read");
         if (read > 0) totalread += read;
       }
-      if (reply[1] != 0x00) return false;
+      if (reply[1] != 0x00) {
+        JFLog.log("SOCKS:bind:1st reply denied.");
+        return false;
+      }
       //second reply
       totalread = 0;
       while (totalread != reply.length) {
@@ -177,7 +184,11 @@ public class SOCKS {
         if (read < 0) throw new Exception("bad read");
         if (read > 0) totalread += read;
       }
-      return reply[1] == 0x00;
+      boolean ok = reply[1] == 0x00;
+      if (!ok) {
+        JFLog.log("SOCKS:bind:2nd reply denied.");
+      }
+      return ok;
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -205,7 +216,10 @@ public class SOCKS {
           if (read < 0) throw new Exception("bad read");
           if (read > 0) totalread += read;
         }
-        if (reply[1] == 0xff) return false;
+        if (reply[1] == 0xff) {
+          JFLog.log("SOCKS:No auth types available.");
+          return false;
+        }
       }
       //send user/pass
       {
@@ -231,7 +245,10 @@ public class SOCKS {
           if (read < 0) throw new Exception("bad read");
           if (read > 0) totalread += read;
         }
-        if (reply[1] != 0x00) return false;
+        if (reply[1] != 0x00) {
+          JFLog.log("SOCKS:Auth denied.");
+          return false;
+        }
       }
       return true;
     } catch (Exception e) {
