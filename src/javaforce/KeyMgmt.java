@@ -223,6 +223,17 @@ public class KeyMgmt {
     }
   }
 
+  public static KeyMgmt getDefaultClient() {
+    String file = JF.getUserPath() + "/.javaforce-client.ks";
+    if (new File(file).exists()) {
+      return new KeyMgmt(file, "password");
+    } else {
+      KeyParams params = new KeyParams();
+      params.dname = "CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA";
+      return create(file, "password", "client", params, "password");
+    }
+  }
+
   /** Creates new keystore with private/public keys.
    *
    * @param storefile = file name

@@ -7,7 +7,7 @@ package javaforce;
 
 public class HTTPS extends HTTP {
   static {
-    JF.initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
   }
   public boolean open(String host) {
     return open(host, 443);
@@ -19,7 +19,7 @@ public class HTTPS extends HTTP {
       if (!super.open(host, port)) {
         throw new Exception("Connect failed");
       }
-      s = JF.connectSSL(s);
+      s = JF.connectSSL(s, KeyMgmt.getDefaultClient());
       if (s == null) {
         throw new Exception("SSL Upgrade failed");
       }

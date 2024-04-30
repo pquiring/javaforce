@@ -515,7 +515,7 @@ public class POP3Server extends Thread {
           }
           cos.write("+OK Switching to TLS\r\n".getBytes());
           //upgrade connection to SSL
-          c = JF.connectSSL(c);
+          c = JF.connectSSL(c, KeyMgmt.getDefaultClient());
           cis = c.getInputStream();
           cos = c.getOutputStream();
           secure = true;

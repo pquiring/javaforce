@@ -3,7 +3,6 @@ package javaforce;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.net.ssl.*;
 
 /**
  * POP3 client class.
@@ -50,26 +49,7 @@ public class POP3 {
    * @param port = port to connect (default = 465)
    */
   public boolean connectSSL(String host, int port) throws Exception {
-    TrustManager[] trustAllCerts = new TrustManager[]{
-      new X509TrustManager() {
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-        }
-
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-        }
-      }
-    };
-    // Let us create the factory where we can set some parameters for the connection
-    SSLContext sc = SSLContext.getInstance("SSL");
-    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-//      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();  //this method will only work with trusted certs
-    SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-    SSLSocket ssl = (SSLSocket) sslsocketfactory.createSocket(host, port);
-    s = (Socket) ssl;
+    s = JF.connectSSL(s, KeyMgmt.getDefaultClient());
     is = s.getInputStream();
     br = new BufferedReader(new InputStreamReader(is));
     os = s.getOutputStream();
@@ -188,7 +168,7 @@ public class POP3 {
     if (!response.startsWith("+OK")) {
       throw new Exception("STARTTLS failed!");
     }
-    s = JF.connectSSL(s);
+    s = JF.connectSSL(s, KeyMgmt.getDefaultClient());
     is = s.getInputStream();
     os = s.getOutputStream();
   }

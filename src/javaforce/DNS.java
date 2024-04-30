@@ -395,8 +395,8 @@ public class DNS {
     //https://en.wikipedia.org/wiki/DNS_over_TLS
     JFLog.log("DNS over TLS is not working yet!");
     try {
-      JF.initHttps();
-      Socket socket = JF.connectSSL(server.getHostString(), server.getPort());
+      JF.initHttps(KeyMgmt.getDefaultClient());
+      Socket socket = JF.connectSSL(server.getHostString(), server.getPort(), KeyMgmt.getDefaultClient());
       OutputStream os = socket.getOutputStream();
       InputStream is = socket.getInputStream();
       os.write(request.getData(), 0, request.getSize());

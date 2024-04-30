@@ -30,7 +30,7 @@ public class ProxyTest {
     }
   }
   public static void main(String[] args) {
-    JF.initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
     HttpURLConnection.setFollowRedirects(false);
     load("https://example.com");
     load("https://arstechnica.com/");
