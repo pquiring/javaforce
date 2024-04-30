@@ -168,11 +168,12 @@ public class FTP {
   public boolean login(String user, String pass) throws Exception {
     cmd("user " + user);
     wait4Response();
-    if (getLastResponse().startsWith("230")) {
+    String res = getLastResponse();
+    if (res.startsWith("230")) {
       //no password required
       return true;
     }
-    if (!getLastResponse().startsWith("331")) {
+    if (!res.startsWith("331")) {
       return false;
     }
     cmd("pass " + pass);
