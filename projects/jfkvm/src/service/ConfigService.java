@@ -2015,7 +2015,7 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      if (vm.getState() != 0) {
+      if (vm.getState() != VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is already powered on.");
         return;
       }
@@ -2041,7 +2041,7 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      if (vm.getState() == 0) {
+      if (vm.getState() == VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is already stopped.");
         return;
       }
@@ -2067,7 +2067,7 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      if (vm.getState() == 0) {
+      if (vm.getState() == VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is not live.");
         return;
       }
@@ -2093,7 +2093,7 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      if (vm.getState() == 0) {
+      if (vm.getState() == VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is already powered down.");
         return;
       }
@@ -2118,6 +2118,10 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
+      if (vm.getState() != VirtualMachine.STATE_OFF) {
+        errmsg.setText("Can not data clone live VM");
+        return;
+      }
       ui.setRightPanel(vmCloneDataPanel(vm, ui));
     });
 
@@ -2132,7 +2136,7 @@ public class ConfigService implements WebUIHandler {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
-      if (vm.getState() != 0) {
+      if (vm.getState() != VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:Can not unregister a live VM.");
         return;
       }
@@ -2141,7 +2145,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         Task task = new Task("Unregister VM : " + vm.name) {
           public void doTask() {
-            if (vm.getState() != 0) {
+            if (vm.getState() != VirtualMachine.STATE_OFF) {
               setResult("Error:Can not unregister a live VM.");
               return;
             }
