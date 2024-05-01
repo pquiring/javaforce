@@ -111,8 +111,8 @@ public class KeyMgmt {
     root = alias;
   }
 
-  /** Sets default keystore type.
-   * Default = JKS.
+  /** Sets default keystore type and provider.
+   * Default = PKCS12.
    */
   public static void setKeyStoreType(String type, String provider) {
     keyStoreType = type;
