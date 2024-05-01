@@ -47,7 +47,7 @@ public class KeyMgmt {
   private String keyFile = "keystore.ks";
   private String root = "root";
 
-  private static String keyStoreType = "JKS";
+  private static String keyStoreType = "PKCS12";
   private static String keyStoreProvider = "SUN";
 
   /** Executes keytool directly */
