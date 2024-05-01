@@ -167,27 +167,6 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     map.revalidate();
   }
 
-  /** This allows connections to untrusted hosts. */
-  private void initHttps() {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-      }
-    };
-    // Let us create the factory where we can set some parameters for the connection
-    try {
-      SSLContext sc = SSLContext.getInstance("SSL");
-      sc.init(null, trustAllCerts, new java.security.SecureRandom());
-      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   private String getHost(String url) {
     //url = http://host/file...
     int i1 = url.indexOf("://");
@@ -432,7 +411,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     }
     //load URL = https://launchpad.net/ubuntu/+archivemirrors
     JFLog.log("Loading mirrors list...");
-    initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
     if (updateRepo) {
       try {
         URL url = new URI("https://launchpad.net/ubuntu/+archivemirrors").toURL();
@@ -576,7 +555,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     }
     //load URL = http://mirrors.fedoraproject.org/publiclist/Fedora/
     JFLog.log("Loading mirrors list...");
-    initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
     if (updateRepo) {
       try {
         URL url = new URI("http://mirrors.fedoraproject.org/publiclist/Fedora/").toURL();

@@ -27,7 +27,7 @@ public class MainPanel extends javax.swing.JPanel {
     tableModel = (DefaultTableModel)table.getModel();
     new File(JF.getUserPath() + "/Torrents").mkdirs();
 //    JFLog.init(JF.getUserPath() + "/.jftorrent.log", true);
-    initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
     loadConfig();
     updateList();
     startServer();
@@ -582,27 +582,6 @@ public class MainPanel extends javax.swing.JPanel {
 
     if (!startTorrent(urltorrent.getAbsolutePath(), dest.getAbsolutePath(), true, false)) return;
     addTorrent(urltorrent.getAbsolutePath(), dest.getAbsolutePath());
-  }
-
-  /** This allows connections to untrusted hosts. */
-  private void initHttps() {
-    TrustManager[] trustAllCerts = new TrustManager[] {
-      new X509TrustManager() {
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-      }
-    };
-    // Let us create the factory where we can set some parameters for the connection
-    try {
-      SSLContext sc = SSLContext.getInstance("SSL");
-      sc.init(null, trustAllCerts, new java.security.SecureRandom());
-      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
   }
 
   public void close() {

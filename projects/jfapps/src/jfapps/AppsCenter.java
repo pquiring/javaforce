@@ -22,7 +22,7 @@ public class AppsCenter extends javax.swing.JFrame {
   public AppsCenter() {
     JFLog.init(JF.getUserPath() + "/.jfapps.log", true);
     initComponents();
-    JF.initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
     setContentPane(new MainPanel());
     setPosition();
     if ((args.length > 0) && (args[0].length() > 0)) {

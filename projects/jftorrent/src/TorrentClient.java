@@ -279,7 +279,7 @@ public class TorrentClient extends Thread {
       System.exit(1);
     }
     JFLog.init(JF.getUserPath() + "/.jftorrent.log", true);
-    JF.initHttps();
+    JF.initHttps(KeyMgmt.getDefaultClient());
     TorrentClient client = new TorrentClient(args[0], args[1], true, false);
     client.start();
   }
