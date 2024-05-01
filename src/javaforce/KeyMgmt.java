@@ -47,6 +47,9 @@ public class KeyMgmt {
   private String keyFile = "keystore.ks";
   private String root = "root";
 
+  private static String keyStoreType = "JKS";
+  private static String keyStoreProvider = "SUN";
+
   /** Executes keytool directly */
   public static boolean keytool(String[] args) {
     ArrayList<String> cmd = new ArrayList<String>();
@@ -108,8 +111,24 @@ public class KeyMgmt {
     root = alias;
   }
 
+  /** Sets default keystore type.
+   * Default = JKS.
+   */
+  public static void setKeyStoreType(String type, String provider) {
+    keyStoreType = type;
+    keyStoreProvider = provider;
+  }
+
   /** Create an empty keystore and save it. */
   public void create() {
+    open(null);
+    save();
+  }
+
+  /** Create an empty keystore and save it. */
+  public void create(String file, String password) {
+    keyFile = file;
+    storePass = password.toCharArray();
     open(null);
     save();
   }
@@ -119,7 +138,7 @@ public class KeyMgmt {
    */
   public boolean open() {
     try {
-      keyStore = KeyStore.getInstance("JKS", "SUN");
+      keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
       FileInputStream fis = new FileInputStream(keyFile);
       keyStore.load(fis, storePass);
       fis.close();
@@ -138,7 +157,7 @@ public class KeyMgmt {
   public boolean open(String file, String keystorepass) {
     storePass = keystorepass.toCharArray();
     try {
-      keyStore = KeyStore.getInstance("JKS", "SUN");
+      keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
       FileInputStream fis = new FileInputStream(file);
       keyStore.load(fis, keystorepass.toCharArray());
       fis.close();
@@ -158,7 +177,7 @@ public class KeyMgmt {
   public boolean open(InputStream is, String keystorepass) {
     storePass = keystorepass.toCharArray();
     try {
-      keyStore = KeyStore.getInstance("JKS", "SUN");
+      keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
       keyStore.load(is, storePass);
       return true;
     } catch (Exception e) {
@@ -174,7 +193,7 @@ public class KeyMgmt {
    */
   public boolean open(InputStream is) {
     try {
-      keyStore = KeyStore.getInstance("JKS", "SUN");
+      keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
       keyStore.load(is, storePass);
       return true;
     } catch (Exception e) {
@@ -282,7 +301,7 @@ public class KeyMgmt {
     } else {
       try {
         KeyMgmt keys = new KeyMgmt();
-        keys.keyStore = KeyStore.getInstance("JKS", "SUN");
+        keys.keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
         KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
         gen.initialize(2048);
         KeyPair pair = gen.generateKeyPair();
@@ -345,7 +364,7 @@ public class KeyMgmt {
     } else {
       try {
         KeyMgmt keys = new KeyMgmt();
-        keys.keyStore = KeyStore.getInstance("JKS", "SUN");
+        keys.keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
         KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
         gen.initialize(2048);
         KeyPair pair = gen.generateKeyPair();
@@ -415,7 +434,7 @@ public class KeyMgmt {
     } else {
       try {
         KeyMgmt keys = new KeyMgmt();
-        keys.keyStore = KeyStore.getInstance("JKS", "SUN");
+        keys.keyStore = KeyStore.getInstance(keyStoreType, keyStoreProvider);
         KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
         gen.initialize(2048);
         KeyPair pair = gen.generateKeyPair();

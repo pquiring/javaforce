@@ -444,8 +444,8 @@ public class KeyMgr extends javax.swing.JDialog {
         break;
       }
       case "create": {
-        KeyMgmt keys = new KeyMgmt(args[1], args[2]);
-        keys.create();
+        KeyMgmt keys = new KeyMgmt();
+        keys.create(args[1], args[2]);
         KeyMgr dialog = new KeyMgr(keys);
         dialog.setVisible(true);
         break;
@@ -484,7 +484,7 @@ public class KeyMgr extends javax.swing.JDialog {
   }
 
   private void do_gen(boolean gen_root) {
-    if (keys.contains(root)) {
+    if (gen_root && keys.contains(root)) {
       if (!JFAWT.showConfirm("Replace root keys", "Replacing root keys will invalidate all client keys!\r\nAre you sure?")) {
         return;
       }
