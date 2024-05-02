@@ -132,6 +132,12 @@ public class ConfigService implements WebUIHandler {
     public Runnable device_pci_init;
     public Runnable device_complete;
 
+    public PopupPanel device_addr_pci_popup;
+    public PopupPanel device_addr_usb_popup;
+    public Runnable device_addr_init;
+    public Address device_addr_addr;
+    public Runnable device_addr_complete;
+
     public Hardware hardware;  //editing VM hardware
 
     public NetworkInterface[] nics_iface;
@@ -185,6 +191,12 @@ public class ConfigService implements WebUIHandler {
 
     ui.device_pci_popup = device_pci_PopupPanel(ui);
     panel.add(ui.device_pci_popup);
+
+    ui.device_addr_pci_popup = device_adv_pci_PopupPanel(ui);
+    panel.add(ui.device_addr_pci_popup);
+
+    ui.device_addr_usb_popup = device_adv_usb_PopupPanel(ui);
+    panel.add(ui.device_addr_usb_popup);
 
     int topSize = client.getHeight() - 128;
     SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
@@ -1134,6 +1146,146 @@ public class ConfigService implements WebUIHandler {
     });
     cancel.addClickListener((me, cmp) -> {
       ui.device_pci_popup.setVisible(false);
+    });
+
+    return panel;
+  }
+
+  //PCI Address : domain, bus, slot, function
+  private PopupPanel device_adv_pci_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("PCI Device Guest Address");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    CheckBox auto = new CheckBox("Auto");
+    row.add(auto);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Domain"));
+    TextField domain = new TextField("");
+    row.add(domain);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Bus"));
+    TextField bus = new TextField("");
+    row.add(bus);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Slot"));
+    TextField slot = new TextField("");
+    row.add(slot);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Function"));
+    TextField function = new TextField("");
+    row.add(function);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Accept");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    ui.device_addr_init = () -> {
+      if (ui.device_addr_addr == null) {
+        ui.device_addr_addr = new Address();
+      }
+      auto.setSelected(ui.device_addr_addr.getType().equals("auto"));
+      domain.setText(ui.device_addr_addr.getDomain());
+      bus.setText(ui.device_addr_addr.getBus(true));
+      slot.setText(ui.device_addr_addr.getSlot());
+      function.setText(ui.device_addr_addr.getFunction());
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      boolean _auto = auto.isSelected();
+      String _domain = Address.cleanHex(domain.getText(), 0xffff);
+      String _bus = Address.cleanHex(bus.getText(), 0xff);
+      String _slot = Address.cleanHex(slot.getText(), 0xff);
+      String _function = Address.cleanHex(function.getText(), 0xf);
+      if (_auto) {
+        ui.device_addr_addr.addr_type = "auto";
+      } else {
+        ui.device_addr_addr.addr_type = "pci";
+      }
+      ui.device_addr_addr.domain = _domain;
+      ui.device_addr_addr.bus = _bus;
+      ui.device_addr_addr.slot = _slot;
+      ui.device_addr_addr.function = _function;
+
+      ui.device_addr_pci_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.device_addr_pci_popup.setVisible(false);
+    });
+
+    return panel;
+  }
+
+  //USB : bus, port
+  private PopupPanel device_adv_usb_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("USB Device Guest Address");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    CheckBox auto = new CheckBox("Auto");
+    row.add(auto);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Bus"));
+    TextField bus = new TextField("");
+    row.add(bus);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Port"));
+    TextField port = new TextField("");
+    row.add(port);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Accept");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    ui.device_addr_init = () -> {
+      if (ui.device_addr_addr == null) {
+        ui.device_addr_addr = new Address();
+      }
+      auto.setSelected(ui.device_addr_addr.getType().equals("auto"));
+      bus.setText(ui.device_addr_addr.getBus(false));
+      port.setText(ui.device_addr_addr.getPort());
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      boolean _auto = auto.isSelected();
+      String _bus = Address.cleanDec(bus.getText(), 0xff);
+      String _port = Address.cleanDec(port.getText(), 0xff);
+      if (_auto) {
+        ui.device_addr_addr.addr_type = "auto";
+      } else {
+        ui.device_addr_addr.addr_type = "usb";
+      }
+      ui.device_addr_addr.bus = _bus;
+      ui.device_addr_addr.port = _port;
+
+      ui.device_addr_pci_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.device_addr_pci_popup.setVisible(false);
     });
 
     return panel;
@@ -2384,6 +2536,8 @@ public class ConfigService implements WebUIHandler {
     net_ops.add(b_net_add);
     Button b_net_edit = new Button("Edit");
     net_ops.add(b_net_edit);
+    Button b_net_addr = new Button("Address");
+    net_ops.add(b_net_addr);
     Button b_net_delete = new Button("Delete");
     net_ops.add(b_net_delete);
     ListBox net_list = new ListBox();
@@ -2400,6 +2554,8 @@ public class ConfigService implements WebUIHandler {
     dev_ops.add(b_dev_add_usb);
     Button b_dev_add_pci = new Button("Add PCI");
     dev_ops.add(b_dev_add_pci);
+    Button b_dev_addr = new Button("Address");
+    dev_ops.add(b_dev_addr);
     Button b_dev_delete = new Button("Delete");
     dev_ops.add(b_dev_delete);
     ListBox dev_list = new ListBox();
@@ -2492,6 +2648,13 @@ public class ConfigService implements WebUIHandler {
       ui.vm_network_init.run();
       ui.vm_network_popup.setVisible(true);
     });
+    b_net_addr.addClickListener((me, cmp) -> {
+      int idx = net_list.getSelectedIndex();
+      if (idx == -1) return;
+      ui.vm_network = hardware.networks.get(idx);
+      ui.device_addr_addr = ui.vm_network;
+      ui.device_addr_pci_popup.setVisible(true);
+    });
     b_net_delete.addClickListener((me, cmp) -> {
       int idx = net_list.getSelectedIndex();
       if (idx == -1) return;
@@ -2515,6 +2678,20 @@ public class ConfigService implements WebUIHandler {
         dev_list.add(ui.device.toString());
       };
       ui.device_pci_popup.setVisible(true);
+    });
+    b_dev_addr.addClickListener((me, cmp) -> {
+      int idx = dev_list.getSelectedIndex();
+      if (idx == -1) return;
+      Device device = ui.hardware.devices.get(idx);
+      ui.device_addr_addr = device.guest_addr;
+      switch (device.type) {
+        case Device.TYPE_PCI:
+          ui.device_addr_pci_popup.setVisible(true);
+          break;
+        case Device.TYPE_USB:
+          ui.device_addr_usb_popup.setVisible(true);
+          break;
+      }
     });
     b_dev_delete.addClickListener((me, cmp) -> {
       int idx = dev_list.getSelectedIndex();
