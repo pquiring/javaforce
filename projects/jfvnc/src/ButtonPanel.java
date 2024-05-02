@@ -26,7 +26,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
-class ButtonPanel extends Panel implements ActionListener {
+import javax.swing.*;
+
+class ButtonPanel extends JPanel implements ActionListener {
 
   VncViewer viewer;
   Button disconnectButton;

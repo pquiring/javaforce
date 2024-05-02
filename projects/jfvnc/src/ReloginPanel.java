@@ -24,12 +24,13 @@
 //
 import java.awt.*;
 import java.awt.event.*;
-import java.applet.*;
+
+import javax.swing.*;
 
 //
 // The panel which implements the Relogin button
 //
-class ReloginPanel extends Panel implements ActionListener {
+class ReloginPanel extends JPanel implements ActionListener {
 
   Button reloginButton;
   Button closeButton;

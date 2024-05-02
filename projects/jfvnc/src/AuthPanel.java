@@ -20,10 +20,12 @@
 import java.awt.*;
 import java.awt.event.*;
 
+import javax.swing.*;
+
 //
 // The panel which implements the user authentication scheme
 //
-class AuthPanel extends Panel implements ActionListener {
+class AuthPanel extends JPanel implements ActionListener {
 
   Label title, retry, prompt;
   TextField password;

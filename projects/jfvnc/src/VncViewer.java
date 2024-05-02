@@ -29,7 +29,9 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 
-public class VncViewer extends java.awt.Panel implements java.lang.Runnable, WindowListener {
+import javax.swing.*;
+
+public class VncViewer extends JPanel implements java.lang.Runnable, WindowListener {
 
   //
   // main() is called when run as a java program from the command line.

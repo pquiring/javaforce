@@ -25,8 +25,9 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class RecordingFrame extends Frame
-        implements WindowListener, ActionListener {
+import javax.swing.*;
+
+class RecordingFrame extends JFrame implements WindowListener, ActionListener {
 
   boolean recording;
 

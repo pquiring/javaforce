@@ -29,8 +29,9 @@
 import java.awt.*;
 import java.awt.event.*;
 
-class OptionsFrame extends Frame
-        implements WindowListener, ActionListener, ItemListener {
+import javax.swing.*;
+
+class OptionsFrame extends JFrame implements WindowListener, ActionListener, ItemListener {
 
   static String[] names = {
     "Encoding",

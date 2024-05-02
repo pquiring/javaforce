@@ -24,8 +24,9 @@
 import java.awt.*;
 import java.awt.event.*;
 
-class ClipboardFrame extends Frame
-        implements WindowListener, ActionListener {
+import javax.swing.*;
+
+class ClipboardFrame extends JFrame implements WindowListener, ActionListener {
 
   TextArea textArea;
   Button clearButton, closeButton;
