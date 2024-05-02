@@ -39,6 +39,7 @@ public class Network extends Address implements Serializable {
     StringBuilder xml = new StringBuilder();
     xml.append("<interface type='bridge'>");
     xml.append("<source bridge='" + bridge.name + "'/>");
+    xml.append(getAddressXML());
     if (bridge.type.equals("os")) {
       xml.append("<virtualport type='openvswitch'/>");
       if (vlan != 0) {

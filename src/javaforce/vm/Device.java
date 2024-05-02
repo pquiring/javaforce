@@ -1,7 +1,11 @@
 package javaforce.vm;
 
 /** Host Device (USB or PCI).
- *
+ * 
+ * this.Address = host device address.
+ * 
+ * Address guest_addr = address within guest.
+ * 
  * @author pquiring
  */
 
@@ -17,6 +21,7 @@ public class Device extends Address implements Serializable {
   public int type;
   public String name;
   public String desc;
+  public Address guest_addr;
   public transient String xml;
 
   public static final int TYPE_USB = 1;
@@ -116,6 +121,9 @@ public class Device extends Address implements Serializable {
     xml.append("<source>");
     xml.append(getAddressXML());
     xml.append("</source>");
+    if (guest_addr != null) {
+      xml.append(guest_addr.getAddressXML());
+    }
     xml.append("</hostdev>");
     return xml.toString();
   }

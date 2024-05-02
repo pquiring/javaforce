@@ -27,6 +27,10 @@ public class Address implements Serializable {
    * @param function = 0x0
    */
   public Address(String domain, String bus, String slot, String function) {
+    setPCIAddress(domain, bus, slot, function);
+  }
+  
+  public void setPCIAddress(String domain, String bus, String slot, String function) {
     addr_type = "pci";
     this.domain = domain;
     this.bus = bus;
@@ -39,9 +43,22 @@ public class Address implements Serializable {
    * @param port = 1
    */
   public Address(String bus, String port) {
+    setUSBAddress(bus, port);
+  }
+  
+  public void setUSBAddress(String bus, String port) {
     addr_type = "usb";
     this.bus = bus;
     this.port = port;
+  }
+  
+  public void setAutoAddress() {
+    addr_type = "auto";
+    domain = null;
+    bus = null;
+    slot = null;
+    function = null;
+    port = null;
   }
 
   public String getAddressXML() {
