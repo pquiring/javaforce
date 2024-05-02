@@ -25,6 +25,9 @@ public class PopupPanel extends Panel {
   public void setModal(boolean state) {
     modal = state;
   }
+  public void setOnClose(Runnable onClose) {
+    titleBar.setOnClose(onClose);
+  }
   public String html() {
     StringBuilder sb = new StringBuilder();
     if (modal) {

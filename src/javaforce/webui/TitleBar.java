@@ -10,6 +10,7 @@ public class TitleBar extends Container {
   private Button button;
   private Pad pad;
   private PopupPanel panel;
+  private Runnable onClose;
   public TitleBar(String title, PopupPanel panel) {
     this.panel = panel;
     setClass("titlebar");
@@ -24,12 +25,19 @@ public class TitleBar extends Container {
     button.addClass("right");
     add(button);
     button.addClickListener((e, c) -> {
-      panel.setVisible(false);
+      if (onClose != null) {
+        onClose.run();
+      } else {
+        panel.setVisible(false);
+      }
     });
   }
   public void init() {
     super.init();
     addEvent("onmousedown", "onmousedownPopupPanel(event, " + panel.id + ");");
+  }
+  public void setOnClose(Runnable onClose) {
+    this.onClose = onClose;
   }
   public void setHeight(int h) {
     super.setHeight(h);
