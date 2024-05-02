@@ -1283,10 +1283,10 @@ public class ConfigService implements WebUIHandler {
       ui.device_addr_addr.bus = _bus;
       ui.device_addr_addr.port = _port;
 
-      ui.device_addr_pci_popup.setVisible(false);
+      ui.device_addr_usb_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
-      ui.device_addr_pci_popup.setVisible(false);
+      ui.device_addr_usb_popup.setVisible(false);
     });
 
     return panel;
