@@ -45,7 +45,7 @@ public class Address implements Serializable {
   }
 
   public String getAddressXML() {
-    if (addr_type == null) return "";
+    if (addr_type == null || addr_type.equals("auto")) return "";
     StringBuilder xml = new StringBuilder();
     switch (addr_type) {
       case "pci":
