@@ -134,7 +134,8 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel device_addr_pci_popup;
     public PopupPanel device_addr_usb_popup;
-    public Runnable device_addr_init;
+    public Runnable device_addr_pci_init;
+    public Runnable device_addr_usb_init;
     public Address device_addr_addr;
     public Runnable device_addr_complete;
 
@@ -1194,7 +1195,7 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.device_addr_init = () -> {
+    ui.device_addr_pci_init = () -> {
       if (ui.device_addr_addr == null) {
         ui.device_addr_addr = new Address();
       }
@@ -1261,7 +1262,7 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.device_addr_init = () -> {
+    ui.device_addr_usb_init = () -> {
       if (ui.device_addr_addr == null) {
         ui.device_addr_addr = new Address();
       }
@@ -2653,6 +2654,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       ui.vm_network = hardware.networks.get(idx);
       ui.device_addr_addr = ui.vm_network;
+      ui.device_addr_pci_init.run();
       ui.device_addr_pci_popup.setVisible(true);
     });
     b_net_delete.addClickListener((me, cmp) -> {
@@ -2686,9 +2688,11 @@ public class ConfigService implements WebUIHandler {
       ui.device_addr_addr = device.guest_addr;
       switch (device.type) {
         case Device.TYPE_PCI:
+          ui.device_addr_pci_init.run();
           ui.device_addr_pci_popup.setVisible(true);
           break;
         case Device.TYPE_USB:
+          ui.device_addr_usb_init.run();
           ui.device_addr_usb_popup.setVisible(true);
           break;
       }
