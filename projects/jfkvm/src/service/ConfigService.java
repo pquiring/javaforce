@@ -257,6 +257,9 @@ public class ConfigService implements WebUIHandler {
       ui.message_popup.setVisible(false);
     });
     ui.message_message = popup_msg;
+    panel.setOnClose( () -> {
+      popup_b_action.click();
+    });
     return panel;
   }
 
@@ -294,6 +297,9 @@ public class ConfigService implements WebUIHandler {
     });
     ui.confirm_message = popup_msg;
     ui.confirm_button = popup_b_action;
+    panel.setOnClose( () -> {
+      popup_b_cancel.click();
+    });
     return panel;
   }
 
@@ -477,6 +483,9 @@ public class ConfigService implements WebUIHandler {
       ui.vm_disk_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -592,6 +601,9 @@ public class ConfigService implements WebUIHandler {
       ui.vm_network_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -707,6 +719,9 @@ public class ConfigService implements WebUIHandler {
       ui.network_vlan_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -838,6 +853,9 @@ public class ConfigService implements WebUIHandler {
       ui.network_bridge_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -1029,6 +1047,9 @@ public class ConfigService implements WebUIHandler {
       ui.network_virtual_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -1089,6 +1110,9 @@ public class ConfigService implements WebUIHandler {
       ui.device_usb_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -1149,6 +1173,9 @@ public class ConfigService implements WebUIHandler {
       ui.device_pci_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -1228,6 +1255,9 @@ public class ConfigService implements WebUIHandler {
       ui.device_addr_pci_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
@@ -1289,6 +1319,9 @@ public class ConfigService implements WebUIHandler {
       ui.device_addr_usb_popup.setVisible(false);
     });
 
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
     return panel;
   }
 
