@@ -642,6 +642,9 @@ public abstract class Component {
     click = Arrays.copyOf(click, click.length + 1);
     click[click.length-1] = handler;
   }
+  public void click() {
+    onClick(null, new MouseEvent());
+  }
 
   protected void onMouseUp(String[] args) {
     for(int a=0;a<mouseUp.length;a++) {
