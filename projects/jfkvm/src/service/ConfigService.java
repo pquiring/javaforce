@@ -4269,6 +4269,8 @@ public class ConfigService implements WebUIHandler {
 //      tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
+      Button help = new Button("Help");
+      tools.add(help);
 
       row = new Row();
       tab.add(row);
@@ -4331,6 +4333,10 @@ public class ConfigService implements WebUIHandler {
         ui.confirm_message.setText("Delete Bridge:" + nic.name);
         ui.confirm_popup.setVisible(true);
       });
+
+      help.addClickListener((me, cmp) -> {
+        cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
+      });
     }
   }
 
@@ -4351,6 +4357,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(edit);
       Button delete = new Button("Delete");
       tools.add(delete);
+      Button help = new Button("Help");
+      tools.add(help);
 
       row = new Row();
       tab.add(row);
@@ -4409,6 +4417,9 @@ public class ConfigService implements WebUIHandler {
         ui.confirm_message.setText("Delete VLAN:" + nic.name);
         ui.confirm_popup.setVisible(true);
       });
+      help.addClickListener((me, cmp) -> {
+        cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
+      });
     }
   }
 
@@ -4450,6 +4461,8 @@ public class ConfigService implements WebUIHandler {
 */
       Button delete = new Button("Delete");
       tools.add(delete);
+      Button help = new Button("Help");
+      tools.add(help);
 
       row = new Row();
       tab.add(row);
@@ -4571,6 +4584,10 @@ public class ConfigService implements WebUIHandler {
           }
         };
         ui.confirm_popup.setVisible(true);
+      });
+
+      help.addClickListener((me, cmp) -> {
+        cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
       });
     }
   }
