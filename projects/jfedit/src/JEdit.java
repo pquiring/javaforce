@@ -510,8 +510,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     try {
       File file = pages.get(idx).filename;
       if (!file.exists()) return;
+      int size = (int)file.length();
       FileInputStream fis = new FileInputStream(file);
-      int size = fis.available();
       if (size > 1024 * 1024) {
         if (!JFAWT.showConfirm("Warning", "File is > 1MB, load anyways?")) {
           closepage(idx);
@@ -523,7 +523,13 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       fis.close();
       pages.get(idx).ts = pages.get(idx).filename.lastModified();
       bLoading = true;
-      String str = new String(txt, "UTF-8");
+      String encoding = "UTF-8";
+      if (size >= 2) {
+        if (((txt[0] & 0xff) == 0xff && (txt[1] & 0xff) == 0xfe) || (txt[1] == 0)) {
+          encoding = "UTF-16";
+        }
+      }
+      String str = new String(txt, encoding);
       boolean bUnix = Settings.settings.bUnix;
       if (Settings.settings.bPreserve) {
         int lf = str.indexOf("\n");

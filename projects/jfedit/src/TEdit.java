@@ -574,17 +574,24 @@ public class TEdit implements KeyEvents {
       try {
         File file = new File(this.filename);
         if (!file.exists()) throw new Exception("file not found");
+        int size = (int)file.length();
         FileInputStream fis = new FileInputStream(this.filename);
-        byte data[] = JF.readAll(fis);
+        byte txt[] = JF.readAll(fis);
         fis.close();
         crlf = false;
-        for(int a=0;a<data.length;a++) {
-          if (data[a] == 13) {
+        for(int a=0;a<txt.length;a++) {
+          if (txt[a] == 13) {
             crlf = true;
             break;
           }
         }
-        String str = new String(data);
+        String encoding = "UTF-8";
+        if (size >= 2) {
+        if (((txt[0] & 0xff) == 0xff && (txt[1] & 0xff) == 0xfe) || (txt[1] == 0)) {
+            encoding = "UTF-16";
+          }
+        }
+        String str = new String(txt, encoding);
         if (crlf) {
           str = str.replaceAll("\r", "");
         }
