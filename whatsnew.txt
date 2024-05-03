@@ -1,5 +1,11 @@
 What's new...
 
+May 3/2024 : JF/57.2
+ - jfKVM/0.92 (RC2)
+   - added Address control of device in guest VM
+ - jfSOCKS/0.17
+   - fix KeyMgr issues
+
 Apr 29/2024 : JF/57.1
  - jfKVM/0.91 (RC1)
    - add : VNC password
