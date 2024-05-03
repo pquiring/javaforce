@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfsshcfg.ico" />
+    <Icon Id="icon.ico" SourceFile="jfssh.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
@@ -22,7 +22,7 @@
         <File Id="jfsshsvc.exe" Source="jfsshsvc.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule22" Name="jfSSHServer" Protocol="tcp" Port="22" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
-        <File Id="jfsshcfg.exe" Source="jfsshcfg.exe" />
+        <File Id="jfssh.exe" Source="jfssh.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="sshdcore.jar" Source="sshd-core.jar" />
         <File Id="sshdcommon.jar" Source="sshd-common.jar" />
@@ -42,7 +42,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{D88F2BF2-FB0C-488E-8C90-94EAB521386C}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSSHServer" Description="SSH Server" Target="[APPLICATIONROOTDIRECTORY]jfsshcfg.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSSHServer" Description="SSH Server" Target="[APPLICATIONROOTDIRECTORY]jfssh.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfSSHServer" Name="installed" Type="integer" Value="1" KeyPath="yes" />
