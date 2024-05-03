@@ -1,3 +1,8 @@
+2024-05-03 : 0.92 (RC2) released!
+  - new : added Address option for Network and Host devices
+    - allows control over device address within guest VM
+  - UI fixes
+
 2024-04-29 : 0.91 (RC1) released!
   - new : added VNC password
 
