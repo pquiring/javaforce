@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import javaforce.awt.JFAWT;
 
 import javax.swing.*;
 
@@ -42,6 +43,8 @@ public class VncViewer extends JPanel implements java.lang.Runnable, WindowListe
     v.mainArgs = argv;
     v.init();
   }
+
+  public VncViewer() {}
 
   String[] mainArgs;
 
@@ -157,6 +160,8 @@ public class VncViewer extends JPanel implements java.lang.Runnable, WindowListe
       vncFrame.add(desktopScrollPane);
       vncFrame.setTitle(rfb.desktopName);
       vncFrame.pack();
+      vncFrame.setLocation(0, 0);
+      vncFrame.setVisible(true);
       vc.resizeDesktopFrame();
 
       if (showControls) {
@@ -240,6 +245,7 @@ public class VncViewer extends JPanel implements java.lang.Runnable, WindowListe
     // Authentication failures would be fatal.
     if (passwordParam != null) {
       vncFrame.pack();
+      JFAWT.centerWindow(vncFrame);
       vncFrame.setVisible(true);
       if (!tryAuthenticate(passwordParam)) {
         throw new Exception("VNC authentication failed");
@@ -261,6 +267,7 @@ public class VncViewer extends JPanel implements java.lang.Runnable, WindowListe
     vncContainer.add(authenticator);
 
     vncFrame.pack();
+    JFAWT.centerWindow(vncFrame);
     vncFrame.setVisible(true);
 
     while (true) {
