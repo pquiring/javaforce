@@ -1,5 +1,8 @@
 Whats new ???
 
+May 3, 2024 : 0.17
+  - fix : KeyMgr issues
+
 Apr 27, 2024 : 0.16
   - new : forward secure services use configured SSL keys
 
