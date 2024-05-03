@@ -565,7 +565,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private boolean findagain(boolean quiet) {
     int idx = getidx();
-    if (findstr == null) return false;
+    if (findstr == null || findstr.length() == 0) return false;
     String txt = pages.get(idx).txt.getText();
     int txtlen = txt.length();
     int findstrlen = findstr.length();
