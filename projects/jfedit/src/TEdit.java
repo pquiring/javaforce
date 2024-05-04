@@ -587,7 +587,7 @@ public class TEdit implements KeyEvents {
         }
         String encoding = "UTF-8";
         if (size >= 2) {
-        if (((txt[0] & 0xff) == 0xff && (txt[1] & 0xff) == 0xfe) || (txt[1] == 0)) {
+          if (((txt[0] & 0xff) == 0xff && (txt[1] & 0xff) == 0xfe) || (txt[1] == 0)) {
             encoding = "UTF-16";
           }
         }
