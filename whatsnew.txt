@@ -1,5 +1,14 @@
 What's new...
 
+May 4/2024 : JF/57.3
+  - jfKVM/0.93
+    - added controllers
+  - jfEdit/0.21
+    - support UTF-16 files
+  - jfSSH/0.3
+    - fix msi package
+  - May the Forth be with you!
+
 May 3/2024 : JF/57.2
  - jfKVM/0.92 (RC2)
    - added Address control of device in guest VM
