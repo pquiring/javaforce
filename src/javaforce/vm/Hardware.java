@@ -179,11 +179,7 @@ public class Hardware implements Serializable {
     for(Disk disk : disks) {
       disk.target_dev = String.format("sd%c", 'a' + idx);
       if (os == OS_WINDOWS) {
-        if (disk.type == Disk.TYPE_ISO) {
-          disk.target_bus = "ide";
-        } else {
-          disk.target_bus = "sata";
-        }
+        disk.target_bus = "sata";
       } else {
         disk.target_bus = "scsi";
       }
