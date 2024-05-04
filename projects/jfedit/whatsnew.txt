@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+5-4-2024 : v0.21
+  - new : support UTF-16 files
+
 2-6-2023 : v0.20
   - add : project panel
 

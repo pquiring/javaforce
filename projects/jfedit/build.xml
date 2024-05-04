@@ -7,7 +7,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.20"/>
+  <property name="version" value="0.21"/>
 
   <property name="project2" value="build-textedit"/>
 
