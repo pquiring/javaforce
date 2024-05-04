@@ -1411,8 +1411,8 @@ public class ConfigService implements WebUIHandler {
       int idx = model.getSelectedIndex();
       if (idx == -1) return;
       ui.ctrl.model = model.getSelectedText();
-      if (ui.device_complete != null) {
-        ui.device_complete.run();
+      if (ui.ctrl_model_complete != null) {
+        ui.ctrl_model_complete.run();
       }
       ui.ctrl_model_popup.setVisible(false);
     });
@@ -2722,7 +2722,7 @@ public class ConfigService implements WebUIHandler {
     ListBox ctrl_list = new ListBox();
     ctrls.add(ctrl_list);
     for(Controller ctrl : hardware.controllers) {
-      dev_list.add(ctrl.toString());
+      ctrl_list.add(ctrl.toString());
     }
 
     //save / cancel
