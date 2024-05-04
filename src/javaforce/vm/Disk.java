@@ -19,7 +19,7 @@ public class Disk implements Serializable {
   public Size size;
   public int boot_order;  //0=none 1=first etc.
   public String target_dev = "sd%c";
-  public String target_bus = "scsi";
+  public String target_bus = "auto";
 
   public static final int TYPE_VMDK = 0;
   public static final int TYPE_QCOW2 = 1;
@@ -146,12 +146,23 @@ public class Disk implements Serializable {
     }
   }
 
-  public String getHardwareXML() {
+  public String getHardwareXML(int os) {
     StringBuilder xml = new StringBuilder();
+    String _dev = target_dev;
+    String _bus = target_bus;
+
+    if (target_bus == null || target_bus.equals("auto")) {
+      if (os == Hardware.OS_WINDOWS) {
+        _bus = "sata";
+      } else {
+        _bus = "scsi";
+      }
+    }
+
     xml.append("<disk type='file' device='" + getDeviceType() + "'>");
     xml.append("<source file='" + getPath2() + "'>");
     xml.append("</source>");
-    xml.append("<target dev='" + target_dev + "' bus='" + target_bus + "'/>");
+    xml.append("<target dev='" + _dev + "' bus='" + _bus + "'/>");
     if (boot_order > 0) {
       xml.append("<boot order='" + boot_order + "'/>");
     }

@@ -430,7 +430,7 @@ public class VirtualMachine implements Serializable {
       }
       if (hardware.disks != null) {
         for(Disk drive : hardware.disks) {
-          xml.append(drive.getHardwareXML());
+          xml.append(drive.getHardwareXML(hardware.os));
         }
       }
       if (hardware.networks != null) {

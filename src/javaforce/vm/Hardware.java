@@ -186,11 +186,6 @@ public class Hardware implements Serializable {
     int idx = 0;
     for(Disk disk : disks) {
       disk.target_dev = String.format("sd%c", 'a' + idx);
-      if (os == OS_WINDOWS) {
-        disk.target_bus = "sata";
-      } else {
-        disk.target_bus = "scsi";
-      }
       idx++;
     }
   }

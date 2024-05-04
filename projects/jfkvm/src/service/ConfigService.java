@@ -139,10 +139,12 @@ public class ConfigService implements WebUIHandler {
     public Address device_addr_addr;
     public Runnable device_addr_complete;
 
+    public String[] ctrl_models;
+    public String ctrl_type;
     public Controller ctrl;
-    public PopupPanel ctrl_scsi_popup;
-    public Runnable ctrl_scsi_init;
-    public Runnable ctrl_scsi_complete;
+    public PopupPanel ctrl_model_popup;
+    public Runnable ctrl_model_init;
+    public Runnable ctrl_model_complete;
 
     public Hardware hardware;  //editing VM hardware
 
@@ -204,8 +206,8 @@ public class ConfigService implements WebUIHandler {
     ui.device_addr_usb_popup = device_adv_usb_PopupPanel(ui);
     panel.add(ui.device_addr_usb_popup);
 
-    ui.ctrl_scsi_popup = ctrl_scsi_PopupPanel(ui);
-    panel.add(ui.ctrl_scsi_popup);
+    ui.ctrl_model_popup = ctrl_scsi_PopupPanel(ui);
+    panel.add(ui.ctrl_model_popup);
 
     int topSize = client.getHeight() - 128;
     SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
@@ -1334,14 +1336,20 @@ public class ConfigService implements WebUIHandler {
   }
 
   private PopupPanel ctrl_scsi_PopupPanel(UI ui) {
-    PopupPanel panel = new PopupPanel("SCSI Controller");
+    PopupPanel panel = new PopupPanel("Controller");
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Model"));
+    row.add(new Label("Type:"));
+    Label type = new Label("");
+    row.add(type);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Model:"));
     ComboBox model = new ComboBox();
     row.add(model);
 
@@ -1352,21 +1360,22 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
-    ui.ctrl_scsi_init = () -> {
+    ui.ctrl_model_init = () -> {
       boolean create = ui.ctrl == null;
+      type.setText(ui.ctrl_type);
       String _sel = null;
       if (create) {
         _sel = "";
         accept.setText("Create");
-        ui.ctrl = new Controller("scsi", "auto");
+        ui.ctrl = new Controller(ui.ctrl_type, "auto");
       } else {
         _sel = ui.ctrl.model;
         accept.setText("Edit");
       }
-      String[] _models = Controller.get_scsi_models();
       int idx = 0;
       int _sel_idx = -1;
-      for(String _model: _models) {
+      model.clear();
+      for(String _model: ui.ctrl_models) {
         if (_model.equals(_sel)) {
           _sel_idx = idx;
         }
@@ -1385,10 +1394,10 @@ public class ConfigService implements WebUIHandler {
       if (ui.device_complete != null) {
         ui.device_complete.run();
       }
-      ui.ctrl_scsi_popup.setVisible(false);
+      ui.ctrl_model_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
-      ui.ctrl_scsi_popup.setVisible(false);
+      ui.ctrl_model_popup.setVisible(false);
     });
 
     panel.setOnClose( () -> {
@@ -2673,16 +2682,25 @@ public class ConfigService implements WebUIHandler {
     //devices
     InnerPanel ctrls = new InnerPanel("Controllers");
     panel.add(ctrls);
+    row = new Row();
+    row.add(new Label("NOTE:Controllers are automatically added as needed"));
+    ctrls.add(row);
     ToolBar ctrl_ops = new ToolBar();
-    devices.add(ctrl_ops);
-    Button b_ctrl_add_usb = new Button("Add SCSI");
-    dev_ops.add(b_ctrl_add_usb);
+    ctrls.add(ctrl_ops);
+    Button b_ctrl_add_scsi = new Button("Add SCSI");
+    ctrl_ops.add(b_ctrl_add_scsi);
+    Button b_ctrl_add_usb = new Button("Add USB");
+    ctrl_ops.add(b_ctrl_add_usb);
+    Button b_ctrl_add_ide = new Button("Add IDE");
+    ctrl_ops.add(b_ctrl_add_ide);
+    Button b_ctrl_edit = new Button("Edit");
+    ctrl_ops.add(b_ctrl_edit);
     Button b_ctrl_addr = new Button("Address");
-    dev_ops.add(b_ctrl_addr);
+    ctrl_ops.add(b_ctrl_addr);
     Button b_ctrl_delete = new Button("Delete");
-    dev_ops.add(b_ctrl_delete);
+    ctrl_ops.add(b_ctrl_delete);
     ListBox ctrl_list = new ListBox();
-    devices.add(ctrl_list);
+    ctrls.add(ctrl_list);
     for(Controller ctrl : hardware.controllers) {
       dev_list.add(ctrl.toString());
     }
@@ -2834,14 +2852,58 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
 
-    b_ctrl_add_usb.addClickListener((me, cmp) -> {
+    b_ctrl_add_scsi.addClickListener((me, cmp) -> {
       ui.ctrl = null;
-      ui.ctrl_scsi_init.run();
-      ui.ctrl_scsi_complete = () -> {
+      ui.ctrl_models = Controller.get_scsi_models();
+      ui.ctrl_type = "scsi";
+      ui.ctrl_model_init.run();
+      ui.ctrl_model_complete = () -> {
         ui.hardware.addController(ui.ctrl);
         ctrl_list.add(ui.ctrl.toString());
       };
-      ui.ctrl_scsi_popup.setVisible(true);
+      ui.ctrl_model_popup.setVisible(true);
+    });
+    b_ctrl_add_usb.addClickListener((me, cmp) -> {
+      ui.ctrl = null;
+      ui.ctrl_models = Controller.get_usb_models();
+      ui.ctrl_type = "usb";
+      ui.ctrl_model_init.run();
+      ui.ctrl_model_complete = () -> {
+        ui.hardware.addController(ui.ctrl);
+        ctrl_list.add(ui.ctrl.toString());
+      };
+      ui.ctrl_model_popup.setVisible(true);
+    });
+    b_ctrl_add_ide.addClickListener((me, cmp) -> {
+      ui.ctrl = null;
+      ui.ctrl_models = Controller.get_ide_models();
+      ui.ctrl_type = "ide";
+      ui.ctrl_model_init.run();
+      ui.ctrl_model_complete = () -> {
+        ui.hardware.addController(ui.ctrl);
+        ctrl_list.add(ui.ctrl.toString());
+      };
+      ui.ctrl_model_popup.setVisible(true);
+    });
+    b_ctrl_edit.addClickListener((me, cmp) -> {
+      int idx = ctrl_list.getSelectedIndex();
+      if (idx == -1) return;
+      ui.ctrl = ui.hardware.controllers.get(idx);
+      ui.ctrl_type = ui.ctrl.type;
+      switch (ui.ctrl.type) {
+        case "scsi":
+          ui.ctrl_models = Controller.get_scsi_models();
+          break;
+        case "usb":
+          ui.ctrl_models = Controller.get_usb_models();
+          break;
+        case "ide":
+          ui.ctrl_models = Controller.get_ide_models();
+          break;
+      }
+      ui.ctrl_model_init.run();
+      ui.ctrl_model_complete = () -> {};
+      ui.ctrl_model_popup.setVisible(true);
     });
     b_ctrl_addr.addClickListener((me, cmp) -> {
       int idx = ctrl_list.getSelectedIndex();

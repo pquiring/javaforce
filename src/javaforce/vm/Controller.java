@@ -49,6 +49,34 @@ public class Controller extends Address implements Serializable {
     };
   }
 
+  public static String[] get_usb_models() {
+    return new String[] {
+      "auto",
+      "piix3-uhci",
+      "piix4-uhci",
+      "ehci",
+      "ich9-ehci1",
+      "ich9-uhci1",
+      "ich9-uhci2",
+      "ich9-uhci3",
+      "vt82c686b-uhci",
+      "pci-ohci",
+      "nec-xhci",
+      "qusb1",
+      "qusb2",
+      "qemu-xhci",
+    };
+  }
+
+  public static String[] get_ide_models() {
+    return new String[] {
+      "auto",
+      "piix3",
+      "piix4",
+      "ich6"
+    };
+  }
+
   public String toString() {
     return type + ":" + model;
   }
