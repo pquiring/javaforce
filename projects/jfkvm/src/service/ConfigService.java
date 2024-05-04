@@ -1572,6 +1572,8 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button help = new Button("Help");
     tools.add(help);
+    Button license = new Button("License");
+    tools.add(license);
     Button support = new Button("Support");
     tools.add(support);
     TextArea msg = new TextArea(
@@ -1587,15 +1589,18 @@ public class ConfigService implements WebUIHandler {
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
       " - Networking : bridge, guests on VLANs\n" +
       " - Storage Pools : Local Disk Partition, NFS, iSCSI Shared Disks, Gluster Replicated Disks (vSAN)\n" +
+      " - provide guest with direct access to host devices\n" +
       " - import vmware machines\n" +
       " - live/offline compute migration\n" +
-      " - offline data migration\n" +
+      " - offline data migration/clone\n" +
       " - autostart machines\n" +
       " - iSCSI requires manual setup (see online help for more info)\n" +
       "\n" +
       "Not supported:\n" +
       " - VMFS storage pools\n" +
       " - vmdk file split into multiple 2GB extents\n" +
+      "\n" +
+      "License: LGPL\n" +
       "\n" +
       "Thanks to Broadcom for the motivation to create this project! &#x263a;\n" +  //unicode smiley face
       "\n" +
@@ -1610,6 +1615,9 @@ public class ConfigService implements WebUIHandler {
 
     help.addClickListener((me, cmp) -> {
       cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help.html");
+    });
+    license.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/license.txt");
     });
     support.addClickListener((me, cmp) -> {
       cmp.getClient().openURL("https://github.com/pquiring/javaforce/issues");
