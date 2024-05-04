@@ -2806,7 +2806,10 @@ public class ConfigService implements WebUIHandler {
       int idx = net_list.getSelectedIndex();
       if (idx == -1) return;
       ui.vm_network = hardware.networks.get(idx);
-      ui.vm_network_complete = null;
+      ui.vm_network_complete = () -> {
+        net_list.remove(idx);
+        net_list.add(idx, "net:" + ui.vm_network.network);
+      };
       ui.vm_network_init.run();
       ui.vm_network_popup.setVisible(true);
     });
