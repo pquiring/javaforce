@@ -374,6 +374,16 @@ public class ConfigService implements WebUIHandler {
     TextField boot_order = new TextField("0");
     row.add(boot_order);
 
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Interface"));
+    ComboBox bus = new ComboBox();
+    row.add(bus);
+    bus.add("auto", "auto");
+    bus.add("sata", "sata");
+    bus.add("scsi", "scsi");
+    bus.add("ide", "ide");
+
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button accept = new Button("Create");
@@ -390,6 +400,7 @@ public class ConfigService implements WebUIHandler {
         path.setText(ui.hardware.getPath());
         type.setSelectedIndex(0);
         type.setReadonly(false);
+        bus.setSelectedIndex(0);
         size.setText("100");
         size_units.setSelectedIndex(1);
         size.setReadonly(false);
@@ -408,6 +419,12 @@ public class ConfigService implements WebUIHandler {
           case Disk.TYPE_ISO: type.setSelectedIndex(2); break;
         }
         type.setReadonly(true);
+        switch (ui.vm_disk.target_bus) {
+          case "auto": bus.setSelectedIndex(0); break;
+          case "sata": bus.setSelectedIndex(1); break;
+          case "scsi": bus.setSelectedIndex(2); break;
+          case "ide": bus.setSelectedIndex(3); break;
+        }
         size.setText(Integer.toString(ui.vm_disk.size.size));
         size_units.setSelectedIndex(ui.vm_disk.size.unit - 2);
         if (ui.vm_disk.type == Disk.TYPE_ISO) {
@@ -431,6 +448,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:can not create iso files");
         return;
       }
+      String _bus = bus.getSelectedText();
       String _name = vmm.cleanName(name.getText());
       if (_name.length() == 0) {
         name.setText(_name);
@@ -474,6 +492,7 @@ public class ConfigService implements WebUIHandler {
         ui.vm_disk.type = _type;
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.boot_order = _boot_order;
+        ui.vm_disk.target_bus = _bus;
         if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), _provision)) {
           errmsg.setText("Error:Failed to create disk");
           return;
@@ -483,6 +502,7 @@ public class ConfigService implements WebUIHandler {
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.resize(vmm.getPoolByName(ui.hardware.pool));
         ui.vm_disk.boot_order = _boot_order;
+        ui.vm_disk.target_bus = _bus;
       }
       if (ui.vm_disk_complete != null) {
         ui.vm_disk_complete.run();
