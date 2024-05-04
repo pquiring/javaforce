@@ -139,6 +139,11 @@ public class ConfigService implements WebUIHandler {
     public Address device_addr_addr;
     public Runnable device_addr_complete;
 
+    public Controller ctrl;
+    public PopupPanel ctrl_scsi_popup;
+    public Runnable ctrl_scsi_init;
+    public Runnable ctrl_scsi_complete;
+
     public Hardware hardware;  //editing VM hardware
 
     public NetworkInterface[] nics_iface;
@@ -198,6 +203,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.device_addr_usb_popup = device_adv_usb_PopupPanel(ui);
     panel.add(ui.device_addr_usb_popup);
+
+    ui.ctrl_scsi_popup = ctrl_scsi_PopupPanel(ui);
+    panel.add(ui.ctrl_scsi_popup);
 
     int topSize = client.getHeight() - 128;
     SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
@@ -1317,6 +1325,70 @@ public class ConfigService implements WebUIHandler {
     });
     cancel.addClickListener((me, cmp) -> {
       ui.device_addr_usb_popup.setVisible(false);
+    });
+
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
+    return panel;
+  }
+
+  private PopupPanel ctrl_scsi_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("SCSI Controller");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Model"));
+    ComboBox model = new ComboBox();
+    row.add(model);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Create");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    ui.ctrl_scsi_init = () -> {
+      boolean create = ui.ctrl == null;
+      String _sel = null;
+      if (create) {
+        _sel = "";
+        accept.setText("Create");
+        ui.ctrl = new Controller("scsi", "auto");
+      } else {
+        _sel = ui.ctrl.model;
+        accept.setText("Edit");
+      }
+      String[] _models = Controller.get_scsi_models();
+      int idx = 0;
+      int _sel_idx = -1;
+      for(String _model: _models) {
+        if (_model.equals(_sel)) {
+          _sel_idx = idx;
+        }
+        model.add(_model, _model);
+        idx++;
+      }
+      if (_sel_idx != -1) {
+        model.setSelectedIndex(_sel_idx);
+      }
+    };
+
+    accept.addClickListener((me, cmp) -> {
+      int idx = model.getSelectedIndex();
+      if (idx == -1) return;
+      ui.ctrl.model = model.getSelectedText();
+      if (ui.device_complete != null) {
+        ui.device_complete.run();
+      }
+      ui.ctrl_scsi_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.ctrl_scsi_popup.setVisible(false);
     });
 
     panel.setOnClose( () -> {
@@ -2580,7 +2652,7 @@ public class ConfigService implements WebUIHandler {
       net_list.add("net:" + nic.network);
     }
     //devices
-    InnerPanel devices = new InnerPanel("Devices");
+    InnerPanel devices = new InnerPanel("Host Devices");
     panel.add(devices);
     ToolBar dev_ops = new ToolBar();
     devices.add(dev_ops);
@@ -2596,6 +2668,23 @@ public class ConfigService implements WebUIHandler {
     devices.add(dev_list);
     for(Device dev : hardware.devices) {
       dev_list.add(dev.toString());
+    }
+
+    //devices
+    InnerPanel ctrls = new InnerPanel("Controllers");
+    panel.add(ctrls);
+    ToolBar ctrl_ops = new ToolBar();
+    devices.add(ctrl_ops);
+    Button b_ctrl_add_usb = new Button("Add SCSI");
+    dev_ops.add(b_ctrl_add_usb);
+    Button b_ctrl_addr = new Button("Address");
+    dev_ops.add(b_ctrl_addr);
+    Button b_ctrl_delete = new Button("Delete");
+    dev_ops.add(b_ctrl_delete);
+    ListBox ctrl_list = new ListBox();
+    devices.add(ctrl_list);
+    for(Controller ctrl : hardware.controllers) {
+      dev_list.add(ctrl.toString());
     }
 
     //save / cancel
@@ -2665,6 +2754,7 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_popup.setVisible(true);
     });
+
     b_net_add.addClickListener((me, cmp) -> {
       ui.vm_network = null;
       ui.vm_network_complete = () -> {
@@ -2696,6 +2786,7 @@ public class ConfigService implements WebUIHandler {
       net_list.remove(idx);
       hardware.removeNetwork(hardware.networks.get(idx));
     });
+
     b_dev_add_usb.addClickListener((me, cmp) -> {
       ui.device = null;
       ui.device_usb_init.run();
@@ -2739,6 +2830,36 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         ui.hardware.removeDevice(device);
         dev_list.remove(idx);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    b_ctrl_add_usb.addClickListener((me, cmp) -> {
+      ui.ctrl = null;
+      ui.ctrl_scsi_init.run();
+      ui.ctrl_scsi_complete = () -> {
+        ui.hardware.addController(ui.ctrl);
+        ctrl_list.add(ui.ctrl.toString());
+      };
+      ui.ctrl_scsi_popup.setVisible(true);
+    });
+    b_ctrl_addr.addClickListener((me, cmp) -> {
+      int idx = ctrl_list.getSelectedIndex();
+      if (idx == -1) return;
+      Controller ctrl = ui.hardware.controllers.get(idx);
+      ui.device_addr_addr = ctrl;
+      ui.device_addr_pci_init.run();
+      ui.device_addr_pci_popup.setVisible(true);
+    });
+    b_ctrl_delete.addClickListener((me, cmp) -> {
+      int idx = ctrl_list.getSelectedIndex();
+      if (idx == -1) return;
+      Controller ctrl = ui.hardware.controllers.get(idx);
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete Controller : " + ctrl.toString());
+      ui.confirm_action = () -> {
+        ui.hardware.removeController(ctrl);
+        ctrl_list.remove(idx);
       };
       ui.confirm_popup.setVisible(true);
     });

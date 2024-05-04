@@ -31,9 +31,32 @@ public class Controller extends Address implements Serializable {
     this.function = function;
   }
 
+  public static String[] get_scsi_models() {
+    return new String[] {
+      "auto",
+      "buslogic",
+      "ibmvscsi",
+      "lsilogic",
+      "lsisas1068",
+      "lsisas1078",
+      "virtio-scsi",
+      "vmpvscsi",
+      "virtio-transitional",
+      "virtio-non-transitional",
+      "ncr53c90",
+      "am53c974",
+      "dc390",
+    };
+  }
+
+  public String toString() {
+    return type + ":" + model;
+  }
+
   public String toXML() {
     StringBuilder xml = new StringBuilder();
-    xml.append("<controller type='" + type + "' index='0' model='" + model + "'>");
+    if (type == null || type.equals("auto")) return "";
+    xml.append("<controller type='" + type + "' model='" + model + "'>");
     if (!type.endsWith("-root")) {
       xml.append(getAddressXML());
     }

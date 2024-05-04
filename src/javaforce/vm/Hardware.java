@@ -144,6 +144,14 @@ public class Hardware implements Serializable {
     devices.remove(device);
   }
 
+  public void addController(Controller ctrl) {
+    controllers.add(ctrl);
+  }
+
+  public void removeController(Controller ctrl) {
+    controllers.remove(ctrl);
+  }
+
   public void validate() {
     if (genid == null) {
       genid = JF.generateUUID();
