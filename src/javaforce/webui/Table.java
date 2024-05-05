@@ -93,9 +93,9 @@ public class Table extends Container implements Click {
     public void setSelected(boolean state) {
       selected = state;
       if (state) {
-        getComponent().sendEvent("addclass", new String[] {"cls=selected"});
+        sendEvent("addclass", new String[] {"cls=selected"});
       } else {
-        getComponent().sendEvent("delclass", new String[] {"cls=selected"});
+        sendEvent("delclass", new String[] {"cls=selected"});
       }
     }
     public boolean isSelected() {
@@ -165,10 +165,10 @@ public class Table extends Container implements Click {
     cell.spanx = spanx;
     cell.spany = spany;
     add(cell);
-    init(comp);
+    init(cell);
   }
-  private void init(Component cmp) {
-    cmp.addClickListener(this);
+  private void init(Cell cell) {
+    cell.addClickListener(this);
   }
   public void addRow() {
     rows++;
@@ -354,7 +354,7 @@ public class Table extends Container implements Click {
     return -1;
   }
   public void onClick(MouseEvent me, Component cmp) {
-    Cell cell = (Cell)cmp.getParent();
+    Cell cell = (Cell)cmp;
     if (has_header && cell.y == 0) return;
     if (me.ctrlKey) {
       switch (sel_mode) {
