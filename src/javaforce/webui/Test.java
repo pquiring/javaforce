@@ -185,9 +185,10 @@ public class Test implements WebUIHandler {
     });
 
     b_remove.addClickListener((MouseEvent e, Component button) -> {
-      list.remove(list.count() - 1);
+      int idx = list.getSelectedIndex();
+      if (idx == -1) return;
+      list.remove(idx);
     });
-
 
     //TAB #4
 

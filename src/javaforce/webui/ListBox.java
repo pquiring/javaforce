@@ -20,9 +20,9 @@ public class ListBox extends ScrollPanel implements Click {
     public void setSelected(boolean state) {
       selected = state;
       if (state) {
-        getComponent().sendEvent("addclass", new String[] {"cls=selected"});
+        sendEvent("addclass", new String[] {"cls=selected"});
       } else {
-        getComponent().sendEvent("delclass", new String[] {"cls=selected"});
+        sendEvent("delclass", new String[] {"cls=selected"});
       }
     }
     public boolean isSelected() {
@@ -51,13 +51,15 @@ public class ListBox extends ScrollPanel implements Click {
   }
 
   public void add(Component item) {
-    init(item);
-    super.add(new Cell(item));
+    Cell cell = new Cell(item);
+    cell.addClickListener(this);
+    super.add(cell);
   }
 
   public void add(int idx, Component item) {
-    init(item);
-    super.add(idx, new Cell(item));
+    Cell cell = new Cell(item);
+    cell.addClickListener(this);
+    super.add(idx, cell);
   }
 
   private Cell getCell(int idx) {
@@ -66,19 +68,6 @@ public class ListBox extends ScrollPanel implements Click {
 
   private Component getComponent(int idx) {
     return getCell(idx).getComponent();
-  }
-
-  private void init(Component cmp) {
-    cmp.addClickListener(this);
-  }
-
-  public void init() {
-    super.init();
-    int cnt = count();
-    for(int idx=0;idx<cnt;idx++) {
-      Component cmp = getComponent(idx);
-      init(cmp);
-    }
   }
 
   public int getSelectedIndex() {
@@ -140,7 +129,7 @@ public class ListBox extends ScrollPanel implements Click {
   }
 
   public void onClick(MouseEvent me, Component cmp) {
-    Cell cell = (Cell)cmp.getParent();
+    Cell cell = (Cell)cmp;
     if (me.ctrlKey) {
       cell.setSelected(!cell.isSelected());
     } else {

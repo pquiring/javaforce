@@ -164,11 +164,8 @@ public class Table extends Container implements Click {
     cell.y = y;
     cell.spanx = spanx;
     cell.spany = spany;
-    add(cell);
-    init(cell);
-  }
-  private void init(Cell cell) {
     cell.addClickListener(this);
+    add(cell);
   }
   public void addRow() {
     rows++;
