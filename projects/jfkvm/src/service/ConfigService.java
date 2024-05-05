@@ -1582,8 +1582,6 @@ public class ConfigService implements WebUIHandler {
       "jfKVM is a Virtual Machine Management System (libvirt)\n" +
       "Designed to be a drop-in replacement for VMWare ESXi hypervisor.\n" +
       "\n" +
-      "Please note this is minimally tested software and not recommended for production environments!\n" +
-      "\n" +
       "Features supported:\n" +
       " - Linux and Windows guests\n" +
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
