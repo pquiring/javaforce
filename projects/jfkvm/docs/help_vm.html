@@ -37,6 +37,17 @@ Connect using favorite VNC client (tightVNC right?) to that IP:port.
 
 After installation you should shutdown the VM, edit it and remove the iso disk.
 
+Devices:
+--------
+
+You can add Network cards, Host devices and Controllers.
+Controllers are usually added as needed so you should not need to add them
+unless you need a specific model.
+The Address within the guest VM can be specified.
+libvirt format:domain.slot.bus.func
+lspci format:bus.slot.func  (domain is implied to be zero)
+Note the bus/slot are backwards.
+
 </pre>
 <br><br>
 
