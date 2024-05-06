@@ -1,5 +1,13 @@
 What's new...
 
+May 6/2024 : JF/58.0
+  - jfKVM/1.0
+    - this last weekend I was able to convert the first
+      VMWare guest to jfKVM, an Asterisk PBX we use at work
+      Conversion was flawless, booted up like nothing changed.
+    - therefore I'm going to finalize this project by
+      releasing version 1.0
+
 May 4/2024 : JF/57.3
   - jfKVM/0.93
     - added controllers
