@@ -1,3 +1,12 @@
+2024-05-06 : 1.0 released!
+  - this last weekend I was able to convert the first
+    VMWare guest to jfKVM, an Asterisk PBX we use at work
+    Conversion was flawless, booted up like nothing changed.
+  - therefore I'm going to finalize this project by
+    releasing version 1.0
+  - there is still much more I want to add but this
+    project is "complete" for now
+
 2024-05-04 : 0.93 (RC3) released!
   - new : add controllers (scsi, usb, ide)
   - new : disk interface can be specified
