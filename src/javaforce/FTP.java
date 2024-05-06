@@ -24,6 +24,7 @@ public class FTP {
   private int pasvport; //passive port
   private ServerSocket ss;  //active socket
   private boolean log = false;
+  private static int logid;
   private ProgressListener progress;
   private boolean aborted = false;
   private boolean active = true;
@@ -143,6 +144,10 @@ public class FTP {
     log = state;
   }
 
+  public static void setLogID(int id) {
+    logid = id;
+  }
+
   public void setPassiveMode(boolean mode) {
     passive = mode;
   }
@@ -198,9 +203,9 @@ public class FTP {
     aborted = false;
     if (log) {
       if (cmd.startsWith("pass ")) {
-        JFLog.log("pass ****");
+        JFLog.log(logid, "pass ****");
       } else {
-        JFLog.log(cmd);
+        JFLog.log(logid, cmd);
       }
     }
     synchronized(response) {
@@ -490,7 +495,7 @@ public class FTP {
           String res = br.readLine();
           if (res == null) throw new Exception("FTP:invalid reply:null");
           if (res.length() < 3) throw new Exception("FTP:invalid reply:" + res);
-          JFLog.log(res);
+          JFLog.log(logid, res);
           addResponse(res);
           if (res.charAt(3) == ' ') {
             synchronized(response) {
@@ -498,7 +503,7 @@ public class FTP {
             }
           }
           if (res.startsWith("5")) {
-            JFLog.log("Aborted");
+            JFLog.log(logid, "Aborted");
             aborted = true;
             if (ds != null) {
               ds.close();
@@ -529,7 +534,7 @@ public class FTP {
       public void run() {
         timeoutCounter++;
         if (timeoutCounter == 20) {
-          JFLog.log("Error:Transfer Timeout");
+          JFLog.log(logid, "Error:Transfer Timeout");
           aborted = true;
           if (ds != null) {
             try {ds.close();} catch (Exception e) {}
