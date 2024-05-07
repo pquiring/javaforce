@@ -35,7 +35,7 @@ public class SMTP {
         }
         return attach;
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(log, e);
         return null;
       }
     }
@@ -139,12 +139,12 @@ public class SMTP {
     switch (type) {
       case AUTH_LOGIN: cmd("AUTH LOGIN"); break;
       case AUTH_NTLM: cmd("AUTH NTLM"); break;
-      default: JFLog.log("SMTP:Unknown auth type:" + type);
+      default: JFLog.log(log, "SMTP:Unknown auth type:" + type);
     }
     getResponse();
     if (response[response.length - 1].startsWith("504")) {
       if (debug_log) {
-        JFLog.log("AUTH " + type + " not supported!");
+        JFLog.log(log, "AUTH " + type + " not supported!");
       }
       return false;
     }
@@ -185,9 +185,9 @@ public class SMTP {
     }
     if (debug_log) {
       if (cmd.startsWith("pass ")) {
-        JFLog.log("pass ****");
+        JFLog.log(log, "pass ****");
       } else {
-        JFLog.log(cmd);
+        JFLog.log(log, cmd);
       }
     }
     cmd += "\r\n";
@@ -574,27 +574,27 @@ public class SMTP {
     //https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/b34032e5-3aae-4bc6-84c3-c6d80eadf7f2
     String domain_str = System.getenv("USERDOMAIN");
     if (domain_str == null) {
-      JFLog.log("Error:USERDOMAIN==null");
+      JFLog.log(log, "Error:USERDOMAIN==null");
       return null;
     }
     byte domain[];
     try {
       domain = domain_str.getBytes("iso-8859-1");
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
       return null;
     }
     int domain_len = domain.length;
     String workstation_str = System.getenv("COMPUTERNAME");
     if (workstation_str == null) {
-      JFLog.log("Error:COMPUTERNAME==null");
+      JFLog.log(log, "Error:COMPUTERNAME==null");
       return null;
     }
     byte workstation[];
     try {
       workstation = workstation_str.getBytes("iso-8859-1");
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
       return null;
     }
     int workstation_len = workstation.length;
@@ -818,7 +818,7 @@ public class SMTP {
     try {
       challenge = response.getBytes("us-ascii");
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
     //TODO : validate challenge
     byte[] type2 = Base64.decode(challenge);
@@ -843,7 +843,7 @@ public class SMTP {
 
     try {
       if ((server_flags & NTLMSSP_NEGOTIATE_EXTENDED_SESSIONSECURITY) != 0) {
-        JFLog.log("SMTP:AUTH:NTLMv2");
+        JFLog.log(log, "SMTP:AUTH:NTLMv2");
         client_flags |= NTLMSSP_NEGOTIATE_EXTENDED_SESSIONSECURITY;
         byte[] client_nonce = new byte[8];
 	      (new Random()).nextBytes(client_nonce);
@@ -891,14 +891,14 @@ public class SMTP {
           nt_response = calcNTv2ResponseVariant(nthash, blob, server_nonce);
         }
         if ((server_flags & NTLMSSP_NEGOTIATE_SIGN) != 0) {
-          JFLog.log("SMTP:NTML:ERROR:NEED SESSION KEYS");
+          JFLog.log(log, "SMTP:NTML:ERROR:NEED SESSION KEYS");
           //https://github.com/codelibs/jcifs/blob/master/src/main/java/jcifs/smb1/ntlmssp/Type3Message.java#L247
           if ((server_flags & NTLMSSP_NEGOTIATE_KEY_EXCH) != 0) {
-            JFLog.log("SMTP:NTML:ERROR:NEED EXCHANGE KEYS");
+            JFLog.log(log, "SMTP:NTML:ERROR:NEED EXCHANGE KEYS");
           }
         }
       } else {
-        JFLog.log("SMTP:AUTH:NTLMv1");
+        JFLog.log(log, "SMTP:AUTH:NTLMv1");
         SecretKeyFactory fac = SecretKeyFactory.getInstance("DES");
         Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
         lmhash = calcLMHash(pass_str, cipher, fac);
@@ -907,7 +907,7 @@ public class SMTP {
         nt_response = calcResponse(nthash, server_nonce, cipher, fac);
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
       return null;
     }
 
@@ -926,7 +926,7 @@ public class SMTP {
     try {
       domain = domain_str.getBytes("UnicodeLittleUnmarked");
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
     int domain_len = domain.length;
     int domain_off = payload_off;
@@ -936,7 +936,7 @@ public class SMTP {
     try {
       user = user_str.getBytes("UnicodeLittleUnmarked");
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
     int user_len = user.length;
     int user_off = payload_off;
@@ -947,7 +947,7 @@ public class SMTP {
     try {
       workstation = workstation_str.getBytes("UnicodeLittleUnmarked");
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
     int workstation_len = workstation.length;
     int workstation_off = payload_off;

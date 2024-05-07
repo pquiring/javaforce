@@ -106,7 +106,7 @@ public class POP3 {
     switch (type) {
       case AUTH_LOGIN: return user_pass(user, pass);
       case AUTH_APOP: return apop(user, pass);
-      default: JFLog.log("POP3:Unknown auth type:" + type);
+      default: JFLog.log(log, "POP3:Unknown auth type:" + type);
     }
     return false;
   }
@@ -158,9 +158,9 @@ public class POP3 {
     }
     if (debug_log || debug) {
       if (cmd.startsWith("pass ")) {
-        JFLog.log("pass ****");
+        JFLog.log(log, "pass ****");
       } else {
-        JFLog.log(cmd);
+        JFLog.log(log, cmd);
       }
     }
     cmd += "\r\n";
@@ -261,8 +261,8 @@ public class POP3 {
   }
 
   private void getResponse() throws Exception {
-    if (debug) JFLog.log("POP3:reading response...");
+    if (debug) JFLog.log(log, "POP3:reading response...");
     response = br.readLine();
-    if (debug) JFLog.log("POP3:response=" + response);
+    if (debug) JFLog.log(log, "POP3:response=" + response);
   }
 }
