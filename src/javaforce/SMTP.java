@@ -46,10 +46,12 @@ public class SMTP {
   private OutputStream os;
   private BufferedReader br;
   private String host;
-  private boolean log = false;
   private ArrayList<String> headers = new ArrayList<String>();
 
-  public boolean debug = false;
+  public static boolean debug = false;
+  public static boolean debug_log = false;
+  public static int log;
+
   /**
    * Holds the repsonse strings from the last executed command
    */
@@ -107,8 +109,12 @@ public class SMTP {
   }
 
   /** Set debug logging state. */
-  public void setLogging(boolean state) {
-    log = state;
+  public static void setLogging(boolean state) {
+    debug_log = state;
+  }
+
+  public static void setLog(int id) {
+    log = id;
   }
 
   /** Sends HELO command. */
@@ -137,7 +143,7 @@ public class SMTP {
     }
     getResponse();
     if (response[response.length - 1].startsWith("504")) {
-      if (log) {
+      if (debug_log) {
         JFLog.log("AUTH " + type + " not supported!");
       }
       return false;
@@ -177,7 +183,7 @@ public class SMTP {
     if ((s == null) || (s.isClosed())) {
       throw new Exception("not connected");
     }
-    if (log) {
+    if (debug_log) {
       if (cmd.startsWith("pass ")) {
         JFLog.log("pass ****");
       } else {

@@ -23,14 +23,15 @@ public class FTP {
   private String host;  //passive host
   private int pasvport; //passive port
   private ServerSocket ss;  //active socket
-  private boolean log = false;
-  private static int logid;
   private ProgressListener progress;
   private boolean aborted = false;
   private boolean active = true;
   private Reader reader;
 
-  public boolean debug = false;
+  public static boolean debug = false;
+  public static boolean debug_log = false;
+  public static int log;
+
   /**
    * Holds the repsonse strings from the last executed command
    */
@@ -140,12 +141,12 @@ public class FTP {
     this.progress = progress;
   }
 
-  public void setLogging(boolean state) {
-    log = state;
+  public static void setLogging(boolean state) {
+    debug_log = state;
   }
 
-  public static void setLogID(int id) {
-    logid = id;
+  public static void setLog(int id) {
+    log = id;
   }
 
   public void setPassiveMode(boolean mode) {
@@ -201,11 +202,11 @@ public class FTP {
       throw new Exception("not connected");
     }
     aborted = false;
-    if (log) {
+    if (debug_log) {
       if (cmd.startsWith("pass ")) {
-        JFLog.log(logid, "pass ****");
+        JFLog.log(log, "pass ****");
       } else {
-        JFLog.log(logid, cmd);
+        JFLog.log(log, cmd);
       }
     }
     synchronized(response) {
@@ -495,7 +496,7 @@ public class FTP {
           String res = br.readLine();
           if (res == null) throw new Exception("FTP:invalid reply:null");
           if (res.length() < 3) throw new Exception("FTP:invalid reply:" + res);
-          JFLog.log(logid, res);
+          JFLog.log(log, res);
           addResponse(res);
           if (res.charAt(3) == ' ') {
             synchronized(response) {
@@ -503,7 +504,7 @@ public class FTP {
             }
           }
           if (res.startsWith("5")) {
-            JFLog.log(logid, "Aborted");
+            JFLog.log(log, "Aborted");
             aborted = true;
             if (ds != null) {
               ds.close();
@@ -534,7 +535,7 @@ public class FTP {
       public void run() {
         timeoutCounter++;
         if (timeoutCounter == 20) {
-          JFLog.log(logid, "Error:Transfer Timeout");
+          JFLog.log(log, "Error:Transfer Timeout");
           aborted = true;
           if (ds != null) {
             try {ds.close();} catch (Exception e) {}

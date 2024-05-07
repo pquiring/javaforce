@@ -14,9 +14,11 @@ public class POP3 {
   private OutputStream os;
   private BufferedReader br;
   private String host;
-  private boolean log = false;
 
-  public boolean debug = false;
+  public static boolean debug = false;
+  public static boolean debug_log = false;
+  public static int log;
+
   /**
    * Holds the response strings from the last executed command
    */
@@ -74,8 +76,12 @@ public class POP3 {
   }
 
   /** Set debug logging state. */
-  public void setLogging(boolean state) {
-    log = state;
+  public static void setLogging(boolean state) {
+    debug_log = state;
+  }
+
+  public static void setLog(int id) {
+    log = id;
   }
 
   /** Sends HELO command. */
@@ -150,7 +156,7 @@ public class POP3 {
     if ((s == null) || (s.isClosed())) {
       throw new Exception("not connected");
     }
-    if (log || debug) {
+    if (debug_log || debug) {
       if (cmd.startsWith("pass ")) {
         JFLog.log("pass ****");
       } else {
