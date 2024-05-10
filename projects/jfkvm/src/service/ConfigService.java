@@ -5231,15 +5231,15 @@ public class ConfigService implements WebUIHandler {
         String file = props.getProperty("file");
         //replace .png with .stat
         file = file.replace(".png", ".stat");
-        String stat_filename = "/var/jfkvm/stats/" + uuid + "/" + type + "-" + file;
+        String filename = Paths.statsPath + "/" + uuid + "/" + type + "-" + file;
         JFImage img = new JFImage(img_width, img_height);
         img.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         img.fill(0, 0, img_width, img_height, Color.white);
         //generate image
-        File stat_file = new File(stat_filename);
-        if (stat_file.exists()) {
+        File stat = new File(filename);
+        if (stat.exists()) {
           try {
-            FileInputStream fis = new FileInputStream(stat_filename);
+            FileInputStream fis = new FileInputStream(filename);
             byte[] data = fis.readAllBytes();
             int pos = 0;
             int longs = data.length / 8;
