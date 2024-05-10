@@ -44,7 +44,7 @@ static bool str_cmp(char* field, char* grep) {
 static void append_domain_stat(char* uuid, int year, int month, int day, int hour, int sample, const char* type, int cnt, jlong v1, jlong v2, jlong v3) {
   char file[256];
   sprintf(file, "/var/jfkvm/stats/%s/%s-%04d-%02d-%02d-%02d.stat", uuid, type, year, month, day, hour);
-  int fd = open(file, O_WRONLY | O_APPEND | O_CREAT);
+  int fd = open(file, O_WRONLY | O_APPEND | O_CREAT, 0600);
   if (fd == -1) return;  //TODO : log error
   struct {
     jlong sample;
