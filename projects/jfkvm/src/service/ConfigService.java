@@ -5252,7 +5252,7 @@ public class ConfigService implements WebUIHandler {
             switch (type) {
               case "mem": {
                 //sample, max, current (kb)
-                int cnt = longs / 3;
+                int cnt = longs / 4;
                 long max = 1024;  //1MB
                 //find max value
                 for(int a=0;a<cnt;a++) {
@@ -5291,7 +5291,7 @@ public class ConfigService implements WebUIHandler {
               }
               case "cpu": {
                 //sample, time (ns)
-                int cnt = longs / 2;
+                int cnt = longs / 4;
                 long max = 100L;  //percent
                 draw_frame(img, max, font_width);
                 long cpu_last = 0;
@@ -5316,7 +5316,7 @@ public class ConfigService implements WebUIHandler {
               }
               case "dsk": {
                 //sample, read, write (bytes)
-                int cnt = longs / 3;
+                int cnt = longs / 4;
                 long max = 1024;  //1MB
                 //find max value
                 for(int a=0;a<cnt;a++) {
@@ -5362,7 +5362,7 @@ public class ConfigService implements WebUIHandler {
               }
               case "net": {
                 //sample, read, write (bytes)
-                int cnt = longs / 3;
+                int cnt = longs / 4;
                 long max = 1024;  //1MB
                 //find max value
                 for(int a=0;a<cnt;a++) {
