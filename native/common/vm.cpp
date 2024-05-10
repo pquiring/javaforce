@@ -1046,7 +1046,7 @@ static JNINativeMethod javaforce_vm_VMHost[] = {
   {"free_memory", "()J", (void *)&Java_javaforce_vm_VMHost_free_1memory},
   {"cpu_load", "()J", (void *)&Java_javaforce_vm_VMHost_cpu_1load},
   {"connect", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VMHost_connect},
-  {"get_all_stats", "(JJJJ)Z", (void *)&Java_javaforce_vm_VMHost_get_1all_1stats},
+  {"get_all_stats", "(IIIII)Z", (void *)&Java_javaforce_vm_VMHost_get_1all_1stats},
 };
 
 static JNINativeMethod javaforce_vm_Device[] = {
