@@ -42,7 +42,7 @@ static bool str_cmp(char* field, char* grep) {
 }
 
 static void append_domain_stat(char* uuid, int year, int month, int day, int hour, char* type, int sample, int cnt, jlong v1, jlong v2, jlong v3) {
-  char file[MAX_PATH];
+  char file[256];
   sprintf(file, "/var/jfkvm/stats/%s/%s-%04d-%02d-%02d-%02d.stat", uuid, type, year, month, day, hour);
   int fd = open(file, O_WRONLY | O_APPEND | O_CREAT);
   if (fd == -1) return;  //TODO : log error
@@ -64,10 +64,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
   void* conn = connect();
   if (conn == NULL) return JNI_FALSE;
 
-  int stats = VIR_DOMAIN_STATS_CPU_TOTAL | VIR_DOMAIN_STATS_BALLOON | VIR_DOMAIN_STATS_INTERFACE | VIR_DOMAIN_STATS_BLOCK;
+  int b_stats = VIR_DOMAIN_STATS_CPU_TOTAL | VIR_DOMAIN_STATS_BALLOON | VIR_DOMAIN_STATS_INTERFACE | VIR_DOMAIN_STATS_BLOCK;
   virDomainStatsRecordPtr* stats;
-  int flags = VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;
-  int cnt = (*_virConnectGetAllDomainStats)(conn, stats, (void***)&stats, flags);
+  int b_flags = VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;
+  int cnt = (*_virConnectGetAllDomainStats)(conn, b_stats, (void***)&stats, b_flags);
 
   virDomainStatsRecordPtr* next;
 
