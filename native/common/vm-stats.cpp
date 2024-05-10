@@ -80,32 +80,32 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
     jlong mem_max = 0, mem_used = 0;
     jlong net_read = 0, net_write = 0;
     jlong disk_read = 0, disk_write = 0, disk_latency = 0;
-    for (;*params;params++) {
+    for (int i=0;i<params_count;params++,i++) {
       virTypedParameterPtr param = params;
-      char* field = &param->field;
+      char* field = (char*)&param->field;
       if (str_cmp(field, "cpu.time")) {
-        cpu_time = param->l;
+        cpu_time = param->value.l;
       }
       else if (str_cmp(field, "balloon.maximum")) {
-        mem_max = param->l;
+        mem_max = param->value.l;
       }
       else if (str_cmp(field, "balloon.current")) {
-        mem_used = param->l;
+        mem_used = param->value.l;
       }
       else if (str_cmp(field, "net.*.rx.bytes")) {
-        net_read += param->l;
+        net_read += param->value.l;
       }
       else if (str_cmp(field, "net.*.tx.bytes")) {
-        net_write += param->l;
+        net_write += param->value.l;
       }
       else if (str_cmp(field, "block.*.rd.bytes")) {
-        disk_read += param->l;
+        disk_read += param->value.l;
       }
       else if (str_cmp(field, "block.*.wr.bytes")) {
-        disk_write += param->l;
+        disk_write += param->value.l;
       }
     }
-    (*_virDomainGetUUIDString(dom, uuid);
+    (*_virDomainGetUUIDString)(dom, uuid);
     append_domain_stat(uuid, year, month, day, hour, sample, "cpu", 1, cpu_time, 0, 0);
     append_domain_stat(uuid, year, month, day, hour, sample, "mem", 2, mem_max, mem_used, 0);
     append_domain_stat(uuid, year, month, day, hour, sample, "net", 2, net_read, net_write, 0);
