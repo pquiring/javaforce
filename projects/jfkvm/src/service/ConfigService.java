@@ -3482,7 +3482,7 @@ public class ConfigService implements WebUIHandler {
     int _month = ui.now.get(Calendar.MONTH) + 1;
     int _day = ui.now.get(Calendar.DAY_OF_MONTH);
     int _hour = ui.now.get(Calendar.HOUR_OF_DAY);
-    String _file = String.format("%04d%-%02d-%02d-%02d", _year, _month, _day, _hour);
+    String _file = String.format("%04d-%02d-%02d-%02d", _year, _month, _day, _hour);
     String uuid = vm.getUUID();
 
     row = new Row();
@@ -3566,7 +3566,7 @@ public class ConfigService implements WebUIHandler {
       int __month = Integer.valueOf(month.getText());
       int __day = Integer.valueOf(day.getText());
       int __hour = Integer.valueOf(hour.getText());
-      String __file = String.format("%04d%-%02d-%02d-%02d", __year, __month, __day, __hour);
+      String __file = String.format("%04d-%02d-%02d-%02d", __year, __month, __day, __hour);
       img_mem.setImage("stats?uuid=" + uuid + "&type=mem&file=" + __file + ".png");
       img_cpu.setImage("stats?uuid=" + uuid + "&type=cpu&file=" + __file + ".png");
       img_dsk.setImage("stats?uuid=" + uuid + "&type=dsk&file=" + __file + ".png");
