@@ -59,7 +59,7 @@ static void append_domain_stat(char* uuid, int year, int month, int day, int hou
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
-  (JNIEnv *e, jclass o, jint year, jint month, jint day, jint sample)
+  (JNIEnv *e, jclass o, jint year, jint month, jint day, jint hour, jint sample)
 {
   void* conn = connect();
   if (conn == NULL) return JNI_FALSE;
@@ -112,7 +112,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
     append_domain_stat(uuid, year, month, day, hour, sample, "dsk", 2, disk_read, disk_write, disk_latency);
   }
 
-  (*_virDomainStatsRecordListFree)(stats);
+  (*_virDomainStatsRecordListFree)((void**)stats);
 
   return JNI_FALSE;
 }
