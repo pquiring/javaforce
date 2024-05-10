@@ -5113,7 +5113,7 @@ public class ConfigService implements WebUIHandler {
       for(int step = 0;step <= 10;step++) {
         String str = String.format("%d%s", value / div, eng);
         int len = str.length();
-        g.drawBytes(str.getBytes(), 0, len, x - (len * font_width), y);
+        g.drawChars(str.toCharArray(), 0, len, x - (len * font_width), y);
         value += value_step_y;
         y -= step_y;
       }
@@ -5127,7 +5127,7 @@ public class ConfigService implements WebUIHandler {
       for(int step = 0;step <= 10;step++) {
         String str = String.format("%dmin", min);
         int len = str.length();
-        g.drawBytes(str.getBytes(), 0, len, x - (len/2 * font_width), y);
+        g.drawChars(str.toCharArray(), 0, len, x - (len/2 * font_width), y);
         min += 6;
         x += step_x;
       }
@@ -5402,6 +5402,8 @@ public class ConfigService implements WebUIHandler {
           } catch (Exception e) {
             JFLog.log(e);
           }
+        } else {
+          img.getGraphics().drawChars("n/a".toCharArray(), 0, 3, img_width / 2, img_height / 2);
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         img.savePNG(out);
