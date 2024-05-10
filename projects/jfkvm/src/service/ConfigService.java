@@ -5055,7 +5055,7 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
-  private void draw_frame(JFImage img, long max_y) {
+  private void draw_frame(JFImage img, long max_y, int font_width) {
     String eng;
     long div;
     long value_step_y;
@@ -5085,7 +5085,7 @@ public class ConfigService implements WebUIHandler {
       //draw grid
       int step_x = data_width / 10;
       int step_y = data_height / 10;
-      for(int i=0;i<10;i++) {
+      for(int i=0;i<=10;i++) {
         //horizontal ---
         x = data_margin_left;
         y = data_margin_top + i * step_y;
@@ -5110,10 +5110,10 @@ public class ConfigService implements WebUIHandler {
       y = data_margin_top + data_height - 5;
       long value = 0;
       int step_y = data_height / 10;  //25
-      for(int step = 0;step < 10;step++) {
+      for(int step = 0;step <= 10;step++) {
         String str = String.format("%d%s", value / div, eng);
         int len = str.length();
-        g.drawBytes(str.getBytes(), 0, len, x - (len * 10), y);
+        g.drawBytes(str.getBytes(), 0, len, x - (len * font_width), y);
         value += value_step_y;
         y -= step_y;
       }
@@ -5124,10 +5124,10 @@ public class ConfigService implements WebUIHandler {
       y = data_margin_top + data_height + 10;
       int min = 0;
       int step_x = data_width / 10;  //54
-      for(int step = 0;step < 10;step++) {
+      for(int step = 0;step <= 10;step++) {
         String str = String.format("%dmin", min);
         int len = str.length();
-        g.drawBytes(str.getBytes(), 0, len, x - (len/2 * 10), y);
+        g.drawBytes(str.getBytes(), 0, len, x - (len/2 * font_width), y);
         min += 6;
         x += step_x;
       }
@@ -5233,7 +5233,13 @@ public class ConfigService implements WebUIHandler {
         file = file.replace(".png", ".stat");
         String filename = Paths.statsPath + "/" + uuid + "/" + type + "-" + file;
         JFImage img = new JFImage(img_width, img_height);
-        img.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        Font font = new Font(Font.DIALOG, Font.PLAIN, 10);
+        int[] font_metrics = JFAWT.getFontMetrics(font);
+        int font_width = font_metrics[0];
+        int font_ascent = font_metrics[1];
+        int font_decent = font_metrics[2];
+        int font_height = font_ascent + font_decent;
+        img.setFont(font);
         img.fill(0, 0, img_width, img_height, Color.white);
         //generate image
         File stat = new File(filename);
@@ -5258,19 +5264,26 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max);
+                draw_frame(img, max, font_width);
                 pos = 0;
                 int x;
-                int y;
+                int y1;
+                int y2;
+                int lx = 0;
+                int ly1 = 0;
+                int ly2 = 0;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
                   long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
                   x = data_margin_left + (int)(sample * 3);
-                  y = data_margin_top + (int)(mem_max * data_height / max);
-                  img.putPixel(x, y, Color.blue);
-                  y = data_margin_top + (int)(mem_cur * data_height / max);
-                  img.putPixel(x, y, Color.red);
+                  y1 = data_margin_top + (int)(mem_max * data_height / max);
+                  if (a > 0) img.line(lx, ly1, x, y1, Color.blue);
+                  y2 = data_margin_top + (int)(mem_cur * data_height / max);
+                  if (a > 0) img.line(lx, ly2, x, y2, Color.red);
+                  lx = x;
+                  ly1 = y1;
+                  ly2 = y2;
                 }
                 break;
               }
@@ -5278,18 +5291,22 @@ public class ConfigService implements WebUIHandler {
                 //sample, time (ns)
                 int cnt = longs / 2;
                 long max = 100L;  //percent
-                draw_frame(img, max);
+                draw_frame(img, max, font_width);
                 long cpu_last = 0;
                 pos = 0;
                 int x;
                 int y;
+                int lx = 0;
+                int ly = 0;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long cpu_time = LE.getuint64(data, pos); pos += 8;
                   x = data_margin_left + (int)(sample * 3);
                   y = data_margin_top + (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
-                  img.putPixel(x, y, Color.blue);
+                  if (a > 0) img.line(lx, ly, x, y, Color.blue);
                   cpu_last = cpu_time;
+                  lx = x;
+                  ly = y;
                 }
                 break;
               }
@@ -5308,22 +5325,32 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max * 1024L);
+                draw_frame(img, max * 1024L, font_width);
                 pos = 0;
                 int x;
-                int y;
+                int y1;
+                int y2;
+                int y3;
+                int lx = 0;
+                int ly1 = 0;
+                int ly2 = 0;
+                int ly3 = 0;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long dsk_read = LE.getuint64(data, pos); pos += 8;
                   long dsk_write = LE.getuint64(data, pos); pos += 8;
                   long total = dsk_read + dsk_write;
                   x = data_margin_left + (int)(sample * 3);
-                  y = data_margin_top + (int)(dsk_read * data_height / max);
-                  img.putPixel(x, y, Color.green);
-                  y = data_margin_top + (int)(dsk_write * data_height / max);
-                  img.putPixel(x, y, Color.blue);
-                  y = data_margin_top + (int)(total * data_height / max);
-                  img.putPixel(x, y, Color.red);
+                  y1 = data_margin_top + (int)(dsk_read * data_height / max);
+                  if (a > 0) img.line(lx, ly1, x, y1, Color.green);
+                  y2 = data_margin_top + (int)(dsk_write * data_height / max);
+                  if (a > 0) img.line(lx, ly2, x, y2, Color.blue);
+                  y3 = data_margin_top + (int)(total * data_height / max);
+                  if (a > 0) img.line(lx, ly3, x, y3, Color.red);
+                  lx = x;
+                  ly1 = y1;
+                  ly2 = y2;
+                  ly3 = y3;
                 }
                 break;
               }
@@ -5342,22 +5369,32 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max * 1024L);
+                draw_frame(img, max * 1024L, font_width);
                 pos = 0;
                 int x;
-                int y;
+                int y1;
+                int y2;
+                int y3;
+                int lx = 0;
+                int ly1 = 0;
+                int ly2 = 0;
+                int ly3 = 0;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long net_read = LE.getuint64(data, pos); pos += 8;
                   long net_write = LE.getuint64(data, pos); pos += 8;
                   long total = net_read + net_write;
                   x = data_margin_left + (int)(sample * 3);
-                  y = data_margin_top + (int)(net_read * data_height / max);
-                  img.putPixel(x, y, Color.green);
-                  y = data_margin_top + (int)(net_write * data_height / max);
-                  img.putPixel(x, y, Color.blue);
-                  y = data_margin_top + (int)(total * data_height / max);
-                  img.putPixel(x, y, Color.red);
+                  y1 = data_margin_top + (int)(net_read * data_height / max);
+                  if (a > 0) img.line(lx, ly1, x, y1, Color.green);
+                  y2 = data_margin_top + (int)(net_write * data_height / max);
+                  if (a > 0) img.line(lx, ly2, x, y2, Color.blue);
+                  y3 = data_margin_top + (int)(total * data_height / max);
+                  if (a > 0) img.line(lx, ly3, x, y3, Color.red);
+                  lx = x;
+                  ly1 = y1;
+                  ly2 = y2;
+                  ly3 = y3;
                 }
                 break;
               }
