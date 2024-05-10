@@ -2,6 +2,10 @@
 
 #include <libvirt/libvirt.h>
 
+#include <sys/stat.h>
+#include <stdio.h>
+#include <fcntl.h>
+
 JF_LIB_HANDLE virt;
 
 //#define VM_DEBUG
@@ -28,6 +32,9 @@ int (*_virDomainGetState)(void* dom, int* state, int* reason, int flags);
 int (*_virConnectListAllDomains)(void* conn, void*** doms, int flags);
 char* (*_virDomainGetMetadata)(void* dom, int type, const char* uri, int flags);
 int (*_virDomainMigrateToURI3)(void* dom, const char* duri, void* params, int nparams, int flags);
+int (*_virDomainGetUUIDString)(void* dom, char* buf);
+int	(*_virConnectGetAllDomainStats)(void* conn, int stats, void*** retStats, int flags);
+void (*_virDomainStatsRecordListFree)(void** stats);
 
 //storage
 void* (*_virStoragePoolDefineXML)(void* conn, const char* xml, int flags);
@@ -106,6 +113,9 @@ void vm_init() {
   getFunction(virt, (void**)&_virConnectListAllDomains, "virConnectListAllDomains");
   getFunction(virt, (void**)&_virDomainGetMetadata, "virDomainGetMetadata");
   getFunction(virt, (void**)&_virDomainMigrateToURI3, "virDomainMigrateToURI3");
+  getFunction(virt, (void**)&_virDomainGetUUIDString, "virDomainGetUUIDString");
+  getFunction(virt, (void**)&_virConnectGetAllDomainStats, "virConnectGetAllDomainStats");
+  getFunction(virt, (void**)&_virDomainStatsRecordListFree, "virDomainStatsRecordListFree");
 
   //storage
   getFunction(virt, (void**)&_virStoragePoolDefineXML, "virStoragePoolDefineXML");
@@ -287,6 +297,8 @@ CPUStat:iowait:   231530000000
 
   return (inuse / total) * 100LL;
 }
+
+#include "vm-stats.cpp"
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_connect
   (JNIEnv *e, jclass o, jstring remote)
@@ -1034,6 +1046,7 @@ static JNINativeMethod javaforce_vm_VMHost[] = {
   {"free_memory", "()J", (void *)&Java_javaforce_vm_VMHost_free_1memory},
   {"cpu_load", "()J", (void *)&Java_javaforce_vm_VMHost_cpu_1load},
   {"connect", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VMHost_connect},
+  {"get_all_stats", "(JJJJ)Z", (void *)&Java_javaforce_vm_VMHost_get_1all_1stats},
 };
 
 static JNINativeMethod javaforce_vm_Device[] = {

@@ -6,9 +6,11 @@ package service;
  */
 
 import java.io.*;
+import java.awt.Font;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.vm.*;
 import javaforce.linux.*;
 import javaforce.net.*;
@@ -36,6 +38,14 @@ public class ConfigService implements WebUIHandler {
     ".*[.]jfvm",
     ".*[.]vmx",
   };
+
+  private static final int img_width = 50 + 540 + 25;
+  private static final int img_height = 25 + 256 + 25;
+
+  private static final int data_width = 540;
+  private static final int data_height = 250;  //25 pixels per 10 units
+
+  private static final long _20sec_ns_ = 20L * 1000L * 1000L * 1000L;  //20 seconds in nano seconds
 
   public void start() {
     initSecureWebKeys();
@@ -2239,6 +2249,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
     Button console = new Button("Console");
     tools.add(console);
+    Button monitor = new Button("Monitor");
+    tools.add(monitor);
     Button start = new Button("Start");
     tools.add(start);
     Button stop = new Button("Stop");
@@ -2302,6 +2314,17 @@ public class ConfigService implements WebUIHandler {
       }
       ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC() + "<br>Password:" + Config.current.vnc_password);
       ui.message_popup.setVisible(true);
+    });
+
+    monitor.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      VirtualMachine vm = vms[idx];
+      if (vm.getState() != VirtualMachine.STATE_ON) {
+        errmsg.setText("VM is not active");
+        return;
+      }
+      ui.setRightPanel(vmMonitorPanel(vm, ui));
     });
 
     start.addClickListener((me, cmp) -> {
@@ -3424,6 +3447,112 @@ public class ConfigService implements WebUIHandler {
       KVMService.tasks.addTask(ui.tasks, task);
       ui.setRightPanel(vmsPanel(ui));
     });
+
+    return panel;
+  }
+
+  private Panel vmMonitorPanel(VirtualMachine vm, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VM:" + vm.name));
+
+    row = new Row();
+    panel.add(row);
+    ToolBar tools = new ToolBar();
+    row.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+
+    Calendar now = Calendar.getInstance();
+    int _year = now.get(Calendar.YEAR);
+    int _month = now.get(Calendar.MONTH) + 1;
+    int _day = now.get(Calendar.DAY_OF_MONTH);
+    int _hour = now.get(Calendar.HOUR_OF_DAY);
+    String _file = String.format("%04d%-%02d-%02d-%02d");
+    String uuid = vm.getUUID();
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Year:"));
+    TextField year = new TextField(Integer.toString(_year));
+    row.add(year);
+    Button year_prev = new Button("<");
+    row.add(year_prev);
+    Button year_next = new Button(">");
+    row.add(year_next);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Month:"));
+    TextField month = new TextField(Integer.toString(_month));
+    row.add(month);
+    Button month_prev = new Button("<");
+    row.add(month_prev);
+    Button month_next = new Button(">");
+    row.add(month_next);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Day:"));
+    TextField day = new TextField(Integer.toString(_day));
+    row.add(day);
+    Button day_prev = new Button("<");
+    row.add(day_prev);
+    Button day_next = new Button(">");
+    row.add(day_next);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Hour:"));
+    TextField hour = new TextField(Integer.toString(_hour));
+    row.add(hour);
+    Button hour_prev = new Button("<");
+    row.add(hour_prev);
+    Button hour_next = new Button(">");
+    row.add(hour_next);
+
+    row = new Row();
+    panel.add(row);
+    Label lbl_mem = new Label("Memory");
+    lbl_mem.setWidth(img_width);
+    row.add(lbl_mem);
+    Label lbl_cpu = new Label("CPU");
+    lbl_cpu.setWidth(img_width);
+    row.add(lbl_cpu);
+
+    row = new Row();
+    panel.add(row);
+    Image img_mem = new Image("stats?uuid=" + uuid + "&type=mem&file=" + _file + ".png");
+    img_mem.setWidth(img_width);
+    img_mem.setHeight(img_height);
+    row.add(img_mem);
+    Image img_cpu = new Image("stats?uuid=" + uuid + "&type=cpu&file=" + _file + ".png");
+    img_cpu.setWidth(img_width);
+    img_cpu.setHeight(img_height);
+    row.add(img_cpu);
+
+    row = new Row();
+    panel.add(row);
+    Label lbl_disk = new Label("Disk");
+    lbl_disk.setWidth(img_width);
+    row.add(lbl_disk);
+    Label lbl_net = new Label("Network");
+    lbl_net.setWidth(img_width);
+    row.add(lbl_net);
+
+    row = new Row();
+    panel.add(row);
+    Image img_disk = new Image("stats?uuid=" + uuid + "&type=dsk&file=" + _file + ".png");
+    img_disk.setWidth(img_width);
+    img_disk.setHeight(img_height);
+    row.add(img_disk);
+    Image img_net = new Image("stats?uuid=" + uuid + "&type=net&file=" + _file + ".png");
+    img_net.setWidth(img_width);
+    img_net.setHeight(img_height);
+    row.add(img_net);
 
     return panel;
   }
@@ -4843,6 +4972,40 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
+  private void draw_frame(JFImage img, long max) {
+    String eng;
+    long div;
+    long step_size;
+    step_size = max / 10L;
+    if (max < 1024L) {
+      //bytes / percent
+      div = 1;
+      eng = "";
+    } else if (max < 1024L * 512L) {
+      //KB
+      div = 1024L;
+      eng = "KB";
+    } else if (max < 1024L * 1024L * 512L) {
+      //MB
+      div = 1024L * 1024L;
+      eng = "MB";
+    } else {
+      //GB
+      div = 1024L * 1024L * 1024L;
+      eng = "GB";
+    }
+    int x = 100;
+    int y = data_height - 5;
+    long value = 0;
+    for(int step = 0;step < 10;step++) {
+      String str = String.format("%d%s", value / div, eng);
+      int len = str.length();
+      img.getGraphics().drawBytes(str.getBytes(), 0, len, x - (len * 10), y);
+      value += step_size;
+      y -= 25;
+    }
+  }
+
   public byte[] getResource(String url) {
     //url = /api/...
     if (debug) {
@@ -4933,6 +5096,151 @@ public class ConfigService implements WebUIHandler {
         NetworkVLAN vlan = Config.current.getNetworkVLAN(network);
         if (vlan == null) return "-1".getBytes();
         return Integer.toString(vlan.vlan).getBytes();
+      }
+      case "stats": {
+        String uuid = props.getProperty("uuid");
+        String type = props.getProperty("type");
+        String file = props.getProperty("file");
+        //replace .png with .stat
+        file = file.replace(".png", ".stat");
+        String stat_filename = "/var/jfkvm/stats/" + uuid + "/" + type + "-" + file;
+        JFImage img = new JFImage(img_width, img_height);
+        img.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        img.fill(0, 0, img_width, img_height, Color.white);
+        //generate image
+        File stat_file = new File(stat_filename);
+        if (stat_file.exists()) {
+          try {
+            FileInputStream fis = new FileInputStream(stat_filename);
+            byte[] data = fis.readAllBytes();
+            int pos = 0;
+            int longs = data.length / 8;
+            switch (type) {
+              case "mem": {
+                //sample, max, current (kb)
+                int cnt = longs / 3;
+                long max = 1024;  //1MB
+                //find max value
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  if (mem_max > max) {
+                    max = mem_max;
+                  }
+                }
+                max += 1024L;
+                draw_frame(img, max);
+                pos = 0;
+                int x;
+                int y;
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  x = 100 + (int)(sample * 3);
+                  y = (int)(mem_max * data_height / max);
+                  img.putPixel(x, y, Color.blue);
+                  y = (int)(mem_cur * data_height / max);
+                  img.putPixel(x, y, Color.red);
+                }
+                break;
+              }
+              case "cpu": {
+                //sample, time (ns)
+                int cnt = longs / 2;
+                long max = 100L;  //percent
+                draw_frame(img, max);
+                long cpu_last = 0;
+                pos = 0;
+                int x;
+                int y;
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long cpu_time = LE.getuint64(data, pos); pos += 8;
+                  x = 100 + (int)(sample * 3);
+                  y = (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
+                  img.putPixel(x, y, Color.blue);
+                  cpu_last = cpu_time;
+                }
+                break;
+              }
+              case "dsk": {
+                //sample, read, write (bytes)
+                int cnt = longs / 3;
+                long max = 1024;  //1MB
+                //find max value
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long dsk_read = LE.getuint64(data, pos); pos += 8;
+                  long dsk_write = LE.getuint64(data, pos); pos += 8;
+                  long total = dsk_read + dsk_write;
+                  if (total > max) {
+                    max = total;
+                  }
+                }
+                max += 1024L;
+                draw_frame(img, max * 1024L);
+                pos = 0;
+                int x;
+                int y;
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long dsk_read = LE.getuint64(data, pos); pos += 8;
+                  long dsk_write = LE.getuint64(data, pos); pos += 8;
+                  long total = dsk_read + dsk_write;
+                  x = 100 + (int)(sample * 3);
+                  y = (int)(dsk_read * data_height / max);
+                  img.putPixel(x, y, Color.green);
+                  y = (int)(dsk_write * data_height / max);
+                  img.putPixel(x, y, Color.blue);
+                  y = (int)(total * data_height / max);
+                  img.putPixel(x, y, Color.red);
+                }
+                break;
+              }
+              case "net": {
+                //sample, read, write (bytes)
+                int cnt = longs / 3;
+                long max = 1024;  //1MB
+                //find max value
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long net_read = LE.getuint64(data, pos); pos += 8;
+                  long net_write = LE.getuint64(data, pos); pos += 8;
+                  long total = net_read + net_write;
+                  if (total > max) {
+                    max = total;
+                  }
+                }
+                max += 1024L;
+                draw_frame(img, max * 1024L);
+                pos = 0;
+                int x;
+                int y;
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long net_read = LE.getuint64(data, pos); pos += 8;
+                  long net_write = LE.getuint64(data, pos); pos += 8;
+                  long total = net_read + net_write;
+                  x = 100 + (int)(sample * 3);
+                  y = (int)(net_read * data_height / max);
+                  img.putPixel(x, y, Color.green);
+                  y = (int)(net_write * data_height / max);
+                  img.putPixel(x, y, Color.blue);
+                  y = (int)(total * data_height / max);
+                  img.putPixel(x, y, Color.red);
+                }
+                break;
+              }
+            }
+          } catch (Exception e) {
+            JFLog.log(e);
+          }
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        img.savePNG(out);
+        return out.toByteArray();
       }
     }
     return null;

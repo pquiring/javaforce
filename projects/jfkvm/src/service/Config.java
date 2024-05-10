@@ -19,6 +19,7 @@ public class Config implements Serializable {
   public String fqn;
   public String token;
   public int auto_start_delay = 60;
+  public int stats_days = 3;
   public ArrayList<String> auto_start_vms = new ArrayList<>();
 
   //storage pools
@@ -66,6 +67,12 @@ public class Config implements Serializable {
     }
     if (auto_start_delay > 600) {
       auto_start_delay = 600;
+    }
+    if (stats_days < 3) {
+      stats_days = 3;
+    }
+    if (stats_days > 365) {
+      stats_days = 365;
     }
     if (auto_start_vms == null) {
       auto_start_vms = new ArrayList<>();

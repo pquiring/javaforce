@@ -40,6 +40,7 @@ public class VirtualMachine implements Serializable {
   public String getPool() {return pool;}
   public String getName() {return name;}
   public int getVNC() {return vnc;}
+  public String getUUID() {return uuid;}
 
   public String getPath() {
     return "/volumes/" + pool + "/" + name;
@@ -58,9 +59,14 @@ public class VirtualMachine implements Serializable {
     return hardware.save(getConfigFile());
   }
 
+  public void create_stats_folder() {
+    new File("/var/jfkvm/stats/" + uuid).mkdir();
+  }
+
   //virDomainCreate
   private native static boolean nstart(String name);
   public boolean start() {
+    create_stats_folder();
     return nstart(name);
   }
 
