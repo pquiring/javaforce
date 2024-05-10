@@ -41,7 +41,7 @@ static bool str_cmp(char* field, char* grep) {
   return true;
 }
 
-static void append_domain_stat(char* uuid, int year, int month, int day, int hour, int sample, const char* type, int cnt, jlong v1, jlong v2, jlong v3) {
+static void append_domain_stat(char* uuid, int year, int month, int day, int hour, int sample, const char* type, jlong v1, jlong v2, jlong v3) {
   char file[256];
   sprintf(file, "/var/jfkvm/stats/%s/%s-%04d-%02d-%02d-%02d.stat", uuid, type, year, month, day, hour);
   int fd = open(file, O_WRONLY | O_APPEND | O_CREAT, 0600);
@@ -54,7 +54,7 @@ static void append_domain_stat(char* uuid, int year, int month, int day, int hou
   r.v1 = v1;
   r.v2 = v2;
   r.v3 = v3;
-  write(fd, &r, 8 + cnt * 8);
+  write(fd, &r, 4 * sizeof(jlong));
   close(fd);
 }
 
@@ -108,10 +108,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
       }
     }
     (*_virDomainGetUUIDString)(dom, uuid);
-    append_domain_stat(uuid, year, month, day, hour, sample, "cpu", 1, cpu_time, 0, 0);
-    append_domain_stat(uuid, year, month, day, hour, sample, "mem", 2, mem_max, mem_used, 0);
-    append_domain_stat(uuid, year, month, day, hour, sample, "net", 2, net_read, net_write, 0);
-    append_domain_stat(uuid, year, month, day, hour, sample, "dsk", 2, disk_read, disk_write, disk_latency);
+    append_domain_stat(uuid, year, month, day, hour, sample, "cpu", cpu_time, 0, 0);
+    append_domain_stat(uuid, year, month, day, hour, sample, "mem", mem_max, mem_used, 0);
+    append_domain_stat(uuid, year, month, day, hour, sample, "net", net_read, net_write, 0);
+    append_domain_stat(uuid, year, month, day, hour, sample, "dsk", disk_read, disk_write, disk_latency);
   }
 
   (*_virDomainStatsRecordListFree)((void**)stats);

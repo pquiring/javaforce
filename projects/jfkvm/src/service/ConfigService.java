@@ -5259,6 +5259,7 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
                   long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  pos += 8;  //reserved
                   if (mem_max > max) {
                     max = mem_max;
                   }
@@ -5276,6 +5277,7 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
                   long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  pos += 8;  //reserved
                   x = data_margin_left + (int)(sample * 3);
                   y1 = data_margin_top + (int)(mem_max * data_height / max);
                   if (a > 0) img.line(lx, ly1, x, y1, Color.blue);
@@ -5301,6 +5303,8 @@ public class ConfigService implements WebUIHandler {
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long cpu_time = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
+                  pos += 8;  //reserved
                   x = data_margin_left + (int)(sample * 3);
                   y = data_margin_top + (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
                   if (a > 0) img.line(lx, ly, x, y, Color.blue);
@@ -5319,6 +5323,7 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long dsk_read = LE.getuint64(data, pos); pos += 8;
                   long dsk_write = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
                   long total = dsk_read + dsk_write;
                   if (total > max) {
                     max = total;
@@ -5339,6 +5344,7 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long dsk_read = LE.getuint64(data, pos); pos += 8;
                   long dsk_write = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
                   long total = dsk_read + dsk_write;
                   x = data_margin_left + (int)(sample * 3);
                   y1 = data_margin_top + (int)(dsk_read * data_height / max);
@@ -5363,6 +5369,7 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long net_read = LE.getuint64(data, pos); pos += 8;
                   long net_write = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
                   long total = net_read + net_write;
                   if (total > max) {
                     max = total;
@@ -5383,6 +5390,7 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long net_read = LE.getuint64(data, pos); pos += 8;
                   long net_write = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
                   long total = net_read + net_write;
                   x = data_margin_left + (int)(sample * 3);
                   y1 = data_margin_top + (int)(net_read * data_height / max);
