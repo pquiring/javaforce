@@ -7,6 +7,7 @@ package service;
 
 import java.io.*;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.util.*;
 
 import javaforce.*;
@@ -39,13 +40,22 @@ public class ConfigService implements WebUIHandler {
     ".*[.]vmx",
   };
 
+  //stats image dimensions
   private static final int img_width = 50 + 540 + 25;
   private static final int img_height = 25 + 256 + 25;
 
-  private static final int data_width = 540;
+  private static final int data_width = 540;  //180 * 3
   private static final int data_height = 250;  //25 pixels per 10 units
 
+  private static final int data_margin_left = 50;
+  private static final int data_margin_right = 25;
+  private static final int data_margin_top = 25;
+  private static final int data_margin_bottom = 25;
+
   private static final long _20sec_ns_ = 20L * 1000L * 1000L * 1000L;  //20 seconds in nano seconds
+
+  private static final long day_ms = 1000L * 60L * 60L * 24L;
+  private static final long hour_ms = 1000L * 60L * 60L;
 
   public void start() {
     initSecureWebKeys();
@@ -88,6 +98,7 @@ public class ConfigService implements WebUIHandler {
   /** This class holds UI elements to be passed down to sub-panels. */
   private static class UI {
     public String user;
+    public Calendar now;
 
     public SplitPanel split;
     public Panel tasks;
@@ -3466,38 +3477,33 @@ public class ConfigService implements WebUIHandler {
     Button refresh = new Button("Refresh");
     tools.add(refresh);
 
-    Calendar now = Calendar.getInstance();
-    int _year = now.get(Calendar.YEAR);
-    int _month = now.get(Calendar.MONTH) + 1;
-    int _day = now.get(Calendar.DAY_OF_MONTH);
-    int _hour = now.get(Calendar.HOUR_OF_DAY);
-    String _file = String.format("%04d%-%02d-%02d-%02d");
+    ui.now = Calendar.getInstance();
+    int _year = ui.now.get(Calendar.YEAR);
+    int _month = ui.now.get(Calendar.MONTH) + 1;
+    int _day = ui.now.get(Calendar.DAY_OF_MONTH);
+    int _hour = ui.now.get(Calendar.HOUR_OF_DAY);
+    String _file = String.format("%04d%-%02d-%02d-%02d", _year, _month, _day, _hour);
     String uuid = vm.getUUID();
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Year:"));
     TextField year = new TextField(Integer.toString(_year));
+    year.setReadonly(true);
     row.add(year);
-    Button year_prev = new Button("<");
-    row.add(year_prev);
-    Button year_next = new Button(">");
-    row.add(year_next);
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Month:"));
     TextField month = new TextField(Integer.toString(_month));
+    month.setReadonly(true);
     row.add(month);
-    Button month_prev = new Button("<");
-    row.add(month_prev);
-    Button month_next = new Button(">");
-    row.add(month_next);
 
     row = new Row();
     panel.add(row);
     row.add(new Label("Day:"));
     TextField day = new TextField(Integer.toString(_day));
+    day.setReadonly(true);
     row.add(day);
     Button day_prev = new Button("<");
     row.add(day_prev);
@@ -3508,6 +3514,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     row.add(new Label("Hour:"));
     TextField hour = new TextField(Integer.toString(_hour));
+    hour.setReadonly(true);
     row.add(hour);
     Button hour_prev = new Button("<");
     row.add(hour_prev);
@@ -3545,14 +3552,90 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Image img_disk = new Image("stats?uuid=" + uuid + "&type=dsk&file=" + _file + ".png");
-    img_disk.setWidth(img_width);
-    img_disk.setHeight(img_height);
-    row.add(img_disk);
+    Image img_dsk = new Image("stats?uuid=" + uuid + "&type=dsk&file=" + _file + ".png");
+    img_dsk.setWidth(img_width);
+    img_dsk.setHeight(img_height);
+    row.add(img_dsk);
     Image img_net = new Image("stats?uuid=" + uuid + "&type=net&file=" + _file + ".png");
     img_net.setWidth(img_width);
     img_net.setHeight(img_height);
     row.add(img_net);
+
+    Runnable reload = () -> {
+      int __year = Integer.valueOf(year.getText());
+      int __month = Integer.valueOf(month.getText());
+      int __day = Integer.valueOf(day.getText());
+      int __hour = Integer.valueOf(hour.getText());
+      String __file = String.format("%04d%-%02d-%02d-%02d", __year, __month, __day, __hour);
+      img_mem.setImage("stats?uuid=" + uuid + "&type=mem&file=" + __file + ".png");
+      img_cpu.setImage("stats?uuid=" + uuid + "&type=cpu&file=" + __file + ".png");
+      img_dsk.setImage("stats?uuid=" + uuid + "&type=dsk&file=" + __file + ".png");
+      img_net.setImage("stats?uuid=" + uuid + "&type=net&file=" + __file + ".png");
+    };
+
+    refresh.addClickListener((me, cmp) -> {
+      reload.run();
+    });
+
+    day_prev.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts -= day_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
+
+    day_next.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts += day_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
+
+    hour_prev.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts -= hour_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
+
+    hour_next.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts += hour_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
 
     return panel;
   }
@@ -4972,20 +5055,20 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
-  private void draw_frame(JFImage img, long max) {
+  private void draw_frame(JFImage img, long max_y) {
     String eng;
     long div;
-    long step_size;
-    step_size = max / 10L;
-    if (max < 1024L) {
+    long value_step_y;
+    value_step_y = max_y / 10L;
+    if (max_y < 1024L) {
       //bytes / percent
       div = 1;
       eng = "";
-    } else if (max < 1024L * 512L) {
+    } else if (max_y < 1024L * 512L) {
       //KB
       div = 1024L;
       eng = "KB";
-    } else if (max < 1024L * 1024L * 512L) {
+    } else if (max_y < 1024L * 1024L * 512L) {
       //MB
       div = 1024L * 1024L;
       eng = "MB";
@@ -4994,15 +5077,60 @@ public class ConfigService implements WebUIHandler {
       div = 1024L * 1024L * 1024L;
       eng = "GB";
     }
-    int x = 100;
-    int y = data_height - 5;
-    long value = 0;
-    for(int step = 0;step < 10;step++) {
-      String str = String.format("%d%s", value / div, eng);
-      int len = str.length();
-      img.getGraphics().drawBytes(str.getBytes(), 0, len, x - (len * 10), y);
-      value += step_size;
-      y -= 25;
+    int x;
+    int y;
+    Graphics g = img.getGraphics();
+    g.setColor(java.awt.Color.gray);
+    {
+      //draw grid
+      int step_x = data_width / 10;
+      int step_y = data_height / 10;
+      for(int i=0;i<10;i++) {
+        //horizontal ---
+        x = data_margin_left;
+        y = data_margin_top + i * step_y;
+        g.drawLine(x, y, x + data_width, y);
+        //vertical |||
+        x = data_margin_left + i * step_x;
+        y = data_margin_top;
+        g.drawLine(x, y, x, y + data_height);
+      }
+    }
+    g.setColor(java.awt.Color.black);
+    {
+      //draw axis lines
+      x = data_margin_left;
+      y = data_margin_top + data_height;
+      g.drawLine(x, y, x, y - data_height);
+      g.drawLine(x, y, x + data_width, y);
+    }
+    {
+      //draw left axis labels (10 divs)
+      x = data_margin_left;
+      y = data_margin_top + data_height - 5;
+      long value = 0;
+      int step_y = data_height / 10;  //25
+      for(int step = 0;step < 10;step++) {
+        String str = String.format("%d%s", value / div, eng);
+        int len = str.length();
+        g.drawBytes(str.getBytes(), 0, len, x - (len * 10), y);
+        value += value_step_y;
+        y -= step_y;
+      }
+    }
+    {
+      //draw bottom axis labels (time : 1 hour / 10 = 6 mins)
+      x = data_margin_left;
+      y = data_margin_top + data_height + 10;
+      int min = 0;
+      int step_x = data_width / 10;  //54
+      for(int step = 0;step < 10;step++) {
+        String str = String.format("%dmin", min);
+        int len = str.length();
+        g.drawBytes(str.getBytes(), 0, len, x - (len/2 * 10), y);
+        min += 6;
+        x += step_x;
+      }
     }
   }
 
@@ -5138,10 +5266,10 @@ public class ConfigService implements WebUIHandler {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
                   long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
-                  x = 100 + (int)(sample * 3);
-                  y = (int)(mem_max * data_height / max);
+                  x = data_margin_left + (int)(sample * 3);
+                  y = data_margin_top + (int)(mem_max * data_height / max);
                   img.putPixel(x, y, Color.blue);
-                  y = (int)(mem_cur * data_height / max);
+                  y = data_margin_top + (int)(mem_cur * data_height / max);
                   img.putPixel(x, y, Color.red);
                 }
                 break;
@@ -5158,8 +5286,8 @@ public class ConfigService implements WebUIHandler {
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long cpu_time = LE.getuint64(data, pos); pos += 8;
-                  x = 100 + (int)(sample * 3);
-                  y = (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
+                  x = data_margin_left + (int)(sample * 3);
+                  y = data_margin_top + (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
                   img.putPixel(x, y, Color.blue);
                   cpu_last = cpu_time;
                 }
@@ -5189,12 +5317,12 @@ public class ConfigService implements WebUIHandler {
                   long dsk_read = LE.getuint64(data, pos); pos += 8;
                   long dsk_write = LE.getuint64(data, pos); pos += 8;
                   long total = dsk_read + dsk_write;
-                  x = 100 + (int)(sample * 3);
-                  y = (int)(dsk_read * data_height / max);
+                  x = data_margin_left + (int)(sample * 3);
+                  y = data_margin_top + (int)(dsk_read * data_height / max);
                   img.putPixel(x, y, Color.green);
-                  y = (int)(dsk_write * data_height / max);
+                  y = data_margin_top + (int)(dsk_write * data_height / max);
                   img.putPixel(x, y, Color.blue);
-                  y = (int)(total * data_height / max);
+                  y = data_margin_top + (int)(total * data_height / max);
                   img.putPixel(x, y, Color.red);
                 }
                 break;
@@ -5223,12 +5351,12 @@ public class ConfigService implements WebUIHandler {
                   long net_read = LE.getuint64(data, pos); pos += 8;
                   long net_write = LE.getuint64(data, pos); pos += 8;
                   long total = net_read + net_write;
-                  x = 100 + (int)(sample * 3);
-                  y = (int)(net_read * data_height / max);
+                  x = data_margin_left + (int)(sample * 3);
+                  y = data_margin_top + (int)(net_read * data_height / max);
                   img.putPixel(x, y, Color.green);
-                  y = (int)(net_write * data_height / max);
+                  y = data_margin_top + (int)(net_write * data_height / max);
                   img.putPixel(x, y, Color.blue);
-                  y = (int)(total * data_height / max);
+                  y = data_margin_top + (int)(total * data_height / max);
                   img.putPixel(x, y, Color.red);
                 }
                 break;
