@@ -42,7 +42,7 @@ public class ConfigService implements WebUIHandler {
 
   //stats image dimensions
   private static final int img_width = 50 + 540 + 25;
-  private static final int img_height = 25 + 256 + 25;
+  private static final int img_height = 25 + 250 + 25;
 
   private static final int data_width = 540;  //180 * 3
   private static final int data_height = 250;  //25 pixels per 10 units
@@ -5273,15 +5273,16 @@ public class ConfigService implements WebUIHandler {
                 int lx = 0;
                 int ly1 = 0;
                 int ly2 = 0;
+                int ys = data_margin_top + data_height;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
                   long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
                   pos += 8;  //reserved
                   x = data_margin_left + (int)(sample * 3);
-                  y1 = data_margin_top + (int)(mem_max * data_height / max);
+                  y1 = ys - (int)(mem_max * data_height / max);
                   if (a > 0) img.line(lx, ly1, x, y1, Color.blue);
-                  y2 = data_margin_top + (int)(mem_cur * data_height / max);
+                  y2 = ys - (int)(mem_cur * data_height / max);
                   if (a > 0) img.line(lx, ly2, x, y2, Color.red);
                   lx = x;
                   ly1 = y1;
@@ -5300,13 +5301,14 @@ public class ConfigService implements WebUIHandler {
                 int y;
                 int lx = 0;
                 int ly = 0;
+                int ys = data_margin_top + data_height;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long cpu_time = LE.getuint64(data, pos); pos += 8;
                   pos += 8;  //reserved
                   pos += 8;  //reserved
                   x = data_margin_left + (int)(sample * 3);
-                  y = data_margin_top + (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
+                  y = ys - (int)(((cpu_time - cpu_last) / _20sec_ns_) * data_height / max);
                   if (a > 0) img.line(lx, ly, x, y, Color.blue);
                   cpu_last = cpu_time;
                   lx = x;
@@ -5340,6 +5342,7 @@ public class ConfigService implements WebUIHandler {
                 int ly1 = 0;
                 int ly2 = 0;
                 int ly3 = 0;
+                int ys = data_margin_top + data_height;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long dsk_read = LE.getuint64(data, pos); pos += 8;
@@ -5347,11 +5350,11 @@ public class ConfigService implements WebUIHandler {
                   pos += 8;  //reserved
                   long total = dsk_read + dsk_write;
                   x = data_margin_left + (int)(sample * 3);
-                  y1 = data_margin_top + (int)(dsk_read * data_height / max);
+                  y1 = ys - (int)(dsk_read * data_height / max);
                   if (a > 0) img.line(lx, ly1, x, y1, Color.green);
-                  y2 = data_margin_top + (int)(dsk_write * data_height / max);
+                  y2 = ys - (int)(dsk_write * data_height / max);
                   if (a > 0) img.line(lx, ly2, x, y2, Color.blue);
-                  y3 = data_margin_top + (int)(total * data_height / max);
+                  y3 = ys - (int)(total * data_height / max);
                   if (a > 0) img.line(lx, ly3, x, y3, Color.red);
                   lx = x;
                   ly1 = y1;
@@ -5386,6 +5389,7 @@ public class ConfigService implements WebUIHandler {
                 int ly1 = 0;
                 int ly2 = 0;
                 int ly3 = 0;
+                int ys = data_margin_top + data_height;
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long net_read = LE.getuint64(data, pos); pos += 8;
@@ -5393,11 +5397,11 @@ public class ConfigService implements WebUIHandler {
                   pos += 8;  //reserved
                   long total = net_read + net_write;
                   x = data_margin_left + (int)(sample * 3);
-                  y1 = data_margin_top + (int)(net_read * data_height / max);
+                  y1 = ys - (int)(net_read * data_height / max);
                   if (a > 0) img.line(lx, ly1, x, y1, Color.green);
-                  y2 = data_margin_top + (int)(net_write * data_height / max);
+                  y2 = ys - (int)(net_write * data_height / max);
                   if (a > 0) img.line(lx, ly2, x, y2, Color.blue);
-                  y3 = data_margin_top + (int)(total * data_height / max);
+                  y3 = ys - (int)(total * data_height / max);
                   if (a > 0) img.line(lx, ly3, x, y3, Color.red);
                   lx = x;
                   ly1 = y1;
