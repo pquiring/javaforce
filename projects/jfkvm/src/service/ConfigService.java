@@ -5055,15 +5055,18 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
-  private void draw_frame(JFImage img, long max_y, int font_width) {
+  private void draw_frame(JFImage img, long max_y, int font_width, boolean percent) {
     String eng;
-    long div;
-    long value_step_y;
-    value_step_y = max_y / 10L;
+    double div;
+    long value_step_y = max_y / 10L;
     if (max_y < 1024L) {
       //bytes / percent
       div = 1;
-      eng = "";
+      if (percent) {
+        eng = "";
+      } else {
+        eng = "B";
+      }
     } else if (max_y < 1024L * 512L) {
       //KB
       div = 1024L;
@@ -5108,10 +5111,10 @@ public class ConfigService implements WebUIHandler {
       //draw left axis labels (10 divs)
       x = data_margin_left;
       y = data_margin_top + data_height - 5;
-      long value = 0;
+      double value = 0;
       int step_y = data_height / 10;  //25
       for(int step = 0;step <= 10;step++) {
-        String str = String.format("%d%s", value / div, eng);
+        String str = String.format("%0.1f%s", value / div, eng);
         int len = str.length();
         g.drawChars(str.toCharArray(), 0, len, x - (len * font_width), y);
         value += value_step_y;
@@ -5253,7 +5256,7 @@ public class ConfigService implements WebUIHandler {
               case "mem": {
                 //sample, max, current (kb)
                 int cnt = longs / 4;
-                long max = 1024;  //1MB
+                long max = 1024L * 1024L;  //1MB
                 //find max value
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
@@ -5264,8 +5267,8 @@ public class ConfigService implements WebUIHandler {
                     max = mem_max;
                   }
                 }
-                max += 1024L;
-                draw_frame(img, max, font_width);
+                max += 1024L * 1024L;  //1MB
+                draw_frame(img, max, font_width, false);
                 pos = 0;
                 int x;
                 int y1;
@@ -5294,7 +5297,7 @@ public class ConfigService implements WebUIHandler {
                 //sample, time (ns)
                 int cnt = longs / 4;
                 long max = 100L;  //percent
-                draw_frame(img, max, font_width);
+                draw_frame(img, max, font_width, true);
                 long cpu_last = 0;
                 pos = 0;
                 int x;
@@ -5319,7 +5322,7 @@ public class ConfigService implements WebUIHandler {
               case "dsk": {
                 //sample, read, write (bytes)
                 int cnt = longs / 4;
-                long max = 1024;  //1MB
+                long max = 1024;  //1KB
                 //find max value
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
@@ -5332,7 +5335,7 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max, font_width);
+                draw_frame(img, max, font_width, false);
                 pos = 0;
                 int x;
                 int y1;
@@ -5366,7 +5369,7 @@ public class ConfigService implements WebUIHandler {
               case "net": {
                 //sample, read, write (bytes)
                 int cnt = longs / 4;
-                long max = 1024;  //1MB
+                long max = 1024;  //1KB
                 //find max value
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
@@ -5379,7 +5382,7 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max, font_width);
+                draw_frame(img, max, font_width, false);
                 pos = 0;
                 int x;
                 int y1;
