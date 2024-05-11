@@ -5323,6 +5323,9 @@ public class ConfigService implements WebUIHandler {
                 //sample, read, write (bytes)
                 int cnt = longs / 4;
                 long max = 1024;  //1KB
+                long last_read = 0;
+                long last_write = 0;
+                long last_total = 0;
                 //find max value
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
@@ -5330,15 +5333,19 @@ public class ConfigService implements WebUIHandler {
                   long dsk_write = LE.getuint64(data, pos); pos += 8;
                   pos += 8;  //reserved
                   long total = dsk_read + dsk_write;
-                  if (total > max) {
+                  long this_total = (dsk_read - last_read) + (dsk_write - last_write);
+                  if (a > 1 && this_total > max) {
                     max = total;
                   }
+                  last_read = dsk_read;
+                  last_write = dsk_write;
+                  last_total = total;
                 }
                 max += 1024L;
                 draw_frame(img, max, font_width, false);
-                long last_read = 0;
-                long last_write = 0;
-                long last_total = 0;
+                last_read = 0;
+                last_write = 0;
+                last_total = 0;
                 pos = 0;
                 int x;
                 int y1;
@@ -5376,6 +5383,9 @@ public class ConfigService implements WebUIHandler {
                 //sample, read, write (bytes)
                 int cnt = longs / 4;
                 long max = 1024;  //1KB
+                long last_read = 0;
+                long last_write = 0;
+                long last_total = 0;
                 //find max value
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
@@ -5383,15 +5393,19 @@ public class ConfigService implements WebUIHandler {
                   long net_write = LE.getuint64(data, pos); pos += 8;
                   pos += 8;  //reserved
                   long total = net_read + net_write;
-                  if (total > max) {
+                  long this_total = (net_read - last_read) + (net_write - last_write);
+                  if (a > 1 && this_total > max) {
                     max = total;
                   }
+                  last_read = net_read;
+                  last_write = net_write;
+                  last_total = total;
                 }
                 max += 1024L;
                 draw_frame(img, max, font_width, false);
-                long last_read = 0;
-                long last_write = 0;
-                long last_total = 0;
+                last_read = 0;
+                last_write = 0;
+                last_total = 0;
                 pos = 0;
                 int x;
                 int y1;
