@@ -5332,7 +5332,7 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max * 1024L, font_width);
+                draw_frame(img, max, font_width);
                 pos = 0;
                 int x;
                 int y1;
@@ -5379,7 +5379,7 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L;
-                draw_frame(img, max * 1024L, font_width);
+                draw_frame(img, max, font_width);
                 pos = 0;
                 int x;
                 int y1;
