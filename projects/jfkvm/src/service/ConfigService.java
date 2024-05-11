@@ -5336,6 +5336,9 @@ public class ConfigService implements WebUIHandler {
                 }
                 max += 1024L;
                 draw_frame(img, max, font_width, false);
+                long last_read = 0;
+                long last_write = 0;
+                long last_total = 0;
                 pos = 0;
                 int x;
                 int y1;
@@ -5353,12 +5356,15 @@ public class ConfigService implements WebUIHandler {
                   pos += 8;  //reserved
                   long total = dsk_read + dsk_write;
                   x = data_margin_left + (int)(sample * 3);
-                  y1 = ys - (int)(dsk_read * data_height / max);
-                  if (a > 0) img.line(lx, ly1, x, y1, Color.green);
-                  y2 = ys - (int)(dsk_write * data_height / max);
-                  if (a > 0) img.line(lx, ly2, x, y2, Color.blue);
-                  y3 = ys - (int)(total * data_height / max);
-                  if (a > 0) img.line(lx, ly3, x, y3, Color.red);
+                  y1 = ys - (int)((dsk_read - last_read) * data_height / max);
+                  if (a > 1) img.line(lx, ly1, x, y1, Color.green);
+                  y2 = ys - (int)((dsk_write - last_write) * data_height / max);
+                  if (a > 1) img.line(lx, ly2, x, y2, Color.blue);
+                  y3 = ys - (int)((total - last_total) * data_height / max);
+                  if (a > 1) img.line(lx, ly3, x, y3, Color.red);
+                  last_read = dsk_read;
+                  last_write = dsk_write;
+                  last_total = total;
                   lx = x;
                   ly1 = y1;
                   ly2 = y2;
@@ -5383,6 +5389,9 @@ public class ConfigService implements WebUIHandler {
                 }
                 max += 1024L;
                 draw_frame(img, max, font_width, false);
+                long last_read = 0;
+                long last_write = 0;
+                long last_total = 0;
                 pos = 0;
                 int x;
                 int y1;
@@ -5400,12 +5409,15 @@ public class ConfigService implements WebUIHandler {
                   pos += 8;  //reserved
                   long total = net_read + net_write;
                   x = data_margin_left + (int)(sample * 3);
-                  y1 = ys - (int)(net_read * data_height / max);
-                  if (a > 0) img.line(lx, ly1, x, y1, Color.green);
-                  y2 = ys - (int)(net_write * data_height / max);
-                  if (a > 0) img.line(lx, ly2, x, y2, Color.blue);
-                  y3 = ys - (int)(total * data_height / max);
-                  if (a > 0) img.line(lx, ly3, x, y3, Color.red);
+                  y1 = ys - (int)((net_read - last_read) * data_height / max);
+                  if (a > 1) img.line(lx, ly1, x, y1, Color.green);
+                  y2 = ys - (int)((net_write - last_write) * data_height / max);
+                  if (a > 1) img.line(lx, ly2, x, y2, Color.blue);
+                  y3 = ys - (int)((total - last_total) * data_height / max);
+                  if (a > 1) img.line(lx, ly3, x, y3, Color.red);
+                  last_read = net_read;
+                  last_write = net_write;
+                  last_total = total;
                   lx = x;
                   ly1 = y1;
                   ly2 = y2;
