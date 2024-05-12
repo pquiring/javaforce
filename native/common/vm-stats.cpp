@@ -14,7 +14,7 @@
 
   CPU_TOTAL = cpu.time  (use delta between two samples to calc percentage)
 
-  BALLON = balloon.current, balloon.maximum, balloon.available, balloon.rss (resident set size), balloon.usable, balloon.unused
+  BALLOON = balloon.current, balloon.maximum, balloon.available, balloon.rss (resident set size), balloon.usable, balloon.unused
 
   INTERFACE = net.count, net.<num>.rx/tx.bytes
 
@@ -91,7 +91,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
       else if (str_cmp(field, "balloon.maximum")) {
         mem_max = param->value.l;
       }
-      else if (str_cmp(field, "balloon.current")) {
+      else if (str_cmp(field, "balloon.unused")) {
         mem_used = param->value.l;
       }
       else if (str_cmp(field, "net.*.rx.bytes")) {

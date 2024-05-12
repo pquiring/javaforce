@@ -5254,14 +5254,15 @@ public class ConfigService implements WebUIHandler {
             int longs = data.length / 8;
             switch (type) {
               case "mem": {
-                //sample, max, current (kb)
+                //sample, max, unused (kb)
                 int cnt = longs / 4;
                 long max = 1024L * 1024L;  //1MB
                 //find max value
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
-                  long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  long mem_unused = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  long mem_active = mem_max - mem_unused;
                   pos += 8;  //reserved
                   if (mem_max > max) {
                     max = mem_max;
@@ -5280,12 +5281,13 @@ public class ConfigService implements WebUIHandler {
                 for(int a=0;a<cnt;a++) {
                   long sample = LE.getuint64(data, pos); pos += 8;
                   long mem_max = LE.getuint64(data, pos) * 1024L; pos += 8;
-                  long mem_cur = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  long mem_unused = LE.getuint64(data, pos) * 1024L; pos += 8;
+                  long mem_active = mem_max - mem_unused;
                   pos += 8;  //reserved
                   x = data_margin_left + (int)(sample * 3);
                   y1 = ys - (int)(mem_max * data_height / max);
                   if (a > 0) img.line(lx, ly1, x, y1, Color.blue);
-                  y2 = ys - (int)(mem_cur * data_height / max);
+                  y2 = ys - (int)(mem_active * data_height / max);
                   if (a > 0) img.line(lx, ly2, x, y2, Color.red);
                   lx = x;
                   ly1 = y1;
