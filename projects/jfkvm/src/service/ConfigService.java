@@ -5311,7 +5311,7 @@ public class ConfigService implements WebUIHandler {
                   pos += 8;  //reserved
                   pos += 8;  //reserved
                   x = data_margin_left + (int)(sample * 3);
-                  y = ys - (int)(((cpu_time - cpu_last) * data_height / max) / _20sec_ns_);
+                  y = ys - (int)((cpu_time - cpu_last) * data_height / _20sec_ns_);  //max = 20 seconds
                   if (a > 0) img.line(lx, ly, x, y, Color.blue);
                   cpu_last = cpu_time;
                   lx = x;
