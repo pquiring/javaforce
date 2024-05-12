@@ -69,7 +69,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
   int b_flags = VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE;
   int cnt = (*_virConnectGetAllDomainStats)(conn, b_stats, (void***)&stats, b_flags);
 
-  if (cnt < 0) return JNI_FALSE;
+  if (cnt < 0) {
+    disconnect(conn);
+    return JNI_FALSE;
+  }
 
   virDomainStatsRecordPtr* next;
 
@@ -115,6 +118,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats
   }
 
   (*_virDomainStatsRecordListFree)((void**)stats);
+
+  disconnect(conn);
 
   return JNI_TRUE;
 }
