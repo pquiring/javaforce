@@ -5243,10 +5243,10 @@ public class ConfigService implements WebUIHandler {
         int font_decent = font_metrics[2];
         int font_height = font_ascent + font_decent;
         img.setFont(font);
-        img.fill(0, 0, img_width, img_height, Color.white);
         //generate image
         File stat = new File(filename);
         if (stat.exists()) {
+          img.fill(0, 0, img_width, img_height, Color.white);
           try {
             FileInputStream fis = new FileInputStream(filename);
             byte[] data = fis.readAllBytes();
@@ -5447,7 +5447,10 @@ public class ConfigService implements WebUIHandler {
             JFLog.log(e);
           }
         } else {
-          img.getGraphics().drawChars("n/a".toCharArray(), 0, 3, img_width / 2, img_height / 2);
+          Graphics g = img.getGraphics();
+          img.fill(0, 0, img_width, img_height, Color.grey);
+          g.setColor(java.awt.Color.black);
+          g.drawChars("n/a".toCharArray(), 0, 3, img_width / 2, img_height / 2);
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         img.savePNG(out);
