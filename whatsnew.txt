@@ -1,5 +1,9 @@
 What's new...
 
+May 13/2024 : JF/59.0
+  - jfKVM/1.5
+    - new : added Monitor stats screen (memory, cpu, disk and network)
+
 May 6/2024 : JF/58.0
   - jfKVM/1.0
     - this last weekend I was able to convert the first
