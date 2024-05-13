@@ -305,7 +305,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     preview_panel.add(row);
-    Image img = new Image(null);
+    Image img = new Image((Resource)null);
     row.add(img);
     preview_panel.setVisible(false);
 
