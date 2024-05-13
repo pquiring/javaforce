@@ -1727,7 +1727,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Stats Retention (days)"));
     TextField stats_days = new TextField(Integer.toString(Config.current.stats_days));
     row.add(stats_days);
-    row.add(new Label("(1-99) (default:3)"));
+    row.add(new Label("(1-365) (default:3)"));
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1746,9 +1746,13 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:VNC Password must be 8 chars");
         return;
       }
-      String _stats_days = vmm.cleanNumber(stats_days.getText());
-      if (_stats_days.length() == 0 || _stats_days.length() > 2 || !_stats_days.equals(stats_days.getText())) {
-        stats_days.setText(_stats_days);
+      String _stats_days_str = vmm.cleanNumber(stats_days.getText());
+      if (_stats_days_str.length() == 0 || !_stats_days_str.equals(stats_days.getText())) {
+        errmsg.setText("Error:Stats Retention is invalid");
+        return;
+      }
+      int _stats_days_int = Integer.valueOf(_stats_days_str);
+      if (_stats_days_int < 1 || _stats_days_int > 365) {
         errmsg.setText("Error:Stats Retention is invalid");
         return;
       }
@@ -1756,7 +1760,7 @@ public class ConfigService implements WebUIHandler {
       String old_vnc_password = Config.current.vnc_password;
       Config.current.fqn = fqn.getText();
       Config.current.vnc_password = new_vnc_password;
-      Config.current.stats_days = Integer.valueOf(_stats_days);
+      Config.current.stats_days = _stats_days_int;
       Storage.setSystemIQN(iqn.getText());
       Config.current.save();
       msg.setText("Settings saved");
