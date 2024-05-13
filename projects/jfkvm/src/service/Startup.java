@@ -80,6 +80,7 @@ public class Startup extends Thread {
       ArrayList<String> auto_start_vms = Config.current.auto_start_vms;
       for(String auto_start_vm : auto_start_vms) {
         for(VirtualMachine vm : vms) {
+          vm.create_stats_folder();
           if (vm.name.equals(auto_start_vm)) {
             if (vm.getState() == VirtualMachine.STATE_OFF) {
               vm.start();
