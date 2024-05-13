@@ -132,7 +132,7 @@ public class VisionSystem {
     VisionAreaRow rows[] = Database.getVisionAreas(pid, s_id);
     Rectangle rect = new Rectangle();
     //add image layer
-    Image img = new Image(null);
+    Image img = new Image((Resource)null);
     panel.add(img);
     //add layers
     for(int a=0;a<rows.length;a++) {
