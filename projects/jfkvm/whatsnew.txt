@@ -1,3 +1,9 @@
+2024-05-13 : 1.5 released!
+  - new : Monitor VM Stats
+    - all VM stats are now monitor and can be viewed
+    - includes : memory, cpu, disk and network bandwidth
+    - need to add active memory and disk latency
+
 2024-05-06 : 1.0 released!
   - this last weekend I was able to convert the first
     VMWare guest to jfKVM, an Asterisk PBX we use at work
