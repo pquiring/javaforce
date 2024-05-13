@@ -2835,7 +2835,10 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       ui.vm_disk = ui.hardware.disks.get(idx);
       ui.vm_disk_init.run();
-      ui.vm_disk_complete = null;
+      ui.vm_disk_complete = () -> {
+        disk_list.remove(idx);
+        disk_list.add(idx, ui.vm_disk.toString());
+      };
       ui.vm_disk_popup.setVisible(true);
     });
     b_disk_delete.addClickListener((me, cmp) -> {
