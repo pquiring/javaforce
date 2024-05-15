@@ -15,8 +15,8 @@ public class HTTP {
   protected InputStream is;
   protected String host;
   protected int port;
-  private HashMap<String, String> request_headers = new HashMap<>();
-  private HashMap<String, String> reply_headers = new HashMap<>();
+  private Parameters request_headers = new Parameters();
+  private Parameters reply_headers = new Parameters();
   private int code = -1;
   public static boolean debug = false;
   private Progress progress;
@@ -25,6 +25,50 @@ public class HTTP {
   public static final String formType = "application/x-www-form-urlencoded";
 
   private final static int bufsiz = 1024;
+
+  public static class Parameters {
+    private HashMap<String, String> params = new HashMap<>();
+
+    public String get(String name) {
+      return params.get(name);
+    }
+
+    public void put(String name, String value) {
+      params.put(name, value);
+    }
+
+    public String[] keys() {
+      return params.keySet().toArray(JF.StringArrayType);
+    }
+
+    public void clear() {
+      params.clear();
+    }
+
+    public HashMap<String, String> getHashMap() {
+      return params;
+    }
+
+    public static Parameters decode(String[] headers, int offset) {
+      Parameters p = new Parameters();
+      for(int i=offset;i<headers.length;i++) {
+        String ln = headers[i];
+        int idx = ln.indexOf(":");
+        if (idx == -1) continue;
+        String key = ln.substring(0, idx).trim();
+        String value = ln.substring(idx + 1).trim();
+        p.put(key, value);
+      }
+      return p;
+    }
+
+    public static Parameters decode(String[] headers) {
+      for(int i=0;i<headers.length;i++) {
+        if (headers[i].length() == 0) return decode(headers, i + 1);
+      }
+      return null;
+    }
+  }
 
   /** Progress Listener */
   public static interface Progress {
@@ -226,7 +270,7 @@ public class HTTP {
 
   /** Returns reply headers. */
   public HashMap<String, String> getHeaders() {
-    return reply_headers;
+    return reply_headers.getHashMap();
   }
 
   /** Returns last status code. */
@@ -452,7 +496,7 @@ public class HTTP {
 
   /** Append user headers. */
   private void appendHeaders(StringBuilder req) {
-    String[] keys = request_headers.keySet().toArray(new String[request_headers.keySet().size()]);
+    String[] keys = request_headers.keys();
     for(String key : keys) {
       String value = request_headers.get(key);
       req.append(key + ": " + value + "\r\n");
