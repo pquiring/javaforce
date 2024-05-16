@@ -68,7 +68,11 @@
 //
 // Visit the ACME Labs Java page for up-to-date versions of this and other
 // fine Java utilities: http://www.acme.com/java/
-import java.io.*;
+
+import java.util.*;
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
 
 /// The DES encryption method.
 // <P>
@@ -469,6 +473,76 @@ public class DesCipher {
       outBytes[outOff + i * 4 + 1] = (byte) (inInts[inOff + i] >>> 16);
       outBytes[outOff + i * 4 + 2] = (byte) (inInts[inOff + i] >>> 8);
       outBytes[outOff + i * 4 + 3] = (byte) inInts[inOff + i];
+    }
+  }
+
+  private static String byteArray2String(byte[] array) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("ByteArray:");
+    for(int a=0;a<array.length;a++) {
+      if (a > 0) sb.append(",");
+      String v = Integer.toBinaryString(array[a] & 0xff);
+      sb.append(String.format("%8s", v));
+    }
+    return sb.toString();
+  }
+
+  private static byte[] reverseBits(byte[] input) {
+    byte[] output = new byte[input.length];
+    for(int a=0;a<input.length;a++) {
+      byte in = input[a];
+      byte out = 0;
+      for(int b=0;b<8;b++) {
+        out <<= 1;
+        if ((in & 0x01) == 0x01) {
+          out |= 1;
+        }
+        in >>= 1;
+      }
+      output[a] = out;
+    }
+    return output;
+  }
+
+  /** Compare this class with Java class. */
+  public static void main(String[] args) {
+    byte[] key = "password".getBytes();
+    DesCipher des_vnc = new DesCipher(key);
+
+    byte[] challenge = new byte[16];
+    Random r = new Random();
+    r.nextBytes(challenge);
+      System.out.println("challenge         =" + byteArray2String(challenge));
+
+    try {
+      byte[] vnc_response = new byte[16];
+      System.arraycopy(challenge, 0, vnc_response, 0, 16);
+
+      des_vnc.encrypt(vnc_response, 0, vnc_response, 0);
+      des_vnc.encrypt(vnc_response, 8, vnc_response, 8);
+
+      System.out.println("DesCipher Response=" + byteArray2String(vnc_response));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    try {
+        byte[] keyBytes = reverseBits("password".getBytes());
+        DESKeySpec desKeySpec = new DESKeySpec(keyBytes);
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+        SecretKey secretKey = keyFactory.generateSecret(desKeySpec);
+
+        // Create Cipher instance
+        Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+        // Encrypt password
+        byte[] res1 = cipher.update(challenge);
+
+       System.out.println("Des.Java  Response=" + byteArray2String(res1));
+
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }
