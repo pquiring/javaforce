@@ -23,6 +23,14 @@ public class BE {
     return ret;
   }
 
+  public static int getuint24(byte[] data, int offset) {
+    int ret;
+    ret = ((int) data[offset] & 0xff) << 16;
+    ret += ((int) data[offset + 1] & 0xff) << 8;
+    ret += ((int) data[offset + 2] & 0xff);
+    return ret;
+  }
+
   public static int getuint32(byte[] data, int offset) {
     int ret;
     ret = ((int) data[offset] & 0xff) << 24;
@@ -50,6 +58,14 @@ public class BE {
   }
 
   public static void setuint16(byte[] data, int offset, int value) {
+    data[offset+1] = (byte)(value & 0xff);
+    value >>= 8;
+    data[offset+0] = (byte)(value & 0xff);
+  }
+
+  public static void setuint24(byte[] data, int offset, int value) {
+    data[offset+2] = (byte)(value & 0xff);
+    value >>= 8;
     data[offset+1] = (byte)(value & 0xff);
     value >>= 8;
     data[offset+0] = (byte)(value & 0xff);
