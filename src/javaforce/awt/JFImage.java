@@ -28,10 +28,13 @@ public class JFImage extends JComponent implements Icon {
   private ResizeOperation resizeOperation = ResizeOperation.CLEAR;
   private int imageType;  //BufferedImage.TYPE_INT_...
 
+  public static boolean debug = false;
+
   public enum ResizeOperation {
     CLEAR, //reset image
     CHOP,  //copy/chop image
-    SCALE  //scale image
+    SCALE,  //scale image
+    NONE,  //do not resize
   };
 
   public JFImage() {
@@ -65,7 +68,9 @@ public class JFImage extends JComponent implements Icon {
   }
 
   private void initImage(int x, int y) {
-//    System.out.println("JFImage.initImage:" + x + "," + y);
+    if (debug) {
+      JFLog.log("JFImage.initImage:" + x + "," + y);
+    }
     bi = new BufferedImage(x, y, imageType);
     init(true);
     setPreferredSize(new Dimension(x, y));
@@ -78,7 +83,9 @@ public class JFImage extends JComponent implements Icon {
 
   public void setBounds(int x, int y, int w, int h) {
     //usually called from LayoutManager / ScrollPane
-//    System.out.println("JFImage.setBounds:" + x + "," + y + "," + w + "," + h);
+    if (debug) {
+      JFLog.log("JFImage.setBounds:" + x + "," + y + "," + w + "," + h);
+    }
     super.setBounds(x, y, w, h);
     if (bi != null) {
       BufferedImage oldbi = bi;
@@ -86,6 +93,8 @@ public class JFImage extends JComponent implements Icon {
       int oldh = getHeight();
       Composite org;
       switch (resizeOperation) {
+        case NONE:
+          break;
         case CLEAR:
           initImage(w, h);
           break;
@@ -110,12 +119,16 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public void setSize(int x, int y) {
-//    System.out.println("JFImage.setSize:" + x + "," + y);
+    if (debug) {
+      JFLog.log("JFImage.setSize:" + x + "," + y);
+    }
     super.setSize(x, y);  //just calls setBounds(getLocation(),x,y);
   }
 
   public void setSize(Dimension d) {
-//    System.out.println("JFImage.setSize:" + d);
+    if (debug) {
+      JFLog.log("JFImage.setSize:" + d);
+    }
     super.setSize(d);
   }
 
@@ -164,7 +177,9 @@ public class JFImage extends JComponent implements Icon {
 
   /** Paint this image onto Graphics. */
   public void paint(Graphics g) {
-//System.out.println("paint");
+    if (debug) {
+      JFLog.log("JFImage:paint");
+    }
     if (bi == null) {
       return;
     }
@@ -455,13 +470,17 @@ public class JFImage extends JComponent implements Icon {
       OSType = "icp5";
     }
     if (w != newSize || h != newSize) {
-//      System.out.println("Scaling icns to:" + newSize + "x" + newSize);
+      if (debug) {
+        JFLog.log("JFImage:saveICNS:Scaling icns to:" + newSize + "x" + newSize);
+      }
       setResizeOperation(ResizeOperation.SCALE);
       setSize(newSize, newSize);
     }
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     savePNG(baos);
-//    System.out.println("png.size=" + baos.size());
+    if (debug) {
+      JFLog.log("JFImage:saveICNS:png.size=" + baos.size());
+    }
     System.arraycopy("icns".getBytes(), 0, header, 0, 4);  //file header "icns"
     BE.setuint32(header, 4, 4*4 + baos.size());  //file size
     System.arraycopy(OSType.getBytes(), 0, header, 8, 4);  //image type
