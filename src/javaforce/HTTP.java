@@ -26,6 +26,9 @@ public class HTTP {
 
   private final static int bufsiz = 1024;
 
+  /** HTTP Parameters.
+   * Stores HTTP Headers or URL Parameters.
+   */
   public static class Parameters {
     private HashMap<String, String> params = new HashMap<>();
 
@@ -49,11 +52,12 @@ public class HTTP {
       return params;
     }
 
-    public static Parameters decode(String[] headers, int offset) {
+    /** Decode HTTP headers starting at offset. */
+    public static Parameters decode(String[] headers, char equals, int offset) {
       Parameters p = new Parameters();
       for(int i=offset;i<headers.length;i++) {
         String ln = headers[i];
-        int idx = ln.indexOf(":");
+        int idx = ln.indexOf(equals);
         if (idx == -1) continue;
         String key = ln.substring(0, idx).trim();
         String value = ln.substring(idx + 1).trim();
@@ -62,13 +66,25 @@ public class HTTP {
       return p;
     }
 
+    /** Decode HTTP headers.  Searches for headers after first blank line.
+     * equals = ':'
+     */
     public static Parameters decode(String[] headers) {
       for(int i=0;i<headers.length;i++) {
-        if (headers[i].length() == 0) return decode(headers, i + 1);
+        if (headers[i].length() == 0) return decode(headers, ':', i + 1);
       }
       return null;
     }
 
+    /** Decode HTTP headers.  Searches for headers after first blank line. */
+    public static Parameters decode(String[] headers, char equals) {
+      for(int i=0;i<headers.length;i++) {
+        if (headers[i].length() == 0) return decode(headers, equals, i + 1);
+      }
+      return null;
+    }
+
+    /** Decode URL parameters. */
     public static Parameters decode(String query) {
       Parameters params = new Parameters();
       String[] items = query.split("&");

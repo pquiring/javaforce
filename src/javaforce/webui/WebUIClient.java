@@ -67,11 +67,33 @@ public class WebUIClient {
     root.init();
   }
   public void dispatchEvent(String id, String event, String[] args) {
+    HTTP.Parameters params;
+    if (args != null) {
+      params = HTTP.Parameters.decode(args, '=', 0);
+    } else {
+      JFLog.log("warning:args=null");
+      params = new HTTP.Parameters();
+    }
     if (id.length() == 0 || id.equals("body")) {
       switch (event) {
         case "load":
           if (root == null) {
-            root = handler.getPanel("root", null, this);
+            String name = params.get("panel");
+            if (name == null) {
+              name = "root";
+            } else {
+              int i1 = name.indexOf('/');
+              int i2 = name.indexOf('/', 1);
+              if (i2 == -1) {
+                name = name.substring(i1 + 1);
+              } else {
+                name = name.substring(i1 + 1, i2);
+              }
+              if (name.length() == 0) {
+                name = "root";
+              }
+            }
+            root = handler.getPanel(name, params, this);
             initPanel();
           }
           isReady = true;

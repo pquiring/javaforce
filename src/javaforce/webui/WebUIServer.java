@@ -77,6 +77,10 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     String url = req.getURL();
     HTTP.Parameters params = HTTP.Parameters.decode(req.getQueryString());
     byte[] data = null;
+
+    if (url.equals("/favicon.ico")) {
+      url = "/webui.png";
+    }
 /*
     if (url.endsWith(".html")) {
       res.setContentType("text/html");  //default
@@ -85,22 +89,13 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     if (url.endsWith(".css")) {
       res.setContentType("text/css");
     }
-    if (url.endsWith(".png")) {
+    else if (url.endsWith(".png")) {
       res.setContentType("image/png");
     }
-    if (url.endsWith(".js")) {
+    else if (url.endsWith(".js")) {
       res.setContentType("text/javascript");
     }
-    if (url.equals("/")) {
-      url = "/webui.html";
-      String browser = req.getHeader("User-Agent");
-      if (browser != null) {
-        if (browser.indexOf("Trident") != -1) {
-          //Internet Explorer - not supported
-          url = "/webui-ie.html";
-        }
-      }
-    }
+
     if (url.startsWith("/static/")) {
       // url = /static/r#
       Resource r = Resource.getResource(url.substring(8));
@@ -115,9 +110,18 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       data = handler.getResource(url, params, res);
       res.addHeader("Cache-Control: no-store");
     } else {
-      if (url.equals("/favicon.ico")) {
-        url = "/webui.png";
+      int idx = url.indexOf('.');
+      if (idx == -1) {
+        url = "/webui.html";
       }
+      String browser = req.getHeader("User-Agent");
+      if (browser != null) {
+        if (browser.indexOf("Trident") != -1) {
+          //Internet Explorer - not supported
+          url = "/webui-ie.html";
+        }
+      }
+      //load resource from javaforce.jar
       data = getResource("javaforce/webui/static" + url);
     }
     if (data == null) {

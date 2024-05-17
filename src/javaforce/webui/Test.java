@@ -72,6 +72,10 @@ public class Test implements WebUIHandler {
     MenuItem m3c = new MenuItem("X3");
     m3.add(m3c);
 
+    Row row0 = new Row();
+    panel.add(row0);
+    row0.add(new Label("Panel=" + name));
+
     Row row1 = new Row();
     panel.add(row1);
     //add : togglebutton
