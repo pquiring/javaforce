@@ -185,6 +185,17 @@ public class RFB {
     return true;
   }
 
+  public void disconnect() {
+    try {
+      if ( s!= null) {
+        s.close();
+        s = null;
+      }
+    } catch (Exception e) {
+      JFLog.log(log, e);
+    }
+  }
+
   public static void setLog(int log) {
     RFB.log = log;
   }
@@ -405,6 +416,10 @@ public class RFB {
   }
 
   public static byte[] encodeResponse(byte[] challenge, byte[] password) {
+    if (password.length != 8) {
+      JFLog.log(log, "Password must be zero padded to 8 bytes");
+      return null;
+    }
     //VNC password key must be reversed
     byte[] r_password = reverseBits(password);
 
