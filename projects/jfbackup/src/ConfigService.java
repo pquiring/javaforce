@@ -11,6 +11,7 @@ import java.util.Stack;
 import java.util.Comparator;
 
 import javaforce.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -32,40 +33,41 @@ public class ConfigService implements WebUIHandler {
   }
 
   private void initSecureWebKeys() {
-    String dname = "CN=jfbackup.sourceforge.net, O=server, OU=webserver, C=CA";
     String keyfile = Paths.dataPath + "/jfbackup.key";
     String password = "password";
+    KeyParams params = new KeyParams();
+    params.dname = "CN=jfbackup.sourceforge.net, O=server, OU=webserver, C=CA";
     if (new File(keyfile).exists()) {
       //load existing keys
       keys = new KeyMgmt();
       try {
         FileInputStream fis = new FileInputStream(keyfile);
-        keys.open(fis, password.toCharArray());
+        keys.open(fis, password);
         fis.close();
       } catch (Exception e) {
         if (!keys.isValid()) {
           //generate random keys
-          keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+          keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
         }
         JFLog.log(e);
       }
     } else {
       //generate random keys
-      keys = KeyMgmt.create(keyfile, "webserver", dname, password);
+      keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
     }
   }
 
-  public Panel getRootPanel(WebUIClient webclient) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     switch (Config.current.mode) {
       case "install": return installPanel();
     }
-    String password = (String)webclient.getProperty("password");
+    String password = (String)client.getProperty("password");
     if (password == null) {
       return loginPanel();
     }
     switch (Config.current.mode) {
-      case "server": return serverPanel(webclient);
-      case "client": return clientPanel(webclient);
+      case "server": return serverPanel(client);
+      case "client": return clientPanel(client);
     }
     return null;
   }
@@ -151,7 +153,7 @@ public class ConfigService implements WebUIHandler {
       WebUIClient webclient = c.getClient();
       if (passTxt.equals(Config.current.password)) {
         webclient.setProperty("password", passTxt);
-        webclient.setPanel(getRootPanel(webclient));
+        webclient.setPanel(getPanel("root", null, webclient));
       } else {
         msg.setText("Wrong password");
         msg.setColor(Color.red);
@@ -1989,7 +1991,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     return null;
   }
 

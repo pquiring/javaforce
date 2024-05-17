@@ -15,6 +15,7 @@ import javaforce.awt.*;
 import javaforce.vm.*;
 import javaforce.linux.*;
 import javaforce.net.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -179,7 +180,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     if (Config.passwd == null) {
       return installPanel(client);
     }
@@ -1498,7 +1499,7 @@ public class ConfigService implements WebUIHandler {
       }
       Config.passwd = new Password(Password.TYPE_SYSTEM, "jfkvm", passTxt1);
       Config.passwd.save();
-      client.setPanel(getRootPanel(client));
+      client.setPanel(getPanel("root", null, client));
     });
     panel.add(inner);
     return panel;
@@ -1539,7 +1540,7 @@ public class ConfigService implements WebUIHandler {
       WebUIClient webclient = c.getClient();
       if (passTxt.equals(Config.passwd.password)) {
         webclient.setProperty("user", userTxt);
-        webclient.setPanel(getRootPanel(webclient));
+        webclient.setPanel(getPanel("root", null, webclient));
       } else {
         msg.setText("Wrong password");
         msg.setColor(Color.red);
@@ -5158,7 +5159,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //url = /api/...
     if (debug) {
       JFLog.log("url=" + url);
@@ -5167,26 +5168,7 @@ public class ConfigService implements WebUIHandler {
       return null;
     }
     url = url.substring(5);
-    String uri;
-    String paramstr;
-    int qidx = url.indexOf('?');
-    if (qidx != -1) {
-      uri = url.substring(0, qidx);
-      paramstr = url.substring(qidx + 1);
-    } else {
-      uri = url;
-      paramstr = "";
-    }
-    String[] params = paramstr.split("[&]");
-    Properties props = new Properties();
-    for(String param : params) {
-      int idx = param.indexOf('=');
-      if (idx == -1) continue;
-      String key = param.substring(0, idx);
-      String value = param.substring(idx + 1);
-      props.setProperty(key, value);
-    }
-    switch (uri) {
+    switch (url) {
       case "keyfile": {
         File file = new File("/root/cluster/localhost");
         if (!file.exists()) {
@@ -5197,7 +5179,7 @@ public class ConfigService implements WebUIHandler {
           JFLog.log("token not setup");
           return null;
         }
-        String token = props.getProperty("token");
+        String token = params.get("token");
         if (token == null) {
           JFLog.log("token not supplied");
           return null;
@@ -5215,8 +5197,8 @@ public class ConfigService implements WebUIHandler {
         }
       }
       case "notify": {
-        String token = props.getProperty("token");
-        String msg = props.getProperty("msg");
+        String token = params.get("token");
+        String msg = params.get("msg");
         if (msg == null) return null;
         if (!token.equals(Config.current.token)) return null;
         switch (msg) {
@@ -5233,16 +5215,16 @@ public class ConfigService implements WebUIHandler {
         return VMHost.getHostname().getBytes();
       }
       case "checkvncport": {
-        String port = props.getProperty("port");
-        String res = "free";
+        String port = params.get("port");
+        String result = "free";
         if (vmm.vnc_port_inuse_local(JF.atoi(port))) {
-          res = "inuse";
+          result = "inuse";
         }
-        return res.getBytes();
+        return result.getBytes();
       }
       case "getnetworkvlan": {
-        String token = props.getProperty("token");
-        String network = props.getProperty("network");
+        String token = params.get("token");
+        String network = params.get("network");
         if (network == null) return null;
         if (!token.equals(Config.current.token)) return null;
         NetworkVLAN vlan = Config.current.getNetworkVLAN(network);
@@ -5250,9 +5232,9 @@ public class ConfigService implements WebUIHandler {
         return Integer.toString(vlan.vlan).getBytes();
       }
       case "stats": {
-        String uuid = props.getProperty("uuid");
-        String type = props.getProperty("type");
-        String file = props.getProperty("file");
+        String uuid = params.get("uuid");
+        String type = params.get("type");
+        String file = params.get("file");
         //replace .png with .stat
         file = file.replace(".png", ".stat");
         String filename = Paths.statsPath + "/" + uuid + "/" + type + "-" + file;

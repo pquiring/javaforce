@@ -100,7 +100,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     Label lbl;
     Row row, row2;
     Pad pad;
@@ -862,7 +862,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //url = /user/hash/component_id/count
     String pts[] = url.split("/");
     String hash = pts[2];
@@ -877,11 +877,11 @@ public class ConfigService implements WebUIHandler {
       return null;
     }
     camera.update_preview = true;
-    byte[] res = camera.preview;
-    if (res == null) {
-      res = cameraicon;
+    byte[] result = camera.preview;
+    if (result == null) {
+      result = cameraicon;
     }
-    return res;
+    return result;
   }
 
   public void clientConnected(WebUIClient client) {

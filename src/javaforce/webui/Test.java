@@ -8,6 +8,7 @@ package javaforce.webui;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.service.*;
 import javaforce.awt.*;
 import javaforce.webui.event.*;
 
@@ -32,14 +33,14 @@ public class Test implements WebUIHandler {
     System.exit(0);
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //TODO : return static images, etc needed by webpage
     return null;
   }
 
   private int value = 50;
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     Panel panel = new Panel();
 
     //add a menubar

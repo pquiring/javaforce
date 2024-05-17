@@ -12,7 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
+import javaforce.service.*;
 import javaforce.media.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
@@ -289,12 +289,12 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     //System.exit(0);
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //TODO : return static images, etc needed by webpage
     return null;
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     Panel panel = new Panel();
 
     video = new Video();

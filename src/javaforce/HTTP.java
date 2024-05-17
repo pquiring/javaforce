@@ -68,6 +68,19 @@ public class HTTP {
       }
       return null;
     }
+
+    public static Parameters decode(String query) {
+      Parameters params = new Parameters();
+      String[] items = query.split("&");
+      for(String item : items) {
+        int idx = item.indexOf('=');
+        if (idx == -1) continue;
+        String key = item.substring(0, idx);
+        String value = item.substring(idx + 1);
+        params.put(key, value);
+      }
+      return params;
+    }
   }
 
   /** Progress Listener */

@@ -5,9 +5,9 @@ package javaforce.webui;
  * @author pquiring
  */
 
-import javaforce.webui.event.*;
+import javaforce.*;
 import javaforce.gl.*;
-import javaforce.awt.*;
+import javaforce.service.*;
 
 public class TestGL implements WebUIHandler {
   public Resource img;
@@ -22,7 +22,7 @@ public class TestGL implements WebUIHandler {
   public void clientConnected(WebUIClient client) {}
   public void clientDisconnected(WebUIClient client) {}
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //TODO : return static images, etc needed by webpage
     return null;
   }
@@ -70,7 +70,7 @@ public class TestGL implements WebUIHandler {
     return data;
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     Panel panel = new Panel() {
       public void onLoaded(String[] args) {
         Matrix pMatrix = new Matrix();

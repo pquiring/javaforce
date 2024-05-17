@@ -11,6 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.gl.*;
 import javaforce.awt.*;
+import javaforce.service.*;
 
 public class TestGLCube implements WebUIHandler {
   public TestGLCube() {
@@ -30,7 +31,7 @@ public class TestGLCube implements WebUIHandler {
     System.exit(0);
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //TODO : return static images, etc needed by webpage
     return null;
   }
@@ -126,7 +127,7 @@ public class TestGLCube implements WebUIHandler {
     return data;
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     Panel panel = new Panel() {
       public void onLoaded(String[] args) {
         Context context = (Context)client.getProperty("context");

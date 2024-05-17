@@ -7,6 +7,7 @@ package javaforce.pi;
 
 import javaforce.*;
 import javaforce.controls.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -55,7 +56,7 @@ public class Test implements WebUIHandler {
     off = Resource.readResource("javaforce/pi/off.png", Resource.PNG);
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     panel = new TestPanel();
     Column col = new Column();
     panel.add(col);
@@ -89,7 +90,7 @@ public class Test implements WebUIHandler {
     return panel;
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     return null;
   }
 

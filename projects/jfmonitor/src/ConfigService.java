@@ -10,6 +10,7 @@ import java.io.*;
 
 import javaforce.*;
 import javaforce.net.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -55,7 +56,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     switch (Config.current.mode) {
       case "install": return installPanel();
     }
@@ -149,7 +150,7 @@ public class ConfigService implements WebUIHandler {
       WebUIClient webclient = c.getClient();
       if (passTxt.equals(Config.current.password)) {
         webclient.setProperty("password", passTxt);
-        webclient.setPanel(getRootPanel(webclient));
+        webclient.setPanel(getPanel("root", null, webclient));
       } else {
         msg.setText("Wrong password");
         msg.setColor(Color.red);
@@ -1125,7 +1126,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     return null;
   }
 

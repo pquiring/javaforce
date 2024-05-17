@@ -100,7 +100,7 @@ public class Main implements WebUIHandler {
     }
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     System.out.println("getRootPanel()");
     client.setProperty("xref", -1);
     client.setProperty("audio-init", 0);
@@ -111,7 +111,7 @@ public class Main implements WebUIHandler {
     return Panels.getPanel("usr_Main", client);
   }
 
-  public byte[] getResource(String url) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     System.out.println("getResource(" + url + ")");
     // url = /user/hash/id/counter
     String f[] = url.split("/");

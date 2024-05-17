@@ -71,7 +71,7 @@ public class WebUIClient {
       switch (event) {
         case "load":
           if (root == null) {
-            root = handler.getRootPanel(this);
+            root = handler.getPanel("root", null, this);
             initPanel();
           }
           isReady = true;
