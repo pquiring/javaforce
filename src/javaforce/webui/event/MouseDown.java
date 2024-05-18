@@ -8,5 +8,5 @@ package javaforce.webui.event;
 import javaforce.webui.*;
 
 public interface MouseDown {
-  public void onMouseDown(Component c);
+  public void onMouseDown(MouseEvent me, Component c);
 }

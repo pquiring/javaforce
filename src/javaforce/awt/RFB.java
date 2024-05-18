@@ -220,6 +220,12 @@ public class RFB {
     return buffer;
   }
 
+  public JFImage getImage(Rectangle area) {
+    JFImage image = new JFImage(area.width, area.height);
+    image.putPixels(getBuffer(), 0, 0, area.width, area.height, area.y * width + area.x, width);
+    return image;
+  }
+
   public int getMouseX() {
     return mx;
   }

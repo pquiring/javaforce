@@ -132,12 +132,13 @@ function wsevent(event) {
     case "setzindex":
       element.style.zIndex = msg.idx;
       break;
-    case "addoption":
+    case "addoption": {
       var option = document.createElement("option");
       option.value = msg.value;
       option.text = msg.text;
       element.add(option);
       break;
+    }
     case "removeoption":
       element.remove(msg.idx);
       break;
@@ -207,10 +208,11 @@ function wsevent(event) {
       element.insertBefore(temp.firstChild, document.getElementById(msg.beforeid));
       temp.innerHTML = '';
       break;
-    case "remove":
+    case "remove": {
       var child = document.getElementById(msg.child);
       element.removeChild(child);
       break;
+    }
     case "settab":
       openTab(null, parseInt(msg.idx), msg.tabs, msg.row);
       break;
@@ -229,11 +231,24 @@ function wsevent(event) {
     case "enabledrag":
       enableDrag(msg.id, msg.type, msg.x1, msg.y1, msg.x2, msg.y2);
       break;
-    case "drawrect":
+    case "drawrect": {
       var ctx = element.getContext('2d');
       ctx.strokeStyle = msg.clr;
       ctx.strokeRect(msg.x, msg.y, msg.w, msg.h);
       break;
+    }
+    case "drawimage": {
+      var ctx = element.getContext('2d');
+      var blob = new Blob( [ bindata ], { type: "image/png" } );
+      var url = URL.createObjectURL( blob );
+      var img = new Image();
+      img.src = url;
+      img.onload = function() {
+        ctx.drawImage(img, msg.x, msg.y);
+        URL.revokeObjectURL(url);
+      };
+      break;
+    }
     case "media_set_source":
       media_set_source(element, msg.src);
       break;
@@ -369,7 +384,8 @@ function onmousedownBody(event, element) {
   var msg = {
     event: "mousedown",
     id: element.id,
-    p: event.clientX + "," + event.clientY
+    x: event.clientX,
+    y: event.clientY
   };
   ws.send(JSON.stringify(msg));
 }
@@ -645,7 +661,10 @@ function onMouseEnter(event, element) {
 function onMouseMove(event, element) {
   var msg = {
     event: "mousemove",
-    id: element.id
+    id: element.id,
+    x: event.clientX,
+    y: event.clientY,
+    b: event.buttons
   };
   ws.send(JSON.stringify(msg));
 }
@@ -654,7 +673,9 @@ function onMouseDown(event, element) {
   var msg = {
     event: "mousedown",
     id: element.id,
-    p: event.clientX + "," + event.clientY
+    x: event.clientX,
+    y: event.clientY,
+    b: event.buttons
   };
   ws.send(JSON.stringify(msg));
 }
@@ -663,7 +684,9 @@ function onMouseUp(event, element) {
   var msg = {
     event: "mouseup",
     id: element.id,
-    p: event.clientX + "," + event.clientY
+    x: event.clientX,
+    y: event.clientY,
+    b: event.buttons
   };
   ws.send(JSON.stringify(msg));
 }

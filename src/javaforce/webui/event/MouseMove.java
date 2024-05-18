@@ -8,5 +8,5 @@ package javaforce.webui.event;
 import javaforce.webui.*;
 
 public interface MouseMove {
-  public void onMouseMove(Component c);
+  public void onMouseMove(MouseEvent me, Component c);
 }

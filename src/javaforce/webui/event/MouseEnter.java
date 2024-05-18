@@ -8,5 +8,5 @@ package javaforce.webui.event;
 import javaforce.webui.*;
 
 public interface MouseEnter {
-  public void onMouseEnter(Component c);
+  public void onMouseEnter(MouseEvent me, Component c);
 }

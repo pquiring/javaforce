@@ -49,6 +49,7 @@ public class Stats extends TimerTask {
       if (now > last_clean) {
         VMHost.clean_stats(Config.current.stats_days);
       }
+      ConsoleSession.clean();
       last_clean = now + day;
     }
   }

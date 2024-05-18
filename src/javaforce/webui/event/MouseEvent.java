@@ -6,5 +6,8 @@ package javaforce.webui.event;
  */
 
 public class MouseEvent {
+  public String action;  //down, up, move
   public boolean ctrlKey, altKey, shiftKey;
+  public int x, y;
+  public int buttons;
 }

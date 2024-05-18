@@ -181,6 +181,9 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
+    if (name.equals("console")) {
+      return getWebConsole(params);
+    }
     if (Config.passwd == null) {
       return installPanel(client);
     }
@@ -2277,8 +2280,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(edit);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
-    Button console = new Button("Console");
-    tools.add(console);
+    Button console_web = new Button("Web Console");
+    tools.add(console_web);
+    Button console_vnc = new Button("VNC Console");
+    tools.add(console_vnc);
     Button monitor = new Button("Monitor");
     tools.add(monitor);
     Button start = new Button("Start");
@@ -2334,7 +2339,7 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(vmsPanel(ui));
     });
 
-    console.addClickListener((me, cmp) -> {
+    console_vnc.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
@@ -2344,6 +2349,22 @@ public class ConfigService implements WebUIHandler {
       }
       ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC() + "<br>Password:" + Config.current.vnc_password);
       ui.message_popup.setVisible(true);
+    });
+
+    console_web.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      VirtualMachine vm = vms[idx];
+      if (vm.getState() != VirtualMachine.STATE_ON) {
+        errmsg.setText("VM is not active");
+        return;
+      }
+      ConsoleSession sess = new ConsoleSession();
+      sess.id = JF.generateUUID();
+      sess.vm = vm;
+      sess.ts = System.currentTimeMillis();
+      sess.put();
+      cmp.getClient().openURL("/console?id=" + sess.id);
     });
 
     monitor.addClickListener((me, cmp) -> {
@@ -5157,6 +5178,22 @@ public class ConfigService implements WebUIHandler {
         x += step_x;
       }
     }
+  }
+
+  public Panel getWebConsole(HTTP.Parameters params) {
+    Panel panel = new Panel();
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button cad = new Button("C+A+D");
+    tools.add(cad);
+    Button winkey = new Button("WinKey");
+    tools.add(winkey);
+    Canvas canvas = new Canvas();
+    panel.add(canvas);
+    new WebConsole(canvas, params).start();
+    return panel;
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {

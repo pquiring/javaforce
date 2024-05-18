@@ -5,6 +5,10 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.io.*;
+
+import javaforce.awt.JFImage;
+
 public class Canvas extends Container {
   private Rectangle rect;
   private Event event;
@@ -43,6 +47,14 @@ public class Canvas extends Container {
   /** Draw a rectangle on canvas. */
   public void drawRect(int clr, Rectangle rect) {
     sendEvent("drawrect", new String[] {"clr=#" + String.format("%06x", clr), "x=" + rect.x, "y=" + rect.y, "w=" + rect.width, "h=" + rect.height});
+  }
+  /** Draw an image on canvas. */
+  public void drawImage(JFImage image, Point at) {
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    image.savePNG(os);
+    byte[] data = os.toByteArray();
+    sendData(data);
+    sendEvent("drawimage", new String[] {"x=" + at.x, "y=" + at.y});
   }
   public void onDrawRect(Rectangle rect) {
     this.rect = rect;

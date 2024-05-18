@@ -499,17 +499,43 @@ public abstract class Component {
     KeyEvent ke = new KeyEvent();
     if (args != null) {
       for(int a=0;a<args.length;a++) {
-        if (args[a].equals("ck=true")) {
-          me.ctrlKey = true;
-          ke.ctrlKey = true;
-        }
-        if (args[a].equals("ak=true")) {
-          me.altKey = true;
-          ke.altKey = true;
-        }
-        if (args[a].equals("sk=true")) {
-          me.shiftKey = true;
-          ke.shiftKey = true;
+        String arg = args[a];
+        int idx = arg.indexOf('=');
+        if (idx == -1) continue;
+        String key = arg.substring(0, idx);
+        String value = arg.substring(idx + 1);
+        boolean bin;
+        switch (key) {
+          case "ck":
+            bin = value.equals("true");
+            me.ctrlKey = bin;
+            ke.ctrlKey = bin;
+            break;
+          case "ak":
+            bin = value.equals("true");
+            me.altKey = bin;
+            ke.altKey = bin;
+            break;
+          case "sk":
+            bin = value.equals("true");
+            me.shiftKey = bin;
+            ke.shiftKey = bin;
+            break;
+          case "keyChar":
+            ke.keyChar = value.charAt(0);
+            break;
+          case "keyCode":
+            ke.keyCode = Integer.valueOf(value);
+            break;
+          case "x":
+            me.x = Integer.valueOf(value);
+            break;
+          case "y":
+            me.y = Integer.valueOf(value);
+            break;
+          case "b":
+            me.buttons = Integer.valueOf(value);
+            break;
         }
       }
     }
@@ -524,16 +550,16 @@ public abstract class Component {
         onChanged(args);
         break;
       case "mousedown":
-        onMouseDown(args);
+        onMouseDown(args, me);
         break;
       case "mouseup":
-        onMouseUp(args);
+        onMouseUp(args, me);
         break;
       case "mousemove":
-        onMouseMove(args);
+        onMouseMove(args, me);
         break;
       case "mouseenter":
-        onMouseEnter(args);
+        onMouseEnter(args, me);
         break;
       case "keydown":
         onKeyDown(args, ke);
@@ -646,9 +672,10 @@ public abstract class Component {
     onClick(null, new MouseEvent());
   }
 
-  protected void onMouseUp(String[] args) {
+  protected void onMouseUp(String[] args, MouseEvent me) {
+    me.action = "up";
     for(int a=0;a<mouseUp.length;a++) {
-      mouseUp[a].onMouseUp(this);
+      mouseUp[a].onMouseUp(me, this);
     }
   }
   private MouseUp[] mouseUp = new MouseUp[0];
@@ -658,9 +685,10 @@ public abstract class Component {
     mouseUp[mouseUp.length-1] = handler;
   }
 
-  protected void onMouseDown(String[] args) {
+  protected void onMouseDown(String[] args, MouseEvent me) {
+    me.action = "down";
     for(int a=0;a<mouseDown.length;a++) {
-      mouseDown[a].onMouseDown(this);
+      mouseDown[a].onMouseDown(me, this);
     }
   }
   private MouseDown[] mouseDown = new MouseDown[0];
@@ -670,9 +698,10 @@ public abstract class Component {
     mouseDown[mouseDown.length-1] = handler;
   }
 
-  protected void onMouseMove(String[] args) {
+  protected void onMouseMove(String[] args, MouseEvent me) {
+    me.action = "move";
     for(int a=0;a<mouseMove.length;a++) {
-      mouseMove[a].onMouseMove(this);
+      mouseMove[a].onMouseMove(me, this);
     }
   }
   private MouseMove[] mouseMove = new MouseMove[0];
@@ -682,9 +711,10 @@ public abstract class Component {
     mouseMove[mouseMove.length-1] = handler;
   }
 
-  protected void onMouseEnter(String[] args) {
-    for(int a=0;a<mouseMove.length;a++) {
-      mouseMove[a].onMouseMove(this);
+  protected void onMouseEnter(String[] args, MouseEvent me) {
+    me.action = "enter";
+    for(int a=0;a<mouseEnter.length;a++) {
+      mouseEnter[a].onMouseEnter(me, this);
     }
   }
   private MouseEnter[] mouseEnter = new MouseEnter[0];
@@ -695,6 +725,7 @@ public abstract class Component {
   }
 
   protected void onKeyUp(String[] args, KeyEvent ke) {
+    ke.action = "up";
     for(int a=0;a<keyUp.length;a++) {
       keyUp[a].onKeyUp(ke, this);
     }
@@ -707,6 +738,7 @@ public abstract class Component {
   }
 
   protected void onKeyDown(String[] args, KeyEvent ke) {
+    ke.action = "down";
     for(int a=0;a<keyDown.length;a++) {
       keyDown[a].onKeyDown(ke, this);
     }
