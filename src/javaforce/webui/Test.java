@@ -265,10 +265,10 @@ public class Test implements WebUIHandler {
     Panel tab8 = new Panel();
     tab.addTab(tab8, "Tab#8");
 
-    Slider vslider = new Slider(Slider.VERTICAL, 0, 100, 0);
+    Slider vslider = new Slider(Slider.VERTICAL, 0, 100, 50);
     vslider.addChangedListener((Slider) -> {System.out.println("vslider=" + vslider.getPos());});
     tab8.add(vslider);
-    Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 0);
+    Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 50);
     hslider.addChangedListener((Slider) -> {System.out.println("hslider=" + hslider.getPos());});
     tab8.add(hslider);
 

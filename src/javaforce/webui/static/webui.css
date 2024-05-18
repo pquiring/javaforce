@@ -250,6 +250,7 @@ td {
 }
 
 .slider {
+  position: absolute;
   cursor: default;
 }
 
