@@ -5,6 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.util.*;
 import java.io.*;
 
 import javaforce.*;
@@ -127,13 +128,10 @@ public class Test implements WebUIHandler {
     row1.add(new FlexBox());
     //add : button
     row1.add(new Button("Far Right"));
-    //add second row
-    Row row2 = new Row();
-    panel.add(row2);
 
     //add : tab panel
     TabPanel tab = new TabPanel();
-    row2.add(tab);
+    panel.add(tab);
 //    row2.addClass("pad");
 
     //TAB #1
@@ -229,51 +227,57 @@ public class Test implements WebUIHandler {
     t5.add(scroll);
     tab.addTab(t5, "Tab#5");
 
-    //add third row
-    Row row3 = new Row();
-    panel.add(row3);
+    //TAB #6
+    Panel tab6 = new Panel();
+    tab.addTab(tab6, "Tab#6");
     Image i1 = new Image(img);
-    row3.add(i1);
+    tab6.add(i1);
 
     SplitPanel sp = new SplitPanel(SplitPanel.VERTICAL);
     sp.setLeftComponent(new Label("AA<br>aa"));
     sp.setRightComponent(new Label("BB<br>bb"));
-    row3.add(sp);
+    tab6.add(sp);
 
     Image i2 = new Image(img);
-    row3.add(i2);
+    tab6.add(i2);
 
-    //add forth row
-    Row row4 = new Row();
-    panel.add(row4);
+    //TAB #7
+    Panel tab7 = new Panel();
+    tab.addTab(tab7, "Tab#7");
 
-/*
-    LayersPanel lp = new LayersPanel();
-    Label layer1 = new Label("NO");
-    lp.add(layer1);
-    Label layer2 = new Label("-----YES");
-    lp.add(layer2);
-    row4.add(lp);
-*/
+    Button load = new Button("load image");
+    load.addClass("row");
+    tab7.add(load);
+    Canvas canvas = new Canvas();
+    canvas.setSize(512, 512);
+    tab7.add(canvas);
+    load.addClickListener((e, c) -> {
+      JFImage image = new JFImage(512, 512);
+      Random r = new Random();
+      int[] buffer = image.getBuffer();
+      for(int px=0;px<512*512;px++) {
+        buffer[px] = (r.nextInt() | JFImage.OPAQUE);
+      }
+      canvas.drawImage(image, new Point(0,0));
+    });
 
     //add fifth row
-    Row row5 = new Row();
-    panel.add(row5);
+    Panel tab8 = new Panel();
+    tab.addTab(tab8, "Tab#8");
 
     Slider vslider = new Slider(Slider.VERTICAL, 0, 100, 0);
     vslider.addChangedListener((Slider) -> {System.out.println("vslider=" + vslider.getPos());});
-    row5.add(vslider);
+    tab8.add(vslider);
     Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 0);
     hslider.addChangedListener((Slider) -> {System.out.println("hslider=" + hslider.getPos());});
-    row5.add(hslider);
+    tab8.add(hslider);
 
     ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 16);
     bar.setValue(50);
-    row5.add(bar);
+    tab8.add(bar);
     client.setProperty("bar", bar);
 
-//    Pad pad2 = new Pad();
-//    panel.add(pad2);
+
     return panel;
   }
 }
