@@ -5181,18 +5181,24 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getWebConsole(HTTP.Parameters params) {
+    WebConsole console = new WebConsole();
+    console.params = params;
     Panel panel = new Panel();
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
+    console.refresh = refresh;
     Button cad = new Button("C+A+D");
     tools.add(cad);
+    console.cad = cad;
     Button winkey = new Button("WinKey");
     tools.add(winkey);
+    console.winkey = winkey;
     Canvas canvas = new Canvas();
     panel.add(canvas);
-    new WebConsole(canvas, params).start();
+    console.canvas = canvas;
+    console.start();
     return panel;
   }
 

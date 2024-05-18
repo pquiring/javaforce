@@ -7,19 +7,22 @@ package service;
  * @author pquiring
  */
 
+import java.awt.event.KeyEvent;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.webui.*;
 
 public class WebConsole extends Thread {
-  private Canvas canvas;
-  private HTTP.Parameters params;
+  public HTTP.Parameters params;
+  public Canvas canvas;
+  public Button refresh;
+  public Button cad;
+  public Button winkey;
+
   private RFB rfb;
   private WebUIClient client;
 
-  public WebConsole(Canvas canvas, HTTP.Parameters params) {
-    this.canvas = canvas;
-    this.params = params;
+  public WebConsole() {
   }
 
   public void run() {
@@ -72,9 +75,40 @@ public class WebConsole extends Thread {
       return;
     }
 
-    int width = rfb.getWidth();
-    int height = rfb.getHeight();
-    canvas.setSize(width, height);
+    //setup canvas size
+    {
+      int width = rfb.getWidth();
+      int height = rfb.getHeight();
+      canvas.setSize(width, height);
+    }
+
+    //setup button events
+    refresh.addClickListener((me, cmp) -> {
+      int width = rfb.getWidth();
+      int height = rfb.getHeight();
+      rfb.writeBufferUpdateRequest(0, 0, width, height, false);
+    });
+    cad.addClickListener((me, cmp) -> {
+      keyDown(KeyEvent.VK_CONTROL, true);
+      keyDown(KeyEvent.VK_ALT, true);
+      JF.sleep(10);
+      keyDown(KeyEvent.VK_DELETE, true);
+      JF.sleep(50);
+      keyUp(KeyEvent.VK_DELETE, true);
+      JF.sleep(10);
+      keyUp(KeyEvent.VK_ALT, true);
+      keyUp(KeyEvent.VK_CONTROL, true);
+    });
+    winkey.addClickListener((me, cmp) -> {
+      //this is done with CTRL+ESC sequence
+      keyDown(KeyEvent.VK_CONTROL, true);
+      JF.sleep(10);
+      keyDown(KeyEvent.VK_ESCAPE, true);
+      JF.sleep(50);
+      keyUp(KeyEvent.VK_ESCAPE, true);
+      JF.sleep(10);
+      keyUp(KeyEvent.VK_CONTROL, true);
+    });
 
     //setup canvas events
     canvas.addMouseDownListener((me, cmp) -> {
@@ -96,6 +130,20 @@ public class WebConsole extends Thread {
     client = canvas.getClient();
 
     main();
+  }
+
+  public void keyDown(int code, boolean convert) {
+    if (convert) {
+      code = RFB.convertKeyCode(code);
+    }
+    rfb.writeKeyEvent(code, true);
+  }
+
+  public void keyUp(int code, boolean convert) {
+    if (convert) {
+      code = RFB.convertKeyCode(code);
+    }
+    rfb.writeKeyEvent(code, false);
   }
 
   private void main() {
