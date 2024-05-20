@@ -13,7 +13,7 @@ public class Canvas extends Container {
   private Rectangle rect;
   public Canvas() {
     setStyle("contentEditable", "true");
-    setStyle("tabindex", "0");
+    addAttr("tabindex", "1");
   }
   public String html() {
     StringBuilder sb = new StringBuilder();
