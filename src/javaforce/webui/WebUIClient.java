@@ -66,19 +66,18 @@ public class WebUIClient {
     root.setClient(this);
     root.init();
   }
-  public void dispatchEvent(String id, String event, String[] args) {
-    HTTP.Parameters params;
-    if (args != null) {
-      params = HTTP.Parameters.decode(args, '=', 0);
+  public void dispatchEvent(String id, String event, String[] msg_args) {
+    HTTP.Parameters msg;
+    if (msg_args != null) {
+      msg = HTTP.Parameters.decode(msg_args, '=', 0);
     } else {
-      JFLog.log("warning:args=null");
-      params = new HTTP.Parameters();
+      msg = new HTTP.Parameters();
     }
     if (id.length() == 0 || id.equals("body")) {
       switch (event) {
         case "load":
           if (root == null) {
-            String name = params.get("panel");
+            String name = msg.get("panel");
             if (name == null) {
               name = "root";
             } else {
@@ -93,6 +92,13 @@ public class WebUIClient {
                 name = "root";
               }
             }
+            String http_params = msg.get("args");
+            HTTP.Parameters params;
+            if (http_params == null) {
+              params = new HTTP.Parameters();
+            } else {
+              params = HTTP.Parameters.decode(http_params.split("[&]"), '=', 0);
+            }
             root = handler.getPanel(name, params, this);
             initPanel();
           }
@@ -103,12 +109,12 @@ public class WebUIClient {
           root.events();
           break;
         case "mousedown":
-          Menu.onMouseDownBody(this, args);
+          Menu.onMouseDownBody(this, msg_args);
           break;
         case "size":
-          for(int a=0;a<args.length;a++) {
-            if (args[a].startsWith("w=")) width = Integer.valueOf(args[a].substring(2));
-            if (args[a].startsWith("h=")) height = Integer.valueOf(args[a].substring(2));
+          for(int a=0;a<msg_args.length;a++) {
+            if (msg_args[a].startsWith("w=")) width = Integer.valueOf(msg_args[a].substring(2));
+            if (msg_args[a].startsWith("h=")) height = Integer.valueOf(msg_args[a].substring(2));
           }
           if (WebUIServer.debug) JFLog.log("size=" + width + "x" + height);
           if (resized != null) {
@@ -116,7 +122,7 @@ public class WebUIClient {
           }
           break;
         case "onloaded":
-          root.dispatchEvent(event, args);
+          root.dispatchEvent(event, msg_args);
           break;
         case "pong":
           synchronized(pingLock) {
@@ -127,7 +133,7 @@ public class WebUIClient {
     } else {
       Component c = root.get(id);
       if (c != null) {
-        c.dispatchEvent(event, args);
+        c.dispatchEvent(event, msg_args);
       } else {
         JFLog.log("Error:Component not found:" + id);
       }

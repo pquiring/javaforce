@@ -34,7 +34,8 @@ function getHeight(element) {
 function load() {
   var msg = {
     event: "load",
-    panel: window.location.pathname
+    panel: window.location.pathname,
+    args: window.location.search
   };
   ws.send(JSON.stringify(msg));
 }
