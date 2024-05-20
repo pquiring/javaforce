@@ -21,6 +21,8 @@ public class WebConsole extends Thread {
 
   private RFB rfb;
   private WebUIClient client;
+  
+  private static final boolean debug = true;
 
   public WebConsole() {
   }
@@ -37,6 +39,9 @@ public class WebConsole extends Thread {
       return;
     }
     rfb = new RFB();
+    if (debug) {
+      RFB.debug = true;
+    }
     if (!rfb.connect("127.0.0.1", sess.vm.getVNC())) {
       JFLog.log("VNC:connection failed");
       return;
@@ -86,9 +91,15 @@ public class WebConsole extends Thread {
     refresh.addClickListener((me, cmp) -> {
       int width = rfb.getWidth();
       int height = rfb.getHeight();
+      if (debug) {
+        JFLog.log("VNC:refresh:" + width + "x" + height);
+      }
       rfb.writeBufferUpdateRequest(0, 0, width, height, false);
     });
     cad.addClickListener((me, cmp) -> {
+      if (debug) {
+        JFLog.log("VNC:C+A+D");
+      }
       keyDown(KeyEvent.VK_CONTROL, true);
       keyDown(KeyEvent.VK_ALT, true);
       JF.sleep(10);
@@ -101,6 +112,9 @@ public class WebConsole extends Thread {
     });
     winkey.addClickListener((me, cmp) -> {
       //this is done with CTRL+ESC sequence
+      if (debug) {
+        JFLog.log("VNC:WinKey");
+      }
       keyDown(KeyEvent.VK_CONTROL, true);
       JF.sleep(10);
       keyDown(KeyEvent.VK_ESCAPE, true);
@@ -112,18 +126,33 @@ public class WebConsole extends Thread {
 
     //setup canvas events
     canvas.addMouseDownListener((me, cmp) -> {
+      if (debug) {
+        JFLog.log("VNC:mousedown:" + me.x +","+ me.y +","+ me.buttons);
+      }
       rfb.writeMouseEvent(me.x, me.y, me.buttons);
     });
     canvas.addMouseUpListener((me, cmp) -> {
+      if (debug) {
+        JFLog.log("VNC:mouseup:" + me.x +","+ me.y +","+ me.buttons);
+      }
       rfb.writeMouseEvent(me.x, me.y, me.buttons);
     });
     canvas.addMouseMoveListener((me, cmp) -> {
+      if (debug) {
+        JFLog.log("VNC:mousemove:" + me.x +","+ me.y +","+ me.buttons);
+      }
       rfb.writeMouseEvent(me.x, me.y, me.buttons);
     });
     canvas.addKeyDownListener((ke, cmp) -> {
+      if (debug) {
+        JFLog.log("VNC:keydown:" + ke.keyChar + "," + ke.keyCode);
+      }
       rfb.writeKeyEvent(ke.keyCode, true);
     });
     canvas.addKeyUpListener((ke, cmp) -> {
+      if (debug) {
+        JFLog.log("VNC:keyup:" + ke.keyChar + "," + ke.keyCode);
+      }
       rfb.writeKeyEvent(ke.keyCode, false);
     });
 
@@ -184,7 +213,7 @@ public class WebConsole extends Thread {
             rfb.readCutText();
             break;
           default:
-            JFLog.log("Unknown msg:" + msg);
+            JFLog.log("VNC:Unknown msg:" + msg);
             break;
         }
       }
