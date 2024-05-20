@@ -15,14 +15,11 @@ import javaforce.webui.*;
 public class WebConsole extends Thread {
   public HTTP.Parameters params;
   public Canvas canvas;
-  public Button refresh;
-  public Button cad;
-  public Button winkey;
 
   private RFB rfb;
   private WebUIClient client;
   
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   public WebConsole() {
   }
@@ -87,48 +84,49 @@ public class WebConsole extends Thread {
       canvas.setSize(width, height);
     }
 
-    //setup button events
-    refresh.addClickListener((me, cmp) -> {
-      int width = rfb.getWidth();
-      int height = rfb.getHeight();
-      if (debug) {
-        JFLog.log("VNC:refresh:" + width + "x" + height);
-      }
-      rfb.writeBufferUpdateRequest(0, 0, width, height, false);
-    });
-    cad.addClickListener((me, cmp) -> {
-      if (debug) {
-        JFLog.log("VNC:C+A+D");
-      }
-      keyDown(KeyEvent.VK_CONTROL, true);
-      keyDown(KeyEvent.VK_ALT, true);
-      JF.sleep(10);
-      keyDown(KeyEvent.VK_DELETE, true);
-      JF.sleep(50);
-      keyUp(KeyEvent.VK_DELETE, true);
-      JF.sleep(10);
-      keyUp(KeyEvent.VK_ALT, true);
-      keyUp(KeyEvent.VK_CONTROL, true);
-    });
-    winkey.addClickListener((me, cmp) -> {
-      //this is done with CTRL+ESC sequence
-      if (debug) {
-        JFLog.log("VNC:WinKey");
-      }
-      keyDown(KeyEvent.VK_CONTROL, true);
-      JF.sleep(10);
-      keyDown(KeyEvent.VK_ESCAPE, true);
-      JF.sleep(50);
-      keyUp(KeyEvent.VK_ESCAPE, true);
-      JF.sleep(10);
-      keyUp(KeyEvent.VK_CONTROL, true);
-    });
-
     client = canvas.getClient();
     
     canvas.setFocus();
 
     main();
+  }
+  
+  public void refresh() {
+    int width = rfb.getWidth();
+    int height = rfb.getHeight();
+    if (debug) {
+      JFLog.log("VNC:refresh:" + width + "x" + height);
+    }
+    rfb.writeBufferUpdateRequest(0, 0, width, height, false);
+  }
+  
+  public void cad() {
+    if (debug) {
+      JFLog.log("VNC:C+A+D");
+    }
+    keyDown(KeyEvent.VK_CONTROL, true);
+    keyDown(KeyEvent.VK_ALT, true);
+    JF.sleep(10);
+    keyDown(KeyEvent.VK_DELETE, true);
+    JF.sleep(50);
+    keyUp(KeyEvent.VK_DELETE, true);
+    JF.sleep(10);
+    keyUp(KeyEvent.VK_ALT, true);
+    keyUp(KeyEvent.VK_CONTROL, true);
+  }
+  
+  public void winkey() {
+    //this is done with CTRL+ESC sequence
+    if (debug) {
+      JFLog.log("VNC:WinKey");
+    }
+    keyDown(KeyEvent.VK_CONTROL, true);
+    JF.sleep(10);
+    keyDown(KeyEvent.VK_ESCAPE, true);
+    JF.sleep(50);
+    keyUp(KeyEvent.VK_ESCAPE, true);
+    JF.sleep(10);
+    keyUp(KeyEvent.VK_CONTROL, true);
   }
   
   public void mouse(int x, int y, int buttons) {

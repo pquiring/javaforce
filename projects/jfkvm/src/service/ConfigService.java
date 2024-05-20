@@ -5188,13 +5188,10 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
-    console.refresh = refresh;
     Button cad = new Button("C+A+D");
     tools.add(cad);
-    console.cad = cad;
     Button winkey = new Button("WinKey");
     tools.add(winkey);
-    console.winkey = winkey;
     Canvas canvas = new Canvas();
     panel.add(canvas);
     console.canvas = canvas;
@@ -5223,6 +5220,16 @@ public class ConfigService implements WebUIHandler {
         console.keyUp(ke.keyCode, true);
       }
     });    
+    //setup button events
+    refresh.addClickListener((me, cmp) -> {
+      console.refresh();
+    });
+    cad.addClickListener((me, cmp) -> {
+      console.cad();
+    });
+    winkey.addClickListener((me, cmp) -> {
+      console.winkey();
+    });
     console.start();
     return panel;
   }
