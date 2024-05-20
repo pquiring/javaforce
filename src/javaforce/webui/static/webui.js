@@ -165,6 +165,12 @@ function wsevent(event) {
     case "setsize":
       element.style.width = msg.w;
       element.style.height = msg.h;
+      if (element.offsetWidth > 0) {
+        element.width = msg.w;
+      }
+      if (element.offsetHeight > 0) {
+        element.height = msg.h;
+      }
       break;
     case "setwidth":
       element.style.width = msg.w;
