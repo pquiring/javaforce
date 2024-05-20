@@ -97,6 +97,9 @@ public class WebUIClient {
             if (http_params == null) {
               params = new HTTP.Parameters();
             } else {
+              if (http_params.length() > 0 && http_params.charAt(0) == '?') {
+                http_params = http_params.substring(1);
+              }
               params = HTTP.Parameters.decode(http_params.split("[&]"), '=', 0);
             }
             root = handler.getPanel(name, params, this);

@@ -214,7 +214,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       }
     }
     try {
-      client.dispatchEvent(id, event, args.toArray(new String[args.size()]));
+      client.dispatchEvent(id, event, args.toArray(JF.StringArrayType));
     } catch (Exception e) {
       e.printStackTrace();
     }
