@@ -522,7 +522,6 @@ public abstract class Component {
             ke.shiftKey = bin;
             break;
           case "key": {
-            JFLog.log("key=" + value);
             int keyCode = 0;
             char keyChar = (char)0;
             if (value.length() == 1) {
@@ -547,6 +546,7 @@ public abstract class Component {
                 case "PageUp": keyCode = 33; break;
                 case "PageDown": keyCode = 34; break;
                 case "\\\\": keyChar = '\\'; break;
+                case "Backspace": keyCode = 8; break;
                 default: JFLog.log("webui:unknown key code:" + value);
               }
             }
