@@ -5210,10 +5210,18 @@ public class ConfigService implements WebUIHandler {
       console.mouse(me.x, me.y, me.buttons);
     });
     canvas.addKeyDownListener((ke, cmp) -> {
-      console.keyDown(ke.keyCode, true);
+      if (ke.keyChar != 0) {
+        console.keyDown(ke.keyChar, false);
+      } else {
+        console.keyDown(ke.keyCode, true);
+      }
     });
     canvas.addKeyUpListener((ke, cmp) -> {
-      console.keyUp(ke.keyCode, true);
+      if (ke.keyChar != 0) {
+        console.keyUp(ke.keyChar, false);
+      } else {
+        console.keyUp(ke.keyCode, true);
+      }
     });    
     console.start();
     return panel;
