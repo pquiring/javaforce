@@ -124,44 +124,18 @@ public class WebConsole extends Thread {
       keyUp(KeyEvent.VK_CONTROL, true);
     });
 
-    //setup canvas events
-    canvas.addMouseDownListener((me, cmp) -> {
-      if (debug) {
-        JFLog.log("VNC:mousedown:" + me.x +","+ me.y +","+ me.buttons);
-      }
-      rfb.writeMouseEvent(me.x, me.y, me.buttons);
-    });
-    canvas.addMouseUpListener((me, cmp) -> {
-      if (debug) {
-        JFLog.log("VNC:mouseup:" + me.x +","+ me.y +","+ me.buttons);
-      }
-      rfb.writeMouseEvent(me.x, me.y, me.buttons);
-    });
-    canvas.addMouseMoveListener((me, cmp) -> {
-      if (debug) {
-        JFLog.log("VNC:mousemove:" + me.x +","+ me.y +","+ me.buttons);
-      }
-      rfb.writeMouseEvent(me.x, me.y, me.buttons);
-    });
-    canvas.addKeyDownListener((ke, cmp) -> {
-      if (debug) {
-        JFLog.log("VNC:keydown:" + ke.keyChar + "," + ke.keyCode);
-      }
-      rfb.writeKeyEvent(ke.keyCode, true);
-    });
-    canvas.addKeyUpListener((ke, cmp) -> {
-      if (debug) {
-        JFLog.log("VNC:keyup:" + ke.keyChar + "," + ke.keyCode);
-      }
-      rfb.writeKeyEvent(ke.keyCode, false);
-    });
-
     client = canvas.getClient();
 
     main();
   }
+  
+  public void mouse(int x, int y, int buttons) {
+    if (rfb == null) return;
+    rfb.writeMouseEvent(x, y, buttons);
+  }
 
   public void keyDown(int code, boolean convert) {
+    if (rfb == null) return;
     if (convert) {
       code = RFB.convertKeyCode(code);
     }
@@ -169,6 +143,7 @@ public class WebConsole extends Thread {
   }
 
   public void keyUp(int code, boolean convert) {
+    if (rfb == null) return;
     if (convert) {
       code = RFB.convertKeyCode(code);
     }

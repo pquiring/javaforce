@@ -5198,6 +5198,22 @@ public class ConfigService implements WebUIHandler {
     Canvas canvas = new Canvas();
     panel.add(canvas);
     console.canvas = canvas;
+    //setup canvas events (must setup before sent to client)
+    canvas.addMouseDownListener((me, cmp) -> {
+      console.mouse(me.x, me.y, me.buttons);
+    });
+    canvas.addMouseUpListener((me, cmp) -> {
+      console.mouse(me.x, me.y, me.buttons);
+    });
+    canvas.addMouseMoveListener((me, cmp) -> {
+      console.mouse(me.x, me.y, me.buttons);
+    });
+    canvas.addKeyDownListener((ke, cmp) -> {
+      console.keyDown(ke.keyCode, true);
+    });
+    canvas.addKeyUpListener((ke, cmp) -> {
+      console.keyUp(ke.keyCode, true);
+    });    
     console.start();
     return panel;
   }
