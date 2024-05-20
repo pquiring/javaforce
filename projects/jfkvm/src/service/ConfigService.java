@@ -5201,6 +5201,7 @@ public class ConfigService implements WebUIHandler {
     //setup canvas events (must setup before sent to client)
     canvas.addMouseDownListener((me, cmp) -> {
       console.mouse(me.x, me.y, me.buttons);
+      canvas.setFocus();
     });
     canvas.addMouseUpListener((me, cmp) -> {
       console.mouse(me.x, me.y, me.buttons);
