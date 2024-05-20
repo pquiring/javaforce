@@ -238,9 +238,6 @@ public class Test implements WebUIHandler {
     sp.setRightComponent(new Label("BB<br>bb"));
     tab6.add(sp);
 
-    Image i2 = new Image(img);
-    tab6.add(i2);
-
     //TAB #7
     Panel tab7 = new Panel();
     tab.addTab(tab7, "Tab#7");
@@ -260,8 +257,23 @@ public class Test implements WebUIHandler {
       }
       canvas.drawImage(image, new Point(0,0));
     });
+    canvas.addMouseDownListener((me, cmp) -> {
+      JFLog.log("canvas:mousedown:" + me.x +","+ me.y +","+ me.buttons);
+    });
+    canvas.addMouseUpListener((me, cmp) -> {
+      JFLog.log("canvas:mouseup:" + me.x +","+ me.y +","+ me.buttons);
+    });
+    canvas.addMouseMoveListener((me, cmp) -> {
+      JFLog.log("canvas:mousemove:" + me.x +","+ me.y +","+ me.buttons);
+    });
+    canvas.addKeyDownListener((ke, cmp) -> {
+      JFLog.log("canvas:keydown:" + ke.keyCode);
+    });
+    canvas.addKeyUpListener((ke, cmp) -> {
+      JFLog.log("canvas:keyup:" + ke.keyCode);
+    });
 
-    //add fifth row
+    //TAB #8
     Panel tab8 = new Panel();
     tab.addTab(tab8, "Tab#8");
 
