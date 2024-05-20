@@ -267,10 +267,10 @@ public class Test implements WebUIHandler {
       JFLog.log("canvas:mousemove:" + me.x +","+ me.y +","+ me.buttons);
     });
     canvas.addKeyDownListener((ke, cmp) -> {
-      JFLog.log("canvas:keydown:" + ke.keyCode);
+      JFLog.log("canvas:keydown:" + (int)ke.keyChar + "," + ke.keyCode);
     });
     canvas.addKeyUpListener((ke, cmp) -> {
-      JFLog.log("canvas:keyup:" + ke.keyCode);
+      JFLog.log("canvas:key up:" + (int)ke.keyChar + "," + ke.keyCode);
     });
 
     //TAB #8

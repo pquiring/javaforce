@@ -705,8 +705,7 @@ function onKeyDown(event, element) {
     ck: event.ctrlKey,
     ak: event.altKey,
     sk: event.shiftKey,
-    keyCode: event.keyCode,
-    charCode: event.charCode
+    key: event.key
   };
   ws.send(JSON.stringify(msg));
 }

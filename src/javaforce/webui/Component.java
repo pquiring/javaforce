@@ -521,12 +521,39 @@ public abstract class Component {
             me.shiftKey = bin;
             ke.shiftKey = bin;
             break;
-          case "keyChar":
-            ke.keyChar = value.charAt(0);
+          case "key": {
+            JFLog.log("key=" + value);
+            int keyCode = 0;
+            char keyChar = (char)0;
+            if (value.length() == 1) {
+              keyChar = value.charAt(0);
+              keyCode = Character.toUpperCase(value.charAt(0));
+            } else {
+              switch (value) {
+                case "Enter": keyCode = 10; break;
+                case "Tab": keyCode = 9; break;
+                case "Control": keyCode = 17; break;
+                case "Alt": keyCode = 18; break;
+                case "Shift": keyCode = 16; break;
+                case "Escape": keyCode = 27; break;
+                case "ArrowUp": keyCode = 38; break;
+                case "ArrowDown": keyCode = 40; break;
+                case "ArrowLeft": keyCode = 37; break;
+                case "ArrowRight": keyCode = 39; break;
+                case "Insert": keyCode = 155; break;
+                case "Delete": keyCode = 127; break;
+                case "Home": keyCode = 36; break;
+                case "End": keyCode = 35; break;
+                case "PageUp": keyCode = 33; break;
+                case "PageDown": keyCode = 34; break;
+                case "\\\\": keyChar = '\\'; break;
+                default: JFLog.log("webui:unknown key code:" + value);
+              }
+            }
+            ke.keyChar = keyChar;
+            ke.keyCode = keyCode;
             break;
-          case "keyCode":
-            ke.keyCode = Integer.valueOf(value);
-            break;
+          }
           case "x":
             me.x = Integer.valueOf(value);
             break;
