@@ -195,5 +195,10 @@ public class WebConsole extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
     }
+    try {
+      rfb.disconnect();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }
