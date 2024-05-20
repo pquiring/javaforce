@@ -48,8 +48,8 @@ public class Stats extends TimerTask {
       long now = System.currentTimeMillis();
       if (now > last_clean) {
         VMHost.clean_stats(Config.current.stats_days);
+        ConsoleSession.clean();
       }
-      ConsoleSession.clean();
       last_clean = now + day;
     }
   }
