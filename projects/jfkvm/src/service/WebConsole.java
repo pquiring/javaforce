@@ -22,7 +22,7 @@ public class WebConsole extends Thread {
   private RFB rfb;
   private WebUIClient client;
   
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   public WebConsole() {
   }
