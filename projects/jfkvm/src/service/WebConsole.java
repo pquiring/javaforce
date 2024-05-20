@@ -125,6 +125,8 @@ public class WebConsole extends Thread {
     });
 
     client = canvas.getClient();
+    
+    canvas.setFocus();
 
     main();
   }

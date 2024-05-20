@@ -11,7 +11,10 @@ import javaforce.awt.JFImage;
 
 public class Canvas extends Container {
   private Rectangle rect;
-  private Event event;
+  public Canvas() {
+    setStyle("contentEditable", "true");
+    setStyle("tabindex", "0");
+  }
   public String html() {
     StringBuilder sb = new StringBuilder();
     sb.append("<canvas" + getAttrs());
