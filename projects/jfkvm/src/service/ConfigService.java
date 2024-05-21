@@ -20,7 +20,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "1.5";
+  public static String version = "2.0";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
@@ -5219,7 +5219,7 @@ public class ConfigService implements WebUIHandler {
       } else {
         console.keyUp(ke.keyCode, true);
       }
-    });    
+    });
     //setup button events
     refresh.addClickListener((me, cmp) -> {
       console.refresh();

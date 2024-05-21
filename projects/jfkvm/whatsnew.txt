@@ -1,3 +1,8 @@
+2024-05-21 : 2.0 released!
+  - new : Web Console
+    - control your VMs right inside your browser
+  - fix : UI issues
+
 2024-05-13 : 1.5 released!
   - new : Monitor VM Stats
     - all VM stats are now monitor and can be viewed
