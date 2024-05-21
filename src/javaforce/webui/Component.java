@@ -692,6 +692,7 @@ public abstract class Component {
   private Click[] click = new Click[0];
   public void addClickListener(Click handler) {
     addEvent("onclick", "onClick(event, this);");
+    addEvent("oncontextmenu", "return false;");
     click = Arrays.copyOf(click, click.length + 1);
     click[click.length-1] = handler;
   }
@@ -708,6 +709,7 @@ public abstract class Component {
   private MouseUp[] mouseUp = new MouseUp[0];
   public void addMouseUpListener(MouseUp handler) {
     addEvent("onmouseup", "onMouseUp(event, this);");
+    addEvent("oncontextmenu", "return false;");
     mouseUp = Arrays.copyOf(mouseUp, mouseUp.length + 1);
     mouseUp[mouseUp.length-1] = handler;
   }
@@ -721,6 +723,7 @@ public abstract class Component {
   private MouseDown[] mouseDown = new MouseDown[0];
   public void addMouseDownListener(MouseDown handler) {
     addEvent("onmousedown", "onMouseDown(event, this);");
+    addEvent("oncontextmenu", "return false;");
     mouseDown = Arrays.copyOf(mouseDown, mouseDown.length + 1);
     mouseDown[mouseDown.length-1] = handler;
   }
