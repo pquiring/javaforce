@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 59.0
+Version 60.0
 
 Description
 ===========

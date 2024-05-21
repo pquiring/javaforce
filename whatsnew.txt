@@ -1,5 +1,15 @@
 What's new...
 
+May 21/2024 : JF/60.0
+  - jfKVM/2.0
+    - new : Web Console (control VMs from browser)
+  - jfVNC/0.3
+    - new : use javaforce.awt.VNC (removed old code borrowed from 3rd party)
+  - new : added RFB/VNC directly into JavaForce
+    - javaforce.awt.RFB
+    - javaforce.awt.VNC
+  - new : webui improvements
+
 May 13/2024 : JF/59.0
   - jfKVM/1.5
     - new : added Monitor stats screen (memory, cpu, disk and network)
