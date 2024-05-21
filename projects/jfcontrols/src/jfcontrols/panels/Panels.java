@@ -355,10 +355,10 @@ public class Panels {
     lbl.addClickListener((me, c) -> {
       Events.click(c);
     });
-    lbl.addMouseDownListener((c) -> {
+    lbl.addMouseDownListener((me, c) -> {
       Events.press(c);
     });
-    lbl.addMouseUpListener((c) -> {
+    lbl.addMouseUpListener((me, c) -> {
       Events.release(c);
     });
     return lbl;
@@ -375,10 +375,10 @@ public class Panels {
     b.addClickListener((me, c) -> {
       Events.click(c);
     });
-    b.addMouseDownListener((c) -> {
+    b.addMouseDownListener((me, c) -> {
       Events.press(c);
     });
-    b.addMouseUpListener((c) -> {
+    b.addMouseUpListener((me, c) -> {
       Events.release(c);
     });
     return b;
@@ -409,10 +409,10 @@ public class Panels {
     b.addChangedListener((c) -> {
       Events.changed((ToggleButton)c);
     });
-    b.addMouseDownListener((c) -> {
+    b.addMouseDownListener((me, c) -> {
       Events.press(c);
     });
-    b.addMouseUpListener((c) -> {
+    b.addMouseUpListener((me, c) -> {
       Events.release(c);
     });
     String tag = v.tag;
@@ -673,10 +673,10 @@ public class Panels {
     img.addClickListener((me, c) -> {
       Events.click(c);
     });
-    img.addMouseDownListener((c) -> {
+    img.addMouseDownListener((me, c) -> {
       Events.press(c);
     });
-    img.addMouseUpListener((c) -> {
+    img.addMouseUpListener((me, c) -> {
       Events.release(c);
     });
     return img;
@@ -1219,10 +1219,10 @@ public class Panels {
     light.addClickListener((me, c) -> {
       Events.click(c);
     });
-    light.addMouseDownListener((c) -> {
+    light.addMouseDownListener((me, c) -> {
       Events.press(c);
     });
-    light.addMouseUpListener((c) -> {
+    light.addMouseUpListener((me, c) -> {
       Events.release(c);
     });
     return light;
@@ -1250,10 +1250,10 @@ public class Panels {
     light.addClickListener((me, c) -> {
       Events.click(c);
     });
-    light.addMouseDownListener((c) -> {
+    light.addMouseDownListener((me, c) -> {
       Events.press(c);
     });
-    light.addMouseUpListener((c) -> {
+    light.addMouseUpListener((me, c) -> {
       Events.release(c);
     });
     return light;
