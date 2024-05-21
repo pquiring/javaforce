@@ -131,6 +131,14 @@ public class WebConsole extends Thread {
   
   public void mouse(int x, int y, int buttons) {
     if (rfb == null) return;
+    //need to swap b2 and b3
+    boolean b1 = (buttons & 0x01) != 0;
+    boolean b2 = (buttons & 0x02) != 0;
+    boolean b3 = (buttons & 0x04) != 0;
+    buttons = 0;
+    if (b1) buttons |= 0x01;
+    if (b3) buttons |= 0x02;
+    if (b2) buttons |= 0x04;
     rfb.writeMouseEvent(x, y, buttons);
   }
 
