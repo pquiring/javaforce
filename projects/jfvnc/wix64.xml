@@ -19,8 +19,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{D5197194-0C29-4ED0-B79D-BEC0951B545D}" Bitness="always64">
-        <File Id="jfvnc.jar" Source="jfvnc.jar" KeyPath="yes" />
-        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes" />
         <File Id="jfvnc.exe" Source="jfvnc.exe" />
       </Component>
     </DirectoryRef>
