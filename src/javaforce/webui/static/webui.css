@@ -86,6 +86,30 @@ td {
   box-sizing: border-box;
 }
 
+.left {
+  vertical-align: middle;
+  text-align: left;
+  white-space: nowrap;
+  margin: 0px;
+  padding: 0px;
+}
+
+.right {
+  vertical-align: middle;
+  text-align: right;
+  white-space: nowrap;
+  margin: 0px;
+  padding: 0px;
+}
+
+.center {
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+  margin: 0px;
+  padding: 0px;
+}
+
 .table {
   border-collapse: collapse;
   padding: 0px;

@@ -289,6 +289,19 @@ public class Test implements WebUIHandler {
     tab8.add(bar);
     client.setProperty("bar", bar);
 
+    //TAB #9
+    Panel tab9 = new Panel();
+    tab.addTab(tab9, "Tab#9");
+
+    GridLayout grid = new GridLayout(2,2,new int[] {Component.RIGHT, Component.LEFT});
+    tab9.add(grid);
+
+    grid.add(new Label("Username"), 0, 0);
+    grid.add(new TextField(""), 1, 0);
+
+    grid.add(new Label("Pass"), 0, 1);
+    grid.add(new TextField(""), 1, 1);
+
 
     return panel;
   }
