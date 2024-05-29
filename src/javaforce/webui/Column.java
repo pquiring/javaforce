@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Column extends Container {
+public class Column extends LayoutManager {
   public Column() {
     addClass("column");
     //setMaxHeight();

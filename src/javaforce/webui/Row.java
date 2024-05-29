@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Row extends Container {
+public class Row extends LayoutManager {
   public Row() {
     addClass("row");
     //setMaxWidth();
