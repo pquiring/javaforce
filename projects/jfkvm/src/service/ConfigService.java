@@ -1459,7 +1459,7 @@ public class ConfigService implements WebUIHandler {
     InnerPanel inner = new InnerPanel("jfKVM Setup");
     inner.setAutoWidth();
     inner.setAutoHeight();
-    panel.setAlign(Component.CENTER);
+    panel.setAlign(CENTER);
     Row row;
     Label header = new Label("jfKVM has not been setup yet, please supply the admin password.");
     inner.add(header);
@@ -1516,12 +1516,13 @@ public class ConfigService implements WebUIHandler {
     InnerPanel inner = new InnerPanel(appname + " Login");
     inner.setAutoWidth();
     inner.setAutoHeight();
-    panel.setAlign(Component.CENTER);
+    panel.setAlign(CENTER);
     Label msg = new Label("");
     inner.add(msg);
 
     GridLayout grid;
     grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    grid.setAlign(CENTER);
     inner.add(grid);
 
     TextField username = new TextField("");
