@@ -18,9 +18,11 @@ import javaforce.net.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+import static javaforce.webui.Component.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "2.0";
+  public static String appname = "jfKVM";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
@@ -1511,31 +1513,26 @@ public class ConfigService implements WebUIHandler {
   private Panel loginPanel() {
     Panel panel = new Panel();
     panel.removeClass("column");
-    InnerPanel inner = new InnerPanel("jfKVM Login");
+    InnerPanel inner = new InnerPanel(appname + " Login");
     inner.setAutoWidth();
     inner.setAutoHeight();
     panel.setAlign(Component.CENTER);
-    Row row;
     Label msg = new Label("");
     inner.add(msg);
 
-    row = new Row();
-    inner.add(row);
-    row.add(new Label("Username:"));
-    TextField username = new TextField("");
-    row.add(username);
+    GridLayout grid;
+    grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    inner.add(grid);
 
-    row = new Row();
-    inner.add(row);
-    row.add(new Label("Password:"));
+    TextField username = new TextField("");
+    grid.addRow(new Component[] {new Label("Username"), username});
+
     TextField password = new TextField("");
     password.setPassword(true);
-    row.add(password);
+    grid.addRow(new Component[] {new Label("Password"), password});
 
-    row = new Row();
-    inner.add(row);
     Button login = new Button("Login");
-    row.add(login);
+    grid.addRow(new Component[] {login});
 
     login.addClickListener( (MouseEvent m, Component c) -> {
       String userTxt = username.getText();
