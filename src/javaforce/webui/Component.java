@@ -209,6 +209,7 @@ public abstract class Component {
         break;
       case CENTER:
         setStyle("text-align", "center");
+        setStyle("margin", "0 auto");
         break;
       case RIGHT:
         setStyle("text-align", "right");
