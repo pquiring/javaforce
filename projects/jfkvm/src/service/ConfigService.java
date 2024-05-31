@@ -1814,7 +1814,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 50}, 21, 2, 0);
+    Table table = new Table(new int[] {150, 50}, 21, 2, 0);
     row.add(table);
 //    table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -2095,23 +2095,20 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Current Password"));
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
+
     TextField old_pass = new TextField("");
-    row.add(old_pass);
+    old_pass.setPassword(true);
+    grid.addRow(new Component[] {new Label("Current Password"), old_pass});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("New Password"));
     TextField new_pass = new TextField("");
-    row.add(new_pass);
+    new_pass.setPassword(true);
+    grid.addRow(new Component[] {new Label("New Password"), new_pass});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Confirm Password"));
     TextField cfm_pass = new TextField("");
-    row.add(cfm_pass);
+    cfm_pass.setPassword(true);
+    grid.addRow(new Component[] {new Label("Confirm Password"), cfm_pass});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
