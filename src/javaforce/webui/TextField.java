@@ -10,6 +10,7 @@ public class TextField extends TextComponent {
   public TextField(String text) {
     this.text = text;
     addEvent("onchange", "onTextChange(event, this);");
+    addEvent("onkeyup", "onTextChange(event, this);");
     setClass("textfield");
   }
   public String html() {
