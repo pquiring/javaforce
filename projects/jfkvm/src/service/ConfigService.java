@@ -1892,18 +1892,12 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
     Button refresh = new Button("Refresh");
-    row.add(refresh);
+    tools.add(refresh);
     Button help = new Button("Help");
-    row.add(help);
+    tools.add(help);
 
     row = new Row();
     panel.add(row);
@@ -1933,12 +1927,18 @@ public class ConfigService implements WebUIHandler {
     Button connect = new Button("Connect");
     row.add(connect);
 
+    ToolBar tools2 = new ToolBar();
+    panel.add(tools2);
+    Button gluster = new Button("Gluster Probe");
+    tools2.add(gluster);
+    Button remove = new Button("Remove Host");
+    tools2.add(remove);
+
     row = new Row();
     panel.add(row);
-    Button gluster = new Button("Gluster Probe");
-    row.add(gluster);
-    Button remove = new Button("Remove Host");
-    row.add(remove);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
