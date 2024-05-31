@@ -2619,33 +2619,25 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     ui.hardware = hardware;
     hardware.validate();
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
     Row row;
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
     //name [   ]
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name:" + hardware.name));
-    //pool [  v]
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Storage Pool:" + hardware.pool));
+    TextField _name = new TextField(hardware.name);
+    _name.setReadonly(true);
+    grid.addRow(new Component[] {new Label("Name"), _name});
+    //pool [   ]
+    TextField _pool = new TextField(hardware.pool);
+    _pool.setReadonly(true);
+    grid.addRow(new Component[] {new Label("Storage Pool"), _pool});
     //operating system type
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("OS Type"));
     ComboBox os_type = new ComboBox();
     os_type.add("Linux", "Linux");
     os_type.add("Windows", "Windows");
     os_type.setSelectedIndex(hardware.os);
-    row.add(os_type);
+    grid.addRow(new Component[] {new Label("OS Type"), os_type});
     //memory [   ] [MB/GB]
     row = new Row();
-    panel.add(row);
-    row.add(new Label("Memory"));
     TextField memory = new TextField(Integer.toString(hardware.memory.size));
     row.add(memory);
     ComboBox memory_units = new ComboBox();
@@ -2653,29 +2645,21 @@ public class ConfigService implements WebUIHandler {
     memory_units.add("GB", "GB");
     memory_units.setSelectedIndex(hardware.memory.unit - 2);
     row.add(memory_units);
+    grid.addRow(new Component[] {new Label("Memory"), row});
     //cpus [   ]
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("CPU Cores"));
+    new Label("CPU Cores");
     TextField cores = new TextField(Integer.toString(hardware.cores));
-    row.add(cores);
+    grid.addRow(new Component[] {});
     //firmware [BIOS/UEFI]
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Firmware"));
     ComboBox firmware = new ComboBox();
     firmware.add("BIOS", "BIOS");
     firmware.add("UEFI", "UEFI");
     if (hardware.bios_efi) {
       firmware.setSelectedIndex(1);
     }
-    row.add(firmware);
+    grid.addRow(new Component[] {new Label("Firmware"), firmware});
     //machine type
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Machine"));
     ComboBox machine = new ComboBox();
-    row.add(machine);
     machine.add("pc", "pc");
     machine.add("q35", "q35");
     switch (hardware.machine) {
@@ -2687,10 +2671,9 @@ public class ConfigService implements WebUIHandler {
         machine.setSelectedIndex(1);
         break;
     }
+    grid.addRow(new Component[] {new Label("Machine"), machine});
     //video card / vram
     row = new Row();
-    panel.add(row);
-    row.add(new Label("Video"));
     ComboBox video = new ComboBox();
     row.add(video);
     video.add("vmvga", "vmvga");
@@ -2720,6 +2703,8 @@ public class ConfigService implements WebUIHandler {
     TextField vram = new TextField("");
     row.add(vram);
     vram.setText(Integer.toString(hardware.vram));
+    grid.addRow(new Component[] {new Label("Video"), row});
+    //video : 3d accel
     row = new Row();
     panel.add(row);
     CheckBox video_3d_accel = new CheckBox("Video 3D Accel");
@@ -2815,6 +2800,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(b_save);
     Button b_cancel = new Button("Cancel");
     tools.add(b_cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     b_disk_create.addClickListener((me, cmp) -> {
       ui.vm_disk = null;
