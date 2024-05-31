@@ -302,6 +302,12 @@ public class Test implements WebUIHandler {
     grid.add(new Label("Pass"), 0, 1);
     grid.add(new TextField(""), 1, 1);
 
+    //TAB #10
+    Panel tab10 = new Panel();
+    tab.addTab(tab10, "Tab#10");
+
+    InnerPanel inner = new InnerPanel("Inner Panel");
+    tab10.add(inner);
 
     return panel;
   }

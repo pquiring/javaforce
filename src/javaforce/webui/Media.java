@@ -29,8 +29,8 @@ public class Media extends Container {
     addEvent("onsuspend", "console.log('Media.suspend:readyState=' + this.readyState);");
     addEvent("onwaiting", "console.log('Media.waiting:readyState=' + this.readyState);");
     setStyle("position", "absolute");
-    setStyle("left", "0");
-    setStyle("top", "0");
+    setStyle("left", "0px");
+    setStyle("top", "0px");
     button_play = new Button("Play");
     button_play.addClickListener(new Click() {
       public void onClick(MouseEvent me, Component comp) {

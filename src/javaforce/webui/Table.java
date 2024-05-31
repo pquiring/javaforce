@@ -70,8 +70,8 @@ public class Table extends Container implements Click {
     public String html() {
       setSize(spanx * getColWidth(x), spany * cellHeight);
       //setPosition(x * width, y * height);
-      setStyle("left", Integer.toString(getColPosition(x)));
-      setStyle("top", Integer.toString(y * cellHeight));
+      setStyle("left", Integer.toString(getColPosition(x)) + "px");
+      setStyle("top", Integer.toString(y * cellHeight) + "px");
       StringBuilder sb = new StringBuilder();
       sb.append("<div" + getAttrs() + ">");
       sb.append(get(0).html());
@@ -103,18 +103,28 @@ public class Table extends Container implements Click {
     }
   }
   private int getTotalWidth() {
+    int width = 0;
+    if (border) {
+      width += 2;
+    }
     if (cellWidths == null) {
-      return cellWidth * cols;
+      width += cellWidth * cols;
     } else {
       int total = 0;
       for(int a=0;a<cellWidths.length;a++) {
         total += cellWidths[a];
       }
-      return total;
+      width += total;
     }
+    return width;
   }
   private int getTotalHeight() {
-    return cellHeight * rows;
+    int height = 0;
+    if (border) {
+      height += 2;
+    }
+    height += cellHeight * rows;
+    return height;
   }
   private void setSize() {
     int totalWidth = getTotalWidth();
@@ -179,6 +189,7 @@ public class Table extends Container implements Click {
       add(c, x, y);
       x++;
     }
+    setSize();
   }
   public void addRow(String[] strs) {
     int x = 0;
@@ -188,6 +199,7 @@ public class Table extends Container implements Click {
       add(new Label(s), x, y);
       x++;
     }
+    setSize();
   }
   public void addColumn() {
     if (cellWidths != null) {
@@ -214,6 +226,7 @@ public class Table extends Container implements Click {
       add(c, x, y);
       y++;
     }
+    setSize();
   }
   public void addColumn(String[] strs) {
     int x = cols;
@@ -223,6 +236,7 @@ public class Table extends Container implements Click {
       add(new Label(s), x, y);
       y++;
     }
+    setSize();
   }
   /** Sets number of columns and rows. */
   public void setTableSize(int cols, int rows) {
@@ -241,12 +255,14 @@ public class Table extends Container implements Click {
         return;
       }
     }
+    setSize();
   }
   public Component remove(int x,int y) {
     Cell cell = getCell(x,y,false);
     if (cell != null) {
       super.remove(cell);
       cell.sendEvent("remove", new String[] {"child=" + cell.id});
+      setSize();
       return cell.get(0);
     }
     return null;
@@ -268,6 +284,7 @@ public class Table extends Container implements Click {
       }
     }
     rows--;
+    setSize();
   }
   public void removeColumn(int col) {
     int cnt = count();
@@ -285,6 +302,7 @@ public class Table extends Container implements Click {
       }
     }
     cols--;
+    setSize();
   }
   public void removeAll() {
     super.removeAll();

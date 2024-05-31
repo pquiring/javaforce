@@ -76,7 +76,6 @@ td {
 }
 
 .cell {
-  vertical-align: middle;
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
@@ -87,7 +86,6 @@ td {
 }
 
 .left {
-  vertical-align: middle;
   text-align: left;
   white-space: nowrap;
   margin: 0px;
@@ -95,7 +93,6 @@ td {
 }
 
 .right {
-  vertical-align: middle;
   text-align: right;
   white-space: nowrap;
   margin: 0px;
@@ -103,7 +100,6 @@ td {
 }
 
 .center {
-  vertical-align: middle;
   text-align: center;
   white-space: nowrap;
   margin: 0px;
@@ -163,8 +159,8 @@ td {
 }
 
 .innerpanel {
-  width: auto;
-  height: auto;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
   margin: 0px;
   display: block;

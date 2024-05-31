@@ -279,7 +279,7 @@ public abstract class Component {
     this.height = height;
     if (width > 0) {setStyle("width", width + "px");}
     if (height > 0) {setStyle("height", height + "px");}
-    sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
+    sendEvent("setsize", new String[] {"w=" + width + "px", "h=" + height + "px"});
   }
   public int getX() {
     return x;
@@ -410,8 +410,8 @@ public abstract class Component {
     sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
     this.x = x;
     this.y = y;
-    setStyle("left", Integer.toString(x));
-    setStyle("top", Integer.toString(y));
+    setStyle("left", Integer.toString(x) + "px");
+    setStyle("top", Integer.toString(y) + "px");
   }
 
   public void setReadonly(boolean state) {

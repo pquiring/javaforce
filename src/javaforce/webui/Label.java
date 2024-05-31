@@ -11,7 +11,6 @@ public class Label extends TextComponent {
   private Resource img;
   public Label(String text) {
     this.text = text;
-    setVerticalAlign(CENTER);
     addEvent("onclick", "onClick(event, this);");
     setClass("label");
     addClass("noselect");

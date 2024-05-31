@@ -56,6 +56,8 @@ public class ConfigService implements WebUIHandler {
   private static final int data_margin_top = 25;
   private static final int data_margin_bottom = 25;
 
+  private static final int col_height = 25;
+
   private static final long _20sec_ns_ = 20L * 1000L * 1000L * 1000L;  //20 seconds in nano seconds
 
   private static final long day_ms = 1000L * 60L * 60L * 24L;
@@ -349,12 +351,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name"));
     TextField name = new TextField("");
     row.add(name);
@@ -418,6 +414,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     ui.vm_disk_init = () -> {
       errmsg.setText("");
@@ -562,12 +564,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Model"));
     ComboBox models = new ComboBox();
     row.add(models);
@@ -594,6 +590,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     ui.vm_network_init = () -> {
       boolean create = ui.vm_network == null;
@@ -673,12 +675,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name"));
     TextField name = new TextField("");
     row.add(name);
@@ -701,6 +697,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     ui.network_vlan_init = () -> {
       boolean create = ui.network_vlan == null;
@@ -791,12 +793,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name"));
     TextField name = new TextField("");
     row.add(name);
@@ -813,6 +809,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     ui.network_bridge_init = () -> {
       boolean create = ui.network_bridge == null;
@@ -925,12 +927,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name"));
     TextField name = new TextField("");
     row.add(name);
@@ -974,6 +970,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     ui.network_virtual_init = () -> {
       boolean create = ui.network_virtual == null;
@@ -1457,10 +1459,8 @@ public class ConfigService implements WebUIHandler {
   public Panel installPanel(WebUIClient client) {
     Panel panel = new Panel();
     panel.removeClass("column");
-    InnerPanel inner = new InnerPanel("jfKVM Setup");
-    inner.setAutoWidth();
-    inner.setAutoHeight();
     panel.setAlign(CENTER);
+    InnerPanel inner = new InnerPanel("jfKVM Setup");
     Row row;
     Label header = new Label("jfKVM has not been setup yet, please supply the admin password.");
     inner.add(header);
@@ -1515,8 +1515,6 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     panel.removeClass("column");
     InnerPanel inner = new InnerPanel(appname + " Login");
-    inner.setAutoWidth();
-    inner.setAutoHeight();
     inner.setAlign(CENTER);
     Label msg = new Label("");
     inner.add(msg);
@@ -1814,7 +1812,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 50}, 21, 2, 0);
+    Table table = new Table(new int[] {150, 50}, col_height, 2, 0);
     row.add(table);
 //    table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -1948,7 +1946,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 100, 50, 50, 50, 50}, 21, 6, 0);
+    Table table = new Table(new int[] {150, 150, 75, 75, 75, 75}, col_height, 6, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -2182,7 +2180,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 75, 50}, 21, 3, 0);
+    Table table = new Table(new int[] {100, 75, 50}, col_height, 3, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -2269,12 +2267,6 @@ public class ConfigService implements WebUIHandler {
     TabPanel panel = new TabPanel();
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button create = new Button("Create");
@@ -2308,7 +2300,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 50, 100}, 21, 3, 0);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {150, 50, 100}, col_height, 3, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -2543,12 +2541,6 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
     //name [   ]
     row = new Row();
     panel.add(row);
@@ -2574,6 +2566,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(b_next);
     Button b_cancel = new Button("Cancel");
     tools.add(b_cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     b_next.addClickListener((me, cmp) -> {
       errmsg.setText("");
@@ -3096,12 +3094,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("VM:" + vm.name));
 
     row = new Row();
@@ -3122,6 +3114,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button next = new Button("Next");
     row.add(next);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     data.addClickListener((me, cmp) -> {
       compute.setSelected(false);
@@ -3179,12 +3177,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Select a storage pool"));
 
     row = new Row();
@@ -3199,6 +3191,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button next = new Button("Next");
     row.add(next);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     next.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
@@ -3220,12 +3218,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("VM:" + vm.name));
 
     row = new Row();
@@ -3240,6 +3232,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button start = new Button("Start");
     row.add(start);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     start.addClickListener((me, cmp) -> {
       if (vm.getState() != VirtualMachine.STATE_OFF) {
@@ -3282,12 +3280,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Select a remote host"));
 
     row = new Row();
@@ -3302,6 +3294,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button next = new Button("Next");
     row.add(next);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     next.addClickListener((me, cmp) -> {
       errmsg.setText("");
@@ -3324,12 +3322,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("VM:" + vm.name));
 
     row = new Row();
@@ -3340,6 +3332,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button start = new Button("Start");
     row.add(start);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     //TODO : confirm move is possible (check cpu,memory,network,device requirements)
 
@@ -3397,12 +3395,6 @@ public class ConfigService implements WebUIHandler {
     Row row;
     ArrayList<Storage> pools = Config.current.pools;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
     Calendar cal = Calendar.getInstance();
     String name_yyyy_mm = String.format("%s-%04d-%02d", vm.name, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
 
@@ -3428,6 +3420,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button next = new Button("Next");
     row.add(next);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     next.addClickListener((me, cmp) -> {
       int idx = list.getSelectedIndex();
@@ -3455,12 +3453,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("VM:" + vm.name));
 
     row = new Row();
@@ -3475,6 +3467,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     Button start = new Button("Start");
     row.add(start);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     //TODO : confirm clone is possible (check storage requirements)
 
@@ -3718,7 +3716,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 75, 50, 75, 50, 50}, 21, 6, 0);
+    Table table = new Table(new int[] {100, 75, 50, 75, 50, 50}, col_height, 6, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -4060,12 +4058,6 @@ public class ConfigService implements WebUIHandler {
     panel.add(desc);
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
     //name
     row = new Row();
     panel.add(row);
@@ -4091,6 +4083,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(next);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     next.addClickListener((me, cmp) -> {
       errmsg.setText("");
@@ -4145,12 +4143,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name:" + pool.name));
 
     row = new Row();
@@ -4177,6 +4169,12 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
@@ -4213,12 +4211,6 @@ public class ConfigService implements WebUIHandler {
   private Panel iscsi_StoragePanel(Storage pool, boolean create, UI ui) {
     Panel panel = new Panel();
     Row row;
-
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -4276,6 +4268,12 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
       String _host = host.getText();
@@ -4331,12 +4329,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name:" + pool.name));
 
     row = new Row();
@@ -4354,9 +4346,6 @@ public class ConfigService implements WebUIHandler {
       }
       dev.add(part, part);
     }
-    if (dev.getCount() == 0) {
-      errmsg.setText("Error:No available partitions found");
-    }
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -4364,6 +4353,16 @@ public class ConfigService implements WebUIHandler {
     tools.add(accept);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    if (dev.getCount() == 0) {
+      errmsg.setText("Error:No available partitions found");
+    }
 
     accept.addClickListener((me, cmp) -> {
       if (dev.getCount() == 0) {
@@ -4416,12 +4415,6 @@ public class ConfigService implements WebUIHandler {
     panel.setModal(true);
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    row.add(errmsg);
-    ui.browse_errmsg = errmsg;
-
     ToolBar tools = new ToolBar();
     panel.add(tools);
     Button refresh = new Button("Refresh");
@@ -4444,6 +4437,12 @@ public class ConfigService implements WebUIHandler {
 
     ListBox list = new ListBox();
     panel.add(list);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    row.add(errmsg);
+    ui.browse_errmsg = errmsg;
 
     ui.browse_init = () -> {
       errmsg.setText("");
@@ -4521,12 +4520,6 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
     row.add(new Label("Name:" + pool.name));
 
     Size size = pool.getDeviceSize();
@@ -4576,6 +4569,12 @@ public class ConfigService implements WebUIHandler {
     row.add(format);
     Button cancel = new Button("Cancel");
     row.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     ext4.addClickListener((me, cmp) -> {
       gfs2.setSelected(false);
@@ -4649,17 +4648,6 @@ public class ConfigService implements WebUIHandler {
       panel.addTab(tab, "Physical NICs");
       Row row;
 
-      row = new Row();
-      tab.add(row);
-      Label errmsg = new Label("");
-      row.add(errmsg);
-      errmsg.setColor(Color.red);
-
-      row = new Row();
-      tab.add(row);
-      Label msg = new Label("");
-      row.add(msg);
-
       ToolBar tools = new ToolBar();
       tab.add(tools);
       Button refresh = new Button("Refresh");
@@ -4671,7 +4659,12 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50}, 21, 4, 0);
+      Label msg = new Label("");
+      row.add(msg);
+
+      row = new Row();
+      tab.add(row);
+      Table table = new Table(new int[] {100, 200, 150, 50}, col_height, 4, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -4739,7 +4732,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 50, 100}, 21, 3, 0);
+      Table table = new Table(new int[] {100, 50, 100}, col_height, 3, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -4823,7 +4816,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 50, 50}, 21, 3, 0);
+      Table table = new Table(new int[] {100, 50, 50}, col_height, 3, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
@@ -4891,17 +4884,6 @@ public class ConfigService implements WebUIHandler {
       panel.addTab(tab, "Server Virtual NICs");
       Row row;
 
-      row = new Row();
-      tab.add(row);
-      Label errmsg = new Label("");
-      row.add(errmsg);
-      errmsg.setColor(Color.red);
-
-      row = new Row();
-      tab.add(row);
-      Label msg = new Label("");
-      row.add(msg);
-
       ToolBar tools = new ToolBar();
       tab.add(tools);
       Button refresh = new Button("Refresh");
@@ -4927,7 +4909,18 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, 21, 6, 0);
+      Label errmsg = new Label("");
+      row.add(errmsg);
+      errmsg.setColor(Color.red);
+
+      row = new Row();
+      tab.add(row);
+      Label msg = new Label("");
+      row.add(msg);
+
+      row = new Row();
+      tab.add(row);
+      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, col_height, 6, 0);
       row.add(table);
       table.setSelectionMode(Table.SELECT_ROW);
       table.setBorder(true);
