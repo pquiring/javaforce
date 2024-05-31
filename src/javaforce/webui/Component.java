@@ -407,7 +407,7 @@ public abstract class Component {
   }
 
   public void setPosition(int x, int y) {
-    sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
+    sendEvent("setpos", new String[] {"x=" + x + "px", "y=" + y + "px"});
     this.x = x;
     this.y = y;
     setStyle("left", Integer.toString(x) + "px");
