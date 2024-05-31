@@ -672,24 +672,17 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name"));
     TextField name = new TextField("");
-    row.add(name);
+    grid.addRow(new Component[] {new Label("Name"), name});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Switch"));
     ComboBox bridge = new ComboBox();
-    row.add(bridge);
+    grid.addRow(new Component[] {new Label("Switch"), bridge});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("VLAN"));
     TextField vlan = new TextField("");
-    row.add(vlan);
+    grid.addRow(new Component[] {new Label("VLAN"), vlan});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -790,18 +783,14 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name"));
     TextField name = new TextField("");
-    row.add(name);
+    grid.addRow(new Component[] {new Label("Name"), name});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Physical NIC"));
     ComboBox iface = new ComboBox();
-    row.add(iface);
+    grid.addRow(new Component[] {new Label("Physical NIC"), iface});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -924,45 +913,23 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name"));
     TextField name = new TextField("");
-    row.add(name);
+    grid.addRow(new Component[] {new Label("Name"), name});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Switch"));
     ComboBox bridge = new ComboBox();
-    row.add(bridge);
+    grid.addRow(new Component[] {new Label("Switch"), bridge});
 
-/*
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("MAC"));
-    TextField mac = new TextField("");
-    row.add(mac);
-    row.add(new Label("(leave blank to generate)"));
-*/
-
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("IP"));
     TextField ip = new TextField("");
-    row.add(ip);
+    grid.addRow(new Component[] {new Label("IP"), ip});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Netmask"));
     TextField netmask = new TextField("");
-    row.add(netmask);
+    grid.addRow(new Component[] {new Label("Netmask"), netmask});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("VLAN"));
     TextField vlan = new TextField("");
-    row.add(vlan);
+    grid.addRow(new Component[] {new Label("VLAN"), vlan});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
