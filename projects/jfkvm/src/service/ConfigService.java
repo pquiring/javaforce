@@ -19,6 +19,7 @@ import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 import static javaforce.webui.Component.*;
+import static javaforce.webui.event.KeyEvent.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "2.0";
@@ -1536,13 +1537,13 @@ public class ConfigService implements WebUIHandler {
     inner.add(login);
 
     username.addKeyDownListener((ke, cmp) -> {
-      if (ke.keyCode == 0x0a) {
+      if (ke.keyCode == VK_ENTER) {
         password.setFocus();
       }
     });
 
     password.addKeyDownListener((ke, cmp) -> {
-      if (ke.keyCode == 0x0a) {
+      if (ke.keyCode == VK_ENTER) {
         login.click();
       }
     });

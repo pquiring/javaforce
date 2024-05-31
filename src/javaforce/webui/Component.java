@@ -10,6 +10,7 @@ import java.net.*;
 
 import javaforce.*;
 import javaforce.webui.event.*;
+import static javaforce.webui.event.KeyEvent.*;
 
 public abstract class Component {
   public String id;
@@ -530,24 +531,24 @@ public abstract class Component {
               keyCode = Character.toUpperCase(value.charAt(0));
             } else {
               switch (value) {
-                case "Enter": keyCode = 10; break;
-                case "Tab": keyCode = 9; break;
-                case "Control": keyCode = 17; break;
-                case "Alt": keyCode = 18; break;
-                case "Shift": keyCode = 16; break;
-                case "Escape": keyCode = 27; break;
-                case "ArrowUp": keyCode = 38; break;
-                case "ArrowDown": keyCode = 40; break;
-                case "ArrowLeft": keyCode = 37; break;
-                case "ArrowRight": keyCode = 39; break;
-                case "Insert": keyCode = 155; break;
-                case "Delete": keyCode = 127; break;
-                case "Home": keyCode = 36; break;
-                case "End": keyCode = 35; break;
-                case "PageUp": keyCode = 33; break;
-                case "PageDown": keyCode = 34; break;
+                case "Enter": keyCode = VK_ENTER; break;
+                case "Tab": keyCode = VK_TAB; break;
+                case "Control": keyCode = VK_CONTROL; break;
+                case "Alt": keyCode = VK_ALT; break;
+                case "Shift": keyCode = VK_SHIFT; break;
+                case "Escape": keyCode = VK_ESCAPE; break;
+                case "ArrowUp": keyCode = VK_ARROW_UP; break;
+                case "ArrowDown": keyCode = VK_ARROW_DOWN; break;
+                case "ArrowLeft": keyCode = VK_ARROW_LEFT; break;
+                case "ArrowRight": keyCode = VK_ARROW_RIGHT; break;
+                case "Insert": keyCode = VK_INSERT; break;
+                case "Delete": keyCode = VK_DELETE; break;
+                case "Home": keyCode = VK_HOME; break;
+                case "End": keyCode = VK_END; break;
+                case "PageUp": keyCode = VK_PAGE_UP; break;
+                case "PageDown": keyCode = VK_PAGE_DOWN; break;
                 case "\\\\": keyChar = '\\'; break;
-                case "Backspace": keyCode = 8; break;
+                case "Backspace": keyCode = VK_BACK_SPACE; break;
                 default: JFLog.log("webui:unknown key code:" + value);
               }
             }
