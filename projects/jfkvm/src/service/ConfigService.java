@@ -1521,8 +1521,7 @@ public class ConfigService implements WebUIHandler {
     Label msg = new Label("");
     inner.add(msg);
 
-    GridLayout grid;
-    grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
     grid.setAlign(CENTER);
     inner.add(grid);
 
@@ -1711,38 +1710,27 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Row row;
 
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Host FQN"));
     TextField fqn = new TextField(Config.current.fqn);
-    row.add(fqn);
+    grid.addRow(new Component[] {new Label("Host FQN"), fqn});
 
     row = new Row();
-    panel.add(row);
-    row.add(new Label("iSCSI Initiator IQN"));
     TextField iqn = new TextField(Storage.getSystemIQN());
     row.add(iqn);
     Button iqn_generate = new Button("Generate");
     row.add(iqn_generate);
+    grid.addRow(new Component[] {new Label("iSCSI Initiator IQN"), row});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("VNC Password"));
     TextField vnc_password = new TextField(Config.current.vnc_password);
-    row.add(vnc_password);
+    grid.addRow(new Component[] {new Label("VNC Password"), vnc_password});
 
     row = new Row();
-    panel.add(row);
-    row.add(new Label("Stats Retention (days)"));
     TextField stats_days = new TextField(Integer.toString(Config.current.stats_days));
     row.add(stats_days);
     row.add(new Label("(1-365) (default:3)"));
+    grid.addRow(new Component[] {new Label("Stats Retention (days)"), row});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1754,7 +1742,14 @@ public class ConfigService implements WebUIHandler {
     Label msg = new Label("");
     row.add(msg);
 
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     save.addClickListener((me, cmp) -> {
+      msg.setText("");
       String new_vnc_password = vmm.cleanName(vnc_password.getText());
       if (new_vnc_password.length() != 8) {
         vnc_password.setText(new_vnc_password);
