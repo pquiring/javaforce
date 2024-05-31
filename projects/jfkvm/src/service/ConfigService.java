@@ -1533,7 +1533,19 @@ public class ConfigService implements WebUIHandler {
     grid.addRow(new Component[] {new Label("Password"), password});
 
     Button login = new Button("Login");
-    grid.addRow(new Component[] {login});
+    inner.add(login);
+
+    username.addKeyDownListener((ke, cmp) -> {
+      if (ke.keyCode == 0x0a) {
+        password.setFocus();
+      }
+    });
+
+    password.addKeyDownListener((ke, cmp) -> {
+      if (ke.keyCode == 0x0a) {
+        login.click();
+      }
+    });
 
     login.addClickListener( (MouseEvent m, Component c) -> {
       String userTxt = username.getText();
