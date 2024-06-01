@@ -789,9 +789,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_comOpen
   COMMTIMEOUTS cto;
   memset(&cto, 0, sizeof(COMMTIMEOUTS));
   GetCommTimeouts(handle, &cto);
-  cto.ReadIntervalTimeout = 10;
+  cto.ReadIntervalTimeout = MAXDWORD;
   cto.ReadTotalTimeoutMultiplier = 0;
-  cto.ReadTotalTimeoutConstant = 100;
+  cto.ReadTotalTimeoutConstant = 0;
   cto.WriteTotalTimeoutMultiplier = 0;
   cto.WriteTotalTimeoutConstant = 0;
   SetCommTimeouts(handle, &cto);

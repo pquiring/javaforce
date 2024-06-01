@@ -804,6 +804,9 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
             do {
               read = wincom.read(data);
               if (debug) JFLog.log("wincom.read=" + read);
+              if (read == 0) {
+                JF.sleep(10);
+              }
             } while (read != 1);
             return data[0];
           }
@@ -812,6 +815,9 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
             do {
               read = wincom.read(buf);
               if (debug) JFLog.log("wincom.read=" + read);
+              if (read == 0) {
+                JF.sleep(10);
+              }
             } while (read <= 0);
             return read;
           }
