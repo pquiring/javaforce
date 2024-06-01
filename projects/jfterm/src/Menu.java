@@ -193,6 +193,15 @@ public class Menu {
 
     menu.add(new JSeparator());
 
+    item = new JMenuItem("Online");
+    item.setMnemonic('O');
+    item.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        JFAWT.openURL("https://pquiring.github.io/javaforce/projects/jfterm/docs/help.html");
+      }
+    });
+    menu.add(item);
+
     item = new JMenuItem("About");
     item.setMnemonic('A');
     item.addActionListener(new java.awt.event.ActionListener() {

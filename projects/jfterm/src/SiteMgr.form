@@ -42,6 +42,7 @@
                   <Component id="bNewFolder" alignment="0" max="32767" attributes="1"/>
                   <Component id="bNewSite" alignment="1" max="32767" attributes="1"/>
                   <Component id="bConnect" max="32767" attributes="1"/>
+                  <Component id="help" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="settings" max="32767" attributes="0"/>
@@ -65,6 +66,9 @@
                       <Component id="bNewSite" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="bNewFolder" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="help" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Component id="listScroll" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -465,6 +469,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bNewFolderActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="help">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Help"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

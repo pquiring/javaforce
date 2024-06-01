@@ -72,6 +72,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     listScroll = new javax.swing.JScrollPane();
     tree = new javax.swing.JTree();
     bNewFolder = new javax.swing.JButton();
+    help = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setTitle("Site Manager");
@@ -347,6 +348,13 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
       }
     });
 
+    help.setText("Help");
+    help.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        helpActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -360,7 +368,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
           .addComponent(bDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(bNewFolder, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(bNewSite, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(bConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(bConnect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(help, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(settings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addContainerGap())
@@ -380,7 +389,10 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(bNewSite)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(bNewFolder))
+            .addComponent(bNewFolder)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(help)
+            .addGap(0, 0, Short.MAX_VALUE))
           .addComponent(listScroll, javax.swing.GroupLayout.Alignment.LEADING))
         .addContainerGap())
     );
@@ -600,6 +612,10 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     }
   }//GEN-LAST:event_selectSSHKeyActionPerformed
 
+  private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
+    JFAWT.openURL("https://pquiring.github.io/javaforce/projects/jfterm/docs/help.html");
+  }//GEN-LAST:event_helpActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JRadioButton ascii;
   private javax.swing.JButton bConnect;
@@ -614,6 +630,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   private javax.swing.JCheckBox cbX;
   private javax.swing.JCheckBox cbX11;
   private javax.swing.JCheckBox cbY;
+  private javax.swing.JButton help;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
