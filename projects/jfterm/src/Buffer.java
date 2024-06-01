@@ -35,7 +35,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
 
   private void init() {
     //now runs in the EDT
-    JFLog.log("Buffer.init start");
+    if (debug) JFLog.log("Buffer.init start");
     try {
       lock = new Object();
       setFocusable(true);
@@ -89,13 +89,15 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
     } catch (Exception e) {
       JFLog.log(e);
     }
-    JFLog.log("Buffer.init done");
+    if (debug) JFLog.log("Buffer.init done");
   }
 
   //public data
   public int sx, sy;  //screen size x/y (80x24)
   private int y1,y2;  //scroll range
   public Script script = null;
+
+  public static boolean debug = false;
 
   //private static data
   private static int fx, fy;  //font size x/y
@@ -633,7 +635,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
   public void setTab(int idx) {System.out.println("setTab" + idx);}
   public void setName(String str) {}
 
-  /** This thread handles the actual setSiteDetailsing and reading the input.*/
+  /** This thread handles the actual setting and reading the input.*/
   private class Reader extends Thread {
     public void run() {
       while (!closed) {
@@ -698,6 +700,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
 
   public void signalRepaint(boolean findScreen) {
     if (render == null) return;
+    if (debug) JFLog.log("signalRepaint");
     synchronized(render) {
       render.findCursor = findScreen;
       render.draw = true;
@@ -800,6 +803,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
             int read = 0;
             do {
               read = wincom.read(data);
+              if (debug) JFLog.log("wincom.read=" + read);
             } while (read != 1);
             return data[0];
           }
@@ -807,6 +811,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
             int read;
             do {
               read = wincom.read(buf);
+              if (debug) JFLog.log("wincom.read=" + read);
             } while (read <= 0);
             return read;
           }

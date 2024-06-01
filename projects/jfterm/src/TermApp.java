@@ -129,6 +129,11 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
    * @param args the command line arguments (currently ignored)
    */
   public static void main(String args[]) {
+    for(String arg : args) {
+      switch (arg) {
+        case "--debug": Buffer.debug = true; break;
+      }
+    }
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         new TermApp().setVisible(true);
