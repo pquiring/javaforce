@@ -3,7 +3,7 @@ Terminal client
 Supports:
   Telnet/ANSI codes (full color)
   ASCII 8bit chars
-  SSH (using JCraft JSch)
+  SSH
   SSH Key Authentication (leave password blank)
   X11 Forwarding
   SSL
