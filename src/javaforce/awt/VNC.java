@@ -48,6 +48,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     initComponents();
     this.remove(tools);
     setupEvents();
+    scroll.setViewportView(image);
   }
 
   /**
@@ -215,10 +216,12 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
 
 
   public void setupEvents() {
-    image.addMouseListener(this);
-    image.addMouseMotionListener(this);
-    image.addMouseListener(this);
-    image.setFocusable(true);
+    if (!is_fullscreen) {
+      image.addMouseListener(this);
+      image.addMouseMotionListener(this);
+      image.addMouseListener(this);
+      image.setFocusable(true);
+    }
     this.addKeyListener(this);
   }
 
