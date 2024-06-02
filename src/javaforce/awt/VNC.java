@@ -5,20 +5,25 @@ package javaforce.awt;
  * @author pquiring
  */
 
+import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 import javaforce.*;
 
 public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 
-  private RFB rfb;
+  private static RFB rfb;
 
   private String host;
   private int port;
   private String pass;
 
-  private JFImage image;
+  private static JFImage image;
   private int buttons;
+  private boolean is_fullscreen;
+  private VNC vnc_windowed;
+  private VNC vnc_fullscreen;
 
   public static boolean debug;
 
@@ -35,6 +40,16 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     new Connect().start();
   }
 
+  /** Create fullscreen window. */
+  public VNC(VNC windowed) {
+    this.vnc_windowed = windowed;
+    this.setUndecorated(true);
+    is_fullscreen = true;
+    initComponents();
+    this.remove(tools);
+    setupEvents();
+  }
+
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,6 +64,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     jButton3 = new javax.swing.JButton();
     jButton1 = new javax.swing.JButton();
     jButton4 = new javax.swing.JButton();
+    fullscreen = new javax.swing.JButton();
     scroll = new javax.swing.JScrollPane();
 
     jButton2.setText("jButton2");
@@ -90,6 +106,17 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     });
     tools.add(jButton4);
 
+    fullscreen.setText("FullScreen");
+    fullscreen.setFocusable(false);
+    fullscreen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    fullscreen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    fullscreen.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        fullscreenActionPerformed(evt);
+      }
+    });
+    tools.add(fullscreen);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -119,6 +146,10 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
     refresh();
   }//GEN-LAST:event_jButton3ActionPerformed
+
+  private void fullscreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullscreenActionPerformed
+    fullscreen();
+  }//GEN-LAST:event_fullscreenActionPerformed
 
   /**
    * @param args the command line arguments
@@ -173,6 +204,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton fullscreen;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
   private javax.swing.JButton jButton3;
@@ -239,6 +271,24 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     int width = rfb.getWidth();
     int height = rfb.getHeight();
     rfb.writeBufferUpdateRequest(0, 0, width, height, false);
+  }
+
+  public void fullscreen() {
+    try {
+      if (is_fullscreen) {
+        JFLog.log("!fullscreen");
+        dispose();
+        vnc_windowed.setVisible(true);
+      } else {
+        JFLog.log("fullscreen");
+        setVisible(false);
+        vnc_fullscreen = new VNC(this);
+        vnc_fullscreen.setVisible(true);
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(vnc_fullscreen);
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public class Connect extends Thread {
@@ -438,6 +488,13 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     int code = e.getKeyCode();
     if (debug) {
       JFLog.log("VNC:KeyPressed:" + Integer.toString(ch) + ":" + code);
+    }
+    if (e.isAltDown() && e.isShiftDown() && e.isControlDown()) {
+      if (code == KeyEvent.VK_F) {
+        fullscreen();
+      }
+      e.consume();
+      return;
     }
     if (ch == KeyEvent.CHAR_UNDEFINED) {
       keyDown(code, true);
