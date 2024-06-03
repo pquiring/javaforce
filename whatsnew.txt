@@ -1,5 +1,12 @@
 What's new...
 
+Jun 3/2024 : JF/61.0
+  - jfKVM/2.1
+    - fix : cpu core
+    - new : improve UI
+  - jfTerm/0.21
+    - fix : WinCom timeout too high
+
 May 21/2024 : JF/60.0
   - jfKVM/2.0
     - new : Web Console (control VMs from browser)
