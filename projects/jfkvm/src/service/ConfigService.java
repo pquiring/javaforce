@@ -2612,9 +2612,8 @@ public class ConfigService implements WebUIHandler {
     row.add(memory_units);
     grid.addRow(new Component[] {new Label("Memory"), row});
     //cpus [   ]
-    new Label("CPU Cores");
     TextField cores = new TextField(Integer.toString(hardware.cores));
-    grid.addRow(new Component[] {});
+    grid.addRow(new Component[] {new Label("CPU Cores"), cores});
     //firmware [BIOS/UEFI]
     ComboBox firmware = new ComboBox();
     firmware.add("BIOS", "BIOS");
