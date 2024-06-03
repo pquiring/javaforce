@@ -1,5 +1,8 @@
 What's new...
 
+Jun 3/2024  - 0.21 released!
+  - fix : WinCom timeout was too high
+
 Mar 18/2020 - 0.20 released!
   - fix : win64 loader now loads msvcrt dlls properly
 
