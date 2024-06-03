@@ -399,6 +399,9 @@ public class VirtualMachine implements Serializable {
       xml.append("<bootmenu enable='yes' timeout='3000'/>");
       xml.append("<smbios mode='emulate'/>");
     xml.append("</os>");
+    xml.append("<cpu>");
+    xml.append(" <topology sockets='1' dies='1' clusters='1' cores='" + hardware.cores + "' threads='1'/>");
+    xml.append("</cpu>");
     xml.append(hardware.memory.toMemoryXML());
     xml.append("<features>");
       xml.append("<acpi/>");
