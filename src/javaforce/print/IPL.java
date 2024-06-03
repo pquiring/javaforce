@@ -206,8 +206,8 @@ public class IPL {
     }
     start();
     etb();
-    end();
     formfeed();
+    end();
     done = true;
   }
 
