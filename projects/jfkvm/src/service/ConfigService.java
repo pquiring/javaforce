@@ -22,7 +22,7 @@ import static javaforce.webui.Component.*;
 import static javaforce.webui.event.KeyEvent.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "2.0";
+  public static String version = "2.1";
   public static String appname = "jfKVM";
   public static boolean debug = false;
   public WebUIServer server;
