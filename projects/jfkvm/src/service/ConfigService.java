@@ -2639,6 +2639,24 @@ public class ConfigService implements WebUIHandler {
         break;
     }
     grid.addRow(new Component[] {new Label("Machine"), machine});
+    //TPM
+    ComboBox tpm = new ComboBox();
+    tpm.add("0", "None");
+    tpm.add("1", "1.2");
+    tpm.add("2", "2.0");
+    switch (hardware.tpm) {
+      default:
+      case Hardware.TPM_NONE:
+        tpm.setSelectedIndex(0);
+        break;
+      case Hardware.TPM_1_2:
+        tpm.setSelectedIndex(1);
+        break;
+      case Hardware.TPM_2_0:
+        tpm.setSelectedIndex(1);
+        break;
+    }
+    grid.addRow(new Component[] {new Label("TPM"), tpm});
     //video card / vram
     row = new Row();
     ComboBox video = new ComboBox();
@@ -3024,6 +3042,7 @@ public class ConfigService implements WebUIHandler {
       hardware.cores = _cores;
       hardware.bios_efi = firmware.getSelectedIndex() == 1;
       hardware.machine = machine.getSelectedValue();
+      hardware.tpm = tpm.getSelectedIndex();
       hardware.video = video.getSelectedValue();
       _size_str = vmm.cleanNumber(vram.getText());
       if (_size_str.length() == 0) {

@@ -395,7 +395,6 @@ public class VirtualMachine implements Serializable {
         xml.append("<source file='/volumes/" + hardware.pool + "/" + hardware.name + "/" + hardware.name + ".nvram'/>");
         xml.append("</nvram>");
       }
-//      xml.append("<boot dev='hd'/>");  //use Disk.boot_order instead
       xml.append("<bootmenu enable='yes' timeout='3000'/>");
       xml.append("<smbios mode='emulate'/>");
     xml.append("</os>");
@@ -404,6 +403,11 @@ public class VirtualMachine implements Serializable {
     xml.append(" <topology sockets='1' dies='1' clusters='1' cores='" + hardware.cores + "' threads='1'/>");
     xml.append("</cpu>");
     xml.append(hardware.memory.toMemoryXML());
+    if (hardware.tpm != Hardware.TPM_NONE) {
+      xml.append("<tpm model='tpm-tis'>");
+      xml.append(" <backend type='emulator' version='" + hardware.getTPMVersion() + "'/>");
+      xml.append("</tpm>");
+    }
     xml.append("<features>");
       xml.append("<acpi/>");
       xml.append("<apic/>");

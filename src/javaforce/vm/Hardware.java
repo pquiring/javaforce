@@ -28,6 +28,7 @@ public class Hardware implements Serializable {
   public String genid;
   public int os;
   public int cores;
+  public int tpm;
   public Size memory;
   public String machine = "pc";
   public String video = "vga";
@@ -43,6 +44,10 @@ public class Hardware implements Serializable {
 
   public static final int OS_LINUX = 0;
   public static final int OS_WINDOWS = 1;
+
+  public static final int TPM_NONE = 0;
+  public static final int TPM_1_2 = 1;
+  public static final int TPM_2_0 = 2;
 
   public Hardware() {
     pool = "default";
@@ -150,6 +155,14 @@ public class Hardware implements Serializable {
 
   public void removeController(Controller ctrl) {
     controllers.remove(ctrl);
+  }
+
+  public String getTPMVersion() {
+    switch (tpm) {
+      case TPM_1_2: return "1.2";
+      case TPM_2_0: return "2.0";
+    }
+    return "0.0";
   }
 
   public void validate() {
