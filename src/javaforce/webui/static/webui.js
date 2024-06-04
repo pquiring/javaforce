@@ -150,8 +150,8 @@ function wsevent(event) {
       element.style.marginTop = msg.px + "px";
       break;
     case "setpos":
-      element.style.left = msg.x;
-      element.style.top = msg.y;
+      element.style.left = msg.x + "px";
+      element.style.top = msg.y + "px";
       break;
     case "getpossize":
       sendPosSize(msg.id);
@@ -163,8 +163,8 @@ function wsevent(event) {
       sendSize(msg.id);
       break;
     case "setsize":
-      element.style.width = msg.w;
-      element.style.height = msg.h;
+      element.style.width = msg.w + "px";
+      element.style.height = msg.h + "px";
       if (element.offsetWidth > 0) {
         element.width = msg.w;
       }
@@ -173,28 +173,28 @@ function wsevent(event) {
       }
       break;
     case "setwidth":
-      element.style.width = msg.w;
+      element.style.width = msg.w + "px";
       break;
     case "setheight":
-      element.style.height = msg.h;
+      element.style.height = msg.h + "px";
       break;
     case "setwidthtoparent":
-      element.style.width = element.parentElement.offsetWidth;
+      element.style.width = element.parentElement.offsetWidth + "px";
       break;
     case "setheighttoparent":
-      element.style.height = element.parentElement.offsetHeight;
+      element.style.height = element.parentElement.offsetHeight + "px";
       break;
     case "setsizetoparent":
-      element.style.width = element.parentElement.offsetWidth;
-      element.style.height = element.parentElement.offsetHeight;
+      element.style.width = element.parentElement.offsetWidth + "px";
+      element.style.height = element.parentElement.offsetHeight + "px";
       break;
     case "setsizetoparent2":
-      element.style.width = getWidth(element.parentElement.parentElement);
-      element.style.height = getHeight(element.parentElement.parentElement);
+      element.style.width = getWidth(element.parentElement.parentElement) + "px";
+      element.style.height = getHeight(element.parentElement.parentElement) + "px";
       break;
     case "setsizetoparent3":
-      element.style.width = element.parentElement.parentElement.parentElement.offsetWidth;
-      element.style.height = element.parentElement.parentElement.parentElement.offsetHeight;
+      element.style.width = element.parentElement.parentElement.parentElement.offsetWidth + "px";
+      element.style.height = element.parentElement.parentElement.parentElement.offsetHeight + "px";
       break;
     case "setclass":
       element.className = msg.cls;
@@ -406,8 +406,8 @@ function onresizeBody(event, element) {
 }
 
 function onresizePanel2(event, element, child) {
-  child.style.width = getWidth(element);
-  child.style.height = getHeight(element);
+  child.style.width = getWidth(element) + "px";
+  child.style.height = getHeight(element) + "px";
   child.dispatchEvent(new Event('resize'));
 }
 
@@ -511,8 +511,8 @@ function onresizeTabPanel(event, tabsid) {
     height = nodes[i].offsetHeight;
     if (height > maxHeight) maxHeight = height;
   }
-  tabs.style.width = maxWidth;
-  tabs.style.height = maxHeight;
+  tabs.style.width = maxWidth + "px";
+  tabs.style.height = maxHeight + "px";
 }
 
 function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
