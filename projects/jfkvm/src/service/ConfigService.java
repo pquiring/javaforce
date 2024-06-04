@@ -348,38 +348,26 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name"));
     TextField name = new TextField("");
-    row.add(name);
+    grid.addRow(new Component[] {new Label("Name"), name});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Pool"));
     ComboBox pool = new ComboBox();
-    row.add(pool);
+    grid.addRow(new Component[] {new Label("Pool"), pool});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Path"));
     TextField path = new TextField("");
-    row.add(path);
     path.setReadonly(true);
+    grid.addRow(new Component[] {new Label("Path"), path});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Format"));
     ComboBox type = new ComboBox();
-    row.add(type);
     type.add("vmdk", "vmdk");
     type.add("qcow2", "qcow2");
     type.add("iso", "iso");
+    grid.addRow(new Component[] {new Label("Format"), type});
 
     row = new Row();
-    panel.add(row);
-    row.add(new Label("Size"));
     TextField size = new TextField("100");
     row.add(size);
     ComboBox size_units = new ComboBox();
@@ -388,31 +376,23 @@ public class ConfigService implements WebUIHandler {
     size_units.add("MB", "MB");
     size_units.add("GB", "GB");
     row.add(size_units);
+    grid.addRow(new Component[] {new Label("Size"), row});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Provision"));
     ComboBox provision = new ComboBox();
     provision.add("thick", "Thick");
     provision.add("thin", "Thin");
-    row.add(provision);
     provision.setSelectedIndex(0);
+    grid.addRow(new Component[] {new Label("Provision"), provision});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Boot Order"));
     TextField boot_order = new TextField("0");
-    row.add(boot_order);
+    grid.addRow(new Component[] {new Label("Boot Order"), boot_order});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Interface"));
     ComboBox bus = new ComboBox();
-    row.add(bus);
     bus.add("auto", "auto");
     bus.add("sata", "sata");
     bus.add("scsi", "scsi");
     bus.add("ide", "ide");
+    grid.addRow(new Component[] {new Label("Interface"), bus});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
