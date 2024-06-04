@@ -403,11 +403,6 @@ public class VirtualMachine implements Serializable {
     xml.append(" <topology sockets='1' dies='1' clusters='1' cores='" + hardware.cores + "' threads='1'/>");
     xml.append("</cpu>");
     xml.append(hardware.memory.toMemoryXML());
-    if (hardware.tpm != Hardware.TPM_NONE) {
-      xml.append("<tpm model='tpm-tis'>");
-      xml.append(" <backend type='emulator' version='" + hardware.getTPMVersion() + "'/>");
-      xml.append("</tpm>");
-    }
     xml.append("<features>");
       xml.append("<acpi/>");
       xml.append("<apic/>");
@@ -419,6 +414,11 @@ public class VirtualMachine implements Serializable {
     xml.append("<on_crash>destroy</on_crash>");
 */
     xml.append("<devices>");
+      if (hardware.tpm != Hardware.TPM_NONE) {
+        xml.append("<tpm model='tpm-tis'>");
+        xml.append(" <backend type='emulator' version='" + hardware.getTPMVersion() + "'/>");
+        xml.append("</tpm>");
+      }
       for(Controller c : hardware.controllers) {
         xml.append(c.toXML());
       }
