@@ -1,5 +1,9 @@
 What's new...
 
+Jun 4/2024 : JF/61.1
+  - jfKVM/2.2
+    - fix : UI issue
+
 Jun 3/2024 : JF/61.0
   - jfKVM/2.1
     - fix : cpu core
