@@ -2673,10 +2673,8 @@ public class ConfigService implements WebUIHandler {
         break;
     }
     grid.addRow(new Component[] {new Label("TPM"), tpm});
-    //video card / vram
-    row = new Row();
+    //video card
     ComboBox video = new ComboBox();
-    row.add(video);
     video.add("vmvga", "vmvga");
     video.add("vga", "vga");
     video.add("cirrus", "cirrus");
@@ -2700,11 +2698,14 @@ public class ConfigService implements WebUIHandler {
         video.setSelectedIndex(4);
         break;
     }
-    row.add(new Label("VRAM (kB)"));
+    grid.addRow(new Component[] {new Label("Video"), video});
+    //video memory
+    row = new Row();
     TextField vram = new TextField("");
     row.add(vram);
+    row.add(new Label("(kb)"));
     vram.setText(Integer.toString(hardware.vram));
-    grid.addRow(new Component[] {new Label("Video"), row});
+    grid.addRow(new Component[] {new Label("Video Memory"), row});
     //video : 3d accel
     row = new Row();
     panel.add(row);
