@@ -19,8 +19,7 @@
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{FD8DBC45-F7CC-48FF-BD8C-4477831F637D}" Bitness="always64">
         <File Id="jfdvr.exe" Source="jfdvr.exe" KeyPath="yes">
-          <fire:FirewallException Id="FirewallRule80" Name="jfDVRWEB80" Protocol="tcp" Port="80" Scope="any" IgnoreFailure="yes" Profile="all" />
-          <fire:FirewallException Id="FirewallRule443" Name="jfDVRWEB443" Protocol="tcp" Port="443" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule" Name="jfDVRWEB" Protocol="tcp" Port="80,443" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jfdvr.jar" Source="jfdvr.jar" />
         <File Id="jfdvrviewer.exe" Source="jfdvr-viewer.exe" />
