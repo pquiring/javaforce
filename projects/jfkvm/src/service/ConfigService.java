@@ -582,28 +582,23 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Model"));
     ComboBox models = new ComboBox();
-    row.add(models);
     for(String model : nic_models) {
       models.add(model, model);
     }
+    grid.addRow(new Component[] {new Label("Model"), models});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Network"));
     ComboBox networks = new ComboBox();
-    row.add(networks);
+    grid.addRow(new Component[] {new Label("Network"), networks});
 
     row = new Row();
-    panel.add(row);
-    row.add(new Label("MAC"));
     TextField mac = new TextField("");
     row.add(mac);
     row.add(new Label("(leave blank to generate)"));
+    grid.addRow(new Component[] {new Label("MAC"), row});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
