@@ -357,6 +357,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    row.add(new Label("Pool"));
+    ComboBox pool = new ComboBox();
+    row.add(pool);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("Path"));
     TextField path = new TextField("");
     row.add(path);
@@ -423,11 +429,29 @@ public class ConfigService implements WebUIHandler {
 
     ui.vm_disk_init = () -> {
       errmsg.setText("");
+      ArrayList<Storage> pools = Config.current.pools;
+      pool.clear();
       if (ui.vm_disk == null) {
         //create
         name.setText(ui.hardware.getNextDiskName());
         name.setReadonly(false);
-        path.setText(ui.hardware.getPath());
+        Storage disk_pool = null;
+        int idx = 0;
+        for(Storage _pool : pools) {
+          String _name = pool.name;
+          pool.add(_name, _name);
+          if (_pool.name.equals(ui.hardware.pool)) {
+            pool.setSelectedIndex(idx);
+            disk_pool = _pool;
+          }
+          idx++;
+        }
+        pool.setReadonly(false);
+        if (disk_pool != null) {
+          path.setText(disk_pool.getPath());
+        } else {
+          path.setText(ui.hardware.getPath());
+        }
         type.setSelectedIndex(0);
         type.setReadonly(false);
         bus.setSelectedIndex(0);
@@ -442,6 +466,16 @@ public class ConfigService implements WebUIHandler {
         //update
         name.setText(ui.vm_disk.name);
         name.setReadonly(true);
+        int idx = 0;
+        for(Storage _pool : pools) {
+          String _name = pool.name;
+          pool.add(_name, _name);
+          if (_pool.name.equals(ui.hardware.pool)) {
+            pool.setSelectedIndex(idx);
+          }
+          idx++;
+        }
+        pool.setReadonly(true);
         path.setText(ui.vm_disk.getPath());
         switch (ui.vm_disk.type) {
           case Disk.TYPE_VMDK: type.setSelectedIndex(0); break;
@@ -469,6 +503,13 @@ public class ConfigService implements WebUIHandler {
         accept.setText("Edit");
       }
     };
+
+    pool.addChangedListener((cmp) -> {
+      //update path
+      Storage disk_pool = vmm.getPoolByName(pool.getSelectedValue());
+      if (disk_pool == null) return;
+      path.setText(disk_pool.getPath());
+    });
 
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
@@ -516,14 +557,14 @@ public class ConfigService implements WebUIHandler {
       if (create) {
         //create
         ui.vm_disk = new Disk();
-        ui.vm_disk.pool = ui.hardware.pool;
+        ui.vm_disk.pool = pool.getSelectedValue();
         ui.vm_disk.folder = ui.hardware.name;
         ui.vm_disk.name = _name;
         ui.vm_disk.type = _type;
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.boot_order = _boot_order;
         ui.vm_disk.target_bus = _bus;
-        if (!ui.vm_disk.create(vmm.getPoolByName(ui.hardware.pool), _provision)) {
+        if (!ui.vm_disk.create(_provision)) {
           errmsg.setText("Error:Failed to create disk");
           return;
         }

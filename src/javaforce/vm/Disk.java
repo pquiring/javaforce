@@ -46,6 +46,10 @@ public class Disk implements Serializable {
     return -1;
   }
 
+  public String getFolder() {
+    return "/volumes/" + pool + "/" + folder;
+  }
+
   public String getPath() {
     return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
   }
@@ -75,12 +79,13 @@ public class Disk implements Serializable {
 
   private native static boolean ncreate(String pool_name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
-  public boolean create(Storage pool, int provision) {
+  public boolean create(int provision) {
+    new File(getFolder()).mkdirs();
     if (false) {
       //use libvirt (not working per docs)
       String xml = getCreateXML(provision);
       JFLog.log("Disk.xml=" + xml);
-      return ncreate(pool.name, xml);
+      return ncreate(pool, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();
