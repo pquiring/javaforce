@@ -157,6 +157,14 @@ public class SDP implements Cloneable {
     return stream0;
   }
 
+  public String getIP() {
+    return ip;
+  }
+
+  public void setIP(String ip) {
+    this.ip = ip;
+  }
+
   public Stream addStream(Type type) {
     JFLog.log(log, "SDP.addStream:" + type);
     Stream stream = new Stream();
