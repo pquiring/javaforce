@@ -738,12 +738,10 @@ bool try_jvm() {
     strcpy(javahome, expanded);
   }
 
-#if 0
-  //this is causing other file related errors in apps
+  //add $JAVA_HOME/bin to DLL search path (this is required to find MSVCRT DLLs)
   strcpy(dll, javahome);
   strcat(dll, "\\bin");
   SetDllDirectory(dll);
-#endif
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");
@@ -751,6 +749,10 @@ bool try_jvm() {
     error("Unable to open jvm.dll");
     return false;
   }
+
+  //restore default DLL search path (without default some apps have file related issues)
+  SetDllDirectory(NULL);
+
   return true;
 }
 
