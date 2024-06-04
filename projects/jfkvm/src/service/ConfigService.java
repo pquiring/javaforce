@@ -1438,19 +1438,17 @@ public class ConfigService implements WebUIHandler {
     errmsg.setColor(Color.red);
     inner.add(errmsg);
 
-    row = new Row();
-    inner.add(row);
-    row.add(new Label("Password:"));
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    grid.setAlign(CENTER);
+    inner.add(grid);
+
     TextField password = new TextField("");
     password.setPassword(true);
-    row.add(password);
+    grid.addRow(new Component[] {new Label("Password:"), password});
 
-    row = new Row();
-    inner.add(row);
-    row.add(new Label("Confirm:"));
     TextField confirm = new TextField("");
     confirm.setPassword(true);
-    row.add(confirm);
+    grid.addRow(new Component[] {new Label("Confirm:"), confirm});
 
     row = new Row();
     inner.add(row);
