@@ -448,9 +448,9 @@ public class ConfigService implements WebUIHandler {
         name.setReadonly(true);
         int idx = 0;
         for(Storage _pool : pools) {
-          String _name = pool.name;
+          String _name = _pool.name;
           pool.add(_name, _name);
-          if (_pool.name.equals(ui.hardware.pool)) {
+          if (_name.equals(ui.hardware.pool)) {
             pool.setSelectedIndex(idx);
           }
           idx++;
