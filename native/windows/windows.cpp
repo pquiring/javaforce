@@ -262,6 +262,7 @@ JavaVMInitArgs *BuildArgs() {
 #endif
 
   if (debug) {
+// Warning : this will cause the app not to load if MSVCRT is not installed at the system level - the one included in the MSI is not found by jmx
     opts[nOpts++] = "-Djava.debug=true";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
