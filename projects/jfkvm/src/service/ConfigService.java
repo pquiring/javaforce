@@ -2653,7 +2653,7 @@ public class ConfigService implements WebUIHandler {
         tpm.setSelectedIndex(1);
         break;
       case Hardware.TPM_2_0:
-        tpm.setSelectedIndex(1);
+        tpm.setSelectedIndex(2);
         break;
     }
     grid.addRow(new Component[] {new Label("TPM"), tpm});
