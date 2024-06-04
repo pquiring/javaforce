@@ -94,6 +94,8 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     SDP.Stream stream = sdp.addStream(SDP.Type.video);
     stream.framerate = fps;
     stream.addCodec(codec);
+    stream.setIP(DVRService.rtspServer.resolve(sess.remotehost));
+    stream.setPort(-1);
     if (sess.rtp != null) {
       sess.rtp.uninit();
       sess.rtp = null;

@@ -609,7 +609,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         camera.fps = fps;
       }
     }
-    //IP/port in SDP is all zeros
     stream.setIP(client.getRemoteIP());
     stream.setPort(-1);
     int av_codec_id = -1;
