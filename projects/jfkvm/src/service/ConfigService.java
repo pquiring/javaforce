@@ -418,9 +418,9 @@ public class ConfigService implements WebUIHandler {
         Storage disk_pool = null;
         int idx = 0;
         for(Storage _pool : pools) {
-          String _name = pool.name;
+          String _name = _pool.name;
           pool.add(_name, _name);
-          if (_pool.name.equals(ui.hardware.pool)) {
+          if (_name.equals(ui.hardware.pool)) {
             pool.setSelectedIndex(idx);
             disk_pool = _pool;
           }
@@ -428,7 +428,7 @@ public class ConfigService implements WebUIHandler {
         }
         pool.setReadonly(false);
         if (disk_pool != null) {
-          path.setText(disk_pool.getPath());
+          path.setText(disk_pool.getPath() + "/" + ui.hardware.name);
         } else {
           path.setText(ui.hardware.getPath());
         }
@@ -488,7 +488,7 @@ public class ConfigService implements WebUIHandler {
       //update path
       Storage disk_pool = vmm.getPoolByName(pool.getSelectedValue());
       if (disk_pool == null) return;
-      path.setText(disk_pool.getPath());
+      path.setText(disk_pool.getPath() + "/" + ui.hardware.name);
     });
 
     accept.addClickListener((me, cmp) -> {
