@@ -768,6 +768,11 @@ public abstract class Component {
     keyUp = Arrays.copyOf(keyUp, keyUp.length + 1);
     keyUp[keyUp.length-1] = handler;
   }
+  public void addKeyUpListenerPreventDefault(KeyUp handler) {
+    addEvent("onkeyup", "onKeyUp2(event, this);");
+    keyUp = Arrays.copyOf(keyUp, keyUp.length + 1);
+    keyUp[keyUp.length-1] = handler;
+  }
 
   protected void onKeyDown(String[] args, KeyEvent ke) {
     ke.action = "down";
@@ -778,6 +783,11 @@ public abstract class Component {
   private KeyDown[] keyDown = new KeyDown[0];
   public void addKeyDownListener(KeyDown handler) {
     addEvent("onkeydown", "onKeyDown(event, this);");
+    keyDown = Arrays.copyOf(keyDown, keyDown.length + 1);
+    keyDown[keyDown.length-1] = handler;
+  }
+  public void addKeyDownListenerPreventDefault(KeyDown handler) {
+    addEvent("onkeydown", "onKeyDown2(event, this);");
     keyDown = Arrays.copyOf(keyDown, keyDown.length + 1);
     keyDown[keyDown.length-1] = handler;
   }

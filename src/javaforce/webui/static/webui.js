@@ -708,11 +708,35 @@ function onKeyDown(event, element) {
     key: event.key
   };
   ws.send(JSON.stringify(msg));
+}
+
+function onKeyUp(event, element) {
+  var msg = {
+    event: "keyup",
+    id: element.id,
+    ck: event.ctrlKey,
+    ak: event.altKey,
+    sk: event.shiftKey,
+    key: event.key
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onKeyDown2(event, element) {
+  var msg = {
+    event: "keydown",
+    id: element.id,
+    ck: event.ctrlKey,
+    ak: event.altKey,
+    sk: event.shiftKey,
+    key: event.key
+  };
+  ws.send(JSON.stringify(msg));
   event.preventDefault();
   return false;
 }
 
-function onKeyUp(event, element) {
+function onKeyUp2(event, element) {
   var msg = {
     event: "keyup",
     id: element.id,

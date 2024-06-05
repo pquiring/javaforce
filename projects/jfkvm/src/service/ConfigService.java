@@ -5198,14 +5198,14 @@ public class ConfigService implements WebUIHandler {
     canvas.addMouseMoveListener((me, cmp) -> {
       console.mouse(me.x, me.y, me.buttons);
     });
-    canvas.addKeyDownListener((ke, cmp) -> {
+    canvas.addKeyDownListenerPreventDefault((ke, cmp) -> {
       if (ke.keyChar != 0) {
         console.keyDown(ke.keyChar, false);
       } else {
         console.keyDown(ke.keyCode, true);
       }
     });
-    canvas.addKeyUpListener((ke, cmp) -> {
+    canvas.addKeyUpListenerPreventDefault((ke, cmp) -> {
       if (ke.keyChar != 0) {
         console.keyUp(ke.keyChar, false);
       } else {
