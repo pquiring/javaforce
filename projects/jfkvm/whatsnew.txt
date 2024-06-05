@@ -1,3 +1,7 @@
+2024-06-05 : 2.3 released!
+  - new : added TPM support
+  - fix : UI improvements and fixes
+
 2024-06-04 : 2.2 released!
   - fix : UI issue
 
