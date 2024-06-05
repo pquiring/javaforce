@@ -82,6 +82,12 @@ public class Config extends SerialObject implements Serializable {
       if (idx == -1) return;
       cameras = (Camera[])JF.copyOfExcluding(cameras, idx);
     }
+    //remove from groups
+    for(Group group : groups) {
+      if (group.contains(camera.name)) {
+        group.remove(camera.name);
+      }
+    }
   }
 
   public void removeGroup(Group group) {

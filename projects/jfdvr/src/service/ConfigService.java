@@ -40,7 +40,7 @@ public class ConfigService implements WebUIHandler {
     String keyfile = Paths.dataPath + "/jfdvr.key";
     String password = "password";
     KeyParams params = new KeyParams();
-    params.dname = "CN=jfdvr.sourceforge.net, O=server, OU=webserver, C=CA";;
+    params.dname = "CN=jfdvr.sourceforge.net, O=server, OU=webserver, C=CA";
     if (new File(keyfile).exists()) {
       //load existing keys
       keys = new KeyMgmt();
