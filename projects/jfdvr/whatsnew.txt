@@ -1,3 +1,6 @@
+Jun 5, 2024 : 0.24 released!
+  - fix : remove camera from groups when deleted
+
 Apr 10, 2024 : 0.23 released!
   - secure ui interface
 
