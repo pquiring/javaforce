@@ -708,6 +708,8 @@ function onKeyDown(event, element) {
     key: event.key
   };
   ws.send(JSON.stringify(msg));
+  event.preventDefault();
+  return false;
 }
 
 function onKeyUp(event, element) {
@@ -720,6 +722,8 @@ function onKeyUp(event, element) {
     key: event.key
   };
   ws.send(JSON.stringify(msg));
+  event.preventDefault();
+  return false;
 }
 
 function onSliderMove(event, element) {
