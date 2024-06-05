@@ -1,5 +1,12 @@
 What's new...
 
+Jun 5/2024 : JF/62.0
+  - jfKVM/2.3
+    - add TPM support
+    - UI improvements & fixes
+  - jfDVR/0.24
+    - remove camera from group when deleted
+
 Jun 4/2024 : JF/61.1
   - jfKVM/2.2
     - fix : UI issue
