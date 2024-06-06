@@ -118,7 +118,6 @@ public class LDAP {
    * @param group = group name
    * @return user is a member
    */
-
   public boolean memberOf(String domain_dn, String username, String group) {
     String[] list = getAttributes(domain_dn, "SAMAccountName=" + username, new String[] {"memberOf"});
     if (list == null || list.length == 0) return false;
@@ -133,6 +132,7 @@ public class LDAP {
     return false;
   }
 
+  /** Create distinguished name from dot domain name. */
   public static String build_dn(String domain) {
     StringBuilder dn = new StringBuilder();
     String[] p = domain.split("[.]");
