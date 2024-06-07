@@ -23,11 +23,6 @@
     <include name="jcifs.jar"/>
     <include name="jdom.jar"/>
     <include name="llrp.jar"/>
-    <include name="log4j-1.2-api.jar"/>
-    <include name="log4j-api.jar"/>
-    <include name="log4j-core.jar"/>
-    <include name="slf4j-api.jar"/>
-    <include name="slf4j-log4j12.jar"/>
     <include name="sshd-common.jar"/>
     <include name="sshd-core.jar"/>
     <include name="sshd-sftp.jar"/>
@@ -92,11 +87,9 @@
     <antcall target="jar-sshd-sftp"/>
     <antcall target="jar-sshd-scp"/>
     <antcall target="jar-jargs"/>
-    <antcall target="jar-log4j-core"/>
-    <antcall target="jar-log4j-api"/>
-    <antcall target="jar-log4j-1.2-api"/>
     <antcall target="jar-slf4j-api"/>
-    <antcall target="jar-slf4j-log4j12"/>
+    <antcall target="jar-slf4j-simple"/>
+    <antcall target="jar-slf4j-nop"/>
     <antcall target="jar-batik-all"/>
     <antcall target="jar-xmlgraphics-commons"/>
     <antcall target="jar-xml-apis-ext"/>

@@ -101,6 +101,18 @@
     <copyjar name="slf4j-api" version="${slf4j-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-slf4j-nop">
+    <copyjar name="slf4j-nop" version="${slf4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-slf4j-simple">
+    <copyjar name="slf4j-simple" version="${slf4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-slf4j-jdk14">
+    <copyjar name="slf4j-jdk14" version="${slf4j-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-slf4j-log4j12">
     <copyjar name="slf4j-log4j12" version="${slf4j-version}" path="${jarpath}"/>
   </target>

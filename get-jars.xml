@@ -127,6 +127,21 @@
     <maven name="slf4j-api" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
+  <available property="have-slf4j-nop" file="${lib}/slf4j-nop-${slf4j-version}.jar"/>
+  <target name="get-slf4j-nop" unless="have-slf4j-nop">
+    <maven name="slf4j-nop" path="org/slf4j" version="${slf4j-version}"/>
+  </target>
+
+  <available property="have-slf4j-simple" file="${lib}/slf4j-simple-${slf4j-version}.jar"/>
+  <target name="get-slf4j-simple" unless="have-slf4j-simple">
+    <maven name="slf4j-simple" path="org/slf4j" version="${slf4j-version}"/>
+  </target>
+
+  <available property="have-slf4j-jdk14" file="${lib}/slf4j-jdk14-${slf4j-version}.jar"/>
+  <target name="get-slf4j-jdk14" unless="have-slf4j-jdk14">
+    <maven name="slf4j-jdk14" path="org/slf4j" version="${slf4j-version}"/>
+  </target>
+
   <available property="have-slf4j-log4j12" file="${lib}/slf4j-log4j12-${slf4j-version}.jar"/>
   <target name="get-slf4j-log4j12" unless="have-slf4j-log4j12">
     <maven name="slf4j-log4j12" path="org/slf4j" version="${slf4j-version}"/>
@@ -228,6 +243,9 @@
     <antcall target="get-log4j-api"/>
     <antcall target="get-log4j12"/>
     <antcall target="get-slf4j-api"/>
+    <antcall target="get-slf4j-nop"/>
+    <antcall target="get-slf4j-simple"/>
+    <antcall target="get-slf4j-jdk14"/>
     <antcall target="get-slf4j-log4j12"/>
     <antcall target="get-mina1-core"/>
     <antcall target="get-mina2-core"/>
