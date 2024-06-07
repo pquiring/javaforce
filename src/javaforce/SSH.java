@@ -110,14 +110,14 @@ public class SSH {
     for(String arg : args) {
       if (argtype != null) {
         switch (argtype) {
-          case "-port": port = Integer.valueOf(arg); break;
+          case "-p": port = Integer.valueOf(arg); break;
         }
         argtype = null;
         continue;
       }
       if (arg.startsWith("-")) {
         switch (arg) {
-          case "-port": argtype = arg; break;
+          case "-p": argtype = arg; break;
           default: usage();
         }
       } else {
@@ -151,8 +151,8 @@ public class SSH {
     }
     //connect input/output relay agents
     Condition connected = () -> {return ssh.connected();};
-    RelayStream rs1 = new RelayStream(System.in, ssh.getOutputStream(), connected);
-    RelayStream rs2 = new RelayStream(ssh.getInputStream(), System.out, connected);
+    RelayStream rs1 = new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
+    RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
     rs1.start();
     rs2.start();
     try {
