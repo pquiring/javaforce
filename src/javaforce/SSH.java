@@ -6,6 +6,7 @@ package javaforce;
  */
 
 import java.io.*;
+import java.util.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
@@ -19,9 +20,9 @@ public class SSH {
 
   private InputStream in;
   private OutputStream out;
+  private Object[] pipes;
 
   public boolean connect(String host, int port, String username, String password) {
-    Object[] pipes;
     try {
       client = SshClient.setUpDefaultClient();
       client.start();
@@ -56,6 +57,7 @@ public class SSH {
       channel.open();
       return true;
     } catch (Exception e) {
+      JFLog.log(e);
       return false;
     }
   }
@@ -64,6 +66,10 @@ public class SSH {
     try {if (client != null) {client.close(); client = null;}} catch(Exception e) {}
     try {if (out != null) {out.close(); out = null;}} catch(Exception e) {}
     try {if (in != null) {in.close(); in = null;}} catch(Exception e) {}
+  }
+
+  public boolean connected() {
+    return client.isOpen();
   }
 
   public OutputStream getOutputStream() {
@@ -82,6 +88,78 @@ public class SSH {
       return ret;
     } catch (Exception e) {
       return null;
+    }
+  }
+
+  public static void usage() {
+    System.out.println("jfssh [user@]host[:port] [-p port]");
+    System.exit(1);
+  }
+
+  public static void error(String msg) {
+    System.out.println("Error:" + msg);
+    System.exit(2);
+  }
+
+  /** SSH cli client */
+  public static void main(String[] args) {
+    String dest = null;
+    int port = 22;
+    ArrayList<String> cmd = new ArrayList<>();
+    String argtype = null;
+    for(String arg : args) {
+      if (argtype != null) {
+        switch (argtype) {
+          case "-port": port = Integer.valueOf(arg); break;
+        }
+        argtype = null;
+        continue;
+      }
+      if (arg.startsWith("-")) {
+        switch (arg) {
+          case "-port": argtype = arg; break;
+          default: usage();
+        }
+      } else {
+        if (dest == null) {
+          dest = arg;
+        } else {
+          cmd.add(arg);
+        }
+      }
+    }
+    if (dest == null) usage();
+    String user = null;
+    String host = null;
+    int idx = dest.indexOf('@');
+    if (idx == -1) {
+      host = dest;
+    } else {
+      user = dest.substring(0, idx);
+      host = dest.substring(idx + 1);
+    }
+    idx = host.indexOf(':');
+    if (idx != -1) {
+      port = Integer.valueOf(host.substring(idx + 1));
+      host = host.substring(0, idx);
+    }
+    System.out.print("Enter Password:");
+    String pass = new String(System.console().readPassword());
+    SSH ssh = new SSH();
+    if (!ssh.connect(host, port, user, pass)) {
+      error("Connection failed");
+    }
+    //connect input/output relay agents
+    Condition connected = () -> {return ssh.connected();};
+    RelayStream rs1 = new RelayStream(System.in, ssh.getOutputStream(), connected);
+    RelayStream rs2 = new RelayStream(ssh.getInputStream(), System.out, connected);
+    rs1.start();
+    rs2.start();
+    try {
+      rs1.join();
+      rs2.join();
+    } catch (Exception e) {
+      //JFLog.log(e);
     }
   }
 }
