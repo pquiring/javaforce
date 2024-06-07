@@ -15,7 +15,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives,jar-sshd-core,jar-sshd-common,jar-slf4j-api,jar-slf4j-log4j12,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-javaforce">
+  <target name="depjars" depends="depnatives,jar-sshd-core,jar-sshd-common,jar-slf4j-api,jar-slf4j-simple,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
