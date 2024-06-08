@@ -23,6 +23,8 @@
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="sshdcore.jar" Source="sshd-core.jar" />
         <File Id="sshdcommon.jar" Source="sshd-common.jar" />
+        <File Id="slf4japi.jar" Source="slf4j-api.jar" />
+        <File Id="slf4jsimple.jar" Source="slf4j-simple.jar" />
         <File Id="jfterm.exe" Source="jfterm.exe" />
       </Component>
     </DirectoryRef>
