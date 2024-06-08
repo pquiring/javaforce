@@ -21,7 +21,7 @@
   <property name="log4j-version" value="2.23.1"/>
   <property name="slf4j-version" value="1.7.33"/>
   <property name="mina1-version" value="1.1.7"/>
-  <property name="mina2-version" value="2.2.1"/>
+  <property name="mina2-version" value="2.2.3"/>
   <property name="sshd-version" value="2.10.0"/>
   <property name="jargs-version" value="1.0-0.1"/>
   <property name="llrp-version" value="1.0.0.7"/>
