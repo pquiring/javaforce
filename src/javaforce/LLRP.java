@@ -338,6 +338,7 @@ public class LLRP implements LLRPEndpoint {
 
   /** Stop reading or writing tags. */
   public void stop() {
+    if (llrp == null) return;
     try {
       //disable RO spec
       if (rospec != null) {
