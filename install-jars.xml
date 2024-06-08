@@ -113,8 +113,8 @@
     <copyjar name="slf4j-jdk14" version="${slf4j-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-slf4j-log4j12">
-    <copyjar name="slf4j-log4j12" version="${slf4j-version}" path="${jarpath}"/>
+  <target name="jar-slf4j-reload4j">
+    <copyjar name="slf4j-reload4j" version="${slf4j-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-mina1-core">

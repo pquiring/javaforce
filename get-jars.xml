@@ -142,9 +142,9 @@
     <maven name="slf4j-jdk14" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
-  <available property="have-slf4j-log4j12" file="${lib}/slf4j-log4j12-${slf4j-version}.jar"/>
-  <target name="get-slf4j-log4j12" unless="have-slf4j-log4j12">
-    <maven name="slf4j-log4j12" path="org/slf4j" version="${slf4j-version}"/>
+  <available property="have-slf4j-reload4j" file="${lib}/slf4j-reload4j-${slf4j-version}.jar"/>
+  <target name="get-slf4j-reload4j" unless="have-slf4j-reload4j">
+    <maven name="slf4j-reload4j" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
   <available property="have-mina1-core" file="${lib}/mina-core-${mina1-version}.jar"/>
@@ -246,7 +246,7 @@
     <antcall target="get-slf4j-nop"/>
     <antcall target="get-slf4j-simple"/>
     <antcall target="get-slf4j-jdk14"/>
-    <antcall target="get-slf4j-log4j12"/>
+    <antcall target="get-slf4j-reload4j"/>
     <antcall target="get-mina1-core"/>
     <antcall target="get-mina2-core"/>
     <antcall target="get-sshd-core"/>
