@@ -7,7 +7,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
-  <property name="version" value="0.21"/>
+  <property name="version" value="0.22"/>
 
   <property name="debian.depends" value="openssh-server"/>
   <property name="fedora.depends" value="openssh-server"/>
