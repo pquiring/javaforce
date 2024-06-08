@@ -28,7 +28,6 @@ public class JBusClient extends Thread {
   private InputStream is;
   private OutputStream os;
   private volatile boolean ready;
-  private int readyCnt = 0;
   private boolean debug = false;
   private int port = 777;
 
@@ -185,9 +184,10 @@ public class JBusClient extends Thread {
    * There should be no quote around args (just around strings if there are any)
    */
   public boolean call(String pfa) {
+    int cnt = 0;
     while (!ready) {
-      readyCnt++;
-      if (readyCnt == 30) {
+      cnt++;
+      if (cnt == 30) {
         return false;  //failed
       }
       JF.sleep(100);

@@ -62,7 +62,7 @@ public class LLRP implements LLRPEndpoint {
       return true;
     } catch (Exception e) {
       try {
-        llrp.disconnect();//ensure it's disconnected
+        llrp.disconnect();  //ensure it's disconnected
       } catch (Exception e2) {}
       llrp = null;
       if (debug) JFLog.log(log_id, e);
