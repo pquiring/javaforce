@@ -49,8 +49,9 @@ public class LLRP implements LLRPEndpoint {
   public static final int IMPINJ_SEARCH_MODE_DUAL_B_TO_A = 6;
 
   public boolean active;
-  public boolean debug;
   public int log_id;
+
+  public static boolean debug;
 
   /** Connects to LLRP Controller. */
   public boolean connect(String ip, int time_out_ms) {
