@@ -17,7 +17,7 @@
   <property name="filters-version" value="2.0.235-1"/>
   <property name="bacnet-version" value="6.0.0"/>
   <property name="xerces-version" value="2.12.2_1"/>
-  <property name="jdom-version" value="1.1"/>
+  <property name="jdom-version" value="2.0.2"/>
   <property name="log4j-version" value="2.23.1"/>
   <property name="slf4j-version" value="2.0.13"/>
   <property name="mina1-version" value="1.1.7"/>
