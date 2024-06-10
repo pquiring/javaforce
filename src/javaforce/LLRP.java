@@ -985,7 +985,7 @@ public class LLRP implements LLRPEndpoint {
   public void messageReceived(LLRPMessage llrpm) {
     lastMsg = System.currentTimeMillis();
     if (debug) {
-      JFLog.log("LLRP:messageReceived:" + llrpm);
+      JFLog.log("LLRP:messageReceived:" + ip + ":" + llrpm);
     }
     try {
       if (llrpm instanceof RO_ACCESS_REPORT) {
@@ -1110,7 +1110,7 @@ public class LLRP implements LLRPEndpoint {
   }
 
   public void errorOccured(String msg) {
-    JFLog.log(log, "LLRP:Error:" + msg);
+    JFLog.log(log, "LLRP:Error:" + ip + ":" + msg);
     active = false;
   }
 
