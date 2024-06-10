@@ -48,7 +48,8 @@ public class LLRP implements LLRPEndpoint {
   public static final int IMPINJ_SEARCH_MODE_SINGLE_RESET = 5;
   public static final int IMPINJ_SEARCH_MODE_DUAL_B_TO_A = 6;
 
-  public boolean active;
+  public boolean active;  //scan is active
+  public boolean connected;
   public int log;
   public long lastMsg;
 
@@ -60,6 +61,7 @@ public class LLRP implements LLRPEndpoint {
     llrp = new LLRPConnector(this, ip);
     try {
       llrp.connect(time_out_ms);
+      connected = true;
       return true;
     } catch (Exception e) {
       try {
@@ -78,9 +80,12 @@ public class LLRP implements LLRPEndpoint {
 
   /** Disconnects from LLRP Controller. */
   public void disconnect() {
-    if (llrp == null) return;
-    llrp.disconnect();
-    llrp = null;
+    active = false;
+    connected = false;
+    if (llrp != null) {
+      llrp.disconnect();
+      llrp = null;
+    }
   }
 
   /** Pings LLRP Controller to keep connection alive. */
@@ -108,7 +113,17 @@ public class LLRP implements LLRPEndpoint {
     } catch (Exception e) {
       if (debug) JFLog.log(log, e);
       active = false;
+      connected = false;
+      disconnect();
     }
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public boolean isConnected() {
+    return connected;
   }
 
   /** Sets Event Listener to read tags. */
@@ -224,6 +239,7 @@ public class LLRP implements LLRPEndpoint {
    */
   public boolean startInventoryScan() {
     if (llrp == null) return false;
+    if (active) return false;
     active = true;
     try {
       rospec = createROSpec();
@@ -379,6 +395,9 @@ public class LLRP implements LLRPEndpoint {
       active = false;
     } catch (Exception e) {
       e.printStackTrace();
+      active = false;
+      connected = false;
+      disconnect();
     }
   }
 
@@ -393,6 +412,7 @@ public class LLRP implements LLRPEndpoint {
   public boolean startWriteTag(short[] oldEPC, short[] newEPC, int wordOffset) {
     if (llrp == null) return false;
     if (active) return false;
+    active = true;
     try {
       rospec = createROSpec();
       accessspec = createWriteAccessSpec(rospec.getROSpecID(), oldEPC, newEPC, wordOffset);
@@ -489,6 +509,7 @@ public class LLRP implements LLRPEndpoint {
   public boolean startKillTag(short[] targetEPC, int password) {
     if (llrp == null) return false;
     if (active) return false;
+    active = true;
     try {
       rospec = createROSpec();
       accessspec = createKillAccessSpec(rospec.getROSpecID(), targetEPC, password);
@@ -1112,6 +1133,8 @@ public class LLRP implements LLRPEndpoint {
   public void errorOccured(String msg) {
     JFLog.log(log, "LLRP:Error:" + ip + ":" + msg);
     active = false;
+    connected = false;
+    disconnect();
   }
 
   private static void usage() {
@@ -1128,7 +1151,7 @@ public class LLRP implements LLRPEndpoint {
       usage();
       return;
     }
-    boolean active = true;
+    boolean main_active = true;
     String ctrl = args[0];
     String cmd = args[1];
     int[] powerLevels = new int[] {80, 80, 80, 80};
@@ -1202,7 +1225,7 @@ public class LLRP implements LLRPEndpoint {
         llrp.setPowerIndexes(powerLevels);
         llrp.connect(ctrl);
         llrp.startInventoryScan();
-        while (active) {
+        while (main_active) {
           JF.sleep(100);
         }
         llrp.disconnect();
