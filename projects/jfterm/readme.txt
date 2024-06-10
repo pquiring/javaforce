@@ -2,7 +2,7 @@ Terminal client
 
 Supports:
   Telnet/ANSI codes (full color)
-  ASCII 8bit chars
+  UTF8 or ASCII8
   SSH
   SSH Key Authentication (leave password blank)
   X11 Forwarding
