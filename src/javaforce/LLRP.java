@@ -88,8 +88,15 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
-  /** Pings LLRP Controller to keep connection alive. */
+  /** Pings LLRP Controller to keep connection alive.
+   * timeout = 5000ms
+   */
   public void ping() {
+    ping(5000);
+  }
+
+  /** Pings LLRP Controller to keep connection alive. */
+  public void ping(int timeout) {
     if (llrp == null) return;
     try {
       long prevMsg = lastMsg;
@@ -100,10 +107,11 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
       int cnt = 0;
+      int maxcnt = timeout / delay;
       while (prevMsg == lastMsg) {
         JF.sleep(delay);
         cnt++;
-        if (cnt == 1000) {  //10 secs
+        if (cnt == maxcnt) {
           break;
         }
       }
