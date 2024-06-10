@@ -187,11 +187,6 @@
     <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
   </target>
 
-  <available property="have-llrp-deps" file="${lib}/llrp-${llrp-version}-deps.jar"/>
-  <target name="get-llrp-deps" unless="have-llrp-deps">
-    <get src="https://github.com/pquiring/llrp/releases/download/0.0/llrp-1.0.0.7-deps.jar" dest="${lib}/llrp-${llrp-version}-deps.jar"/>
-  </target>
-
   <available property="have-commons-lang3" file="${lib}/commons-lang3-${commons-lang3-version}.jar"/>
   <target name="get-commons-lang3" unless="have-commons-lang3">
     <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
@@ -250,7 +245,6 @@
     <antcall target="get-sshd-scp"/>
     <antcall target="get-jargs"/>
     <antcall target="get-llrp"/>
-    <antcall target="get-llrp-deps"/>
     <antcall target="get-commons-lang3"/>
     <antcall target="get-batik-all"/>
     <antcall target="get-xmlgraphics-commons"/>

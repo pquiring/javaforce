@@ -149,10 +149,6 @@
     <copyjar name="llrp" version="${llrp-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-llrp-deps">
-    <copyjar name="llrp" suffix="-deps" version="${llrp-version}" path="${jarpath}"/>
-  </target>
-
   <target name="jar-commons-lang3">
     <copyjar name="commons-lang3" version="${commons-lang3-version}" path="${jarpath}"/>
   </target>
