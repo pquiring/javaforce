@@ -1,5 +1,15 @@
 What's new...
 
+Jun 10/2024 : JF/63.0
+  - upgraded to LLRP/2.0
+    - upgraded to mina/2.x
+    - long time issue with LLRP has finally been resolved.
+    - older LLRP required mina/1.x but other projects needed 2.x so had to maintain both versions.
+    - mina/1.x was finally removed
+  - jfTerm/0.22
+    - fixed SSH support
+  - upgraded slf4j to 2.0.13 and mina to 2.2.3
+
 Jun 5/2024 : JF/62.0
   - jfKVM/2.3
     - add TPM support
