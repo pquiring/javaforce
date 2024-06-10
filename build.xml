@@ -87,9 +87,13 @@
     <antcall target="jar-sshd-sftp"/>
     <antcall target="jar-sshd-scp"/>
     <antcall target="jar-jargs"/>
+    <antcall target="jar-mina2-core"/>
     <antcall target="jar-slf4j-api"/>
     <antcall target="jar-slf4j-simple"/>
     <antcall target="jar-slf4j-nop"/>
+    <antcall target="jar-log4j-core"/>
+    <antcall target="jar-log4j-api"/>
+    <antcall target="jar-log4j-1.2-api"/>
     <antcall target="jar-batik-all"/>
     <antcall target="jar-xmlgraphics-commons"/>
     <antcall target="jar-xml-apis-ext"/>

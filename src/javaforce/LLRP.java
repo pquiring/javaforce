@@ -49,7 +49,8 @@ public class LLRP implements LLRPEndpoint {
   public static final int IMPINJ_SEARCH_MODE_DUAL_B_TO_A = 6;
 
   public boolean active;
-  public int log_id;
+  public int log;
+  public long lastMsg;
 
   public static boolean debug;
 
@@ -65,7 +66,7 @@ public class LLRP implements LLRPEndpoint {
         llrp.disconnect();  //ensure it's disconnected
       } catch (Exception e2) {}
       llrp = null;
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       return false;
     }
   }
@@ -86,14 +87,26 @@ public class LLRP implements LLRPEndpoint {
   public void ping() {
     if (llrp == null) return;
     try {
-      //enable keepalive : some readers do not support it, but it will still "test" the connection
+      long prevMsg = lastMsg;
+      //some readers do not support it, but it will still "test" the connection
       {
         KEEPALIVE msg = new KEEPALIVE();
         llrp.send(msg);
         JF.sleep(delay);
       }
+      int cnt = 0;
+      while (prevMsg == lastMsg) {
+        JF.sleep(delay);
+        cnt++;
+        if (cnt == 1000) {  //10 secs
+          break;
+        }
+      }
+      if (prevMsg == lastMsg) {
+        throw new Exception("ping:no reply");
+      }
     } catch (Exception e) {
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       active = false;
     }
   }
@@ -199,14 +212,8 @@ public class LLRP implements LLRPEndpoint {
     impinj_search_mode = mode;
   }
 
-  public void enableDebugLogging(int log_id) {
-    debug = true;
-    this.log_id = log_id;
-  }
-
-  public void disableDebugLogging() {
-    debug = false;
-    log_id = 0;
+  public void setLog(int log) {
+    this.log = log;
   }
 
   /** Starts reading RFID tags with inventory scans.
@@ -332,7 +339,7 @@ public class LLRP implements LLRPEndpoint {
       }
       return true;
     } catch (Exception e) {
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       return false;
     }
   }
@@ -455,7 +462,7 @@ public class LLRP implements LLRPEndpoint {
       }
       return true;
     } catch (Exception e) {
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       return false;
     }
   }
@@ -551,7 +558,7 @@ public class LLRP implements LLRPEndpoint {
       }
       return true;
     } catch (Exception e) {
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       return false;
     }
   }
@@ -588,14 +595,14 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(1000);
         max--;
         if (max == 0) {
-          JFLog.log(log_id, "LLRP:Error:getPowerLevels():timeout");
+          JFLog.log(log, "LLRP:Error:getPowerLevels():timeout");
           return null;
         }
       }
       reading_power_levels = false;
       return powerLevels;
     } catch (Exception e) {
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       return null;
     }
   }
@@ -632,14 +639,14 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(1000);
         max--;
         if (max == 0) {
-          JFLog.log(log_id, "LLRP:Error:getSensitivityLevels():timeout");
+          JFLog.log(log, "LLRP:Error:getSensitivityLevels():timeout");
           return null;
         }
       }
       reading_sensitivity_levels = false;
       return sensitivityLevels;
     } catch (Exception e) {
-      if (debug) JFLog.log(log_id, e);
+      if (debug) JFLog.log(log, e);
       return null;
     }
   }
@@ -976,6 +983,10 @@ public class LLRP implements LLRPEndpoint {
   }
 
   public void messageReceived(LLRPMessage llrpm) {
+    lastMsg = System.currentTimeMillis();
+    if (debug) {
+      JFLog.log("LLRP:messageReceived:" + llrpm);
+    }
     try {
       if (llrpm instanceof RO_ACCESS_REPORT) {
         int idx;
@@ -1015,7 +1026,7 @@ public class LLRP implements LLRPEndpoint {
           if (events != null && (epc_read != null || epc_scan != null)) {
             String epc = epc_read != null && epc_read.length() > 0 ? epc_read : epc_scan;
             if (debug) {
-              JFLog.log(log_id, "[" + System.currentTimeMillis() + "] EPC=" + epc + ":RSSI=" + tag_rssi);
+              JFLog.log(log, "[" + System.currentTimeMillis() + "] EPC=" + epc + ":RSSI=" + tag_rssi);
             }
             events.tagRead(epc, tag_rssi);
           }
@@ -1099,16 +1110,17 @@ public class LLRP implements LLRPEndpoint {
   }
 
   public void errorOccured(String msg) {
-    JFLog.log(log_id, "LLRP:Error:" + msg);
+    JFLog.log(log, "LLRP:Error:" + msg);
     active = false;
   }
 
   private static void usage() {
     System.out.println("usage : LLRP controller_ip cmd [args]");
-    System.out.println("where : cmd = read | powerlevels | rssilevels");
+    System.out.println("where : cmd = read | powerlevels | rssilevels | ping");
     System.out.println("      : read [power=p1[,p2[,p3[,p4]]]] [rssi=threshold] [period=ms] [gpi=port] [duration=ms]");
     System.out.println("      : powerlevels");
     System.out.println("      : rssilevels");
+    System.out.println("      : ping");
   }
 
   public static void main(String[] args) {
@@ -1193,6 +1205,7 @@ public class LLRP implements LLRPEndpoint {
         while (active) {
           JF.sleep(100);
         }
+        llrp.disconnect();
         break;
       }
       case "powerlevels": {
@@ -1211,6 +1224,7 @@ public class LLRP implements LLRPEndpoint {
           System.out.println("PowerLevel:index=" + index + ":level=" + levels[index]);
           index++;
         }
+        llrp.disconnect();
         break;
       }
       case "rssilevels": {
@@ -1229,6 +1243,15 @@ public class LLRP implements LLRPEndpoint {
           System.out.println("SensitivtyLevel:index=" + index + ":level=" + levels[index]);
           index++;
         }
+        llrp.disconnect();
+        break;
+      }
+      case "ping": {
+        LLRP llrp = new LLRP();
+        llrp.debug = true;
+        llrp.connect(ctrl);
+        llrp.ping();
+        llrp.disconnect();
         break;
       }
       default: {
@@ -1236,5 +1259,6 @@ public class LLRP implements LLRPEndpoint {
         break;
       }
     }
+    System.out.println("Done");
   }
 }
