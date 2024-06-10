@@ -146,12 +146,14 @@ public class SSH {
   public static void main(String[] args) {
     String dest = null;
     int port = 22;
+    String out = null;
     ArrayList<String> cmd = new ArrayList<>();
     String argtype = null;
     for(String arg : args) {
       if (argtype != null) {
         switch (argtype) {
           case "-p": port = Integer.valueOf(arg); break;
+          case "-o": out = arg; break;
         }
         argtype = null;
         continue;
@@ -159,6 +161,7 @@ public class SSH {
       if (arg.startsWith("-")) {
         switch (arg) {
           case "-p": argtype = arg; break;
+          case "-o": argtype = arg; break;
           default: usage();
         }
       } else {
@@ -207,22 +210,32 @@ public class SSH {
     //connect input/output relay agents
     Condition connected = () -> {return ssh.connected();};
 //    RelayStream.debug = true;
-    RelayStream rs1 = null;
-    if (opts.type == TYPE_SHELL) {
-      new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
-    }
-    RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
-    if (opts.type == TYPE_SHELL) {
-      rs1.start();
-    }
-    rs2.start();
-    try {
-      if (opts.type == TYPE_SHELL) {
-        rs1.join();
-      }
-      rs2.join();
-    } catch (Exception e) {
-      //JFLog.log(e);
+    switch (opts.type) {
+      case TYPE_SHELL:
+        RelayStream rs1 = new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
+        RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
+        rs1.start();
+        rs2.start();
+        try {
+          rs1.join();
+          rs2.join();
+        } catch (Exception e) {
+          //JFLog.log(e);
+        }
+        break;
+      case TYPE_EXEC:
+        String output = ssh.getOutput();
+        if (out != null) {
+          try {
+            FileOutputStream fos = new FileOutputStream(out);
+            fos.write(output.getBytes());
+            fos.close();
+          } catch (Exception e) {
+            JFLog.log(e);
+          }
+        }
+        System.out.print(output);
+        break;
     }
   }
 }
