@@ -571,6 +571,18 @@ public class KeyMgmt {
     }
   }
 
+  public KeyPair getKeyPair(String alias, String keypass) {
+    try {
+      Key key = (PrivateKey) keyStore.getKey(alias, keypass.toCharArray());
+      Certificate cert = keyStore.getCertificate(alias);
+      PublicKey publicKey = cert.getPublicKey();
+      return new KeyPair(publicKey, (PrivateKey) key);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   public boolean setEntry(String alias, KeyStore.Entry entry) {
     try {
       keyStore.setEntry(alias, entry, new KeyStore.PasswordProtection(storePass));

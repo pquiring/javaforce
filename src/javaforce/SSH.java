@@ -7,13 +7,31 @@ package javaforce;
 
 import java.io.*;
 import java.util.*;
+import java.security.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.common.util.net.SshdSocketAddress;
 
 public class SSH {
+
+  /** SSH Connection options. */
+  public static class Options {
+    public int type;
+    public String username;
+    public String password;
+    public KeyMgmt keys;
+    public String keyalias;
+    public String keypass;
+    public String command;  //if type == EXEC
+  }
+
+  public static final int TYPE_SHELL = 0;
+  public static final int TYPE_EXEC = 1;
+  public static final int TYPE_SUBSYSTEM = 2;
+
   private SshClient client;
   private ClientSession session;
   private ClientChannel channel;
@@ -22,29 +40,38 @@ public class SSH {
   private OutputStream out;
   private Object[] pipes;
 
-  public boolean connect(String host, int port, String username, String password) {
+  public boolean connect(String host, int port, Options options) {
     try {
       client = SshClient.setUpDefaultClient();
       client.start();
-      ConnectFuture cf = client.connect(username, host, port);
+      ConnectFuture cf = client.connect(options.username, host, port);
       session = cf.verify().getSession();
-      if (true) {
-        session.addPasswordIdentity(password);
+      if (options.password != null) {
+        session.addPasswordIdentity(options.password);
       } else {
-        //TODO : support key
-        //session.addPublicKeyIdentity(sd.sshKey);
+        session.addPublicKeyIdentity((KeyPair)options.keys.getKeyPair(options.keyalias, options.keypass));
       }
       session.auth().verify(30000);
-      channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
-      if (false) {
-        // Enable X11 forwarding
-        //channel.setXForwarding(true);
-        JFLog.log("TODO : enable x11 forwarding");
-      }
-      if (false) {
-        // Enable agent-forwarding
-        //channel.setAgentForwarding(true);
-        JFLog.log("TODO : enable agent forwarding");
+      switch (options.type) {
+        case TYPE_SHELL:
+          channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
+          //https://github.com/apache/mina-sshd/blob/master/docs/port-forwarding.md
+          if (false) {
+            // Enable X11 forwarding
+            //session.createRemotePortForwardingTracker(SshdSocketAddress.LOCALHOST_ADDRESS, SshdSocketAddress.LOCALHOST_ADDRESS);
+            JFLog.log("TODO : enable x11 forwarding");
+          }
+          if (false) {
+            // Enable agent-forwarding
+            //session.createRemotePortForwardingTracker(SshdSocketAddress.LOCALHOST_ADDRESS, SshdSocketAddress.LOCALHOST_ADDRESS);
+            JFLog.log("TODO : enable agent forwarding");
+          }
+          break;
+        case TYPE_EXEC:
+          channel = session.createExecChannel(options.command);
+          break;
+        case TYPE_SUBSYSTEM:
+          break;
       }
       pipes = createPipes();
       if (pipes == null) return false;
@@ -78,6 +105,20 @@ public class SSH {
 
   public InputStream getInputStream() {
     return in;
+  }
+
+  /** Get output from exec command. */
+  public String getOutput() {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Condition connected = () -> {return connected();};
+    RelayStream rs2 = new RelayStream(getInputStream(), baos, connected);
+    rs2.start();
+    try {
+      rs2.join();
+    } catch (Exception e) {
+      //JFLog.log(e);
+    }
+    return new String(baos.toByteArray());
   }
 
   private Object[] createPipes() {
@@ -146,17 +187,39 @@ public class SSH {
     System.out.print("Enter Password:");
     String pass = new String(System.console().readPassword());
     SSH ssh = new SSH();
-    if (!ssh.connect(host, port, user, pass)) {
+    Options opts = new Options();
+    opts.username = user;
+    opts.password = pass;
+    if (cmd.size() > 0) {
+      StringBuilder command = new StringBuilder();
+      for(String str : cmd) {
+        if (command.length() > 0) {
+          command.append(" ");
+        }
+        command.append(str);
+      }
+      opts.command = command.toString();
+      opts.type = TYPE_EXEC;
+    }
+    if (!ssh.connect(host, port, opts)) {
       error("Connection failed");
     }
     //connect input/output relay agents
     Condition connected = () -> {return ssh.connected();};
-    RelayStream rs1 = new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
+//    RelayStream.debug = true;
+    RelayStream rs1 = null;
+    if (opts.type == TYPE_SHELL) {
+      new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
+    }
     RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
-    rs1.start();
+    if (opts.type == TYPE_SHELL) {
+      rs1.start();
+    }
     rs2.start();
     try {
-      rs1.join();
+      if (opts.type == TYPE_SHELL) {
+        rs1.join();
+      }
       rs2.join();
     } catch (Exception e) {
       //JFLog.log(e);

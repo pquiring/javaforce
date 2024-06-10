@@ -13,6 +13,9 @@ public class RelayStream extends Thread {
   private InputStream in;
   private OutputStream out;
   private Condition connected;
+
+  public static boolean debug = false;
+
   public RelayStream(InputStream in, OutputStream out, Condition connected) {
     this.in = in;
     this.out = out;
@@ -32,6 +35,9 @@ public class RelayStream extends Thread {
       }
     } catch (Exception e) {
       //JFLog.log(e);
+    }
+    if (debug) {
+      JFLog.log("RelayStream done");
     }
   }
 }
