@@ -32,6 +32,8 @@ public class SSH {
   public static final int TYPE_EXEC = 1;
   public static final int TYPE_SUBSYSTEM = 2;
 
+  public static boolean debug = false;
+
   private SshClient client;
   private ClientSession session;
   private ClientChannel channel;
@@ -95,7 +97,7 @@ public class SSH {
     try {if (in != null) {in.close(); in = null;}} catch(Exception e) {}
   }
 
-  public boolean connected() {
+  public boolean isConnected() {
     return client.isOpen();
   }
 
@@ -110,7 +112,7 @@ public class SSH {
   /** Get output from exec command. */
   public String getOutput() {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    Condition connected = () -> {return connected();};
+    Condition connected = () -> {return isConnected();};
     RelayStream rs2 = new RelayStream(getInputStream(), baos, connected);
     rs2.start();
     try {
@@ -119,6 +121,43 @@ public class SSH {
       //JFLog.log(e);
     }
     return new String(baos.toByteArray());
+  }
+
+  /** Execute commands and return output.
+   * Commands should cause connection to terminate or function will never return.
+   */
+  public String script(String[] cmds) {
+    InputStream is = getInputStream();
+    OutputStream os = getOutputStream();
+    try {
+      for(String cmd : cmds) {
+        if (debug) JFLog.log(cmd);
+        os.write(cmd.getBytes());
+        os.write("\r\n".getBytes());
+      }
+      StringBuilder sb = new StringBuilder();
+      byte[] data = new byte[1024];
+      while (isConnected()) {
+        int read = is.read(data);
+        if (debug) JFLog.log("read=" + read);
+        if (read == -1) break;
+        if (read > 0) {
+          sb.append(new String(data, 0, read));
+        }
+      }
+      while (is.available() > 0) {
+        int read = is.read(data);
+        if (debug) JFLog.log("read=" + read);
+        if (read == -1) break;
+        if (read > 0) {
+          sb.append(new String(data, 0, read));
+        }
+      }
+      return sb.toString();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return null;
   }
 
   private Object[] createPipes() {
@@ -149,6 +188,7 @@ public class SSH {
     String out = null;
     ArrayList<String> cmd = new ArrayList<>();
     String argtype = null;
+    boolean script = false;
     for(String arg : args) {
       if (argtype != null) {
         switch (argtype) {
@@ -162,6 +202,7 @@ public class SSH {
         switch (arg) {
           case "-p": argtype = arg; break;
           case "-o": argtype = arg; break;
+          case "-s": script = true; break;
           default: usage();
         }
       } else {
@@ -193,7 +234,7 @@ public class SSH {
     Options opts = new Options();
     opts.username = user;
     opts.password = pass;
-    if (cmd.size() > 0) {
+    if (cmd.size() > 0 && !script) {
       StringBuilder command = new StringBuilder();
       for(String str : cmd) {
         if (command.length() > 0) {
@@ -208,19 +249,24 @@ public class SSH {
       error("Connection failed");
     }
     //connect input/output relay agents
-    Condition connected = () -> {return ssh.connected();};
+    Condition connected = () -> {return ssh.isConnected();};
+//    SSH.debug = true;
 //    RelayStream.debug = true;
     switch (opts.type) {
       case TYPE_SHELL:
-        RelayStream rs1 = new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
-        RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
-        rs1.start();
-        rs2.start();
-        try {
-          rs1.join();
-          rs2.join();
-        } catch (Exception e) {
-          //JFLog.log(e);
+        if (script) {
+          System.out.println(ssh.script(cmd.toArray(JF.StringArrayType)));
+        } else {
+          RelayStream rs1 = new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
+          RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
+          rs1.start();
+          rs2.start();
+          try {
+            rs1.join();
+            rs2.join();
+          } catch (Exception e) {
+            //JFLog.log(e);
+          }
         }
         break;
       case TYPE_EXEC:
