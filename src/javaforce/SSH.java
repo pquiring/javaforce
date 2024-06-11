@@ -203,11 +203,21 @@ public class SSH {
     System.exit(2);
   }
 
+  private static void output(String file, String output) {
+    try {
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(output.getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   /** SSH cli client */
   public static void main(String[] args) {
     String dest = null;
     int port = 22;
-    String out = null;
+    String outfile = null;
     ArrayList<String> cmd = new ArrayList<>();
     String argtype = null;
     boolean script = false;
@@ -215,7 +225,7 @@ public class SSH {
       if (argtype != null) {
         switch (argtype) {
           case "-p": port = Integer.valueOf(arg); break;
-          case "-o": out = arg; break;
+          case "-o": outfile = arg; break;
         }
         argtype = null;
         continue;
@@ -277,7 +287,11 @@ public class SSH {
     switch (opts.type) {
       case TYPE_SHELL:
         if (script) {
-          System.out.println(ssh.script(cmd.toArray(JF.StringArrayType)));
+          String output = ssh.script(cmd.toArray(JF.StringArrayType));
+          System.out.println(output);
+          if (outfile != null) {
+            output(outfile, output);
+          }
         } else {
           RelayStream rs1 = new RelayStream(Console.getInputStream(), ssh.getOutputStream(), connected);
           RelayStream rs2 = new RelayStream(ssh.getInputStream(), Console.getOutputStream(), connected);
@@ -293,14 +307,8 @@ public class SSH {
         break;
       case TYPE_EXEC:
         String output = ssh.getOutput();
-        if (out != null) {
-          try {
-            FileOutputStream fos = new FileOutputStream(out);
-            fos.write(output.getBytes());
-            fos.close();
-          } catch (Exception e) {
-            JFLog.log(e);
-          }
+        if (outfile != null) {
+          output(outfile, output);
         }
         System.out.print(output);
         break;
