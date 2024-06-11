@@ -125,10 +125,31 @@ public class SSH {
 
   /** Execute commands and return output.
    * Commands should cause connection to terminate or function will never return.
+   * Timeout = 1 min
+   * @param cmds = commands to execute
    */
   public String script(String[] cmds) {
+    return script(cmds, 60 * 1000);
+  }
+
+  /** Execute commands and return output.
+   * Commands should cause connection to terminate or function will never return.
+   * @param cmds = commands to execute
+   * @param timeout = timeout in ms (0 = disable)
+   */
+  public String script(String[] cmds, int timeout) {
     InputStream is = getInputStream();
     OutputStream os = getOutputStream();
+    if (timeout > 0) {
+      Timer timer = new Timer();
+      timer.schedule(new TimerTask() {
+        public void run() {
+          if (client != null) {
+            disconnect();
+          }
+        }
+      }, timeout);
+    }
     try {
       for(String cmd : cmds) {
         if (debug) JFLog.log(cmd);
@@ -153,6 +174,7 @@ public class SSH {
           sb.append(new String(data, 0, read));
         }
       }
+      disconnect();
       return sb.toString();
     } catch (Exception e) {
       JFLog.log(e);
