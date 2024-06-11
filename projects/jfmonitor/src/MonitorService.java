@@ -13,7 +13,8 @@ public class MonitorService extends Thread {
   public static MonitorService monitorService;
   public static APIService apiService;
   public static Server server;
-  public static QueryClients query;
+  public static QueryClients queryClients;
+  public static QueryHardware queryHardware;
   public static Client client;
 
   private static PacketCapture capture;
@@ -92,7 +93,9 @@ public class MonitorService extends Thread {
   public static void startServer() {
     server = new Server();
     server.start();
-    query = new QueryClients();
-    query.start();
+    queryClients = new QueryClients();
+    queryClients.start();
+    queryHardware = new QueryHardware();
+    queryHardware.start();
   }
 }

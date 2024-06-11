@@ -8,6 +8,83 @@ import java.io.Serializable;
 public class Device implements Serializable {
   public static final long serialVersionUID = 1;
 
+  public int type;
   public String mac;
   public String desc;
+
+  public String user;
+  public String pass;
+
+  //hardware config
+  public Hardware hardware;
+
+  public static final int TYPE_UNKNOWN = 0;
+  public static final int TYPE_CISCO = 1;
+
+  public String getip() {
+    return Config.current.getip(mac);
+  }
+
+  public void resetValid() {
+    for(Port port : hardware.ports) {
+      port.valid = false;
+    }
+    for(VLAN vlan : hardware.vlans) {
+      vlan.valid = false;
+    }
+  }
+
+  public void removeInvalid() {
+    Port[] ps = hardware.ports.toArray(new Port[0]);
+    for(Port port : ps) {
+      if (!port.valid) {
+        hardware.ports.remove(port);
+      }
+    }
+    VLAN[] vs = hardware.vlans.toArray(new VLAN[0]);
+    for(VLAN vlan : vs) {
+      if (!vlan.valid) {
+        hardware.vlans.remove(vlan);
+      }
+    }
+  }
+
+  public Port getPort(String id) {
+    for(Port port : hardware.ports) {
+      if (port.id.equals(id)) {
+        port.valid = true;
+        return port;
+      }
+    }
+    Port port = new Port();
+    hardware.ports.add(port);
+    port.valid = true;
+    return port;
+  }
+
+  public VLAN getVLAN(String id) {
+    for(VLAN vlan : hardware.vlans) {
+      if (vlan.id.equals(id)) {
+        vlan.valid = true;
+        return vlan;
+      }
+    }
+    VLAN vlan = new VLAN();
+    hardware.vlans.add(vlan);
+    vlan.valid = true;
+    return vlan;
+  }
+
+  public Group getGroup(String id) {
+    for(Group group : hardware.groups) {
+      if (group.id.equals(id)) {
+        group.valid = true;
+        return group;
+      }
+    }
+    Group group = new Group();
+    hardware.groups.add(group);
+    group.valid = true;
+    return group;
+  }
 }

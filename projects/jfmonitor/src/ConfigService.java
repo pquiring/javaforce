@@ -175,8 +175,10 @@ public class ConfigService implements WebUIHandler {
       case "": right = serverHome(); break;
       case "status": right = serverStatus(); break;
       case "monitor_network": right = serverMonitorNetwork(); break;
+      case "monitor_hardware": right = serverMonitorHardware(); break;
       case "monitor_storage": right = serverMonitorStorage(); break;
       case "config_network": right = serverConfigNetwork(); break;
+      case "config_hardware": right = serverConfigHardware(); break;
       case "config_storage": right = serverConfigStorage(); break;
       case "config": right = serverConfig(); break;
       case "logs": right = serverLogs(null); break;
@@ -197,60 +199,66 @@ public class ConfigService implements WebUIHandler {
     ListBox list = new ListBox();
     list.setName("list");
     //add menu options
-    Button opt1 = new Button("Status");
-    list.add(opt1);
-    opt1.setWidth(leftSize);
-    opt1.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_status = new Button("Status");
+    list.add(opt_status);
+    opt_status.setWidth(leftSize);
+    opt_status.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "status");
       webclient.refresh();
     });
-    Button opt2 = new Button("Network Monitor");
-    list.add(opt2);
-    opt2.setWidth(leftSize);
-    opt2.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_net_mon = new Button("Network Monitor");
+    list.add(opt_net_mon);
+    opt_net_mon.setWidth(leftSize);
+    opt_net_mon.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "monitor_network");
       webclient.refresh();
     });
-    Button opt3 = new Button("Storage Monitor");
-    list.add(opt3);
-    opt3.setWidth(leftSize);
-    opt3.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_hw_mon = new Button("Monitor Hardware");
+    list.add(opt_hw_mon);
+    opt_hw_mon.setWidth(leftSize);
+    opt_hw_mon.addClickListener( (MouseEvent me, Component c) -> {
+      WebUIClient webclient = c.getClient();
+      webclient.setProperty("screen", "monitor_hardware");
+      webclient.refresh();
+    });
+    Button opt_storage_mon = new Button("Storage Monitor");
+    list.add(opt_storage_mon);
+    opt_storage_mon.setWidth(leftSize);
+    opt_storage_mon.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "monitor_storage");
       webclient.refresh();
     });
-    Button opt4 = new Button("Setup Network");
-    list.add(opt4);
-    opt4.setWidth(leftSize);
-    opt4.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_setup_net = new Button("Setup Network");
+    list.add(opt_setup_net);
+    opt_setup_net.setWidth(leftSize);
+    opt_setup_net.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "config_network");
       webclient.refresh();
     });
-/*
-    Button opt5 = new Button("Setup Storage");
-    list.add(opt5);
-    opt5.setWidth(leftSize);
-    opt5.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_setup_hw = new Button("Setup Hardware");
+    list.add(opt_setup_hw);
+    opt_setup_hw.setWidth(leftSize);
+    opt_setup_hw.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "config_storage");
+      webclient.setProperty("screen", "config_hardware");
       webclient.refresh();
     });
-*/
-    Button opt6 = new Button("Configure");
-    list.add(opt6);
-    opt6.setWidth(leftSize);
-    opt6.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_cfg = new Button("Configure");
+    list.add(opt_cfg);
+    opt_cfg.setWidth(leftSize);
+    opt_cfg.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "config");
       webclient.refresh();
     });
-    Button opt7 = new Button("Logs");
-    list.add(opt7);
-    opt7.setWidth(leftSize);
-    opt7.addClickListener( (MouseEvent me, Component c) -> {
+    Button opt_logs = new Button("Logs");
+    list.add(opt_logs);
+    opt_logs.setWidth(leftSize);
+    opt_logs.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
       webclient.setProperty("screen", "logs");
       webclient.refresh();
@@ -552,6 +560,47 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  public Panel serverConfigHardware() {
+    Panel panel = new ScrollPanel();
+    Row row = new Row();
+    Label label = new Label("jfMonitor/" + Config.AppVersion);
+    row.add(label);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Type:"));
+    ComboBox type = new ComboBox();
+    type.add("Cisco", "Cisco");
+    row.add(type);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Username:"));
+    TextField user = new TextField("");
+    row.add(user);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Password:"));
+    TextField pass = new TextField("");
+    pass.setPassword(true);
+    row.add(pass);
+    panel.add(row);
+
+    row = new Row();
+    Button add = new Button("Add");
+    row.add(add);
+    panel.add(row);
+
+    add.addClickListener((me, cmp) -> {
+      //TODO
+    });
+
+    //TODO : list all known hardware (button to delete each one) (or do that in other screen)
+
+    return panel;
+  }
+
   public Panel serverConfigStorage() {
     Panel panel = new Panel();
     Row row = new Row();
@@ -844,6 +893,14 @@ public class ConfigService implements WebUIHandler {
       }
     }.start();
 */
+
+    return panel;
+  }
+
+  public Panel serverMonitorHardware() {
+    Panel panel = new ScrollPanel();
+
+    //TODO : show all hardware in a table
 
     return panel;
   }

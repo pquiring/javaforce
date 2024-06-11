@@ -118,7 +118,35 @@ public class Config implements Serializable {
     return null;
   }
 
+  public Device[] getDevices() {
+    return devices.toArray(new Device[0]);
+  }
+
   public void addDevice(Device dev) {
     devices.add(dev);
+  }
+
+  public String getmac(String ip) {
+    for(Network nw : Config.current.getNetworks()) {
+      for(IP nwip : nw.ips) {
+        if (nwip.host.equals(ip)) {
+          String mac = nwip.mac;
+          return mac;
+        }
+      }
+    }
+    return null;
+  }
+
+  public String getip(String mac) {
+    for(Network nw : Config.current.getNetworks()) {
+      for(IP nwip : nw.ips) {
+        if (nwip.mac.equals(mac)) {
+          String ip = nwip.host;
+          return ip;
+        }
+      }
+    }
+    return null;
   }
 }

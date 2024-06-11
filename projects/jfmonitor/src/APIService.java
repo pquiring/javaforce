@@ -37,22 +37,17 @@ public class APIService extends Thread implements WebHandler {
         }
       }
       if (ip == null) throw new Exception("bad args");
-      for(Network nw : Config.current.getNetworks()) {
-        for(IP nwip : nw.ips) {
-          if (nwip.host.equals(ip)) {
-            String mac = nwip.mac;
-            StringBuilder sb = new StringBuilder();
-            if (html) {
-              sb.append("<body style='margin: 0px; padding: 0px; overflow: hidden;'>");
-            }
-            sb.append(mac);
-            if (html) {
-              sb.append("</body>");
-            }
-            try {res.write(sb.toString().getBytes());} catch (Exception e) {}
-          }
-        }
+      String mac = Config.current.getmac(ip);
+      if (mac == null) mac = "00:00:00:00:00:00";
+      StringBuilder sb = new StringBuilder();
+      if (html) {
+        sb.append("<body style='margin: 0px; padding: 0px; overflow: hidden;'>");
       }
+      sb.append(mac);
+      if (html) {
+        sb.append("</body>");
+      }
+      try {res.write(sb.toString().getBytes());} catch (Exception e) {}
     } catch (Exception e) {
       try {res.write("00:00:00:00:00:00".getBytes());} catch (Exception e2) {}
     }
