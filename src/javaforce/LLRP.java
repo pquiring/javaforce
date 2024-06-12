@@ -1126,6 +1126,15 @@ public class LLRP implements LLRPEndpoint {
       else if (llrpm instanceof DISABLE_ROSPEC_RESPONSE) {
         //TODO
       }
+      else if (llrpm instanceof ADD_ACCESSSPEC_RESPONSE) {
+        //TODO
+      }
+      else if (llrpm instanceof ENABLE_ACCESSSPEC_RESPONSE) {
+        //TODO
+      }
+      else if (llrpm instanceof DISABLE_ACCESSSPEC_RESPONSE) {
+        //TODO
+      }
       else if (llrpm instanceof ERROR_MESSAGE) {
         ERROR_MESSAGE msg = (ERROR_MESSAGE)llrpm;
         //TODO : handle error message
