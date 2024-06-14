@@ -54,7 +54,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     //init Paths
     Paths.init();
     log = Config.nextLog();
-    JFLog.append(JFLog.DEFAULT_LOG, Paths.logsPath + "/system.log", false);  //default log (0)
+    JFLog.append(JFLog.DEFAULT, Paths.logsPath + "/system.log", false);  //default log (0)
     JFLog.append(log, Paths.logsPath + "/service.log", false);
     JFLog.setRetention(log, 5);
     JFLog.log(log, "jfDVR/" + ConfigService.version + " starting...");

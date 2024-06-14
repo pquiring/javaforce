@@ -23,7 +23,13 @@ public class JFLog {
   private static boolean useTimestamp = false;
   private static long timestampBase;
 
-  public static final int DEFAULT_LOG = 0;
+  //recommended trace ids
+  public static final int DEFAULT = 0;
+  public static final int TRACE = 1;
+  public static final int DEBUG = 2;
+  public static final int INFO = 3;
+  public static final int WARN = 4;
+  public static final int ERROR = 5;
 
   private static class TraceException extends Exception {
     public TraceException(String msg) {
@@ -57,7 +63,7 @@ public class JFLog {
   }
 
   public static boolean init(String filename, boolean stdout) {
-    return init(DEFAULT_LOG, filename, false, stdout ? System.out : null);
+    return init(DEFAULT, filename, false, stdout ? System.out : null);
   }
 
   public static boolean init(int id, String filename, boolean stdout) {
@@ -65,7 +71,7 @@ public class JFLog {
   }
 
   public static boolean append(String filename, boolean stdout) {
-    return init(DEFAULT_LOG, filename, true, stdout ? System.out : null);
+    return init(DEFAULT, filename, true, stdout ? System.out : null);
   }
 
   public static boolean append(int id, String filename, boolean stdout) {
@@ -84,7 +90,7 @@ public class JFLog {
   }
 
   public static void setRetention(int days) {
-    setRetention(DEFAULT_LOG, days);
+    setRetention(DEFAULT, days);
   }
 
   private static final long KB = 1024;
@@ -110,7 +116,7 @@ public class JFLog {
    * Once the file is greater the log will rotate()
    */
   public static void setMaxFilesize(long size) {
-    setMaxFilesize(DEFAULT_LOG, size);
+    setMaxFilesize(DEFAULT, size);
   }
 
   public static boolean close(int id) {
@@ -132,7 +138,7 @@ public class JFLog {
   }
 
   public static boolean close() {
-    return close(DEFAULT_LOG);
+    return close(DEFAULT);
   }
 
   /** Uses a timestamp instead of date/time for each message logged.
@@ -145,7 +151,7 @@ public class JFLog {
   }
 
   public static boolean log(String msg) {
-    return log(DEFAULT_LOG, msg);
+    return log(DEFAULT, msg);
   }
 
   private static final long ms_per_day = 24 * 60 * 60 * 1000;
@@ -266,11 +272,11 @@ public class JFLog {
 
   /** Rotates log file. */
   public static boolean rotate() {
-    return rotate(DEFAULT_LOG);
+    return rotate(DEFAULT);
   }
 
   public static boolean log(Throwable t) {
-    return log(DEFAULT_LOG, t);
+    return log(DEFAULT, t);
   }
 
   public static boolean log(int id, Throwable t) {
@@ -293,7 +299,7 @@ public class JFLog {
   }
 
   public static boolean log(String msg, Throwable t) {
-    return log(DEFAULT_LOG, msg, t);
+    return log(DEFAULT, msg, t);
   }
 
   public static boolean log(int id, String msg, Throwable t) {
@@ -315,7 +321,7 @@ public class JFLog {
   }
 
   public static void setEnabled(boolean state) {
-    setEnabled(DEFAULT_LOG, state);
+    setEnabled(DEFAULT, state);
   }
 
   /**
@@ -343,7 +349,7 @@ public class JFLog {
    * NOTE: write() doesn't cycle log files.
    */
   public static boolean write(byte data[], int off, int len) {
-    return write(DEFAULT_LOG, data, off, len);
+    return write(DEFAULT, data, off, len);
   }
 
   public static OutputStream getOutputStream(int id) {
@@ -358,7 +364,7 @@ public class JFLog {
   }
 
   public static OutputStream getOutputStream() {
-    return getOutputStream(DEFAULT_LOG);
+    return getOutputStream(DEFAULT);
   }
 
   public static void logTrace(int id, String msg) {
@@ -373,7 +379,7 @@ public class JFLog {
     try {
       throw new TraceException(msg);
     } catch (Exception e) {
-      log(DEFAULT_LOG, e);
+      log(DEFAULT, e);
     }
   }
 }

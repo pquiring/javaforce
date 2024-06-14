@@ -28,6 +28,7 @@
     <include name="sshd-sftp.jar"/>
     <include name="sshd-scp.jar"/>
     <include name="batik-all.jar"/>
+    <include name="slf4j-api.jar"/>
   </fileset>
 
   <import file="base.xml"/>
