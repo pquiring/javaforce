@@ -92,6 +92,8 @@ public class SSH {
   }
 
   public void disconnect() {
+    try {if (channel != null) {channel.close(); channel = null;}} catch(Exception e) {}
+    try {if (session != null) {session.close(); session = null;}} catch(Exception e) {}
     try {if (client != null) {client.close(); client = null;}} catch(Exception e) {}
     try {if (out != null) {out.close(); out = null;}} catch(Exception e) {}
     try {if (in != null) {in.close(); in = null;}} catch(Exception e) {}
@@ -140,8 +142,9 @@ public class SSH {
   public String script(String[] cmds, int timeout) {
     InputStream is = getInputStream();
     OutputStream os = getOutputStream();
+    Timer timer = null;
     if (timeout > 0) {
-      Timer timer = new Timer();
+      timer = new Timer();
       timer.schedule(new TimerTask() {
         public void run() {
           if (client != null) {
@@ -175,9 +178,15 @@ public class SSH {
         }
       }
       disconnect();
+      if (timer != null) {
+        timer.cancel();
+      }
       return sb.toString();
     } catch (Exception e) {
       JFLog.log(e);
+    }
+    if (timer != null) {
+      timer.cancel();
     }
     return null;
   }
@@ -319,5 +328,6 @@ public class SSH {
         System.out.print(output);
         break;
     }
+    ssh.disconnect();
   }
 }
