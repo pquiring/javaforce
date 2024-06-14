@@ -275,7 +275,7 @@ public class Cisco {
       String[] f = ln.split(" ");
       switch(f[0]) {
         case "version":
-          device.hardware.version = ln;
+          device.hardware.version = f[1];
           break;
         case "interface":
           int idx = indexOfDigit(f[1]);
@@ -303,6 +303,9 @@ public class Cisco {
                     if (port != null) {
                       port.setVLANs(f[4].split(","));
                     }
+                    if (group != null) {
+                      group.setVLANs(f[4].split(","));
+                    }
                   }
                   break;
               }
@@ -310,6 +313,9 @@ public class Cisco {
             case "mode":
               if (port != null) {
                 port.mode = f[2];  //trunk or access
+              }
+              if (group != null) {
+                group.mode = f[2];  //trunk or access
               }
               break;
           }
@@ -324,6 +330,10 @@ public class Cisco {
             port.ip = f[2];
             port.mask = f[3];
           }
+          if (group != null) {
+            group.ip = f[2];
+            group.mask = f[3];
+          }
           if (vlan != null) {
             vlan.ip = f[2];
             vlan.mask = f[3];
@@ -334,9 +344,15 @@ public class Cisco {
             case "ip":
               if (port != null) {
                 port.ip = null;
+                port.mask = null;
+              }
+              if (group != null) {
+                group.ip = null;
+                group.mask = null;
               }
               if (vlan != null) {
                 vlan.ip = null;
+                vlan.mask = null;
               }
               break;
           }

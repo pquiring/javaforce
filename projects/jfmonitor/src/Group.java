@@ -12,5 +12,20 @@ public class Group implements Serializable {
   public transient boolean valid;
 
   public String id;
-  public ArrayList<String> ports = new ArrayList<>();
+
+  //interface
+  public String ip, mask;
+
+  //switchport
+  public String mode;  //trunk or access
+  public ArrayList<String> vlans = new ArrayList<>();  //allowed vlans
+  public String vlan;  //native vlan
+  public String group;
+
+  public void setVLANs(String[] _vlans) {
+    vlans.clear();
+    for(String vlan : _vlans) {
+      vlans.add(vlan);
+    }
+  }
 }

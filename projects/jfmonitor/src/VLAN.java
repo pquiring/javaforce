@@ -11,5 +11,8 @@ public class VLAN implements Serializable {
   public transient boolean valid;
 
   public String id;
-  public String ip, mask;  //interface IP
+  public String name;
+
+  //interface
+  public String ip, mask;
 }

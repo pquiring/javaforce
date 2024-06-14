@@ -29,6 +29,9 @@ public class Device implements Serializable {
     for(Port port : hardware.ports) {
       port.valid = false;
     }
+    for(Group group : hardware.groups) {
+      group.valid = false;
+    }
     for(VLAN vlan : hardware.vlans) {
       vlan.valid = false;
     }
@@ -39,6 +42,12 @@ public class Device implements Serializable {
     for(Port port : ps) {
       if (!port.valid) {
         hardware.ports.remove(port);
+      }
+    }
+    Group[] gs = hardware.groups.toArray(new Group[0]);
+    for(Group group : gs) {
+      if (!group.valid) {
+        hardware.groups.remove(group);
       }
     }
     VLAN[] vs = hardware.vlans.toArray(new VLAN[0]);
