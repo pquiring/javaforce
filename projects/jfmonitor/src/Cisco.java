@@ -257,6 +257,7 @@ public class Cisco {
     if (!ssh.connect(ip, 22, options)) return false;
     String cfg = ssh.getOutput();
     if (cfg == null || cfg.length() == 0) return false;
+    device.hardware.config = cfg;
     String[] lns = cfg.replaceAll("\\r", "").split("\n");
     VLAN vlan = null;
     Group group = null;
