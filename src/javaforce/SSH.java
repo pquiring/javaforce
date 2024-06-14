@@ -235,6 +235,7 @@ public class SSH {
           case "-p": argtype = arg; break;
           case "-o": argtype = arg; break;
           case "-s": script = true; break;
+          case "-debug": debug = true; break;
           default: usage();
         }
       } else {
@@ -281,9 +282,14 @@ public class SSH {
       error("Connection failed");
     }
     //connect input/output relay agents
-    Condition connected = () -> {return ssh.isConnected();};
-//    SSH.debug = true;
-//    RelayStream.debug = true;
+    Condition connected = () -> {
+      boolean conn = ssh.isConnected();
+      if (debug) JFLog.log("isConnected=" + conn);
+      return conn;
+    };
+    if (debug) {
+      RelayStream.debug = true;
+    }
     switch (opts.type) {
       case TYPE_SHELL:
         if (script) {
