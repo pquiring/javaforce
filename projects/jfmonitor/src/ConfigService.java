@@ -270,10 +270,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Button popup_b_save = new Button("Save");
-    row.add(popup_b_save);
-    Button popup_b_cancel = new Button("Cancel");
-    row.add(popup_b_cancel);
+    Button b_save = new Button("Save");
+    row.add(b_save);
+    Button b_cancel = new Button("Cancel");
+    row.add(b_cancel);
 
     row = new Row();
     panel.add(row);
@@ -296,7 +296,7 @@ public class ConfigService implements WebUIHandler {
       vlan.setText(port.getVLAN());
     };
 
-    popup_b_save.addClickListener((MouseEvent e, Component button) -> {
+    b_save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
@@ -323,11 +323,11 @@ public class ConfigService implements WebUIHandler {
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
-    popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
+    b_cancel.addClickListener((MouseEvent e, Component button) -> {
       panel.setVisible(false);
     });
     panel.setOnClose( () -> {
-      popup_b_cancel.click();
+      b_cancel.click();
     });
     return panel;
   }
@@ -1186,6 +1186,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(addGroup);
       Button removeGroup = new Button("Remove Group");
       tools.add(removeGroup);
+      Button save = new Button("Save");
+      tools.add(save);
       Button delete = new Button("Delete");
       tools.add(delete);
 
@@ -1245,6 +1247,11 @@ public class ConfigService implements WebUIHandler {
         ui.device = device;
         ui.port_init.run();
         ui.port_popup.setVisible(true);
+      });
+
+      save.addClickListener((me, cmp) -> {
+        device.save();
+        msg.setText("Config saved!");
       });
 
       delete.addClickListener((me, cmp) -> {

@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 import java.util.*;
 
+import javaforce.*;
+
 public class Device implements Serializable, Comparable<Device>, Cloneable {
   public static final long serialVersionUID = 1;
 
@@ -172,6 +174,15 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
       selection.remove(port);
     } else {
       selection.add(port);
+    }
+  }
+
+  public void save() {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        cisco.saveConfig(this);
+        break;
     }
   }
 

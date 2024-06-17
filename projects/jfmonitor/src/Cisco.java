@@ -17,6 +17,10 @@ public class Cisco {
     String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan add " + vlan + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("addVLANs:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -31,10 +35,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan remove " + vlan + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("removeLANs:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -52,6 +59,10 @@ public class Cisco {
     String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan " + vlans + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setVLANs:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -66,10 +77,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";switchport trunk native vlan " + vlan + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setVLAN:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -84,10 +98,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;vlan " + vid + ";name " + name + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("createVLAN:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -102,10 +119,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;no vlan " + vid + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("removeVLAN:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -120,10 +140,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + iid + ";ip addr " + iface_ip + " " + iface_mask + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("addInterfaceIP:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -138,10 +161,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + iid + ";no ip;exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("removeInterfaceIP:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -172,9 +198,12 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setSwitchMode:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -191,10 +220,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface port-channel " + gid + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("createGroup:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -210,10 +242,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;no interface port-channel " + gid + ";exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("removeGroup:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -229,10 +264,13 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";channel-group " + gid + " mode on;exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("groupAddPort:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
@@ -248,10 +286,35 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";no channel-group;exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
+    if (debug) {
+      JFLog.log("groupRemovePort:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean saveConfig(Device device) {
+    //interface # ; no channel-group #
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "copy running-config startup-config;;exit";  //enter = confirm filename
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("saveConfig:" + cmds);
+      return true;
+    }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
     if (result == null) return false;
