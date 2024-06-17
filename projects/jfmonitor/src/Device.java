@@ -71,6 +71,16 @@ public class Device implements Serializable {
     return port;
   }
 
+  public Port getPortByNumber(String number) {
+    for(Port port : hardware.ports) {
+      if (port.getPortNumber().equals(number)) {
+        port.valid = true;
+        return port;
+      }
+    }
+    return null;
+  }
+
   public VLAN getVLAN(String id) {
     for(VLAN vlan : hardware.vlans) {
       if (vlan.id.equals(id)) {

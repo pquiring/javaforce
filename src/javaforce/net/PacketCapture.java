@@ -156,24 +156,7 @@ public class PacketCapture {
   }
 
   public static boolean valid_ip(String ip) {
-    String[] p = ip.split("[.]");
-    if (p.length != 4) return false;
-    int[] o = new int[4];
-    for(int a=0;a<4;a++) {
-      String s = p[a];
-      if (s.length() == 0) return false;
-      if (s.charAt(0) == '0' && s.length() > 1) return false;  //leading zero
-      if (s.length() > 3) return false;
-      try {
-        int value = Integer.valueOf(s);
-        if (value < 0 || value > 255) return false;
-        o[a] = value;
-      } catch (Exception e) {
-        return false;
-      }
-    }
-    if (o[0] == 0) return false;
-    return true;
+    return IP4.isIP(ip);
   }
 
   public static byte[] decode_ip(String ip) {

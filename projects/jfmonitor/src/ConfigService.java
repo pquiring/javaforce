@@ -56,6 +56,16 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
+  private static class UI {
+    public PopupPanel message_popup;
+    public Label message_message;
+
+    public PopupPanel confirm_popup;
+    public Label confirm_message;
+    public Button confirm_button;
+    public Runnable confirm_action;
+  }
+
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     switch (Config.current.mode) {
       case "install": return installPanel();
@@ -161,8 +171,83 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private PopupPanel messagePopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Message");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label popup_msg = new Label("Message");
+    row.add(popup_msg);
+
+    row = new Row();
+    panel.add(row);
+    Button popup_b_action = new Button("Okay");
+    row.add(popup_b_action);
+
+    popup_b_action.addClickListener((MouseEvent e, Component button) -> {
+      ui.message_popup.setVisible(false);
+    });
+    ui.message_message = popup_msg;
+    panel.setOnClose( () -> {
+      popup_b_action.click();
+    });
+    return panel;
+  }
+
+  private PopupPanel confirmPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Confirm");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label popup_msg = new Label("Message");
+    row.add(popup_msg);
+
+    row = new Row();
+    panel.add(row);
+    Label popup_label = new Label("Are you sure?");
+    row.add(popup_label);
+
+    row = new Row();
+    panel.add(row);
+    Button popup_b_action = new Button("Action");
+    row.add(popup_b_action);
+    Button popup_b_cancel = new Button("Cancel");
+    row.add(popup_b_cancel);
+
+    popup_b_action.addClickListener((MouseEvent e, Component button) -> {
+      if (ui.confirm_action != null) {
+        ui.confirm_action.run();
+      }
+      ui.confirm_popup.setVisible(false);
+    });
+    popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
+      panel.setVisible(false);
+    });
+    ui.confirm_message = popup_msg;
+    ui.confirm_button = popup_b_action;
+    panel.setOnClose( () -> {
+      popup_b_cancel.click();
+    });
+    return panel;
+  }
+
   public Panel serverPanel(WebUIClient webclient) {
     Panel panel = new Panel();
+
+    UI ui = new UI();
+
+    ui.message_popup = messagePopupPanel(ui);
+    panel.add(ui.message_popup);
+
+    ui.confirm_popup = confirmPopupPanel(ui);
+    panel.add(ui.confirm_popup);
+
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");
     int leftSize = 128;
@@ -175,7 +260,7 @@ public class ConfigService implements WebUIHandler {
       case "": right = serverHome(); break;
       case "status": right = serverStatus(); break;
       case "monitor_network": right = serverMonitorNetwork(); break;
-      case "monitor_hardware": right = serverMonitorHardware(); break;
+      case "monitor_hardware": right = serverMonitorHardware(ui); break;
       case "monitor_storage": right = serverMonitorStorage(); break;
       case "config_network": right = serverConfigNetwork(); break;
       case "config_hardware": right = serverConfigHardware(); break;
@@ -618,6 +703,11 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       msg.setText("Connecting...");
       String _host = device.getText();
+      if (!IP4.isIP(_host)) {
+        errmsg.setText("Invalid IP address");
+        msg.setText("");
+        return;
+      }
       String _mac = Config.current.getmac(_host);
       if (_mac == null) {
         errmsg.setText("Device mac not found");
@@ -648,9 +738,8 @@ public class ConfigService implements WebUIHandler {
       _device.hardware.pass = _pass;
       msg.setText("Device added");
       Config.save();
+      QueryHardware.scan_now = true;
     });
-
-    //TODO : list all known hardware (button to delete each one) (or do that in other screen)
 
     return panel;
   }
@@ -952,7 +1041,7 @@ public class ConfigService implements WebUIHandler {
   private static final int CELL_SIZE_X = 48;
   private static final int CELL_SIZE_Y = 32;
 
-  public Panel serverMonitorHardware() {
+  public Panel serverMonitorHardware(UI ui) {
     Panel panel = new ScrollPanel();
     Row row;
 
@@ -1041,12 +1130,24 @@ public class ConfigService implements WebUIHandler {
 
         idx += 2;
       }
+      if (pcnt == 0 && gcnt == 0) {
+        table.addColumn(new Component[] {new Label("?"), new Label("?")});
+      }
+
+      editPort.addClickListener((me, cmp) -> {
+        //TODO
+      });
 
       delete.addClickListener((me, cmp) -> {
-        device.hardware = null;
-        Config.save();
-        WebUIClient webclient = cmp.getClient();
-        webclient.refresh();
+        ui.confirm_action = () -> {
+          device.hardware = null;
+          Config.save();
+          WebUIClient webclient = cmp.getClient();
+          webclient.refresh();
+        };
+        ui.confirm_message.setText("Delete Device : Are you sure?");
+        ui.confirm_button.setText("Delete");
+        ui.confirm_popup.setVisible(true);
       });
     }
 

@@ -1,5 +1,7 @@
 /** Cisco API
  *
+ * "terminal length 0"
+ *
  * @author pquiring
  */
 
@@ -377,8 +379,35 @@ public class Cisco {
     return true;
   }
 
-  public boolean queryState(Device device) {
-    //TODO : get link, etc.
+  public boolean queryStatus(Device device) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    options.type = SSH.TYPE_EXEC;
+    options.command = "show interface status";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (!ssh.connect(ip, 22, options)) return false;
+    String status = ssh.getOutput();
+    if (status == null || status.length() == 0) return false;
+    /*
+Port         Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/1                         connected    trunk      a-full a-1000 10/100/1000BaseTX
+Gi1/0/2                         notconnect   1            auto   auto 10/100/1000BaseTX
+...
+    */
+    String[] lns = status.replaceAll("\\r", "").split("\n");
+    for(String ln : lns) {
+      int i1 = JF.indexOfDigit(ln);
+      if (i1 == -1) continue;
+      int i2 = ln.indexOf(" ");
+      if (i2 == -1) continue;
+      String number = ln.substring(i1, i2);
+      Port port = device.getPortByNumber(number);
+      if (port == null) continue;
+      port.link = ln.indexOf("connected") != -1;
+    }
     return false;
   }
 }

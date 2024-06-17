@@ -34,12 +34,16 @@ public class Port implements Serializable {
     }
   }
 
-  public String toString() {
+  public String getPortNumber() {
     int idx = JF.indexOfDigit(id);
     if (idx == -1) {
       return id;
     } else {
       return id.substring(idx);
     }
+  }
+
+  public String toString() {
+    return getPortNumber();
   }
 }
