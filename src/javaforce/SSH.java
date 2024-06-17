@@ -43,6 +43,12 @@ public class SSH {
   private Object[] pipes;
 
   public boolean connect(String host, int port, Options options) {
+    if (!debug) {
+      JFLog.setEnabled(JFLog.TRACE, false);  //very verbose
+      JFLog.setEnabled(JFLog.DEBUG, false);  //very verbose
+      JFLog.setEnabled(JFLog.INFO, false);  //very verbose
+      JFLog.setEnabled(JFLog.WARN, false);  //very verbose
+    }
     try {
       client = SshClient.setUpDefaultClient();
       client.start();
