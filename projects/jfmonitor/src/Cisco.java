@@ -397,6 +397,7 @@ Gi1/0/1                         connected    trunk      a-full a-1000 10/100/100
 Gi1/0/2                         notconnect   1            auto   auto 10/100/1000BaseTX
 ...
     */
+    device.resetValid();
     String[] lns = status.replaceAll("\\r", "").split("\n");
     for(String ln : lns) {
       int i1 = JF.indexOfDigit(ln);
@@ -408,6 +409,7 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
       if (port == null) continue;
       port.link = ln.indexOf("connected") != -1;
     }
+    device.removeInvalid();
     return false;
   }
 }

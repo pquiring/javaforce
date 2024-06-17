@@ -22,6 +22,7 @@ public class QueryHardware extends Thread {
             break;
         }
       }
+      Config.save();
       //wait 5 mins
       for(int a=0;a<5 * 60 && Status.active;a++) {
         if (scan_now) break;

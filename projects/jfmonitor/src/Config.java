@@ -119,7 +119,9 @@ public class Config implements Serializable {
   }
 
   public Device[] getDevices() {
-    return devices.toArray(new Device[0]);
+    Device[] list = devices.toArray(new Device[0]);
+    Arrays.sort(list);
+    return list;
   }
 
   public void addDevice(Device dev) {

@@ -737,6 +737,9 @@ public class ConfigService implements WebUIHandler {
       _device.hardware.user = _user;
       _device.hardware.pass = _pass;
       msg.setText("Device added");
+      device.setText("");
+      user.setText("");
+      pass.setText("");
       Config.save();
       QueryHardware.scan_now = true;
     });
@@ -1029,13 +1032,16 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private void setupPortCell(Component cell, Port port) {
+  private void setupPortCell(Component cell, Port port, Label msg) {
     cell.setSize(CELL_SIZE_X, CELL_SIZE_Y);
     if (port.link) {
       cell.setBackColor(Color.green);
     } else {
       cell.setBackColor(Color.grey);
     }
+    cell.addClickListener((me, cmp) -> {
+      msg.setText("Port:" + port.id);
+    });
   }
 
   private static final int CELL_SIZE_X = 48;
@@ -1094,6 +1100,11 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       panel.add(row);
+      Label msg = new Label("");
+      row.add(msg);
+
+      row = new Row();
+      panel.add(row);
       Label errmsg = new Label("");
       errmsg.setColor(Color.red);
       row.add(errmsg);
@@ -1111,10 +1122,10 @@ public class ConfigService implements WebUIHandler {
         Port p2 = idx2 < pcnt ? hw.ports.get(idx + 1) : null;
 
         Component c1 = new Label(p1.toString());
-        setupPortCell(c1, p1);
+        setupPortCell(c1, p1, msg);
         Component c2 = p2 != null ? new Label(p2.toString()) : null;
         if (c2 != null) {
-          setupPortCell(c2, p2);
+          setupPortCell(c2, p2, msg);
         } else {
           c2 = new Label("X");
         }
@@ -1122,7 +1133,7 @@ public class ConfigService implements WebUIHandler {
         if (gidx < gcnt) {
           Port p3 = hw.groups.get(gidx++);
           Component c3 = new Label(p3.toString());
-          setupPortCell(c3, p3);
+          setupPortCell(c3, p3, msg);
           table.addColumn(new Component[] {c1, c2, c3});
         } else {
           table.addColumn(new Component[] {c1, c2});

@@ -5,7 +5,7 @@
 
 import java.io.Serializable;
 
-public class Device implements Serializable {
+public class Device implements Serializable, Comparable<Device> {
   public static final long serialVersionUID = 1;
 
   public int type;
@@ -111,5 +111,13 @@ public class Device implements Serializable {
 
   public String toString() {
     return "Device:" + getip();
+  }
+
+  public int compareTo(Device to) {
+    String this_ip = Config.current.getip(this.mac);
+    if (this_ip == null) return 0;
+    String to_ip = Config.current.getip(to.mac);
+    if (to_ip == null) return 0;
+    return this_ip.compareTo(to_ip);
   }
 }
