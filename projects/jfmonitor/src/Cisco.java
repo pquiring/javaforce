@@ -9,7 +9,7 @@ import javaforce.*;
 
 public class Cisco {
   public static final boolean debug = false;
-  public boolean addVLAN(Device device, Port port, String vlan) {
+  public boolean addVLANs(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
@@ -26,13 +26,30 @@ public class Cisco {
     }
     return ok;
   }
-  public boolean removeVLAN(Device device, Port port, String vlan) {
+  public boolean removeVLANs(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan remove " + vlan + ";exit;exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean setVLANs(Device device, Port port, String vlans) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan " + vlans + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
@@ -273,6 +290,7 @@ public class Cisco {
     Port port = null;
     device.resetValid();
     for(String ln : lns) {
+      ln = ln.toLowerCase().trim();
       //decode config
       if (ln.startsWith("!")) {
         //end of section
@@ -281,7 +299,6 @@ public class Cisco {
         port = null;
         continue;
       }
-      ln = ln.toLowerCase();
       String[] f = ln.split(" ");
       switch(f[0]) {
         case "version":

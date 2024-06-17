@@ -5,7 +5,9 @@
 
 import java.io.Serializable;
 
-public class Device implements Serializable, Comparable<Device> {
+import java.util.*;
+
+public class Device implements Serializable, Comparable<Device>, Cloneable {
   public static final long serialVersionUID = 1;
 
   public int type;
@@ -15,10 +17,23 @@ public class Device implements Serializable, Comparable<Device> {
   //hardware config
   public Hardware hardware;
 
+  //transient data
+  public transient ArrayList<Port> selection = new ArrayList<>();
+
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_CISCO = 1;
 
   public Device() {}
+
+  public Device clone() {
+    try {
+      Device clone = (Device)super.clone();  //shallow copy
+      clone.hardware = clone.hardware.clone();
+      return clone;
+    } catch (Exception e) {
+      return null;
+    }
+  }
 
   public String getip() {
     return Config.current.getip(mac);
@@ -107,6 +122,57 @@ public class Device implements Serializable, Comparable<Device> {
     hardware.groups.add(group);
     group.valid = true;
     return group;
+  }
+
+  public boolean configSetVLANs(Port port, String vlans) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        return cisco.setVLANs(this, port, vlans);
+    }
+    return false;
+  }
+
+  public boolean configAddVLANs(Port port, String vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        return cisco.addVLANs(this, port, vlan);
+    }
+    return false;
+  }
+
+  public boolean configRemoveVLANs(Port port, String vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        return cisco.removeVLANs(this, port, vlan);
+    }
+    return false;
+  }
+
+  public boolean configSetVLAN(Port port, String vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        return cisco.setVLAN(this, port, vlan);
+    }
+    return false;
+  }
+
+  public void setSelection(Port port) {
+    if (selection == null) selection = new ArrayList<>();
+    selection.clear();
+    selection.add(port);
+  }
+
+  public void invertSelection(Port port) {
+    if (selection == null) selection = new ArrayList<>();
+    if (selection.contains(port)) {
+      selection.remove(port);
+    } else {
+      selection.add(port);
+    }
   }
 
   public String toString() {

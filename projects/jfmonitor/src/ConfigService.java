@@ -64,6 +64,13 @@ public class ConfigService implements WebUIHandler {
     public Label confirm_message;
     public Button confirm_button;
     public Runnable confirm_action;
+
+    public Device device;
+    public PopupPanel port_popup;
+    public Runnable port_init;
+    public Label port_msg;
+    public TextField port_vlans;
+    public TextField port_vlan;
   }
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
@@ -224,13 +231,101 @@ public class ConfigService implements WebUIHandler {
       if (ui.confirm_action != null) {
         ui.confirm_action.run();
       }
-      ui.confirm_popup.setVisible(false);
+      panel.setVisible(false);
     });
     popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
       panel.setVisible(false);
     });
     ui.confirm_message = popup_msg;
     ui.confirm_button = popup_b_action;
+    panel.setOnClose( () -> {
+      popup_b_cancel.click();
+    });
+    return panel;
+  }
+
+  private PopupPanel editPortPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Edit Port");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label port_msg = new Label("Port:");
+    row.add(port_msg);
+    ui.port_msg = port_msg;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VLANs:"));
+    TextField vlans = new TextField("");
+    row.add(vlans);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VLAN:"));
+    TextField vlan = new TextField("");
+    row.add(vlan);
+
+    row = new Row();
+    panel.add(row);
+    Button popup_b_save = new Button("Save");
+    row.add(popup_b_save);
+    Button popup_b_cancel = new Button("Cancel");
+    row.add(popup_b_cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    ui.port_init = () -> {
+      if (ui.device == null) {
+        JFLog.log("Error:ui.device == null");
+        return;
+      }
+      Port port = ui.device.selection.get(0);
+      if (port == null) {
+        JFLog.log("Error:ui.device.selection empty");
+        return;
+      }
+      port_msg.setText("Port:" + port.id);
+      vlans.setText(port.getVLANs());
+      vlan.setText(port.getVLAN());
+    };
+
+    popup_b_save.addClickListener((MouseEvent e, Component button) -> {
+      errmsg.setText("");
+      String _vlans = vlans.getText();
+      String _vlan = vlan.getText();
+      Port port = ui.device.selection.get(0);
+      if (port == null) return;
+      if (!port.getVLANs().equals(_vlans)) {
+        //change vlans
+        if (!VLAN.validVLANs(_vlans)) {
+          errmsg.setText("Invalid VLANs");
+          return;
+        }
+        String[] _vlan_list = VLAN.splitVLANs(_vlans);
+        port.setVLANs(_vlan_list);
+        ui.device.configSetVLANs(port, _vlans);
+      }
+      if (!port.getVLAN().equals(_vlan)) {
+        //change vlan
+        if (!VLAN.validVLAN(_vlan)) {
+          errmsg.setText("Invalid VLAN");
+          return;
+        }
+        ui.device.configSetVLAN(port, _vlan);
+      }
+      QueryHardware.scan_now = true;
+      panel.setVisible(false);
+    });
+    popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
+      panel.setVisible(false);
+    });
     panel.setOnClose( () -> {
       popup_b_cancel.click();
     });
@@ -247,6 +342,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.confirm_popup = confirmPopupPanel(ui);
     panel.add(ui.confirm_popup);
+
+    ui.port_popup = editPortPopupPanel(ui);
+    panel.add(ui.port_popup);
 
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");
@@ -1032,16 +1130,14 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private void setupPortCell(Component cell, Port port, Label msg) {
+  private void setupPortCell(Component cell, Device device, Port port, Label msg, UI ui) {
     cell.setSize(CELL_SIZE_X, CELL_SIZE_Y);
     if (port.link) {
       cell.setBackColor(Color.green);
     } else {
       cell.setBackColor(Color.grey);
     }
-    cell.addClickListener((me, cmp) -> {
-      msg.setText("Port:" + port.id);
-    });
+    cell.addClickListener((me, cmp) -> { if (me.ctrlKey) device.invertSelection(port); else device.setSelection(port); msg.setText("Port:" + port.id); });
   }
 
   private static final int CELL_SIZE_X = 48;
@@ -1122,10 +1218,10 @@ public class ConfigService implements WebUIHandler {
         Port p2 = idx2 < pcnt ? hw.ports.get(idx + 1) : null;
 
         Component c1 = new Label(p1.toString());
-        setupPortCell(c1, p1, msg);
+        setupPortCell(c1, device, p1, msg, ui);
         Component c2 = p2 != null ? new Label(p2.toString()) : null;
         if (c2 != null) {
-          setupPortCell(c2, p2, msg);
+          setupPortCell(c2, device, p2, msg, ui);
         } else {
           c2 = new Label("X");
         }
@@ -1133,7 +1229,7 @@ public class ConfigService implements WebUIHandler {
         if (gidx < gcnt) {
           Port p3 = hw.groups.get(gidx++);
           Component c3 = new Label(p3.toString());
-          setupPortCell(c3, p3, msg);
+          setupPortCell(c3, device, p3, msg, ui);
           table.addColumn(new Component[] {c1, c2, c3});
         } else {
           table.addColumn(new Component[] {c1, c2});
@@ -1146,7 +1242,9 @@ public class ConfigService implements WebUIHandler {
       }
 
       editPort.addClickListener((me, cmp) -> {
-        //TODO
+        ui.device = device;
+        ui.port_init.run();
+        ui.port_popup.setVisible(true);
       });
 
       delete.addClickListener((me, cmp) -> {

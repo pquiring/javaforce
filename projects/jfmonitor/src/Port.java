@@ -27,11 +27,24 @@ public class Port implements Serializable {
 
   public transient boolean link;
 
+  public String getVLANs() {
+    return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));
+  }
+
   public void setVLANs(String[] _vlans) {
     vlans.clear();
     for(String vlan : _vlans) {
       vlans.add(vlan);
     }
+  }
+
+  public String getVLAN() {
+    if (vlan == null) vlan = "1";
+    return vlan;
+  }
+
+  public void setVLAN(String _vlan) {
+    vlan = _vlan;
   }
 
   public String getPortNumber() {
