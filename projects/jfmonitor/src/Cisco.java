@@ -9,8 +9,8 @@ public class Cisco {
   public boolean addVLAN(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan add " + vlan + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
@@ -26,8 +26,8 @@ public class Cisco {
   public boolean removeVLAN(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan remove " + vlan + ";exit;exit;exit";
     String ip = device.getip();
@@ -44,8 +44,8 @@ public class Cisco {
   public boolean setVLAN(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";switchport trunk native vlan " + vlan + ";exit;exit;exit";
     String ip = device.getip();
@@ -62,8 +62,8 @@ public class Cisco {
   public boolean createVLAN(Device device, String vid, String name) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;vlan " + vid + ";name " + name + ";exit;exit;exit";
     String ip = device.getip();
@@ -80,8 +80,8 @@ public class Cisco {
   public boolean removeVLAN(Device device, String vid) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;no vlan " + vid + ";exit;exit;exit";
     String ip = device.getip();
@@ -98,8 +98,8 @@ public class Cisco {
   public boolean addInterfaceIP(Device device, String iid, String iface_ip, String iface_mask) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + iid + ";ip addr " + iface_ip + " " + iface_mask + ";exit;exit;exit";
     String ip = device.getip();
@@ -116,8 +116,8 @@ public class Cisco {
   public boolean removeInterfaceIP(Device device, String iid) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + iid + ";no ip;exit;exit;exit";
     String ip = device.getip();
@@ -134,7 +134,7 @@ public class Cisco {
   public static final int MODE_ACCESS = 0;
   public static final int MODE_TRUNK = 1;
   public static final int MODE_NO_SWITCHPORT = 2;
-  public boolean setMode(Device device, Port port, int mode) {
+  public boolean setSwitchMode(Device device, Port port, int mode) {
     String cmds = null;
     switch (mode) {
       case MODE_ACCESS:
@@ -150,8 +150,8 @@ public class Cisco {
     if (cmds == null) return false;
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String ip = device.getip();
     if (ip == null) return false;
@@ -169,8 +169,8 @@ public class Cisco {
     //interface port-channel #
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface port-channel " + gid + ";exit;exit;exit";
     String ip = device.getip();
@@ -188,8 +188,8 @@ public class Cisco {
     //no interface port-channel #
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;no interface port-channel " + gid + ";exit;exit";
     String ip = device.getip();
@@ -207,8 +207,8 @@ public class Cisco {
     //interface # ; channel-group # mode on
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";channel-group " + gid + " mode on;exit;exit;exit";
     String ip = device.getip();
@@ -226,8 +226,8 @@ public class Cisco {
     //interface # ; no channel-group #
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     String cmds = "config terminal;interface " + port.id + ";no channel-group;exit;exit;exit";
     String ip = device.getip();
@@ -241,15 +241,15 @@ public class Cisco {
     }
     return ok;
   }
-  public boolean query(Device device) {
+  public boolean queryConfig(Device device) {
     //query device configuration
     if (device.hardware == null) {
       device.hardware = new Hardware();
     }
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
-    options.username = device.user;
-    options.password = device.pass;
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
     options.command = "show configuration";
     String ip = device.getip();
@@ -260,7 +260,7 @@ public class Cisco {
     device.hardware.config = cfg;
     String[] lns = cfg.replaceAll("\\r", "").split("\n");
     VLAN vlan = null;
-    Group group = null;
+    Port group = null;
     Port port = null;
     device.resetValid();
     for(String ln : lns) {
@@ -279,7 +279,7 @@ public class Cisco {
           device.hardware.version = f[1];
           break;
         case "interface":
-          int idx = indexOfDigit(f[1]);
+          int idx = JF.indexOfDigit(f[1]);
           if (idx == -1) continue;
           String name = f[1].substring(0, idx);
           switch (name) {
@@ -368,13 +368,8 @@ public class Cisco {
     return true;
   }
 
-  private int indexOfDigit(String str) {
-    char[] cs = str.toCharArray();
-    int idx = 0;
-    for(char c : cs) {
-      if (Character.isDigit(c)) return idx;
-      idx++;
-    }
-    return -1;
+  public boolean queryState(Device device) {
+    //TODO : get link, etc.
+    return false;
   }
 }

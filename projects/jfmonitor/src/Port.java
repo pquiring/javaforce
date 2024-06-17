@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 import java.util.*;
 
+import javaforce.*;
+
 public class Port implements Serializable {
   public static final long serialVersionUID = 1;
 
@@ -29,6 +31,15 @@ public class Port implements Serializable {
     vlans.clear();
     for(String vlan : _vlans) {
       vlans.add(vlan);
+    }
+  }
+
+  public String toString() {
+    int idx = JF.indexOfDigit(id);
+    if (idx == -1) {
+      return id;
+    } else {
+      return id.substring(idx);
     }
   }
 }

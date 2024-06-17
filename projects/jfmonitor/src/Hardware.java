@@ -9,9 +9,12 @@ import java.util.*;
 public class Hardware implements Serializable {
   public static final long serialVersionUID = 1;
 
+  public String user;
+  public String pass;
+
   public String version;
   public String config;
-  public ArrayList<Port> ports;
-  public ArrayList<VLAN> vlans;
-  public ArrayList<Group> groups;
+  public ArrayList<Port> ports = new ArrayList<>();
+  public ArrayList<VLAN> vlans = new ArrayList<>();
+  public ArrayList<Port> groups = new ArrayList<>();
 }

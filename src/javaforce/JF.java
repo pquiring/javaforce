@@ -1317,6 +1317,17 @@ public class JF {
     return -1;
   }
 
+  /** Return index of first digit in str.  Returns -1 if not found. */
+  public static int indexOfDigit(String str) {
+    char[] cs = str.toCharArray();
+    int idx = 0;
+    for(char c : cs) {
+      if (Character.isDigit(c)) return idx;
+      idx++;
+    }
+    return -1;
+  }
+
   /** Expand arguments.
    *  Performs argument globbing (wildcards).
    *  Used by native launcher.

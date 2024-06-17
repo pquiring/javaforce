@@ -18,7 +18,7 @@ public class QueryHardware extends Thread {
         if (dev.type == Device.TYPE_UNKNOWN) continue;
         switch (dev.type) {
           case Device.TYPE_UNKNOWN: continue;
-          case Device.TYPE_CISCO: cisco.query(dev); break;
+          case Device.TYPE_CISCO: cisco.queryConfig(dev); break;
         }
       }
     }

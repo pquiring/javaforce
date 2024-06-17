@@ -575,6 +575,12 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     row = new Row();
+    row.add(new Label("Device:"));
+    TextField device = new TextField("");
+    row.add(device);
+    panel.add(row);
+
+    row = new Row();
     row.add(new Label("Username:"));
     TextField user = new TextField("");
     row.add(user);
@@ -592,8 +598,45 @@ public class ConfigService implements WebUIHandler {
     row.add(add);
     panel.add(row);
 
+    row = new Row();
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+    panel.add(row);
+
+    row = new Row();
+    Label msg = new Label("");
+    row.add(msg);
+    panel.add(row);
+
     add.addClickListener((me, cmp) -> {
-      //TODO
+      errmsg.setText("");
+      msg.setText("");
+      String _host = device.getText();
+      String _mac = Config.current.getmac(_host);
+      if (_mac == null) {
+        errmsg.setText("Device mac not found");
+        return;
+      }
+      Device _device = Config.current.getDevice(_mac);
+      if (_device == null) {
+        errmsg.setText("Device not found");
+        return;
+      }
+      String _user = user.getText();
+      String _pass = pass.getText();
+      SSH ssh = new SSH();
+      SSH.Options opts = new SSH.Options();
+      opts.username = _user;
+      opts.password = _pass;
+      if (!ssh.connect(_host, 22, opts)) {
+        errmsg.setText("Connection failed");
+        return;
+      }
+      _device.hardware = new Hardware();
+      _device.hardware.user = _user;
+      _device.hardware.pass = _pass;
+      msg.setText("Device added");
     });
 
     //TODO : list all known hardware (button to delete each one) (or do that in other screen)
@@ -897,10 +940,72 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private void setupPortCell(Component cell, Port port) {
+    cell.setSize(CELL_SIZE_X, CELL_SIZE_Y);
+    if (port.link) {
+      cell.setBackColor(Color.green);
+    } else {
+      cell.setBackColor(Color.grey);
+    }
+  }
+
+  private static final int CELL_SIZE_X = 32;
+  private static final int CELL_SIZE_Y = 32;
+
   public Panel serverMonitorHardware() {
     Panel panel = new ScrollPanel();
 
-    //TODO : show all hardware in a table
+    Device[] list = Config.current.getDevices();
+    for(Device device : list) {
+      if (device.hardware == null) continue;
+
+      Hardware hw = device.hardware;
+
+      ToolBar tools = new ToolBar();
+      panel.add(tools);
+      Button editPort = new Button("Edit Port");
+      tools.add(editPort);
+      Button addVLAN = new Button("Add VLAN");
+      tools.add(addVLAN);
+      Button removeVLAN = new Button("Remove VLAN");
+      tools.add(removeVLAN);
+      Button addGroup = new Button("Create Group");
+      tools.add(addGroup);
+      Button removeGroup = new Button("Remove Group");
+      tools.add(removeGroup);
+
+      Row row = new Row();
+      panel.add(row);
+      Label errmsg = new Label("");
+      errmsg.setColor(Color.red);
+      row.add(errmsg);
+
+      Table table = new Table(CELL_SIZE_X, CELL_SIZE_Y, 0, 3);
+      table.setBorder(true);
+
+      int gidx = 0;
+      int gcnt = hw.groups.size();
+      for(int idx = 0;idx < hw.ports.size();) {
+        Port p1 = hw.ports.get(idx);
+        Port p2 = hw.ports.get(idx + 1);
+
+        Component c1 = new Label(p1.toString());
+        setupPortCell(c1, p1);
+        Component c2 = new Label(p2.toString());
+        setupPortCell(c2, p2);
+
+        if (gidx < gcnt) {
+          Port p3 = hw.groups.get(gidx++);
+          Component c3 = new Label(p3.toString());
+          setupPortCell(c3, p3);
+          table.addColumn(new Component[] {c1, c2, c3});
+        } else {
+          table.addColumn(new Component[] {c1, c2});
+        }
+
+        idx += 2;
+      }
+    }
 
     return panel;
   }

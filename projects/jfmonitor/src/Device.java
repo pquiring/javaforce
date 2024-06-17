@@ -12,9 +12,6 @@ public class Device implements Serializable {
   public String mac;
   public String desc;
 
-  public String user;
-  public String pass;
-
   //hardware config
   public Hardware hardware;
 
@@ -29,7 +26,7 @@ public class Device implements Serializable {
     for(Port port : hardware.ports) {
       port.valid = false;
     }
-    for(Group group : hardware.groups) {
+    for(Port group : hardware.groups) {
       group.valid = false;
     }
     for(VLAN vlan : hardware.vlans) {
@@ -44,8 +41,8 @@ public class Device implements Serializable {
         hardware.ports.remove(port);
       }
     }
-    Group[] gs = hardware.groups.toArray(new Group[0]);
-    for(Group group : gs) {
+    Port[] gs = hardware.groups.toArray(new Port[0]);
+    for(Port group : gs) {
       if (!group.valid) {
         hardware.groups.remove(group);
       }
@@ -84,14 +81,14 @@ public class Device implements Serializable {
     return vlan;
   }
 
-  public Group getGroup(String id) {
-    for(Group group : hardware.groups) {
+  public Port getGroup(String id) {
+    for(Port group : hardware.groups) {
       if (group.id.equals(id)) {
         group.valid = true;
         return group;
       }
     }
-    Group group = new Group();
+    Port group = new Port();
     hardware.groups.add(group);
     group.valid = true;
     return group;
