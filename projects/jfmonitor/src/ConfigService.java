@@ -568,6 +568,11 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
+
+    row = new Row();
     row.add(new Label("Type:"));
     ComboBox type = new ComboBox();
     type.add("Cisco", "Cisco");
@@ -611,16 +616,18 @@ public class ConfigService implements WebUIHandler {
 
     add.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      msg.setText("");
+      msg.setText("Connecting...");
       String _host = device.getText();
       String _mac = Config.current.getmac(_host);
       if (_mac == null) {
         errmsg.setText("Device mac not found");
+        msg.setText("");
         return;
       }
       Device _device = Config.current.getDevice(_mac);
       if (_device == null) {
         errmsg.setText("Device not found");
+        msg.setText("");
         return;
       }
       String _user = user.getText();
@@ -631,12 +638,16 @@ public class ConfigService implements WebUIHandler {
       opts.password = _pass;
       if (!ssh.connect(_host, 22, opts)) {
         errmsg.setText("Connection failed");
+        msg.setText("");
         return;
       }
+      ssh.disconnect();
       _device.hardware = new Hardware();
+      _device.type = Device.TYPE_CISCO;
       _device.hardware.user = _user;
       _device.hardware.pass = _pass;
       msg.setText("Device added");
+      Config.save();
     });
 
     //TODO : list all known hardware (button to delete each one) (or do that in other screen)
@@ -837,8 +848,9 @@ public class ConfigService implements WebUIHandler {
 
   public Panel serverMonitorNetwork() {
     Panel panel = new ScrollPanel();
-    Row row = new Row();
+    Row row;
 
+    row = new Row();
     Label label = new Label("jfMonitor/" + Config.AppVersion);
     row.add(label);
     panel.add(row);
@@ -880,41 +892,29 @@ public class ConfigService implements WebUIHandler {
           row.add(mac);
           Device dev = Config.current.getDevice(ip.mac);
           row.add(new Label(":"));
-          if (dev != null) {
-            TextField desc = new TextField(dev.desc);
-            row.add(desc);
-            CheckBox notify = new CheckBox("notify");
-            notify.setSelected(ip.notify);
-            row.add(notify);
-            Button add = new Button("Save");
-            add.addClickListener( (MouseEvent me, Component c) -> {
-              ip.notify = notify.isSelected();
-              Device newdev = Config.current.getDevice(ip.mac);
-              newdev.desc = desc.getText();
-              Config.save();
-              WebUIClient webclient = c.getClient();
-              webclient.refresh();
-            });
-            row.add(add);
-          } else {
-            TextField desc = new TextField("Unknown device");
-            row.add(desc);
-            CheckBox notify = new CheckBox("notify");
-            notify.setSelected(ip.notify);
-            row.add(notify);
-            Button add = new Button("Add");
-            add.addClickListener( (MouseEvent me, Component c) -> {
+          TextField desc = new TextField(dev == null ? "Unknown device" : dev.desc);
+          row.add(desc);
+          CheckBox notify = new CheckBox("notify");
+          notify.setSelected(ip.notify);
+          row.add(notify);
+          Button update = new Button(dev == null ? "Add" : "Save");
+          update.addClickListener( (me, c) -> {
+            Device _dev = Config.current.getDevice(ip.mac);
+            if (_dev == null) {
               ip.notify = notify.isSelected();
               Device newdev = new Device();
               newdev.mac = ip.mac;
               newdev.desc = desc.getText();
               Config.current.addDevice(newdev);
-              Config.save();
-              WebUIClient webclient = c.getClient();
-              webclient.refresh();
-            });
-            row.add(add);
-          }
+              update.setText("Save");
+            } else {
+              ip.notify = notify.isSelected();
+              Device newdev = Config.current.getDevice(ip.mac);
+              newdev.desc = desc.getText();
+            }
+            Config.save();
+          });
+          row.add(update);
         }
         block.add(row);
         inner.add(block);
@@ -949,15 +949,37 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  private static final int CELL_SIZE_X = 32;
+  private static final int CELL_SIZE_X = 48;
   private static final int CELL_SIZE_Y = 32;
 
   public Panel serverMonitorHardware() {
     Panel panel = new ScrollPanel();
+    Row row;
+
+    row = new Row();
+    Label label = new Label("jfMonitor/" + Config.AppVersion);
+    row.add(label);
+    panel.add(row);
+
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Hardware Monitor:"));
+    Label progress = new Label("");
+    row.add(progress);
+    panel.add(row);
 
     Device[] list = Config.current.getDevices();
     for(Device device : list) {
       if (device.hardware == null) continue;
+
+      row = new Row();
+      row.setBackColor(Color.blue);
+      row.setHeight(5);
+      panel.add(row);
 
       Hardware hw = device.hardware;
 
@@ -973,8 +995,15 @@ public class ConfigService implements WebUIHandler {
       tools.add(addGroup);
       Button removeGroup = new Button("Remove Group");
       tools.add(removeGroup);
+      Button delete = new Button("Delete");
+      tools.add(delete);
 
-      Row row = new Row();
+      row = new Row();
+      panel.add(row);
+      Label desc = new Label("Device:" + Config.current.getip(device.mac));
+      row.add(desc);
+
+      row = new Row();
       panel.add(row);
       Label errmsg = new Label("");
       errmsg.setColor(Color.red);
@@ -982,17 +1011,24 @@ public class ConfigService implements WebUIHandler {
 
       Table table = new Table(CELL_SIZE_X, CELL_SIZE_Y, 0, 3);
       table.setBorder(true);
+      panel.add(table);
 
       int gidx = 0;
       int gcnt = hw.groups.size();
+      int pcnt = hw.ports.size();
       for(int idx = 0;idx < hw.ports.size();) {
+        int idx2 = idx + 1;
         Port p1 = hw.ports.get(idx);
-        Port p2 = hw.ports.get(idx + 1);
+        Port p2 = idx2 < pcnt ? hw.ports.get(idx + 1) : null;
 
         Component c1 = new Label(p1.toString());
         setupPortCell(c1, p1);
-        Component c2 = new Label(p2.toString());
-        setupPortCell(c2, p2);
+        Component c2 = p2 != null ? new Label(p2.toString()) : null;
+        if (c2 != null) {
+          setupPortCell(c2, p2);
+        } else {
+          c2 = new Label("X");
+        }
 
         if (gidx < gcnt) {
           Port p3 = hw.groups.get(gidx++);
@@ -1005,7 +1041,19 @@ public class ConfigService implements WebUIHandler {
 
         idx += 2;
       }
+
+      delete.addClickListener((me, cmp) -> {
+        device.hardware = null;
+        Config.save();
+        WebUIClient webclient = cmp.getClient();
+        webclient.refresh();
+      });
     }
+
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
 
     return panel;
   }

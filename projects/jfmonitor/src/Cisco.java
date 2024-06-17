@@ -6,6 +6,7 @@
 import javaforce.*;
 
 public class Cisco {
+  public static final boolean debug = false;
   public boolean addVLAN(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
@@ -243,8 +244,11 @@ public class Cisco {
   }
   public boolean queryConfig(Device device) {
     //query device configuration
+    if (debug) {
+      JFLog.log("Cisco.queryConfig:" + device);
+    }
     if (device.hardware == null) {
-      device.hardware = new Hardware();
+      return false;
     }
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
@@ -257,6 +261,9 @@ public class Cisco {
     if (!ssh.connect(ip, 22, options)) return false;
     String cfg = ssh.getOutput();
     if (cfg == null || cfg.length() == 0) return false;
+    if (debug) {
+      JFLog.log("Cisco.config=" + cfg);
+    }
     device.hardware.config = cfg;
     String[] lns = cfg.replaceAll("\\r", "").split("\n");
     VLAN vlan = null;
@@ -282,10 +289,12 @@ public class Cisco {
           int idx = JF.indexOfDigit(f[1]);
           if (idx == -1) continue;
           String name = f[1].substring(0, idx);
+          String id = f[1].substring(idx);
+          if (id.equals("0/0")) continue;  //ignore admin port
           switch (name) {
             case "vlan": vlan = device.getVLAN(f[1]); break;
             case "port-channel": group = device.getGroup(f[1]); break;
-            default: port = device.getPort(f[2]); break;
+            default: port = device.getPort(f[1]); break;
           }
           break;
         case "switchport":

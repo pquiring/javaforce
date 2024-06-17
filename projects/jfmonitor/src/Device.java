@@ -18,6 +18,8 @@ public class Device implements Serializable {
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_CISCO = 1;
 
+  public Device() {}
+
   public String getip() {
     return Config.current.getip(mac);
   }
@@ -63,6 +65,7 @@ public class Device implements Serializable {
       }
     }
     Port port = new Port();
+    port.id = id;
     hardware.ports.add(port);
     port.valid = true;
     return port;
@@ -76,6 +79,7 @@ public class Device implements Serializable {
       }
     }
     VLAN vlan = new VLAN();
+    vlan.id = id;
     hardware.vlans.add(vlan);
     vlan.valid = true;
     return vlan;
@@ -89,8 +93,13 @@ public class Device implements Serializable {
       }
     }
     Port group = new Port();
+    group.id = id;
     hardware.groups.add(group);
     group.valid = true;
     return group;
+  }
+
+  public String toString() {
+    return "Device:" + getip();
   }
 }
