@@ -43,7 +43,8 @@ public class JFLogger implements Logger {
   }
 
   public void trace(String msg, Throwable t) {
-    JFLog.log(JFLog.TRACE, msg + t.toString());
+    JFLog.log(JFLog.TRACE, msg);
+    if (t != null) JFLog.log(JFLog.TRACE, t);
   }
 
   public boolean isTraceEnabled(Marker marker) {
@@ -67,7 +68,8 @@ public class JFLogger implements Logger {
   }
 
   public void trace(Marker marker, String msg, Throwable t) {
-    JFLog.log(JFLog.TRACE, msg + t);
+    JFLog.log(JFLog.TRACE, msg);
+    if (t != null) JFLog.log(JFLog.TRACE, t);
   }
 
   public boolean isDebugEnabled() {
@@ -91,7 +93,8 @@ public class JFLogger implements Logger {
   }
 
   public void debug(String msg, Throwable t) {
-    JFLog.log(JFLog.DEBUG, msg + t);
+    JFLog.log(JFLog.DEBUG, msg);
+    if (t != null) JFLog.log(JFLog.DEBUG, t);
   }
 
   public boolean isDebugEnabled(Marker marker) {
@@ -115,7 +118,8 @@ public class JFLogger implements Logger {
   }
 
   public void debug(Marker marker, String msg, Throwable t) {
-    JFLog.log(JFLog.DEBUG, msg + t);
+    JFLog.log(JFLog.DEBUG, msg);
+    if (t != null) JFLog.log(JFLog.DEBUG, t);
   }
 
   public boolean isInfoEnabled() {
@@ -139,7 +143,8 @@ public class JFLogger implements Logger {
   }
 
   public void info(String msg, Throwable t) {
-    JFLog.log(JFLog.INFO, msg + t);
+    JFLog.log(JFLog.INFO, msg);
+    if (t != null) JFLog.log(JFLog.INFO, t);
   }
 
   public boolean isInfoEnabled(Marker marker) {
@@ -163,7 +168,8 @@ public class JFLogger implements Logger {
   }
 
   public void info(Marker marker, String msg, Throwable t) {
-    JFLog.log(JFLog.INFO, msg + t);
+    JFLog.log(JFLog.INFO, msg);
+    if (t != null) JFLog.log(JFLog.INFO, t);
   }
 
   public boolean isWarnEnabled() {
@@ -187,7 +193,8 @@ public class JFLogger implements Logger {
   }
 
   public void warn(String msg, Throwable t) {
-    JFLog.log(JFLog.WARN, msg + t);
+    JFLog.log(JFLog.WARN, msg);
+    if (t != null) JFLog.log(JFLog.WARN, t);
   }
 
   public boolean isWarnEnabled(Marker marker) {
@@ -211,7 +218,8 @@ public class JFLogger implements Logger {
   }
 
   public void warn(Marker marker, String msg, Throwable t) {
-    JFLog.log(JFLog.WARN, msg + t);
+    JFLog.log(JFLog.WARN, msg);
+    if (t != null) JFLog.log(JFLog.WARN, t);
   }
 
   public boolean isErrorEnabled() {
@@ -235,7 +243,8 @@ public class JFLogger implements Logger {
   }
 
   public void error(String msg, Throwable t) {
-    JFLog.log(JFLog.ERROR, msg + t);
+    JFLog.log(JFLog.ERROR, msg);
+    if (t != null) JFLog.log(JFLog.ERROR, t);
   }
 
   public boolean isErrorEnabled(Marker marker) {
@@ -259,6 +268,7 @@ public class JFLogger implements Logger {
   }
 
   public void error(Marker marker, String msg, Throwable t) {
-    JFLog.log(JFLog.ERROR, msg + t);
+    JFLog.log(JFLog.ERROR, msg);
+    if (t != null) JFLog.log(JFLog.ERROR, t);
   }
 }
