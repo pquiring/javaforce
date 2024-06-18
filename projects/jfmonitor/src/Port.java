@@ -15,6 +15,7 @@ public class Port implements Serializable {
   public transient boolean valid;
 
   public String id;
+  public String name;
 
   //interface
   public String ip, mask;

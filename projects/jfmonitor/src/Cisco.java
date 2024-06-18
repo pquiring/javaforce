@@ -303,7 +303,6 @@ public class Cisco {
     return ok;
   }
   public boolean saveConfig(Device device) {
-    //interface # ; no channel-group #
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
@@ -313,6 +312,48 @@ public class Cisco {
     if (ip == null) return false;
     if (debug) {
       JFLog.log("saveConfig:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean setVLANName(Device device, VLAN vlan, String name) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "vlan " + vlan.id + ";name " + name + ";exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setName(VLAN):" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean setPortName(Device device, Port port, String name) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;interface " + port.id + ";desc " + name + ";exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setPortName:" + cmds);
       return true;
     }
     if (!ssh.connect(ip, 22, options)) return false;
@@ -453,10 +494,49 @@ public class Cisco {
           break;
         case "spanning-tree":
           break;
+        case "description":
+          if (port != null) {
+            port.name = f[1];
+          }
+          if (group != null) {
+            group.name = f[1];
+          }
+          break;
       }
     }
     device.removeInvalid();
     return true;
+  }
+
+  public boolean queryVLANs(Device device) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    options.type = SSH.TYPE_EXEC;
+    options.command = "show interface status";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (!ssh.connect(ip, 22, options)) return false;
+    String status = ssh.getOutput();
+    if (status == null || status.length() == 0) return false;
+    /*
+VLAN Name ...
+---- ---  ...
+1    default
+    */
+    String[] lns = status.replaceAll("\\r", "").split("\n");
+    for(String ln : lns) {
+      int i1 = JF.indexOfDigit(ln);
+      if (i1 != 0) continue;
+      String id = ln.substring(0, 4).trim();
+      VLAN vlan = device.getVLAN(id);
+      if (vlan == null) continue;
+      int i2 = ln.indexOf(' ', 4);
+      if (i2 == -1) continue;
+      vlan.name = ln.substring(4, i2);
+    }
+    return false;
   }
 
   public boolean queryStatus(Device device) {

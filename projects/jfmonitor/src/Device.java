@@ -177,7 +177,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public void save() {
+  public void saveConfig() {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();

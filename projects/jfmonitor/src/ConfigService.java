@@ -1249,8 +1249,16 @@ public class ConfigService implements WebUIHandler {
         ui.port_popup.setVisible(true);
       });
 
+      //add vlan
+
+      //remove vlan
+
+      //add group
+
+      //remove group
+
       save.addClickListener((me, cmp) -> {
-        device.save();
+        device.saveConfig();
         msg.setText("Config saved!");
       });
 
