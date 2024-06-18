@@ -20,9 +20,6 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   //hardware config
   public Hardware hardware;
 
-  //transient data
-  public transient ArrayList<Port> selection = new ArrayList<>();
-
   public static final int TYPE_UNKNOWN = 0;
   public static final int TYPE_CISCO = 1;
 
@@ -163,32 +160,6 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         return cisco.setVLAN(this, port, vlan);
     }
     return false;
-  }
-
-  public void setSelection(Port port) {
-    if (selection == null) selection = new ArrayList<>();
-    for(Port other : selection) {
-      other.cell.setBorder(false);
-    }
-    selection.clear();
-    selection.add(port);
-    port.cell.setBorder(true);
-  }
-
-  public boolean isSelected(Port port) {
-    if (selection == null) selection = new ArrayList<>();
-    return selection.contains(port);
-  }
-
-  public void invertSelection(Port port) {
-    if (selection == null) selection = new ArrayList<>();
-    if (selection.contains(port)) {
-      selection.remove(port);
-      port.cell.setBorder(false);
-    } else {
-      selection.add(port);
-      port.cell.setBorder(true);
-    }
   }
 
   public void setPortName(Port port, String name) {

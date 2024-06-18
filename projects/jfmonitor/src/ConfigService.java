@@ -3,9 +3,7 @@
  * @author pquiring
  */
 
-import java.util.Calendar;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 import java.io.*;
 
 import javaforce.*;
@@ -56,6 +54,49 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
+  private static class Selection {
+    public HashMap<Port, Component> ports = new HashMap<>();
+
+    public int size() {
+      return ports.size();
+    }
+
+    private Port[] getPorts() {
+      return ports.keySet().toArray(new Port[0]);
+    }
+
+    private Component[] getComponents() {
+      return ports.values().toArray(new Component[0]);
+    }
+
+    public Port getPort(int idx) {
+      return getPorts()[0];
+    }
+
+    public void setSelection(Port port, Component cell) {
+      for(Port other : getPorts()) {
+        ports.get(other).setBorder(false);
+        ports.remove(other);
+      }
+      ports.put(port, cell);
+      cell.setBorder(true);
+    }
+
+    public boolean isSelected(Port port) {
+      return ports.containsKey(port);
+    }
+
+    public void invertSelection(Port port, Component cell) {
+      if (ports.containsKey(port)) {
+        ports.get(port).setBorder(false);
+        ports.remove(port);
+      } else {
+        cell.setBorder(true);
+        ports.put(port, cell);
+      }
+    }
+  }
+
   private static class UI {
     public PopupPanel message_popup;
     public Label message_message;
@@ -66,6 +107,7 @@ public class ConfigService implements WebUIHandler {
     public Runnable confirm_action;
 
     public Device device;
+    public HashMap<Device, Selection> selection = new HashMap<>();
 
     public PopupPanel port_popup;
     public Runnable port_init;
@@ -296,15 +338,16 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
 
     ui.port_init = () -> {
+      errmsg.setText("");
       if (ui.device == null) {
-        JFLog.log("Error:ui.device == null");
+        errmsg.setText("Error:ui.device == null");
         return;
       }
-      Port port = ui.device.selection.get(0);
-      if (port == null) {
-        JFLog.log("Error:ui.device.selection empty");
+      if (ui.selection.get(ui.device).size() != 1) {
+        errmsg.setText("Must select only one port to edit");
         return;
       }
+      Port port = ui.selection.get(ui.device).getPort(0);
       port_msg.setText("Port:" + port.id);
       name.setText(port.name);
       vlans.setText(port.getVLANs());
@@ -316,7 +359,7 @@ public class ConfigService implements WebUIHandler {
       String _name = name.getText();
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
-      Port port = ui.device.selection.get(0);
+      Port port = ui.selection.get(ui.device).getPort(0);
       if (port == null) return;
       if (!port.name.equals(_name)) {
         //change name
@@ -1274,12 +1317,11 @@ public class ConfigService implements WebUIHandler {
     } else {
       cell.setBackColor(Color.grey);
     }
-    port.cell = cell;  //TODO : should be per webui session
     cell.addClickListener((me, cmp) -> {
       if (me.ctrlKey)
-        device.invertSelection(port);
+        ui.selection.get(device).invertSelection(port, cell);
       else
-        device.setSelection(port);
+        ui.selection.get(device).setSelection(port, cell);
       msg.setText("Port:" + port.id);
     });
   }

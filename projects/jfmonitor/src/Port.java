@@ -28,7 +28,6 @@ public class Port implements Serializable {
   public String group;
 
   public transient boolean link;
-  public transient Component cell;  //TODO : needs to be per webui session
 
   public String getVLANs() {
     return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));
