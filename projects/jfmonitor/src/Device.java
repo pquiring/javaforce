@@ -132,7 +132,15 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        return cisco.setVLANs(this, port, vlans);
+        if (cisco.setVLANs(this, port, vlans)) {
+          String[] vs = vlans.split(",");
+          port.vlans.clear();
+          for(String vlan : vs) {
+            port.vlans.add(vlan);
+          }
+          return true;
+        }
+        break;
     }
     return false;
   }
@@ -141,7 +149,11 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        return cisco.addVLANs(this, port, vlan);
+        if (cisco.addVLANs(this, port, vlan)) {
+          port.vlans.add(vlan);
+          return true;
+        }
+        break;
     }
     return false;
   }
@@ -150,7 +162,11 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        return cisco.removeVLANs(this, port, vlan);
+        if (cisco.removeVLANs(this, port, vlan)) {
+          port.vlans.remove(vlan);
+          return true;
+        }
+        break;
     }
     return false;
   }
@@ -159,70 +175,91 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        return cisco.setVLAN(this, port, vlan);
+        if (cisco.setVLAN(this, port, vlan)) {
+          port.vlan = vlan;
+          return true;
+        }
+        break;
     }
     return false;
   }
 
-  public void configSetPortName(Port port, String name) {
+  public boolean configSetPortName(Port port, String name) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        cisco.setPortName(this, port, name);
-        break;
-    }
-  }
-
-  public void configCreateVLAN(String id, String name) {
-    switch (type) {
-      case TYPE_CISCO:
-        Cisco cisco = new Cisco();
-        cisco.createVLAN(this, id, name);
-        break;
-    }
-  }
-
-  public void configRemoveVLAN(VLAN vlan) {
-    switch (type) {
-      case TYPE_CISCO:
-        Cisco cisco = new Cisco();
-        cisco.removeVLAN(this, vlan.id);
-        break;
-    }
-  }
-
-  public void configCreateGroup(String gid, Port[] ports) {
-    switch (type) {
-      case TYPE_CISCO:
-        Cisco cisco = new Cisco();
-        cisco.createGroup(this, gid);
-        for(Port port : ports) {
-          cisco.addPortToGroup(this, gid, port);
+        if (cisco.setPortName(this, port, name)) {
+          port.name = name;
+          return true;
         }
         break;
     }
+    return false;
   }
 
-  public void configRemoveGroup(String gid) {
+  public boolean configCreateVLAN(String id, String name) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        cisco.removeGroup(this, gid);
+        if (cisco.createVLAN(this, id, name)) {
+          hardware.vlans.add(new VLAN(id, name));
+          return true;
+        }
         break;
     }
+    return false;
   }
 
-  public void configSetGroup(String gid, Port port) {
+  public boolean configRemoveVLAN(VLAN vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeVLAN(this, vlan.id)) {
+          hardware.vlans.remove(vlan);
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configCreateGroup(String gid, Port[] ports) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (!cisco.createGroup(this, gid)) return false;
+        for(Port port : ports) {
+          if (!cisco.addPortToGroup(this, gid, port)) return false;
+        }
+        return true;
+    }
+    return false;
+  }
+
+  public boolean configRemoveGroup(String gid) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeGroup(this, gid)) {
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configSetGroup(String gid, Port port) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
         if (gid.length() == 0) {
-          cisco.removePortFromGroup(this, port);
+          if (!cisco.removePortFromGroup(this, port)) return false;
         } else {
-          cisco.addPortToGroup(this, gid, port);
+          if (!cisco.addPortToGroup(this, gid, port)) return false;
         }
-        break;
+        return true;
     }
+    return false;
   }
 
   public String nextGroupID() {

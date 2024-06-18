@@ -11,6 +11,7 @@ import javaforce.net.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+import javaforce.webui.tasks.*;
 
 public class ConfigService implements WebUIHandler {
   public WebUIServer server;
@@ -396,7 +397,21 @@ public class ConfigService implements WebUIHandler {
       if (port == null) return;
       if (!port.name.equals(_name)) {
         //change name
-        ui.device.configSetPortName(port, _name);
+        Task task = new Task("Set Port Name") {
+          public void doTask() {
+            try {
+              if (ui.device.configSetPortName(port, _name)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
       }
       if (!port.getVLANs().equals(_vlans)) {
         //change vlans
@@ -406,7 +421,18 @@ public class ConfigService implements WebUIHandler {
         }
         String[] _vlan_list = VLAN.splitVLANs(_vlans);
         port.setVLANs(_vlan_list);
-        ui.device.configSetVLANs(port, _vlans);
+        Task task = new Task("Set Port VLANs") {
+          public void doTask() {
+            try {
+              ui.device.configSetVLANs(port, _vlans);
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
       }
       if (!port.getVLAN().equals(_vlan)) {
         //change vlan
@@ -414,7 +440,18 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid VLAN");
           return;
         }
-        ui.device.configSetVLAN(port, _vlan);
+        Task task = new Task("Set Port VLAN") {
+          public void doTask() {
+            try {
+              ui.device.configSetVLAN(port, _vlan);
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
       }
       if (!port.getGroup().equals(_group)) {
         //change group membership
@@ -422,7 +459,18 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid Group");
           return;
         }
-        ui.device.configSetGroup(_group, port);
+          Task task = new Task("Set Port Group") {
+            public void doTask() {
+              try {
+                ui.device.configSetGroup(_group, port);
+                setStatus("Completed");
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
       }
       QueryHardware.scan_now = true;
       panel.setVisible(false);
@@ -476,7 +524,18 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       String _id = id.getText();
       String _name = name.getText();
-      ui.device.configCreateVLAN(_id, _name);
+      Task task = new Task("Create VLAN") {
+        public void doTask() {
+          try {
+            ui.device.configCreateVLAN(_id, _name);
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error:" + action + " failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
       ui.vlans_init.run();
       QueryHardware.scan_now = true;
       panel.setVisible(false);
@@ -528,7 +587,18 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       VLAN vlan = ui.vlans_vlans[idx];
       ui.confirm_action = () -> {
-        ui.device.configRemoveVLAN(vlan);
+        Task task = new Task("Delete VLAN") {
+          public void doTask() {
+            try {
+              ui.device.configRemoveVLAN(vlan);
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_message.setText("Delete Device : Are you sure?");
       ui.confirm_button.setText("Delete");
@@ -1510,7 +1580,18 @@ public class ConfigService implements WebUIHandler {
         }
         ui.confirm_action = () -> {
           Port[] ports = ui.selection.get(device).getPorts();
-          device.configCreateGroup(device.nextGroupID(), ports);
+          Task task = new Task("Create Group") {
+            public void doTask() {
+              try {
+                device.configCreateGroup(device.nextGroupID(), ports);
+                setStatus("Completed");
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
         };
         ui.confirm_message.setText("Create Group : Are you sure?");
         ui.confirm_button.setText("Create");
@@ -1529,7 +1610,18 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.confirm_action = () -> {
-          ui.device.configRemoveGroup(group.getGroupID());
+          Task task = new Task("Delete Group") {
+            public void doTask() {
+              try {
+                ui.device.configRemoveGroup(group.getGroupID());
+                setStatus("Completed");
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
         };
         ui.confirm_message.setText("Delete Group : Are you sure?");
         ui.confirm_button.setText("Delete");

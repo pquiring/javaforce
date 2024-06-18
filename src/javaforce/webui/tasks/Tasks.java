@@ -39,6 +39,7 @@ public class Tasks extends Thread {
   public void addTask(Panel ui_tasks, Task task) {
     task.tasks = ui_tasks;
     task.ts_start = System.currentTimeMillis();
+    task.result = "";
     addUI(task);
     synchronized (lock) {
       taskList.add(task);

@@ -28,8 +28,7 @@ public class Port implements Serializable {
   public String vlan;  //native vlan
   public String group;
   public boolean isGroup;
-
-  public transient boolean link;
+  public boolean link;
 
   public String getGroupID() {
     if (!isGroup) return "-1";

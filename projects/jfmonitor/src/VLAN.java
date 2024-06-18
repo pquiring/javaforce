@@ -12,6 +12,13 @@ public class VLAN implements Serializable {
 
   public transient boolean valid;
 
+  public VLAN() {}
+
+  public VLAN(String id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public String id;
   public String name;
 

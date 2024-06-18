@@ -1,6 +1,6 @@
 /** Cisco API
  *
- * "terminal length 0"
+ * If a command does a more pause use "terminal length 0" to disable more.
  *
  * @author pquiring
  */
@@ -9,6 +9,7 @@ import javaforce.*;
 
 public class Cisco {
   public static final boolean debug = false;
+  public static final boolean debug_cfg = false;
   public boolean addVLANs(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
@@ -426,7 +427,7 @@ public class Cisco {
     if (!ssh.connect(ip, 22, options)) return false;
     String cfg = ssh.getOutput();
     if (cfg == null || cfg.length() == 0) return false;
-    if (debug) {
+    if (debug_cfg) {
       JFLog.log("Cisco.config=" + cfg);
     }
     device.hardware.config = cfg;
