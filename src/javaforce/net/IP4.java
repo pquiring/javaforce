@@ -69,6 +69,16 @@ public class IP4 {
   public String toString() {
     return toIP4String();
   }
+  public int toInt() {
+    int value = ip[0] & 0xff;
+    value <<= 8;
+    value += ip[1] & 0xff;
+    value <<= 8;
+    value += ip[2] & 0xff;
+    value <<= 8;
+    value += ip[3] & 0xff;
+    return value;
+  }
   public boolean isEmpty() {
     for(int a=0;a<4;a++) {
       if (ip[a] != 0) return false;

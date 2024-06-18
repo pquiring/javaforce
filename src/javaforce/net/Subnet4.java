@@ -13,7 +13,22 @@ public class Subnet4 {
   private IP4 ip = new IP4(), mask = new IP4();
   public static boolean isSubnet(String str) {
     if (!IP4.isIP(str)) return false;
-    //TODO : check bits
+    try {
+      IP4 ip = new IP4();
+      ip.setIP(str);
+      char[] bin = Integer.toBinaryString(ip.toInt()).toCharArray();
+      boolean zero = false;
+      for(int i=0;i<bin.length;i++) {
+        if (bin[i] == '0') {
+          zero = true;
+        } else {
+          if (zero) return false;
+        }
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
     return true;
   }
   public static String fromCIDR(int cidr) {
@@ -79,5 +94,8 @@ public class Subnet4 {
     JFLog.log("CIDR/26=" + fromCIDR(26));
     JFLog.log("CIDR/24=" + fromCIDR(24));
     JFLog.log("CIDR/16=" + fromCIDR(16));
+    JFLog.log("isSubnet(255.255.255.0)=" + isSubnet("255.255.255.0"));
+    JFLog.log("isSubnet(255.255.128.0)=" + isSubnet("255.255.128.0"));
+    JFLog.log("isSubnet(255.255.0.8)=" + isSubnet("255.255.0.8"));
   }
 }

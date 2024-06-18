@@ -96,7 +96,7 @@ public class Port implements Serializable {
       for(Port port : ports) {
         if (port.getGroup().equals(gid)) {
           if (cnt > 0) sb.append(",");
-          sb.append(port.getPortNumber());
+          sb.append(port.getNumber());
           cnt++;
         }
       }
@@ -105,7 +105,7 @@ public class Port implements Serializable {
     return sb.toString();
   }
 
-  public String getPortNumber() {
+  public String getNumber() {
     int idx = JF.indexOfDigit(id);
     if (idx == -1) {
       return id;
@@ -115,6 +115,6 @@ public class Port implements Serializable {
   }
 
   public String toString() {
-    return getPortNumber();
+    return getNumber();
   }
 }

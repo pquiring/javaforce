@@ -64,7 +64,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
       }
     }
     if (do_vlans) {
-      VLAN[] vs = hardware.vlans.toArray(new VLAN[0]);
+      VLAN[] vs = hardware.vlans.toArray(VLAN.ArrayType);
       for(VLAN vlan : vs) {
         if (!vlan.valid) {
           hardware.vlans.remove(vlan);
@@ -90,7 +90,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
 
   public Port getPortByNumber(String number) {
     for(Port port : hardware.ports) {
-      if (port.getPortNumber().equals(number)) {
+      if (port.getNumber().equals(number)) {
         port.valid = true;
         return port;
       }
@@ -108,6 +108,8 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     VLAN vlan = new VLAN();
     vlan.id = id;
     vlan.name = "";
+    vlan.ip = "";
+    vlan.mask = "";
     hardware.vlans.add(vlan);
     vlan.valid = true;
     return vlan;
@@ -216,6 +218,47 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         Cisco cisco = new Cisco();
         if (cisco.removeVLAN(this, vlan.id)) {
           hardware.vlans.remove(vlan);
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configEditVLAN(VLAN vlan, String name) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setVLANName(this, vlan, name)) {
+          vlan.name = name;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configAddVLAN_IP(VLAN vlan, String ip, String mask) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.addInterfaceIP(this, vlan.id, ip, mask)) {
+          vlan.ip = ip;
+          vlan.mask = mask;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configRemoveVLAN_IP(VLAN vlan, String ip, String mask) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeInterfaceIP(this, vlan.id)) {
+          vlan.ip = ip;
+          vlan.mask = mask;
           return true;
         }
         break;

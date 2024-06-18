@@ -456,7 +456,7 @@ public class Cisco {
           String id = f[1].substring(idx);
           if (id.equals("0/0")) continue;  //ignore admin port
           switch (name) {
-            case "vlan": vlan = device.getVLAN(f[1]); break;
+            case "vlan": vlan = device.getVLAN(id); break;
             case "port-channel": port = device.getGroup(f[1]); break;
             default: port = device.getPort(f[1]); break;
           }
@@ -539,7 +539,7 @@ public class Cisco {
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
-    options.command = "show interface status";
+    options.command = "show vlan brief";
     String ip = device.getip();
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
@@ -555,7 +555,7 @@ VLAN Name ...
       int i1 = JF.indexOfDigit(ln);
       if (i1 != 0) continue;
       String id = ln.substring(0, 4).trim();
-      VLAN vlan = device.getVLAN(id);
+      VLAN vlan = device.getVLAN("vlan" + id);
       if (vlan == null) continue;
       int i2 = ln.indexOf(' ', 4);
       if (i2 == -1) continue;
@@ -596,5 +596,10 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
     }
     device.removeInvalid(true, false, false);
     return false;
+  }
+
+  //TODO : show if hardware has unsaved changes
+  public void queryDiff() {
+    //show archive config differences
   }
 }

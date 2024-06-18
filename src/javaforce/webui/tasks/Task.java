@@ -17,6 +17,7 @@ public class Task extends Thread implements Status {
   protected long ts_start;
   protected long ts_stop;
   protected long ts_delta;
+  protected boolean running;
 
   public int percent;
   public boolean successful;

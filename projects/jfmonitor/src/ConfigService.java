@@ -72,7 +72,6 @@ public class ConfigService implements WebUIHandler {
     public boolean alreadyGrouped() {
       for(Port port : getPorts()) {
         if (port.group != null && port.group.length() > 0) {
-          JFLog.log("alreadyGrouped:" + port.id + ":" + port.group);
           return true;
         }
       }
@@ -139,6 +138,7 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel vlan_popup;
     public Runnable vlan_init;
+    public VLAN vlan_vlan;
 
     public PopupPanel vlans_popup;
     public Runnable vlans_init;
@@ -424,8 +424,11 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Set Port VLANs") {
           public void doTask() {
             try {
-              ui.device.configSetVLANs(port, _vlans);
-              setStatus("Completed");
+              if (ui.device.configSetVLANs(port, _vlans)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
             } catch (Exception e) {
               setStatus("Error:" + action + " failed, check logs.");
               JFLog.log(e);
@@ -443,8 +446,11 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Set Port VLAN") {
           public void doTask() {
             try {
-              ui.device.configSetVLAN(port, _vlan);
-              setStatus("Completed");
+              if (ui.device.configSetVLAN(port, _vlan)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
             } catch (Exception e) {
               setStatus("Error:" + action + " failed, check logs.");
               JFLog.log(e);
@@ -462,8 +468,11 @@ public class ConfigService implements WebUIHandler {
           Task task = new Task("Set Port Group") {
             public void doTask() {
               try {
-                ui.device.configSetGroup(_group, port);
-                setStatus("Completed");
+                if (ui.device.configSetGroup(_group, port)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
               } catch (Exception e) {
                 setStatus("Error:" + action + " failed, check logs.");
                 JFLog.log(e);
@@ -504,6 +513,18 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    row.add(new Label("IP:"));
+    TextField ip = new TextField("");
+    row.add(ip);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Mask:"));
+    TextField mask = new TextField("");
+    row.add(mask);
+
+    row = new Row();
+    panel.add(row);
     Button b_save = new Button("Save");
     row.add(b_save);
     Button b_cancel = new Button("Cancel");
@@ -516,26 +537,132 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
 
     ui.vlan_init = () -> {
-      id.setText("");
-      name.setText("");
+      if (ui.vlan_vlan == null) {
+        id.setText("");
+        id.setReadonly(false);
+        name.setText("");
+        ip.setText("");
+        mask.setText("");
+      } else {
+        id.setText(ui.vlan_vlan.getNumber());
+        id.setReadonly(true);
+        name.setText(ui.vlan_vlan.name);
+        ip.setText(ui.vlan_vlan.ip);
+        mask.setText(ui.vlan_vlan.mask);
+      }
     };
 
     b_save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
       String _id = id.getText();
       String _name = name.getText();
-      Task task = new Task("Create VLAN") {
-        public void doTask() {
-          try {
-            ui.device.configCreateVLAN(_id, _name);
-            setStatus("Completed");
-          } catch (Exception e) {
-            setStatus("Error:" + action + " failed, check logs.");
-            JFLog.log(e);
+      String _ip = ip.getText();
+      String _mask = mask.getText();
+      if (!VLAN.validVLAN(_id)) {
+        errmsg.setText("Invalid VLAN ID");
+        return;
+      }
+      if (_ip.length() > 0 || _mask.length() > 0) {
+        if (!IP4.isIP(_ip)) {
+          errmsg.setText("Invalid IP Address");
+          return;
+        }
+        if (!Subnet4.isSubnet(_mask)) {
+          errmsg.setText("Invalid Subnet Mask");
+          return;
+        }
+      }
+      if (ui.vlan_vlan == null) {
+        //create vlan
+        if (true) {
+          Task task = new Task("Create VLAN") {
+            public void doTask() {
+              try {
+                if (ui.device.configCreateVLAN(_id, _name)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+        if (_ip.length() > 0) {
+          Task task = new Task("Create VLAN IP") {
+            public void doTask() {
+              try {
+                if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+      } else {
+        //edit vlan
+        if (true) {
+          Task task = new Task("Set VLAN Name") {
+            public void doTask() {
+              try {
+                if (ui.device.configEditVLAN(ui.vlan_vlan, _name)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+        if (_ip.length() > 0) {
+          Task task = new Task("Create VLAN IP") {
+            public void doTask() {
+              try {
+                if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        } else {
+          if (ui.vlan_vlan.ip.length() > 0) {
+            Task task = new Task("Remove VLAN IP") {
+              public void doTask() {
+                try {
+                  if (ui.device.configRemoveVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
+                    setStatus("Completed");
+                  } else {
+                    setStatus("Failed");
+                  }
+                } catch (Exception e) {
+                  setStatus("Error:" + action + " failed, check logs.");
+                  JFLog.log(e);
+                }
+              }
+            };
+            Tasks.tasks.addTask(ui.tasks, task);
           }
         }
-      };
-      Tasks.tasks.addTask(ui.tasks, task);
+      }
       ui.vlans_init.run();
       QueryHardware.scan_now = true;
       panel.setVisible(false);
@@ -559,26 +686,42 @@ public class ConfigService implements WebUIHandler {
 
     Button add = new Button("Add");
     tools.add(add);
+    Button edit = new Button("Edit");
+    tools.add(edit);
     Button delete = new Button("Delete");
     tools.add(delete);
 
-    Table table = new Table(new int[] {64, 128}, 32, 2, 0);
+    Table table = new Table(new int[] {64, 128, 128, 128}, 32, 4, 0);
     table.setBorder(true);
+    table.setSelectionMode(Table.SELECT_ROW);
     panel.add(table);
 
     ui.vlans_init = () -> {
-      table.setTableSize(2, 0);
       if (ui.device == null) return;
-      ui.vlans_vlans = ui.device.hardware.vlans.toArray(new VLAN[0]);
+      ui.vlans_vlans = ui.device.hardware.vlans.toArray(VLAN.ArrayType);
+      while (table.getRows() > 0) {
+        table.removeRow(0);
+      }
       for(VLAN vlan : ui.vlans_vlans) {
-        table.addRow(new Component[] {new Label(vlan.id), new Label(vlan.name)});
+        table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.name), new Label(vlan.ip), new Label(vlan.mask)});
       }
     };
 
     Button close = new Button("Close");
     close.setAlign(Component.RIGHT);
+    panel.add(close);
 
     add.addClickListener((me, cmp) -> {
+      ui.vlan_vlan = null;
+      ui.vlan_init.run();
+      ui.vlan_popup.setVisible(true);
+    });
+
+    edit.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      ui.vlan_vlan = ui.vlans_vlans[idx];
+      ui.vlan_init.run();
       ui.vlan_popup.setVisible(true);
     });
 
@@ -590,8 +733,11 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Delete VLAN") {
           public void doTask() {
             try {
-              ui.device.configRemoveVLAN(vlan);
-              setStatus("Completed");
+              if (ui.device.configRemoveVLAN(vlan)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
             } catch (Exception e) {
               setStatus("Error:" + action + " failed, check logs.");
               JFLog.log(e);
@@ -1583,8 +1729,11 @@ public class ConfigService implements WebUIHandler {
           Task task = new Task("Create Group") {
             public void doTask() {
               try {
-                device.configCreateGroup(device.nextGroupID(), ports);
-                setStatus("Completed");
+                if (device.configCreateGroup(device.nextGroupID(), ports)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
               } catch (Exception e) {
                 setStatus("Error:" + action + " failed, check logs.");
                 JFLog.log(e);
@@ -1613,8 +1762,11 @@ public class ConfigService implements WebUIHandler {
           Task task = new Task("Delete Group") {
             public void doTask() {
               try {
-                ui.device.configRemoveGroup(group.getGroupID());
-                setStatus("Completed");
+                if (ui.device.configRemoveGroup(group.getGroupID())) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
               } catch (Exception e) {
                 setStatus("Error:" + action + " failed, check logs.");
                 JFLog.log(e);
@@ -1956,5 +2108,9 @@ public class ConfigService implements WebUIHandler {
       c.get(Calendar.HOUR_OF_DAY),
       c.get(Calendar.MINUTE),
       c.get(Calendar.SECOND));
+  }
+
+  public static String numbers(String str) {
+    return JF.filter(str, JF.filter_numeric);
   }
 }

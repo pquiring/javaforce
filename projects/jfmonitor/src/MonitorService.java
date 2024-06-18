@@ -83,6 +83,7 @@ public class MonitorService extends Thread {
     configService.start();
     //start tasks service
     Tasks.init();
+    Tasks.tasks.setSequential(true);
     //start redir service
     redirService = new WebServerRedir();
     redirService.start(80, 443);

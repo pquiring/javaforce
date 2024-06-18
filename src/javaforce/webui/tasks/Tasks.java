@@ -17,7 +17,9 @@ import javaforce.webui.*;
 public class Tasks extends Thread {
   private Object lock = new Object();
   private ArrayList<Task> taskList = new ArrayList<>();
+  private ArrayList<Task> waiting = new ArrayList<>();
   private boolean active = true;
+  private boolean sequential = false;
 
   public static Tasks tasks;
 
@@ -31,9 +33,22 @@ public class Tasks extends Thread {
     active = false;
   }
 
+  /** Perform tasks one at a time. */
+  public void setSequential(boolean state) {
+    sequential = state;
+  }
+
   private void addUI(Task task) {
     task.taskui = new TaskUI(task);
     task.tasks.add(0, task.taskui);  //add at top of panel
+  }
+
+  private boolean busy() {
+    if (waiting.size() > 0) return true;
+    for(Task task : taskList) {
+      if (task.running) return true;
+    }
+    return false;
   }
 
   public void addTask(Panel ui_tasks, Task task) {
@@ -42,9 +57,20 @@ public class Tasks extends Thread {
     task.result = "";
     addUI(task);
     synchronized (lock) {
-      taskList.add(task);
+      if (sequential) {
+        if (busy()) {
+          waiting.add(task);
+        } else {
+          task.running = true;
+          taskList.add(task);
+          task.start();
+        }
+      } else {
+        task.running = true;
+        taskList.add(task);
+        task.start();
+      }
     }
-    task.start();
   }
 
   private void updateUI(Task task) {
@@ -54,6 +80,17 @@ public class Tasks extends Thread {
   public void completed(Task task) {
     task.ts_stop = System.currentTimeMillis();
     task.ts_delta = task.ts_stop - task.ts_start;
+    synchronized (lock) {
+      task.running = false;
+      if (sequential) {
+        if (waiting.size() > 0) {
+          Task next = waiting.remove(0);
+          next.running = true;
+          taskList.add(next);
+          next.start();
+        }
+      }
+    }
     updateUI(task);
     JFLog.log("Task completed:" + task.action + ":result=" + task.result);
   }

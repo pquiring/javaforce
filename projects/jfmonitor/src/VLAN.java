@@ -10,6 +10,8 @@ import javaforce.*;
 public class VLAN implements Serializable {
   public static final long serialVersionUID = 1;
 
+  public static final VLAN[] ArrayType = new VLAN[0];
+
   public transient boolean valid;
 
   public VLAN() {}
@@ -24,6 +26,15 @@ public class VLAN implements Serializable {
 
   //interface
   public String ip, mask;
+
+  public String getNumber() {
+    int idx = JF.indexOfDigit(id);
+    if (idx == -1) {
+      return id;
+    } else {
+      return id.substring(idx);
+    }
+  }
 
   public static boolean validVLAN(String vlan) {
     String num = JF.filter(vlan, JF.filter_numeric);
