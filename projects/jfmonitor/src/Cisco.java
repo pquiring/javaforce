@@ -236,6 +236,48 @@ public class Cisco {
     }
     return ok;
   }
+  public boolean addPortToGroup(Device device, String gid, Port port) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;interface " + port.id + ";channel-group " + gid + ";exit;exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("createGroup:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean removePortFromGroup(Device device, Port port) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;interface " + port.id + ";no channel-group;exit;exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("createGroup:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
   public boolean removeGroup(Device device, String gid) {
     //no interface port-channel #
     SSH ssh = new SSH();

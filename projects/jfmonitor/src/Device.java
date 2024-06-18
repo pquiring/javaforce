@@ -5,11 +5,6 @@
 
 import java.io.Serializable;
 
-import java.util.*;
-
-import javaforce.*;
-import javaforce.webui.*;
-
 public class Device implements Serializable, Comparable<Device>, Cloneable {
   public static final long serialVersionUID = 1;
 
@@ -121,6 +116,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
     Port group = new Port();
     group.id = id;
+    group.isGroup = true;
     hardware.groups.add(group);
     group.valid = true;
     return group;
@@ -187,6 +183,40 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         cisco.removeVLAN(this, vlan.id);
         break;
     }
+  }
+
+  public void createGroup(String gid, Port[] ports) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        cisco.createGroup(this, gid);
+        for(Port port : ports) {
+          cisco.addPortToGroup(this, gid, port);
+        }
+        break;
+    }
+  }
+
+  public void removeGroup(String gid) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        cisco.removeGroup(this, gid);
+        break;
+    }
+  }
+
+  public String nextGroupID() {
+    Port[] groups = hardware.groups.toArray(new Port[0]);
+    if (groups.length == 0) return "1";
+    int max = 1;
+    for(Port group : groups) {
+      int gid = Integer.valueOf(group.getGroupID());
+      if (gid > max) {
+        max = gid + 1;
+      }
+    }
+    return Integer.toString(max);
   }
 
   public void saveConfig() {

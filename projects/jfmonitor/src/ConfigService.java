@@ -61,6 +61,20 @@ public class ConfigService implements WebUIHandler {
       return ports.size();
     }
 
+    public boolean containsGroup() {
+      for(Port port : getPorts()) {
+        if (port.isGroup) return true;
+      }
+      return false;
+    }
+
+    public boolean alreadyGrouped() {
+      for(Port port : getPorts()) {
+        if (port.group != null && port.group.length() > 0) return true;
+      }
+      return false;
+    }
+
     private Port[] getPorts() {
       return ports.keySet().toArray(new Port[0]);
     }
@@ -1439,10 +1453,41 @@ public class ConfigService implements WebUIHandler {
         ui.vlans_popup.setVisible(true);
       });
 
-      //TODO : add group
+      addGroup.addClickListener((me, cmp) -> {
+        if (ui.selection.get(device).size() < 1) {
+          errmsg.setText("Must select more than one port to make a group");
+          return;
+        }
+        if (ui.selection.get(device).containsGroup()) {
+          errmsg.setText("Do not select a group port to create a group");
+          return;
+        }
+        if (ui.selection.get(device).alreadyGrouped()) {
+          errmsg.setText("One or more ports is already in a group");
+          return;
+        }
+        Port[] ports = ui.selection.get(device).getPorts();
+        device.createGroup(device.nextGroupID(), ports);
+      });
 
-
-      //TODO : remove group
+      removeGroup.addClickListener((me, cmp) -> {
+        errmsg.setText("");
+        if (ui.selection.get(device).size() != 1) {
+          errmsg.setText("Must select one group port");
+          return;
+        }
+        Port group = ui.selection.get(device).getPorts()[0];
+        if (!group.isGroup) {
+          errmsg.setText("Must select one group port");
+          return;
+        }
+        ui.confirm_action = () -> {
+          ui.device.removeGroup(group.getGroupID());
+        };
+        ui.confirm_message.setText("Delete Group : Are you sure?");
+        ui.confirm_button.setText("Delete");
+        ui.confirm_popup.setVisible(true);
+      });
 
       save.addClickListener((me, cmp) -> {
         device.saveConfig();

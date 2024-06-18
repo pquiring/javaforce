@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.webui.*;
 
 public class Port implements Serializable {
   public static final long serialVersionUID = 1;
@@ -26,8 +25,20 @@ public class Port implements Serializable {
   public ArrayList<String> vlans = new ArrayList<>();  //allowed vlans
   public String vlan;  //native vlan
   public String group;
+  public boolean isGroup;
 
   public transient boolean link;
+
+  public String getGroupID() {
+    if (!isGroup) return "-1";
+    int idx = JF.indexOfDigit(id);
+    if (idx == -1) return "-1";
+    return id.substring(idx);
+  }
+
+  public String getGroup() {
+    return group;
+  }
 
   public String getVLANs() {
     return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));
