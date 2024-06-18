@@ -24,7 +24,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   public Device clone() {
     try {
       Device clone = (Device)super.clone();  //shallow copy
-      clone.hardware = clone.hardware.clone();
+      clone.hardware = hardware.clone();
       return clone;
     } catch (Exception e) {
       return null;
@@ -100,10 +100,6 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   }
 
   public VLAN getVLAN(String id) {
-    if (!id.startsWith("vlan")) {
-      JFLog.logTrace("invalid vlan id");
-      return null;
-    }
     for(VLAN vlan : hardware.vlans) {
       if (vlan.id.equals(id)) {
         vlan.valid = true;

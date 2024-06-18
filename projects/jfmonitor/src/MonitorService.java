@@ -28,6 +28,7 @@ public class MonitorService extends Thread {
       switch (arg) {
         case "debug":
           JFLog.log("Debug mode enabled");
+          Config.debug = true;
           Cisco.debug = true;
           break;
       }

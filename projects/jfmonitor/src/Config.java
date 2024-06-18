@@ -18,6 +18,7 @@ public class Config implements Serializable {
   public static Config current;
 
   public static boolean pcap;
+  public static boolean debug;
 
   public String mode;  //'install','client','server'
   public String server_host;  //if client

@@ -600,7 +600,7 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
       port.link = ln.indexOf("connected") != -1;
     }
     device.removeInvalid(true, false, false);
-    return false;
+    return true;
   }
 
   //TODO : show if hardware has unsaved changes

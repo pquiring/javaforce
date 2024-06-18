@@ -17,6 +17,7 @@ public class VLAN implements Serializable, Comparable<VLAN> {
   public VLAN() {}
 
   public VLAN(String id, String name) {
+    JFLog.log("VLAN(" + id + "," + name + ")");
     this.id = id;
     this.name = name;
     ip = "";
