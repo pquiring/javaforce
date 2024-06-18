@@ -390,7 +390,6 @@ public class Cisco {
     device.hardware.config = cfg;
     String[] lns = cfg.replaceAll("\\r", "").split("\n");
     VLAN vlan = null;
-    Port group = null;
     Port port = null;
     device.resetValid();
     for(String ln : lns) {
@@ -399,7 +398,6 @@ public class Cisco {
       if (ln.startsWith("!")) {
         //end of section
         vlan = null;
-        group = null;
         port = null;
         continue;
       }
@@ -416,7 +414,7 @@ public class Cisco {
           if (id.equals("0/0")) continue;  //ignore admin port
           switch (name) {
             case "vlan": vlan = device.getVLAN(f[1]); break;
-            case "port-channel": group = device.getGroup(f[1]); break;
+            case "port-channel": port = device.getGroup(f[1]); break;
             default: port = device.getPort(f[1]); break;
           }
           break;
@@ -436,9 +434,6 @@ public class Cisco {
                     if (port != null) {
                       port.setVLANs(f[4].split(","));
                     }
-                    if (group != null) {
-                      group.setVLANs(f[4].split(","));
-                    }
                   }
                   break;
               }
@@ -446,9 +441,6 @@ public class Cisco {
             case "mode":
               if (port != null) {
                 port.mode = f[2];  //trunk or access
-              }
-              if (group != null) {
-                group.mode = f[2];  //trunk or access
               }
               break;
           }
@@ -463,10 +455,6 @@ public class Cisco {
             port.ip = f[2];
             port.mask = f[3];
           }
-          if (group != null) {
-            group.ip = f[2];
-            group.mask = f[3];
-          }
           if (vlan != null) {
             vlan.ip = f[2];
             vlan.mask = f[3];
@@ -478,10 +466,6 @@ public class Cisco {
               if (port != null) {
                 port.ip = null;
                 port.mask = null;
-              }
-              if (group != null) {
-                group.ip = null;
-                group.mask = null;
               }
               if (vlan != null) {
                 vlan.ip = null;
@@ -495,11 +479,9 @@ public class Cisco {
         case "spanning-tree":
           break;
         case "description":
+          String desc = ln.substring(12);
           if (port != null) {
-            port.name = f[1];
-          }
-          if (group != null) {
-            group.name = f[1];
+            port.name = desc;
           }
           break;
       }
