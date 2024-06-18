@@ -158,7 +158,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
-  public void setPortName(Port port, String name) {
+  public void configSetPortName(Port port, String name) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
@@ -167,7 +167,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public void createVLAN(String id, String name) {
+  public void configCreateVLAN(String id, String name) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
@@ -176,7 +176,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public void removeVLAN(VLAN vlan) {
+  public void configRemoveVLAN(VLAN vlan) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
@@ -185,7 +185,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public void createGroup(String gid, Port[] ports) {
+  public void configCreateGroup(String gid, Port[] ports) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
@@ -197,11 +197,24 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public void removeGroup(String gid) {
+  public void configRemoveGroup(String gid) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
         cisco.removeGroup(this, gid);
+        break;
+    }
+  }
+
+  public void configSetGroup(String gid, Port port) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (gid.length() == 0) {
+          cisco.removePortFromGroup(this, port);
+        } else {
+          cisco.addPortToGroup(this, gid, port);
+        }
         break;
     }
   }

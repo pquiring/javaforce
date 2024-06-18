@@ -37,7 +37,13 @@ public class Port implements Serializable {
   }
 
   public String getGroup() {
+    if (group == null) group = "";
     return group;
+  }
+
+  public static boolean validGroup(String gid) {
+    if (gid.length() == 0) return true;
+    return gid.equals(JF.filter(gid, JF.filter_numeric));
   }
 
   public String getVLANs() {

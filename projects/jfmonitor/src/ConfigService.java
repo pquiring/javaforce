@@ -84,7 +84,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     public Port getPort(int idx) {
-      return getPorts()[0];
+      return getPorts()[idx];
     }
 
     public void setSelection(Port port, Component cell) {
@@ -340,6 +340,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    row.add(new Label("Group:"));
+    TextField group = new TextField("");
+    row.add(group);
+
+    row = new Row();
+    panel.add(row);
     Button b_save = new Button("Save");
     row.add(b_save);
     Button b_cancel = new Button("Cancel");
@@ -353,19 +359,12 @@ public class ConfigService implements WebUIHandler {
 
     ui.port_init = () -> {
       errmsg.setText("");
-      if (ui.device == null) {
-        errmsg.setText("Error:ui.device == null");
-        return;
-      }
-      if (ui.selection.get(ui.device).size() != 1) {
-        errmsg.setText("Must select only one port to edit");
-        return;
-      }
       Port port = ui.selection.get(ui.device).getPort(0);
       port_msg.setText("Port:" + port.id);
       name.setText(port.name);
       vlans.setText(port.getVLANs());
       vlan.setText(port.getVLAN());
+      group.setText(port.getGroup());
     };
 
     b_save.addClickListener((MouseEvent e, Component button) -> {
@@ -373,11 +372,12 @@ public class ConfigService implements WebUIHandler {
       String _name = name.getText();
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
+      String _group = group.getText();
       Port port = ui.selection.get(ui.device).getPort(0);
       if (port == null) return;
       if (!port.name.equals(_name)) {
         //change name
-        ui.device.setPortName(port, _name);
+        ui.device.configSetPortName(port, _name);
       }
       if (!port.getVLANs().equals(_vlans)) {
         //change vlans
@@ -396,6 +396,14 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.device.configSetVLAN(port, _vlan);
+      }
+      if (!port.getGroup().equals(_group)) {
+        //change group membership
+        if (_group.length() > 0 && !Port.validGroup(_group)) {
+          errmsg.setText("Invalid Group");
+          return;
+        }
+        ui.device.configSetGroup(_group, port);
       }
       QueryHardware.scan_now = true;
       panel.setVisible(false);
@@ -449,7 +457,7 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       String _id = id.getText();
       String _name = name.getText();
-      ui.device.createVLAN(_id, _name);
+      ui.device.configCreateVLAN(_id, _name);
       ui.vlans_init.run();
       QueryHardware.scan_now = true;
       panel.setVisible(false);
@@ -501,7 +509,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       VLAN vlan = ui.vlans_vlans[idx];
       ui.confirm_action = () -> {
-        ui.device.removeVLAN(vlan);
+        ui.device.configRemoveVLAN(vlan);
       };
       ui.confirm_message.setText("Delete Device : Are you sure?");
       ui.confirm_button.setText("Delete");
@@ -1442,6 +1450,10 @@ public class ConfigService implements WebUIHandler {
       }
 
       editPort.addClickListener((me, cmp) -> {
+        if (ui.selection.get(device).size() != 1) {
+          errmsg.setText("Must select only one port to edit");
+          return;
+        }
         ui.device = device;
         ui.port_init.run();
         ui.port_popup.setVisible(true);
@@ -1467,7 +1479,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         Port[] ports = ui.selection.get(device).getPorts();
-        device.createGroup(device.nextGroupID(), ports);
+        device.configCreateGroup(device.nextGroupID(), ports);
       });
 
       removeGroup.addClickListener((me, cmp) -> {
@@ -1482,7 +1494,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.confirm_action = () -> {
-          ui.device.removeGroup(group.getGroupID());
+          ui.device.configRemoveGroup(group.getGroupID());
         };
         ui.confirm_message.setText("Delete Group : Are you sure?");
         ui.confirm_button.setText("Delete");
