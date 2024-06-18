@@ -676,16 +676,14 @@ public class ConfigService implements WebUIHandler {
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
-    table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask")});
     panel.add(table);
 
     ui.vlans_init = () -> {
       if (ui.device == null) return;
       ui.vlans_vlans = ui.device.hardware.vlans.toArray(VLAN.ArrayType);
       Arrays.sort(ui.vlans_vlans);
-      while (table.getRows() > 0) {
-        table.removeRow(0);
-      }
+      table.removeAll();
+      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask")});
       for(VLAN vlan : ui.vlans_vlans) {
         table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.name), new Label(vlan.ip), new Label(vlan.mask)});
       }
