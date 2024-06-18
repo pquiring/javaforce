@@ -66,11 +66,15 @@ public class ConfigService implements WebUIHandler {
     public Runnable confirm_action;
 
     public Device device;
+
     public PopupPanel port_popup;
     public Runnable port_init;
     public Label port_msg;
     public TextField port_vlans;
     public TextField port_vlan;
+
+    public PopupPanel vlan_popup;
+    public Runnable vlan_init;
   }
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
@@ -258,6 +262,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    row.add(new Label("Name"));
+    TextField name = new TextField("");
+    row.add(name);
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("VLANs:"));
     TextField vlans = new TextField("");
     row.add(vlans);
@@ -292,16 +302,22 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       port_msg.setText("Port:" + port.id);
+      name.setText(port.name);
       vlans.setText(port.getVLANs());
       vlan.setText(port.getVLAN());
     };
 
     b_save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
+      String _name = name.getText();
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
       Port port = ui.device.selection.get(0);
       if (port == null) return;
+      if (!port.name.equals(_name)) {
+        //change name
+        ui.device.setPortName(port, _name);
+      }
       if (!port.getVLANs().equals(_vlans)) {
         //change vlans
         if (!VLAN.validVLANs(_vlans)) {
@@ -332,6 +348,59 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private PopupPanel editVLANPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Edit VLAN");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("VLAN ID:"));
+    TextField id = new TextField("");
+    row.add(id);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name:"));
+    TextField name = new TextField("");
+    row.add(name);
+
+    row = new Row();
+    panel.add(row);
+    Button b_save = new Button("Save");
+    row.add(b_save);
+    Button b_cancel = new Button("Cancel");
+    row.add(b_cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    ui.vlan_init = () -> {
+      id.setText("");
+      name.setText("");
+    };
+
+    b_save.addClickListener((MouseEvent e, Component button) -> {
+      errmsg.setText("");
+      String _id = id.getText();
+      String _name = name.getText();
+      ui.device.createVLAN(_id, _name);
+      QueryHardware.scan_now = true;
+      panel.setVisible(false);
+    });
+    b_cancel.addClickListener((MouseEvent e, Component button) -> {
+      panel.setVisible(false);
+    });
+    panel.setOnClose( () -> {
+      b_cancel.click();
+    });
+    return panel;
+  }
+
   public Panel serverPanel(WebUIClient webclient) {
     Panel panel = new Panel();
 
@@ -345,6 +414,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.port_popup = editPortPopupPanel(ui);
     panel.add(ui.port_popup);
+
+    ui.vlan_popup = editVLANPopupPanel(ui);
+    panel.add(ui.vlan_popup);
 
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");

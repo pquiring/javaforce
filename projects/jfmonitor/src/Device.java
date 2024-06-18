@@ -83,6 +83,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
     Port port = new Port();
     port.id = id;
+    port.name = "";
     hardware.ports.add(port);
     port.valid = true;
     return port;
@@ -107,6 +108,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
     VLAN vlan = new VLAN();
     vlan.id = id;
+    vlan.name = "";
     hardware.vlans.add(vlan);
     vlan.valid = true;
     return vlan;
@@ -174,6 +176,24 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
       selection.remove(port);
     } else {
       selection.add(port);
+    }
+  }
+
+  public void setPortName(Port port, String name) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        cisco.setPortName(this, port, name);
+        break;
+    }
+  }
+
+  public void createVLAN(String id, String name) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        cisco.createVLAN(this, id, name);
+        break;
     }
   }
 

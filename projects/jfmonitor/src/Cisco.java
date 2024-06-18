@@ -536,7 +536,7 @@ VLAN Name ...
       if (i2 == -1) continue;
       vlan.name = ln.substring(4, i2);
     }
-    return false;
+    return true;
   }
 
   public boolean queryStatus(Device device) {
