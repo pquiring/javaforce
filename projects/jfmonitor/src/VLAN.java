@@ -19,6 +19,8 @@ public class VLAN implements Serializable, Comparable<VLAN> {
   public VLAN(String id, String name) {
     this.id = id;
     this.name = name;
+    ip = "";
+    mask = "";
   }
 
   public String id;

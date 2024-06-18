@@ -99,7 +99,12 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;vlan " + vid + ";name " + name + ";exit;exit;exit";
+    String cmds;
+    if (name.length() > 0) {
+      cmds = "config terminal;vlan " + vid + ";name " + name + ";exit;exit;exit";
+    } else {
+      cmds = "config terminal;vlan " + vid + ";exit;exit;exit";
+    }
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
