@@ -528,7 +528,7 @@ public class Cisco {
           break;
       }
     }
-    device.removeInvalid();
+    device.removeInvalid(true, true, true);
     return true;
   }
 
@@ -593,7 +593,7 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
       if (port == null) continue;
       port.link = ln.indexOf("connected") != -1;
     }
-    device.removeInvalid();
+    device.removeInvalid(true, false, false);
     return false;
   }
 }

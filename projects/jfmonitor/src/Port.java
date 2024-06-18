@@ -12,6 +12,8 @@ import javaforce.*;
 public class Port implements Serializable {
   public static final long serialVersionUID = 1;
 
+  public static final Port[] ArrayType = new Port[0];
+
   public transient boolean valid;
 
   public String id;

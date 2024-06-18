@@ -70,17 +70,20 @@ public class ConfigService implements WebUIHandler {
 
     public boolean alreadyGrouped() {
       for(Port port : getPorts()) {
-        if (port.group != null && port.group.length() > 0) return true;
+        if (port.group != null && port.group.length() > 0) {
+          JFLog.log("alreadyGrouped:" + port.id + ":" + port.group);
+          return true;
+        }
       }
       return false;
     }
 
     private Port[] getPorts() {
-      return ports.keySet().toArray(new Port[0]);
+      return ports.keySet().toArray(Port.ArrayType);
     }
 
     private Component[] getComponents() {
-      return ports.values().toArray(new Component[0]);
+      return ports.values().toArray(Component.ArrayType);
     }
 
     public Port getPort(int idx) {
@@ -400,7 +403,7 @@ public class ConfigService implements WebUIHandler {
       }
       if (!port.getGroup().equals(_group)) {
         //change group membership
-        if (_group.length() > 0 && !Port.validGroup(_group)) {
+        if (_group.length() > 0 && (!Port.validGroup(_group) || !ui.device.groupExists(_group))) {
           errmsg.setText("Invalid Group");
           return;
         }
@@ -1340,12 +1343,15 @@ public class ConfigService implements WebUIHandler {
     } else {
       cell.setBackColor(Color.grey);
     }
+    if (!ui.selection.containsKey(device)) {
+      ui.selection.put(device, new Selection());
+    }
     cell.addClickListener((me, cmp) -> {
       if (me.ctrlKey)
         ui.selection.get(device).invertSelection(port, cell);
       else
         ui.selection.get(device).setSelection(port, cell);
-      msg.setText("Port:" + port.info(device.hardware.ports.toArray(new Port[0])));
+      msg.setText("Port:" + port.info(device.hardware.ports.toArray(Port.ArrayType)));
     });
   }
 
@@ -1421,10 +1427,10 @@ public class ConfigService implements WebUIHandler {
       int gidx = 0;
       int gcnt = hw.groups.size();
       int pcnt = hw.ports.size();
-      for(int idx = 0;idx < pcnt;) {
-        int idx2 = idx + 1;
-        Port p1 = hw.ports.get(idx);
-        Port p2 = idx2 < pcnt ? hw.ports.get(idx + 1) : null;
+      for(int pidx = 0;pidx < pcnt;) {
+        int idx2 = pidx + 1;
+        Port p1 = hw.ports.get(pidx);
+        Port p2 = idx2 < pcnt ? hw.ports.get(pidx + 1) : null;
 
         Component c1 = new Label(p1.toString());
         setupPortCell(c1, device, p1, msg, ui);
@@ -1436,6 +1442,7 @@ public class ConfigService implements WebUIHandler {
         }
 
         if (gidx < gcnt) {
+          JFLog.log("display group:" + gidx);
           Port p3 = hw.groups.get(gidx++);
           Component c3 = new Label(p3.toString());
           setupPortCell(c3, device, p3, msg, ui);
@@ -1444,7 +1451,7 @@ public class ConfigService implements WebUIHandler {
           table.addColumn(new Component[] {c1, c2});
         }
 
-        idx += 2;
+        pidx += 2;
       }
       if (pcnt == 0) {
         table.addColumn(new Component[] {new Label("?"), new Label("?")});

@@ -134,6 +134,10 @@ public class WebUIClient {
           break;
       }
     } else {
+      if (root == null) {
+        JFLog.log("Error:root panel not set");
+        return;
+      }
       Component c = root.get(id);
       if (c != null) {
         c.dispatchEvent(event, msg_args);

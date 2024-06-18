@@ -13,6 +13,9 @@ import javaforce.webui.event.*;
 import static javaforce.webui.event.KeyEvent.*;
 
 public abstract class Component {
+
+  public static final Component[] ArrayType = new Component[0];
+
   public String id;
   public Container parent;
   public WebUIClient client;

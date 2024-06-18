@@ -46,23 +46,29 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public void removeInvalid() {
-    Port[] ps = hardware.ports.toArray(new Port[0]);
-    for(Port port : ps) {
-      if (!port.valid) {
-        hardware.ports.remove(port);
+  public void removeInvalid(boolean do_ports, boolean do_groups, boolean do_vlans) {
+    if (do_ports) {
+      Port[] ps = hardware.ports.toArray(Port.ArrayType);
+      for(Port port : ps) {
+        if (!port.valid) {
+          hardware.ports.remove(port);
+        }
       }
     }
-    Port[] gs = hardware.groups.toArray(new Port[0]);
-    for(Port group : gs) {
-      if (!group.valid) {
-        hardware.groups.remove(group);
+    if (do_groups) {
+      Port[] gs = hardware.groups.toArray(Port.ArrayType);
+      for(Port group : gs) {
+        if (!group.valid) {
+          hardware.groups.remove(group);
+        }
       }
     }
-    VLAN[] vs = hardware.vlans.toArray(new VLAN[0]);
-    for(VLAN vlan : vs) {
-      if (!vlan.valid) {
-        hardware.vlans.remove(vlan);
+    if (do_vlans) {
+      VLAN[] vs = hardware.vlans.toArray(new VLAN[0]);
+      for(VLAN vlan : vs) {
+        if (!vlan.valid) {
+          hardware.vlans.remove(vlan);
+        }
       }
     }
   }
@@ -220,7 +226,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   }
 
   public String nextGroupID() {
-    Port[] groups = hardware.groups.toArray(new Port[0]);
+    Port[] groups = hardware.groups.toArray(Port.ArrayType);
     if (groups.length == 0) return "1";
     int max = 1;
     for(Port group : groups) {
@@ -239,6 +245,13 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         cisco.saveConfig(this);
         break;
     }
+  }
+
+  public boolean groupExists(String gid) {
+    for(Port group : hardware.groups.toArray(Port.ArrayType)) {
+      if (group.getGroupID().equals(gid)) return true;
+    }
+    return false;
   }
 
   public String toString() {
