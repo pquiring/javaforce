@@ -48,6 +48,11 @@ public class Port implements Serializable {
     return gid.equals(JF.filter(gid, JF.filter_numeric));
   }
 
+  public String getName() {
+    if (name == null) name = "";
+    return name;
+  }
+
   public String getVLANs() {
     return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));
   }

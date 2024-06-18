@@ -365,7 +365,7 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       Port port = ui.selection.get(ui.device).getPort(0);
       port_msg.setText("Port:" + port.id);
-      name.setText(port.name);
+      name.setText(port.getName());
       vlans.setText(port.getVLANs());
       vlan.setText(port.getVLAN());
       group.setText(port.getGroup());
