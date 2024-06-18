@@ -562,9 +562,9 @@ VLAN Name ...
       String id = ln.substring(0, 4).trim();
       VLAN vlan = device.getVLAN("vlan" + id);
       if (vlan == null) continue;
-      int i2 = ln.indexOf(' ', 4);
+      int i2 = ln.indexOf(' ', 5);
       if (i2 == -1) continue;
-      vlan.name = ln.substring(4, i2);
+      vlan.name = ln.substring(5, i2);
     }
     return true;
   }
