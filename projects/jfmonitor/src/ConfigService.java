@@ -75,6 +75,10 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel vlan_popup;
     public Runnable vlan_init;
+
+    public PopupPanel vlans_popup;
+    public Runnable vlans_init;
+    public VLAN[] vlans_vlans;
   }
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
@@ -389,6 +393,7 @@ public class ConfigService implements WebUIHandler {
       String _id = id.getText();
       String _name = name.getText();
       ui.device.createVLAN(_id, _name);
+      ui.vlans_init.run();
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
@@ -398,6 +403,62 @@ public class ConfigService implements WebUIHandler {
     panel.setOnClose( () -> {
       b_cancel.click();
     });
+    return panel;
+  }
+
+  private PopupPanel viewVLANsPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Edit VLAN");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+
+    Button add = new Button("Add");
+    tools.add(add);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+
+    Table table = new Table(new int[] {64, 128}, 32, 2, 0);
+    table.setBorder(true);
+    panel.add(table);
+
+    ui.vlans_init = () -> {
+      table.setTableSize(2, 0);
+      if (ui.device == null) return;
+      ui.vlans_vlans = ui.device.hardware.vlans.toArray(new VLAN[0]);
+      for(VLAN vlan : ui.vlans_vlans) {
+        table.addRow(new Component[] {new Label(vlan.id), new Label(vlan.name)});
+      }
+    };
+
+    Button close = new Button("Close");
+    close.setAlign(Component.RIGHT);
+
+    add.addClickListener((me, cmp) -> {
+      ui.vlan_popup.setVisible(true);
+    });
+
+    delete.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      VLAN vlan = ui.vlans_vlans[idx];
+      ui.confirm_action = () -> {
+        ui.device.removeVLAN(vlan);
+      };
+      ui.confirm_message.setText("Delete Device : Are you sure?");
+      ui.confirm_button.setText("Delete");
+      ui.confirm_popup.setVisible(true);
+    });
+
+    close.addClickListener((me, cmp) -> {
+      panel.setVisible(false);
+    });
+
+    panel.setOnClose( () -> {
+      close.click();
+    });
+
     return panel;
   }
 
@@ -415,8 +476,12 @@ public class ConfigService implements WebUIHandler {
     ui.port_popup = editPortPopupPanel(ui);
     panel.add(ui.port_popup);
 
+    ui.vlans_popup = viewVLANsPopupPanel(ui);
+    panel.add(ui.vlans_popup);
+
     ui.vlan_popup = editVLANPopupPanel(ui);
     panel.add(ui.vlan_popup);
+
 
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");
@@ -1250,10 +1315,8 @@ public class ConfigService implements WebUIHandler {
       panel.add(tools);
       Button editPort = new Button("Edit Port");
       tools.add(editPort);
-      Button addVLAN = new Button("Add VLAN");
-      tools.add(addVLAN);
-      Button removeVLAN = new Button("Remove VLAN");
-      tools.add(removeVLAN);
+      Button viewVLAN = new Button("View VLANs");
+      tools.add(viewVLAN);
       Button addGroup = new Button("Create Group");
       tools.add(addGroup);
       Button removeGroup = new Button("Remove Group");
@@ -1321,9 +1384,11 @@ public class ConfigService implements WebUIHandler {
         ui.port_popup.setVisible(true);
       });
 
-      //add vlan
-
-      //remove vlan
+      viewVLAN.addClickListener((me, cmp) -> {
+        ui.device = device;
+        ui.vlans_init.run();
+        ui.vlans_popup.setVisible(true);
+      });
 
       //add group
 

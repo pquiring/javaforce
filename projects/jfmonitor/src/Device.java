@@ -197,6 +197,15 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
+  public void removeVLAN(VLAN vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        cisco.removeVLAN(this, vlan.id);
+        break;
+    }
+  }
+
   public void saveConfig() {
     switch (type) {
       case TYPE_CISCO:

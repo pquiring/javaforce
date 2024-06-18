@@ -378,7 +378,7 @@ public class Cisco {
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
     options.type = SSH.TYPE_EXEC;
-    options.command = "show configuration";
+    options.command = "show running-config";
     String ip = device.getip();
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
