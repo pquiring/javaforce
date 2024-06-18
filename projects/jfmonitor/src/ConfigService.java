@@ -1768,7 +1768,7 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Save Config") {
           public void doTask() {
             try {
-              if (ui.device.saveConfig()) {
+              if (device.saveConfig()) {
                 setStatus("Completed");
               } else {
                 setStatus("Failed");
