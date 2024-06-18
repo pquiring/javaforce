@@ -7,6 +7,7 @@ import java.util.*;
 import java.nio.file.*;
 
 import javaforce.*;
+import javaforce.webui.tasks.*;
 
 public class VirtualMachine implements Serializable {
   private static final long serialVersionUID = 1L;

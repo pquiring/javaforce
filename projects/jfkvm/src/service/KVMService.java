@@ -15,7 +15,6 @@ public class KVMService extends Thread {
   public static KVMService kvmService;
   public static ConfigService configService;
   public static WebServerRedir redirService;
-  public static Tasks tasks;
   public static Stats stats;
 
   public static void serviceStart(String args[]) {
@@ -38,8 +37,9 @@ public class KVMService extends Thread {
     //startup services
     new Startup().start();
     //starts tasks service
-    tasks = new Tasks();
-    tasks.start();
+    Tasks.init();
+    //start hosts service
+    Hosts.init();
     //start stats timer
     stats = new Stats();
     stats.start();
@@ -68,13 +68,21 @@ public class KVMService extends Thread {
       }
       redirService = null;
     }
-    if (tasks != null) {
+    if (Tasks.tasks != null) {
       try {
-        tasks.cancel();
+        Tasks.tasks.cancel();
       } catch (Exception e) {
         JFLog.log(e);
       }
-      tasks = null;
+      Tasks.tasks = null;
+    }
+    if (Hosts.hosts != null) {
+      try {
+        Hosts.hosts.cancel();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      Hosts.hosts = null;
     }
     if (stats != null) {
       try {

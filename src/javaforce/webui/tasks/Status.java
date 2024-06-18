@@ -1,4 +1,4 @@
-package javaforce.vm;
+package javaforce.webui.tasks;
 
 /** Task status callback.
  *

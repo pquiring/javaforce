@@ -1989,7 +1989,7 @@ public class ConfigService implements WebUIHandler {
           genkey = false;
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
 
     local_token_generate.addClickListener((me, cmp) -> {
@@ -2029,7 +2029,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
 
     gluster.addClickListener((me, cmp) -> {
@@ -2045,7 +2045,7 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             if (Storage.gluster_probe(host_host)) {
-              KVMService.tasks.check_now();
+              Hosts.hosts.check_now();
               setStatus("Completed");
             } else {
               setStatus("Probe failed, check logs.");
@@ -2056,7 +2056,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
 
     remove.addClickListener((me, cmp) -> {
@@ -2195,7 +2195,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
     stop.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
@@ -2211,7 +2211,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
     enable.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
@@ -2227,7 +2227,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
     disable.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
@@ -2243,7 +2243,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
 
     return panel;
@@ -2385,7 +2385,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -2411,7 +2411,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -2437,7 +2437,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -2463,7 +2463,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -2511,7 +2511,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -3271,7 +3271,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
       ui.setRightPanel(vmsPanel(ui));
     });
 
@@ -3388,7 +3388,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
       ui.setRightPanel(vmsPanel(ui));
     });
 
@@ -3495,7 +3495,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
       ui.setRightPanel(vmsPanel(ui));
     });
 
@@ -3838,7 +3838,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
     stop.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
@@ -3864,7 +3864,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -3889,7 +3889,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
       };
-      KVMService.tasks.addTask(ui.tasks, task);
+      Tasks.tasks.addTask(ui.tasks, task);
     });
     unmount.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
@@ -3915,7 +3915,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -3999,7 +3999,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
         ui.setRightPanel(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);
@@ -4029,7 +4029,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
         ui.setRightPanel(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);
@@ -4625,7 +4625,7 @@ public class ConfigService implements WebUIHandler {
             }
           }
         };
-        KVMService.tasks.addTask(ui.tasks, task);
+        Tasks.tasks.addTask(ui.tasks, task);
         ui.setRightPanel(storagePanel(ui));
       };
       ui.confirm_popup.setVisible(true);

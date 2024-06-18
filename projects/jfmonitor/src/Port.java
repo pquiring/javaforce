@@ -76,6 +76,9 @@ public class Port implements Serializable {
   public String info(Port[] ports) {
     StringBuilder sb = new StringBuilder();
     sb.append(id);
+    if (mode != null) {
+      sb.append(" mode:" + mode);
+    }
     if (vlans.size() > 0) {
       sb.append(" vlans:[");
       int cnt = 0;
@@ -86,9 +89,7 @@ public class Port implements Serializable {
       }
       sb.append("]");
     }
-    if (vlan != null && vlan.length() > 0) {
-      sb.append(" vlan:" + vlan);
-    }
+    sb.append(" vlan:" + getVLAN());
     if (isGroup) {
       String gid = getGroupID();
       sb.append(" ports:[");

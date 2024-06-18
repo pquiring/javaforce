@@ -10,6 +10,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.vm.*;
+import javaforce.webui.tasks.*;
 
 public class VMM implements VMProvider {
   public String cleanName(String name) {

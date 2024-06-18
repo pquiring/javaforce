@@ -10,8 +10,8 @@ package service;
  */
 
 import javaforce.*;
-import javaforce.vm.*;
 import javaforce.webui.*;
+import javaforce.webui.tasks.*;
 
 public class Task extends Thread implements Status {
   protected long ts_start;
@@ -37,7 +37,7 @@ public class Task extends Thread implements Status {
     } catch (Exception e) {
       JFLog.log(e);
     }
-    KVMService.tasks.completed(this);
+    Tasks.tasks.completed(this);
   }
 
   /** Performs task in a thread. */
