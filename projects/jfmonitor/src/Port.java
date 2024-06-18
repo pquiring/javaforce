@@ -73,9 +73,11 @@ public class Port implements Serializable {
     sb.append(id);
     if (vlans.size() > 0) {
       sb.append(" vlans:[");
+      int cnt = 0;
       for(String vlan : vlans) {
+        if (cnt > 0) sb.append(",");
         sb.append(vlan);
-        sb.append(",");
+        cnt++;
       }
       sb.append("]");
     }
@@ -85,9 +87,12 @@ public class Port implements Serializable {
     if (isGroup) {
       String gid = getGroupID();
       sb.append(" ports:[");
+      int cnt = 0;
       for(Port port : ports) {
         if (port.getGroup().equals(gid)) {
+          if (cnt > 0) sb.append(",");
           sb.append(port.getPortNumber());
+          cnt++;
         }
       }
       sb.append("]");

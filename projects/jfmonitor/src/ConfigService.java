@@ -1374,8 +1374,8 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     row.add(new Label("Hardware Monitor:"));
-    Label progress = new Label("");
-    row.add(progress);
+    Button refresh = new Button("Refresh");
+    row.add(refresh);
     panel.add(row);
 
     Device[] list = Config.current.getDevices();
@@ -1442,7 +1442,6 @@ public class ConfigService implements WebUIHandler {
         }
 
         if (gidx < gcnt) {
-          JFLog.log("display group:" + gidx);
           Port p3 = hw.groups.get(gidx++);
           Component c3 = new Label(p3.toString());
           setupPortCell(c3, device, p3, msg, ui);
@@ -1486,8 +1485,13 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("One or more ports is already in a group");
           return;
         }
-        Port[] ports = ui.selection.get(device).getPorts();
-        device.configCreateGroup(device.nextGroupID(), ports);
+        ui.confirm_action = () -> {
+          Port[] ports = ui.selection.get(device).getPorts();
+          device.configCreateGroup(device.nextGroupID(), ports);
+        };
+        ui.confirm_message.setText("Create Group : Are you sure?");
+        ui.confirm_button.setText("Create");
+        ui.confirm_popup.setVisible(true);
       });
 
       removeGroup.addClickListener((me, cmp) -> {
@@ -1531,6 +1535,10 @@ public class ConfigService implements WebUIHandler {
     row.setBackColor(Color.blue);
     row.setHeight(5);
     panel.add(row);
+
+    refresh.addClickListener((me, cmp) -> {
+      cmp.getClient().refresh();
+    });
 
     return panel;
   }
