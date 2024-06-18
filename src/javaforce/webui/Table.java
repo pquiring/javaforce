@@ -344,6 +344,7 @@ public class Table extends Container implements Click {
     return cell.get(0);
   }
   public int getRows() {
+    if (has_header && rows > 0) return rows - 1;
     return rows;
   }
   public int getColumns() {

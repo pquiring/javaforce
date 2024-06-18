@@ -17,7 +17,6 @@ public class QueryHardware extends Thread {
           case Device.TYPE_UNKNOWN:
             continue;
           case Device.TYPE_CISCO:
-            //if (Config.debug)
             Device _dev = dev.clone();
             if (!cisco.queryConfig(_dev)) break;
             if (!cisco.queryVLANs(_dev)) break;
