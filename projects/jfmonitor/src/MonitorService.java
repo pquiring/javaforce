@@ -6,6 +6,7 @@
 import javaforce.*;
 import javaforce.service.*;
 import javaforce.net.*;
+import javaforce.webui.tasks.*;
 
 public class MonitorService extends Thread {
   public static ConfigService configService;
@@ -53,6 +54,14 @@ public class MonitorService extends Thread {
       }
       redirService = null;
     }
+    if (Tasks.tasks != null) {
+      try {
+        Tasks.tasks.cancel();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      Tasks.tasks = null;
+    }
   }
 
   public void run() {
@@ -72,6 +81,8 @@ public class MonitorService extends Thread {
     //start config service
     configService = new ConfigService();
     configService.start();
+    //start tasks service
+    Tasks.init();
     //start redir service
     redirService = new WebServerRedir();
     redirService.start(80, 443);

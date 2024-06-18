@@ -116,6 +116,9 @@ public class ConfigService implements WebUIHandler {
   }
 
   private static class UI {
+    public SplitPanel split;
+    public Panel tasks;
+
     public PopupPanel message_popup;
     public Label message_message;
 
@@ -139,6 +142,18 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel vlans_popup;
     public Runnable vlans_init;
     public VLAN[] vlans_vlans;
+  }
+
+  private Panel tasksPanel(UI ui) {
+    Panel panel = new Panel();
+    panel.add(new Label("Tasks"));
+
+    Panel tasks = new Panel();
+    panel.add(tasks);
+
+    ui.tasks = tasks;
+
+    return panel;
   }
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
@@ -531,7 +546,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverPanel(WebUIClient webclient) {
+  public Panel serverPanel(WebUIClient client) {
     Panel panel = new Panel();
 
     UI ui = new UI();
@@ -551,14 +566,19 @@ public class ConfigService implements WebUIHandler {
     ui.vlan_popup = editVLANPopupPanel(ui);
     panel.add(ui.vlan_popup);
 
+    int topSize = client.getHeight() - 128;
+    SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
+    panel.add(top_bot);
+    top_bot.setDividerPosition(topSize);
 
-    SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
-    split.setName("split");
+    SplitPanel left_right = new SplitPanel(SplitPanel.VERTICAL);
+    ui.split = left_right;
+    left_right.setName("split");
     int leftSize = 128;
-    split.setDividerPosition(leftSize);
+    left_right.setDividerPosition(leftSize);
     Panel left = serverLeftPanel(leftSize);
     Panel right = null;
-    String screen = (String)webclient.getProperty("screen");
+    String screen = (String)client.getProperty("screen");
     if (screen == null) screen = "";
     switch (screen) {
       case "": right = serverHome(); break;
@@ -573,11 +593,15 @@ public class ConfigService implements WebUIHandler {
       case "logs": right = serverLogs(null); break;
       default: JFLog.log("Unknown screen:" + screen); break;
     }
-    split.setLeftComponent(left);
+    left_right.setLeftComponent(left);
     if (right != null) {
-      split.setRightComponent(right);
+      left_right.setRightComponent(right);
     }
-    panel.add(split);
+
+    Panel tasks = tasksPanel(ui);
+
+    top_bot.setTopComponent(left_right);
+    top_bot.setBottomComponent(tasks);
 
     return panel;
   }
