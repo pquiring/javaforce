@@ -730,7 +730,7 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       };
-      ui.confirm_message.setText("Delete Device : Are you sure?");
+      ui.confirm_message.setText("Delete VLAN : Are you sure?");
       ui.confirm_button.setText("Delete");
       ui.confirm_popup.setVisible(true);
     });
