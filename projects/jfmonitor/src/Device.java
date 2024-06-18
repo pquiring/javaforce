@@ -323,13 +323,13 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return Integer.toString(max);
   }
 
-  public void saveConfig() {
+  public boolean saveConfig() {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        cisco.saveConfig(this);
-        break;
+        return cisco.saveConfig(this);
     }
+    return false;
   }
 
   public boolean groupExists(String gid) {

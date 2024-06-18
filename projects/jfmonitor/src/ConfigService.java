@@ -1765,8 +1765,21 @@ public class ConfigService implements WebUIHandler {
       });
 
       save.addClickListener((me, cmp) -> {
-        device.saveConfig();
-        msg.setText("Config saved!");
+        Task task = new Task("Save Config") {
+          public void doTask() {
+            try {
+              if (ui.device.saveConfig()) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
       });
 
       delete.addClickListener((me, cmp) -> {
