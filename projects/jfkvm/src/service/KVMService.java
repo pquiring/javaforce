@@ -10,6 +10,7 @@ package service;
 
 import javaforce.*;
 import javaforce.service.*;
+import javaforce.webui.tasks.*;
 
 public class KVMService extends Thread {
   public static KVMService kvmService;
