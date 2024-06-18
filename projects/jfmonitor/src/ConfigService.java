@@ -591,12 +591,11 @@ public class ConfigService implements WebUIHandler {
       case "config_storage": right = serverConfigStorage(); break;
       case "config": right = serverConfig(); break;
       case "logs": right = serverLogs(null); break;
-      default: JFLog.log("Unknown screen:" + screen); break;
+      default: JFLog.log("Unknown screen:" + screen); right = new Panel(); break;
     }
     left_right.setLeftComponent(left);
-    if (right != null) {
-      left_right.setRightComponent(right);
-    }
+    right.setHeight(topSize);
+    left_right.setRightComponent(right);
 
     Panel tasks = tasksPanel(ui);
 
