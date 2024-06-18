@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.webui.*;
 
 public class Port implements Serializable {
   public static final long serialVersionUID = 1;
@@ -27,6 +28,7 @@ public class Port implements Serializable {
   public String group;
 
   public transient boolean link;
+  public transient Component cell;  //TODO : needs to be per webui session
 
   public String getVLANs() {
     return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));

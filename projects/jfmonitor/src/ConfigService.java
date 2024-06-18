@@ -1274,7 +1274,14 @@ public class ConfigService implements WebUIHandler {
     } else {
       cell.setBackColor(Color.grey);
     }
-    cell.addClickListener((me, cmp) -> { if (me.ctrlKey) device.invertSelection(port); else device.setSelection(port); msg.setText("Port:" + port.id); });
+    port.cell = cell;  //TODO : should be per webui session
+    cell.addClickListener((me, cmp) -> {
+      if (me.ctrlKey)
+        device.invertSelection(port);
+      else
+        device.setSelection(port);
+      msg.setText("Port:" + port.id);
+    });
   }
 
   private static final int CELL_SIZE_X = 48;
@@ -1349,7 +1356,7 @@ public class ConfigService implements WebUIHandler {
       int gidx = 0;
       int gcnt = hw.groups.size();
       int pcnt = hw.ports.size();
-      for(int idx = 0;idx < hw.ports.size();) {
+      for(int idx = 0;idx < pcnt;) {
         int idx2 = idx + 1;
         Port p1 = hw.ports.get(idx);
         Port p2 = idx2 < pcnt ? hw.ports.get(idx + 1) : null;
@@ -1374,7 +1381,7 @@ public class ConfigService implements WebUIHandler {
 
         idx += 2;
       }
-      if (pcnt == 0 && gcnt == 0) {
+      if (pcnt == 0) {
         table.addColumn(new Component[] {new Label("?"), new Label("?")});
       }
 
@@ -1390,9 +1397,10 @@ public class ConfigService implements WebUIHandler {
         ui.vlans_popup.setVisible(true);
       });
 
-      //add group
+      //TODO : add group
 
-      //remove group
+
+      //TODO : remove group
 
       save.addClickListener((me, cmp) -> {
         device.saveConfig();

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.webui.*;
 
 public class Device implements Serializable, Comparable<Device>, Cloneable {
   public static final long serialVersionUID = 1;
@@ -166,16 +167,27 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
 
   public void setSelection(Port port) {
     if (selection == null) selection = new ArrayList<>();
+    for(Port other : selection) {
+      other.cell.setBorder(false);
+    }
     selection.clear();
     selection.add(port);
+    port.cell.setBorder(true);
+  }
+
+  public boolean isSelected(Port port) {
+    if (selection == null) selection = new ArrayList<>();
+    return selection.contains(port);
   }
 
   public void invertSelection(Port port) {
     if (selection == null) selection = new ArrayList<>();
     if (selection.contains(port)) {
       selection.remove(port);
+      port.cell.setBorder(false);
     } else {
       selection.add(port);
+      port.cell.setBorder(true);
     }
   }
 
