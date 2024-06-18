@@ -84,6 +84,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     public Port getPort(int idx) {
+      if (size() == 0) return null;
       return getPorts()[idx];
     }
 
@@ -1344,7 +1345,7 @@ public class ConfigService implements WebUIHandler {
         ui.selection.get(device).invertSelection(port, cell);
       else
         ui.selection.get(device).setSelection(port, cell);
-      msg.setText("Port:" + port.id);
+      msg.setText("Port:" + port.info(device.hardware.ports.toArray(new Port[0])));
     });
   }
 

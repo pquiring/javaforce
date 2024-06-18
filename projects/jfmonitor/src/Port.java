@@ -66,6 +66,33 @@ public class Port implements Serializable {
     vlan = _vlan;
   }
 
+  public String info(Port[] ports) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(id);
+    if (vlans.size() > 0) {
+      sb.append(" vlans:[");
+      for(String vlan : vlans) {
+        sb.append(vlan);
+        sb.append(",");
+      }
+      sb.append("]");
+    }
+    if (vlan != null && vlan.length() > 0) {
+      sb.append(" vlan:" + vlan);
+    }
+    if (isGroup) {
+      String gid = getGroupID();
+      sb.append(" ports:[");
+      for(Port port : ports) {
+        if (port.getGroup().equals(gid)) {
+          sb.append(port.getPortNumber());
+        }
+      }
+      sb.append("]");
+    }
+    return sb.toString();
+  }
+
   public String getPortNumber() {
     int idx = JF.indexOfDigit(id);
     if (idx == -1) {
