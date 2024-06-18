@@ -456,7 +456,7 @@ public class Cisco {
           String id = f[1].substring(idx);
           if (id.equals("0/0")) continue;  //ignore admin port
           switch (name) {
-            case "vlan": vlan = device.getVLAN(id); break;
+            case "vlan": vlan = device.getVLAN(f[1]); break;
             case "port-channel": port = device.getGroup(f[1]); break;
             default: port = device.getPort(f[1]); break;
           }

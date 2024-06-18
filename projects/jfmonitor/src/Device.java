@@ -4,6 +4,7 @@
  */
 
 import java.io.Serializable;
+import javaforce.JFLog;
 
 public class Device implements Serializable, Comparable<Device>, Cloneable {
   public static final long serialVersionUID = 1;
@@ -99,6 +100,10 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   }
 
   public VLAN getVLAN(String id) {
+    if (!id.startsWith("vlan")) {
+      JFLog.logTrace("invalid vlan id");
+      return null;
+    }
     for(VLAN vlan : hardware.vlans) {
       if (vlan.id.equals(id)) {
         vlan.valid = true;
@@ -204,7 +209,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
         if (cisco.createVLAN(this, id, name)) {
-          hardware.vlans.add(new VLAN(id, name));
+          hardware.vlans.add(new VLAN("vlan" + id, name));
           return true;
         }
         break;

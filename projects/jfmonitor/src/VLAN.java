@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import javaforce.*;
 
-public class VLAN implements Serializable {
+public class VLAN implements Serializable, Comparable<VLAN> {
   public static final long serialVersionUID = 1;
 
   public static final VLAN[] ArrayType = new VLAN[0];
@@ -80,5 +80,13 @@ public class VLAN implements Serializable {
       sb.append(vlan);
     }
     return sb.toString();
+  }
+
+  public int compareTo(VLAN o) {
+    int tv = Integer.valueOf(getNumber());
+    int ov = Integer.valueOf(o.getNumber());
+    if (tv < ov) return -1;
+    if (tv > ov) return 1;
+    return 0;
   }
 }

@@ -340,29 +340,20 @@ public class ConfigService implements WebUIHandler {
     row.add(port_msg);
     ui.port_msg = port_msg;
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name"));
+    GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+    panel.add(grid);
+
     TextField name = new TextField("");
-    row.add(name);
+    grid.addRow(new Component[] {new Label("Name"), name});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("VLANs:"));
     TextField vlans = new TextField("");
-    row.add(vlans);
+    grid.addRow(new Component[] {new Label("VLANs"), vlans});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("VLAN:"));
     TextField vlan = new TextField("");
-    row.add(vlan);
+    grid.addRow(new Component[] {new Label("VLAN"), vlan});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Group:"));
     TextField group = new TextField("");
-    row.add(group);
+    grid.addRow(new Component[] {new Label("Group"), group});
 
     row = new Row();
     panel.add(row);
@@ -498,30 +489,20 @@ public class ConfigService implements WebUIHandler {
     panel.setPosition(256, 128);
     panel.setModal(true);
     Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+    panel.add(grid);
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("VLAN ID:"));
     TextField id = new TextField("");
-    row.add(id);
+    grid.addRow(new Component[] {new Label("ID"), id});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Name:"));
     TextField name = new TextField("");
-    row.add(name);
+    grid.addRow(new Component[] {new Label("Name"), name});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("IP:"));
     TextField ip = new TextField("");
-    row.add(ip);
+    grid.addRow(new Component[] {new Label("IP"), ip});
 
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Mask:"));
     TextField mask = new TextField("");
-    row.add(mask);
+    grid.addRow(new Component[] {new Label("Mask"), mask});
 
     row = new Row();
     panel.add(row);
@@ -694,11 +675,14 @@ public class ConfigService implements WebUIHandler {
     Table table = new Table(new int[] {64, 128, 128, 128}, 32, 4, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
+    table.setHeader(true);
+    table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask")});
     panel.add(table);
 
     ui.vlans_init = () -> {
       if (ui.device == null) return;
       ui.vlans_vlans = ui.device.hardware.vlans.toArray(VLAN.ArrayType);
+      Arrays.sort(ui.vlans_vlans);
       while (table.getRows() > 0) {
         table.removeRow(0);
       }
