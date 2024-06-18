@@ -8,8 +8,8 @@
 import javaforce.*;
 
 public class Cisco {
-  public static final boolean debug = false;
-  public static final boolean debug_cfg = false;
+  public static boolean debug = false;
+  public static boolean debug_cfg = false;
   public boolean addVLANs(Device device, Port port, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();

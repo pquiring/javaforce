@@ -24,6 +24,14 @@ public class MonitorService extends Thread {
     if (monitorService != null) return;
     monitorService = new MonitorService();
     monitorService.start();
+    for(String arg : args) {
+      switch (arg) {
+        case "debug":
+          JFLog.log("Debug mode enabled");
+          Cisco.debug = true;
+          break;
+      }
+    }
   }
   public static void serviceStop() {
     monitorService.cancel();
