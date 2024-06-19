@@ -370,6 +370,12 @@ public class ConfigService implements WebUIHandler {
     TextField group = new TextField("");
     grid.addRow(new Component[] {new Label("Group"), group});
 
+    TextField ip = new TextField("");
+    grid.addRow(new Component[] {new Label("IP"), ip});
+
+    TextField mask = new TextField("");
+    grid.addRow(new Component[] {new Label("Mask"), mask});
+
     row = new Row();
     panel.add(row);
     Button b_save = new Button("Save");
@@ -392,6 +398,8 @@ public class ConfigService implements WebUIHandler {
       vlans.setText(port.getVLANs());
       vlan.setText(port.getVLAN());
       group.setText(port.getGroup());
+      ip.setText(port.ip);
+      mask.setText(port.mask);
     };
 
     b_save.addClickListener((MouseEvent e, Component button) -> {
@@ -401,8 +409,20 @@ public class ConfigService implements WebUIHandler {
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
       String _group = group.getText();
+      String _ip = ip.getText();
+      String _mask = mask.getText();
       Port port = ui.selection.get(ui.device).getPort(0);
       if (port == null) return;
+      if (_ip.length() > 0 || _mask.length() > 0) {
+        if (_ip.length() == 0 || !IP4.isIP(_ip)) {
+          errmsg.setText("Invalid IP Address");
+          return;
+        }
+        if (_mask.length() == 0 || !Subnet4.isSubnet(_mask)) {
+          errmsg.setText("Invalid Subnet Mask");
+          return;
+        }
+      }
       if (port.getMode() != _mode) {
         //change mode
         Task task = new Task("Set Port Mode") {
@@ -507,6 +527,44 @@ public class ConfigService implements WebUIHandler {
           };
           Tasks.tasks.addTask(ui.tasks, task);
       }
+      if (_mode == Cisco.MODE_NO_SWITCHPORT) {
+        if (!_ip.equals(port.ip) || !_mask.equals(port.mask)) {
+          if (_ip.length() > 0) {
+            Task task = new Task("Set Port IP") {
+              public void doTask() {
+                try {
+                  if (ui.device.configAddPort_IP(port, _ip, _mask)) {
+                    setStatus("Completed");
+                  } else {
+                    setStatus("Failed");
+                  }
+                } catch (Exception e) {
+                  setStatus("Error:" + action + " failed, check logs.");
+                  JFLog.log(e);
+                }
+              }
+            };
+            Tasks.tasks.addTask(ui.tasks, task);
+          } else {
+            //remove ip
+            Task task = new Task("Remove Port IP") {
+              public void doTask() {
+                try {
+                  if (ui.device.configRemovePort_IP(port)) {
+                    setStatus("Completed");
+                  } else {
+                    setStatus("Failed");
+                  }
+                } catch (Exception e) {
+                  setStatus("Error:" + action + " failed, check logs.");
+                  JFLog.log(e);
+                }
+              }
+            };
+            Tasks.tasks.addTask(ui.tasks, task);
+          }
+        }
+      }
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
@@ -579,11 +637,11 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       if (_ip.length() > 0 || _mask.length() > 0) {
-        if (!IP4.isIP(_ip)) {
+        if (_ip.length() == 0 || !IP4.isIP(_ip)) {
           errmsg.setText("Invalid IP Address");
           return;
         }
-        if (!Subnet4.isSubnet(_mask)) {
+        if (_mask.length() == 0 || !Subnet4.isSubnet(_mask)) {
           errmsg.setText("Invalid Subnet Mask");
           return;
         }
@@ -664,7 +722,7 @@ public class ConfigService implements WebUIHandler {
             Task task = new Task("Remove VLAN IP") {
               public void doTask() {
                 try {
-                  if (ui.device.configRemoveVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
+                  if (ui.device.configRemoveVLAN_IP(ui.vlan_vlan)) {
                     setStatus("Completed");
                   } else {
                     setStatus("Failed");

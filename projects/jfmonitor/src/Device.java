@@ -140,6 +140,34 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
+  public boolean configAddPort_IP(Port port, String ip, String mask) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.addInterfaceIP(this, port.id, ip, mask)) {
+          port.ip = ip;
+          port.mask = mask;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configRemovePort_IP(Port port) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeInterfaceIP(this, port.id)) {
+          port.ip = "";
+          port.mask = "";
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
   public boolean configSetVLANs(Port port, String vlans) {
     switch (type) {
       case TYPE_CISCO:
@@ -262,13 +290,13 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
-  public boolean configRemoveVLAN_IP(VLAN vlan, String ip, String mask) {
+  public boolean configRemoveVLAN_IP(VLAN vlan) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
         if (cisco.removeInterfaceIP(this, vlan.id)) {
-          vlan.ip = ip;
-          vlan.mask = mask;
+          vlan.ip = "";
+          vlan.mask = "";
           return true;
         }
         break;

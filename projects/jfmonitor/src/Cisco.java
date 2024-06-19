@@ -208,7 +208,7 @@ public class Cisco {
     switch (mode) {
       case MODE_ACCESS: return "access";
       case MODE_TRUNK: return "trunk";
-      case MODE_NO_SWITCHPORT: return "no switchmode";
+      case MODE_NO_SWITCHPORT: return "no switchport";
     }
     return null;
   }
