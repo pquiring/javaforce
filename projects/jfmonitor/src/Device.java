@@ -127,6 +127,19 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return group;
   }
 
+  public boolean configSetSwitchMode(Port port, int mode) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setSwitchMode(this, port, mode)) {
+          port.mode = Cisco.getSwitchMode(mode);
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
   public boolean configSetVLANs(Port port, String vlans) {
     switch (type) {
       case TYPE_CISCO:
@@ -174,7 +187,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        if (cisco.setVLAN(this, port, vlan)) {
+        if (cisco.setVLAN(this, port, vlan, port.getMode())) {
           port.vlan = vlan;
           return true;
         }
@@ -272,9 +285,12 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         Port group = new Port();
         group.id = "port-channel" + gid;
         //setup group settings to match ports
-        if (!cisco.setSwitchMode(this, group, Cisco.getSwitchMode(first.mode))) return false;
-        if (!cisco.setVLANs(this, group, first.getVLANs())) return false;
-        if (!cisco.setVLAN(this, group, first.vlan)) return false;
+        int mode = Cisco.getSwitchMode(first.mode);
+        if (!cisco.setSwitchMode(this, group, mode)) return false;
+        if (mode == Cisco.MODE_TRUNK) {
+          if (!cisco.setVLANs(this, group, first.getVLANs())) return false;
+        }
+        if (!cisco.setVLAN(this, group, first.vlan, mode)) return false;
         //join ports to group
         for(Port port : ports) {
           if (!cisco.addPortToGroup(this, gid, port)) return false;

@@ -73,12 +73,22 @@ public class Cisco {
     }
     return ok;
   }
-  public boolean setVLAN(Device device, Port port, String vlan) {
+  public boolean setVLAN(Device device, Port port, String vlan, int mode) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + port.id + ";switchport trunk native vlan " + vlan + ";exit;exit;exit";
+    String cmds = null;
+    switch (mode) {
+      case MODE_TRUNK:
+        cmds = "config terminal;interface " + port.id + ";switchport trunk native vlan " + vlan + ";exit;exit;exit";
+        break;
+      case MODE_ACCESS:
+        cmds = "config terminal;interface " + port.id + ";switchport access vlan " + vlan + ";exit;exit;exit";
+        break;
+      default:
+        return false;
+    }
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
@@ -190,9 +200,17 @@ public class Cisco {
     switch (name) {
       case "access": return MODE_ACCESS;
       case "trunk": return MODE_TRUNK;
-      //TODO : NO_SWITCHPORT
+      case "no switchport": return MODE_NO_SWITCHPORT;
     }
     return -1;
+  }
+  public static String getSwitchMode(int mode) {
+    switch (mode) {
+      case MODE_ACCESS: return "access";
+      case MODE_TRUNK: return "trunk";
+      case MODE_NO_SWITCHPORT: return "no switchmode";
+    }
+    return null;
   }
   public boolean setSwitchMode(Device device, Port port, int mode) {
     String cmds = null;
@@ -526,6 +544,11 @@ public class Cisco {
               if (vlan != null) {
                 vlan.ip = null;
                 vlan.mask = null;
+              }
+              break;
+            case "switchport":
+              if (port != null) {
+                port.mode = "no switchport";
               }
               break;
           }

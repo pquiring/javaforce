@@ -24,7 +24,7 @@ public class Port implements Serializable, Comparable<Port> {
   public String mask = "";
 
   //switchport
-  public String mode = "";  //trunk or access
+  public String mode = "";  //trunk or access or "no switchport"
   public ArrayList<String> vlans = new ArrayList<>();  //allowed vlans
   public String vlan = "1";  //native vlan
   public String group = "";
@@ -41,6 +41,10 @@ public class Port implements Serializable, Comparable<Port> {
   public String getGroup() {
     if (group == null) group = "";
     return group;
+  }
+
+  public int getMode() {
+    return Cisco.getSwitchMode(mode);
   }
 
   public static boolean validGroup(String gid) {

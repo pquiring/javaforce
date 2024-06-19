@@ -143,7 +143,6 @@ public class ConfigService implements WebUIHandler {
 
     public PopupPanel port_popup;
     public Runnable port_init;
-    public Label port_msg;
     public TextField port_vlans;
     public TextField port_vlan;
 
@@ -347,12 +346,17 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label port_msg = new Label("Port:");
-    row.add(port_msg);
-    ui.port_msg = port_msg;
+    Label port_desc = new Label("Port:");
+    row.add(port_desc);
 
     GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
     panel.add(grid);
+
+    ComboBox mode = new ComboBox();
+    mode.add("access", "Access");
+    mode.add("trunk", "Trunk");
+//    mode.add("no switchport", "no switchport");
+    grid.addRow(new Component[] {new Label("Mode"), mode});
 
     TextField name = new TextField("");
     grid.addRow(new Component[] {new Label("Name"), name});
@@ -382,7 +386,8 @@ public class ConfigService implements WebUIHandler {
     ui.port_init = () -> {
       errmsg.setText("");
       Port port = ui.selection.get(ui.device).getPort(0);
-      port_msg.setText("Port:" + port.id);
+      port_desc.setText("Port:" + port.id);
+      mode.setSelectedIndex(Cisco.getSwitchMode(port.mode));
       name.setText(port.getName());
       vlans.setText(port.getVLANs());
       vlan.setText(port.getVLAN());
@@ -391,12 +396,31 @@ public class ConfigService implements WebUIHandler {
 
     b_save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
+      int _mode = mode.getSelectedIndex();
       String _name = name.getText();
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
       String _group = group.getText();
       Port port = ui.selection.get(ui.device).getPort(0);
       if (port == null) return;
+      if (port.getMode() != _mode) {
+        //change mode
+        Task task = new Task("Set Port Mode") {
+          public void doTask() {
+            try {
+              if (ui.device.configSetSwitchMode(port, _mode)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      }
       if (!port.name.equals(_name)) {
         //change name
         Task task = new Task("Set Port Name") {
@@ -415,7 +439,7 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (!port.getVLANs().equals(_vlans)) {
+      if (_mode == Cisco.MODE_TRUNK && !port.getVLANs().equals(_vlans)) {
         //change vlans
         if (!VLAN.validVLANs(_vlans)) {
           errmsg.setText("Invalid VLANs");
