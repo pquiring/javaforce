@@ -313,14 +313,17 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   public String nextGroupID() {
     Port[] groups = hardware.groups.toArray(Port.ArrayType);
     if (groups.length == 0) return "1";
-    int max = 1;
+    boolean[] used = new boolean[65];  //1-64
     for(Port group : groups) {
       int gid = Integer.valueOf(group.getGroupID());
-      if (gid > max) {
-        max = gid + 1;
+      if (gid > 0 && gid < 65) {
+        used[gid] = true;
       }
     }
-    return Integer.toString(max);
+    for(int gid=1;gid<65;gid++) {
+      if (!used[gid]) return Integer.toString(gid);
+    }
+    return "-1";
   }
 
   public boolean saveConfig() {

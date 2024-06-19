@@ -190,6 +190,7 @@ public class Cisco {
     switch (name) {
       case "access": return MODE_ACCESS;
       case "trunk": return MODE_TRUNK;
+      //TODO : NO_SWITCHPORT
     }
     return -1;
   }
