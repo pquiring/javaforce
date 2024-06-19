@@ -83,7 +83,6 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
     Port port = new Port();
     port.id = id;
-    port.name = "";
     hardware.ports.add(port);
     port.valid = true;
     return port;
@@ -108,9 +107,6 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
     VLAN vlan = new VLAN();
     vlan.id = id;
-    vlan.name = "";
-    vlan.ip = "";
-    vlan.mask = "";
     hardware.vlans.add(vlan);
     vlan.valid = true;
     return vlan;
@@ -270,8 +266,16 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   public boolean configCreateGroup(String gid, Port[] ports) {
     switch (type) {
       case TYPE_CISCO:
+        Port first = ports[0];
         Cisco cisco = new Cisco();
         if (!cisco.createGroup(this, gid)) return false;
+        Port group = new Port();
+        group.id = "port-channel" + gid;
+        //setup group settings to match ports
+        if (!cisco.setSwitchMode(this, group, Cisco.getSwitchMode(first.mode))) return false;
+        if (!cisco.setVLANs(this, group, first.getVLANs())) return false;
+        if (!cisco.setVLAN(this, group, first.vlan)) return false;
+        //join ports to group
         for(Port port : ports) {
           if (!cisco.addPortToGroup(this, gid, port)) return false;
         }

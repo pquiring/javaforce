@@ -78,6 +78,17 @@ public class ConfigService implements WebUIHandler {
       return false;
     }
 
+    public boolean notEquals() {
+      Port[] ports = getPorts();
+      Port first = ports[0];
+      for(Port port : ports) {
+        if (!port.equals(first)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     private Port[] getPorts() {
       return ports.keySet().toArray(Port.ArrayType);
     }
@@ -1709,6 +1720,10 @@ public class ConfigService implements WebUIHandler {
         }
         if (ui.selection.get(device).alreadyGrouped()) {
           errmsg.setText("One or more ports is already in a group");
+          return;
+        }
+        if (ui.selection.get(device).notEquals()) {
+          errmsg.setText("Ports must be all the same");
           return;
         }
         ui.confirm_action = () -> {

@@ -9,7 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class Port implements Serializable {
+public class Port implements Serializable, Comparable<Port> {
   public static final long serialVersionUID = 1;
 
   public static final Port[] ArrayType = new Port[0];
@@ -17,16 +17,17 @@ public class Port implements Serializable {
   public transient boolean valid;
 
   public String id;
-  public String name;
+  public String name = "";
 
   //interface
-  public String ip, mask;
+  public String ip = "";
+  public String mask = "";
 
   //switchport
-  public String mode;  //trunk or access
+  public String mode = "";  //trunk or access
   public ArrayList<String> vlans = new ArrayList<>();  //allowed vlans
-  public String vlan;  //native vlan
-  public String group;
+  public String vlan = "1";  //native vlan
+  public String group = "";
   public boolean isGroup;
   public boolean link;
 
@@ -44,7 +45,10 @@ public class Port implements Serializable {
 
   public static boolean validGroup(String gid) {
     if (gid.length() == 0) return true;
-    return gid.equals(JF.filter(gid, JF.filter_numeric));
+    if (!gid.equals(JF.filter(gid, JF.filter_numeric))) return false;
+    int value = Integer.valueOf(gid);
+    if (value < 1 || value > 4094) return false;
+    return true;
   }
 
   public String getName() {
@@ -116,5 +120,13 @@ public class Port implements Serializable {
 
   public String toString() {
     return getNumber();
+  }
+
+  public int compareTo(Port o) {
+    if (!mode.equals(o.mode)) return -1;
+    if (!getVLANs().equals(o.getVLANs())) return -1;
+    if (!vlan.equals(o.vlan)) return -1;
+    if (!group.equals(o.group)) return -1;
+    return 0;
   }
 }

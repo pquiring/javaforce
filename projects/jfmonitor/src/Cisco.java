@@ -186,6 +186,13 @@ public class Cisco {
   public static final int MODE_ACCESS = 0;
   public static final int MODE_TRUNK = 1;
   public static final int MODE_NO_SWITCHPORT = 2;
+  public static int getSwitchMode(String name) {
+    switch (name) {
+      case "access": return MODE_ACCESS;
+      case "trunk": return MODE_TRUNK;
+    }
+    return -1;
+  }
   public boolean setSwitchMode(Device device, Port port, int mode) {
     String cmds = null;
     switch (mode) {
