@@ -153,6 +153,14 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel vlans_popup;
     public Runnable vlans_init;
     public VLAN[] vlans_vlans;
+
+    public PopupPanel routing_popup;
+    public Runnable routing_init;
+    public Route[] routing_routes;
+
+    public PopupPanel route_popup;
+    public Runnable route_init;
+    public Route route_route;
   }
 
   private Panel tasksPanel(UI ui) {
@@ -880,6 +888,241 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private PopupPanel editRoutePopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Edit Route");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+    panel.add(grid);
+
+    TextField ip = new TextField("");
+    grid.addRow(new Component[] {new Label("IP"), ip});
+
+    TextField mask = new TextField("");
+    grid.addRow(new Component[] {new Label("Mask"), mask});
+
+    TextField gateway = new TextField("");
+    grid.addRow(new Component[] {new Label("Gateway"), mask});
+
+    row = new Row();
+    panel.add(row);
+    Button b_save = new Button("Save");
+    row.add(b_save);
+    Button b_cancel = new Button("Cancel");
+    row.add(b_cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    ui.route_init = () -> {
+      if (ui.route_route == null) {
+        ui.route_route = new Route();
+        ip.setText("");
+        mask.setText("");
+        gateway.setText("");
+      } else {
+        ip.setText(ui.route_route.ip);
+        mask.setText(ui.route_route.mask);
+        gateway.setText(ui.route_route.gateway);
+      }
+    };
+
+    b_save.addClickListener((MouseEvent e, Component button) -> {
+      errmsg.setText("");
+      String _ip = ip.getText();
+      if (!IP4.isIP(_ip)) {
+        errmsg.setText("Invalid IP Address");
+        return;
+      }
+      String _mask = mask.getText();
+      if (!Subnet4.isSubnet(_mask)) {
+        errmsg.setText("Invalid Subnet Mask");
+        return;
+      }
+      String _gateway = gateway.getText();
+      if (!IP4.isIP(_gateway)) {
+        errmsg.setText("Invalid Gateway Address");
+        return;
+      }
+      ui.route_route.ip = _ip;
+      ui.route_route.mask = _mask;
+      ui.route_route.gateway = _gateway;
+      Task task = new Task("Add Route") {
+        public void doTask() {
+          try {
+            if (ui.device.configRemoveRoute(ui.route_route)) {
+              setStatus("Completed");
+            } else {
+              setStatus("Failed");
+            }
+          } catch (Exception e) {
+            setStatus("Error:" + action + " failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+      ui.routing_init.run();
+      QueryHardware.scan_now = true;
+      panel.setVisible(false);
+    });
+    b_cancel.addClickListener((MouseEvent e, Component button) -> {
+      panel.setVisible(false);
+    });
+    panel.setOnClose( () -> {
+      b_cancel.click();
+    });
+    return panel;
+  }
+
+  private PopupPanel viewRoutingPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Routing Config");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+
+    Button save = new Button("Save");
+    tools.add(save);
+
+    row = new Row();
+    CheckBox routing = new CheckBox("Enable Routing mode");
+    row.add(routing);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Default Gateway (non-routing mode)"));
+    TextField gateway = new TextField("");
+    row.add(gateway);
+    panel.add(row);
+
+    ToolBar tools2 = new ToolBar();
+    panel.add(tools2);
+
+    Button add = new Button("Add");
+    tools2.add(add);
+    Button edit = new Button("Edit");
+    tools2.add(edit);
+    Button delete = new Button("Delete");
+    tools2.add(delete);
+
+    Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
+    table.setBorder(true);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setHeader(true);
+    panel.add(table);
+
+    ui.routing_init = () -> {
+      if (ui.device == null) return;
+      ui.routing_routes = ui.device.hardware.routes.toArray(Route.ArrayType);
+      Arrays.sort(ui.routing_routes);
+      table.removeAll();
+      table.addRow(new Component[] {new Label("IP"), new Label("Mask"), new Label("Gateway")});
+      for(Route route : ui.routing_routes) {
+        table.addRow(new Component[] {new Label(route.ip), new Label(route.mask), new Label(route.gateway)});
+      }
+    };
+
+    Button close = new Button("Close");
+    close.setAlign(Component.RIGHT);
+    panel.add(close);
+
+    save.addClickListener((me, cmp) -> {
+      boolean _routing = routing.isSelected();
+      String _gateway = gateway.getText();
+      if (_routing != ui.device.hardware.routing) {
+        Task task = new Task("Set Routing Mode") {
+          public void doTask() {
+            try {
+              if (ui.device.configSetRoutingMode(_routing)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      }
+      if (!_gateway.equals(ui.device.hardware.gateway)) {
+        Task task = new Task("Set Routing Mode") {
+          public void doTask() {
+            try {
+              if (ui.device.configSetDefaultGateway(_gateway)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      }
+    });
+
+    add.addClickListener((me, cmp) -> {
+      ui.route_route = null;
+      ui.route_init.run();
+      ui.route_popup.setVisible(true);
+    });
+
+    edit.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      ui.route_route = ui.routing_routes[idx];
+      ui.route_init.run();
+      ui.route_popup.setVisible(true);
+    });
+
+    delete.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      Route route = ui.routing_routes[idx];
+      ui.confirm_action = () -> {
+        Task task = new Task("Delete Route") {
+          public void doTask() {
+            try {
+              if (ui.device.configRemoveRoute(route)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_message.setText("Delete Route : Are you sure?");
+      ui.confirm_button.setText("Delete");
+      ui.confirm_popup.setVisible(true);
+    });
+
+    close.addClickListener((me, cmp) -> {
+      panel.setVisible(false);
+    });
+
+    panel.setOnClose( () -> {
+      close.click();
+    });
+
+    return panel;
+  }
+
   public Panel serverPanel(WebUIClient client) {
     Panel panel = new Panel();
 
@@ -899,6 +1142,12 @@ public class ConfigService implements WebUIHandler {
 
     ui.vlan_popup = editVLANPopupPanel(ui);
     panel.add(ui.vlan_popup);
+
+    ui.routing_popup = viewRoutingPopupPanel(ui);
+    panel.add(ui.routing_popup);
+
+    ui.route_popup = editRoutePopupPanel(ui);
+    panel.add(ui.route_popup);
 
     int topSize = client.getHeight() - 128;
     SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
@@ -1761,6 +2010,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(addGroup);
       Button removeGroup = new Button("Remove Group");
       tools.add(removeGroup);
+      Button routing = new Button("Routing");
+      tools.add(routing);
       Button save = new Button("Save");
       tools.add(save);
       Button delete = new Button("Delete");
@@ -1905,6 +2156,12 @@ public class ConfigService implements WebUIHandler {
         ui.confirm_message.setText("Delete Group : Are you sure?");
         ui.confirm_button.setText("Delete");
         ui.confirm_popup.setVisible(true);
+      });
+
+      routing.addClickListener((me, cmp) -> {
+        ui.device = device;
+        ui.routing_init.run();
+        ui.routing_popup.setVisible(true);
       });
 
       save.addClickListener((me, cmp) -> {

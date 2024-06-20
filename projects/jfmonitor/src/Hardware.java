@@ -18,6 +18,10 @@ public class Hardware implements Serializable, Cloneable {
   public ArrayList<VLAN> vlans = new ArrayList<>();
   public ArrayList<Port> groups = new ArrayList<>();
 
+  public boolean routing;
+  public String gateway;  //default gateway if !routing
+  public ArrayList<Route> routes = new ArrayList<>();
+
   public Hardware clone() {
     try {
       Hardware clone = (Hardware)super.clone();  //shallow copy

@@ -367,6 +367,79 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
+  public boolean configSetRoutingMode(boolean state) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setRoutingMode(this, state)) {
+          hardware.routing = state;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configSetDefaultGateway(String ip) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setDefaultGateway(this, ip)) {
+          hardware.gateway = ip;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configAddRoute(Route route) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.addRoute(this, route)) {
+          addRoute(route);
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configRemoveRoute(Route route) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeRoute(this, route)) {
+          removeRoute(route);
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  private void addRoute(Route route) {
+    for(Route r : hardware.routes) {
+      if (r.equals(route)) {
+        //update route
+        r.gateway = route.gateway;
+        return;
+      }
+    }
+    //new route
+    hardware.routes.add(route);
+  }
+
+  private void removeRoute(Route route) {
+    for(Route r : hardware.routes) {
+      if (r.equals(route)) {
+        hardware.routes.remove(r);
+        return;
+      }
+    }
+  }
+
   public String nextGroupID() {
     Port[] groups = hardware.groups.toArray(Port.ArrayType);
     if (groups.length == 0) return "1";

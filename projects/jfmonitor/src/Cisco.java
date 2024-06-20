@@ -402,6 +402,95 @@ public class Cisco {
     }
     return ok;
   }
+  public boolean setRoutingMode(Device device, boolean state) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = null;
+    if (state) {
+      cmds = "config terminal;ip routing;exit;exit";
+    } else {
+      cmds = "config terminal;no ip routing;exit;exit";
+    }
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setRoutingMode:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean setDefaultGateway(Device device, String gateway) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;ip default-gateway " + gateway + ";exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setDefaultGateway:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean addRoute(Device device, Route route) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;ip route " + route.toString() + ";exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("addRoute:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean removeRoute(Device device, Route route) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;no ip route " + route.toString() + ";exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("addRoute:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
   public boolean saveConfig(Device device) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
@@ -551,13 +640,32 @@ public class Cisco {
           }
           break;
         case "ip":
-          if (port != null) {
-            port.ip = f[2];
-            port.mask = f[3];
-          }
-          if (vlan != null) {
-            vlan.ip = f[2];
-            vlan.mask = f[3];
+          switch (f[1]) {
+            case "address":
+              if (port != null) {
+                port.ip = f[2];
+                port.mask = f[3];
+              }
+              if (vlan != null) {
+                vlan.ip = f[2];
+                vlan.mask = f[3];
+              }
+              break;
+            case "default-gateway":
+              device.hardware.gateway = f[2];
+              break;
+            case "routing":
+              device.hardware.routing = true;
+              break;
+            case "route":
+              if (f[2].equals("static")) break;
+              if (f.length != 5) break;
+              Route route = new Route();
+              route.ip = f[2];
+              route.mask = f[3];
+              route.gateway = f[4];
+              device.hardware.routes.add(route);
+              break;
           }
           break;
         case "no":
