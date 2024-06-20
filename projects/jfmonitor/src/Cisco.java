@@ -195,12 +195,12 @@ public class Cisco {
   }
   public static final int MODE_ACCESS = 0;
   public static final int MODE_TRUNK = 1;
-  public static final int MODE_NO_SWITCHPORT = 2;
+  public static final int MODE_IP = 2;
   public static int getSwitchMode(String name) {
     switch (name) {
       case "access": return MODE_ACCESS;
       case "trunk": return MODE_TRUNK;
-      case "no switchport": return MODE_NO_SWITCHPORT;
+      case "ip": return MODE_IP;
     }
     return -1;
   }
@@ -208,7 +208,7 @@ public class Cisco {
     switch (mode) {
       case MODE_ACCESS: return "access";
       case MODE_TRUNK: return "trunk";
-      case MODE_NO_SWITCHPORT: return "no switchport";
+      case MODE_IP: return "ip";
     }
     return null;
   }
@@ -221,7 +221,7 @@ public class Cisco {
       case MODE_TRUNK:
         cmds = "config terminal;interface " + port.id + ";switchport mode trunk;exit;exit;exit";
         break;
-      case MODE_NO_SWITCHPORT:
+      case MODE_IP:
         cmds = "config terminal;interface " + port.id + ";no switchport;exit;exit;exit";
         break;
     }
@@ -548,7 +548,7 @@ public class Cisco {
               break;
             case "switchport":
               if (port != null) {
-                port.mode = "no switchport";
+                port.mode = "ip";
               }
               break;
           }

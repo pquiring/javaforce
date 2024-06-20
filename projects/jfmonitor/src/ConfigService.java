@@ -353,9 +353,10 @@ public class ConfigService implements WebUIHandler {
     panel.add(grid);
 
     ComboBox mode = new ComboBox();
-    mode.add("access", "Access");
-    mode.add("trunk", "Trunk");
-//    mode.add("no switchport", "no switchport");
+    mode.add("access", "L2:Access");
+    mode.add("trunk", "L2:Trunk");
+    mode.add("ip", "L3:IP");
+
     grid.addRow(new Component[] {new Label("Mode"), mode});
 
     TextField name = new TextField("");
@@ -527,7 +528,7 @@ public class ConfigService implements WebUIHandler {
           };
           Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (_mode == Cisco.MODE_NO_SWITCHPORT) {
+      if (_mode == Cisco.MODE_IP) {
         if (!_ip.equals(port.ip) || !_mask.equals(port.mask)) {
           if (_ip.length() > 0) {
             Task task = new Task("Set Port IP") {

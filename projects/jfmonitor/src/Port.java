@@ -24,7 +24,7 @@ public class Port implements Serializable, Comparable<Port> {
   public String mask = "";
 
   //switchport
-  public String mode = "";  //trunk or access or "no switchport"
+  public String mode = "";  //trunk or access or ip
   public ArrayList<String> vlans = new ArrayList<>();  //allowed vlans
   public String vlan = "1";  //native vlan
   public String group = "";
