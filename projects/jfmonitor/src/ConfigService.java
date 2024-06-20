@@ -598,6 +598,11 @@ public class ConfigService implements WebUIHandler {
     TextField mask = new TextField("");
     grid.addRow(new Component[] {new Label("Mask"), mask});
 
+    ComboBox stp = new ComboBox();
+    stp.add("0", "disable");
+    stp.add("1", "enable");
+    grid.addRow(new Component[] {new Label("STP"), stp});
+
     row = new Row();
     panel.add(row);
     Button b_save = new Button("Save");
@@ -618,12 +623,14 @@ public class ConfigService implements WebUIHandler {
         name.setText("");
         ip.setText("");
         mask.setText("");
+        stp.setSelectedIndex(1);
       } else {
         id.setText(ui.vlan_vlan.getNumber());
         id.setReadonly(true);
         name.setText(ui.vlan_vlan.name);
         ip.setText(ui.vlan_vlan.ip);
         mask.setText(ui.vlan_vlan.mask);
+        stp.setSelectedIndex(ui.vlan_vlan.stp ? 1 : 0);
       }
     };
 
@@ -633,6 +640,7 @@ public class ConfigService implements WebUIHandler {
       String _name = name.getText();
       String _ip = ip.getText();
       String _mask = mask.getText();
+      boolean _stp = stp.getSelectedIndex() == 1;
       if (!VLAN.validVLAN(_id)) {
         errmsg.setText("Invalid VLAN ID");
         return;
@@ -671,6 +679,23 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+        if (!_stp) {
+          Task task = new Task("Disable VLAN STP") {
+            public void doTask() {
+              try {
+                if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
                   setStatus("Completed");
                 } else {
                   setStatus("Failed");
@@ -737,6 +762,23 @@ public class ConfigService implements WebUIHandler {
             Tasks.tasks.addTask(ui.tasks, task);
           }
         }
+        if (_stp != ui.vlan_vlan.stp) {
+          Task task = new Task("Disable VLAN STP") {
+            public void doTask() {
+              try {
+                if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
       }
       ui.vlans_init.run();
       QueryHardware.scan_now = true;
@@ -766,7 +808,7 @@ public class ConfigService implements WebUIHandler {
     Button delete = new Button("Delete");
     tools.add(delete);
 
-    Table table = new Table(new int[] {64, 128, 128, 128}, 32, 4, 0);
+    Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
@@ -777,9 +819,9 @@ public class ConfigService implements WebUIHandler {
       ui.vlans_vlans = ui.device.hardware.vlans.toArray(VLAN.ArrayType);
       Arrays.sort(ui.vlans_vlans);
       table.removeAll();
-      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask")});
+      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask"), new Label("STP")});
       for(VLAN vlan : ui.vlans_vlans) {
-        table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.name), new Label(vlan.ip), new Label(vlan.mask)});
+        table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.name), new Label(vlan.ip), new Label(vlan.mask), new Label(Boolean.toString(vlan.stp))});
       }
     };
 

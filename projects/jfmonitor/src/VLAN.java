@@ -28,6 +28,9 @@ public class VLAN implements Serializable, Comparable<VLAN> {
   public String ip = "";
   public String mask = "";
 
+  //stp
+  public boolean stp = true;
+
   public String getNumber() {
     int idx = JF.indexOfDigit(id);
     if (idx == -1) {

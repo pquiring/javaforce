@@ -151,6 +151,32 @@ public class Cisco {
     }
     return ok;
   }
+  public boolean setVLAN_STP(Device device, VLAN vlan, boolean state) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = null;
+    if (state) {
+      cmds = "config terminal;spanning-tree vlan " + vlan.getNumber() + ";exit;exit";
+    } else {
+      cmds = "config terminal;no spanning-tree vlan " + vlan.getNumber() + ";exit;exit";
+    }
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setVLAN_STP:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
   public boolean addInterfaceIP(Device device, String iid, String iface_ip, String iface_mask) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
@@ -535,7 +561,7 @@ public class Cisco {
           }
           break;
         case "no":
-          switch(f[2]) {
+          switch(f[1]) {
             case "ip":
               if (port != null) {
                 port.ip = null;
@@ -549,6 +575,14 @@ public class Cisco {
             case "switchport":
               if (port != null) {
                 port.mode = "ip";
+              }
+              break;
+            case "spanning-tree":
+              switch (f[2]) {
+                case "vlan":
+                  vlan = device.getVLAN("vlan" + f[3]);
+                  vlan.stp = false;
+                  break;
               }
               break;
           }

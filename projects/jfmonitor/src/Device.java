@@ -304,6 +304,19 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
+  public boolean configSetVLAN_STP(VLAN vlan, boolean state) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setVLAN_STP(this, vlan, state)) {
+          vlan.stp = state;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
   public boolean configCreateGroup(String gid, Port[] ports) {
     switch (type) {
       case TYPE_CISCO:
