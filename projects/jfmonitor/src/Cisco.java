@@ -688,8 +688,11 @@ public class Cisco {
             case "spanning-tree":
               switch (f[2]) {
                 case "vlan":
-                  vlan = device.getVLAN("vlan" + f[3]);
-                  vlan.stp = false;
+                  String[] vlans = VLAN.splitVLANs(f[3], true);
+                  for(String vid : vlans) {
+                    VLAN _vlan = device.getVLAN("vlan" + vid);
+                    _vlan.stp = false;
+                  }
                   break;
               }
               break;

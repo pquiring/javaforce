@@ -474,7 +474,7 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid VLANs");
           return;
         }
-        String[] _vlan_list = VLAN.splitVLANs(_vlans);
+        String[] _vlan_list = VLAN.splitVLANs(_vlans, false);
         port.setVLANs(_vlan_list);
         Task task = new Task("Set Port VLANs") {
           public void doTask() {

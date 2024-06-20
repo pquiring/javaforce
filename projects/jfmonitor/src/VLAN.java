@@ -3,7 +3,8 @@
  * @author pquiring
  */
 
-import java.io.Serializable;
+import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -72,9 +73,26 @@ public class VLAN implements Serializable, Comparable<VLAN> {
     return true;
   }
 
-  public static String[] splitVLANs(String vlans) {
+  public static String[] splitVLANs(String vlans, boolean split_ranges) {
     String[] _vlans = vlans.split(",");
-    return _vlans;
+    if (split_ranges) {
+      ArrayList<String> list = new ArrayList<>();
+      for(String vlan : _vlans) {
+        int idx = vlan.indexOf('-');
+        if (idx == -1) {
+          list.add(vlan);
+        } else {
+          int r1 = Integer.valueOf(vlan.substring(0, idx));
+          int r2 = Integer.valueOf(vlan.substring(idx + 1));
+          for(int v=r1;v<=r2;v++) {
+            list.add(Integer.toString(v));
+          }
+        }
+      }
+      return list.toArray(JF.StringArrayType);
+    } else {
+      return _vlans;
+    }
   }
 
   public static String joinVLANs(String[] vlans) {

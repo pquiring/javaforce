@@ -173,7 +173,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
         if (cisco.setVLANs(this, port, vlans)) {
-          String[] vs = vlans.split(",");
+          String[] vs = VLAN.splitVLANs(vlans, false);
           port.vlans.clear();
           for(String vlan : vs) {
             port.vlans.add(vlan);
