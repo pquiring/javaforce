@@ -28,6 +28,7 @@ public class Hardware implements Serializable, Cloneable {
       clone.ports = new ArrayList<>();
       clone.vlans = new ArrayList<>();
       clone.groups = new ArrayList<>();
+      clone.routes = new ArrayList<>();
       return clone;
     } catch (Exception e) {
       return null;

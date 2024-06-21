@@ -1630,11 +1630,13 @@ public class ConfigService implements WebUIHandler {
         msg.setText("");
         return;
       }
+/*
       if (_device.hardware != null) {
         errmsg.setText("Device already added");
         msg.setText("");
         return;
       }
+*/
       String _user = user.getText();
       String _pass = pass.getText();
       SSH ssh = new SSH();
