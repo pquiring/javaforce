@@ -41,6 +41,21 @@ public class VLAN implements Serializable, Comparable<VLAN> {
     }
   }
 
+  public String getName() {
+    if (name == null) name = "";
+    return name;
+  }
+
+  public String getIP() {
+    if (ip == null) ip = "";
+    return ip;
+  }
+
+  public String getMask() {
+    if (mask == null) mask = "";
+    return mask;
+  }
+
   public static boolean validVLAN(String vlan) {
     String num = JF.filter(vlan, JF.filter_numeric);
     if (!vlan.equals(num)) return false;

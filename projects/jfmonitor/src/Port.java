@@ -43,6 +43,11 @@ public class Port implements Serializable, Comparable<Port> {
     return group;
   }
 
+  public String getName() {
+    if (name == null) name = "";
+    return name;
+  }
+
   public String getIP() {
     if (ip == null) ip = "";
     return ip;
@@ -63,11 +68,6 @@ public class Port implements Serializable, Comparable<Port> {
     int value = Integer.valueOf(gid);
     if (value < 1 || value > 4094) return false;
     return true;
-  }
-
-  public String getName() {
-    if (name == null) name = "";
-    return name;
   }
 
   public String getVLANs() {

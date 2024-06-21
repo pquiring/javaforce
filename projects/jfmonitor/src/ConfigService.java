@@ -629,6 +629,7 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
 
     ui.vlan_init = () -> {
+      errmsg.setText("");
       if (ui.vlan_vlan == null) {
         id.setText("");
         id.setReadonly(false);
@@ -837,7 +838,7 @@ public class ConfigService implements WebUIHandler {
       table.removeAll();
       table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask"), new Label("STP")});
       for(VLAN vlan : ui.vlans_vlans) {
-        table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.name), new Label(vlan.ip), new Label(vlan.mask), new Label(Boolean.toString(vlan.stp))});
+        table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.getName()), new Label(vlan.getIP()), new Label(vlan.getMask()), new Label(Boolean.toString(vlan.stp))});
       }
     };
 
@@ -927,6 +928,7 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
 
     ui.route_init = () -> {
+      errmsg.setText("");
       if (ui.route_route == null) {
         ui.route_route = new Route();
         ip.setText("");
