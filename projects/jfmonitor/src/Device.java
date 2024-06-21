@@ -348,6 +348,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
+        //TODO : remove group from all ports???
         if (cisco.removeGroup(this, gid)) {
           return true;
         }

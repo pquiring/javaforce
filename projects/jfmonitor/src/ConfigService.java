@@ -2166,6 +2166,7 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (device.configRemoveGroup(group.getGroupID())) {
+                  QueryHardware.scan_now = true;
                   setStatus("Completed");
                 } else {
                   setStatus("Failed");
