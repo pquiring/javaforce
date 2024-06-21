@@ -903,7 +903,7 @@ public class ConfigService implements WebUIHandler {
     grid.addRow(new Component[] {new Label("Mask"), mask});
 
     TextField gateway = new TextField("");
-    grid.addRow(new Component[] {new Label("Gateway"), mask});
+    grid.addRow(new Component[] {new Label("Gateway"), gateway});
 
     row = new Row();
     panel.add(row);
