@@ -106,11 +106,12 @@ public class Port implements Serializable, Comparable<Port> {
     if (mode != null) {
       sb.append(" mode:" + mode);
     }
-    sb.append(" access:");
-    sb.append(" vlan:" + getAccessVLAN());
-    sb.append(" trunk:");
+    sb.append(" access{");
+    sb.append("vlan:" + getAccessVLAN());
+    sb.append("}");
+    sb.append(" trunk{");
     if (vlans.size() > 0) {
-      sb.append(" vlans:[");
+      sb.append("vlans:[");
       int cnt = 0;
       for(String vlan : vlans) {
         if (cnt > 0) sb.append(",");
@@ -120,6 +121,7 @@ public class Port implements Serializable, Comparable<Port> {
       sb.append("]");
     }
     sb.append(" vlan:" + getTrunkVLAN());
+    sb.append("}");
     if (isGroup) {
       String gid = getGroupID();
       sb.append(" ports:[");
