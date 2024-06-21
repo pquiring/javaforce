@@ -825,11 +825,14 @@ public class ConfigService implements WebUIHandler {
     Button delete = new Button("Delete");
     tools.add(delete);
 
+    ScrollPanel table_panel = new ScrollPanel();
     Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
-    panel.add(table);
+    table_panel.add(table);
+    table_panel.setSize(table.getWidth() + 32, 480);  //+32 for scroll bars
+    panel.add(table_panel);
 
     ui.vlans_init = () -> {
       if (ui.device == null) return;
@@ -1028,11 +1031,14 @@ public class ConfigService implements WebUIHandler {
     Button delete = new Button("Delete");
     tools2.add(delete);
 
+    ScrollPanel table_panel = new ScrollPanel();
     Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
-    panel.add(table);
+    table_panel.add(table);
+    table_panel.setSize(table.getWidth() + 32, 480);  //+32 for scroll bars
+    panel.add(table_panel);
 
     ui.routing_init = () -> {
       if (ui.device == null) return;
