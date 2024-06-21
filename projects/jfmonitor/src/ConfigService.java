@@ -2133,6 +2133,7 @@ public class ConfigService implements WebUIHandler {
       }
 
       editPort.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         if (ui.selection.get(device).size() != 1) {
           errmsg.setText("Must select only one port to edit");
           return;
@@ -2149,6 +2150,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       addGroup.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         if (ui.selection.get(device).size() < 2) {
           errmsg.setText("Must select more than one port to make a group");
           return;
