@@ -66,6 +66,9 @@ public class SMTP {
    * @param port = port to connect (default = 25 or 587)
    */
   public boolean connect(String host, int port) throws Exception {
+    if (debug) {
+      JFLog.log("connect(" + host + ":" + port + ")");
+    }
     s = new Socket(host, port);
     is = s.getInputStream();
     br = new BufferedReader(new InputStreamReader(is));
@@ -84,6 +87,9 @@ public class SMTP {
    * @param port = port to connect (default = 465)
    */
   public boolean connectSSL(String host, int port) throws Exception {
+    if (debug) {
+      JFLog.log("connectSSL(" + host + ":" + port + ")");
+    }
     s = JF.connectSSL(host, port, KeyMgmt.getDefaultClient());
     is = s.getInputStream();
     br = new BufferedReader(new InputStreamReader(is));
@@ -117,9 +123,9 @@ public class SMTP {
     log = id;
   }
 
-  /** Sends HELO command. */
+  /** Sends HELO / EHLO command. */
   public boolean login() throws Exception {
-    cmd("HELO " + host);
+    cmd("EHLO " + host);
     getResponse();
     if (!response[response.length - 1].startsWith("250")) {
       return false;
@@ -127,6 +133,7 @@ public class SMTP {
     return true;
   }
 
+  public static final String AUTH_PLAIN = "PLAIN";
   public static final String AUTH_LOGIN = "LOGIN";
   public static final String AUTH_NTLM = "NTLM";
 
@@ -137,6 +144,7 @@ public class SMTP {
    */
   public boolean auth(String user, String pass, String type) throws Exception {
     switch (type) {
+      case AUTH_PLAIN: cmd("AUTH PLAIN"); break;
       case AUTH_LOGIN: cmd("AUTH LOGIN"); break;
       case AUTH_NTLM: cmd("AUTH NTLM"); break;
       default: JFLog.log(log, "SMTP:Unknown auth type:" + type);
@@ -153,6 +161,9 @@ public class SMTP {
     }
     cmd(encodeFirst(user, pass, type, response[response.length - 1].substring(4)));
     getResponse();
+    if (response[response.length - 1].startsWith("235")) {
+      return true;
+    }
     if (!response[response.length - 1].startsWith("334")) {
       return false;
     }
@@ -455,12 +466,19 @@ public class SMTP {
       String user = null;
       String pass = null;
       String auth = AUTH_LOGIN;
+      boolean starttls = false;
       ArrayList<String> files = new ArrayList<String>();
       for(String arg : args) {
         if (!arg.startsWith("--")) continue;
+        arg = arg.substring(2);
         int idx = arg.indexOf("=");
-        if (idx == -1) continue;
-        String key = arg.substring(2, idx);
+        if (idx == -1) {
+          switch (arg) {
+            case "starttls": starttls = true; break;
+          }
+          continue;
+        }
+        String key = arg.substring(0, idx);
         String value = arg.substring(idx + 1);
         switch (key) {
           case "server": host = value; break;
@@ -476,6 +494,7 @@ public class SMTP {
           case "debug": setDebug(true); break;
           case "auth":
             switch (value) {
+              case "PLAIN": auth = AUTH_PLAIN; break;
               case "LOGIN": auth = AUTH_LOGIN; break;
               case "NTLM": auth = AUTH_NTLM; break;
               default: System.out.println("auth not supported:" + value); System.exit(1); break;
@@ -500,6 +519,9 @@ public class SMTP {
         smtp.connectSSL(host, port);
       }
       smtp.login();
+      if (starttls) {
+        smtp.starttls();
+      }
       if (user != null && pass != null) {
         if (!smtp.auth(args[2], args[3], auth)) {
           throw new Exception("Login failed!");
@@ -639,6 +661,8 @@ public class SMTP {
   }
   private static String encodeFirst(String user, String pass, String type, String response) {
     switch (type) {
+      case AUTH_PLAIN:
+        return new String(Base64.encode((user + pass).getBytes()));
       case AUTH_LOGIN:
         return new String(Base64.encode(user.getBytes()));
       case AUTH_NTLM:
@@ -1032,6 +1056,8 @@ public class SMTP {
   }
   private static String encodeSecond(String user, String pass, String type, String response) {
     switch (type) {
+      case AUTH_PLAIN:
+        return null;
       case AUTH_LOGIN:
         return new String(Base64.encode(pass.getBytes()));
       case AUTH_NTLM:
