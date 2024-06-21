@@ -954,7 +954,7 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Add Route") {
         public void doTask() {
           try {
-            if (ui.device.configRemoveRoute(ui.route_route)) {
+            if (ui.device.configAddRoute(ui.route_route)) {
               setStatus("Completed");
             } else {
               setStatus("Failed");
