@@ -25,6 +25,7 @@ public class Port implements Serializable, Comparable<Port> {
 
   //switchport
   public String mode = "";  //trunk or access or ip
+  public String access_vlan = "1";  //access vlan
   public ArrayList<String> vlans = new ArrayList<>();  //allowed vlans
   public String vlan = "1";  //native vlan
   public String group = "";
@@ -70,6 +71,11 @@ public class Port implements Serializable, Comparable<Port> {
     return true;
   }
 
+  public String getAccessVLAN() {
+    if (access_vlan == null) access_vlan = "1";
+    return access_vlan;
+  }
+
   public String getVLANs() {
     return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));
   }
@@ -85,7 +91,7 @@ public class Port implements Serializable, Comparable<Port> {
     }
   }
 
-  public String getVLAN() {
+  public String getTrunkVLAN() {
     if (vlan == null) vlan = "1";
     return vlan;
   }
@@ -100,6 +106,9 @@ public class Port implements Serializable, Comparable<Port> {
     if (mode != null) {
       sb.append(" mode:" + mode);
     }
+    sb.append(" access:");
+    sb.append(" vlan:" + getAccessVLAN());
+    sb.append(" trunk:");
     if (vlans.size() > 0) {
       sb.append(" vlans:[");
       int cnt = 0;
@@ -110,7 +119,7 @@ public class Port implements Serializable, Comparable<Port> {
       }
       sb.append("]");
     }
-    sb.append(" vlan:" + getVLAN());
+    sb.append(" vlan:" + getTrunkVLAN());
     if (isGroup) {
       String gid = getGroupID();
       sb.append(" ports:[");

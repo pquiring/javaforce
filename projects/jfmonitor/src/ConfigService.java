@@ -370,11 +370,14 @@ public class ConfigService implements WebUIHandler {
     TextField name = new TextField("");
     grid.addRow(new Component[] {new Label("Name"), name});
 
+    TextField access_vlan = new TextField("");
+    grid.addRow(new Component[] {new Label("Access VLAN"), access_vlan});
+
     TextField vlans = new TextField("");
-    grid.addRow(new Component[] {new Label("VLANs"), vlans});
+    grid.addRow(new Component[] {new Label("Trunk VLANs"), vlans});
 
     TextField vlan = new TextField("");
-    grid.addRow(new Component[] {new Label("VLAN"), vlan});
+    grid.addRow(new Component[] {new Label("Trunk VLAN"), vlan});
 
     TextField group = new TextField("");
     grid.addRow(new Component[] {new Label("Group"), group});
@@ -404,8 +407,9 @@ public class ConfigService implements WebUIHandler {
       port_desc.setText("Port:" + port.id);
       mode.setSelectedIndex(Cisco.getSwitchMode(port.mode));
       name.setText(port.getName());
+      access_vlan.setText(port.getAccessVLAN());
       vlans.setText(port.getVLANs());
-      vlan.setText(port.getVLAN());
+      vlan.setText(port.getTrunkVLAN());
       group.setText(port.getGroup());
       ip.setText(port.getIP());
       mask.setText(port.getMask());
@@ -415,6 +419,7 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       int _mode = mode.getSelectedIndex();
       String _name = name.getText();
+      String _access_vlan = access_vlan.getText();
       String _vlans = vlans.getText();
       String _vlan = vlan.getText();
       String _group = group.getText();
@@ -472,15 +477,37 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (_mode == Cisco.MODE_TRUNK && !port.getVLANs().equals(_vlans)) {
+      if (!port.getAccessVLAN().equals(_vlan)) {
+        //change access vlan
+        if (!VLAN.validVLAN(_access_vlan)) {
+          errmsg.setText("Invalid Access VLAN");
+          return;
+        }
+        Task task = new Task("Set Port Access VLAN") {
+          public void doTask() {
+            try {
+              if (ui.device.configSetAccessVLAN(port, _access_vlan)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      }
+      if (!port.getVLANs().equals(_vlans)) {
         //change vlans
         if (!VLAN.validVLANs(_vlans)) {
-          errmsg.setText("Invalid VLANs");
+          errmsg.setText("Invalid Trunk VLANs");
           return;
         }
         String[] _vlan_list = VLAN.splitVLANs(_vlans, false);
         port.setVLANs(_vlan_list);
-        Task task = new Task("Set Port VLANs") {
+        Task task = new Task("Set Port Trunk VLANs") {
           public void doTask() {
             try {
               if (ui.device.configSetVLANs(port, _vlans)) {
@@ -496,16 +523,16 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (!port.getVLAN().equals(_vlan)) {
-        //change vlan
+      if (!port.getTrunkVLAN().equals(_vlan)) {
+        //change native vlan
         if (!VLAN.validVLAN(_vlan)) {
-          errmsg.setText("Invalid VLAN");
+          errmsg.setText("Invalid Trunk VLAN");
           return;
         }
-        Task task = new Task("Set Port VLAN") {
+        Task task = new Task("Set Port Trunk VLAN") {
           public void doTask() {
             try {
-              if (ui.device.configSetVLAN(port, _vlan)) {
+              if (ui.device.configSetTrunkVLAN(port, _vlan)) {
                 setStatus("Completed");
               } else {
                 setStatus("Failed");

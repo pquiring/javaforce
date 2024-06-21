@@ -627,6 +627,15 @@ public class Cisco {
                   break;
               }
               break;
+            case "access":
+              switch (f[2]) {
+                case "vlan":
+                  if (port != null) {
+                    port.access_vlan = f[3];
+                  }
+                  break;
+              }
+              break;
             case "mode":
               if (port != null) {
                 port.mode = f[2];  //trunk or access

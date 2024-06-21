@@ -132,6 +132,9 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         Cisco cisco = new Cisco();
         if (cisco.setSwitchMode(this, port, mode)) {
           port.mode = Cisco.getSwitchMode(mode);
+          if (mode == Cisco.MODE_ACCESS) {
+            port.vlans.clear();
+          }
           return true;
         }
         break;
@@ -210,12 +213,25 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
-  public boolean configSetVLAN(Port port, String vlan) {
+  public boolean configSetTrunkVLAN(Port port, String vlan) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        if (cisco.setVLAN(this, port, vlan, port.getMode())) {
+        if (cisco.setVLAN(this, port, vlan, Cisco.MODE_TRUNK)) {
           port.vlan = vlan;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configSetAccessVLAN(Port port, String vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setVLAN(this, port, vlan, Cisco.MODE_ACCESS)) {
+          port.access_vlan = vlan;
           return true;
         }
         break;
@@ -333,8 +349,8 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
           if (!cisco.setVLANs(this, group, first.getVLANs())) return false;
         }
         group.setVLANs(first.getVLANs());
-        if (!cisco.setVLAN(this, group, first.getVLAN(), mode)) return false;
-        group.setVLAN(first.getVLAN());
+        if (!cisco.setVLAN(this, group, first.getTrunkVLAN(), mode)) return false;
+        group.setVLAN(first.getTrunkVLAN());
         //join ports to group
         for(Port port : ports) {
           if (!cisco.addPortToGroup(this, gid, port)) return false;
