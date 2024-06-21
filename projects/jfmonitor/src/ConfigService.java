@@ -990,6 +990,8 @@ public class ConfigService implements WebUIHandler {
 
     Button save = new Button("Save");
     tools.add(save);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
 
     row = new Row();
     CheckBox routing = new CheckBox("Enable Routing mode");
@@ -1072,6 +1074,10 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
+    });
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.routing_init.run();
     });
 
     add.addClickListener((me, cmp) -> {

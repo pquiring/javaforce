@@ -479,7 +479,7 @@ public class Cisco {
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
-      JFLog.log("addRoute:" + cmds);
+      JFLog.log("removeRoute:" + cmds);
       return true;
     }
     if (!ssh.connect(ip, 22, options)) return false;

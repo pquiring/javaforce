@@ -19,6 +19,7 @@ public class Route implements Serializable, Comparable<Route> {
   public int compareTo(Route o) {
     if (!ip.equals(o.ip)) return ip.compareTo(o.ip);
     if (!mask.equals(o.mask)) return mask.compareTo(o.mask);
+    //do not compare gateway
     return 0;
   }
 }

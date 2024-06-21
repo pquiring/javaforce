@@ -421,7 +421,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
 
   private void addRoute(Route route) {
     for(Route r : hardware.routes) {
-      if (r.equals(route)) {
+      if (r.compareTo(route) == 0) {
         //update route
         r.gateway = route.gateway;
         return;
@@ -433,7 +433,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
 
   private void removeRoute(Route route) {
     for(Route r : hardware.routes) {
-      if (r.equals(route)) {
+      if (r.compareTo(route) == 0) {
         hardware.routes.remove(r);
         return;
       }
