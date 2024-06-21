@@ -779,7 +779,7 @@ function closePanel(event, element) {
   ws.send(JSON.stringify(msg));
 }
 
-function onResized(event, element) {
+function onResize(event, element) {
   sendSize(element.id);
 }
 

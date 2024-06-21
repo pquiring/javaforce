@@ -55,9 +55,11 @@ public class Container extends Component {
   }
   /** Get Component by id. */
   public Component get(String id) {
+    if (id.equals(this.id)) return this;
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       Component comp = get(a);
+      if (comp.id == null) continue;
       if (comp.id.equals(id)) return comp;
       if (comp instanceof Container) {
         Container container = (Container)comp;

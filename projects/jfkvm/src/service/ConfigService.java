@@ -184,12 +184,16 @@ public class ConfigService implements WebUIHandler {
     public ArrayList<NetworkVirtual> nics_virt;
     public NetworkVLAN[] nics_vlans;
 
+    public void resize() {
+      int height = top_bottom_split.getDividerPosition();
+      right_panel.setHeight(height);
+      int width = client.getWidth() - left_right_split.getDividerPosition();
+      right_panel.setWidth(width);
+    }
+
     public void setRightPanel(Panel panel) {
       right_panel = panel;
-      int width = client.getWidth() - left_right_split.getDividerPosition();
-      int height = top_bottom_split.getDividerPosition();
-      panel.setWidth(width);
-      panel.setHeight(height);
+      resize();
       left_right_split.setRightComponent(panel);
     }
   }
@@ -279,6 +283,10 @@ public class ConfigService implements WebUIHandler {
     ui.left_right_split.addChangedListener((cmp) -> {
       int width = client.getWidth() - ui.left_right_split.getDividerPosition();
       ui.right_panel.setWidth(width);
+    });
+
+    panel.addResizedListener((cmp, x, y) -> {
+      ui.resize();
     });
 
     return panel;
