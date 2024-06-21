@@ -35,9 +35,9 @@ public class Slider extends Container {
   public void onEvent(String event, String[] args) {
     switch (event) {
       case "sliderpos":
-        for(int a=0;a<args.length;a++) {
-          if (args[a].startsWith("pos=")) {
-            pos = Integer.valueOf(args[a].substring(4));
+        for(String arg : args) {
+          if (arg.startsWith("pos=")) {
+            pos = Integer.valueOf(arg.substring(4));
             onChanged(null);
           }
         }

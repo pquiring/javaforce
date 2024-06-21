@@ -127,7 +127,10 @@ public class ConfigService implements WebUIHandler {
   }
 
   private static class UI {
-    public SplitPanel split;
+    public WebUIClient client;
+    public SplitPanel top_bottom_split;
+    public SplitPanel left_right_split;
+    public Panel right_panel;
     public Panel tasks;
 
     public PopupPanel message_popup;
@@ -161,6 +164,19 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel route_popup;
     public Runnable route_init;
     public Route route_route;
+
+    public void resize() {
+      int height = top_bottom_split.getDividerPosition();
+      right_panel.setHeight(height);
+      int width = client.getWidth() - left_right_split.getDividerPosition();
+      right_panel.setWidth(width);
+    }
+
+    public void setRightPanel(Panel panel) {
+      right_panel = panel;
+      resize();
+      left_right_split.setRightComponent(panel);
+    }
   }
 
   private Panel tasksPanel(UI ui) {
@@ -1188,6 +1204,7 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
 
     UI ui = new UI();
+    ui.client = client;
 
     ui.message_popup = messagePopupPanel(ui);
     panel.add(ui.message_popup);
@@ -1211,45 +1228,44 @@ public class ConfigService implements WebUIHandler {
     panel.add(ui.route_popup);
 
     int topSize = client.getHeight() - 128;
-    SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
-    panel.add(top_bot);
-    top_bot.setDividerPosition(topSize);
+    ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL);
+    panel.add(ui.top_bottom_split);
+    ui.top_bottom_split.setDividerPosition(topSize);
 
-    SplitPanel left_right = new SplitPanel(SplitPanel.VERTICAL);
-    ui.split = left_right;
-    left_right.setName("split");
+    ui.left_right_split = new SplitPanel(SplitPanel.VERTICAL);
+    ui.left_right_split.setName("split");
     int leftSize = 128;
-    left_right.setDividerPosition(leftSize);
-    Panel left = serverLeftPanel(leftSize);
-    Panel right = null;
-    String screen = (String)client.getProperty("screen");
-    if (screen == null) screen = "";
-    switch (screen) {
-      case "": right = serverHome(); break;
-      case "status": right = serverStatus(); break;
-      case "monitor_network": right = serverMonitorNetwork(); break;
-      case "monitor_hardware": right = serverMonitorHardware(ui); break;
-      case "monitor_storage": right = serverMonitorStorage(); break;
-      case "config_network": right = serverConfigNetwork(); break;
-      case "config_hardware": right = serverConfigHardware(); break;
-      case "config_storage": right = serverConfigStorage(); break;
-      case "config": right = serverConfig(); break;
-      case "logs": right = serverLogs(null); break;
-      default: JFLog.log("Unknown screen:" + screen); right = new Panel(); break;
-    }
-    left_right.setLeftComponent(left);
+    ui.left_right_split.setDividerPosition(leftSize);
+    Panel left = serverLeftPanel(leftSize, ui);
+    Panel right = serverHome();
+    ui.right_panel = right;
+    ui.left_right_split.setLeftComponent(left);
     right.setHeight(topSize);
-    left_right.setRightComponent(right);
+    ui.left_right_split.setRightComponent(right);
 
     Panel tasks = tasksPanel(ui);
 
-    top_bot.setTopComponent(left_right);
-    top_bot.setBottomComponent(tasks);
+    ui.top_bottom_split.setTopComponent(ui.left_right_split);
+    ui.top_bottom_split.setBottomComponent(tasks);
+
+    ui.top_bottom_split.addChangedListener((cmp) -> {
+      ui.resize();
+    });
+    ui.left_right_split.addChangedListener((cmp) -> {
+      ui.resize();
+    });
+
+    ui.top_bottom_split.addResizedListener((cmp, x, y) -> {
+      ui.resize();
+    });
+    ui.left_right_split.addResizedListener((cmp, x, y) -> {
+      ui.resize();
+    });
 
     return panel;
   }
 
-  public Panel serverLeftPanel(int leftSize) {
+  public Panel serverLeftPanel(int leftSize, UI ui) {
     Panel panel = new Panel();
     //left side
     ListBox list = new ListBox();
@@ -1259,65 +1275,49 @@ public class ConfigService implements WebUIHandler {
     list.add(opt_status);
     opt_status.setWidth(leftSize);
     opt_status.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "status");
-      webclient.refresh();
+      ui.setRightPanel(serverStatus());
     });
     Button opt_net_mon = new Button("Network Monitor");
     list.add(opt_net_mon);
     opt_net_mon.setWidth(leftSize);
     opt_net_mon.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "monitor_network");
-      webclient.refresh();
+      ui.setRightPanel(serverMonitorNetwork());
     });
     Button opt_hw_mon = new Button("Monitor Hardware");
     list.add(opt_hw_mon);
     opt_hw_mon.setWidth(leftSize);
     opt_hw_mon.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "monitor_hardware");
-      webclient.refresh();
+      ui.setRightPanel(serverMonitorHardware(ui));
     });
     Button opt_storage_mon = new Button("Storage Monitor");
     list.add(opt_storage_mon);
     opt_storage_mon.setWidth(leftSize);
     opt_storage_mon.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "monitor_storage");
-      webclient.refresh();
+      ui.setRightPanel(serverMonitorStorage());
     });
     Button opt_setup_net = new Button("Setup Network");
     list.add(opt_setup_net);
     opt_setup_net.setWidth(leftSize);
     opt_setup_net.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "config_network");
-      webclient.refresh();
+      ui.setRightPanel(serverConfigNetwork());
     });
     Button opt_setup_hw = new Button("Setup Hardware");
     list.add(opt_setup_hw);
     opt_setup_hw.setWidth(leftSize);
     opt_setup_hw.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "config_hardware");
-      webclient.refresh();
+      ui.setRightPanel(serverConfigHardware());
     });
     Button opt_cfg = new Button("Configure");
     list.add(opt_cfg);
     opt_cfg.setWidth(leftSize);
     opt_cfg.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "config");
-      webclient.refresh();
+      ui.setRightPanel(serverConfig());
     });
     Button opt_logs = new Button("Logs");
     list.add(opt_logs);
     opt_logs.setWidth(leftSize);
     opt_logs.addClickListener( (MouseEvent me, Component c) -> {
-      WebUIClient webclient = c.getClient();
-      webclient.setProperty("screen", "logs");
-      webclient.refresh();
+      ui.setRightPanel(serverLogs(null));
     });
 
     panel.add(list);

@@ -164,15 +164,6 @@ td {
   display: block;
 }
 
-.scrollpanel {
-  overflow: auto;
-  display: table;
-}
-
-.scrollpanelcell {
-  display: table-cell;
-}
-
 .listbox {
   display: block;
 }

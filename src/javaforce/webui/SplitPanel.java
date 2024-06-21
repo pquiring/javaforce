@@ -156,4 +156,17 @@ public class SplitPanel extends Panel {
   public void setBottomComponent(Component c) {
     c2.set(0, c);
   }
+
+  public void onEvent(String event, String[] args) {
+    switch (event) {
+      case "dividerpos":
+        for(String arg : args) {
+          if (arg.startsWith("pos=")) {
+            pos = Integer.valueOf(arg.substring(4));
+            onChanged(null);
+          }
+        }
+        break;
+    }
+  }
 }

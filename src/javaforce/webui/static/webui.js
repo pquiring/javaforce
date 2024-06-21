@@ -349,6 +349,15 @@ function sendSliderPos(id, pos) {
   ws.send(JSON.stringify(msg));
 }
 
+function sendDividerPos(id, pos) {
+  var msg = {
+    event: "dividerpos",
+    id: id,
+    pos: pos
+  };
+  ws.send(JSON.stringify(msg));
+}
+
 function sendMarginLeft(id) {
   var element = document.getElementById(id);
   var msg = {
@@ -529,6 +538,7 @@ function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
   element3.parentElement.style.width = width3 + "px";
   element3.parentElement.style.height = height + "px";
   element3.dispatchEvent(new Event('resize'));
+  sendDividerPos(element.id, width1);
 }
 
 function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
@@ -545,6 +555,7 @@ function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
   element3.parentElement.style.width = width + "px";
   element3.parentElement.style.height = height3 + "px";
   element3.dispatchEvent(new Event('resize'));
+  sendDividerPos(element.id, height1);
 }
 
 function onmousedownSplitPanel(event, element, id1, id2, id3, top, dir) {

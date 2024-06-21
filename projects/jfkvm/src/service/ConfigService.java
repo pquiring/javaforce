@@ -104,11 +104,14 @@ public class ConfigService implements WebUIHandler {
 
   /** This class holds UI elements to be passed down to sub-panels. */
   private static class UI {
+    public WebUIClient client;
     public String user;
     public Calendar now;
 
-    public SplitPanel split;
+    public SplitPanel top_bottom_split;
+    public SplitPanel left_right_split;
     public Panel tasks;
+    public Panel right_panel;
 
     public PopupPanel message_popup;
     public Label message_message;
@@ -182,7 +185,12 @@ public class ConfigService implements WebUIHandler {
     public NetworkVLAN[] nics_vlans;
 
     public void setRightPanel(Panel panel) {
-      split.setRightComponent(panel);
+      right_panel = panel;
+      int width = client.getWidth() - left_right_split.getDividerPosition();
+      int height = top_bottom_split.getDividerPosition();
+      panel.setWidth(width);
+      panel.setHeight(height);
+      left_right_split.setRightComponent(panel);
     }
   }
 
@@ -199,6 +207,7 @@ public class ConfigService implements WebUIHandler {
     }
     Panel panel = new Panel();
     UI ui = new UI();
+    ui.client = client;
     ui.user = user;
 
     ui.message_popup = messagePopupPanel(ui);
@@ -241,27 +250,36 @@ public class ConfigService implements WebUIHandler {
     panel.add(ui.ctrl_model_popup);
 
     int topSize = client.getHeight() - 128;
-    SplitPanel top_bot = new SplitPanel(SplitPanel.HORIZONTAL);
-    panel.add(top_bot);
-    top_bot.setDividerPosition(topSize);
+    ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL);
+    panel.add(ui.top_bottom_split);
+    ui.top_bottom_split.setDividerPosition(topSize);
 
     int leftSize = 128;
-    SplitPanel left_right = new SplitPanel(SplitPanel.VERTICAL);
-    ui.split = left_right;
-    left_right.setDividerPosition(leftSize);
-    left_right.setLeftComponent(leftPanel(ui, leftSize));
-    left_right.setRightComponent(welcomePanel(ui));
+    ui.left_right_split = new SplitPanel(SplitPanel.VERTICAL);
+    ui.left_right_split = ui.left_right_split;
+    ui.left_right_split.setDividerPosition(leftSize);
+    ui.left_right_split.setLeftComponent(leftPanel(ui, leftSize));
+    ui.left_right_split.setRightComponent(welcomePanel(ui));
 
     Panel tasks = tasksPanel(ui);
 
-    top_bot.setTopComponent(left_right);
-    top_bot.setBottomComponent(tasks);
+    ui.top_bottom_split.setTopComponent(ui.left_right_split);
+    ui.top_bottom_split.setBottomComponent(tasks);
 
 /*
     b_help.addClickListener((MouseEvent e, Component button) -> {
         client.openURL("http://jfkvm.sourceforge.net/help.html");
       });
 */
+
+    ui.top_bottom_split.addChangedListener((cmp) -> {
+      int height = ui.top_bottom_split.getDividerPosition();
+      ui.right_panel.setHeight(height);
+    });
+    ui.left_right_split.addChangedListener((cmp) -> {
+      int width = client.getWidth() - ui.left_right_split.getDividerPosition();
+      ui.right_panel.setWidth(width);
+    });
 
     return panel;
   }
