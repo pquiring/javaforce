@@ -2110,7 +2110,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       addGroup.addClickListener((me, cmp) -> {
-        if (ui.selection.get(device).size() < 1) {
+        if (ui.selection.get(device).size() < 2) {
           errmsg.setText("Must select more than one port to make a group");
           return;
         }
