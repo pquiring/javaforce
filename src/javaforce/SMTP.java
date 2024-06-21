@@ -109,7 +109,7 @@ public class SMTP {
   }
 
   /** Set debug logging state. */
-  public static void setLogging(boolean state) {
+  public static void setDebug(boolean state) {
     debug_log = state;
   }
 
@@ -441,7 +441,7 @@ public class SMTP {
     }
     SMTP smtp = new SMTP();
     try {
-      smtp.setLogging(true);
+      smtp.setDebug(true);
       smtp.debug = true;
       int port = 25;
       String host = null;
@@ -473,6 +473,7 @@ public class SMTP {
           case "subject": subject = value; break;
           case "user": user = value; break;
           case "pass": pass = value; break;
+          case "debug": setDebug(true); break;
           case "auth":
             switch (value) {
               case "LOGIN": auth = AUTH_LOGIN; break;
