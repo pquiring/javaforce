@@ -339,7 +339,7 @@ public class POP3Server extends Thread {
     IP4 target = new IP4();
     if (!target.setIP(ip4)) return false;
     for(Subnet4 net : subnet_src_list) {
-      if (net.matches(target)) {
+      if (net.isWithin(target)) {
         return true;
       }
     }

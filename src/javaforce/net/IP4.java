@@ -13,8 +13,16 @@ import java.net.*;
 
 import javaforce.*;
 
-public class IP4 {
+public class IP4 implements Comparable<IP4> {
   public byte[] ip = new byte[4];
+  public IP4() {
+  }
+  public IP4(String str) {
+    setIP(str);
+  }
+  public IP4(IP4 ip4) {
+    setIP(ip4);
+  }
   public static boolean isIP(String str) {
     if (str.equals("0:0:0:0:0:0:0:1")) {
       //IP6 localhost
@@ -54,6 +62,34 @@ public class IP4 {
   }
   public boolean setIP(InetAddress addr) {
     return setIP(addr.getHostAddress());
+  }
+  public boolean setIP(IP4 o) {
+    for(int a=0;a<4;a++) {
+      ip[a] = o.ip[a];
+    }
+    return true;
+  }
+  public void mask(IP4 o) {
+    for(int a=0;a<4;a++) {
+      ip[a] &= o.ip[a];
+    }
+  }
+  public void or(IP4 o) {
+    for(int a=0;a<4;a++) {
+      ip[a] |= o.ip[a];
+    }
+  }
+  public boolean allZero() {
+    for(int a=0;a<4;a++) {
+      if (ip[a] != 0) return false;
+    }
+    return true;
+  }
+  public boolean allOne() {
+    for(int a=0;a<4;a++) {
+      if (ip[a] != -1) return false;
+    }
+    return true;
   }
   public InetAddress toInetAddress() {
     try {
@@ -104,20 +140,30 @@ public class IP4 {
     return ip4;
   }
 
-  public static void test(String ip) {
+  public static void test(String ip, boolean expect) {
     IP4 ip4 = new IP4();
-    ip4.setIP(ip);
+    boolean res = ip4.setIP(ip);
+    if (res != expect) {
+      JFLog.log("failed:" + ip);
+    }
     JFLog.log(IP4.isIP(ip) + ":" + ip + ":" + ip4.toString());
   }
 
   public static void main(String[] args) {
-    test("1.1.1.1");
-    test("127.0.0.1");
-    test("255.255.255.0");
-    test("1.1.1.-1");
-    test("127.a.0.1");
-    test("127..0.1");
-    test("127.0.0.1.");
+    test("1.1.1.1", true);
+    test("127.0.0.1", true);
+    test("255.255.255.0", true);
+    test("1.1.1.-1", false);
+    test("127.a.0.1", false);
+    test("127..0.1", false);
+    test("127.0.0.1.", false);
     JFLog.log("loopback=" + getLoopbackIP().toString());
+  }
+
+  public int compareTo(IP4 o) {
+    for(int a=0;a<4;a++) {
+      if (ip[a] != o.ip[a]) return -1;
+    }
+    return 0;
   }
 }

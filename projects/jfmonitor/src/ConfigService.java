@@ -387,10 +387,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Button b_save = new Button("Save");
-    row.add(b_save);
-    Button b_cancel = new Button("Cancel");
-    row.add(b_cancel);
+    Button save = new Button("Save");
+    row.add(save);
+    Button cancel = new Button("Cancel");
+    row.add(cancel);
 
     row = new Row();
     panel.add(row);
@@ -411,7 +411,7 @@ public class ConfigService implements WebUIHandler {
       mask.setText(port.getMask());
     };
 
-    b_save.addClickListener((MouseEvent e, Component button) -> {
+    save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
       int _mode = mode.getSelectedIndex();
       String _name = name.getText();
@@ -429,6 +429,10 @@ public class ConfigService implements WebUIHandler {
         }
         if (_mask.length() == 0 || !Subnet4.isSubnet(_mask)) {
           errmsg.setText("Invalid Subnet Mask");
+          return;
+        }
+        if (!valid_ip_mask_address(_ip, _mask)) {
+          errmsg.setText("Invalid IP Address");
           return;
         }
       }
@@ -577,11 +581,11 @@ public class ConfigService implements WebUIHandler {
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
-    b_cancel.addClickListener((MouseEvent e, Component button) -> {
+    cancel.addClickListener((MouseEvent e, Component button) -> {
       panel.setVisible(false);
     });
     panel.setOnClose( () -> {
-      b_cancel.click();
+      cancel.click();
     });
     return panel;
   }
@@ -613,10 +617,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Button b_save = new Button("Save");
-    row.add(b_save);
-    Button b_cancel = new Button("Cancel");
-    row.add(b_cancel);
+    Button save = new Button("Save");
+    row.add(save);
+    Button cancel = new Button("Cancel");
+    row.add(cancel);
 
     row = new Row();
     panel.add(row);
@@ -642,7 +646,7 @@ public class ConfigService implements WebUIHandler {
       }
     };
 
-    b_save.addClickListener((MouseEvent e, Component button) -> {
+    save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
       String _id = id.getText();
       String _name = name.getText();
@@ -660,6 +664,10 @@ public class ConfigService implements WebUIHandler {
         }
         if (_mask.length() == 0 || !Subnet4.isSubnet(_mask)) {
           errmsg.setText("Invalid Subnet Mask");
+          return;
+        }
+        if (!valid_ip_mask_address(_ip, _mask)) {
+          errmsg.setText("Invalid IP Address");
           return;
         }
       }
@@ -792,11 +800,11 @@ public class ConfigService implements WebUIHandler {
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
-    b_cancel.addClickListener((MouseEvent e, Component button) -> {
+    cancel.addClickListener((MouseEvent e, Component button) -> {
       panel.setVisible(false);
     });
     panel.setOnClose( () -> {
-      b_cancel.click();
+      cancel.click();
     });
     return panel;
   }
@@ -907,10 +915,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Button b_save = new Button("Save");
-    row.add(b_save);
-    Button b_cancel = new Button("Cancel");
-    row.add(b_cancel);
+    Button save = new Button("Save");
+    row.add(save);
+    Button cancel = new Button("Cancel");
+    row.add(cancel);
 
     row = new Row();
     panel.add(row);
@@ -931,7 +939,7 @@ public class ConfigService implements WebUIHandler {
       }
     };
 
-    b_save.addClickListener((MouseEvent e, Component button) -> {
+    save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
       String _ip = ip.getText();
       if (!IP4.isIP(_ip)) {
@@ -946,6 +954,10 @@ public class ConfigService implements WebUIHandler {
       String _gateway = gateway.getText();
       if (!IP4.isIP(_gateway)) {
         errmsg.setText("Invalid Gateway Address");
+        return;
+      }
+      if (!valid_ip_mask_route(_ip, _mask)) {
+        errmsg.setText("IP Address not within subnet mask");
         return;
       }
       ui.route_route.ip = _ip;
@@ -970,11 +982,11 @@ public class ConfigService implements WebUIHandler {
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
-    b_cancel.addClickListener((MouseEvent e, Component button) -> {
+    cancel.addClickListener((MouseEvent e, Component button) -> {
       panel.setVisible(false);
     });
     panel.setOnClose( () -> {
-      b_cancel.click();
+      cancel.click();
     });
     return panel;
   }
@@ -2519,5 +2531,21 @@ public class ConfigService implements WebUIHandler {
 
   public static String numbers(String str) {
     return JF.filter(str, JF.filter_numeric);
+  }
+
+  /** Check if ip/mask is a valid device address. */
+  public boolean valid_ip_mask_address(String ip, String mask) {
+    IP4 ip4 = new IP4();
+    ip4.setIP(ip);
+    Subnet4 subnet4 = new Subnet4();
+    subnet4.setMask(mask);
+    return subnet4.isDevice(ip4);
+  }
+
+  /** Check if ip/mask is a valid route entry. */
+  public boolean valid_ip_mask_route(String ip, String mask) {
+    Subnet4 subnet4 = new Subnet4();
+    if (!subnet4.setIP(ip)) return false;
+    return (subnet4.setMask(mask));
   }
 }
