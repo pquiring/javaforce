@@ -2165,7 +2165,7 @@ public class ConfigService implements WebUIHandler {
           Task task = new Task("Delete Group") {
             public void doTask() {
               try {
-                if (ui.device.configRemoveGroup(group.getGroupID())) {
+                if (device.configRemoveGroup(group.getGroupID())) {
                   setStatus("Completed");
                 } else {
                   setStatus("Failed");

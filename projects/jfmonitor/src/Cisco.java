@@ -299,7 +299,7 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + port.id + ";channel-group " + gid + ";exit;exit;exit";
+    String cmds = "config terminal;interface " + port.id + ";channel-group " + gid + " mode on;exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
