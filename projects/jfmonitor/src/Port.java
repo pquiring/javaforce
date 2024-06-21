@@ -74,6 +74,10 @@ public class Port implements Serializable, Comparable<Port> {
     return VLAN.joinVLANs(vlans.toArray(JF.StringArrayType));
   }
 
+  public void setVLANs(String _vlans) {
+    setVLANs(VLAN.splitVLANs(_vlans, false));
+  }
+
   public void setVLANs(String[] _vlans) {
     vlans.clear();
     for(String vlan : _vlans) {

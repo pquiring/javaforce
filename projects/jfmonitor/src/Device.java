@@ -328,10 +328,13 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         //setup group settings to match ports
         int mode = Cisco.getSwitchMode(first.mode);
         if (!cisco.setSwitchMode(this, group, mode)) return false;
+        group.mode = Cisco.getSwitchMode(mode);
         if (mode == Cisco.MODE_TRUNK) {
           if (!cisco.setVLANs(this, group, first.getVLANs())) return false;
         }
-        if (!cisco.setVLAN(this, group, first.vlan, mode)) return false;
+        group.setVLANs(first.getVLANs());
+        if (!cisco.setVLAN(this, group, first.getVLAN(), mode)) return false;
+        group.setVLAN(first.getVLAN());
         //join ports to group
         for(Port port : ports) {
           if (!cisco.addPortToGroup(this, gid, port)) return false;
