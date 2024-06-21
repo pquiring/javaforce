@@ -619,7 +619,7 @@ public class ConfigService implements WebUIHandler {
 
   private PopupPanel editVLANPopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Edit VLAN");
-    panel.setPosition(256, 128);
+    panel.setPosition(256 + 64, 128 + 64);
     panel.setModal(true);
     Row row;
     GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
@@ -851,6 +851,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(edit);
     Button delete = new Button("Delete");
     tools.add(delete);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
 
     ScrollPanel table_panel = new ScrollPanel();
     Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
@@ -916,6 +918,10 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
 
+    refresh.addClickListener((me, cmp) -> {
+     ui.vlans_init.run();
+    });
+
     close.addClickListener((me, cmp) -> {
       panel.setVisible(false);
     });
@@ -929,7 +935,7 @@ public class ConfigService implements WebUIHandler {
 
   private PopupPanel editRoutePopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Edit Route");
-    panel.setPosition(256, 128);
+    panel.setPosition(256 + 64, 128 + 64);
     panel.setModal(true);
     Row row;
     GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
