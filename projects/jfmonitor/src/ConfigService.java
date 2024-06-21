@@ -407,8 +407,8 @@ public class ConfigService implements WebUIHandler {
       vlans.setText(port.getVLANs());
       vlan.setText(port.getVLAN());
       group.setText(port.getGroup());
-      ip.setText(port.ip);
-      mask.setText(port.mask);
+      ip.setText(port.getIP());
+      mask.setText(port.getMask());
     };
 
     b_save.addClickListener((MouseEvent e, Component button) -> {
@@ -1020,6 +1020,8 @@ public class ConfigService implements WebUIHandler {
 
     ui.routing_init = () -> {
       if (ui.device == null) return;
+      routing.setSelected(ui.device.hardware.routing);
+      gateway.setText(ui.device.hardware.getGateway());
       ui.routing_routes = ui.device.hardware.routes.toArray(Route.ArrayType);
       Arrays.sort(ui.routing_routes);
       table.removeAll();

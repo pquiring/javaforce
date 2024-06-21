@@ -43,6 +43,16 @@ public class Port implements Serializable, Comparable<Port> {
     return group;
   }
 
+  public String getIP() {
+    if (ip == null) ip = "";
+    return ip;
+  }
+
+  public String getMask() {
+    if (mask == null) mask = "";
+    return mask;
+  }
+
   public int getMode() {
     return Cisco.getSwitchMode(mode);
   }

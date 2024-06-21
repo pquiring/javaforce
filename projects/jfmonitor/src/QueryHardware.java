@@ -21,6 +21,7 @@ public class QueryHardware extends Thread {
             if (!cisco.queryConfig(_dev)) break;
             if (!cisco.queryVLANs(_dev)) break;
             if (!cisco.queryStatus(_dev)) break;
+            _dev.hardware.lastUpdate = System.currentTimeMillis();
             dev.hardware = _dev.hardware;
             break;
         }

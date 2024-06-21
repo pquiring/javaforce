@@ -11,6 +11,7 @@ public class Hardware implements Serializable, Cloneable {
 
   public String user;
   public String pass;
+  public long lastUpdate;
 
   public String version;
   public String config;
@@ -21,6 +22,11 @@ public class Hardware implements Serializable, Cloneable {
   public boolean routing;
   public String gateway;  //default gateway if !routing
   public ArrayList<Route> routes = new ArrayList<>();
+
+  public String getGateway() {
+    if (gateway == null) gateway = "";
+    return gateway;
+  }
 
   public Hardware clone() {
     try {
