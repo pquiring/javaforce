@@ -82,7 +82,7 @@ public class ConfigService implements WebUIHandler {
       Port[] ports = getPorts();
       Port first = ports[0];
       for(Port port : ports) {
-        if (!port.equals(first)) {
+        if (port.compareTo(first) != 0) {
           return true;
         }
       }
@@ -524,21 +524,21 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid Group");
           return;
         }
-          Task task = new Task("Set Port Group") {
-            public void doTask() {
-              try {
-                if (ui.device.configSetGroup(_group, port)) {
-                  setStatus("Completed");
-                } else {
-                  setStatus("Failed");
-                }
-              } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
-                JFLog.log(e);
+        Task task = new Task("Set Port Group") {
+          public void doTask() {
+            try {
+              if (ui.device.configSetGroup(_group, port)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
               }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
             }
-          };
-          Tasks.tasks.addTask(ui.tasks, task);
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
       }
       if (_mode == Cisco.MODE_IP) {
         if (!_ip.equals(port.ip) || !_mask.equals(port.mask)) {
@@ -2132,6 +2132,7 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (device.configCreateGroup(device.nextGroupID(), ports)) {
+                  QueryHardware.scan_now = true;
                   setStatus("Completed");
                 } else {
                   setStatus("Failed");

@@ -4,7 +4,6 @@
  */
 
 import java.io.Serializable;
-import javaforce.JFLog;
 
 public class Device implements Serializable, Comparable<Device>, Cloneable {
   public static final long serialVersionUID = 1;
@@ -325,6 +324,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         if (!cisco.createGroup(this, gid)) return false;
         Port group = new Port();
         group.id = "port-channel" + gid;
+        hardware.groups.add(group);
         //setup group settings to match ports
         int mode = Cisco.getSwitchMode(first.mode);
         if (!cisco.setSwitchMode(this, group, mode)) return false;
