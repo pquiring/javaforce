@@ -436,8 +436,8 @@ public class ConfigService implements WebUIHandler {
       int _mode = mode.getSelectedIndex();
       String _name = name.getText();
       String _access_vlan = access_vlan.getText();
-      String _vlans = vlans.getText();
-      String _vlan = vlan.getText();
+      String _trunk_vlans = vlans.getText();
+      String _trunk_vlan = vlan.getText();
       String _group = group.getText();
       String _ip = ip.getText();
       String _mask = mask.getText();
@@ -493,7 +493,7 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (!port.getAccessVLAN().equals(_vlan)) {
+      if (!port.getAccessVLAN().equals(_access_vlan)) {
         //change access vlan
         if (!VLAN.validVLAN(_access_vlan)) {
           errmsg.setText("Invalid Access VLAN");
@@ -515,18 +515,18 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (!port.getVLANs().equals(_vlans)) {
+      if (!port.getVLANs().equals(_trunk_vlans)) {
         //change vlans
-        if (!VLAN.validVLANs(_vlans)) {
+        if (!VLAN.validVLANs(_trunk_vlans)) {
           errmsg.setText("Invalid Trunk VLANs");
           return;
         }
-        String[] _vlan_list = VLAN.splitVLANs(_vlans, false);
+        String[] _vlan_list = VLAN.splitVLANs(_trunk_vlans, false);
         port.setVLANs(_vlan_list);
         Task task = new Task("Set Port Trunk VLANs") {
           public void doTask() {
             try {
-              if (ui.device.configSetVLANs(port, _vlans)) {
+              if (ui.device.configSetVLANs(port, _trunk_vlans)) {
                 setStatus("Completed");
               } else {
                 setStatus("Failed");
@@ -539,16 +539,16 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(ui.tasks, task);
       }
-      if (!port.getTrunkVLAN().equals(_vlan)) {
+      if (!port.getTrunkVLAN().equals(_trunk_vlan)) {
         //change native vlan
-        if (!VLAN.validVLAN(_vlan)) {
+        if (!VLAN.validVLAN(_trunk_vlan)) {
           errmsg.setText("Invalid Trunk VLAN");
           return;
         }
         Task task = new Task("Set Port Trunk VLAN") {
           public void doTask() {
             try {
-              if (ui.device.configSetTrunkVLAN(port, _vlan)) {
+              if (ui.device.configSetTrunkVLAN(port, _trunk_vlan)) {
                 setStatus("Completed");
               } else {
                 setStatus("Failed");
