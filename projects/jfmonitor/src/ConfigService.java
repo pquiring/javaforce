@@ -1296,7 +1296,7 @@ public class ConfigService implements WebUIHandler {
     list.add(opt_setup_net);
     opt_setup_net.setWidth(leftSize);
     opt_setup_net.addClickListener( (MouseEvent me, Component c) -> {
-      ui.setRightPanel(serverConfigNetwork());
+      ui.setRightPanel(serverConfigNetwork(ui));
     });
     Button opt_setup_hw = new Button("Setup Hardware");
     list.add(opt_setup_hw);
@@ -1443,7 +1443,7 @@ public class ConfigService implements WebUIHandler {
     return true;
   }
 
-  public Panel serverConfigNetwork() {
+  public Panel serverConfigNetwork(UI ui) {
     Panel panel = new ScrollPanel();
     Row row = new Row();
     Label label = new Label("jfMonitor/" + Config.AppVersion);
@@ -1525,8 +1525,7 @@ public class ConfigService implements WebUIHandler {
       nw.init();
       Config.current.addNetwork(nw);
       Config.save();
-      WebUIClient webclient = c.getClient();
-      webclient.refresh();
+      ui.setRightPanel(serverConfigNetwork(ui));
     });
 
     for(Network nw : Config.current.getNetworks()) {
@@ -1594,8 +1593,7 @@ public class ConfigService implements WebUIHandler {
         nw.desc = nw_desc;
         nw.validate();
         Config.save();
-        WebUIClient webclient = c.getClient();
-        webclient.refresh();
+        ui.setRightPanel(serverConfigNetwork(ui));
       });
       Button edit_delete = new Button("Delete");
       row.add(edit_delete);
@@ -1604,8 +1602,7 @@ public class ConfigService implements WebUIHandler {
       row.add(edit_msg_delete);
       edit_delete.addClickListener( (MouseEvent me, Component c) -> {
         Config.current.removeNetwork(nw);
-        WebUIClient webclient = c.getClient();
-        webclient.refresh();
+        ui.setRightPanel(serverConfigNetwork(ui));
       });
       panel.add(row);
     }
@@ -2250,8 +2247,7 @@ public class ConfigService implements WebUIHandler {
         ui.confirm_action = () -> {
           device.hardware = null;
           Config.save();
-          WebUIClient webclient = cmp.getClient();
-          webclient.refresh();
+          ui.setRightPanel(serverMonitorHardware(ui));
         };
         ui.confirm_message.setText("Delete Device : Are you sure?");
         ui.confirm_button.setText("Delete");
@@ -2265,7 +2261,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     refresh.addClickListener((me, cmp) -> {
-      cmp.getClient().refresh();
+      ui.setRightPanel(serverMonitorHardware(ui));
     });
 
     return panel;

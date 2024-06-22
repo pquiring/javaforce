@@ -11,6 +11,5 @@ public class ScrollPanel extends Panel {
   public ScrollPanel() {
     setClass("block");
     setOverflow(AUTO);
-    setResizeChild(false);
   }
 }
