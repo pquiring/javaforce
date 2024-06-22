@@ -586,6 +586,11 @@ public class Cisco {
       if (ln.startsWith("!")) {
         //end of section
         vlan = null;
+        if (port != null) {
+          if (port.vlans.isEmpty()) {
+            port.setVLANs(new String[] {"ALL"});
+          }
+        }
         port = null;
         continue;
       }
