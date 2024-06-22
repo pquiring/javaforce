@@ -132,7 +132,7 @@ public class SSH {
   }
 
   /** Execute commands and return output.
-   * Commands should cause connection to terminate or function will never return.
+   * Commands should cause connection to terminate or function will return after timeout.
    * Timeout = 1 min
    * @param cmds = commands to execute
    */
@@ -141,7 +141,7 @@ public class SSH {
   }
 
   /** Execute commands and return output.
-   * Commands should cause connection to terminate or function will never return.
+   * Commands should cause connection to terminate or function will return after timeout.
    * @param cmds = commands to execute
    * @param timeout = timeout in ms (0 = disable)
    */

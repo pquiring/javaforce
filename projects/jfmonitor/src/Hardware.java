@@ -15,6 +15,7 @@ public class Hardware implements Serializable, Cloneable {
 
   public String version;
   public String config;
+  public String serial;
   public ArrayList<Port> ports = new ArrayList<>();
   public ArrayList<VLAN> vlans = new ArrayList<>();
   public ArrayList<Port> groups = new ArrayList<>();
@@ -26,6 +27,11 @@ public class Hardware implements Serializable, Cloneable {
   public String getGateway() {
     if (gateway == null) gateway = "";
     return gateway;
+  }
+
+  public String getSerial() {
+    if (serial == null) serial = "";
+    return serial;
   }
 
   public Hardware clone() {

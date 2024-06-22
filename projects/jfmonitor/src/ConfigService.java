@@ -180,7 +180,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   private Panel tasksPanel(UI ui) {
-    Panel panel = new Panel();
+    Panel panel = new ScrollPanel();
     panel.add(new Label("Tasks"));
 
     Panel tasks = new Panel();
@@ -1618,31 +1618,22 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    row = new Row();
-    row.add(new Label("Type:"));
+    GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+    panel.add(grid);
+
     ComboBox type = new ComboBox();
     type.add("Cisco", "Cisco");
-    row.add(type);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Type"), type});
 
-    row = new Row();
-    row.add(new Label("Device:"));
     TextField device = new TextField("");
-    row.add(device);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Device"), device});
 
-    row = new Row();
-    row.add(new Label("Username:"));
     TextField user = new TextField("");
-    row.add(user);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Username"), user});
 
-    row = new Row();
-    row.add(new Label("Password:"));
     TextField pass = new TextField("");
     pass.setPassword(true);
-    row.add(pass);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Password"), pass});
 
     row = new Row();
     Button add = new Button("Add");
@@ -2074,6 +2065,9 @@ public class ConfigService implements WebUIHandler {
       panel.add(row);
       Label desc = new Label("Device:" + Config.current.getip(device.mac));
       row.add(desc);
+      TextField serial = new TextField(device.hardware.getSerial());
+      serial.setReadonly(true);
+      row.add(serial);
 
       row = new Row();
       panel.add(row);

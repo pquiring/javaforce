@@ -135,6 +135,9 @@ public class Port implements Serializable, Comparable<Port> {
       }
       sb.append("]");
     }
+    if (name != null) {
+      sb.append(" name:" + name);
+    }
     return sb.toString();
   }
 

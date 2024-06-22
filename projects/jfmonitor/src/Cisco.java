@@ -1,6 +1,6 @@
 /** Cisco API
  *
- * If a command does a more pause use "terminal length 0" to disable more.
+ * If a command result is very long use "terminal length 0" to disable more.
  *
  * @author pquiring
  */
@@ -566,12 +566,11 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    options.type = SSH.TYPE_EXEC;
-    options.command = "show running-config";
+    String cmds = "terminal length 0;show running-config;show version | include Serial;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
-    String cfg = ssh.getOutput();
+    String cfg = ssh.script(cmds.split(";"));
     if (cfg == null || cfg.length() == 0) return false;
     if (debug_cfg) {
       JFLog.log("Cisco.config=" + cfg);
@@ -595,6 +594,28 @@ public class Cisco {
         case "version":
           device.hardware.version = f[1];
           break;
+        case "snmp-server":
+          switch (f[1]) {
+            case "chassis-id":
+              device.hardware.serial = f[2].toUpperCase();
+              break;
+          }
+          break;
+        case "system":
+          switch (f[1]) {
+            case "serial":
+              switch (f[2]) {
+                case "number":
+                  int idx = ln.indexOf(':');
+                  if (idx != -1) {
+                    device.hardware.serial = ln.substring(idx + 1).trim().toUpperCase();
+                    JFLog.log("serial=" + device.hardware.serial);
+                  }
+                  break;
+              }
+              break;
+          }
+          break;
         case "interface":
           int idx = JF.indexOfDigit(f[1]);
           if (idx == -1) continue;
@@ -608,6 +629,7 @@ public class Cisco {
           }
           break;
         case "switchport":
+          if (f.length == 1) break;
           switch(f[1]) {
             case "trunk":
               switch(f[2]) {
