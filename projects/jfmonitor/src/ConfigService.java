@@ -1255,10 +1255,6 @@ public class ConfigService implements WebUIHandler {
       ui.resize();
     });
 
-    panel.addResizedListener((cmp, x, y) -> {
-      ui.resize();
-    });
-
     return panel;
   }
 
