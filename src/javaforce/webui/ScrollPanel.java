@@ -2,7 +2,7 @@ package javaforce.webui;
 
 /** Scroll Panel
  *
- * The height MUST be specified in order for scroll bars to appear.
+ * The size MUST be specified in order for scroll bars to appear.
  *
  * @author pquiring
  */

@@ -31,9 +31,9 @@ public class Panel extends Container {
   }
   public void init() {
     super.init();
-    if (count() > 0) {
-      Component child = get(0);
-      if (child instanceof Panel && !(child instanceof PopupPanel)) {
+    for(int a=0;a<count();a++) {
+      Component child = get(a);
+      if (child instanceof Panel && !child.isPopup()) {
         addEvent("onresize", "onresizePanel(event, this,\"" + child.id + "\");");
       }
     }

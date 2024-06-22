@@ -78,16 +78,7 @@ public class Container extends Component {
   }
   /** Add component to end of components. */
   public void add(Component comp) {
-    comp.parent = this;
-    components.add(comp);
-    if (client != null) {
-      comp.setClient(client);
-      comp.init();
-    }
-    if (id != null) {
-      sendEvent("add", new String[] {"html=" + comp.html()});
-      comp.events();
-    }
+    add(count(), comp);
   }
   /** Add component at index. */
   public void add(int idx, Component comp) {

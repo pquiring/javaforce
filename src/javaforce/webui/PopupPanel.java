@@ -68,4 +68,7 @@ public class PopupPanel extends Panel {
   public void setTitle(String title) {
     titleBar.setText(title);
   }
+  public boolean isPopup() {
+    return true;
+  }
 }

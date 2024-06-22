@@ -1,4 +1,4 @@
-/** ConfigService
+/** ConfigService : jfMonitor
  *
  * @author pquiring
  */

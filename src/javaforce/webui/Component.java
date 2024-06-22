@@ -409,6 +409,10 @@ public abstract class Component {
     return isVisible;
   }
 
+  public boolean isPopup() {
+    return false;
+  }
+
   public void setPosition(int x, int y) {
     sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
     this.x = x;

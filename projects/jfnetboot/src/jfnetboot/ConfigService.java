@@ -1,6 +1,6 @@
 package jfnetboot;
 
-/** Config service.
+/** Config service : jfNetBoot
  *
  * @author pquiring
  */
