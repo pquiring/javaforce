@@ -2252,6 +2252,7 @@ public class ConfigService implements WebUIHandler {
 
     refresh.addClickListener((me, cmp) -> {
       ui.setRightPanel(serverMonitorHardware(ui));
+      QueryHardware.scan_now = true;
     });
 
     return panel;
