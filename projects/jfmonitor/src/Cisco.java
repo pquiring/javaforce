@@ -609,7 +609,6 @@ public class Cisco {
                   int idx = ln.indexOf(':');
                   if (idx != -1) {
                     device.hardware.serial = ln.substring(idx + 1).trim().toUpperCase();
-                    JFLog.log("serial=" + device.hardware.serial);
                   }
                   break;
               }

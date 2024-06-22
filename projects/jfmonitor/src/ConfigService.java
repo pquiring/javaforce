@@ -1992,7 +1992,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   private void setupPortCell(Component cell, Device device, Port port, Label msg, UI ui) {
-    cell.setSize(CELL_SIZE_X, CELL_SIZE_Y);
+    cell.setSize(CELL_SIZE_X - 2, CELL_SIZE_Y - 2);
     if (port.link) {
       cell.setBackColor(Color.green);
     } else {
