@@ -82,11 +82,18 @@ public class ConfigService implements WebUIHandler {
       Port[] ports = getPorts();
       Port first = ports[0];
       for(Port port : ports) {
-        if (port.compareTo(first) != 0) {
+        if (!port.equalsPort(first)) {
           return true;
         }
       }
       return false;
+    }
+
+    public boolean allTrunk() {
+      for(Port port : getPorts()) {
+        if (port.getMode() != Cisco.MODE_TRUNK) return false;
+      }
+      return true;
     }
 
     private Port[] getPorts() {
@@ -156,6 +163,11 @@ public class ConfigService implements WebUIHandler {
     public PopupPanel vlans_popup;
     public Runnable vlans_init;
     public VLAN[] vlans_vlans;
+
+    public PopupPanel multi_vlans_popup;
+    public Runnable multi_vlans_init;
+    public Port[] multi_vlans_ports;
+    public String multi_op;
 
     public PopupPanel routing_popup;
     public Runnable routing_init;
@@ -949,6 +961,85 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private PopupPanel multiVLANPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Multi VLAN Edit");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+    panel.add(grid);
+
+    row = new Row();
+    panel.add(row);
+    Label msg = new Label("");
+    row.add(msg);
+
+    TextField vlans = new TextField("");
+    grid.addRow(new Component[] {new Label("VLANs"), vlans});
+
+    row = new Row();
+    panel.add(row);
+    Button save = new Button("Save");
+    row.add(save);
+    Button cancel = new Button("Cancel");
+    row.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    ui.multi_vlans_init = () -> {
+      save.setText(ui.multi_op);
+      msg.setText(ui.multi_op + " VLANs to " + ui.multi_vlans_ports.length + " port(s).");
+      errmsg.setText("");
+    };
+
+    save.addClickListener((MouseEvent e, Component button) -> {
+      errmsg.setText("");
+      String _vlans = vlans.getText();
+      if (!VLAN.validVLANs(_vlans)) {
+        errmsg.setText("Invalid VLANs");
+        return;
+      }
+      Task task = new Task("Multi VLAN Edit") {
+        public void doTask() {
+          try {
+            boolean okay = false;
+            switch (ui.multi_op) {
+              case "Add":
+                okay = ui.device.configAddVLANs(ui.multi_vlans_ports, _vlans);
+                break;
+              case "Remove":
+                okay = ui.device.configRemoveVLANs(ui.multi_vlans_ports, _vlans);
+                break;
+            }
+            if (okay) {
+              setStatus("Completed");
+            } else {
+              setStatus("Failed");
+            }
+          } catch (Exception e) {
+            setStatus("Error:" + action + " failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+      ui.routing_init.run();
+      QueryHardware.scan_now = true;
+      panel.setVisible(false);
+    });
+    cancel.addClickListener((MouseEvent e, Component button) -> {
+      panel.setVisible(false);
+    });
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
+    return panel;
+  }
+
   private PopupPanel editRoutePopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Edit Route");
     panel.setPosition(256 + 64, 128 + 64);
@@ -1220,6 +1311,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.vlan_popup = editVLANPopupPanel(ui);
     panel.add(ui.vlan_popup);
+
+    ui.multi_vlans_popup = multiVLANPopupPanel(ui);
+    panel.add(ui.multi_vlans_popup);
 
     ui.routing_popup = viewRoutingPopupPanel(ui);
     panel.add(ui.routing_popup);
@@ -2050,6 +2144,10 @@ public class ConfigService implements WebUIHandler {
       tools.add(editPort);
       Button viewVLAN = new Button("View VLANs");
       tools.add(viewVLAN);
+      Button addVLAN = new Button("Add VLANs");
+      tools.add(addVLAN);
+      Button removeVLAN = new Button("Remove VLANs");
+      tools.add(removeVLAN);
       Button addGroup = new Button("Create Group");
       tools.add(addGroup);
       Button removeGroup = new Button("Remove Group");
@@ -2131,6 +2229,40 @@ public class ConfigService implements WebUIHandler {
         ui.device = device;
         ui.vlans_init.run();
         ui.vlans_popup.setVisible(true);
+      });
+
+      addVLAN.addClickListener((me, cmp) -> {
+        errmsg.setText("");
+        if (ui.selection.get(device).size() == 0) {
+          errmsg.setText("Select one or more ports");
+          return;
+        }
+        if (!ui.selection.get(device).allTrunk()) {
+          errmsg.setText("All ports must be L2:Trunk");
+          return;
+        }
+        ui.device = device;
+        ui.multi_vlans_ports = ui.selection.get(device).getPorts();
+        ui.multi_op = "Add";
+        ui.multi_vlans_init.run();
+        ui.multi_vlans_popup.setVisible(true);
+      });
+
+      removeVLAN.addClickListener((me, cmp) -> {
+        errmsg.setText("");
+        if (ui.selection.get(device).size() == 0) {
+          errmsg.setText("Select one or more ports");
+          return;
+        }
+        if (!ui.selection.get(device).allTrunk()) {
+          errmsg.setText("All ports must be L2:Trunk");
+          return;
+        }
+        ui.device = device;
+        ui.multi_vlans_ports = ui.selection.get(device).getPorts();
+        ui.multi_vlans_init.run();
+        ui.multi_op = "Remove";
+        ui.multi_vlans_popup.setVisible(true);
       });
 
       addGroup.addClickListener((me, cmp) -> {

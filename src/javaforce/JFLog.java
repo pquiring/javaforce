@@ -170,7 +170,7 @@ public class JFLog {
       msg = String.format("[%1$d] %2$s\r\n", (System.nanoTime() / 1000000) - timestampBase, msg);
     }
     if (log == null) {
-      System.out.println(msg);
+      System.out.print(msg);
       return false;
     }
     if (!log.enabled) {

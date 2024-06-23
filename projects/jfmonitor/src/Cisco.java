@@ -5,17 +5,52 @@
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 
 public class Cisco {
   public static boolean debug = false;
   public static boolean debug_cfg = false;
-  public boolean addVLANs(Device device, Port port, String vlan) {
+  private static String range(Port[] ports) {
+    StringBuilder sb = new StringBuilder();
+    //see VLAN.mergeVLANs() for similar logic
+    sb.append("range ");
+    Arrays.sort(ports);
+    Port first = null;
+    Port last = null;
+    for(Port port : ports) {
+      if (first == null) {
+        sb.append(port.id);
+        first = port;
+      } else {
+        int lv = last.getPortInt();
+        int pv = port.getPortInt();
+        if (!port.equalsType(first) || pv != lv + 1) {
+          if (last != first) {
+            //range first-last
+            sb.append(" - ");
+            sb.append(last.getPort());
+          }
+          sb.append(" , ");
+          sb.append(port.id);
+          first = port;
+        }
+      }
+      last = port;
+    }
+    if (last != first) {
+      sb.append(" - ");
+      sb.append(last.getPort());
+    }
+    return sb.toString();
+  }
+  public boolean addVLANs(Device device, Port[] ports, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan add " + vlan + ";exit;exit;exit";
+    String cmds = "config terminal;interface " + range(ports) + ";switchport trunk allowed vlan add " + vlan + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
@@ -31,12 +66,12 @@ public class Cisco {
     }
     return ok;
   }
-  public boolean removeVLANs(Device device, Port port, String vlan) {
+  public boolean removeVLANs(Device device, Port[] ports, String vlan) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + port.id + ";switchport trunk allowed vlan remove " + vlan + ";exit;exit;exit";
+    String cmds = "config terminal;interface " + range(ports) + ";switchport trunk allowed vlan remove " + vlan + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
@@ -817,5 +852,23 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
   //TODO : show if hardware has unsaved changes
   public void queryDiff() {
     //show archive config differences
+  }
+
+  public static void main(String[] args) {
+    //TODO : unit testing range()
+    Port[] ports = new Port[16];
+    int p = 1;
+    for(int i=0;i<16;i++) {
+      if (i < 8) {
+        ports[i] = new Port("ethernet1/" + p++);
+      } else {
+        ports[i] = new Port("gigabit1/" + p++);
+      }
+      if (i % 3 == 0) p++;
+      if (i % 9 == 0) p++;
+      JFLog.log("port[] = " + ports[i].getID());
+    }
+    String range = range(ports);
+    JFLog.log("range=" + range);
   }
 }

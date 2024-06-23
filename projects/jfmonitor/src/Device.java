@@ -89,7 +89,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
 
   public Port getPortByNumber(String number) {
     for(Port port : hardware.ports) {
-      if (port.getNumber().equals(number)) {
+      if (port.getSlotsPort().equals(number)) {
         port.valid = true;
         return port;
       }
@@ -187,12 +187,14 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
-  public boolean configAddVLANs(Port port, String vlan) {
+  public boolean configAddVLANs(Port[] ports, String vlans) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        if (cisco.addVLANs(this, port, vlan)) {
-          port.vlans.add(vlan);
+        if (cisco.addVLANs(this, ports, vlans)) {
+          for(Port port : ports) {
+            port.addVLANs(VLAN.splitVLANs(vlans, true));
+          }
           return true;
         }
         break;
@@ -200,12 +202,14 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
-  public boolean configRemoveVLANs(Port port, String vlan) {
+  public boolean configRemoveVLANs(Port[] ports, String vlans) {
     switch (type) {
       case TYPE_CISCO:
         Cisco cisco = new Cisco();
-        if (cisco.removeVLANs(this, port, vlan)) {
-          port.vlans.remove(vlan);
+        if (cisco.removeVLANs(this, ports, vlans)) {
+          for(Port port : ports) {
+            port.removeVLANs(VLAN.splitVLANs(vlans, true));
+          }
           return true;
         }
         break;

@@ -14,6 +14,9 @@ public class Port implements Serializable, Comparable<Port> {
 
   public static final Port[] ArrayType = new Port[0];
 
+  public Port() {}
+  public Port(String id) {this.id = id;}
+
   public transient boolean valid;
 
   public String id;
@@ -91,6 +94,18 @@ public class Port implements Serializable, Comparable<Port> {
     }
   }
 
+  public void addVLANs(String[] add_vlans) {
+    String[] this_vlans = VLAN.splitVLANs(getVLANs(), true);
+    String new_vlans = VLAN.addVLANs(this_vlans, add_vlans);
+    setVLANs(new_vlans);
+  }
+
+  public void removeVLANs(String[] remove_vlans) {
+    String[] this_vlans = VLAN.splitVLANs(getVLANs(), true);
+    String new_vlans = VLAN.removeVLANs(this_vlans, remove_vlans);
+    setVLANs(new_vlans);
+  }
+
   public String getTrunkVLAN() {
     if (vlan == null) vlan = "1";
     return vlan;
@@ -129,7 +144,7 @@ public class Port implements Serializable, Comparable<Port> {
       for(Port port : ports) {
         if (port.getGroup().equals(gid)) {
           if (cnt > 0) sb.append(",");
-          sb.append(port.getNumber());
+          sb.append(port.getSlotsPort());
           cnt++;
         }
       }
@@ -141,7 +156,32 @@ public class Port implements Serializable, Comparable<Port> {
     return sb.toString();
   }
 
-  public String getNumber() {
+  public String getID() {
+    return id;
+  }
+
+  /** Returns type : gigabitethernet, tengigethernet, etc. */
+  public String getType() {
+    int idx = JF.indexOfDigit(id);
+    if (idx == -1) {
+      return id;
+    } else {
+      return id.substring(0, idx);
+    }
+  }
+
+  public String getSlots() {
+    int i1 = JF.indexOfDigit(id);
+    int i2 = id.lastIndexOf('/');
+    if (i1 == -1 || i2 == -1) {
+      return id;
+    } else {
+      return id.substring(i1, i2);
+    }
+  }
+
+  /** Returns slot/[subslot]/port. */
+  public String getSlotsPort() {
     int idx = JF.indexOfDigit(id);
     if (idx == -1) {
       return id;
@@ -150,15 +190,47 @@ public class Port implements Serializable, Comparable<Port> {
     }
   }
 
-  public String toString() {
-    return getNumber();
+  /** Returns port. */
+  public String getPort() {
+    int idx = id.lastIndexOf('/');
+    if (idx == -1) {
+      return id;
+    } else {
+      return id.substring(idx + 1);
+    }
   }
 
+  public int getPortInt() {
+    return Integer.valueOf(getPort());
+  }
+
+  public String toString() {
+    return getSlotsPort();
+  }
+
+  /** Compares ports for same type of ID. */
+  public boolean equalsType(Port o) {
+    return getType().equals(o.getType());
+  }
+
+  /** Compares ports for inclusion into new group. */
+  public boolean equalsPort(Port o) {
+    if (mode.equals(o.mode)) return false;
+    if (!getVLANs().equals(o.getVLANs())) return false;
+    if (!vlan.equals(o.vlan)) return false;
+    return true;
+  }
+
+  /** Compares id to sort Ports. */
   public int compareTo(Port o) {
-    if (!mode.equals(o.mode)) return -1;
-    if (!getVLANs().equals(o.getVLANs())) return -1;
-    if (!vlan.equals(o.vlan)) return -1;
-    if (!group.equals(o.group)) return -1;
+    int c1 = getType().compareTo(o.getType());
+    if (c1 != 0) return c1;
+    int c2 = getSlots().compareTo(o.getSlots());
+    if (c2 != 0) return c2;
+    int v1 = getPortInt();
+    int v2 = o.getPortInt();
+    if (v1 < v2) return -1;
+    if (v1 > v2) return 1;
     return 0;
   }
 }
