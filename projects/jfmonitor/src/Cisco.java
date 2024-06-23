@@ -589,6 +589,7 @@ public class Cisco {
     }
     return ok;
   }
+  //TODO : merge all queries into one connection
   public boolean queryConfig(Device device) {
     //query device configuration
     if (debug) {
@@ -611,6 +612,7 @@ public class Cisco {
       JFLog.log("Cisco.config=" + cfg);
     }
     device.hardware.config = cfg;
+    device.hardware.saveConfig(device);
     String[] lns = cfg.replaceAll("\\r", "").split("\n");
     VLAN vlan = null;
     Port port = null;

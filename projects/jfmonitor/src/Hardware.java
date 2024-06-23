@@ -6,6 +6,8 @@
 import java.io.*;
 import java.util.*;
 
+import javaforce.*;
+
 public class Hardware implements Serializable, Cloneable {
   public static final long serialVersionUID = 1;
 
@@ -32,6 +34,21 @@ public class Hardware implements Serializable, Cloneable {
   public String getSerial() {
     if (serial == null) serial = "";
     return serial;
+  }
+
+  public void saveConfig(Device device) {
+    String serial = getSerial();
+    if (serial.length() == 0) {
+      serial = device.mac;
+    }
+    try {
+      String filename = Paths.cfgsPath + "/" + serial + ".cfg";
+      FileOutputStream fos = new FileOutputStream(filename);
+      fos.write(config.getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public Hardware clone() {
