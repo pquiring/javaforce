@@ -1719,6 +1719,10 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
+    row = new Row();
+    row.add(new Label("NOTE:The hardware device must be within a subnet configured in Setup Network."));
+    panel.add(row);
+
     GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
     panel.add(grid);
 
