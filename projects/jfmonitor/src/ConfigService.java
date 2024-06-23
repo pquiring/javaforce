@@ -1834,31 +1834,27 @@ public class ConfigService implements WebUIHandler {
     Label msg = new Label("");
     panel.add(msg);
 
-    row = new Row();
-    row.add(new Label("EMail Notification:"));
-    panel.add(row);
-    row = new Row();
-    row.add(new Label("SMTP Server:"));
+    GridLayout grid = new GridLayout(3, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT, GridLayout.LEFT});
+    panel.add(grid);
+
+    grid.addRow(new Component[] {new Label("EMail Notification")});
+
     TextField email_server = new TextField(validString(Config.current.email_server));
-    row.add(email_server);
     CheckBox email_secure = new CheckBox("Secure");
     email_secure.setSelected(Config.current.email_secure);
-    row.add(email_secure);
-    panel.add(row);
-    row = new Row();
-    row.add(new Label(" Email To:"));
+    grid.addRow(new Component[] {new Label("SMTP Server"), email_server, email_secure});
+
     TextField emails = new TextField(validString(Config.current.emails));
-    row.add(emails);
-    row.add(new Label("(seperate multiple emails with commas)"));
-    panel.add(row);
-    row = new Row();
-    row.add(new Label("SMTP Auth (optional): User:"));
+    grid.addRow(new Component[] {new Label("Email To"), emails, new Label("(seperate multiple emails with commas)")});
+
+    grid.addRow(new Component[] {new Label("SMTP Auth (optional)")});
+
     TextField email_user = new TextField(validString(Config.current.email_user));
-    row.add(email_user);
-    row.add(new Label("Pass:"));
+    grid.addRow(new Component[] {new Label("User"), email_user});
+
     TextField email_pass = new TextField(validString(Config.current.email_pass));
-    row.add(email_pass);
-    row.add(new Label("Type:"));
+    grid.addRow(new Component[] {new Label("Pass"), email_pass});
+
     ComboBox email_type = new ComboBox();
     email_type.add("LOGIN", "LOGIN");
     email_type.add("NTLM", "NTLM");
@@ -1866,15 +1862,11 @@ public class ConfigService implements WebUIHandler {
       case SMTP.AUTH_LOGIN: email_type.setSelectedIndex(0); break;
       case SMTP.AUTH_NTLM: email_type.setSelectedIndex(1); break;
     }
-    row.add(email_type);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Type"), email_type});
 
-    row = new Row();
-    row.add(new Label("Unknown Devices:"));
     CheckBox unknowns = new CheckBox("Daily Notification Report");
     unknowns.setSelected(Config.current.notify_unknown_device);
-    row.add(unknowns);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Unknown Devices"), unknowns});
 
     row = new Row();
     Button email_save = new Button("Save");
