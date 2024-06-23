@@ -1425,6 +1425,13 @@ public class ConfigService implements WebUIHandler {
 
     panel.add(new Label("Select an option on the left."));
 
+    Button help = new Button("Help");
+    panel.add(help);
+
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfmonitor/docs/help.html");
+    });
+
     return panel;
   }
 
@@ -2125,6 +2132,12 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Hardware Monitor:"));
     Button refresh = new Button("Refresh");
     row.add(refresh);
+    Button help = new Button("Help");
+    row.add(help);
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfmonitor/docs/help.html");
+    });
+
     panel.add(row);
 
     Device[] list = Config.current.getDevices();
