@@ -1553,52 +1553,45 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     row = new Row();
-    row.add(new Label("Client:"));
+    row.add(new Label("NOTE:DHCP ranges are optional"));
+    panel.add(row);
+
+    GridLayout grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+    panel.add(grid);
+
     ComboBox client = new ComboBox();
     for(String host : Config.current.hosts) {
       client.add(host, host);
     }
-    row.add(client);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Client"), client});
 
-    row = new Row();
-    row.add(new Label("Network Interface IP:"));
     TextField host_ip = new TextField("");
-    row.add(host_ip);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Network Interface IP"), host_ip});
 
-    row = new Row();
-    row.add(new Label("First IP:"));
     TextField first_ip = new TextField("");
-    row.add(first_ip);
-    row.add(new Label("Last IP:"));
+    grid.addRow(new Component[] {new Label("First IP"), first_ip});
+
     TextField last_ip = new TextField("");
-    row.add(last_ip);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Last IP"), last_ip});
 
-    row = new Row();
-    row.add(new Label("DHCP First IP:"));
     TextField first_dhcp_ip = new TextField("");
-    row.add(first_ip);
-    row.add(new Label("Last IP:"));
-    TextField last_dhcp_ip = new TextField("");
-    row.add(last_ip);
-    row.add(new Label("(optional)"));
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("DHCP First IP"), first_dhcp_ip});
 
-    row = new Row();
-    row.add(new Label("Description:"));
+    TextField last_dhcp_ip = new TextField("");
+    grid.addRow(new Component[] {new Label("DHCP Last IP"), last_dhcp_ip});
+
     TextField desc = new TextField("");
-    row.add(desc);
-    panel.add(row);
+    grid.addRow(new Component[] {new Label("Description"), last_ip});
 
     row = new Row();
     Button add = new Button("Add");
     row.add(add);
+
     Label msg = new Label("");
     msg.setColor(Color.red);
     row.add(msg);
     panel.add(row);
+
     add.addClickListener( (MouseEvent me, Component c) -> {
       String nw_host = client.getSelectedText();
       String nw_ip = host_ip.getText();
@@ -1635,44 +1628,36 @@ public class ConfigService implements WebUIHandler {
       row.add(new Label("Client:" + nw.host));
       panel.add(row);
 
-      row = new Row();
-      row.add(new Label("Network Interface IP:"));
+      GridLayout edit_grid = new GridLayout(2, 0, new int[] {GridLayout.RIGHT, GridLayout.LEFT});
+      panel.add(edit_grid);
+
       TextField edit_host_ip = new TextField(nw.ip_nic);
-      row.add(edit_host_ip);
-      panel.add(row);
+      edit_grid.addRow(new Component[] {new Label("Network Interface IP"), edit_host_ip});
 
-      row = new Row();
-      row.add(new Label("First IP:"));
       TextField edit_first_ip = new TextField(nw.ip_first);
-      row.add(edit_first_ip);
-      row.add(new Label("Last IP:"));
+      edit_grid.addRow(new Component[] {new Label("First IP"), edit_first_ip});
+
       TextField edit_last_ip = new TextField(nw.ip_last);
-      row.add(edit_last_ip);
-      panel.add(row);
+      edit_grid.addRow(new Component[] {new Label("Last IP"), edit_last_ip});
 
-      row = new Row();
-      row.add(new Label("DHCP First IP:"));
       TextField edit_first_dhcp_ip = new TextField(nw.ip_dhcp_first);
-      row.add(edit_first_dhcp_ip);
-      row.add(new Label("Last IP:"));
-      TextField edit_last_dhcp_ip = new TextField(nw.ip_dhcp_last);
-      row.add(edit_last_dhcp_ip);
-      row.add(new Label("(optional)"));
-      panel.add(row);
+      edit_grid.addRow(new Component[] {new Label("DHCP First IP"), edit_first_dhcp_ip});
 
-      row = new Row();
-      row.add(new Label("Description:"));
+      TextField edit_last_dhcp_ip = new TextField(nw.ip_dhcp_last);
+      edit_grid.addRow(new Component[] {new Label("DHCP Last IP"), edit_last_dhcp_ip});
+
       TextField edit_desc = new TextField(nw.desc);
-      row.add(edit_desc);
-      panel.add(row);
+      edit_grid.addRow(new Component[] {new Label("Description"), edit_desc});
 
       row = new Row();
       Button edit_save = new Button("Save");
       row.add(edit_save);
       Label edit_msg = new Label("");
-      msg.setColor(Color.red);
+      edit_msg.setColor(Color.red);
       row.add(edit_msg);
+
       edit_save.addClickListener( (MouseEvent me, Component c) -> {
+        edit_msg.setText("");
         String nw_ip = edit_host_ip.getText();
         String nw_first = edit_first_ip.getText();
         String nw_last = edit_last_ip.getText();
@@ -1680,6 +1665,7 @@ public class ConfigService implements WebUIHandler {
         String nw_dhcp_last = edit_last_dhcp_ip.getText();
         String nw_desc = edit_desc.getText();
         if (!valid(nw.host, nw_ip, nw_first, nw_last, nw_dhcp_first, nw_dhcp_last, msg)) {
+          edit_msg.setText("Invalid settings");
           return;
         }
         nw.ip_nic = nw_ip;
@@ -1695,7 +1681,7 @@ public class ConfigService implements WebUIHandler {
       Button edit_delete = new Button("Delete");
       row.add(edit_delete);
       Label edit_msg_delete = new Label("");
-      msg.setColor(Color.red);
+      edit_msg_delete.setColor(Color.red);
       row.add(edit_msg_delete);
       edit_delete.addClickListener( (MouseEvent me, Component c) -> {
         Config.current.removeNetwork(nw);
