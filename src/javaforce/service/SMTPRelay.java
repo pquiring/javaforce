@@ -133,13 +133,12 @@ public class SMTPRelay extends Thread {
           smtp.connectSSL(smtp_host, smtp_port);
         else
           smtp.connect(smtp_host, smtp_port);
+        smtp.login();  //HELO
         if (smtp_user != null && smtp_pass != null) {
           if (!smtp.auth(smtp_user, smtp_pass, SMTP.AUTH_LOGIN)) {
             smtp.disconnect();
             throw new Exception("SMTP auth failed!");
           }
-        } else {
-          smtp.login();  //HELO
         }
         //decode message and re-send
         String msg = new String(data);
