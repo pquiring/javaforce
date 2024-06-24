@@ -9,6 +9,7 @@ import javaforce.*;
 
 public class QueryClients extends Thread {
   public void run() {
+    //wait 5 secs
     for(int a=0;a<5 && Status.active;a++) {
       JF.sleep(1000);
     }
@@ -53,6 +54,7 @@ public class QueryClients extends Thread {
           client.networks.clear();
         }
       }
+      //wait 1 min
       for(int a=0;a<60 && Status.active;a++) {
         JF.sleep(1000);
       }

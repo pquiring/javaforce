@@ -74,6 +74,9 @@ public class ServerClient extends Thread {
             String nw_stop = readString();
             int len = readLength();
             byte[] map = read(len);
+            if (Config.debug) {
+              JFLog.log("pn4:length=" + map.length);
+            }
             for(Network network : Config.current.getNetworks()) {
               if (network.host.equals(getHost())) {
                 if (network.ip_nic.equals(nw_nic)) {

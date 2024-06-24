@@ -1753,13 +1753,13 @@ public class ConfigService implements WebUIHandler {
       }
       String _mac = Config.current.getmac(_host);
       if (_mac == null) {
-        errmsg.setText("Device mac not found");
+        errmsg.setText("Device mac not found, try again in 10 mins.");
         msg.setText("");
         return;
       }
       Device _device = Config.current.getDevice(_mac);
       if (_device == null) {
-        errmsg.setText("Device not found");
+        errmsg.setText("Device not found, try again in 10 mins.");
         msg.setText("");
         return;
       }

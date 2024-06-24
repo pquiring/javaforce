@@ -34,8 +34,12 @@ public class Client extends Thread {
           if (length > 11) {
             throw new Exception("bad cmd length");
           }
-          byte cmd[] = read(length);
-          switch (new String(cmd)) {
+          byte bytes[] = read(length);
+          String cmd = new String(bytes);
+          if (Config.debug) {
+            JFLog.log("cmd=" + cmd);
+          }
+          switch (cmd) {
             case "ping":  //keep alive
               writeString("pong");
               break;

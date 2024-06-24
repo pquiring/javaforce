@@ -77,6 +77,9 @@ public class Network implements Serializable {
           }
         }
       }
+      if (Config.debug) {
+        JFLog.log("update:" + ip.online + ":" + ip.mac);
+      }
       if (ip.notify && !first) {
         if (was_online && !ip.online) {
           Notify.notify_ip(ip.host, ip.online);
