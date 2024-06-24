@@ -74,11 +74,15 @@ public class Network implements Serializable {
           Device dev = Config.current.getDevice(ip.mac);
           if (dev == null) {
             Notify.add_unknown_device(ip.mac, desc);
+            dev = new Device();
+            dev.mac = ip.mac;
+            dev.desc = "Unknown device";
+            Config.current.addDevice(dev);
           }
         }
       }
       if (Config.debug) {
-        JFLog.log("update:" + ip.online + ":" + ip.mac);
+        JFLog.log("update:" + ip.host + ":" + ip.online + ":" + ip.mac);
       }
       if (ip.notify && !first) {
         if (was_online && !ip.online) {
