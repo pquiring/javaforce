@@ -45,12 +45,12 @@ public class Cisco {
     }
     return sb.toString();
   }
-  public boolean addVLANs(Device device, Port[] ports, String vlan) {
+  public boolean addVLANs(Device device, Port[] ports, String vlans) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + range(ports) + ";switchport trunk allowed vlan add " + vlan + ";exit;exit;exit";
+    String cmds = "config terminal;interface " + range(ports) + ";switchport trunk allowed vlan add " + vlans + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
@@ -66,12 +66,12 @@ public class Cisco {
     }
     return ok;
   }
-  public boolean removeVLANs(Device device, Port[] ports, String vlan) {
+  public boolean removeVLANs(Device device, Port[] ports, String vlans) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + range(ports) + ";switchport trunk allowed vlan remove " + vlan + ";exit;exit;exit";
+    String cmds = "config terminal;interface " + range(ports) + ";switchport trunk allowed vlan remove " + vlans + ";exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {

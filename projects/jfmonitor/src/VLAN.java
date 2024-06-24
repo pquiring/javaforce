@@ -195,10 +195,10 @@ public class VLAN implements Serializable, Comparable<VLAN> {
       }
     }
     while (i1 < c1) {
-      list.add(vlans[i1]);
+      list.add(vlans[i1++]);
     }
     while (i2 < c2) {
-      list.add(add[i2]);
+      list.add(add[i2++]);
     }
     return mergeVLANs(list.toArray(JF.StringArrayType));
   }
@@ -230,10 +230,10 @@ public class VLAN implements Serializable, Comparable<VLAN> {
       }
     }
     while (i1 < c1) {
-      list.add(vlans[i1]);
+      list.add(vlans[i1++]);
     }
     while (i2 < c2) {
-      list.add(remove[i2]);
+      list.add(remove[i2++]);
     }
     return mergeVLANs(list.toArray(JF.StringArrayType));
   }
