@@ -1760,7 +1760,7 @@ public class ConfigService implements WebUIHandler {
       Device _device = Config.current.getDevice(_mac);
       if (_device == null) {
         errmsg.setText("Device not found, try again in 10 mins.");
-        msg.setText("");
+        msg.setText("MAC=" + _mac);
         return;
       }
 /*
