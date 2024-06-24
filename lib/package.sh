@@ -67,7 +67,7 @@ package llrp jfllrp 2.0
 package bcprov jfbcprov 1.76
 package bctls jfbctls 1.76
 package bcutil jfbcutil 1.76
-package mina jfmina 2.2.3
+package mina-core jfmina-core 2.2.3
 package log4j-api jflog4j-api 2.23.1
-package log4j-core jflog4j-api 2.23.1
+package log4j-core jflog4j-core 2.23.1
 package log4j-1.2-api jflog4j-1.2-api 2.23.1
