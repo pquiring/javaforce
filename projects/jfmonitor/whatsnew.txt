@@ -1,3 +1,6 @@
+Jun 24/2024 : 0.8 released
+  - added cisco configuration support
+
 Apr 10/2024 : 0.7 released
   - secured ui interface
   - fixed linux support
