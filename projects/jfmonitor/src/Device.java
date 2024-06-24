@@ -501,10 +501,14 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   }
 
   public int compareTo(Device to) {
-    String this_ip = Config.current.getip(this.mac);
-    if (this_ip == null) return 0;
-    String to_ip = Config.current.getip(to.mac);
-    if (to_ip == null) return 0;
-    return this_ip.compareTo(to_ip);
+    String _this = Config.current.getip(this.mac);
+    if (_this == null) {
+      _this = mac;
+    }
+    String _to = Config.current.getip(to.mac);
+    if (_to == null) {
+      _to = to.mac;
+    }
+    return _this.compareTo(_to);
   }
 }
