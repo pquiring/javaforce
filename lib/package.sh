@@ -55,8 +55,8 @@ package sshd-core jfsshd-core 2.10.0
 package sshd-common jfsshd-common 2.10.0
 package sshd-sftp jfsshd-sftp 2.10.0
 package sshd-scp jfsshd-scp 2.10.0
-package sfl4j-api jfslf4j-api 2.0.13
-package sfl4j-jdk14 jfslf4j-jdk14 2.0.13
-package sfl4j-nop jfslf4j-nop 2.0.13
-package sfl4j-reload4j jfslf4j-reload4j 2.0.13
-package sfl4j-simple jfslf4j-simple 2.0.13
+package slf4j-api jfslf4j-api 2.0.13
+package slf4j-jdk14 jfslf4j-jdk14 2.0.13
+package slf4j-nop jfslf4j-nop 2.0.13
+package slf4j-reload4j jfslf4j-reload4j 2.0.13
+package slf4j-simple jfslf4j-simple 2.0.13
