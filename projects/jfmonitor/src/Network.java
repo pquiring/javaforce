@@ -70,15 +70,17 @@ public class Network implements Serializable {
         ip.mac = String.format("%02x%02x%02x%02x%02x%02x", map[pos] & 0xff, map[pos+1] & 0xff, map[pos+2] & 0xff, map[pos+3] & 0xff, map[pos+4] & 0xff, map[pos+5] & 0xff);
         pos += 6;
         //check if unknown device
+        Device dev = Config.current.getDevice(ip.mac);
         if (Config.current.notify_unknown_device) {
-          Device dev = Config.current.getDevice(ip.mac);
           if (dev == null) {
             Notify.add_unknown_device(ip.mac, desc);
-            dev = new Device();
-            dev.mac = ip.mac;
-            dev.desc = "Unknown device";
-            Config.current.addDevice(dev);
           }
+        }
+        if (dev == null) {
+          dev = new Device();
+          dev.mac = ip.mac;
+          dev.desc = "Unknown device";
+          Config.current.addDevice(dev);
         }
       }
       if (Config.debug) {
