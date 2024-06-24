@@ -2,6 +2,9 @@
 
 # package all dep jars
 
+# Many dep jars are not found or outdated within most Linux repos
+# This script will package these dep jars to be placed in the JavaForce repos
+
 function detectos {
   if [ ! -f /etc/os-release ]; then
     echo Unable to detect os
@@ -60,3 +63,11 @@ package slf4j-jdk14 jfslf4j-jdk14 2.0.13
 package slf4j-nop jfslf4j-nop 2.0.13
 package slf4j-reload4j jfslf4j-reload4j 2.0.13
 package slf4j-simple jfslf4j-simple 2.0.13
+package llrp jfllrp 2.0
+package bcprov jfbcprov 1.76
+package bctls jfbctls 1.76
+package bcutil jfbcutil 1.76
+package mina jfmina 2.2.3
+package log4j-api jflog4j-api 2.23.1
+package log4j-core jflog4j-api 2.23.1
+package log4j-1.2-api jflog4j-1.2-api 2.23.1

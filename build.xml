@@ -8,13 +8,9 @@
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
 
-  <!-- libxcursor dep helps load libjawt.so which the loader attempts to load during startup -->
-
-  <property name="debian.depends" value="default-jre        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, jfslf4j-api, jfslf4j-jdk14, jfslf4j-nop, jfslf4j-reload4j, jfslf4j-simple, libv4l-0 , desktop-file-utils, libxcursor1, libncurses6"/>
-  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, jfslf4j-api, jfslf4j-jdk14, jfslf4j-nop, jfslf4j-reload4j, jfslf4j-simple, libv4l   , desktop-file-utils, libXcursor , ncurses"/>
-  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, jfslf4j-api, jfslf4j-jdk14, jfslf4j-nop, jfslf4j-reload4j, jfslf4j-simple, v4l-utils, desktop-file-utils, libxcursor , ncurses"/>
-
   <property environment="env"/>
+
+  <property file="jf.properties"/>
 
   <fileset dir="." id="classpath">
     <include name="bcprov.jar"/>
@@ -140,7 +136,6 @@
   </target>
 
   <target name="jre-base" description="build JRE for bundled JRE builds with only base">
-    <property file="jf.properties"/>
     <exec command="jlink --module-path ${java.home}/jmods --add-modules ${jre-base} --output jre_base"/>
     <delete>
       <fileset dir="jre_base/bin" includes="java**.exe"/>
@@ -150,7 +145,6 @@
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
-    <property file="jf.properties"/>
     <exec command="jlink --module-path ${java.home}/jmods --add-modules ${jre-base},${jre-desktop} --output jre_base_desktop"/>
     <delete>
       <fileset dir="jre_base_desktop/bin" includes="java**.exe"/>
@@ -160,14 +154,12 @@
   </target>
 
   <target name="jre-base-desktop-java" description="build JRE for bundled JRE builds with desktop (swing) support (includes java executables)">
-    <property file="jf.properties"/>
     <exec command="jlink --module-path ${java.home}/jmods --add-modules ${jre-base},${jre-desktop} --output jre_base_desktop_java"/>
     <delete dir="jre_base_desktop_java/include"/>
     <delete dir="jre_base_desktop_java/legal"/>
   </target>
 
   <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
-    <property file="jf.properties"/>
     <exec command="jlink --module-path ${java.home}/jmods --add-modules ${jre-base},${jre-javac} --output jre_base_javac"/>
     <delete>
       <fileset dir="jre_base_javac/bin" includes="java**.exe"/>
