@@ -163,11 +163,11 @@ public class JFLog {
     }
     if (!useTimestamp) {
       Calendar cal = Calendar.getInstance();
-      msg = String.format("[%1$04d/%2$02d/%3$02d %4$02d:%5$02d:%6$02d] %7$s\r\n",
+      msg = String.format("[%1$04d/%2$02d/%3$02d %4$02d:%5$02d:%6$02d] %7$s%8$s",
               cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
-              cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), msg);
+              cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), msg, JF.eol);
     } else {
-      msg = String.format("[%1$d] %2$s\r\n", (System.nanoTime() / 1000000) - timestampBase, msg);
+      msg = String.format("[%1$d] %2$s%3$s", (System.nanoTime() / 1000000) - timestampBase, msg, JF.eol);
     }
     if (log == null) {
       System.out.print(msg);
@@ -285,7 +285,7 @@ public class JFLog {
   public static boolean log(int id, Throwable t) {
     StringBuilder buf = new StringBuilder();
     buf.append(t.toString());
-    buf.append("\r\n");
+    buf.append(JF.eol);
     StackTraceElement ste[] = t.getStackTrace();
     int start = 0;
     if (t instanceof TraceException) {
@@ -295,7 +295,7 @@ public class JFLog {
       for (int a = start; a < ste.length; a++) {
         buf.append("\tat ");
         buf.append(ste[a].toString());
-        buf.append("\r\n");
+        buf.append(JF.eol);
       }
     }
     return log(id, buf.toString());

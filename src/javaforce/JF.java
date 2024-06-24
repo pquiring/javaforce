@@ -28,6 +28,8 @@ public class JF {
     System.out.println("javaforce/" + getVersion());
   }
 
+  public static final String eol = System.getProperty("line.separator");
+
   public static final boolean isGraal = Boolean.getBoolean("java.graal");
 
   public static final boolean isGraal() {
