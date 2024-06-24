@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{C424F2E5-71CA-4E27-A592-5AE371E15345}" Version="0.2" Language="1033" Name="jfSMTPRelay" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{C424F2E5-71CA-4E27-A592-5AE371E15345}" Version="0.3" Language="1033" Name="jfSMTPRelay" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
