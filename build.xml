@@ -10,9 +10,9 @@
 
   <!-- libxcursor dep helps load libjawt.so which the loader attempts to load during startup -->
 
-  <property name="debian.depends" value="default-jre        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l-0 , desktop-file-utils, libxcursor1, libncurses6"/>
-  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, libv4l   , desktop-file-utils, libXcursor , ncurses"/>
-  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, v4l-utils, desktop-file-utils, libxcursor , ncurses"/>
+  <property name="debian.depends" value="default-jre        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, jfslf4j-api, jfslf4j-jdk14, jfslf4j-nop, jfslf4j-reload4j, jfslf4j-simple, libv4l-0 , desktop-file-utils, libxcursor1, libncurses6"/>
+  <property name="fedora.depends" value="java-latest-openjdk, jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, jfslf4j-api, jfslf4j-jdk14, jfslf4j-nop, jfslf4j-reload4j, jfslf4j-simple, libv4l   , desktop-file-utils, libXcursor , ncurses"/>
+  <property name="arch.depends"   value="jre-openjdk        , jfcifs, jfsshd-core, jfsshd-common, jfsshd-sftp, jfsshd-scp, jfslf4j-api, jfslf4j-jdk14, jfslf4j-nop, jfslf4j-reload4j, jfslf4j-simple, v4l-utils, desktop-file-utils, libxcursor , ncurses"/>
 
   <property environment="env"/>
 
