@@ -51,7 +51,7 @@ public class POP3 {
    * @param port = port to connect (default = 465)
    */
   public boolean connectSSL(String host, int port) throws Exception {
-    s = JF.connectSSL(s, KeyMgmt.getDefaultClient());
+    s = JF.connectSSL(host, port, KeyMgmt.getDefaultClient());
     is = s.getInputStream();
     br = new BufferedReader(new InputStreamReader(is));
     os = s.getOutputStream();
