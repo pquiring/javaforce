@@ -1581,7 +1581,7 @@ public class ConfigService implements WebUIHandler {
     grid.addRow(new Component[] {new Label("DHCP Last IP"), last_dhcp_ip});
 
     TextField desc = new TextField("");
-    grid.addRow(new Component[] {new Label("Description"), last_ip});
+    grid.addRow(new Component[] {new Label("Description"), desc});
 
     row = new Row();
     Button add = new Button("Add");
@@ -2156,7 +2156,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       panel.add(row);
-      Label desc = new Label("Device:" + Config.current.getip(device.mac));
+      Label desc = new Label("Device:" + Config.current.getip(device.mac) + " Serial:");
       row.add(desc);
       TextField serial = new TextField(device.hardware.getSerial());
       serial.setReadonly(true);
