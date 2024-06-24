@@ -1,5 +1,12 @@
 What's new...
 
+Jun 24/2024 : JF/64.0
+ - implemented slf4j
+ - SSH client
+   - support TYPE_EXEC
+ - jfMonitor/0.8
+   - added support for configuring Cisco network devices
+
 Jun 10/2024 : JF/63.0
   - upgraded to LLRP/2.0
     - upgraded to mina/2.x
