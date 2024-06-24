@@ -523,7 +523,7 @@ public class SMTP {
         smtp.starttls();
       }
       if (user != null && pass != null) {
-        if (!smtp.auth(args[2], args[3], auth)) {
+        if (!smtp.auth(user, pass, auth)) {
           throw new Exception("Login failed!");
         }
       }
