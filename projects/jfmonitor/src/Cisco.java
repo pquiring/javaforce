@@ -59,6 +59,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -80,6 +81,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -101,6 +103,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -132,6 +135,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -158,6 +162,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -179,6 +184,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -205,6 +211,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -226,6 +233,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -247,6 +255,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -299,6 +308,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -322,6 +332,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -343,6 +354,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -364,6 +376,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -386,6 +399,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -408,6 +422,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -430,6 +445,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -456,6 +472,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -477,6 +494,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -498,6 +516,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -519,6 +538,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -540,6 +560,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -561,6 +582,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -582,6 +604,7 @@ public class Cisco {
     }
     if (!ssh.connect(ip, 22, options)) return false;
     String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (result == null) return false;
     boolean ok = result.indexOf('%') == -1;
     if (!ok) {
@@ -607,6 +630,7 @@ public class Cisco {
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
     String cfg = ssh.script(cmds.split(";"));
+    ssh.disconnect();
     if (cfg == null || cfg.length() == 0) return false;
     if (debug_cfg) {
       JFLog.log("Cisco.config=" + cfg);
@@ -797,6 +821,7 @@ public class Cisco {
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
     String status = ssh.getOutput();
+    ssh.disconnect();
     if (status == null || status.length() == 0) return false;
     /*
 VLAN Name ...
@@ -828,6 +853,7 @@ VLAN Name ...
     if (ip == null) return false;
     if (!ssh.connect(ip, 22, options)) return false;
     String status = ssh.getOutput();
+    ssh.disconnect();
     if (status == null || status.length() == 0) return false;
     /*
 Port         Name               Status       Vlan       Duplex  Speed Type
