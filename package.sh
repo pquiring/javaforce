@@ -17,6 +17,7 @@ function detectos {
       pkg=deb
       PKG=DEB
       OS=debian
+      sudo apt install bzip2
       case $HOSTTYPE in
       x86_64)
         ARCH=amd64
