@@ -14,18 +14,18 @@ import javaforce.*;
 public class GenDEB {
   private BuildTools tools;
   public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Usage:GenDEB build.xml");
+    if (args.length != 2) {
+      System.out.println("Usage:GenDEB build.xml depends");
       System.exit(1);
     }
     try {
-      new GenDEB().run(args[0]);
+      new GenDEB().run(args[0], args[1]);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  public void run(String buildfile) throws Exception {
+  public void run(String buildfile, String deps) throws Exception {
     String files = "files.lst";
     if (new File("files-debian.lst").exists()) {
       files = "files-debian.lst";
@@ -62,7 +62,7 @@ public class GenDEB {
     Runtime rt = Runtime.getRuntime();
     int ret;
     try {
-      GenPkgInfo.main(new String[] {"debian", arch, files});
+      GenPkgInfo.main(new String[] {"debian", arch, files, deps});
       if (new File(control).exists()) {
         new File(control).delete();
       }

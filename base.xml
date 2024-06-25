@@ -152,18 +152,21 @@
   <target name="deb" depends="installapp" description="create deb package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
+      <arg value="${debian.depends}"/>
     </java>
   </target>
 
   <target name="rpm" depends="installapp" description="create rpm package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
+      <arg value="${fedora.depends}"/>
     </java>
   </target>
 
   <target name="pac" depends="installapp" description="create pac package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
+      <arg value="${arch.depends}"/>
     </java>
   </target>
 

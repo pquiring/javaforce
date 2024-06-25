@@ -23,13 +23,13 @@ public class GenPkgInfo {
   }
 
   private BuildTools tools;
-  private String app, apptype, desc, arch, ver;
+  private String app, apptype, desc, arch, ver, deps;
   private long size;  //in bytes
 
   public static void main(String[] args) {
-    if (args == null || args.length < 3) {
+    if (args == null || args.length < 4) {
       System.out.println("GenPkgInfo : build linux package info files");
-      System.out.println("  Usage : GenPkgInfo distro archtype files.list");
+      System.out.println("  Usage : GenPkgInfo distro archtype files.list depends");
       System.out.println("    distro = debian fedora arch");
       System.exit(1);
     }
@@ -46,6 +46,7 @@ public class GenPkgInfo {
     String distro = args[0];
     arch = getArch();
     size = calcSize(args[2]);
+    deps = args[3];
     //load build.xml and extract app , desc , etc.
     app = tools.getProperty("app");
     apptype = tools.getProperty("apptype");
@@ -107,9 +108,9 @@ public class GenPkgInfo {
     }
   }
 
-  private String[] getDepends(String tagName) {
+  private String[] getDepends() {
     ArrayList<String> depends = new ArrayList<String>();
-    String[] list = tools.getProperty(tagName).split(",");
+    String[] list = deps.split(",");
     if (!app.equals("javaforce")) depends.add("javaforce");
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();
@@ -135,7 +136,7 @@ public class GenPkgInfo {
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
       sb.append("Depends: ");
-      String[] depends = getDepends("debian.depends");
+      String[] depends = getDepends();
       for(int a=0;a<depends.length;a++) {
         if (a > 0) sb.append(",");
         sb.append(depends[a]);
@@ -214,7 +215,7 @@ public class GenPkgInfo {
 */
       sb.append("Summary: " + desc + "\n");
       sb.append("Requires: ");
-      String[] depends = getDepends("fedora.depends");
+      String[] depends = getDepends();
       for(int a=0;a<depends.length;a++) {
         if (a > 0) sb.append(",");
         sb.append(depends[a]);
@@ -252,7 +253,7 @@ public class GenPkgInfo {
       sb.append("arch = ");
       sb.append(arch);
       sb.append("\n");
-      String[] depends = getDepends("arch.depends");
+      String[] depends = getDepends();
       for(int a=0;a<depends.length;a++) {
         sb.append("depend = ");
         sb.append(depends[a]);

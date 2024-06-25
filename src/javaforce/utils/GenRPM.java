@@ -14,17 +14,17 @@ import javaforce.*;
 public class GenRPM {
   private BuildTools tools;
   public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Usage:GenRPM build.xml");
+    if (args.length != 2) {
+      System.out.println("Usage:GenRPM build.xml deps");
       System.exit(1);
     }
     try {
-      new GenRPM().run(args[0]);
+      new GenRPM().run(args[0], args[1]);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
-  public void run(String buildfile) throws Exception {
+  public void run(String buildfile, String deps) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
     String files = "files.lst";
@@ -61,7 +61,7 @@ public class GenRPM {
     Process p;
     boolean debug = System.getenv("DEBUG") != null;
     try {
-      GenPkgInfo.main(new String[] {"fedora", arch, files});
+      GenPkgInfo.main(new String[] {"fedora", arch, files, deps});
       JF.copyAllAppend(files, "rpm.spec");
       if (new File(data).exists()) {
         new File(data).delete();

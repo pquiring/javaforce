@@ -14,17 +14,17 @@ import javaforce.*;
 public class GenPAC {
   private BuildTools tools;
   public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Usage:GenPAC build.xml");
+    if (args.length != 2) {
+      System.out.println("Usage:GenPAC build.xml deps");
       System.exit(1);
     }
     try {
-      new GenPAC().run(args[0]);
+      new GenPAC().run(args[0], args[1]);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
-  public void run(String buildfile) throws Exception {
+  public void run(String buildfile, String deps) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
 
@@ -60,7 +60,7 @@ public class GenPAC {
 
     Runtime rt = Runtime.getRuntime();
     try {
-      GenPkgInfo.main(new String[] {"arch", arch, files});
+      GenPkgInfo.main(new String[] {"arch", arch, files, deps});
       new File(files_tmp).delete();
       JF.echoAppend(".PKGINFO\n", files_tmp);
       JF.echoAppend(".MTREE\n", files_tmp);
