@@ -1,5 +1,13 @@
 What's new...
 
+Jun 25/2024 : JF/64.1
+ - jfMonitor/0.9
+   - fixed exception in Device.compareTo()
+ - jfSMTPRelay/0.3
+   - fixed SMTP auth
+ - fixed JF.connectSSL()
+ - added more dep jars into the JF repos
+
 Jun 24/2024 : JF/64.0
  - implemented slf4j
  - SSH client
