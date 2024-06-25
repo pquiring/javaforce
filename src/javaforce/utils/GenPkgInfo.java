@@ -135,13 +135,15 @@ public class GenPkgInfo {
       sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>\n");
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
-      sb.append("Depends: ");
-      String[] depends = getDepends();
-      for(int a=0;a<depends.length;a++) {
-        if (a > 0) sb.append(",");
-        sb.append(depends[a]);
+      if (!deps.equals("null")) {
+        sb.append("Depends: ");
+        String[] depends = getDepends();
+        for(int a=0;a<depends.length;a++) {
+          if (a > 0) sb.append(",");
+          sb.append(depends[a]);
+        }
+        sb.append("\n");
       }
-      sb.append("\n");
       new File("deb").mkdir();
       {
         FileOutputStream fos = new FileOutputStream("deb/control");
@@ -214,13 +216,15 @@ public class GenPkgInfo {
       sb.append("\n");
 */
       sb.append("Summary: " + desc + "\n");
-      sb.append("Requires: ");
-      String[] depends = getDepends();
-      for(int a=0;a<depends.length;a++) {
-        if (a > 0) sb.append(",");
-        sb.append(depends[a]);
+      if (!deps.equals("null")) {
+        sb.append("Requires: ");
+        String[] depends = getDepends();
+        for(int a=0;a<depends.length;a++) {
+          if (a > 0) sb.append(",");
+          sb.append(depends[a]);
+        }
+        sb.append("\n");
       }
-      sb.append("\n");
       sb.append("%description\n " + desc + "\n");
       sb.append("%post\n");
       sb.append("#!/bin/sh\n");
@@ -253,11 +257,13 @@ public class GenPkgInfo {
       sb.append("arch = ");
       sb.append(arch);
       sb.append("\n");
-      String[] depends = getDepends();
-      for(int a=0;a<depends.length;a++) {
-        sb.append("depend = ");
-        sb.append(depends[a]);
-        sb.append("\n");
+      if (!deps.equals("null")) {
+        String[] depends = getDepends();
+        for(int a=0;a<depends.length;a++) {
+          sb.append("depend = ");
+          sb.append(depends[a]);
+          sb.append("\n");
+        }
       }
       FileOutputStream fos = new FileOutputStream(".PKGINFO");
       fos.write(sb.toString().getBytes());
