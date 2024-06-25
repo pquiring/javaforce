@@ -1,3 +1,6 @@
+Jun 25/2024 : 0.9 released
+  - fixed exception in Device.compareTo()
+
 Jun 24/2024 : 0.8 released
   - added cisco configuration support
 
