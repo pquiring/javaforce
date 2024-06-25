@@ -111,12 +111,14 @@ public class GenPkgInfo {
   private String[] getDepends() {
     ArrayList<String> depends = new ArrayList<String>();
     String[] list = deps.split(",");
-    if (!app.equals("javaforce")) depends.add("javaforce");
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();
       if (depend.length() == 0) continue;
       if (depend.equals("null")) continue;
       depends.add(depend);
+    }
+    if (!app.equals("javaforce") && !depends.contains("javaforce")) {
+      depends.add("javaforce");
     }
     return depends.toArray(JF.StringArrayType);
   }

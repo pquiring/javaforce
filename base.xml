@@ -6,6 +6,9 @@
   <property name="jarpath" value="."/>
   <property name="jdkver" value="17"/>
   <property name="lib" value="${home}/lib"/>
+  <property name="debian.depends" value="javaforce"/>
+  <property name="fedora.depends" value="javaforce"/>
+  <property name="arch.depends"   value="javaforce"/>
 
   <import file="versions.xml"/>
 
