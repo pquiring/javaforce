@@ -13,6 +13,7 @@ public class Settings {
 
   public int http_port = 80;
   public int https_port = 443;
+  public int api_port = 8080;
 
   private static String configFile() {
     return Paths.dataPath + "/settings.cfg";
@@ -24,6 +25,7 @@ public class Settings {
       Properties props = new Properties();
       props.setProperty("http.port", Integer.toString(http_port));
       props.setProperty("https.port", Integer.toString(https_port));
+      props.setProperty("api.port", Integer.toString(api_port));
       props.store(fos, "jfMonitor");
       fos.close();
     } catch (Exception e) {
@@ -46,6 +48,7 @@ public class Settings {
       fis.close();
       current.http_port = Integer.valueOf(getProperty(props, "http.port", "80"));
       current.https_port = Integer.valueOf(getProperty(props, "https.port", "443"));
+      current.api_port = Integer.valueOf(getProperty(props, "api.port", "8080"));
     } catch (FileNotFoundException e) {
       current = new Settings();
       current.save();

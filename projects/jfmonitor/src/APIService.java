@@ -11,7 +11,7 @@ public class APIService extends Thread implements WebHandler {
 
   public void run() {
     web = new WebServer();
-    web.start(this, 8080);
+    web.start(this, Settings.current.api_port);
   }
 
   public void cancel() {
