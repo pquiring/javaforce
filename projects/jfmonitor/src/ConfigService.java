@@ -21,7 +21,7 @@ public class ConfigService implements WebUIHandler {
   public void start() {
     initSecureWebKeys();
     server = new WebUIServer();
-    server.start(this, 443, keys);
+    server.start(this, Settings.current.https_port, keys);
   }
 
   public void stop() {

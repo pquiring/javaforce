@@ -87,6 +87,7 @@ public class MonitorService extends Thread {
 
     //load current config
     Config.load();
+    Settings.load();
     //start config service
     configService = new ConfigService();
     configService.start();
@@ -95,7 +96,7 @@ public class MonitorService extends Thread {
     Tasks.tasks.setSequential(true);
     //start redir service
     redirService = new WebServerRedir();
-    redirService.start(80, 443);
+    redirService.start(Settings.current.http_port, Settings.current.https_port);
     //start api service
     apiService = new APIService();
     apiService.start();
