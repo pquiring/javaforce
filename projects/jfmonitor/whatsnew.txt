@@ -1,3 +1,6 @@
+Jun 26/2024 : 0.10 released
+  - bring settings.cfg back to change web ports
+
 Jun 25/2024 : 0.9 released
   - fixed exception in Device.compareTo()
 
