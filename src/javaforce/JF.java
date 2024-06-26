@@ -21,7 +21,7 @@ import java.security.cert.Certificate;
 public class JF {
 
   public static String getVersion() {
-    return "64.1";
+    return "64.2";
   }
 
   public static void main(String[] args) {
