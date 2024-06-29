@@ -102,6 +102,14 @@ public class WebResponse extends OutputStream {
     contentType = type;
   }
 
+  public String getContentType() {
+    return contentType;
+  }
+
+  public void setContentLength(int length) {
+    addHeader("Content-Length: " + length);
+  }
+
   public void addCookie(String name, String value) {
     cookies.add(name + "=" + value);
   }
