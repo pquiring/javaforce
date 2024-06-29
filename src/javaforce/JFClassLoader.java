@@ -112,7 +112,9 @@ public class JFClassLoader extends ClassLoader {
 
   public Class<?> findClass(String name) throws ClassNotFoundException {
     //try bootloader first
-    try { return super.findClass(name); } catch (Exception e) {}
+    if (!name.startsWith("javaforce.")) {
+      try { return super.findClass(name); } catch (Exception e) {}
+    }
     byte[] data = getData(name);
     if (data == null) return null;
     return defineClass(name, data, 0, data.length);
@@ -120,7 +122,9 @@ public class JFClassLoader extends ClassLoader {
 
   public Class<?> findClass(String module_name, String name) {
     //try bootloader first
-    try { return super.findClass(module_name, name); } catch (Exception e) {}
+    if (!name.startsWith("javaforce.")) {
+      try { return super.findClass(module_name, name); } catch (Exception e) {}
+    }
     byte[] data = getData(name);
     if (data == null) return null;
     return defineClass(name, data, 0, data.length);

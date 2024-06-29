@@ -1,6 +1,6 @@
 /** Network Port
  *
- * @author peterq.admin
+ * @author peter.quiring
  */
 
 import java.io.Serializable;
