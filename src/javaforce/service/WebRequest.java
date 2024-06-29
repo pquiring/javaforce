@@ -21,6 +21,7 @@ public class WebRequest {
   public String serverIP, remoteIP;
   public int serverPort, remotePort;
   public String method;
+  public HTTP.Parameters params;
 
   public static class Session {
     public String id;
@@ -59,6 +60,14 @@ public class WebRequest {
     }
     return null;
   }
+  public int getContentLength() {
+    String length = getHeader("Content-Length");
+    if (length == null) return -1;
+    return Integer.valueOf(length.trim());
+  }
+  public String getContentType() {
+    return getHeader("Content-Type");
+  }
   private String randomID() {
     Random r = new Random();
     return "" + r.nextLong() + "-" + r.nextLong() + "-" + System.currentTimeMillis();
@@ -90,6 +99,30 @@ public class WebRequest {
         sessions.put(id, session);
       }
     }
+    params = new HTTP.Parameters();
+    String query = getQueryString();
+    setParameters(query);
+    String type = getContentType();
+    int length = getContentLength();
+    if (type != null && type.equals("application/x-www-form-urlencoded")) {
+      try {
+        byte[] data = is.readAllBytes();
+        setParameters(new String(data));
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+  }
+
+  private void setParameters(String str) {
+    String[] ps = str.split("[&]");
+    for(String p : ps) {
+      int idx = p.indexOf('=');
+      if (idx == -1) continue;
+      String key = p.substring(0, idx);
+      String value = p.substring(0, idx);
+      params.put(key, JF.decodeURL(value));
+    }
   }
 
   public String getHost() {
@@ -109,4 +142,8 @@ public class WebRequest {
   public String getMethod() { return method; }
 
   public InputStream getInputStream() { return is; }
+
+  public String getParameter(String name) {
+    return params.get(name);
+  }
 };
