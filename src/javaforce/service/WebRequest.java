@@ -22,6 +22,7 @@ public class WebRequest {
   public int serverPort, remotePort;
   public String method;
   public HTTP.Parameters params;
+  public boolean secure;
 
   public static class Session {
     public String id;
@@ -145,5 +146,9 @@ public class WebRequest {
 
   public String getParameter(String name) {
     return params.get(name);
+  }
+
+  public boolean isSecure() {
+    return secure;
   }
 };

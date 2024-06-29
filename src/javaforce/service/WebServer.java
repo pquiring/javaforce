@@ -18,6 +18,7 @@ public class WebServer {
   private WebHandler api;
   private WebSocketHandler wsapi;
   private ServerSocket ss;
+  private boolean secure;
   private boolean active = true;
   private ArrayList<Connection> clients = new ArrayList<>();
   private Object clientsLock = new Object();
@@ -32,6 +33,7 @@ public class WebServer {
 
   /** Start web server on secure port using provided keys. */
   public boolean start(WebHandler api, int port, KeyMgmt keys) {
+    secure = true;
     this.api = api;
     try {
       if (keys != null) {
@@ -120,6 +122,7 @@ public class WebServer {
           request.append((char)ch);
           if (request.toString().endsWith("\r\n\r\n")) {
             WebRequest req = new WebRequest();
+            req.secure = web.secure;
             req.request = request.toString();
             req.fields = req.request.split("\r\n");
             req.is = is;
