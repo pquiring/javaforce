@@ -1,0 +1,11 @@
+[Unit]
+Description=jfServlets
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfservlets
+ExecStop=/usr/bin/jfservlets --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
