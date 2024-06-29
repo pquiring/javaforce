@@ -22,6 +22,8 @@ public class JFClassLoader extends ClassLoader {
   private ArrayList<Folder> cp_folders = new ArrayList<>();
   private HashMap<String, Folder> cp_files = new HashMap<>();
 
+  public static boolean debug = false;
+
   /** Build a Class Loader from the classpath.
    *
    * classpath may include directories and jar files.
@@ -58,9 +60,9 @@ public class JFClassLoader extends ClassLoader {
         continue;
       }
       if (file.getName().endsWith(".jar")) {
-        Folder folder = new Folder();
-        cp_folders.add(folder);
-        doJarFolder(file, folder, "");
+        Folder jar_folder = new Folder();
+        cp_folders.add(jar_folder);
+        doJarFolder(file, jar_folder, "");
         continue;
       }
       JFLog.log("Unknown ClassPath element:" + file);
@@ -73,15 +75,33 @@ public class JFClassLoader extends ClassLoader {
       for(File file : files) {
         String name = file.getName();
         if (file.isDirectory()) {
-          doFileFolder(file, file_folder, path + "/" + name);
+          String full;
+          if (path.length() == 0) full = name; else full = path + "/" + name;
+          doFileFolder(file, file_folder, full);
+        } else if (file.getName().endsWith(".jar")) {
+          Folder jar_folder = new Folder();
+          cp_folders.add(jar_folder);
+          doJarFolder(file, jar_folder, "");
+        } else if (file.getName().endsWith(".class")) {
+          String full;
+          if (path.length() == 0) full = name; else full = path + "/" + name;
+          FileInputStream fis = new FileInputStream(file);
+          byte[] data = fis.readAllBytes();
+          fis.close();
+          if (debug) JFLog.log("class:" + full);
+          String cls = convert_class(full);
+          file_folder.files.put(cls, data);
+          cp_files.put(cls, file_folder);
         } else {
           String full;
           if (path.length() == 0) full = name; else full = path + "/" + name;
           FileInputStream fis = new FileInputStream(file);
           byte[] data = fis.readAllBytes();
           fis.close();
-          file_folder.files.put(full, data);
-          cp_files.put(full, file_folder);
+          if (debug) JFLog.log("resource:" + full);
+          String cls = convert_resource(full);
+          file_folder.files.put(cls, data);
+          cp_files.put(cls, file_folder);
         }
       }
     } catch (Exception e) {
@@ -98,16 +118,36 @@ public class JFClassLoader extends ClassLoader {
         if (ze.isDirectory()) {
           continue;
         }
-        String full;
-        if (path.length() == 0) full = name; else full = path + "/" + name;
-        byte[] data = zis.readAllBytes();
-        jar_folder.files.put(full, data);
-        cp_files.put(full, jar_folder);
+        if (name.endsWith(".class")) {
+          String full;
+          if (path.length() == 0) full = name; else full = path + "/" + name;
+          byte[] data = zis.readAllBytes();
+          if (debug) JFLog.log("jar.class:" + full);
+          String cls = convert_class(full);
+          jar_folder.files.put(cls, data);
+          cp_files.put(cls, jar_folder);
+        }
       }
       zis.close();
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  private String convert_class(String in) {
+    in = in.substring(0, in.length() - 6);  //remove .class
+    in = in.replaceAll("[/]", ".");
+    if (JF.isWindows()) {
+      in = in.replaceAll("[\\\\]", ".");
+    }
+    return in;
+  }
+
+  private String convert_resource(String in) {
+    if (JF.isWindows()) {
+      in = in.replaceAll("[\\\\]", "/");
+    }
+    return in;
   }
 
   public Class<?> findClass(String name) throws ClassNotFoundException {
@@ -117,7 +157,13 @@ public class JFClassLoader extends ClassLoader {
     }
     byte[] data = getData(name);
     if (data == null) return null;
-    return defineClass(name, data, 0, data.length);
+    if (debug) JFLog.log("defineClass:" + data.length);
+    try {
+      return defineClass(name, data, 0, data.length);
+    } catch (Throwable t) {
+      JFLog.log(t);
+      return null;
+    }
   }
 
   public Class<?> findClass(String module_name, String name) {
@@ -127,12 +173,20 @@ public class JFClassLoader extends ClassLoader {
     }
     byte[] data = getData(name);
     if (data == null) return null;
-    return defineClass(name, data, 0, data.length);
+    try {
+      return defineClass(name, data, 0, data.length);
+    } catch (Throwable t) {
+      JFLog.log(t);
+      return null;
+    }
   }
 
   private byte[] getData(String name) {
     Folder folder = cp_files.get(name);
-    if (folder == null) return null;
+    if (folder == null) {
+      JFLog.log("JFClassLoader:class not found:" + name);
+      return null;
+    }
     return folder.files.get(name);
   }
 
@@ -159,10 +213,10 @@ public class JFClassLoader extends ClassLoader {
   }
 
   public Class<?> loadClass(String name) throws ClassNotFoundException {
-    return loadClass(name);
+    return super.loadClass(name);
   }
 
   public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-    return loadClass(name, resolve);
+    return super.loadClass(name, resolve);
   }
 }
