@@ -93,7 +93,7 @@ public class HTTP {
         if (idx == -1) continue;
         String key = item.substring(0, idx);
         String value = item.substring(idx + 1);
-        params.put(key, value);
+        params.put(key, JF.decodeURL(value));
       }
       return params;
     }
