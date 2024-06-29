@@ -106,8 +106,8 @@ public class WebRequest {
     int length = getContentLength();
     if (type != null && type.equals("application/x-www-form-urlencoded")) {
       try {
-        byte[] data = is.readAllBytes();
-        setParameters(new String(data));
+        byte[] data = JF.readAll(is, length);
+        setParameters(new String(data, "UTF-8"));
       } catch (Exception e) {
         JFLog.log(e);
       }
