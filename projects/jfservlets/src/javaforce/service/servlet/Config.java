@@ -28,10 +28,16 @@ public class Config implements Serializable {
       if (current == null) throw new Exception("failed to load config");
       current.valid();
       return true;
+    } catch (FileNotFoundException e) {
+      current = new Config();
+      current.valid();
+      current.save();
+      return false;
     } catch (Exception e) {
       JFLog.log(e);
       current = new Config();
       current.valid();
+      current.save();
       return false;
     }
   }

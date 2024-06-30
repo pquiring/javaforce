@@ -81,23 +81,26 @@ public class ServletsService implements WebHandler {
     //URL = /war/static_file.ext
     JFLog.log("doGet:" + req.getURL());
     String url = req.getURL();
+    if (url.indexOf("..") != -1) {
+      do400(req, res);
+      return;
+    }
     String war_name = null;
     String servlet_name = null;
+    String static_name = null;
     String[] p = url.split("[/]", -1);
-    if (p.length == 0) {
-      //never occurs
-      war_name = "root";
-      servlet_name = "";  //welcome page
-    } else if (p.length == 1) {
-      //never occurs
-      war_name = "root";
-      servlet_name = p[0];
-    } else if (p.length == 2) {
+    if (p.length < 2) {
+      do404(req, res);
+      return;
+    }
+    if (p.length == 2) {
       war_name = "root";
       servlet_name = p[1];
+      static_name = url;
     } else {
       war_name = p[1];
       servlet_name = p[2];
+      static_name = url.substring(1 + war_name.length() + 1);  // /war/
     }
     WAR war = getWAR(war_name, true);
     if (war == null) {
@@ -108,9 +111,10 @@ public class ServletsService implements WebHandler {
     //check if welcome page is requested
     if (servlet_name.length() == 0) {
       servlet_name = war.welcome;
+      static_name = war.welcome;
     }
     //check for static resource
-    byte[] data = war.getStaticResource(servlet_name);
+    byte[] data = war.getStaticResource(static_name);
     if (data != null) {
       try {
         res.getOutputStream().write(data);
@@ -139,6 +143,10 @@ public class ServletsService implements WebHandler {
 
   public void doPost(WebRequest req, WebResponse res) {
     doGet(req, res);
+  }
+
+  public void do400(WebRequest req, WebResponse res) {
+    doError(req, res, 400, "400 Bad Request");
   }
 
   public void do404(WebRequest req, WebResponse res) {

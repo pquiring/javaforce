@@ -23,7 +23,7 @@ public class WAR {
   public String welcome = "index.html";
   public String folder;
 
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   private WAR() {}
 
@@ -56,14 +56,12 @@ public class WAR {
     int i2 = folder.indexOf('-');
     war.name = folder.substring(i1 + 1, i2);
     war.servlets = new ArrayList<>();
-    if (debug) JFLog.log("loading class path...");
     war.loader = makeClassLoader(folder);
     war.folder = folder;
 
     HttpServlet servlet = null;
     String name = null;
 
-    if (debug) JFLog.log("loading web.xml...");
     XML xml = new XML();
     xml.read(folder + "/WEB-INF/web.xml");
     XML.XMLTag root = xml.root;
@@ -87,7 +85,6 @@ public class WAR {
                   if (ctor == null) throw new Exception("WAR:ctor not found:" + cls_name);
                   servlet = (HttpServlet)ctor.newInstance();
                   servlet.name = name;
-                  if (debug) JFLog.log("WAR:add servlet:" + name);
                   war.servlets.add(servlet);
                 } catch (Exception e) {
                   JFLog.log(e);
@@ -119,7 +116,7 @@ public class WAR {
           for(XML.XMLTag child : tag.children) {
             switch (child.name) {
               case "welcome-file":
-                war.welcome = child.content;
+                war.welcome = child.content.trim();
                 break;
             }
           }
@@ -165,8 +162,8 @@ public class WAR {
   }
 
   public byte[] getStaticResource(String name) {
-    if (name.startsWith("META-INF")) return null;
-    if (name.startsWith("WEB-INF")) return null;
+    if (name.toUpperCase().startsWith("META-INF")) return null;
+    if (name.toUpperCase().startsWith("WEB-INF")) return null;
     File file = new File(folder + "/" + name);
     if (!file.exists()) return null;
     try {
