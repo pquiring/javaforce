@@ -1,6 +1,6 @@
 package javaforce.service.servlet;
 
-/** WAR
+/** WAR (Web ARchive)
  *
  * @author peter.quiring
  */
@@ -22,6 +22,7 @@ public class WAR {
   public boolean registered;
   public String welcome = "index.html";
   public String folder;
+  public long install;
   public long delete;
 
   public static boolean debug = false;
@@ -32,30 +33,9 @@ public class WAR {
     if (JF.isWindows()) {
       folder = folder.replaceAll("\\\\", "/");
     }
-/*
-<web-app version="2.4">
-
-  <servlet>
-    <servlet-name>example</servlet-name>
-    <servlet-class>code.example</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>example</servlet-name>
-    <url-pattern>/example</url-pattern>
-  </servlet-mapping>
-
-  <welcome-file-list>
-    <welcome-file>
-      index.html
-    </welcome-file>
-  </welcome-file-list>
-
-</web-app>
-*/
     WAR war = new WAR();
-    int i1 = folder.lastIndexOf('/');
-    int i2 = folder.indexOf('-');
-    war.name = folder.substring(i1 + 1, i2);
+    war.name = getName(folder);
+    war.install = getInstallDate(folder);
     war.servlets = new ArrayList<>();
     war.loader = makeClassLoader(folder);
     war.folder = folder;
@@ -127,9 +107,11 @@ public class WAR {
     return war;
   }
 
-  public static WAR delete(String folder) {
+  public static WAR delete(String name) {
     WAR war = new WAR();
-    war.folder = folder;
+    war.name = getName(name);
+    war.install = getInstallDate(name);
+    war.folder = Paths.workingPath + "/" + name;
     return war;
   }
 
@@ -173,5 +155,22 @@ public class WAR {
       }
     }
     return null;
+  }
+
+  public static long getInstallDate(String folder) {
+    int idx = folder.indexOf('-');
+    if (idx == -1) return -1;
+    return Long.valueOf(folder.substring(idx + 1));
+  }
+
+  public static String getName(String folder) {
+    int i1 = folder.lastIndexOf('/');
+    if (i1 == -1) i1 = 0; else i1++;
+    int i2 = folder.indexOf('-');
+    return folder.substring(i1, i2);
+  }
+
+  public String toString() {
+    return name + "-" + install;
   }
 }

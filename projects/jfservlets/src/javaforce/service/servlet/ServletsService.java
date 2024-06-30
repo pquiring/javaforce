@@ -192,8 +192,9 @@ public class ServletsService implements WebHandler {
   private void deployWAR(File file) {
     String name_ext = file.getName();
     String name = name_ext.substring(0, name_ext.length() - 4);  //remove .war
-    String folder = Paths.workingPath + "/" + name + "-" + System.currentTimeMillis();
-    JFLog.log("deployWAR:" + file + ",name=" + name + ",folder=" + folder);
+    long install = System.currentTimeMillis();
+    String folder = Paths.workingPath + "/" + name + "-" + install;
+    JFLog.log("deployWAR:" + name + "-" + install);
     WAR war;
     synchronized (wars_lock) {
       war = getWAR(name, false);
@@ -273,7 +274,7 @@ public class ServletsService implements WebHandler {
   }
 
   private void unregisterWAR(WAR war) {
-    JFLog.log("unregisterWAR:" + war.name);
+    JFLog.log("unregisterWAR:" + war.toString());
     wars.remove(war);
     war.delete = System.currentTimeMillis();
     synchronized (delete_lock) {
@@ -283,21 +284,9 @@ public class ServletsService implements WebHandler {
 
   /** Register a WAR in /working */
   private void registerWAR(WAR war) {
-    JFLog.log("registerWAR:" + war.name);
+    JFLog.log("registerWAR:" + war.toString());
     war.registered = true;
     wars.add(war);
-  }
-
-  private long getInstallDate(String folder) {
-    int idx = folder.indexOf('-');
-    if (idx == -1) return -1;
-    return Long.valueOf(folder.substring(idx + 1));
-  }
-
-  private String getName(String folder) {
-    int idx = folder.indexOf('-');
-    if (idx == -1) return null;
-    return folder.substring(idx);
   }
 
   /** Register all WAR in /working */
@@ -307,24 +296,25 @@ public class ServletsService implements WebHandler {
     for(File folder : folders) {
       if (!folder.isDirectory()) continue;
       String folder_name = folder.getName();
-      String war_name = getName(folder_name);
-      long install_date = getInstallDate(folder_name);
+      String war_name = WAR.getName(folder_name);
+      long install_date = WAR.getInstallDate(folder_name);
       //check if this war is obsolete
       boolean obsolete = false;
       for(File other : folders) {
         if (!other.isDirectory()) continue;
         if (other.equals(folder)) continue;
-        String other_war_name = getName(folder_name);
+        String other_name = other.getName();
+        String other_war_name = WAR.getName(other_name);
         if (!other_war_name.equals(war_name)) continue;
-        long other_install_date = getInstallDate(folder_name);
+        long other_install_date = WAR.getInstallDate(other_name);
         if (other_install_date > install_date) {
           obsolete = true;
+          break;
         }
-        break;
       }
       if (obsolete) {
         //create war just for deletion
-        WAR war = WAR.delete(folder.getAbsolutePath());
+        WAR war = WAR.delete(folder.getName());
         unregisterWAR(war);
         continue;
       }
@@ -386,6 +376,7 @@ public class ServletsService implements WebHandler {
           if (war.delete > now_60_secs) continue;
           delete_wars.remove(0);
         }
+        JFLog.log("delete:" + war.toString());
         JF.deletePathEx(war.folder);
       }
     }
