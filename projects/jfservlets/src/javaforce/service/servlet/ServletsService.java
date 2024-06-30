@@ -21,12 +21,15 @@ public class ServletsService implements WebHandler {
   private WebServer http;
   private WebServer https;
 
-  private Object lock = new Object();
+  private Object wars_lock = new Object();
   private ArrayList<WAR> wars = new ArrayList<>();
+  private Object delete_lock = new Object();
   private ArrayList<WAR> delete_wars = new ArrayList<>();
 
   private WatchService watch;
   private Watcher watcher;
+
+  private Deleter deleter;
 
   private boolean active;
 
@@ -58,6 +61,8 @@ public class ServletsService implements WebHandler {
     watchDeploy();
     deployWARs();
     registerWARs();
+    deleter = new Deleter();
+    deleter.start();
   }
 
   public void stop() {
@@ -170,7 +175,7 @@ public class ServletsService implements WebHandler {
   }
 
   private WAR getWAR(String name, boolean need_register) {
-    synchronized (lock) {
+    synchronized (wars_lock) {
       for(WAR war : wars) {
         if (war.name.equals(name)) {
           if (need_register && !war.registered) {
@@ -190,7 +195,7 @@ public class ServletsService implements WebHandler {
     String folder = Paths.workingPath + "/" + name + "-" + System.currentTimeMillis();
     JFLog.log("deployWAR:" + file + ",name=" + name + ",folder=" + folder);
     WAR war;
-    synchronized (lock) {
+    synchronized (wars_lock) {
       war = getWAR(name, false);
       if (war != null) {
         unregisterWAR(war);
@@ -233,6 +238,10 @@ public class ServletsService implements WebHandler {
     RandomAccessFile raf = null;
     try {
       raf = new RandomAccessFile(file, "r");
+      long length = raf.length();
+      if (length < 512) {
+        throw new Exception("too small");
+      }
       byte[] header = new byte[4];
       if (raf.read(header) != 4) {
         throw new Exception("bad read");
@@ -242,7 +251,7 @@ public class ServletsService implements WebHandler {
           throw new Exception("not zip");
         }
       }
-      raf.seek(raf.length() - 22);
+      raf.seek(length - 22);
       byte[] end = new byte[22];
       if (raf.read(end) != 22) {
         throw new Exception("bad read");
@@ -266,7 +275,10 @@ public class ServletsService implements WebHandler {
   private void unregisterWAR(WAR war) {
     JFLog.log("unregisterWAR:" + war.name);
     wars.remove(war);
-    delete_wars.add(war);
+    war.delete = System.currentTimeMillis();
+    synchronized (delete_lock) {
+      delete_wars.add(war);
+    }
   }
 
   /** Register a WAR in /working */
@@ -276,13 +288,46 @@ public class ServletsService implements WebHandler {
     wars.add(war);
   }
 
+  private long getInstallDate(String folder) {
+    int idx = folder.indexOf('-');
+    if (idx == -1) return -1;
+    return Long.valueOf(folder.substring(idx + 1));
+  }
+
+  private String getName(String folder) {
+    int idx = folder.indexOf('-');
+    if (idx == -1) return null;
+    return folder.substring(idx);
+  }
+
   /** Register all WAR in /working */
   private void registerWARs() {
     JFLog.log("registerWARs");
     File[] folders = new File(Paths.workingPath).listFiles();
     for(File folder : folders) {
-      JFLog.log("folder=" + folder);
       if (!folder.isDirectory()) continue;
+      String folder_name = folder.getName();
+      String war_name = getName(folder_name);
+      long install_date = getInstallDate(folder_name);
+      //check if this war is obsolete
+      boolean obsolete = false;
+      for(File other : folders) {
+        if (!other.isDirectory()) continue;
+        if (other.equals(folder)) continue;
+        String other_war_name = getName(folder_name);
+        if (!other_war_name.equals(war_name)) continue;
+        long other_install_date = getInstallDate(folder_name);
+        if (other_install_date > install_date) {
+          obsolete = true;
+        }
+        break;
+      }
+      if (obsolete) {
+        //create war just for deletion
+        WAR war = WAR.delete(folder.getAbsolutePath());
+        unregisterWAR(war);
+        continue;
+      }
       WAR war = WAR.load(folder.getAbsolutePath());
       if (war != null) {
         registerWAR(war);
@@ -322,6 +367,26 @@ public class ServletsService implements WebHandler {
           }
           result = deployWARs();
         } while (!result);
+      }
+    }
+  }
+
+  public class Deleter extends Thread {
+    public void run() {
+      while (active) {
+        for(int a=0;active && a<5;a++) {
+          JF.sleep(1000);
+        }
+        WAR war;
+        //wait 60 seconds before attempting to delete war in working folder
+        long now_60_secs = System.currentTimeMillis() - (60 * 1000);
+        synchronized (delete_lock) {
+          if (delete_wars.size() == 0) continue;
+          war = delete_wars.get(0);
+          if (war.delete > now_60_secs) continue;
+          delete_wars.remove(0);
+        }
+        JF.deletePathEx(war.folder);
       }
     }
   }

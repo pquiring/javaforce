@@ -22,6 +22,7 @@ public class WAR {
   public boolean registered;
   public String welcome = "index.html";
   public String folder;
+  public long delete;
 
   public static boolean debug = false;
 
@@ -126,34 +127,11 @@ public class WAR {
     return war;
   }
 
-  private static void printArray(File[] p) {
-    System.out.print("p[] = ");
-    for(int a=0;a<p.length;a++) {
-      System.out.print("{" + p[a] + "}");
-    }
-    System.out.println("");
+  public static WAR delete(String folder) {
+    WAR war = new WAR();
+    war.folder = folder;
+    return war;
   }
-
-/*
-  private static void add_jars(ArrayList<File> files, File folder) {
-    folder.listFiles((File file) -> {
-      boolean is_jar = file.getName().endsWith(".jar");
-      if (is_jar) files.add(file);
-      return false;
-    });
-  }
-
-  private static void add_classes(ArrayList<File> files, File folder) {
-    folder.listFiles((File file) -> {
-      boolean is_class = file.getName().endsWith(".class");
-      if (is_class) files.add(file);
-      if (file.isDirectory()) {
-        add_classes(files, file);
-      }
-      return false;
-    });
-  }
-*/
 
   private static JFClassLoader makeClassLoader(String folder) {
     File lib = new File(folder + "/WEB-INF/lib");
