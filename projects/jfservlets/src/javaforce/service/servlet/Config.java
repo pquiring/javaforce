@@ -14,6 +14,8 @@ public class Config implements Serializable {
   private static final long serialVersionUID = 1L;
   public static Config current;
 
+  public static final String version = "0.1";
+
   public Config() {
     valid();
   }

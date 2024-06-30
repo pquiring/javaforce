@@ -46,6 +46,7 @@ public class ServletsService implements WebHandler {
     Paths.init();
     JFLog.append(Paths.logsPath + "/system.log", true);
     JFLog.setRetention(30);
+    JFLog.log("Starting jfServlets/" + Config.version + "...");
     Config.load();
     Settings.load();
     JFLog.log("Starting http...");
