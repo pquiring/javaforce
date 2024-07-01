@@ -20,6 +20,7 @@ public class ServletsService implements WebHandler {
 
   private WebServer http;
   private WebServer https;
+  public static KeyMgmt keys;
 
   private Object wars_lock = new Object();
   private ArrayList<WAR> wars = new ArrayList<>();
@@ -52,12 +53,13 @@ public class ServletsService implements WebHandler {
     JFLog.log("Starting jfServlets/" + Config.version + "...");
     Config.load();
     Settings.load();
-    JFLog.log("Starting http...");
+    JFLog.log("Starting http...(" + Settings.current.http_port + ")");
     http = new WebServer();
     http.start(this, Settings.current.http_port);
-    JFLog.log("Starting https...");
+    JFLog.log("Starting https...(" + Settings.current.https_port + ")");
+    initSecureWebKeys();
     https = new WebServer();
-    https.start(this, Settings.current.https_port, KeyMgmt.getDefaultClient());
+    https.start(this, Settings.current.https_port, keys);
     watchDeploy();
     deployWARs();
     registerWARs();
@@ -79,6 +81,27 @@ public class ServletsService implements WebHandler {
       try { watch.close(); } catch (Exception e) {}
       watch = null;
     }
+  }
+
+  public static void initSecureWebKeys() {
+    String keyfile = Paths.dataPath + "/jfservlets.key";
+    String password = "password";
+    KeyParams params = new KeyParams();
+    params.dname = "CN=jfservlets.sourceforge.net, O=server, OU=webserver, C=CA";
+    if (new File(keyfile).exists()) {
+      //load existing keys
+      keys = new KeyMgmt();
+      try {
+        FileInputStream fis = new FileInputStream(keyfile);
+        keys.open(fis, password);
+        fis.close();
+        return;
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    //generate random keys
+    keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
   }
 
   public void doGet(WebRequest req, WebResponse res) {
