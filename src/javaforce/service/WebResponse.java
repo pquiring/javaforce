@@ -16,6 +16,7 @@ public class WebResponse extends OutputStream {
   private String contentType = "text/html; charset=UTF-8";
   private ArrayList<String> cookies = new ArrayList<String>();
   private ArrayList<String> headers = new ArrayList<String>();
+  private PrintWriter writer = new PrintWriter(this);
 
   public void write(int b) throws IOException {
     buf.write(b);
@@ -26,6 +27,8 @@ public class WebResponse extends OutputStream {
   }
 
   void writeAll(WebRequest req) throws Exception {
+    writer.flush();
+    flush();
     byte[] data = buf.toByteArray();
     boolean gzip = false;
     if (data.length > 0) {
@@ -93,6 +96,10 @@ public class WebResponse extends OutputStream {
     return this;
   }
 
+  public PrintWriter getWriter() {
+    return writer;
+  }
+
   public void setStatus(int sc, String msg) {
     statusCode = sc;
     statusString = msg;
@@ -123,10 +130,19 @@ public class WebResponse extends OutputStream {
     addHeader("Location: " + url);
   }
 
+  public int getLength() {
+    return buf.size();
+  }
+
+  public void flush() {
+    try {super.flush();} catch (Exception e) {}
+  }
+
   public HashMap<String, Object> toHashMap() {
     HashMap<String, Object> map = new HashMap<>();
     map.put("ContentType", getContentType());
     map.put("OutputStream", getOutputStream());
+    map.put("Writer", getWriter());
     return map;
   }
 
@@ -134,6 +150,7 @@ public class WebResponse extends OutputStream {
     setContentType((String)map.get("ContentType"));
     Integer length = (Integer)map.get("ContentLength");
     if (length != null) {
+      System.out.println("WebResponse:length=" + length);
       setContentLength(length);
     }
   }

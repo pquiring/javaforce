@@ -30,7 +30,7 @@ public class HttpServletResponseImpl implements HttpServletResponse {
   }
 
   public PrintWriter getWriter() {
-    return new PrintWriter(getOutputStream());
+    return (PrintWriter)res.get("Writer");
   }
 
   public String getContentType() {

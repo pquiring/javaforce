@@ -10,13 +10,10 @@
 package code;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import javaforce.*;
 
 public class example extends HttpServlet {
 
@@ -65,10 +62,10 @@ public class example extends HttpServlet {
 
   public void doRequest(HttpServletRequest request, HttpServletResponse response) {
     try {
-      OutputStream out = response.getOutputStream();
+      PrintWriter out = response.getWriter();
       StringBuilder sb = new StringBuilder();
       sb.append("Example Servlet");
-      out.write(sb.toString().getBytes());
+      out.print(sb.toString());
     } catch (Exception e) {
       try {
         response.setContentType("text/html;charset=UTF-8");
