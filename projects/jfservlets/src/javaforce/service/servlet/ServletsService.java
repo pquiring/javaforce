@@ -131,9 +131,11 @@ public class ServletsService implements WebHandler {
       return;
     }
     if (p.length == 2) {
-      war_name = "root";
-      servlet_name = p[1];
-      static_name = url;
+      if (url.equals("/")) {
+        url = "/root";
+      }
+      res.sendRedirect(url + "/");
+      return;
     } else {
       war_name = p[1];
       servlet_name = p[2];
