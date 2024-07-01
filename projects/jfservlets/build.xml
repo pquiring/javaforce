@@ -38,6 +38,7 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.jar" todir="/usr/share/java"/>
+    <copy file="servlet-api.jar" todir="/usr/share/java"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 

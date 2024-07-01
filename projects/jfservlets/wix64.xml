@@ -26,6 +26,7 @@
 				</File>
         <File Id="jfservletskeymgr.exe" Source="jfservlets-keymgr.exe" />
         <File Id="jfservlets.jar" Source="jfservlets.jar" />
+        <File Id="servletapi.jar" Source="servlet-api.jar" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfServlets" DisplayName="jfServlets" Description="jfServlets" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfServlets" Wait="yes" />
