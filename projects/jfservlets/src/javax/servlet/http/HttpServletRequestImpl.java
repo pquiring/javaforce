@@ -78,4 +78,18 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     return new BufferedReader(new InputStreamReader(getInputStream()));
   }
 
+  public String getRequestURI() {
+    return req.getURL();
+  }
+
+  public StringBuffer getRequestURL() {
+    StringBuffer str = new StringBuffer();
+    str.append(getScheme());
+    str.append("://");
+    str.append(getServerName());
+    str.append(":");
+    str.append(Integer.toString(getServerPort()));
+    str.append(req.getURL());
+    return str;
+  }
 }

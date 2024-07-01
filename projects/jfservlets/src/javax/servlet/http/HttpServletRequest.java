@@ -8,4 +8,6 @@ package javax.servlet.http;
 import javax.servlet.*;
 
 public interface HttpServletRequest extends ServletRequest {
+  public String getRequestURI();
+  public StringBuffer getRequestURL();
 }
