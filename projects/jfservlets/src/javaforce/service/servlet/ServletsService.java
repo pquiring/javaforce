@@ -7,6 +7,7 @@ package javaforce.service.servlet;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
+import java.util.concurrent.*;
 
 import javaforce.*;
 import javaforce.service.*;
@@ -303,7 +304,7 @@ public class ServletsService implements WebHandler {
   private void unregisterWAR(WAR war) {
     JFLog.log("unregisterWAR:" + war.toString());
     wars.remove(war);
-    war.delete = System.currentTimeMillis();
+    war.delete = System.currentTimeMillis() + (60 * 1000);
     synchronized (delete_lock) {
       delete_wars.add(war);
     }
@@ -371,11 +372,9 @@ public class ServletsService implements WebHandler {
   public class Watcher extends Thread {
     public void run() {
       while (active) {
-        WatchKey key = watch.poll();
-        if (key == null) {
-          JF.sleep(1000);
-          continue;
-        }
+        try {
+          WatchKey key = watch.poll(5 * 1000, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {}
         //wait 5 seconds
         boolean result = false;
         do {
@@ -383,7 +382,7 @@ public class ServletsService implements WebHandler {
             JF.sleep(1000);
           }
           result = deployWARs();
-        } while (!result);
+        } while (active && !result);
       }
     }
   }
@@ -395,12 +394,11 @@ public class ServletsService implements WebHandler {
           JF.sleep(1000);
         }
         WAR war;
-        //wait 60 seconds before attempting to delete war in working folder
-        long now_60_secs = System.currentTimeMillis() - (60 * 1000);
+        long now = System.currentTimeMillis();
         synchronized (delete_lock) {
           if (delete_wars.size() == 0) continue;
           war = delete_wars.get(0);
-          if (war.delete > now_60_secs) continue;
+          if (war.delete > now) continue;
           delete_wars.remove(0);
         }
         JFLog.log("delete:" + war.toString());
