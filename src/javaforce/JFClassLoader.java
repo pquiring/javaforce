@@ -17,7 +17,9 @@ import java.util.zip.*;
 
 public class JFClassLoader extends ClassLoader {
   private static class Folder {
-    HashMap<String, byte[]> files = new HashMap<>();
+    public Object lock = new Object();
+    public HashMap<String, byte[]> files = new HashMap<>();
+    public HashMap<String, Class<?>> classes = new HashMap<>();
   };
   private ArrayList<Folder> cp_folders = new ArrayList<>();
   private HashMap<String, Folder> cp_files = new HashMap<>();
@@ -30,6 +32,7 @@ public class JFClassLoader extends ClassLoader {
    *
    */
   public JFClassLoader(String[] classpath) {
+    super(ClassLoader.getPlatformClassLoader());
     File[] files = new File[classpath.length];
     int idx = 0;
     for(String cp : classpath) {
@@ -44,10 +47,21 @@ public class JFClassLoader extends ClassLoader {
    *
    */
   public JFClassLoader(File[] classpath) {
+    super(ClassLoader.getPlatformClassLoader());
     init(classpath);
   }
 
   private void init(File[] classpath) {
+    //need to get PlatformClassLoader
+    if (debug) {
+      JFLog.log("platform = " + ClassLoader.getPlatformClassLoader());
+      JFLog.log("system = " + ClassLoader.getSystemClassLoader());
+      ClassLoader parent = this.getParent();
+      while (parent != null) {
+        JFLog.log("parent = " + parent);
+        parent = parent.getParent();
+      }
+    }
     for(File file : classpath) {
       if (!file.exists()) {
         JFLog.log("Error:ClassPath element not found:" + file.getAbsolutePath());
@@ -88,8 +102,8 @@ public class JFClassLoader extends ClassLoader {
           FileInputStream fis = new FileInputStream(file);
           byte[] data = fis.readAllBytes();
           fis.close();
-          if (debug) JFLog.log("class:" + full);
           String cls = convert_class(full);
+          if (debug) JFLog.log("class:" + cls);
           file_folder.files.put(cls, data);
           cp_files.put(cls, file_folder);
         } else {
@@ -98,8 +112,8 @@ public class JFClassLoader extends ClassLoader {
           FileInputStream fis = new FileInputStream(file);
           byte[] data = fis.readAllBytes();
           fis.close();
-          if (debug) JFLog.log("resource:" + full);
           String cls = convert_resource(full);
+          if (debug) JFLog.log("resource:" + cls);
           file_folder.files.put(cls, data);
           cp_files.put(cls, file_folder);
         }
@@ -122,8 +136,8 @@ public class JFClassLoader extends ClassLoader {
           String full;
           if (path.length() == 0) full = name; else full = path + "/" + name;
           byte[] data = zis.readAllBytes();
-          if (debug) JFLog.log("jar.class:" + full);
           String cls = convert_class(full);
+          if (debug) JFLog.log("jar.class:" + cls);
           jar_folder.files.put(cls, data);
           cp_files.put(cls, jar_folder);
         }
@@ -151,33 +165,42 @@ public class JFClassLoader extends ClassLoader {
   }
 
   public Class<?> findClass(String name) throws ClassNotFoundException {
-    //try bootloader first
-    if (!name.startsWith("javaforce.")) {
-      try { return super.findClass(name); } catch (Exception e) {}
-    }
-    byte[] data = getData(name);
-    if (data == null) return null;
-    if (debug) JFLog.log("defineClass:" + data.length);
-    try {
-      return defineClass(name, data, 0, data.length);
-    } catch (Throwable t) {
-      JFLog.log(t);
-      return null;
-    }
+    return findClass(null, name);
   }
 
   public Class<?> findClass(String module_name, String name) {
     //try bootloader first
     if (!name.startsWith("javaforce.")) {
-      try { return super.findClass(module_name, name); } catch (Exception e) {}
+      try {
+        Class<?> cls;
+        if (module_name == null)
+          cls = super.findClass(name);
+        else
+          cls = super.findClass(module_name, name);
+        if (cls != null) {
+          if (debug) JFLog.log("bootClass:" + name);
+          return cls;
+        }
+      } catch (Exception e) {}
     }
-    byte[] data = getData(name);
-    if (data == null) return null;
-    try {
-      return defineClass(name, data, 0, data.length);
-    } catch (Throwable t) {
-      JFLog.log(t);
-      return null;
+    Folder folder = cp_files.get(name);
+    if (folder == null) return null;
+    synchronized (folder.lock) {
+      Class<?> cls = folder.classes.get(name);
+      if (cls != null) return cls;
+      byte[] data = getData(name);
+      if (data == null) return null;
+      if (debug) JFLog.log("defineClass:" + name);
+      try {
+        cls = defineClass(name, data, 0, data.length);
+        if (cls != null) {
+          folder.classes.put(name, cls);
+        }
+        return cls;
+      } catch (Throwable t) {
+        JFLog.log(t);
+        return null;
+      }
     }
   }
 
@@ -218,5 +241,46 @@ public class JFClassLoader extends ClassLoader {
 
   public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
     return super.loadClass(name, resolve);
+  }
+
+  public static String inspectClass(Class<?> cls, boolean recursive) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("inspectClass{");
+    sb.append("class=" + cls);
+    Class<?> supercls = cls.getSuperclass();
+    if (supercls != null) {
+      sb.append(",super=" + supercls);
+    }
+    Object[] ifaces = cls.getInterfaces();
+    for(Object iface : ifaces) {
+      sb.append(",interface=" + iface);
+    }
+    sb.append("}");
+    if (recursive && supercls != null) {
+      sb.append(inspectClass(supercls, recursive));
+    }
+    return sb.toString();
+  }
+
+  public static String inspectObject(Object obj, boolean recursive) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("inspectObject{object=" + obj);
+    Class<?> cls = obj.getClass();
+    sb.append(",class=" + cls);
+    Class<?> supercls = cls.getSuperclass();
+    sb.append(",super=" + supercls);
+    Object[] ifaces = cls.getInterfaces();
+    for(Object iface : ifaces) {
+      sb.append(",interface=" + iface);
+    }
+    sb.append("}");
+    if (recursive && supercls != null) {
+      sb.append(inspectClass(supercls, recursive));
+    }
+    return sb.toString();
+  }
+
+  public String toString() {
+    return "JFClassLoader";
   }
 }

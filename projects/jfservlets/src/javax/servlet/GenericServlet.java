@@ -4,7 +4,9 @@ package javax.servlet;
  *
  */
 
-public abstract class GenericServlet implements Servlet, ServletConfig {
+import java.io.*;
+
+public abstract class GenericServlet implements Servlet, ServletConfig, Serializable {
   public void destroy() {}
   public void init() {}
   public void init(ServletConfig cfg) {}

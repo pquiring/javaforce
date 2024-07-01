@@ -5,29 +5,28 @@ package javax.servlet.http;
  * @author peter.quiring
  */
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.*;
+
 import javax.servlet.*;
 
-import javaforce.service.*;
-
 public class HttpServletResponseImpl implements HttpServletResponse {
-  private WebResponse res;
+  private HashMap<String, Object> res;
 
-  public HttpServletResponseImpl(WebResponse res) {
+  public HttpServletResponseImpl(HashMap<String, Object> res) {
     this.res = res;
   }
 
   public void setContentType(String mime) {
-    res.setContentType(mime);
+    res.put("ContentType", mime);
   }
 
   public void setContentLength(int length) {
-    res.setContentLength(length);
+    res.put("ContentLength", length);
   }
 
   public ServletOutputStream getOutputStream() {
-    return new ServletOutputStream(res.getOutputStream());
+    return new ServletOutputStream((OutputStream)res.get("OutputStream"));
   }
 
   public PrintWriter getWriter() {
@@ -35,10 +34,10 @@ public class HttpServletResponseImpl implements HttpServletResponse {
   }
 
   public String getContentType() {
-    return res.getContentType();
+    return (String)res.get("ContentType");
   }
 
   public void flushBuffer() {
-    try {res.flush();} catch (Exception e) {}
+    //TODO
   }
 }

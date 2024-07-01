@@ -9,9 +9,9 @@ package javax.servlet;
  */
 
 public interface Servlet {
-  public void destroy();
-  public ServletConfig getServletConfig();
-  public String getServletInfo();
-  public void init(ServletConfig cfg);
-  public void service(ServletRequest request, ServletResponse response);
+  void destroy();
+  ServletConfig getServletConfig();
+  String getServletInfo();
+  void init(ServletConfig cfg);
+  void service(ServletRequest request, ServletResponse response);
 }

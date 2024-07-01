@@ -6,48 +6,51 @@ package javax.servlet.http;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javax.servlet.*;
 
-import javaforce.service.*;
 
 public class HttpServletRequestImpl implements HttpServletRequest {
-  private WebRequest req;
+  private HashMap<String, Object> req;
+  private HashMap<String, String> params;
 
-  public HttpServletRequestImpl(WebRequest req) {
+  @SuppressWarnings("unchecked")
+  public HttpServletRequestImpl(HashMap<String, Object> req) {
     this.req = req;
+    params = (HashMap<String, String>)req.get("params");
   }
 
   public int getLocalPort() {
-    return req.getLocalPort();
+    return (Integer)req.get("LocalPort");
   }
 
   public String getLocalAddr() {
-    return req.getLocalAddr();
+    return (String)req.get("LocalAddr");
   }
 
   public boolean isSecure() {
-    return req.isSecure();
+    return (Boolean)req.get("isSecure");
   }
 
   public int getServerPort() {
-    return req.getLocalPort();
+    return (Integer)req.get("LocalPort");
   }
 
   public String getServerName() {
-    return req.getLocalAddr();
+    return (String)req.get("LocalAddr");
   }
 
   public int getRemotePort() {
-    return req.getRemotePort();
+    return (Integer)req.get("RemotePort");
   }
 
   public String getRemoteAddr() {
-    return req.getRemoteAddr();
+    return (String)req.get("RemoteAddr");
   }
 
   public String getRemoteHost() {
-    return req.getRemoteAddr();
+    return (String)req.get("RemoteAddr");
   }
 
   public String getScheme() {
@@ -59,19 +62,19 @@ public class HttpServletRequestImpl implements HttpServletRequest {
   }
 
   public String getParameter(String name) {
-    return req.getParameter(name);
+    return params.get(name);
   }
 
   public int getContentLength() {
-    return req.getContentLength();
+    return (Integer)req.get("ContentLength");
   }
 
   public String getContentType() {
-    return req.getContentType();
+    return (String)req.get("ContentType");
   }
 
   public ServletInputStream getInputStream() {
-    return new ServletInputStream(req.getInputStream());
+    return new ServletInputStream((InputStream)req.get("InputStream"));
   }
 
   public BufferedReader getReader() {
@@ -79,7 +82,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
   }
 
   public String getRequestURI() {
-    return req.getURL();
+    return (String)req.get("URL");
   }
 
   public StringBuffer getRequestURL() {
@@ -89,7 +92,11 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     str.append(getServerName());
     str.append(":");
     str.append(Integer.toString(getServerPort()));
-    str.append(req.getURL());
+    str.append(getRequestURI());
     return str;
+  }
+
+  public String getMethod() {
+    return (String)req.get("Method");
   }
 }

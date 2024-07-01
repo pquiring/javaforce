@@ -21,6 +21,7 @@ public class JFLog {
   }
   private static HashMap<Integer, LogInstance> list = new HashMap<Integer, LogInstance>();
   private static boolean useTimestamp = false;
+  private static boolean showCause = false;
   private static long timestampBase;
 
   //recommended trace ids
@@ -148,6 +149,11 @@ public class JFLog {
   public static void enableTimestamp(boolean state) {
     timestampBase = System.nanoTime() / 1000000;
     useTimestamp = state;
+  }
+
+  /** Display cause of Exceptions in log(Throwable t). */
+  public static void setShowCause(boolean state) {
+    showCause = state;
   }
 
   public static boolean log(String msg) {
@@ -298,7 +304,14 @@ public class JFLog {
         buf.append(JF.eol);
       }
     }
-    return log(id, buf.toString());
+    boolean result = log(id, buf.toString());
+    if (showCause) {
+      Throwable c = t.getCause();
+      if (c != null) {
+        log(id, c);
+      }
+    }
+    return result;
   }
 
   public static boolean log(String msg, Throwable t) {

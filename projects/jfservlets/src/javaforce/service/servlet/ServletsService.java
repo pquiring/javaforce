@@ -12,12 +12,9 @@ import java.util.concurrent.*;
 import javaforce.*;
 import javaforce.service.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 public class ServletsService implements WebHandler {
   private static ServletsService server;
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   private WebServer http;
   private WebServer https;
@@ -36,6 +33,11 @@ public class ServletsService implements WebHandler {
   private boolean active;
 
   public static void serviceStart(String[] args) {
+    if (args.length > 0) {
+      debug = args[0].equals("debug");
+      WAR.debug = true;
+      JFClassLoader.debug = debug;
+    }
     server = new ServletsService();
     server.start();
   }
@@ -159,19 +161,21 @@ public class ServletsService implements WebHandler {
       return;
     }
     //find servlet within war file using url pattern matching
-    HttpServlet servlet = war.getServletByURL("/" + servlet_name);
+    WAR.Servlet servlet = war.getServletByURL("/" + servlet_name);
     if (servlet == null) {
       JFLog.log("servlet not found:" + servlet_name);
       do404(req, res);
       return;
     }
-    //build servlet request/response
-    HttpServletRequest http_req = new HttpServletRequestImpl(req);
-    HttpServletResponse http_res = new HttpServletResponseImpl(res);
-    switch (method) {
-      case "GET": servlet.doGet(http_req, http_res); break;
-      case "POST": servlet.doPost(http_req, http_res); break;
-      default: do501(req, res); break;
+    try {
+      HashMap<String, Object> req_map = req.toHashMap();
+      Object http_req = servlet.req_ctor.newInstance(req_map);
+      HashMap<String, Object> res_map = res.toHashMap();
+      Object http_res = servlet.res_ctor.newInstance(res_map);
+      servlet.service.invoke(servlet.servlet, http_req, http_res);
+      res.fromHashMap(res_map);
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 
@@ -344,7 +348,12 @@ public class ServletsService implements WebHandler {
         unregisterWAR(war);
         continue;
       }
-      WAR war = WAR.load(folder.getAbsolutePath());
+      WAR war = null;
+      try {
+        war = WAR.load(folder.getAbsolutePath());
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
       if (war != null) {
         registerWAR(war);
       } else {

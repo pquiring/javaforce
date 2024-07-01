@@ -122,4 +122,19 @@ public class WebResponse extends OutputStream {
     setStatus(301, "Moved");
     addHeader("Location: " + url);
   }
+
+  public HashMap<String, Object> toHashMap() {
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("ContentType", getContentType());
+    map.put("OutputStream", getOutputStream());
+    return map;
+  }
+
+  public void fromHashMap(HashMap<String, Object> map) {
+    setContentType((String)map.get("ContentType"));
+    Integer length = (Integer)map.get("ContentLength");
+    if (length != null) {
+      setContentLength(length);
+    }
+  }
 }

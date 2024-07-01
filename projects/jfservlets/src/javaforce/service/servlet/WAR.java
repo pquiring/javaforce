@@ -6,10 +6,8 @@ package javaforce.service.servlet;
  */
 
 import java.io.*;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
 import java.util.*;
-
-import javax.servlet.http.*;
 
 import javaforce.*;
 
@@ -17,7 +15,7 @@ public class WAR {
   public String name;
   public XML web;
   public JFClassLoader loader;
-  public ArrayList<HttpServlet> servlets;
+  public ArrayList<Servlet> servlets;
   public Object lock = new Object();
   public boolean registered;
   public String welcome = "index.html";
@@ -29,7 +27,20 @@ public class WAR {
 
   private WAR() {}
 
+  public static class Servlet {
+    //must use reflection to get servlet from loader
+    public Object servlet;
+    public Method service;
+    public Class<?> req;
+    public Constructor<?> req_ctor;
+    public Class<?> res;
+    public Constructor<?> res_ctor;
+    public String name;
+    public String url;
+  }
+
   public static WAR load(String folder) {
+    JFLog.log("WAR:load:" + folder);
     if (JF.isWindows()) {
       folder = folder.replaceAll("\\\\", "/");
     }
@@ -40,7 +51,7 @@ public class WAR {
     war.loader = makeClassLoader(folder);
     war.folder = folder;
 
-    HttpServlet servlet = null;
+    Servlet servlet = null;
     String name = null;
 
     XML xml = new XML();
@@ -60,12 +71,35 @@ public class WAR {
               case "servlet-class":
                 try {
                   String cls_name = child.content;
-                  Class<?> cls = war.loader.findClass(cls_name);
-                  if (cls == null) throw new Exception("WAR:class not found:" + cls_name);
-                  Constructor<?> ctor = cls.getConstructor();
-                  if (ctor == null) throw new Exception("WAR:ctor not found:" + cls_name);
-                  servlet = (HttpServlet)ctor.newInstance();
+                  servlet = new Servlet();
                   servlet.name = name;
+                  {
+                    Class<?> cls = war.loader.findClass(cls_name);
+                    if (cls == null) throw new Exception("WAR:class not found:" + cls_name);
+                    Constructor<?> ctor = cls.getConstructor();
+                    if (ctor == null) throw new Exception("WAR:ctor not found:" + cls_name);
+                    servlet.servlet = ctor.newInstance();
+                    for(Method method : cls.getMethods()) {
+                      if (method.getName().equals("service")) {
+                        servlet.service = method;
+                      }
+                    }
+                    if (servlet.service == null) {
+                      JFLog.log("Error:service not found:" + name);
+                    }
+                  }
+                  {
+                    Class<?> cls = war.loader.findClass("javax.servlet.http.HttpServletRequestImpl");
+                    if (cls == null) throw new Exception("WAR:class not found:" + "HttpServletRequestImpl");
+                    servlet.req = cls;
+                    servlet.req_ctor = cls.getConstructors()[0];
+                  }
+                  {
+                    Class<?> cls = war.loader.findClass("javax.servlet.http.HttpServletResponseImpl");
+                    if (cls == null) throw new Exception("WAR:class not found:" + "HttpServletResponseImpl");
+                    servlet.res = cls;
+                    servlet.res_ctor = cls.getConstructors()[0];
+                  }
                   war.servlets.add(servlet);
                 } catch (Exception e) {
                   JFLog.log(e);
@@ -118,7 +152,13 @@ public class WAR {
   private static JFClassLoader makeClassLoader(String folder) {
     File lib = new File(folder + "/WEB-INF/lib");
     File classes = new File(folder + "/WEB-INF/classes");
-    return new JFClassLoader(new File[] {lib, classes});
+    File servlets = null;
+    if (JF.isWindows()) {
+      servlets = new File(System.getProperty("java.app.home") + "/servlet-api.jar");
+    } else {
+      servlets = new File("/usr/share/java/servlet-api.jar");
+    }
+    return new JFClassLoader(new File[] {lib, classes, servlets});
   }
 
   public byte[] getStaticResource(String name) {
@@ -137,15 +177,15 @@ public class WAR {
     return null;
   }
 
-  public HttpServlet getServletByName(String name) {
-    for(HttpServlet servlet : servlets) {
+  public Servlet getServletByName(String name) {
+    for(Servlet servlet : servlets) {
       if (servlet.name.equals(name)) return servlet;
     }
     return null;
   }
 
-  public HttpServlet getServletByURL(String url) {
-    for(HttpServlet servlet : servlets) {
+  public Servlet getServletByURL(String url) {
+    for(Servlet servlet : servlets) {
       if (JF.isWildcard(servlet.url)) {
         if (JF.wildcardCompare(url, servlet.url, true)) {
           return servlet;

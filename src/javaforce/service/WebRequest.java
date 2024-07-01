@@ -151,4 +151,20 @@ public class WebRequest {
   public boolean isSecure() {
     return secure;
   }
+
+  public HashMap<String, Object> toHashMap() {
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("params", params.getHashMap());
+    map.put("LocalPort", getLocalPort());
+    map.put("LocalAddr", getLocalAddr());
+    map.put("isSecure", isSecure());
+    map.put("RemotePort", getRemotePort());
+    map.put("RemoteAddr", getRemoteAddr());
+    map.put("ContentType", getContentType());
+    map.put("ContentLength", getContentLength());
+    map.put("InputStream", getInputStream());
+    map.put("URL", getURL());
+    map.put("Method", getMethod());
+    return map;
+  }
 };

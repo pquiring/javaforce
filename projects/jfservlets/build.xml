@@ -27,11 +27,11 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
-      <fileset dir="." includes="*.png"/>
-      <manifest>
-        <attribute name="Main-Class" value="core.ServletsService"/>
-      </manifest>
+    <jar destfile="${app}.jar">
+      <fileset dir="${build}" includes="javaforce/**/*.class"/>
+    </jar>
+    <jar destfile="servlet-api.jar">
+      <fileset dir="${build}" includes="javax/**/*.class"/>
     </jar>
   </target>
 
