@@ -63,9 +63,9 @@ public class ServletsService implements WebHandler {
     initSecureWebKeys();
     https = new WebServer();
     https.start(this, Settings.current.https_port, keys);
-    watchDeploy();
-    deployWARs();
     registerWARs();
+    deployWARs();
+    watchDeploy();
     deleter = new Deleter();
     deleter.start();
   }
