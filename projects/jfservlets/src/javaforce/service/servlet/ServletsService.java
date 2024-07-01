@@ -239,20 +239,18 @@ public class ServletsService implements WebHandler {
 
   /** Deploy all files in /deploy */
   private boolean deployWARs() {
-    JFLog.log("deployWARs");
-    File[] files = new File(Paths.deployPath).listFiles();
+    File[] files = new File(Paths.deployPath).listFiles((file) -> {return file.getName().endsWith(".war");});
     if (files == null || files.length == 0) return true;
+    JFLog.log("deployWARs");
     boolean result = true;
     for(File file : files) {
       String name = file.getName();
-      if (name.endsWith(".war")) {
-        JFLog.log("deployWARs:found war:" + name);
-        if (zipComplete(file)) {
-          deployWAR(file);
-        } else {
-          JFLog.log("deployWARs:incomplete war:" + name);
-          result = false;
-        }
+      JFLog.log("deployWARs:found war:" + name);
+      if (zipComplete(file)) {
+        deployWAR(file);
+      } else {
+        JFLog.log("deployWARs:incomplete war:" + name);
+        result = false;
       }
     }
     return result;
