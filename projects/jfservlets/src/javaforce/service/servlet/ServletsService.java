@@ -48,8 +48,10 @@ public class ServletsService implements WebHandler {
   public void start() {
     active = true;
     Paths.init();
-    JFLog.append(Paths.logsPath + "/system.log", true);
-    JFLog.setRetention(30);
+    JFLog.append(Config.LOG_SYSTEM, Paths.logsPath + "/system.log", true);
+    JFLog.setRetention(Config.LOG_SYSTEM, 30);
+    JFLog.append(Config.LOG_ACCESS, Paths.logsPath + "/access.log", true);
+    JFLog.setRetention(Config.LOG_ACCESS, 30);
     JFLog.log("Starting jfServlets/" + Config.version + "...");
     Config.load();
     Settings.load();
@@ -108,7 +110,10 @@ public class ServletsService implements WebHandler {
     //URL = /war/servlet?args
     // or
     //URL = /war/static_file.ext
-    JFLog.log("doGet:" + req.getURL());
+    String method = req.getMethod();
+    String client_addr = req.getRemoteAddr();
+    int client_port = req.getRemotePort();
+    JFLog.log(Config.LOG_ACCESS, method + ":" + client_addr + ":" + client_port + ":" + req.getURL());
     String url = req.getURL();
     if (url.indexOf("..") != -1) {
       do400(req, res);
@@ -162,7 +167,6 @@ public class ServletsService implements WebHandler {
     //build servlet request/response
     HttpServletRequest http_req = new HttpServletRequestImpl(req);
     HttpServletResponse http_res = new HttpServletResponseImpl(res);
-    String method = req.getMethod();
     switch (method) {
       case "GET": servlet.doGet(http_req, http_res); break;
       case "POST": servlet.doPost(http_req, http_res); break;

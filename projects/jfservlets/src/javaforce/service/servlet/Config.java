@@ -16,6 +16,9 @@ public class Config implements Serializable {
 
   public static final String version = "0.1";
 
+  public static final int LOG_SYSTEM = 0;
+  public static final int LOG_ACCESS = 1;
+
   public Config() {
     valid();
   }
