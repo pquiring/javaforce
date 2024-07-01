@@ -24,7 +24,7 @@
           <fire:FirewallException Id="FirewallRule3" Name="jfServlets_HTTP" Protocol="tcp" Port="80" Scope="any" IgnoreFailure="yes" Profile="all" />
           <fire:FirewallException Id="FirewallRule4" Name="jfServlets_HTTPS" Protocol="tcp" Port="443" Scope="any" IgnoreFailure="yes" Profile="all" />
 				</File>
-        <File Id="keymgr.exe" Source="keymgr.exe" />
+        <File Id="jfservletskeymgr.exe" Source="jfservlets-keymgr.exe" />
         <File Id="jfservlets.jar" Source="jfservlets.jar" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfServlets" DisplayName="jfServlets" Description="jfServlets" Start="auto" ErrorControl="normal" />
