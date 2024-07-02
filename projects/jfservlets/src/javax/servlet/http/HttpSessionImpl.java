@@ -21,4 +21,8 @@ public class HttpSessionImpl implements HttpSession {
   public void setAttribute(String name, Object value) {
     props.put(name, value);
   }
+
+  public void removeAttribute(String name) {
+    props.remove(name);
+  }
 }
