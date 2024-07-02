@@ -41,15 +41,15 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 function debian {
-  apt --yes install g++ default-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev libvirt-dev zlib1g-dev sudo
+  apt --yes install g++ default-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev libvirt-dev zlib1g-dev sudo libv4l-0
 }
 
 function fedora {
-  dnf -y install gcc-c++ java-17-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel libvirt-devel ncurses-devel rpm-build
+  dnf -y install gcc-c++ java-17-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel libvirt-devel ncurses-devel rpm-build libv4l
 }
 
 function arch {
-  pacman -S --noconfirm jdk17-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt
+  pacman -S --noconfirm jdk17-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
 }
 
 function freebsd {
