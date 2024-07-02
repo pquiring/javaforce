@@ -60,7 +60,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
   }
 
   public String getProtocol() {
-    return "HTTP/1.0";  //TODO : 2.0?
+    return "HTTP/1.1";  //TODO : 2.0?
   }
 
   public String getParameter(String name) {

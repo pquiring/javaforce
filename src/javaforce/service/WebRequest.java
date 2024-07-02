@@ -121,7 +121,7 @@ public class WebRequest {
       int idx = p.indexOf('=');
       if (idx == -1) continue;
       String key = p.substring(0, idx);
-      String value = p.substring(0, idx);
+      String value = p.substring(idx + 1);
       params.put(key, JF.decodeURL(value));
     }
   }
