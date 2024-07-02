@@ -20,7 +20,8 @@ jfdns - DNS Service
 jfdvr - DVR Service (IP Camera Recording)
 jfedit - Multi-Tabbed Text Editor
 jffile - File Manager for jfLinux
-jfftp - FTP Utility
+jfftp-client - FTP Client
+jfftp-server - FTP Server
 jfhelp - Help System for jfLinux
 jfhex - Hex Editor
 jfhexbig - Hex Editor (Sector based for Large files)
@@ -41,6 +42,7 @@ jfpasswords - Passwords Manager
 jfpbx - VoIP PBX Service
 jfphone - VoIP Phone
 jfplcbackup - PLC Backup/Restore Utility
+jfpop3 - POP3 Service
 jfprojector - Desktop/Audio Projector
 jfproxy - Proxy Service
 jfqemu - QEMU Manager
@@ -48,7 +50,11 @@ jfrecordcamera - Record Camera Utility
 jfrecorddesktop - Record Desktop Utility
 jfremote - VNC/RDP Client
 jfrepo - Linux Repository Selection Utility for jfLinux
+jfservlets - WebServer supporting javax.servlet.http.HttpServlet
+jfsmtp - SMTP Service
+jfsmtprelay - POP3 to SMTP Relay Service
 jfsocks - SOCKS Service
+jfssh - SSH Service
 jfstun - STUN Service
 jftaskmgr - Task Manager for jfLinux
 jfterm - Telnet/SSH Client
