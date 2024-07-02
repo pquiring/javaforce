@@ -176,7 +176,7 @@ public class ServletsService implements WebHandler {
       Object http_res = servlet.res_ctor.newInstance(res_map);
       servlet.service.invoke(servlet.servlet, http_req, http_res);
       res.fromHashMap(res_map);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       JFLog.log(e);
     }
   }
