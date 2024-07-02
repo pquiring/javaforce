@@ -1,0 +1,5 @@
+/usr/bin/jfservlets
+/usr/bin/jfservlets-keymgr
+/usr/share/java/jfservlets.jar
+/usr/share/java/servlet-api.jar
+/lib/systemd/system/jfservlets.service
