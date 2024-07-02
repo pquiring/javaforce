@@ -44,6 +44,11 @@ public class WAR {
     if (JF.isWindows()) {
       folder = folder.replaceAll("\\\\", "/");
     }
+    String web_xml = folder + "/WEB-INF/web.xml";
+    if (!new File(web_xml).exists()) {
+      JFLog.log("Error:WEB-INF/web.xml missing");
+      return null;
+    }
     WAR war = new WAR();
     war.name = getName(folder);
     war.install = getInstallDate(folder);
@@ -55,7 +60,7 @@ public class WAR {
     String name = null;
 
     XML xml = new XML();
-    xml.read(folder + "/WEB-INF/web.xml");
+    xml.read(web_xml);
     XML.XMLTag root = xml.root;
 
     for(XML.XMLTag tag : root.children) {
@@ -66,7 +71,7 @@ public class WAR {
           for(XML.XMLTag child : tag.children) {
             switch (child.name) {
               case "servlet-name":
-                name = child.content;
+                name = child.content.trim();
                 break;
               case "servlet-class":
                 try {
@@ -79,7 +84,10 @@ public class WAR {
                     Constructor<?> ctor = cls.getConstructor();
                     if (ctor == null) throw new Exception("WAR:ctor not found:" + cls_name);
                     servlet.servlet = ctor.newInstance();
-                    for(Method method : cls.getMethods()) {
+                    Method[] methods = cls.getMethods();
+                    for(Method method : methods) {
+                      JFLog.log("method:" + method);
+                      //TODO : need to check args too
                       if (method.getName().equals("service")) {
                         servlet.service = method;
                       }
@@ -100,8 +108,9 @@ public class WAR {
                     servlet.res = cls;
                     servlet.res_ctor = cls.getConstructors()[0];
                   }
+                  JFLog.log("WAR:servlet:" + servlet.name);
                   war.servlets.add(servlet);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                   JFLog.log(e);
                 }
                 break;
@@ -114,14 +123,15 @@ public class WAR {
           for(XML.XMLTag child : tag.children) {
             switch (child.name) {
               case "servlet-name":
-                servlet = war.getServletByName(child.content);
+                name = child.content.trim();
+                servlet = war.getServletByName(name);
                 if (servlet == null) {
-                  JFLog.log("Error:Servlet not found:" + child.content);
+                  JFLog.log("Error:Servlet not found:" + name);
                 }
                 break;
               case "url-pattern":
                 if (servlet != null) {
-                  servlet.url = child.content;
+                  servlet.url = child.content.trim();
                 }
                 break;
             }

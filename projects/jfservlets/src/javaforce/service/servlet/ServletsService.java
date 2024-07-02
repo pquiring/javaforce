@@ -353,7 +353,7 @@ public class ServletsService implements WebHandler {
       WAR war = null;
       try {
         war = WAR.load(folder.getAbsolutePath());
-      } catch (Exception e) {
+      } catch (Throwable e) {
         JFLog.log(e);
       }
       if (war != null) {

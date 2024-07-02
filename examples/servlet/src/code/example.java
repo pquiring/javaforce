@@ -14,6 +14,7 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import javaforce.*;
 
 public class example extends HttpServlet {
 
@@ -64,7 +65,8 @@ public class example extends HttpServlet {
     try {
       PrintWriter out = response.getWriter();
       StringBuilder sb = new StringBuilder();
-      sb.append("Example Servlet");
+      sb.append("Example Servlet<br><br>");
+      sb.append("JavaForce/" + JF.getVersion() + "<br>");
       out.print(sb.toString());
     } catch (Exception e) {
       try {
