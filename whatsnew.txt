@@ -1,5 +1,9 @@
 What's new...
 
+July 2/2024 : JF/65.0
+ - jfServlets/0.1
+   - new WebServer semi-compliant with Java Servlets (javax.servlet.http.HttpServlet)
+
 Jun 26/2024 : JF/64.2
  - jfMonitor/0.10
    - bring settings.cfg back to change web ports
