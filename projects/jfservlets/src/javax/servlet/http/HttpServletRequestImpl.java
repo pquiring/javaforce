@@ -14,11 +14,13 @@ import javax.servlet.*;
 public class HttpServletRequestImpl implements HttpServletRequest {
   private HashMap<String, Object> req;
   private HashMap<String, String> params;
+  private HttpSession session;
 
   @SuppressWarnings("unchecked")
   public HttpServletRequestImpl(HashMap<String, Object> req) {
     this.req = req;
     params = (HashMap<String, String>)req.get("params");
+    session = new HttpSession();
   }
 
   public int getLocalPort() {
@@ -98,5 +100,10 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
   public String getMethod() {
     return (String)req.get("Method");
+  }
+
+  public HttpSession getSession() {
+    //TODO : this session should be based on cookie value stored in client
+    return session;
   }
 }

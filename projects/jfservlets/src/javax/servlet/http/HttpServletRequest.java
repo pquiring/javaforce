@@ -11,4 +11,5 @@ public interface HttpServletRequest extends ServletRequest {
   public String getRequestURI();
   public StringBuffer getRequestURL();
   public String getMethod();
+  public HttpSession getSession();
 }
