@@ -8,7 +8,11 @@ package javax.servlet.http;
 import java.util.*;
 
 public class HttpSession {
-  private HashMap<String, Object> props = new HashMap<>();
+  private HashMap<String, Object> props;
+
+  public HttpSession(HashMap<String, Object> map) {
+    props = map;
+  }
 
   public Object getAttribute(String name) {
     return props.get(name);

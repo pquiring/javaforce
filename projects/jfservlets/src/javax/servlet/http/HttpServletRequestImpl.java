@@ -20,7 +20,7 @@ public class HttpServletRequestImpl implements HttpServletRequest {
   public HttpServletRequestImpl(HashMap<String, Object> req) {
     this.req = req;
     params = (HashMap<String, String>)req.get("params");
-    session = new HttpSession();
+    session = new HttpSession((HashMap<String, Object>)req.get("session"));
   }
 
   public int getLocalPort() {

@@ -86,9 +86,8 @@ public class WAR {
                     servlet.servlet = ctor.newInstance();
                     Method[] methods = cls.getMethods();
                     for(Method method : methods) {
-                      JFLog.log("method:" + method);
-                      //TODO : need to check args too
-                      if (method.getName().equals("service")) {
+                      //JFLog.log("method:" + method.getName() + ":" + method.toString());
+                      if (method.toString().equals("public void javax.servlet.http.HttpServlet.service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)")) {
                         servlet.service = method;
                       }
                     }

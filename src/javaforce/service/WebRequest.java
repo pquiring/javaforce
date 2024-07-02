@@ -165,6 +165,7 @@ public class WebRequest {
     map.put("InputStream", getInputStream());
     map.put("URL", getURL());
     map.put("Method", getMethod());
+    map.put("session", session.props);
     return map;
   }
 };
