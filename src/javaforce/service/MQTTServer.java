@@ -2,8 +2,6 @@ package javaforce.service;
 
 /** MQTTBroker service
  *
- * NOT Supported : PUBLISH.RETAIN
- *
  * @author pquiring
  */
 
@@ -24,13 +22,24 @@ public class MQTTServer extends Thread {
 
   private static class Topic {
     private String name;
+    private boolean retain;
+    private byte[] pkt;
     private ArrayList<Worker> subs = new ArrayList<>();
     private Object lock = new Object();
     public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
       this.name = name;
     }
+    public void setRetain(boolean state) {
+      retain = state;
+      if (!state) {
+        pkt = null;
+      }
+    }
     public void publish(byte[] pkt) {
+      if (retain) {
+        this.pkt = pkt.clone();
+      }
       synchronized (lock) {
         for(Worker worker : subs) {
           try {worker.publish(pkt);} catch (Exception e) {}
@@ -40,6 +49,9 @@ public class MQTTServer extends Thread {
     public void subscribe(Worker worker) {
       synchronized (lock) {
         subs.add(worker);
+      }
+      if (retain) {
+        try {worker.publish(pkt);} catch (Exception e) {}
       }
     }
     public void unsubscribe(Worker worker) {
@@ -270,6 +282,7 @@ public class MQTTServer extends Thread {
           msg = new String(packet, msgPosition, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
           Topic topic = getTopic(topic_name);
+          topic.setRetain(retain);
           topic.publish(packet);
           switch (qos) {
             case QOS_1: {
