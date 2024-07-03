@@ -2,6 +2,8 @@ package javaforce.service;
 
 /** MQTTBroker service
  *
+ * NOT Supported : PUBLISH.RETAIN
+ *
  * @author pquiring
  */
 
@@ -24,6 +26,7 @@ public class MQTTServer extends Thread {
     private String name;
     private ArrayList<Worker> subs = new ArrayList<>();
     private Object lock = new Object();
+    public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
       this.name = name;
     }
@@ -96,6 +99,15 @@ public class MQTTServer extends Thread {
     }
   }
 
+  private void unsubAll(Worker worker) {
+    synchronized (lock) {
+      Topic[] alltopics = (Topic[])topics.values().toArray(Topic.TopicArrayType);
+      for(Topic topic : alltopics) {
+        topic.unsubscribe(worker);
+      }
+    }
+  }
+
   private int getPacketLength(byte[] data, int length) {
     int multi = 1;
     int value = 0;
@@ -118,21 +130,6 @@ public class MQTTServer extends Thread {
     return (short)BE.getuint16(data, idPosition);
   }
 
-  private void setPacketLength(byte[] in, byte[] out) {
-    int value = in.length;
-    int pos = 1;
-    byte ebyte;
-    do {
-      ebyte = (byte)(value % 0x80);
-      value /= 0x80;
-      if (value > 0) {
-        ebyte |= 0x80;
-      }
-      out[pos++] = ebyte;
-    } while (value != 0);
-  }
-
-  /** max packet size = 127 bytes + 2 for header */
   private void setPacketLength(byte[] packet) {
     int value = packet.length - 2;
     int pos = 1;
@@ -147,8 +144,8 @@ public class MQTTServer extends Thread {
     } while (value > 0);
   }
 
-  private void setPacketID(byte[] data, short id) {
-    BE.setuint16(data, 2, id);
+  private void setPacketID(byte[] data, int offset, short id) {
+    BE.setuint16(data, offset, id);
   }
 
   private int getLengthBytes(int length) {
@@ -173,6 +170,11 @@ public class MQTTServer extends Thread {
   public static final byte CMD_PING = 12;
   public static final byte CMD_PONG = 13;
   public static final byte CMD_DISCONNECT = 14;
+
+  public static final byte QOS_0 = 0;
+  public static final byte QOS_1 = 1;
+  public static final byte QOS_2 = 2;
+  public static final byte QOS_3 = 3;  //not used
 
   private class Worker extends Thread {
     public Socket s;
@@ -225,12 +227,13 @@ public class MQTTServer extends Thread {
       } catch (Exception e) {
         JFLog.log(e);
       }
+      unsubAll(this);
       if (debug) JFLog.log("disconnect:" + ip);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
-      short id;
+      short id = 0;
       int idPosition;
       int topicPosition;
       int topicLength;
@@ -248,25 +251,46 @@ public class MQTTServer extends Thread {
           break;
         case CMD_PUBLISH: {
           //header, size, topic, id, msg
+          boolean dup = (packet[0] & 0x08) != 0;
+          byte qos = (byte)((packet[0] & 0x06) >> 1);
+          boolean retain = (packet[0] & 0x01) != 0;
           topicPosition = 1 + getLengthBytes(packetLength);
           topicLength = getTopicLength(packet, topicPosition);
           if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
           topic_name = new String(packet, topicPosition + 2, topicLength);
           idPosition = topicPosition + 2 + topicLength;
-          id = getPacketID(packet, idPosition);
-          if (debug) JFLog.log("id=" + id);
-          msgPosition = idPosition + 2;
+          msgPosition = idPosition;
+          if (qos > 0) {
+            id = getPacketID(packet, idPosition);
+            if (debug) JFLog.log("id=" + id);
+            msgPosition += 2;
+          }
           msgLength = totalLength - msgPosition;
           if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
           msg = new String(packet, msgPosition, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
           Topic topic = getTopic(topic_name);
           topic.publish(packet);
-          reply = new byte[4];
-          reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
-          //reply = header , size , id_hi, id_lo
-          setPacketLength(reply);
-          setPacketID(reply, id);
+          switch (qos) {
+            case QOS_1: {
+              //CMD_PUBLISH_ACK
+              reply = new byte[4];
+              reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
+              //reply = header , size , id_hi, id_lo
+              setPacketLength(reply);
+              setPacketID(reply, 2, id);
+              break;
+            }
+            case QOS_2: {
+              //CMD_PUBLISH_REC
+              reply = new byte[4];
+              reply[0] = (byte)(CMD_PUBLISH_REC << 4);
+              //reply = header , size , id_hi, id_lo
+              setPacketLength(reply);
+              setPacketID(reply, 2, id);
+              break;
+            }
+          }
           if (events != null) {
             events.message(topic_name, msg);
           }
@@ -279,7 +303,11 @@ public class MQTTServer extends Thread {
           //???
           break;
         case CMD_PUBLISH_REL:
-          //???
+          reply = new byte[4];
+          reply[0] = (byte)(CMD_PUBLISH_CMP << 4);
+          setPacketLength(reply);
+          id = getPacketID(packet, 2);
+          setPacketID(reply, 2, id);
           break;
         case CMD_PUBLISH_CMP:
           //???
@@ -304,7 +332,7 @@ public class MQTTServer extends Thread {
           //header , size , id_hi, id_lo, return_code=0
           reply[0] = (byte)(CMD_SUBSCRIBE_ACK << 4);
           setPacketLength(reply);
-          setPacketID(reply, id);
+          setPacketID(reply, 2, id);
           break;
         }
         case CMD_UNSUBSCRIBE: {
@@ -327,7 +355,7 @@ public class MQTTServer extends Thread {
           reply[0] = (byte)(CMD_UNSUBSCRIBE_ACK << 4);
           //header , size , id_hi, id_lo
           setPacketLength(reply);
-          setPacketID(reply, id);
+          setPacketID(reply, 2, id);
           break;
         }
         case CMD_PING:
@@ -339,10 +367,9 @@ public class MQTTServer extends Thread {
         case CMD_DISCONNECT:
           break;
       }
-      if (reply == null) {
-        throw new Exception("MQTT:bad cmd:" + cmd);
+      if (reply != null) {
+        send(reply);
       }
-      send(reply);
     }
     private void send(byte[] reply) throws Exception {
       os.write(reply);

@@ -2,6 +2,8 @@ package javaforce;
 
 /** MQTT client
  *
+ * https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html
+ *
  * @author peter.quiring
  */
 
@@ -54,15 +56,43 @@ public class MQTT {
     this.events = events;
   }
 
-  private int calcPacketLength(int topic_length, int msg_length) {
-    return -1;
+  private int calcPacketLength(boolean has_id, int topic_length, int msg_length) {
+    //does NOT include the header or length itself
+    int length = 0;
+    if (has_id) {
+      length += 2;  //id
+    }
+    if (topic_length > 0) {
+      length += 2;  //short length;
+      length += topic_length;
+    }
+    //TODO : has_id2 ???
+    if (msg_length > 0) {
+      length += msg_length;
+    }
+    return length;
   }
 
-  public void publish(String topic, String msg) {
-    int length = calcPacketLength(topic.length(), msg.length());
-    byte[] packet = new byte[length];
-    packet[0] = (byte)(CMD_PUBLISH << 4);
+  private short id = 0x0001;
 
+  public void publish(String topic, String msg) {
+    byte[] topic_bytes = topic.getBytes();
+    int topic_length = topic_bytes.length;
+    byte[] msg_bytes = msg.getBytes();
+    int msg_length = msg_bytes.length;
+    int length = calcPacketLength(true, topic_length, msg_length);
+    byte[] packet = new byte[length];
+    packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1);
+    setPacketLength(packet);
+    int pos = 1 + getLengthBytes(length);
+    setPacketID(packet, pos, id++);
+    pos += 2;
+    setTopicLength(packet, pos, (short)topic_length);
+    pos += 2;
+    System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
+    pos += topic_length;
+    System.arraycopy(msg_bytes, 0, packet, pos, msg_length);
+    pos += msg_length;
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -71,10 +101,19 @@ public class MQTT {
   }
 
   public void subscribe(String topic) {
-    int length = calcPacketLength(topic.length(), 0);
+    byte[] topic_bytes = topic.getBytes();
+    int topic_length = topic_bytes.length;
+    int length = calcPacketLength(true, topic_length, 0);
     byte[] packet = new byte[length];
     packet[0] = (byte)(CMD_SUBSCRIBE << 4);
-
+    setPacketLength(packet);
+    int pos = 1 + getLengthBytes(length);
+    setPacketID(packet, pos, id++);
+    pos += 2;
+    setTopicLength(packet, pos, (short)topic_length);
+    pos += 2;
+    System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
+    pos += topic_length;
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -83,10 +122,19 @@ public class MQTT {
   }
 
   public void unsubscribe(String topic) {
-    int length = calcPacketLength(topic.length(), 0);
+    byte[] topic_bytes = topic.getBytes();
+    int topic_length = topic_bytes.length;
+    int length = calcPacketLength(true, topic_length, 0);
     byte[] packet = new byte[length];
     packet[0] = (byte)(CMD_UNSUBSCRIBE << 4);
-
+    setPacketLength(packet);
+    int pos = 1 + getLengthBytes(length);
+    setPacketID(packet, pos, id++);
+    pos += 2;
+    setTopicLength(packet, pos, (short)topic_length);
+    pos += 2;
+    System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
+    pos += topic_length;
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -118,21 +166,6 @@ public class MQTT {
     return (short)BE.getuint16(data, idPosition);
   }
 
-  private void setPacketLength(byte[] in, byte[] out) {
-    int value = in.length;
-    int pos = 1;
-    byte ebyte;
-    do {
-      ebyte = (byte)(value % 0x80);
-      value /= 0x80;
-      if (value > 0) {
-        ebyte |= 0x80;
-      }
-      out[pos++] = ebyte;
-    } while (value != 0);
-  }
-
-  /** max packet size = 127 bytes + 2 for header */
   private void setPacketLength(byte[] packet) {
     int value = packet.length - 2;
     int pos = 1;
@@ -147,8 +180,12 @@ public class MQTT {
     } while (value > 0);
   }
 
-  private void setPacketID(byte[] data, short id) {
-    BE.setuint16(data, 2, id);
+  private void setPacketID(byte[] data, int offset, short id) {
+    BE.setuint16(data, offset, id);
+  }
+
+  private void setTopicLength(byte[] data, int offset, short length) {
+    BE.setuint16(data, offset, length);
   }
 
   private int getLengthBytes(int length) {
@@ -250,7 +287,7 @@ public class MQTT {
           reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
           //reply = header , size , id_hi, id_lo
           setPacketLength(reply);
-          setPacketID(reply, id);
+          setPacketID(reply, 2, id);
           if (events != null) {
             events.message(topic, msg);
           }
@@ -260,7 +297,8 @@ public class MQTT {
           //???
           break;
         case CMD_PUBLISH_REC:
-          //???
+          reply = new byte[4];
+          reply[0] = (byte)(CMD_PUBLISH_REL << 4);
           break;
         case CMD_PUBLISH_REL:
           //???
@@ -277,10 +315,9 @@ public class MQTT {
         case CMD_DISCONNECT:
           break;
       }
-      if (reply == null) {
-        throw new Exception("MQTT:bad cmd:" + cmd);
+      if (reply != null) {
+        send(reply);
       }
-      send(reply);
     }
     private void send(byte[] reply) throws Exception {
       os.write(reply);
