@@ -215,7 +215,7 @@ public class Port implements Serializable, Comparable<Port> {
 
   /** Compares ports for inclusion into new group. */
   public boolean equalsPort(Port o) {
-    if (mode.equals(o.mode)) return false;
+    if (!mode.equals(o.mode)) return false;
     if (!getVLANs().equals(o.getVLANs())) return false;
     if (!vlan.equals(o.vlan)) return false;
     return true;
