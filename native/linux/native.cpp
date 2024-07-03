@@ -88,7 +88,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   if (jawt == NULL) {
     jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
     if (jawt == NULL) {
-      printf("dlopen(libjawt.so) failed\n");
+      printf("Warning:dlopen(libjawt.so) unsuccessful\n");
       return JNI_FALSE;
     }
     _JAWT_GetAWT = (jboolean (JNICALL *)(JNIEnv *e, JAWT *c))dlsym(jawt, "JAWT_GetAWT");
@@ -98,7 +98,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     x11 = dlopen(clibX11_so, RTLD_LAZY | RTLD_GLOBAL);
     e->ReleaseStringUTFChars(libX11_so, clibX11_so);
     if (x11 == NULL) {
-      printf("dlopen(libX11.so) failed!\n");
+      printf("Warning:dlopen(libX11.so) unsuccessful\n");
       return JNI_FALSE;
     }
     _XOpenDisplay = (void* (*)(void*))dlsym(xgl, "XOpenDisplay");
@@ -109,7 +109,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     xgl = dlopen(clibgl_so, RTLD_LAZY | RTLD_GLOBAL);
     e->ReleaseStringUTFChars(libgl_so, clibgl_so);
     if (xgl == NULL) {
-      printf("dlopen(libGL.so) failed\n");
+      printf("Warning:dlopen(libGL.so) unsuccessful\n");
       return JNI_FALSE;
     }
     _glXCreateContext = (void* (*)(void*,void*,void*,int))dlsym(xgl, "glXCreateContext");
@@ -124,7 +124,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     v4l2 = dlopen(clibv4l2_so, RTLD_LAZY | RTLD_GLOBAL);
     e->ReleaseStringUTFChars(libv4l2_so, clibv4l2_so);
     if (v4l2 == NULL) {
-      printf("dlopen(libv4l2.so) failed\n");
+      printf("Warning:dlopen(libv4l2.so) unsuccessful\n");
       return JNI_FALSE;
     }
     _v4l2_open = (int (*)(const char *file, int oflag, ...))dlsym(v4l2, "v4l2_open");
