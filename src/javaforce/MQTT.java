@@ -299,6 +299,9 @@ public class MQTT {
         case CMD_PUBLISH_REC:
           reply = new byte[4];
           reply[0] = (byte)(CMD_PUBLISH_REL << 4);
+          setPacketLength(reply);
+          id = getPacketID(packet, 2);
+          setPacketID(reply, 2, id);
           break;
         case CMD_PUBLISH_REL:
           //???
