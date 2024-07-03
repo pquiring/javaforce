@@ -1,0 +1,11 @@
+[Unit]
+Description=JavaForce MQTT Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfmqtt
+ExecStop=/usr/bin/jfmqtt --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
