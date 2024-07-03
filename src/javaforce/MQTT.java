@@ -1,100 +1,100 @@
-package javaforce.service;
+package javaforce;
 
-/** MQTTBroker service
+/** MQTT client
  *
- * @author pquiring
+ * @author peter.quiring
  */
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javaforce.*;
+import javaforce.service.*;
 
-public class MQTTServer extends Thread {
+import static javaforce.service.MQTTServer.*;
+
+public class MQTT {
+  private Socket s;
+  private InputStream is;
+  private OutputStream os;
+  private MQTTEvents events;
+  private Worker worker;
+
+  public boolean connect(String host) {
+    return connect(host, 1883);
+  }
+
+  public boolean connect(String host, int port) {
+    disconnect();
+    try {
+      s = new Socket(host, port);
+      is = s.getInputStream();
+      os = s.getOutputStream();
+      worker = new Worker(s);
+      worker.start();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public void disconnect() {
+    if (s != null) {
+      try { s.close(); } catch (Exception e) {}
+      s = null;
+    }
+    if (worker != null) {
+      worker.cancel();
+      worker = null;
+    }
+  }
+
   public void setListener(MQTTEvents events) {
     this.events = events;
   }
 
-  public void cancel() {
-    active = false;
+  private int calcPacketLength(int topic_length, int msg_length) {
+    return -1;
   }
 
-  private static class Topic {
-    private String name;
-    private ArrayList<Worker> subs = new ArrayList<>();
-    private Object lock = new Object();
-    public Topic(String name) {
-      this.name = name;
-    }
-    public void publish(byte[] pkt) {
-      synchronized (lock) {
-        for(Worker worker : subs) {
-          try {worker.publish(pkt);} catch (Exception e) {}
-        }
-      }
-    }
-    public void subscribe(Worker worker) {
-      synchronized (lock) {
-        subs.add(worker);
-      }
-    }
-    public void unsubscribe(Worker worker) {
-      synchronized (lock) {
-        subs.remove(worker);
-      }
-    }
-  }
+  public void publish(String topic, String msg) {
+    int length = calcPacketLength(topic.length(), msg.length());
+    byte[] packet = new byte[length];
+    packet[0] = (byte)(CMD_PUBLISH << 4);
 
-  private boolean active;
-  private Object lock = new Object();
-  private HashMap<String, Topic> topics = new HashMap<>();
-  private MQTTEvents events;
-
-  private ServerSocket ss;
-
-  private static int bufsiz = 4096;
-
-  public static boolean debug = false;
-  public static boolean debug_msg = false;
-
-  public void run() {
-    active = true;
     try {
-      ss = new ServerSocket(1883);  //MQTT Broker port
-      while (active) {
-        Socket s = ss.accept();
-        Worker worker = new Worker(s);
-        worker.start();
-      }
+      os.write(packet);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  /*
+  public void subscribe(String topic) {
+    int length = calcPacketLength(topic.length(), 0);
+    byte[] packet = new byte[length];
+    packet[0] = (byte)(CMD_SUBSCRIBE << 4);
 
-  struct MQTT {
-    byte header;  // msg_type(4) / dup(1) / qos(2) / retain (1)
-    byte[] length;  // (7 bits per byte) (bit 7 indicates another byte) (max 4 bytes)
-    short id1;  //some packets
-    short topicLength;  //some packets
-    byte[] topic;  //some packets
-    short id2;  //some packets
-    byte[] msg;  //remainder of packet
-  }
-
-  */
-
-  private Topic getTopic(String name) {
-    synchronized (lock) {
-      Topic topic = topics.get(name);
-      if (topic != null) return topic;
-      topic = new Topic(name);
-      topics.put(name, topic);
-      return topic;
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
+
+  public void unsubscribe(String topic) {
+    int length = calcPacketLength(topic.length(), 0);
+    byte[] packet = new byte[length];
+    packet[0] = (byte)(CMD_UNSUBSCRIBE << 4);
+
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private static int bufsiz = 4096;
 
   private int getPacketLength(byte[] data, int length) {
     int multi = 1;
@@ -159,22 +159,8 @@ public class MQTTServer extends Thread {
     return -1;
   }
 
-  public static final byte CMD_CONNECT = 1;
-  public static final byte CMD_CONNECT_ACK = 2;
-  public static final byte CMD_PUBLISH = 3;
-  public static final byte CMD_PUBLISH_ACK = 4;
-  public static final byte CMD_PUBLISH_REC = 5;
-  public static final byte CMD_PUBLISH_REL = 6;
-  public static final byte CMD_PUBLISH_CMP = 7;
-  public static final byte CMD_SUBSCRIBE = 8;
-  public static final byte CMD_SUBSCRIBE_ACK = 9;
-  public static final byte CMD_UNSUBSCRIBE = 10;
-  public static final byte CMD_UNSUBSCRIBE_ACK = 11;
-  public static final byte CMD_PING = 12;
-  public static final byte CMD_PONG = 13;
-  public static final byte CMD_DISCONNECT = 14;
-
   private class Worker extends Thread {
+    private boolean active = true;
     public Socket s;
     public InputStream is;
     public OutputStream os;
@@ -234,7 +220,7 @@ public class MQTTServer extends Thread {
       int idPosition;
       int topicPosition;
       int topicLength;
-      String topic_name;
+      String topic;
       int msgPosition;
       int msgLength;
       String msg;
@@ -251,7 +237,7 @@ public class MQTTServer extends Thread {
           topicPosition = 1 + getLengthBytes(packetLength);
           topicLength = getTopicLength(packet, topicPosition);
           if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic_name = new String(packet, topicPosition + 2, topicLength);
+          topic = new String(packet, topicPosition + 2, topicLength);
           idPosition = topicPosition + 2 + topicLength;
           id = getPacketID(packet, idPosition);
           if (debug) JFLog.log("id=" + id);
@@ -259,16 +245,14 @@ public class MQTTServer extends Thread {
           msgLength = totalLength - msgPosition;
           if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
           msg = new String(packet, msgPosition, msgLength);
-          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
-          Topic topic = getTopic(topic_name);
-          topic.publish(packet);
+          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic + ":" + msg + "!");
           reply = new byte[4];
           reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
           //reply = header , size , id_hi, id_lo
           setPacketLength(reply);
           setPacketID(reply, id);
           if (events != null) {
-            events.message(topic_name, msg);
+            events.message(topic, msg);
           }
           break;
         }
@@ -284,52 +268,6 @@ public class MQTTServer extends Thread {
         case CMD_PUBLISH_CMP:
           //???
           break;
-        case CMD_SUBSCRIBE: {
-          //cmd, size, id, topic
-          idPosition = 1 + getLengthBytes(packetLength);
-          id = getPacketID(packet, idPosition);
-          if (debug) JFLog.log("id=" + id);
-          topicPosition = idPosition + 2;
-          topicLength = getTopicLength(packet, topicPosition);
-          if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic_name = new String(packet, topicPosition + 2, topicLength);
-          msgPosition = topicPosition + 2 + topicLength;
-          msgLength = totalLength - msgPosition;
-          if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
-          msg = new String(packet, msgPosition, msgLength);
-          Topic topic = getTopic(topic_name);
-          topic.subscribe(this);
-          if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + topic_name + ":" + msg + "!");
-          reply = new byte[5];
-          //header , size , id_hi, id_lo, return_code=0
-          reply[0] = (byte)(CMD_SUBSCRIBE_ACK << 4);
-          setPacketLength(reply);
-          setPacketID(reply, id);
-          break;
-        }
-        case CMD_UNSUBSCRIBE: {
-          //cmd, size, id, topic
-          idPosition = 1 + getLengthBytes(packetLength);
-          id = getPacketID(packet, idPosition);
-          if (debug) JFLog.log("id=" + id);
-          topicPosition = idPosition + 2;
-          topicLength = getTopicLength(packet, topicPosition);
-          if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic_name = new String(packet, topicPosition + 2, topicLength);
-          msgPosition = topicPosition + 2 + topicLength;
-          msgLength = totalLength - msgPosition;
-          if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
-          msg = new String(packet, msgPosition, msgLength);
-          Topic topic = getTopic(topic_name);
-          topic.unsubscribe(this);
-          if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + topic_name + ":" + msg);
-          reply = new byte[4];
-          reply[0] = (byte)(CMD_UNSUBSCRIBE_ACK << 4);
-          //header , size , id_hi, id_lo
-          setPacketLength(reply);
-          setPacketID(reply, id);
-          break;
-        }
         case CMD_PING:
           reply = new byte[2];
           reply[0] = (byte)(CMD_PONG << 4);
@@ -347,8 +285,12 @@ public class MQTTServer extends Thread {
     private void send(byte[] reply) throws Exception {
       os.write(reply);
     }
-    public void publish(byte[] pkt) throws Exception {
-      os.write(pkt);
+    public void cancel() {
+      active = false;
+      if (s != null) {
+        try { s.close(); } catch (Exception e) {}
+        s = null;
+      }
     }
   }
 }
