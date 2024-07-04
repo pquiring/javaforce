@@ -77,7 +77,7 @@ public class MQTT {
       length += 2;  //short length;
       length += topic_length;
     }
-    //TODO : has_id2 ???
+    length++;  //properties
     if (msg_length > 0) {
       length += msg_length;
     }
@@ -128,7 +128,7 @@ public class MQTT {
     int msg_length = msg_bytes.length;
     int length = calcPacketLength(true, topic_length, msg_length);
     int length_bytes = getLengthBytes(length);
-    byte[] packet = new byte[1 + length_bytes + 1 + length];
+    byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
     setPacketLength(packet);
     int pos = 1 + length_bytes;
@@ -166,6 +166,7 @@ public class MQTT {
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
+    pos++;  //properties length
     setTopicLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
@@ -234,7 +235,7 @@ public class MQTT {
     return value;
   }
 
-  private int getTopicLength(byte[] data, int topicPosition) {
+  private int getStringLength(byte[] data, int topicPosition) {
     return BE.getuint16(data, topicPosition);
   }
 
@@ -331,11 +332,9 @@ public class MQTT {
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
       short id = 0;
-      int idPosition;
-      int topicPosition;
+      int pos;
       int topicLength;
-      String topic;
-      int msgPosition;
+      String topic_name;
       int msgLength;
       String msg;
       if (debug) JFLog.log("cmd=" + cmd);
@@ -344,32 +343,31 @@ public class MQTT {
           if (debug_msg) JFLog.log("connect_ack");
           break;
         case CMD_PUBLISH: {
-          //header, size, topic, id, msg
           boolean dup = (packet[0] & 0x08) != 0;
           byte qos = (byte)((packet[0] & 0x06) >> 1);
           boolean retain = (packet[0] & 0x01) != 0;
-          topicPosition = 1 + getLengthBytes(packetLength);
-          topicLength = getTopicLength(packet, topicPosition);
-          if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic = new String(packet, topicPosition + 2, topicLength);
-          idPosition = topicPosition + 2 + topicLength;
-          msgPosition = idPosition;
+          pos = 1 + getLengthBytes(packetLength);
+          topicLength = getStringLength(packet, pos);
+          if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
+          pos += 2;
+          topic_name = new String(packet, pos, topicLength);
+          pos += topicLength;
           if (qos > 0) {
-            id = getPacketID(packet, idPosition);
+            id = getPacketID(packet, pos);
             if (debug) JFLog.log("id=" + id);
-            msgPosition += 2;
+            pos += 2;
           }
-          int props_length = getLength(packet, msgPosition, totalLength);
+          int props_length = getLength(packet, pos, totalLength);
           if (props_length == -1) throw new Exception("malformed packet");
-          int props_bytes = getLengthBytes(props_length);
-          msgPosition++;  //props length
+          int props_length_bytes = getLengthBytes(props_length);
+          pos += props_length_bytes;
           if (props_length > 0) {
-            msgPosition += props_bytes;
+            pos += props_length_bytes;
           }
-          msgLength = totalLength - msgPosition;
-          if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
-          msg = new String(packet, msgPosition, msgLength);
-          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic + ":" + msg + "!");
+          msgLength = totalLength - pos;
+          if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
+          msg = new String(packet, pos, msgLength);
+          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
           switch (qos) {
             case QOS_1: {
               //CMD_PUBLISH_ACK
@@ -391,7 +389,7 @@ public class MQTT {
             }
           }
           if (events != null) {
-            events.message(topic, msg);
+            events.message(topic_name, msg);
           }
           break;
         }

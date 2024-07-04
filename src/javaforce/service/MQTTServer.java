@@ -159,7 +159,7 @@ public class MQTTServer extends Thread {
     return value;
   }
 
-  private int getTopicLength(byte[] data, int topicPosition) {
+  private int getStringLength(byte[] data, int topicPosition) {
     return BE.getuint16(data, topicPosition);
   }
 
@@ -277,11 +277,9 @@ public class MQTTServer extends Thread {
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
       short id = 0;
-      int idPosition;
-      int topicPosition;
+      int pos = 1;
       int topicLength;
       String topic_name;
-      int msgPosition;
       int msgLength;
       String msg;
       if (debug) JFLog.log("cmd=" + cmd);
@@ -297,27 +295,27 @@ public class MQTTServer extends Thread {
           boolean dup = (packet[0] & 0x08) != 0;
           byte qos = (byte)((packet[0] & 0x06) >> 1);
           boolean retain = (packet[0] & 0x01) != 0;
-          topicPosition = 1 + getLengthBytes(packetLength);
-          topicLength = getTopicLength(packet, topicPosition);
-          if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic_name = new String(packet, topicPosition + 2, topicLength);
-          idPosition = topicPosition + 2 + topicLength;
-          msgPosition = idPosition;
+          pos = 1 + getLengthBytes(packetLength);
+          topicLength = getStringLength(packet, pos);
+          if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
+          pos += 2;
+          topic_name = new String(packet, pos, topicLength);
+          pos += topicLength;
           if (qos > 0) {
-            id = getPacketID(packet, idPosition);
+            id = getPacketID(packet, pos);
             if (debug) JFLog.log("id=" + id);
-            msgPosition += 2;
+            pos += 2;
           }
-          int props_length = getLength(packet, msgPosition, totalLength);
+          int props_length = getLength(packet, pos, totalLength);
           if (props_length == -1) throw new Exception("malformed packet");
-          int props_bytes = getLengthBytes(props_length);
-          msgPosition++;  //props length
+          int props_length_bytes = getLengthBytes(props_length);
+          pos += props_length_bytes;
           if (props_length > 0) {
-            msgPosition += props_bytes;
+            pos += props_length_bytes;
           }
-          msgLength = totalLength - msgPosition;
-          if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
-          msg = new String(packet, msgPosition, msgLength);
+          msgLength = totalLength - pos;
+          if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
+          msg = new String(packet, pos, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
           Topic topic = getTopic(topic_name);
           topic.publish(packet, totalLength, retain);
@@ -364,20 +362,27 @@ public class MQTTServer extends Thread {
           break;
         case CMD_SUBSCRIBE: {
           //cmd, size, id, topic
-          idPosition = 1 + getLengthBytes(packetLength);
-          id = getPacketID(packet, idPosition);
+          pos = 1 + getLengthBytes(packetLength);
+          id = getPacketID(packet, pos);
           if (debug) JFLog.log("id=" + id);
-          topicPosition = idPosition + 2;
-          topicLength = getTopicLength(packet, topicPosition);
-          if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic_name = new String(packet, topicPosition + 2, topicLength);
-          msgPosition = topicPosition + 2 + topicLength;
-          msgLength = totalLength - msgPosition;
-          if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
-          msg = new String(packet, msgPosition, msgLength);
-          Topic topic = getTopic(topic_name);
-          topic.subscribe(this);
-          if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + topic_name + ":" + msg + "!");
+          pos += 2;
+          int props_length = getLength(packet, pos, totalLength);
+          int props_length_bytes = getLengthBytes(props_length);
+          pos += props_length_bytes;
+          if (props_length > 0) {
+            pos += props_length_bytes;
+          }
+          while (pos < totalLength) {
+            topicLength = getStringLength(packet, pos);
+            if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
+            pos += 2;
+            topic_name = new String(packet, pos, topicLength);
+            pos += topicLength;
+            Topic topic = getTopic(topic_name);
+            topic.subscribe(this);
+            if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + topic_name);
+            pos++;  //subscribe options
+          }
           reply = new byte[5];
           //header , size , id_hi, id_lo, return_code=0
           reply[0] = (byte)(CMD_SUBSCRIBE_ACK << 4);
@@ -387,20 +392,20 @@ public class MQTTServer extends Thread {
         }
         case CMD_UNSUBSCRIBE: {
           //cmd, size, id, topic
-          idPosition = 1 + getLengthBytes(packetLength);
-          id = getPacketID(packet, idPosition);
+          pos = 1 + getLengthBytes(packetLength);
+          id = getPacketID(packet, pos);
           if (debug) JFLog.log("id=" + id);
-          topicPosition = idPosition + 2;
-          topicLength = getTopicLength(packet, topicPosition);
-          if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
-          topic_name = new String(packet, topicPosition + 2, topicLength);
-          msgPosition = topicPosition + 2 + topicLength;
-          msgLength = totalLength - msgPosition;
-          if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
-          msg = new String(packet, msgPosition, msgLength);
-          Topic topic = getTopic(topic_name);
-          topic.unsubscribe(this);
-          if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + topic_name + ":" + msg);
+          pos += 2;
+          while (pos < totalLength) {
+            topicLength = getStringLength(packet, pos);
+            pos += 2;
+            if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
+            topic_name = new String(packet, pos, topicLength);
+            pos += topicLength;
+            Topic topic = getTopic(topic_name);
+            topic.unsubscribe(this);
+            if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + topic_name);
+          }
           reply = new byte[4];
           reply[0] = (byte)(CMD_UNSUBSCRIBE_ACK << 4);
           //header , size , id_hi, id_lo
