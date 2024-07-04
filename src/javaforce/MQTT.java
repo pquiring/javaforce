@@ -67,7 +67,7 @@ public class MQTT {
     this.events = events;
   }
 
-  private int calcPacketLength(boolean has_id, int topic_length, int msg_length) {
+  private int calcPacketLength(boolean has_id, int topic_length, boolean has_opts, int msg_length) {
     //does NOT include the header or length itself
     int length = 0;
     if (has_id) {
@@ -76,6 +76,9 @@ public class MQTT {
     if (topic_length > 0) {
       length += 2;  //short length;
       length += topic_length;
+    }
+    if (has_opts) {
+      length++;  //sub : topic options
     }
     length++;  //properties
     if (msg_length > 0) {
@@ -126,7 +129,7 @@ public class MQTT {
     int topic_length = topic_bytes.length;
     byte[] msg_bytes = msg.getBytes();
     int msg_length = msg_bytes.length;
-    int length = calcPacketLength(true, topic_length, msg_length);
+    int length = calcPacketLength(true, topic_length, false, msg_length);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
@@ -158,7 +161,7 @@ public class MQTT {
   public void subscribe(String topic) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
-    int length = calcPacketLength(true, topic_length, 0);
+    int length = calcPacketLength(true, topic_length, true, 0);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)(CMD_SUBSCRIBE << 4);
@@ -171,6 +174,7 @@ public class MQTT {
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
+    pos++;  //subscribe options
     if (debug) {
       JFLog.log("subscribe:" + topic);
     }
@@ -185,7 +189,7 @@ public class MQTT {
   public void unsubscribe(String topic) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
-    int length = calcPacketLength(true, topic_length, 0);
+    int length = calcPacketLength(true, topic_length, false, 0);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)(CMD_UNSUBSCRIBE << 4);
