@@ -11,8 +11,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javaforce.service.*;
-
 import static javaforce.service.MQTTServer.*;
 
 public class MQTT {
@@ -43,6 +41,12 @@ public class MQTT {
 
   public void disconnect() {
     if (s != null) {
+      //cmd, length, reason code(0)
+      byte[] packet = new byte[3];
+      packet[0] = (byte)(CMD_DISCONNECT << 4);
+      packet[1] = 1;  //packet length
+      packet[2] = 0;  //disconnect reason code
+      try { os.write(packet); } catch (Exception e) {}
       try { s.close(); } catch (Exception e) {}
       s = null;
     }
@@ -71,6 +75,23 @@ public class MQTT {
       length += msg_length;
     }
     return length;
+  }
+
+  public void connect() {
+    byte[] packet = new byte[8];
+    packet[0] = (byte)(CMD_CONNECT << 4);
+    packet[1] = 6;  //packet length
+    packet[2] = 0;
+    packet[3] = 4;  //string length (short)
+    packet[4] = 'M';
+    packet[5] = 'Q';
+    packet[6] = 'T';
+    packet[7] = 'T';
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   private short id = 0x0001;
@@ -135,6 +156,17 @@ public class MQTT {
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  public void ping() {
+    byte[] packet = new byte[2];
+    packet[0] = (byte)(CMD_PING << 4);
+    packet[1] = 0;  //packet length
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -263,12 +295,6 @@ public class MQTT {
       String msg;
       if (debug) JFLog.log("cmd=" + cmd);
       switch (cmd) {
-        case CMD_CONNECT:
-          reply = new byte[4];
-          //reply = header , size , ack_flags, return_code=0
-          reply[0] = (byte)(CMD_CONNECT_ACK << 4);
-          setPacketLength(reply);
-          break;
         case CMD_PUBLISH: {
           //header, size, topic, id, msg
           topicPosition = 1 + getLengthBytes(packetLength);
@@ -316,6 +342,7 @@ public class MQTT {
           if (debug_msg) JFLog.log("PING:" + ip);
           break;
         case CMD_DISCONNECT:
+          active = false;
           break;
       }
       if (reply != null) {

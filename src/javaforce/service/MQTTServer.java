@@ -17,7 +17,7 @@ public class MQTTServer extends Thread {
   }
 
   public void cancel() {
-    active = false;
+    server_active = false;
   }
 
   private static class Topic {
@@ -41,8 +41,12 @@ public class MQTTServer extends Thread {
         this.pkt = pkt.clone();
       }
       synchronized (lock) {
-        for(Worker worker : subs) {
-          try {worker.publish(pkt);} catch (Exception e) {}
+        for(Worker sub : subs.toArray(WorkerArrayType)) {
+          try {
+            sub.publish(pkt);
+          } catch (Exception e) {
+            unsubscribe(sub);
+          }
         }
       }
     }
@@ -61,7 +65,7 @@ public class MQTTServer extends Thread {
     }
   }
 
-  private boolean active;
+  private boolean server_active;
   private Object lock = new Object();
   private HashMap<String, Topic> topics = new HashMap<>();
   private MQTTEvents events;
@@ -74,10 +78,10 @@ public class MQTTServer extends Thread {
   public static boolean debug_msg = false;
 
   public void run() {
-    active = true;
+    server_active = true;
     try {
       ss = new ServerSocket(1883);  //MQTT Broker port
-      while (active) {
+      while (server_active) {
         Socket s = ss.accept();
         Worker worker = new Worker(s);
         worker.start();
@@ -111,7 +115,7 @@ public class MQTTServer extends Thread {
     }
   }
 
-  private void unsubAll(Worker worker) {
+  private void unsubscribeAll(Worker worker) {
     synchronized (lock) {
       Topic[] alltopics = (Topic[])topics.values().toArray(Topic.TopicArrayType);
       for(Topic topic : alltopics) {
@@ -188,11 +192,14 @@ public class MQTTServer extends Thread {
   public static final byte QOS_2 = 2;
   public static final byte QOS_3 = 3;  //not used
 
+  public static Worker[] WorkerArrayType = new Worker[0];
+
   private class Worker extends Thread {
     public Socket s;
     public InputStream is;
     public OutputStream os;
     public String ip;
+    public boolean active = true;
     public Worker(Socket s) {
       this.s = s;
     }
@@ -203,13 +210,13 @@ public class MQTTServer extends Thread {
         ip = s.getInetAddress().getHostAddress();
         if (debug) JFLog.log("connect:" + ip);
         byte[] buf = new byte[bufsiz];
-        while (active) {
+        while (server_active && active) {
           int totalRead = 0;
           int packetLength = -1;  //excluding header + length fields
           int totalLength = -1;  //total packet length
           int read;
           Arrays.fill(buf, (byte)0);
-          while (active) {
+          while (server_active && active) {
             if (packetLength == -1) {
               read = is.read(buf, totalRead, 1);
             } else {
@@ -239,7 +246,7 @@ public class MQTTServer extends Thread {
       } catch (Exception e) {
         JFLog.log(e);
       }
-      unsubAll(this);
+      unsubscribeAll(this);
       if (debug) JFLog.log("disconnect:" + ip);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
@@ -378,6 +385,8 @@ public class MQTTServer extends Thread {
           if (debug_msg) JFLog.log("PING:" + ip);
           break;
         case CMD_DISCONNECT:
+          unsubscribeAll(this);
+          active = false;
           break;
       }
       if (reply != null) {
