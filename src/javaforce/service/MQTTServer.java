@@ -46,22 +46,24 @@ public class MQTTServer extends Thread {
   private static class Topic {
     private String name;
     private byte[] pkt;  //retained publish
+    private int pkt_length;
     private ArrayList<Worker> subs = new ArrayList<>();
     private Object lock = new Object();
     public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
       this.name = name;
     }
-    public void publish(byte[] pkt, boolean retain) {
+    public void publish(byte[] pkt, int length, boolean retain) {
       //mask off flags : dup, retain
       pkt[0] &= 0xf6;
       if (retain) {
         this.pkt = pkt.clone();
+        this.pkt_length = length;
       }
       synchronized (lock) {
         for(Worker sub : subs.toArray(WorkerArrayType)) {
           try {
-            sub.publish(pkt);
+            sub.publish(pkt, length);
           } catch (Exception e) {
             unsubscribe(sub);
           }
@@ -73,7 +75,7 @@ public class MQTTServer extends Thread {
         subs.add(worker);
       }
       if (pkt != null) {
-        try {worker.publish(pkt);} catch (Exception e) {}
+        try {worker.publish(pkt, pkt_length);} catch (Exception e) {}
       }
     }
     public void unsubscribe(Worker worker) {
@@ -263,6 +265,7 @@ public class MQTTServer extends Thread {
             break;
           }
         }
+      } catch (SocketException se) {
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -309,7 +312,7 @@ public class MQTTServer extends Thread {
           msg = new String(packet, msgPosition, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
           Topic topic = getTopic(topic_name);
-          topic.publish(packet, retain);
+          topic.publish(packet, totalLength, retain);
           switch (qos) {
             case QOS_1: {
               //CMD_PUBLISH_ACK
@@ -415,8 +418,8 @@ public class MQTTServer extends Thread {
     private void send(byte[] reply) throws Exception {
       os.write(reply);
     }
-    public void publish(byte[] pkt) throws Exception {
-      os.write(pkt);
+    public void publish(byte[] pkt, int length) throws Exception {
+      os.write(pkt, 0, length);
     }
   }
 }

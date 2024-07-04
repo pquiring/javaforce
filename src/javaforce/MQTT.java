@@ -117,18 +117,18 @@ public class MQTT {
     int length = calcPacketLength(true, topic_length, msg_length);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
-    packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1);
+    packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
     setPacketLength(packet);
     int pos = 1 + length_bytes;
+    setTopicLength(packet, pos, (short)topic_length);
+    pos += 2;
+    System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
+    pos += topic_length;
     setPacketID(packet, pos, id++);
     if (id == 0x7fff) {
       id = 1;
     }
     pos += 2;
-    setTopicLength(packet, pos, (short)topic_length);
-    pos += 2;
-    System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
-    pos += topic_length;
     System.arraycopy(msg_bytes, 0, packet, pos, msg_length);
     pos += msg_length;
     if (debug) {
@@ -328,6 +328,9 @@ public class MQTT {
       String msg;
       if (debug) JFLog.log("cmd=" + cmd);
       switch (cmd) {
+        case CMD_CONNECT_ACK:
+          if (debug_msg) JFLog.log("connect_ack");
+          break;
         case CMD_PUBLISH: {
           //header, size, topic, id, msg
           boolean dup = (packet[0] & 0x08) != 0;
@@ -389,6 +392,9 @@ public class MQTT {
           break;
         case CMD_PUBLISH_CMP:
           //???
+          break;
+        case CMD_SUBSCRIBE_ACK:
+          if (debug_msg) JFLog.log("subscribe_ack");
           break;
         case CMD_PING:
           reply = new byte[2];
