@@ -18,6 +18,10 @@ public class MQTTServer extends Thread {
 
   public void cancel() {
     server_active = false;
+    if (ss != null) {
+      try {ss.close();} catch (Exception e) {}
+      ss = null;
+    }
   }
 
   private static class Topic {
