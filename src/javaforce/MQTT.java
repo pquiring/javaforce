@@ -135,7 +135,7 @@ public class MQTT {
     packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
     setPacketLength(packet);
     int pos = 1 + length_bytes;
-    setTopicLength(packet, pos, (short)topic_length);
+    setStringLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
@@ -170,7 +170,7 @@ public class MQTT {
     setPacketID(packet, pos, id++);
     pos += 2;
     pos++;  //properties length
-    setTopicLength(packet, pos, (short)topic_length);
+    setStringLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
@@ -197,7 +197,8 @@ public class MQTT {
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
-    setTopicLength(packet, pos, (short)topic_length);
+    pos++;  //properties length
+    setStringLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
@@ -265,7 +266,7 @@ public class MQTT {
     BE.setuint16(data, offset, id);
   }
 
-  private void setTopicLength(byte[] data, int offset, short length) {
+  private void setStringLength(byte[] data, int offset, short length) {
     BE.setuint16(data, offset, length);
   }
 
@@ -442,18 +443,22 @@ public class MQTT {
     }
   }
 
+  private static String resub = null;
+
   public static void main(String[] args) {
     if (args.length < 1) {
       System.out.println("Usage:MQTT server [publish topic msg]");
       System.out.println("Usage:MQTT server [subscribe topic]");
       return;
     }
-    MQTT.debug = true;
-    MQTT.debug_msg = true;
+//    MQTT.debug = true;
+//    MQTT.debug_msg = true;
     try {
       MQTT client = new MQTT();
       client.setListener((topic, msg) -> {
         JFLog.log("msg:" + topic + "=" + msg);
+        client.unsubscribe(topic);
+        resub = topic;
         return true;
       });
       client.connect(args[0]);
@@ -473,6 +478,10 @@ public class MQTT {
           JF.sleep(1000);
         }
         client.ping();
+        if (resub != null) {
+          client.subscribe(resub);
+          resub = null;
+        }
       }
     } catch (Exception e) {
       JFLog.log(e);

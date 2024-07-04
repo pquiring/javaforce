@@ -406,9 +406,9 @@ public class MQTTServer extends Thread {
             topic.unsubscribe(this);
             if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + topic_name);
           }
-          reply = new byte[4];
+          reply = new byte[5];
           reply[0] = (byte)(CMD_UNSUBSCRIBE_ACK << 4);
-          //header , size , id_hi, id_lo
+          //header , size , id_hi, id_lo, reason=0
           setPacketLength(reply);
           setPacketID(reply, 2, id);
           break;
