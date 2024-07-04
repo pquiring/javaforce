@@ -85,15 +85,27 @@ public class MQTT {
   }
 
   public void connect() {
-    byte[] packet = new byte[8];
+    byte[] packet = new byte[17 + 8];
     packet[0] = (byte)(CMD_CONNECT << 4);
-    packet[1] = 6;  //packet length
+    packet[1] = 15 + 8;  //packet length
     packet[2] = 0;
     packet[3] = 4;  //string length (short)
     packet[4] = 'M';
     packet[5] = 'Q';
     packet[6] = 'T';
     packet[7] = 'T';
+    packet[8] = 5;  //protocol version
+    packet[9] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START);  //connect flags (2=clean start)
+    packet[10] = 0;
+    packet[11] = 120;  //keep alive interval (2 mins)
+    packet[12] = 0;  //properties length
+    packet[13] = 0;
+    packet[14] = 2 + 8;  //client id length (short)
+    packet[15] = 'J';  //client id
+    packet[16] = 'F';
+    Random r = new Random();
+    String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
+    System.arraycopy(hex.getBytes(), 0, packet, 17, 8);
     try {
       os.write(packet);
     } catch (Exception e) {
