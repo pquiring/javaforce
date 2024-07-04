@@ -90,8 +90,14 @@ public class MQTT {
     try {
       os.write(packet);
     } catch (Exception e) {
+      disconnect();
       JFLog.log(e);
     }
+  }
+
+  public boolean isConnected() {
+    if (worker == null) return false;
+    return worker.active;
   }
 
   private short id = 0x0001;
@@ -107,6 +113,9 @@ public class MQTT {
     setPacketLength(packet);
     int pos = 1 + getLengthBytes(length);
     setPacketID(packet, pos, id++);
+    if (id == 0x7fff) {
+      id = 1;
+    }
     pos += 2;
     setTopicLength(packet, pos, (short)topic_length);
     pos += 2;
@@ -117,6 +126,7 @@ public class MQTT {
     try {
       os.write(packet);
     } catch (Exception e) {
+      disconnect();
       JFLog.log(e);
     }
   }
@@ -138,6 +148,7 @@ public class MQTT {
     try {
       os.write(packet);
     } catch (Exception e) {
+      disconnect();
       JFLog.log(e);
     }
   }
@@ -159,6 +170,7 @@ public class MQTT {
     try {
       os.write(packet);
     } catch (Exception e) {
+      disconnect();
       JFLog.log(e);
     }
   }
@@ -170,6 +182,7 @@ public class MQTT {
     try {
       os.write(packet);
     } catch (Exception e) {
+      disconnect();
       JFLog.log(e);
     }
   }
@@ -279,13 +292,14 @@ public class MQTT {
         }
       } catch (Exception e) {
         JFLog.log(e);
+        active = false;
       }
       if (debug) JFLog.log("disconnect:" + ip);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
-      short id;
+      short id = 0;
       int idPosition;
       int topicPosition;
       int topicLength;
@@ -297,23 +311,45 @@ public class MQTT {
       switch (cmd) {
         case CMD_PUBLISH: {
           //header, size, topic, id, msg
+          boolean dup = (packet[0] & 0x08) != 0;
+          byte qos = (byte)((packet[0] & 0x06) >> 1);
+          boolean retain = (packet[0] & 0x01) != 0;
           topicPosition = 1 + getLengthBytes(packetLength);
           topicLength = getTopicLength(packet, topicPosition);
           if (debug) JFLog.log("topic=" + topicPosition + "/" + topicLength);
           topic = new String(packet, topicPosition + 2, topicLength);
           idPosition = topicPosition + 2 + topicLength;
-          id = getPacketID(packet, idPosition);
-          if (debug) JFLog.log("id=" + id);
+          msgPosition = idPosition;
+          if (qos > 0) {
+            id = getPacketID(packet, idPosition);
+            if (debug) JFLog.log("id=" + id);
+            msgPosition += 2;
+          }
           msgPosition = idPosition + 2;
           msgLength = totalLength - msgPosition;
           if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
           msg = new String(packet, msgPosition, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic + ":" + msg + "!");
-          reply = new byte[4];
-          reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
-          //reply = header , size , id_hi, id_lo
-          setPacketLength(reply);
-          setPacketID(reply, 2, id);
+          switch (qos) {
+            case QOS_1: {
+              //CMD_PUBLISH_ACK
+              reply = new byte[4];
+              reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
+              //reply = header , size , id_hi, id_lo
+              setPacketLength(reply);
+              setPacketID(reply, 2, id);
+              break;
+            }
+            case QOS_2: {
+              //CMD_PUBLISH_REC
+              reply = new byte[4];
+              reply[0] = (byte)(CMD_PUBLISH_REC << 4);
+              //reply = header , size , id_hi, id_lo
+              setPacketLength(reply);
+              setPacketID(reply, 2, id);
+              break;
+            }
+          }
           if (events != null) {
             events.message(topic, msg);
           }

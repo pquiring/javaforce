@@ -22,21 +22,16 @@ public class MQTTServer extends Thread {
 
   private static class Topic {
     private String name;
-    private boolean retain;
-    private byte[] pkt;
+    private byte[] pkt;  //retained publish
     private ArrayList<Worker> subs = new ArrayList<>();
     private Object lock = new Object();
     public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
       this.name = name;
     }
-    public void setRetain(boolean state) {
-      retain = state;
-      if (!state) {
-        pkt = null;
-      }
-    }
-    public void publish(byte[] pkt) {
+    public void publish(byte[] pkt, boolean retain) {
+      //mask off flags : dup, retain
+      pkt[0] &= 0xf9;
       if (retain) {
         this.pkt = pkt.clone();
       }
@@ -54,7 +49,7 @@ public class MQTTServer extends Thread {
       synchronized (lock) {
         subs.add(worker);
       }
-      if (retain) {
+      if (pkt != null) {
         try {worker.publish(pkt);} catch (Exception e) {}
       }
     }
@@ -289,8 +284,7 @@ public class MQTTServer extends Thread {
           msg = new String(packet, msgPosition, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
           Topic topic = getTopic(topic_name);
-          topic.setRetain(retain);
-          topic.publish(packet);
+          topic.publish(packet, retain);
           switch (qos) {
             case QOS_1: {
               //CMD_PUBLISH_ACK
