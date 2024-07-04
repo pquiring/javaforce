@@ -128,7 +128,7 @@ public class MQTT {
     int msg_length = msg_bytes.length;
     int length = calcPacketLength(true, topic_length, msg_length);
     int length_bytes = getLengthBytes(length);
-    byte[] packet = new byte[1 + length_bytes + length];
+    byte[] packet = new byte[1 + length_bytes + 1 + length];
     packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
     setPacketLength(packet);
     int pos = 1 + length_bytes;
@@ -141,6 +141,7 @@ public class MQTT {
       id = 1;
     }
     pos += 2;
+    pos++;  //properties length
     System.arraycopy(msg_bytes, 0, packet, pos, msg_length);
     pos += msg_length;
     if (debug) {
@@ -220,10 +221,9 @@ public class MQTT {
 
   private static int bufsiz = 4096;
 
-  private int getPacketLength(byte[] data, int length) {
+  private int getLength(byte[] data, int pos, int length) {
     int multi = 1;
     int value = 0;
-    int pos = 1;
     int next;
     do {
       if (pos >= length) return -1;
@@ -305,7 +305,7 @@ public class MQTT {
             totalRead += read;
             if (totalRead < 2) continue;
             if (packetLength == -1) {
-              packetLength = getPacketLength(buf, totalRead);
+              packetLength = getLength(buf, 1, totalRead);
               if (packetLength != -1) {
                 totalLength = 1 + getLengthBytes(packetLength) + packetLength;
                 if (debug) JFLog.log("totalLength=" + totalLength);
@@ -359,7 +359,13 @@ public class MQTT {
             if (debug) JFLog.log("id=" + id);
             msgPosition += 2;
           }
-          msgPosition = idPosition + 2;
+          int props_length = getLength(packet, msgPosition, totalLength);
+          if (props_length == -1) throw new Exception("malformed packet");
+          int props_bytes = getLengthBytes(props_length);
+          msgPosition++;  //props length
+          if (props_length > 0) {
+            msgPosition += props_bytes;
+          }
           msgLength = totalLength - msgPosition;
           if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
           msg = new String(packet, msgPosition, msgLength);

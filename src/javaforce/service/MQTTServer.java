@@ -146,10 +146,9 @@ public class MQTTServer extends Thread {
     }
   }
 
-  private int getPacketLength(byte[] data, int length) {
+  private int getLength(byte[] data, int pos, int length) {
     int multi = 1;
     int value = 0;
-    int pos = 1;
     int next;
     do {
       if (pos >= length) return -1;
@@ -251,7 +250,7 @@ public class MQTTServer extends Thread {
             totalRead += read;
             if (totalRead < 2) continue;
             if (packetLength == -1) {
-              packetLength = getPacketLength(buf, totalRead);
+              packetLength = getLength(buf, 1, totalRead);
               if (packetLength != -1) {
                 totalLength = 1 + getLengthBytes(packetLength) + packetLength;
                 if (debug) JFLog.log("totalLength=" + totalLength);
@@ -308,6 +307,13 @@ public class MQTTServer extends Thread {
             id = getPacketID(packet, idPosition);
             if (debug) JFLog.log("id=" + id);
             msgPosition += 2;
+          }
+          int props_length = getLength(packet, msgPosition, totalLength);
+          if (props_length == -1) throw new Exception("malformed packet");
+          int props_bytes = getLengthBytes(props_length);
+          msgPosition++;  //props length
+          if (props_length > 0) {
+            msgPosition += props_bytes;
           }
           msgLength = totalLength - msgPosition;
           if (debug) JFLog.log("msg=" + msgPosition + "/" + msgLength);
