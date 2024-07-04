@@ -1,4 +1,4 @@
-package javaforce.service;
+package javaforce;
 
 /** MQTT Events
  *
