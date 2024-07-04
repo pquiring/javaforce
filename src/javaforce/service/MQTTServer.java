@@ -12,6 +12,19 @@ import java.util.*;
 import javaforce.*;
 
 public class MQTTServer extends Thread {
+  private static MQTTServer service;
+  public static void serviceStart(String[] args) {
+    service = new MQTTServer();
+    service.start();
+  }
+
+  public static void serviceStop() {
+    if (service != null) {
+      service.cancel();
+      service = null;
+    }
+  }
+
   public void setListener(MQTTEvents events) {
     this.events = events;
   }
@@ -78,6 +91,8 @@ public class MQTTServer extends Thread {
 
   public void run() {
     server_active = true;
+    JFLog.append(JF.getLogPath() + "/jfmqtt.log", true);
+    JFLog.log("MQTTServer starting on port 1883...");
     try {
       ss = new ServerSocket(1883);  //MQTT Broker port
       while (server_active) {

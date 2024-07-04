@@ -1,4 +1,4 @@
-<project name="jfmqtt" basedir=".">
+<project name="jfmqtt" default="jar" basedir=".">
   <!-- set global properties for this build -->
   <property name="app" value="jfmqtt"/>
   <property name="apptype" value="service"/>
@@ -6,7 +6,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives">
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
