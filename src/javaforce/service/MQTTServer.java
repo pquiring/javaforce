@@ -16,6 +16,12 @@ public class MQTTServer extends Thread {
   public static void serviceStart(String[] args) {
     service = new MQTTServer();
     service.start();
+    for(String arg : args) {
+      switch (arg) {
+        case "debug": debug = true; break;
+        case "debug_msg": debug_msg = true; break;
+      }
+    }
   }
 
   public static void serviceStop() {

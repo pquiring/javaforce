@@ -396,4 +396,35 @@ public class MQTT {
       }
     }
   }
+
+  public static void main(String[] args) {
+    if (args.length < 1) {
+      System.out.println("Usage:MQTT server [publish topic msg]");
+      System.out.println("Usage:MQTT server [subscribe topic]");
+      return;
+    }
+    MQTT client = new MQTT();
+    client.setListener((topic, msg) -> {
+      JFLog.log("msg:" + topic + "=" + msg);
+      return true;
+    });
+    client.connect(args[0]);
+    client.connect();
+    if (args.length == 4) {
+      if (args[1].equals("publish")) {
+        client.publish(args[2], args[3]);
+      }
+    }
+    if (args.length == 3) {
+      if (args[1].equals("subscribe")) {
+        client.subscribe(args[2]);
+      }
+    }
+    while (client.isConnected()) {
+      for(int a=0;a<60;a++) {
+        JF.sleep(1000);
+      }
+      client.ping();
+    }
+  }
 }
