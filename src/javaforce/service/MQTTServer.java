@@ -35,7 +35,7 @@ public class MQTTServer extends Thread {
     }
     public void publish(byte[] pkt, boolean retain) {
       //mask off flags : dup, retain
-      pkt[0] &= 0xf9;
+      pkt[0] &= 0xf6;
       if (retain) {
         this.pkt = pkt.clone();
       }
