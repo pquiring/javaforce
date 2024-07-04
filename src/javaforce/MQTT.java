@@ -42,6 +42,9 @@ public class MQTT {
   }
 
   public void disconnect() {
+    if (debug) {
+      JFLog.log("disconnect");
+    }
     if (s != null) {
       //cmd, length, reason code(0)
       byte[] packet = new byte[3];
@@ -51,6 +54,8 @@ public class MQTT {
       try { os.write(packet); } catch (Exception e) {}
       try { s.close(); } catch (Exception e) {}
       s = null;
+      os = null;
+      is = null;
     }
     if (worker != null) {
       worker.cancel();
@@ -110,10 +115,11 @@ public class MQTT {
     byte[] msg_bytes = msg.getBytes();
     int msg_length = msg_bytes.length;
     int length = calcPacketLength(true, topic_length, msg_length);
-    byte[] packet = new byte[length];
+    int length_bytes = getLengthBytes(length);
+    byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1);
     setPacketLength(packet);
-    int pos = 1 + getLengthBytes(length);
+    int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     if (id == 0x7fff) {
       id = 1;
@@ -125,6 +131,9 @@ public class MQTT {
     pos += topic_length;
     System.arraycopy(msg_bytes, 0, packet, pos, msg_length);
     pos += msg_length;
+    if (debug) {
+      JFLog.log("publish:" + topic + "=" + msg);
+    }
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -137,16 +146,20 @@ public class MQTT {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
     int length = calcPacketLength(true, topic_length, 0);
-    byte[] packet = new byte[length];
+    int length_bytes = getLengthBytes(length);
+    byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)(CMD_SUBSCRIBE << 4);
     setPacketLength(packet);
-    int pos = 1 + getLengthBytes(length);
+    int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
     setTopicLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
+    if (debug) {
+      JFLog.log("subscribe:" + topic);
+    }
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -159,16 +172,20 @@ public class MQTT {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
     int length = calcPacketLength(true, topic_length, 0);
-    byte[] packet = new byte[length];
+    int length_bytes = getLengthBytes(length);
+    byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)(CMD_UNSUBSCRIBE << 4);
     setPacketLength(packet);
-    int pos = 1 + getLengthBytes(length);
+    int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
     setTopicLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
+    if (debug) {
+      JFLog.log("unsubscribe:" + topic);
+    }
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -407,28 +424,32 @@ public class MQTT {
     }
     MQTT.debug = true;
     MQTT.debug_msg = true;
-    MQTT client = new MQTT();
-    client.setListener((topic, msg) -> {
-      JFLog.log("msg:" + topic + "=" + msg);
-      return true;
-    });
-    client.connect(args[0]);
-    client.connect();
-    if (args.length == 4) {
-      if (args[1].equals("publish")) {
-        client.publish(args[2], args[3]);
+    try {
+      MQTT client = new MQTT();
+      client.setListener((topic, msg) -> {
+        JFLog.log("msg:" + topic + "=" + msg);
+        return true;
+      });
+      client.connect(args[0]);
+      client.connect();
+      if (args.length == 4) {
+        if (args[1].equals("publish")) {
+          client.publish(args[2], args[3]);
+        }
       }
-    }
-    if (args.length == 3) {
-      if (args[1].equals("subscribe")) {
-        client.subscribe(args[2]);
+      if (args.length == 3) {
+        if (args[1].equals("subscribe")) {
+          client.subscribe(args[2]);
+        }
       }
-    }
-    while (client.isConnected()) {
-      for(int a=0;a<60;a++) {
-        JF.sleep(1000);
+      while (client.isConnected()) {
+        for(int a=0;a<60;a++) {
+          JF.sleep(1000);
+        }
+        client.ping();
       }
-      client.ping();
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 }
