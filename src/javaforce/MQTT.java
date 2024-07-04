@@ -19,6 +19,8 @@ public class MQTT {
   private OutputStream os;
   private MQTTEvents events;
   private Worker worker;
+  public static boolean debug;
+  public static boolean debug_msg;
 
   public boolean connect(String host) {
     return connect(host, 1883);
@@ -403,6 +405,8 @@ public class MQTT {
       System.out.println("Usage:MQTT server [subscribe topic]");
       return;
     }
+    MQTT.debug = true;
+    MQTT.debug_msg = true;
     MQTT client = new MQTT();
     client.setListener((topic, msg) -> {
       JFLog.log("msg:" + topic + "=" + msg);
