@@ -20,7 +20,7 @@
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{89D71F0A-BA7F-4B5C-AD18-911560B2A0BF}" Bitness="always64">
         <File Id="jfmqtt.exe" Source="jfmqtt.exe" KeyPath="yes">
-          <fire:FirewallException Id="FirewallRule" Name="jfMQTTServer" Protocol="udp" Port="67" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule" Name="jfMQTTServer" Protocol="tcp" Port="1883" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jfmqtt.exe" Source="jfmqtt.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
