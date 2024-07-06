@@ -1172,7 +1172,7 @@ public class ConfigService implements WebUIHandler {
     tools2.add(delete);
 
     ScrollPanel table_panel = new ScrollPanel();
-    Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
+    Table table = new Table(new int[] {128, 128, 128}, 32, 3, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
