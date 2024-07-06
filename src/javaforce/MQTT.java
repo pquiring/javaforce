@@ -122,33 +122,32 @@ public class MQTT {
     int user_length = user_bytes.length;
     byte[] pass_bytes = pass.getBytes();
     int pass_length = pass_bytes.length;
-    int packet_length = 17 + 8 + 2 + user_length + 2 + pass_length;
-    if (packet_length > 125) {
-      JFLog.log("Error:user/pass too long");
-      return;
-    }
-    byte[] packet = new byte[packet_length];
-    packet[0] = (byte)(CMD_CONNECT << 4);
-    packet[1] = (byte)(packet_length - 2);
-    packet[2] = 0;
-    packet[3] = 4;  //string length (short)
-    packet[4] = 'M';
-    packet[5] = 'Q';
-    packet[6] = 'T';
-    packet[7] = 'T';
-    packet[8] = 5;  //protocol version
-    packet[9] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START + FLAG_USER + FLAG_PASS);  //connect flags
-    packet[10] = 0;
-    packet[11] = 120;  //keep alive interval (2 mins)
-    packet[12] = 0;  //properties length
-    packet[13] = 0;
-    packet[14] = 2 + 8;  //client id length (short)
-    packet[15] = 'J';  //client id
-    packet[16] = 'F';
+    int packet_length = 15 + 8 + 2 + user_length + 2 + pass_length;
+    int length_bytes = getLengthBytes(packet_length);
+    byte[] packet = new byte[1 + length_bytes + packet_length];
+    int pos = 0;
+    packet[pos++] = (byte)(CMD_CONNECT << 4);
+    setPacketLength(packet, length_bytes);
+    pos += length_bytes;
+    packet[pos++] = 0;
+    packet[pos++] = 4;  //string length (short)
+    packet[pos++] = 'M';
+    packet[pos++] = 'Q';
+    packet[pos++] = 'T';
+    packet[pos++] = 'T';
+    packet[pos++] = 5;  //protocol version
+    packet[pos++] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START + FLAG_USER + FLAG_PASS);  //connect flags
+    packet[pos++] = 0;
+    packet[pos++] = 120;  //keep alive interval (2 mins)
+    packet[pos++] = 0;  //properties length
+    packet[pos++] = 0;
+    packet[pos++] = 2 + 8;  //client id length (short)
+    packet[pos++] = 'J';  //client id
+    packet[pos++] = 'F';
     Random r = new Random();
     String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
     System.arraycopy(hex.getBytes(), 0, packet, 17, 8);
-    int pos = 25;
+    pos += 8;
     setStringLength(packet, pos, (short)user_length);
     pos += 2;
     setString(packet, pos, user_bytes, user_length);
@@ -181,7 +180,7 @@ public class MQTT {
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
-    setPacketLength(packet);
+    setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setStringLength(packet, pos, (short)topic_length);
     pos += 2;
@@ -213,7 +212,7 @@ public class MQTT {
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)(CMD_SUBSCRIBE << 4);
-    setPacketLength(packet);
+    setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
@@ -241,7 +240,7 @@ public class MQTT {
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
     packet[0] = (byte)(CMD_UNSUBSCRIBE << 4);
-    setPacketLength(packet);
+    setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
@@ -296,8 +295,8 @@ public class MQTT {
     return (short)BE.getuint16(data, idPosition);
   }
 
-  private void setPacketLength(byte[] packet) {
-    int value = packet.length - 2;
+  private void setPacketLength(byte[] packet, int length_bytes) {
+    int value = packet.length - 1 - length_bytes;
     int pos = 1;
     byte ebyte;
     do {
@@ -323,6 +322,7 @@ public class MQTT {
   }
 
   private int getLengthBytes(int length) {
+    //does not include the header or length bytes itself
     if (length <= 0x7f) return 1;
     if (length <= 0x3ff) return 2;
     if (length <= 0x1fffff) return 3;
@@ -431,7 +431,7 @@ public class MQTT {
               reply = new byte[4];
               reply[0] = (byte)(CMD_PUBLISH_ACK << 4);
               //reply = header , size , id_hi, id_lo
-              setPacketLength(reply);
+              setPacketLength(reply, 1);
               setPacketID(reply, 2, id);
               break;
             }
@@ -440,7 +440,7 @@ public class MQTT {
               reply = new byte[4];
               reply[0] = (byte)(CMD_PUBLISH_REC << 4);
               //reply = header , size , id_hi, id_lo
-              setPacketLength(reply);
+              setPacketLength(reply, 1);
               setPacketID(reply, 2, id);
               break;
             }
@@ -456,7 +456,7 @@ public class MQTT {
         case CMD_PUBLISH_REC:
           reply = new byte[4];
           reply[0] = (byte)(CMD_PUBLISH_REL << 4);
-          setPacketLength(reply);
+          setPacketLength(reply, 1);
           id = getPacketID(packet, 2);
           setPacketID(reply, 2, id);
           break;
