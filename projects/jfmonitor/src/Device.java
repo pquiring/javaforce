@@ -170,6 +170,32 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
+  public boolean configAddPort_DHCP_Relay(Port port, String dhcp_relay) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.addInterfaceDHCPRelay(this, port.id, dhcp_relay)) {
+          port.dhcp_relay = dhcp_relay;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configRemovePort_DHCP_Relay(Port port) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeInterfaceDHCPRelay(this, port.id)) {
+          port.dhcp_relay = "";
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
   public boolean configSetVLANs(Port port, String vlans) {
     switch (type) {
       case TYPE_CISCO:
@@ -329,6 +355,32 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         Cisco cisco = new Cisco();
         if (cisco.setVLAN_STP(this, vlan, state)) {
           vlan.stp = state;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configAddVLAN_DHCP_Relay(VLAN vlan, String dhcp_relay) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.addInterfaceDHCPRelay(this, vlan.id, dhcp_relay)) {
+          vlan.dhcp_relay = dhcp_relay;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configRemoveVLAN_DHCP_Relay(VLAN vlan) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.removeInterfaceDHCPRelay(this, vlan.id)) {
+          vlan.dhcp_relay = "";
           return true;
         }
         break;

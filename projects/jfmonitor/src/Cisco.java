@@ -246,11 +246,55 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + iid + ";no ip;exit;exit;exit";
+    String cmds = "config terminal;interface " + iid + ";no ip address;exit;exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {
       JFLog.log("removeInterfaceIP:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean addInterfaceDHCPRelay(Device device, String iid, String dhcp_relay) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;interface " + iid + ";ip helper-address " + dhcp_relay + ";exit;exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setInterfaceDHCPRelay:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
+  public boolean removeInterfaceDHCPRelay(Device device, String iid) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "config terminal;interface " + iid + ";no ip helper-address;exit;exit;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setInterfaceDHCPRelay:" + cmds);
       return true;
     }
     if (!ssh.connect(ip, 22, options)) return false;
@@ -745,6 +789,14 @@ public class Cisco {
               if (vlan != null) {
                 vlan.ip = f[2];
                 vlan.mask = f[3];
+              }
+              break;
+            case "helper-address":
+              if (port != null) {
+                port.dhcp_relay = f[2];
+              }
+              if (vlan != null) {
+                vlan.dhcp_relay = f[2];
               }
               break;
             case "default-gateway":

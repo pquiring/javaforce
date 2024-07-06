@@ -25,6 +25,7 @@ public class Port implements Serializable, Comparable<Port> {
   //interface
   public String ip = "";
   public String mask = "";
+  public String dhcp_relay = "";
 
   //switchport
   public String mode = "";  //trunk or access or ip
@@ -60,6 +61,11 @@ public class Port implements Serializable, Comparable<Port> {
   public String getMask() {
     if (mask == null) mask = "";
     return mask;
+  }
+
+  public String getDHCPRelay() {
+    if (dhcp_relay == null) dhcp_relay = "";
+    return dhcp_relay;
   }
 
   public int getMode() {

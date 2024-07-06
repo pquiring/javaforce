@@ -28,6 +28,7 @@ public class VLAN implements Serializable, Comparable<VLAN> {
   //interface
   public String ip = "";
   public String mask = "";
+  public String dhcp_relay = "";
 
   //stp
   public boolean stp = true;
@@ -54,6 +55,11 @@ public class VLAN implements Serializable, Comparable<VLAN> {
   public String getMask() {
     if (mask == null) mask = "";
     return mask;
+  }
+
+  public String getDHCPRelay() {
+    if (dhcp_relay == null) dhcp_relay = "";
+    return dhcp_relay;
   }
 
   public static boolean validVLAN(String vlan) {

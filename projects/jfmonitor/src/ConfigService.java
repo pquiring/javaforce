@@ -416,6 +416,9 @@ public class ConfigService implements WebUIHandler {
     TextField mask = new TextField("");
     grid.addRow(new Component[] {new Label("Mask"), mask});
 
+    TextField dhcp_relay = new TextField("");
+    grid.addRow(new Component[] {new Label("DHCP Relay"), dhcp_relay});
+
     row = new Row();
     panel.add(row);
     Button save = new Button("Save");
@@ -441,6 +444,7 @@ public class ConfigService implements WebUIHandler {
       group.setText(port.getGroup());
       ip.setText(port.getIP());
       mask.setText(port.getMask());
+      dhcp_relay.setText(port.getDHCPRelay());
     };
 
     save.addClickListener((MouseEvent e, Component button) -> {
@@ -453,6 +457,7 @@ public class ConfigService implements WebUIHandler {
       String _group = group.getText();
       String _ip = ip.getText();
       String _mask = mask.getText();
+      String _dhcp_relay = dhcp_relay.getText();
       Port port = ui.selection.get(ui.device).getPort(0);
       if (port == null) return;
       if (_ip.length() > 0 || _mask.length() > 0) {
@@ -466,6 +471,12 @@ public class ConfigService implements WebUIHandler {
         }
         if (!valid_ip_mask_address(_ip, _mask)) {
           errmsg.setText("Invalid IP Address");
+          return;
+        }
+      }
+      if (_dhcp_relay.length() > 0) {
+        if (!IP4.isIP(_dhcp_relay)) {
+          errmsg.setText("Invalid DHCP Relay Address");
           return;
         }
       }
@@ -633,6 +644,42 @@ public class ConfigService implements WebUIHandler {
           }
         }
       }
+      if (!_dhcp_relay.equals(port.getDHCPRelay())) {
+        if (_dhcp_relay.length() > 0) {
+          Task task = new Task("Set Port DHCP Relay") {
+            public void doTask() {
+              try {
+                if (ui.device.configAddPort_DHCP_Relay(port, _dhcp_relay)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        } else {
+          //remove ip
+          Task task = new Task("Remove Port DHCP Relay") {
+            public void doTask() {
+              try {
+                if (ui.device.configRemovePort_DHCP_Relay(port)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+      }
       QueryHardware.scan_now = true;
       panel.setVisible(false);
     });
@@ -665,6 +712,9 @@ public class ConfigService implements WebUIHandler {
     TextField mask = new TextField("");
     grid.addRow(new Component[] {new Label("Mask"), mask});
 
+    TextField dhcp_relay = new TextField("");
+    grid.addRow(new Component[] {new Label("DHCP Relay"), dhcp_relay});
+
     ComboBox stp = new ComboBox();
     stp.add("0", "disable");
     stp.add("1", "enable");
@@ -691,13 +741,15 @@ public class ConfigService implements WebUIHandler {
         name.setText("");
         ip.setText("");
         mask.setText("");
+        dhcp_relay.setText("");
         stp.setSelectedIndex(1);
       } else {
         id.setText(ui.vlan_vlan.getNumber());
         id.setReadonly(true);
-        name.setText(ui.vlan_vlan.name);
-        ip.setText(ui.vlan_vlan.ip);
-        mask.setText(ui.vlan_vlan.mask);
+        name.setText(ui.vlan_vlan.getName());
+        ip.setText(ui.vlan_vlan.getIP());
+        mask.setText(ui.vlan_vlan.getMask());
+        dhcp_relay.setText(ui.vlan_vlan.getDHCPRelay());
         stp.setSelectedIndex(ui.vlan_vlan.stp ? 1 : 0);
       }
     };
@@ -708,6 +760,7 @@ public class ConfigService implements WebUIHandler {
       String _name = name.getText();
       String _ip = ip.getText();
       String _mask = mask.getText();
+      String _dhcp_relay = dhcp_relay.getText();
       boolean _stp = stp.getSelectedIndex() == 1;
       if (!VLAN.validVLAN(_id)) {
         errmsg.setText("Invalid VLAN ID");
@@ -724,6 +777,12 @@ public class ConfigService implements WebUIHandler {
         }
         if (!valid_ip_mask_address(_ip, _mask)) {
           errmsg.setText("Invalid IP Address");
+          return;
+        }
+      }
+      if (_dhcp_relay.length() > 0) {
+        if (!IP4.isIP(_dhcp_relay)) {
+          errmsg.setText("Invalid DHCP Relay Address");
           return;
         }
       }
@@ -768,6 +827,23 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+        if (_ip.length() > 0) {
+          Task task = new Task("Set VLAN DHCP Relay") {
+            public void doTask() {
+              try {
+                if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
                   setStatus("Completed");
                 } else {
                   setStatus("Failed");
@@ -850,6 +926,41 @@ public class ConfigService implements WebUIHandler {
             }
           };
           Tasks.tasks.addTask(ui.tasks, task);
+        }
+        if (_dhcp_relay.length() > 0) {
+          Task task = new Task("Set VLAN DHCP Relay") {
+            public void doTask() {
+              try {
+                if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        } else {
+          if (ui.vlan_vlan.ip.length() > 0) {
+            Task task = new Task("Remove VLAN DHCP Relay") {
+              public void doTask() {
+                try {
+                  if (ui.device.configRemoveVLAN_DHCP_Relay(ui.vlan_vlan)) {
+                    setStatus("Completed");
+                  } else {
+                    setStatus("Failed");
+                  }
+                } catch (Exception e) {
+                  setStatus("Error:" + action + " failed, check logs.");
+                  JFLog.log(e);
+                }
+              }
+            };
+            Tasks.tasks.addTask(ui.tasks, task);
+          }
         }
       }
       ui.vlans_init.run();
