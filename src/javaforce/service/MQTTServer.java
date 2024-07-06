@@ -214,6 +214,8 @@ public class MQTTServer extends Thread {
   public static final byte QOS_3 = 3;  //not used
 
   public static final byte FLAG_CLEAN_START = 2;
+  public static final byte FLAG_PASS = 0x40;
+  public static final byte FLAG_USER = (byte)0x80;
 
   public static Worker[] WorkerArrayType = new Worker[0];
 
@@ -284,12 +286,13 @@ public class MQTTServer extends Thread {
       String msg;
       if (debug) JFLog.log("cmd=" + cmd);
       switch (cmd) {
-        case CMD_CONNECT:
+        case CMD_CONNECT: {
           reply = new byte[5];
           //reply = header , size , ack_flags, return_code=0, props
           reply[0] = (byte)(CMD_CONNECT_ACK << 4);
           setPacketLength(reply);
           break;
+        }
         case CMD_PUBLISH: {
           //header, size, topic, id, msg
           boolean dup = (packet[0] & 0x08) != 0;

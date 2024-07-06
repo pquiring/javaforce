@@ -98,7 +98,7 @@ public class MQTT {
     packet[6] = 'T';
     packet[7] = 'T';
     packet[8] = 5;  //protocol version
-    packet[9] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START);  //connect flags (2=clean start)
+    packet[9] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START);  //connect flags
     packet[10] = 0;
     packet[11] = 120;  //keep alive interval (2 mins)
     packet[12] = 0;  //properties length
@@ -109,6 +109,54 @@ public class MQTT {
     Random r = new Random();
     String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
     System.arraycopy(hex.getBytes(), 0, packet, 17, 8);
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      disconnect();
+      JFLog.log(e);
+    }
+  }
+
+  public void connect(String user, String pass) {
+    byte[] user_bytes = user.getBytes();
+    int user_length = user_bytes.length;
+    byte[] pass_bytes = pass.getBytes();
+    int pass_length = pass_bytes.length;
+    int packet_length = 17 + 8 + 2 + user_length + 2 + pass_length;
+    if (packet_length > 125) {
+      JFLog.log("Error:user/pass too long");
+      return;
+    }
+    byte[] packet = new byte[packet_length];
+    packet[0] = (byte)(CMD_CONNECT << 4);
+    packet[1] = (byte)(packet_length - 2);
+    packet[2] = 0;
+    packet[3] = 4;  //string length (short)
+    packet[4] = 'M';
+    packet[5] = 'Q';
+    packet[6] = 'T';
+    packet[7] = 'T';
+    packet[8] = 5;  //protocol version
+    packet[9] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START + FLAG_USER + FLAG_PASS);  //connect flags
+    packet[10] = 0;
+    packet[11] = 120;  //keep alive interval (2 mins)
+    packet[12] = 0;  //properties length
+    packet[13] = 0;
+    packet[14] = 2 + 8;  //client id length (short)
+    packet[15] = 'J';  //client id
+    packet[16] = 'F';
+    Random r = new Random();
+    String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
+    System.arraycopy(hex.getBytes(), 0, packet, 17, 8);
+    int pos = 25;
+    setStringLength(packet, pos, (short)user_length);
+    pos += 2;
+    setString(packet, pos, user_bytes, user_length);
+    pos += user_length;
+    setStringLength(packet, pos, (short)pass_length);
+    pos += 2;
+    setString(packet, pos, pass_bytes, pass_length);
+    pos += pass_length;
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -268,6 +316,10 @@ public class MQTT {
 
   private void setStringLength(byte[] data, int offset, short length) {
     BE.setuint16(data, offset, length);
+  }
+
+  private void setString(byte[] data, int offset, byte[] str, int length) {
+    System.arraycopy(str, 0, data, offset, length);
   }
 
   private int getLengthBytes(int length) {
@@ -462,7 +514,7 @@ public class MQTT {
         return true;
       });
       client.connect(args[0]);
-      client.connect();
+      client.connect("user", "pass");
       if (args.length == 4) {
         if (args[1].equals("publish")) {
           client.publish(args[2], args[3]);
