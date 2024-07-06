@@ -295,6 +295,7 @@ public class MQTTServer extends Thread {
           boolean dup = (packet[0] & 0x08) != 0;
           byte qos = (byte)((packet[0] & 0x06) >> 1);
           boolean retain = (packet[0] & 0x01) != 0;
+          if (qos == QOS_3) throw new Exception("malformed packet");
           pos = 1 + getLengthBytes(packetLength);
           topicLength = getStringLength(packet, pos);
           if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
