@@ -130,7 +130,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private static String server_init;
 
   public boolean message(String topic, String msg) {
-    msgs.setText(msgs.getText() + msg + "\r\n");
+    String ln = topic + "=" + msg + "\r\n";
+    msgs.setText(msgs.getText() + ln);
     return true;
   }
 
