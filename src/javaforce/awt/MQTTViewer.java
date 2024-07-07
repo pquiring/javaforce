@@ -149,6 +149,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       msgs.setText("Connection failed!");
       client = null;
     }
+    client.setListener(this);
     start.setText("Stop");
   }
 
