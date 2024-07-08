@@ -144,19 +144,27 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   }
 
   public void start_new() {
-    msgs.setText("Connecting...");
+    String _server = server.getText();
+    String _topic = topic.getText();
+    msgs.setText("Connecting to " + _server + "...");
     client = new MQTT();
-    if (!client.connect(server.getText())) {
+    if (!client.connect(_server)) {
       msgs.setText("Connection failed!");
       client = null;
     }
+    msgs.setText("Connected to " + _server + "\r\n");
     client.setListener(this);
+    client.subscribe(_topic);
     start.setText("Stop");
+    server.setEditable(false);
+    topic.setEditable(false);
   }
 
   public void stop() {
     client.disconnect();
     client = null;
     start.setText("Start");
+    server.setEditable(true);
+    topic.setEditable(true);
   }
 }
