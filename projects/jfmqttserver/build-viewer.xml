@@ -1,15 +1,12 @@
-<project name="jfmqtt" default="jar" basedir=".">
+<project name="jfmqttviewer" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jfmqtt"/>
-  <property name="apptype" value="service"/>
+  <property name="app" value="jfmqttviewer"/>
+  <property name="apptype" value="window"/>
   <property name="home" value="../.."/>
-  <property name="jre" location="${home}/jre_base_desktop"/>
-
-  <property name="project2" value="build-viewer"/>
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives,jar-javaforce">
+  <target name="depjars" depends="depnatives">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -19,6 +16,5 @@
   </target>
 
   <target name="install" description="install files for linux">
-    <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 </project>
