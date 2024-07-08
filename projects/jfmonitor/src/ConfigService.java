@@ -839,7 +839,7 @@ public class ConfigService implements WebUIHandler {
           };
           Tasks.tasks.addTask(ui.tasks, task);
         }
-        if (_ip.length() > 0) {
+        if (_dhcp_relay.length() > 0) {
           Task task = new Task("Set VLAN DHCP Relay") {
             public void doTask() {
               try {
@@ -858,7 +858,7 @@ public class ConfigService implements WebUIHandler {
         }
       } else {
         //edit vlan
-        if (true) {
+        if (!_name.equals(ui.vlan_vlan.getName())) {
           Task task = new Task("Set VLAN Name") {
             public void doTask() {
               try {
@@ -876,23 +876,25 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (_ip.length() > 0) {
-          Task task = new Task("Create VLAN IP") {
-            public void doTask() {
-              try {
-                if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
-                  setStatus("Completed");
-                } else {
-                  setStatus("Failed");
+          if (!_ip.equals(ui.vlan_vlan.getIP())) {
+            Task task = new Task("Set VLAN IP") {
+              public void doTask() {
+                try {
+                  if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
+                    setStatus("Completed");
+                  } else {
+                    setStatus("Failed");
+                  }
+                } catch (Exception e) {
+                  setStatus("Error:" + action + " failed, check logs.");
+                  JFLog.log(e);
                 }
-              } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
-                JFLog.log(e);
               }
-            }
-          };
-          Tasks.tasks.addTask(ui.tasks, task);
+            };
+            Tasks.tasks.addTask(ui.tasks, task);
+          }
         } else {
-          if (ui.vlan_vlan.ip.length() > 0) {
+          if (ui.vlan_vlan.getIP().length() > 0) {
             Task task = new Task("Remove VLAN IP") {
               public void doTask() {
                 try {
@@ -911,7 +913,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
         if (_stp != ui.vlan_vlan.stp) {
-          Task task = new Task("Disable VLAN STP") {
+          Task task = new Task("Set VLAN STP") {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
@@ -928,23 +930,25 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (_dhcp_relay.length() > 0) {
-          Task task = new Task("Set VLAN DHCP Relay") {
-            public void doTask() {
-              try {
-                if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
-                  setStatus("Completed");
-                } else {
-                  setStatus("Failed");
+          if (!_dhcp_relay.equals(ui.vlan_vlan.getDHCPRelay())) {
+            Task task = new Task("Set VLAN DHCP Relay") {
+              public void doTask() {
+                try {
+                  if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
+                    setStatus("Completed");
+                  } else {
+                    setStatus("Failed");
+                  }
+                } catch (Exception e) {
+                  setStatus("Error:" + action + " failed, check logs.");
+                  JFLog.log(e);
                 }
-              } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
-                JFLog.log(e);
               }
-            }
-          };
-          Tasks.tasks.addTask(ui.tasks, task);
+            };
+            Tasks.tasks.addTask(ui.tasks, task);
+          }
         } else {
-          if (ui.vlan_vlan.ip.length() > 0) {
+          if (ui.vlan_vlan.getDHCPRelay().length() > 0) {
             Task task = new Task("Remove VLAN DHCP Relay") {
               public void doTask() {
                 try {
