@@ -34,6 +34,8 @@ function build {
   if [ "$1" == "jfbackup" ]; then
     return
   fi
+  echo Packaging $1
+  echo Packaging $1 1>&2
   cd $1
   ant $pkg
   cd ..

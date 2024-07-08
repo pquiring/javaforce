@@ -80,6 +80,8 @@ find -name "*.class" | xargs rm
 ant $pkg
 
 #package utils
+echo Packaging utils
+echo Packaging utils 1>&2
 cd utils
 ant $pkg
 cd ..
