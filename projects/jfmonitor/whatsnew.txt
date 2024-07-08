@@ -1,3 +1,7 @@
+July 8/2024 : 0.13 released
+  - new : added DHCP Relay for ports and vlans
+  - fix : editing VLAN options
+
 July 3/2024 : 0.12 released
   - fix : add Group
 
