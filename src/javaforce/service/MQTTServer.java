@@ -83,6 +83,9 @@ public class MQTTServer extends Thread {
         subs.remove(worker);
       }
     }
+    public boolean matches(String wc) {
+      return JF.wildcardCompare(name, wc, false);
+    }
   }
 
   private boolean server_active;
@@ -113,20 +116,6 @@ public class MQTTServer extends Thread {
     }
   }
 
-  /*
-
-  struct MQTT {
-    byte header;  // msg_type(4) / dup(1) / qos(2) / retain (1)
-    byte[] length;  // (7 bits per byte) (bit 7 indicates another byte) (max 4 bytes)
-    short id1;  //some packets
-    short topicLength;  //some packets
-    byte[] topic;  //some packets
-    short id2;  //some packets
-    byte[] msg;  //remainder of packet
-  }
-
-  */
-
   private Topic getTopic(String name) {
     synchronized (lock) {
       Topic topic = topics.get(name);
@@ -135,6 +124,18 @@ public class MQTTServer extends Thread {
       topics.put(name, topic);
       return topic;
     }
+  }
+
+  private Topic[] getTopics(String wc) {
+    ArrayList<Topic> topics_sub = new ArrayList<>();
+    synchronized (lock) {
+      for(Topic topic : topics.values().toArray(Topic.TopicArrayType)) {
+        if (topic.matches(wc)) {
+          topics_sub.add(topic);
+        }
+      }
+    }
+    return topics_sub.toArray(Topic.TopicArrayType);
   }
 
   private void unsubscribeAll(Worker worker) {
@@ -382,8 +383,15 @@ public class MQTTServer extends Thread {
             pos += 2;
             topic_name = new String(packet, pos, topicLength);
             pos += topicLength;
-            Topic topic = getTopic(topic_name);
-            topic.subscribe(this);
+            if (JF.isWildcard(topic_name)) {
+              Topic[] topics = getTopics(topic_name);
+              for(Topic topic : topics) {
+                topic.subscribe(this);
+              }
+            } else {
+              Topic topic = getTopic(topic_name);
+              topic.subscribe(this);
+            }
             if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + topic_name);
             pos++;  //subscribe options
           }
