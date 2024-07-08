@@ -1,2 +1,3 @@
 /usr/bin/jfmqtt
+/usr/bin/jfmqttviewer
 /lib/systemd/system/jfmqtt.service
