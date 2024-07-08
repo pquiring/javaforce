@@ -998,7 +998,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
 
     ScrollPanel table_panel = new ScrollPanel();
-    Table table = new Table(new int[] {64, 128, 128, 128, 64}, 32, 5, 0);
+    Table table = new Table(new int[] {64, 128, 128, 128, 64, 128}, 32, 6, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
@@ -1011,9 +1011,16 @@ public class ConfigService implements WebUIHandler {
       ui.vlans_vlans = ui.device.hardware.vlans.toArray(VLAN.ArrayType);
       Arrays.sort(ui.vlans_vlans);
       table.removeAll();
-      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask"), new Label("STP")});
+      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask"), new Label("STP"), new Label("DHCP Relay")});
       for(VLAN vlan : ui.vlans_vlans) {
-        table.addRow(new Component[] {new Label(vlan.getNumber()), new Label(vlan.getName()), new Label(vlan.getIP()), new Label(vlan.getMask()), new Label(Boolean.toString(vlan.stp))});
+        table.addRow(new Component[] {
+          new Label(vlan.getNumber()),
+          new Label(vlan.getName()),
+          new Label(vlan.getIP()),
+          new Label(vlan.getMask()),
+          new Label(Boolean.toString(vlan.stp)),
+          new Label(vlan.getDHCPRelay()),
+        });
       }
     };
 
