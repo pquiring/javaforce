@@ -617,7 +617,7 @@ public class Cisco {
     SSH.Options options = new SSH.Options();
     options.username = device.hardware.user;
     options.password = device.hardware.pass;
-    String cmds = "config terminal;vlan " + vlan.id + ";name " + name + ";exit;exit";
+    String cmds = "config terminal;vlan " + vlan.getNumber() + ";name " + name + ";exit;exit";
     String ip = device.getip();
     if (ip == null) return false;
     if (debug) {

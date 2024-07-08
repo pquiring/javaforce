@@ -561,6 +561,8 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     if (_to == null) {
       _to = to.mac;
     }
+    if (_this.length() < _to.length()) return -1;
+    if (_this.length() > _to.length()) return 1;
     return _this.compareTo(_to);
   }
 }
