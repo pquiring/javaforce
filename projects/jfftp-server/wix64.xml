@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfftpcfg.ico" />
+    <Icon Id="icon.ico" SourceFile="jfftp.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
