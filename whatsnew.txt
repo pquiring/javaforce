@@ -1,5 +1,12 @@
 What's new...
 
+July 9/2024 : JF/66.0
+ - added MQTT client and completed MQTTServer
+ - jfMQTT/0.1
+   - new MQTT Broker
+ - jfMonitor/0.13
+   - added Cisco:DHCP Relay options
+
 July 2/2024 : JF/65.0
  - jfServlets/0.1
    - new WebServer semi-compliant with Java Servlets (javax.servlet.http.HttpServlet)
