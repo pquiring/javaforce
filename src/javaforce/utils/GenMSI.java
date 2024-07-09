@@ -32,6 +32,10 @@ public class GenMSI {
     String apptype = tools.getProperty("apptype");
     String version = tools.getProperty("version");
     String jre = tools.getProperty("jre");
+    if (jre.length() == 0) {
+      JFLog.log("Error:JRE property not set");
+      System.exit(1);
+    }
     jre = jre.replaceAll("\\$\\{home\\}", home);
     String msi = tools.getProperty("msi");
     if (msi.length() == 0) msi = app;
