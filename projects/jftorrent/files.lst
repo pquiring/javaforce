@@ -1,7 +1,8 @@
 /usr/share/java/jftorrent.jar
 /usr/bin/jftorrent
-/usr/bin/jftorrentTracker
-/usr/bin/jftorrentMaker
+/usr/bin/jftorrent-client
+/usr/bin/jftorrent-maker
+/usr/bin/jftorrent-tracker
 /usr/share/jfhelp/jftorrent.html
 /usr/share/applications/jftorrent.desktop
 /usr/share/icons/hicolor/48x48/apps/jftorrent.png

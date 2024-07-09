@@ -22,9 +22,9 @@
         <File Id="jftorrent.jar" Source="jftorrent.jar" KeyPath="yes" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jftorrent.exe" Source="jftorrent.exe" />
-        <File Id="run.bat" Source="run.bat" />
-        <File Id="runMaker.bat" Source="runMaker.bat" />
-        <File Id="runTracker.bat" Source="runTracker.bat" />
+        <File Id="jftorrentclient.exe" Source="jftorrent-client.exe" />
+        <File Id="jftorrentmaker.exe" Source="jftorrent-maker.exe" />
+        <File Id="jftorrenttracker.exe" Source="jftorrent-tracker.exe" />
       </Component>
     </DirectoryRef>
 
