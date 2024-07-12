@@ -30,7 +30,8 @@ Folders
  /native    - native loaders with JNI bindings for FFmpeg, OpenGL, Camera
  /projects  - source for all sub-projects
  /iso       - scripts to build jfLinux iso (outdated)
- /linux     - scripts to install JavaForce repo (preferred method for Linux)
+ /linux     - scripts to install JavaForce repo for Linux
+ /windows   - scripts to install JavaForce repo for Windows
  /utils     - utility apps (jnlp)
 
 Getting Started
