@@ -196,6 +196,19 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return false;
   }
 
+  public boolean configPortShutdown(Port port, boolean state) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setInterfaceShutdown(this, port.id, state)) {
+          port.shutdown = state;
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
   public boolean configSetVLANs(Port port, String vlans) {
     switch (type) {
       case TYPE_CISCO:
@@ -381,6 +394,19 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
         Cisco cisco = new Cisco();
         if (cisco.removeInterfaceDHCPRelay(this, vlan.id)) {
           vlan.dhcp_relay = "";
+          return true;
+        }
+        break;
+    }
+    return false;
+  }
+
+  public boolean configVLAN_Shutdown(VLAN vlan, boolean state) {
+    switch (type) {
+      case TYPE_CISCO:
+        Cisco cisco = new Cisco();
+        if (cisco.setInterfaceShutdown(this, vlan.id, state)) {
+          vlan.shutdown = state;
           return true;
         }
         break;

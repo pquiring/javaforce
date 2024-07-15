@@ -307,6 +307,33 @@ public class Cisco {
     }
     return ok;
   }
+  public boolean setInterfaceShutdown(Device device, String iid, boolean state) {
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = null;
+    if (state) {
+      cmds = "config terminal;interface " + iid + ";shutdown;exit;exit;exit";
+    } else {
+      cmds = "config terminal;interface " + iid + ";no shutdown;exit;exit;exit";
+    }
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (debug) {
+      JFLog.log("setInterfaceShutdown:" + cmds);
+      return true;
+    }
+    if (!ssh.connect(ip, 22, options)) return false;
+    String result = ssh.script(cmds.split(";"));
+    ssh.disconnect();
+    if (result == null) return false;
+    boolean ok = result.indexOf('%') == -1;
+    if (!ok) {
+      JFLog.log("Error:" + result);
+    }
+    return ok;
+  }
   public static final int MODE_ACCESS = 0;
   public static final int MODE_TRUNK = 1;
   public static final int MODE_IP = 2;
@@ -844,9 +871,17 @@ public class Cisco {
                   break;
               }
               break;
+            case "shutdown":
+              break;
           }
           break;
         case "shutdown":
+          if (port != null) {
+            port.shutdown = true;
+          }
+          if (vlan != null) {
+            vlan.shutdown = true;
+          }
           break;
         case "spanning-tree":
           break;

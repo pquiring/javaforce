@@ -29,6 +29,7 @@ public class VLAN implements Serializable, Comparable<VLAN> {
   public String ip = "";
   public String mask = "";
   public String dhcp_relay = "";
+  public boolean shutdown;
 
   //stp
   public boolean stp = true;

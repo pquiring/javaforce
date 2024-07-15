@@ -26,6 +26,7 @@ public class Port implements Serializable, Comparable<Port> {
   public String ip = "";
   public String mask = "";
   public String dhcp_relay = "";
+  public boolean shutdown;
 
   //switchport
   public String mode = "";  //trunk or access or ip

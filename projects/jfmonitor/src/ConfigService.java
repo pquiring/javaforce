@@ -419,6 +419,9 @@ public class ConfigService implements WebUIHandler {
     TextField dhcp_relay = new TextField("");
     grid.addRow(new Component[] {new Label("DHCP Relay"), dhcp_relay});
 
+    CheckBox shutdown = new CheckBox("");
+    grid.addRow(new Component[] {new Label("Shutdown"),shutdown});
+
     row = new Row();
     panel.add(row);
     Button save = new Button("Save");
@@ -437,6 +440,7 @@ public class ConfigService implements WebUIHandler {
       Port port = ui.selection.get(ui.device).getPort(0);
       port_desc.setText("Port:" + port.id);
       mode.setSelectedIndex(Cisco.getSwitchMode(port.mode));
+      shutdown.setSelected(port.shutdown);
       name.setText(port.getName());
       access_vlan.setText(port.getAccessVLAN());
       vlans.setText(port.getVLANs());
@@ -450,6 +454,7 @@ public class ConfigService implements WebUIHandler {
     save.addClickListener((MouseEvent e, Component button) -> {
       errmsg.setText("");
       int _mode = mode.getSelectedIndex();
+      boolean _shutdown = shutdown.isSelected();
       String _name = name.getText();
       String _access_vlan = access_vlan.getText();
       String _trunk_vlans = vlans.getText();
@@ -486,6 +491,23 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetSwitchMode(port, _mode)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Failed");
+              }
+            } catch (Exception e) {
+              setStatus("Error:" + action + " failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      }
+      if (_shutdown != port.shutdown) {
+        Task task = new Task("Set Shutdown") {
+          public void doTask() {
+            try {
+              if (ui.device.configPortShutdown(port, _shutdown)) {
                 setStatus("Completed");
               } else {
                 setStatus("Failed");
@@ -720,6 +742,9 @@ public class ConfigService implements WebUIHandler {
     stp.add("1", "enable");
     grid.addRow(new Component[] {new Label("STP"), stp});
 
+    CheckBox shutdown = new CheckBox("");
+    grid.addRow(new Component[] {new Label("Shutdown"), shutdown});
+
     row = new Row();
     panel.add(row);
     Button save = new Button("Save");
@@ -743,6 +768,7 @@ public class ConfigService implements WebUIHandler {
         mask.setText("");
         dhcp_relay.setText("");
         stp.setSelectedIndex(1);
+        shutdown.setSelected(false);
       } else {
         id.setText(ui.vlan_vlan.getNumber());
         id.setReadonly(true);
@@ -751,6 +777,7 @@ public class ConfigService implements WebUIHandler {
         mask.setText(ui.vlan_vlan.getMask());
         dhcp_relay.setText(ui.vlan_vlan.getDHCPRelay());
         stp.setSelectedIndex(ui.vlan_vlan.stp ? 1 : 0);
+        shutdown.setSelected(ui.vlan_vlan.shutdown);
       }
     };
 
@@ -762,6 +789,7 @@ public class ConfigService implements WebUIHandler {
       String _mask = mask.getText();
       String _dhcp_relay = dhcp_relay.getText();
       boolean _stp = stp.getSelectedIndex() == 1;
+      boolean _shutdown = shutdown.isSelected();
       if (!VLAN.validVLAN(_id)) {
         errmsg.setText("Invalid VLAN ID");
         return;
@@ -844,6 +872,23 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
+        if (_shutdown) {
+          Task task = new Task("Set VLAN Shutdown") {
+            public void doTask() {
+              try {
+                if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {
                   setStatus("Completed");
                 } else {
                   setStatus("Failed");
@@ -966,6 +1011,23 @@ public class ConfigService implements WebUIHandler {
             Tasks.tasks.addTask(ui.tasks, task);
           }
         }
+        if (_shutdown != ui.vlan_vlan.shutdown) {
+          Task task = new Task("Set VLAN Shutdown") {
+            public void doTask() {
+              try {
+                if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Failed");
+                }
+              } catch (Exception e) {
+                setStatus("Error:" + action + " failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        }
       }
       ui.vlans_init.run();
       QueryHardware.scan_now = true;
@@ -998,7 +1060,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
 
     ScrollPanel table_panel = new ScrollPanel();
-    Table table = new Table(new int[] {64, 128, 128, 128, 64, 128}, 32, 6, 0);
+    Table table = new Table(new int[] {64, 128, 128, 128, 64, 128, 64}, 32, 6, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);
@@ -1011,7 +1073,7 @@ public class ConfigService implements WebUIHandler {
       ui.vlans_vlans = ui.device.hardware.vlans.toArray(VLAN.ArrayType);
       Arrays.sort(ui.vlans_vlans);
       table.removeAll();
-      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask"), new Label("STP"), new Label("DHCP Relay")});
+      table.addRow(new Component[] {new Label("ID"), new Label("Name"), new Label("IP"), new Label("Mask"), new Label("STP"), new Label("DHCP Relay"), new Label("Shutdown")});
       for(VLAN vlan : ui.vlans_vlans) {
         table.addRow(new Component[] {
           new Label(vlan.getNumber()),
@@ -1020,6 +1082,7 @@ public class ConfigService implements WebUIHandler {
           new Label(vlan.getMask()),
           new Label(Boolean.toString(vlan.stp)),
           new Label(vlan.getDHCPRelay()),
+          new Label(Boolean.toString(vlan.shutdown)),
         });
       }
     };
@@ -2198,10 +2261,14 @@ public class ConfigService implements WebUIHandler {
 
   private void setupPortCell(Component cell, Device device, Port port, Label msg, UI ui) {
     cell.setSize(CELL_SIZE_X - 2, CELL_SIZE_Y - 2);
-    if (port.link) {
-      cell.setBackColor(Color.green);
+    if (port.shutdown) {
+      cell.setBackColor(Color.red);
     } else {
-      cell.setBackColor(Color.grey);
+      if (port.link) {
+        cell.setBackColor(Color.green);
+      } else {
+        cell.setBackColor(Color.grey);
+      }
     }
     if (!ui.selection.containsKey(device)) {
       ui.selection.put(device, new Selection());
