@@ -79,6 +79,8 @@ cd ../../..
 find -name "*.class" | xargs rm
 
 #package javaforce
+echo Packaging javaforce
+echo Packaging javaforce 1>&2
 ant $pkg
 
 #package utils
