@@ -64,7 +64,9 @@ if [ ! -f native/linux64.bin ]; then
 fi
 
 #install repo
-ant repo
+if [ ! -f repo/readme.txt ]; then
+  ant repo
+fi
 
 #clean repo
 echo cleaning repo/$OS/$ARCH/
