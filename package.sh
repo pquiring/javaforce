@@ -76,7 +76,7 @@ chmod +x clean.sh
 cd ../../..
 
 #force rebuild everything
-find -name "*.class" | xargs rm
+find -name "*.class" | xargs rm 2>/dev/null
 
 #package javaforce
 echo Packaging javaforce
