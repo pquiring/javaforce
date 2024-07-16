@@ -5,6 +5,7 @@
   <!-- native dependancies versions -->
   <property name="glfw-version" value="3.4"/>
   <property name="ffmpeg-version" value="5.1.2"/>
+  <property name="opencl-version" value="v2024.05.08"/>
   <!-- Maven Java Dependancies versions -->
   <property name="twelvemonkeys-version" value="3.9.4"/>
   <property name="bfg-version" value="1.14.0"/>

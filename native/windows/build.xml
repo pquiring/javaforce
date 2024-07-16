@@ -5,7 +5,7 @@
 
   <target name="windows" description="create windows native files">
     <!-- native library -->
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' native.cpp /c /Fo: native.obj"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' /I '../opencl' native.cpp /c /Fo: native.obj"/>
     <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw.obj"/>
     <exec command="cl /I '../glfw/include' glfw-null.c /c /Fo: glfw-null.obj"/>
     <exec command="lib /nologo /out:native.lib native.obj glfw.obj glfw-null.obj"/>

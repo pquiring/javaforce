@@ -19,7 +19,7 @@
 #define AUDIO_FRAME 1
 #define VIDEO_FRAME 2
 
-static jboolean loaded = JNI_FALSE;
+static jboolean ffmpeg_loaded = JNI_FALSE;
 
 static jboolean ff_debug_log = JNI_FALSE;
 static jboolean ff_debug_trace = JNI_FALSE;
@@ -387,10 +387,10 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ninit
   (JNIEnv *e, jclass c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale)
 {
-  if (loaded) return loaded;
+  if (ffmpeg_loaded) return ffmpeg_loaded;
 
   const char *codecFile = e->GetStringUTFChars(jcodec, NULL);
 
@@ -423,12 +423,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
 
   //get JNI IDs
 
-  loaded = JNI_TRUE;
+  ffmpeg_loaded = JNI_TRUE;
 
   return JNI_TRUE;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1set_1logging
+JNIEXPORT void JNICALL Java_javaforce_media_MediaCoder_setLogging
   (JNIEnv *e, jclass c, jboolean state)
 {
   (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);

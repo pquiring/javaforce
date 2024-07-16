@@ -39,6 +39,7 @@
 #include "javaforce_ui_Image.h"
 #include "javaforce_ui_Window.h"
 #include "javaforce_net_PacketCapture.h"
+#include "javaforce_gl_CL.h"
 
 #ifdef __arm__
   #define __RASPBERRY_PI__
@@ -1883,6 +1884,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #ifndef __FreeBSD__
 #include "../common/ni.cpp"
 #endif
+
+#include "../common/opencl.cpp"
 
 #include "../common/types.h"
 

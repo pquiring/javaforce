@@ -44,6 +44,12 @@
     <exec command="git clone https://github.com/nothings/stb.git native/stb"/>
   </target>
 
+  <available property="have-opencl" file="native/opencl/CL/cl.h"/>
+  <target name="get-opencl" unless="have-opencl" description="download opencl headers">
+    <exec command="git clone https://github.com/KhronosGroup/OpenCL-Headers.git native/opencl"/>
+    <exec command="git checkout -q tags/${opencl-version}" dir="native/opencl"/>
+  </target>
+
   <target name="get-ffmpeg-win64-bin" description="download ffmpeg for Win64">
     <echo message="Downloading: ffmpeg-win64-bin-${ffmpeg-version}.zip"/>
     <get src="http://javaforce.sourceforge.net/ffmpeg-win64-bin-${ffmpeg-version}.zip" dest="ffmpeg-win64-bin-${ffmpeg-version}.zip"/>
@@ -70,6 +76,7 @@
     <antcall target="depnatives"/>
     <antcall target="get-glfw"/>
     <antcall target="get-stb"/>
+    <antcall target="get-opencl"/>
     <antcall target="get-repo"/>
     <antcall target="getjars"/>
     <antcall target="jar-jcifs"/>

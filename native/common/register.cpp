@@ -127,8 +127,8 @@ static JNINativeMethod javaforce_media_Camera[] = {
 };
 
 static JNINativeMethod javaforce_media_MediaCoder[] = {
-  {"ffmpeg_init", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_media_MediaCoder_ffmpeg_1init},
-  {"ffmpeg_set_logging", "(Z)V", (void *)&Java_javaforce_media_MediaCoder_ffmpeg_1set_1logging},
+  {"ninit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_media_MediaCoder_ninit},
+  {"setLogging", "(Z)V", (void *)&Java_javaforce_media_MediaCoder_setLogging},
 };
 
 static JNINativeMethod javaforce_media_MediaDecoder[] = {
@@ -184,6 +184,10 @@ static JNINativeMethod javaforce_net_PacketCapture[] = {
   {"compile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_compile},
   {"read", "(J)[B", (void *)&Java_javaforce_net_PacketCapture_read},
   {"write", "(J[BII)Z", (void *)&Java_javaforce_net_PacketCapture_write},
+};
+
+static JNINativeMethod javaforce_cl_CL[] = {
+  {"ninit", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_cl_CL_ninit},
 };
 
 #ifdef __RASPBERRY_PI__
@@ -264,6 +268,9 @@ void registerCommonNatives(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/net/PacketCapture");
   registerNatives(env, cls, javaforce_net_PacketCapture, sizeof(javaforce_net_PacketCapture)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/cl/CL");
+  registerNatives(env, cls, javaforce_cl_CL, sizeof(javaforce_cl_CL)/sizeof(JNINativeMethod));
 
 #ifdef __RASPBERRY_PI__
   cls = findClass(env, "javaforce/pi/GPIO");

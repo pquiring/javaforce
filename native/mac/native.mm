@@ -21,6 +21,7 @@
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"
 #include "javaforce_ui_Window.h"
+#include "javaforce_cl_CL.h"
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
@@ -318,6 +319,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
 #include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"
+
+#include "../common/opencl.cpp"
 
 #include "../common/ni.cpp"
 

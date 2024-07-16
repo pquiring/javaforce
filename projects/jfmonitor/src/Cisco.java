@@ -478,52 +478,6 @@ public class Cisco {
     }
     return ok;
   }
-  public boolean groupAddPort(Device device, Port port, String gid) {
-    //interface # ; channel-group # mode on
-    SSH ssh = new SSH();
-    SSH.Options options = new SSH.Options();
-    options.username = device.hardware.user;
-    options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + port.id + ";channel-group " + gid + " mode on;exit;exit;exit";
-    String ip = device.getip();
-    if (ip == null) return false;
-    if (debug) {
-      JFLog.log("groupAddPort:" + cmds);
-      return true;
-    }
-    if (!ssh.connect(ip, 22, options)) return false;
-    String result = ssh.script(cmds.split(";"));
-    ssh.disconnect();
-    if (result == null) return false;
-    boolean ok = result.indexOf('%') == -1;
-    if (!ok) {
-      JFLog.log("Error:" + result);
-    }
-    return ok;
-  }
-  public boolean groupRemovePort(Device device, Port port) {
-    //interface # ; no channel-group #
-    SSH ssh = new SSH();
-    SSH.Options options = new SSH.Options();
-    options.username = device.hardware.user;
-    options.password = device.hardware.pass;
-    String cmds = "config terminal;interface " + port.id + ";no channel-group;exit;exit;exit";
-    String ip = device.getip();
-    if (ip == null) return false;
-    if (debug) {
-      JFLog.log("groupRemovePort:" + cmds);
-      return true;
-    }
-    if (!ssh.connect(ip, 22, options)) return false;
-    String result = ssh.script(cmds.split(";"));
-    ssh.disconnect();
-    if (result == null) return false;
-    boolean ok = result.indexOf('%') == -1;
-    if (!ok) {
-      JFLog.log("Error:" + result);
-    }
-    return ok;
-  }
   public boolean setRoutingMode(Device device, boolean state) {
     SSH ssh = new SSH();
     SSH.Options options = new SSH.Options();

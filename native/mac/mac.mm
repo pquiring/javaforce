@@ -46,6 +46,7 @@
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_media_VideoBuffer.h"
 #include "javaforce_net_PacketCapture.h"
+#include "javaforce_cl_CL.h"
 
 /* Global variables */
 int type;
