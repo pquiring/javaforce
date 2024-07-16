@@ -131,12 +131,18 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   //get platform_id
   res = (*_clGetPlatformIDs)(1, &platform_id, NULL);
 
-  if (res != CL_SUCCESS) return JNI_FALSE;
+  if (res != CL_SUCCESS) {
+    printf("Error: Failed to get platform id!\n");
+    return JNI_FALSE;
+  }
 
   //get device_id
   res = (*_clGetDeviceIDs)(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
 
-  if (res != CL_SUCCESS) return JNI_FALSE;
+  if (res != CL_SUCCESS) {
+    printf("Error: Failed to get device id!\n");
+    return JNI_FALSE;
+  }
 
   // Create a compute context
   context = (*_clCreateContext)(0, 1, &device_id, NULL, NULL, &err);
