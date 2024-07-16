@@ -117,7 +117,7 @@ clRetainKernel_fn _clRetainKernel;
 clRetainMemObject_fn _clRetainMemObject;
 clRetainProgram_fn _clRetainProgram;
 clRetainSampler_fn _clRetainSampler;
-clSetCommandQueueProperty_fn _clSetCommandQueueProperty;
+//clSetCommandQueueProperty_fn _clSetCommandQueueProperty;  //deprecated
 clSetContextDestructorCallback_fn _clSetContextDestructorCallback;
 clSetDefaultDeviceCommandQueue_fn _clSetDefaultDeviceCommandQueue;
 clSetEventCallback_fn _clSetEventCallback;
@@ -252,7 +252,7 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clRetainMemObject, "clRetainMemObject");
   getFunction(opencl, (void**)&_clRetainProgram, "clRetainProgram");
   getFunction(opencl, (void**)&_clRetainSampler, "clRetainSampler");
-  getFunction(opencl, (void**)&_clSetCommandQueueProperty, "clSetCommandQueueProperty");
+//  getFunction(opencl, (void**)&_clSetCommandQueueProperty, "clSetCommandQueueProperty");
   getFunction(opencl, (void**)&_clSetContextDestructorCallback, "clSetContextDestructorCallback");
   getFunction(opencl, (void**)&_clSetDefaultDeviceCommandQueue, "clSetDefaultDeviceCommandQueue");
   getFunction(opencl, (void**)&_clSetEventCallback, "clSetEventCallback");
