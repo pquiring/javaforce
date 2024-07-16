@@ -15,7 +15,7 @@ clCloneKernel_fn _clCloneKernel;
 clCompileProgram_fn _clCompileProgram;
 clCreateBuffer_fn _clCreateBuffer;
 clCreateBufferWithProperties_fn _clCreateBufferWithProperties;
-clCreateCommandQueue_fn _clCreateCommandQueue;
+//clCreateCommandQueue_fn _clCreateCommandQueue;  //deprecated
 clCreateCommandQueueWithProperties_fn _clCreateCommandQueueWithProperties;
 clCreateContext_fn _clCreateContext;
 clCreateContextFromType_fn _clCreateContextFromType;
@@ -25,8 +25,8 @@ clCreateContextFromType_fn _clCreateContextFromType;
 //clCreateFromGLTexture2D_fn _clCreateFromGLTexture2D;
 //clCreateFromGLTexture3D_fn _clCreateFromGLTexture3D;
 clCreateImage_fn _clCreateImage;
-clCreateImage2D_fn _clCreateImage2D;
-clCreateImage3D_fn _clCreateImage3D;
+//clCreateImage2D_fn _clCreateImage2D;  //deprecated
+//clCreateImage3D_fn _clCreateImage3D;  //deprecated
 clCreateImageWithProperties_fn _clCreateImageWithProperties;
 clCreateKernel_fn _clCreateKernel;
 clCreateKernelsInProgram_fn _clCreateKernelsInProgram;
@@ -35,13 +35,13 @@ clCreateProgramWithBinary_fn _clCreateProgramWithBinary;
 clCreateProgramWithBuiltInKernels_fn _clCreateProgramWithBuiltInKernels;
 clCreateProgramWithIL_fn _clCreateProgramWithIL;
 clCreateProgramWithSource_fn _clCreateProgramWithSource;
-clCreateSampler_fn _clCreateSampler;
+//clCreateSampler_fn _clCreateSampler;  //deprecated
 clCreateSamplerWithProperties_fn _clCreateSamplerWithProperties;
 clCreateSubBuffer_fn _clCreateSubBuffer;
 clCreateSubDevices_fn _clCreateSubDevices;
 clCreateUserEvent_fn _clCreateUserEvent;
 //clEnqueueAcquireGLObjects_fn _clEnqueueAcquireGLObjects;
-clEnqueueBarrier_fn _clEnqueueBarrier;
+//clEnqueueBarrier_fn _clEnqueueBarrier;  //deprecated
 clEnqueueBarrierWithWaitList_fn _clEnqueueBarrierWithWaitList;
 clEnqueueCopyBuffer_fn _clEnqueueCopyBuffer;
 clEnqueueCopyBufferRect_fn _clEnqueueCopyBufferRect;
@@ -52,7 +52,7 @@ clEnqueueFillBuffer_fn _clEnqueueFillBuffer;
 clEnqueueFillImage_fn _clEnqueueFillImage;
 clEnqueueMapBuffer_fn _clEnqueueMapBuffer;
 clEnqueueMapImage_fn _clEnqueueMapImage;
-clEnqueueMarker_fn _clEnqueueMarker;
+//clEnqueueMarker_fn _clEnqueueMarker;  //deprecated
 clEnqueueMarkerWithWaitList_fn _clEnqueueMarkerWithWaitList;
 clEnqueueMigrateMemObjects_fn _clEnqueueMigrateMemObjects;
 clEnqueueNativeKernel_fn _clEnqueueNativeKernel;
@@ -67,9 +67,9 @@ clEnqueueSVMMemcpy_fn _clEnqueueSVMMemcpy;
 clEnqueueSVMMemFill_fn _clEnqueueSVMMemFill;
 clEnqueueSVMMigrateMem_fn _clEnqueueSVMMigrateMem;
 clEnqueueSVMUnmap_fn _clEnqueueSVMUnmap;
-clEnqueueTask_fn _clEnqueueTask;
+//clEnqueueTask_fn _clEnqueueTask;  //deprecated
 clEnqueueUnmapMemObject_fn _clEnqueueUnmapMemObject;
-clEnqueueWaitForEvents_fn _clEnqueueWaitForEvents;
+//clEnqueueWaitForEvents_fn _clEnqueueWaitForEvents;  //deprecated
 clEnqueueWriteBuffer_fn _clEnqueueWriteBuffer;
 clEnqueueWriteBufferRect_fn _clEnqueueWriteBufferRect;
 clEnqueueWriteImage_fn _clEnqueueWriteImage;
@@ -82,7 +82,7 @@ clGetDeviceIDs_fn _clGetDeviceIDs;
 clGetDeviceInfo_fn _clGetDeviceInfo;
 clGetEventInfo_fn _clGetEventInfo;
 clGetEventProfilingInfo_fn _clGetEventProfilingInfo;
-clGetExtensionFunctionAddress_fn _clGetExtensionFunctionAddress;
+//clGetExtensionFunctionAddress_fn _clGetExtensionFunctionAddress;  //deprecated
 clGetExtensionFunctionAddressForPlatform_fn _clGetExtensionFunctionAddressForPlatform;
 //clGetGLObjectInfo_fn _clGetGLObjectInfo;
 //clGetGLTextureInfo_fn _clGetGLTextureInfo;
@@ -125,12 +125,12 @@ clSetKernelArg_fn _clSetKernelArg;
 clSetKernelArgSVMPointer_fn _clSetKernelArgSVMPointer;
 clSetKernelExecInfo_fn _clSetKernelExecInfo;
 clSetMemObjectDestructorCallback_fn _clSetMemObjectDestructorCallback;
-clSetProgramReleaseCallback_fn _clSetProgramReleaseCallback;
+//clSetProgramReleaseCallback_fn _clSetProgramReleaseCallback;  //deprecated
 clSetProgramSpecializationConstant_fn _clSetProgramSpecializationConstant;
 clSetUserEventStatus_fn _clSetUserEventStatus;
 clSVMAlloc_fn _clSVMAlloc;
 clSVMFree_fn _clSVMFree;
-clUnloadCompiler_fn _clUnloadCompiler;
+//clUnloadCompiler_fn _clUnloadCompiler;  //deprecated
 clUnloadPlatformCompiler_fn _clUnloadPlatformCompiler;
 clWaitForEvents_fn _clWaitForEvents;
 
@@ -150,7 +150,7 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clCompileProgram, "clCompileProgram");
   getFunction(opencl, (void**)&_clCreateBuffer, "clCreateBuffer");
   getFunction(opencl, (void**)&_clCreateBufferWithProperties, "clCreateBufferWithProperties");
-  getFunction(opencl, (void**)&_clCreateCommandQueue, "clCreateCommandQueue");
+//  getFunction(opencl, (void**)&_clCreateCommandQueue, "clCreateCommandQueue");
   getFunction(opencl, (void**)&_clCreateCommandQueueWithProperties, "clCreateCommandQueueWithProperties");
   getFunction(opencl, (void**)&_clCreateContext, "clCreateContext");
   getFunction(opencl, (void**)&_clCreateContextFromType, "clCreateContextFromType");
@@ -160,8 +160,8 @@ static jboolean opencl_init(const char* openclFile)
 //  getFunction(opencl, (void**)&_clCreateFromGLTexture2D, "clCreateFromGLTexture2D");
 //  getFunction(opencl, (void**)&_clCreateFromGLTexture3D, "clCreateFromGLTexture3D");
   getFunction(opencl, (void**)&_clCreateImage, "clCreateImage");
-  getFunction(opencl, (void**)&_clCreateImage2D, "clCreateImage2D");
-  getFunction(opencl, (void**)&_clCreateImage3D, "clCreateImage3D");
+//  getFunction(opencl, (void**)&_clCreateImage2D, "clCreateImage2D");
+//  getFunction(opencl, (void**)&_clCreateImage3D, "clCreateImage3D");
   getFunction(opencl, (void**)&_clCreateImageWithProperties, "clCreateImageWithProperties");
   getFunction(opencl, (void**)&_clCreateKernel, "clCreateKernel");
   getFunction(opencl, (void**)&_clCreateKernelsInProgram, "clCreateKernelsInProgram");
@@ -170,13 +170,13 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clCreateProgramWithBuiltInKernels, "clCreateProgramWithBuiltInKernels");
   getFunction(opencl, (void**)&_clCreateProgramWithIL, "clCreateProgramWithIL");
   getFunction(opencl, (void**)&_clCreateProgramWithSource, "clCreateProgramWithSource");
-  getFunction(opencl, (void**)&_clCreateSampler, "clCreateSampler");
+//  getFunction(opencl, (void**)&_clCreateSampler, "clCreateSampler");
   getFunction(opencl, (void**)&_clCreateSamplerWithProperties, "clCreateSamplerWithProperties");
   getFunction(opencl, (void**)&_clCreateSubBuffer, "clCreateSubBuffer");
   getFunction(opencl, (void**)&_clCreateSubDevices, "clCreateSubDevices");
   getFunction(opencl, (void**)&_clCreateUserEvent, "clCreateUserEvent");
 //  getFunction(opencl, (void**)&_clEnqueueAcquireGLObjects, "clEnqueueAcquireGLObjects");
-  getFunction(opencl, (void**)&_clEnqueueBarrier, "clEnqueueBarrier");
+//  getFunction(opencl, (void**)&_clEnqueueBarrier, "clEnqueueBarrier");
   getFunction(opencl, (void**)&_clEnqueueBarrierWithWaitList, "clEnqueueBarrierWithWaitList");
   getFunction(opencl, (void**)&_clEnqueueCopyBuffer, "clEnqueueCopyBuffer");
   getFunction(opencl, (void**)&_clEnqueueCopyBufferRect, "clEnqueueCopyBufferRect");
@@ -187,7 +187,7 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clEnqueueFillImage, "clEnqueueFillImage");
   getFunction(opencl, (void**)&_clEnqueueMapBuffer, "clEnqueueMapBuffer");
   getFunction(opencl, (void**)&_clEnqueueMapImage, "clEnqueueMapImage");
-  getFunction(opencl, (void**)&_clEnqueueMarker, "clEnqueueMarker");
+//  getFunction(opencl, (void**)&_clEnqueueMarker, "clEnqueueMarker");
   getFunction(opencl, (void**)&_clEnqueueMarkerWithWaitList, "clEnqueueMarkerWithWaitList");
   getFunction(opencl, (void**)&_clEnqueueMigrateMemObjects, "clEnqueueMigrateMemObjects");
   getFunction(opencl, (void**)&_clEnqueueNativeKernel, "clEnqueueNativeKernel");
@@ -202,9 +202,9 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clEnqueueSVMMemFill, "clEnqueueSVMMemFill");
   getFunction(opencl, (void**)&_clEnqueueSVMMigrateMem, "clEnqueueSVMMigrateMem");
   getFunction(opencl, (void**)&_clEnqueueSVMUnmap, "clEnqueueSVMUnmap");
-  getFunction(opencl, (void**)&_clEnqueueTask, "clEnqueueTask");
+//  getFunction(opencl, (void**)&_clEnqueueTask, "clEnqueueTask");
   getFunction(opencl, (void**)&_clEnqueueUnmapMemObject, "clEnqueueUnmapMemObject");
-  getFunction(opencl, (void**)&_clEnqueueWaitForEvents, "clEnqueueWaitForEvents");
+//  getFunction(opencl, (void**)&_clEnqueueWaitForEvents, "clEnqueueWaitForEvents");
   getFunction(opencl, (void**)&_clEnqueueWriteBuffer, "clEnqueueWriteBuffer");
   getFunction(opencl, (void**)&_clEnqueueWriteBufferRect, "clEnqueueWriteBufferRect");
   getFunction(opencl, (void**)&_clEnqueueWriteImage, "clEnqueueWriteImage");
@@ -217,7 +217,7 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clGetDeviceInfo, "clGetDeviceInfo");
   getFunction(opencl, (void**)&_clGetEventInfo, "clGetEventInfo");
   getFunction(opencl, (void**)&_clGetEventProfilingInfo, "clGetEventProfilingInfo");
-  getFunction(opencl, (void**)&_clGetExtensionFunctionAddress, "clGetExtensionFunctionAddress");
+//  getFunction(opencl, (void**)&_clGetExtensionFunctionAddress, "clGetExtensionFunctionAddress");
   getFunction(opencl, (void**)&_clGetExtensionFunctionAddressForPlatform, "clGetExtensionFunctionAddressForPlatform");
 //  getFunction(opencl, (void**)&_clGetGLObjectInfo, "clGetGLObjectInfo");
 //  getFunction(opencl, (void**)&_clGetGLTextureInfo, "clGetGLTextureInfo");
@@ -260,12 +260,12 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clSetKernelArgSVMPointer, "clSetKernelArgSVMPointer");
   getFunction(opencl, (void**)&_clSetKernelExecInfo, "clSetKernelExecInfo");
   getFunction(opencl, (void**)&_clSetMemObjectDestructorCallback, "clSetMemObjectDestructorCallback");
-  getFunction(opencl, (void**)&_clSetProgramReleaseCallback, "clSetProgramReleaseCallback");
+//  getFunction(opencl, (void**)&_clSetProgramReleaseCallback, "clSetProgramReleaseCallback");
   getFunction(opencl, (void**)&_clSetProgramSpecializationConstant, "clSetProgramSpecializationConstant");
   getFunction(opencl, (void**)&_clSetUserEventStatus, "clSetUserEventStatus");
   getFunction(opencl, (void**)&_clSVMAlloc, "clSVMAlloc");
   getFunction(opencl, (void**)&_clSVMFree, "clSVMFree");
-  getFunction(opencl, (void**)&_clUnloadCompiler, "clUnloadCompiler");
+//  getFunction(opencl, (void**)&_clUnloadCompiler, "clUnloadCompiler");
   getFunction(opencl, (void**)&_clUnloadPlatformCompiler, "clUnloadPlatformCompiler");
   getFunction(opencl, (void**)&_clWaitForEvents, "clWaitForEvents");
 
