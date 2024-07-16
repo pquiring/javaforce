@@ -2,8 +2,8 @@
 
 #define CL_TARGET_OPENCL_VERSION 300
 
-#include "../opencl/Cl/cl.h"
-#include "../opencl/Cl/cl_function_types.h"
+#include "../opencl/CL/cl.h"
+#include "../opencl/CL/cl_function_types.h"
 
 JF_LIB_HANDLE opencl = NULL;
 
