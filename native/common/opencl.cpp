@@ -13,7 +13,7 @@ static jboolean opencl_loaded = JNI_FALSE;
 clGetPlatformIDs_fn _clGetPlatformIDs;
 clGetDeviceIDs_fn _clGetDeviceIDs;
 clCreateContext_fn _clCreateContext;
-clCreateCommandQueue_fn _clCreateCommandQueue;
+clCreateCommandQueueWithProperties_fn _clCreateCommandQueueWithProperties;
 clCreateProgramWithSource_fn _clCreateProgramWithSource;
 clBuildProgram_fn _clBuildProgram;
 clCreateKernel_fn _clCreateKernel;
@@ -45,7 +45,7 @@ static jboolean opencl_init(const char* openclFile)
   getFunction(opencl, (void**)&_clGetPlatformIDs, "clGetPlatformIDs");
   getFunction(opencl, (void**)&_clGetDeviceIDs, "clGetDeviceIDs");
   getFunction(opencl, (void**)&_clCreateContext, "clCreateContext");
-  getFunction(opencl, (void**)&_clCreateCommandQueue, "clCreateCommandQueue");
+  getFunction(opencl, (void**)&_clCreateCommandQueueWithProperties, "clCreateCommandQueueWithProperties");
   getFunction(opencl, (void**)&_clCreateProgramWithSource, "clCreateProgramWithSource");
   getFunction(opencl, (void**)&_clBuildProgram, "clBuildProgram");
   getFunction(opencl, (void**)&_clCreateKernel, "clCreateKernel");
@@ -131,14 +131,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   //get platform_id
   res = (*_clGetPlatformIDs)(1, &platform_id, NULL);
 
-  printf("clGetPlatformIDs = %d\n", res);
-
   if (res != CL_SUCCESS) return JNI_FALSE;
 
   //get device_id
   res = (*_clGetDeviceIDs)(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
-
-  printf("clGetDeviceIDs = %d\n", res);
 
   if (res != CL_SUCCESS) return JNI_FALSE;
 
@@ -151,7 +147,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   }
 
   // Create a command commands
-  commands = (*_clCreateCommandQueue)(context, device_id, 0, &err);
+  commands = (*_clCreateCommandQueueWithProperties)(context, device_id, NULL, &err);
   if (!commands)
   {
     printf("Error: Failed to create a command commands!\n");
