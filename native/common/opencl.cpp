@@ -274,16 +274,15 @@ static jboolean opencl_init(const char* openclFile)
   return JNI_TRUE;
 }
 
-#define DATA_SIZE (1024)
+#define DATA_SIZE (64 * 1024)
 
 // Simple compute kernel which computes the square of an input array
 //
 static const char* KernelSource = "\n" \
-"__kernel void square(__global float* input, __global float* output, const unsigned int count)\n" \
+"__kernel void square(__global float* input, __global float* output)\n" \
 "{\n" \
 "   int i = get_global_id(0);\n" \
-"   if(i < count)\n" \
-"       output[i] = input[i] * input[i];\n" \
+"   output[i] = input[i] * input[i];\n" \
 "}\n" \
 "\n";
 
@@ -413,10 +412,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   }
 
   // Set the arguments to our compute kernel
-  err = 0;
   err  = (*_clSetKernelArg)(kernel, 0, sizeof(cl_mem), &input);
   err |= (*_clSetKernelArg)(kernel, 1, sizeof(cl_mem), &output);
-  err |= (*_clSetKernelArg)(kernel, 2, sizeof(unsigned int), &count);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to set kernel arguments! %d\n", err);
@@ -431,11 +428,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
     printf("Error: Failed to retrieve kernel work group info! %d\n", err);
     return JNI_FALSE;
   }
+  printf("local = %zd\n", local);
 
   // Execute the kernel over the entire range of our 1d input data set
   // using the maximum number of work group items for this device
   //
   global = count;
+  printf("global = %zd\n", global);
   err = (*_clEnqueueNDRangeKernel)(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
   if (err)
   {
@@ -448,7 +447,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   (*_clFinish)(commands);
 
   // Read back the results from the device to verify the output
-  err = (*_clEnqueueReadBuffer)( commands, output, CL_TRUE, 0, sizeof(float) * count, results, 0, NULL, NULL );
+  err = (*_clEnqueueReadBuffer)(commands, output, CL_TRUE, 0, sizeof(float) * count, results, 0, NULL, NULL);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to read output array! %d\n", err);
