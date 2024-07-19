@@ -6,3 +6,6 @@ To install the repo (requires admin rights):
 To install packages:
   winget install {package-name}
 
+Notes:
+  - only Windows 11 is supported
+  - Windows Server is not supported yet (Microsoft is working on this)

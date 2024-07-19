@@ -74,8 +74,9 @@ Common Ant tasks:
 compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
+run : execute program from command line (with debugging support enabled)
 javadoc : build javadoc api files
-deploy : build maven deployment artifacts
+deploy : build maven deployment artifacts (requires pom.xml)
 executable : build native launcher
  - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
  - a project property "apptype" can be defined as:
@@ -86,13 +87,13 @@ executable : build native launcher
      "client" for client config GUI apps (same as "window" type plus adds "-client" to executable and package names)
 ffmpeg : copy ffmpeg libraries to project folder (Windows only)
 installapp : install files before package creation (Linux only)
-deb : build Debian deb file (after install)
+deb : build Debian deb file (after installapp)
  - requires bzip2, binutils, sudo
  - linux packaging requires files.lst
-rpm : build Fedora rpm file (after install)
+rpm : build Fedora rpm file (after installapp)
  - requires rpm-build
  - linux packaging requires files.lst
-pac : build Arch pac file (after install)
+pac : build Arch pac file (after installapp)
  - linux packaging requires files.lst
 msi : build Windows msi file with JRE bundled
  - msi creation requires:
@@ -142,6 +143,7 @@ The native loaders in /bin enable JMX debugging support on port 9010.
 These loaders are used when you run an app with "ant run".
 From VisualVM you can connect to the JMX as localhost:9010
 You can also enable debug support by adding DEBUG=true to the project .cfg file to have it enabled in the generated executable.
+This should be removed for any public release.
 
 Requirements
 ------------
@@ -149,6 +151,7 @@ Requirements
   - Apache Ant 1.10+
   - Linux : gcc
   - Windows : VC++, wixtoolset 4+
+  - Mac : gcc (Xcode)
   - FFmpeg 5.1+
   - glfw for OpenGL support
 
