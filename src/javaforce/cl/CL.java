@@ -1,6 +1,6 @@
 package javaforce.cl;
 
-/** CL
+/** OpenCL
  *
  * @author peter.quiring
  */
@@ -137,7 +137,7 @@ public class CL implements AutoCloseable {
     System.out.println("Starting Java test...");
     try {
       CL cl = CL.create(
-        "__kernel void square(__global float* input, __global float* output) {  int i = get_global_id(0); output[i] = input[i] * input[i]; }",
+        "__kernel void square(__global float* input, __global float* output) { int i = get_global_id(0); output[i] = input[i] * input[i]; }",
         "square",
         TYPE_GPU);
       long input = cl.createWriteBuffer(Float.BYTES * SIZE);
