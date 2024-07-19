@@ -159,6 +159,8 @@ public class CL implements AutoCloseable {
 
       cl.readBuffer(output, results);
 
+      cl.freeBuffer(input);
+      cl.freeBuffer(output);
       cl.close();
 
       //confirm results
