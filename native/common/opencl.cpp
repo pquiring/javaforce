@@ -274,6 +274,15 @@ static jboolean opencl_init(const char* openclFile)
   return JNI_TRUE;
 }
 
+struct CLContext {
+  cl_platform_id platform_id;         // compute platform id
+  cl_device_id device_id;             // compute device id
+  cl_context context;                 // compute context
+  cl_command_queue commands;          // compute command queue
+  cl_program program;                 // compute program
+  cl_kernel kernel;                   // compute kernel
+};
+
 #define DATA_SIZE (64 * 1024)
 
 // Simple compute kernel which computes the square of an input array
@@ -428,13 +437,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
     printf("Error: Failed to retrieve kernel work group info! %d\n", err);
     return JNI_FALSE;
   }
-  printf("local = %zd\n", local);
 
   // Execute the kernel over the entire range of our 1d input data set
   // using the maximum number of work group items for this device
   //
   global = count;
-  printf("global = %zd\n", global);
   err = (*_clEnqueueNDRangeKernel)(commands, kernel, 1, NULL, &global, &local, 0, NULL, NULL);
   if (err)
   {
@@ -466,7 +473,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
 
   // Print a brief summary detailing the results
   //
-  printf("Computed '%d/%d' correct values!\n", correct, count);
+  printf("OpenCL Test : Computed '%d/%d' correct values!\n", correct, count);
 
   // Shutdown and cleanup
   (*_clReleaseMemObject)(input);
@@ -475,6 +482,264 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   (*_clReleaseKernel)(kernel);
   (*_clReleaseCommandQueue)(commands);
   (*_clReleaseContext)(context);
+
+  return JNI_TRUE;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
+  (JNIEnv *e, jclass o, jstring src, jstring kernel, jint type)
+{
+  int res, err;
+  CLContext *ctx = (CLContext*)malloc(sizeof(CLContext));
+  memset(ctx, 0, sizeof(CLContext));
+
+  //get platform_id
+  res = (*_clGetPlatformIDs)(1, &ctx->platform_id, NULL);
+
+  if (res != CL_SUCCESS) {
+    printf("Error: Failed to get platform id!\n");
+    free(ctx);
+    return 0;
+  }
+
+  //get device_id
+  res = (*_clGetDeviceIDs)(ctx->platform_id, type, 1, &ctx->device_id, NULL);
+
+  if (res != CL_SUCCESS) {
+    printf("Error: Failed to get device id!\n");
+    free(ctx);
+    return 0;
+  }
+
+  // Create a compute context
+  ctx->context = (*_clCreateContext)(0, 1, &ctx->device_id, NULL, NULL, &err);
+  if (!ctx->context)
+  {
+    printf("Error: Failed to create a compute context!\n");
+    free(ctx);
+    return 0;
+  }
+
+  // Create a command commands
+  ctx->commands = (*_clCreateCommandQueueWithProperties)(ctx->context, ctx->device_id, NULL, &err);
+  if (!ctx->commands)
+  {
+    printf("Error: Failed to create a command commands!\n");
+    free(ctx);
+    return 0;
+  }
+
+  const char *c_src = e->GetStringUTFChars(src, NULL);
+
+  // Create the compute program from the source buffer
+  ctx->program = (*_clCreateProgramWithSource)(ctx->context, 1, (const char**)&c_src, NULL, &err);
+
+  e->ReleaseStringUTFChars(src, c_src);
+
+  if (!ctx->program)
+  {
+    printf("Error: Failed to create compute program!\n");
+    free(ctx);
+    return 0;
+  }
+
+  // Build the program executable
+  err = (*_clBuildProgram)(ctx->program, 0, NULL, NULL, NULL, NULL);
+  if (err != CL_SUCCESS)
+  {
+    size_t len;
+    char buffer[2048];
+
+    printf("Error: Failed to build program executable!\n");
+    (*_clGetProgramBuildInfo)(ctx->program, ctx->device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+    printf("%s\n", buffer);
+    free(ctx);
+    return 0;
+  }
+
+  const char *c_kernel = e->GetStringUTFChars(kernel, NULL);
+
+  // Create the compute kernel in the program we wish to run
+  ctx->kernel = (*_clCreateKernel)(ctx->program, c_kernel, &err);
+
+  e->ReleaseStringUTFChars(kernel, c_kernel);
+
+  if (!ctx->kernel || err != CL_SUCCESS)
+  {
+    printf("Error: Failed to create compute kernel!\n");
+    free(ctx);
+    return 0;
+  }
+
+  return (jlong)ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreateBuffer
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jint size, jint type)
+{
+  if (ctx_ptr == 0) return 0;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  cl_mem buffer = (*_clCreateBuffer)(ctx->context, type, size, NULL, NULL);
+
+  return (jlong)buffer;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nsetArg
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jint idx, jbyteArray data)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
+  int size = e->GetArrayLength(data);
+
+  int err = (*_clSetKernelArg)(ctx->kernel, idx, size, dataptr);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to set kernel arguments! %d\n", err);
+  }
+
+  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
+
+  return err == CL_SUCCESS;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferi8
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jbyteArray data)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
+  int size = e->GetArrayLength(data);
+
+  int err = (*_clEnqueueWriteBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size, dataptr, 0, NULL, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to write buffer! %d\n", err);
+  }
+
+  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
+
+  return err == CL_SUCCESS;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferf32
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jfloatArray data)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
+  int size = e->GetArrayLength(data);
+
+  int err = (*_clEnqueueWriteBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size * 4, dataptr, 0, NULL, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to write buffer! %d\n", err);
+  }
+
+  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
+
+  return err == CL_SUCCESS;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jint count)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  size_t global = count;
+  size_t local;
+
+  int err = (*_clGetKernelWorkGroupInfo)(ctx->kernel, ctx->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to retrieve kernel work group info! %d\n", err);
+    return JNI_FALSE;
+  }
+
+  err = (*_clEnqueueNDRangeKernel)(ctx->commands, ctx->kernel, 1, NULL, &global, &local, 0, NULL, NULL);
+  if (err)
+  {
+    printf("Error: Failed to execute kernel!\n");
+    return JNI_FALSE;
+  }
+
+  (*_clFinish)(ctx->commands);
+
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferi8
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jbyteArray data)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
+  int size = e->GetArrayLength(data);
+
+  int err = (*_clEnqueueReadBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size, dataptr, 0, NULL, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to write buffer! %d\n", err);
+  }
+
+  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
+
+  return err == CL_SUCCESS;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferf32
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jfloatArray data)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
+  int size = e->GetArrayLength(data);
+
+  int err = (*_clEnqueueReadBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size * 4, dataptr, 0, NULL, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to write buffer! %d\n", err);
+  }
+
+  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
+
+  return err == CL_SUCCESS;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeBuffer
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  (*_clReleaseMemObject)((cl_mem)buffer);
+
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nclose
+  (JNIEnv *e, jclass o, jlong ctx_ptr)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  (*_clReleaseProgram)(ctx->program);
+  (*_clReleaseKernel)(ctx->kernel);
+  (*_clReleaseCommandQueue)(ctx->commands);
+  (*_clReleaseContext)(ctx->context);
+  free(ctx);
 
   return JNI_TRUE;
 }
