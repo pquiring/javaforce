@@ -14,8 +14,15 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
    */
   public MQTTViewer() {
     initComponents();
-    if (server_init != null) {
-      server.setText(server_init);
+    if (args.length > 0) {
+      server.setText(args[0]);
+      if (args.length > 1) {
+        authenticate.setSelected(true);
+        username.setText(args[1]);
+        if (args.length > 2) {
+          password.setText(args[2]);
+        }
+      }
     }
   }
 
@@ -34,6 +41,11 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     start = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     msgs = new javax.swing.JTextArea();
+    jLabel3 = new javax.swing.JLabel();
+    authenticate = new javax.swing.JCheckBox();
+    username = new javax.swing.JTextField();
+    jLabel4 = new javax.swing.JLabel();
+    password = new javax.swing.JTextField();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("MQTT Viewer");
@@ -41,6 +53,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     jLabel1.setText("Server");
 
     server.setText("127.0.0.1");
+    server.setMinimumSize(new java.awt.Dimension(100, 22));
+    server.setPreferredSize(new java.awt.Dimension(100, 22));
 
     jLabel2.setText("Topic");
 
@@ -57,6 +71,18 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     msgs.setRows(5);
     jScrollPane1.setViewportView(msgs);
 
+    jLabel3.setText("Username");
+
+    authenticate.setText("Authenticate");
+
+    username.setMinimumSize(new java.awt.Dimension(100, 22));
+    username.setPreferredSize(new java.awt.Dimension(100, 22));
+
+    jLabel4.setText("Password");
+
+    password.setMinimumSize(new java.awt.Dimension(100, 22));
+    password.setPreferredSize(new java.awt.Dimension(100, 22));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -72,8 +98,18 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(server)
+            .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(authenticate)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel3)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel4)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(start)))
         .addContainerGap())
     );
@@ -84,7 +120,12 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
           .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(start))
+          .addComponent(start)
+          .addComponent(jLabel3)
+          .addComponent(authenticate)
+          .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4)
+          .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
@@ -105,9 +146,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
    * @param args the command line arguments
    */
   public static void main(String args[]) {
-    if (args.length > 0) {
-      server_init = args[0];
-    }
+    MQTTViewer.args = args;
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -117,17 +156,22 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox authenticate;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea msgs;
+  private javax.swing.JTextField password;
   private javax.swing.JTextField server;
   private javax.swing.JButton start;
   private javax.swing.JTextField topic;
+  private javax.swing.JTextField username;
   // End of variables declaration//GEN-END:variables
 
   private MQTT client;
-  private static String server_init;
+  private static String[] args;
 
   public boolean message(String topic, String msg) {
     String ln = topic + "=" + msg + "\r\n";
@@ -152,20 +196,32 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       msgs.setText("Connection failed!");
       client = null;
     }
-    client.connect();
+    if (authenticate.isSelected()) {
+      String _user = username.getText();
+      String _pass = password.getText();
+      client.connect(_user, _pass);
+    } else {
+      client.connect();
+    }
     msgs.setText("Connected to " + _server + "\r\n");
     client.setListener(this);
     client.subscribe(_topic);
     start.setText("Stop");
-    server.setEditable(false);
-    topic.setEditable(false);
+    setState(false);
   }
 
   public void stop() {
     client.disconnect();
     client = null;
     start.setText("Start");
-    server.setEditable(true);
-    topic.setEditable(true);
+    setState(true);
+  }
+
+  private void setState(boolean state) {
+    server.setEditable(state);
+    topic.setEditable(state);
+    authenticate.setEnabled(state);
+    username.setEditable(state);
+    password.setEditable(state);
   }
 }
