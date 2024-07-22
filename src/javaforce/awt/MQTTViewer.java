@@ -58,7 +58,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
     jLabel2.setText("Topic");
 
-    topic.setText("*");
+    topic.setText("#");
 
     start.setText("Start");
     start.addActionListener(new java.awt.event.ActionListener() {

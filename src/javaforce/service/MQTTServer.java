@@ -43,6 +43,12 @@ public class MQTTServer extends Thread {
     }
   }
 
+  public static boolean hasWildcard(String topic) {
+    if (topic.indexOf('+') != -1) return true;
+    if (topic.indexOf('*') != -1) return true;
+    return false;
+  }
+
   private static class Topic {
     private String name;
     private byte[] pkt;  //retained publish
@@ -83,8 +89,35 @@ public class MQTTServer extends Thread {
         subs.remove(worker);
       }
     }
-    public boolean matches(String wc) {
-      return JF.wildcardCompare(name, wc, false);
+    public boolean matches(String topic) {
+      String[] ns = name.split("[/]");
+      String[] ws = topic.split("[/]");
+      int ni = 0;
+      int wi = 0;
+      for(;ni<ns.length;ni++) {
+        String n = ns[ni];
+        if (wi == ws.length) return false;
+        String w = ws[wi];
+        wi++;
+        if (w.equals("+")) {
+          //match any section
+          continue;
+        }
+        if (w.equals("#")) {
+          //match remainder
+          return true;
+        }
+        if (!n.equals(w)) {
+          //section does not match
+          return false;
+        }
+      }
+      if (wi != ws.length) {
+        String w = ws[wi];
+        if (w.equals("#")) return true;
+        return false;
+      }
+      return true;
     }
   }
 
@@ -387,7 +420,7 @@ public class MQTTServer extends Thread {
             pos += 2;
             topic_name = new String(packet, pos, topicLength);
             pos += topicLength;
-            if (JF.isWildcard(topic_name)) {
+            if (hasWildcard(topic_name)) {
               Topic[] topics = getTopics(topic_name);
               for(Topic topic : topics) {
                 topic.subscribe(this);

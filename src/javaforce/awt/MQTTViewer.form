@@ -105,7 +105,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="topic">
       <Properties>
-        <Property name="text" type="java.lang.String" value="*"/>
+        <Property name="text" type="java.lang.String" value="#"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="start">
