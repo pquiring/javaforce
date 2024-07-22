@@ -98,7 +98,7 @@ public class MQTT {
     packet[6] = 'T';
     packet[7] = 'T';
     packet[8] = 5;  //protocol version
-    packet[9] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START);  //connect flags
+    packet[9] = (byte)(FLAG_CLEAN_START);  //connect flags
     packet[10] = 0;
     packet[11] = 120;  //keep alive interval (2 mins)
     packet[12] = 0;  //properties length
@@ -136,7 +136,7 @@ public class MQTT {
     packet[pos++] = 'T';
     packet[pos++] = 'T';
     packet[pos++] = 5;  //protocol version
-    packet[pos++] = (byte)((QOS_1 << 3) + FLAG_CLEAN_START + FLAG_USER + FLAG_PASS);  //connect flags
+    packet[pos++] = (byte)(FLAG_CLEAN_START + FLAG_USER + FLAG_PASS);  //connect flags
     packet[pos++] = 0;
     packet[pos++] = 120;  //keep alive interval (2 mins)
     packet[pos++] = 0;  //properties length
