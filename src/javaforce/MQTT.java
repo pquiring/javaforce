@@ -211,7 +211,7 @@ public class MQTT {
     int length = calcPacketLength(true, topic_length, true, 0);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
-    packet[0] = (byte)(CMD_SUBSCRIBE << 4);
+    packet[0] = (byte)(CMD_SUBSCRIBE << 4) + RESERVED_2;
     setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
@@ -239,7 +239,7 @@ public class MQTT {
     int length = calcPacketLength(true, topic_length, false, 0);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
-    packet[0] = (byte)(CMD_UNSUBSCRIBE << 4);
+    packet[0] = (byte)(CMD_UNSUBSCRIBE << 4) + RESERVED_2;
     setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
@@ -455,7 +455,7 @@ public class MQTT {
           break;
         case CMD_PUBLISH_REC:
           reply = new byte[4];
-          reply[0] = (byte)(CMD_PUBLISH_REL << 4);
+          reply[0] = (byte)(CMD_PUBLISH_REL << 4) + RESERVED_2;
           setPacketLength(reply, 1);
           id = getPacketID(packet, 2);
           setPacketID(reply, 2, id);
@@ -497,14 +497,16 @@ public class MQTT {
 
   private static String resub = null;
 
+  private static void usage() {
+    System.out.println("Usage:MQTT server [-u user] [-p pass] [publish topic msg]");
+    System.out.println("Usage:MQTT server [-u user] [-p pass] [subscribe topic]");
+  }
+
   public static void main(String[] args) {
     if (args.length < 1) {
-      System.out.println("Usage:MQTT server [publish topic msg]");
-      System.out.println("Usage:MQTT server [subscribe topic]");
+      usage();
       return;
     }
-//    MQTT.debug = true;
-//    MQTT.debug_msg = true;
     try {
       MQTT client = new MQTT();
       client.setListener((topic, msg) -> {
@@ -513,17 +515,64 @@ public class MQTT {
         resub = topic;
         return true;
       });
-      client.connect(args[0]);
-      client.connect("user", "pass");
-      if (args.length == 4) {
-        if (args[1].equals("publish")) {
-          client.publish(args[2], args[3]);
+      String host = args[0];
+      String cmd = null;
+      String topic = null;
+      String msg = null;
+      String user = null;
+      String pass = null;
+      for(int idx = 1;idx < args.length;idx++) {
+        String arg = args[idx];
+        if (arg.equals("-u")) {
+          user = args[idx + 1];
+          idx++;
+          continue;
         }
+        if (arg.equals("-p")) {
+          pass = args[idx + 1];
+          idx++;
+          continue;
+        }
+        if (arg.equals("-d")) {
+          MQTT.debug = true;
+          MQTT.debug_msg = true;
+          continue;
+        }
+        if (cmd == null) {
+          cmd = arg;
+          continue;
+        }
+        if (topic == null) {
+          topic = arg;
+          continue;
+        }
+        if (msg == null) {
+          msg = arg;
+          continue;
+        }
+        JFLog.log("Unknown arg:" + arg);
       }
-      if (args.length == 3) {
-        if (args[1].equals("subscribe")) {
-          client.subscribe(args[2]);
-        }
+      if (cmd == null || topic == null) {
+        usage();
+        return;
+      }
+      client.connect(host);
+      if (user != null && pass != null) {
+        client.connect(user, pass);
+      } else {
+        client.connect();
+      }
+      switch (cmd) {
+        case "publish":
+          if (msg == null) {
+            usage();
+            return;
+          }
+          client.publish(topic, msg);
+          break;
+        case "subscribe":
+          client.subscribe(topic);
+          break;
       }
       while (client.isConnected()) {
         for(int a=0;a<60;a++) {

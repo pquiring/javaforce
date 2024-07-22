@@ -210,6 +210,9 @@ public class MQTTServer extends Thread {
   public static final byte CMD_DISCONNECT = 14;
   public static final byte CMD_AUTH = 15;
 
+  public static final byte RESERVED = 0;
+  public static final byte RESERVED_2 = 2;
+
   public static final byte QOS_0 = 0;
   public static final byte QOS_1 = 1;
   public static final byte QOS_2 = 2;
