@@ -534,7 +534,7 @@ public class MQTT {
           continue;
         }
         if (arg.equals("-d")) {
-          MQTT.debug = true;
+//          MQTT.debug = true;  //too verbose
           MQTT.debug_msg = true;
           continue;
         }

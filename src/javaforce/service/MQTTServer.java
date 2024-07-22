@@ -45,7 +45,7 @@ public class MQTTServer extends Thread {
 
   public static boolean hasWildcard(String topic) {
     if (topic.indexOf('+') != -1) return true;
-    if (topic.indexOf('*') != -1) return true;
+    if (topic.indexOf('#') != -1) return true;
     return false;
   }
 
