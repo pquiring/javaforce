@@ -1,5 +1,14 @@
 What's new...
 
+July 29/2024 : JF/66.1
+ - jfMonitor/0.14
+   - added disable port option
+ - jfMQTT/0.2
+   - fixed wildcards
+ - OpenCL
+   - added initial support for OpenCL
+   - see javaforce.cl.CL
+
 July 9/2024 : JF/66.0
  - added MQTT client and completed MQTTServer
  - jfMQTT/0.1
