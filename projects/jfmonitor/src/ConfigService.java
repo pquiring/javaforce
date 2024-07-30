@@ -420,7 +420,7 @@ public class ConfigService implements WebUIHandler {
     grid.addRow(new Component[] {new Label("DHCP Relay"), dhcp_relay});
 
     CheckBox shutdown = new CheckBox("");
-    grid.addRow(new Component[] {new Label("Shutdown"),shutdown});
+    grid.addRow(new Component[] {new Label("Shutdown"), shutdown});
 
     row = new Row();
     panel.add(row);
@@ -1060,7 +1060,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
 
     ScrollPanel table_panel = new ScrollPanel();
-    Table table = new Table(new int[] {64, 128, 128, 128, 64, 128, 64}, 32, 6, 0);
+    Table table = new Table(new int[] {64, 128, 128, 128, 64, 128, 96}, 32, 7, 0);
     table.setBorder(true);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setHeader(true);

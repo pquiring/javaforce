@@ -21,6 +21,7 @@ public class Hardware implements Serializable, Cloneable {
   public ArrayList<Port> ports = new ArrayList<>();
   public ArrayList<VLAN> vlans = new ArrayList<>();
   public ArrayList<Port> groups = new ArrayList<>();
+  public ArrayList<MACTableEntry> mac_table = new ArrayList<>();
 
   public boolean routing;
   public String gateway;  //default gateway if !routing
@@ -34,6 +35,11 @@ public class Hardware implements Serializable, Cloneable {
   public String getSerial() {
     if (serial == null) serial = "";
     return serial;
+  }
+
+  public void addMACTableEntry(String mac, String port) {
+    MACTableEntry entry = new MACTableEntry(mac, port);
+    mac_table.add(entry);
   }
 
   public void saveConfig(Device device) {
@@ -57,6 +63,7 @@ public class Hardware implements Serializable, Cloneable {
       clone.ports = new ArrayList<>();
       clone.vlans = new ArrayList<>();
       clone.groups = new ArrayList<>();
+      clone.mac_table = new ArrayList<>();
       clone.routes = new ArrayList<>();
       return clone;
     } catch (Exception e) {

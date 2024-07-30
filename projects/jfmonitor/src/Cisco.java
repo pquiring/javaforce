@@ -919,8 +919,53 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
   }
 
   //TODO : show if hardware has unsaved changes
-  public void queryDiff() {
+  public boolean queryDiff() {
     //show archive config differences
+    return false;
+  }
+
+  public boolean queryMACTable(Device device) {
+    //query mac table
+    if (debug) {
+      JFLog.log("Cisco.queryMACTable:" + device);
+    }
+    if (device.hardware == null) {
+      return false;
+    }
+    SSH ssh = new SSH();
+    SSH.Options options = new SSH.Options();
+    options.username = device.hardware.user;
+    options.password = device.hardware.pass;
+    String cmds = "terminal length 0;show mac address-table;exit";
+    String ip = device.getip();
+    if (ip == null) return false;
+    if (!ssh.connect(ip, 22, options)) return false;
+    String mac_table = ssh.script(cmds.split(";"));
+    ssh.disconnect();
+    if (mac_table == null || mac_table.length() == 0) return false;
+    String[] lns = mac_table.replaceAll("\\r", "").split("\n");
+    for(String ln : lns) {
+      ln = ln.toLowerCase().trim();
+      String[] fs = ln.split("[ ]");
+      if (fs.length != 4) continue;
+      String vlan = fs[0];
+      String mac = fs[1];
+      String type = fs[2];
+      String ports = fs[3];
+      String port_id = null;
+      int idx = JF.indexOfDigit(ports);
+      if (idx != -1) {
+        port_id = ports.substring(idx);
+      } else {
+        port_id = ports;
+      }
+      Port port = device.getPort(port_id);
+      if (port == null) continue;
+      Device dev = Config.current.getDevice(mac);
+      if (dev == null) continue;
+      device.hardware.addMACTableEntry(mac, port_id);
+    }
+    return true;
   }
 
   public static void main(String[] args) {

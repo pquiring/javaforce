@@ -11,6 +11,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
   public int type;
   public String mac;
   public String desc;
+  public String loc;  //location : where this device lives : DEVICE_MAC:PORT
 
   //hardware config
   public Hardware hardware;

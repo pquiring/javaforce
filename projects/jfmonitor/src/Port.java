@@ -35,6 +35,7 @@ public class Port implements Serializable, Comparable<Port> {
   public String vlan = "1";  //native vlan
   public String group = "";
   public boolean isGroup;
+  public boolean isUplink;  //connects to another switch
   public boolean link;
 
   public String getGroupID() {

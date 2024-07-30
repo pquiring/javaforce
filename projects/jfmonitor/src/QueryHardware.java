@@ -36,6 +36,10 @@ public class QueryHardware extends Thread {
                 JFLog.log("Failed to query status:" + dev);
                 break;
               }
+              if (!cisco.queryMACTable(_dev)) {
+                JFLog.log("Failed to query MAC table:" + dev);
+                break;
+              }
               _dev.hardware.lastUpdate = System.currentTimeMillis();
               dev.hardware = _dev.hardware;
             } catch (Exception e) {
