@@ -2234,6 +2234,12 @@ public class ConfigService implements WebUIHandler {
             Config.save();
           });
           row.add(update);
+          if (dev != null) {
+            //show location
+            if (dev.loc != null) {
+              row.add(new Label("Location:" + dev.getLocation()));
+            }
+          }
         }
         block.add(row);
         inner.add(block);

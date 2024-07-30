@@ -128,6 +128,18 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     return group;
   }
 
+  public String getLocation() {
+    if (loc == null) return "";
+    //convert MAC to IP
+    String[] mac_port = loc.split("[:]");
+    if (mac_port.length != 2) return "???";
+    String mac = mac_port[0];
+    String port = mac_port[1];
+    String ip = Config.current.getip(mac);
+    if (ip == null) ip = "???";
+    return ip + ":" + port;
+  }
+
   public boolean configSetSwitchMode(Port port, int mode) {
     switch (type) {
       case TYPE_CISCO:
