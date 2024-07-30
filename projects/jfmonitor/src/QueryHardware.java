@@ -18,7 +18,6 @@ public class QueryHardware extends Thread {
           case Device.TYPE_UNKNOWN:
             continue;
           case Device.TYPE_CISCO:
-            String ip = dev.getip();
             if (debug) {
               JFLog.log("Query:" + dev);
             }
@@ -48,6 +47,7 @@ public class QueryHardware extends Thread {
             break;
         }
       }
+      analyzeMACTables(devs);
       Config.save();
       //wait 5 mins
       if (debug) {
@@ -58,6 +58,49 @@ public class QueryHardware extends Thread {
         JF.sleep(1000);
       }
       scan_now = false;
+    }
+  }
+  private void analyzeMACTables(Device[] devs) {
+    //update switch uplinks
+    for(Device dev : devs) {
+      if (dev.type == Device.TYPE_UNKNOWN) continue;
+      if (dev.hardware == null) continue;
+      switch (dev.type) {
+        case Device.TYPE_UNKNOWN:
+          break;
+        case Device.TYPE_CISCO:
+          MACTableEntry[] mtes = dev.hardware.getMACTable();
+          for(MACTableEntry mte : mtes) {
+            Device child = Config.current.getDevice(mte.mac);
+            if (child == null) break;
+            if (child.hardware != null) {
+              Port port = dev.getPort(mte.port, false);
+              if (port == null) break;
+              port.isUplink = true;
+            }
+          }
+          break;
+      }
+    }
+    //update device locations
+    for(Device dev : devs) {
+      if (dev.type == Device.TYPE_UNKNOWN) continue;
+      if (dev.hardware == null) continue;
+      switch (dev.type) {
+        case Device.TYPE_UNKNOWN:
+          break;
+        case Device.TYPE_CISCO:
+          MACTableEntry[] mtes = dev.hardware.getMACTable();
+          for(MACTableEntry mte : mtes) {
+            Device child = Config.current.getDevice(mte.mac);
+            if (child == null) break;
+            Port port = dev.getPort(mte.port, false);
+            if (port == null) break;
+            if (port.isUplink) break;
+            child.loc = dev.mac + ":" + mte.port;
+          }
+          break;
+      }
     }
   }
 }

@@ -74,13 +74,14 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     }
   }
 
-  public Port getPort(String id) {
+  public Port getPort(String id, boolean create) {
     for(Port port : hardware.ports) {
       if (port.id.equals(id)) {
         port.valid = true;
         return port;
       }
     }
+    if (!create) return null;
     Port port = new Port();
     port.id = id;
     hardware.ports.add(port);

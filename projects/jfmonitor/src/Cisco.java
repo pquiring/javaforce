@@ -715,7 +715,7 @@ public class Cisco {
           switch (name) {
             case "vlan": vlan = device.getVLAN(f[1]); break;
             case "port-channel": port = device.getGroup(f[1]); break;
-            default: port = device.getPort(f[1]); break;
+            default: port = device.getPort(f[1], true); break;
           }
           break;
         case "switchport":
@@ -959,7 +959,7 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
       } else {
         port_id = ports;
       }
-      Port port = device.getPort(port_id);
+      Port port = device.getPort(port_id, false);
       if (port == null) continue;
       Device dev = Config.current.getDevice(mac);
       if (dev == null) continue;
