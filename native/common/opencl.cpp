@@ -576,7 +576,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_nkernel
   if (!kernel_ptr || err != CL_SUCCESS)
   {
     printf("Error: Failed to create compute kernel!\n");
-    free(ctx);
     return 0;
   }
 
