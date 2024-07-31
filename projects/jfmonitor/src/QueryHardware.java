@@ -65,6 +65,7 @@ public class QueryHardware extends Thread {
       JFLog.log("QueryHardware.analyzeMACTables()");
     }
     //update switch uplinks
+    int count_uplink = 0;
     for(Device dev : devs) {
       if (dev.type == Device.TYPE_UNKNOWN) continue;
       if (dev.hardware == null) continue;
@@ -75,17 +76,32 @@ public class QueryHardware extends Thread {
           MACTableEntry[] mtes = dev.hardware.getMACTable();
           for(MACTableEntry mte : mtes) {
             Device child = Config.current.getDevice(mte.mac);
-            if (child == null) break;
+            if (child == null) {
+              if (debug) {
+                JFLog.log("child not found:" + mte.mac);
+              }
+              break;
+            }
             if (child.hardware != null) {
-              Port port = dev.getPort(mte.port, false);
-              if (port == null) break;
+              Port port = dev.getPortByNumber(mte.port);
+              if (port == null) {
+                if (debug) {
+                  JFLog.log("port not found:" + mte.port);
+                }
+                break;
+              }
               port.isUplink = true;
+              count_uplink++;
             }
           }
           break;
       }
     }
+    if (debug) {
+      JFLog.log("uplink count=" + count_uplink);
+    }
     //update device locations
+    int count_locs = 0;
     for(Device dev : devs) {
       if (dev.type == Device.TYPE_UNKNOWN) continue;
       if (dev.hardware == null) continue;
@@ -96,14 +112,33 @@ public class QueryHardware extends Thread {
           MACTableEntry[] mtes = dev.hardware.getMACTable();
           for(MACTableEntry mte : mtes) {
             Device child = Config.current.getDevice(mte.mac);
-            if (child == null) break;
-            Port port = dev.getPort(mte.port, false);
-            if (port == null) break;
-            if (port.isUplink) break;
+            if (child == null) {
+              if (debug) {
+                JFLog.log("child not found:" + mte.mac);
+              }
+              break;
+            }
+            Port port = dev.getPortByNumber(mte.port);
+            if (port == null) {
+              if (debug) {
+                JFLog.log("port not found:" + mte.port);
+              }
+              break;
+            }
+            if (port.isUplink) {
+              if (debug) {
+                JFLog.log("port is uplink:" + mte.port);
+              }
+              break;
+            }
             child.loc = dev.mac + ":" + mte.port;
+            count_locs++;
           }
           break;
       }
+    }
+    if (debug) {
+      JFLog.log("location count=" + count_locs);
     }
   }
 }

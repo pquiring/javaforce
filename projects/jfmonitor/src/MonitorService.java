@@ -30,6 +30,7 @@ public class MonitorService extends Thread {
           JFLog.log("Debug mode enabled");
           Config.debug = true;
           Cisco.debug = true;
+          QueryHardware.debug = true;
           break;
       }
     }

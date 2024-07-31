@@ -947,12 +947,12 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
     int count = 0;
     for(String ln : lns) {
       ln = ln.toLowerCase().trim();
-      String[] fs = ln.split("[ ]");
+      String[] fs = ln.split("[ ]+");
       if (fs.length != 4) {
         continue;
       }
       String vlan = fs[0];
-      String mac = fs[1];
+      String mac = fs[1].replaceAll("[.]", "");
       String type = fs[2];
       String ports = fs[3];
       String port_id = null;
@@ -962,12 +962,18 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
       } else {
         port_id = ports;
       }
-      Port port = device.getPort(port_id, false);
+      Port port = device.getPortByNumber(port_id);
       if (port == null) {
+        if (debug) {
+          JFLog.log("port not found:" + port_id);
+        }
         continue;
       }
       Device dev = Config.current.getDevice(mac);
       if (dev == null) {
+        if (debug) {
+          JFLog.log("device not found:" + mac);
+        }
         continue;
       }
       device.hardware.addMACTableEntry(mac, port_id);
