@@ -50,14 +50,20 @@ public class CL implements AutoCloseable {
 
   private long ctx;
 
-  private static native long ncreate(String src, String func, int type);
+  private static native long ncreate(String src, int type);
 
-  public static CL create(String src, String func, int type) {
-    return new CL(ncreate(src, func, type));
+  public static CL create(String src, int type) {
+    return new CL(ncreate(src, type));
   };
 
-  public static CL create(String src, String func) {
-    return create(src, func, TYPE_DEFAULT);
+  public static CL create(String src) {
+    return create(src, TYPE_DEFAULT);
+  }
+
+  private static native long nkernel(long ctx, String func);
+
+  public long kernel(String func) {
+    return nkernel(ctx, func);
   }
 
   private native long ncreateBuffer(long ctx, int size, int type);
@@ -72,16 +78,16 @@ public class CL implements AutoCloseable {
 
   public long createReadWriteBuffer(int size) {return ncreateBuffer(ctx, size, MEM_READ_WRITE);}
 
-  private static native boolean nsetArg(long ctx, int idx, byte[] value);
+  private static native boolean nsetArg(long ctx, long kernel, int idx, byte[] value);
 
-  public boolean setArg(int idx, byte[] value) {
-    return nsetArg(ctx, idx, value);
+  public boolean setArg(long kernel, int idx, byte[] value) {
+    return nsetArg(ctx, kernel, idx, value);
   }
 
-  public boolean setArg(int idx, long value) {
+  public boolean setArg(long kernel, int idx, long value) {
     byte[] tmp = new byte[8];
     LE.setuint64(tmp, 0, value);
-    return nsetArg(ctx, idx, tmp);
+    return nsetArg(ctx, kernel, idx, tmp);
   }
 
   private static native boolean nwriteBufferi8(long ctx, long buffer, byte[] value);
@@ -96,9 +102,9 @@ public class CL implements AutoCloseable {
     return nwriteBufferf32(ctx, buffer, data);
   }
 
-  private static native boolean nexecute(long ctx, int count);
+  private static native boolean nexecute(long ctx, long kernel, int count);
 
-  public boolean execute(int count) {return nexecute(ctx, count);}
+  public boolean execute(long kernel, int count) {return nexecute(ctx, kernel, count);}
 
   private static native boolean nreadBufferi8(long ctx, long buffer, byte[] value);
 
@@ -110,6 +116,12 @@ public class CL implements AutoCloseable {
 
   public boolean readBuffer(long buffer, float[] data) {
     return nreadBufferf32(ctx, buffer, data);
+  }
+
+  private static native boolean nfreeKernel(long ctx, long kernel);
+
+  public boolean freeKernel(long kernel) {
+    return nfreeKernel(ctx, kernel);
   }
 
   private static native boolean nfreeBuffer(long ctx, long buffer);
@@ -138,8 +150,8 @@ public class CL implements AutoCloseable {
     try {
       CL cl = CL.create(
         "__kernel void square(__global float* input, __global float* output) { int i = get_global_id(0); output[i] = input[i] * input[i]; }",
-        "square",
         TYPE_GPU);
+      long kernel = cl.kernel("square");
       long input = cl.createWriteBuffer(Float.BYTES * SIZE);
       long output = cl.createReadBuffer(Float.BYTES * SIZE);
 
@@ -152,15 +164,16 @@ public class CL implements AutoCloseable {
 
       cl.writeBuffer(input, data);
 
-      cl.setArg(0, input);
-      cl.setArg(1, output);
+      cl.setArg(kernel, 0, input);
+      cl.setArg(kernel, 1, output);
 
-      cl.execute(SIZE);
+      cl.execute(kernel, SIZE);
 
       cl.readBuffer(output, results);
 
       cl.freeBuffer(input);
       cl.freeBuffer(output);
+      cl.freeKernel(kernel);
       cl.close();
 
       //confirm results

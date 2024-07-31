@@ -188,14 +188,16 @@ static JNINativeMethod javaforce_net_PacketCapture[] = {
 
 static JNINativeMethod javaforce_cl_CL[] = {
   {"ninit", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_cl_CL_ninit},
-  {"ncreate", "(Ljava/lang/String;Ljava/lang/String;I)J", (void *)&Java_javaforce_cl_CL_ncreate},
+  {"ncreate", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_cl_CL_ncreate},
+  {"nkernel", "(JLjava/lang/String;)J", (void *)&Java_javaforce_cl_CL_nkernel},
   {"ncreateBuffer", "(JII)J", (void *)&Java_javaforce_cl_CL_ncreateBuffer},
-  {"nsetArg", "(JI[B)Z", (void *)&Java_javaforce_cl_CL_nsetArg},
+  {"nsetArg", "(JJI[B)Z", (void *)&Java_javaforce_cl_CL_nsetArg},
   {"nwriteBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferi8},
   {"nwriteBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferf32},
-  {"nexecute", "(JI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
+  {"nexecute", "(JJI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
   {"nreadBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nreadBufferi8},
   {"nreadBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nreadBufferf32},
+  {"nfreeKernel", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeKernel},
   {"nfreeBuffer", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeBuffer},
   {"nclose", "(J)Z", (void *)&Java_javaforce_cl_CL_nclose},
 };

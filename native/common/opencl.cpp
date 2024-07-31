@@ -280,7 +280,6 @@ struct CLContext {
   cl_context context;                 // compute context
   cl_command_queue commands;          // compute command queue
   cl_program program;                 // compute program
-  cl_kernel kernel;                   // compute kernel
 };
 
 #define DATA_SIZE (64 * 1024)
@@ -487,7 +486,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
-  (JNIEnv *e, jclass o, jstring src, jstring kernel, jint type)
+  (JNIEnv *e, jclass o, jstring src, jint type)
 {
   int res, err;
   CLContext *ctx = (CLContext*)malloc(sizeof(CLContext));
@@ -557,21 +556,31 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
     return 0;
   }
 
+  return (jlong)ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_nkernel
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jstring kernel)
+{
+  if (ctx_ptr == 0) return 0;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+  int err;
+
   const char *c_kernel = e->GetStringUTFChars(kernel, NULL);
 
   // Create the compute kernel in the program we wish to run
-  ctx->kernel = (*_clCreateKernel)(ctx->program, c_kernel, &err);
+  jlong kernel_ptr = (jlong)(*_clCreateKernel)(ctx->program, c_kernel, &err);
 
   e->ReleaseStringUTFChars(kernel, c_kernel);
 
-  if (!ctx->kernel || err != CL_SUCCESS)
+  if (!kernel_ptr || err != CL_SUCCESS)
   {
     printf("Error: Failed to create compute kernel!\n");
     free(ctx);
     return 0;
   }
 
-  return (jlong)ctx;
+  return kernel_ptr;
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreateBuffer
@@ -586,7 +595,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreateBuffer
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nsetArg
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jint idx, jbyteArray data)
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint idx, jbyteArray data)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -595,7 +604,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nsetArg
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   int size = e->GetArrayLength(data);
 
-  int err = (*_clSetKernelArg)(ctx->kernel, idx, size, dataptr);
+  int err = (*_clSetKernelArg)((cl_kernel)kernel, idx, size, dataptr);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to set kernel arguments! %d\n", err);
@@ -649,7 +658,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferf32
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jint count)
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -657,14 +666,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
   size_t global = count;
   size_t local;
 
-  int err = (*_clGetKernelWorkGroupInfo)(ctx->kernel, ctx->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
+  int err = (*_clGetKernelWorkGroupInfo)((cl_kernel)kernel, ctx->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to retrieve kernel work group info! %d\n", err);
     return JNI_FALSE;
   }
 
-  err = (*_clEnqueueNDRangeKernel)(ctx->commands, ctx->kernel, 1, NULL, &global, &local, 0, NULL, NULL);
+  err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 1, NULL, &global, &local, 0, NULL, NULL);
   if (err)
   {
     printf("Error: Failed to execute kernel!\n");
@@ -718,6 +727,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferf32
   return err == CL_SUCCESS;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeKernel
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  (*_clReleaseKernel)((cl_kernel)kernel);
+
+  return JNI_TRUE;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeBuffer
   (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer)
 {
@@ -736,7 +756,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nclose
   CLContext *ctx = (CLContext*)ctx_ptr;
 
   (*_clReleaseProgram)(ctx->program);
-  (*_clReleaseKernel)(ctx->kernel);
   (*_clReleaseCommandQueue)(ctx->commands);
   (*_clReleaseContext)(ctx->context);
   free(ctx);
