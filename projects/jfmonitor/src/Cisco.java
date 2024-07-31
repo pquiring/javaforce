@@ -944,10 +944,13 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
     ssh.disconnect();
     if (mac_table == null || mac_table.length() == 0) return false;
     String[] lns = mac_table.replaceAll("\\r", "").split("\n");
+    int count = 0;
     for(String ln : lns) {
       ln = ln.toLowerCase().trim();
       String[] fs = ln.split("[ ]");
-      if (fs.length != 4) continue;
+      if (fs.length != 4) {
+        continue;
+      }
       String vlan = fs[0];
       String mac = fs[1];
       String type = fs[2];
@@ -960,10 +963,18 @@ Gi1/0/2                         notconnect   1            auto   auto 10/100/100
         port_id = ports;
       }
       Port port = device.getPort(port_id, false);
-      if (port == null) continue;
+      if (port == null) {
+        continue;
+      }
       Device dev = Config.current.getDevice(mac);
-      if (dev == null) continue;
+      if (dev == null) {
+        continue;
+      }
       device.hardware.addMACTableEntry(mac, port_id);
+      count++;
+    }
+    if (debug) {
+      JFLog.log("MAC Table:device=" + device.mac + ":count=" + count);
     }
     return true;
   }

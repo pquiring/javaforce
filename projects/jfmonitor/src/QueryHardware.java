@@ -51,7 +51,7 @@ public class QueryHardware extends Thread {
       Config.save();
       //wait 5 mins
       if (debug) {
-        JFLog.log("Query:sleep 5 mins");
+        JFLog.log("QueryHardware.run():sleep 5 mins");
       }
       for(int a=0;a<5 * 60 && Status.active;a++) {
         if (scan_now) break;
@@ -61,6 +61,9 @@ public class QueryHardware extends Thread {
     }
   }
   private void analyzeMACTables(Device[] devs) {
+    if (debug) {
+      JFLog.log("QueryHardware.analyzeMACTables()");
+    }
     //update switch uplinks
     for(Device dev : devs) {
       if (dev.type == Device.TYPE_UNKNOWN) continue;
