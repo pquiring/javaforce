@@ -137,7 +137,7 @@ public class Device implements Serializable, Comparable<Device>, Cloneable {
     String port = mac_port[1];
     String ip = Config.current.getip(mac);
     if (ip == null) ip = "???";
-    return ip + ":" + port;
+    return "Switch=" + ip + " Port=" + port;
   }
 
   public boolean configSetSwitchMode(Port port, int mode) {
