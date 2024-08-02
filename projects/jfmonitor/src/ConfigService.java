@@ -2228,8 +2228,7 @@ public class ConfigService implements WebUIHandler {
               update.setText("Save");
             } else {
               ip.notify = notify.isSelected();
-              Device newdev = Config.current.getDevice(ip.mac);
-              newdev.desc = desc.getText();
+              _dev.desc = desc.getText();
             }
             Config.save();
           });

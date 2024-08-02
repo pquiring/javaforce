@@ -161,6 +161,9 @@ public class Port implements Serializable, Comparable<Port> {
     if (name != null) {
       sb.append(" name:" + name);
     }
+    if (isUplink) {
+      sb.append(" uplink:true");
+    }
     return sb.toString();
   }
 
