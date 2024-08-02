@@ -1,3 +1,6 @@
+Aug 2/2024 : 0.15 released
+  - new : cisco : analyze MAC address tables to show where devices are connected
+
 July 15/2024 : 0.14 released
   - new : added shutdown option for ports/vlans
 
