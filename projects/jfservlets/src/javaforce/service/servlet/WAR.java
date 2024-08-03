@@ -29,14 +29,75 @@ public class WAR {
 
   public static class Servlet {
     //must use reflection to get servlet from loader
-    public Object servlet;
-    public Method service;
-    public Class<?> req;
-    public Constructor<?> req_ctor;
-    public Class<?> res;
-    public Constructor<?> res_ctor;
-    public String name;
-    public String url;
+    private Object servlet;
+    private Method service;
+    private Method init;
+    private Method destroy;
+    private Class<?> req;
+    private Constructor<?> req_ctor;
+    private Class<?> res;
+    private Constructor<?> res_ctor;
+    private String name;
+    private String url;
+    private boolean inited;
+    private Object lock = new Object();
+
+    private void init() {
+      synchronized (lock) {
+        if (inited) return;
+        try {
+          if (init != null) {
+            init.invoke(servlet);
+          }
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
+        inited = true;
+      }
+    }
+
+    private void destroy() {
+      synchronized (lock) {
+        if (!inited) return;
+        try {
+          if (destroy != null) {
+            destroy.invoke(servlet);
+          }
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
+        inited = false;
+      }
+    }
+
+    public Object createRequest(HashMap map) {
+      try {
+        return req_ctor.newInstance(map);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
+    }
+
+    public Object createResponse(HashMap map) {
+      try {
+        return res_ctor.newInstance(map);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
+    }
+
+    public void invoke(Object http_req, Object http_res) {
+      if (!inited) {
+        init();
+      }
+      try {
+        service.invoke(servlet, http_req, http_res);
+      } catch (Throwable t) {
+        JFLog.log(t);
+      }
+    }
   }
 
   public static WAR load(String folder) {
@@ -86,9 +147,20 @@ public class WAR {
                     servlet.servlet = ctor.newInstance();
                     Method[] methods = cls.getMethods();
                     for(Method method : methods) {
-                      //JFLog.log("method:" + method.getName() + ":" + method.toString());
-                      if (method.toString().equals("public void javax.servlet.http.HttpServlet.service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)")) {
-                        servlet.service = method;
+                      String sign = method.toString();
+                      if (debug) {
+                        JFLog.log("method:name=" + method.getName() + ":signature=" + sign);
+                      }
+                      switch (sign) {
+                        case "public void javax.servlet.http.HttpServlet.service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)":
+                          servlet.service = method;
+                          break;
+                        case "public void javax.servlet.http.GenericServlet.init()":
+                          servlet.init = method;
+                          break;
+                        case "public void javax.servlet.http.GenericServlet.destroy()":
+                          servlet.destroy = method;
+                          break;
                       }
                     }
                     if (servlet.service == null) {
@@ -217,6 +289,16 @@ public class WAR {
     if (i1 == -1) i1 = 0; else i1++;
     int i2 = folder.indexOf('-');
     return folder.substring(i1, i2);
+  }
+
+  //destroy all servlets (if inited)
+  public void destroyAll() {
+    //TODO : wait till all invoke()s have completed
+    for(Servlet servlet : servlets) {
+      if (servlet.inited) {
+        servlet.destroy();
+      }
+    }
   }
 
   public String toString() {

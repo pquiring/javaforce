@@ -171,10 +171,12 @@ public class ServletsService implements WebHandler {
     }
     try {
       HashMap<String, Object> req_map = req.toHashMap();
-      Object http_req = servlet.req_ctor.newInstance(req_map);
+      Object http_req = servlet.createRequest(req_map);
+      if (http_req == null) throw new Exception("Failed to create request map");
       HashMap<String, Object> res_map = res.toHashMap();
-      Object http_res = servlet.res_ctor.newInstance(res_map);
-      servlet.service.invoke(servlet.servlet, http_req, http_res);
+      Object http_res = servlet.createResponse(res_map);
+      if (http_res == null) throw new Exception("Failed to create response map");
+      servlet.invoke(http_req, http_res);
       res.fromHashMap(res_map);
     } catch (Throwable e) {
       JFLog.log(e);
@@ -308,6 +310,7 @@ public class ServletsService implements WebHandler {
   private void unregisterWAR(WAR war) {
     JFLog.log("unregisterWAR:" + war.toString());
     wars.remove(war);
+    war.destroyAll();
     war.delete = System.currentTimeMillis() + (60 * 1000);
     synchronized (delete_lock) {
       delete_wars.add(war);
@@ -396,6 +399,7 @@ public class ServletsService implements WebHandler {
     }
   }
 
+  /** This thread deletes the expanded files from a war file after it has been upgraded with a newer version. */
   public class Deleter extends Thread {
     public void run() {
       while (active) {
