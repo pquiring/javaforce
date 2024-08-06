@@ -146,14 +146,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       while (active) {
         JF.sleep(250);
         long now = System.currentTimeMillis();
-        if (now - lastPacket > 20*1000) {
+        if (now - lastPacket > 5*1000) {
           JFLog.log(log, camera.name + " : Reconnecting");
           disconnect();
           if (!connect()) {
             JF.sleep(1000);
             continue;
           }
-        } else if (now - lastKeepAlive > 45*1000) {
+        } else if (now - lastKeepAlive > 25*1000) {
           JFLog.log(log, camera.name + " : keep alive");
           client.keepalive(url);
           lastKeepAlive = now;
