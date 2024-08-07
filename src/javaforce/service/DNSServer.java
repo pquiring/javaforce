@@ -54,7 +54,7 @@ public class DNSServer {
 
   private boolean uplinks_down = false;  //uplink(s) are down?
 
-  public class Server extends Thread {
+  private class Server extends Thread {
     public boolean active;
     public void run() {
       active = true;

@@ -71,7 +71,7 @@ public class FTPServer {
     return JF.getConfigPath() + "/jfftp.key";
   }
 
-  public class Server extends Thread {
+  private class Server extends Thread {
     public boolean active;
     public void run() {
       active = true;

@@ -11,7 +11,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class MQTTServer extends Thread {
+public class MQTTServer {
   private static MQTTServer service;
   public static void serviceStart(String[] args) {
     service = new MQTTServer();
@@ -26,7 +26,7 @@ public class MQTTServer extends Thread {
 
   public static void serviceStop() {
     if (service != null) {
-      service.cancel();
+      service.stop();
       service = null;
     }
   }
@@ -35,12 +35,19 @@ public class MQTTServer extends Thread {
     this.events = events;
   }
 
-  public void cancel() {
-    server_active = false;
+  public void start() {
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
     if (ss != null) {
       try {ss.close();} catch (Exception e) {}
       ss = null;
     }
+    server = null;
   }
 
   public static boolean hasWildcard(String topic) {
@@ -121,7 +128,7 @@ public class MQTTServer extends Thread {
     }
   }
 
-  private boolean server_active;
+  private Server server;
   private Object lock = new Object();
   private HashMap<String, Topic> topics = new HashMap<>();
   private MQTTEvents events;
@@ -133,19 +140,22 @@ public class MQTTServer extends Thread {
   public static boolean debug = false;
   public static boolean debug_msg = false;
 
-  public void run() {
-    server_active = true;
-    JFLog.append(JF.getLogPath() + "/jfmqtt.log", true);
-    JFLog.log("MQTTServer starting on port 1883...");
-    try {
-      ss = new ServerSocket(1883);  //MQTT Broker port
-      while (server_active) {
-        Socket s = ss.accept();
-        Worker worker = new Worker(s);
-        worker.start();
+  private class Server extends Thread {
+    public boolean active;
+    public void run() {
+      active = true;
+      JFLog.append(JF.getLogPath() + "/jfmqtt.log", true);
+      JFLog.log("MQTTServer starting on port 1883...");
+      try {
+        ss = new ServerSocket(1883);  //MQTT Broker port
+        while (active) {
+          Socket s = ss.accept();
+          Worker worker = new Worker(s);
+          worker.start();
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
@@ -273,13 +283,13 @@ public class MQTTServer extends Thread {
         ip = s.getInetAddress().getHostAddress();
         if (debug) JFLog.log("connect:" + ip);
         byte[] buf = new byte[bufsiz];
-        while (server_active && active) {
+        while (active && active) {
           int totalRead = 0;
           int packetLength = -1;  //excluding header + length fields
           int totalLength = -1;  //total packet length
           int read;
           Arrays.fill(buf, (byte)0);
-          while (server_active && active) {
+          while (active && active) {
             if (packetLength == -1) {
               read = is.read(buf, totalRead, 1);
             } else {

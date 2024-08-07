@@ -95,7 +95,7 @@ public class DHCPServer {
   }
   private ArrayList<Host> hosts = new ArrayList<Host>();
 
-  public class Server extends Thread {
+  private class Server extends Thread {
     public boolean active;
     public void run() {
       active = true;
