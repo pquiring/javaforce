@@ -265,6 +265,7 @@ public class SOCKSServer {
       }
       forward_remote_workers.clear();
     }
+    server = null;
   }
 
   enum Section {None, Global};

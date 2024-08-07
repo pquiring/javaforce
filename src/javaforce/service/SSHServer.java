@@ -21,7 +21,7 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class SSHServer extends Thread {
+public class SSHServer {
   public final static String busPack = "net.sf.jfssh";
 
   public static boolean debug = false;
@@ -35,8 +35,8 @@ public class SSHServer extends Thread {
   private static ArrayList<EMail> users;
   private static IP4Port bind = new IP4Port();
 
-  private boolean active;
   private SshServer sshd;
+  private Server server;
 
   //config
   private String root = null;
@@ -79,89 +79,101 @@ public class SSHServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    ssh.close();
+    ssh.stop();
   }
 
   public static void main(String[] args) {
   }
 
-  public void run() {
-    JFLog.append(JF.getLogPath() + "/jfssh.log", true);
-    JFLog.setRetention(30);
-    JFLog.log("SSH : Starting service");
+  private class Server extends Thread {
+    public boolean active;
+    public void run() {
+      JFLog.append(JF.getLogPath() + "/jfssh.log", true);
+      JFLog.setRetention(30);
+      JFLog.log("SSH : Starting service");
 
-    try {
-      loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
+      active = true;
+      try {
+        loadConfig();
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
 
-      sshd = SshServer.setUpDefaultServer();
-      sshd.setPort(bind.port);
-      sshd.setHost(bind.toIP4String());
-      sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
+        sshd = SshServer.setUpDefaultServer();
+        sshd.setPort(bind.port);
+        sshd.setHost(bind.toIP4String());
+        sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
 
-      //Accept all keys for authentication
-      sshd.setPublickeyAuthenticator((s, publicKey, serverSession) -> true);
+        //Accept all keys for authentication
+        sshd.setPublickeyAuthenticator((s, publicKey, serverSession) -> true);
 
-      //Allow username/password authentication using pre-defined credentials
-      sshd.setPasswordAuthenticator((username, password, serverSession) -> {
-        for(EMail acct : users) {
-          if (acct.user.equals(username)) {
-            return acct.pass.equals(password);
+        //Allow username/password authentication using pre-defined credentials
+        sshd.setPasswordAuthenticator((username, password, serverSession) -> {
+          for(EMail acct : users) {
+            if (acct.user.equals(username)) {
+              return acct.pass.equals(password);
+            }
+          }
+          if (ldap_server != null && ldap_domain != null) {
+            LDAP ldap = new LDAP();
+            return ldap.login(ldap_server, ldap_domain, username, password);
+          }
+          return false;
+        });
+
+        //Setup Virtual File System (VFS)
+        Path dir = Paths.get(root);
+        VirtualFileSystemFactory vfs = new VirtualFileSystemFactory(dir.toAbsolutePath());
+        sshd.setFileSystemFactory(vfs);
+
+        //Add SFTP support
+        if (enable_sftp) {
+          List<SubsystemFactory> sftpCommandFactory = new ArrayList<>();
+          SftpSubsystemFactory sftp = new SftpSubsystemFactory();
+          sftpCommandFactory.add(sftp);
+          sshd.setSubsystemFactories(sftpCommandFactory);
+        }
+
+        //Add SCP support
+        if (enable_scp) {
+          ScpCommandFactory scp = new ScpCommandFactory.Builder().build();
+          sshd.setCommandFactory(scp);
+        }
+
+        //Add Shell support
+        if (enable_shell) {
+          if (JF.isWindows()) {
+            sshd.setShellFactory(new ProcessShellFactory("cmd.exe", new String[] {"cmd.exe"}));
+          } else {
+            sshd.setShellFactory(new ProcessShellFactory("/bin/bash", new String[] {"/bin/bash"}));
           }
         }
-        if (ldap_server != null && ldap_domain != null) {
-          LDAP ldap = new LDAP();
-          return ldap.login(ldap_server, ldap_domain, username, password);
+
+        sshd.start();
+        active = true;
+        while (sshd.isStarted() && active) {
+          JF.sleep(1000);
         }
-        return false;
-      });
-
-      //Setup Virtual File System (VFS)
-      Path dir = Paths.get(root);
-      VirtualFileSystemFactory vfs = new VirtualFileSystemFactory(dir.toAbsolutePath());
-      sshd.setFileSystemFactory(vfs);
-
-      //Add SFTP support
-      if (enable_sftp) {
-        List<SubsystemFactory> sftpCommandFactory = new ArrayList<>();
-        SftpSubsystemFactory sftp = new SftpSubsystemFactory();
-        sftpCommandFactory.add(sftp);
-        sshd.setSubsystemFactories(sftpCommandFactory);
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-
-      //Add SCP support
-      if (enable_scp) {
-        ScpCommandFactory scp = new ScpCommandFactory.Builder().build();
-        sshd.setCommandFactory(scp);
-      }
-
-      //Add Shell support
-      if (enable_shell) {
-        if (JF.isWindows()) {
-          sshd.setShellFactory(new ProcessShellFactory("cmd.exe", new String[] {"cmd.exe"}));
-        } else {
-          sshd.setShellFactory(new ProcessShellFactory("/bin/bash", new String[] {"/bin/bash"}));
-        }
-      }
-
-      sshd.start();
-      active = true;
-      while (sshd.isStarted() && active) {
-        JF.sleep(1000);
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
-  public void close() {
-    active = false;
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
     if (sshd != null) {
       try {sshd.stop();} catch (Exception e) {}
       sshd = null;
     }
+    server = null;
   }
 
   enum Section {None, Global};
@@ -294,7 +306,7 @@ public class SSHServer extends Thread {
     }
     public void restart() {
       JFLog.log("restart");
-      ssh.close();
+      ssh.stop();
       ssh = new SSHServer();
       ssh.start();
     }
