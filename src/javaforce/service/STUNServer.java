@@ -30,7 +30,7 @@ import javaforce.*;
 import javaforce.jbus.JBusClient;
 import javaforce.jbus.JBusServer;
 
-public class STUNServer extends Thread {
+public class STUNServer {
   private static int defaultLifeTime = 600;
 
   public final static String busPack = "net.sf.jfstun";
@@ -79,8 +79,7 @@ public class STUNServer extends Thread {
   private final static short XOR_MAPPED_ADDRESS = 0x0020;
   private final static short RESERVATION_TOKEN = 0x0022;
 
-  private volatile boolean active = true;
-  private volatile boolean done = false;
+  private Server server;
   private String user, pass;
   private DatagramSocket ds, ds2;
   private final String realm = "javaforce.service.STUN";
@@ -186,8 +185,15 @@ public class STUNServer extends Thread {
     return ds.getLocalAddress().getHostAddress();
   }
 
-  public void close() {
-    active = false;
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
     if (ds != null) {
       try {
         ds.close();
@@ -203,9 +209,6 @@ public class STUNServer extends Thread {
       } catch (Exception e) {
         JFLog.log(e);
       }
-    }
-    while (!done) {
-      JF.sleep(10);
     }
   }
 
@@ -406,7 +409,7 @@ public class STUNServer extends Thread {
       }
       localPort = ds.getPort();
 
-      while (active) {
+      while (server.active) {
         try {
           dp = new DatagramPacket(data, 1500);
           ds.receive(dp);
@@ -710,10 +713,9 @@ public class STUNServer extends Thread {
               break;
           }
         } catch (Exception e) {
-          if (active) JFLog.log(e);
+          if (server.active) JFLog.log(e);
         }
       }
-      done = true;
     }
   }
 
@@ -839,7 +841,7 @@ public class STUNServer extends Thread {
       }
     }
     public void restart() {
-      stun.close();
+      stun.stop();
       stun = new STUNServer();
       stun.start();
     }
@@ -856,17 +858,20 @@ public class STUNServer extends Thread {
   public static void main(String[] args) {
   }
 
-  public void run() {
-    JFLog.append(JF.getLogPath() + "/jfssh.log", true);
-    JFLog.setRetention(30);
-    JFLog.log("STUN : Starting service");
+  private class Server extends Thread {
+    public boolean active;
+    public void run() {
+      active = true;
+      JFLog.append(JF.getLogPath() + "/jfssh.log", true);
+      JFLog.setRetention(30);
+      JFLog.log("STUN : Starting service");
 
-    busClient = new JBusClient(busPack, new JBusMethods());
-    busClient.setPort(getBusPort());
-    busClient.start();
-    doStart();
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
+      doStart();
+    }
   }
-
   private static STUNServer stun;
 
   public static void serviceStart(String[] args) {
@@ -887,6 +892,6 @@ public class STUNServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    stun.close();
+    stun.stop();
   }
 }
