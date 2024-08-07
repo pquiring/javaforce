@@ -555,7 +555,7 @@ public class ConfigPanel extends Panel {
         FileOutputStream fos = new FileOutputStream(dhcp_config_file);
         fos.write(new_config.getBytes());
         fos.close();
-        Service.dhcp.close();
+        Service.dhcp.stop();
         Service.dhcp = new DHCPServer();
         Service.dhcp.setNotify(Service.tftp);
         Service.dhcp.start();

@@ -44,7 +44,7 @@ public class Service {
   public static void serviceStop() {
     JFLog.log("jfNetBoot stopping...");
     if (dhcp != null) {
-      dhcp.close();
+      dhcp.stop();
       dhcp = null;
     }
     Clients.close();
