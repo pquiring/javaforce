@@ -16,7 +16,7 @@ import java.security.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
-public class ProxyServer extends Thread {
+public class ProxyServer {
 
   public final static String busPack = "net.sf.jfproxy";
 
@@ -32,22 +32,30 @@ public class ProxyServer extends Thread {
     public String url, newurl;
   }
 
+  private Server server;
   private ServerSocket ss;
-  private static Vector<Session> list = new Vector<Session>();
-  private static ArrayList<String> blockedDomain = new ArrayList<String>();
-  private static ArrayList<String> blockedURL = new ArrayList<String>();
-  private static ArrayList<URLChange> urlChanges = new ArrayList<URLChange>();
-  private static ArrayList<Integer> allow_net = new ArrayList<Integer>();
-  private static ArrayList<Integer> allow_mask = new ArrayList<Integer>();
-  private static int port = 3128;
-  private static int nextSSLport = 8081;
-  private static boolean filtersecure = false;
-  private static HashMap<String, SecureSite> secureSites = new HashMap<String,SecureSite>();
-  private static String keyPath;
-  private static SSLSocketFactory sslSocketFactory;
+  private Vector<Session> list = new Vector<Session>();
+  private ArrayList<String> blockedDomain = new ArrayList<String>();
+  private ArrayList<String> blockedURL = new ArrayList<String>();
+  private ArrayList<URLChange> urlChanges = new ArrayList<URLChange>();
+  private ArrayList<Integer> allow_net = new ArrayList<Integer>();
+  private ArrayList<Integer> allow_mask = new ArrayList<Integer>();
+  private int port = 3128;
+  private int nextSSLport = 8081;
+  private boolean filtersecure = false;
+  private HashMap<String, SecureSite> secureSites = new HashMap<String,SecureSite>();
+  private String keyPath;
+  private SSLSocketFactory sslSocketFactory;
 
-  public void close() {
-    JFLog.logTrace("proxy.close()");
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
     try {
       ss.close();
     } catch (Exception e) {}
@@ -66,6 +74,7 @@ public class ProxyServer extends Thread {
       secureSites.clear();
       deleteKeys();
     }
+    server = null;
   }
 
   public void deleteKeys() {
@@ -79,84 +88,87 @@ public class ProxyServer extends Thread {
     }
   }
 
-  public void run() {
-    JFLog.append(getLogFile(), true);
-    JFLog.setRetention(30);
-    JFLog.log("Proxy : Starting service");
-    Socket s;
-    Session sess;
-    loadConfig();
-    busClient = new JBusClient(busPack, new JBusMethods());
-    busClient.setPort(getBusPort());
-    busClient.start();
-    if (filtersecure) {
-      JFLog.log("Setting up secure server...");
-      keyPath = JF.getConfigPath() + "/jfproxy";
-      new File(keyPath).mkdir();
-      deleteKeys();
-      if (!new File(keyPath + "/localhost.key").exists()) {
-        keytool(new String[] {
-          "-genkeypair",
-          "-alias",
-          "localhost",
-          "-keystore",
-          "localhost.key",
-          "-storepass",
-          "password",
-          "-keypass",
-          "password",
-          "-keyalg",
-          "RSA",
-          "-dname",
-          "CN=localhost, OU=JavaForce, O=JavaForce, C=CA",
-          "-validity",
-          "3650",
-          "-ext",
-          "KeyUsage=digitalSignature,keyEncipherment,keyCertSign,codeSigning",
-          "-ext",
-          "ExtendedKeyUsage=serverAuth,clientAuth",
-          "-ext",
-          "BasicConstraints=ca:true,pathlen:3",
-        });
-        keytool(new String[] {
-          "-exportcert",
-          "-alias",
-          "localhost",
-          "-keystore",
-          "localhost.key",
-          "-storepass",
-          "password",
-          "-file",
-          "localhost.crt"
-        });
+  private class Server extends Thread {
+    public boolean active;
+    public void run() {
+      JFLog.append(getLogFile(), true);
+      JFLog.setRetention(30);
+      JFLog.log("Proxy : Starting service");
+      Socket s;
+      Session sess;
+      loadConfig();
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
+      if (filtersecure) {
+        JFLog.log("Setting up secure server...");
+        keyPath = JF.getConfigPath() + "/jfproxy";
+        new File(keyPath).mkdir();
+        deleteKeys();
+        if (!new File(keyPath + "/localhost.key").exists()) {
+          keytool(new String[] {
+            "-genkeypair",
+            "-alias",
+            "localhost",
+            "-keystore",
+            "localhost.key",
+            "-storepass",
+            "password",
+            "-keypass",
+            "password",
+            "-keyalg",
+            "RSA",
+            "-dname",
+            "CN=localhost, OU=JavaForce, O=JavaForce, C=CA",
+            "-validity",
+            "3650",
+            "-ext",
+            "KeyUsage=digitalSignature,keyEncipherment,keyCertSign,codeSigning",
+            "-ext",
+            "ExtendedKeyUsage=serverAuth,clientAuth",
+            "-ext",
+            "BasicConstraints=ca:true,pathlen:3",
+          });
+          keytool(new String[] {
+            "-exportcert",
+            "-alias",
+            "localhost",
+            "-keystore",
+            "localhost.key",
+            "-storepass",
+            "password",
+            "-file",
+            "localhost.crt"
+          });
+        }
+        initSSL();
       }
-      initSSL();
-    }
-    //try to bind to port 5 times (in case restart() takes a while)
-    for(int a=0;a<5;a++) {
+      //try to bind to port 5 times (in case restart() takes a while)
+      for(int a=0;a<5;a++) {
+        try {
+          ss = new ServerSocket(port);
+        } catch (Exception e) {
+          if (a == 4) return;
+          JF.sleep(1000);
+          continue;
+        }
+        break;
+      }
       try {
-        ss = new ServerSocket(port);
+        JFLog.log("Starting proxy on port " + port);
+        while (active) {
+          s = ss.accept();
+          sess = new Session(s, false);
+          sess.start();
+        }
       } catch (Exception e) {
-        if (a == 4) return;
-        JF.sleep(1000);
-        continue;
+        JFLog.log(e);
       }
-      break;
-    }
-    try {
-      JFLog.log("Starting proxy on port " + port);
-      while (!ss.isClosed()) {
-        s = ss.accept();
-        sess = new Session(s, false);
-        sess.start();
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
   /** Executes keytool directly */
-  public static boolean keytool(String[] args) {
+  public boolean keytool(String[] args) {
     ArrayList<String> cmd = new ArrayList<String>();
     try {
       if (JF.isWindows()) {
@@ -312,7 +324,7 @@ public class ProxyServer extends Thread {
     return ret;
   }
 
-  private static void initSSL() {
+  private void initSSL() {
     try {
       TrustManager[] trustAllCerts = new TrustManager[] {
         new X509TrustManager() {
@@ -338,7 +350,7 @@ public class ProxyServer extends Thread {
     }
   }
 
-  public static int getSSLPort(String host) {
+  public int getSSLPort(String host) {
     if (host.equals("localhost")) return -1;  //should not happen
     if (host.equals("127.0.0.1")) return -1;  //should not happen
     SecureSite secureSite;
@@ -360,7 +372,7 @@ public class ProxyServer extends Thread {
     return secureSite.port;
   }
 
-  public static class SecureSite extends Thread {
+  public class SecureSite extends Thread {
     public String domain;
     public SSLContext sc;
     public SSLServerSocketFactory serverSocketFactory;
@@ -491,7 +503,7 @@ public class ProxyServer extends Thread {
     }
   }
 
-  private static class Session extends Thread {
+  private class Session extends Thread {
     private Socket p, i;  //proxy, internet
     private InputStream pis, iis;
     private OutputStream pos, ios;
@@ -972,7 +984,7 @@ public class ProxyServer extends Thread {
       }
     }
     public void restart() {
-      proxy.close();
+      proxy.stop();
       proxy = new ProxyServer();
       proxy.start();
     }
@@ -1011,6 +1023,6 @@ public class ProxyServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    proxy.close();
+    proxy.stop();
   }
 }
