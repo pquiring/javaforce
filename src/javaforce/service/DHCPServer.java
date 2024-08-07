@@ -20,7 +20,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
-public class DHCPServer extends Thread {
+public class DHCPServer {
 
   public final static String busPack = "net.sf.jfdhcp";
 
@@ -82,6 +82,7 @@ public class DHCPServer extends Thread {
     public String pxe_bootfile;
     public ArrayList<Option> options = new ArrayList<Option>();
   }
+  private Server server;
   private ArrayList<Pool> pools = new ArrayList<Pool>();
   private Pool global = new Pool();
   private Inet4Address broadcastAddress;
@@ -93,45 +94,34 @@ public class DHCPServer extends Thread {
     public DatagramSocket ds;
   }
   private ArrayList<Host> hosts = new ArrayList<Host>();
-  private Object close = new Object();
-  private static boolean stopping;
 
-  public static enum State {Loading, Running, Error, Stopped};
-  public State state = State.Loading;
-  public Object stateMonitor = new Object();
-
-  public void run() {
-    JFLog.append(getLogFile(), true);
-    JFLog.setRetention(30);
-    JFLog.log("DHCP : Starting service");
-    try {
-      loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
-      if (!validConfig()) {
-        throw new Exception("invalid config");
+  public class Server extends Thread {
+    public boolean active;
+    public void run() {
+      active = true;
+      JFLog.append(getLogFile(), true);
+      JFLog.setRetention(30);
+      JFLog.log("DHCP : Starting service");
+      try {
+        loadConfig();
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+        if (!validConfig()) {
+          throw new Exception("invalid config");
+        }
+        broadcastAddress = (Inet4Address)Inet4Address.getByName("255.255.255.255");
+        for(int a=0;a<hosts.size();a++) {
+          new HostWorker(hosts.get(a)).start();
+        }
+        while(active) {
+          synchronized(this) {
+            wait();
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      broadcastAddress = (Inet4Address)Inet4Address.getByName("255.255.255.255");
-      for(int a=0;a<hosts.size();a++) {
-        new HostWorker(hosts.get(a)).start();
-      }
-      setState(State.Running);
-      //wait for close request
-      synchronized(close) {
-        close.wait();
-      }
-      setState(State.Stopped);
-    } catch (Exception e) {
-      JFLog.log(e);
-      setState(State.Error);
-    }
-  }
-
-  public void setState(State newState) {
-    synchronized(stateMonitor) {
-      state = newState;
-      stateMonitor.notify();
     }
   }
 
@@ -140,19 +130,31 @@ public class DHCPServer extends Thread {
     this.notify = notify;
   }
 
+  /** Start DHCP Service. */
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
   /** Stop the DHCP Service. */
-  public void close() {
-    stopping = true;
+  public void stop() {
+    if (server == null) return;
     int cnt = hosts.size();
     for(int a=0;a<cnt;a++) {
       DatagramSocket ds;
       ds = hosts.get(a).ds;
       if (ds != null) ds.close();
     }
-    if (busClient != null) busClient.close();
-    synchronized(close) {
-      close.notify();
+    if (busClient != null) {
+      busClient.close();
+      busClient = null;
     }
+    server.active = false;
+    synchronized(server) {
+      server.notify();
+    }
+    server = null;
   }
 
   private class HostWorker extends Thread {
@@ -171,7 +173,7 @@ public class DHCPServer extends Thread {
           new RequestWorker(packet, host).start();
         }
       } catch (SocketException e) {
-        if (!stopping) JFLog.log(e);
+        if (server != null && server.active) JFLog.log(e);
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -1013,7 +1015,7 @@ public class DHCPServer extends Thread {
       }
     }
     public void restart() {
-      dhcp.close();
+      dhcp.stop();
       dhcp = new DHCPServer();
       dhcp.start();
     }
@@ -1025,9 +1027,6 @@ public class DHCPServer extends Thread {
     } else {
       return 777;
     }
-  }
-
-  public static void main(String[] args) {
   }
 
   //Win32 Service
@@ -1052,6 +1051,6 @@ public class DHCPServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    dhcp.close();
+    dhcp.stop();
   }
 }
