@@ -17,29 +17,26 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
-public class SMTPRelay extends Thread {
+public class SMTPRelay {
 
-  private static String pop3_host;
-  private static int pop3_port;
-  private static boolean pop3_secure;
-  private static String pop3_user;  //login name (required)
-  private static String pop3_pass;  //login pass (required)
+  private Server server;
+  private String pop3_host;
+  private int pop3_port;
+  private boolean pop3_secure;
+  private String pop3_user;  //login name (required)
+  private String pop3_pass;  //login pass (required)
 
-  private static String smtp_host;
-  private static int smtp_port;
-  private static boolean smtp_secure;
-  private static String smtp_user;  //login name (optional)
-  private static String smtp_pass;  //login pass (optional)
-  private static String smtp_from;  //override 'from' email (optional)
+  private String smtp_host;
+  private int smtp_port;
+  private boolean smtp_secure;
+  private String smtp_user;  //login name (optional)
+  private String smtp_pass;  //login pass (optional)
+  private String smtp_from;  //override 'from' email (optional)
 
-  private static boolean keepalive = false;  //keep POP3 connection active
-  private static long interval = 15;  //how often (minutes) to check for new messages
+  private boolean keepalive = false;  //keep POP3 connection active
+  private long interval = 15;  //how often (minutes) to check for new messages
 
-  //private static SMTPRelay service;
-  private static volatile boolean active;
-  private static Object lock = new Object();
-  private static SMTPRelay service;
-  private static POP3 pop3;
+  private POP3 pop3;
 
   private static boolean debug = false;
 
@@ -61,34 +58,45 @@ public class SMTPRelay extends Thread {
     }
   }
 
-  public void run() {
-    JFLog.append(JF.getLogPath() + "/jfsmtprelay.log", true);
-    JFLog.setRetention(30);
-    JFLog.log("SMTPRelay : Starting service");
-    try {
-      loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
-      active = true;
-      while (active) {
-        relay();
-        for(int a=0;a<interval * 60;a++) {
-          if (!active) return;
-          JF.sleep(1000);
+  private class Server extends Thread {
+    public boolean active;
+    public void run() {
+      JFLog.append(JF.getLogPath() + "/jfsmtprelay.log", true);
+      JFLog.setRetention(30);
+      JFLog.log("SMTPRelay : Starting service");
+      try {
+        loadConfig();
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+        active = true;
+        while (active) {
+          relay();
+          for(int a=0;a<interval * 60;a++) {
+            if (!active) break;
+            JF.sleep(1000);
+          }
         }
+        if (pop3 != null) {
+          pop3.disconnect();
+          pop3 = null;
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      if (pop3 != null) {
-        pop3.disconnect();
-        pop3 = null;
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
-  public void close() {
-    active = false;
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
+    server = null;
   }
 
   private void relay() {
@@ -290,7 +298,7 @@ public class SMTPRelay extends Thread {
     }
   }
 
-  public static boolean validConfig() {
+  public boolean validConfig() {
     if (pop3_host == null) return false;
     if (pop3_user == null) return false;
     if (pop3_pass == null) return false;
@@ -316,11 +324,10 @@ public class SMTPRelay extends Thread {
       busServer.close();
       busServer = null;
     }
-    service.close();
+    service.stop();
   }
 
-  public static void main(String[] args) {
-  }
+  private static SMTPRelay service;
 
   private static JBusServer busServer;
   private JBusClient busClient;
@@ -343,7 +350,7 @@ public class SMTPRelay extends Thread {
     }
     public void restart() {
       JFLog.log("restart");
-      service.close();
+      service.stop();
       service = new SMTPRelay();
       service.start();
     }
