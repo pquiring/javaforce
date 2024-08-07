@@ -16,7 +16,7 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class FTPServer extends Thread {
+public class FTPServer {
   public final static String busPack = "net.sf.jfftp";
 
   public static boolean debug = false;
@@ -39,30 +39,29 @@ public class FTPServer extends Thread {
     }
   }
 
-  private static FTPServer ftp;
-  private static volatile boolean active;
-  private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
-  private static ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
-  private static String ldap_domain;
-  private static String ldap_server;
-  private static String root;
-  private static ArrayList<EMail> users;
-  private static Object lock = new Object();
-  private static IP4Port bind = new IP4Port();
-  private static ArrayList<Subnet4> subnet_src_list;
-  private static ArrayList<Integer> ports = new ArrayList<>();
-  private static ArrayList<Integer> ssl_ports = new ArrayList<>();
+  private Server server;
+  private ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
+  private ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
+  private String ldap_domain;
+  private String ldap_server;
+  private String root;
+  private ArrayList<EMail> users;
+  private Object lock = new Object();
+  private IP4Port bind = new IP4Port();
+  private ArrayList<Subnet4> subnet_src_list;
+  private ArrayList<Integer> ports = new ArrayList<>();
+  private ArrayList<Integer> ssl_ports = new ArrayList<>();
 
   public FTPServer() {
   }
 
-  private static void addSession(ClientWorker sess) {
+  private void addSession(ClientWorker sess) {
     synchronized(lock) {
       clients.add(sess);
     }
   }
 
-  private static void removeSession(ClientWorker sess) {
+  private void removeSession(ClientWorker sess) {
     synchronized(lock) {
       clients.remove(sess);
     }
@@ -72,35 +71,48 @@ public class FTPServer extends Thread {
     return JF.getConfigPath() + "/jfftp.key";
   }
 
-  public void run() {
-    JFLog.append(JF.getLogPath() + "/jfftp.log", true);
-    JFLog.setRetention(30);
-    JFLog.log("FTP : Starting service");
-    try {
-      loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
-      for(int p : ports) {
-        ServerWorker worker = new ServerWorker(p, false);
-        worker.start();
-        servers.add(worker);
+  public class Server extends Thread {
+    public boolean active;
+    public void run() {
+      active = true;
+      JFLog.append(JF.getLogPath() + "/jfftp.log", true);
+      JFLog.setRetention(30);
+      JFLog.log("FTP : Starting service");
+      try {
+        loadConfig();
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+        for(int p : ports) {
+          ServerWorker worker = new ServerWorker(p, false);
+          worker.start();
+          servers.add(worker);
+        }
+        for(int p : ssl_ports) {
+          ServerWorker worker = new ServerWorker(p, true);
+          worker.start();
+          servers.add(worker);
+        }
+        while(active) {
+          synchronized(this) {
+            wait();
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      for(int p : ssl_ports) {
-        ServerWorker worker = new ServerWorker(p, true);
-        worker.start();
-        servers.add(worker);
-      }
-      while (active) {
-        JF.sleep(1000);
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
-  public void close() {
-    active = false;
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
     synchronized(lock) {
       ServerWorker[] sa = servers.toArray(new ServerWorker[0]);
       for(ServerWorker s : sa) {
@@ -114,6 +126,10 @@ public class FTPServer extends Thread {
       }
       clients.clear();
     }
+    synchronized(server) {
+      server.notify();
+    }
+    server = null;
   }
 
   enum Section {None, Global};
@@ -272,7 +288,7 @@ public class FTPServer extends Thread {
     }
   }
 
-  public static boolean login(String user, String pass) {
+  public boolean login(String user, String pass) {
     for(EMail acct : users) {
       if (acct.user.equals(user)) {
         return acct.pass.equals(pass);
@@ -285,10 +301,11 @@ public class FTPServer extends Thread {
     return false;
   }
 
-  public static class ServerWorker extends Thread {
+  public class ServerWorker extends Thread {
     private ServerSocket ss;
     private int port;
     private boolean secure;
+    public boolean worker_active;
 
     public ServerWorker(int port, boolean secure) {
       this.port = port;
@@ -315,8 +332,9 @@ public class FTPServer extends Thread {
           bind.port = port;
           ss.bind(bind.toInetSocketAddress());
         }
-        active = true;
-        while (active) {
+        JFLog.log("FTP Server started on port " + ss.getLocalPort());
+        worker_active = true;
+        while (worker_active) {
           Socket s = ss.accept();
           InetSocketAddress sa = (InetSocketAddress)s.getRemoteSocketAddress();
           String src_ip = sa.getAddress().getHostAddress();
@@ -344,7 +362,7 @@ public class FTPServer extends Thread {
     }
   }
 
-  private static boolean ip_src_allowed(String ip4) {
+  private boolean ip_src_allowed(String ip4) {
     if (subnet_src_list.size() == 0) return true;
     IP4 target = new IP4();
     if (!target.setIP(ip4)) return false;
@@ -356,7 +374,7 @@ public class FTPServer extends Thread {
     return false;
   }
 
-  private static boolean userExists(EMail email) {
+  private boolean userExists(EMail email) {
     for(EMail acct : users) {
       if (acct.user.equals(email.user)) {
         return true;
@@ -368,7 +386,7 @@ public class FTPServer extends Thread {
 
   private enum Mode {none, passive, port};
 
-  public static class ClientWorker extends Thread {
+  public class ClientWorker extends Thread {
     private Socket c;
     private boolean secure;
     private InputStream cis = null;
@@ -937,6 +955,8 @@ public class FTPServer extends Thread {
     }
   }
 
+  private static FTPServer ftp;
+
   public static void serviceStart(String[] args) {
     if (JF.isWindows()) {
       busServer = new JBusServer(getBusPort());
@@ -955,10 +975,7 @@ public class FTPServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    ftp.close();
-  }
-
-  public static void main(String[] args) {
+    ftp.stop();
   }
 
   private static JBusServer busServer;
@@ -982,7 +999,7 @@ public class FTPServer extends Thread {
     }
     public void restart() {
       JFLog.log("restart");
-      ftp.close();
+      ftp.stop();
       ftp = new FTPServer();
       ftp.start();
     }
