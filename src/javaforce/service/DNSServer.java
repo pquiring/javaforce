@@ -20,7 +20,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
-public class DNSServer extends Thread {
+public class DNSServer {
   public final static String busPack = "net.sf.jfdns";
 
   public static boolean debug = false;
@@ -40,6 +40,7 @@ public class DNSServer extends Thread {
     public long ts;  //timestamp
   }
 
+  private Server server;
   private DatagramSocket ds;
   private static int maxmtu = 512;  //standard
   private ArrayList<String> uplink = new ArrayList<String>();
@@ -53,43 +54,54 @@ public class DNSServer extends Thread {
 
   private boolean uplinks_down = false;  //uplink(s) are down?
 
-  public void run() {
-    JFLog.append(getLogFile(), false);
-    JFLog.setRetention(30);
-    JFLog.log("DNS : Starting service");
-    try {
-      loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
-      for(int a=0;a<5;a++) {
-        try {
-          ds = new DatagramSocket(53);
-        } catch (Exception e) {
-          if (a == 4) {
-            JFLog.log(e);
-            return;
+  public class Server extends Thread {
+    public boolean active;
+    public void run() {
+      active = true;
+      JFLog.append(getLogFile(), false);
+      JFLog.setRetention(30);
+      JFLog.log("DNS : Starting service");
+      try {
+        loadConfig();
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+        for(int a=0;a<5;a++) {
+          try {
+            ds = new DatagramSocket(53);
+          } catch (Exception e) {
+            if (a == 4) {
+              JFLog.log(e);
+              return;
+            }
+            JF.sleep(1000);
+            continue;
           }
-          JF.sleep(1000);
-          continue;
+          break;
         }
-        break;
+        while (active) {
+          byte[] data = new byte[maxmtu];
+          DatagramPacket packet = new DatagramPacket(data, maxmtu);
+          ds.receive(packet);
+          new Worker(packet).start();
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      while (true) {
-        byte[] data = new byte[maxmtu];
-        DatagramPacket packet = new DatagramPacket(data, maxmtu);
-        ds.receive(packet);
-        new Worker(packet).start();
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
-  public void close() {
-    try {
-      ds.close();
-    } catch (Exception e) {}
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
+    try { if (ds != null) ds.close(); } catch (Exception e) {}
+    server = null;
   }
 
   enum Section {None, Global, Records};
@@ -624,7 +636,7 @@ public class DNSServer extends Thread {
     }
     public void restart() {
       JFLog.log("restart");
-      dns.close();
+      dns.stop();
       dns = new DNSServer();
       dns.start();
     }
@@ -636,9 +648,6 @@ public class DNSServer extends Thread {
     } else {
       return 777;
     }
-  }
-
-  public static void main(String[] args) {
   }
 
   //Win32 Service
@@ -663,7 +672,7 @@ public class DNSServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    dns.close();
+    dns.stop();
   }
 }
 
