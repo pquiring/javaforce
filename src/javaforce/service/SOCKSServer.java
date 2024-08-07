@@ -19,7 +19,7 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class SOCKSServer extends Thread {
+public class SOCKSServer {
   public final static String busPack = "net.sf.jfsocks";
 
   public static boolean debug = false;
@@ -40,26 +40,26 @@ public class SOCKSServer extends Thread {
     }
   }
 
-  private static ServerSocket ss;
-  private static volatile boolean active;
-  private static ArrayList<SocksWorker> socks_workers = new ArrayList<SocksWorker>();
-  private static ArrayList<ForwardLocalWorker> forward_local_workers = new ArrayList<ForwardLocalWorker>();
-  private static ArrayList<ForwardRemoteWorker> forward_remote_workers = new ArrayList<ForwardRemoteWorker>();
-  private static Object lock = new Object();
-  private static boolean socks4 = true, socks5 = false;
-  private static boolean socks_bind = false;
-  private static int socks_bind_timeout = (60 * 60 * 1000);  //default 60 mins
-  private static int forward_remote_timeout = (5 * 60 * 1000);  //default 5 mins (Note: TIME_WAIT is 4 mins)
-  private static IP4Port bind = new IP4Port();
-  private static IP4Port bind_cmd = new IP4Port();
-  private static boolean secure = false;
-  private static boolean secure_verify = false;
-  private static ArrayList<String> user_pass_list;
-  private static ArrayList<Subnet4> subnet_dest_list;
-  private static ArrayList<Subnet4> subnet_src_list;
-  private static ArrayList<ForwardLocal> forward_local_list;
-  private static ArrayList<ForwardRemote> forward_remote_list;
-  private static KeyMgmt keys = new KeyMgmt();
+  private ServerSocket ss;
+  private Server server;
+  private ArrayList<SocksWorker> socks_workers = new ArrayList<SocksWorker>();
+  private ArrayList<ForwardLocalWorker> forward_local_workers = new ArrayList<ForwardLocalWorker>();
+  private ArrayList<ForwardRemoteWorker> forward_remote_workers = new ArrayList<ForwardRemoteWorker>();
+  private Object lock = new Object();
+  private boolean socks4 = true, socks5 = false;
+  private boolean socks_bind = false;
+  private int socks_bind_timeout = (60 * 60 * 1000);  //default 60 mins
+  private int forward_remote_timeout = (5 * 60 * 1000);  //default 5 mins (Note: TIME_WAIT is 4 mins)
+  private IP4Port bind = new IP4Port();
+  private IP4Port bind_cmd = new IP4Port();
+  private boolean secure = false;
+  private boolean secure_verify = false;
+  private ArrayList<String> user_pass_list;
+  private ArrayList<Subnet4> subnet_dest_list;
+  private ArrayList<Subnet4> subnet_src_list;
+  private ArrayList<ForwardLocal> forward_local_list;
+  private ArrayList<ForwardRemote> forward_remote_list;
+  private KeyMgmt keys = new KeyMgmt();
 
   public SOCKSServer() {
   }
@@ -69,7 +69,7 @@ public class SOCKSServer extends Thread {
     this.secure = secure;
   }
 
-  private static class ForwardLocal {
+  private class ForwardLocal {
     public IP4Port from = new IP4Port();
     public IP4Port to = new IP4Port();
     public boolean set_from(String ip_port) {
@@ -96,7 +96,7 @@ public class SOCKSServer extends Thread {
   }
 
   /** Logs an exception and returns false if it was a Socket Exception. */
-  private static boolean log(Exception e) {
+  private boolean log(Exception e) {
     if (e instanceof SocketException) {
       JFLog.log("Connection lost (SocketException)");
       return false;
@@ -109,7 +109,7 @@ public class SOCKSServer extends Thread {
     return true;
   }
 
-  private static class ForwardRemote {
+  private class ForwardRemote {
     public String user, pass;
     public IP4Port socks = new IP4Port();
     public IP4 from = new IP4();
@@ -150,13 +150,13 @@ public class SOCKSServer extends Thread {
     user_pass_list.add(user_pass);
   }
 
-  public static void addSession(SocksWorker sess) {
+  public void addSession(SocksWorker sess) {
     synchronized(lock) {
       socks_workers.add(sess);
     }
   }
 
-  public static void removeSession(SocksWorker sess) {
+  public void removeSession(SocksWorker sess) {
     synchronized(lock) {
       socks_workers.remove(sess);
     }
@@ -166,74 +166,85 @@ public class SOCKSServer extends Thread {
     return JF.getConfigPath() + "/jfsocks.key";
   }
 
-  public void run() {
-    JFLog.append(JF.getLogPath() + "/jfsocks.log", true);
-    JFLog.setRetention(30);
-    JFLog.log("SOCKS : Starting service");
-    try {
-      loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
-      if (secure) {
-        JFLog.log("CreateServerSocketSSL");
-        keys.setRootAlias("jfsocks");
-        if (new File(getKeyFile()).exists()) {
-          FileInputStream fis = new FileInputStream(getKeyFile());
-          keys.open(fis, "password");
-          fis.close();
-        } else {
-          JFLog.log("Warning:Server SSL Keys not generated!");
-        }
-        ss = JF.createServerSocketSSL(keys);
-        if (secure_verify) {
-          JF.clientKeys = keys;
-          JF.clientKeysAlias = "jfsocks";
-          ((SSLServerSocket)ss).setNeedClientAuth(true);
-        }
-      } else {
-        ss = new ServerSocket();
-      }
-      ss.bind(bind.toInetSocketAddress());
+  private class Server extends Thread {
+    public boolean active;
+    public void run() {
+      JFLog.append(JF.getLogPath() + "/jfsocks.log", true);
+      JFLog.setRetention(30);
+      JFLog.log("SOCKS : Starting service");
       active = true;
-      for(ForwardLocal fl : forward_local_list) {
-        ForwardLocalWorker flw = new ForwardLocalWorker(fl);
-        flw.start();
-        forward_local_workers.add(flw);
-      }
-      for(ForwardRemote fr : forward_remote_list) {
-        ForwardRemoteWorker frw = new ForwardRemoteWorker(fr);
-        frw.start();
-        forward_remote_workers.add(frw);
-      }
-      while (active) {
-        try {
-          Socket s = ss.accept();
-          InetSocketAddress sa = (InetSocketAddress)s.getRemoteSocketAddress();
-          String src_ip = sa.getAddress().getHostAddress();
-          if (src_ip.equals("0:0:0:0:0:0:0:1")) {
-            //IP6 localhost
-            src_ip = "127.0.0.1";
+      try {
+        loadConfig();
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+        if (secure) {
+          JFLog.log("CreateServerSocketSSL");
+          keys.setRootAlias("jfsocks");
+          if (new File(getKeyFile()).exists()) {
+            FileInputStream fis = new FileInputStream(getKeyFile());
+            keys.open(fis, "password");
+            fis.close();
+          } else {
+            JFLog.log("Warning:Server SSL Keys not generated!");
           }
-          if (!ip_src_allowed(src_ip)) {
-            JFLog.log("SOCKS:Source IP blocked:" + src_ip);
-            s.close();
-            continue;
+          ss = JF.createServerSocketSSL(keys);
+          if (secure_verify) {
+            JF.clientKeys = keys;
+            JF.clientKeysAlias = "jfsocks";
+            ((SSLServerSocket)ss).setNeedClientAuth(true);
           }
-          SocksWorker sess = new SocksWorker(s);
-          addSession(sess);
-          sess.start();
-        } catch (Exception e) {
-          log(e);
+        } else {
+          ss = new ServerSocket();
         }
+        ss.bind(bind.toInetSocketAddress());
+        active = true;
+        for(ForwardLocal fl : forward_local_list) {
+          ForwardLocalWorker flw = new ForwardLocalWorker(fl);
+          flw.start();
+          forward_local_workers.add(flw);
+        }
+        for(ForwardRemote fr : forward_remote_list) {
+          ForwardRemoteWorker frw = new ForwardRemoteWorker(fr);
+          frw.start();
+          forward_remote_workers.add(frw);
+        }
+        while (active) {
+          try {
+            Socket s = ss.accept();
+            InetSocketAddress sa = (InetSocketAddress)s.getRemoteSocketAddress();
+            String src_ip = sa.getAddress().getHostAddress();
+            if (src_ip.equals("0:0:0:0:0:0:0:1")) {
+              //IP6 localhost
+              src_ip = "127.0.0.1";
+            }
+            if (!ip_src_allowed(src_ip)) {
+              JFLog.log("SOCKS:Source IP blocked:" + src_ip);
+              s.close();
+              continue;
+            }
+            SocksWorker sess = new SocksWorker(s);
+            addSession(sess);
+            sess.start();
+          } catch (Exception e) {
+            log(e);
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
-  public void close() {
-    active = false;
+  public void start() {
+    stop();
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
+    if (server == null) return;
+    server.active = false;
     try { ss.close(); } catch (Exception e) {}
     synchronized(lock) {
       SocksWorker[] socks = socks_workers.toArray(new SocksWorker[0]);
@@ -511,7 +522,7 @@ public class SOCKSServer extends Thread {
     }
   }
 
-  private static boolean ip_src_allowed(String ip4) {
+  private boolean ip_src_allowed(String ip4) {
     if (subnet_src_list.size() == 0) return true;
     IP4 target = new IP4();
     if (!target.setIP(ip4)) return false;
@@ -523,7 +534,7 @@ public class SOCKSServer extends Thread {
     return false;
   }
 
-  private static boolean ip_dest_allowed(String ip4) {
+  private boolean ip_dest_allowed(String ip4) {
     if (subnet_dest_list.size() == 0) return true;
     IP4 target = new IP4();
     if (!target.setIP(ip4)) return false;
@@ -535,7 +546,7 @@ public class SOCKSServer extends Thread {
     return false;
   }
 
-  public static class SocksWorker extends Thread {
+  public class SocksWorker extends Thread {
     private Socket c;
     private Socket o;
     private ProxyData pd1, pd2;
@@ -934,7 +945,7 @@ public class SOCKSServer extends Thread {
       try {
         ss = new ServerSocket();
         ss.bind(forward.from.toInetSocketAddress());
-        while (active) {
+        while (server.active) {
           Socket from = ss.accept();
           try {
             Socket to = new Socket(forward.to.toInetAddress(), forward.to.port);
@@ -964,7 +975,7 @@ public class SOCKSServer extends Thread {
     }
     public void run() {
       try {
-        while (active) {
+        while (server.active) {
           boolean wait = true;
           try {
             Socket from = null;
@@ -996,13 +1007,13 @@ public class SOCKSServer extends Thread {
           if (wait) {
             //abnormal exception - wait to avoid hammering server
             int wait_time = 0;
-            while (active && wait_time < forward_remote_timeout) {
+            while (server.active && wait_time < forward_remote_timeout) {
               JF.sleep(1000);
               wait_time += 1000;
             }
           } else {
             int wait_time = 0;
-            while (active && wait_time < 5000) {
+            while (server.active && wait_time < 5000) {
               JF.sleep(1000);
               wait_time += 1000;
             }
@@ -1017,7 +1028,7 @@ public class SOCKSServer extends Thread {
     }
   }
 
-  public static class ProxyData extends Thread {
+  public class ProxyData extends Thread {
     private Socket sRead;
     private Socket sWrite;
     private volatile boolean active;
@@ -1071,10 +1082,7 @@ public class SOCKSServer extends Thread {
       busServer.close();
       busServer = null;
     }
-    socks.close();
-  }
-
-  public static void main(String[] args) {
+    socks.stop();
   }
 
   private static JBusServer busServer;
@@ -1098,7 +1106,7 @@ public class SOCKSServer extends Thread {
     }
     public void restart() {
       JFLog.log("restart");
-      socks.close();
+      socks.stop();
       socks = new SOCKSServer();
       socks.start();
     }
