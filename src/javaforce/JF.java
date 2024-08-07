@@ -269,6 +269,22 @@ public class JF {
     }
   }
 
+  public static String getHostname() {
+    if (JF.isWindows()) {
+      return System.getenv("COMPUTERNAME");
+    } else {
+      try {
+        FileInputStream fis = new FileInputStream("/etc/hostname");
+        byte[] data = fis.readAllBytes();
+        fis.close();
+        return new String(data);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return "localhost";
+      }
+    }
+  }
+
   public static void printEnvironment() {
     Map<String, String> env = System.getenv();
 

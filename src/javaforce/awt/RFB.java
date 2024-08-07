@@ -1,6 +1,6 @@
 package javaforce.awt;
 
-/** RFB Protocol (VNC) client.
+/** RFB Protocol (VNC) server/client.
  *
  * RFC : 6143
  *
@@ -9,7 +9,8 @@ package javaforce.awt;
 
 import java.io.*;
 import java.net.*;
-import java.util.zip.Inflater;
+import java.util.*;
+import java.util.zip.*;
 
 import java.awt.event.*;
 
@@ -103,7 +104,7 @@ public class RFB {
     }
   }
 
-  private static class PixelFormat {
+  public static class PixelFormat {
     public int bpp;  //bits/pixel (8, 16, 32)
     public int depth;  //24
     public boolean be;  //big endian
@@ -171,6 +172,16 @@ public class RFB {
     }
   }
 
+  public static class RFBMouseEvent {
+    public int x, y;
+    public int buttons;
+  }
+
+  public static class RFBKeyEvent {
+    public int code;
+    public boolean down;
+  }
+
   public boolean connect(String host, int port) {
     try {
       s = new Socket(host, port);
@@ -183,6 +194,24 @@ public class RFB {
       return false;
     }
     return true;
+  }
+
+  public boolean connect(Socket s) {
+    try {
+      this.s = s;
+      is = s.getInputStream();
+      os = s.getOutputStream();
+      connected = true;
+    } catch (Exception e) {
+      connected = false;
+      JFLog.log(log, e);
+      return false;
+    }
+    return true;
+  }
+
+  public boolean isConnected() {
+    return connected;
   }
 
   public void disconnect() {
@@ -218,6 +247,12 @@ public class RFB {
 
   public int[] getBuffer() {
     return buffer;
+  }
+
+  public void setBuffer(int[] px) {
+    if (px.length == buffer.length) {
+      System.arraycopy(px, 0, buffer, 0, px.length);
+    }
   }
 
   public JFImage getImage(Rectangle area) {
@@ -303,7 +338,7 @@ public class RFB {
     }
   }
 
-  int readCompactLen() {
+  private int readCompactLen() {
     int[] portion = new int[3];
     portion[0] = readByte();
     int byteCount = 1;
@@ -345,6 +380,15 @@ public class RFB {
   private void write(byte[] data) {
     try {
       os.write(data);
+    } catch (Exception e) {
+      connected = false;
+      JFLog.log(log, e);
+    }
+  }
+
+  private void write(byte[] data, int length) {
+    try {
+      os.write(data, 0, length);
     } catch (Exception e) {
       connected = false;
       JFLog.log(log, e);
@@ -396,12 +440,36 @@ public class RFB {
     return types;
   }
 
+  public void writeAuthTypes() {
+    byte[] pkt = new byte[2];
+    pkt[0] = 1;
+    pkt[1] = AUTH_VNC;
+    write(pkt);
+  }
+
+  public byte readAuthType() {
+    return (byte)readByte();
+  }
+
   public byte[] readAuthChallenge() {
     byte[] data = read(16);
     if (debug) {
       JFLog.log(log, "RFB:read challenge=" + data);
     }
     return data;
+  }
+
+  public byte[] writeAuthChallenge() {
+    byte[] pkt = new byte[16];
+    Random r = new Random();
+    for(int a=0;a<16;a++) {
+      pkt[a] = (byte)r.nextInt(256);
+    }
+    if (debug) {
+      JFLog.log(log, "RFB:read challenge=" + pkt);
+    }
+    write(pkt);
+    return pkt;
   }
 
   private static byte[] reverseBits(byte[] input) {
@@ -461,6 +529,14 @@ public class RFB {
     write(res);
   }
 
+  public void writeAuthResult(boolean state) {
+    int value = state == true ? 0 : 1;
+    writeInt(value);
+    if (value == 1) {
+      writeInt(0);
+    }
+  }
+
   public boolean readAuthResult() {
     int res = readInt();
     if (debug) {
@@ -479,6 +555,10 @@ public class RFB {
       JFLog.log("RFB:errmsg=" + errmsg);
     }
     return res == 0;
+  }
+
+  public byte readClientInit() {
+    return (byte)readByte();
   }
 
   public void writeClientInit(boolean shared) {
@@ -515,6 +595,28 @@ public class RFB {
     return true;
   }
 
+  public boolean writeServerInit(int width, int height) {
+    String name = JF.getHostname();
+    if (name == null || name.length() == 0) name = "computer";
+    int len = name.length();
+    byte[] pkt = new byte[20 + 4 + len];
+    {
+      this.width = width;
+      this.height = height;
+      setSize();
+      BE.setuint16(pkt, 0, width);
+      BE.setuint16(pkt, 2, height);
+      pf = PixelFormat.create_24bpp();
+      pf.encode(pkt, 4);
+    }
+    {
+      BE.setuint32(pkt, 20, len);
+      System.arraycopy(name.getBytes(), 0, pkt, 24, len);
+    }
+    write(pkt);
+    return true;
+  }
+
   //client to server
 
   public static final int C_MSG_SET_PIXEL_FORMAT = 0;
@@ -524,15 +626,38 @@ public class RFB {
   public static final int C_MSG_MOUSE_EVENT = 5;
   public static final int C_MSG_CUT_TEXT = 6;
 
+  public PixelFormat readPixelFormat() {
+    PixelFormat pf = new PixelFormat();
+    byte[] pkt = read(19);
+    pf.decode(pkt, 3);
+    return pf;
+  }
+
   public void writePixelFormat() {
     if (debug) {
       JFLog.log(log, "RFB:write PixelFormat");
     }
     byte[] pkt = new byte[20];
     pkt[0] = C_MSG_SET_PIXEL_FORMAT;
+    //1-3 = padding
     PixelFormat pf = PixelFormat.create_24bpp();
     pf.encode(pkt, 4);
     write(pkt);
+  }
+
+  public int[] readEncodings() {
+    byte[] header = read(3);  //byte padding; short count;
+    int count = BE.getuint16(header, 1);
+    if (count < 0 || count > 128) {
+      JFLog.log("RFB:Error:# encodings=" + count);
+      return null;
+    }
+    int[] encodings = new int[count];
+    byte[] data = read(count * 4);
+    for(int idx=0;idx<count;idx++) {
+      encodings[idx] = BE.getuint32(data, idx * 4);
+    }
+    return encodings;
   }
 
   public void writeEncodings(int[] encodings) {
@@ -589,6 +714,17 @@ public class RFB {
     });
   }
 
+  public Rectangle readBufferUpdateRequest() {
+    Rectangle rect = new Rectangle();
+    byte[] pkt = read(9);
+    //pkt[0] = flags (0=incremental)
+    rect.x = BE.getuint16(pkt, 1);
+    rect.y = BE.getuint16(pkt, 3);
+    rect.width = BE.getuint16(pkt, 5);
+    rect.height = BE.getuint16(pkt, 7);
+    return rect;
+  }
+
   public void writeBufferUpdateRequest(int x, int y, int width, int height, boolean incremental) {
     if (debug) {
       JFLog.log(log, "RFB:write BufferUpdateRequest");
@@ -603,7 +739,8 @@ public class RFB {
     write(pkt);
   }
 
-  public static int convertKeyCode(int key) {
+  /** Convert Java key code to RFB key code. */
+  public static int convertJavaKeyCode(int key) {
     switch (key) {
       case KeyEvent.VK_BACK_SPACE:
         key = 0xff08;
@@ -699,6 +836,103 @@ public class RFB {
     return key;
   }
 
+  /** Convert RFB key code to Java key code. */
+  public static int convertRFBKeyCode(int key) {
+    switch (key) {
+      case 0xff08:
+        key = KeyEvent.VK_BACK_SPACE;
+        break;
+      case 0xff09:
+        key = KeyEvent.VK_TAB;
+        break;
+      case 0xff0d:
+        key = KeyEvent.VK_ENTER;
+        break;
+      case 0xff1b:
+        key = KeyEvent.VK_ESCAPE;
+        break;
+      case 0xff50:
+        key = KeyEvent.VK_HOME;
+        break;
+      case 0xff51:
+        key = KeyEvent.VK_LEFT;
+        break;
+      case 0xff52:
+        key = KeyEvent.VK_UP;
+        break;
+      case 0xff53:
+        key = KeyEvent.VK_RIGHT;
+        break;
+      case 0xff54:
+        key = KeyEvent.VK_DOWN;
+        break;
+      case 0xff55:
+        key = KeyEvent.VK_PAGE_UP;
+        break;
+      case 0xff56:
+        key = KeyEvent.VK_PAGE_DOWN;
+        break;
+      case 0xff57:
+        key = KeyEvent.VK_END;
+        break;
+      case 0xff63:
+        key = KeyEvent.VK_INSERT;
+        break;
+      case 0xffbe:
+        key = KeyEvent.VK_F1;
+        break;
+      case 0xffbf:
+        key = KeyEvent.VK_F2;
+        break;
+      case 0xffc0:
+        key = KeyEvent.VK_F3;
+        break;
+      case 0xffc1:
+        key = KeyEvent.VK_F4;
+        break;
+      case 0xffc2:
+        key = KeyEvent.VK_F5;
+        break;
+      case 0xffc3:
+        key = KeyEvent.VK_F6;
+        break;
+      case 0xffc4:
+        key = KeyEvent.VK_F7;
+        break;
+      case 0xffc5:
+        key = KeyEvent.VK_F8;
+        break;
+      case 0xffc6:
+        key = KeyEvent.VK_F9;
+        break;
+      case 0xffc7:
+        key = KeyEvent.VK_F10;
+        break;
+      case 0xffc8:
+        key = KeyEvent.VK_F11;
+        break;
+      case 0xffc9:
+        key = KeyEvent.VK_F12;
+        break;
+      case 0xffe1:
+        key = KeyEvent.VK_SHIFT;
+        break;
+      case 0xffe3:
+        key = KeyEvent.VK_CONTROL;
+        break;
+      case 0xffe7:
+        key = KeyEvent.VK_META;
+        break;
+      case 0xffe9:
+        key = KeyEvent.VK_ALT;
+        break;
+      case 0xffff:
+        key = KeyEvent.VK_DELETE;
+        break;
+    }
+    return key;
+  }
+
   public void writeKeyEvent(int code, boolean down) {
     if (debug) {
       JFLog.log(log, "RFB:write KeyEvent");
@@ -711,6 +945,14 @@ public class RFB {
     write(pkt);
   }
 
+  public RFBKeyEvent readKeyEvent() {
+    RFBKeyEvent event = new RFBKeyEvent();
+    byte[] pkt = read(7);
+    event.down = (pkt[0] & 0x1) == 0x1;
+    event.code = BE.getuint32(pkt, 3);
+    return event;
+  }
+
   public void writeMouseEvent(int x, int y, int buttons) {
     if (debug) {
       JFLog.log(log, "RFB:write MouseEvent");
@@ -721,6 +963,15 @@ public class RFB {
     BE.setuint16(pkt, 2, x);
     BE.setuint16(pkt, 4, y);
     write(pkt);
+  }
+
+  public RFBMouseEvent readMouseEvent() {
+    RFBMouseEvent event = new RFBMouseEvent();
+    byte[] pkt = read(5);
+    event.buttons = pkt[0];
+    event.x = BE.getuint16(pkt, 1);
+    event.y = BE.getuint16(pkt, 3);
+    return event;
   }
 
   public void writeCutText(String txt) {
@@ -771,6 +1022,15 @@ public class RFB {
       readRectangle(rect);
     }
     return rect;
+  }
+
+  public void writeBufferUpdate(Rectangle rect) {
+    byte[] pkt = new byte[4];
+    pkt[0] = S_MSG_BUFFER_UPDATE;
+    pkt[1] = 0;  //padding
+    BE.setuint16(pkt, 2, 1);  //count
+    write(pkt);
+    writeRectangle(rect, TYPE_RAW);
   }
 
   public static final int TYPE_RAW = 0;
@@ -843,12 +1103,16 @@ public class RFB {
     int x2 = x1 + rect.width - 1;
     int y1 = rect.y;
     int y2 = y1 + rect.height - 1;
+    int dst = y1 * width + x1;
+    int stride = width - rect.width;
     for(int y = y1;y <= y2;y++) {
       for(int x = x1;x <= x2;x++) {
         px = getPixel(data, src) | JFImage.OPAQUE;
-        buffer[y * width + x] = px;
+        buffer[dst] = px;
         src += 4;
+        dst++;
       }
+      dst += stride;
     }
   }
 
@@ -1038,22 +1302,16 @@ public class RFB {
   }
 
   // Zlib encoder's data.
-  private byte[] zlibBuf;
-  private int zlibBufLen = 0;
   private Inflater zlibInflater;
 
   void readRectZlib(Rectangle r) {
     int nBytes = readInt();
-
-    if (zlibBuf == null || zlibBufLen < nBytes) {
-      zlibBufLen = nBytes * 2;
-      zlibBuf = read(zlibBufLen);
-    }
+    byte[] input = read(nBytes);
 
     if (zlibInflater == null) {
       zlibInflater = new Inflater();
     }
-    zlibInflater.setInput(zlibBuf, 0, nBytes);
+    zlibInflater.setInput(input, 0, nBytes);
 
     if (bytesPixel == 1) {
       //TODO : support 8bpp zlib
@@ -1395,6 +1653,87 @@ public class RFB {
     if (debug) {
       JFLog.log("Pointer Pos:" + mx + "," + my);
     }
+  }
+
+  private void writeRectangle(Rectangle rect, int encoding) {
+    byte[] pkt = new byte[12];
+    BE.setuint16(pkt, 0, rect.x);
+    BE.setuint16(pkt, 2, rect.y);
+    BE.setuint16(pkt, 4, rect.width);
+    BE.setuint16(pkt, 6, rect.height);
+    BE.setuint32(pkt, 8, encoding);
+    write(pkt);
+    switch (encoding) {
+      case TYPE_RAW: writeRectRaw(rect); break;
+      case TYPE_ZLIB: writeRectZlib(rect); break;
+    }
+  }
+
+  private void readPixel(int src, byte[] out, int dst) {
+    int px = buffer[src];
+    out[dst + 0] = (byte)(px & 0xff);
+    px >>>= 8;
+    out[dst + 1] = (byte)(px & 0xff);
+    px >>>= 8;
+    out[dst + 2] = (byte)(px & 0xff);
+  }
+
+  private void writeRectRaw(Rectangle rect) {
+    byte[] data = new byte[rect.width * rect.height * 4];
+    int src = 0;
+    int dst = 0;
+    int x1 = rect.x;
+    int x2 = x1 + rect.width - 1;
+    int y1 = rect.y;
+    int y2 = y1 + rect.height - 1;
+    int stride = width - rect.width;
+    for(int y = y1;y <= y2;y++) {
+      for(int x = x1;x <= x2;x++) {
+        readPixel(src, data, dst);
+        src++;
+        dst += 4;
+      }
+      src += stride;
+    }
+    write(data);
+  }
+
+  private Deflater zlibDeflater;
+
+  private void writeRectZlib(Rectangle rect) {
+    if (zlibDeflater == null) {
+      zlibDeflater = new Deflater();
+    }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    byte[] input = new byte[rect.width * 4];
+    byte[] output = new byte[input.length + 128];
+
+    int x1 = rect.x;
+    int y1 = rect.y;
+    int x2 = x1 + rect.width - 1;
+    int y2 = y1 + rect.height - 1;
+    int px_idx = x1;
+    int b_idx = 0;
+    int stride = width - rect.width;
+    for(int y=y1;y<y2;y++) {
+      b_idx = 0;
+      for(int x=x1;x<x2;x++) {
+        readPixel(px_idx, input, b_idx);
+        px_idx++;
+        b_idx += 4;
+      }
+      px_idx += stride;
+      //deflate line
+      zlibDeflater.setInput(input);
+      int length = zlibDeflater.deflate(output);
+      baos.write(output, 0, length);
+    }
+
+    byte[] out = baos.toByteArray();
+
+    writeInt(out.length);
+    write(out);
   }
 
   /** Reads color map. */

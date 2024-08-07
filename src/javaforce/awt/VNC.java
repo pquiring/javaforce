@@ -227,14 +227,14 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
 
   public void keyDown(int code, boolean convert) {
     if (convert) {
-      code = RFB.convertKeyCode(code);
+      code = RFB.convertJavaKeyCode(code);
     }
     rfb.writeKeyEvent(code, true);
   }
 
   public void keyUp(int code, boolean convert) {
     if (convert) {
-      code = RFB.convertKeyCode(code);
+      code = RFB.convertJavaKeyCode(code);
     }
     rfb.writeKeyEvent(code, false);
   }
