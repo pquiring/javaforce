@@ -1068,22 +1068,26 @@ public class RFB {
     writeRectangle(rect, encoding);
   }
 
-  public static final int TYPE_RAW = 0;
-  public static final int TYPE_COPY_RECT = 1;
-  public static final int TYPE_RRE = 2;
-  public static final int TYPE_CORRE = 4;
-  public static final int TYPE_HEXTILE = 5;
-  public static final int TYPE_ZLIB = 6;
-  public static final int TYPE_TIGHT = 7;
-  public static final int TYPE_ZLIB_HEX = 8;  //HexTile w/ ZLIB extensions
-  public static final int TYPE_TRLE = 15;
-  public static final int TYPE_ZRLE = 16;
-  public static final int TYPE_ZYWRLE = 17;
+  //vnc encoding types                            // decode | encode
+  public static final int TYPE_RAW = 0;           // yes    | yes
+  public static final int TYPE_COPY_RECT = 1;     // yes    | no
+  public static final int TYPE_RRE = 2;           // yes    | no
+  public static final int TYPE_CORRE = 4;         // yes    | no
+  public static final int TYPE_HEXTILE = 5;       // yes    | no
+  public static final int TYPE_ZLIB = 6;          // yes    | yes
+  public static final int TYPE_TIGHT = 7;         // yes    | yes
+  public static final int TYPE_HEXTILE_ZLIB = 8;  // no     | no
+  public static final int TYPE_TRLE = 15;         // no     | no
+  public static final int TYPE_ZRLE = 16;         // no     | no
+  public static final int TYPE_ZYWRLE = 17;       // no     | no
+
+  //psuedo types
   public static final int TYPE_DESKTOP_SIZE = -223;
   public static final int TYPE_LAST_RECT = -224;
   public static final int TYPE_POINTER_POS = -232;
   public static final int TYPE_CURSOR = -239;
 
+  //tight jpeg levels
   public static final int TYPE_JPEG_9 = -23;
   public static final int TYPE_JPEG_8 = -24;
   public static final int TYPE_JPEG_7 = -25;
@@ -1115,7 +1119,7 @@ public class RFB {
       case TYPE_HEXTILE: readRectHexTile(rect); break;
       case TYPE_ZLIB: readRectZlib(rect); break;
       case TYPE_TIGHT: readRectTight(rect); break;
-      case TYPE_ZLIB_HEX: unsupported(encoding); break;
+      case TYPE_HEXTILE_ZLIB: unsupported(encoding); break;
       case TYPE_TRLE: unsupported(encoding); break;
       case TYPE_ZRLE: unsupported(encoding); break;
       case TYPE_ZYWRLE: unsupported(encoding); break;
