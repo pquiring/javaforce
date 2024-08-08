@@ -1030,7 +1030,7 @@ public class RFB {
     pkt[1] = 0;  //padding
     BE.setuint16(pkt, 2, 1);  //count
     write(pkt);
-    writeRectangle(rect, TYPE_RAW);
+    writeRectangle(rect, TYPE_ZLIB);
   }
 
   public static final int TYPE_RAW = 0;
@@ -1301,7 +1301,6 @@ public class RFB {
     }
   }
 
-  // Zlib encoder's data.
   private Inflater zlibInflater;
 
   void readRectZlib(Rectangle r) {
@@ -1311,7 +1310,7 @@ public class RFB {
     if (zlibInflater == null) {
       zlibInflater = new Inflater();
     }
-    zlibInflater.setInput(input, 0, nBytes);
+    zlibInflater.setInput(input);
 
     if (bytesPixel == 1) {
       //TODO : support 8bpp zlib
@@ -1328,7 +1327,10 @@ public class RFB {
       int i, offset;
       for (int dy = r.y; dy < r.y + r.height; dy++) {
         try {
-          zlibInflater.inflate(buf);
+          int length = zlibInflater.inflate(buf);
+          if (debug) {
+            JFLog.log("inflate.length=" + length);
+          }
         } catch (Exception e) {
           JFLog.log(log, e);
         }
@@ -1713,20 +1715,22 @@ public class RFB {
     int y1 = rect.y;
     int x2 = x1 + rect.width - 1;
     int y2 = y1 + rect.height - 1;
-    int px_idx = x1;
-    int b_idx = 0;
+    int src_idx = y1 * width + x1;
+    int dst_idx = 0;
     int stride = width - rect.width;
-    for(int y=y1;y<y2;y++) {
-      b_idx = 0;
-      for(int x=x1;x<x2;x++) {
-        readPixel(px_idx, input, b_idx);
-        px_idx++;
-        b_idx += 4;
+    for(int y=y1;y<=y2;y++) {
+      dst_idx = 0;
+      for(int x=x1;x<=x2;x++) {
+        readPixel(src_idx, input, dst_idx);
+        src_idx++;
+        dst_idx += 4;
       }
-      px_idx += stride;
-      //deflate line
+      src_idx += stride;
       zlibDeflater.setInput(input);
-      int length = zlibDeflater.deflate(output);
+      int length = zlibDeflater.deflate(output, 0, output.length, Deflater.SYNC_FLUSH);
+      if (debug) {
+        JFLog.log("length=" + length);
+      }
       baos.write(output, 0, length);
     }
 
