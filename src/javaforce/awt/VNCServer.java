@@ -194,6 +194,10 @@ public class VNCServer {
         refresh = true;  //send init full update
         try {
           while (connected) {
+            if (!rfb.haveEncodings()) {
+              JF.sleep(100);
+              continue;
+            }
             Rectangle new_size = screen.getDefaultConfiguration().getBounds();
             if (new_size.width != size.width || new_size.height != size.height) {
               //TODO : screen size changed

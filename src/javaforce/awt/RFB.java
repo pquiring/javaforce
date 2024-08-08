@@ -645,6 +645,8 @@ public class RFB {
     write(pkt);
   }
 
+  private int[] encodings;
+
   public int[] readEncodings() {
     byte[] header = read(3);  //byte padding; short count;
     int count = BE.getuint16(header, 1);
@@ -652,12 +654,29 @@ public class RFB {
       JFLog.log("RFB:Error:# encodings=" + count);
       return null;
     }
-    int[] encodings = new int[count];
+    encodings = new int[count];
     byte[] data = read(count * 4);
     for(int idx=0;idx<count;idx++) {
       encodings[idx] = BE.getuint32(data, idx * 4);
     }
     return encodings;
+  }
+
+  public boolean haveEncodings() {
+    return encodings != null;
+  }
+
+  private boolean haveEncoding(int encoding) {
+    for(int a=0;a<encodings.length;a++) {
+      if (encodings[a] == encoding) return true;
+    }
+    return false;
+  }
+
+  private int bestEncoding() {
+    if (haveEncoding(TYPE_ZLIB)) return TYPE_ZLIB;
+    //all clients MUST support TYPE_RAW
+    return TYPE_RAW;
   }
 
   public void writeEncodings(int[] encodings) {
@@ -1030,7 +1049,7 @@ public class RFB {
     pkt[1] = 0;  //padding
     BE.setuint16(pkt, 2, 1);  //count
     write(pkt);
-    writeRectangle(rect, TYPE_ZLIB);
+    writeRectangle(rect, bestEncoding());
   }
 
   public static final int TYPE_RAW = 0;
@@ -1312,20 +1331,25 @@ public class RFB {
     }
     zlibInflater.setInput(input);
 
+    int x1 = r.x;
+    int y1 = r.y;
+    int x2 = x1 + r.width - 1;
+    int y2 = y1 + r.height - 1;
+
     if (bytesPixel == 1) {
       //TODO : support 8bpp zlib
       byte[] pixels8 = null;
-      for (int dy = r.y; dy < r.y + r.height; dy++) {
+      for (int dy = y1; dy <= y2; dy++) {
         try {
-          zlibInflater.inflate(pixels8, dy * width + r.x, r.width);
+          zlibInflater.inflate(pixels8, dy * width + x1, r.width);
         } catch (Exception e) {
           JFLog.log(log, e);
         }
       }
     } else {
       byte[] buf = new byte[r.width * 4];
-      int i, offset;
-      for (int dy = r.y; dy < r.y + r.height; dy++) {
+      int offset;
+      for (int dy = y1; dy <= y2; dy++) {
         try {
           int length = zlibInflater.inflate(buf);
           if (debug) {
@@ -1335,7 +1359,7 @@ public class RFB {
           JFLog.log(log, e);
         }
         offset = dy * width + r.x;
-        for (i = 0; i < r.width; i++) {
+        for (int i = 0; i < r.width; i++) {
           buffer[offset + i] = getPixel(buf, i*4) | JFImage.OPAQUE;
         }
       }
