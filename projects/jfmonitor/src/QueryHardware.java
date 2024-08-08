@@ -90,8 +90,10 @@ public class QueryHardware extends Thread {
                 }
                 break;
               }
-              port.isUplink = true;
-              count_uplink++;
+              if (!port.isUplink) {
+                port.isUplink = true;
+                count_uplink++;
+              }
             }
           }
           break;
