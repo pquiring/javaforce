@@ -1077,6 +1077,8 @@ public class RFB {
   public static final int TYPE_ZLIB = 6;          // yes    | yes
   public static final int TYPE_TIGHT = 7;         // yes    | yes
   public static final int TYPE_HEXTILE_ZLIB = 8;  // no     | no
+  public static final int TYPE_ULTRA = 9;         // no     | no
+  public static final int TYPE_ULTRA2 = 10;       // no     | no
   public static final int TYPE_TRLE = 15;         // no     | no
   public static final int TYPE_ZRLE = 16;         // no     | no
   public static final int TYPE_ZYWRLE = 17;       // no     | no
