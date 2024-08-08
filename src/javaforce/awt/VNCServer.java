@@ -14,10 +14,10 @@ import java.awt.*;
 import javaforce.*;
 
 public class VNCServer {
-  public boolean start(String pass) {
-    return start(pass, 5900);
+  public boolean start(String pass, VNCRobot robot) {
+    return start(pass, robot, 5900);
   }
-  public boolean start(String pass, int port) {
+  public boolean start(String pass, VNCRobot robot, int port) {
     if (active) {
       stop();
     }
@@ -26,6 +26,7 @@ public class VNCServer {
       return false;
     }
     this.pass = pass;
+    this.robot = robot;
     try {
       JFLog.log("VNCServer starting on port " + port + "...");
       active = true;
@@ -54,6 +55,7 @@ public class VNCServer {
   private ServerSocket ss;
   private boolean active;
   private String pass;
+  private VNCRobot robot;
 
   private class Server extends Thread {
     public void run() {
@@ -72,7 +74,6 @@ public class VNCServer {
   private class Client extends Thread {
     private Socket s;
     private RFB rfb;
-    private GraphicsDevice screen;
     private Rectangle size;
     private Updater updater;
     private boolean connected;
@@ -101,13 +102,11 @@ public class VNCServer {
           }
         }
         rfb.writeAuthResult(true);
-        screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        size = screen.getDefaultConfiguration().getBounds();
+        size = robot.getScreenSize();
         rfb.writeServerInit(size.width, size.height);
         rfb.readClientInit();
         updater = new Updater();
         updater.start();
-        Robot robot = new Robot();
         //read requests from client
         while (active && connected) {
           connected = rfb.isConnected();
@@ -198,12 +197,12 @@ public class VNCServer {
               JF.sleep(100);
               continue;
             }
-            Rectangle new_size = screen.getDefaultConfiguration().getBounds();
+            Rectangle new_size = robot.getScreenSize();
             if (new_size.width != size.width || new_size.height != size.height) {
               //TODO : screen size changed
             }
             if (refresh) {
-              img = JFImage.createScreenCapture(screen);
+              img = robot.getScreenCatpure();
               rfb.setBuffer(img.getBuffer());
               RFB.Rectangle rect = new RFB.Rectangle();
               rect.width = size.width;
@@ -211,7 +210,7 @@ public class VNCServer {
               rfb.writeBufferUpdate(rect);
               refresh = false;
             } else {
-              JFImage update = JFImage.createScreenCapture(screen);
+              JFImage update = robot.getScreenCatpure();
               boolean changed = false;
               int x1 = INF, x2 = -1;
               int y1 = INF, y2 = -1;
@@ -265,12 +264,30 @@ public class VNCServer {
     }
   }
 
+  /** NOTE : THIS SERVICE DOES NOT WORK!!!
+   *
+   * java.awt.Robot does NOT work in a service.
+   *
+   * Looking into using native code soon.
+   */
+
+  private static VNCServer vnc;
+
+  public static void serviceStart(String[] args) {
+    vnc = new VNCServer();
+    vnc.start("password", new VNCJavaRobot(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()), 5900);
+  }
+
+  public static void serviceStop() {
+    vnc.stop();
+  }
+
   public static void main(String[] args) {
     if (args.length < 1) {
       System.out.println("Usage:VNCServer password");
       System.exit(1);
     }
     VNCServer server = new VNCServer();
-    server.start(args[0], 5900);
+    server.start(args[0], new VNCJavaRobot(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()), 5900);
   }
 }
