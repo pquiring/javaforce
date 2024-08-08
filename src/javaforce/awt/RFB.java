@@ -356,6 +356,17 @@ public class RFB {
     return len;
   }
 
+  private void writeCompactLen(int length) {
+    while (length > 0) {
+      if (length >= 0x80) {
+        writeByte((length & 0x7f) + 0x80);
+      } else {
+        writeByte(length & 0x7f);
+      }
+      length >>= 7;
+    }
+  }
+
   private void writeByte(int data) {
     try {
       os.write(data);
@@ -386,9 +397,9 @@ public class RFB {
     }
   }
 
-  private void write(byte[] data, int length) {
+  private void write(byte[] data, int offset, int length) {
     try {
-      os.write(data, 0, length);
+      os.write(data, offset, length);
     } catch (Exception e) {
       connected = false;
       JFLog.log(log, e);
@@ -674,6 +685,7 @@ public class RFB {
   }
 
   private int bestEncoding() {
+    if (haveEncoding(TYPE_TIGHT)) return TYPE_TIGHT;
     if (haveEncoding(TYPE_ZLIB)) return TYPE_ZLIB;
     //all clients MUST support TYPE_RAW
     return TYPE_RAW;
@@ -1049,7 +1061,11 @@ public class RFB {
     pkt[1] = 0;  //padding
     BE.setuint16(pkt, 2, 1);  //count
     write(pkt);
-    writeRectangle(rect, bestEncoding());
+    int encoding = bestEncoding();
+    if (debug) {
+      JFLog.log("encoding=" + encoding);
+    }
+    writeRectangle(rect, encoding);
   }
 
   public static final int TYPE_RAW = 0;
@@ -1527,7 +1543,10 @@ public class RFB {
       myInflater.setInput(zlibData);
       byte[] buf = new byte[dataSize];
       try {
-        myInflater.inflate(buf);
+        int length = myInflater.inflate(buf);
+        if (debug) {
+          JFLog.log("Tight.length=" + length);
+        }
       } catch (Exception e) {
         JFLog.log(log, e);
         return;
@@ -1568,12 +1587,6 @@ public class RFB {
           int srcOffset = 0;
           int destOffset, i;
           for (int dy = 0; dy < r.height; dy++) {
-            try {
-              myInflater.inflate(buf);
-            } catch (Exception e) {
-              JFLog.log(log, e);
-              return;
-            }
             destOffset = (r.y + dy) * width + r.x;
             for (i = 0; i < r.width; i++) {
               buffer[destOffset + i] = getPixel(buf, srcOffset) | JFImage.OPAQUE;
@@ -1692,6 +1705,7 @@ public class RFB {
     switch (encoding) {
       case TYPE_RAW: writeRectRaw(rect); break;
       case TYPE_ZLIB: writeRectZlib(rect); break;
+      case TYPE_TIGHT: writeRectTight(rect); break;
     }
   }
 
@@ -1762,6 +1776,52 @@ public class RFB {
 
     writeInt(out.length);
     write(out);
+  }
+
+  private void writeRectTight(Rectangle r) {
+    int x1 = r.x;
+    int x2 = x1 + r.width - 1;
+    int y1 = r.y;
+    int y2 = y1 + r.height - 1;
+    int size = r.width * r.height * 3;
+    writeByte(0);  //comp_ctl
+    if (size < TIGHT_MIN_TO_COMPRESS) {
+      //just write pixels raw
+      byte[] raw = new byte[size];
+      int src = y1 * width + x1;
+      int dst = 0;
+      int stride = width - r.width;
+      for(int y=y1;y<=y2;y++) {
+        for(int x=x1;x<=x2;x++) {
+          readPixel(src, raw, dst);
+          src++;
+          dst += 3;
+        }
+        src += stride;
+      }
+      write(raw);
+    } else {
+      if (zlibDeflater == null) {
+        zlibDeflater = new Deflater();
+      }
+      byte[] raw = new byte[size];
+      int src = y1 * width + x1;
+      int dst = 0;
+      int stride = width - r.width;
+      for(int y=y1;y<=y2;y++) {
+        for(int x=x1;x<=x2;x++) {
+          readPixel(src, raw, dst);
+          src++;
+          dst += 3;
+        }
+        src += stride;
+      }
+      byte[] output = new byte[size * 2];
+      zlibDeflater.setInput(raw);
+      int length = zlibDeflater.deflate(output, 0, output.length, Deflater.SYNC_FLUSH);
+      writeCompactLen(length);
+      write(output, 0, length);
+    }
   }
 
   /** Reads color map. */
