@@ -17,11 +17,10 @@ public class VNCJavaRobot implements VNCRobot {
   public VNCJavaRobot(GraphicsDevice screen) {
     this.screen = screen;
     try {
-      robot = new Robot();
+      robot = new Robot(screen);
     } catch (Exception e) {
       JFLog.log(e);
     }
-
   }
 
   public Rectangle getScreenSize() {
