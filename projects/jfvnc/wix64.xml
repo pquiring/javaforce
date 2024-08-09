@@ -19,8 +19,13 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{D5197194-0C29-4ED0-B79D-BEC0951B545D}" Bitness="always64">
-        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes" />
+        <File Id="jfvncsvc.exe" Source="jfvncsvc.exe" KeyPath="yes">
+          <fire:FirewallException Id="FirewallRule" Name="jfVNCServer" Protocol="tcp" Port="5900" Scope="any" IgnoreFailure="yes" Profile="all" />
+        </File>
+        <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jfvnc.exe" Source="jfvnc.exe" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfVNCServer" DisplayName="jfVNCServer" Description="jf VNC Server" Start="auto" ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfVNCServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
