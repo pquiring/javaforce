@@ -241,26 +241,26 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   }
 
   public void ctrl_alt_del() {
-    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
-    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ALT));
+    keyDown(RFB.VK_CONTROL);
+    keyDown(RFB.VK_ALT);
     JF.sleep(10);
-    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_DELETE));
+    keyDown(RFB.VK_DELETE);
     JF.sleep(50);
-    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_DELETE));
+    keyUp(RFB.VK_DELETE);
     JF.sleep(10);
-    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ALT));
-    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
+    keyUp(RFB.VK_ALT);
+    keyUp(RFB.VK_CONTROL);
   }
 
   public void win_key() {
     //this is done with CTRL+ESC sequence
-    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
+    keyDown(RFB.VK_CONTROL);
     JF.sleep(10);
-    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ESCAPE));
+    keyDown(RFB.VK_ESCAPE);
     JF.sleep(50);
-    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ESCAPE));
+    keyUp(RFB.VK_ESCAPE);
     JF.sleep(10);
-    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
+    keyUp(RFB.VK_CONTROL);
   }
 
   public void refresh() {
