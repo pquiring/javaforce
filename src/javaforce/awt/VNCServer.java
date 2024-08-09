@@ -142,17 +142,15 @@ public class VNCServer {
             }
             case RFB.C_MSG_KEY_EVENT: {
               RFB.RFBKeyEvent event = rfb.readKeyEvent();
-              int vk = RFB.convertRFBKeyCode(event.code);
-              if (vk > 0xff00) break;  //invalid key codes
               try {
                 if (event.down) {
-                  robot.keyPress(vk);
+                  robot.keyPress(event.code);
                 } else {
-                  robot.keyRelease(vk);
+                  robot.keyRelease(event.code);
                 }
               } catch (Exception e) {
                 JFLog.log(e);
-                JFLog.log("vk=" + String.format("0x%04x", vk));
+                JFLog.log("vk=" + String.format("0x%04x", event.code));
               }
               break;
             }

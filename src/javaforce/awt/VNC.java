@@ -225,17 +225,11 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     this.addKeyListener(this);
   }
 
-  public void keyDown(int code, boolean convert) {
-    if (convert) {
-      code = RFB.convertJavaKeyCode(code);
-    }
+  public void keyDown(int code) {
     rfb.writeKeyEvent(code, true);
   }
 
-  public void keyUp(int code, boolean convert) {
-    if (convert) {
-      code = RFB.convertJavaKeyCode(code);
-    }
+  public void keyUp(int code) {
     rfb.writeKeyEvent(code, false);
   }
 
@@ -247,26 +241,26 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   }
 
   public void ctrl_alt_del() {
-    keyDown(KeyEvent.VK_CONTROL, true);
-    keyDown(KeyEvent.VK_ALT, true);
+    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
+    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ALT));
     JF.sleep(10);
-    keyDown(KeyEvent.VK_DELETE, true);
+    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_DELETE));
     JF.sleep(50);
-    keyUp(KeyEvent.VK_DELETE, true);
+    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_DELETE));
     JF.sleep(10);
-    keyUp(KeyEvent.VK_ALT, true);
-    keyUp(KeyEvent.VK_CONTROL, true);
+    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ALT));
+    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
   }
 
   public void win_key() {
     //this is done with CTRL+ESC sequence
-    keyDown(KeyEvent.VK_CONTROL, true);
+    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
     JF.sleep(10);
-    keyDown(KeyEvent.VK_ESCAPE, true);
+    keyDown(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ESCAPE));
     JF.sleep(50);
-    keyUp(KeyEvent.VK_ESCAPE, true);
+    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_ESCAPE));
     JF.sleep(10);
-    keyUp(KeyEvent.VK_CONTROL, true);
+    keyUp(VNCJavaRobot.convertJavaKeyCode(KeyEvent.VK_CONTROL));
   }
 
   public void refresh() {
@@ -500,12 +494,15 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       return;
     }
     if (ch == KeyEvent.CHAR_UNDEFINED) {
-      keyDown(code, true);
+      keyDown(VNCJavaRobot.convertJavaKeyCode(code));
     } else {
       if (e.isControlDown()) {
         ch += 0x60;
       }
-      keyDown(ch, ch < 0x20);
+      if (ch < 0x20) {
+        ch = (char)VNCJavaRobot.convertJavaKeyCode(ch);
+      }
+      keyDown(ch);
     }
   }
 
@@ -516,12 +513,15 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       JFLog.log("VNC:KeyReleased:" + Integer.toString(ch) + ":" + code);
     }
     if (ch == KeyEvent.CHAR_UNDEFINED) {
-      keyUp(code, true);
+      keyUp(VNCJavaRobot.convertJavaKeyCode(code));
     } else {
       if (e.isControlDown()) {
         ch += 0x60;
       }
-      keyUp(ch, ch < 0x20);
+      if (ch < 0x20) {
+        ch = (char)VNCJavaRobot.convertJavaKeyCode(ch);
+      }
+      keyUp(ch);
     }
   }
 }

@@ -12,8 +12,6 @@ import java.net.*;
 import java.util.*;
 import java.util.zip.*;
 
-import java.awt.event.*;
-
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
@@ -181,6 +179,37 @@ public class RFB {
     public int code;
     public boolean down;
   }
+
+  public static final int VK_BACK_SPACE = 0xff08;
+  public static final int VK_TAB = 0xff09;
+  public static final int VK_ENTER = 0xff0d;
+  public static final int VK_ESCAPE = 0xff1b;
+  public static final int VK_HOME = 0xff50;
+  public static final int VK_LEFT = 0xff51;
+  public static final int VK_UP = 0xff52;
+  public static final int VK_RIGHT = 0xff53;
+  public static final int VK_DOWN = 0xff54;
+  public static final int VK_PAGE_UP = 0xff55;
+  public static final int VK_PAGE_DOWN = 0xff56;
+  public static final int VK_END = 0xff57;
+  public static final int VK_INSERT = 0xff63;
+  public static final int VK_F1 = 0xffbe;
+  public static final int VK_F2 = 0xffbf;
+  public static final int VK_F3 = 0xffc0;
+  public static final int VK_F4 = 0xffc1;
+  public static final int VK_F5 = 0xffc2;
+  public static final int VK_F6 = 0xffc3;
+  public static final int VK_F7 = 0xffc4;
+  public static final int VK_F8 = 0xffc5;
+  public static final int VK_F9 = 0xffc6;
+  public static final int VK_F10 = 0xffc7;
+  public static final int VK_F11 = 0xffc8;
+  public static final int VK_F12 = 0xffc9;
+  public static final int VK_SHIFT = 0xffe1;
+  public static final int VK_CONTROL = 0xffe3;
+  public static final int VK_META = 0xffe7;
+  public static final int VK_ALT = 0xffe9;
+  public static final int VK_DELETE = 0xffff;
 
   public boolean connect(String host, int port) {
     try {
@@ -768,200 +797,6 @@ public class RFB {
     BE.setuint16(pkt, 6, width);
     BE.setuint16(pkt, 8, height);
     write(pkt);
-  }
-
-  /** Convert Java key code to RFB key code. */
-  public static int convertJavaKeyCode(int key) {
-    switch (key) {
-      case KeyEvent.VK_BACK_SPACE:
-        key = 0xff08;
-        break;
-      case KeyEvent.VK_TAB:
-        key = 0xff09;
-        break;
-      case KeyEvent.VK_ENTER:
-        key = 0xff0d;
-        break;
-      case KeyEvent.VK_ESCAPE:
-        key = 0xff1b;
-        break;
-      case KeyEvent.VK_HOME:
-        key = 0xff50;
-        break;
-      case KeyEvent.VK_LEFT:
-        key = 0xff51;
-        break;
-      case KeyEvent.VK_UP:
-        key = 0xff52;
-        break;
-      case KeyEvent.VK_RIGHT:
-        key = 0xff53;
-        break;
-      case KeyEvent.VK_DOWN:
-        key = 0xff54;
-        break;
-      case KeyEvent.VK_PAGE_UP:
-        key = 0xff55;
-        break;
-      case KeyEvent.VK_PAGE_DOWN:
-        key = 0xff56;
-        break;
-      case KeyEvent.VK_END:
-        key = 0xff57;
-        break;
-      case KeyEvent.VK_INSERT:
-        key = 0xff63;
-        break;
-      case KeyEvent.VK_F1:
-        key = 0xffbe;
-        break;
-      case KeyEvent.VK_F2:
-        key = 0xffbf;
-        break;
-      case KeyEvent.VK_F3:
-        key = 0xffc0;
-        break;
-      case KeyEvent.VK_F4:
-        key = 0xffc1;
-        break;
-      case KeyEvent.VK_F5:
-        key = 0xffc2;
-        break;
-      case KeyEvent.VK_F6:
-        key = 0xffc3;
-        break;
-      case KeyEvent.VK_F7:
-        key = 0xffc4;
-        break;
-      case KeyEvent.VK_F8:
-        key = 0xffc5;
-        break;
-      case KeyEvent.VK_F9:
-        key = 0xffc6;
-        break;
-      case KeyEvent.VK_F10:
-        key = 0xffc7;
-        break;
-      case KeyEvent.VK_F11:
-        key = 0xffc8;
-        break;
-      case KeyEvent.VK_F12:
-        key = 0xffc9;
-        break;
-      case KeyEvent.VK_SHIFT:
-        key = 0xffe1;
-        break;
-      case KeyEvent.VK_CONTROL:
-        key = 0xffe3;
-        break;
-      case KeyEvent.VK_META:
-        key = 0xffe7;
-        break;
-      case KeyEvent.VK_ALT:
-        key = 0xffe9;
-        break;
-      case KeyEvent.VK_DELETE:
-        key = 0xffff;
-        break;
-    }
-    return key;
-  }
-
-  /** Convert RFB key code to Java key code. */
-  public static int convertRFBKeyCode(int key) {
-    switch (key) {
-      case 0xff08:
-        key = KeyEvent.VK_BACK_SPACE;
-        break;
-      case 0xff09:
-        key = KeyEvent.VK_TAB;
-        break;
-      case 0xff0d:
-        key = KeyEvent.VK_ENTER;
-        break;
-      case 0xff1b:
-        key = KeyEvent.VK_ESCAPE;
-        break;
-      case 0xff50:
-        key = KeyEvent.VK_HOME;
-        break;
-      case 0xff51:
-        key = KeyEvent.VK_LEFT;
-        break;
-      case 0xff52:
-        key = KeyEvent.VK_UP;
-        break;
-      case 0xff53:
-        key = KeyEvent.VK_RIGHT;
-        break;
-      case 0xff54:
-        key = KeyEvent.VK_DOWN;
-        break;
-      case 0xff55:
-        key = KeyEvent.VK_PAGE_UP;
-        break;
-      case 0xff56:
-        key = KeyEvent.VK_PAGE_DOWN;
-        break;
-      case 0xff57:
-        key = KeyEvent.VK_END;
-        break;
-      case 0xff63:
-        key = KeyEvent.VK_INSERT;
-        break;
-      case 0xffbe:
-        key = KeyEvent.VK_F1;
-        break;
-      case 0xffbf:
-        key = KeyEvent.VK_F2;
-        break;
-      case 0xffc0:
-        key = KeyEvent.VK_F3;
-        break;
-      case 0xffc1:
-        key = KeyEvent.VK_F4;
-        break;
-      case 0xffc2:
-        key = KeyEvent.VK_F5;
-        break;
-      case 0xffc3:
-        key = KeyEvent.VK_F6;
-        break;
-      case 0xffc4:
-        key = KeyEvent.VK_F7;
-        break;
-      case 0xffc5:
-        key = KeyEvent.VK_F8;
-        break;
-      case 0xffc6:
-        key = KeyEvent.VK_F9;
-        break;
-      case 0xffc7:
-        key = KeyEvent.VK_F10;
-        break;
-      case 0xffc8:
-        key = KeyEvent.VK_F11;
-        break;
-      case 0xffc9:
-        key = KeyEvent.VK_F12;
-        break;
-      case 0xffe1:
-        key = KeyEvent.VK_SHIFT;
-        break;
-      case 0xffe3:
-        key = KeyEvent.VK_CONTROL;
-        break;
-      case 0xffe7:
-        key = KeyEvent.VK_META;
-        break;
-      case 0xffe9:
-        key = KeyEvent.VK_ALT;
-        break;
-      case 0xffff:
-        key = KeyEvent.VK_DELETE;
-        break;
-    }
-    return key;
   }
 
   public void writeKeyEvent(int code, boolean down) {
