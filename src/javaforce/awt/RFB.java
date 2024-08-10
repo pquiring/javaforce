@@ -279,9 +279,11 @@ public class RFB {
   }
 
   public void setBuffer(int[] px) {
-    if (px.length == buffer.length) {
-      System.arraycopy(px, 0, buffer, 0, px.length);
+    if (px.length != buffer.length) {
+      JFLog.log("Error:RFB.setBuffer():px.length wrong size:" + px.length + "!=" + buffer.length);
+      return;
     }
+    System.arraycopy(px, 0, buffer, 0, px.length);
   }
 
   public JFImage getImage(Rectangle area) {

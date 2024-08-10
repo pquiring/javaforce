@@ -1305,7 +1305,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
       , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
-    ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo, jvideo_ptr, JNI_COMMIT);
+    ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo, jvideo_ptr, 0);
   }
 
   return ctx->jvideo;
@@ -1379,7 +1379,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
     (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
       , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
-    ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo16, jvideo_ptr, JNI_COMMIT);
+    ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo16, jvideo_ptr, 0);
   }
 
   return ctx->jvideo16;

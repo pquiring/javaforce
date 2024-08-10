@@ -121,12 +121,12 @@ JNIEXPORT jint JNICALL Java_javaforce_ui_Font_loadFont
   printf("Font:max_ascent=%d max_descent=%d\n", max_ascent, max_descent);
 #endif
 
-  e->ReleasePrimitiveArrayCritical(fontdata, fontdata_ptr, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(fontinfo, fontinfo_ptr, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(coords, coords_ptr, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(glyph, glyph_ptr, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(cps, cps_ptr, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(pixels, pixels_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(fontdata, fontdata_ptr, 0);
+  e->ReleasePrimitiveArrayCritical(fontinfo, fontinfo_ptr, 0);
+  e->ReleasePrimitiveArrayCritical(coords, coords_ptr, 0);
+  e->ReleasePrimitiveArrayCritical(glyph, glyph_ptr, 0);
+  e->ReleasePrimitiveArrayCritical(cps, cps_ptr, 0);
+  e->ReleasePrimitiveArrayCritical(pixels, pixels_ptr, 0);
 
   return drawn;
 }

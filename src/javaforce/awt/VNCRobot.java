@@ -9,7 +9,7 @@ import java.awt.*;
 
 public interface VNCRobot {
   public Rectangle getScreenSize();
-  public JFImage getScreenCatpure();
+  public int[] getScreenCapture();
   public void keyPress(int code);
   public void keyRelease(int code);
   public void mouseMove(int x, int y);

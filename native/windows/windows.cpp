@@ -344,7 +344,18 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"comClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_comClose},
   {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comRead},
   {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comWrite},
+
   {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
+  {"setStationDesktop", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_setStationDesktop},
+  {"resetStationDesktop", "()Z", (void *)&Java_javaforce_jni_WinNative_resetStationDesktop},
+  {"getDesktopRect", "([I)Z", (void *)&Java_javaforce_jni_WinNative_getDesktopRect},
+  {"getScreenCapture", "()[I", (void *)&Java_javaforce_jni_WinNative_getScreenCapture},
+  {"simulateKeyDown", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateKeyDown},
+  {"simulateKeyUp", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateKeyUp},
+  {"simulateMouseMove", "(II)V", (void *)&Java_javaforce_jni_WinNative_simulateMouseMove},
+  {"simulateMouseDown", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateMouseDown},
+  {"simulateMouseUp", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateMouseUp},
+
   {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
   {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},
   {"peAddString", "(JII[B)V", (void *)&Java_javaforce_jni_WinNative_peAddString},

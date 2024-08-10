@@ -14,6 +14,15 @@ public class WinNative {
 
   //Windows
   public static native boolean getWindowRect(String name, int[] rect);  //returns x,y,width,height
+  public static native boolean setStationDesktop(String station, String desktop);  //"winsta0", "default"
+  public static native boolean resetStationDesktop();
+  public static native boolean getDesktopRect(int[] rect);  //returns x,y,width,height
+  public static native int[] getScreenCapture();
+  public static native void simulateKeyDown(int vk);
+  public static native void simulateKeyUp(int vk);
+  public static native void simulateMouseMove(int x, int y);
+  public static native void simulateMouseDown(int button);
+  public static native void simulateMouseUp(int button);
 
   //WinPE resources
   public static native long peBegin(String file);  //returns handle

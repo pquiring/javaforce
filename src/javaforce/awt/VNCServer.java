@@ -2,12 +2,9 @@ package javaforce.awt;
 
 /** VNCServer.
  *
- * Runs in user mode only, does not run as a system service.
- *
  * @author peter.quiring
  */
 
-import java.io.*;
 import java.net.*;
 import java.awt.*;
 
@@ -88,7 +85,6 @@ public class VNCServer {
         rfb.connect(s);
         rfb.writeVersion(RFB.VERSION_3_8);
         float ver = rfb.readVersion();
-        JFLog.log("client version=" + ver);
         rfb.writeAuthTypes();
         byte type = rfb.readAuthType();
         if (type != RFB.AUTH_VNC) throw new Exception("Auth failed");
@@ -183,7 +179,7 @@ public class VNCServer {
       try { s.close(); } catch (Exception e) {}
     }
     private class Updater extends Thread {
-      private JFImage img;
+      private int[] img;
       private boolean refresh;
       private static final int INF = 64 * 1024;
       public void run() {
@@ -200,15 +196,15 @@ public class VNCServer {
               //TODO : screen size changed
             }
             if (refresh) {
-              img = robot.getScreenCatpure();
-              rfb.setBuffer(img.getBuffer());
+              img = robot.getScreenCapture();
+              rfb.setBuffer(img);
               RFB.Rectangle rect = new RFB.Rectangle();
               rect.width = size.width;
               rect.height = size.height;
               rfb.writeBufferUpdate(rect);
               refresh = false;
             } else {
-              JFImage update = robot.getScreenCatpure();
+              int[] update = robot.getScreenCapture();
               boolean changed = false;
               int x1 = INF, x2 = -1;
               int y1 = INF, y2 = -1;
@@ -217,8 +213,8 @@ public class VNCServer {
               int y = 0;
               int height = size.height;
               int idx = 0;
-              int[] ipx = img.getBuffer();
-              int[] upx = update.getBuffer();
+              int[] ipx = img;
+              int[] upx = update;
               for(y=0;y<height;y++) {
                 for(x=0;x<width;x++) {
                   if (ipx[idx] != upx[idx]) {
@@ -241,7 +237,7 @@ public class VNCServer {
                 }
               }
               if (changed) {
-                rfb.setBuffer(update.getBuffer());
+                rfb.setBuffer(update);
                 RFB.Rectangle rect = new RFB.Rectangle();
                 rect.x = x1;
                 rect.y = y1;
@@ -272,8 +268,20 @@ public class VNCServer {
   private static VNCServer vnc;
 
   public static void serviceStart(String[] args) {
+    JFLog.append(JF.getLogPath() + "/jfvncsvc.log", true);
+    VNCRobot robot;
+    GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice[] devs = gfx.getScreenDevices();
+    for(GraphicsDevice dev : devs) {
+      JFLog.log("device=" + dev);
+    }
+    if (JF.isWindows()) {
+      robot = new VNCWinRobot();
+    } else {
+      robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
+    }
     vnc = new VNCServer();
-    vnc.start("password", new VNCJavaRobot(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()), 5900);
+    vnc.start("password", robot, 5900);
   }
 
   public static void serviceStop() {
@@ -285,7 +293,15 @@ public class VNCServer {
       System.out.println("Usage:VNCServer password");
       System.exit(1);
     }
+    VNCRobot robot;
     VNCServer server = new VNCServer();
-    server.start(args[0], new VNCJavaRobot(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()), 5900);
+    GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    boolean win = JF.isWindows();
+    if (win) {
+      robot = new VNCWinRobot();
+    } else {
+      robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
+    }
+    server.start(args[0], robot, 5900);
   }
 }

@@ -31,7 +31,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadPNG
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
   size_ptr[0] = x;
   size_ptr[1] = y;
-  e->ReleasePrimitiveArrayCritical(size, size_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(size, size_ptr, 0);
 
   jintArray out = e->NewIntArray(x*y);
   uint8 *out_ptr = (uint8*)e->GetPrimitiveArrayCritical(out, &isCopy);
@@ -48,7 +48,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadPNG
     dst[off+3] = src[off+3];
     off += 4;
   }
-  e->ReleasePrimitiveArrayCritical(out, out_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(out, out_ptr, 0);
 
   stbi_image_free(px_ptr);
 
@@ -111,7 +111,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsavePNG
   uint8 *out_ptr = (uint8*)e->GetPrimitiveArrayCritical(out, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
   memcpy(out_ptr, ctx.buf, ctx.siz);
-  e->ReleasePrimitiveArrayCritical(out, out_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(out, out_ptr, 0);
 
   free(ctx.buf);
 
@@ -138,13 +138,13 @@ JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadJPG
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
   size_ptr[0] = x;
   size_ptr[1] = y;
-  e->ReleasePrimitiveArrayCritical(size, size_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(size, size_ptr, 0);
 
   jintArray out = e->NewIntArray(x*y);
   uint8 *out_ptr = (uint8*)e->GetPrimitiveArrayCritical(out, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
   memcpy(out_ptr, px_ptr, x*y*4);
-  e->ReleasePrimitiveArrayCritical(out, out_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(out, out_ptr, 0);
 
   stbi_image_free(px_ptr);
 
@@ -174,7 +174,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsaveJPG
   uint8 *out_ptr = (uint8*)e->GetPrimitiveArrayCritical(out, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
   memcpy(out_ptr, ctx.buf, ctx.siz);
-  e->ReleasePrimitiveArrayCritical(out, out_ptr, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(out, out_ptr, 0);
 
   free(ctx.buf);
 

@@ -134,7 +134,7 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskAnalog
   void *_data = e->GetDoubleArrayElements(data, NULL);
   int size = e->GetArrayLength(data);
   (*_DAQmxReadAnalogF64)(taskHandle, size / numchs, 10.0, DAQmx_Val_GroupByChannel, (float64*)_data, size, &read, NULL);
-  e->ReleaseDoubleArrayElements(data, (jdouble*)_data, JNI_COMMIT);
+  e->ReleaseDoubleArrayElements(data, (jdouble*)_data, 0);
   return read;
 }
 
@@ -146,7 +146,7 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskBinary
   void *_data = (jint*)e->GetPrimitiveArrayCritical(data, NULL);
   int size = e->GetArrayLength(data);
   (*_DAQmxReadBinaryU32)(taskHandle, size / numchs, 10.0, DAQmx_Val_GroupByChannel, (uInt32*)_data, size, &read, NULL);
-  e->ReleasePrimitiveArrayCritical(data, (jint*)_data, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(data, (jint*)_data, 0);
   return read;
 }
 
@@ -158,7 +158,7 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskDigital
   void *_data = (jint*)e->GetPrimitiveArrayCritical(data, NULL);
   int size = e->GetArrayLength(data);
   (*_DAQmxReadDigitalU32)(taskHandle, size / numchs, 10.0, DAQmx_Val_GroupByChannel, (uInt32*)_data, size, &read, NULL);
-  e->ReleasePrimitiveArrayCritical(data, (jint*)_data, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(data, (jint*)_data, 0);
   return read;
 }
 
@@ -170,7 +170,7 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskCounter
   void *_data = e->GetDoubleArrayElements(data, NULL);
   int size = e->GetArrayLength(data);
   (*_DAQmxReadCounterF64)(taskHandle, size / numchs, 10.0, (float64*)_data, size, &read, NULL);
-  e->ReleaseDoubleArrayElements(data, (jdouble*)_data, JNI_COMMIT);
+  e->ReleaseDoubleArrayElements(data, (jdouble*)_data, 0);
   return read;
 }
 
