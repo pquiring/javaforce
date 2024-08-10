@@ -5,8 +5,10 @@ package javaforce.awt;
  * @author peter.quiring
  */
 
+import java.io.*;
 import java.net.*;
 import java.awt.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -53,6 +55,40 @@ public class VNCServer {
   private boolean active;
   private String pass;
   private VNCRobot robot;
+
+  private static class Config {
+    public String password = "password";
+    public int port = 5900;
+  }
+
+  private static Config loadConfig() {
+    try {
+      File file = new File(JF.getConfigPath() + "/jfvncserver.cfg");
+      if (!file.exists()) {
+        return new Config();
+      }
+      FileInputStream fis = new FileInputStream(file);
+      Properties props = new Properties();
+      props.load(fis);
+      fis.close();
+      Config config = new Config();
+      String password = props.getProperty("password");
+      if (password != null && password.length() == 8) {
+        config.password = password;
+      }
+      String port = props.getProperty("port");
+      if (port != null) {
+        config.port = JF.atoi(port);
+        if (config.port < 0 || config.port > 65535) {
+          config.port = 5900;
+        }
+      }
+      return config;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
 
   private class Server extends Thread {
     public void run() {
@@ -266,6 +302,7 @@ public class VNCServer {
    */
 
   private static VNCServer vnc;
+  private static Config config;
 
   public static void serviceStart(String[] args) {
     JFLog.append(JF.getLogPath() + "/jfvncsvc.log", true);
@@ -280,8 +317,9 @@ public class VNCServer {
     } else {
       robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
     }
+    config = loadConfig();
     vnc = new VNCServer();
-    vnc.start("password", robot, 5900);
+    vnc.start(config.password, robot, config.port);
   }
 
   public static void serviceStop() {
@@ -290,18 +328,23 @@ public class VNCServer {
 
   public static void main(String[] args) {
     if (args.length < 1) {
-      System.out.println("Usage:VNCServer password");
+      System.out.println("Usage:VNCServer {password} [port]");
       System.exit(1);
+    }
+    String password = args[0];
+    int port = 5900;
+    if (args.length > 1) {
+      port = JF.atoi(args[1]);
+      if (port < 0 || port > 65535) port = 5900;
     }
     VNCRobot robot;
     VNCServer server = new VNCServer();
     GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    boolean win = JF.isWindows();
-    if (win) {
+    if (JF.isWindows()) {
       robot = new VNCWinRobot();
     } else {
       robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
     }
-    server.start(args[0], robot, 5900);
+    server.start(password, robot, port);
   }
 }
