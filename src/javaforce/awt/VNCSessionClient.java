@@ -1,6 +1,6 @@
 package javaforce.awt;
 
-/** VNCSession
+/** VNCSessionClient
  *
  * Runs in current session context to capture screen and simulate input events.
  * Used only when VNCServer runs as a system service.
@@ -13,8 +13,10 @@ package javaforce.awt;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
+import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 
 public class VNCSessionClient implements VNCRobot {
 
@@ -27,7 +29,12 @@ public class VNCSessionClient implements VNCRobot {
   public static final byte CMD_MOUSE_UP = 7;
   public static final byte CMD_EXIT = 99;
 
+  public static boolean debug = true;
+
   public static void main(String[] args) {
+    if (debug) {
+      JFLog.append(JF.getLogPath() + "/jfvncsession-" + System.currentTimeMillis() + ".log", true);
+    }
     GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
     VNCSessionClient session = new VNCSessionClient(gfx.getDefaultScreenDevice());
     session.run();
@@ -53,32 +60,67 @@ public class VNCSessionClient implements VNCRobot {
     return JFImage.createScreenCapture(screen).getBuffer();
   }
 
+  private boolean[] keys = new boolean[256];
+
   public void keyPress(int code) {
-    code = VNCJavaRobot.convertRFBKeyCode(code);
-    robot.keyPress(code);
+    code = VNCRobot.convertRFBKeyCode(code);
+    if (debug) {
+      JFLog.log("keyPress:0x" + Integer.toString(code, 16));
+    }
+    try {
+      robot.keyPress(code);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void keyRelease(int code) {
-    code = VNCJavaRobot.convertRFBKeyCode(code);
-    robot.keyRelease(code);
+    code = VNCRobot.convertRFBKeyCode(code);
+    if (debug) {
+      JFLog.log("keyRelease:0x" + Integer.toString(code, 16));
+    }
+    try {
+      robot.keyRelease(code);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    if (JF.isWindows()) {
+      if (code > 0 && code < 256) {
+        keys[code] = false;
+      }
+    }
   }
 
   public void mouseMove(int x, int y) {
-    robot.mouseMove(x, y);
+    try {
+      robot.mouseMove(x, y);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void mousePress(int button) {
-    robot.mousePress(button);
+    button = VNCRobot.convertMouseButtons(button);
+    try {
+      robot.mousePress(button);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void mouseRelease(int button) {
-    robot.mouseRelease(button);
+    button = VNCRobot.convertMouseButtons(button);
+    try {
+      robot.mouseRelease(button);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   private void run() {
     //connect to VNCSessionServer
     try {
-      Socket s = new Socket("127.0.0.1", 5999);
+      Socket s = new Socket("127.0.0.1", VNCSessionServer.port);
       InputStream is = s.getInputStream();
       OutputStream os = s.getOutputStream();
       DataInputStream dis = new DataInputStream(is);

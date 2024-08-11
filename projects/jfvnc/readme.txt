@@ -1,8 +1,10 @@
 VNC Viewer:
 
- - based on tightvnc-java/1.2.7
+ - jfvnc.exe : vnc client
 
 VNC Server:
 
- - service currently does NOT work and is a work in progress.
-
+ - jfvncsvc.exe : service based which runs in the background
+   - jfvncsession.exe : used internally by service for each connection
+ - jfvnccli.exe : app based which runs as a user app with limited functionality
+   - useful in logon scripts, etc.

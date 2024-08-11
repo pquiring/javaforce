@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <userenv.h>
+#include <sas.h>
 #ifndef _NTDDTAPE_
 #include <ntddtape.h>
 #endif
@@ -941,6 +942,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_executeSession
   if (pEnvBlock) DestroyEnvironmentBlock(pEnvBlock);
 
   return res;
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateCtrlAltDel
+  (JNIEnv *e, jclass c)
+{
+  SendSAS(false);
 }
 
 //impersonate user

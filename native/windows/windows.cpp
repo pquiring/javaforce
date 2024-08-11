@@ -346,21 +346,9 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comWrite},
 
   {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
-
-/*
-  {"setStationDesktop", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_setStationDesktop},
-  {"resetStationDesktop", "()Z", (void *)&Java_javaforce_jni_WinNative_resetStationDesktop},
-  {"getDesktopRect", "([I)Z", (void *)&Java_javaforce_jni_WinNative_getDesktopRect},
-  {"getScreenCapture", "()[I", (void *)&Java_javaforce_jni_WinNative_getScreenCapture},
-  {"simulateKeyDown", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateKeyDown},
-  {"simulateKeyUp", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateKeyUp},
-  {"simulateMouseMove", "(II)V", (void *)&Java_javaforce_jni_WinNative_simulateMouseMove},
-  {"simulateMouseDown", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateMouseDown},
-  {"simulateMouseUp", "(I)V", (void *)&Java_javaforce_jni_WinNative_simulateMouseUp},
-*/
-
   {"getLog", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_getLog},
   {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_executeSession},
+  {"simulateCtrlAltDel", "()V", (void *)&Java_javaforce_jni_WinNative_simulateCtrlAltDel},
 
   {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
   {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},

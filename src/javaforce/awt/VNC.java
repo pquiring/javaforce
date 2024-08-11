@@ -494,13 +494,13 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       return;
     }
     if (ch == KeyEvent.CHAR_UNDEFINED) {
-      keyDown(VNCJavaRobot.convertJavaKeyCode(code));
+      keyDown(VNCRobot.convertJavaKeyCode(code));
     } else {
       if (e.isControlDown()) {
         ch += 0x60;
       }
       if (ch < 0x20) {
-        ch = (char)VNCJavaRobot.convertJavaKeyCode(ch);
+        ch = (char)VNCRobot.convertJavaKeyCode(ch);
       }
       keyDown(ch);
     }
@@ -513,13 +513,13 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       JFLog.log("VNC:KeyReleased:" + Integer.toString(ch) + ":" + code);
     }
     if (ch == KeyEvent.CHAR_UNDEFINED) {
-      keyUp(VNCJavaRobot.convertJavaKeyCode(code));
+      keyUp(VNCRobot.convertJavaKeyCode(code));
     } else {
       if (e.isControlDown()) {
         ch += 0x60;
       }
       if (ch < 0x20) {
-        ch = (char)VNCJavaRobot.convertJavaKeyCode(ch);
+        ch = (char)VNCRobot.convertJavaKeyCode(ch);
       }
       keyUp(ch);
     }

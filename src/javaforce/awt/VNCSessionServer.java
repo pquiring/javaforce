@@ -42,7 +42,7 @@ public class VNCSessionServer {
     public void run() {
       active = true;
       try {
-        ss = new ServerSocket(5999, 0, Inet4Address.getLoopbackAddress());
+        ss = new ServerSocket(port, 0, Inet4Address.getLoopbackAddress());
       } catch (Exception e) {
         JFLog.log(e);
         return;

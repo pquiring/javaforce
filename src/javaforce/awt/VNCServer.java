@@ -8,6 +8,7 @@ package javaforce.awt;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 
 import javaforce.*;
@@ -65,6 +66,7 @@ public class VNCServer {
   private boolean active;
   private boolean service;
   private String pass;
+  private static boolean debug = true;
 
   private static class Config {
     public String password = "password";
@@ -139,6 +141,8 @@ public class VNCServer {
       return session_server.getClient();
     }
   }
+
+  private boolean[] keys = new boolean[256];
 
   private class Client extends Thread {
     private Socket s;
@@ -215,8 +219,31 @@ public class VNCServer {
               try {
                 if (event.down) {
                   robot.keyPress(event.code);
+                  if (JF.isWindows()) {
+                    //check for Ctrl+Alt+Delete
+                    int code = VNCRobot.convertRFBKeyCode(event.code);
+                    if (code > 0 && code < 256) {
+                      keys[code] = true;
+                    }
+                    boolean cad = code == KeyEvent.VK_DELETE;
+                    if (keys[KeyEvent.VK_SHIFT]) cad = false;
+                    if (!keys[KeyEvent.VK_CONTROL]) cad = false;
+                    if (!keys[KeyEvent.VK_ALT]) cad = false;
+                    if (cad) {
+                      if (debug) {
+                        JFLog.log("Simulating Ctrl+Alt+Del");
+                      }
+                      WinNative.simulateCtrlAltDel();
+                    }
+                  }
                 } else {
                   robot.keyRelease(event.code);
+                  if (JF.isWindows()) {
+                    int code = VNCRobot.convertRFBKeyCode(event.code);
+                    if (code > 0 && code < 256) {
+                      keys[code] = false;
+                    }
+                  }
                 }
               } catch (Exception e) {
                 JFLog.log(e);
