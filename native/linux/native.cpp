@@ -880,8 +880,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
   }
   cenv[nenv] = NULL;
 
-  const char *ccmd = e->GetStringUTFChars(cmd,NULL);
+  const char *ccmd = e->GetStringUTFChars(cmd, NULL);
   execvpe(ccmd, cargs, cenv);
+  e->ReleaseStringUTFChars(cmd, ccmd);
   return 0;
 }
 

@@ -16,11 +16,9 @@ public class VNCJavaRobot implements VNCRobot {
   private GraphicsDevice screen;
 
   public VNCJavaRobot(GraphicsDevice screen) {
-    JFLog.log("screen=" + screen);
     this.screen = screen;
     try {
       robot = new Robot(screen);
-      JFLog.log("robot=" + robot);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -249,4 +247,6 @@ public class VNCJavaRobot implements VNCRobot {
     }
     return key;
   }
+
+  public void close() {}
 }

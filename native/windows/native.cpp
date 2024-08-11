@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <userenv.h>
 #ifndef _NTDDTAPE_
 #include <ntddtape.h>
 #endif
@@ -28,6 +29,28 @@
 #include "javaforce_ui_Window.h"
 #include "javaforce_net_PacketCapture.h"
 #include "javaforce_cl_CL.h"
+
+static char* log_log = NULL;
+static int log_size = 0;
+
+static void log_append(const char* msg) {
+  if (log_log == NULL) {
+    log_size = 4096;
+    log_log = (char*)GlobalAlloc(GMEM_FIXED, log_size);
+  }
+  int loglen = strlen(log_log);
+  int msglen = strlen(msg);
+  if (loglen + msglen + 1 > log_size) {
+    log_size += 4096;
+    log_log = (char*)GlobalReAlloc(log_log, log_size, GMEM_MOVEABLE);
+  }
+  strcat(log_log, msg);
+}
+
+static void log_reset() {
+  if (log_log == NULL) return;
+  log_log[0] = 0;
+}
 
 HMODULE wgl = NULL;
 
@@ -849,183 +872,75 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_getWindowRect
   return ok;
 }
 
-static HWINSTA current_station = NULL;
-static HDESK current_desktop = NULL;
-
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_setStationDesktop
-  (JNIEnv *e, jclass c, jstring station, jstring desktop)
-{
-  Java_javaforce_jni_WinNative_resetStationDesktop(e, NULL);
-  current_station = GetProcessWindowStation();
-  current_desktop = GetThreadDesktop(GetCurrentThreadId());
-  const char *cstation = e->GetStringUTFChars(station, NULL);
-  HWINSTA station0 = OpenWindowStation(cstation, false,
-    WINSTA_ACCESSCLIPBOARD |
-    WINSTA_ACCESSGLOBALATOMS |
-    WINSTA_CREATEDESKTOP |
-    WINSTA_ENUMDESKTOPS |
-    WINSTA_ENUMERATE |
-    WINSTA_EXITWINDOWS |
-    WINSTA_READATTRIBUTES |
-    WINSTA_READSCREEN |
-    WINSTA_WRITEATTRIBUTES
-    );
-  e->ReleaseStringUTFChars(station, cstation);
-  SetProcessWindowStation(station0);
-  const char *cdesktop = e->GetStringUTFChars(desktop, NULL);
-  HDESK desktop0 = OpenDesktop(cdesktop, 0, false,
-    DESKTOP_CREATEMENU |
-    DESKTOP_CREATEWINDOW |
-    DESKTOP_ENUMERATE |
-    DESKTOP_HOOKCONTROL |
-    DESKTOP_JOURNALPLAYBACK |
-    DESKTOP_JOURNALRECORD |
-    DESKTOP_READOBJECTS |
-    DESKTOP_SWITCHDESKTOP |
-    DESKTOP_WRITEOBJECTS
-    );
-  e->ReleaseStringUTFChars(desktop, cdesktop);
-  SetThreadDesktop(desktop0);
-  return JNI_TRUE;
-}
-
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_resetStationDesktop
+JNIEXPORT jstring JNICALL Java_javaforce_jni_WinNative_getLog
   (JNIEnv *e, jclass c)
 {
-  if (current_station != NULL) {
-    SetProcessWindowStation(current_station);
-    CloseWindowStation(current_station);
-    current_station = NULL;
+  if (log_log == NULL) return NULL;
+  jstring log = e->NewStringUTF(log_log);
+  log_reset();
+  return log;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_executeSession
+  (JNIEnv *e, jclass c, jstring cmd, jobjectArray args)
+{
+  //build args
+  int nargs = e->GetArrayLength(args);
+  char **cargs = (char **)malloc((nargs+1) * sizeof(char*));  //+1 NULL terminator
+  for(int a=0;a<nargs;a++) {
+    jstring jstr = (jstring)e->GetObjectArrayElement(args, a);
+    const char *cstr = e->GetStringUTFChars(jstr,NULL);
+    int sl = strlen(cstr);
+    cargs[a] = (char*)malloc(sl+1);
+    strcpy(cargs[a], cstr);
+    e->ReleaseStringUTFChars(jstr, cstr);
   }
-  if (current_desktop != NULL) {
-    SetThreadDesktop(current_desktop);
-    CloseDesktop(current_desktop);
-    current_desktop = NULL;
+  cargs[nargs] = NULL;
+
+  DWORD sid = WTSGetActiveConsoleSessionId();
+
+  STARTUPINFO si;
+  memset(&si, 0, sizeof(STARTUPINFO));
+  si.cb = sizeof(STARTUPINFO);
+  si.lpDesktop = "winsta0\\default";
+
+  PROCESS_INFORMATION pi;
+
+  HANDLE hToken = NULL;
+  HANDLE hNewToken = NULL;
+  void* pEnvBlock = NULL;
+
+  DWORD dwCreationFlags = NORMAL_PRIORITY_CLASS;
+
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ALL_ACCESS, &hToken)) {
+    return JNI_FALSE;
   }
-  return JNI_TRUE;
-}
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_getDesktopRect
-  (JNIEnv *e, jclass c, jintArray rect)
-{
-  jint *rectptr = e->GetIntArrayElements(rect,NULL);
-  HWND hwnd = GetDesktopWindow();
-  RECT winrect;
-  jboolean ok = JNI_FALSE;
-  if (hwnd != NULL) {
-    if (GetWindowRect(hwnd, &winrect)) {
-      rectptr[0] = winrect.left;
-      rectptr[1] = winrect.top;
-      rectptr[2] = winrect.right - winrect.left;
-      rectptr[3] = winrect.bottom - winrect.top;
-      ok = JNI_TRUE;
-    }
+  if (!DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, 0, SecurityAnonymous, TokenPrimary, &hNewToken)){
+    return JNI_FALSE;
   }
-  e->ReleaseIntArrayElements(rect, rectptr, 0);
-  return ok;
-}
 
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_WinNative_getScreenCapture
-  (JNIEnv *e, jclass c)
-{
-  //https://learn.microsoft.com/en-us/windows/win32/gdi/capturing-an-image
-  HDC hdc = GetDC(NULL);
-  if (hdc == NULL) return NULL;
-  HDC hDest = CreateCompatibleDC(hdc);
-  if (hDest == NULL) return NULL;
+  if (!SetTokenInformation(hNewToken, TokenSessionId, &sid, sizeof(DWORD))) {
+    return JNI_FALSE;
+  }
 
-  int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-  int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-  int pixels = width * height;
+  if (!CreateEnvironmentBlock(&pEnvBlock, hToken, TRUE)) {
+    return JNI_FALSE;
+  } else {
+    dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
+  }
 
-  HBITMAP hbDesktop = CreateCompatibleBitmap(hdc, width, height);
+  const char *ccmd = e->GetStringUTFChars(cmd, NULL);
 
-  HGDIOBJ selObj = SelectObject(hDest, hbDesktop);
+  jboolean res = CreateProcessAsUser(hNewToken, 0, (LPSTR)ccmd, 0, 0, FALSE, dwCreationFlags, pEnvBlock, NULL, &si, &pi);
 
-  BOOL blt = BitBlt(hDest, 0, 0, width, height, hdc, 0, 0, SRCCOPY);
+  e->ReleaseStringUTFChars(cmd, ccmd);
 
-  BITMAP bitmap;
-  memset(&bitmap, 0, sizeof(BITMAP));
-  int gb = GetObject(hbDesktop, sizeof(BITMAP), (LPVOID)&bitmap);
+  if (hToken) CloseHandle(hToken);
+  if (hNewToken) CloseHandle(hNewToken);
+  if (pEnvBlock) DestroyEnvironmentBlock(pEnvBlock);
 
-  BITMAPINFOHEADER bi;
-  bi.biSize = sizeof(BITMAPINFOHEADER);
-  bi.biWidth = width;
-  bi.biHeight = -height;
-  bi.biPlanes = 1;
-  bi.biBitCount = 32;
-  bi.biCompression = BI_RGB;
-  bi.biSizeImage = 0;
-  bi.biXPelsPerMeter = 0;
-  bi.biYPelsPerMeter = 0;
-  bi.biClrUsed = 0;
-  bi.biClrImportant = 0;
-
-  jintArray px = e->NewIntArray(pixels);
-  jint *pxptr = e->GetIntArrayElements(px, NULL);
-  int lines = GetDIBits(hDest, hbDesktop, 0, height, pxptr, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
-  e->ReleaseIntArrayElements(px, pxptr, 0);
-
-  ReleaseDC(NULL, hdc);
-  DeleteObject(hbDesktop);
-  DeleteDC(hDest);
-
-  return px;
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateKeyDown
-  (JNIEnv *e, jclass c, jint code)
-{
-  INPUT input;
-  memset(&input, 0, sizeof(INPUT));
-  input.type = INPUT_KEYBOARD;
-  input.ki.wVk = code;
-  SendInput(1, &input, sizeof(INPUT));
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateKeyUp
-  (JNIEnv *e, jclass c, jint code)
-{
-  INPUT input;
-  memset(&input, 0, sizeof(INPUT));
-  input.type = INPUT_KEYBOARD;
-  input.ki.wVk = code;
-  input.ki.dwFlags = KEYEVENTF_KEYUP;
-  SendInput(1, &input, sizeof(INPUT));
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateMouseMove
-  (JNIEnv *e, jclass c, jint x, jint y)
-{
-  INPUT input;
-  memset(&input, 0, sizeof(INPUT));
-  input.type = INPUT_MOUSE;
-  input.mi.dx = x;
-  input.mi.dy = y;
-  input.mi.dwFlags = MOUSEEVENTF_MOVE;
-  SendInput(1, &input, sizeof(INPUT));
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateMouseDown
-  (JNIEnv *e, jclass c, jint button)
-{
-  INPUT input;
-  memset(&input, 0, sizeof(INPUT));
-  input.type = INPUT_MOUSE;
-  input.mi.mouseData = button;
-  input.mi.dwFlags = MOUSEEVENTF_XDOWN;
-  SendInput(1, &input, sizeof(INPUT));
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateMouseUp
-  (JNIEnv *e, jclass c, jint button)
-{
-  INPUT input;
-  memset(&input, 0, sizeof(INPUT));
-  input.type = INPUT_MOUSE;
-  input.mi.mouseData = button;
-  input.mi.dwFlags = MOUSEEVENTF_XUP;
-  SendInput(1, &input, sizeof(INPUT));
+  return res;
 }
 
 //impersonate user

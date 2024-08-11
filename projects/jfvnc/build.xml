@@ -10,7 +10,8 @@
   <property name="version" value="0.3"/>
 
   <property name="project2" value="build-service"/>
-  <property name="project3" value="build-cli"/>
+  <property name="project3" value="build-session"/>
+  <property name="project4" value="build-cli"/>
 
   <import file="${home}/base.xml"/>
 

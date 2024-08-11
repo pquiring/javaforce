@@ -11,12 +11,13 @@ import java.awt.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 
 public class VNCServer {
-  public boolean start(String pass, VNCRobot robot) {
-    return start(pass, robot, 5900);
+  public boolean start(String pass, boolean service) {
+    return start(pass, service, 5900);
   }
-  public boolean start(String pass, VNCRobot robot, int port) {
+  public boolean start(String pass, boolean service, int port) {
     if (active) {
       stop();
     }
@@ -25,18 +26,22 @@ public class VNCServer {
       return false;
     }
     this.pass = pass;
-    this.robot = robot;
+    this.service = service;
     try {
       JFLog.log("VNCServer starting on port " + port + "...");
       active = true;
       ss = new ServerSocket(port);
       server = new Server();
       server.start();
+      if (service) {
+        session_server = new VNCSessionServer();
+        session_server.start();
+      }
       return true;
     } catch (Exception e) {
       JFLog.log(e);
+      return false;
     }
-    return false;
   }
   public void stop() {
     active = false;
@@ -48,13 +53,18 @@ public class VNCServer {
     } catch (Exception e) {
       JFLog.log(e);
     }
+    if (session_server != null) {
+      session_server.stop();
+      session_server = null;
+    }
   }
 
   private Server server;
   private ServerSocket ss;
+  private VNCSessionServer session_server;
   private boolean active;
+  private boolean service;
   private String pass;
-  private VNCRobot robot;
 
   private static class Config {
     public String password = "password";
@@ -92,27 +102,55 @@ public class VNCServer {
 
   private class Server extends Thread {
     public void run() {
+      VNCRobot robot;
       while (active) {
         try {
           Socket s = ss.accept();
-          Client client = new Client(s);
+          if (service) {
+            robot = spawnSession();
+          } else {
+            GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
+          }
+          if (robot == null) {
+            s.close();
+            continue;
+          }
+          Client client = new Client(s, robot);
           client.start();
         } catch (Exception e) {
           JFLog.log(e);
         }
       }
     }
+    private VNCRobot spawnSession() {
+      if (JF.isWindows()) {
+        if (!WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {})) {
+          return null;
+        }
+      } else {
+        try {
+          java.lang.Runtime.getRuntime().exec(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
+        } catch (Exception e) {
+          JFLog.log(e);
+          return null;
+        }
+      }
+      return session_server.getClient();
+    }
   }
 
   private class Client extends Thread {
     private Socket s;
     private RFB rfb;
+    private VNCRobot robot;
     private Rectangle size;
     private Updater updater;
     private boolean connected;
     private int buttons;
-    public Client(Socket s) {
+    public Client(Socket s, VNCRobot robot) {
       this.s = s;
+      this.robot = robot;
     }
     public void run() {
       connected = true;
@@ -209,6 +247,7 @@ public class VNCServer {
         JFLog.log(e);
         close();
       }
+      robot.close();
     }
     public void close() {
       connected = false;
@@ -306,20 +345,9 @@ public class VNCServer {
 
   public static void serviceStart(String[] args) {
     JFLog.append(JF.getLogPath() + "/jfvncsvc.log", true);
-    VNCRobot robot;
-    GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsDevice[] devs = gfx.getScreenDevices();
-    for(GraphicsDevice dev : devs) {
-      JFLog.log("device=" + dev);
-    }
-    if (JF.isWindows()) {
-      robot = new VNCWinRobot();
-    } else {
-      robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
-    }
     config = loadConfig();
     vnc = new VNCServer();
-    vnc.start(config.password, robot, config.port);
+    vnc.start(config.password, true, config.port);
   }
 
   public static void serviceStop() {
@@ -328,7 +356,7 @@ public class VNCServer {
 
   public static void main(String[] args) {
     if (args.length < 1) {
-      System.out.println("Usage:VNCServer {password} [port]");
+      JFAWT.showError("Usage", "Usage:VNCServer {password} [port]");
       System.exit(1);
     }
     String password = args[0];
@@ -337,14 +365,7 @@ public class VNCServer {
       port = JF.atoi(args[1]);
       if (port < 0 || port > 65535) port = 5900;
     }
-    VNCRobot robot;
     VNCServer server = new VNCServer();
-    GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    if (JF.isWindows()) {
-      robot = new VNCWinRobot();
-    } else {
-      robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
-    }
-    server.start(password, robot, port);
+    server.start(password, false, port);
   }
 }

@@ -2,6 +2,7 @@
   <description>native</description>
   <property name="home" value="../.."/>
   <property environment="env"/>
+  <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib"/>
 
   <target name="windows" description="create windows native files">
     <!-- native library -->
@@ -11,16 +12,16 @@
     <exec command="lib /nologo /out:native.lib native.obj glfw.obj glfw-null.obj"/>
 
     <!-- native loaders -->
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_SERVICE windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' windows.cpp native.lib ${winlibs} /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' windows.cpp native.lib ${winlibs} /Fe: ../win64c.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_SERVICE windows.cpp native.lib ${winlibs} /Fe: ../win64s.exe /link /subsystem:console"/>
 
     <!-- native cli loaders -->
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecw.exe /link /subsystem:windows /entry:mainCRTStartup"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexec.exe /link /subsystem:console"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecwd.exe /link /subsystem:windows /entry:mainCRTStartup"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecd.exe /link /subsystem:console"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG /D_JF_CLI_SERVICE windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecsd.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecw.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexec.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecwd.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecd.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG /D_JF_CLI_SERVICE windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecsd.exe /link /subsystem:console"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>

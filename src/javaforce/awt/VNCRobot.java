@@ -15,4 +15,5 @@ public interface VNCRobot {
   public void mouseMove(int x, int y);
   public void mousePress(int button);
   public void mouseRelease(int button);
+  public void close();
 }
