@@ -349,6 +349,7 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"getLog", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_getLog},
   {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_executeSession},
   {"simulateCtrlAltDel", "()V", (void *)&Java_javaforce_jni_WinNative_simulateCtrlAltDel},
+  {"setInputDesktop", "()V", (void *)&Java_javaforce_jni_WinNative_setInputDesktop},
 
   {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
   {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},
@@ -682,7 +683,7 @@ void ServiceStatus(int state) {
   ss.dwServiceType = SERVICE_WIN32;
   ss.dwWin32ExitCode = 0;
   ss.dwCurrentState = state;
-  ss.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+  ss.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SESSIONCHANGE;
   ss.dwWin32ExitCode = 0;
   ss.dwServiceSpecificExitCode = 0;
   ss.dwCheckPoint = 0;
@@ -691,18 +692,20 @@ void ServiceStatus(int state) {
   SetServiceStatus(ServiceHandle, &ss);
 }
 
-void __stdcall ServiceControl(int OpCode) {
-  switch (OpCode) {
+void __stdcall ServiceControlEx(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext) {
+  switch (dwControl) {
     case SERVICE_CONTROL_STOP:
       AttachJVM();
       ServiceStatus(SERVICE_STOPPED);
       InvokeMethodVoid(mainclass, "serviceStop", "()V", NULL);
       break;
+    case SERVICE_CONTROL_SESSIONCHANGE:
+      break;
   }
 }
 
 void __stdcall ServiceMain(int argc, char **argv) {
-  ServiceHandle = RegisterServiceCtrlHandler(service, (void (__stdcall *)(unsigned long))ServiceControl);
+  ServiceHandle = RegisterServiceCtrlHandlerEx(service, (LPHANDLER_FUNCTION_EX)ServiceControlEx, NULL);
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   registerAllNatives(g_env);

@@ -53,14 +53,22 @@ public class VNCSessionClient implements VNCRobot {
   }
 
   public Rectangle getScreenSize() {
+    WinNative.setInputDesktop();
+    String log = WinNative.getLog();
+    if (log != null) {
+      JFLog.log(log);
+    }
     return screen.getDefaultConfiguration().getBounds();
   }
 
   public int[] getScreenCapture() {
+    WinNative.setInputDesktop();
+    String log = WinNative.getLog();
+    if (log != null) {
+      JFLog.log(log);
+    }
     return JFImage.createScreenCapture(screen).getBuffer();
   }
-
-  private boolean[] keys = new boolean[256];
 
   public void keyPress(int code) {
     code = VNCRobot.convertRFBKeyCode(code);
@@ -83,11 +91,6 @@ public class VNCSessionClient implements VNCRobot {
       robot.keyRelease(code);
     } catch (Exception e) {
       JFLog.log(e);
-    }
-    if (JF.isWindows()) {
-      if (code > 0 && code < 256) {
-        keys[code] = false;
-      }
     }
   }
 

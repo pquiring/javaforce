@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <userenv.h>
 #include <sas.h>
+#include <wtsapi32.h>
 #ifndef _NTDDTAPE_
 #include <ntddtape.h>
 #endif
@@ -31,6 +32,8 @@
 #include "javaforce_net_PacketCapture.h"
 #include "javaforce_cl_CL.h"
 
+#include "../common/library.h"
+
 static char* log_log = NULL;
 static int log_size = 0;
 
@@ -38,6 +41,7 @@ static void log_append(const char* msg) {
   if (log_log == NULL) {
     log_size = 4096;
     log_log = (char*)GlobalAlloc(GMEM_FIXED, log_size);
+    log_log[0] = 0;
   }
   int loglen = strlen(log_log);
   int msglen = strlen(msg);
@@ -882,9 +886,31 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_WinNative_getLog
   return log;
 }
 
+BOOL CALLBACK EnumWindowStationProc(_In_ LPTSTR lpszWindowStation,_In_ LPARAM lParam) {
+  char msg[1024];
+  sprintf(msg, "enum.station=%s\n", lpszWindowStation);
+  log_append(msg);
+  return true;
+}
+
+BOOL CALLBACK EnumDesktopProc(_In_ LPTSTR lpszDesktop,_In_ LPARAM lParam) {
+  char msg[1024];
+  sprintf(msg, "enum.desktop=%s\n", lpszDesktop);
+  log_append(msg);
+  return true;
+}
+
+BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd,_In_ LPARAM lParam) {
+  char msg[1024];
+  sprintf(msg, "enum.window=%p\n", hwnd);
+  log_append(msg);
+  return true;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_executeSession
   (JNIEnv *e, jclass c, jstring cmd, jobjectArray args)
 {
+  char msg[1024];
   //build args
   int nargs = e->GetArrayLength(args);
   char **cargs = (char **)malloc((nargs+1) * sizeof(char*));  //+1 NULL terminator
@@ -948,6 +974,16 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateCtrlAltDel
   (JNIEnv *e, jclass c)
 {
   SendSAS(false);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_setInputDesktop
+  (JNIEnv *e, jclass c)
+{
+  //change between default and winlogon desktops
+  HDESK desk = OpenInputDesktop(0, false, 0x2000000);
+  if (desk != NULL) {
+    SetThreadDesktop(desk);
+  }
 }
 
 //impersonate user
@@ -1721,8 +1757,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
   e->ReleasePrimitiveArrayCritical(a, aptr, 0);
 }
 
-
-#include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"
 

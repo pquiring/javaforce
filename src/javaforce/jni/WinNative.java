@@ -17,6 +17,7 @@ public class WinNative {
   public static native String getLog();
   public static native boolean executeSession(String cmd, String[] args);  //execute child process in current session id
   public static native void simulateCtrlAltDel();
+  public static native void setInputDesktop();
 
   //WinPE resources
   public static native long peBegin(String file);  //returns handle

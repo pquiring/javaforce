@@ -2,7 +2,7 @@
   <description>native</description>
   <property name="home" value="../.."/>
   <property environment="env"/>
-  <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib sas.lib"/>
+  <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib sas.lib wtsapi32.lib"/>
 
   <target name="windows" description="create windows native files">
     <!-- native library -->

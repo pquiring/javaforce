@@ -43,9 +43,10 @@ First get some tools installed, all projects are built with Apache Ant (http://a
 Before checking out the source make sure to configure line endings:
   linux/mac : git config --global core.autocrlf input
   windows : git config --global core.autocrlf true
-Checkout Javaforce:
+Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
+  git checkout tags/66.0
   ant
 Next build the native launchers.
 

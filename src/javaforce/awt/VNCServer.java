@@ -102,6 +102,22 @@ public class VNCServer {
     }
   }
 
+  private VNCRobot spawnSession() {
+    if (JF.isWindows()) {
+      if (!WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {})) {
+        return null;
+      }
+    } else {
+      try {
+        java.lang.Runtime.getRuntime().exec(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
+    }
+    return session_server.getClient();
+  }
+
   private class Server extends Thread {
     public void run() {
       VNCRobot robot;
@@ -124,21 +140,6 @@ public class VNCServer {
           JFLog.log(e);
         }
       }
-    }
-    private VNCRobot spawnSession() {
-      if (JF.isWindows()) {
-        if (!WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {})) {
-          return null;
-        }
-      } else {
-        try {
-          java.lang.Runtime.getRuntime().exec(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
-        } catch (Exception e) {
-          JFLog.log(e);
-          return null;
-        }
-      }
-      return session_server.getClient();
     }
   }
 
@@ -281,14 +282,17 @@ public class VNCServer {
       try { s.close(); } catch (Exception e) {}
     }
     private class Updater extends Thread {
+      private boolean updater_active;
       private int[] img;
       private boolean refresh;
+      private int sid;
       private static final int INF = 64 * 1024;
       public void run() {
+        updater_active = true;
         //write screen changes to client
         refresh = true;  //send init full update
         try {
-          while (connected) {
+          while (updater_active && connected) {
             if (!rfb.haveEncodings()) {
               JF.sleep(100);
               continue;
@@ -354,6 +358,10 @@ public class VNCServer {
           JFLog.log(e);
         }
       }
+      public void cancel() {
+        updater_active = false;
+        JF.sleep(250);
+      }
       public void refresh(RFB.Rectangle rect) {
         refresh = true;
       }
@@ -371,7 +379,7 @@ public class VNCServer {
   private static Config config;
 
   public static void serviceStart(String[] args) {
-    JFLog.append(JF.getLogPath() + "/jfvncsvc.log", true);
+    JFLog.init(JF.getLogPath() + "/jfvncsvc.log", true);
     config = loadConfig();
     vnc = new VNCServer();
     vnc.start(config.password, true, config.port);
