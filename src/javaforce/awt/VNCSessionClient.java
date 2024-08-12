@@ -61,13 +61,15 @@ public class VNCSessionClient implements VNCRobot {
     return screen.getDefaultConfiguration().getBounds();
   }
 
-  public int[] getScreenCapture() {
+  public int[] getScreenCapture(int pf) {
     WinNative.setInputDesktop();
     String log = WinNative.getLog();
     if (log != null) {
       JFLog.log(log);
     }
-    return JFImage.createScreenCapture(screen).getBuffer();
+    int[] rgb = JFImage.createScreenCapture(screen).getBuffer();
+    if (pf == RFB.PF_RGB) return rgb;
+    return RFB.swapPixelFormat(rgb);
   }
 
   public void keyPress(int code) {
@@ -139,9 +141,10 @@ public class VNCSessionClient implements VNCRobot {
           }
           case CMD_GET_SCREEN: {
             Rectangle size = getScreenSize();
+            int pf = is.read();
             dos.writeInt(size.width);
             dos.writeInt(size.height);
-            int[] px32 = getScreenCapture();
+            int[] px32 = getScreenCapture(pf);
             int pixels = px32.length;
             byte[] px8 = new byte[pixels * 4];
             int i8 = 0;

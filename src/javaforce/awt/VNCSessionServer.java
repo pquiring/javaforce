@@ -116,9 +116,10 @@ public class VNCSessionServer {
       return null;
     }
 
-    public int[] getScreenCapture() {
+    public int[] getScreenCapture(int pf) {
       try {
         os.write(CMD_GET_SCREEN);
+        os.write(pf);
         int width = dis.readInt();
         int height = dis.readInt();
         int pixels = width * height;

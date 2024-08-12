@@ -39,6 +39,10 @@ public class RFB {
 
   public static boolean debug;
 
+  //pixel formats
+  public static int PF_RGB = 1;  //Java
+  public static int PF_BGR = 2;  //tightVNC
+
   public static class Rectangle {
     public Rectangle() {}
     public Rectangle(int x, int y, int width, int height) {
@@ -165,9 +169,31 @@ public class RFB {
       return pf;
     }
 
-    public String toString() {
-      return "PixelFormat:" + bpp + "," + depth + ",be=" + be + ",tc=" + tc;
+    public int getFormat() {
+      if (be) return PF_BGR;  //default
+      return PF_RGB;
     }
+
+    public String toString() {
+      return "PixelFormat:" + bpp + "," + depth + ",be=" + be + ",tc=" + tc + ",r=" + r_shift + ",g=" + g_shift + ",b=" + b_shift;
+    }
+  }
+
+  /** Convert RGB to BGR. */
+  public static int[] swapPixelFormat(int[] rgb) {
+    int len = rgb.length;
+    int[] bgr = new int[len];
+    int px, aa_gg, rr, bb;
+    for(int i=0;i<len;i++) {
+      px = rgb[i];
+      //AA RR GG BB  ->  AA BB GG RR
+      aa_gg = px & 0xff00ff00;
+      rr = (px & 0xff0000) >> 16;
+      bb = (px & 0xff) << 16;
+      px = aa_gg | rr | bb;
+      bgr[i] = px;
+    }
+    return bgr;
   }
 
   public static class RFBMouseEvent {

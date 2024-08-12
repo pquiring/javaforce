@@ -28,8 +28,10 @@ public class VNCJavaRobot implements VNCRobot {
     return screen.getDefaultConfiguration().getBounds();
   }
 
-  public int[] getScreenCapture() {
-    return JFImage.createScreenCapture(screen).getBuffer();
+  public int[] getScreenCapture(int pf) {
+    int[] rgb = JFImage.createScreenCapture(screen).getBuffer();
+    if (pf == RFB.PF_RGB) return rgb;
+    return RFB.swapPixelFormat(rgb);
   }
 
   public void keyPress(int code) {

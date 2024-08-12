@@ -153,6 +153,7 @@ public class VNCServer {
     private Updater updater;
     private boolean connected;
     private int buttons;
+    private int pf = RFB.PF_BGR;  //default for VNC
     public Client(Socket s, VNCRobot robot) {
       this.s = s;
       this.robot = robot;
@@ -260,8 +261,8 @@ public class VNCServer {
               break;
             }
             case RFB.C_MSG_SET_PIXEL_FORMAT: {
-              RFB.PixelFormat pf = rfb.readPixelFormat();
-              //ignored
+              RFB.PixelFormat rfb_pf = rfb.readPixelFormat();
+              pf = rfb_pf.getFormat();
               break;
             }
             case RFB.C_MSG_CUT_TEXT: {
@@ -302,7 +303,7 @@ public class VNCServer {
               //TODO : screen size changed
             }
             if (refresh) {
-              img = robot.getScreenCapture();
+              img = robot.getScreenCapture(pf);
               rfb.setBuffer(img);
               RFB.Rectangle rect = new RFB.Rectangle();
               rect.width = size.width;
@@ -310,7 +311,7 @@ public class VNCServer {
               rfb.writeBufferUpdate(rect);
               refresh = false;
             } else {
-              int[] update = robot.getScreenCapture();
+              int[] update = robot.getScreenCapture(pf);
               boolean changed = false;
               int x1 = INF, x2 = -1;
               int y1 = INF, y2 = -1;
