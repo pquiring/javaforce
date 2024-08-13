@@ -225,6 +225,7 @@ public class RFB {
   public static final int VK_PAGE_DOWN = 0xff56;
   public static final int VK_END = 0xff57;
   public static final int VK_INSERT = 0xff63;
+  public static final int VK_CONTEXT_MENU = 0xff67;
   //numpad
   public static final int VK_NUMPAD_ENTER = 0xff8d;
   public static final int VK_NUMPAD_ASTERISK = 0xffaa;

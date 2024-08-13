@@ -337,6 +337,9 @@ public interface VNCRobot {
       case RFB.VK_WIN_KEY_R:
         key = KeyEvent.VK_WINDOWS;
         break;
+      case RFB.VK_CONTEXT_MENU:
+        key = KeyEvent.VK_CONTEXT_MENU;
+        break;
     }
     return key;
   }
