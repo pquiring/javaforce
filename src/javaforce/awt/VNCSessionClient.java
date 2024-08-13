@@ -13,12 +13,10 @@ package javaforce.awt;
 import java.io.*;
 import java.net.*;
 import java.awt.*;
-import java.awt.event.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 
-public class VNCSessionClient implements VNCRobot {
+public class VNCSessionClient extends VNCJavaRobot {
 
   public static final byte CMD_GET_SCREEN_SIZE = 1;
   public static final byte CMD_GET_SCREEN = 2;
@@ -40,86 +38,8 @@ public class VNCSessionClient implements VNCRobot {
     session.run();
   }
 
-  private Robot robot;
-  private GraphicsDevice screen;
-
   public VNCSessionClient(GraphicsDevice screen) {
-    this.screen = screen;
-    try {
-      robot = new Robot(screen);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public Rectangle getScreenSize() {
-    WinNative.setInputDesktop();
-    String log = WinNative.getLog();
-    if (log != null) {
-      JFLog.log(log);
-    }
-    return screen.getDefaultConfiguration().getBounds();
-  }
-
-  public int[] getScreenCapture(int pf) {
-    WinNative.setInputDesktop();
-    String log = WinNative.getLog();
-    if (log != null) {
-      JFLog.log(log);
-    }
-    int[] rgb = JFImage.createScreenCapture(screen).getBuffer();
-    if (pf == RFB.PF_RGB) return rgb;
-    return RFB.swapPixelFormat(rgb);
-  }
-
-  public void keyPress(int code) {
-    code = VNCRobot.convertRFBKeyCode(code);
-    if (debug) {
-      JFLog.log("keyPress:0x" + Integer.toString(code, 16));
-    }
-    try {
-      robot.keyPress(code);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public void keyRelease(int code) {
-    code = VNCRobot.convertRFBKeyCode(code);
-    if (debug) {
-      JFLog.log("keyRelease:0x" + Integer.toString(code, 16));
-    }
-    try {
-      robot.keyRelease(code);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public void mouseMove(int x, int y) {
-    try {
-      robot.mouseMove(x, y);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public void mousePress(int button) {
-    button = VNCRobot.convertMouseButtons(button);
-    try {
-      robot.mousePress(button);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public void mouseRelease(int button) {
-    button = VNCRobot.convertMouseButtons(button);
-    try {
-      robot.mouseRelease(button);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    super(screen);
   }
 
   private void run() {
@@ -170,11 +90,11 @@ public class VNCSessionClient implements VNCRobot {
             break;
           }
           case CMD_MOUSE_DOWN: {
-            mousePress(is.read());
+            mousePress(dis.readInt());
             break;
           }
           case CMD_MOUSE_UP: {
-            mouseRelease(is.read());
+            mouseRelease(dis.readInt());
             break;
           }
           case CMD_EXIT: {

@@ -8,6 +8,8 @@ package javaforce.awt;
 import java.awt.*;
 import java.awt.event.*;
 
+import javaforce.*;
+
 public interface VNCRobot {
   public Rectangle getScreenSize();
   public int[] getScreenCapture(int pf);
@@ -117,6 +119,10 @@ public interface VNCRobot {
 
   /** Convert RFB key code to Java key code. */
   public static int convertRFBKeyCode(int key) {
+    if (key >= 'a' && key <= 'z') {
+      //convert to upper case
+      key -= ('a' - 'A');
+    }
     switch (key) {
       case RFB.VK_BACK_SPACE:
         key = KeyEvent.VK_BACK_SPACE;
@@ -194,31 +200,153 @@ public interface VNCRobot {
         key = KeyEvent.VK_F12;
         break;
       case RFB.VK_SHIFT:
+      case RFB.VK_SHIFT_R:
         key = KeyEvent.VK_SHIFT;
         break;
       case RFB.VK_CONTROL:
+      case RFB.VK_CONTROL_R:
         key = KeyEvent.VK_CONTROL;
         break;
       case RFB.VK_META:
+      case RFB.VK_META_R:
         key = KeyEvent.VK_META;
         break;
       case RFB.VK_ALT:
+      case RFB.VK_ALT_R:
         key = KeyEvent.VK_ALT;
         break;
       case RFB.VK_DELETE:
         key = KeyEvent.VK_DELETE;
+        break;
+      case RFB.VK_EXCLAMATION_MASK:
+        key = KeyEvent.VK_1;
+        break;
+      case RFB.VK_AT:
+        key = KeyEvent.VK_2;
+        break;
+      case RFB.VK_NUMBER_SIGN:
+        key = KeyEvent.VK_3;
+        break;
+      case RFB.VK_DOLLAR_SIGN:
+        key = KeyEvent.VK_4;
+        break;
+      case RFB.VK_PERCENT:
+        key = KeyEvent.VK_5;
+        break;
+      case RFB.VK_CIRCUMFLEX:
+        key = KeyEvent.VK_6;
+        break;
+      case RFB.VK_AMPERSAND:
+        key = KeyEvent.VK_7;
+        break;
+      case RFB.VK_ASTERISK:
+        key = KeyEvent.VK_8;
+        break;
+      case RFB.VK_LEFT_PARENTHSIS:
+        key = KeyEvent.VK_9;
+        break;
+      case RFB.VK_RIGHT_PARENTHSIS:
+        key = KeyEvent.VK_0;
+        break;
+      case RFB.VK_UNDERSCORE:
+        key = KeyEvent.VK_MINUS;
+        break;
+      case RFB.VK_PLUS:
+        key = KeyEvent.VK_EQUALS;
+        break;
+      case RFB.VK_QUOTE_LEFT:
+      case RFB.VK_TILDE:
+        key = KeyEvent.VK_BACK_QUOTE;
+        break;
+      case RFB.VK_NUMPAD0:
+        key = KeyEvent.VK_0;
+        break;
+      case RFB.VK_NUMPAD1:
+        key = KeyEvent.VK_1;
+        break;
+      case RFB.VK_NUMPAD2:
+        key = KeyEvent.VK_2;
+        break;
+      case RFB.VK_NUMPAD3:
+        key = KeyEvent.VK_3;
+        break;
+      case RFB.VK_NUMPAD4:
+        key = KeyEvent.VK_4;
+        break;
+      case RFB.VK_NUMPAD5:
+        key = KeyEvent.VK_5;
+        break;
+      case RFB.VK_NUMPAD6:
+        key = KeyEvent.VK_6;
+        break;
+      case RFB.VK_NUMPAD7:
+        key = KeyEvent.VK_7;
+        break;
+      case RFB.VK_NUMPAD8:
+        key = KeyEvent.VK_8;
+        break;
+      case RFB.VK_NUMPAD9:
+        key = KeyEvent.VK_9;
+        break;
+      case RFB.VK_NUMPAD_ENTER:
+        key = KeyEvent.VK_ENTER;
+        break;
+      case RFB.VK_NUMPAD_ASTERISK:
+        key = KeyEvent.VK_MULTIPLY;
+        break;
+      case RFB.VK_NUMPAD_PLUS:
+        key = KeyEvent.VK_ADD;
+        break;
+      case RFB.VK_NUMPAD_PERIOD:
+        key = KeyEvent.VK_PERIOD;
+        break;
+      case RFB.VK_NUMPAD_MINUS:
+        key = KeyEvent.VK_SUBTRACT;
+        break;
+      case RFB.VK_NUMPAD_DIVIDE:
+        key = KeyEvent.VK_DIVIDE;
+        break;
+      case RFB.VK_OPEN_BRACKET:
+        key = KeyEvent.VK_OPEN_BRACKET;
+        break;
+      case RFB.VK_CLOSE_BRACKET:
+        key = KeyEvent.VK_CLOSE_BRACKET;
+        break;
+      case RFB.VK_PIPE:
+        key = KeyEvent.VK_BACK_SLASH;
+        break;
+      case RFB.VK_SEMICOLON:
+        key = KeyEvent.VK_SEMICOLON;
+        break;
+      case RFB.VK_DOUBLE_QUOTE:
+        key = KeyEvent.VK_QUOTE;
+        break;
+      case RFB.VK_LESS:
+        key = KeyEvent.VK_COMMA;
+        break;
+      case RFB.VK_GREATER:
+        key = KeyEvent.VK_PERIOD;
+        break;
+      case RFB.VK_QUESTION_MARK:
+        key = KeyEvent.VK_SLASH;
+        break;
+      case RFB.VK_QUOTE:
+        key = KeyEvent.VK_QUOTE;
         break;
     }
     return key;
   }
 
   /** Convert RFB buttons to java.awt.Robot buttons. */
-  public static int convertMouseButtons(int buttons) {
-    switch (buttons) {
+  public static int convertMouseButtons(int button) {
+    switch (button) {
       case 1: return InputEvent.BUTTON1_DOWN_MASK;
       case 2: return InputEvent.BUTTON2_DOWN_MASK;
       case 4: return InputEvent.BUTTON3_DOWN_MASK;
-      default: return 0;
+      default: {
+        JFLog.log("Unknown mouse button:" + button);
+        return 0;
+      }
     }
   }
 }

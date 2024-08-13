@@ -169,7 +169,7 @@ public class VNCSessionServer {
     public void mousePress(int button) {
       try {
         os.write(CMD_MOUSE_DOWN);
-        os.write(button);
+        dos.writeInt(button);
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -178,7 +178,7 @@ public class VNCSessionServer {
     public void mouseRelease(int button) {
       try {
         os.write(CMD_MOUSE_UP);
-        os.write(button);
+        dos.writeInt(button);
       } catch (Exception e) {
         JFLog.log(e);
       }

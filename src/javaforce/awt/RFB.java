@@ -219,6 +219,24 @@ public class RFB {
   public static final int VK_PAGE_DOWN = 0xff56;
   public static final int VK_END = 0xff57;
   public static final int VK_INSERT = 0xff63;
+  //numpad
+  public static final int VK_NUMPAD_ENTER = 0xff8d;
+  public static final int VK_NUMPAD_ASTERISK = 0xffaa;
+  public static final int VK_NUMPAD_PLUS = 0xffab;
+  public static final int VK_NUMPAD_PERIOD = 0xffae;
+  public static final int VK_NUMPAD_MINUS = 0xffad;
+  public static final int VK_NUMPAD_DIVIDE = 0xffaf;
+  public static final int VK_NUMPAD0 = 0xffb0;
+  public static final int VK_NUMPAD1 = 0xffb1;
+  public static final int VK_NUMPAD2 = 0xffb2;
+  public static final int VK_NUMPAD3 = 0xffb3;
+  public static final int VK_NUMPAD4 = 0xffb4;
+  public static final int VK_NUMPAD5 = 0xffb5;
+  public static final int VK_NUMPAD6 = 0xffb6;
+  public static final int VK_NUMPAD7 = 0xffb7;
+  public static final int VK_NUMPAD8 = 0xffb8;
+  public static final int VK_NUMPAD9 = 0xffb9;
+
   public static final int VK_F1 = 0xffbe;
   public static final int VK_F2 = 0xffbf;
   public static final int VK_F3 = 0xffc0;
@@ -232,10 +250,38 @@ public class RFB {
   public static final int VK_F11 = 0xffc8;
   public static final int VK_F12 = 0xffc9;
   public static final int VK_SHIFT = 0xffe1;
+  public static final int VK_SHIFT_R = 0xffe2;
   public static final int VK_CONTROL = 0xffe3;
+  public static final int VK_CONTROL_R = 0xffe4;
   public static final int VK_META = 0xffe7;
+  public static final int VK_META_R = 0xffe8;
   public static final int VK_ALT = 0xffe9;
+  public static final int VK_ALT_R = 0xffea;
   public static final int VK_DELETE = 0xffff;
+
+  public static final int VK_EXCLAMATION_MASK = 0x0021;
+  public static final int VK_AT = 0x0040;
+  public static final int VK_NUMBER_SIGN = 0x0023;
+  public static final int VK_DOLLAR_SIGN = 0x0024;
+  public static final int VK_PERCENT = 0x0025;
+  public static final int VK_CIRCUMFLEX = 0x005e;
+  public static final int VK_AMPERSAND = 0x0026;
+  public static final int VK_ASTERISK = 0x002a;
+  public static final int VK_LEFT_PARENTHSIS = 0x0028;
+  public static final int VK_RIGHT_PARENTHSIS = 0x0029;
+  public static final int VK_UNDERSCORE = 0x005f;
+  public static final int VK_PLUS = 0x002b;
+  public static final int VK_QUOTE_LEFT = 0x0060;
+  public static final int VK_TILDE = 0x007e;
+  public static final int VK_OPEN_BRACKET = 0x007b;
+  public static final int VK_CLOSE_BRACKET = 0x007d;
+  public static final int VK_PIPE = 0x007c;
+  public static final int VK_SEMICOLON = 0x003a;
+  public static final int VK_DOUBLE_QUOTE = 0x0022;
+  public static final int VK_LESS = 0x003c;
+  public static final int VK_GREATER = 0x003e;
+  public static final int VK_QUESTION_MARK = 0x003f;
+  public static final int VK_QUOTE = 0x0027;
 
   public boolean connect(String host, int port) {
     try {

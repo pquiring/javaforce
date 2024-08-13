@@ -35,20 +35,20 @@ public class VNCJavaRobot implements VNCRobot {
   }
 
   public void keyPress(int code) {
-    code = VNCRobot.convertRFBKeyCode(code);
     try {
       robot.keyPress(code);
     } catch (Exception e) {
       JFLog.log(e);
+      JFLog.log("invalid code=" + code);
     }
   }
 
   public void keyRelease(int code) {
-    code = VNCRobot.convertRFBKeyCode(code);
     try {
       robot.keyRelease(code);
     } catch (Exception e) {
       JFLog.log(e);
+      JFLog.log("invalid code=" + code);
     }
   }
 
@@ -61,7 +61,6 @@ public class VNCJavaRobot implements VNCRobot {
   }
 
   public void mousePress(int button) {
-    button = VNCRobot.convertMouseButtons(button);
     try {
       robot.mousePress(button);
     } catch (Exception e) {
@@ -70,7 +69,6 @@ public class VNCJavaRobot implements VNCRobot {
   }
 
   public void mouseRelease(int button) {
-    button = VNCRobot.convertMouseButtons(button);
     try {
       robot.mouseRelease(button);
     } catch (Exception e) {

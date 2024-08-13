@@ -62,6 +62,8 @@ public class TestEvents extends javax.swing.JFrame {
   }// </editor-fold>//GEN-END:initComponents
 
   private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
+    int key = evt.getKeyCode();
+    System.out.println(String.format(" key=%x",key));
     int mods = evt.getModifiersEx();
     System.out.println(String.format("mods=%x",mods));
   }//GEN-LAST:event_jTextField1KeyPressed

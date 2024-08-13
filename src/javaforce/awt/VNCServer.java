@@ -66,7 +66,7 @@ public class VNCServer {
   private boolean active;
   private boolean service;
   private String pass;
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   private static class Config {
     public String password = "password";
@@ -198,17 +198,17 @@ public class VNCServer {
               try {
                 robot.mouseMove(event.x, event.y);
                 int mask = 1;
-                int button = 1;
                 for(int a=0;a<3;a++) {
                   if ((buttons & mask) != (event.buttons & mask)) {
                     if ((event.buttons & mask) == 0) {
-                      robot.mouseRelease(button);
+                      JFLog.log("mouseRelease:" + mask);
+                      robot.mouseRelease(VNCRobot.convertMouseButtons(mask));
                     } else {
-                      robot.mousePress(button);
+                      JFLog.log("mousePress:" + mask);
+                      robot.mousePress(VNCRobot.convertMouseButtons(mask));
                     }
                   }
                   mask <<= 1;
-                  button++;
                 }
               } catch (Exception e) {
                 JFLog.log(e);
@@ -218,12 +218,20 @@ public class VNCServer {
             }
             case RFB.C_MSG_KEY_EVENT: {
               RFB.RFBKeyEvent event = rfb.readKeyEvent();
+              if (debug) {
+                JFLog.log("KeyEvent:" + (event.down ? "down" : "up"));
+                JFLog.log("old.key=0x" + Integer.toString(event.code, 16));
+              }
+              int code = VNCRobot.convertRFBKeyCode(event.code);
+              if (debug) {
+                JFLog.log("new.key=0x" + Integer.toString(code, 16));
+              }
+              if (code > 0xff) break;
               try {
                 if (event.down) {
-                  robot.keyPress(event.code);
+                  robot.keyPress(code);
                   if (JF.isWindows()) {
                     //check for Ctrl+Alt+Delete
-                    int code = VNCRobot.convertRFBKeyCode(event.code);
                     if (code > 0 && code < 256) {
                       keys[code] = true;
                     }
@@ -239,9 +247,8 @@ public class VNCServer {
                     }
                   }
                 } else {
-                  robot.keyRelease(event.code);
+                  robot.keyRelease(code);
                   if (JF.isWindows()) {
-                    int code = VNCRobot.convertRFBKeyCode(event.code);
                     if (code > 0 && code < 256) {
                       keys[code] = false;
                     }
@@ -249,7 +256,6 @@ public class VNCServer {
                 }
               } catch (Exception e) {
                 JFLog.log(e);
-                JFLog.log("vk=" + String.format("0x%04x", event.code));
               }
               break;
             }
@@ -395,6 +401,7 @@ public class VNCServer {
       JFAWT.showError("Usage", "Usage:VNCServer {password} [port]");
       System.exit(1);
     }
+    JFLog.init("jfvnccli.log", true);
     String password = args[0];
     int port = 5900;
     if (args.length > 1) {
