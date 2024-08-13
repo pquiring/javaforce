@@ -45,6 +45,12 @@ public class RFB {
 
   public static class Rectangle {
     public Rectangle() {}
+    public Rectangle(java.awt.Rectangle r) {
+      this.x = r.x;
+      this.y = r.y;
+      this.width = r.width;
+      this.height = r.height;
+    }
     public Rectangle(int x, int y, int width, int height) {
       this.x = x;
       this.y = y;
@@ -964,13 +970,13 @@ public class RFB {
     return rect;
   }
 
-  public void writeBufferUpdate(Rectangle rect) {
+  public void writeBufferUpdate(Rectangle rect, int encoding) {
     byte[] pkt = new byte[4];
     pkt[0] = S_MSG_BUFFER_UPDATE;
     pkt[1] = 0;  //padding
     BE.setuint16(pkt, 2, 1);  //count
     write(pkt);
-    int encoding = bestEncoding();
+    if (encoding == -1) encoding = bestEncoding();
     if (debug) {
       JFLog.log("encoding=" + encoding);
     }
@@ -1621,7 +1627,14 @@ public class RFB {
       case TYPE_RAW: writeRectRaw(rect); break;
       case TYPE_ZLIB: writeRectZlib(rect); break;
       case TYPE_TIGHT: writeRectTight(rect); break;
+      case TYPE_DESKTOP_SIZE: writeRectDesktopSize(rect); break;
     }
+  }
+
+  private void writeRectDesktopSize(Rectangle rect) {
+    this.width = rect.width;
+    this.height = rect.height;
+    setSize();
   }
 
   private void readPixel(int src, byte[] out, int dst) {

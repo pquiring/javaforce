@@ -306,7 +306,8 @@ public class VNCServer {
             }
             Rectangle new_size = robot.getScreenSize();
             if (new_size.width != size.width || new_size.height != size.height) {
-              //TODO : screen size changed
+              size = new_size;
+              rfb.writeBufferUpdate(new RFB.Rectangle(new_size), RFB.TYPE_DESKTOP_SIZE);
             }
             if (refresh) {
               img = robot.getScreenCapture(pf);
@@ -314,7 +315,7 @@ public class VNCServer {
               RFB.Rectangle rect = new RFB.Rectangle();
               rect.width = size.width;
               rect.height = size.height;
-              rfb.writeBufferUpdate(rect);
+              rfb.writeBufferUpdate(rect, -1);
               refresh = false;
             } else {
               int[] update = robot.getScreenCapture(pf);
@@ -356,7 +357,7 @@ public class VNCServer {
                 rect.y = y1;
                 rect.width = x2 - x1 + 1;
                 rect.height = y2 - y1 + 1;
-                rfb.writeBufferUpdate(rect);
+                rfb.writeBufferUpdate(rect, -1);
               }
             }
             JF.sleep(100);
