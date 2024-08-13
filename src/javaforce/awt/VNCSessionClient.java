@@ -15,6 +15,7 @@ import java.net.*;
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 
 public class VNCSessionClient extends VNCJavaRobot {
 
@@ -60,6 +61,9 @@ public class VNCSessionClient extends VNCJavaRobot {
             break;
           }
           case CMD_GET_SCREEN: {
+            if (JF.isWindows()) {
+              WinNative.setInputDesktop();
+            }
             Rectangle size = getScreenSize();
             int pf = is.read();
             dos.writeInt(size.width);
