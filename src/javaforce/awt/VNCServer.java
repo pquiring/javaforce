@@ -201,10 +201,8 @@ public class VNCServer {
                 for(int a=0;a<3;a++) {
                   if ((buttons & mask) != (event.buttons & mask)) {
                     if ((event.buttons & mask) == 0) {
-                      JFLog.log("mouseRelease:" + mask);
                       robot.mouseRelease(VNCRobot.convertMouseButtons(mask));
                     } else {
-                      JFLog.log("mousePress:" + mask);
                       robot.mousePress(VNCRobot.convertMouseButtons(mask));
                     }
                   }
@@ -226,32 +224,37 @@ public class VNCServer {
               if (debug) {
                 JFLog.log("new.key=0x" + Integer.toString(code, 16));
               }
-              if (code > 0xff) break;
               try {
                 if (event.down) {
-                  robot.keyPress(code);
                   if (JF.isWindows()) {
                     //check for Ctrl+Alt+Delete
                     if (code > 0 && code < 256) {
                       keys[code] = true;
                     }
-                    boolean cad = code == KeyEvent.VK_DELETE;
-                    if (keys[KeyEvent.VK_SHIFT]) cad = false;
-                    if (!keys[KeyEvent.VK_CONTROL]) cad = false;
-                    if (!keys[KeyEvent.VK_ALT]) cad = false;
-                    if (cad) {
+                    boolean shift = keys[KeyEvent.VK_SHIFT];
+                    boolean ctrl = keys[KeyEvent.VK_CONTROL];
+                    boolean alt = keys[KeyEvent.VK_ALT];
+                    if (debug) {
+                      JFLog.log("shift=" + shift + ",ctrl=" + ctrl + ",alt=" + alt);
+                    }
+                    if (code == KeyEvent.VK_DELETE && !shift && ctrl && alt) {
                       if (debug) {
                         JFLog.log("Simulating Ctrl+Alt+Del");
                       }
                       WinNative.simulateCtrlAltDel();
                     }
                   }
+                  if (code != -1) {
+                    robot.keyPress(code);
+                  }
                 } else {
-                  robot.keyRelease(code);
                   if (JF.isWindows()) {
                     if (code > 0 && code < 256) {
                       keys[code] = false;
                     }
+                  }
+                  if (code != -1) {
+                    robot.keyRelease(code);
                   }
                 }
               } catch (Exception e) {

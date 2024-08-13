@@ -333,6 +333,10 @@ public interface VNCRobot {
       case RFB.VK_QUOTE:
         key = KeyEvent.VK_QUOTE;
         break;
+      case RFB.VK_WIN_KEY:
+      case RFB.VK_WIN_KEY_R:
+        key = KeyEvent.VK_WINDOWS;
+        break;
     }
     return key;
   }

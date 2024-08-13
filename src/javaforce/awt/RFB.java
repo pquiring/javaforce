@@ -263,6 +263,8 @@ public class RFB {
   public static final int VK_META_R = 0xffe8;
   public static final int VK_ALT = 0xffe9;
   public static final int VK_ALT_R = 0xffea;
+  public static final int VK_WIN_KEY = 0xffeb;
+  public static final int VK_WIN_KEY_R = 0xffec;
   public static final int VK_DELETE = 0xffff;
 
   public static final int VK_EXCLAMATION_MASK = 0x0021;
