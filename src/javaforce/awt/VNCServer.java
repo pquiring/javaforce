@@ -348,7 +348,7 @@ public class VNCServer {
               JF.sleep(100);
               continue;
             }
-            if (JF.isWindows()) {
+            if (JF.isWindows() && !update_sid) {
               int newsid = WinNative.getSessionID();
               if (newsid != -1 && newsid != sid) {
                 //client needs a new robot
@@ -358,10 +358,6 @@ public class VNCServer {
                 synchronized (lock) {
                   robot.close();
                   robot = null;
-                  //BUG : no way to detect if this delay is long enough for Windows to actually switch the desktop
-//                  for(int a=0;a<3;a++) {
-//                    JF.sleep(1000);
-//                  }
                   robot = newSession();
                 }
                 sid = newsid;
