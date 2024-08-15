@@ -18,6 +18,7 @@ public interface VNCRobot {
   public void mouseMove(int x, int y);
   public void mousePress(int button);
   public void mouseRelease(int button);
+  public boolean active();
   public void close();
 
   /** Convert Java key code to RFB key code. */

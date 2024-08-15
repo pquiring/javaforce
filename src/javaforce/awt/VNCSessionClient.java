@@ -28,7 +28,9 @@ public class VNCSessionClient extends VNCJavaRobot {
   public static final byte CMD_MOUSE_UP = 7;
   public static final byte CMD_EXIT = 99;
 
-  public static boolean debug = true;
+  private int sid;
+
+  public static boolean debug = false;
 
   public static void main(String[] args) {
     if (debug) {
@@ -43,14 +45,25 @@ public class VNCSessionClient extends VNCJavaRobot {
     super(screen);
   }
 
+  private Socket s;
+
   private void run() {
     //connect to VNCSessionServer
     try {
-      Socket s = new Socket("127.0.0.1", VNCSessionServer.port);
+      JFLog.log("VNCSessionClient Started");
+      s = new Socket("127.0.0.1", VNCSessionServer.port);
       InputStream is = s.getInputStream();
       OutputStream os = s.getOutputStream();
       DataInputStream dis = new DataInputStream(is);
       DataOutputStream dos = new DataOutputStream(os);
+      if (JF.isWindows()) {
+        sid = -1;
+        while (sid == -1) {
+          sid = WinNative.getSessionID();
+          JF.sleep(100);
+        }
+        JFLog.log("Session ID=" + sid);
+      }
       while (s.isConnected()) {
         byte cmd = (byte)is.read();
         switch (cmd) {
@@ -63,6 +76,15 @@ public class VNCSessionClient extends VNCJavaRobot {
           case CMD_GET_SCREEN: {
             if (JF.isWindows()) {
               WinNative.setInputDesktop();
+              if (VNCServer.update_sid) {
+                int newsid = WinNative.getSessionID();
+                if ((newsid != -1) && (newsid != sid)) {
+                  JFLog.log("Sessiod ID changed:old=" + sid + ",new=" + newsid);
+                  GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                  setRobot(gfx.getDefaultScreenDevice());
+                  sid = newsid;
+                }
+              }
             }
             Rectangle size = getScreenSize();
             int pf = is.read();
@@ -102,7 +124,7 @@ public class VNCSessionClient extends VNCJavaRobot {
             break;
           }
           case CMD_EXIT: {
-            System.exit(0);
+            close();
             break;
           }
         }
@@ -110,7 +132,19 @@ public class VNCSessionClient extends VNCJavaRobot {
     } catch (Exception e) {
       JFLog.log(e);
     }
+    close();
   }
 
-  public void close() {System.exit(0);}
+  public void close() {
+    JFLog.log("VNCSessionClient Stopped");
+    try {
+      if (s != null) {
+        s.close();
+        s = null;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    System.exit(0);
+  }
 }

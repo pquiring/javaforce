@@ -907,7 +907,7 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd,_In_ LPARAM lParam) {
   return true;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_executeSession
+JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
   (JNIEnv *e, jclass c, jstring cmd, jobjectArray args)
 {
   char msg[1024];
@@ -964,10 +964,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_executeSession
   e->ReleaseStringUTFChars(cmd, ccmd);
 
   if (hToken) CloseHandle(hToken);
-  if (hNewToken) CloseHandle(hNewToken);
   if (pEnvBlock) DestroyEnvironmentBlock(pEnvBlock);
 
-  return res;
+  if (res == false) {
+    if (hNewToken) CloseHandle(hNewToken);
+    return 0;
+  }
+
+  return (jlong)hNewToken;
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateCtrlAltDel
@@ -979,11 +983,37 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateCtrlAltDel
 JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_setInputDesktop
   (JNIEnv *e, jclass c)
 {
+  char msg[1024];
   //change between default and winlogon desktops
   HDESK desk = OpenInputDesktop(0, false, 0x2000000);
   if (desk != NULL) {
     SetThreadDesktop(desk);
   }
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_getSessionID
+  (JNIEnv *e, jclass c)
+{
+  return WTSGetActiveConsoleSessionId();
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_setSessionID
+  (JNIEnv *e, jclass c, jlong token, jint sid)
+{
+  if (token == 0) return JNI_FALSE;
+  HANDLE hToken = (HANDLE)token;
+  if (!SetTokenInformation(hToken, TokenSessionId, &sid, sizeof(DWORD))) {
+    return JNI_FALSE;
+  }
+  return JNI_TRUE;
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_closeSession
+  (JNIEnv *e, jclass c, jlong token)
+{
+  if (token == 0) return;
+  HANDLE hToken = (HANDLE)token;
+  CloseHandle(hToken);
 }
 
 //impersonate user

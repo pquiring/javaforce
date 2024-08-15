@@ -67,6 +67,7 @@ public class VNCServer {
   private boolean service;
   private String pass;
   private static boolean debug = false;
+  public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
 
   private static class Config {
     public String password = "password";
@@ -102,11 +103,16 @@ public class VNCServer {
     }
   }
 
-  private VNCRobot spawnSession() {
+  private VNCRobot newSession() {
+    if (debug) {
+      JFLog.log("Starting new Session");
+    }
+    long token = -1;
     if (JF.isWindows()) {
-      if (!WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {})) {
-        return null;
+      if (debug) {
+        JFLog.log("Session ID=" + WinNative.getSessionID());
       }
+      token = WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {});
     } else {
       try {
         java.lang.Runtime.getRuntime().exec(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
@@ -115,7 +121,19 @@ public class VNCServer {
         return null;
       }
     }
-    return session_server.getClient();
+    VNCSessionServer.Client robot = session_server.getClient();
+    if (JF.isWindows()) {
+      robot.token = token;
+      robot.sid = -1;
+      while (robot.sid == -1) {
+        robot.sid = WinNative.getSessionID();
+        JF.sleep(100);
+      }
+    }
+    if (debug) {
+      JFLog.log("robot=" + robot);
+    }
+    return robot;
   }
 
   private class Server extends Thread {
@@ -125,7 +143,7 @@ public class VNCServer {
         try {
           Socket s = ss.accept();
           if (service) {
-            robot = spawnSession();
+            robot = newSession();
           } else {
             GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
             robot = new VNCJavaRobot(gfx.getDefaultScreenDevice());
@@ -148,6 +166,7 @@ public class VNCServer {
   private class Client extends Thread {
     private Socket s;
     private RFB rfb;
+    private Object lock = new Object();
     private VNCRobot robot;
     private Rectangle size;
     private Updater updater;
@@ -187,6 +206,13 @@ public class VNCServer {
         while (active && connected) {
           connected = rfb.isConnected();
           int cmd = rfb.readMessageType();
+          synchronized (lock) {
+            if (!robot.active()) {
+              //should not get here
+              robot.close();
+              robot = newSession();
+            }
+          }
           switch (cmd) {
             case RFB.C_MSG_BUFFER_REQUEST: {
               RFB.Rectangle rect = rfb.readBufferUpdateRequest();
@@ -196,17 +222,19 @@ public class VNCServer {
             case RFB.C_MSG_MOUSE_EVENT: {
               RFB.RFBMouseEvent event = rfb.readMouseEvent();
               try {
-                robot.mouseMove(event.x, event.y);
-                int mask = 1;
-                for(int a=0;a<3;a++) {
-                  if ((buttons & mask) != (event.buttons & mask)) {
-                    if ((event.buttons & mask) == 0) {
-                      robot.mouseRelease(VNCRobot.convertMouseButtons(mask));
-                    } else {
-                      robot.mousePress(VNCRobot.convertMouseButtons(mask));
+                synchronized (lock) {
+                  robot.mouseMove(event.x, event.y);
+                  int mask = 1;
+                  for(int a=0;a<3;a++) {
+                    if ((buttons & mask) != (event.buttons & mask)) {
+                      if ((event.buttons & mask) == 0) {
+                        robot.mouseRelease(VNCRobot.convertMouseButtons(mask));
+                      } else {
+                        robot.mousePress(VNCRobot.convertMouseButtons(mask));
+                      }
                     }
+                    mask <<= 1;
                   }
-                  mask <<= 1;
                 }
               } catch (Exception e) {
                 JFLog.log(e);
@@ -245,7 +273,9 @@ public class VNCServer {
                     }
                   }
                   if (code != -1) {
-                    robot.keyPress(code);
+                    synchronized (lock) {
+                      robot.keyPress(code);
+                    }
                   }
                 } else {
                   if (JF.isWindows()) {
@@ -254,7 +284,9 @@ public class VNCServer {
                     }
                   }
                   if (code != -1) {
-                    robot.keyRelease(code);
+                    synchronized (lock) {
+                      robot.keyRelease(code);
+                    }
                   }
                 }
               } catch (Exception e) {
@@ -285,7 +317,9 @@ public class VNCServer {
         JFLog.log(e);
         close();
       }
-      robot.close();
+      synchronized (lock) {
+        robot.close();
+      }
     }
     public void close() {
       connected = false;
@@ -302,18 +336,49 @@ public class VNCServer {
         //write screen changes to client
         refresh = true;  //send init full update
         try {
+          if (JF.isWindows()) {
+            sid = -1;
+            while (sid == -1) {
+              sid = WinNative.getSessionID();
+              JF.sleep(100);
+            }
+          }
           while (updater_active && connected) {
             if (!rfb.haveEncodings()) {
               JF.sleep(100);
               continue;
             }
-            Rectangle new_size = robot.getScreenSize();
+            if (JF.isWindows()) {
+              int newsid = WinNative.getSessionID();
+              if (newsid != -1 && newsid != sid) {
+                //client needs a new robot
+                if (debug) {
+                  JFLog.log("Session ID change detected, creating a new session.");
+                }
+                synchronized (lock) {
+                  robot.close();
+                  robot = null;
+                  //BUG : no way to detect if this delay is long enough for Windows to actually switch the desktop
+//                  for(int a=0;a<3;a++) {
+//                    JF.sleep(1000);
+//                  }
+                  robot = newSession();
+                }
+                sid = newsid;
+              }
+            }
+            Rectangle new_size = null;
+            synchronized (lock) {
+              new_size = robot.getScreenSize();
+            }
             if (new_size.width != size.width || new_size.height != size.height) {
               size = new_size;
               rfb.writeBufferUpdate(new RFB.Rectangle(new_size), RFB.TYPE_DESKTOP_SIZE);
             }
             if (refresh) {
-              img = robot.getScreenCapture(pf);
+              synchronized (lock) {
+                img = robot.getScreenCapture(pf);
+              }
               rfb.setBuffer(img);
               RFB.Rectangle rect = new RFB.Rectangle();
               rect.width = size.width;
@@ -321,7 +386,10 @@ public class VNCServer {
               rfb.writeBufferUpdate(rect, -1);
               refresh = false;
             } else {
-              int[] update = robot.getScreenCapture(pf);
+              int[] update;
+              synchronized (lock) {
+                update = robot.getScreenCapture(pf);
+              }
               boolean changed = false;
               int x1 = INF, x2 = -1;
               int y1 = INF, y2 = -1;

@@ -15,9 +15,12 @@ public class WinNative {
   //Windows
   public static native boolean getWindowRect(String name, int[] rect);  //returns x,y,width,height
   public static native String getLog();
-  public static native boolean executeSession(String cmd, String[] args);  //execute child process in current session id
+  public static native long executeSession(String cmd, String[] args);  //execute child process in current session id
   public static native void simulateCtrlAltDel();
   public static native void setInputDesktop();
+  public static native int getSessionID();
+  public static native boolean setSessionID(long token, int sid);  //update session ID of process
+  public static native void closeSession(long token);
 
   //WinPE resources
   public static native long peBegin(String file);  //returns handle

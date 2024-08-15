@@ -24,6 +24,15 @@ public class VNCJavaRobot implements VNCRobot {
     }
   }
 
+  public void setRobot(GraphicsDevice screen) {
+    this.screen = screen;
+    try {
+      robot = new Robot(screen);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   public Rectangle getScreenSize() {
     return screen.getDefaultConfiguration().getBounds();
   }
@@ -74,6 +83,10 @@ public class VNCJavaRobot implements VNCRobot {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public boolean active() {
+    return true;
   }
 
   public void close() {}

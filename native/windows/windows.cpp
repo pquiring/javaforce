@@ -347,9 +347,12 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
 
   {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
   {"getLog", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_getLog},
-  {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_executeSession},
+  {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_executeSession},
   {"simulateCtrlAltDel", "()V", (void *)&Java_javaforce_jni_WinNative_simulateCtrlAltDel},
   {"setInputDesktop", "()V", (void *)&Java_javaforce_jni_WinNative_setInputDesktop},
+  {"getSessionID", "()I", (void *)&Java_javaforce_jni_WinNative_getSessionID},
+  {"setSessionID", "(JI)Z", (void *)&Java_javaforce_jni_WinNative_setSessionID},
+  {"closeSession", "(J)V", (void *)&Java_javaforce_jni_WinNative_closeSession},
 
   {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
   {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},
