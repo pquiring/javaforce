@@ -387,7 +387,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
                 if (debug) {
                   JFLog.log("VNC:DrawRect:" + rect);
                 }
-                image.putPixels(RFB.swapPixelFormat(rfb.getBuffer()), rect.x, rect.y, rect.width, rect.height, rect.y * width + rect.x, width);
+                image.putPixels(rfb.getBuffer(), rect.x, rect.y, rect.width, rect.height, rect.y * width + rect.x, width);
                 rfb.writeBufferUpdateRequest(0, 0, width, height, true);
               }
               java.awt.EventQueue.invokeLater(() -> {
