@@ -348,7 +348,7 @@ public class VNCServer {
               JF.sleep(100);
               continue;
             }
-            if (JF.isWindows() && !update_sid) {
+            if (JF.isWindows() && service && !update_sid) {
               int newsid = WinNative.getSessionID();
               if (newsid != -1 && newsid != sid) {
                 //client needs a new robot
