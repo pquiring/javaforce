@@ -36,9 +36,16 @@ public class VNCSessionClient extends VNCJavaRobot {
     if (debug) {
       JFLog.append(JF.getLogPath() + "/jfvncsession-" + System.currentTimeMillis() + ".log", true);
     }
-    GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    VNCSessionClient session = new VNCSessionClient(gfx.getDefaultScreenDevice());
-    session.run();
+    try {
+      if (debug) {
+        JFLog.log("VNCSessionClient Starting...");
+      }
+      GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      VNCSessionClient session = new VNCSessionClient(gfx.getDefaultScreenDevice());
+      session.run();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public VNCSessionClient(GraphicsDevice screen) {
@@ -50,7 +57,9 @@ public class VNCSessionClient extends VNCJavaRobot {
   private void run() {
     //connect to VNCSessionServer
     try {
-      JFLog.log("VNCSessionClient Started");
+      if (debug) {
+        JFLog.log("Connecting to 127.0.0.1:" + VNCSessionServer.port);
+      }
       s = new Socket("127.0.0.1", VNCSessionServer.port);
       InputStream is = s.getInputStream();
       OutputStream os = s.getOutputStream();
@@ -62,7 +71,6 @@ public class VNCSessionClient extends VNCJavaRobot {
           sid = WinNative.getSessionID();
           JF.sleep(100);
         }
-        JFLog.log("Session ID=" + sid);
       }
       while (s.isConnected()) {
         byte cmd = (byte)is.read();
@@ -79,7 +87,6 @@ public class VNCSessionClient extends VNCJavaRobot {
               if (VNCServer.update_sid) {
                 int newsid = WinNative.getSessionID();
                 if ((newsid != -1) && (newsid != sid)) {
-                  JFLog.log("Sessiod ID changed:old=" + sid + ",new=" + newsid);
                   GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
                   setRobot(gfx.getDefaultScreenDevice());
                   sid = newsid;
