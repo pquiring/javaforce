@@ -72,6 +72,7 @@ public class VNCServer {
   private static class Config {
     public String password = "password";
     public int port = 5900;
+    public String user;  //linux only
   }
 
   private static Config loadConfig() {
@@ -96,6 +97,12 @@ public class VNCServer {
           config.port = 5900;
         }
       }
+      if (JF.isUnix()) {
+        String user = props.getProperty("user");
+        if (user != null) {
+          config.user = user;
+        }
+      }
       return config;
     } catch (Exception e) {
       JFLog.log(e);
@@ -118,6 +125,7 @@ public class VNCServer {
         //support X11 now (wayland in the future)
         ProcessBuilder pb = new ProcessBuilder();
         pb.environment().put("DISPLAY", ":0");
+        pb.environment().put("XAUTHORITY", "/home/" + config.user + "/.Xauthority");
         pb.command(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
         pb.start();
       } catch (Exception e) {

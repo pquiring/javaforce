@@ -43,7 +43,7 @@ public class VNCSessionClient extends VNCJavaRobot {
       GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
       VNCSessionClient session = new VNCSessionClient(gfx.getDefaultScreenDevice());
       session.run();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       JFLog.log(e);
     }
   }
