@@ -66,7 +66,7 @@ public class VNCServer {
   private boolean active;
   private boolean service;
   private String pass;
-  private static boolean debug = true;
+  private static boolean debug = false;
   public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
 
   private static class Config {
