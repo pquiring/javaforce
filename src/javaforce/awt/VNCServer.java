@@ -66,7 +66,7 @@ public class VNCServer {
   private boolean active;
   private boolean service;
   private String pass;
-  private static boolean debug = false;
+  private static boolean debug = true;
   public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
 
   private static class Config {
@@ -115,7 +115,11 @@ public class VNCServer {
       token = WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {});
     } else {
       try {
-        java.lang.Runtime.getRuntime().exec(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
+        //support X11 now (wayland in the future)
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.environment().put("DISPLAY", ":0");
+        pb.command(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
+        pb.start();
       } catch (Exception e) {
         JFLog.log(e);
         return null;
