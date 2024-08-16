@@ -125,7 +125,7 @@ public class VNCServer {
         //support X11 now (wayland in the future)
         ProcessBuilder pb = new ProcessBuilder();
         pb.environment().put("DISPLAY", ":0");
-        pb.environment().put("XAUTHORITY", "/home/" + config.user + "/.Xauthority");
+        pb.environment().put("XAUTHORITY", "/home/" + getLinuxUser() + "/.Xauthority");
         pb.command(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
         pb.start();
       } catch (Exception e) {
@@ -146,6 +146,14 @@ public class VNCServer {
       JFLog.log("robot=" + robot);
     }
     return robot;
+  }
+
+  private String getLinuxUser() {
+    if (config.user != null) return config.user;
+    //return first user in /home
+    File[] users = new File("/home").listFiles();
+    if (users == null || users.length == 0) return "null";
+    return users[0].getName();
   }
 
   private class Server extends Thread {
