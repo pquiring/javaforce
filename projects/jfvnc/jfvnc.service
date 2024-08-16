@@ -1,0 +1,11 @@
+[Unit]
+Description=JavaForce VNC Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfvncsvc
+ExecStop=/usr/bin/jfvncsvc --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

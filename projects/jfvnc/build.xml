@@ -23,6 +23,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
