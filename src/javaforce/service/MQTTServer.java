@@ -55,11 +55,11 @@ public class MQTTServer {
   }
 
   public static String getLogFile() {
-    return JF.getLogPath() + "/jmqtt.log";
+    return JF.getLogPath() + "/jfmqtt.log";
   }
 
   public static String getConfigFile() {
-    return JF.getConfigPath() + "/jmqtt.cfg";
+    return JF.getConfigPath() + "/jfmqtt.cfg";
   }
 
   public void setListener(MQTTEvents events) {
@@ -101,7 +101,7 @@ public class MQTTServer {
 
   private static Config loadConfig() {
     try {
-      File file = new File(JF.getConfigPath() + "/jfmqtt.cfg");
+      File file = new File(getConfigFile());
       if (!file.exists()) {
         return new Config();
       }
@@ -261,7 +261,7 @@ public class MQTTServer {
       busClient = new JBusClient(busPack, new JBusMethods());
       busClient.setPort(getBusPort());
       busClient.start();
-      JFLog.append(JF.getLogPath() + "/jfmqtt.log", true);
+      JFLog.append(getLogFile(), true);
       JFLog.log("MQTTServer starting on port 1883...");
       try {
         ss = new ServerSocket(config.port);

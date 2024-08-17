@@ -12,9 +12,17 @@ import java.awt.event.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 import javaforce.jni.*;
 
 public class VNCServer {
+  public final static String busPack = "net.sf.jfvnc";
+
+  public boolean start() {
+    config = loadConfig();
+    return start(config.password, true, config.port);
+  }
+
   public boolean start(String pass, boolean service) {
     return start(pass, service, 5900);
   }
@@ -27,7 +35,7 @@ public class VNCServer {
       return false;
     }
     this.pass = pass;
-    this.service = service;
+    this.service_mode = service;
     try {
       JFLog.log("VNCServer starting on port " + port + "...");
       active = true;
@@ -58,13 +66,18 @@ public class VNCServer {
       session_server.stop();
       session_server = null;
     }
+    if (busClient != null) {
+      busClient.close();
+      busClient = null;
+    }
   }
 
   private Server server;
   private ServerSocket ss;
   private VNCSessionServer session_server;
+  private JBusClient busClient;
   private boolean active;
-  private boolean service;
+  private boolean service_mode;
   private String pass;
   private static boolean debug = false;
   public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
@@ -78,7 +91,7 @@ public class VNCServer {
 
   private static Config loadConfig() {
     try {
-      File file = new File(JF.getConfigPath() + "/jfvncserver.cfg");
+      File file = new File(getConfigFile());
       if (!file.exists()) {
         return new Config();
       }
@@ -164,10 +177,13 @@ public class VNCServer {
   private class Server extends Thread {
     public void run() {
       VNCRobot robot;
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       while (active) {
         try {
           Socket s = ss.accept();
-          if (service) {
+          if (service_mode) {
             robot = newSession();
           } else {
             GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -373,7 +389,7 @@ public class VNCServer {
               JF.sleep(100);
               continue;
             }
-            if (JF.isWindows() && service && !update_sid) {
+            if (JF.isWindows() && service_mode && !update_sid) {
               int newsid = WinNative.getSessionID();
               if (newsid != -1 && newsid != sid) {
                 //client needs a new robot
@@ -475,18 +491,45 @@ public class VNCServer {
    * Looking into using native code soon.
    */
 
-  private static VNCServer vnc;
+  private static VNCServer service;
   private static Config config;
+  private static JBusServer busServer;
 
   public static void serviceStart(String[] args) {
-    JFLog.init(JF.getLogPath() + "/jfvncsvc.log", true);
-    config = loadConfig();
-    vnc = new VNCServer();
-    vnc.start(config.password, true, config.port);
+    JFLog.init(getLogFile(), true);
+    service = new VNCServer();
+    service.start();
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
   }
 
   public static void serviceStop() {
-    vnc.stop();
+    service.stop();
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33014;
+    } else {
+      return 777;
+    }
+  }
+
+  public static String getLogFile() {
+    return JF.getLogPath() + "/jfvnc.log";
+  }
+
+  public static String getConfigFile() {
+    return JF.getConfigPath() + "/jfvnc.cfg";
   }
 
   public static void main(String[] args) {
@@ -503,5 +546,29 @@ public class VNCServer {
     }
     VNCServer server = new VNCServer();
     server.start(password, false, port);
+  }
+
+  public static class JBusMethods {
+    public void getConfig(String pack) {
+      byte[] cfg = JF.readFile(getConfigFile());
+      if (cfg == null) cfg = new byte[0];
+      String config = new String(cfg);
+      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      service.stop();
+      service = new VNCServer();
+      service.start();
+    }
   }
 }
