@@ -12,6 +12,7 @@
   <property name="project2" value="build-service"/>
   <property name="project3" value="build-session"/>
   <property name="project4" value="build-cli"/>
+  <property name="project5" value="build-config"/>
 
   <import file="${home}/base.xml"/>
 

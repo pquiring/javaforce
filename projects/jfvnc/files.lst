@@ -2,4 +2,5 @@
 /usr/bin/jfvnccli
 /usr/bin/jfvncsession
 /usr/bin/jfvncsvc
+/usr/bin/jfvncconfig
 /lib/systemd/system/jfvnc.service
