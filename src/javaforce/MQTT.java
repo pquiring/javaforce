@@ -22,10 +22,12 @@ public class MQTT {
   public static boolean debug;
   public static boolean debug_msg;
 
+  /** Connects to MQTT service port. */
   public boolean connect(String host) {
     return connect(host, 1883);
   }
 
+  /** Connects to MQTT service port. */
   public boolean connect(String host, int port) {
     disconnect();
     try {
@@ -41,6 +43,7 @@ public class MQTT {
     }
   }
 
+  /** Disconnects from MQTT service port. */
   public void disconnect() {
     if (debug) {
       JFLog.log("disconnect");
@@ -87,6 +90,7 @@ public class MQTT {
     return length;
   }
 
+  /** Send MQTT CONNECT command. */
   public void connect() {
     byte[] packet = new byte[17 + 8];
     packet[0] = (byte)(CMD_CONNECT << 4);
@@ -117,6 +121,7 @@ public class MQTT {
     }
   }
 
+  /** Send MQTT CONNECT command with username/password. */
   public void connect(String user, String pass) {
     byte[] user_bytes = user.getBytes();
     int user_length = user_bytes.length;
@@ -171,6 +176,7 @@ public class MQTT {
 
   private short id = 0x0001;
 
+  /** Send MQTT PUBLISH command. */
   public void publish(String topic, String msg) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
@@ -205,6 +211,7 @@ public class MQTT {
     }
   }
 
+  /** Send MQTT SUBSCRIBE command. */
   public void subscribe(String topic) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
@@ -233,6 +240,7 @@ public class MQTT {
     }
   }
 
+  /** Send MQTT UNSUBSCRIBE command. */
   public void unsubscribe(String topic) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;

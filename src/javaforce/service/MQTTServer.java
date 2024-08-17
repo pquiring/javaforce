@@ -47,7 +47,77 @@ public class MQTTServer {
       try {ss.close();} catch (Exception e) {}
       ss = null;
     }
+    if (forwarder != null) {
+      forwarder.stop();
+      forwarder = null;
+    }
     server = null;
+  }
+
+  private static class Config {
+    public int port = 1883;
+    public String user, pass;
+    public String forward;
+    public int forward_port = 1883;
+    public String forward_topic = "#";
+    public String forward_user;
+    public String forward_pass;
+  }
+
+  private static Config loadConfig() {
+    try {
+      File file = new File(JF.getConfigPath() + "/jfmqtt.cfg");
+      if (!file.exists()) {
+        return new Config();
+      }
+      FileInputStream fis = new FileInputStream(file);
+      Properties props = new Properties();
+      props.load(fis);
+      fis.close();
+      Config config = new Config();
+      String port = props.getProperty("port");
+      if (port != null) {
+        config.port = JF.atoi(port);
+        if (config.port <= 0 || config.port > 65535) {
+          config.port = 1883;
+        }
+      }
+      String user = props.getProperty("user");
+      if (user != null) {
+        config.user = user;
+      }
+      String pass = props.getProperty("pass");
+      if (pass != null) {
+        config.pass = pass;
+      }
+      String forward = props.getProperty("forward");
+      if (forward != null) {
+        config.forward = forward;
+      }
+      String forward_port = props.getProperty("forward_port");
+      if (forward_port != null) {
+        config.forward_port = JF.atoi(forward_port);
+        if (config.forward_port <= 0 || config.forward_port > 65535) {
+          config.forward_port = 1883;
+        }
+      }
+      String forward_topic = props.getProperty("forward_topic");
+      if (forward_topic != null) {
+        config.forward_topic = forward_topic;
+      }
+      String forward_user = props.getProperty("forward_user");
+      if (forward_user != null) {
+        config.forward_user = forward_user;
+      }
+      String forward_pass = props.getProperty("forward_pass");
+      if (forward_pass != null) {
+        config.forward_pass = forward_pass;
+      }
+      return config;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
 
   public static boolean hasWildcard(String topic) {
@@ -60,7 +130,7 @@ public class MQTTServer {
     private String name;
     private byte[] pkt;  //retained publish
     private int pkt_length;
-    private ArrayList<Worker> subs = new ArrayList<>();
+    private ArrayList<Client> subs = new ArrayList<>();
     private Object lock = new Object();
     public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
@@ -74,7 +144,7 @@ public class MQTTServer {
         this.pkt_length = length;
       }
       synchronized (lock) {
-        for(Worker sub : subs.toArray(WorkerArrayType)) {
+        for(Client sub : subs.toArray(ClientArrayType)) {
           try {
             sub.publish(pkt, length);
           } catch (Exception e) {
@@ -83,17 +153,17 @@ public class MQTTServer {
         }
       }
     }
-    public void subscribe(Worker worker) {
+    public void subscribe(Client client) {
       synchronized (lock) {
-        subs.add(worker);
+        subs.add(client);
       }
       if (pkt != null) {
-        try {worker.publish(pkt, pkt_length);} catch (Exception e) {}
+        try {client.publish(pkt, pkt_length);} catch (Exception e) {}
       }
     }
-    public void unsubscribe(Worker worker) {
+    public void unsubscribe(Client client) {
       synchronized (lock) {
-        subs.remove(worker);
+        subs.remove(client);
       }
     }
     public boolean matches(String topic) {
@@ -129,11 +199,14 @@ public class MQTTServer {
   }
 
   private Server server;
+  private Config config;
   private Object lock = new Object();
   private HashMap<String, Topic> topics = new HashMap<>();
   private MQTTEvents events;
 
   private ServerSocket ss;
+  private Object forward_lock = new Object();
+  private MQTTForward forwarder;
 
   private static int bufsiz = 4096;
 
@@ -144,14 +217,19 @@ public class MQTTServer {
     public boolean active;
     public void run() {
       active = true;
+      loadConfig();
+      if (config.forward != null) {
+        forwarder = new MQTTForward();
+        forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
+      }
       JFLog.append(JF.getLogPath() + "/jfmqtt.log", true);
       JFLog.log("MQTTServer starting on port 1883...");
       try {
-        ss = new ServerSocket(1883);  //MQTT Broker port
+        ss = new ServerSocket(config.port);
         while (active) {
           Socket s = ss.accept();
-          Worker worker = new Worker(s);
-          worker.start();
+          Client client = new Client(s);
+          client.start();
         }
       } catch (Exception e) {
         JFLog.log(e);
@@ -181,11 +259,11 @@ public class MQTTServer {
     return topics_sub.toArray(Topic.TopicArrayType);
   }
 
-  private void unsubscribeAll(Worker worker) {
+  private void unsubscribeAll(Client client) {
     synchronized (lock) {
       Topic[] alltopics = (Topic[])topics.values().toArray(Topic.TopicArrayType);
       for(Topic topic : alltopics) {
-        topic.unsubscribe(worker);
+        topic.unsubscribe(client);
       }
     }
   }
@@ -265,15 +343,15 @@ public class MQTTServer {
   public static final byte FLAG_PASS = 0x40;
   public static final byte FLAG_USER = (byte)0x80;
 
-  public static Worker[] WorkerArrayType = new Worker[0];
+  public static Client[] ClientArrayType = new Client[0];
 
-  private class Worker extends Thread {
+  private class Client extends Thread {
     public Socket s;
     public InputStream is;
     public OutputStream os;
     public String ip;
     public boolean active = true;
-    public Worker(Socket s) {
+    public Client(Socket s) {
       this.s = s;
     }
     public void run() {
@@ -335,6 +413,7 @@ public class MQTTServer {
       if (debug) JFLog.log("cmd=" + cmd);
       switch (cmd) {
         case CMD_CONNECT: {
+          //TODO : support user/pass auth
           reply = new byte[5];
           //reply = header , size , ack_flags, return_code=0, props
           reply[0] = (byte)(CMD_CONNECT_ACK << 4);
@@ -393,6 +472,9 @@ public class MQTTServer {
           }
           if (events != null) {
             events.message(topic_name, msg);
+          }
+          if (forwarder != null) {
+            forwarder.add(topic_name, msg);
           }
           break;
         }
