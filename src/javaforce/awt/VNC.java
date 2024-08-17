@@ -195,7 +195,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     }
     String _host = host;
     int _port = port;
-    String _pass = pass;
+    String _pass = RFB.checkPassword(pass);
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -344,6 +344,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
             dispose();
             System.exit(0);
           }
+          pass = RFB.checkPassword(pass);
         }
       } catch (Exception e) {
         JFLog.log(e);

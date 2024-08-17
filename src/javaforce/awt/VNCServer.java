@@ -30,11 +30,7 @@ public class VNCServer {
     if (active) {
       stop();
     }
-    if (pass == null || pass.length() != 8) {
-      JFLog.log("VNCServer:pass must be 8 chars (pad with zero)");
-      return false;
-    }
-    this.pass = pass;
+    this.pass = RFB.checkPassword(pass);
     this.service_mode = service;
     try {
       JFLog.log("VNCServer starting on port " + port + "...");

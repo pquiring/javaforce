@@ -612,13 +612,25 @@ public class RFB {
     return output;
   }
 
-  public static byte[] encodeResponse(byte[] challenge, byte[] password) {
-    if (password.length != 8) {
-      JFLog.log(log, "Password must be zero padded to 8 bytes");
-      return null;
+  /** Ensures password is the required 8 chars long. */
+  public static String checkPassword(String password) {
+    int len = password.length();
+    if (len == 8) return password;
+    if (len > 8) return password.substring(0, 8);
+    byte[] buf = new byte[8];
+    System.arraycopy(password.getBytes(), 0, buf, 0, len);
+    //fill remainder with zeros
+    for(int i = len;i<8;i++) {
+      buf[i] = '0';
     }
+    return new String(buf);
+  }
+
+  public static byte[] encodeResponse(byte[] challenge, byte[] password) {
+    //VNC password must be 8 chars long
+    byte[] password8 = checkPassword(new String(password)).getBytes();
     //VNC password key must be reversed
-    byte[] r_password = reverseBits(password);
+    byte[] r_password = reverseBits(password8);
 
     try {
       // Create DES Cipher key
