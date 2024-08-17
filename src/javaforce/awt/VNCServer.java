@@ -23,22 +23,22 @@ public class VNCServer {
     return start(config.password, true, config.port);
   }
 
-  public boolean start(String pass, boolean service) {
-    return start(pass, service, 5900);
+  public boolean start(String pass, boolean service_mode) {
+    return start(pass, service_mode, 5900);
   }
-  public boolean start(String pass, boolean service, int port) {
+  public boolean start(String pass, boolean service_mode, int port) {
     if (active) {
       stop();
     }
     this.pass = RFB.checkPassword(pass);
-    this.service_mode = service;
+    this.service_mode = service_mode;
     try {
       JFLog.log("VNCServer starting on port " + port + "...");
       active = true;
       ss = new ServerSocket(port);
       server = new Server();
       server.start();
-      if (service) {
+      if (service_mode) {
         session_server = new VNCSessionServer();
         session_server.start();
       }
@@ -79,7 +79,7 @@ public class VNCServer {
   public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
 
   private static class Config {
-    public String password = "password";
+    public String password;
     public int port = 5900;
     public String user;  //linux only
     public String display = ":0";  //linux only (default = :0)
@@ -89,7 +89,9 @@ public class VNCServer {
     try {
       File file = new File(getConfigFile());
       if (!file.exists()) {
-        return new Config();
+        Config config = new Config();
+        config.password = randomPassword();
+        return config;
       }
       FileInputStream fis = new FileInputStream(file);
       Properties props = new Properties();
@@ -97,8 +99,10 @@ public class VNCServer {
       fis.close();
       Config config = new Config();
       String password = props.getProperty("password");
-      if (password != null && password.length() == 8) {
-        config.password = password;
+      if (password != null) {
+        config.password = RFB.checkPassword(password);
+      } else {
+        config.password = randomPassword();
       }
       String port = props.getProperty("port");
       if (port != null) {
@@ -122,6 +126,15 @@ public class VNCServer {
       JFLog.log(e);
       return null;
     }
+  }
+
+  private static String randomPassword() {
+    byte[] cs = new byte[8];
+    Random r = new Random();
+    for(int a=0;a<8;a++) {
+      cs[a] = (byte)(r.nextInt(26) + 'a');
+    }
+    return new String(cs);
   }
 
   private VNCRobot newSession() {
