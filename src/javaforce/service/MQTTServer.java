@@ -10,12 +10,23 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
 public class MQTTServer {
+  public final static String busPack = "net.sf.jfmqtt";
+
   private static MQTTServer service;
+  private static JBusServer busServer;
   public static void serviceStart(String[] args) {
     service = new MQTTServer();
     service.start();
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
     for(String arg : args) {
       switch (arg) {
         case "debug": debug = true; break;
@@ -29,6 +40,26 @@ public class MQTTServer {
       service.stop();
       service = null;
     }
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33014;
+    } else {
+      return 777;
+    }
+  }
+
+  public static String getLogFile() {
+    return JF.getLogPath() + "/jmqtt.log";
+  }
+
+  public static String getConfigFile() {
+    return JF.getConfigPath() + "/jmqtt.cfg";
   }
 
   public void setListener(MQTTEvents events) {
@@ -50,6 +81,10 @@ public class MQTTServer {
     if (forwarder != null) {
       forwarder.stop();
       forwarder = null;
+    }
+    if (busClient != null) {
+      busClient.close();
+      busClient = null;
     }
     server = null;
   }
@@ -207,6 +242,7 @@ public class MQTTServer {
   private ServerSocket ss;
   private Object forward_lock = new Object();
   private MQTTForward forwarder;
+  private JBusClient busClient;
 
   private static int bufsiz = 4096;
 
@@ -222,6 +258,9 @@ public class MQTTServer {
         forwarder = new MQTTForward();
         forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
       }
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       JFLog.append(JF.getLogPath() + "/jfmqtt.log", true);
       JFLog.log("MQTTServer starting on port 1883...");
       try {
@@ -574,6 +613,30 @@ public class MQTTServer {
     }
     public void publish(byte[] pkt, int length) throws Exception {
       os.write(pkt, 0, length);
+    }
+  }
+
+  public static class JBusMethods {
+    public void getConfig(String pack) {
+      byte[] cfg = JF.readFile(getConfigFile());
+      if (cfg == null) cfg = new byte[0];
+      String config = new String(cfg);
+      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      service.stop();
+      service = new MQTTServer();
+      service.start();
     }
   }
 }
