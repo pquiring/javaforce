@@ -65,6 +65,7 @@ public class QueryHardware extends Thread {
       JFLog.log("QueryHardware.analyzeMACTables()");
     }
     //update switch uplinks
+    int switches = 0;
     int count_uplink = 0;
     for(Device dev : devs) {
       if (dev.type == Device.TYPE_UNKNOWN) continue;
@@ -73,14 +74,19 @@ public class QueryHardware extends Thread {
         case Device.TYPE_UNKNOWN:
           break;
         case Device.TYPE_CISCO:
+          switches++;
           MACTableEntry[] mtes = dev.hardware.getMACTable();
+          if (debug) {
+            String ip = Config.current.getip(dev.mac);
+            JFLog.log("device=" + ip + ":mac table size=" + mtes.length);
+          }
           for(MACTableEntry mte : mtes) {
             Device child = Config.current.getDevice(mte.mac);
             if (child == null) {
               if (debug) {
                 JFLog.log("child not found:" + mte.mac);
               }
-              break;
+              continue;
             }
             if (child.hardware != null) {
               Port port = dev.getPortByNumber(mte.port);
@@ -88,7 +94,7 @@ public class QueryHardware extends Thread {
                 if (debug) {
                   JFLog.log("port not found:" + mte.port);
                 }
-                break;
+                continue;
               }
               if (!port.isUplink) {
                 port.isUplink = true;
@@ -118,20 +124,20 @@ public class QueryHardware extends Thread {
               if (debug) {
                 JFLog.log("child not found:" + mte.mac);
               }
-              break;
+              continue;
             }
             Port port = dev.getPortByNumber(mte.port);
             if (port == null) {
               if (debug) {
                 JFLog.log("port not found:" + mte.port);
               }
-              break;
+              continue;
             }
             if (port.isUplink) {
               if (debug) {
                 JFLog.log("port is uplink:" + mte.port);
               }
-              break;
+              continue;
             }
             child.loc = dev.mac + ":" + mte.port;
             count_locs++;
@@ -140,6 +146,8 @@ public class QueryHardware extends Thread {
       }
     }
     if (debug) {
+      JFLog.log("devices=" + devs.length);
+      JFLog.log("switches=" + switches);
       JFLog.log("location count=" + count_locs);
     }
   }
