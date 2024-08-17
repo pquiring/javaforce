@@ -73,6 +73,7 @@ public class VNCServer {
     public String password = "password";
     public int port = 5900;
     public String user;  //linux only
+    public String display = ":0";  //linux only (default = :0)
   }
 
   private static Config loadConfig() {
@@ -102,6 +103,10 @@ public class VNCServer {
         if (user != null) {
           config.user = user;
         }
+        String display = props.getProperty("display");
+        if (display != null) {
+          config.display = display;
+        }
       }
       return config;
     } catch (Exception e) {
@@ -124,7 +129,7 @@ public class VNCServer {
       try {
         //support X11 now (wayland in the future)
         ProcessBuilder pb = new ProcessBuilder();
-        pb.environment().put("DISPLAY", ":0");
+        pb.environment().put("DISPLAY", config.display);
         pb.environment().put("XAUTHORITY", "/home/" + getLinuxUser() + "/.Xauthority");
         pb.command(new String[] {System.getProperty("java.app.home") + "/jfvncsession"});
         pb.start();
