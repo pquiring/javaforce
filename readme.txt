@@ -16,11 +16,11 @@ JavaForce (JF) is a Java library featuring:
 Includes many apps built around the library such as jfPhone, jfVideo Creator, jfAudio, jfMusic, etc.
   - see projects/readme.txt for complete list
 
-JF is also the core library in the Java infused Linux Operating system:
+JF is also the core library in jfLinux, a Java infused Linux Operating system:
   https://github.com/pquiring/javaforce/tree/master/linux
 
 JF is also used to create jfCraft, a Minecraft clone:
-  http://pquiring.github.io/jfcraft
+  https://github.com/pquiring/jfcraft
 
 Folders
 =======
@@ -61,6 +61,8 @@ Building jfLinux
 After building Javaforce and the native components you can run package.sh to package everything.
 Supported distros : Debian, Fedora, Arch.
 FreeBSD is currently not supported (open issue if you would like to see FreeBSD packager task and repo created)
+All packages are stored in /repo and can then be processed and uploaded to a repo server.
+Packages are hosted on sourceforge.net which can be installed thur the jfLinux install process.
 
 JavaForce Ant tasks:
 --------------------
@@ -120,7 +122,7 @@ Maven
 -----
 The Maven repo is used to download dependancies using ant tasks.
 The mvn tool is currently not required.
-A pom.xml is supplied but is missing dependancies for now, the minimum is included
+A pom.xml is supplied for JF but is missing dependancies for now, the minimum is included
 to create deployment artifacts.
 
 Graal Support
