@@ -91,7 +91,7 @@ public class MQTTServer {
 
   private static class Config {
     public int port = 1883;
-    public String user, pass;
+//    public String user, pass;
     public String forward;
     public int forward_port = 1883;
     public String forward_topic = "#";
@@ -99,12 +99,21 @@ public class MQTTServer {
     public String forward_pass;
   }
 
+  private static String defaultConfig
+    = "port=1883\n"
+    + "password = password\n"
+//    + "#user=username\n"
+//    + "#pass=password\n"
+    + "#forward=host\n"
+    + "#forward.port=port\n"
+    + "#forward.topic=\"#\"\n"
+    + "#forward.user=username\n"
+    + "#forward.pass=password\n"
+  ;
+
   private static Config loadConfig() {
     try {
       File file = new File(getConfigFile());
-      if (!file.exists()) {
-        return new Config();
-      }
       FileInputStream fis = new FileInputStream(file);
       Properties props = new Properties();
       props.load(fis);
@@ -117,6 +126,7 @@ public class MQTTServer {
           config.port = 1883;
         }
       }
+/*
       String user = props.getProperty("user");
       if (user != null) {
         config.user = user;
@@ -125,6 +135,7 @@ public class MQTTServer {
       if (pass != null) {
         config.pass = pass;
       }
+*/
       String forward = props.getProperty("forward");
       if (forward != null) {
         config.forward = forward;
@@ -149,6 +160,16 @@ public class MQTTServer {
         config.forward_pass = forward_pass;
       }
       return config;
+    } catch (FileNotFoundException e) {
+      //create default config
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(defaultConfig.getBytes());
+        fos.close();
+      } catch (Exception e2) {
+        JFLog.log(e2);
+      }
+      return new Config();
     } catch (Exception e) {
       JFLog.log(e);
       return null;
@@ -262,7 +283,7 @@ public class MQTTServer {
       busClient.setPort(getBusPort());
       busClient.start();
       JFLog.append(getLogFile(), true);
-      JFLog.log("MQTTServer starting on port 1883...");
+      JFLog.log("MQTTServer starting on port " + config.port + "...");
       try {
         ss = new ServerSocket(config.port);
         while (active) {
