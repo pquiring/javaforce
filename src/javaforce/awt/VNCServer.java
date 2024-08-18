@@ -79,25 +79,36 @@ public class VNCServer {
   public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
 
   private static class Config {
+    public Config(String password) {
+      this.password = password;
+    }
     public String password;
     public int port = 5900;
     public String user;  //linux only
     public String display = ":0";  //linux only (default = :0)
+
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append("port=" + port + "\n");
+      sb.append("password=" + password + "\n");
+      if (user != null) {
+        sb.append("user=" + user + "\n");
+      } else {
+        sb.append("#user=username  #linux account with X11 authorization\n");
+      }
+      sb.append("display=" + display + "  #linux display name\n");
+      return sb.toString();
+    }
   }
 
   private static Config loadConfig() {
     try {
       File file = new File(getConfigFile());
-      if (!file.exists()) {
-        Config config = new Config();
-        config.password = randomPassword();
-        return config;
-      }
       FileInputStream fis = new FileInputStream(file);
       Properties props = new Properties();
       props.load(fis);
       fis.close();
-      Config config = new Config();
+      Config config = new Config(null);
       String password = props.getProperty("password");
       if (password != null) {
         config.password = RFB.checkPassword(password);
@@ -120,6 +131,17 @@ public class VNCServer {
         if (display != null) {
           config.display = display;
         }
+      }
+      return config;
+    } catch (FileNotFoundException e) {
+      //create default config
+      Config config = new Config(randomPassword());
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(config.toString().getBytes());
+        fos.close();
+      } catch (Exception e2) {
+        JFLog.log(e2);
       }
       return config;
     } catch (Exception e) {
