@@ -101,7 +101,6 @@ public class MQTTServer {
 
   private static String defaultConfig
     = "port=1883\n"
-    + "password = password\n"
 //    + "#user=username\n"
 //    + "#pass=password\n"
     + "#forward=host\n"
@@ -172,7 +171,7 @@ public class MQTTServer {
       return new Config();
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return new Config();
     }
   }
 
