@@ -72,7 +72,7 @@ public class MQTTForward {
         return;
       }
       queue.add(new Entry(topic, msg));
-      queue.notify();
+      lock.notify();
     }
   }
 
@@ -80,7 +80,7 @@ public class MQTTForward {
     while (active) {
       synchronized (lock) {
         if (queue.size() == 0) {
-          try { queue.wait(1000); } catch (Exception e) {}
+          try { lock.wait(1000); } catch (Exception e) {}
           return null;
         }
         Entry entry = queue.remove(0);
