@@ -3,7 +3,7 @@
   <property name="app" value="jfvncsvc"/>
   <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
-  <property name="cfg" value="jfvnc.ico"/>
+  <property name="ico" value="jfvnc.ico"/>
 
   <import file="${home}/base.xml"/>
 
