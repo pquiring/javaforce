@@ -62,7 +62,7 @@ public class MQTTApp extends javax.swing.JFrame {
     viewLog = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    setTitle("DHCP Server");
+    setTitle("MQTT Server");
 
     save.setText("Save");
     save.setEnabled(false);
