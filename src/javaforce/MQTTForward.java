@@ -65,7 +65,7 @@ public class MQTTForward {
     max_queue_size = size;
   }
 
-  public void add(String topic, String msg) {  //tag:value
+  public void publish(String topic, String msg) {  //tag:value
     synchronized (lock) {
       if (queue.size() > max_queue_size) {
         JFLog.log("Error:MQTT Queue > " + max_queue_size);
@@ -76,7 +76,7 @@ public class MQTTForward {
     }
   }
 
-  public Entry remove() {
+  private Entry remove() {
     while (active) {
       synchronized (lock) {
         if (queue.size() == 0) {

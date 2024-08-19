@@ -533,7 +533,7 @@ public class MQTTServer {
             events.message(topic_name, msg);
           }
           if (forwarder != null) {
-            forwarder.add(topic_name, msg);
+            forwarder.publish(topic_name, msg);
           }
           break;
         }
