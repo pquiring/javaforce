@@ -32,6 +32,7 @@ jfmedia - Multi-Media Player for jfLinux
 jfmodbusserver - MODBUS Server for Raspberry PI
 jfmonitor - Network Monitoring Service
 jfmping - Multi-Ping Utility
+jfmqtt - MQTT Server
 jfmusic - Music Editor (MIDI + Tracker)
 jfnetboot - PXE Booting Service
 jfnettools - Network Testing Utility
@@ -62,5 +63,5 @@ jftest3d - OpenGL Test Suite
 jftorrent - Torrent Server/Client
 jfupgrade - Package Upgrade Manager for jfLinux
 jfvideo - Video Creator
-jfvnc - VNC Client
+jfvnc - VNC Server/Client
 jfwelcome - Welcome App for jfLinux
