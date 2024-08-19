@@ -18,7 +18,7 @@ import javaforce.jni.*;
 public class VNCServer {
   public final static String busPack = "net.sf.jfvnc";
 
-  public boolean start() {
+  private boolean start() {
     config = loadConfig();
     return start(config.password, true, config.port);
   }
@@ -584,7 +584,7 @@ public class VNCServer {
       byte[] cfg = JF.readFile(getConfigFile());
       if (cfg == null) cfg = new byte[0];
       String config = new String(cfg);
-      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(config)));
+      service.busClient.call(pack, "getConfig", JBusClient.quote(JBusClient.encodeString(config)));
     }
     public void setConfig(String cfg) {
       //write new file

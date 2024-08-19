@@ -273,17 +273,17 @@ public class MQTTServer {
     public boolean active;
     public void run() {
       active = true;
-      loadConfig();
-      if (config.forward != null) {
-        forwarder = new MQTTForward();
-        forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
-      }
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
-      JFLog.append(getLogFile(), true);
-      JFLog.log("MQTTServer starting on port " + config.port + "...");
       try {
+        JFLog.append(getLogFile(), true);
+        config = loadConfig();
+        if (config.forward != null) {
+          forwarder = new MQTTForward();
+          forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
+        }
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+        JFLog.log("MQTTServer starting on port " + config.port + "...");
         ss = new ServerSocket(config.port);
         while (active) {
           Socket s = ss.accept();
@@ -641,7 +641,7 @@ public class MQTTServer {
       byte[] cfg = JF.readFile(getConfigFile());
       if (cfg == null) cfg = new byte[0];
       String config = new String(cfg);
-      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(config)));
+      service.busClient.call(pack, "getConfig", JBusClient.quote(JBusClient.encodeString(config)));
     }
     public void setConfig(String cfg) {
       //write new file
