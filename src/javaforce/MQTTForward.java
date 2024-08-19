@@ -99,7 +99,8 @@ public class MQTTForward {
           continue;
         }
         try {
-          if (!client.isConnected()) {
+          if (client != null && !client.isConnected()) {
+            client.disconnect();
             client = null;
           }
           while (client == null) {
