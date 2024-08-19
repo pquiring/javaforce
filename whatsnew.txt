@@ -1,5 +1,18 @@
 What's new...
 
+Aug 19/2024 : JF/67.0
+ - added javaforce.MQTTForward
+   - MQTT thread queue to publish messages to another MQTT server
+ - added javaforce.awt.VNCServer
+   - VNC server for Windows and Linux
+ - jfMonitor/0.16
+   - fix Cisco MAC table analysis
+ - jfVNC/0.4
+   - added VNCServer and config app
+ - jfMQTT/0.3
+   - added config app
+   - added forward options to forward messages to another MQTT server
+
 July 29/2024 : JF/66.1
  - jfMonitor/0.14
    - added disable port option
