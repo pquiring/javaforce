@@ -105,7 +105,7 @@ public class MQTTServer {
 //    + "#pass=password\n"
     + "#forward=host\n"
     + "#forward.port=port\n"
-    + "#forward.topic=\"#\"\n"
+    + "#forward.topic=#\n"
     + "#forward.user=username\n"
     + "#forward.pass=password\n"
   ;
