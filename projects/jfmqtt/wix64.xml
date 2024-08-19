@@ -34,7 +34,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{D39D83F0-9BD0-4CB5-AB99-94FFCD7E8D54}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfMQTTServer" Description="MQTT Server" Target="[APPLICATIONROOTDIRECTORY]jfmqtt.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfMQTTServer" Description="MQTT Server" Target="[APPLICATIONROOTDIRECTORY]jfmqttconfig.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfMQTTServer" Name="installed" Type="integer" Value="1" KeyPath="yes" />
