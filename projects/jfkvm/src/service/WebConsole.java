@@ -18,7 +18,7 @@ public class WebConsole extends Thread {
 
   private RFB rfb;
   private WebUIClient client;
-  
+
   private static final boolean debug = false;
 
   public WebConsole() {
@@ -85,12 +85,12 @@ public class WebConsole extends Thread {
     }
 
     client = canvas.getClient();
-    
+
     canvas.setFocus();
 
     main();
   }
-  
+
   public void refresh() {
     int width = rfb.getWidth();
     int height = rfb.getHeight();
@@ -99,7 +99,7 @@ public class WebConsole extends Thread {
     }
     rfb.writeBufferUpdateRequest(0, 0, width, height, false);
   }
-  
+
   public void cad() {
     if (debug) {
       JFLog.log("VNC:C+A+D");
@@ -114,7 +114,7 @@ public class WebConsole extends Thread {
     keyUp(KeyEvent.VK_ALT, true);
     keyUp(KeyEvent.VK_CONTROL, true);
   }
-  
+
   public void winkey() {
     //this is done with CTRL+ESC sequence
     if (debug) {
@@ -128,7 +128,7 @@ public class WebConsole extends Thread {
     JF.sleep(10);
     keyUp(KeyEvent.VK_CONTROL, true);
   }
-  
+
   public void mouse(int x, int y, int buttons) {
     if (rfb == null) return;
     //need to swap b2 and b3
@@ -145,7 +145,7 @@ public class WebConsole extends Thread {
   public void keyDown(int code, boolean convert) {
     if (rfb == null) return;
     if (convert) {
-      code = RFB.convertKeyCode(code);
+      code = VNCRobot.convertJavaKeyCode(code);
     }
     rfb.writeKeyEvent(code, true);
   }
@@ -153,7 +153,7 @@ public class WebConsole extends Thread {
   public void keyUp(int code, boolean convert) {
     if (rfb == null) return;
     if (convert) {
-      code = RFB.convertKeyCode(code);
+      code = VNCRobot.convertJavaKeyCode(code);
     }
     rfb.writeKeyEvent(code, false);
   }
