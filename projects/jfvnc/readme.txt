@@ -6,6 +6,7 @@ VNC Server:
 
  - jfvncsvc.exe : service based which runs in the background
    - jfvncsession.exe : used internally by service for each connection
+   - supports Windows and Linux (X11)
  - jfvnccli.exe : app based which runs as a user app with limited functionality
    - useful in logon scripts, etc.
  - config file : jfvncserver.cfg

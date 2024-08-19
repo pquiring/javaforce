@@ -1,0 +1,2 @@
+2024-08-18 : v0.4
+  - added VNCServer (supports Windows and Linux)
