@@ -1,3 +1,6 @@
+Aug 19/2024 : 0.16 released
+  - fix : cisco : MAC table analysis
+
 Aug 2/2024 : 0.15 released
   - new : cisco : analyze MAC address tables to show where devices are connected
 
