@@ -3,6 +3,7 @@
   <property name="app" value="jfmqttconfig"/>
   <property name="apptype" value="window"/>
   <property name="home" value="../.."/>
+  <property name="cfg" value="jfmqtt.ico"/>
 
   <import file="${home}/base.xml"/>
 
