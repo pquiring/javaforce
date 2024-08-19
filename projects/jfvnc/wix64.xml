@@ -40,8 +40,8 @@
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfVNC" Name="installed" Type="integer" Value="1" KeyPath="yes" />
       </Component>
-      <Component Id="ApplicationShortcut" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF462}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVNC Config" Description="VNC Client" Target="[APPLICATIONROOTDIRECTORY]jfvncconfig.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
+      <Component Id="ApplicationShortcut2" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF463}">
+        <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfVNC Config" Description="VNC Client" Target="[APPLICATIONROOTDIRECTORY]jfvncconfig.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
       </Component>
     </StandardDirectory>
 
@@ -50,6 +50,7 @@
       <ComponentRef Id="appfiles" />
       <ComponentGroupRef Id="JRE" />
       <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="ApplicationShortcut2" />
     </Feature>
 
     </Package>
