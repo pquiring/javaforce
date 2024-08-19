@@ -549,7 +549,7 @@ public class VNCServer {
 
   public static int getBusPort() {
     if (JF.isWindows()) {
-      return 33014;
+      return 33015;
     } else {
       return 777;
     }
