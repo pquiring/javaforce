@@ -1138,6 +1138,8 @@ public class NetApp extends javax.swing.JFrame {
         log.append("PASS:" + port + "\n");
       } catch (SocketTimeoutException to) {
         log.append("FAIL:" + port + "\n");
+      } catch (ConnectException to) {
+        log.append("FAIL:" + port + "\n");
       } catch (Exception e) {
         log.append(e.toString() + "\n");
       }
@@ -1149,11 +1151,14 @@ public class NetApp extends javax.swing.JFrame {
         String[] str_ports = netmap_ports.getText().split(",");
         timeout = Integer.valueOf(netmap_timeout.getText());
         log.append("Host=" + host + "\n");
+        setLog();
         for(int i=0;i<str_ports.length;i++) {
+          if (!active) break;
           String port = str_ports[i];
           if (port.indexOf('-') == -1) {
             //single port
             test(Integer.valueOf(port));
+            setLog();
           } else {
             //port range
             int idx = port.indexOf('-');
@@ -1162,6 +1167,7 @@ public class NetApp extends javax.swing.JFrame {
             for(int p = start;p < stop;p++) {
               if (!active) break;
               test(p);
+              setLog();
             }
           }
         }
