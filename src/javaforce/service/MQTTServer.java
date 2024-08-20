@@ -276,7 +276,11 @@ public class MQTTServer {
         config = loadConfig();
         if (config.forward != null) {
           forwarder = new MQTTForward();
-          forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
+          if (config.forward_user != null && config.forward_pass != null) {
+            forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
+          } else {
+            forwarder.start(config.forward, config.forward_port);
+          }
         }
         busClient = new JBusClient(busPack, new JBusMethods());
         busClient.setPort(getBusPort());
