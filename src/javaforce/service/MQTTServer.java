@@ -258,7 +258,6 @@ public class MQTTServer {
   private MQTTEvents events;
 
   private ServerSocket ss;
-  private Object forward_lock = new Object();
   private MQTTForward forwarder;
   private JBusClient busClient;
 
