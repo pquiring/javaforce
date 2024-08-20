@@ -91,7 +91,7 @@ public class MQTTServer {
 
   private static class Config {
     public int port = 1883;
-//    public String user, pass;
+    public String user, pass;
     public String forward;
     public int forward_port = 1883;
     public String forward_topic = "#";
@@ -101,8 +101,8 @@ public class MQTTServer {
 
   private static String defaultConfig
     = "port=1883\n"
-//    + "#user=username\n"
-//    + "#pass=password\n"
+    + "#user=username\n"
+    + "#pass=password\n"
     + "#forward=host\n"
     + "#forward.port=1883\n"
     + "#forward.topic=#\n"
@@ -125,7 +125,6 @@ public class MQTTServer {
           config.port = 1883;
         }
       }
-/*
       String user = props.getProperty("user");
       if (user != null) {
         config.user = user;
@@ -134,7 +133,6 @@ public class MQTTServer {
       if (pass != null) {
         config.pass = pass;
       }
-*/
       String forward = props.getProperty("forward");
       if (forward != null) {
         config.forward = forward;
@@ -344,6 +342,10 @@ public class MQTTServer {
     return BE.getuint16(data, topicPosition);
   }
 
+  private String getString(byte[] data, int offset, int length) {
+    return new String(data, offset, length);
+  }
+
   private short getPacketID(byte[] data, int idPosition) {
     return (short)BE.getuint16(data, idPosition);
   }
@@ -409,7 +411,9 @@ public class MQTTServer {
     public InputStream is;
     public OutputStream os;
     public String ip;
-    public boolean active = true;
+    public boolean client_active = true;
+    public String client_id;
+    public boolean auth;
     public Client(Socket s) {
       this.s = s;
     }
@@ -420,13 +424,16 @@ public class MQTTServer {
         ip = s.getInetAddress().getHostAddress();
         if (debug) JFLog.log("connect:" + ip);
         byte[] buf = new byte[bufsiz];
-        while (active && active) {
+        if (config.user == null || config.pass == null) {
+          auth = true;
+        }
+        while (server.active && client_active) {
           int totalRead = 0;
           int packetLength = -1;  //excluding header + length fields
           int totalLength = -1;  //total packet length
           int read;
           Arrays.fill(buf, (byte)0);
-          while (active && active) {
+          while (server.active && client_active) {
             if (packetLength == -1) {
               read = is.read(buf, totalRead, 1);
             } else {
@@ -461,10 +468,12 @@ public class MQTTServer {
       if (debug) JFLog.log("disconnect:" + ip);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
+      //totalLength = packet.length
+      //packetLength = length excluding header and packet length byte(s)
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
       short id = 0;
-      int pos = 1;
+      int pos;
       int topicLength;
       String topic_name;
       int msgLength;
@@ -472,7 +481,51 @@ public class MQTTServer {
       if (debug) JFLog.log("cmd=" + cmd);
       switch (cmd) {
         case CMD_CONNECT: {
-          //TODO : support user/pass auth
+          pos = 1 + getLengthBytes(packetLength);
+          int ver = packet[pos + 6];  //should be 5
+          int flags = packet[pos + 7];
+          pos += 10;
+
+          int props_length = getLength(packet, pos, totalLength);
+          if (props_length == -1) throw new Exception("malformed packet");
+          int props_length_bytes = getLengthBytes(props_length);
+          pos += props_length_bytes;
+          if (props_length > 0) {
+            pos += props_length_bytes;
+          }
+
+          int client_id_length = BE.getuint16(packet, pos);
+          pos += 2;
+          client_id = getString(packet, pos, client_id_length);
+          if (debug) {
+            JFLog.log("client_id=" + client_id);
+          }
+          pos += client_id_length;
+          String user = null;
+          if ((flags & FLAG_USER) != 0) {
+            int user_length = BE.getuint16(packet, pos);
+            pos += 2;
+            user = getString(packet, pos, user_length);
+            pos += user_length;
+          }
+          String pass = null;
+          if ((flags & FLAG_PASS) != 0) {
+            int pass_length = BE.getuint16(packet, pos);
+            pos += 2;
+            pass = getString(packet, pos, pass_length);
+            pos += pass_length;
+          }
+          if (config.user != null && config.pass != null) {
+            //compare user/pass
+            if (user == null || !user.equals(config.user) || pass == null || !pass.equals(config.pass)) {
+              if (debug) {
+                JFLog.log("auth failed:" + user + ":" + pass);
+              }
+              disconnect();
+              break;
+            }
+            auth = true;
+          }
           reply = new byte[5];
           //reply = header , size , ack_flags, return_code=0, props
           reply[0] = (byte)(CMD_CONNECT_ACK << 4);
@@ -480,6 +533,10 @@ public class MQTTServer {
           break;
         }
         case CMD_PUBLISH: {
+          if (!auth) {
+            disconnect();
+            break;
+          }
           //header, size, topic, id, msg
           boolean dup = (packet[0] & 0x08) != 0;
           byte qos = (byte)((packet[0] & 0x06) >> 1);
@@ -489,7 +546,7 @@ public class MQTTServer {
           topicLength = getStringLength(packet, pos);
           if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
           pos += 2;
-          topic_name = new String(packet, pos, topicLength);
+          topic_name = getString(packet, pos, topicLength);
           pos += topicLength;
           if (qos > 0) {
             id = getPacketID(packet, pos);
@@ -506,7 +563,7 @@ public class MQTTServer {
           msgLength = totalLength - pos;
           if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
           msg = new String(packet, pos, msgLength);
-          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
+          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg);
           Topic topic = getTopic(topic_name);
           topic.publish(packet, totalLength, retain);
           switch (qos) {
@@ -538,12 +595,24 @@ public class MQTTServer {
           break;
         }
         case CMD_PUBLISH_ACK:
+          if (!auth) {
+            disconnect();
+            break;
+          }
           //???
           break;
         case CMD_PUBLISH_REC:
+          if (!auth) {
+            disconnect();
+            break;
+          }
           //???
           break;
         case CMD_PUBLISH_REL:
+          if (!auth) {
+            disconnect();
+            break;
+          }
           reply = new byte[4];
           reply[0] = (byte)(CMD_PUBLISH_CMP << 4);
           setPacketLength(reply);
@@ -551,9 +620,17 @@ public class MQTTServer {
           setPacketID(reply, 2, id);
           break;
         case CMD_PUBLISH_CMP:
+          if (!auth) {
+            disconnect();
+            break;
+          }
           //???
           break;
         case CMD_SUBSCRIBE: {
+          if (!auth) {
+            disconnect();
+            break;
+          }
           //cmd, size, id, topic
           pos = 1 + getLengthBytes(packetLength);
           id = getPacketID(packet, pos);
@@ -569,7 +646,7 @@ public class MQTTServer {
             topicLength = getStringLength(packet, pos);
             if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
             pos += 2;
-            topic_name = new String(packet, pos, topicLength);
+            topic_name = getString(packet, pos, topicLength);
             pos += topicLength;
             if (hasWildcard(topic_name)) {
               Topic[] topics = getTopics(topic_name);
@@ -591,16 +668,27 @@ public class MQTTServer {
           break;
         }
         case CMD_UNSUBSCRIBE: {
+          if (!auth) {
+            disconnect();
+            break;
+          }
           //cmd, size, id, topic
           pos = 1 + getLengthBytes(packetLength);
           id = getPacketID(packet, pos);
           if (debug) JFLog.log("id=" + id);
           pos += 2;
+          int props_length = getLength(packet, pos, totalLength);
+          if (props_length == -1) throw new Exception("malformed packet");
+          int props_length_bytes = getLengthBytes(props_length);
+          pos += props_length_bytes;
+          if (props_length > 0) {
+            pos += props_length_bytes;
+          }
           while (pos < totalLength) {
             topicLength = getStringLength(packet, pos);
             pos += 2;
             if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
-            topic_name = new String(packet, pos, topicLength);
+            topic_name = getString(packet, pos, topicLength);
             pos += topicLength;
             Topic topic = getTopic(topic_name);
             topic.unsubscribe(this);
@@ -614,14 +702,17 @@ public class MQTTServer {
           break;
         }
         case CMD_PING:
+          if (!auth) {
+            disconnect();
+            break;
+          }
           reply = new byte[2];
           reply[0] = (byte)(CMD_PONG << 4);
 //          setPacketLength(reply);  //zero
           if (debug_msg) JFLog.log("PING:" + ip);
           break;
         case CMD_DISCONNECT:
-          unsubscribeAll(this);
-          active = false;
+          disconnect();
           break;
       }
       if (reply != null) {
@@ -633,6 +724,12 @@ public class MQTTServer {
     }
     public void publish(byte[] pkt, int length) throws Exception {
       os.write(pkt, 0, length);
+    }
+    private void disconnect() {
+      unsubscribeAll(this);
+      client_active = false;
+      try {s.close();} catch (Exception e) {}
+      s = null;
     }
   }
 

@@ -19,8 +19,8 @@ public class MQTT {
   private OutputStream os;
   private MQTTEvents events;
   private Worker worker;
-  public static boolean debug;
-  public static boolean debug_msg;
+  public static boolean debug = false;
+  public static boolean debug_msg = false;
 
   /** Connects to MQTT service port. */
   public boolean connect(String host) {
@@ -151,7 +151,7 @@ public class MQTT {
     packet[pos++] = 'F';
     Random r = new Random();
     String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
-    System.arraycopy(hex.getBytes(), 0, packet, 17, 8);
+    System.arraycopy(hex.getBytes(), 0, packet, pos, 8);
     pos += 8;
     setStringLength(packet, pos, (short)user_length);
     pos += 2;
@@ -299,6 +299,10 @@ public class MQTT {
     return BE.getuint16(data, topicPosition);
   }
 
+  private String getString(byte[] data, int offset, int length) {
+    return new String(data, offset, length);
+  }
+
   private short getPacketID(byte[] data, int idPosition) {
     return (short)BE.getuint16(data, idPosition);
   }
@@ -415,7 +419,7 @@ public class MQTT {
           topicLength = getStringLength(packet, pos);
           if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
           pos += 2;
-          topic_name = new String(packet, pos, topicLength);
+          topic_name = getString(packet, pos, topicLength);
           pos += topicLength;
           if (qos > 0) {
             id = getPacketID(packet, pos);
@@ -432,7 +436,7 @@ public class MQTT {
           msgLength = totalLength - pos;
           if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
           msg = new String(packet, pos, msgLength);
-          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg + "!");
+          if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg);
           switch (qos) {
             case QOS_1: {
               //CMD_PUBLISH_ACK
@@ -584,13 +588,13 @@ public class MQTT {
       }
       while (client.isConnected()) {
         for(int a=0;a<60;a++) {
+          if (resub != null) {
+            client.subscribe(resub);
+            resub = null;
+          }
           JF.sleep(1000);
         }
         client.ping();
-        if (resub != null) {
-          client.subscribe(resub);
-          resub = null;
-        }
       }
     } catch (Exception e) {
       JFLog.log(e);
