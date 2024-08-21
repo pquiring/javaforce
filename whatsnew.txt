@@ -1,5 +1,10 @@
 What's new...
 
+Aug 21/2024 : JF/67.1
+ - jfMQTT/0.4
+   - added user/pass auth
+   - fixed unsub msg
+
 Aug 19/2024 : JF/67.0
  - added javaforce.MQTTForward
    - MQTT thread queue to publish messages to another MQTT server
