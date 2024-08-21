@@ -1,3 +1,7 @@
+2024-08-21 - v0.4
+  - added user/pass auth
+  - fixed unsubscribe message
+
 2024-08-19 - v0.3
   - added config app
   - added MQTTForward
