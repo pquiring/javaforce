@@ -369,6 +369,28 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     return result;
   }
 
+  /**
+   * SET_PARAMETER (RTSP)
+   */
+  public boolean set_parameter(String url, String[] params) {
+    sess.uri = RTSPURL.cleanURL(url);
+    sess.extra = "";
+    sess.params = params;
+    boolean result = issue(sess, "SET_PARAMETER");
+    sess.params = null;
+    return result;
+  }
+
+  /** Set seek position.
+   * Not a RTSP standard option.
+   * Specific to JavaForce / jfDVR.
+   *
+   * @param pos = unix time stamp (ms) (-1 = live)
+   */
+  public boolean seek(String url, long pos) {
+    return set_parameter(url, new String[] {"Seek: " + pos});
+  }
+
   // other unsupported commands: ANNOUNCE, PAUSE, SET_PARAMETER, REDIRECT, RECORD
 
   /**

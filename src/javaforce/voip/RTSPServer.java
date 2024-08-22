@@ -355,6 +355,10 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               iface.onGetParameter(this, sess, HTTP.getContent(msg));
               break;
             }
+            case "SET_PARAMETER": {
+              iface.onSetParameter(this, sess, HTTP.getContent(msg));
+              break;
+            }
           }
           break;
       }
