@@ -17,6 +17,7 @@ public class VideoPanel extends javax.swing.JPanel {
    */
   public VideoPanel() {
     initComponents();
+    container.setVisible(false);
   }
 
   /**
@@ -27,6 +28,13 @@ public class VideoPanel extends javax.swing.JPanel {
   @SuppressWarnings("unchecked")
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
+
+    container = new javax.swing.JScrollPane();
+    controls = new javax.swing.JPanel();
+    timeline = new javax.swing.JLabel();
+    date = new javax.swing.JLabel();
+    date_pick = new javax.swing.JButton();
+    seconds = new javax.swing.JLabel();
 
     setPreferredSize(new java.awt.Dimension(1280, 720));
     addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -45,15 +53,88 @@ public class VideoPanel extends javax.swing.JPanel {
       }
     });
 
+    controls.setPreferredSize(new java.awt.Dimension(1454, 100));
+
+    timeline.setBackground(new java.awt.Color(0, 0, 0));
+    timeline.setForeground(new java.awt.Color(51, 255, 0));
+    timeline.setToolTipText("24 hr timeline");
+    timeline.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+    timeline.setPreferredSize(new java.awt.Dimension(1442, 18));
+    timeline.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseDragged(java.awt.event.MouseEvent evt) {
+        timelineMouseDragged(evt);
+      }
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        timelineMouseMoved(evt);
+      }
+    });
+
+    date.setText("Date: yyyy-mm-dd");
+
+    date_pick.setText("v");
+    date_pick.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        date_pickActionPerformed(evt);
+      }
+    });
+
+    seconds.setBackground(new java.awt.Color(0, 0, 0));
+    seconds.setForeground(new java.awt.Color(51, 255, 0));
+    seconds.setToolTipText("60 second timeline");
+    seconds.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+    seconds.setPreferredSize(new java.awt.Dimension(62, 18));
+    seconds.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseDragged(java.awt.event.MouseEvent evt) {
+        secondsMouseDragged(evt);
+      }
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        secondsMouseMoved(evt);
+      }
+    });
+
+    javax.swing.GroupLayout controlsLayout = new javax.swing.GroupLayout(controls);
+    controls.setLayout(controlsLayout);
+    controlsLayout.setHorizontalGroup(
+      controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(controlsLayout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(timeline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addGroup(controlsLayout.createSequentialGroup()
+            .addComponent(date)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(date_pick)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+    controlsLayout.setVerticalGroup(
+      controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(controlsLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(timeline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(date)
+            .addComponent(date_pick))
+          .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(47, Short.MAX_VALUE))
+    );
+
+    container.setViewportView(controls);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 485, Short.MAX_VALUE)
+      .addComponent(container, javax.swing.GroupLayout.DEFAULT_SIZE, 1280, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 271, Short.MAX_VALUE)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+        .addGap(0, 650, Short.MAX_VALUE)
+        .addComponent(container, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -68,8 +149,34 @@ public class VideoPanel extends javax.swing.JPanel {
     zoom(evt.getX(), evt.getY());
   }//GEN-LAST:event_formMouseClicked
 
+  private void date_pickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_date_pickActionPerformed
+    date_popup();
+  }//GEN-LAST:event_date_pickActionPerformed
+
+  private void timelineMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_timelineMouseMoved
+    timeline_mouse_move(evt.getX(), evt.getY());
+  }//GEN-LAST:event_timelineMouseMoved
+
+  private void timelineMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_timelineMouseDragged
+    timeline_mouse_drag(evt.getX(), evt.getY());
+  }//GEN-LAST:event_timelineMouseDragged
+
+  private void secondsMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseDragged
+    // TODO add your handling code here:
+  }//GEN-LAST:event_secondsMouseDragged
+
+  private void secondsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseMoved
+    // TODO add your handling code here:
+  }//GEN-LAST:event_secondsMouseMoved
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JScrollPane container;
+  private javax.swing.JPanel controls;
+  private javax.swing.JLabel date;
+  private javax.swing.JButton date_pick;
+  private javax.swing.JLabel seconds;
+  private javax.swing.JLabel timeline;
   // End of variables declaration//GEN-END:variables
 
   private JFImage img;
@@ -86,7 +193,7 @@ public class VideoPanel extends javax.swing.JPanel {
     int x = getWidth();
     int y = getHeight();
     if (x > 0 && y > 0) {
-      img = new JFImage(getWidth(), getHeight());
+      img = new JFImage(x, y);
     }
   }
 
@@ -194,5 +301,17 @@ public class VideoPanel extends javax.swing.JPanel {
       zy = y / h;
       zoom = true;
     }
+  }
+
+  private void date_popup() {
+    //TODO
+  }
+
+  private void timeline_mouse_move(int x, int y) {
+    //TODO
+  }
+
+  private void timeline_mouse_drag(int x, int y) {
+    //TODO
   }
 }

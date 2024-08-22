@@ -20,8 +20,6 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public boolean enabled;
   public boolean record_motion;
   public int record_motion_threshold;
-  public int record_motion_after;
-  public int max_file_size;  //in MBs
   public int max_folder_size;  //in GBs
 
   //picture mode data
@@ -39,8 +37,6 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     url_low = "";
     record_motion = true;
     record_motion_threshold = 20;
-    record_motion_after = 5;
-    max_file_size = 1024;
     max_folder_size = 100;
     controller = "";
     tag_trigger = "";
@@ -151,8 +147,8 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
         case id_url_low: url_low = readString(); break;
         case id_record_motion: record_motion = readBoolean(); break;
         case id_record_motion_threshold: record_motion_threshold = readInt(); break;
-        case id_record_motion_after: record_motion_after = readInt(); break;
-        case id_max_file_size: max_file_size = readInt(); break;
+        case id_record_motion_after: readInt(); break;  //obsolete
+        case id_max_file_size: readInt(); break;  //obsolete
         case id_max_folder_size: max_folder_size = readInt(); break;
         case id_controller: controller = readString(); break;
         case id_tag_trigger: tag_trigger = readString(); break;
@@ -180,9 +176,9 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     writeShort(id_record_motion_threshold);
     writeInt(record_motion_threshold);
     writeShort(id_record_motion_after);
-    writeInt(record_motion_after);
+    writeInt(0);  //old:record_motion_after
     writeShort(id_max_file_size);
-    writeInt(max_file_size);
+    writeInt(0);  //old:max_file_size
     writeShort(id_max_folder_size);
     writeInt(max_folder_size);
     if (controller != null) {

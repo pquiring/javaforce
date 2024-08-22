@@ -372,6 +372,20 @@ public class DVRService extends Thread implements RTSPServerInterface {
     }
   }
 
+  public void onSetParameter(RTSPServer server, RTSPSession sess, String[] params) {
+    sess.ts = System.currentTimeMillis();
+    try {
+      String seek = HTTP.getParameter(params, "Seek");
+      if (seek != null) {
+        //TODO
+      }
+      server.reply(sess, 200, "OK");
+    } catch (Exception e) {
+      if (debug) JFLog.log(log, e);
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
   public void onConnect(RTSPServer rtsp, RTSPSession sess) {
     JFLog.log(log, "onConnect:" + sess);
     sess.ts = System.currentTimeMillis();

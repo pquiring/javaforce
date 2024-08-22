@@ -17,7 +17,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   public Camera camera;
   private String url;
   private String path;
-  private long max_file_size;  //in bytes
   private long max_folder_size;  //in bytes
 
   public static boolean debug = false;
@@ -41,9 +40,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private int width = -1;
   private int height = -1;
   private float fps = -1;
-  private long now;
-  private boolean recording = false;
-  private boolean recording_start = false;
+  private final boolean recording;
   private int frameCount = 0;
   private boolean active = true;
   private PacketBuffer packets_decode;
@@ -60,6 +57,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private boolean isEncoder;  //viewing, recording
   private boolean isDecoder;  //decoding, preview, motion detection
   private CameraWorker encoderWorker;  //used by decoding to signal recording state to encoder
+  private long minute;
+  private boolean keep;
 
   //MediaCoder Interface
 
@@ -126,9 +125,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     JFLog.log(log, "CameraWorkerVideo:" + cam_url + ":encoder=" + is_Encoder + ":decoder=" + is_Decoder);
     JFLog.log(log, "Camera=" + camera.name);
     path = Paths.videoPath + "/" + cam.name;
-    max_file_size = cam.max_file_size * 1024L * 1024L;
     max_folder_size = cam.max_folder_size * 1024L * 1024L * 1024L;
-    recording = is_Encoder && !cam.record_motion;  //always recording
+    recording = is_Encoder;
     if (is_Decoder) {
       preview_image = new JFImage(decoded_x, decoded_y);
     }
@@ -238,14 +236,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         Packet packet = packets_encode.getNextFrame();
         if (debug_encoder) JFLog.log(log, "encoder:add full packet");
         if (recording) {
-          if (!recording_start) {
-            //only start recording at a key frame so playback start immediately
-            recording_start = key_frame;
-          }
-          if (recording_start) {
-            recordFrame(packet, key_frame);
-            frameCount++;
-          }
+          recordFrame(packet, key_frame);
+          frameCount++;
         } else {
           if (encoder != null) {
             encoder.stop();
@@ -265,7 +257,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void recordFrame(Packet packet, boolean key_frame) {
     try {
-      if (file_size > max_file_size && key_frame) {
+      long current_minute = System.currentTimeMillis() / 60L;  //current minute
+      if (current_minute != minute && key_frame) {
+        minute = current_minute;
+        if (!camera.record_motion) {
+          keep = true;
+        }
         JFLog.log(log, camera.name + " : max file size");
         if (encoder != null) {
           encoder.stop();
@@ -275,6 +272,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           closeFile();
           raf = null;
         }
+        keep = !camera.record_motion;
       }
       if (raf == null) {
         createFile();
@@ -455,11 +453,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       , now.get(Calendar.DAY_OF_MONTH)
       , now.get(Calendar.HOUR_OF_DAY)
       , now.get(Calendar.MINUTE)
-      , now.get(Calendar.SECOND)
+      , 0  //seconds always zero
     );
   }
 
-  private long last_change_time;
   private int imgcnt;
   private void detectMotion(int newFrame[], boolean key_frame) {
     if (newFrame == null || last_frame == null) {
@@ -500,15 +497,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       return;
     }
     if (changed > camera.record_motion_threshold) {
-      last_change_time = now;
-      encoderWorker.setRecording(true);
-    } else {
-      if (!encoderWorker.isRecording()) return;
-      long diff = (now - last_change_time) / 1000L;
-      boolean off_delay = diff > camera.record_motion_after;
-      if (off_delay) {
-        encoderWorker.setRecording(false);
-      }
+      keep = true;
     }
   }
 
@@ -535,14 +524,18 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       JFLog.log(log, e);
     }
     raf = null;
-    Recording rec = new Recording();
-    rec.file = new File(filename);
-    rec.size = rec.file.length();
-    if (rec.size != file_size) {
-      JFLog.log(log, "Error:file size mismatch");
+    if (keep) {
+      Recording rec = new Recording();
+      rec.file = new File(filename);
+      rec.size = rec.file.length();
+      if (rec.size != file_size) {
+        JFLog.log(log, "Error:file size mismatch");
+      }
+      rec.time = rec.file.lastModified();
+      files.add(rec);
+    } else {
+      new File(filename).delete();
     }
-    rec.time = rec.file.lastModified();
-    files.add(rec);
     frameCount = 0;
     file_size = 0;
   }
@@ -563,11 +556,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public void reloadConfig() {
     JFLog.log(log, "Reloading config");
-    max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
-    if (isEncoder && !camera.record_motion) {
-      recording = true;
-    }
   }
 
   public Camera getCamera() {
@@ -576,19 +565,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public int getLog() {
     return log;
-  }
-
-  public void setRecording(boolean state) {
-    if (state) {
-      recording = true;
-    } else {
-      recording = false;
-      recording_start = false;
-    }
-  }
-
-  public boolean isRecording() {
-    return recording;
   }
 
   //RTSPClient Interface
@@ -714,7 +690,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (isEncoder) {
         camera.sendPacket(buf, offset, length);
       }
-      now = lastPacket = System.currentTimeMillis();
       if (h264 != null) {
         h264.decode(buf, 0, length, this);
       }

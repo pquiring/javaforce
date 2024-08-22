@@ -18,7 +18,6 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   private String url, cleanurl;
   private String user,pass;
   private String path;
-  private long max_file_size;  //in bytes
   private long max_folder_size;  //in bytes
 
   private long folder_size;
@@ -37,7 +36,6 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   private String last_filename;
   private boolean isEncoder;
   private boolean isDecoder;
-  private boolean recording;
 
   private Controller controller;
 
@@ -47,14 +45,6 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   public int getLog() {
     return log;
-  }
-
-  public void setRecording(boolean state) {
-    recording = true;
-  }
-
-  public boolean isRecording() {
-    return recording;
   }
 
   private static class Recording {
@@ -85,7 +75,6 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
     path = Paths.videoPath + "/" + camera.name;
-    max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
     if (isDecoder) {
       preview_image = new JFImage(preview_x, preview_y);
@@ -270,7 +259,6 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   public void reloadConfig() {
     JFLog.log(log, "Reloading config");
-    max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
   }
 

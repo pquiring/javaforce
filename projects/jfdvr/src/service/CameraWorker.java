@@ -11,6 +11,4 @@ public interface CameraWorker {
   public void reloadConfig();
   public Camera getCamera();
   public int getLog();
-  public void setRecording(boolean state);
-  public boolean isRecording();
 }

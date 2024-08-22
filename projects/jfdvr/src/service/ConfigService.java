@@ -225,18 +225,6 @@ public class ConfigService implements WebUIHandler {
     });
     row.add(threshold_lbl);
 
-    row = new Row();
-    camera_video_panel.add(row);
-    lbl = new Label("Motion Recording Off Delay (sec):");
-    row.add(lbl);
-    Slider camera_motion_off_delay = new Slider(Slider.HORIZONTAL, 0, 60, 5);
-    row.add(camera_motion_off_delay);
-    Label motion_off_delay_lbl = new Label("5");
-    camera_motion_off_delay.addChangedListener((Component c) -> {
-      motion_off_delay_lbl.setText(Integer.toString(camera_motion_off_delay.getPos()));
-    });
-    row.add(motion_off_delay_lbl);
-
     InnerPanel pic_panel = new InnerPanel("Picture Options (http)");
     camera_panel.add(pic_panel);
 
@@ -271,13 +259,6 @@ public class ConfigService implements WebUIHandler {
 
     InnerPanel storage_panel = new InnerPanel("Storage");
     camera_panel.add(storage_panel);
-
-    row = new Row();
-    storage_panel.add(row);
-    lbl = new Label("Max file size (MB) (10-4096):");
-    row.add(lbl);
-    TextField max_file_size = new TextField("1024");
-    row.add(max_file_size);
 
     row = new Row();
     storage_panel.add(row);
@@ -412,11 +393,6 @@ public class ConfigService implements WebUIHandler {
           camera_record_motion.setSelected(camera.record_motion);
           camera_threshold.setPos(camera.record_motion_threshold);
           threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
-          if (camera.record_motion_after < 0) camera.record_motion_after = 0;
-          if (camera.record_motion_after > 60) camera.record_motion_after = 60;
-          camera_motion_off_delay.setPos(camera.record_motion_after);
-          motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
-          max_file_size.setText(Integer.toString(camera.max_file_size));
           max_folder_size.setText(Integer.toString(camera.max_folder_size));
           controller.setText(camera.controller);
           tag_trigger.setText(camera.tag_trigger);
@@ -563,11 +539,6 @@ public class ConfigService implements WebUIHandler {
           camera.record_motion = camera_record_motion.isSelected();
           camera.record_motion_threshold = camera_threshold.getPos();
           threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
-          camera.record_motion_after = camera_motion_off_delay.getPos();
-          motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
-          camera.max_file_size = Integer.valueOf(max_file_size.getText());
-          if (camera.max_file_size < 5) camera.max_file_size = 5;
-          if (camera.max_file_size > 4096) camera.max_file_size = 4096;
           camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
           if (camera.max_folder_size < 0) camera.max_folder_size = 1;
           if (camera.max_folder_size > 4096) camera.max_folder_size = 4096;
