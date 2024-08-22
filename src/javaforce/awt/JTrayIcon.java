@@ -7,8 +7,6 @@ package javaforce.awt;
  * Fixes graalvm issues with TrayIcon PopupMenu distorted.
  * https://github.com/oracle/graal/issues/7037
  *
- * BUG : does not auto hide.
- *
  * @author peter.quiring
  */
 

@@ -6,6 +6,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
@@ -167,15 +168,15 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
   private void addTrayIcon() {
     //create tray icon
-    PopupMenu popup = new PopupMenu();
-    show = new MenuItem("Show");
+    JPopupMenu popup = new JPopupMenu();
+    show = new JMenuItem("Show");
     show.addActionListener(this);
     popup.add(show);
     popup.addSeparator();
-    exit = new MenuItem("Exit");
+    exit = new JMenuItem("Exit");
     exit.addActionListener(this);
     popup.add(exit);
-    icon = new TrayIcon(trayicon.getImage(), "Passwords", popup);
+    icon = new JTrayIcon(trayicon.getImage(), "Passwords", popup);
     try {
       SystemTray.getSystemTray().add(icon);
     } catch (Exception e) {
@@ -185,6 +186,6 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
   private JFImage trayicon;
   private MainPanel panel;
-  private TrayIcon icon;
-  public MenuItem exit, show;
+  private JTrayIcon icon;
+  public JMenuItem exit, show;
 }
