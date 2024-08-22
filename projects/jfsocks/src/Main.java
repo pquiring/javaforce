@@ -763,12 +763,16 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     exit = new MenuItem("Exit");
     exit.addActionListener(this);
     popup.add(exit);
-    icon = new JFIcon();
-    icon.create(trayicon, popup, this, "Socks");
+    icon = new TrayIcon(trayicon.getImage(), "Socks", popup);
+    try {
+      SystemTray.getSystemTray().add(icon);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   private JFImage trayicon;
-  private JFIcon icon;
+  private TrayIcon icon;
   private MenuItem exit, show;
 
   private void getProfile() {

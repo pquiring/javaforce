@@ -175,12 +175,16 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     exit = new MenuItem("Exit");
     exit.addActionListener(this);
     popup.add(exit);
-    icon = new JFIcon();
-    icon.create(trayicon, popup, this, "Passwords");
+    icon = new TrayIcon(trayicon.getImage(), "Passwords", popup);
+    try {
+      SystemTray.getSystemTray().add(icon);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   private JFImage trayicon;
   private MainPanel panel;
-  private JFIcon icon;
+  private TrayIcon icon;
   public MenuItem exit, show;
 }
