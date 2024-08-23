@@ -14,19 +14,25 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 import javaforce.jni.*;
+import javaforce.utils.*;
 
 public class VNCServer {
   public final static String busPack = "net.sf.jfvnc";
 
   private boolean start() {
     config = loadConfig();
-    return start(config.password, true, config.port);
+    return start(config.password, config.port, true);
   }
 
-  public boolean start(String pass, boolean service_mode) {
-    return start(pass, service_mode, 5900);
+  public boolean start(String pass) {
+    return start(pass, 5900, false);
   }
-  public boolean start(String pass, boolean service_mode, int port) {
+
+  public boolean start(String pass, int port) {
+    return start(pass, port, false);
+  }
+
+  private boolean start(String pass, int port, boolean service_mode) {
     if (active) {
       stop();
     }
@@ -563,20 +569,65 @@ public class VNCServer {
     return JF.getConfigPath() + "/jfvnc.cfg";
   }
 
+  private static String getServiceFile() {
+    return System.getProperty("user.dir") + "\\jfvncsvc.exe";
+  }
+
   public static void main(String[] args) {
     if (args.length < 1) {
-      JFAWT.showError("Usage", "Usage:VNCServer {password} [port]");
+      String usage = "";
+      if (JF.isWindows()) {
+        usage = "Usage:\nVNCServer {password} [port]\nVNCServer -install | -remove | -start | -stop";
+      } else {
+        usage = "Usage:\nVNCServer {password} [port]";
+      }
+      JFAWT.showError("Usage", usage);
       System.exit(1);
     }
-    JFLog.init("jfvnccli.log", true);
-    String password = args[0];
-    int port = 5900;
-    if (args.length > 1) {
-      port = JF.atoi(args[1]);
-      if (port < 0 || port > 65535) port = 5900;
+    if (args[0].startsWith("-")) {
+      if (!JF.isWindows()) {
+        JFAWT.showError("Error", "Not supported");
+        System.exit(1);
+      }
+      String exe = getServiceFile();
+      if (!new File(exe).exists()) {
+        JFAWT.showError("Error", "Unable to find jfvncsvc.exe");
+        System.exit(1);
+      }
+      switch (args[0]) {
+        case "-install": {
+          WinService.create("jfVNCServer", exe);
+          break;
+        }
+        case "-remove": {
+          WinService.delete("jfVNCServer");
+          break;
+        }
+        case "-start": {
+          WinService.start("jfVNCServer");
+          break;
+        }
+        case "-stop": {
+          WinService.stop("jfVNCServer");
+          break;
+        }
+        default: {
+          JFAWT.showError("Error", "Unknown option:" + args[0]);
+          System.exit(1);
+          break;
+        }
+      }
+    } else {
+      JFLog.init("jfvnccli.log", true);
+      String password = args[0];
+      int port = 5900;
+      if (args.length > 1) {
+        port = JF.atoi(args[1]);
+        if (port < 0 || port > 65535) port = 5900;
+      }
+      VNCServer server = new VNCServer();
+      server.start(password, port);
     }
-    VNCServer server = new VNCServer();
-    server.start(password, false, port);
   }
 
   public static class JBusMethods {
