@@ -53,8 +53,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     jLabel1.setText("Server");
 
     server.setText("127.0.0.1");
-    server.setMinimumSize(new java.awt.Dimension(100, 22));
-    server.setPreferredSize(new java.awt.Dimension(100, 22));
+    server.setMinimumSize(new java.awt.Dimension(200, 22));
+    server.setPreferredSize(new java.awt.Dimension(200, 22));
 
     jLabel2.setText("Topic");
 
@@ -98,13 +98,13 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(authenticate)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
