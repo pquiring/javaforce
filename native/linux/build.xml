@@ -1,6 +1,7 @@
 <project name="native" default="help" basedir=".">
   <description>native</description>
   <property environment="env"/>
+  <property name="libs" value="-ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm"/>
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
@@ -12,16 +13,16 @@
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
     <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu  -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu  -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64s.bin"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu  -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64.bin"/>
+    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu  -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64s.bin"/>
     <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
     <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
     <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
 
     <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecsd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -o ../../bin/jfexec"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a ${libs} -o ../../bin/jfexecd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -36,13 +37,13 @@
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
     <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../linux64s.bin"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -linotify -o ../linux64.bin"/>
+    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -linotify -o ../linux64s.bin"/>
 
     <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexecsd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -linotify -o ../../bin/jfexec"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl ${libs} -linotify -o ../../bin/jfexecd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -linotify -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -57,16 +58,16 @@
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
     <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE  -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64s.bin"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64.bin"/>
+    <exec command="gcc ${opt} -D_JF_SERVICE  -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64s.bin"/>
     <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
     <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
     <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
 
     <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexecsd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -o ../../bin/jfexec"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a ${libs} -o ../../bin/jfexecd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
