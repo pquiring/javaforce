@@ -1681,10 +1681,10 @@ public class JF {
     }
   }
 
-  private final static long KB = 1024;
-  private final static long MB = 1024 * 1024;
-  private final static long GB = 1024 * 1024 * 1024;
-  private final static long TB = 1024L * 1024L * 1024L * 1024L;
+  public final static long KB = 1024;
+  public final static long MB = 1024 * 1024;
+  public final static long GB = 1024 * 1024 * 1024;
+  public final static long TB = 1024L * 1024L * 1024L * 1024L;
 
   /** Converts long to engineering notation (KB, MB, GB, TB). */
   public static String toEng(long size) {
