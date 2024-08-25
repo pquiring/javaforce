@@ -26,6 +26,7 @@ public class Media {
   private int[] indexes = new int[4096];
   private long[] tses = new long[4096];
   private Frame frame;
+  private long ts_keyframe;
 
   private static final int JFAV = 0x4a464156;  //file magic id
   private static final int V32 = 32;  //file version (limited to 2GB)
@@ -69,6 +70,7 @@ public class Media {
     try {
       write = true;
       currentFrame = 0;
+      ts_keyframe = 0;
       raf = new RandomAccessFile(file, "rw");
       raf.setLength(0);
       if (!writeHeader()) {
@@ -92,6 +94,7 @@ public class Media {
       raf.setLength(raf.getFilePointer());
       write = true;
       currentFrame = header.frameCount;
+      ts_keyframe = tses[currentFrame - 1];
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -164,6 +167,12 @@ public class Media {
     return false;
   }
 
+  /** Read next Frame.
+   *
+   * Do not modify fields in Frame.
+   *
+   * @return frame = next frame or null at end of file or error
+   */
   public Frame readFrame() {
     if (write) return null;
     try {
@@ -174,6 +183,7 @@ public class Media {
         currentFrame++;
       }
       frame.stream = raf.readByte();
+      frame.ts += raf.readShort();  //delta ts
       frame.length = raf.readInt();
       while (frame.length > frame.data.length) {
         frame.data = new byte[frame.data.length << 1];
@@ -199,6 +209,15 @@ public class Media {
     }
   }
 
+  /** Write next frame.
+   *
+   * @param stream = stream index
+   * @param data = raw codec data
+   * @param offset = offset into data
+   * @param length = length of data
+   * @param ts = timestamp of frame
+   * @param keyFrame = is frame a key frame?
+   */
   public boolean writeFrame(int stream, byte[] data, int offset, int length, long ts, boolean keyFrame) {
     try {
       long file_offset = raf.getFilePointer();
@@ -214,8 +233,10 @@ public class Media {
         indexes[header.frameCount] = (int)file_offset;
         tses[header.frameCount] = ts;
         header.frameCount++;
+        ts_keyframe = ts;
       }
       raf.writeByte(stream);
+      raf.writeShort((short)(ts - ts_keyframe));
       raf.writeInt(length);
       raf.write(data, offset, length);
       return true;
