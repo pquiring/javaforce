@@ -144,9 +144,24 @@ public class JF {
     }
     try {
       if (str.charAt(0) == '+') {
-        return Integer.parseInt(str.substring(1));
+        str = str.substring(1);
       }
       return Integer.parseInt(str);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return -1;
+    }
+  }
+
+  public static long atol(String str) {
+    if (str.length() == 0) {
+      return 0;
+    }
+    try {
+      if (str.charAt(0) == '+') {
+        str = str.substring(1);
+      }
+      return Long.parseLong(str);
     } catch (Exception e) {
       JFLog.log(e);
       return -1;
@@ -159,6 +174,18 @@ public class JF {
     }
     try {
       return Float.parseFloat(str);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return -1;
+    }
+  }
+
+  public static double atod(String str) {
+    if (str.length() == 0) {
+      return 0;
+    }
+    try {
+      return Double.parseDouble(str);
     } catch (Exception e) {
       JFLog.log(e);
       return -1;
