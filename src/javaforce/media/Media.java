@@ -135,25 +135,16 @@ public class Media {
     public int length;  //length of data
   }
 
-  /** Seek to a frame #.
-   * Seeks to next keyFrame for better playback.
+  /** Seek to frame #.
    * Seeking is not supported on files opened for writing (create() or append()).
    */
   public boolean seekFrame(int frame) {
     if (write) return false;
     try {
-      int index;
-      //seek ahead to next keyframe to allow smooth playback after seek() operation
-      //keyFrames have a negative index
-      do {
-        if (frame >= header.frameCount) {
-          return false;
-        }
-        index = indexes[frame++];
-      } while (index > 0);
-      index *= -1;
+      if (frame >= header.frameCount) return false;
+      int index = indexes[frame];
       raf.seek(index);
-      currentFrame = frame - 1;
+      currentFrame = frame;
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -174,10 +165,15 @@ public class Media {
   }
 
   public Frame readFrame() {
-    if (write || currentFrame == header.frameCount) return null;
+    if (write) return null;
     try {
+      long pos = raf.getFilePointer();
+      if (pos >= header.indexOffset) return null;
+      if (pos >= indexes[currentFrame]) {
+        frame.ts = tses[currentFrame];
+        currentFrame++;
+      }
       frame.stream = raf.readByte();
-      frame.ts = tses[currentFrame++];
       frame.length = raf.readInt();
       while (frame.length > frame.data.length) {
         frame.data = new byte[frame.data.length << 1];
@@ -205,19 +201,20 @@ public class Media {
 
   public boolean writeFrame(int stream, byte[] data, int offset, int length, long ts, boolean keyFrame) {
     try {
-      if (indexes.length == header.frameCount) {
-        growIndexes(true);
-      }
-      long index = raf.getFilePointer();
-      long end = index + length + 5;
-      if (end >= V32_max_file_size) {
+      long file_offset = raf.getFilePointer();
+      long file_end = file_offset + length + 5;
+      if (file_end >= V32_max_file_size) {
         JFLog.log("Media:max_file_size reached (2GB)");
         return false;
       }
-      if (keyFrame) index *= -1;
-      indexes[header.frameCount] = (int)index;
-      tses[header.frameCount] = ts;
-      header.frameCount++;
+      if (keyFrame) {
+        if (indexes.length == header.frameCount) {
+          growIndexes(true);
+        }
+        indexes[header.frameCount] = (int)file_offset;
+        tses[header.frameCount] = ts;
+        header.frameCount++;
+      }
       raf.writeByte(stream);
       raf.writeInt(length);
       raf.write(data, offset, length);
@@ -232,7 +229,7 @@ public class Media {
   private static class Header {
     int magic;  //magic id
     int version;  //file version
-    int frameCount;  //# of frames
+    int frameCount;  //# of "key" frames
     int indexOffset;  //offset to indexes
     int streamCount;
     int[] streams;
