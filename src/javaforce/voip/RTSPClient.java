@@ -443,6 +443,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
             iface.onTeardown(this);
           } else if (sess.cmd.equals("GET_PARAMETER")) {
             iface.onGetParameter(this, HTTP.getContent(msg));
+          } else if (sess.cmd.equals("SET_PARAMETER")) {
+            iface.onSetParameter(this, HTTP.getContent(msg));
           }
           break;
         case 401:

@@ -12,4 +12,5 @@ public interface RTSPClientInterface {
   public void onPlay(RTSPClient client);
   public void onTeardown(RTSPClient client);
   public void onGetParameter(RTSPClient client, String[] params);
+  public void onSetParameter(RTSPClient client, String[] params);
 }
