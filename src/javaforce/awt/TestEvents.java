@@ -4,13 +4,21 @@ package javaforce.awt;
  *
  * @author pquiring
  */
-public class TestEvents extends javax.swing.JFrame {
+
+import java.awt.event.*;
+
+public class TestEvents extends javax.swing.JFrame implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
   /**
    * Creates new form TestEvents
    */
   public TestEvents() {
     initComponents();
+    keys.addKeyListener(this);
+    mouse.addMouseListener(this);
+    mouse.addMouseMotionListener(this);
+    mouse.addMouseWheelListener(this);
+    System.out.println("JAR Resource URL=" + getClass().getResource("/javaforce/icons/dhcp.png").toString());
   }
 
   /**
@@ -22,18 +30,22 @@ public class TestEvents extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jTextField1 = new javax.swing.JTextField();
-    jButton2 = new javax.swing.JButton();
+    keys = new javax.swing.JTextField();
+    exit = new javax.swing.JButton();
+    mouse = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-    jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
-      public void keyPressed(java.awt.event.KeyEvent evt) {
-        jTextField1KeyPressed(evt);
+    exit.setText("Exit");
+    exit.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        exitActionPerformed(evt);
       }
     });
 
-    jButton2.setText("Exit");
+    mouse.setBackground(new java.awt.Color(255, 255, 0));
+    mouse.setText("Mouse Events");
+    mouse.setOpaque(true);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -42,59 +54,36 @@ public class TestEvents extends javax.swing.JFrame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jTextField1)
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 327, Short.MAX_VALUE)
-            .addComponent(jButton2)))
+          .addComponent(keys)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(mouse, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(exit)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(keys, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jButton2)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(exit)
+          .addComponent(mouse))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
-    int key = evt.getKeyCode();
-    System.out.println(String.format(" key=%x",key));
-    int mods = evt.getModifiersEx();
-    System.out.println(String.format("mods=%x",mods));
-  }//GEN-LAST:event_jTextField1KeyPressed
+  private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
+    System.exit(0);
+  }//GEN-LAST:event_exitActionPerformed
 
   /**
    * @param args the command line arguments
    */
   public static void main(String[] args) {
-    /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-     */
-    try {
-      for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-        if ("Nimbus".equals(info.getName())) {
-          javax.swing.UIManager.setLookAndFeel(info.getClassName());
-          break;
-        }
-      }
-    } catch (ClassNotFoundException ex) {
-      java.util.logging.Logger.getLogger(TestEvents.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-      java.util.logging.Logger.getLogger(TestEvents.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-      java.util.logging.Logger.getLogger(TestEvents.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-      java.util.logging.Logger.getLogger(TestEvents.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
-
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -104,7 +93,91 @@ public class TestEvents extends javax.swing.JFrame {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton jButton2;
-  private javax.swing.JTextField jTextField1;
+  private javax.swing.JButton exit;
+  private javax.swing.JTextField keys;
+  private javax.swing.JLabel mouse;
   // End of variables declaration//GEN-END:variables
+
+  //KeyListener
+
+  public void keyTyped(KeyEvent e) {
+    int key = e.getKeyCode();
+    int mods = e.getModifiersEx();
+    System.out.println(String.format("       keyTyped:key=0x%x,mods=0x%x",key,mods));
+  }
+
+  public void keyPressed(KeyEvent e) {
+    int key = e.getKeyCode();
+    int mods = e.getModifiersEx();
+    System.out.println(String.format("     keyPressed:key=0x%x,mods=0x%x",key,mods));
+  }
+
+  public void keyReleased(KeyEvent e) {
+    int key = e.getKeyCode();
+    int mods = e.getModifiersEx();
+    System.out.println(String.format("    keyReleased:key=0x%x,mods=0x%x",key,mods));
+  }
+
+  //MouseListener
+
+  public void mouseClicked(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("   mouseClicked:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  public void mousePressed(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("   mousePressed:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  public void mouseReleased(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("  mouseReleased:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  public void mouseEntered(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("   mouseEntered:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  public void mouseExited(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("    mouseExited:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  //MouseMotionListener
+
+  public void mouseDragged(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("   mouseDragged:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  public void mouseMoved(MouseEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    System.out.println(String.format("     mouseMoved:x=%d,y=%d,b=0x%x",x,y,b));
+  }
+
+  //MouseWheelListener
+
+  public void mouseWheelMoved(MouseWheelEvent e) {
+    int x = e.getX();
+    int y = e.getY();
+    int b = e.getButton();
+    int w = e.getWheelRotation();
+    System.out.println(String.format("mouseWheelMoved:x=%d,y=%d,b=0x%x,w=%d",x,y,b,w));
+  }
 }
