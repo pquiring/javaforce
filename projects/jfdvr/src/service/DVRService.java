@@ -187,19 +187,19 @@ public class DVRService extends Thread implements RTSPServerInterface {
     boolean same = camera.url.equals(camera.url_low);
     CameraWorker viewer = null;
     if (camera.url.length() > 0) {
-      viewer = startCamera(camera, camera.url, true, same || camera.url_low.length() == 0, null);
+      viewer = startCamera(camera, camera.url, true, same || camera.url_low.length() == 0);
     }
     if (camera.url_low.length() > 0 && !same) {
-      startCamera(camera, camera.url_low, camera.url.length() == 0, true, viewer);
+      startCamera(camera, camera.url_low, camera.url.length() == 0, true);
     }
   }
 
-  public CameraWorker startCamera(Camera camera, String url, boolean isViewer, boolean isDecoding, CameraWorker viewer) {
+  public CameraWorker startCamera(Camera camera, String url, boolean isViewer, boolean isDecoding) {
     JFLog.log(log, "Start Camera:" + camera.name);
     CameraWorker instance = null;
     switch (url.substring(0,4)) {
-      case "rtsp": instance = new CameraWorkerVideo(camera, url, isViewer, isDecoding, viewer); break;
-      case "http": instance = new CameraWorkerPictures(camera, url, isViewer, isDecoding, viewer); break;
+      case "rtsp": instance = new CameraWorkerVideo(camera, url, isViewer, isDecoding); break;
+      case "http": instance = new CameraWorkerPictures(camera, url, isViewer, isDecoding); break;
     }
     if (instance == null) {
       JFLog.log(log, "Error:invalid camera:" + camera.name);
@@ -303,13 +303,20 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public void onPlay(RTSPServer server, RTSPSession sess) {
     try {
       URL url = new URI(sess.uri).toURL();
-      String path = url.getPath();  // / type / name
-      String[] type_name = path.split("/");
-      String type = type_name[1];
-      String name = type_name[2];
+      String path = url.getPath().substring(1);  //rename leading /
+      String[] args = path.split("/");
+      String type = args[0];
+      String name = args[1];
       switch (type) {
-        case "camera": camera_add_viewer(name, sess); break;
-        case "group": throw new Exception("CAN-NOT-PLAY-GROUP");
+        case "camera":
+          switch (args.length) {
+            case 2: camera_add_viewer(name, sess); break;
+            case 3: camera_add_viewer_file(name, sess, args[2], null); break;  //view past recording
+            case 4: camera_add_viewer_file(name, sess, args[2], args[3]); break;  //download segment
+          }
+          break;
+        case "group":
+          throw new Exception("CAN-NOT-PLAY-GROUP");
         default: throw new Exception("BAD-URL");
       }
       server.reply(sess, 200, "OK");
@@ -327,6 +334,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       String type = type_name[1];
       String name = type_name[2];
       switch (type) {
+        case "file":  //no break
         case "camera": camera_remove_viewer(name, sess); break;
         case "group": throw new Exception("CAN-NOT-PLAY-GROUP");
         default: throw new Exception("BAD-URL");
@@ -344,27 +352,33 @@ public class DVRService extends Thread implements RTSPServerInterface {
       String action = HTTP.getParameter(params, "action");
       if (action == null) action = "keep-alive";
       if (debug) JFLog.log(log, "onGetParameter:uri=" + sess.uri + ":action=" + action);
-      if (action.equals("query")) {
-        URL url = new URI(sess.uri).toURL();
-        String path = url.getPath();  // / type / name
-        String[] type_name = path.split("/");
-        String type = type_name[1];
-        String name = type_name[2];
-        if (debug) JFLog.log(log, "DVRService:query:" + type + "/" + name + ":" + sess.remotehost + ":" + sess.remoteport);
-        sess.params = null;
-        switch (type) {
-          case "list": sess.params = get_list_all(name); break;
-          case "camera": sess.params = new String[] {"type: camera"}; break;
-          case "group": sess.params = get_list_group_cameras(name); break;
-          default: throw new Exception("BAD URL");
-        }
-        server.reply(sess, 200, "OK");
-        sess.params = null;
-      } else {
-        if (debug) JFLog.log(log, "DVRService:ack keep-alive:" + sess.remotehost + ":" + sess.remoteport);
-        sess.params = new String[] {"type: keep-alive"};
-        server.reply(sess, 200, "OK");
-        sess.params = null;
+      switch (action) {
+        case "query":
+          URL url = new URI(sess.uri).toURL();
+          String path = url.getPath();  // / type / name
+          path = path.substring(1);  //remove leading /
+          String[] args = path.split("/");
+          String type = args[0];
+          String name = args[1];
+          if (debug) JFLog.log(log, "DVRService:query:" + type + "/" + name + ":" + sess.remotehost + ":" + sess.remoteport);
+          sess.params = null;
+          switch (type) {
+            case "list": sess.params = get_list_all(name); break;
+            case "camera": sess.params = new String[] {"type: camera"}; break;
+            case "group": sess.params = get_list_group_cameras(name); break;
+            default: throw new Exception("BAD URL");
+          }
+          server.reply(sess, 200, "OK");
+          sess.params = null;
+          break;
+        case "keep-alive":
+          if (debug) JFLog.log(log, "DVRService:ack keep-alive:" + sess.remotehost + ":" + sess.remoteport);
+          sess.params = new String[] {"type: keep-alive"};
+          server.reply(sess, 200, "OK");
+          sess.params = null;
+          break;
+        default:
+          throw new Exception("BAD REQUEST");
       }
     } catch (Exception e) {
       if (debug) JFLog.log(log, e);
@@ -375,9 +389,13 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public void onSetParameter(RTSPServer server, RTSPSession sess, String[] params) {
     sess.ts = System.currentTimeMillis();
     try {
-      String seek = HTTP.getParameter(params, "Seek");
-      if (seek != null) {
-        //TODO
+      String action = HTTP.getParameter(params, "Seek");
+      if (action == null) throw new Exception("BAD REQUEST");
+      switch (action) {
+        case "seek":
+          //TODO
+          String ts = HTTP.getParameter(params, "ts");
+          break;
       }
       server.reply(sess, 200, "OK");
     } catch (Exception e) {
@@ -396,8 +414,14 @@ public class DVRService extends Thread implements RTSPServerInterface {
     sess.ts = 0;
     try {
       if (sess.res_user != null) {
-        Camera cam = (Camera)sess.res_user;
-        cam.remove_viewer(sess);
+        if (sess.res_user instanceof Camera) {
+          Camera cam = (Camera)sess.res_user;
+          cam.remove_viewer(sess);
+        }
+        if (sess.res_user instanceof MediaServer) {
+          MediaServer media = (MediaServer)sess.res_user;
+          media.camera.remove_viewer(sess);
+        }
       }
       if (sess.rtp != null) {
         sess.rtp.uninit();
@@ -418,6 +442,12 @@ public class DVRService extends Thread implements RTSPServerInterface {
     Camera camera = Config.current.getCamera(name);
     if (camera == null) return;
     camera.add_viewer(sess);
+  }
+
+  private void camera_add_viewer_file(String name, RTSPSession sess, String ts_start, String ts_end) {
+    Camera camera = Config.current.getCamera(name);
+    if (camera == null) return;
+    camera.add_viewer_file(sess, ts_start, ts_end);
   }
 
   private void camera_remove_viewer(String name, RTSPSession sess) {
@@ -479,9 +509,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
           synchronized (Config.current.camerasLock) {
             for(Camera cam : Config.current.cameras) {
               synchronized (cam.viewersLock) {
-                int count = cam.viewers.size();
+                int count = cam.viewers_live.size();
                 for(int idx=0;idx<count;idx++) {
-                  RTSPSession sess = cam.viewers.get(idx);
+                  RTSPSession sess = cam.viewers_live.get(idx);
                   if (sess.ts < cut) {
                     JFLog.log(log, "DVR:Session expired:" + sess);
                     cam.remove_viewer(sess);

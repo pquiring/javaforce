@@ -22,20 +22,29 @@ public class Viewer {
   private NetworkReader[] networkReaders;  //group cameras
   private int grid_x, grid_y, grid_xy;
   private boolean playing;
+  private MediaEncoder encoder;
+  private MediaDownload downloader;
 
   public static boolean debug = false;
   public static boolean debug_packets = false;
+
   private final static boolean debug_buffers = false;
+
+  public URL url;
 
   /** Play a network source directly. */
   public void play(URL url) {
+    if (playing) {
+      stop(true);
+    }
     playing = true;
     if (url == null) {
       JFAWT.showError("Error", "Invalid URL");
       return;
     }
+    this.url = url;
     if (videoPanel == null) {
-      videoPanel = new VideoPanel();
+      videoPanel = new VideoPanel(this);
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
           ViewerApp.setPanel(videoPanel);
@@ -43,12 +52,9 @@ public class Viewer {
       });
       videoPanel.start();
     }
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        networkReader = new NetworkReader(url);
-        networkReader.start();
-      }
-    });
+    videoPanel.setURL(url.toString());
+    networkReader = new NetworkReader(url);
+    networkReader.start();
   }
 
   public synchronized void stop(boolean wait) {
@@ -96,10 +102,6 @@ public class Viewer {
     private MediaVideoDecoder video_decoder;
     private long frameCount;
     private long audioCount;
-    private long fileLength;
-    private int seekPosition;
-    private long mediaLength;
-    private boolean updatingPos;
     private boolean preBuffering;
     private int width, height;
     private final int audio_bufsiz = 1024;
@@ -110,10 +112,10 @@ public class Viewer {
     public NetworkReader(URL url) {
       //rtsp://host/type/name
       this.url = url;
-      String path = url.getPath();
+      String path = url.getPath().substring(1);
       String[] p = path.split("/");
-      type = p[1];
-      name = p[2];
+      type = p[0];
+      name = p[1];
     }
     public void setGrid(int gx, int gy) {
       grid = true;
@@ -123,7 +125,6 @@ public class Viewer {
     public void run() {
       frameCount = 0;
       audioCount = 0;
-      seekPosition = -1;
       audio_buffer = null;
       video_buffer = null;
       width = -1;
@@ -136,9 +137,7 @@ public class Viewer {
       try {
         connect();
 
-        fileLength = -1;
         String err = null;
-        mediaLength = -1;
         if (playThread == null) {
           playThread = new PlayVideoOnlyThread();
           playThread.start();
@@ -412,6 +411,20 @@ public class Viewer {
       }
     }
 
+    public void onSetParameter(RTSPClient client, String[] params) {
+      String download = HTTP.getParameter(params, "download");
+      if (download == null) return;
+      switch (download) {
+        case "complete":
+          if (encoder != null) {
+            encoder.stop();
+            encoder = null;
+          }
+
+          break;
+      }
+    }
+
     //RTP Interface
 
     public void rtpSamples(RTPChannel rtp) {
@@ -424,6 +437,11 @@ public class Viewer {
       switch (codec) {
         case CodecType.H264: rtpCodec(rtp, h264, buf, offset, length); break;
         case CodecType.H265: rtpCodec(rtp, h265, buf, offset, length); break;
+        case CodecType.RTCP:
+          if (new String(buf, offset, length).equals("done")) {
+            stopDownload();
+          }
+          break;
       }
     }
 
@@ -441,6 +459,10 @@ public class Viewer {
 
     public void onPacket(Packet packet) {
       if (debug_packets) JFLog.log("onPacket");
+      if (encoder != null) {
+        encoder.addVideoEncoded(packet.data, packet.offset, packet.length, false);  //key_frame ???
+        return;
+      }
       try {
         packets.add(packet);
         if (!packets.haveCompleteFrame()) return;
@@ -686,5 +708,22 @@ public class Viewer {
   public void refresh() {
     stop(true);
     play(Config.url);
+  }
+  public void startDownload(String filename) {
+    downloader = new MediaDownload(this, filename);
+    encoder = new MediaEncoder();
+    encoder.start(downloader, -1, -1, -1, -1, -1, "mp4", true, false);
+    downloader.setVisible(true);  //current thread is EDT
+  }
+  public void stopDownload() {
+    if (encoder != null) {
+      encoder.stop();
+      encoder = null;
+    }
+    if (downloader != null) {
+      downloader.complete();
+      downloader = null;
+    }
+    play(JF.createURL(VideoPanel.cleanURL(url.toString())));
   }
 }

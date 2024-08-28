@@ -6,8 +6,12 @@ package viewer;
  */
 
 import java.awt.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import javaforce.*;
+import javaforce.voip.*;
 import javaforce.awt.*;
 
 public class VideoPanel extends javax.swing.JPanel {
@@ -15,9 +19,13 @@ public class VideoPanel extends javax.swing.JPanel {
   /**
    * Creates new form VideoPanel
    */
-  public VideoPanel() {
+  public VideoPanel(Viewer viewer) {
     initComponents();
     container.setVisible(false);
+    this.viewer = viewer;
+    timeline_min = new JFImage(min_per_day, 16);
+    timeline_sec = new JFImage(60, 16);
+    setup();
   }
 
   /**
@@ -31,10 +39,11 @@ public class VideoPanel extends javax.swing.JPanel {
 
     container = new javax.swing.JScrollPane();
     controls = new javax.swing.JPanel();
-    timeline = new javax.swing.JLabel();
-    date = new javax.swing.JLabel();
-    date_pick = new javax.swing.JButton();
+    minutes = new javax.swing.JLabel();
     seconds = new javax.swing.JLabel();
+    live = new javax.swing.JButton();
+    download = new javax.swing.JButton();
+    date = new javax.swing.JSpinner();
 
     setPreferredSize(new java.awt.Dimension(1280, 720));
     addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -54,33 +63,40 @@ public class VideoPanel extends javax.swing.JPanel {
     });
 
     controls.setPreferredSize(new java.awt.Dimension(1454, 100));
-
-    timeline.setBackground(new java.awt.Color(0, 0, 0));
-    timeline.setForeground(new java.awt.Color(51, 255, 0));
-    timeline.setToolTipText("24 hr timeline");
-    timeline.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-    timeline.setPreferredSize(new java.awt.Dimension(1442, 18));
-    timeline.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-      public void mouseDragged(java.awt.event.MouseEvent evt) {
-        timelineMouseDragged(evt);
-      }
+    controls.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
       public void mouseMoved(java.awt.event.MouseEvent evt) {
-        timelineMouseMoved(evt);
+        controlsMouseMoved(evt);
       }
     });
 
-    date.setText("Date: yyyy-mm-dd");
-
-    date_pick.setText("v");
-    date_pick.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        date_pickActionPerformed(evt);
+    minutes.setBackground(new java.awt.Color(0, 0, 0));
+    minutes.setForeground(new java.awt.Color(51, 255, 0));
+    minutes.setToolTipText("");
+    minutes.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+    minutes.setPreferredSize(new java.awt.Dimension(1442, 18));
+    minutes.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+      public void mouseDragged(java.awt.event.MouseEvent evt) {
+        minutesMouseDragged(evt);
+      }
+      public void mouseMoved(java.awt.event.MouseEvent evt) {
+        minutesMouseMoved(evt);
+      }
+    });
+    minutes.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        minutesMouseClicked(evt);
+      }
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        minutesMousePressed(evt);
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        minutesMouseReleased(evt);
       }
     });
 
     seconds.setBackground(new java.awt.Color(0, 0, 0));
     seconds.setForeground(new java.awt.Color(51, 255, 0));
-    seconds.setToolTipText("60 second timeline");
+    seconds.setToolTipText("");
     seconds.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
     seconds.setPreferredSize(new java.awt.Dimension(62, 18));
     seconds.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -91,6 +107,37 @@ public class VideoPanel extends javax.swing.JPanel {
         secondsMouseMoved(evt);
       }
     });
+    seconds.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        secondsMouseClicked(evt);
+      }
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        secondsMousePressed(evt);
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        secondsMouseReleased(evt);
+      }
+    });
+
+    live.setText("Live");
+    live.setToolTipText("Seek to live video");
+    live.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        liveActionPerformed(evt);
+      }
+    });
+
+    download.setText("Download");
+    download.setToolTipText("Select range then download");
+    download.setEnabled(false);
+    download.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        downloadActionPerformed(evt);
+      }
+    });
+
+    date.setModel(new javax.swing.SpinnerDateModel());
+    date.setEditor(new javax.swing.JSpinner.DateEditor(date, "yyyy-dd-MM"));
 
     javax.swing.GroupLayout controlsLayout = new javax.swing.GroupLayout(controls);
     controls.setLayout(controlsLayout);
@@ -99,12 +146,14 @@ public class VideoPanel extends javax.swing.JPanel {
       .addGroup(controlsLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(timeline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(minutes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addGroup(controlsLayout.createSequentialGroup()
-            .addComponent(date)
+            .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(date_pick)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(live)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(download)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
@@ -112,12 +161,13 @@ public class VideoPanel extends javax.swing.JPanel {
       controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(controlsLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(timeline, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(minutes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(date)
-            .addComponent(date_pick))
+            .addComponent(live)
+            .addComponent(download)
+            .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(47, Short.MAX_VALUE))
     );
@@ -139,6 +189,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }// </editor-fold>//GEN-END:initComponents
 
   private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
+    wake();
   }//GEN-LAST:event_formMouseMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
@@ -149,52 +200,155 @@ public class VideoPanel extends javax.swing.JPanel {
     zoom(evt.getX(), evt.getY());
   }//GEN-LAST:event_formMouseClicked
 
-  private void date_pickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_date_pickActionPerformed
-    date_popup();
-  }//GEN-LAST:event_date_pickActionPerformed
-
-  private void timelineMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_timelineMouseMoved
-    timeline_mouse_move(evt.getX(), evt.getY());
-  }//GEN-LAST:event_timelineMouseMoved
-
-  private void timelineMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_timelineMouseDragged
-    timeline_mouse_drag(evt.getX(), evt.getY());
-  }//GEN-LAST:event_timelineMouseDragged
-
-  private void secondsMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseDragged
-    // TODO add your handling code here:
-  }//GEN-LAST:event_secondsMouseDragged
+  private void liveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_liveActionPerformed
+    seek_live();
+  }//GEN-LAST:event_liveActionPerformed
 
   private void secondsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseMoved
     // TODO add your handling code here:
   }//GEN-LAST:event_secondsMouseMoved
 
+  private void secondsMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseDragged
+    // TODO add your handling code here:
+  }//GEN-LAST:event_secondsMouseDragged
+
+  private void minutesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseClicked
+    seek_mins(evt.getX());
+  }//GEN-LAST:event_minutesMouseClicked
+
+  private void minutesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseMoved
+    timeline_mouse_move(evt.getX(), evt.getY());
+  }//GEN-LAST:event_minutesMouseMoved
+
+  private void minutesMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseDragged
+    timeline_mouse_move(evt.getX(), evt.getY());
+  }//GEN-LAST:event_minutesMouseDragged
+
+  private void secondsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseClicked
+    seek_secs(evt.getX());
+  }//GEN-LAST:event_secondsMouseClicked
+
+  private void minutesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMousePressed
+    sel_mins_start(evt.getX());
+  }//GEN-LAST:event_minutesMousePressed
+
+  private void minutesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseReleased
+    sel_mins_stop(evt.getX());
+  }//GEN-LAST:event_minutesMouseReleased
+
+  private void secondsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMousePressed
+    sel_secs_start(evt.getX());
+  }//GEN-LAST:event_secondsMousePressed
+
+  private void secondsMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseReleased
+    sel_secs_stop(evt.getX());
+  }//GEN-LAST:event_secondsMouseReleased
+
+  private void downloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadActionPerformed
+    download();
+  }//GEN-LAST:event_downloadActionPerformed
+
+  private void controlsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_controlsMouseMoved
+    wake();
+  }//GEN-LAST:event_controlsMouseMoved
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane container;
   private javax.swing.JPanel controls;
-  private javax.swing.JLabel date;
-  private javax.swing.JButton date_pick;
+  private javax.swing.JSpinner date;
+  private javax.swing.JButton download;
+  private javax.swing.JButton live;
+  private javax.swing.JLabel minutes;
   private javax.swing.JLabel seconds;
-  private javax.swing.JLabel timeline;
   // End of variables declaration//GEN-END:variables
 
-  private JFImage img;
+  private Viewer viewer;
+  private String url;
+  private JFImage video;
+  private JFImage timeline_min;
+  private JFImage timeline_sec;
   private boolean needPainting = false;
   private boolean grid;
   private int gx, gy;
   private boolean zoom;
   private int zx, zy;
+  private long lastUpdate;
+  private long ts_delta;  //0=live
+  //selection on minutes timeline
+  private long ts_sel_min_start = -1;
+  private long ts_sel_min_stop = -1;
+  //selection on seconds timeline
+  private long ts_sel_sec_start = -1;
+  private long ts_sel_sec_stop = -1;
+  //selection start
+  private int sel_mins_start = -1;
+  private int sel_secs_start = -1;
+  private boolean showControls = true;
+  private java.util.Timer timer;
+  private int cnt = 0;
 
   public static boolean debug = false;
 
   private synchronized void init() {
-    if (img != null) return;
+    if (video != null) return;
     int x = getWidth();
     int y = getHeight();
     if (x > 0 && y > 0) {
-      img = new JFImage(x, y);
+      video = new JFImage(x, y);
     }
+  }
+
+  private void wake() {
+    if (showControls) return;
+    cnt = 0;
+    java.awt.EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        showControls = true;
+        controls.setVisible(true);
+        repaint();
+      }
+    });
+  }
+
+  private void setup() {
+    timer = new java.util.Timer();
+    timer.schedule(new TimerTask() {
+      public void run() {
+        if (!showControls) return;
+        cnt++;
+        if (cnt == 5) {
+          java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+              showControls = false;
+              controls.setVisible(false);
+              repaint();
+            }
+          });
+        }
+      }
+    }, 1000, 1000);
+  }
+
+  private void unsetup() {
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
+  }
+
+  /** Removes timestamps from URL */
+  public static String cleanURL(String url) {
+    //rtsp://user:pass@server/camera/name/[ts_start/[ts_end]]
+    int i1 = url.indexOf('/', 7);
+    int i2 = url.indexOf('/', i1+1);
+    if (i2 == -1) return url;
+    int i3 = url.indexOf('/', i2+1);
+    if (i3 == -1) return url;
+    return url.substring(0, i3);  //strip timestamps
+  }
+
+  public void setURL(String url) {
+    this.url = cleanURL(url);
   }
 
   public void start() {
@@ -202,29 +356,30 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   public void resize() {
-    img = new JFImage(getWidth(), getHeight());
+    video = new JFImage(getWidth(), getHeight());
   }
 
   public void stop() {
     if (ViewerApp.self.isFullScreen()) {
       ViewerApp.self.toggleFullScreen();
     }
+    unsetup();
   }
 
   public void setImage(JFImage src) {
     init();
-    if (img == null) return;
+    if (video == null) return;
     if (src.getWidth() == getWidth() && src.getHeight() == getHeight()) {
-      img.putJFImage(src, 0, 0);
+      video.putJFImage(src, 0, 0);
     } else {
-      img.putJFImageScale(src, 0, 0, getWidth(), getHeight());
+      video.putJFImageScale(src, 0, 0, getWidth(), getHeight());
     }
     update();
   }
 
   public void setImage(JFImage src, int px, int py) {
     init();
-    if (img == null) return;
+    if (video == null) return;
     if (zoom) {
       if (px != zx || py != zy) return;
       setImage(src);
@@ -242,8 +397,8 @@ public class VideoPanel extends javax.swing.JPanel {
 
   private void setImageRect(JFImage src, int x, int y, int w, int h) {
     init();
-    if (img == null) return;
-    img.putJFImageScale(src, x, y, w, h);
+    if (video == null) return;
+    video.putJFImageScale(src, x, y, w, h);
   }
 
   private void update() {
@@ -252,6 +407,13 @@ public class VideoPanel extends javax.swing.JPanel {
       return;
     }
     needPainting = true;
+    long now = System.currentTimeMillis() / 1000L;
+    if (lastUpdate != now) {
+      updateTimelines();
+      minutes.setIcon(timeline_min);
+      seconds.setIcon(timeline_sec);
+      lastUpdate = now;
+    }
     try {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
@@ -265,24 +427,26 @@ public class VideoPanel extends javax.swing.JPanel {
     int w = getWidth();
     int h = getHeight();
     //paint controls
-    if (img == null) {
+    if (video == null) {
       g.fillRect(0, 0, w, h);
     } else {
-      int iw = img.getWidth();
-      int ih = img.getHeight();
+      int iw = video.getWidth();
+      int ih = video.getHeight();
       if (((iw != w) || (ih != h))) {
         if (debug) JFLog.log("VideoPanel:image scaled");
         JFImage scaled = new JFImage();
         scaled.setImageSize(w, h);
-        scaled.getGraphics().drawImage(img.getImage(), 0,0, w,h, 0,0, iw,ih, null);
-        img = scaled;
+        scaled.getGraphics().drawImage(video.getImage(), 0,0, w,h, 0,0, iw,ih, null);
+        video = scaled;
       }
-      g.drawImage(img.getImage(), 0, 0, null);
+      g.drawImage(video.getImage(), 0, 0, null);
     }
     needPainting = false;
   }
 
   public void setGrid(int gx, int gy) {
+    unsetup();
+    controls.setVisible(false);
     grid = true;
     this.gx = gx;
     this.gy = gy;
@@ -303,15 +467,203 @@ public class VideoPanel extends javax.swing.JPanel {
     }
   }
 
-  private void date_popup() {
-    //TODO
+  private static final int GREEN = 0x00ff00;
+  private static final int BLUE = 0x0000ff;
+
+  private void updateTimelines() {
+    boolean past_day = getDayDelta() > 0;
+    boolean past_min = ts_delta > ms_per_min;
+    long now = System.currentTimeMillis();
+    long day = toDay(now);
+    long min = toMin(now);
+    long sec = toSec(now);
+    for(int x=0;x<min_per_day;x++) {
+      long cmin = x * ms_per_min;
+      int clr = 0;
+      if (past_day) {
+        clr = GREEN;
+      } else {
+        if (cmin <= min) {
+          clr = GREEN;
+        }
+      }
+      if (cmin == min) {
+        clr = BLUE;
+      }
+      timeline_min.line(x, 0, x, 15, clr);
+    }
+    for(int x=0;x<60;x++) {
+      long csec = x * 1000;
+      int clr = 0;
+      if (past_min) {
+        clr = GREEN;
+      } else {
+        if (csec <= sec) {
+          clr = GREEN;
+        }
+      }
+      if (csec == min) {
+        clr = BLUE;
+      }
+      timeline_sec.line(x, 0, x, 15, clr);
+    }
   }
 
+  //download preview for tooltip
   private void timeline_mouse_move(int x, int y) {
     //TODO
   }
 
-  private void timeline_mouse_drag(int x, int y) {
-    //TODO
+  private static final long ms_per_day = 24 * 60 * 60 * 1000;  //hr * min * sec * 1000
+  private static final long ms_per_min = 60 * 1000;  //sec * 1000
+  private static final int min_per_day = 24 * 60;  //hr * min
+
+  private long toDay(long ts) {
+    //round ts to 12:00AM
+    ts /= ms_per_day;
+    ts *= ms_per_day;
+    return ts;
+  }
+
+  private long toMin(long ts) {
+    //get minute within day
+    ts = ts % ms_per_day;
+    ts /= ms_per_min;
+    ts *= ms_per_min;
+    return ts;
+  }
+
+  private long toSec(long ts) {
+    //get second within minute
+    ts = ts % ms_per_min;
+    ts /= 1000;
+    ts *= 1000;
+    return ts;
+  }
+
+  private long getDayDelta() {
+    long now = System.currentTimeMillis();
+    long today = toDay(now);
+    Date dt = (Date)date.getValue();
+    long date_day = toDay(dt.getTime());
+    if (date_day > today) return 0;
+    return today - date_day;
+  }
+
+  private void seek_live() {
+    ts_delta = 0;
+    try {
+      viewer.play(new URI(url).toURL());
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private void seek_mins(int mins) {
+    clearSelection();
+    ts_delta = getDayDelta() + (mins * ms_per_min);
+    long now = System.currentTimeMillis();
+    long ts = now - ts_delta;
+    try {
+      viewer.play(new URI(url + "/" + ts).toURL());
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private void seek_secs(int secs) {
+    clearSelection();
+    long mins = ts_delta / ms_per_min;
+    ts_delta = getDayDelta() + (mins * ms_per_min) + (secs * 1000);
+    long now = System.currentTimeMillis();
+    long ts = now - ts_delta;
+    try {
+      viewer.play(new URI(url + "/" + ts).toURL());
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private void clearSelection() {
+    sel_mins_start = -1;
+    sel_secs_start = -1;
+    ts_sel_min_start = -1;
+    ts_sel_min_stop = -1;
+    ts_sel_sec_start = -1;
+    ts_sel_sec_stop = -1;
+    download.setEnabled(false);
+  }
+
+  private void sel_mins_start(int min) {
+    sel_mins_start = min;
+  }
+
+  private void sel_mins_stop(int min) {
+    if (sel_mins_start == min) {
+      clearSelection();
+      return;
+    }
+    if (min < sel_mins_start) {
+      //swap start/stop
+      int tmp = sel_mins_start;
+      sel_mins_start = min;
+      min = tmp;
+    }
+    long now = System.currentTimeMillis();
+    ts_sel_min_start = now - (getDayDelta() + (sel_mins_start * ms_per_min));
+    ts_sel_min_stop = ts_sel_min_start + (min * ms_per_min);
+    ts_sel_sec_start = -1;
+    ts_sel_sec_stop = -1;
+    download.setEnabled(true);
+  }
+
+  private void sel_secs_start(int sec) {
+    sel_secs_start = sec;
+  }
+
+  private void sel_secs_stop(int sec) {
+    if (sel_secs_start == sec) {
+      clearSelection();
+      return;
+    }
+    if (sec < sel_secs_start) {
+      //swap start/stop
+      int tmp = sel_secs_start;
+      sel_secs_start = sec;
+      sec = tmp;
+    }
+    long mins = toMin(ts_delta);
+    long now = System.currentTimeMillis();
+    ts_sel_sec_start = now - (sel_secs_start * 1000);
+    ts_sel_sec_stop = ts_sel_sec_start + (sec * 1000);
+    ts_sel_min_start = -1;
+    ts_sel_min_stop = -1;
+    download.setEnabled(true);
+  }
+
+  private void download() {
+    String filename = JFAWT.getSaveAsFile(System.getProperty("user.dir"), new String[][] {
+      {"MKV", "mkv"},
+      {"MP4", "mp4"},
+      {"AVI", "avi"},
+    });
+    if (filename == null) return;
+    viewer.startDownload(filename);
+    if (ts_sel_min_start != -1) {
+      //download mins
+      try {
+        viewer.play(new URI(url + "/" + ts_sel_min_start + "/" + ts_sel_min_stop).toURL());
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    if (ts_sel_sec_start != -1) {
+      //download secs
+      try {
+        viewer.play(new URI(url + "/" + ts_sel_sec_start + "/" + ts_sel_sec_stop).toURL());
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
   }
 }

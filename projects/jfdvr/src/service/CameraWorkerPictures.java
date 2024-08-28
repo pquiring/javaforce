@@ -60,7 +60,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  public CameraWorkerPictures(Camera camera, String url, boolean isEncoder, boolean isDecoder, CameraWorker viewer) {
+  public CameraWorkerPictures(Camera camera, String url, boolean isEncoder, boolean isDecoder) {
     this.url = url;
     this.cleanurl = HTTP.cleanURL(url);
     this.isEncoder = isEncoder;

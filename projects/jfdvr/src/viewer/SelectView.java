@@ -308,6 +308,9 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
     updateLists();
   }
 
+  public void onSetParameter(RTSPClient client, String[] params) {
+  }
+
   public void refresh() {
     updateLists.doClick();
   }

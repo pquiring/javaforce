@@ -13,7 +13,7 @@ import javaforce.awt.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 
-public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RTPInterface, MediaIO, CameraWorker, PacketReceiver {
+public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RTPInterface, CameraWorker, PacketReceiver {
   public Camera camera;
   private String url;
   private String path;
@@ -32,16 +32,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private RTPH264 h264;
   private RTPH265 h265;
   private MediaVideoDecoder decoder;
-  private MediaEncoder encoder;
-  private RandomAccessFile raf;
-  private long file_size;
-  private long file_pos;
+  private Media encoder;
   private long folder_size;
-  private int width = -1;
-  private int height = -1;
-  private float fps = -1;
-  private final boolean recording;
-  private int frameCount = 0;
   private boolean active = true;
   private PacketBuffer packets_decode;
   private PacketBuffer packets_encode;
@@ -56,44 +48,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private int log;
   private boolean isEncoder;  //viewing, recording
   private boolean isDecoder;  //decoding, preview, motion detection
-  private CameraWorker encoderWorker;  //used by decoding to signal recording state to encoder
+//  private CameraWorker encoderWorker;  //used by decoding to signal recording state to encoder
   private long minute;
   private boolean keep;
-
-  //MediaCoder Interface
-
-  public int read(MediaCoder coder, byte[] buffer) {
-//    JFLog.log(log, "read:" + buffer.length);
-    return -1;
-  }
-
-  public int write(MediaCoder coder, byte[] buffer) {
-//    JFLog.log(log, "write:" + buffer.length);
-    writeFile(buffer);
-    if (file_pos == file_size) {
-      file_size += buffer.length;
-      folder_size += buffer.length;
-    }
-    file_pos += buffer.length;
-    return buffer.length;
-  }
-
-  public long seek(MediaCoder coder, long pos, int how) {
-//    JFLog.log(log, "seek:" + pos + ":" + how);
-    long newpos = 0;
-    try {
-      switch (how) {
-        case MediaCoder.SEEK_SET: newpos = pos; break;
-        case MediaCoder.SEEK_CUR: long curpos = raf.getFilePointer(); newpos = pos + curpos; break;
-        case MediaCoder.SEEK_END: long size = raf.length(); newpos = size + pos; break;
-      }
-      raf.seek(newpos);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    file_pos = newpos;
-    return newpos;
-  }
 
   private static class Recording {
     public File file;
@@ -103,16 +60,13 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  public CameraWorkerVideo(Camera cam, String cam_url, boolean is_Encoder, boolean is_Decoder, CameraWorker encoder_worker) {
+  public CameraWorkerVideo(Camera cam, String cam_url, boolean is_Encoder, boolean is_Decoder) {
     this.url = cam_url;
+    //NOTE:if camera only has one URL this class will be encoder and decoder
     this.isEncoder = is_Encoder;
     this.isDecoder = is_Decoder;
-    if (is_Encoder && is_Decoder) {
-      encoder_worker = this;
-    }
-    this.encoderWorker = encoder_worker;
     this.camera = cam;
-    if (is_Encoder) {
+    if (isEncoder) {
       log = Config.nextLog();
       JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + "-encode.log", true);
       JFLog.setRetention(log, 5);
@@ -126,12 +80,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     JFLog.log(log, "Camera=" + camera.name);
     path = Paths.videoPath + "/" + cam.name;
     max_folder_size = cam.max_folder_size * 1024L * 1024L * 1024L;
-    recording = is_Encoder;
-    if (is_Decoder) {
+    if (isDecoder) {
       preview_image = new JFImage(decoded_x, decoded_y);
     }
   }
-
 
   public void run() {
     setName("CameraWorkerVideo");
@@ -171,14 +123,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     } catch (Exception e) {
       JFLog.log(log, e);
     }
-    try {
-      if (raf != null) {
-        closeFile();
-        raf = null;
-      }
-    } catch (Exception e) {
-      JFLog.log(log, e);
-    }
     JFLog.log(log ,"CameraWorkerVideo:stop");
     JFLog.close(log);
   }
@@ -195,58 +139,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         JFLog.log(log, "delete recording:" + rec.file.getName());
       }
       if (packets_encode == null) return;
-      if (width == -1 || height == -1) {
-        //decode one frame to get width/height
-        if (h264 != null) {
-          if (!packets_encode.haveCompleteFrame()) return;
-          Packet fullPacket = packets_encode.getNextFrame();
-          CodecInfo info = RTPH264.getCodecInfo(fullPacket);
-          if (info == null || info.width == 0 || info.height == 0) {
-            JFLog.log(log, "Error:Unable to determine stream info");
-            return;
-          }
-          JFLog.log(log, "Encoder:size=" + info.width + "x" + info.height + ":fps=" + info.fps);
-          this.width = info.width;
-          this.height = info.height;
-          if (fps == -1) {
-            fps = info.fps;
-            camera.fps = fps;
-          }
-        }
-        if (h265 != null) {
-          if (!packets_encode.haveCompleteFrame()) return;
-          Packet packet = packets_encode.getNextFrame();
-          CodecInfo info = RTPH265.getCodecInfo(packet);
-          if (info == null || info.width == 0 || info.height == 0) {
-            JFLog.log(log, "Error:Unable to determine stream info");
-            return;
-          }
-          JFLog.log(log, "Encoder:size=" + info.width + "x" + info.height + ":fps=" + info.fps);
-          width = info.width;
-          height = info.height;
-          if (fps == -1) {
-            fps = info.fps;
-            camera.fps = fps;
-          }
-        }
-      }
       int cnt = 0;
       while (packets_encode.haveCompleteFrame()) {
         boolean key_frame = packets_encode.isNextFrame_KeyFrame();
         Packet packet = packets_encode.getNextFrame();
         if (debug_encoder) JFLog.log(log, "encoder:add full packet");
-        if (recording) {
-          recordFrame(packet, key_frame);
-          frameCount++;
-        } else {
-          if (encoder != null) {
-            encoder.stop();
-            encoder = null;
-          }
-          if (raf != null) {
-            closeFile();
-          }
-        }
+        recordFrame(packet, key_frame);
         cnt++;
         if (cnt == 256) break;
       }
@@ -257,7 +155,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void recordFrame(Packet packet, boolean key_frame) {
     try {
-      long current_minute = System.currentTimeMillis() / 60L;  //current minute
+      long now = System.currentTimeMillis();
+      long current_minute = now / 60L;  //current minute
       if (current_minute != minute && key_frame) {
         minute = current_minute;
         if (!camera.record_motion) {
@@ -265,33 +164,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         }
         JFLog.log(log, camera.name + " : max file size");
         if (encoder != null) {
-          encoder.stop();
-          encoder = null;
-        }
-        if (raf != null) {
           closeFile();
-          raf = null;
         }
         keep = !camera.record_motion;
       }
-      if (raf == null) {
+      if (encoder == null) {
         createFile();
       }
-      if (encoder == null) {
-        if (width == -1 || height == -1 || fps == -1) {
-          JFLog.log(log, "Unable to start encoder:size not defined yet");
-          return;
-        }
-        encoder = new MediaEncoder();
-        encoder.framesPerKeyFrame = (int)fps;
-        encoder.videoBitRate = 4 * 1024 * 1024;  //4Mb/sec
-        if (!encoder.start(this, width, height, (int)fps, 0, 0, "mp4", true, false)) {
-          JFLog.log(log, "Error:Encoder.start() failed! : res=" + width + "x" + height + ",fps=" + fps);
-          encoder = null;
-          return;
-        }
-      }
-      encoder.addVideoEncoded(packet.data, 0, packet.length, key_frame);
+      encoder.writeFrame(0, packet.data, 0, packet.length, now, key_frame);
     } catch (Exception e) {
       JFLog.log(log, e);
     }
@@ -322,19 +202,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           packets_decode.reset();
           return;
         }
-        if (width == -1 && height == -1) {
-          width = decoder.getWidth();
-          height = decoder.getHeight();
-          if (width == -1 || height == -1 || width == 0 || height == 0) {
-            width = -1;
-            height = -1;
-            return;
-          }
-          if (fps == -1) {
-            //should come from SDP
-            fps = decoder.getFrameRate();
-          }
-          JFLog.log(log, camera.name + " : detected : size=" + width + "x" + height + ":fps=" + fps);
+        if (last_frame == null) {
           last_frame = new int[decoded_xy];
         }
         if (camera.record_motion) {
@@ -350,9 +218,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public boolean connect() {
     //reset values
-    width = -1;
-    height = -1;
-    fps = -1;
     client = new RTSPClient();
     client.setLog(log);
     String user = null;
@@ -408,8 +273,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       decoder = null;
     }
     if (encoder != null) {
-      encoder.stop();
-      encoder = null;
+      closeFile();
     }
     packets_decode = null;
     packets_encode = null;
@@ -492,10 +356,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       }
     }
     System.arraycopy(newFrame, 0, last_frame, 0, decoded_xy);
-    if (encoderWorker == null) {
-      JFLog.log(log, "Error:encoder==null");
-      return;
-    }
     if (changed > camera.record_motion_threshold) {
       keep = true;
     }
@@ -505,46 +365,34 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void createFile() {
     try {
-      frameCount = 0;
-      file_size = 0;
-      file_pos = 0;
       filename = getFilename();
-      raf = new RandomAccessFile(filename, "rw");
       JFLog.log(log, camera.name + " : createFile:" + filename);
+      int codec = -1;
+      if (h264 != null) codec = MediaCoder.AV_CODEC_ID_H264;
+      else if (h265 != null) codec = MediaCoder.AV_CODEC_ID_H265;
+      if (codec == -1) {
+        JFLog.log("Error:createFile():Codec not known yet");
+        return;
+      }
+      encoder = new Media();
+      encoder.create(filename, new int[] {codec});
     } catch (Exception e) {
       JFLog.log(log, e);
     }
   }
 
   private void closeFile() {
-    if (raf == null) return;
-    try {
-      raf.close();
-    } catch (Exception e) {
-      JFLog.log(log, e);
-    }
-    raf = null;
+    if (encoder == null) return;
+    encoder.close();
+    encoder = null;
     if (keep) {
       Recording rec = new Recording();
       rec.file = new File(filename);
       rec.size = rec.file.length();
-      if (rec.size != file_size) {
-        JFLog.log(log, "Error:file size mismatch");
-      }
       rec.time = rec.file.lastModified();
       files.add(rec);
     } else {
       new File(filename).delete();
-    }
-    frameCount = 0;
-    file_size = 0;
-  }
-
-  private void writeFile(byte data[]) {
-    try {
-      raf.write(data);
-    } catch (Exception e) {
-      JFLog.log(log, e);
     }
   }
 
@@ -579,11 +427,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
       return;
     }
-    if (stream.framerate > 0) {
-      fps = stream.framerate;
-      if (isEncoder) {
-        camera.fps = fps;
-      }
+    if (stream.framerate > 0 && isEncoder) {
+      camera.fps = stream.framerate;
     }
     stream.setIP(client.getRemoteIP());
     stream.setPort(-1);
@@ -666,6 +511,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   }
 
   public void onGetParameter(RTSPClient client, String[] params) {
+  }
+
+  public void onSetParameter(RTSPClient client, String[] params) {
   }
 
   //RTP Interface
