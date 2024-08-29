@@ -309,18 +309,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     }
   }
 
-  private String getFilename() {
-    Calendar now = Calendar.getInstance();
-    return String.format("%s/%04d-%02d-%02d_%02d-%02d-%02d.mp4", path
-      , now.get(Calendar.YEAR)
-      , now.get(Calendar.MONTH) + 1
-      , now.get(Calendar.DAY_OF_MONTH)
-      , now.get(Calendar.HOUR_OF_DAY)
-      , now.get(Calendar.MINUTE)
-      , 0  //seconds always zero
-    );
-  }
-
   private int imgcnt;
   private void detectMotion(int newFrame[], boolean key_frame) {
     if (newFrame == null || last_frame == null) {
@@ -365,7 +353,13 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void createFile() {
     try {
-      filename = getFilename();
+      long now = System.currentTimeMillis();
+      long secs = now % (60 * 1000);
+      long round = 0;
+      if (secs < (30 * 1000)) {
+        round = 15 * 1000;
+      }
+      filename = DVRService.getRecordingFilename(camera.name, now + round, ".jfav");
       JFLog.log(log, camera.name + " : createFile:" + filename);
       int codec = -1;
       if (h264 != null) codec = MediaCoder.AV_CODEC_ID_H264;

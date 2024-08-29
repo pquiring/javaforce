@@ -54,10 +54,7 @@ public class MediaServer {
   private class Reader extends Thread {
     private Media media;
     private long ts_current;
-    private long min_now;
-    private long min_last;
     public void run() {
-      min_last = 0;
       loadFile();
       while (active) {
         long now = System.currentTimeMillis();
@@ -90,12 +87,12 @@ public class MediaServer {
         closeFile();
       }
       //load file @ ts_current
-      min_now = ts_current % 60;
-      if (min_now == min_last) {
-        min_now++;
+      long secs = ts_current % (60 * 1000);
+      long round = 0;
+      if (secs < (30 * 1000)) {
+        round = 15 * 1000;
       }
-      min_last = min_now;
-      String filename = Paths.videoPath + "/" + camera.name + "/" + min_now + ".jfav";
+      String filename = DVRService.getRecordingFilename(camera.name, ts_current + round, ".jfav");
       File file = new File(filename);
       if (!file.exists()) {
         abort();
