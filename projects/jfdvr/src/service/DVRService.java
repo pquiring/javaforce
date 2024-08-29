@@ -490,9 +490,11 @@ public class DVRService extends Thread implements RTSPServerInterface {
     return new String[] {camlist};
   }
 
+  private static final long ms_min = 60 * 1000;
+
   public static String getRecordingFilename(String camera, long ts, String ext) {
-    ts /= 60;
-    ts *= 60;
+    ts /= ms_min;
+    ts *= ms_min;
     return Paths.videoPath + "/" + camera + "/" + ts + ext;
   }
 
