@@ -4,6 +4,7 @@
   { "name" : "javaforce.ui.Font", "allDeclaredConstructors" : true},
   { "name" : "javaforce.ui.Image", "allDeclaredConstructors" : true},
   { "name" : "javaforce.gl.GL", "allDeclaredConstructors" : true, "allDeclaredMethods" : true},
+  { "name" : "javaforce.cl.CL", "allDeclaredConstructors" : true, "allDeclaredMethods" : true},
   { "name" : "javaforce.media.MediaIO", "allDeclaredMethods" : true},
   { "name" : "javaforce.media.MediaCoder", "allDeclaredConstructors" : true, "fields" : [ { "name" : "ctx" } ]},
   { "name" : "javaforce.media.Camera", "allDeclaredConstructors" : true},
