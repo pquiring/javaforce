@@ -152,7 +152,8 @@ public class LDAP {
     System.out.println("Usage:ldap {command} [args]");
     System.out.println(" login server domain username password");
     System.out.println(" attrs server domain username password dname key attrs...");
-    System.out.println(" memberof server domain username password dname username group");
+    System.out.println(" memberof server domain username password dname {username|computername} group");
+    System.out.println("   ERRORLEVEL==1 if true");
     System.exit(1);
   }
 
@@ -197,6 +198,7 @@ public class LDAP {
           }
           boolean isMember = ldap.memberOf(args[5], args[6], args[7]);
           System.out.println("memberOf = " + isMember);
+          System.exit(isMember ? 1 : 0);
           break;
         }
       }
