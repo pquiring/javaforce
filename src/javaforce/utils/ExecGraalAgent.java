@@ -44,7 +44,17 @@ public class ExecGraalAgent implements ShellProcessListener {
     String classpath = props.getProperty("CLASSPATH");
     String mainclass = props.getProperty("MAINCLASS");
 
-    new File("META-INF/native-image").mkdirs();
+    String folder = "META-INF/native-image";
+    new File(folder).mkdirs();
+    //delete existing config files (except javaforce)
+    if (!JF.getCurrentPath().endsWith("javaforce")) {
+      File[] files = new File(folder).listFiles();
+      for(File file : files) {
+        if (file.isFile()) {
+          file.delete();
+        }
+      }
+    }
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
