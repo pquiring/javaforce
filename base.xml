@@ -97,7 +97,12 @@
     </sequential>
   </target>
 
-  <target name="graal" depends="jar,depjars" description="generate aot library">
+  <target name="graalmeta" depends="" description="build meta jar file">
+    <jar destfile="meta.jar" includes="META-INF/**/*" basedir=".">
+    </jar>
+  </target>
+
+  <target name="graal" depends="jar,depjars,graalmeta" description="generate aot library">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>

@@ -43,6 +43,8 @@ public class ExecGraal implements ShellProcessListener {
     String classpath = props.getProperty("CLASSPATH");
     String mainclass = props.getProperty("MAINCLASS");
 
+    classpath += ";meta.jar";
+
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
@@ -61,7 +63,11 @@ public class ExecGraal implements ShellProcessListener {
     cmd.add("--shared");
     cmd.add("--no-fallback");
 
-    sp.run(cmd.toArray(JF.StringArrayType), true);
+    String[] cmdArray = cmd.toArray(JF.StringArrayType);
+
+    System.out.println("cmd=" + JF.join(" ", cmdArray));
+
+    sp.run(cmdArray, true);
 
     doSubProjects();
   }

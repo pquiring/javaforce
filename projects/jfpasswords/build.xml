@@ -27,7 +27,6 @@
     <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <fileset dir="." includes="*.crt"/>
-      <fileset dir="." includes="META-INF/**/*"/>
       <manifest>
         <attribute name="Main-Class" value="PasswordsApp"/>
       </manifest>

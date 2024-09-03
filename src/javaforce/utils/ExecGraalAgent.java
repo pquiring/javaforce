@@ -57,10 +57,33 @@ public class ExecGraalAgent implements ShellProcessListener {
       cmd.add(classpath.replaceAll("[;]", ":"));
     }
     cmd.add(mainclass);
-    sp.run(cmd.toArray(JF.StringArrayType), true);
+
+    String[] cmdArray = cmd.toArray(JF.StringArrayType);
+
+    System.out.println("cmd=" + JF.join(" ", cmdArray));
+
+    sp.run(cmdArray, true);
+
+    generate_jni_config(mainclass);
   }
 
   public void shellProcessOutput(String str) {
     System.out.print(str);
+  }
+
+  private void generate_jni_config(String mainclass) {
+    String filename = "META-INF/native-image/jni-config.json";
+    if (new File(filename).exists()) return;
+    try {
+      StringBuilder jni = new StringBuilder();
+      jni.append("[");
+      jni.append("{ \"name\" : \"" + mainclass + "\", \"methods\": [ {\"name\" : \"main\"} ]}");
+      jni.append("]");
+      FileOutputStream fos = new FileOutputStream(filename);
+      fos.write(jni.toString().getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }
