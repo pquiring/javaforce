@@ -43,6 +43,10 @@ public class ExecGraalAgent implements ShellProcessListener {
 
     String classpath = props.getProperty("CLASSPATH");
     String mainclass = props.getProperty("MAINCLASS");
+    String graalargs = props.getProperty("GRAALARGS");
+    if (graalargs == null) {
+      graalargs = "";
+    }
 
     String folder = "META-INF/native-image";
     new File(folder).mkdirs();
@@ -67,6 +71,11 @@ public class ExecGraalAgent implements ShellProcessListener {
       cmd.add(classpath.replaceAll("[;]", ":"));
     }
     cmd.add(mainclass);
+
+    String[] args = graalargs.split(" ");
+    for(String arg : args) {
+      cmd.add(arg);
+    }
 
     String[] cmdArray = cmd.toArray(JF.StringArrayType);
 
