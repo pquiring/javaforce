@@ -8,7 +8,7 @@
 
   <property name="version" value="${javaforce-version}"/>
 
-  <target name="buildall" description="build all utils">
+  <target name="buildall" depends="jar" description="build all utils">
     <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
@@ -42,13 +42,15 @@
     <ant antfile="build-scriptex.xml" inheritAll="false"/>
     <ant antfile="build-web.xml" inheritAll="false"/>
     <ant antfile="build-vss.xml" inheritAll="false"/>
-    <ant antfile="build-ssh.xml" inheritAll="false"/>
+    <ant antfile="build-jfssh.xml" inheritAll="false"/>
     <ant antfile="build-jfsshd.xml" inheritAll="false"/>
+    <ant antfile="build-ldap.xml" inheritAll="false"/>
     <zip destfile="jfUtilities-${javaforce-version}.zip">
       <fileset dir=".">
         <include name="*.exe"/>
+        <include name="*.jar"/>
       </fileset>
-      <fileset dir="jre_base/bin">
+      <fileset dir="${home}/jre_base/bin">
         <include name="*.dll"/>
       </fileset>
     </zip>
@@ -57,10 +59,10 @@
   <target name="install">
   </target>
 
-  <target name="depjars" depends="buildall">
+  <target name="depjars" depends="jar-javaforce,jar-sshd-common,jar-sshd-core,jar-sshd-sftp,jar-sshd-scp">
   </target>
 
-  <target name="jar">
+  <target name="jar" depends="depjars">
   </target>
 
   <target name="help" description="display help">

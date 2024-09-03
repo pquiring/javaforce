@@ -114,7 +114,7 @@ public class LDAP {
    * Must login() first.
    *
    * @param domain_dn = domain as dn (distinguished name) (ie: DC=example,DC=com)
-   * @param username = user to check for
+   * @param username = user to check for (for computer use COMPUTERNAME plus $)
    * @param group = group name
    * @return user is a member
    */
