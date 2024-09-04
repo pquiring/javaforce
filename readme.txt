@@ -130,9 +130,9 @@ Graal Support
 JavaForce includes some support for building AOT executables using GraalVM (http://www.graalvm.org)
 To build a project using Graal use the following Ant Tasks.
   graalagent
-    - execute application to build native configuration files
+    - execute application and monitor JNI usage to build native configuration files
     - run through the application making sure to use all features and then exit
-    - these config files are stored in META-INF/native-image and must be included in the application jar file
+    - GRAALARGS can be configured in app cfg file for console apps to force required program flow to be monitored
   graal
     - builds application native Library (should run after agent has generated config files)
     - JavaForce uses graal to build a library instead of an executable so the javaforce launchers can still be used
@@ -156,7 +156,7 @@ Requirements
   - Windows : VC++, wixtoolset 4+
   - Mac : gcc (Xcode)
   - FFmpeg 5.1+
-  - glfw for OpenGL support
+  - glfw 3.4 (OpenGL support)
 
 License
 =======
