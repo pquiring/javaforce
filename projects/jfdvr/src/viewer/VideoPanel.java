@@ -669,5 +669,8 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void setTimestamp(long ts) {
     ts_delta = ts;
+    if (ts_delta == 0) {
+      seek_live();
+    }
   }
 }
