@@ -71,14 +71,14 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     }
   }
 
-  public void add_viewer_file(RTSPSession sess, String ts_start, String ts_end) {
+  public void add_viewer_file(RTSPServer server, RTSPSession sess, String ts_start, String ts_end) {
     synchronized (viewersLock) {
       if (viewers_file.contains(sess)) {
         JFLog.log("DVR:Camera:RTSPSession:add_viewer_recording:already exists:" + sess);
       } else {
         viewers_file.add(sess);
       }
-      MediaServer media = new MediaServer(this, sess, ts_start, ts_end);
+      MediaServer media = new MediaServer(this, server, sess, ts_start, ts_end);
       media.start();
       sess.res_user = media;
     }

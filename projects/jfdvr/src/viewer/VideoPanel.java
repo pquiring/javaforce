@@ -666,4 +666,8 @@ public class VideoPanel extends javax.swing.JPanel {
       }
     }
   }
+
+  public void setTimestamp(long ts) {
+    ts_delta = ts;
+  }
 }

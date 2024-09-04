@@ -358,7 +358,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   }
 
   /**
-   * GET_PARAMETER (RTSP) Used as a keep alive.
+   * GET_PARAMETER (RTSP)
    */
   public boolean get_parameter(String url, String[] params) {
     sess.uri = RTSPURL.cleanURL(url);
@@ -402,7 +402,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
         JFLog.log(log, "Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
         return;
       }
-      String req = null;
+      String cmd = null;
       if (remoteip.equals("127.0.0.1")) {
         remoteip = sess.localhost;
       }
@@ -421,11 +421,26 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       if (type != -1) {
         JFLog.log(log, "reply=" + type + ":" + sess);
       } else {
-        req = getRequest(msg);
+        cmd = getRequest(msg);
         sess.uri = getURI(msg);
-        JFLog.log(log, "request=" + req + ":" + sess);
+        JFLog.log(log, "request=" + cmd + ":" + sess);
       }
       switch (type) {
+        case -1:
+          //the server rarely issues commands, only a few are supported
+          switch (cmd) {
+            case "GET_PARAMETER":
+              iface.onGetParameter(this, HTTP.getContent(msg));
+              break;
+            case "SET_PARAMETER":
+              iface.onSetParameter(this, HTTP.getContent(msg));
+              break;
+            default:
+              //treat all other codes as a cancel
+              sess.epass = null;
+              break;
+          }
+          break;
         case 200:
           if (sess.cmd.equals("OPTIONS")) {
             iface.onOptions(this);

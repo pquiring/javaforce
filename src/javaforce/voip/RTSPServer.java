@@ -150,6 +150,64 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   public void turnData(STUN stun, byte[] data, int offset, int length, short channel) {}
 
   /**
+   * Issues a command to the RTSP server.
+   */
+  private boolean issue(RTSPSession sess, String cmd) {
+    sess.cmd = cmd;
+    StringBuilder req = new StringBuilder();
+    StringBuilder post = new StringBuilder();
+    req.append(cmd + " " + sess.uri + sess.extra + " RTSP/1.0\r\n");
+    req.append("CSeq: " + sess.cseq++ + "\r\n");
+    req.append("User-Agent: " + useragent + "\r\n");
+    if (sess.transport != null) {
+      req.append(sess.transport);
+    }
+    if (sess.accept != null) {
+      req.append("Accept: " + sess.accept + "\r\n");
+    }
+    if (sess.id != null) {
+      req.append("Session: " + sess.id + "\r\n");
+    }
+    if (sess.params != null) {
+      for(String param : sess.params) {
+        post.append(param);
+        post.append("\r\n");
+      }
+      req.append("Content-Type: text/parameters\r\n");
+      req.append("Content-Length: " + post.length() + "\r\n");
+    }
+    req.append("\r\n");
+    if (sess.params != null) {
+      req.append(post);
+    }
+    return send(sess.remoteaddr, sess.remoteport, req.toString());
+  }
+
+  /**
+   * GET_PARAMETER (RTSP)
+   */
+  public boolean get_parameter(RTSPSession sess, String url, String[] params) {
+    sess.uri = RTSPURL.cleanURL(url);
+    sess.extra = "";
+    sess.params = params;
+    boolean result = issue(sess, "GET_PARAMETER");
+    sess.params = null;
+    return result;
+  }
+
+  /**
+   * SET_PARAMETER (RTSP)
+   */
+  public boolean set_parameter(RTSPSession sess, String url, String[] params) {
+    sess.uri = RTSPURL.cleanURL(url);
+    sess.extra = "";
+    sess.params = params;
+    boolean result = issue(sess, "SET_PARAMETER");
+    sess.params = null;
+    return result;
+  }
+
+  /**
    * Issues a reply to the RTSP client.
    */
   public boolean reply(RTSPSession sess, int code, String msg, String header) {
@@ -250,7 +308,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
 
       int reply = getResponseType(msg);
       if (reply != -1) {
-        JFLog.log(log, "nreply=" + reply + ":" + sess);
+        JFLog.log(log, "reply=" + reply + ":" + sess);
       } else {
         cmd = getRequest(msg);
         sess.uri = getURI(msg);

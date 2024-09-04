@@ -16,6 +16,7 @@ import javaforce.voip.*;
 public class MediaServer {
   public Camera camera;
 
+  private RTSPServer server;
   private RTSPSession sess;
   private long ts_start;
   private long ts_end;
@@ -24,7 +25,7 @@ public class MediaServer {
   private boolean download;
   private Reader reader;
 
-  public MediaServer(Camera camera, RTSPSession sess, String ts_start, String ts_end) {
+  public MediaServer(Camera camera, RTSPServer server, RTSPSession sess, String ts_start, String ts_end) {
     download = ts_end != null;
     this.camera = camera;
     active = true;
@@ -33,6 +34,7 @@ public class MediaServer {
     if (download) {
       this.ts_end = JF.atol(ts_end);
     }
+    this.server = server;
     this.sess = sess;
   }
 
@@ -67,7 +69,8 @@ public class MediaServer {
         if (download) {
           if (frame.ts >= ts_end) {
             abort();
-            sess.channel.writeRTCP("done".getBytes(), 0, 4);
+            server.set_parameter(sess, sess.uri, new String[] {"download: complete"});
+            break;
           }
         } else {
           long delay = (now - ts_delta) - frame.ts;
@@ -82,22 +85,34 @@ public class MediaServer {
       }
     }
     private void loadFile() {
-      ts_current = System.currentTimeMillis() - ts_delta;
       if (media != null) {
         closeFile();
       }
       //load file @ ts_current
-      long secs = ts_current % (60 * 1000);
-      long round = 0;
-      if (secs < (30 * 1000)) {
-        round = 15 * 1000;
-      }
-      String filename = DVRService.getRecordingFilename(camera.name, ts_current + round, ".jfav");
-      File file = new File(filename);
-      if (!file.exists()) {
-        abort();
-        return;
-      }
+      String filename;
+      File file;
+      boolean exists;
+      long now = System.currentTimeMillis();
+      do {
+        ts_current = now - ts_delta;
+        long secs = ts_current % (60 * 1000);
+        long round = 0;
+        if (secs < (30 * 1000)) {
+          round = 15 * 1000;
+        }
+        filename = DVRService.getRecordingFilename(camera.name, ts_current + round);
+        file = new File(filename);
+        exists = file.exists();
+        if (!exists) {
+          ts_delta -= 60 * 1000;  //try next minute
+          if (ts_delta <= 0) {
+            //skipped ahead to now
+            server.set_parameter(sess, sess.uri, new String[] {"ts: 0"});
+            abort();
+            return;
+          }
+        }
+      } while (!exists);
       media = new Media();
       if (!media.open(filename)) {
         abort();

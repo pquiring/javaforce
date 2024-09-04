@@ -359,7 +359,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (secs < (30 * 1000)) {
         round = 15 * 1000;
       }
-      filename = DVRService.getRecordingFilename(camera.name, now + round, ".jfav");
+      filename = DVRService.getRecordingFilename(camera.name, now + round);
       JFLog.log(log, camera.name + " : createFile:" + filename);
       int codec = -1;
       if (h264 != null) codec = MediaCoder.AV_CODEC_ID_H264;

@@ -412,15 +412,17 @@ public class Viewer {
     }
 
     public void onSetParameter(RTSPClient client, String[] params) {
+      String ts = HTTP.getParameter(params, "ts");
+      if (ts != null) {
+        //notice that is has changed
+        videoPanel.setTimestamp(JF.atol(ts));
+        return;
+      }
       String download = HTTP.getParameter(params, "download");
       if (download == null) return;
       switch (download) {
         case "complete":
-          if (encoder != null) {
-            encoder.stop();
-            encoder = null;
-          }
-
+          stopDownload();
           break;
       }
     }
@@ -437,11 +439,6 @@ public class Viewer {
       switch (codec) {
         case CodecType.H264: rtpCodec(rtp, h264, buf, offset, length); break;
         case CodecType.H265: rtpCodec(rtp, h265, buf, offset, length); break;
-        case CodecType.RTCP:
-          if (new String(buf, offset, length).equals("done")) {
-            stopDownload();
-          }
-          break;
       }
     }
 

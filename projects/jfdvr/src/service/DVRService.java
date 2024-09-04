@@ -447,7 +447,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   private void camera_add_viewer_file(String name, RTSPSession sess, String ts_start, String ts_end) {
     Camera camera = Config.current.getCamera(name);
     if (camera == null) return;
-    camera.add_viewer_file(sess, ts_start, ts_end);
+    camera.add_viewer_file(rtspServer, sess, ts_start, ts_end);
   }
 
   private void camera_remove_viewer(String name, RTSPSession sess) {
@@ -492,10 +492,10 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   private static final long ms_min = 60 * 1000;
 
-  public static String getRecordingFilename(String camera, long ts, String ext) {
+  public static String getRecordingFilename(String camera, long ts) {
     ts /= ms_min;
     ts *= ms_min;
-    return Paths.videoPath + "/" + camera + "/" + ts + ext;
+    return Paths.videoPath + "/" + camera + "/" + ts + ".jfav";
   }
 
   public class WorkerKeepAlive extends Thread {
