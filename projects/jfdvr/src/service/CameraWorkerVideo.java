@@ -472,7 +472,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     }
     rtp = new RTP();
     rtp.setLog(log);
-    if (!rtp.init(this)) {
+    if (!rtp.init(this, TransportType.UDP)) {
       JFLog.log(log, "RTP init failed");
       rtp = null;
       return;

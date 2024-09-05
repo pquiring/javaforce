@@ -188,6 +188,11 @@ public class RTP implements STUN.Listener {
     return false;
   }
 
+  public boolean init(RTPInterface iface) {
+    return init(iface, TransportType.UDP);
+  }
+
+
   public void setReceiveBufferSize(int bytes) {
     if (sock1 == null) return;
     try {

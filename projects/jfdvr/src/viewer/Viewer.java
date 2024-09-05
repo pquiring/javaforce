@@ -332,7 +332,7 @@ public class Viewer {
         return;
       }
       rtp = new RTP();
-      rtp.init(this);
+      rtp.init(this, TransportType.UDP);
       rtp.start();
       channel = rtp.createChannel(stream);
       channel.start();

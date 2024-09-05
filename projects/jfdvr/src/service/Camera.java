@@ -117,7 +117,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
       sess.rtp = null;
     }
     sess.rtp = new RTP();
-    sess.rtp.init(this);
+    sess.rtp.init(this, TransportType.UDP);
     sess.rtp.start();
     if (sess.channel != null) {
       sess.channel = null;
