@@ -154,6 +154,11 @@ public class LDAP {
     System.out.println(" attrs server domain username password dname key attrs...");
     System.out.println(" memberof server domain username password dname {username|computername} group");
     System.out.println("   ERRORLEVEL==1 if true");
+    System.out.println(" Where:");
+    System.out.println("   server = LDAP server (Windows AD Server)");
+    System.out.println("   domain = short domain name (example)");
+    System.out.println("   dname = long domain name in distinguished name format (dc=example,dc=com)");
+    System.out.println("   computername = should end with $ ( %COMPUTERNAME%$ )");
     System.exit(1);
   }
 
