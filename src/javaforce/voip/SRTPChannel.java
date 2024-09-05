@@ -216,8 +216,7 @@ public class SRTPChannel extends RTPChannel {
             if (rtp.useTURN) {
               rtp.stun1.sendData(turn1ch, request, 0, offset);
             } else {
-              DatagramPacket dp = new DatagramPacket(request, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort());
-              rtp.sock1.send(dp);
+              rtp.sock1.send(request, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort());
             }
           } catch (Exception e) {
             JFLog.log(e);
@@ -591,7 +590,7 @@ public class SRTPChannel extends RTPChannel {
       if (rtp.useTURN) {
         rtp.stun1.sendData(turn1ch, stun, 0, offset);
       } else {
-        rtp.sock1.send(new DatagramPacket(stun, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort()));
+        rtp.sock1.send(stun, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort());
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -699,7 +698,7 @@ public class SRTPChannel extends RTPChannel {
           if (rtp.useTURN) {
             rtp.stun1.sendData(turn1ch, data, off, len);
           } else {
-            rtp.sock1.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort()));
+            rtp.sock1.send(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort());
           }
         }
       } catch (Exception e) {

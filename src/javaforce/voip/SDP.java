@@ -9,6 +9,8 @@ import javaforce.*;
  *
  * @author pquiring
  *
+ * TODO : support TCP/TLS
+ *
  * Created : Nov 30, 2013
  */
 
@@ -24,6 +26,7 @@ public class SDP implements Cloneable {
   }
   public class Stream {
     public Type type;
+    public TransportType transport;
     public Mode mode = Mode.sendrecv;
     public String ip;  //optional (stream specific) [rare]
     public Codec[] codecs = new Codec[0];
@@ -170,6 +173,7 @@ public class SDP implements Cloneable {
     Stream stream = new Stream();
     stream.sdp = this;
     stream.type = type;
+    stream.transport = TransportType.UDP;
     streams = Arrays.copyOf(streams, streams.length+1);
     streams[streams.length-1] = stream;
     return stream;
@@ -257,8 +261,12 @@ public class SDP implements Cloneable {
       Codec rfc2833 = stream.getCodec(RTP.CODEC_RFC2833);
       StringBuilder m = new StringBuilder();
       m.append("m=" + stream.getType() + " " + stream.port + " ");
+      switch (stream.transport) {
+        case UDP: m.append("UDP/"); break;
+        case TCP: m.append("TCP/"); break;
+      }
       if (stream.keyExchange == KeyExchange.DTLS) {
-        m.append("UDP/TLS/");
+        m.append("TLS/");
       }
       m.append("RTP/" + stream.profile);
       for(int b=0;b<stream.codecs.length;b++) {
@@ -413,25 +421,20 @@ public class SDP implements Cloneable {
         }
         //parse static codecs
         String[] f = ln.split(" ");
-        String[] p = f[2].split("/");
-        //p[] = RTP/AVP
-        //p[] = UDP/TLS/RTP/SRTP
-        int i = 1;
-        if (p[i].equals("TLS")) {
-          stream.keyExchange = SDP.KeyExchange.DTLS;
-          i = 3;
-        }
-        if (p[i].equals("AVP")) {
-          stream.profile = SDP.Profile.AVP;
-        } else if (p[i].equals("AVPF")) {
-          stream.profile = SDP.Profile.AVPF;
-        } else if (p[i].equals("SAVP")) {
-          stream.profile = SDP.Profile.SAVP;
-        } else if (p[i].equals("SAVPF")) {
-          stream.profile = SDP.Profile.SAVPF;
-        } else {
-          stream.profile = SDP.Profile.UNKNOWN;
-          JFLog.log(log, "SIP.getSDP() : Unsupported profile:" + p[i]);
+        String[] ps = f[2].split("/");
+        for(String p : ps) {
+          switch (p) {
+            case "RTP": break;
+            case "SRTP": break;
+            case "UDP": stream.transport = TransportType.UDP; break;
+            case "TCP": stream.transport = TransportType.TCP; break;
+            case "TLS": stream.keyExchange = SDP.KeyExchange.DTLS; break;
+            case "AVP": stream.profile = SDP.Profile.AVP; break;
+            case "AVPF": stream.profile = SDP.Profile.AVPF; break;
+            case "SAVP": stream.profile = SDP.Profile.SAVP; break;
+            case "SAVPF": stream.profile = SDP.Profile.SAVPF; break;
+            default: JFLog.log(log, "SIP.getSDP() : Unsupported profile:" + p);
+          }
         }
         stream.port = JF.atoi(f[1]);
         for(int b=3;b<f.length;b++) {

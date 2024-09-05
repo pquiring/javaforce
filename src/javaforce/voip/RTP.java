@@ -13,7 +13,7 @@ public class RTP implements STUN.Listener {
   private static int nextlocalrtpport = 32768;
   private static int rtpmin = 32768;
   private static int rtpmax = 65536;
-  protected DatagramSocket sock1, sock2;
+  protected Transport sock1, sock2;
   private Worker worker1, worker2;  //inbound Workers
   private int localrtpport;
   public volatile boolean active = false;
@@ -141,41 +141,7 @@ public class RTP implements STUN.Listener {
     throw new Exception("Turn timeout");
   }
 
-  /** For testing only */
-  public boolean init(RTPInterface iface, int port) {
-    this.iface = iface;
-    try {
-      localrtpport = port;
-      if (useTURN) {
-        //alloc TURN relay
-        wait4reset();
-        stun1 = new STUN();
-        if (!stun1.start(localrtpport, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
-        stun1.requestAlloc(true, null);
-        wait4reply();
-        if (turnToken == null) throw new Exception("Turn token missing");
-        JFLog.log(log, "RTP:TURN:host=" + stun1.getIP());
-        JFLog.log(log, "RTP:TURN:port=" + stun1.getPort());
-        wait4reset();
-        stun2 = new STUN();
-        if (!stun2.start(localrtpport + 1, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
-        stun2.requestAlloc(false, turnToken);
-        wait4reply();
-        JFLog.log(log, "RTP:TURN:host=" + stun2.getIP());
-        JFLog.log(log, "RTP:TURN:port=" + stun2.getPort());
-      } else {
-        sock1 = new DatagramSocket(localrtpport);
-        sock2 = new DatagramSocket(localrtpport + 1);
-      }
-      JFLog.log(log, "RTP:localport=" + localrtpport);
-    } catch (Exception e2) {
-      JFLog.log(log, e2);
-      return false;
-    }
-    return true;
-  }
-
-  public boolean init(RTPInterface iface) {
+  public boolean init(RTPInterface iface, TransportType type) {
     this.iface = iface;
     for(int a=0;a<5;a++) {
       try {
@@ -198,9 +164,19 @@ public class RTP implements STUN.Listener {
           JFLog.log(log, "RTP:TURN:host=" + stun2.getIP());
           JFLog.log(log, "RTP:TURN:port=" + stun2.getPort());
         } else {
-          sock1 = new DatagramSocket(localrtpport);
-          sock2 = new DatagramSocket(localrtpport + 1);
-          setReceiveBufferSize(16*1024*1024);  //default 64K drops video packets
+          switch (type) {
+            case UDP:
+              sock1 = new TransportUDP();
+              sock2 = new TransportUDP();
+              break;
+            case TCP:
+              sock1 = new TransportTCPClient();
+              sock2 = new TransportTCPClient();
+              break;
+          }
+          sock1.open(null, localrtpport, null);
+          sock2.open(null, localrtpport + 1, null);
+          sock1.setReceiveBufferSize(16*1024*1024);  //default 64K drops video packets
         }
         JFLog.log(log, "RTP:localport=" + localrtpport);
       } catch (Exception e2) {
@@ -408,10 +384,10 @@ public class RTP implements STUN.Listener {
   private class Worker extends Thread {
 
     private RTP rtp;
-    private DatagramSocket sock;
+    private Transport sock;
     private boolean rtcp;
 
-    public Worker(RTP rtp, DatagramSocket sock, boolean rtcp) {
+    public Worker(RTP rtp, Transport sock, boolean rtcp) {
       this.rtp = rtp;
       this.sock = sock;
       this.rtcp = rtcp;
@@ -422,14 +398,15 @@ public class RTP implements STUN.Listener {
       byte[] data = new byte[rtp.mtu];
       while (rtp.active) {
         try {
-          DatagramPacket pack = new DatagramPacket(data, rtp.mtu);
+          Packet pack = new Packet();
+          pack.data = data;
           sock.receive(pack);
-          int len = pack.getLength();
+          int len = pack.length;
           if (len < 12) {
             continue;
           }
-          String remoteip = pack.getAddress().getHostAddress();
-          int remoteport = pack.getPort();
+          String remoteip = pack.host;
+          int remoteport = pack.port;
           if (rtcp) {
             RTPChannel channel = rtp.findChannel(remoteip, remoteport-1);
             if (channel == null) {
@@ -449,11 +426,6 @@ public class RTP implements STUN.Listener {
             }
             channel.processRTP(data, 0, len);
           }
-        } catch (SocketException e) {
-          if (rtp.active) {
-            JFLog.log(log, e);
-          }
-          rtp.active = false;
         } catch (Exception e) {
           JFLog.log(log, e);
           rtp.active = false;

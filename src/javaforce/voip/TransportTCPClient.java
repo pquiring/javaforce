@@ -176,4 +176,7 @@ public class TransportTCPClient implements Transport {
   public String[] getClients() {
     return new String[0];
   }
+
+  public void setReceiveBufferSize(int size) {
+  }
 }

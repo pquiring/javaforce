@@ -390,6 +390,12 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               String client_port = HTTP.getParameter(tags, "client_port");
               String[] ports = client_port.split("[-]");
               sess.channel.stream.port = Integer.valueOf(ports[0]);
+              String[] ps = tags[0].split("/");
+              for(String p : ps) {
+                switch (p) {
+                  case "TCP": sess.channel.stream.transport = TransportType.TCP; break;
+                }
+              }
               iface.onSetup(this, sess);
               break;
             }

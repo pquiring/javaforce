@@ -509,7 +509,7 @@ public class SRTPChannelJ9 extends RTPChannel {
       if (rtp.useTURN) {
         rtp.stun1.sendData(turn1ch, stun, 0, offset);
       } else {
-        rtp.sock1.send(new DatagramPacket(stun, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort()));
+        rtp.sock1.send(stun, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort());
       }
     } catch (Exception e) {
       JFLog.log(e);

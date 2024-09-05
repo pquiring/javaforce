@@ -6,6 +6,12 @@ package javaforce.voip;
  */
 
 public class Packet {
+  public Packet() {}
+  public Packet(byte[] data, int offset, int length) {
+    this.data = data;
+    this.offset = offset;
+    this.length = length;
+  }
   public byte[] data;
   public int offset;
   public int length;

@@ -307,4 +307,7 @@ public class TransportTCPServer implements Transport {
       return clients.keySet().toArray(JF.StringArrayType);
     }
   }
+
+  public void setReceiveBufferSize(int size) {
+  }
 }

@@ -78,4 +78,12 @@ public class TransportUDP implements Transport {
     //not tracked for UDP clients
     return new String[0];
   }
+
+  public void setReceiveBufferSize(int size) {
+    try {
+      ds.setReceiveBufferSize(size);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
 }

@@ -22,4 +22,5 @@ public interface Transport {
 //  public int getLocalPort();
   public boolean error();
   public String[] getClients();
+  public void setReceiveBufferSize(int size);
 }

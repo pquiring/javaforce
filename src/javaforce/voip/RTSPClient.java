@@ -322,9 +322,15 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Send SETUP request to server (RTSP).
    */
-  public boolean setup(String url, int localrtpport, String control) {
+  public boolean setup(String url, int localrtpport, String control, TransportType type) {
     if (debug) JFLog.log(log, "setup:" + url);
-    sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
+    StringBuilder transport = new StringBuilder();
+    transport.append("Transport: ");
+    if (type == TransportType.TCP) {
+      transport.append("TCP/");
+    }
+    transport.append("RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n");
+    sess.transport = transport.toString();
     sess.uri = sess.base;
     if (control != null && control.length() > 0) {
       if (sess.uri.endsWith("/")) {
@@ -336,6 +342,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     boolean result = issue(sess, "SETUP");
     sess.transport = null;
     return result;
+  }
+
+  public boolean setup(String url, int localrtpport, String control) {
+    return setup(url, localrtpport, control, TransportType.UDP);
   }
 
   /**

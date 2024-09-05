@@ -103,7 +103,7 @@ public class RTPChannel {
       if (RTP.useTURN) {
         rtp.stun1.sendData(turn1ch, data, off, len);
       } else {
-        rtp.sock1.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort()));
+        rtp.sock1.send(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort());
       }
     } catch (Exception e) {
       JFLog.log(log, e);
@@ -124,7 +124,7 @@ public class RTPChannel {
       if (RTP.useTURN) {
         rtp.stun2.sendData(turn2ch, data, off, len);
       } else {
-        rtp.sock2.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort() + 1));
+        rtp.sock2.send(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort() + 1);
       }
     } catch (Exception e) {
       JFLog.log(log, "err:RTP.writeRTCP:failed");
