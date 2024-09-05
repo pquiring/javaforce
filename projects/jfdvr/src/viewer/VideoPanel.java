@@ -178,7 +178,7 @@ public class VideoPanel extends javax.swing.JPanel {
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(container, javax.swing.GroupLayout.DEFAULT_SIZE, 1280, Short.MAX_VALUE)
+      .addComponent(container, javax.swing.GroupLayout.DEFAULT_SIZE, 1170, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -298,11 +298,11 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void wake() {
-    if (grid || controls.isVisible()) return;
+    if (grid || container.isVisible()) return;
     cnt = 0;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        controls.setVisible(true);
+        container.setVisible(true);
         repaint();
       }
     });
@@ -312,12 +312,12 @@ public class VideoPanel extends javax.swing.JPanel {
     timer = new java.util.Timer();
     timer.schedule(new TimerTask() {
       public void run() {
-        if (!controls.isVisible()) return;
+        if (!container.isVisible()) return;
         cnt++;
         if (cnt == 5) {
           java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-              controls.setVisible(false);
+              container.setVisible(false);
               repaint();
             }
           });
@@ -443,7 +443,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void setGrid(int gx, int gy) {
     unsetup();
-    controls.setVisible(false);
+    container.setVisible(false);
     grid = true;
     this.gx = gx;
     this.gy = gy;
