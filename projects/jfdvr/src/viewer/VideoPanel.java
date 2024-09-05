@@ -283,7 +283,6 @@ public class VideoPanel extends javax.swing.JPanel {
   //selection start
   private int sel_mins_start = -1;
   private int sel_secs_start = -1;
-  private boolean showControls = true;
   private java.util.Timer timer;
   private int cnt = 0;
 
@@ -299,11 +298,10 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void wake() {
-    if (showControls) return;
+    if (grid || controls.isVisible()) return;
     cnt = 0;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        showControls = true;
         controls.setVisible(true);
         repaint();
       }
@@ -314,12 +312,11 @@ public class VideoPanel extends javax.swing.JPanel {
     timer = new java.util.Timer();
     timer.schedule(new TimerTask() {
       public void run() {
-        if (!showControls) return;
+        if (!controls.isVisible()) return;
         cnt++;
         if (cnt == 5) {
           java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-              showControls = false;
               controls.setVisible(false);
               repaint();
             }

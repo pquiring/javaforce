@@ -162,16 +162,14 @@ public class VideoPanel extends javax.swing.JPanel {
 
   private JFImage img, new_img;
   private boolean needPainting = false;
-  private boolean showControls = true;
   private java.util.Timer timer;
   private int cnt = 0;
 
   private void wake() {
-    if (showControls) return;
+    if (controls.isVisible()) return;
     cnt = 0;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        showControls = true;
         controls.setVisible(true);
         repaint();
       }
@@ -182,12 +180,11 @@ public class VideoPanel extends javax.swing.JPanel {
     timer = new java.util.Timer();
     timer.schedule(new TimerTask() {
       public void run() {
-        if (!showControls) return;
+        if (!controls.isVisible()) return;
         cnt++;
         if (cnt == 5) {
           java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-              showControls = false;
               controls.setVisible(false);
               repaint();
             }
