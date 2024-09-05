@@ -15,6 +15,7 @@ import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "0.25";
+  public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
   private byte[] cameraicon;
@@ -368,74 +369,80 @@ public class ConfigService implements WebUIHandler {
     row.add(blk4);
 
     list.addChangedListener((Component x) -> {
-      errmsg.setText("");
-      String opt = list.getSelectedItem();
-      if (opt == null) return;
-      int idx = opt.indexOf(':');
-      String opt_type = opt.substring(0, idx);
-      String opt_name = opt.substring(idx+1);
-      switch (opt_type) {
-        case "Camera": {
-          //select camera
-          int camera_cnt = Config.current.cameras.length;
-          Camera camera = null;
-          for(int a=0;a<camera_cnt;a++) {
-            if (Config.current.cameras[a].name.equals(opt_name)) {
-              camera = Config.current.cameras[a];
-              break;
+      try {
+        if (debug) JFLog.log("list.addChangedListener()");
+        errmsg.setText("");
+        String opt = list.getSelectedItem();
+        if (debug) JFLog.log("list.opt=" + opt);
+        if (opt == null) return;
+        int idx = opt.indexOf(':');
+        String opt_type = opt.substring(0, idx);
+        String opt_name = opt.substring(idx+1);
+        switch (opt_type) {
+          case "Camera": {
+            //select camera
+            int camera_cnt = Config.current.cameras.length;
+            Camera camera = null;
+            for(int a=0;a<camera_cnt;a++) {
+              if (Config.current.cameras[a].name.equals(opt_name)) {
+                camera = Config.current.cameras[a];
+                break;
+              }
             }
+            if (camera == null) break;
+            camera_name.setText(camera.name);
+            camera_url.setText(camera.url);
+            camera_url_low.setText(camera.url_low);
+            camera_enabled.setSelected(camera.enabled);
+            camera_record_motion.setSelected(camera.record_motion);
+            camera_threshold.setPos(camera.record_motion_threshold);
+            threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
+            max_folder_size.setText(Integer.toString(camera.max_folder_size));
+            controller.setText(camera.controller);
+            tag_trigger.setText(camera.tag_trigger);
+            tag_value.setText(camera.tag_value);
+            pos_edge.setSelected(camera.pos_edge);
+            stopTimer(client);
+            client.setProperty("camera", camera);
+            Camera camera_cap = camera;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+              public void run() {
+                motion_bar.setValue(camera_cap.motion_value);
+                motion_value.setText(Integer.toString((int)camera_cap.motion_value));
+                img.refresh();
+              }
+            }, 500, 500);
+            client.setProperty("timer", timer);
+            preview_panel.setVisible(true);
+            camera.viewing = true;
+            camera.update_preview = true;
+            camera_panel.setVisible(true);
+            group_panel.setVisible(false);
+            client.setProperty("view", "cameras");
+            break;
           }
-          if (camera == null) break;
-          camera_name.setText(camera.name);
-          camera_url.setText(camera.url);
-          camera_url_low.setText(camera.url_low);
-          camera_enabled.setSelected(camera.enabled);
-          camera_record_motion.setSelected(camera.record_motion);
-          camera_threshold.setPos(camera.record_motion_threshold);
-          threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
-          max_folder_size.setText(Integer.toString(camera.max_folder_size));
-          controller.setText(camera.controller);
-          tag_trigger.setText(camera.tag_trigger);
-          tag_value.setText(camera.tag_value);
-          pos_edge.setSelected(camera.pos_edge);
-          stopTimer(client);
-          client.setProperty("camera", camera);
-          Camera camera_cap = camera;
-          Timer timer = new Timer();
-          timer.schedule(new TimerTask() {
-            public void run() {
-              motion_bar.setValue(camera_cap.motion_value);
-              motion_value.setText(Integer.toString((int)camera_cap.motion_value));
-              img.refresh();
+          case "Group": {
+            //select group
+            int group_cnt = Config.current.groups.length;
+            Group group = null;
+            for(int a=0;a<group_cnt;a++) {
+              if (Config.current.groups[a].name.equals(opt_name)) {
+                group = Config.current.groups[a];
+                break;
+              }
             }
-          }, 500, 500);
-          client.setProperty("timer", timer);
-          preview_panel.setVisible(true);
-          camera.viewing = true;
-          camera.update_preview = true;
-          camera_panel.setVisible(true);
-          group_panel.setVisible(false);
-          client.setProperty("view", "cameras");
-          break;
-        }
-        case "Group": {
-          //select group
-          int group_cnt = Config.current.groups.length;
-          Group group = null;
-          for(int a=0;a<group_cnt;a++) {
-            if (Config.current.groups[a].name.equals(opt_name)) {
-              group = Config.current.groups[a];
-              break;
-            }
+            if (group == null) break;
+            group_name.setText(group.name);
+            update_group_lists(group, group_list_avail, group_list_selected);
+            camera_panel.setVisible(false);
+            group_panel.setVisible(true);
+            client.setProperty("view", "groups");
+            break;
           }
-          if (group == null) break;
-          group_name.setText(group.name);
-          update_group_lists(group, group_list_avail, group_list_selected);
-          camera_panel.setVisible(false);
-          group_panel.setVisible(true);
-          client.setProperty("view", "groups");
-          break;
         }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
     });
     b_new_camera.addClickListener((MouseEvent e, Component button) -> {

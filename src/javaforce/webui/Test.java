@@ -183,6 +183,12 @@ public class Test implements WebUIHandler {
     t3.add(b_remove);
     tab.addTab(t3, "Tab#3");
 
+    list.addChangedListener(new Changed() {
+      public void onChanged(Component c) {
+        JFLog.log("list.onChanged:" + list.getSelectedItem());
+      }
+    });
+
     b_add.addClickListener((MouseEvent e, Component button) -> {
       list.add("Option #" + (list.count()+1));
     });

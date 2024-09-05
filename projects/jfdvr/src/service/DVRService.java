@@ -68,6 +68,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         RTSP.debug = true;
         WebUIServer.debug = true;
         CameraWorkerVideo.debug = true;
+        ConfigService.debug = true;
       }
       debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
         if (rtspServer == null) {

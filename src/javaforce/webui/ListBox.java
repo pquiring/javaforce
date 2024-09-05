@@ -14,7 +14,8 @@ public class ListBox extends ScrollPanel implements Click {
       add(cmp);
     }
     public Component getComponent() {
-      return get(0);
+      Component cmp = get(0);
+      return cmp;
     }
     private boolean selected;
     public void setSelected(boolean state) {
@@ -53,7 +54,7 @@ public class ListBox extends ScrollPanel implements Click {
   public void add(Component item) {
     Cell cell = new Cell(item);
     cell.addClickListener(this);
-    super.add(cell);
+    super.add(count(), cell);
   }
 
   public void add(int idx, Component item) {
