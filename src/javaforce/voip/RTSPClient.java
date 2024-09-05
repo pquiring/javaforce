@@ -64,7 +64,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
         if (!startSTUN()) return false;
       }
       findlocalhost();
-      JFLog.log(log, "localhost = " + localhost + " for remotehost = " + remotehost);
+      JFLog.log(log, "localhost = " + localhost + " for remotehost = " + remotehost + ":" + remoteip);
       if (this.remotehost.equals("127.0.0.1")) {
         this.remotehost = localhost;
         remoteip = resolve(this.remotehost);
@@ -251,10 +251,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Issues a command to the RTSP server.
    */
   private boolean issue(RTSPSession sess, String cmd) {
-    JFLog.log(log, "issue command : " + cmd + " from : " + user + " to : " + remotehost + ":" + sess);
     sess.remotehost = remoteip;
     sess.remoteport = remoteport;
     sess.cmd = cmd;
+    JFLog.log(log, "issue command : " + cmd + " from : " + user + " to : " + remotehost + ":" + sess);
     StringBuilder req = new StringBuilder();
     StringBuilder post = new StringBuilder();
     req.append(cmd + " " + sess.uri + sess.extra + " RTSP/1.0\r\n");

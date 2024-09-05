@@ -51,6 +51,6 @@ public class RTSPSession {
   public Object res_user;  //resource object
 
   public String toString() {
-    return "RTSPSession:{local=" + localport + ",remote=" + remotehost + ":" + remoteport + ":" + rtp + ":" + cmd + "}";
+    return "RTSPSession:{local=" + localport + ",remote=" + remotehost + ":" + remoteport + ",rtp=" + rtp + ",cmd=" + cmd + "}";
   }
 }
