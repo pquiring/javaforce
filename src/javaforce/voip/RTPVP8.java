@@ -33,10 +33,10 @@ public class RTPVP8 extends RTPCodec {
   }
 
   /** Encodes raw VP8 data into multiple RTP packets. */
-  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
-    int len = data.length;
+  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+    int len = length;
     int packetLength;
-    int offset = 0;
+    int pos = offset;
     boolean first = true;
     while (len > 0) {
       if (len > mtu) {
@@ -50,9 +50,9 @@ public class RTPVP8 extends RTPCodec {
         packet.data[12] = (byte)(0x10);  //X R N S PartID(4)
         first = false;
       }
-      System.arraycopy(data, offset, packet, 13, packetLength);
+      System.arraycopy(data, pos, packet, 13, packetLength);
       pr.onPacket(packet);
-      offset += packetLength;
+      pos += packetLength;
       len -= packetLength;
     }
     packet.length = 0;

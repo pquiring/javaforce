@@ -121,7 +121,7 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
         if (codec.name.equals("JPEG")) {
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
           localImage.saveJPG(baos);
-          rtpJpeg.encode(baos.toByteArray(), PhonePanel.vx, PhonePanel.vy, 0, this);
+          rtpJpeg.encode(baos.toByteArray(), 0, baos.size(), PhonePanel.vx, PhonePanel.vy, 0, this);
           synchronized (lock) {
             lock.notify();
           }
@@ -300,29 +300,29 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
     int len = bytes.length;
     if (codec.name.equals("H263")) {
       //        printArray("encoded_h263", bytes, 0, bytes.length);
-      rtpH263.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpH263.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("VP8")) {
       //        printArray("encoded_vp8", bytes, 0, bytes.length);
       //        try { raf.write(bytes); } catch (Exception e) {}
-      rtpVP8.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpVP8.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("VP9")) {
       //        printArray("encoded_vp9", bytes, 0, bytes.length);
       //        try { raf.write(bytes); } catch (Exception e) {}
-      rtpVP9.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpVP9.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("H264")) {
       //        printArray("encoded_h264", bytes, 0, bytes.length);
       //        try { raf.write(bytes); } catch (Exception e) {}
-      rtpH264.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpH264.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("H265")) {
       //        printArray("encoded_h265", bytes, 0, bytes.length);
       //        try { raf.write(bytes); } catch (Exception e) {}
-      rtpH265.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpH265.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("H263-1998")) {
       //        printArray("encoded_1998", bytes, 0, bytes.length);
-      rtpH263_1998.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpH263_1998.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     } else if (codec.name.equals("H263-2000")) {
       //        printArray("encoded_2000", bytes, 0, bytes.length);
-      rtpH263_2000.encode(bytes, PhonePanel.vx, PhonePanel.vy, codec.id, this);
+      rtpH263_2000.encode(bytes, 0, bytes.length, PhonePanel.vx, PhonePanel.vy, codec.id, this);
     }
     synchronized (lock) {
       lock.notify();

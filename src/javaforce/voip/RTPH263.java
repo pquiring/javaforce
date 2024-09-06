@@ -37,7 +37,7 @@ public class RTPH263 extends RTPCodec {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
     //TODO
   }
 

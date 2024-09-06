@@ -46,20 +46,20 @@ public class RTPH263_1998 extends RTPCodec {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
-    int len = data.length;
+  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+    int len = length;
     int packetLength;
-    int offset = 0;
+    int pos = offset;
     boolean p;  //was 0,0 stripped off?
     while (len > 0) {
       p = false;
-      if (len > 2 && data[offset] == 0 && data[offset + 1] == 0) {
+      if (len > 2 && data[pos] == 0 && data[pos + 1] == 0) {
         p = true;
-        offset += 2;
+        pos += 2;
         len -= 2;
       }
       if (len > mtu) {
-        packetLength = find_best_length(data, offset, len);
+        packetLength = find_best_length(data, pos, len);
       } else {
         packetLength = len;
       }
@@ -68,8 +68,8 @@ public class RTPH263_1998 extends RTPCodec {
       //build H.263 header (2 bytes)
       packet.data[12] = (byte)(p ? 0x20 : 0x00);
 //      packet.data[13] = 0x00;
-      System.arraycopy(data, offset, packet.data, 12 + 2, packetLength);
-      offset += packetLength;
+      System.arraycopy(data, pos, packet.data, 12 + 2, packetLength);
+      pos += packetLength;
       len -= packetLength;
       pr.onPacket(packet);
     }

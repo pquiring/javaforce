@@ -62,25 +62,25 @@ public class RTPH264 extends RTPCodec {
    */
 
   /** Encodes raw H.264 packets into multiple RTP packets (fragments). */
-  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
-    int len = data.length;
+  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+    int len = length;
     int packetLength;
-    int offset = 0;
+    int pos = offset;
     while (len > 0) {
       //skip 0,0,0,1
-      while (data[offset] == 0) {offset++; len--;}
-      offset++; len--;  //skip 1
+      while (data[pos] == 0) {pos++; len--;}
+      pos++; len--;  //skip 1
       if (len > mtu) {
-        packetLength = find_best_length(data, offset, len);
+        packetLength = find_best_length(data, pos, len);
       } else {
         packetLength = len;
       }
       if (packetLength > mtu) {
         //need to split up into Frag Units (mode A)
         int nalLength = mtu - 2;
-        byte type = get_nal_type(data, offset);
-        byte nri = (byte)(data[offset] & 0x60);
-        offset++;
+        byte type = get_nal_type(data, pos);
+        byte nri = (byte)(data[pos] & 0x60);
+        pos++;
         len--;
         packetLength--;
         boolean first = true;
@@ -94,8 +94,8 @@ public class RTPH264 extends RTPCodec {
             packet.data[13] |= S;  //first FU packet
             first = false;
           }
-          System.arraycopy(data, offset, packet.data, 14, nalLength);
-          offset += nalLength;
+          System.arraycopy(data, pos, packet.data, 14, nalLength);
+          pos += nalLength;
           len -= nalLength;
           packetLength -= nalLength;
           pr.onPacket(packet);
@@ -108,8 +108,8 @@ public class RTPH264 extends RTPCodec {
         packet.data[12] |= nri;
         packet.data[13] = type;
         packet.data[13] |= E;  //last FU packet
-        System.arraycopy(data, offset, packet.data, 14, nalLength);
-        offset += nalLength;
+        System.arraycopy(data, pos, packet.data, 14, nalLength);
+        pos += nalLength;
         len -= nalLength;
         packetLength -= nalLength;
         pr.onPacket(packet);
@@ -117,9 +117,9 @@ public class RTPH264 extends RTPCodec {
         //full NAL packet
         packet.length = packetLength + 12;  //12=RTP.length
         RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
-        System.arraycopy(data, offset, packet.data, 12, packetLength);
+        System.arraycopy(data, pos, packet.data, 12, packetLength);
         pr.onPacket(packet);
-        offset += packetLength;
+        pos += packetLength;
         len -= packetLength;
       }
     }

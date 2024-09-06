@@ -55,9 +55,11 @@ public class MediaServer {
   }
 
   //reads media file and streams to player
-  private class Reader extends Thread {
+  private class Reader extends Thread implements PacketReceiver {
     private Media media;
     private long ts_current;
+    private int codec_id;
+    private RTPCodec rtp_codec;
     public void run() {
       loadFile();
       while (active) {
@@ -77,10 +79,13 @@ public class MediaServer {
         } else {
           long delay = (now - ts_delta) - frame.ts;
           if (delay > 3) {
+            JFLog.log("sleep=" + delay);
             JF.sleep((int)delay);
           }
         }
-        sess.channel.writeRTP(frame.data, frame.offset, frame.length);
+        //encode codec packet into RTP packets
+        //TODO : get RTP codec ID ??? 96 ???
+        rtp_codec.encode(frame.data, frame.offset, frame.length, 0, 0, 96, this);
       }
       if (media != null) {
         closeFile();
@@ -122,6 +127,11 @@ public class MediaServer {
         abort();
         return;
       }
+      codec_id = media.getStreamIDs()[0];
+      switch (codec_id) {
+        case MediaCoder.AV_CODEC_ID_H264: rtp_codec = new RTPH264(); break;
+        case MediaCoder.AV_CODEC_ID_H265: rtp_codec = new RTPH265(); break;
+      }
       media.seekTime(ts_current);
     }
     private void abort() {
@@ -133,6 +143,10 @@ public class MediaServer {
         media.close();
         media = null;
       }
+    }
+
+    public void onPacket(Packet frame) {
+      sess.channel.writeRTP(frame.data, frame.offset, frame.length);
     }
   }
 }

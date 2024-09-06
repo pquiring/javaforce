@@ -32,18 +32,18 @@ public class RTPJPEG extends RTPCodec {
   }
 
   /** Encodes a raw JPEG data into multiple RTP packets. */
-  public void encode(byte[] jpeg, int x, int y, int id, PacketReceiver pr) {
-    int cnt = (jpeg.length + mtu - 1) / mtu;
-    int len = jpeg.length;
+  public void encode(byte[] jpeg, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+    int cnt = (length + mtu - 1) / mtu;
+    int len = length;
     int packetLength;
-    int offset = 0;
+    int pos = offset;
     for(int a=0;a<cnt;a++) {
       if (len > mtu) packetLength = mtu; else packetLength = len;
       packet.length = packetLength + 12 + 8;  //12=RTP.length 8=rtp_jpeg_header.length
       RTPChannel.buildHeader(packet.data, RTP.CODEC_JPEG.id, seqnum, timestamp, ssrc, a == cnt-1);
-      buildHeader(packet.data, x, y, offset);
-      System.arraycopy(jpeg, offset, packet.data, 12 + 8, packetLength);
-      offset += packetLength;
+      buildHeader(packet.data, x, y, pos);
+      System.arraycopy(jpeg, pos, packet.data, 12 + 8, packetLength);
+      pos += packetLength;
       len -= packetLength;
       if (a == cnt-1) {
         packet.data[1] |= M;  //mark last packet (marker)
