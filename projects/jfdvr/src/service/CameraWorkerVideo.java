@@ -79,7 +79,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     JFLog.log(log, "CameraWorkerVideo:" + cam_url + ":encoder=" + is_Encoder + ":decoder=" + is_Decoder);
     JFLog.log(log, "Camera=" + camera.name);
     path = Paths.videoPath + "/" + cam.name;
-    max_folder_size = cam.max_folder_size * 1024L * 1024L * 1024L;
+    max_folder_size = cam.max_folder_size * JF.GB;
     if (isDecoder) {
       preview_image = new JFImage(decoded_x, decoded_y);
     }
@@ -156,13 +156,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private void recordFrame(Packet packet, boolean key_frame) {
     try {
       long now = System.currentTimeMillis();
-      long current_minute = now / 60L;  //current minute
+      long current_minute = now / (60L * 1000L);  //current minute
       if (current_minute != minute && key_frame) {
         minute = current_minute;
         if (!camera.record_motion) {
           keep = true;
         }
-        JFLog.log(log, camera.name + " : max file size");
         if (encoder != null) {
           closeFile();
         }
@@ -385,6 +384,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       rec.size = rec.file.length();
       rec.time = rec.file.lastModified();
       files.add(rec);
+      folder_size += rec.size;
     } else {
       new File(filename).delete();
     }
@@ -398,7 +398,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public void reloadConfig() {
     JFLog.log(log, "Reloading config");
-    max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
+    max_folder_size = camera.max_folder_size * JF.GB;
   }
 
   public Camera getCamera() {

@@ -137,6 +137,7 @@ public class VideoPanel extends javax.swing.JPanel {
     });
 
     date.setModel(new javax.swing.SpinnerDateModel());
+    date.setToolTipText("Date");
     date.setEditor(new javax.swing.JSpinner.DateEditor(date, "yyyy-dd-MM"));
 
     javax.swing.GroupLayout controlsLayout = new javax.swing.GroupLayout(controls);
