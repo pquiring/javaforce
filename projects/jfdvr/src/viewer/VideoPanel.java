@@ -25,7 +25,7 @@ public class VideoPanel extends javax.swing.JPanel {
     this.viewer = viewer;
     timeline_min = new JFImage(min_per_day, 16);
     timeline_sec = new JFImage(60, 16);
-    setup();
+    createTimer();
   }
 
   /**
@@ -303,13 +303,15 @@ public class VideoPanel extends javax.swing.JPanel {
     cnt = 0;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
+        if (debug) JFLog.log("show controls");
         container.setVisible(true);
+        revalidate();
         repaint();
       }
     });
   }
 
-  private void setup() {
+  private void createTimer() {
     timer = new java.util.Timer();
     timer.schedule(new TimerTask() {
       public void run() {
@@ -318,6 +320,7 @@ public class VideoPanel extends javax.swing.JPanel {
         if (cnt == 5) {
           java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+              if (debug) JFLog.log("hide controls");
               container.setVisible(false);
               repaint();
             }
@@ -327,7 +330,7 @@ public class VideoPanel extends javax.swing.JPanel {
     }, 1000, 1000);
   }
 
-  private void unsetup() {
+  private void cancelTimer() {
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -361,7 +364,7 @@ public class VideoPanel extends javax.swing.JPanel {
     if (ViewerApp.self.isFullScreen()) {
       ViewerApp.self.toggleFullScreen();
     }
-    unsetup();
+    cancelTimer();
   }
 
   public void setImage(JFImage src) {
@@ -444,7 +447,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void setGrid(int gx, int gy) {
     if (debug) JFLog.log("setGrid:" + gx + "," + gy);
-    unsetup();
+    cancelTimer();
     container.setVisible(false);
     grid = true;
     this.gx = gx;
