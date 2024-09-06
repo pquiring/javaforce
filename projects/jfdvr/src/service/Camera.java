@@ -30,6 +30,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
 
   public static boolean debug = false;
   private transient int log;
+  public transient boolean keep;  //keep current recording : this value is shared between encoder and decoder threads
 
   public Camera() {
     name = "";

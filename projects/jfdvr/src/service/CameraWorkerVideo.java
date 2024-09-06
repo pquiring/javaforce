@@ -22,7 +22,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   public static boolean debug = false;
   private static boolean debug_encoder = false;
   private static boolean debug_decoder = false;
-  private static boolean debug_buffers = false;
   private static boolean debug_motion = false;
   private static boolean debug_motion_image = false;
 
@@ -49,7 +48,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private boolean isEncoder;  //viewing, recording
   private boolean isDecoder;  //decoding, preview, motion detection
   private long minute;
-  private boolean keep;
 
   private static class Recording {
     public File file;
@@ -159,12 +157,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       if (current_minute != minute && key_frame) {
         minute = current_minute;
         if (!camera.record_motion) {
-          keep = true;
+          camera.keep = true;
         }
         if (encoder != null) {
           closeFile();
         }
-        keep = !camera.record_motion;
+        camera.keep = !camera.record_motion;
       }
       if (encoder == null) {
         if (!createFile()) return;
@@ -315,7 +313,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     float changed = VideoBuffer.compareFrames(last_frame, newFrame, decoded_x, decoded_y);
     camera.motion_value = changed;
     if (debug_motion && key_frame) {
-      System.out.println(camera.name + ":changed=" + changed);
+      JFLog.log(log, camera.name + ":keep=" + changed + ">" + camera.record_motion_threshold);
       if (debug_motion_image) {
         JFImage img = new JFImage(decoded_x, decoded_y);
         int size = decoded_x * decoded_y;
@@ -343,7 +341,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     }
     System.arraycopy(newFrame, 0, last_frame, 0, decoded_xy);
     if (changed > camera.record_motion_threshold) {
-      keep = true;
+      camera.keep = true;
     }
   }
 
@@ -377,10 +375,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void closeFile() {
     if (encoder == null) return;
-    if (debug) JFLog.log(log, camera.name + " : closeFile : keep=" + keep);
+    if (debug) JFLog.log(log, camera.name + " : closeFile : keep=" + camera.keep);
     encoder.close();
     encoder = null;
-    if (keep) {
+    if (camera.keep) {
       Recording rec = new Recording();
       rec.file = new File(filename);
       rec.size = rec.file.length();
