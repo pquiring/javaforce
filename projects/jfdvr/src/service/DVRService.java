@@ -25,8 +25,8 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public static boolean active = true;
 
-  public final static boolean debug = true;
-  public final static boolean debug_sub_systems = false;
+  public static boolean debug = false;
+  public static boolean debug_sub_systems = true;
 
   /** The G1 GC is known to crash under heavy loads.
    * Invoke System.gc() every 30 seconds seems to avoid GC deadlocks.
@@ -41,6 +41,11 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public static void serviceStart(String args[]) {
     MediaCoder.init();
     if (dvrService != null) return;
+    for(String arg : args) {
+      switch (arg) {
+        case "debug": debug = true; break;
+      }
+    }
     dvrService = new DVRService();
     dvrService.start();
   }
@@ -65,6 +70,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     Config.load();
     //create debug state
     if (debug) {
+      JFLog.log(log, "debug output enabled");
       if (debug_sub_systems) {
         TransportTCPServer.debug = true;
         RTSP.debug = true;

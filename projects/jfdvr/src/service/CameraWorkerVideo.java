@@ -377,6 +377,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private void closeFile() {
     if (encoder == null) return;
+    if (debug) JFLog.log(log, camera.name + " : closeFile : keep=" + keep);
     encoder.close();
     encoder = null;
     if (keep) {
