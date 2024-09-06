@@ -312,6 +312,13 @@ public class JF {
     }
   }
 
+  /** Returns current epoch adjusted for current timezone. */
+  public static long currentTimeMillis() {
+    long now = System.currentTimeMillis();
+    int offset = TimeZone.getDefault().getOffset(now);
+    return now + offset;
+  }
+
   public static void printEnvironment() {
     Map<String, String> env = System.getenv();
 

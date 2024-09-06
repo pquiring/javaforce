@@ -61,6 +61,7 @@ public class ViewerApp extends javax.swing.JFrame {
     }
     setExtendedState(Frame.MAXIMIZED_BOTH);
     fullscreen = true;
+    ToolTipManager.sharedInstance().setInitialDelay(100);  //force faster tool tips
   }
 
   /**
@@ -74,7 +75,7 @@ public class ViewerApp extends javax.swing.JFrame {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("jfDVR Viewer");
-    setPreferredSize(new java.awt.Dimension(1280, 720));
+    setPreferredSize(new java.awt.Dimension(1500, 720));
     addWindowListener(new java.awt.event.WindowAdapter() {
       public void windowClosed(java.awt.event.WindowEvent evt) {
         formWindowClosed(evt);
@@ -85,7 +86,7 @@ public class ViewerApp extends javax.swing.JFrame {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 952, Short.MAX_VALUE)
+      .addGap(0, 1250, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

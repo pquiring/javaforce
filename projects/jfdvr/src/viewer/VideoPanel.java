@@ -6,12 +6,10 @@ package viewer;
  */
 
 import java.awt.*;
-import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.voip.*;
 import javaforce.awt.*;
 
 public class VideoPanel extends javax.swing.JPanel {
@@ -26,6 +24,7 @@ public class VideoPanel extends javax.swing.JPanel {
     timeline_min = new JFImage(min_per_day, 16);
     timeline_sec = new JFImage(60, 16);
     createTimer();
+    cal = Calendar.getInstance();
   }
 
   /**
@@ -80,6 +79,11 @@ public class VideoPanel extends javax.swing.JPanel {
       }
       public void mouseMoved(java.awt.event.MouseEvent evt) {
         minutesMouseMoved(evt);
+      }
+    });
+    minutes.addFocusListener(new java.awt.event.FocusAdapter() {
+      public void focusGained(java.awt.event.FocusEvent evt) {
+        minutesFocusGained(evt);
       }
     });
     minutes.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -184,8 +188,8 @@ public class VideoPanel extends javax.swing.JPanel {
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addGap(0, 650, Short.MAX_VALUE)
-        .addComponent(container, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(0, 640, Short.MAX_VALUE)
+        .addComponent(container, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -206,7 +210,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_liveActionPerformed
 
   private void secondsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseMoved
-    // TODO add your handling code here:
+    timeline_secs_mouse_move(evt.getX(), evt.getY());
   }//GEN-LAST:event_secondsMouseMoved
 
   private void secondsMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseDragged
@@ -218,11 +222,11 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_minutesMouseClicked
 
   private void minutesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseMoved
-    timeline_mouse_move(evt.getX(), evt.getY());
+    timeline_mins_mouse_move(evt.getX(), evt.getY());
   }//GEN-LAST:event_minutesMouseMoved
 
   private void minutesMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseDragged
-    timeline_mouse_move(evt.getX(), evt.getY());
+    timeline_mins_mouse_move(evt.getX(), evt.getY());
   }//GEN-LAST:event_minutesMouseDragged
 
   private void secondsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseClicked
@@ -252,6 +256,9 @@ public class VideoPanel extends javax.swing.JPanel {
   private void controlsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_controlsMouseMoved
     wake();
   }//GEN-LAST:event_controlsMouseMoved
+
+  private void minutesFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_minutesFocusGained
+  }//GEN-LAST:event_minutesFocusGained
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane container;
@@ -286,6 +293,7 @@ public class VideoPanel extends javax.swing.JPanel {
   private int sel_secs_start = -1;
   private java.util.Timer timer;
   private int cnt = 0;
+  private Calendar cal;
 
   public static boolean debug = false;
 
@@ -299,8 +307,8 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void wake() {
-    if (grid || container.isVisible()) return;
     cnt = 0;
+    if (grid || container.isVisible()) return;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         if (debug) JFLog.log("show controls");
@@ -469,19 +477,21 @@ public class VideoPanel extends javax.swing.JPanel {
     }
   }
 
+  private static final int BLACK = 0x000000;
   private static final int GREEN = 0x00ff00;
   private static final int BLUE = 0x0000ff;
 
   private void updateTimelines() {
     boolean past_day = getDayDelta() > 0;
     boolean past_min = ts_delta > ms_per_min;
-    long now = System.currentTimeMillis();
+    long now = JF.currentTimeMillis();
     long day = toDay(now);
     long min = toMin(now);
     long sec = toSec(now);
+    if (debug) JFLog.log("time:" + now + ":" + (day/ms_per_day) + "," + (min/ms_per_min) + "," + (sec/ms_per_sec) + ":" + past_day);
     for(int x=0;x<min_per_day;x++) {
       long cmin = x * ms_per_min;
-      int clr = 0;
+      int clr = BLACK;
       if (past_day) {
         clr = GREEN;
       } else {
@@ -512,26 +522,48 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   //download preview for tooltip
-  private void timeline_mouse_move(int x, int y) {
-    //TODO
+  private void timeline_mins_mouse_move(int x, int y) {
+    if (x >= 1440) x = 1439;
+    int mins = x;  //1440
+    int hour = x / 60;  //24
+    mins -= hour * 60;  //60
+    String am_pm = null;
+    String text = null;
+    if (hour >= 12) {
+      am_pm = "PM";
+      hour -= 12;
+    } else {
+      am_pm = "AM";
+    }
+    if (hour == 0) hour = 12;
+    text = String.format("%02d:%02d%s", hour, mins, am_pm);
+    minutes.setToolTipText(text);
+  }
+
+  private void timeline_secs_mouse_move(int x, int y) {
+    if (x >= 60) x = 59;
+    int secs = x;  //60
+    String text = String.format("%02d", secs);
+    seconds.setToolTipText(text);
   }
 
   private static final long ms_per_day = 24 * 60 * 60 * 1000;  //hr * min * sec * 1000
   private static final long ms_per_min = 60 * 1000;  //sec * 1000
+  private static final long ms_per_sec = 1000;
   private static final int min_per_day = 24 * 60;  //hr * min
 
   private long toDay(long ts) {
-    //round ts to 12:00AM
+    //get days since epoch * ms_per_day (represents time at midnight)
     ts /= ms_per_day;
     ts *= ms_per_day;
     return ts;
   }
 
   private long toMin(long ts) {
-    //get minute within day
-    ts = ts % ms_per_day;
-    ts /= ms_per_min;
-    ts *= ms_per_min;
+    //get minute within day : 1440 * 1000
+    ts %= ms_per_day;
+    long secs = ts % ms_per_sec;
+    ts -= secs;
     return ts;
   }
 
@@ -562,6 +594,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void seek_mins(int mins) {
+    if (mins >= 1440) mins = 1439;
     clearSelection();
     ts_delta = getDayDelta() + (mins * ms_per_min);
     long now = System.currentTimeMillis();
@@ -574,6 +607,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void seek_secs(int secs) {
+    if (secs >= 60) secs = 59;
     clearSelection();
     long mins = ts_delta / ms_per_min;
     ts_delta = getDayDelta() + (mins * ms_per_min) + (secs * 1000);
