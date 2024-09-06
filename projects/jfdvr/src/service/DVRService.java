@@ -64,8 +64,8 @@ public class DVRService implements RTSPServerInterface {
       //init Paths
       Paths.init();
       log = Config.nextLog();
-      JFLog.append(JFLog.DEFAULT, Paths.logsPath + "/system.log", false);  //default log (0)
-      JFLog.append(log, Paths.logsPath + "/service.log", false);
+      JFLog.append(JFLog.DEFAULT, Paths.logsPath + "/system.log", true);  //default log (0)
+      JFLog.append(log, Paths.logsPath + "/service.log", true);
       JFLog.setRetention(log, 5);
       JFLog.log(log, "jfDVR/" + ConfigService.version + " starting...");
       JFLog.log(log, "pid=" + ProcessHandle.current().pid());
@@ -296,7 +296,7 @@ public class DVRService implements RTSPServerInterface {
     try {
       URL url = new URI(sess.uri).toURL();
       String path = url.getPath().substring(1);  //rename leading /
-      if (debug) JFLog.log("onDescribe:" + path);
+      if (debug) JFLog.log(log, "onDescribe:" + path);
       String[] args = path.split("/");
       String type = args[0];
       String name = args[1];
@@ -326,7 +326,7 @@ public class DVRService implements RTSPServerInterface {
     try {
       URL url = new URI(sess.uri).toURL();
       String path = url.getPath().substring(1);  //rename leading /
-      if (debug) JFLog.log("onPlay:" + path);
+      if (debug) JFLog.log(log, "onPlay:" + path);
       String[] args = path.split("/");
       String type = args[0];
       String name = args[1];
@@ -353,7 +353,7 @@ public class DVRService implements RTSPServerInterface {
     try {
       URL url = new URI(sess.uri).toURL();
       String path = url.getPath().substring(1);  // / type / name
-      if (debug) JFLog.log("onTeardown:" + path);
+      if (debug) JFLog.log(log, "onTeardown:" + path);
       String[] args = path.split("/");
       String type = args[0];
       String name = args[1];

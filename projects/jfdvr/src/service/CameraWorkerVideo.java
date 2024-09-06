@@ -65,12 +65,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     this.camera = cam;
     if (isEncoder) {
       log = Config.nextLog();
-      JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + "-encode.log", true);
+      JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + "-encode.log", false);
       JFLog.setRetention(log, 5);
       camera.setLog(log);
     } else {
       log = Config.nextLog();
-      JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + "-decode.log", true);
+      JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + "-decode.log", false);
       JFLog.setRetention(log, 5);
     }
     JFLog.log(log, "CameraWorkerVideo:" + cam_url + ":encoder=" + is_Encoder + ":decoder=" + is_Decoder);

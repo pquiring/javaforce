@@ -53,6 +53,7 @@ public class Media {
         return false;
       }
       readIndexes();
+      return true;
     } catch (Exception e) {
       JFLog.log(e);
     }
