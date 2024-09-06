@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Audio extends Media {
+public class Audio extends MediaComponent {
   public Audio() {
     super("audio");
   }

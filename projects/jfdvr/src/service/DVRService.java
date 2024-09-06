@@ -81,6 +81,7 @@ public class DVRService implements RTSPServerInterface {
           CameraWorkerVideo.debug = true;
           ConfigService.debug = true;
           MediaServer.debug = true;
+          Media.debug = true;
         }
         debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
           if (rtspServer == null) {

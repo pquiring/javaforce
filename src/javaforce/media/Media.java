@@ -34,6 +34,8 @@ public class Media {
   private static final long V32_max_file_size = 2L * JF.GB;  //max file size for V32
   private static final int max_streams = 16;
 
+  public static boolean debug = false;
+
   /** Open existing file for reading. */
   public boolean open(String file) {
     return open(file, "r");
@@ -182,6 +184,7 @@ public class Media {
       if (pos >= indexes[currentFrame]) {
         frame.ts = tses[currentFrame];
         currentFrame++;
+        if (debug) JFLog.log("Media.readFrame():next frame:ts=" + frame.ts);
       }
       frame.stream = raf.readByte();
       frame.ts += raf.readShort();  //delta ts

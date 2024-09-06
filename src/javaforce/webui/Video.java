@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Video extends Media {
+public class Video extends MediaComponent {
   public Video() {
     super("video");
   }

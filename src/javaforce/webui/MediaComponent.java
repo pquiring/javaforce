@@ -7,7 +7,7 @@ package javaforce.webui;
 
 import javaforce.webui.event.*;
 
-public class Media extends Container {
+public class MediaComponent extends Container {
   private String tag;
   private String src;
   private int state;
@@ -19,7 +19,7 @@ public class Media extends Container {
   public static final int STATE_PLAY = 2;
   public static final int STATE_PAUSE = 3;
 
-  public Media(String tag) {
+  public MediaComponent(String tag) {
     this.tag = tag;
     addEvent("onplay", "media_onplay(this);");
     addEvent("onstop", "media_onstop(this);");
@@ -34,7 +34,7 @@ public class Media extends Container {
     button_play = new Button("Play");
     button_play.addClickListener(new Click() {
       public void onClick(MouseEvent me, Component comp) {
-        Media.this.dispatchEvent("action", null);
+        MediaComponent.this.dispatchEvent("action", null);
       }
     });
     add(button_play);

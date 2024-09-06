@@ -36,6 +36,7 @@ public class MediaServer {
     if (download) {
       this.ts_end = JF.atol(ts_end);
     }
+    if (debug) JFLog.log("MediaServer:ts_start=" + ts_start + ",ts_delta=" + ts_delta + ",ts_end=" + ts_end);
     this.server = server;
     this.sess = sess;
   }
@@ -70,6 +71,7 @@ public class MediaServer {
           loadFile();
           continue;
         }
+        JFLog.log("frame.ts=" + frame.ts);
         if (download) {
           if (frame.ts >= ts_end) {
             abort();
@@ -79,7 +81,6 @@ public class MediaServer {
         } else {
           long delay = (now - ts_delta) - frame.ts;
           if (delay > 3) {
-            JFLog.log("sleep=" + delay);
             JF.sleep((int)delay);
           }
         }
