@@ -75,7 +75,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
     path = Paths.videoPath + "/" + camera.name;
-    max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
+    max_folder_size = camera.max_folder_size * JF.GB;
     if (isDecoder) {
       preview_image = new JFImage(preview_x, preview_y);
       captured_image = new JFImage();
@@ -259,7 +259,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   public void reloadConfig() {
     JFLog.log(log, "Reloading config");
-    max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
+    max_folder_size = camera.max_folder_size * JF.GB;
   }
 
   private String get16(byte[] data, boolean isBE) {

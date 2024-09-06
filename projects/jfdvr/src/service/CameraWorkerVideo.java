@@ -48,7 +48,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private int log;
   private boolean isEncoder;  //viewing, recording
   private boolean isDecoder;  //decoding, preview, motion detection
-//  private CameraWorker encoderWorker;  //used by decoding to signal recording state to encoder
   private long minute;
   private boolean keep;
 
@@ -156,7 +155,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private void recordFrame(Packet packet, boolean key_frame) {
     try {
       long now = System.currentTimeMillis();
-      long current_minute = now / (60L * 1000L);  //current minute
+      long current_minute = now / (60L * 1000L);
       if (current_minute != minute && key_frame) {
         minute = current_minute;
         if (!camera.record_motion) {
@@ -168,7 +167,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         keep = !camera.record_motion;
       }
       if (encoder == null) {
-        createFile();
+        if (!createFile()) return;
       }
       encoder.writeFrame(0, packet.data, 0, packet.length, now, key_frame);
     } catch (Exception e) {
@@ -350,7 +349,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private String filename;
 
-  private void createFile() {
+  private boolean createFile() {
     try {
       long now = System.currentTimeMillis();
       long secs = now % (60 * 1000);
@@ -365,12 +364,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       else if (h265 != null) codec = MediaCoder.AV_CODEC_ID_H265;
       if (codec == -1) {
         JFLog.log("Error:createFile():Codec not known yet");
-        return;
+        return false;
       }
       encoder = new Media();
       encoder.create(filename, new int[] {codec});
+      return true;
     } catch (Exception e) {
       JFLog.log(log, e);
+      return false;
     }
   }
 
@@ -545,6 +546,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   /** Received H264/265 packet. */
   public void onPacket(Packet packet) {
+    lastPacket = System.currentTimeMillis();
     try {
       if (isEncoder) {
         onPacketEncoder(packet);
