@@ -142,7 +142,7 @@ public class VideoPanel extends javax.swing.JPanel {
 
     date.setModel(new javax.swing.SpinnerDateModel());
     date.setToolTipText("Date");
-    date.setEditor(new javax.swing.JSpinner.DateEditor(date, "yyyy-dd-MM"));
+    date.setEditor(new javax.swing.JSpinner.DateEditor(date, "yyyy-MM-dd"));
 
     javax.swing.GroupLayout controlsLayout = new javax.swing.GroupLayout(controls);
     controls.setLayout(controlsLayout);
@@ -482,7 +482,7 @@ public class VideoPanel extends javax.swing.JPanel {
   private static final int BLUE = 0x0000ff;
 
   private void updateTimelines() {
-    boolean past_day = getDayDelta() > 0;
+    boolean past_day = get_date_delta() > 0;
     boolean past_min = ts_delta > ms_per_min;
     long now = JF.currentTimeMillis();
     long day = toDay(now);
@@ -521,6 +521,10 @@ public class VideoPanel extends javax.swing.JPanel {
     }
   }
 
+  private int getOffset(long now) {
+    return TimeZone.getDefault().getOffset(now);
+  }
+
   //download preview for tooltip
   private void timeline_mins_mouse_move(int x, int y) {
     if (x >= 1440) x = 1439;
@@ -548,6 +552,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private static final long ms_per_day = 24 * 60 * 60 * 1000;  //hr * min * sec * 1000
+  private static final long ms_per_hour = 60 * 60 * 1000;  //min * sec * 1000
   private static final long ms_per_min = 60 * 1000;  //sec * 1000
   private static final long ms_per_sec = 1000;
   private static final int min_per_day = 24 * 60;  //hr * min
@@ -575,13 +580,17 @@ public class VideoPanel extends javax.swing.JPanel {
     return ts;
   }
 
-  private long getDayDelta() {
+  private long get_date_delta() {
+    //this is all in UTC (no timezones)
     long now = System.currentTimeMillis();
     long today = toDay(now);
     Date dt = (Date)date.getValue();
     long date_day = toDay(dt.getTime());
+    if (debug) JFLog.log("today=" + (today / ms_per_min) + ",date=" + (date_day / ms_per_min));
     if (date_day > today) return 0;
-    return today - date_day;
+    long delta = today - date_day;
+    if (debug) JFLog.log("date_delta_mins=" + (delta / ms_per_min));
+    return delta;
   }
 
   private void seek_live() {
@@ -596,7 +605,12 @@ public class VideoPanel extends javax.swing.JPanel {
   private void seek_mins(int mins) {
     if (mins >= 1440) mins = 1439;
     clearSelection();
-    ts_delta = getDayDelta() + (mins * ms_per_min);
+    long tz_now = JF.currentTimeMillis();
+    int now_mins = (int)(toMin(tz_now) / ms_per_min);
+    mins = now_mins - mins;
+    ts_delta = get_date_delta() + (mins * ms_per_min);
+    if (debug) JFLog.log("ts_delta_mins=" + (ts_delta / ms_per_min));
+    if (ts_delta < 0) return;
     long now = System.currentTimeMillis();
     long ts = now - ts_delta;
     try {
@@ -610,7 +624,9 @@ public class VideoPanel extends javax.swing.JPanel {
     if (secs >= 60) secs = 59;
     clearSelection();
     long mins = ts_delta / ms_per_min;
-    ts_delta = getDayDelta() + (mins * ms_per_min) + (secs * 1000);
+    ts_delta = get_date_delta() + (mins * ms_per_min) + (secs * 1000);
+    if (debug) JFLog.log("ts_delta_mins=" + (ts_delta / ms_per_min));
+    if (ts_delta < 0) return;
     long now = System.currentTimeMillis();
     long ts = now - ts_delta;
     try {
@@ -646,7 +662,7 @@ public class VideoPanel extends javax.swing.JPanel {
       min = tmp;
     }
     long now = System.currentTimeMillis();
-    ts_sel_min_start = now - (getDayDelta() + (sel_mins_start * ms_per_min));
+    ts_sel_min_start = now - (get_date_delta() + (sel_mins_start * ms_per_min));
     ts_sel_min_stop = ts_sel_min_start + (min * ms_per_min);
     ts_sel_sec_start = -1;
     ts_sel_sec_stop = -1;
