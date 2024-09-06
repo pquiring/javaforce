@@ -181,13 +181,15 @@ public class Media {
     try {
       long pos = raf.getFilePointer();
       if (pos >= header.indexOffset) return null;
-      if (pos >= indexes[currentFrame]) {
+      if (pos == indexes[currentFrame]) {
         frame.ts = tses[currentFrame];
+        if (debug) JFLog.log("Media.readFrame():key_frame_ts=" + frame.ts + "@" + currentFrame);
         currentFrame++;
-        if (debug) JFLog.log("Media.readFrame():next frame:ts=" + frame.ts);
       }
       frame.stream = raf.readByte();
-      frame.ts += raf.readShort();  //delta ts
+      short delta_ts = raf.readShort();
+      if (debug) JFLog.log("Media.readFrame():delta_ts=" + delta_ts);
+      frame.ts += delta_ts;  //delta ts
       frame.length = raf.readInt();
       while (frame.length > frame.data.length) {
         frame.data = new byte[frame.data.length << 1];
@@ -345,6 +347,38 @@ public class Media {
     } catch (Exception e) {
       JFLog.log(e);
       return false;
+    }
+  }
+
+  private void view() {
+    JFLog.log("# key frames=" + header.frameCount);
+    for(int a=0;a<header.frameCount;a++) {
+      JFLog.log("frame = " + a);
+      JFLog.log(" ts[] = " + tses[a]);
+      JFLog.log("idx[] = " + indexes[a]);
+    }
+    do {
+      Frame frame = readFrame();
+      if (frame == null) break;
+    } while (true);
+  }
+
+  public static void main(String[] args) {
+    if (args.length == 0) {
+      JFLog.log("usage:Media view file.jfav");
+      System.exit(0);
+    }
+    debug = true;
+    switch (args[0]) {
+      case "view": {
+        Media media = new Media();
+        media.open(args[1]);
+        media.view();
+        break;
+      }
+      default:
+        JFLog.log("Unknown command:" + args[0]);
+        break;
     }
   }
 }
