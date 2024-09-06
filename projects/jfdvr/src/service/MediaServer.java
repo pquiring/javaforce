@@ -16,6 +16,8 @@ import javaforce.voip.*;
 public class MediaServer {
   public Camera camera;
 
+  public static boolean debug = false;
+
   private RTSPServer server;
   private RTSPSession sess;
   private long ts_start;
@@ -94,6 +96,7 @@ public class MediaServer {
       boolean exists;
       long now = System.currentTimeMillis();
       do {
+        if (debug) JFLog.log("MediaServer:ts_delta=" + ts_delta);
         ts_current = now - ts_delta;
         long secs = ts_current % (60 * 1000);
         long round = 0;
@@ -115,7 +118,9 @@ public class MediaServer {
       } while (!exists);
       media = new Media();
       if (!media.open(filename)) {
+        if (debug) JFLog.log("Media not found:" + filename);
         abort();
+        return;
       }
       media.seekTime(ts_current);
     }

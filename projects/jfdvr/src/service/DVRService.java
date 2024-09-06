@@ -15,7 +15,7 @@ import javaforce.webui.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 
-public class DVRService extends Thread implements RTSPServerInterface {
+public class DVRService implements RTSPServerInterface {
   public static DVRService dvrService;
   public static ConfigService configService;
   public static WebServerRedir redirService;
@@ -39,7 +39,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   private int log;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     MediaCoder.init();
     if (dvrService != null) return;
     for(String arg : args) {
@@ -54,106 +54,115 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public static void serviceStop() {
     if (dvrService == null) return;
-    dvrService.cancel();
+    dvrService.stop();
     dvrService = null;
   }
 
-  public void run() {
-    setName("DVRService");
-    //init Paths
-    Paths.init();
-    log = Config.nextLog();
-    JFLog.append(JFLog.DEFAULT, Paths.logsPath + "/system.log", false);  //default log (0)
-    JFLog.append(log, Paths.logsPath + "/service.log", false);
-    JFLog.setRetention(log, 5);
-    JFLog.log(log, "jfDVR/" + ConfigService.version + " starting...");
-    JFLog.log(log, "pid=" + ProcessHandle.current().pid());
-    //load current config
-    Config.load();
-    //create debug state
-    if (debug) {
-      JFLog.log(log, "debug output enabled");
-      if (debug_sub_systems) {
-        TransportTCPServer.debug = true;
-        RTSP.debug = true;
-        WebUIServer.debug = true;
-        CameraWorkerVideo.debug = true;
-        ConfigService.debug = true;
-      }
-      debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
-        if (rtspServer == null) {
-          debugState.write("rtspServer==null");
-          return;
+  private class Server extends Thread {
+    public void run() {
+      setName("DVRService");
+      //init Paths
+      Paths.init();
+      log = Config.nextLog();
+      JFLog.append(JFLog.DEFAULT, Paths.logsPath + "/system.log", false);  //default log (0)
+      JFLog.append(log, Paths.logsPath + "/service.log", false);
+      JFLog.setRetention(log, 5);
+      JFLog.log(log, "jfDVR/" + ConfigService.version + " starting...");
+      JFLog.log(log, "pid=" + ProcessHandle.current().pid());
+      //load current config
+      Config.load();
+      //create debug state
+      if (debug) {
+        JFLog.log(log, "debug output enabled");
+        if (debug_sub_systems) {
+          TransportTCPServer.debug = true;
+          RTSP.debug = true;
+          WebUIServer.debug = true;
+          CameraWorkerVideo.debug = true;
+          ConfigService.debug = true;
+          MediaServer.debug = true;
         }
-        debugState.write("now=" + System.currentTimeMillis());
-        try {
-          RTSPSession[] sesses = rtspServer.getSessions();
-          debugState.write("*** Server Sessions ************");
-          for(RTSPSession sess : sesses) {
-            debugState.write(sess.toString());
+        debugState = new DebugState(Paths.logsPath + "/debug.log", new Runnable() {public void run() {
+          if (rtspServer == null) {
+            debugState.write("rtspServer==null");
+            return;
           }
-        } catch (Exception e) {
-          debugState.write(e.toString());
-        }
-        try {
-          debugState.write("*** Transport Sessions ************");
-          String[] clients = rtspServer.getTransportClients();
-          for(String client : clients) {
-            debugState.write(client);
-          }
-        } catch (Exception e) {
-          debugState.write(e.toString());
-        }
-        try {
-          debugState.write("*** Cameras ************");
-          Config config = Config.current;
-          for(int a=0;a<config.cameras.length;a++) {
-            Camera cam = config.cameras[a];
-            if (cam.enabled) {
-              debugState.write(cam.toString());
+          debugState.write("now=" + System.currentTimeMillis());
+          try {
+            RTSPSession[] sesses = rtspServer.getSessions();
+            debugState.write("*** Server Sessions ************");
+            for(RTSPSession sess : sesses) {
+              debugState.write(sess.toString());
             }
+          } catch (Exception e) {
+            debugState.write(e.toString());
           }
-        } catch (Exception e) {
-          debugState.write(e.toString());
-        }
-        try {
-          debugState.write("*** Camera Sessions ************");
-          Object[] workers = list.toArray();
-          for(Object worker : workers) {
-            debugState.write(worker.toString());
+          try {
+            debugState.write("*** Transport Sessions ************");
+            String[] clients = rtspServer.getTransportClients();
+            for(String client : clients) {
+              debugState.write(client);
+            }
+          } catch (Exception e) {
+            debugState.write(e.toString());
           }
-        } catch (Exception e) {
-          debugState.write(e.toString());
+          try {
+            debugState.write("*** Cameras ************");
+            Config config = Config.current;
+            for(int a=0;a<config.cameras.length;a++) {
+              Camera cam = config.cameras[a];
+              if (cam.enabled) {
+                debugState.write(cam.toString());
+              }
+            }
+          } catch (Exception e) {
+            debugState.write(e.toString());
+          }
+          try {
+            debugState.write("*** Camera Sessions ************");
+            Object[] workers = list.toArray();
+            for(Object worker : workers) {
+              debugState.write(worker.toString());
+            }
+          } catch (Exception e) {
+            debugState.write(e.toString());
+          }
+        }});
+        debugState.start();
+      }
+      //start config service
+      configService = new ConfigService();
+      configService.start();
+      //start redir service
+      redirService = new WebServerRedir();
+      redirService.start(80, 443);
+      //enable firewall exception
+      setupFirewall();
+      //start keep alive thread
+      keepAlive = new WorkerKeepAlive();
+      keepAlive.start();
+      //start RTSP server
+      rtspServer = new RTSPServer();
+      rtspServer.init(554, DVRService.this, TransportType.TCP);
+      //start recording processes
+      Config config = Config.current;
+      for(int a=0;a<config.cameras.length;a++) {
+        if (config.cameras[a].enabled) {
+          startCamera(config.cameras[a]);
         }
-      }});
-      debugState.start();
-    }
-    //start config service
-    configService = new ConfigService();
-    configService.start();
-    //start redir service
-    redirService = new WebServerRedir();
-    redirService.start(80, 443);
-    //enable firewall exception
-    setupFirewall();
-    //start keep alive thread
-    keepAlive = new WorkerKeepAlive();
-    keepAlive.start();
-    //start RTSP server
-    rtspServer = new RTSPServer();
-    rtspServer.init(554, this, TransportType.TCP);
-    //start recording processes
-    Config config = Config.current;
-    for(int a=0;a<config.cameras.length;a++) {
-      if (config.cameras[a].enabled) {
-        startCamera(config.cameras[a]);
       }
     }
   }
 
+  private Server server;
   public ArrayList<CameraWorker> list = new ArrayList<CameraWorker>();
 
-  public void cancel() {
+  public void start() {
+    server = new Server();
+    server.start();
+  }
+
+  public void stop() {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
       try {
@@ -192,6 +201,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
       debugState.cancel();
       debugState = null;
     }
+    server = null;
   }
 
   public void startCamera(Camera camera) {
@@ -285,10 +295,11 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public void onDescribe(RTSPServer server, RTSPSession sess) {
     try {
       URL url = new URI(sess.uri).toURL();
-      String path = url.getPath();  // / type / name
-      String[] type_name = path.split("/");
-      String type = type_name[1];
-      String name = type_name[2];
+      String path = url.getPath().substring(1);  //rename leading /
+      if (debug) JFLog.log("onDescribe:" + path);
+      String[] args = path.split("/");
+      String type = args[0];
+      String name = args[1];
       switch (type) {
         case "camera": sess.sdp = camera_get_sdp(name, sess); break;
         case "group": throw new Exception("CAN-NOT-PLAY-GROUP");
@@ -315,6 +326,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     try {
       URL url = new URI(sess.uri).toURL();
       String path = url.getPath().substring(1);  //rename leading /
+      if (debug) JFLog.log("onPlay:" + path);
       String[] args = path.split("/");
       String type = args[0];
       String name = args[1];
@@ -340,10 +352,11 @@ public class DVRService extends Thread implements RTSPServerInterface {
   public void onTeardown(RTSPServer server, RTSPSession sess) {
     try {
       URL url = new URI(sess.uri).toURL();
-      String path = url.getPath();  // / type / name
-      String[] type_name = path.split("/");
-      String type = type_name[1];
-      String name = type_name[2];
+      String path = url.getPath().substring(1);  // / type / name
+      if (debug) JFLog.log("onTeardown:" + path);
+      String[] args = path.split("/");
+      String type = args[0];
+      String name = args[1];
       switch (type) {
         case "file":  //no break
         case "camera": camera_remove_viewer(name, sess); break;
