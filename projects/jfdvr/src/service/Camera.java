@@ -103,14 +103,16 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   }
 
   public String[] get_sdp(RTSPSession sess) {
-    if (codec == null) {
-      JFLog.log(log, "Error:Camera not ready");
-      return null;
-    }
     SDP sdp = new SDP();
     SDP.Stream stream = sdp.addStream(SDP.Type.video);
-    stream.framerate = fps;
-    stream.addCodec(codec);
+    if (codec != null) {
+      stream.framerate = fps;
+      stream.addCodec(codec);
+    } else {
+      //create generic codec type (useful for playing recordings when camera is offline)
+      stream.framerate = 10;
+      stream.addCodec(new Codec("H264", 96));
+    }
     stream.setIP(DVRService.rtspServer.resolve(sess.remotehost));
     stream.setPort(-1);
     if (sess.rtp != null) {

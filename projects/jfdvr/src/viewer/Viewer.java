@@ -163,7 +163,7 @@ public class Viewer {
           }
         }
         JFLog.log("NetworkReader:closing");
-        close(true);
+        close(true, true);
         if (err != null) JFAWT.showError("Error", err);
       } catch (Exception e) {
         JFAWT.showError("Error", e.toString());
@@ -234,9 +234,9 @@ public class Viewer {
       }
     }
 
-    private void close(boolean teardown) {
+    private void close(boolean disconnect, boolean teardown) {
       JFLog.log("close:1");
-      if (rtsp != null) {
+      if (disconnect && rtsp != null) {
         if (teardown) {
           rtsp.teardown(url.toString());
         }
@@ -286,6 +286,11 @@ public class Viewer {
     public void onDescribe(RTSPClient client, SDP sdp) {
       JFLog.log("onDescribe");
       JFLog.log("SDP=" + sdp);
+      close(false, false);
+      if (sdp == null) {
+        JFLog.log("Play failed : onDescribe() SDP == null");
+        return;
+      }
       SDP.Stream stream = sdp.getFirstVideoStream();
       if (stream == null) {
         JFLog.log("Error:CameraWorker:onDescribe():SDP does not contain video stream");
@@ -352,7 +357,7 @@ public class Viewer {
     public void onTeardown(RTSPClient client) {
       JFLog.log("onTeardown");
       //stop RTP stream
-      close(false);
+      close(true, false);
     }
 
     private void start_camera() {

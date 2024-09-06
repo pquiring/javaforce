@@ -39,16 +39,16 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_GSM = new Codec("GSM", 3);  //patent expired
   public final static Codec CODEC_G711a = new Codec("PCMA", 8);  //patent expired
   public final static Codec CODEC_G722 = new Codec("G722", 9);  //patent expired
-  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent encumbered
+  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent expired (2017-01-01)
   public final static Codec CODEC_JPEG = new Codec("JPEG", 26);  //public domain
-  public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired
+  public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired (2020-07-01)
   //dynamic ids (96-127)
   public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 96);
   public final static Codec CODEC_VP8 = new Codec("VP8", 100);  //open source (Google!)
   public final static Codec CODEC_VP9 = new Codec("VP9", 101);  //open source (Google!)
   public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 110);  //patent expired
   public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 111);  //patent expired
-  public final static Codec CODEC_H264 = new Codec("H264", 120);  //patent encumbered
+  public final static Codec CODEC_H264 = new Codec("H264", 120);  //patent expired (2024-03-26)
   public final static Codec CODEC_H265 = new Codec("H265", 121);  //patent encumbered
 
   static {
