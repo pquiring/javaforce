@@ -67,7 +67,6 @@ char err_msg[1024];
 JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
 bool graal = false;
-bool ffmpeg = false;
 bool debug = false;
 char errmsg[1024];
 
@@ -412,19 +411,11 @@ void registerAllNatives(JNIEnv *env) {
   registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
 }
 
-void load_ffmpeg() {
-  InvokeMethodVoid("javaforce/media/MediaCoder", "load", "()V", NULL);
-}
-
 /** Invokes the main method in a new thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();
 
   registerAllNatives(g_env);
-
-  if (ffmpeg) {
-    load_ffmpeg();
-  }
 
   char **argv = g_argv;
   int argc = g_argc;
@@ -457,10 +448,6 @@ bool loadProperties() {
     char* arg = argv[a];
     if (arg[0] == 0) continue;
     if (arg[0] == '-') {
-      if (strcmp(arg, "-ffmpeg") == 0) {
-        ffmpeg = true;
-        continue;
-      }
       if (strcmp(arg, "-cp") == 0) {
         continue;
       }
@@ -554,9 +541,6 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
       strcpy(xoptions, ln1 + 8);
-    }
-    else if (strncmp(ln1, "FFMPEG=", 7) == 0) {
-      ffmpeg = true;
     }
     else if (strncmp(ln1, "DEBUG=", 6) == 0) {
       debug = true;
@@ -712,9 +696,6 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   registerAllNatives(g_env);
-  if (ffmpeg) {
-    load_ffmpeg();
-  }
   InvokeMethodVoid(mainclass, "serviceStart", "([Ljava/lang/String;)V", ConvertStringArray(g_env, argc, argv));
   g_jvm->DestroyJavaVM();
 }

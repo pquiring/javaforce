@@ -100,6 +100,7 @@ public class ViewerApp extends javax.swing.JFrame {
    * @param args the command line arguments
    */
   public static void main(String args[]) {
+    MediaCoder.init();
     ViewerApp.args = args;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {

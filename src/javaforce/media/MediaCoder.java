@@ -14,7 +14,7 @@ import javaforce.jni.*;
 public class MediaCoder {
   private long ctx = 0;
   /** Loads the media framework native libraries from native loader. */
-  private static void load() {
+  public static void init() {
     File[] sysFolders;
     String ext = "";
     String apphome = System.getProperty("java.app.home");

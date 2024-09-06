@@ -11,12 +11,14 @@ import java.awt.event.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.media.*;
 import javaforce.awt.*;
 
 import common.Config;
 
 public class App extends Thread implements ActionListener {
   public static void main(String args[]) {
+    MediaCoder.init();
     App server = new App();
     server.start();
   }

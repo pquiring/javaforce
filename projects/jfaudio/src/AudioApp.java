@@ -70,6 +70,7 @@ public class AudioApp extends javax.swing.JFrame implements KeyEventDispatcher {
    * @param args the command line arguments
    */
   public static void main(String args[]) {
+    MediaCoder.init();
     if (!Paths.testPaths()) return;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {

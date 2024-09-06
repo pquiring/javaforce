@@ -4,12 +4,14 @@ import java.awt.event.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.media.*;
 import javaforce.voip.*;
 
 /** Entry point for jfPhone application. */
 
 public class PhoneApp extends JFrame implements WindowListener, WindowController {
   public static void main(String[] args) {
+    MediaCoder.init();
     if (args.length > 0) {
       if (args[0].equals("debug")) {
         //enable debug channels

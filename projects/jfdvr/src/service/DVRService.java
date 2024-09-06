@@ -13,6 +13,7 @@ import javaforce.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.voip.*;
+import javaforce.media.*;
 
 public class DVRService extends Thread implements RTSPServerInterface {
   public static DVRService dvrService;
@@ -38,6 +39,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
   private int log;
 
   public static void serviceStart(String args[]) {
+    MediaCoder.init();
     if (dvrService != null) return;
     dvrService = new DVRService();
     dvrService.start();

@@ -65,7 +65,6 @@ char method[MAX_PATH];
 char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
-bool ffmpeg = false;
 bool vm = false;
 bool debug = false;
 char errmsg[1024];
@@ -408,11 +407,6 @@ bool JavaThread(void *ignore) {
   //load linux shared libraries
   InvokeMethodVoid("javaforce/jni/LnxNative", "load", "()V", NULL);
 
-  if (ffmpeg) {
-    //load ffmpeg shared libraries
-    InvokeMethodVoid("javaforce/media/MediaCoder", "load", "()V", NULL);
-  }
-
   if (vm) {
     vm_init();
     vm_register(g_env);
@@ -473,10 +467,6 @@ bool loadProperties() {
     char* arg = argv[a];
     if (arg[0] == 0) continue;
     if (arg[0] == '-') {
-      if (strcmp(arg, "-ffmpeg") == 0) {
-        ffmpeg = true;
-        continue;
-      }
       if (strcmp(arg, "-vm") == 0) {
         vm = true;
         continue;
@@ -583,9 +573,6 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
       strcpy(xoptions, ln1 + 8);
-    }
-    else if (strncmp(ln1, "FFMPEG=", 7) == 0) {
-      ffmpeg = true;
     }
     else if (strncmp(ln1, "VM=", 3) == 0) {
       vm = true;
