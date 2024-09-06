@@ -443,6 +443,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   public void setGrid(int gx, int gy) {
+    if (debug) JFLog.log("setGrid:" + gx + "," + gy);
     unsetup();
     container.setVisible(false);
     grid = true;

@@ -35,21 +35,29 @@ public class ViewerApp extends javax.swing.JFrame {
     setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View)");
     RTP.setPortRange(40000, 50000);
     Config.randomPort();
-    if (args.length > 0 && args[0].startsWith("rtsp://")) {
-      String arg = args[0];
-      viewer = new Viewer();
-      try {
-        Config.createURL(arg);
-        viewer.play(Config.url);
-      } catch (Exception e) {
-        e.printStackTrace();
+    for(String arg : args) {
+      if (arg.startsWith("rtsp://")) {
+        if (viewer == null) {
+          viewer = new Viewer();
+          try {
+            Config.createURL(arg);
+            viewer.play(Config.url);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      } else if (arg.equals("debug")) {
+        debug = true;
+        VideoPanel.debug = true;
+      } else {
+        if (selector == null) {
+          selector = new SelectView();
+          if (args.length > 0) {
+            selector.setServer(arg);
+          }
+          setPanel(selector);
+        }
       }
-    } else {
-      selector = new SelectView();
-      if (args.length > 0) {
-        selector.setServer(args[0]);
-      }
-      setPanel(selector);
     }
     setExtendedState(Frame.MAXIMIZED_BOTH);
     fullscreen = true;
@@ -117,6 +125,7 @@ public class ViewerApp extends javax.swing.JFrame {
   public static ViewerApp self;
   public static Container root;
   public static JFImage cameraicon;
+  public static boolean debug;
   public boolean fullscreen;
 
   private void setPosition() {
