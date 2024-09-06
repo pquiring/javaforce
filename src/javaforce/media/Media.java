@@ -183,13 +183,14 @@ public class Media {
       if (pos >= header.indexOffset) return null;
       if (pos == indexes[currentFrame]) {
         frame.ts = tses[currentFrame];
+        ts_keyframe = frame.ts;
         if (debug) JFLog.log("Media.readFrame():key_frame_ts=" + frame.ts + "@" + currentFrame);
         currentFrame++;
       }
       frame.stream = raf.readByte();
       short delta_ts = raf.readShort();
       if (debug) JFLog.log("Media.readFrame():delta_ts=" + delta_ts);
-      frame.ts += delta_ts;  //delta ts
+      frame.ts = ts_keyframe + delta_ts;
       frame.length = raf.readInt();
       while (frame.length > frame.data.length) {
         frame.data = new byte[frame.data.length << 1];

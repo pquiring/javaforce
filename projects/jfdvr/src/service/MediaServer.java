@@ -82,7 +82,7 @@ public class MediaServer {
           long delay = frame.ts - (now - ts_delta);
           delay -= 5;
           if (debug) JFLog.log("delay=" + delay);
-          if (delay > 3 && delay < 1000) {
+          if (delay > 3 && delay < 5000) {
             JF.sleep((int)delay);
           }
         }
