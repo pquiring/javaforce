@@ -27,6 +27,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
 
   public static boolean debug = false;
   public static boolean debug_sub_systems = true;
+  public static boolean debug_dry_run = false;
 
   /** The G1 GC is known to crash under heavy loads.
    * Invoke System.gc() every 30 seconds seems to avoid GC deadlocks.
@@ -44,6 +45,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
     for(String arg : args) {
       switch (arg) {
         case "debug": debug = true; break;
+        case "dryrun": debug_dry_run = true; break;
       }
     }
     dvrService = new DVRService();
@@ -193,10 +195,10 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   public void startCamera(Camera camera) {
+    if (debug_dry_run) return;
     boolean same = camera.url.equals(camera.url_low);
-    CameraWorker viewer = null;
     if (camera.url.length() > 0) {
-      viewer = startCamera(camera, camera.url, true, same || camera.url_low.length() == 0);
+      startCamera(camera, camera.url, true, same || camera.url_low.length() == 0);
     }
     if (camera.url_low.length() > 0 && !same) {
       startCamera(camera, camera.url_low, camera.url.length() == 0, true);
