@@ -363,8 +363,22 @@ public class VideoPanel extends javax.swing.JPanel {
     return url.substring(0, i3);  //strip timestamps
   }
 
-  public void setURL(String url) {
+  public void setURL(String url, String path) {
     this.url = cleanURL(url);
+    String[] p = path.substring(1).split("/");
+    //camera / name / ts_start / ts_end
+    String ts_start = null;
+    String ts_end = null;
+    switch (p.length) {
+      case 2: break;
+      case 3: ts_start = p[2]; break;
+      case 4: ts_start = p[2]; ts_end = p[3]; break;
+    }
+    if (ts_start != null) {
+      SpinnerDateModel model = (SpinnerDateModel)date.getModel();
+      model.setCalendarField(Calendar.DAY_OF_MONTH);
+      model.setValue(new Date(Long.valueOf(ts_start)));
+    }
   }
 
   public void start() {

@@ -52,7 +52,7 @@ public class Viewer {
       });
       videoPanel.start();
     }
-    videoPanel.setURL(url.toString());
+    videoPanel.setURL(url.toString(), url.getPath());
     networkReader = new NetworkReader(url);
     networkReader.start();
   }
