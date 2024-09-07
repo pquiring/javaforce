@@ -8,6 +8,7 @@ package viewer;
 import java.awt.*;
 import java.net.*;
 import java.util.*;
+import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
@@ -24,7 +25,13 @@ public class VideoPanel extends javax.swing.JPanel {
     timeline_min = new JFImage(min_per_day, 16);
     timeline_sec = new JFImage(60, 16);
     createTimer();
-    cal = Calendar.getInstance();
+    //do not allow editing JSpinner text
+    JSpinner.DateEditor editor = (JSpinner.DateEditor)date.getEditor();
+    editor.getTextField().setEditable(false);
+    //set spinner date step size to DAY_OF_MONTH
+    SpinnerDateModel model = (SpinnerDateModel)date.getModel();
+    model.setCalendarField(Calendar.DAY_OF_MONTH);
+    //TODO : due to bug in JSpinner the date format must be dd-MM-yyyy
   }
 
   /**
@@ -140,9 +147,10 @@ public class VideoPanel extends javax.swing.JPanel {
       }
     });
 
-    date.setModel(new javax.swing.SpinnerDateModel());
-    date.setToolTipText("Date");
-    date.setEditor(new javax.swing.JSpinner.DateEditor(date, "yyyy-MM-dd"));
+    date.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.DAY_OF_YEAR));
+    date.setEditor(new javax.swing.JSpinner.DateEditor(date, "dd-MM-yyyy"));
+    date.setFocusable(false);
+    date.setOpaque(true);
 
     javax.swing.GroupLayout controlsLayout = new javax.swing.GroupLayout(controls);
     controls.setLayout(controlsLayout);
@@ -153,7 +161,7 @@ public class VideoPanel extends javax.swing.JPanel {
         .addGroup(controlsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(minutes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addGroup(controlsLayout.createSequentialGroup()
-            .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(live)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -293,7 +301,6 @@ public class VideoPanel extends javax.swing.JPanel {
   private int sel_secs_start = -1;
   private java.util.Timer timer;
   private int cnt = 0;
-  private Calendar cal;
 
   public static boolean debug = false;
 

@@ -61,7 +61,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="minutes" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="date" min="-2" max="-2" attributes="0"/>
+                              <Component id="date" min="-2" pref="102" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="live" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -169,12 +169,13 @@
             <Component class="javax.swing.JSpinner" name="date">
               <Properties>
                 <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-                  <SpinnerModel initial="now" stepSize="5" type="date"/>
+                  <SpinnerModel initial="now" stepSize="6" type="date"/>
                 </Property>
-                <Property name="toolTipText" type="java.lang.String" value="Date"/>
                 <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
-                  <SpinnerEditor format="yyyy-MM-dd" type="1"/>
+                  <SpinnerEditor format="dd-MM-yyyy" type="1"/>
                 </Property>
+                <Property name="focusable" type="boolean" value="false"/>
+                <Property name="opaque" type="boolean" value="true"/>
               </Properties>
             </Component>
           </SubComponents>
