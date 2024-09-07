@@ -18,4 +18,7 @@ public class Packet {
 
   public String host;
   public int port;
+
+  public int stream;
+  public long ts;
 }

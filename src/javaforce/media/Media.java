@@ -17,6 +17,7 @@ package javaforce.media;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.voip.*;
 
 public class Media {
   private RandomAccessFile raf;
@@ -25,7 +26,7 @@ public class Media {
   private int currentFrame;
   private int[] indexes = new int[4096];
   private long[] tses = new long[4096];
-  private Frame frame;
+  private Packet frame;
   private long ts_keyframe;
 
   private static final int JFAV = 0x4a464156;  //file magic id
@@ -43,7 +44,7 @@ public class Media {
 
   private boolean open(String file, String mode) {
     if (raf != null) return false;
-    frame = new Frame();
+    frame = new Packet();
     frame.data = new byte[4096];
     try {
       write = false;
@@ -133,14 +134,6 @@ public class Media {
     return header.frameCount;
   }
 
-  public static class Frame {
-    public int stream;  //stream index
-    public long ts;  //timestamp from beginning (ms)
-    public byte[] data;  //raw codec data
-    public int offset;  //offset of data
-    public int length;  //length of data
-  }
-
   /** Seek to frame #.
    * Seeking is not supported on files opened for writing (create() or append()).
    */
@@ -176,7 +169,7 @@ public class Media {
    *
    * @return frame = next frame or null at end of file or error
    */
-  public Frame readFrame() {
+  public Packet readFrame() {
     if (write) return null;
     try {
       long pos = raf.getFilePointer();
@@ -359,7 +352,7 @@ public class Media {
       JFLog.log("idx[] = " + indexes[a]);
     }
     do {
-      Frame frame = readFrame();
+      Packet frame = readFrame();
       if (frame == null) break;
     } while (true);
   }

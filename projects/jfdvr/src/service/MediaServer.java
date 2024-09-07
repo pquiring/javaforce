@@ -65,7 +65,7 @@ public class MediaServer {
       loadFile();
       while (active) {
         long now = System.currentTimeMillis();
-        Media.Frame frame = media.readFrame();
+        Packet frame = media.readFrame();
         if (frame == null) {
           closeFile();
           loadFile();
