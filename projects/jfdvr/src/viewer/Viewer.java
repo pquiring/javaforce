@@ -459,23 +459,23 @@ public class Viewer {
       }
     }
 
-    public void onPacket(Packet packet) {
+    public void onPacket(Packet rtp_packet) {
       if (debug_packets) JFLog.log("onPacket");
-      if (encoder != null) {
-        encoder.addVideoEncoded(packet.data, packet.offset, packet.length, false);  //key_frame ???
-        return;
-      }
       try {
-        packets.add(packet);
+        packets.add(rtp_packet);
         if (!packets.haveCompleteFrame()) return;
         boolean key_frame = packets.isNextFrame_KeyFrame();
         if (debug_buffers && key_frame) {
           JFLog.log(log, "packets_decode=" + packets.toString());
         }
-        Packet nextPacket = packets.getNextFrame();
-        decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
+        Packet codec_packet = packets.getNextFrame();
+        if (encoder != null) {
+          encoder.addVideoEncoded(codec_packet.data, codec_packet.offset, codec_packet.length, key_frame);
+          return;
+        }
+        decoded_frame = video_decoder.decode(codec_packet.data, codec_packet.offset, codec_packet.length);
         if (decoded_frame == null) {
-          JFLog.log(log, "Error:newFrame == null:packet.length=" + nextPacket.length + ":" + name);
+          JFLog.log(log, "Error:newFrame == null:packet.length=" + codec_packet.length + ":" + name);
           JFLog.log(log, "NALs=" + packets.get_nal_list());
           packets.reset();
           return;

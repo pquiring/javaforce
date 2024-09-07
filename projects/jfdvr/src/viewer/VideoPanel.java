@@ -525,7 +525,6 @@ public class VideoPanel extends javax.swing.JPanel {
     return TimeZone.getDefault().getOffset(now);
   }
 
-  //download preview for tooltip
   private void timeline_mins_mouse_move(int x, int y) {
     if (x >= 1440) x = 1439;
     int mins = x;  //1440
