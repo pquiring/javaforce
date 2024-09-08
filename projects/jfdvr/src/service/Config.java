@@ -136,7 +136,6 @@ public class Config extends SerialObject implements Serializable {
     return next_log++;
   }
 
-
   //RTSP ports for service : 5000-5999
   private static int nextPort = 5000;
   public static synchronized int getLocalPort() {

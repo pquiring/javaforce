@@ -48,7 +48,10 @@ public class ViewerApp extends javax.swing.JFrame {
         }
       } else if (arg.equals("debug")) {
         debug = true;
+        Viewer.debug = true;
         VideoPanel.debug = true;
+        JFLog.append(JF.getUserPath() + "/jfdvr-viewer.log", true);
+        JFLog.setRetention(7);
       } else {
         if (selector == null) {
           selector = new SelectView();
@@ -207,7 +210,7 @@ public class ViewerApp extends javax.swing.JFrame {
   }
 
   public static void setPanel(JPanel panel) {
-    JFLog.log("setPanel:" + panel);
+    if (debug) JFLog.log("setPanel:" + panel);
     Container old = self.getContentPane();
     if (old instanceof VideoPanel) {
       VideoPanel video = (VideoPanel)old;
@@ -226,5 +229,11 @@ public class ViewerApp extends javax.swing.JFrame {
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {toggleFullscreen();}}, KeyEvent.VK_F11);
     panel.revalidate();
+  }
+
+  private static int next_log = 1;
+  /* Returns next log id for JFLog */
+  public static synchronized int nextLog() {
+    return next_log++;
   }
 }

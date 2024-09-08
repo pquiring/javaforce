@@ -116,6 +116,11 @@ public class Viewer {
       String[] p = path.split("/");
       type = p[0];
       name = p[1];
+      if (debug) {
+        log = ViewerApp.nextLog();
+        JFLog.append(log, JF.getUserPath() + "/jfdvr-" + type + "-" + name + ".log", true);
+        JFLog.setRetention(log, 7);
+      }
     }
     public void setGrid(int gx, int gy) {
       grid = true;
