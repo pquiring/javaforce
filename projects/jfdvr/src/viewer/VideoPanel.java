@@ -24,7 +24,6 @@ public class VideoPanel extends javax.swing.JPanel {
     this.viewer = viewer;
     timeline_min = new JFImage(min_per_day, 16);
     timeline_sec = new JFImage(60, 16);
-    createTimer();
     //do not allow editing JSpinner text
     JSpinner.DateEditor editor = (JSpinner.DateEditor)date.getEditor();
     editor.getTextField().setEditable(false);
@@ -327,6 +326,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private void createTimer() {
+    if (timer != null) return;
     timer = new java.util.Timer();
     timer.schedule(new TimerTask() {
       public void run() {
@@ -383,17 +383,15 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void start() {
     init();
+    createTimer();
+  }
+
+  public void stop() {
+    cancelTimer();
   }
 
   public void resize() {
     video = new JFImage(getWidth(), getHeight());
-  }
-
-  public void stop() {
-    if (ViewerApp.self.isFullScreen()) {
-      ViewerApp.self.toggleFullScreen();
-    }
-    cancelTimer();
   }
 
   public void setImage(JFImage src) {

@@ -50,8 +50,8 @@ public class Viewer {
           ViewerApp.setPanel(videoPanel);
         }
       });
-      videoPanel.start();
     }
+    videoPanel.start();
     videoPanel.setURL(url.toString(), url.getPath());
     networkReader = new NetworkReader(url);
     networkReader.start();
@@ -179,11 +179,6 @@ public class Viewer {
       playThread = null;
       audio_buffer = null;
       video_buffer = null;
-      if (videoPanel != null) {
-        videoPanel.stop();
-        videoPanel = null;
-        ViewerApp.self.setPanel(null);
-      }
       if (playing) Viewer.this.stop(false);
       video_decoder = null;
     }

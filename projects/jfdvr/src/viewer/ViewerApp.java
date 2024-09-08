@@ -168,7 +168,7 @@ public class ViewerApp extends javax.swing.JFrame {
       "F1 = Help\n" +
       "F2 = Select View\n" +
       "F5 = Refresh\n" +
-      "F10 = Full Screen\n"
+      "F11 = Full Screen\n"
     );
   }
 
@@ -208,6 +208,11 @@ public class ViewerApp extends javax.swing.JFrame {
 
   public static void setPanel(JPanel panel) {
     JFLog.log("setPanel:" + panel);
+    Container old = self.getContentPane();
+    if (old instanceof VideoPanel) {
+      VideoPanel video = (VideoPanel)old;
+      video.stop();
+    }
     if (panel == null) {
       self.setContentPane(root);
       return;
@@ -219,7 +224,7 @@ public class ViewerApp extends javax.swing.JFrame {
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
-    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {toggleFullscreen();}}, KeyEvent.VK_F10);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {toggleFullscreen();}}, KeyEvent.VK_F11);
     panel.revalidate();
   }
 }
