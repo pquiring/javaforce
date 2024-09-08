@@ -14,4 +14,5 @@ public class CodecInfo {
   //audio
   public int chs;
   public int freq;
+  public int bits;
 }

@@ -309,8 +309,9 @@ public class Media {
       if (header.flags > 0) {
         header.info = new CodecInfo();
         if ((header.flags & FLAG_AUDIO) != 0) {
-          header.info.chs = raf.readInt();
+          header.info.chs = raf.readByte();
           header.info.freq = raf.readInt();
+          header.info.bits = raf.readByte();
         }
         if ((header.flags & FLAG_VIDEO) != 0) {
           header.info.width = raf.readInt();
@@ -342,8 +343,9 @@ public class Media {
       if (header.info != null) {
         if ((header.flags & FLAG_AUDIO) != 0) {
           //write audio details
-          raf.writeInt(header.info.chs);
+          raf.writeByte(header.info.chs);
           raf.writeInt(header.info.freq);
+          raf.writeByte(header.info.bits);
         }
         if ((header.flags & FLAG_VIDEO) != 0) {
           //write video details
