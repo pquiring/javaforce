@@ -217,11 +217,11 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_liveActionPerformed
 
   private void secondsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseMoved
-    timeline_secs_mouse_move(evt.getX(), evt.getY());
+    timeline_secs_mouse_move(evt.getX(), evt.getY(), false);
   }//GEN-LAST:event_secondsMouseMoved
 
   private void secondsMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseDragged
-    // TODO add your handling code here:
+    timeline_secs_mouse_move(evt.getX(), evt.getY(), true);
   }//GEN-LAST:event_secondsMouseDragged
 
   private void minutesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseClicked
@@ -229,11 +229,11 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_minutesMouseClicked
 
   private void minutesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseMoved
-    timeline_mins_mouse_move(evt.getX(), evt.getY());
+    timeline_mins_mouse_move(evt.getX(), evt.getY(), false);
   }//GEN-LAST:event_minutesMouseMoved
 
   private void minutesMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_minutesMouseDragged
-    timeline_mins_mouse_move(evt.getX(), evt.getY());
+    timeline_mins_mouse_move(evt.getX(), evt.getY(), true);
   }//GEN-LAST:event_minutesMouseDragged
 
   private void secondsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_secondsMouseClicked
@@ -289,15 +289,18 @@ public class VideoPanel extends javax.swing.JPanel {
   private int zx, zy;
   private long lastUpdate;
   private long ts_delta;  //0=live
+  //selection on minutes in timestamp format
+  private long ts_sel_mins_start = -1;
+  private long ts_sel_mins_stop = -1;
+  //selection on seconds in timestamp format
+  private long ts_sel_secs_start = -1;
+  private long ts_sel_secs_stop = -1;
   //selection on minutes timeline
-  private long ts_sel_min_start = -1;
-  private long ts_sel_min_stop = -1;
-  //selection on seconds timeline
-  private long ts_sel_sec_start = -1;
-  private long ts_sel_sec_stop = -1;
-  //selection start
   private int sel_mins_start = -1;
+  private int sel_mins_stop = -1;
+  //selection on seconds timeline
   private int sel_secs_start = -1;
+  private int sel_secs_stop = -1;
   private java.util.Timer timer;
   private int cnt = 0;
 
@@ -435,7 +438,7 @@ public class VideoPanel extends javax.swing.JPanel {
       return;
     }
     needPainting = true;
-    long now = System.currentTimeMillis() / 1000L;
+    long now = System.currentTimeMillis() / 100L;
     if (lastUpdate != now) {
       updateTimelines();
       minutes.setIcon(timeline_min);
@@ -497,17 +500,18 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   private static final int BLACK = 0x000000;
+  private static final int RED = 0xff0000;
   private static final int GREEN = 0x00ff00;
   private static final int BLUE = 0x0000ff;
 
   private void updateTimelines() {
     boolean past_day = get_date_delta() > 0;
     boolean past_min = ts_delta > ms_per_min;
-    long now = JF.currentTimeMillis();
+    long now = JF.currentTimeMillis();  //adjusted to timezone
     long day = toDay(now);
     long min = toMin(now);
     long sec = toSec(now);
-    if (debug) JFLog.log("time:" + now + ":" + (day/ms_per_day) + "," + (min/ms_per_min) + "," + (sec/ms_per_sec) + ":" + past_day);
+    if (debug) JFLog.log("time:" + now + ":" + (day/ms_per_day) + "," + (min/ms_per_min) + "," + (sec/ms_per_sec) + ":" + past_day + ":" + sel_mins_start);
     for(int x=0;x<min_per_day;x++) {
       long cmin = x * ms_per_min;
       int clr = BLACK;
@@ -517,6 +521,9 @@ public class VideoPanel extends javax.swing.JPanel {
         if (cmin <= min) {
           clr = GREEN;
         }
+      }
+      if (sel_mins_start != -1 && x >= sel_mins_start && x <= sel_mins_stop && clr == GREEN) {
+        clr = RED;
       }
       if (cmin == min) {
         clr = BLUE;
@@ -533,6 +540,9 @@ public class VideoPanel extends javax.swing.JPanel {
           clr = GREEN;
         }
       }
+      if (sel_secs_start != -1 && x >= sel_secs_start && x <= sel_secs_stop && clr == GREEN) {
+        clr = RED;
+      }
       if (csec == min) {
         clr = BLUE;
       }
@@ -544,8 +554,11 @@ public class VideoPanel extends javax.swing.JPanel {
     return TimeZone.getDefault().getOffset(now);
   }
 
-  private void timeline_mins_mouse_move(int x, int y) {
+  private void timeline_mins_mouse_move(int x, int y, boolean drag) {
     if (x >= 1440) x = 1439;
+    if (drag && sel_mins_start != -1) {
+      sel_mins_stop = x;
+    }
     int mins = x;  //1440
     int hour = x / 60;  //24
     mins -= hour * 60;  //60
@@ -560,13 +573,20 @@ public class VideoPanel extends javax.swing.JPanel {
     if (hour == 0) hour = 12;
     text = String.format("%02d:%02d%s", hour, mins, am_pm);
     minutes.setToolTipText(text);
+    update();
+    wake();
   }
 
-  private void timeline_secs_mouse_move(int x, int y) {
+  private void timeline_secs_mouse_move(int x, int y, boolean drag) {
     if (x >= 60) x = 59;
+    if (drag && sel_secs_start != -1) {
+      sel_secs_stop = x;
+    }
     int secs = x;  //60
     String text = String.format("%02d", secs);
     seconds.setToolTipText(text);
+    update();
+    wake();
   }
 
   private static final long ms_per_day = 24 * 60 * 60 * 1000;  //hr * min * sec * 1000
@@ -656,11 +676,13 @@ public class VideoPanel extends javax.swing.JPanel {
 
   private void clearSelection() {
     sel_mins_start = -1;
+    sel_mins_stop = -1;
     sel_secs_start = -1;
-    ts_sel_min_start = -1;
-    ts_sel_min_stop = -1;
-    ts_sel_sec_start = -1;
-    ts_sel_sec_stop = -1;
+    sel_secs_stop = -1;
+    ts_sel_mins_start = -1;
+    ts_sel_mins_stop = -1;
+    ts_sel_secs_start = -1;
+    ts_sel_secs_stop = -1;
     download.setEnabled(false);
   }
 
@@ -680,10 +702,10 @@ public class VideoPanel extends javax.swing.JPanel {
       min = tmp;
     }
     long now = System.currentTimeMillis();
-    ts_sel_min_start = now - (get_date_delta() + (sel_mins_start * ms_per_min));
-    ts_sel_min_stop = ts_sel_min_start + (min * ms_per_min);
-    ts_sel_sec_start = -1;
-    ts_sel_sec_stop = -1;
+    ts_sel_mins_start = now - (get_date_delta() + (sel_mins_start * ms_per_min));
+    ts_sel_mins_stop = ts_sel_mins_start + (min * ms_per_min);
+    ts_sel_secs_start = -1;
+    ts_sel_secs_stop = -1;
     download.setEnabled(true);
   }
 
@@ -704,10 +726,10 @@ public class VideoPanel extends javax.swing.JPanel {
     }
     long mins = toMin(ts_delta);
     long now = System.currentTimeMillis();
-    ts_sel_sec_start = now - (sel_secs_start * 1000);
-    ts_sel_sec_stop = ts_sel_sec_start + (sec * 1000);
-    ts_sel_min_start = -1;
-    ts_sel_min_stop = -1;
+    ts_sel_secs_start = now - (sel_secs_start * 1000);
+    ts_sel_secs_stop = ts_sel_secs_start + (sec * 1000);
+    ts_sel_mins_start = -1;
+    ts_sel_mins_stop = -1;
     download.setEnabled(true);
   }
 
@@ -719,18 +741,18 @@ public class VideoPanel extends javax.swing.JPanel {
     });
     if (filename == null) return;
     viewer.startDownload(filename);
-    if (ts_sel_min_start != -1) {
+    if (ts_sel_mins_start != -1) {
       //download mins
       try {
-        viewer.play(new URI(url + "/" + ts_sel_min_start + "/" + ts_sel_min_stop).toURL());
+        viewer.play(new URI(url + "/" + ts_sel_mins_start + "/" + ts_sel_mins_stop).toURL());
       } catch (Exception e) {
         JFLog.log(e);
       }
     }
-    if (ts_sel_sec_start != -1) {
+    if (ts_sel_secs_start != -1) {
       //download secs
       try {
-        viewer.play(new URI(url + "/" + ts_sel_sec_start + "/" + ts_sel_sec_stop).toURL());
+        viewer.play(new URI(url + "/" + ts_sel_secs_start + "/" + ts_sel_secs_stop).toURL());
       } catch (Exception e) {
         JFLog.log(e);
       }
