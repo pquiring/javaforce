@@ -353,6 +353,7 @@ public class Media {
         }
       }
       raf.writeInt(header.keyFrames);
+      raf.writeInt(header.allFrames);
       raf.writeInt(header.indexOffset);
       raf.writeInt(header.streamCount);
       for(int idx=0;idx<header.streamCount;idx++) {
