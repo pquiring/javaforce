@@ -6,7 +6,12 @@ package javaforce.voip;
  */
 
 public class CodecInfo {
+  //video
   public int width;
   public int height;
   public float fps;
+
+  //audio
+  public int chs;
+  public int freq;
 }

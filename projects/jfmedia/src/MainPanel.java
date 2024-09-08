@@ -363,6 +363,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private StatusCellRenderer statusCellRenderer = new StatusCellRenderer();
   private JBusClient jbusClient;
   private FileReader fileReader;
+  private MediaFileReader mediaReader;
   private NetworkReader networkReader;
   private Thread playThread;
   private static MainPanel This;
@@ -491,8 +492,14 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     model.setValueAt(icon_playing, idx, 0);
     currentIdx = idx;
     playing = true;
-    fileReader = new FileReader(tableFiles.get(idx));
-    fileReader.start();
+    String filename = tableFiles.get(idx);
+    if (filename.toLowerCase().endsWith(".jfav")) {
+      mediaReader = new MediaFileReader(filename);
+      mediaReader.start();
+    } else {
+      fileReader = new FileReader(filename);
+      fileReader.start();
+    }
     play.setIcon(pauseIcon);
     timer = new javax.swing.Timer(1000, this);
     timer.start();
@@ -503,8 +510,14 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (playing) {stop(true); return;}
     currentIdx = -1;
     playing = true;
-    fileReader = new FileReader(file.getAbsolutePath());
-    fileReader.start();
+    String filename = file.getAbsolutePath();
+    if (filename.toLowerCase().endsWith(".jfav")) {
+      mediaReader = new MediaFileReader(filename);
+      mediaReader.start();
+    } else {
+      fileReader = new FileReader(filename);
+      fileReader.start();
+    }
     play.setIcon(pauseIcon);
     timer = new javax.swing.Timer(1000, this);
     timer.start();
@@ -546,6 +559,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       JFLog.log("stop:waiting for reader thread to stop");
       if (fileReader != null) {
         try {fileReader.join();} catch (Exception e) {JFLog.log(e);}
+      }
+      if (mediaReader != null) {
+        try {mediaReader.join();} catch (Exception e) {JFLog.log(e);}
       }
       if (networkReader != null) {
         try {networkReader.join();} catch (Exception e) {JFLog.log(e);}
@@ -802,8 +818,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   public class FileReader extends Thread implements MediaIO {
     private String file;
     private RandomAccessFile raf;
-    private long fileRead = 0;
-    private byte fileBuf[] = new byte[64*1024];
 
     public FileReader(String file) {
       this.file = file;
@@ -977,6 +991,170 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         JFLog.log(e);
       }
       return pos;
+    }
+  }
+
+  /** Plays .jfav media files. */
+  public class MediaFileReader extends Thread {
+    private String file;
+    private Media media;
+    private Packet packet;
+    private int codec_id;
+    private long timebase;
+
+    public MediaFileReader(String file) {
+      this.file = file;
+    }
+    public void run() {
+      frameCount = 0;
+      audioCount = 0;
+      seekPosition = -1;
+      audio_buffer = new AudioBuffer(44100, chs, buffer_seconds);
+      video_buffer = null;
+      width = -1;
+      height = -1;
+      resizeVideo = false;
+      eof = false;
+      preBuffering = true;
+
+      try {
+        media = new Media();
+        if (!media.open(file)) {
+          throw new Exception("open file failed");
+        }
+        packet = media.readFrame();
+        codec_id = media.getStreamIDs()[0];
+        timebase = media.getTimeBase();
+        CodecInfo info = media.getCodecInfo();
+        if (info == null) {
+          //extract info from first frame
+          switch (codec_id) {
+            case MediaCoder.AV_CODEC_ID_H264: info = RTPH264.getCodecInfo(packet); break;
+            case MediaCoder.AV_CODEC_ID_H265: info = RTPH265.getCodecInfo(packet); break;
+            default: throw new Exception("unsupported codec id:" + codec_id);
+          }
+          if (info == null) {
+            throw new Exception("unable to detect codec info");
+          }
+        }
+        fileLength = new File(file).length();
+        String err = null;
+        int framecount = media.getAllFrameCount();
+        mediaLength = (int)(framecount / info.fps);
+        JFLog.log("Duration=" + mediaLength);
+        fps = info.fps;
+        JFLog.log("FPS=" + fps);
+        if (fps > 0) {
+          videoPanel = new VideoPanel();
+          java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+              setPanel(videoPanel);
+            }
+          });
+          videoPanel.start();
+          width = getWidth();
+          height = getHeight();
+          video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+          playThread = new PlayAudioVideoThread();
+          playThread.start();
+          video_decoder = new MediaVideoDecoder();
+          video_decoder.start(codec_id, getWidth(), getHeight());
+        } else {
+          playThread = new PlayAudioOnlyThread();
+          playThread.start();
+        }
+        while (playing && !eof) {
+          if (paused) {
+            JF.sleep(100);  //TODO:use a lock with wait() and notify() instead
+            preBuffering = true;  //pre buffer again after unpause
+            continue;
+          }
+          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
+            //buffers are nearly full - wait for player to consume some
+            preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
+            int sleep;
+            if (fps > 0) {
+              sleep = 1000 / (int)fps;
+//              JFLog.log("video sleeping:" + sleep + ":" + fps);
+            } else {
+              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
+//              JFLog.log("audio sleeping:" + sleep);
+            }
+            JF.sleep(sleep);
+            continue;
+          }
+          if (seekPosition != -1) {
+            long seekTime = (mediaLength / 100) * seekPosition;
+            if (!media.seekTime(seekTime + timebase)) {
+              JFLog.log("Seek failed");
+            } else {
+              synchronized(countLock) {
+                frameCount = (long)(seekTime * fps);
+                audioCount = seekTime * 44100 * chs;
+              }
+            }
+            seekPosition = -1;
+            video_buffer.clear();
+            audio_buffer.clear();
+          }
+          if (resizeVideo) {
+            synchronized(sizeLock) {
+              //TODO : resize video
+              resizeVideo = false;
+            }
+          }
+          //decode more media
+          packet = media.readFrame();
+          switch (packet.stream) {
+            case 1:  //audio packet read
+              short audio[] = null;  //TODO
+              audio_buffer.add(audio, 0, audio.length);
+              break;
+            case 0:  //video packet read
+              int video[] = video_decoder.decode(packet);
+              JFImage img = video_buffer.getNewFrame();
+              if (img != null) {
+                if ((img.getWidth() != width) || (img.getHeight() != height)) {
+                  img.setSize(width, height);
+                }
+                img.putPixels(video, 0, 0, width, height, 0);
+                video_buffer.freeNewFrame();
+              } else {
+                JFLog.log("Warning : VideoBuffer overflow");
+              }
+              break;
+            case MediaCoder.END_FRAME:
+              eof = true;
+              break;
+          }
+        }
+        if (err != null) JFAWT.showError("Error", err);
+      } catch (Exception e) {
+        JFAWT.showError("Error", e.toString());
+        JFLog.log(e);
+      }
+      try {
+        JFLog.log("wait for play thread");
+        playThread.join();
+        JFLog.log("play thread done");
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      playThread = null;
+      audio_buffer = null;
+      video_buffer = null;
+      if (videoPanel != null) {
+        videoPanel.stop();
+        videoPanel = null;
+        setPanel(MainPanel.this);
+      }
+      if (video_decoder != null) {
+        video_decoder.stop();
+        video_decoder = null;
+      }
+      if (playing) MainPanel.this.stop(false);
+      decoder = null;
+      JFLog.log("read thread exit");
     }
   }
 

@@ -11,6 +11,8 @@ package javaforce.media;
  * Data is written in big-endian format.
  * Currently limited to 2GB file sizes.
  *
+ * If audio and video are added then stream zero must be video.
+ *
  * @author peter.quiring
  */
 
@@ -65,12 +67,21 @@ public class Media {
 
   /** Create new file for writing.
    * If file exists it is truncated. */
-  public boolean create(String file, int[] streamIDs) {
+  public boolean create(String file, int[] streamIDs, CodecInfo info) {
     if (raf != null) return false;
     if (streamIDs == null || streamIDs.length == 0 || streamIDs.length > max_streams) return false;
     header = new Header();
     header.streamCount = streamIDs.length;
     header.streams = streamIDs;
+    if (info != null) {
+      header.info = info;
+      if (info.chs != 0 && info.freq != 0) {
+        header.flags |= FLAG_AUDIO;
+      }
+      if (info.width != 0 && info.height != 0) {
+        header.flags |= FLAG_VIDEO;
+      }
+    }
     try {
       write = true;
       currentFrame = 0;
@@ -88,6 +99,10 @@ public class Media {
     return false;
   }
 
+  public boolean create(String file, int[] streamIDs) {
+    return create(file, streamIDs, null);
+  }
+
   /** Open existing file to writing. */
   public boolean append(String file) {
     if (raf != null) return false;
@@ -97,7 +112,7 @@ public class Media {
       raf.seek(header.indexOffset);
       raf.setLength(raf.getFilePointer());
       write = true;
-      currentFrame = header.frameCount;
+      currentFrame = header.keyFrames;
       ts_keyframe = tses[currentFrame - 1];
       return true;
     } catch (Exception e) {
@@ -130,8 +145,24 @@ public class Media {
     return header.streams;
   }
 
-  public int getFrameCount() {
-    return header.frameCount;
+  /** Return # of key frames. */
+  public int getKeyFrameCount() {
+    return header.keyFrames;
+  }
+
+  /** Return # of key frames. */
+  public int getAllFrameCount() {
+    return header.allFrames;
+  }
+
+  /** Returns timestamp of first frame. */
+  public long getTimeBase() {
+    return tses[0];
+  }
+
+  /** Returns codec info that describes the media (optional). */
+  public CodecInfo getCodecInfo() {
+    return header.info;
   }
 
   /** Seek to frame #.
@@ -140,7 +171,7 @@ public class Media {
   public boolean seekFrame(int frame) {
     if (write) return false;
     try {
-      if (frame >= header.frameCount) return false;
+      if (frame >= header.keyFrames) return false;
       int index = indexes[frame];
       raf.seek(index);
       currentFrame = frame;
@@ -155,7 +186,7 @@ public class Media {
    */
   public boolean seekTime(long ts) {
     if (write) return false;
-    for(int idx=0;idx<header.frameCount;idx++) {
+    for(int idx=0;idx<header.keyFrames;idx++) {
       if (tses[idx] >= ts) {
         return seekFrame(idx);
       }
@@ -197,7 +228,7 @@ public class Media {
   }
 
   private void growIndexes(boolean keep) {
-    while (indexes.length <= header.frameCount) {
+    while (indexes.length <= header.keyFrames) {
       int[] old_indexes = indexes;
       indexes = new int[indexes.length << 1];
       long[] old_tses = tses;
@@ -226,14 +257,17 @@ public class Media {
         JFLog.log("Media:max_file_size reached (2GB)");
         return false;
       }
-      if (keyFrame) {
-        if (indexes.length == header.frameCount) {
-          growIndexes(true);
+      if (stream == 0) {
+        if (keyFrame) {
+          if (indexes.length == header.keyFrames) {
+            growIndexes(true);
+          }
+          indexes[header.keyFrames] = (int)file_offset;
+          tses[header.keyFrames] = ts;
+          header.keyFrames++;
+          ts_keyframe = ts;
         }
-        indexes[header.frameCount] = (int)file_offset;
-        tses[header.frameCount] = ts;
-        header.frameCount++;
-        ts_keyframe = ts;
+        header.allFrames++;
       }
       raf.writeByte(stream);
       raf.writeShort((short)(ts - ts_keyframe));
@@ -250,11 +284,18 @@ public class Media {
   private static class Header {
     int magic;  //magic id
     int version;  //file version
-    int frameCount;  //# of "key" frames
+    int flags;  //see FLAG_... below
+    int keyFrames;  //# of "key" frames
+    int allFrames;  //# of all frames (key + delta)
     int indexOffset;  //offset to indexes
     int streamCount;
     int[] streams;
+    CodecInfo info;
   }
+
+  private static int FLAG_AUDIO = 0x01;
+  private static int FLAG_VIDEO = 0x02;
+  private static int FLAG_MAX_VALUE = 0x03;
 
   private Header readHeader() {
     Header header = new Header();
@@ -263,7 +304,22 @@ public class Media {
       if (header.magic != JFAV) throw new Exception("invalid file");
       header.version = raf.readInt();
       if (header.version != V32) throw new Exception("invalid file");
-      header.frameCount = raf.readInt();
+      header.flags = raf.readInt();
+      if (header.flags > FLAG_MAX_VALUE) throw new Exception("invalid file");
+      if (header.flags > 0) {
+        header.info = new CodecInfo();
+        if ((header.flags & FLAG_AUDIO) != 0) {
+          header.info.chs = raf.readInt();
+          header.info.freq = raf.readInt();
+        }
+        if ((header.flags & FLAG_VIDEO) != 0) {
+          header.info.width = raf.readInt();
+          header.info.height = raf.readInt();
+          header.info.fps = raf.readFloat();
+        }
+      }
+      header.keyFrames = raf.readInt();
+      header.allFrames = raf.readInt();
       header.indexOffset = raf.readInt();
       header.streamCount = raf.readInt();
       if (header.streamCount < 1 || header.streamCount > max_streams) throw new Exception("invalid file");
@@ -282,7 +338,21 @@ public class Media {
     try {
       raf.writeInt(JFAV);  //header
       raf.writeInt(V32);  //version (32bit)
-      raf.writeInt(header.frameCount);
+      raf.writeInt(header.flags);
+      if (header.info != null) {
+        if ((header.flags & FLAG_AUDIO) != 0) {
+          //write audio details
+          raf.writeInt(header.info.chs);
+          raf.writeInt(header.info.freq);
+        }
+        if ((header.flags & FLAG_VIDEO) != 0) {
+          //write video details
+          raf.writeInt(header.info.width);
+          raf.writeInt(header.info.height);
+          raf.writeFloat(header.info.fps);
+        }
+      }
+      raf.writeInt(header.keyFrames);
       raf.writeInt(header.indexOffset);
       raf.writeInt(header.streamCount);
       for(int idx=0;idx<header.streamCount;idx++) {
@@ -299,7 +369,7 @@ public class Media {
     //MUST call writeIndexes() first to update header.indexOffset
     try {
       raf.seek(8);
-      raf.writeInt(header.frameCount);
+      raf.writeInt(header.keyFrames);
       raf.writeInt(header.indexOffset);
       return true;
     } catch (Exception e) {
@@ -314,7 +384,7 @@ public class Media {
       tses = new long[4096];
       growIndexes(false);
       raf.seek(header.indexOffset);
-      for(int idx=0;idx<header.frameCount;idx++) {
+      for(int idx=0;idx<header.keyFrames;idx++) {
         indexes[idx] = raf.readInt();
         tses[idx] = raf.readLong();
       }
@@ -333,7 +403,7 @@ public class Media {
     try {
       header.indexOffset = (int)raf.length();
       raf.seek(header.indexOffset);
-      for(int idx=0;idx<header.frameCount;idx++) {
+      for(int idx=0;idx<header.keyFrames;idx++) {
         raf.writeInt(indexes[idx]);
         raf.writeLong(tses[idx]);
       }
@@ -345,8 +415,8 @@ public class Media {
   }
 
   private void view() {
-    JFLog.log("# key frames=" + header.frameCount);
-    for(int a=0;a<header.frameCount;a++) {
+    JFLog.log("# key frames=" + header.keyFrames);
+    for(int a=0;a<header.keyFrames;a++) {
       JFLog.log("frame = " + a);
       JFLog.log(" ts[] = " + tses[a]);
       JFLog.log("idx[] = " + indexes[a]);
