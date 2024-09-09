@@ -66,7 +66,9 @@ public class Media {
   }
 
   /** Create new file for writing.
-   * If file exists it is truncated. */
+   * If file exists it is truncated.
+   * CodecInfo should contain information about audio/video format.
+   */
   public boolean create(String file, int[] streamIDs, CodecInfo info) {
     if (raf != null) return false;
     if (streamIDs == null || streamIDs.length == 0 || streamIDs.length > max_streams) return false;
@@ -99,6 +101,8 @@ public class Media {
     return false;
   }
 
+  /** Create new file for writing.
+   * If file exists it is truncated. */
   public boolean create(String file, int[] streamIDs) {
     return create(file, streamIDs, null);
   }
@@ -141,6 +145,7 @@ public class Media {
     write = false;
   }
 
+  /** Return stream IDs. */
   public int[] getStreamIDs() {
     return header.streams;
   }
@@ -150,13 +155,14 @@ public class Media {
     return header.keyFrames;
   }
 
-  /** Return # of key frames. */
+  /** Return # of all frames. */
   public int getAllFrameCount() {
     return header.allFrames;
   }
 
   /** Returns timestamp of first frame. */
   public long getTimeBase() {
+    if (write) return 0;
     return tses[0];
   }
 
@@ -196,7 +202,7 @@ public class Media {
 
   /** Read next Frame.
    *
-   * Do not modify fields in Frame.
+   * Do not modify fields in Packet.
    *
    * @return frame = next frame or null at end of file or error
    */
@@ -284,13 +290,13 @@ public class Media {
   private static class Header {
     int magic;  //magic id
     int version;  //file version
-    int flags;  //see FLAG_... below
     int keyFrames;  //# of "key" frames
     int allFrames;  //# of all frames (key + delta)
     int indexOffset;  //offset to indexes
+    int flags;  //see FLAG_... below
+    CodecInfo info;  //optional
     int streamCount;
     int[] streams;
-    CodecInfo info;
   }
 
   private static int FLAG_AUDIO = 0x01;
@@ -431,6 +437,7 @@ public class Media {
     } while (true);
   }
 
+  /** Unit testing. */
   public static void main(String[] args) {
     if (args.length == 0) {
       JFLog.log("usage:Media view file.jfav");
