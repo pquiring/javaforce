@@ -216,12 +216,12 @@ public class DVRService implements RTSPServerInterface {
     }
   }
 
-  public CameraWorker startCamera(Camera camera, String url, boolean isViewer, boolean isDecoding) {
-    JFLog.log(log, "Start Camera:" + camera.name);
+  public CameraWorker startCamera(Camera camera, String url, boolean isEncoding, boolean isDecoding) {
+    JFLog.log(log, "Start Camera:" + camera.name + ":encoder=" + isEncoding + ":decoder=" + isDecoding);
     CameraWorker instance = null;
     switch (url.substring(0,4)) {
-      case "rtsp": instance = new CameraWorkerVideo(camera, url, isViewer, isDecoding); break;
-      case "http": instance = new CameraWorkerPictures(camera, url, isViewer, isDecoding); break;
+      case "rtsp": instance = new CameraWorkerVideo(camera, url, isEncoding, isDecoding); break;
+      case "http": instance = new CameraWorkerPictures(camera, url, isEncoding, isDecoding); break;
     }
     if (instance == null) {
       JFLog.log(log, "Error:invalid camera:" + camera.name);

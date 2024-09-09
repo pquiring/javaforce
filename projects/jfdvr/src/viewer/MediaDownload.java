@@ -16,9 +16,16 @@ public class MediaDownload extends javax.swing.JDialog implements MediaIO {
   /**
    * Creates new form MediaDownload
    */
-  public MediaDownload(java.awt.Frame parent, boolean modal) {
+  public MediaDownload(java.awt.Frame parent, boolean modal, Viewer viewer, String filename) {
     super(parent, modal);
     initComponents();
+    this.viewer = viewer;
+    try {
+      raf = new RandomAccessFile(filename, "rw");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    JFAWT.centerWindow(this);
   }
 
   /**
@@ -82,15 +89,6 @@ public class MediaDownload extends javax.swing.JDialog implements MediaIO {
   private RandomAccessFile raf;
   private Viewer viewer;
   private boolean complete;
-  public MediaDownload(Viewer viewer, String filename) {
-    this.viewer = viewer;
-    try {
-      raf = new RandomAccessFile(filename, "rw");
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-    JFAWT.centerWindow(this);
-  }
   public int read(MediaCoder coder, byte data[]) {
     try {
       return raf.read(data);
@@ -120,12 +118,6 @@ public class MediaDownload extends javax.swing.JDialog implements MediaIO {
       JFLog.log(e);
       return 0;
     }
-  }
-
-  public void complete() {
-    complete = true;
-    progress.setIndeterminate(false);
-    progress.setValue(100);
   }
 
   private void abort() {

@@ -74,25 +74,29 @@ public abstract class RTSP implements TransportInterface {
    * Closes the UDP port and frees resources.
    */
   protected void uninit() {
-    if (debug) JFLog.log(log, "RTSP.unint() start:" + this);
+    if (debug) JFLog.log(log, "RTSP.uninit() start:" + this);
     if (transport == null) {
       return;
     }
     active = false;
     transport.close();
     try {
-      if (debug) JFLog.log(log, "RTSP.uninit() waiting for reader:" + this);
-      worker_reader.join();
+      if (worker_reader != null) {
+        if (debug) JFLog.log(log, "RTSP.uninit() waiting for reader:" + this);
+        worker_reader.join();
+      }
     } catch (Exception e) {
-      e.printStackTrace();
+      JFLog.log(log, e);
     }
     worker_reader = null;
     if (server) {
-      worker_packet.cancel();
-      try {
-        worker_packet.join();
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (worker_packet != null) {
+        worker_packet.cancel();
+        try {
+          worker_packet.join();
+        } catch (Exception e) {
+          JFLog.log(log, e);
+        }
       }
       worker_packet = null;
     }
@@ -775,11 +779,12 @@ public abstract class RTSP implements TransportInterface {
             JF.sleep(1000);
             continue;
           }
+          if (debug) JFLog.log(log, "RTSP:receiving:...");
           if (!transport.receive(pack)) {
             pool.free(pack);
             continue;
           }
-          if (debug) JFLog.log(log, "RTSP:packet:host=" + pack.host);
+          if (debug) JFLog.log(log, "RTSP:received:host=" + pack.host);
           if (pack.length <= 4) {
             pool.free(pack);
             continue;  //keep alive
@@ -789,7 +794,7 @@ public abstract class RTSP implements TransportInterface {
             worker_packet.add(pack);
           } else {
             //RTSPClient
-            if (debug) JFLog.log(log, "RTSP:packet send:host=" + pack.host);
+            if (debug) JFLog.log(log, "RTSP:packet recv:host=" + pack.host);
             String[] msg = new String(pack.data, 0, pack.length).split("\r\n", -1);
             iface.onPacket(RTSP.this, msg, pack.host, pack.port);
             if (debug) JFLog.log(log, "RTSP:packet free:host=" + pack.host);

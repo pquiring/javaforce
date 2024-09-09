@@ -7,6 +7,7 @@ package viewer;
  */
 
 import java.net.*;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
@@ -22,18 +23,23 @@ public class Viewer {
   private NetworkReader[] networkReaders;  //group cameras
   private int grid_x, grid_y, grid_xy;
   private boolean playing;
+  public boolean downloading;
+  private boolean download_pause;
+  public boolean download_done;
+  private String download_ext;
   private MediaEncoder encoder;
   private MediaDownload downloader;
 
   public static boolean debug = false;
   public static boolean debug_packets = false;
-
-  private final static boolean debug_buffers = false;
+  public static boolean debug_buffers = false;
+  public static boolean debug_download = true;
 
   public URL url;
 
   /** Play a network source directly. */
   public void play(URL url) {
+    if (debug) JFLog.log("play:" + url);
     if (playing) {
       stop(true);
     }
@@ -63,11 +69,11 @@ public class Viewer {
     }
     playing = false;
     if (wait) {
-      JFLog.log("stop:waiting for reader thread to stop");
+      JFLog.log("Viewer:stop:waiting for reader thread to stop");
       if (networkReader != null) {
         try {networkReader.join();} catch (Exception e) {JFLog.log(e);}
       }
-      JFLog.log("stop:reader thread done");
+      JFLog.log("Viewer:stop:reader thread done");
     }
   }
 
@@ -142,15 +148,16 @@ public class Viewer {
       try {
         connect();
 
-        if (playThread == null) {
+        if (playThread == null && !downloading) {
           playThread = new PlayVideoOnlyThread();
           playThread.start();
         }
         while (playing) {
+          if (download_done) break;
           JF.sleep(1000);
           long now = System.currentTimeMillis();
           if (now - lastPacket > 20*1000) {
-            JFLog.log(log, "NetworkReader : Reconnecting : " + url);
+            if (debug) JFLog.log(log, "NetworkReader : Reconnecting : " + url);
             disconnect();
             drawCameraIcon();
             if (!connect()) {
@@ -165,15 +172,16 @@ public class Viewer {
             break;
           }
         }
-        JFLog.log(log, "NetworkReader:closing");
-        close(true, true);
+        close(true, false);
       } catch (Exception e) {
         JFAWT.showError("Error", e.toString());
         JFLog.log(log, e);
       }
       try {
         JFLog.log(log, "wait for play thread");
-        playThread.join();
+        if (playThread != null) {
+          playThread.join();
+        }
         JFLog.log(log, "play thread done");
       } catch (Exception e) {
         JFLog.log(log, e);
@@ -183,6 +191,11 @@ public class Viewer {
       video_buffer = null;
       if (playing) Viewer.this.stop(false);
       video_decoder = null;
+      if (download_done) {
+        new Timer().schedule(new TimerTask() {public void run() {
+          stopDownload();
+        }}, 100);
+      }
     }
 
     private void drawCameraIcon() {
@@ -248,9 +261,10 @@ public class Viewer {
     }
 
     private void close(boolean disconnect, boolean teardown) {
-      JFLog.log(log, "NetworkReader.close");
+      if (debug) JFLog.logTrace(log, "NetworkReader.close()");
       try {
         if (disconnect && rtsp != null) {
+          RTSP.debug = true;  //test
           if (teardown) {
             rtsp.teardown(url.toString());
           }
@@ -422,16 +436,17 @@ public class Viewer {
     public void onSetParameter(RTSPClient client, String[] params) {
       String ts = HTTP.getParameter(params, "ts");
       if (ts != null) {
+        if (debug) JFLog.log("ts=" + ts);
         //notice that is has changed
         videoPanel.setTimestamp(JF.atol(ts));
         return;
       }
       String download = HTTP.getParameter(params, "download");
-      if (download == null) return;
-      switch (download) {
-        case "complete":
-          stopDownload();
-          break;
+      if (download != null) {
+        if (debug) JFLog.log("download=" + download);
+        if (download.equals("complete")) {
+          download_done = true;
+        }
       }
     }
 
@@ -451,7 +466,10 @@ public class Viewer {
     }
 
     public void rtpCodec(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
-      if (debug_packets) JFLog.log(log, "rtpCodec:packet");
+      if (debug_packets) {
+        int seq = RTPChannel.getseqnum(buf, offset);
+        JFLog.log(log, "rtpCodec:packet:" + seq);
+      }
       try {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
@@ -460,6 +478,16 @@ public class Viewer {
       } catch (Exception e) {
         JFLog.log(log, e);
       }
+    }
+
+    private CodecInfo getCodecInfo(Packet packet) {
+      if (h264 != null) {
+        return RTPH264.getCodecInfo(packet);
+      }
+      if (h265 != null) {
+        return RTPH265.getCodecInfo(packet);
+      }
+      return null;
     }
 
     public void onPacket(Packet rtp_packet) {
@@ -472,7 +500,28 @@ public class Viewer {
           JFLog.log(log, "packets_decode=" + packets.toString());
         }
         Packet codec_packet = packets.getNextFrame();
-        if (encoder != null) {
+        if (downloading) {
+          if (download_pause) {
+            if (debug_download) JFLog.log(log, "downloading:discard packet:paused");
+            return;
+          }
+          if (encoder == null) {
+            CodecInfo info = getCodecInfo(codec_packet);
+            if (info == null) {
+              if (debug_download) JFLog.log(log, "downloading:discard packet:no codec info");
+              return;
+            }
+            encoder = new MediaEncoder();
+            encoder.videoBitRate = (int)(4 * JF.MB);
+            encoder.framesPerKeyFrame = 20;
+            if (debug_download) JFLog.log(log, "download:" + info);
+            if (!encoder.start(downloader, info.width, info.height, (int)info.fps, -1, -1, "mp4", true, false)) {
+              if (debug_download) JFLog.log(log, "download:encoder.start() failed");
+              encoder = null;
+              return;
+            }
+          }
+          if (debug_download) JFLog.log(log, "download:add frame:key=" + key_frame + ":" + codec_packet);
           encoder.addVideoEncoded(codec_packet.data, codec_packet.offset, codec_packet.length, key_frame);
           return;
         }
@@ -711,23 +760,35 @@ public class Viewer {
     }
   }
   public void refresh() {
+    if (downloading) return;
     stop(true);
     play(Config.url);
   }
-  public void startDownload(String filename) {
-    downloader = new MediaDownload(this, filename);
-    encoder = new MediaEncoder();
-    encoder.start(downloader, -1, -1, -1, -1, -1, "mp4", true, false);
-    downloader.setVisible(true);  //current thread is EDT
+  public void startDownload(String filename, String ext) {
+    RTSP.debug = true;  //test
+    download_ext = ext;
+    download_pause = true;
+    download_done = false;
+    downloading = true;
+    downloader = new MediaDownload(null, true, this, filename);
+    java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
+      downloader.setVisible(true);  //current thread is EDT (does not return until dialog is closed)
+    }});
   }
   public void stopDownload() {
+    stop(true);
+    downloading = false;
+    download_pause = false;
+    download_done = false;
     if (encoder != null) {
       encoder.stop();
       encoder = null;
     }
     if (downloader != null) {
-      downloader.complete();
-      downloader = null;
+      java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
+        downloader.dispose();
+        downloader = null;
+      }});
     }
     play(JF.createURL(VideoPanel.cleanURL(url.toString())));
   }

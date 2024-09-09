@@ -305,6 +305,7 @@ public class VideoPanel extends javax.swing.JPanel {
   private int cnt = 0;
 
   public static boolean debug = false;
+  public static boolean debug_ts = false;
 
   private synchronized void init() {
     if (video != null) return;
@@ -511,7 +512,7 @@ public class VideoPanel extends javax.swing.JPanel {
     long day = toDay(now);
     long min = toMin(now);
     long sec = toSec(now);
-    if (debug) JFLog.log("time:" + now + ":" + (day/ms_per_day) + "," + (min/ms_per_min) + "," + (sec/ms_per_sec) + ":" + past_day + ":" + sel_mins_start);
+    if (debug_ts) JFLog.log("time:" + now + ":" + (day/ms_per_day) + "," + (min/ms_per_min) + "," + (sec/ms_per_sec) + ":" + past_day + ":" + sel_mins_start);
     for(int x=0;x<min_per_day;x++) {
       long cmin = x * ms_per_min;
       int clr = BLACK;
@@ -624,10 +625,10 @@ public class VideoPanel extends javax.swing.JPanel {
     long today = toDay(now);
     Date dt = (Date)date.getValue();
     long date_day = toDay(dt.getTime());
-    if (debug) JFLog.log("today=" + (today / ms_per_min) + ",date=" + (date_day / ms_per_min));
+    if (debug_ts) JFLog.log("today=" + (today / ms_per_min) + ",date=" + (date_day / ms_per_min));
     if (date_day > today) return 0;
     long delta = today - date_day;
-    if (debug) JFLog.log("date_delta_mins=" + (delta / ms_per_min));
+    if (debug_ts) JFLog.log("date_delta_mins=" + (delta / ms_per_min));
     return delta;
   }
 
@@ -733,14 +734,23 @@ public class VideoPanel extends javax.swing.JPanel {
     download.setEnabled(true);
   }
 
+  private String ext(String filename) {
+    int idx = filename.lastIndexOf('.');
+    if (idx == -1) return null;
+    return filename.substring(idx + 1);
+  }
+
   private void download() {
     String filename = JFAWT.getSaveAsFile(System.getProperty("user.dir"), new String[][] {
-      {"MKV", "mkv"},
       {"MP4", "mp4"},
-      {"AVI", "avi"},
     });
     if (filename == null) return;
-    viewer.startDownload(filename);
+    String ext = ext(filename);
+    if (ext == null) {
+      filename += ".mp4";
+      ext = "mp4";
+    }
+    viewer.startDownload(filename, ext);
     if (ts_sel_mins_start != -1) {
       //download mins
       try {
@@ -760,6 +770,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   public void setTimestamp(long ts) {
+    if (viewer.downloading) return;
     ts_delta = ts;
     if (ts_delta == 0) {
       seek_live();

@@ -362,7 +362,14 @@ public class JFAWT {
     }
     chooser.setSelectedFile(new File(file));
     if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-      return chooser.getSelectedFile().getAbsolutePath();
+      FileNameExtensionFilter ff = (FileNameExtensionFilter)chooser.getFileFilter();
+      String ext = ff.getExtensions()[0];
+      String filename = chooser.getSelectedFile().getAbsolutePath();
+      int idx = filename.lastIndexOf('.');
+      if (idx == -1) {
+        filename += "." + ext;
+      }
+      return filename;
     } else {
       return null;
     }
@@ -391,7 +398,14 @@ public class JFAWT {
       }
     }
     if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-      return chooser.getSelectedFile().getAbsolutePath();
+      FileNameExtensionFilter ff = (FileNameExtensionFilter)chooser.getFileFilter();
+      String ext = ff.getExtensions()[0];
+      String filename = chooser.getSelectedFile().getAbsolutePath();
+      int idx = filename.lastIndexOf('.');
+      if (idx == -1) {
+        filename += "." + ext;
+      }
+      return filename;
     } else {
       return null;
     }

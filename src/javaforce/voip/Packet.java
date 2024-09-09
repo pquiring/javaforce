@@ -21,4 +21,8 @@ public class Packet {
 
   public int stream;
   public long ts;
+
+  public String toString() {
+    return "Packet:{data:" + data + ",offset:" + offset + ",length:" + length + "}";
+  }
 }
