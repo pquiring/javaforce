@@ -18,7 +18,7 @@ public class MediaServer {
 
   public static boolean debug = false;
   public static boolean debug_ts = false;
-  public static boolean debug_download = true;
+  public static boolean debug_download = false;
 
   private RTSPServer server;
   private RTSPSession sess;
@@ -62,7 +62,6 @@ public class MediaServer {
   //reads media file and streams to player
   private class Reader extends Thread implements PacketReceiver {
     private Media media;
-    private long ts_current;
     private int codec_id;
     private RTPCodec rtp_codec;
     public void run() {

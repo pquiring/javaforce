@@ -33,7 +33,7 @@ public class Viewer {
   public static boolean debug = false;
   public static boolean debug_packets = false;
   public static boolean debug_buffers = false;
-  public static boolean debug_download = true;
+  public static boolean debug_download = false;
 
   public URL url;
 
