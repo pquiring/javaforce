@@ -38,7 +38,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
       if (false) {
         //see bouncy castle DTLSClientTest
         RTP testRTP = new RTP();
-        testRTP.init(null, 5556);
+        testRTP.init(null);
         testRTP.start();
         SDP sdp = new SDP();
         SDP.Stream stream = sdp.addStream(SDP.Type.audio);
