@@ -304,6 +304,9 @@ public class Media {
       if (header.magic != JFAV) throw new Exception("invalid file");
       header.version = raf.readInt();
       if (header.version != V32) throw new Exception("invalid file");
+      header.keyFrames = raf.readInt();
+      header.allFrames = raf.readInt();
+      header.indexOffset = raf.readInt();
       header.flags = raf.readInt();
       if (header.flags > FLAG_MAX_VALUE) throw new Exception("invalid file");
       if (header.flags > 0) {
@@ -319,9 +322,6 @@ public class Media {
           header.info.fps = raf.readFloat();
         }
       }
-      header.keyFrames = raf.readInt();
-      header.allFrames = raf.readInt();
-      header.indexOffset = raf.readInt();
       header.streamCount = raf.readInt();
       if (header.streamCount < 1 || header.streamCount > max_streams) throw new Exception("invalid file");
       header.streams = new int[header.streamCount];
@@ -339,6 +339,9 @@ public class Media {
     try {
       raf.writeInt(JFAV);  //header
       raf.writeInt(V32);  //version (32bit)
+      raf.writeInt(header.keyFrames);
+      raf.writeInt(header.allFrames);
+      raf.writeInt(header.indexOffset);
       raf.writeInt(header.flags);
       if (header.info != null) {
         if ((header.flags & FLAG_AUDIO) != 0) {
@@ -354,9 +357,6 @@ public class Media {
           raf.writeFloat(header.info.fps);
         }
       }
-      raf.writeInt(header.keyFrames);
-      raf.writeInt(header.allFrames);
-      raf.writeInt(header.indexOffset);
       raf.writeInt(header.streamCount);
       for(int idx=0;idx<header.streamCount;idx++) {
         raf.writeInt(header.streams[idx]);
@@ -371,8 +371,9 @@ public class Media {
   private boolean updateHeader() {
     //MUST call writeIndexes() first to update header.indexOffset
     try {
-      raf.seek(8);
+      raf.seek(8);  //header, version
       raf.writeInt(header.keyFrames);
+      raf.writeInt(header.allFrames);
       raf.writeInt(header.indexOffset);
       return true;
     } catch (Exception e) {
