@@ -432,6 +432,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (fn.endsWith(".h265")) return true;
     if (fn.endsWith(".webm")) return true;
     if (fn.endsWith(".mov")) return true;
+    if (fn.endsWith(".jfav")) return true;
     return false;
   }
 
@@ -1112,6 +1113,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
               break;
             case 0:  //video packet read
               int video[] = video_decoder.decode(packet);
+              if (video == null) break;
               JFImage img = video_buffer.getNewFrame();
               if (img != null) {
                 if ((img.getWidth() != width) || (img.getHeight() != height)) {
