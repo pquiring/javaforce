@@ -81,7 +81,7 @@ public class Viewer {
   private boolean resizeVideo;
   private Object sizeLock = new Object();
 
-  public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface, PacketReceiver {
+  public class NetworkReader extends Thread implements RTSPClientInterface, RTPInterface, PacketReceiver {
     private URL url;
     private String type, name;
     private RTSPClient rtsp;
@@ -142,7 +142,6 @@ public class Viewer {
       try {
         connect();
 
-        String err = null;
         if (playThread == null) {
           playThread = new PlayVideoOnlyThread();
           playThread.start();
@@ -159,27 +158,25 @@ public class Viewer {
               continue;
             }
           } else if (now - lastKeepAlive > 45*1000) {
-            rtsp.keepalive(url.toString());
-            lastKeepAlive = now;
+            keepAlive(now);
           }
           if (type.equals("group") && cameras != null) {
             //group no longer need to run
             break;
           }
         }
-        JFLog.log("NetworkReader:closing");
+        JFLog.log(log, "NetworkReader:closing");
         close(true, true);
-        if (err != null) JFAWT.showError("Error", err);
       } catch (Exception e) {
         JFAWT.showError("Error", e.toString());
-        JFLog.log(e);
+        JFLog.log(log, e);
       }
       try {
-        JFLog.log("wait for play thread");
+        JFLog.log(log, "wait for play thread");
         playThread.join();
-        JFLog.log("play thread done");
+        JFLog.log(log, "play thread done");
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(log, e);
       }
       playThread = null;
       audio_buffer = null;
@@ -189,111 +186,117 @@ public class Viewer {
     }
 
     private void drawCameraIcon() {
-      if (type.equals("group")) return;
-      if (grid) {
-        videoPanel.setImage(ViewerApp.cameraicon, gx, gy);
-      } else {
-        videoPanel.setImage(ViewerApp.cameraicon);
+      try {
+        if (type.equals("group")) return;
+        if (grid) {
+          videoPanel.setImage(ViewerApp.cameraicon, gx, gy);
+        } else {
+          videoPanel.setImage(ViewerApp.cameraicon);
+        }
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
     }
 
     public boolean connect() {
-      rtsp = new RTSPClient();
-      int port = url.getPort();
-      if (port == -1) {
-        port = 554;  //default RTSP port
-      }
-      rtsp.init(url.getHost(), port, Config.getLocalPort(), this, TransportType.TCP);
-      String user_pass = url.getUserInfo();
-      if (user_pass != null) {
-        int idx = user_pass.indexOf(":");
-        String user = user_pass.substring(0, idx);
-        String pass = user_pass.substring(idx + 1);
-        rtsp.setUserPass(user, pass);
-      }
-      if (type.equals("group")) {
-        rtsp.get_parameter(url.toString(), new String[] {"action: query"});
-      } else {
-        start_camera();
-      }
+      try {
+        rtsp = new RTSPClient();
+        int port = url.getPort();
+        if (port == -1) {
+          port = 554;  //default RTSP port
+        }
+        if (!rtsp.init(url.getHost(), port, Config.getLocalPort(), this, TransportType.TCP)) {
+          JFLog.log(log, "RTSPClient.init() failed!");
+          return false;
+        }
+        String user_pass = url.getUserInfo();
+        if (user_pass != null) {
+          int idx = user_pass.indexOf(":");
+          String user = user_pass.substring(0, idx);
+          String pass = user_pass.substring(idx + 1);
+          rtsp.setUserPass(user, pass);
+        }
+        if (type.equals("group")) {
+          rtsp.get_parameter(url.toString(), new String[] {"action: query"});
+        } else {
+          start_camera();
+        }
 
-      long now = System.currentTimeMillis();
-      lastKeepAlive = now;
-      lastPacket = now;
-      return true;
+        long now = System.currentTimeMillis();
+        lastKeepAlive = now;
+        lastPacket = now;
+        return true;
+      } catch (Exception e) {
+        JFLog.log(log, e);
+        return false;
+      }
     }
 
     public void disconnect() {
-      if (rtsp != null) {
-        rtsp.uninit();
-        rtsp = null;
-      }
-      if (video_decoder != null) {
-        video_decoder.stop();
-        video_decoder = null;
+      try {
+        if (rtsp != null) {
+          rtsp.uninit();
+          rtsp = null;
+        }
+        if (video_decoder != null) {
+          video_decoder.stop();
+          video_decoder = null;
+        }
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
     }
 
     private void close(boolean disconnect, boolean teardown) {
-      JFLog.log("close:1");
-      if (disconnect && rtsp != null) {
-        if (teardown) {
-          rtsp.teardown(url.toString());
+      JFLog.log(log, "NetworkReader.close");
+      try {
+        if (disconnect && rtsp != null) {
+          if (teardown) {
+            rtsp.teardown(url.toString());
+          }
+          rtsp.uninit();
+          rtsp = null;
         }
-        rtsp.uninit();
-        rtsp = null;
+        if (rtp != null) {
+          rtp.stop();
+          rtp = null;
+        }
+        channel = null;
+        if (video_decoder != null) {
+          video_decoder.stop();
+          video_decoder = null;
+        }
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
-      JFLog.log("close:2");
-      if (rtp != null) {
-        rtp.stop();
-        rtp = null;
-      }
-      channel = null;
-      JFLog.log("close:3");
-      if (video_decoder != null) {
-        video_decoder.stop();
-        video_decoder = null;
-      }
-      JFLog.log("close:4");
     }
 
-    //interface MediaIO
-    public int read(MediaCoder coder, byte data[]) {
-      int read = 0;
+    private void keepAlive(long now) {
       try {
-        //TODO : read network data
+        rtsp.keepalive(url.toString());
+        lastKeepAlive = now;
       } catch (Exception e) {
-        JFLog.log(e);
-        return read;
+        JFLog.log(log, e);
       }
-      if (read == -1) read = 0;
-      return read;
-    }
-    public int write(MediaCoder coder, byte data[]) {
-      //jfmedia does not create media files
-      return 0;
-    }
-    public long seek(MediaCoder coder, long pos, int how) {
-      return -1;
     }
 
     //RTSPClient Interface
     public void onOptions(RTSPClient client) {
-      JFLog.log("onOptions");
+      JFLog.log(log, "onOptions");
       client.describe(url.toString());
     }
 
     public void onDescribe(RTSPClient client, SDP sdp) {
-      JFLog.log("onDescribe");
-      JFLog.log("SDP=" + sdp);
+      JFLog.log(log, "onDescribe");
+      JFLog.log(log, "SDP=" + sdp);
       close(false, false);
       if (sdp == null) {
-        JFLog.log("Play failed : onDescribe() SDP == null");
+        JFLog.log(log, "Play failed : onDescribe() SDP == null");
         return;
       }
       SDP.Stream stream = sdp.getFirstVideoStream();
       if (stream == null) {
-        JFLog.log("Error:CameraWorker:onDescribe():SDP does not contain video stream");
+        JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
         return;
       }
       //IP/port in SDP is all zeros
@@ -307,10 +310,10 @@ public class Viewer {
       boolean status;
       fps = stream.getFrameRate();
       if (fps <= 0) {
-        JFLog.log("Warning : Invalid framerate:Using 10fps");
+        JFLog.log(log, "Warning : Invalid framerate:Using 10fps");
         fps = 10;
       } else {
-        JFLog.log("FPS=" + fps);
+        JFLog.log(log, "FPS=" + fps);
       }
       decoded_x = ViewerApp.self.getWidth();
       decoded_y = ViewerApp.self.getHeight();
@@ -328,12 +331,12 @@ public class Viewer {
         h265 = new RTPH265();
         packets = new PacketBuffer(CodecType.H265);
       } else {
-        JFLog.log("DVR Viewer:No supported codec detected");
+        JFLog.log(log, "DVR Viewer:No supported codec detected");
         return;
       }
       status = video_decoder.start(av_codec, decoded_x, decoded_y);
       if (!status) {
-        JFLog.log("Error:MediaVideoDecoder.start() failed");
+        JFLog.log(log, "Error:MediaVideoDecoder.start() failed");
         return;
       }
       rtp = new RTP();
@@ -345,17 +348,17 @@ public class Viewer {
     }
 
     public void onSetup(RTSPClient client) {
-      JFLog.log("onSetup");
+      JFLog.log(log, "onSetup");
       client.play(url.toString());
     }
 
     public void onPlay(RTSPClient client) {
-      JFLog.log("onPlay");
+      JFLog.log(log, "onPlay");
       //connect to RTP stream and start decoding video
     }
 
     public void onTeardown(RTSPClient client) {
-      JFLog.log("onTeardown");
+      JFLog.log(log, "onTeardown");
       //stop RTP stream
       close(true, false);
     }
@@ -365,7 +368,7 @@ public class Viewer {
     }
 
     private void start_group(String cams) {
-      JFLog.log("start_group:" + cams);
+      JFLog.log(log, "start_group:" + cams);
       cameras = cams.split(",");
       int count = cameras.length;
       grid = true;
@@ -401,7 +404,7 @@ public class Viewer {
     }
 
     public void onGetParameter(RTSPClient client, String[] params) {
-      JFLog.log("onGetParameter:" + type);
+      JFLog.log(log, "onGetParameter:" + type);
       switch (type) {
         case "camera":
           //keep-alive
@@ -448,7 +451,7 @@ public class Viewer {
     }
 
     public void rtpCodec(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
-      if (debug_packets) JFLog.log("rtpCodec:packet");
+      if (debug_packets) JFLog.log(log, "rtpCodec:packet");
       try {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
@@ -460,7 +463,7 @@ public class Viewer {
     }
 
     public void onPacket(Packet rtp_packet) {
-      if (debug_packets) JFLog.log("onPacket");
+      if (debug_packets) JFLog.log(log, "onPacket");
       try {
         packets.add(rtp_packet);
         if (!packets.haveCompleteFrame()) return;
@@ -496,7 +499,7 @@ public class Viewer {
               img.putPixels(decoded_frame, 0, 0, width, height, 0);
               video_buffer.freeNewFrame();
             } else {
-              if (debug_buffers) JFLog.log("Warning : VideoBuffer overflow");
+              if (debug_buffers) JFLog.log(log, "Warning : VideoBuffer overflow");
             }
           }
         }
@@ -512,7 +515,7 @@ public class Viewer {
       public void run() {
         double frameDelay = -1;
         double samplesPerFrame = (44100.0 * ((double)chs)) / fps;
-        JFLog.log("samplesPerFrame=" + samplesPerFrame);
+        JFLog.log(log, "samplesPerFrame=" + samplesPerFrame);
         double samplesToWrite = 0;
         AudioOutput output = new AudioOutput();
         output.start(chs, 44100, 16, audio_bufsiz * 2 /*bytes*/, "<default>");
@@ -573,7 +576,7 @@ public class Viewer {
               video_buffer.freeNextFrame();
             }
           } else {
-            if (debug) JFLog.log("Playback too slow - skipping a frame");
+            if (debug) JFLog.log(log, "Playback too slow - skipping a frame");
             skip++;
           }
           current += frameDelay;
@@ -588,7 +591,7 @@ public class Viewer {
           JF.sleep((int)delay);
         }
         output.stop();
-        JFLog.log("play thread exit");
+        JFLog.log(log, "play thread exit");
       }
     }
 
@@ -634,7 +637,7 @@ public class Viewer {
           JF.sleep((int)delay);
         }
         output.stop();
-        JFLog.log("play thread exit");
+        JFLog.log(log, "play thread exit");
       }
     }
     public class PlayVideoOnlyThread extends Thread {
@@ -682,7 +685,7 @@ public class Viewer {
               video_buffer.freeNextFrame();
             }
           } else {
-            if (debug) JFLog.log("Playback too slow - skipping a frame");
+            if (debug) JFLog.log(log, "Playback too slow - skipping a frame");
             skip++;
           }
           current += frameDelay;
@@ -696,7 +699,7 @@ public class Viewer {
           }
           JF.sleep((int)delay);
         }
-        JFLog.log("play thread exit");
+        JFLog.log(log, "play thread exit");
       }
     }
   }
