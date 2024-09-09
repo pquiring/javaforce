@@ -261,7 +261,7 @@ public class Viewer {
     }
 
     private void close(boolean disconnect, boolean teardown) {
-      if (debug) JFLog.logTrace(log, "NetworkReader.close()");
+      if (debug) JFLog.log(log, "NetworkReader.close()");
       try {
         if (disconnect && rtsp != null) {
           RTSP.debug = true;  //test
@@ -296,157 +296,193 @@ public class Viewer {
 
     //RTSPClient Interface
     public void onOptions(RTSPClient client) {
-      JFLog.log(log, "onOptions");
-      client.describe(url.toString());
+      try {
+        JFLog.log(log, "onOptions");
+        client.describe(url.toString());
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
     }
 
     public void onDescribe(RTSPClient client, SDP sdp) {
-      JFLog.log(log, "onDescribe");
-      JFLog.log(log, "SDP=" + sdp);
-      close(false, false);
-      if (sdp == null) {
-        JFLog.log(log, "Play failed : onDescribe() SDP == null");
-        return;
+      try {
+        JFLog.log(log, "onDescribe");
+        JFLog.log(log, "SDP=" + sdp);
+        close(false, false);
+        if (sdp == null) {
+          JFLog.log(log, "Play failed : onDescribe() SDP == null");
+          return;
+        }
+        SDP.Stream stream = sdp.getFirstVideoStream();
+        if (stream == null) {
+          JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
+          return;
+        }
+        //IP/port in SDP is all zeros
+        stream.setIP(client.getRemoteIP());
+        stream.setPort(-1);
+        if (video_decoder != null) {
+          video_decoder.stop();
+          video_decoder = null;
+        }
+        video_decoder = new MediaVideoDecoder();
+        boolean status;
+        fps = stream.getFrameRate();
+        if (fps <= 0) {
+          JFLog.log(log, "Warning : Invalid framerate:Using 10fps");
+          fps = 10;
+        } else {
+          JFLog.log(log, "FPS=" + fps);
+        }
+        decoded_x = ViewerApp.self.getWidth();
+        decoded_y = ViewerApp.self.getHeight();
+        decoded_xy = decoded_x * decoded_y;
+        width = decoded_x;
+        height = decoded_y;
+        video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+        int av_codec = -1;
+        if (stream.hasCodec(RTP.CODEC_H264)) {
+          av_codec = MediaCoder.AV_CODEC_ID_H264;
+          h264 = new RTPH264();
+          packets = new PacketBuffer(CodecType.H264);
+        } else if (stream.hasCodec(RTP.CODEC_H265)) {
+          av_codec = MediaCoder.AV_CODEC_ID_H265;
+          h265 = new RTPH265();
+          packets = new PacketBuffer(CodecType.H265);
+        } else {
+          JFLog.log(log, "DVR Viewer:No supported codec detected");
+          return;
+        }
+        status = video_decoder.start(av_codec, decoded_x, decoded_y);
+        if (!status) {
+          JFLog.log(log, "Error:MediaVideoDecoder.start() failed");
+          return;
+        }
+        rtp = new RTP();
+        rtp.init(this, TransportType.UDP);
+        rtp.start();
+        channel = rtp.createChannel(stream);
+        channel.start();
+        client.setup(url.toString(), rtp.getlocalrtpport(), stream.control);
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
-      SDP.Stream stream = sdp.getFirstVideoStream();
-      if (stream == null) {
-        JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
-        return;
-      }
-      //IP/port in SDP is all zeros
-      stream.setIP(client.getRemoteIP());
-      stream.setPort(-1);
-      if (video_decoder != null) {
-        video_decoder.stop();
-        video_decoder = null;
-      }
-      video_decoder = new MediaVideoDecoder();
-      boolean status;
-      fps = stream.getFrameRate();
-      if (fps <= 0) {
-        JFLog.log(log, "Warning : Invalid framerate:Using 10fps");
-        fps = 10;
-      } else {
-        JFLog.log(log, "FPS=" + fps);
-      }
-      decoded_x = ViewerApp.self.getWidth();
-      decoded_y = ViewerApp.self.getHeight();
-      decoded_xy = decoded_x * decoded_y;
-      width = decoded_x;
-      height = decoded_y;
-      video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
-      int av_codec = -1;
-      if (stream.hasCodec(RTP.CODEC_H264)) {
-        av_codec = MediaCoder.AV_CODEC_ID_H264;
-        h264 = new RTPH264();
-        packets = new PacketBuffer(CodecType.H264);
-      } else if (stream.hasCodec(RTP.CODEC_H265)) {
-        av_codec = MediaCoder.AV_CODEC_ID_H265;
-        h265 = new RTPH265();
-        packets = new PacketBuffer(CodecType.H265);
-      } else {
-        JFLog.log(log, "DVR Viewer:No supported codec detected");
-        return;
-      }
-      status = video_decoder.start(av_codec, decoded_x, decoded_y);
-      if (!status) {
-        JFLog.log(log, "Error:MediaVideoDecoder.start() failed");
-        return;
-      }
-      rtp = new RTP();
-      rtp.init(this, TransportType.UDP);
-      rtp.start();
-      channel = rtp.createChannel(stream);
-      channel.start();
-      client.setup(url.toString(), rtp.getlocalrtpport(), stream.control);
     }
 
     public void onSetup(RTSPClient client) {
-      JFLog.log(log, "onSetup");
-      client.play(url.toString());
+      try {
+        JFLog.log(log, "onSetup");
+        client.play(url.toString());
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
     }
 
     public void onPlay(RTSPClient client) {
-      JFLog.log(log, "onPlay");
-      //connect to RTP stream and start decoding video
+      try {
+        JFLog.log(log, "onPlay");
+        //connect to RTP stream and start decoding video
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
     }
 
     public void onTeardown(RTSPClient client) {
-      JFLog.log(log, "onTeardown");
-      //stop RTP stream
-      close(true, false);
+      try {
+        JFLog.log(log, "onTeardown");
+        //stop RTP stream
+        close(true, false);
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
     }
 
     private void start_camera() {
-      rtsp.options(url.toString());
+      try {
+        rtsp.options(url.toString());
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
     }
 
     private void start_group(String cams) {
-      JFLog.log(log, "start_group:" + cams);
-      cameras = cams.split(",");
-      int count = cameras.length;
-      grid = true;
-      grid_x = 2;
-      grid_y = 2;
-      grid_xy = grid_x * grid_y;
-      while (grid_xy < count) {
-        if (grid_x == grid_y) {
-          grid_x++;
-        } else {
-          grid_y++;
-        }
+      try {
+        JFLog.log(log, "start_group:" + cams);
+        cameras = cams.split(",");
+        int count = cameras.length;
+        grid = true;
+        grid_x = 2;
+        grid_y = 2;
         grid_xy = grid_x * grid_y;
-      }
-      videoPanel.setGrid(grid_x, grid_y);
-      //start cameras
-      networkReaders = new NetworkReader[count];
-      int px = 0;
-      int py = 0;
-      for(int a=0;a<count;a++) {
-        URL camurl = Config.newURL("/camera/" + cameras[a]);
-        if (camurl == null) continue;
-        NetworkReader nr = new NetworkReader(camurl);
-        nr.setGrid(px, py);
-        nr.start();
-        networkReaders[a] = nr;
-        px++;
-        if (px == grid_x) {
-          px = 0;
-          py++;
+        while (grid_xy < count) {
+          if (grid_x == grid_y) {
+            grid_x++;
+          } else {
+            grid_y++;
+          }
+          grid_xy = grid_x * grid_y;
         }
+        videoPanel.setGrid(grid_x, grid_y);
+        //start cameras
+        networkReaders = new NetworkReader[count];
+        int px = 0;
+        int py = 0;
+        for(int a=0;a<count;a++) {
+          URL camurl = Config.newURL("/camera/" + cameras[a]);
+          if (camurl == null) continue;
+          NetworkReader nr = new NetworkReader(camurl);
+          nr.setGrid(px, py);
+          nr.start();
+          networkReaders[a] = nr;
+          px++;
+          if (px == grid_x) {
+            px = 0;
+            py++;
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
     }
 
     public void onGetParameter(RTSPClient client, String[] params) {
-      JFLog.log(log, "onGetParameter:" + type);
-      switch (type) {
-        case "camera":
-          //keep-alive
-          break;
-        case "group":
-          if (!grid) {
-            start_group(HTTP.getParameter(params, "cameras"));
-          } else {
+      try {
+        JFLog.log(log, "onGetParameter:" + type);
+        switch (type) {
+          case "camera":
             //keep-alive
-          }
-          break;
+            break;
+          case "group":
+            if (!grid) {
+              start_group(HTTP.getParameter(params, "cameras"));
+            } else {
+              //keep-alive
+            }
+            break;
+        }
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
     }
 
     public void onSetParameter(RTSPClient client, String[] params) {
-      String ts = HTTP.getParameter(params, "ts");
-      if (ts != null) {
-        if (debug) JFLog.log("ts=" + ts);
-        //notice that is has changed
-        videoPanel.setTimestamp(JF.atol(ts));
-        return;
-      }
-      String download = HTTP.getParameter(params, "download");
-      if (download != null) {
-        if (debug) JFLog.log("download=" + download);
-        if (download.equals("complete")) {
-          download_done = true;
+      try {
+        String ts = HTTP.getParameter(params, "ts");
+        if (ts != null) {
+          if (debug) JFLog.log("ts=" + ts);
+          //notice that is has changed
+          videoPanel.setTimestamp(JF.atol(ts));
+          return;
         }
+        String download = HTTP.getParameter(params, "download");
+        if (download != null) {
+          if (debug) JFLog.log("download=" + download);
+          if (download.equals("complete")) {
+            download_done = true;
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(log, e);
       }
     }
 
