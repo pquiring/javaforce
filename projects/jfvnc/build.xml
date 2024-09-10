@@ -7,7 +7,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
-  <property name="version" value="0.4"/>
+  <property name="version" value="0.5"/>
 
   <property name="project2" value="build-service"/>
   <property name="project3" value="build-session"/>
