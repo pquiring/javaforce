@@ -1,5 +1,17 @@
 What's new...
 
+Sept 10/2024 : JF/68.0
+ - jfDVR/0.30
+   - viewer now supports viewing recordings
+ - jfMedia/0.22
+   - added support for new jfav media file
+ - jfVNC/0.5
+   - jfvnccli.exe can now install/remove windows service
+ - improved graal support
+ - new : LDAP cli utility (jfldap.sf.net)
+   - includes memberof check, good for login scripts
+   - compiled with graal
+
 Aug 21/2024 : JF/67.1
  - jfMQTT/0.4
    - added user/pass auth
