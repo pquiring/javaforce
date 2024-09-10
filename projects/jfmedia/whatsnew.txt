@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Sept 10, 2024 : v0.22 released!
+  - support jfav media files
+
 Feb 23, 2024 : v0.21 released!
   - many fixes
 
