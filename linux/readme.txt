@@ -3,6 +3,8 @@ jfLinux
 
 Desc:
   jfLinux is a complete desktop environment (DE) using the JavaForce library and related apps.
+  The installation script will install the JF software repo and optionally install the DE.
+  Installing the DE is not required to use other JF apps.
 
 Status:
   Currently the DE is based on X11.  There are plans to implement Wayland support but that may have to wait
