@@ -10,7 +10,6 @@ import java.io.*;
 import javaforce.*;
 import javaforce.jni.*;
 
-
 public class MediaCoder {
   private long ctx = 0;
   /** Loads the media framework native libraries from native loader. */
@@ -85,6 +84,23 @@ public class MediaCoder {
   public static final int PROFILE_BASELINE = 1;  //default
   public static final int PROFILE_MAIN = 2;
   public static final int PROFILE_HIGH = 3;
+
+  //formats (containers)
+  //mpeg
+  public static final String AV_FORMAT_ID_MP1 = "mp1";
+  public static final String AV_FORMAT_ID_MP2 = "mp2";
+  //note : mp3 was skipped because of possible confusion with mp1.3 (aka mp3)
+  public static final String AV_FORMAT_ID_MP4 = "mp4";
+  //MS
+  public static final String AV_FORMAT_ID_AVI = "avi";
+  //open
+  public static final String AV_FORMAT_ID_MKV = "mkv";
+  public static final String AV_FORMAT_ID_OGG = "ogg";
+  public static final String AV_FORMAT_ID_WEBM = "webm";
+  //audio only
+  public static final String AV_FORMAT_ID_WAV = "wav";
+  //apple
+  public static final String AV_FORMAT_ID_MOV = "mov";
 
   //video codecs (VideoDecoder)
   public static final int AV_CODEC_ID_NONE = 0;

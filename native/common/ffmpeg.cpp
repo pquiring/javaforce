@@ -784,7 +784,7 @@ static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_heigh
  * @param new_height - scale video to new height (-1 = use stream height)
  * @param new_chs - # of channels to mix to (-1 = use stream channels)
  * @param new_freq - output sampling rate (-1 = use stream rate)
- * @param seekable - can you seek input? (true=file JNI_FALSE=stream)
+ * @param seekable - can you seek input? (true=file false=stream)
  * NOTE : Audio output is always 16bit
  */
 
@@ -1759,7 +1759,6 @@ static int io_close2(AVFormatContext *fmt_ctx, AVIOContext *pb) {
 static jboolean single_file = JNI_FALSE;  //not working
 
 static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVideo, jboolean doAudio, void*read, void*write, void*seek) {
-  printf("context2=%p\n", _avformat_alloc_output_context2);
   (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, codec, NULL);
   if (ctx->fmt_ctx == NULL) {
     printf("Error:Unable to find codec:%s\n", codec);
