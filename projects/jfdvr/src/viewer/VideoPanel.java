@@ -466,8 +466,7 @@ public class VideoPanel extends javax.swing.JPanel {
       int ih = video.getHeight();
       if (((iw != w) || (ih != h))) {
         if (debug) JFLog.log("VideoPanel:image scaled");
-        JFImage scaled = new JFImage();
-        scaled.setImageSize(w, h);
+        JFImage scaled = new JFImage(w, h);
         scaled.getGraphics().drawImage(video.getImage(), 0,0, w,h, 0,0, iw,ih, null);
         video = scaled;
       }

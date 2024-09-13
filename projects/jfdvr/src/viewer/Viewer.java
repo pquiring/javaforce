@@ -359,13 +359,16 @@ public class Viewer {
           return;
         }
         rtp = new RTP();
-        rtp.init(this, TransportType.UDP);
+        if (!rtp.init(this, TransportType.UDP)) {
+          JFLog.log(log, "Error:RTP.init() failed");
+          return;
+        }
         rtp.start();
         channel = rtp.createChannel(stream);
         channel.start();
         client.setup(url.toString(), rtp.getlocalrtpport(), stream.control);
-      } catch (Exception e) {
-        JFLog.log(log, e);
+      } catch (Throwable t) {
+        JFLog.log(log, t);
       }
     }
 
