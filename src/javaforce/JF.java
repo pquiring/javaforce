@@ -122,7 +122,7 @@ public class JF {
     }
   }
 
-  public static String encoderURL(String url) {
+  public static String encodeURL(String url) {
     try {
       return URLEncoder.encode(url, "UTF-8");
     } catch (Exception e) {
