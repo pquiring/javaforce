@@ -79,6 +79,27 @@ public class JFLog {
     return init(id, filename, true, stdout ? System.out : null);
   }
 
+  public static int[] getIDs() {
+    Integer[] set = (Integer[])list.keySet().toArray();
+    int size = set.length;
+    int[] ids = new int[size];
+    for(int a=0;a<size;a++) {
+      ids[a] = set[a];
+    }
+    return ids;
+  }
+
+  public static String getLogFileName(int id) {
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
+    if (log == null) {
+      return null;
+    }
+    return log.filename;
+  }
+
   public static void setRetention(int id, int days) {
     LogInstance log;
     synchronized(list) {
@@ -237,30 +258,7 @@ public class JFLog {
       File file = new File(log.filename);
       file.renameTo(new File(tmp));
       if (log.retention != -1) {
-        File files[] = null;
-        int fidx = log.filename.lastIndexOf('/');
-        if (fidx == -1) {
-          //no path
-          files = new File(".").listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-              return (name.startsWith(log.filename));
-            }
-          });
-        } else {
-          String folder = log.filename.substring(0, fidx);
-          String filename = null;
-          if (idx == -1) {
-            filename = log.filename.substring(fidx + 1);
-          } else {
-            filename = log.filename.substring(fidx + 1, idx);
-          }
-          String fn = filename;
-          files = new File(folder).listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-              return name.startsWith(fn);
-            }
-          });
-        }
+        File files[] = getFiles(id);
         if (files != null) {
           //delete files older than retention
           long timestamp = System.currentTimeMillis() - (log.retention * ms_per_day);
@@ -277,6 +275,47 @@ public class JFLog {
       }
     }
     return true;
+  }
+
+  public static File[] getFiles(int id) {
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
+    if (log == null) {
+      return null;
+    }
+    try {
+      File files[] = null;
+      int idx = log.filename.lastIndexOf('.');
+      int fidx = log.filename.lastIndexOf('/');
+      if (fidx == -1) {
+        //no path
+        files = new File(".").listFiles(new FilenameFilter() {
+          public boolean accept(File dir, String name) {
+            return (name.startsWith(log.filename));
+          }
+        });
+      } else {
+        String folder = log.filename.substring(0, fidx);
+        String filename = null;
+        if (idx == -1) {
+          filename = log.filename.substring(fidx + 1);
+        } else {
+          filename = log.filename.substring(fidx + 1, idx);
+        }
+        String fn = filename;
+        files = new File(folder).listFiles(new FilenameFilter() {
+          public boolean accept(File dir, String name) {
+            return name.startsWith(fn);
+          }
+        });
+      }
+      return files;
+    } catch (Exception e) {
+      log(e);
+    }
+    return null;
   }
 
   /** Rotates log file. */
