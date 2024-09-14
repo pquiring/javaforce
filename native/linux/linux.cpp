@@ -65,7 +65,6 @@ char method[MAX_PATH];
 char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
-bool vm = false;
 bool debug = false;
 char errmsg[1024];
 
@@ -395,7 +394,6 @@ void registerAllNatives(JNIEnv *env) {
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
 }
 
-extern void vm_init();
 extern void vm_register(JNIEnv *env);
 
 /** Continues loading the JVM in a new Thread. */
@@ -403,14 +401,10 @@ bool JavaThread(void *ignore) {
   CreateJVM();
 
   registerAllNatives(g_env);
+  vm_register(g_env);
 
   //load linux shared libraries
   InvokeMethodVoid("javaforce/jni/LnxNative", "load", "()V", NULL);
-
-  if (vm) {
-    vm_init();
-    vm_register(g_env);
-  }
 
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
@@ -467,10 +461,6 @@ bool loadProperties() {
     char* arg = argv[a];
     if (arg[0] == 0) continue;
     if (arg[0] == '-') {
-      if (strcmp(arg, "-vm") == 0) {
-        vm = true;
-        continue;
-      }
       if (strcmp(arg, "-cp") == 0) {
         continue;
       }
@@ -573,9 +563,6 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
       strcpy(xoptions, ln1 + 8);
-    }
-    else if (strncmp(ln1, "VM=", 3) == 0) {
-      vm = true;
     }
     else if (strncmp(ln1, "DEBUG=", 6) == 0) {
       debug = true;

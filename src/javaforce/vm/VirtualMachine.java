@@ -28,6 +28,8 @@ public class VirtualMachine implements Serializable {
     vnc = -1;  //update during register
   }
 
+  public static native boolean init();
+
   public String pool;
   public String name;
   private String uuid;  //only valid while registered

@@ -84,11 +84,11 @@ void*	(*_virSecretDefineXML)(void* conn, const char* xml, int flags);
 int	(*_virSecretFree)(void* secret);
 int	(*_virSecretSetValue)(void* secret, const char* value, size_t value_size, int flags);
 
-void vm_init() {
+JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_init(JNIEnv *e, jclass o) {
   virt = loadLibrary("/usr/lib/x86_64-linux-gnu/libvirt.so");
   if (virt == NULL) {
     printf("VM:Error:Unable to open libvirt.so\n");
-    return;
+    return JNI_FALSE;
   }
 
   //common
@@ -164,6 +164,8 @@ void vm_init() {
   getFunction(virt, (void**)&_virSecretDefineXML, "virSecretDefineXML");
   getFunction(virt, (void**)&_virSecretFree, "virSecretFree");
   getFunction(virt, (void**)&_virSecretSetValue, "virSecretSetValue");
+
+  return JNI_TRUE;
 }
 
 //common code
