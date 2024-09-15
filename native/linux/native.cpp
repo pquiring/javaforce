@@ -1975,9 +1975,9 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
 };
 
-extern "C" void lnxnative_register(JNVEnv *env);
+extern "C" void lnxnative_register(JNIEnv *env);
 
-void lnxnative_register(JNVEnv *env) {
+void lnxnative_register(JNIEnv *env) {
   jclass cls;
 
   cls = findClass(env, "javaforce/jni/LnxNative");

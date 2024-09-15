@@ -328,7 +328,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxServiceStop(JNIEnv *e
 
 #include "../common/register.cpp"
 
-extern "C" void lnxnative_register(JNVEnv *env);
+extern "C" void lnxnative_register(JNIEnv *env);
 
 extern "C" void vm_register(JNIEnv *env);
 
