@@ -1,5 +1,7 @@
 /* pcap */
 
+#include "register.h"
+
 //pcap types
 
 struct pcap_addr {
@@ -291,4 +293,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_write
   e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
 
   return ret == 0;
+}
+
+static JNINativeMethod javaforce_net_PacketCapture[] = {
+  {"ninit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_ninit},
+  {"listLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_net_PacketCapture_listLocalInterfaces},
+  {"nstart", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_net_PacketCapture_nstart},
+  {"stop", "(J)V", (void *)&Java_javaforce_net_PacketCapture_stop},
+  {"compile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_compile},
+  {"read", "(J)[B", (void *)&Java_javaforce_net_PacketCapture_read},
+  {"write", "(J[BII)Z", (void *)&Java_javaforce_net_PacketCapture_write},
+};
+
+extern "C" void pcap_register(JNIEnv *env);
+
+void pcap_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/net/PacketCapture");
+  registerNatives(env, cls, javaforce_net_PacketCapture, sizeof(javaforce_net_PacketCapture)/sizeof(JNINativeMethod));
 }
