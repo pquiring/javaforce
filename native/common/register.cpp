@@ -1,19 +1,3 @@
-static JNINativeMethod javaforce_controls_ni_DAQmx[] = {
-  {"daqInit", "()Z", (void *)&Java_javaforce_controls_ni_DAQmx_daqInit},
-  {"createTask", "()J", (void *)&Java_javaforce_controls_ni_DAQmx_createTask},
-  {"createChannelAnalog", "(JLjava/lang/String;DJDD)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelAnalog},
-  {"createChannelDigital", "(JLjava/lang/String;DJ)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelDigital},
-  {"createChannelCounter", "(JLjava/lang/String;DJDDLjava/lang/String;DI)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelCounter},
-  {"startTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_startTask},
-  {"readTaskAnalog", "(JI[D)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskAnalog},
-  {"readTaskBinary", "(JI[I)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskBinary},
-  {"readTaskDigital", "(JI[I)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskDigital},
-  {"readTaskCounter", "(JI[D)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskCounter},
-  {"stopTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_stopTask},
-  {"clearTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_clearTask},
-  {"printError", "()V", (void *)&Java_javaforce_controls_ni_DAQmx_printError},
-};
-
 static JNINativeMethod javaforce_gl_GL[] = {
   {"glInit", "()Z", (void *)&Java_javaforce_gl_GL_glInit},
   {"glActiveTexture", "(I)V", (void *)&Java_javaforce_gl_GL_glActiveTexture},
@@ -192,14 +176,14 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
   }
 }
 
+extern "C" void ni_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
 
 #ifndef __FreeBSD__
-  cls = findClass(env, "javaforce/controls/ni/DAQmx");
-  registerNatives(env, cls, javaforce_controls_ni_DAQmx, sizeof(javaforce_controls_ni_DAQmx)/sizeof(JNINativeMethod));
+  ni_register(env);
 #endif
 
   cls = findClass(env, "javaforce/gl/GL");

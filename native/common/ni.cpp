@@ -1,5 +1,7 @@
 #include "NIDAQmx.h"
 
+#include "register.h"
+
 // API Reference http://zone.ni.com/reference/en-XX/help/370471AF-01/
 
 JF_LIB_HANDLE nidll = NULL;
@@ -194,4 +196,29 @@ JNIEXPORT void JNICALL Java_javaforce_controls_ni_DAQmx_printError
   char errmsg[2048];
   (*_DAQmxGetExtendedErrorInfo)(errmsg, 2048);
   printf("NI.Error=%s\n", errmsg);
+}
+
+static JNINativeMethod javaforce_controls_ni_DAQmx[] = {
+  {"daqInit", "()Z", (void *)&Java_javaforce_controls_ni_DAQmx_daqInit},
+  {"createTask", "()J", (void *)&Java_javaforce_controls_ni_DAQmx_createTask},
+  {"createChannelAnalog", "(JLjava/lang/String;DJDD)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelAnalog},
+  {"createChannelDigital", "(JLjava/lang/String;DJ)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelDigital},
+  {"createChannelCounter", "(JLjava/lang/String;DJDDLjava/lang/String;DI)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelCounter},
+  {"startTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_startTask},
+  {"readTaskAnalog", "(JI[D)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskAnalog},
+  {"readTaskBinary", "(JI[I)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskBinary},
+  {"readTaskDigital", "(JI[I)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskDigital},
+  {"readTaskCounter", "(JI[D)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskCounter},
+  {"stopTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_stopTask},
+  {"clearTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_clearTask},
+  {"printError", "()V", (void *)&Java_javaforce_controls_ni_DAQmx_printError},
+};
+
+extern "C" void ni_register(JNIEnv *env);
+
+void ni_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/controls/ni/DAQmx");
+  registerNatives(env, cls, javaforce_controls_ni_DAQmx, sizeof(javaforce_controls_ni_DAQmx)/sizeof(JNINativeMethod));
 }

@@ -13,7 +13,7 @@
 
 #include <chrono>
 
-#include "../common/register.h"
+#include "register.h"
 
 //returned by Decoder.read()
 #define END_FRAME -1
