@@ -1,21 +1,3 @@
-static JNINativeMethod javaforce_ui_Window[] = {
-  {"ninit", "()Z", (void *)&Java_javaforce_ui_Window_ninit},
-  {"ncreate", "(ILjava/lang/String;IILjavaforce/ui/Window;J)J", (void *)&Java_javaforce_ui_Window_ncreate},
-  {"ndestroy", "(J)V", (void *)&Java_javaforce_ui_Window_ndestroy},
-  {"nsetcurrent", "(J)V", (void *)&Java_javaforce_ui_Window_nsetcurrent},
-  {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_ui_Window_nseticon},
-  {"pollEvents", "(I)V", (void *)&Java_javaforce_ui_Window_pollEvents},
-  {"postEvent", "()V", (void *)&Java_javaforce_ui_Window_postEvent},
-  {"nshow", "(J)V", (void *)&Java_javaforce_ui_Window_nshow},
-  {"nhide", "(J)V", (void *)&Java_javaforce_ui_Window_nhide},
-  {"nswap", "(J)V", (void *)&Java_javaforce_ui_Window_nswap},
-  {"nhidecursor", "(J)V", (void *)&Java_javaforce_ui_Window_nhidecursor},
-  {"nshowcursor", "(J)V", (void *)&Java_javaforce_ui_Window_nshowcursor},
-  {"nlockcursor", "(J)V", (void *)&Java_javaforce_ui_Window_nlockcursor},
-  {"ngetpos", "(J[I)V", (void *)&Java_javaforce_ui_Window_ngetpos},
-  {"nsetpos", "(JII)V", (void *)&Java_javaforce_ui_Window_nsetpos},
-};
-
 static JNINativeMethod javaforce_ui_Font[] = {
   {"loadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_ui_Font_loadFont}
 };
@@ -107,6 +89,7 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
 
 extern "C" void ni_register(JNIEnv *env);
 extern "C" void gl_register(JNIEnv *env);
+extern "C" void glfw_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
@@ -118,8 +101,7 @@ void registerCommonNatives(JNIEnv *env) {
 
   gl_register(env);
 
-  cls = findClass(env, "javaforce/ui/Window");
-  registerNatives(env, cls, javaforce_ui_Window, sizeof(javaforce_ui_Window)/sizeof(JNINativeMethod));
+  glfw_register(env);
 
   cls = findClass(env, "javaforce/ui/Font");
   registerNatives(env, cls, javaforce_ui_Font, sizeof(javaforce_ui_Font)/sizeof(JNINativeMethod));
