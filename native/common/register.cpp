@@ -1,15 +1,3 @@
-static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
-  {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
-  {"cameraListDevices", "()[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
-  {"cameraListModes", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
-  {"cameraStart", "(III)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
-  {"cameraStop", "()Z", (void *)&Java_javaforce_media_Camera_cameraStop},
-  {"cameraGetFrame", "()[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
-  {"cameraGetWidth", "()I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
-  {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
-};
-
 const char* nclass;
 
 jclass findClass(JNIEnv *env, const char *clsname) {
@@ -34,6 +22,7 @@ extern "C" void gl_register(JNIEnv *env);
 extern "C" void glfw_register(JNIEnv *env);
 extern "C" void font_register(JNIEnv *env);
 extern "C" void image_register(JNIEnv *env);
+extern "C" void camera_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
 extern "C" void videobuffer_register(JNIEnv *env);
 extern "C" void pcap_register(JNIEnv *env);
@@ -57,8 +46,7 @@ void registerCommonNatives(JNIEnv *env) {
   image_register(env);
 
 #ifndef __FreeBSD__
-  cls = findClass(env, "javaforce/media/Camera");
-  registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
+  camera_register(env);
 #endif
 
   ffmpeg_register(env);

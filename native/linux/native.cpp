@@ -1897,3 +1897,24 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #include "../common/pcap.cpp"
 
 #include "../common/vm.cpp"
+
+static JNINativeMethod javaforce_media_Camera[] = {
+  {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
+  {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
+  {"cameraListDevices", "()[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
+  {"cameraListModes", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
+  {"cameraStart", "(III)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
+  {"cameraStop", "()Z", (void *)&Java_javaforce_media_Camera_cameraStop},
+  {"cameraGetFrame", "()[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
+  {"cameraGetWidth", "()I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
+  {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
+};
+
+extern "C" void camera_register(JNIEnv *env);
+
+void camera_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/media/Camera");
+  registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
+}
