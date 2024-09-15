@@ -10,23 +10,6 @@ static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
 };
 
-#ifdef __RASPBERRY_PI__
-static JNINativeMethod javaforce_pi_GPIO[] = {
-  {"ninit", "(I)Z", (void *)&Java_javaforce_pi_GPIO_ninit},
-  {"configOutput", "(I)Z", (void *)&Java_javaforce_pi_GPIO_configOutput},
-  {"configInput", "(I)Z", (void *)&Java_javaforce_pi_GPIO_configInput},
-  {"write", "(IZ)Z", (void *)&Java_javaforce_pi_GPIO_write},
-  {"read", "(I)Z", (void *)&Java_javaforce_pi_GPIO_read},
-};
-
-static JNINativeMethod javaforce_pi_I2C[] = {
-  {"init", "()Z", (void *)&Java_javaforce_pi_I2C_init},
-  {"setSlave", "(I)Z", (void *)&Java_javaforce_pi_I2C_setSlave},
-  {"write", "([B)Z", (void *)&Java_javaforce_pi_I2C_write},
-  {"read", "([B)I", (void *)&Java_javaforce_pi_I2C_read},
-};
-#endif
-
 const char* nclass;
 
 jclass findClass(JNIEnv *env, const char *clsname) {
@@ -55,6 +38,8 @@ extern "C" void ffmpeg_register(JNIEnv *env);
 extern "C" void videobuffer_register(JNIEnv *env);
 extern "C" void pcap_register(JNIEnv *env);
 extern "C" void cl_register(JNIEnv *env);
+extern "C" void gpio_register(JNIEnv *env);
+extern "C" void i2c_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
@@ -85,10 +70,8 @@ void registerCommonNatives(JNIEnv *env) {
   cl_register(env);
 
 #ifdef __RASPBERRY_PI__
-  cls = findClass(env, "javaforce/pi/GPIO");
-  registerNatives(env, cls, javaforce_pi_GPIO, sizeof(javaforce_pi_GPIO)/sizeof(JNINativeMethod));
+  gpio_register(env);
 
-  cls = findClass(env, "javaforce/pi/I2C");
-  registerNatives(env, cls, javaforce_pi_I2C, sizeof(javaforce_pi_I2C)/sizeof(JNINativeMethod));
+  i2c_register(env);
 #endif
 }

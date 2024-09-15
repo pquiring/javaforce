@@ -8,6 +8,8 @@
 
 #include "javaforce_pi_GPIO.h"
 
+#include "..\common\register.h"
+
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
 
@@ -94,4 +96,21 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_read
   (JNIEnv *env, jclass obj, jint bit)
 {
   return GET_GPIO(bit);
+}
+
+static JNINativeMethod javaforce_pi_GPIO[] = {
+  {"ninit", "(I)Z", (void *)&Java_javaforce_pi_GPIO_ninit},
+  {"configOutput", "(I)Z", (void *)&Java_javaforce_pi_GPIO_configOutput},
+  {"configInput", "(I)Z", (void *)&Java_javaforce_pi_GPIO_configInput},
+  {"write", "(IZ)Z", (void *)&Java_javaforce_pi_GPIO_write},
+  {"read", "(I)Z", (void *)&Java_javaforce_pi_GPIO_read},
+};
+
+extern void gpio_register(JNIEnv *env);
+
+void gpio_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/pi/GPIO");
+  registerNatives(env, cls, javaforce_pi_GPIO, sizeof(javaforce_pi_GPIO)/sizeof(JNINativeMethod));
 }
