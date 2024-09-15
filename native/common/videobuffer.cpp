@@ -12,6 +12,8 @@
   #include "arm64.cpp"
 #endif
 
+#include "register.h"
+
 JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height)
 {
@@ -54,4 +56,17 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   e->ReleasePrimitiveArrayCritical(img2, px2, JNI_ABORT);
 
   return changed;
+}
+
+static JNINativeMethod javaforce_media_VideoBuffer[] = {
+  {"compareFrames", "([I[III)F", (void *)&Java_javaforce_media_VideoBuffer_compareFrames},
+};
+
+extern "C" void videobuffer_register(JNIEnv *env);
+
+void videobuffer_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/media/VideoBuffer");
+  registerNatives(env, cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
 }

@@ -10,10 +10,6 @@ static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
 };
 
-static JNINativeMethod javaforce_media_VideoBuffer[] = {
-  {"compareFrames", "([I[III)F", (void *)&Java_javaforce_media_VideoBuffer_compareFrames},
-};
-
 static JNINativeMethod javaforce_net_PacketCapture[] = {
   {"ninit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_ninit},
   {"listLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_net_PacketCapture_listLocalInterfaces},
@@ -82,6 +78,7 @@ extern "C" void glfw_register(JNIEnv *env);
 extern "C" void font_register(JNIEnv *env);
 extern "C" void image_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
+extern "C" void videobuffer_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
@@ -105,8 +102,7 @@ void registerCommonNatives(JNIEnv *env) {
 
   ffmpeg_register(env);
 
-  cls = findClass(env, "javaforce/media/VideoBuffer");
-  registerNatives(env, cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
+  videobuffer_register(env);
 
   cls = findClass(env, "javaforce/net/PacketCapture");
   registerNatives(env, cls, javaforce_net_PacketCapture, sizeof(javaforce_net_PacketCapture)/sizeof(JNINativeMethod));
