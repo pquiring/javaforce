@@ -1094,6 +1094,8 @@ static JNINativeMethod javaforce_vm_Secret[] = {
 
 #include "register.h"
 
+extern "C" void vm_register(JNIEnv *env);
+
 void vm_register(JNIEnv *env) {
   //register java natives
   jclass cls;

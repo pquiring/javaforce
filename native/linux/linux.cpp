@@ -328,63 +328,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxServiceStop(JNIEnv *e
 
 #include "../common/register.cpp"
 
-//Linux native methods
-static JNINativeMethod javaforce_jni_LnxNative[] = {
-  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
-  {"lnxServiceStop", "()Z", (void *)&Java_javaforce_jni_LnxNative_lnxServiceStop},
-  {"comOpen", "(Ljava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_comOpen},
-  {"comClose", "(I)V", (void *)&Java_javaforce_jni_LnxNative_comClose},
-  {"comRead", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comRead},
-  {"comWrite", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comWrite},
-  {"ptyAlloc", "()J", (void *)&Java_javaforce_jni_LnxNative_ptyAlloc},
-  {"ptyFree", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyFree},
-  {"ptyOpen", "(J)Ljava/lang/String;", (void *)&Java_javaforce_jni_LnxNative_ptyOpen},
-  {"ptyClose", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyClose},
-  {"ptyRead", "(J[B)I", (void *)&Java_javaforce_jni_LnxNative_ptyRead},
-  {"ptyWrite", "(J[B)V", (void *)&Java_javaforce_jni_LnxNative_ptyWrite},
-  {"ptySetSize", "(JII)V", (void *)&Java_javaforce_jni_LnxNative_ptySetSize},
-  {"ptyChildExec", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_ptyChildExec},
-  {"inotify_init", "()I", (void *)&Java_javaforce_jni_LnxNative_inotify_1init},
-  {"inotify_add_watch", "(ILjava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1add_1watch},
-  {"inotify_rm_watch", "(II)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1rm_1watch},
-  {"inotify_read", "(I)[B", (void *)&Java_javaforce_jni_LnxNative_inotify_1read},
-  {"inotify_close", "(I)V", (void *)&Java_javaforce_jni_LnxNative_inotify_1close},
-  {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_LnxNative_x11_1get_1id},
-  {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1desktop},
-  {"x11_set_dock", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1dock},
-  {"x11_set_strut", "(JIIIII)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1strut},
-  {"x11_tray_main", "(JIII)V", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1main},
-  {"x11_tray_reposition", "(III)V", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1reposition},
-  {"x11_tray_width", "()I", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1width},
-  {"x11_tray_stop", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1stop},
-  {"x11_set_listener", "(Ljavaforce/linux/X11Listener;)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1listener},
-  {"x11_window_list_main", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1window_1list_1main},
-  {"x11_window_list_stop", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1window_1list_1stop},
-  {"x11_minimize_all", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1minimize_1all},
-  {"x11_raise_window", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1raise_1window},
-  {"x11_map_window", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1map_1window},
-  {"x11_unmap_window", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1unmap_1window},
-  {"x11_keysym_to_keycode", "(C)I", (void *)&Java_javaforce_jni_LnxNative_x11_1keysym_1to_1keycode},
-  {"x11_send_event", "(IZ)Z", (void *)&Java_javaforce_jni_LnxNative_x11_1send_1event__IZ},
-  {"x11_send_event", "(JIZ)Z", (void *)&Java_javaforce_jni_LnxNative_x11_1send_1event__JIZ},
-  {"authUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
-  {"setenv", "(Ljava/lang/String;Ljava/lang/String;)V", (void *)&Java_javaforce_jni_LnxNative_setenv},
-  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_enableConsoleMode},
-  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_disableConsoleMode},
-  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsoleSize},
-  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsolePos},
-  {"readConsole", "()C", (void *)&Java_javaforce_jni_LnxNative_readConsole},
-  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_LnxNative_peekConsole},
-  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_LnxNative_writeConsole},
-  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_LnxNative_writeConsoleArray},
-  {"fileGetMode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_fileGetMode},
-  {"fileSetMode", "(Ljava/lang/String;I)V", (void *)&Java_javaforce_jni_LnxNative_fileSetMode},
-  {"fileSetAccessTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetAccessTime},
-  {"fileSetModifiedTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetModifiedTime},
-  {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
-};
+extern "C" void lnxnative_register(JNVEnv *env);
 
-extern void vm_register(JNIEnv *env);
+extern "C" void vm_register(JNIEnv *env);
 
 /** Register natives embedded with executable. */
 void registerAllNatives(JNIEnv *env) {
@@ -392,10 +338,9 @@ void registerAllNatives(JNIEnv *env) {
 
   registerCommonNatives(env);
 
-  cls = findClass(env, "javaforce/jni/LnxNative");
-  registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
+  lnxnative_register(env);
 
-  vm_register(g_env);
+  vm_register(env);
 }
 
 /** Continues loading the JVM in a new Thread. */
