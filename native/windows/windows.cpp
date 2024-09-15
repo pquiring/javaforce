@@ -337,69 +337,7 @@ void AttachJVM() {
 
 #include "../common/register.cpp"
 
-//Windows native methods
-static JNINativeMethod javaforce_jni_WinNative[] = {
-  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_WinNative_comOpen},
-  {"comClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_comClose},
-  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comRead},
-  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comWrite},
-
-  {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
-  {"getLog", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_getLog},
-  {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_executeSession},
-  {"simulateCtrlAltDel", "()V", (void *)&Java_javaforce_jni_WinNative_simulateCtrlAltDel},
-  {"setInputDesktop", "()V", (void *)&Java_javaforce_jni_WinNative_setInputDesktop},
-  {"getSessionID", "()I", (void *)&Java_javaforce_jni_WinNative_getSessionID},
-  {"setSessionID", "(JI)Z", (void *)&Java_javaforce_jni_WinNative_setSessionID},
-  {"closeSession", "(J)V", (void *)&Java_javaforce_jni_WinNative_closeSession},
-
-  {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
-  {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},
-  {"peAddString", "(JII[B)V", (void *)&Java_javaforce_jni_WinNative_peAddString},
-  {"peEnd", "(J)V", (void *)&Java_javaforce_jni_WinNative_peEnd},
-  {"impersonateUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_impersonateUser},
-  {"findJDKHome", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_findJDKHome},
-  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_enableConsoleMode},
-  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_disableConsoleMode},
-  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_WinNative_getConsoleSize},
-  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_WinNative_getConsolePos},
-  {"readConsole", "()C", (void *)&Java_javaforce_jni_WinNative_readConsole},
-  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_WinNative_peekConsole},
-  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_WinNative_writeConsole},
-  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_WinNative_writeConsoleArray},
-  {"tapeOpen", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_tapeOpen},
-  {"tapeClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_tapeClose},
-  {"tapeFormat", "(JI)Z", (void *)&Java_javaforce_jni_WinNative_tapeFormat},
-  {"tapeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_tapeRead},
-  {"tapeWrite", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_tapeWrite},
-  {"tapeSetpos", "(JJ)Z", (void *)&Java_javaforce_jni_WinNative_tapeSetpos},
-  {"tapeGetpos", "(J)J", (void *)&Java_javaforce_jni_WinNative_tapeGetpos},
-  {"tapeMedia", "(J)Z", (void *)&Java_javaforce_jni_WinNative_tapeMedia},
-  {"tapeMediaSize", "()J", (void *)&Java_javaforce_jni_WinNative_tapeMediaSize},
-  {"tapeMediaBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeMediaBlockSize},
-  {"tapeMediaReadOnly", "()Z", (void *)&Java_javaforce_jni_WinNative_tapeMediaReadOnly},
-  {"tapeDrive", "(J)Z", (void *)&Java_javaforce_jni_WinNative_tapeDrive},
-  {"tapeDriveMinBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveMinBlockSize},
-  {"tapeDriveMaxBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveMaxBlockSize},
-  {"tapeDriveDefaultBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveDefaultBlockSize},
-  {"tapeLastError", "()I", (void *)&Java_javaforce_jni_WinNative_tapeLastError},
-  {"changerOpen", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_changerOpen},
-  {"changerClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_changerClose},
-  {"changerList", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_changerList},
-  {"changerMove", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_changerMove},
-//vss
-  {"vssInit", "()Z", (void *)&Java_javaforce_jni_WinNative_vssInit},
-  {"vssListVols", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_vssListVols},
-  {"vssListShadows", "()[[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_vssListShadows},
-  {"vssCreateShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssCreateShadow},
-  {"vssDeleteShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadow},
-  {"vssDeleteShadowAll", "()Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadowAll},
-  {"vssMountShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssMountShadow},
-  {"vssUnmountShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssUnmountShadow},
-//test
-  {"add", "(II)I", (void *)&Java_javaforce_jni_WinNative_add},
-  {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
-};
+extern "C" void winnative_register(JNIEnv *env);
 
 /** Register natives embedded with executable. */
 void registerAllNatives(JNIEnv *env) {
@@ -407,8 +345,7 @@ void registerAllNatives(JNIEnv *env) {
 
   registerCommonNatives(env);
 
-  cls = findClass(env, "javaforce/jni/WinNative");
-  registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
+  winnative_register(env);
 }
 
 /** Invokes the main method in a new thread. */
