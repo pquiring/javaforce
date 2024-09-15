@@ -11,6 +11,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../stb/stb_image_write.h"
 
+#include "register.h"
+
 JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadPNG
   (JNIEnv *e, jobject o, jbyteArray data, jintArray size)
 {
@@ -179,4 +181,20 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsaveJPG
   free(ctx.buf);
 
   return out;
+}
+
+static JNINativeMethod javaforce_ui_Image[] = {
+  {"nloadPNG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadPNG},
+  {"nsavePNG", "([III)[B", (void *)&Java_javaforce_ui_Image_nsavePNG},
+  {"nloadJPG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadJPG},
+  {"nsaveJPG", "([IIII)[B", (void *)&Java_javaforce_ui_Image_nloadJPG}
+};
+
+extern "C" void image_register(JNIEnv *env);
+
+void image_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/ui/Image");
+  registerNatives(env, cls, javaforce_ui_Image, sizeof(javaforce_ui_Image)/sizeof(JNINativeMethod));
 }

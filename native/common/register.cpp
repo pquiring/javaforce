@@ -1,10 +1,3 @@
-static JNINativeMethod javaforce_ui_Image[] = {
-  {"nloadPNG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadPNG},
-  {"nsavePNG", "([III)[B", (void *)&Java_javaforce_ui_Image_nsavePNG},
-  {"nloadJPG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadJPG},
-  {"nsaveJPG", "([IIII)[B", (void *)&Java_javaforce_ui_Image_nloadJPG}
-};
-
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
   {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
@@ -87,6 +80,7 @@ extern "C" void ni_register(JNIEnv *env);
 extern "C" void gl_register(JNIEnv *env);
 extern "C" void glfw_register(JNIEnv *env);
 extern "C" void font_register(JNIEnv *env);
+extern "C" void image_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
@@ -102,8 +96,7 @@ void registerCommonNatives(JNIEnv *env) {
 
   font_register(env);
 
-  cls = findClass(env, "javaforce/ui/Image");
-  registerNatives(env, cls, javaforce_ui_Image, sizeof(javaforce_ui_Image)/sizeof(JNINativeMethod));
+  image_register(env);
 
 #ifndef __FreeBSD__
   cls = findClass(env, "javaforce/media/Camera");
