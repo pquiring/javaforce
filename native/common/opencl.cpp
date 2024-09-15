@@ -5,6 +5,8 @@
 #include "../opencl/CL/cl.h"
 #include "../opencl/CL/cl_function_types.h"
 
+#include "register.h"
+
 JF_LIB_HANDLE opencl = NULL;
 
 static jboolean opencl_loaded = JNI_FALSE;
@@ -760,4 +762,29 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nclose
   free(ctx);
 
   return JNI_TRUE;
+}
+
+static JNINativeMethod javaforce_cl_CL[] = {
+  {"ninit", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_cl_CL_ninit},
+  {"ncreate", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_cl_CL_ncreate},
+  {"nkernel", "(JLjava/lang/String;)J", (void *)&Java_javaforce_cl_CL_nkernel},
+  {"ncreateBuffer", "(JII)J", (void *)&Java_javaforce_cl_CL_ncreateBuffer},
+  {"nsetArg", "(JJI[B)Z", (void *)&Java_javaforce_cl_CL_nsetArg},
+  {"nwriteBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferi8},
+  {"nwriteBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferf32},
+  {"nexecute", "(JJI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
+  {"nreadBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nreadBufferi8},
+  {"nreadBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nreadBufferf32},
+  {"nfreeKernel", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeKernel},
+  {"nfreeBuffer", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeBuffer},
+  {"nclose", "(J)Z", (void *)&Java_javaforce_cl_CL_nclose},
+};
+
+extern "C" void cl_register(JNIEnv *env);
+
+void cl_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/cl/CL");
+  registerNatives(env, cls, javaforce_cl_CL, sizeof(javaforce_cl_CL)/sizeof(JNINativeMethod));
 }

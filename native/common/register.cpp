@@ -10,22 +10,6 @@ static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
 };
 
-static JNINativeMethod javaforce_cl_CL[] = {
-  {"ninit", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_cl_CL_ninit},
-  {"ncreate", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_cl_CL_ncreate},
-  {"nkernel", "(JLjava/lang/String;)J", (void *)&Java_javaforce_cl_CL_nkernel},
-  {"ncreateBuffer", "(JII)J", (void *)&Java_javaforce_cl_CL_ncreateBuffer},
-  {"nsetArg", "(JJI[B)Z", (void *)&Java_javaforce_cl_CL_nsetArg},
-  {"nwriteBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferi8},
-  {"nwriteBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferf32},
-  {"nexecute", "(JJI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
-  {"nreadBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nreadBufferi8},
-  {"nreadBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nreadBufferf32},
-  {"nfreeKernel", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeKernel},
-  {"nfreeBuffer", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeBuffer},
-  {"nclose", "(J)Z", (void *)&Java_javaforce_cl_CL_nclose},
-};
-
 #ifdef __RASPBERRY_PI__
 static JNINativeMethod javaforce_pi_GPIO[] = {
   {"ninit", "(I)Z", (void *)&Java_javaforce_pi_GPIO_ninit},
@@ -70,6 +54,7 @@ extern "C" void image_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
 extern "C" void videobuffer_register(JNIEnv *env);
 extern "C" void pcap_register(JNIEnv *env);
+extern "C" void cl_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
@@ -97,8 +82,7 @@ void registerCommonNatives(JNIEnv *env) {
 
   pcap_register(env);
 
-  cls = findClass(env, "javaforce/cl/CL");
-  registerNatives(env, cls, javaforce_cl_CL, sizeof(javaforce_cl_CL)/sizeof(JNINativeMethod));
+  cl_register(env);
 
 #ifdef __RASPBERRY_PI__
   cls = findClass(env, "javaforce/pi/GPIO");
