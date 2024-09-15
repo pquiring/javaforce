@@ -1,6 +1,8 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../stb/stb_truetype.h"
 
+#include "register.h"
+
 //#define FONT_DEBUG
 
 JNIEXPORT jint JNICALL Java_javaforce_ui_Font_loadFont
@@ -129,6 +131,19 @@ JNIEXPORT jint JNICALL Java_javaforce_ui_Font_loadFont
   e->ReleasePrimitiveArrayCritical(pixels, pixels_ptr, 0);
 
   return drawn;
+}
+
+static JNINativeMethod javaforce_ui_Font[] = {
+  {"loadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_ui_Font_loadFont}
+};
+
+extern "C" void font_register(JNIEnv *env);
+
+void font_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/ui/Font");
+  registerNatives(env, cls, javaforce_ui_Font, sizeof(javaforce_ui_Font)/sizeof(JNINativeMethod));
 }
 
 /*/

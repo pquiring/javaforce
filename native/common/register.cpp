@@ -1,7 +1,3 @@
-static JNINativeMethod javaforce_ui_Font[] = {
-  {"loadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_ui_Font_loadFont}
-};
-
 static JNINativeMethod javaforce_ui_Image[] = {
   {"nloadPNG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadPNG},
   {"nsavePNG", "([III)[B", (void *)&Java_javaforce_ui_Image_nsavePNG},
@@ -90,6 +86,7 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
 extern "C" void ni_register(JNIEnv *env);
 extern "C" void gl_register(JNIEnv *env);
 extern "C" void glfw_register(JNIEnv *env);
+extern "C" void font_register(JNIEnv *env);
 extern "C" void ffmpeg_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
@@ -103,8 +100,7 @@ void registerCommonNatives(JNIEnv *env) {
 
   glfw_register(env);
 
-  cls = findClass(env, "javaforce/ui/Font");
-  registerNatives(env, cls, javaforce_ui_Font, sizeof(javaforce_ui_Font)/sizeof(JNINativeMethod));
+  font_register(env);
 
   cls = findClass(env, "javaforce/ui/Image");
   registerNatives(env, cls, javaforce_ui_Image, sizeof(javaforce_ui_Image)/sizeof(JNINativeMethod));
