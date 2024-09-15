@@ -1,5 +1,7 @@
 //OpenGL functions
 
+#include "register.h"
+
 enum GLNAMES {
   GLACTIVETEXTURE,
   GLATTACHSHADER,
@@ -618,4 +620,84 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glViewport
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4)
 {
   (*(void (*)(int, int, int, int))funcs[GLVIEWPORT].func)(i1, i2, i3, i4);
+}
+
+static JNINativeMethod javaforce_gl_GL[] = {
+  {"glInit", "()Z", (void *)&Java_javaforce_gl_GL_glInit},
+  {"glActiveTexture", "(I)V", (void *)&Java_javaforce_gl_GL_glActiveTexture},
+  {"glAttachShader", "(II)V", (void *)&Java_javaforce_gl_GL_glAttachShader},
+  {"glBindBuffer", "(II)V", (void *)&Java_javaforce_gl_GL_glBindBuffer},
+  {"glBindFramebuffer", "(II)V", (void *)&Java_javaforce_gl_GL_glBindFramebuffer},
+  {"glBindRenderbuffer", "(II)V", (void *)&Java_javaforce_gl_GL_glBindRenderbuffer},
+  {"glBindTexture", "(II)V", (void *)&Java_javaforce_gl_GL_glBindTexture},
+  {"glBlendFunc", "(II)V", (void *)&Java_javaforce_gl_GL_glBlendFunc},
+  {"glBufferData", "(II[FI)V", (void *)&Java_javaforce_gl_GL_glBufferData__II_3FI},
+  {"glBufferData", "(II[SI)V", (void *)&Java_javaforce_gl_GL_glBufferData__II_3SI},
+  {"glBufferData", "(II[II)V", (void *)&Java_javaforce_gl_GL_glBufferData__II_3II},
+  {"glBufferData", "(II[BI)V", (void *)&Java_javaforce_gl_GL_glBufferData__II_3BI},
+  {"glClear", "(I)V", (void *)&Java_javaforce_gl_GL_glClear},
+  {"glClearColor", "(FFFF)V", (void *)&Java_javaforce_gl_GL_glClearColor},
+  {"glColorMask", "(ZZZZ)V", (void *)&Java_javaforce_gl_GL_glColorMask},
+  {"glCompileShader", "(I)V", (void *)&Java_javaforce_gl_GL_glCompileShader},
+  {"glCreateProgram", "()I", (void *)&Java_javaforce_gl_GL_glCreateProgram},
+  {"glCreateShader", "(I)I", (void *)&Java_javaforce_gl_GL_glCreateShader},
+  {"glCullFace", "(I)V", (void *)&Java_javaforce_gl_GL_glCullFace},
+  {"glDeleteBuffers", "(I[I)V", (void *)&Java_javaforce_gl_GL_glDeleteBuffers},
+  {"glDeleteFramebuffers", "(I[I)V", (void *)&Java_javaforce_gl_GL_glDeleteFramebuffers},
+  {"glDeleteRenderbuffers", "(I[I)V", (void *)&Java_javaforce_gl_GL_glDeleteRenderbuffers},
+  {"glDeleteTextures", "(I[I)V", (void *)&Java_javaforce_gl_GL_glDeleteTextures},
+  {"glDrawElements", "(IIII)V", (void *)&Java_javaforce_gl_GL_glDrawElements},
+  {"glDepthFunc", "(I)V", (void *)&Java_javaforce_gl_GL_glDepthFunc},
+  {"glDisable", "(I)V", (void *)&Java_javaforce_gl_GL_glDisable},
+  {"glDisableVertexAttribArray", "(I)V", (void *)&Java_javaforce_gl_GL_glDisableVertexAttribArray},
+  {"glDepthMask", "(Z)V", (void *)&Java_javaforce_gl_GL_glDepthMask},
+  {"glEnable", "(I)V", (void *)&Java_javaforce_gl_GL_glEnable},
+  {"glEnableVertexAttribArray", "(I)V", (void *)&Java_javaforce_gl_GL_glEnableVertexAttribArray},
+  {"glFlush", "()V", (void *)&Java_javaforce_gl_GL_glFlush},
+  {"glFramebufferTexture2D", "(IIIII)V", (void *)&Java_javaforce_gl_GL_glFramebufferTexture2D},
+  {"glFramebufferRenderbuffer", "(IIII)V", (void *)&Java_javaforce_gl_GL_glFramebufferRenderbuffer},
+  {"glFrontFace", "(I)V", (void *)&Java_javaforce_gl_GL_glFrontFace},
+  {"glGetAttribLocation", "(ILjava/lang/String;)I", (void *)&Java_javaforce_gl_GL_glGetAttribLocation},
+  {"glGetError", "()I", (void *)&Java_javaforce_gl_GL_glGetError},
+  {"glGetProgramInfoLog", "(I)Ljava/lang/String;", (void *)&Java_javaforce_gl_GL_glGetProgramInfoLog},
+  {"glGetShaderInfoLog", "(I)Ljava/lang/String;", (void *)&Java_javaforce_gl_GL_glGetShaderInfoLog},
+  {"glGetString", "(I)Ljava/lang/String;", (void *)&Java_javaforce_gl_GL_glGetString},
+  {"glGetIntegerv", "(I[I)V", (void *)&Java_javaforce_gl_GL_glGetIntegerv},
+  {"glGenBuffers", "(I[I)V", (void *)&Java_javaforce_gl_GL_glGenBuffers},
+  {"glGenFramebuffers", "(I[I)V", (void *)&Java_javaforce_gl_GL_glGenFramebuffers},
+  {"glGenRenderbuffers", "(I[I)V", (void *)&Java_javaforce_gl_GL_glGenRenderbuffers},
+  {"glGenTextures", "(I[I)V", (void *)&Java_javaforce_gl_GL_glGenTextures},
+  {"glGetUniformLocation", "(ILjava/lang/String;)I", (void *)&Java_javaforce_gl_GL_glGetUniformLocation},
+  {"glLinkProgram", "(I)V", (void *)&Java_javaforce_gl_GL_glLinkProgram},
+  {"glPixelStorei", "(II)V", (void *)&Java_javaforce_gl_GL_glPixelStorei},
+  {"glReadPixels", "(IIIIII[I)V", (void *)&Java_javaforce_gl_GL_glReadPixels},
+  {"glRenderbufferStorage", "(IIII)V", (void *)&Java_javaforce_gl_GL_glRenderbufferStorage},
+  {"glShaderSource", "(II[Ljava/lang/String;[I)I", (void *)&Java_javaforce_gl_GL_glShaderSource},
+  {"glStencilFunc", "(III)I", (void *)&Java_javaforce_gl_GL_glStencilFunc},
+  {"glStencilMask", "(I)I", (void *)&Java_javaforce_gl_GL_glStencilMask},
+  {"glStencilOp", "(III)I", (void *)&Java_javaforce_gl_GL_glStencilOp},
+  {"glTexImage2D", "(IIIIIIII[I)V", (void *)&Java_javaforce_gl_GL_glTexImage2D},
+  {"glTexSubImage2D", "(IIIIIIII[I)V", (void *)&Java_javaforce_gl_GL_glTexSubImage2D},
+  {"glTexParameteri", "(III)V", (void *)&Java_javaforce_gl_GL_glTexParameteri},
+  {"glUseProgram", "(I)V", (void *)&Java_javaforce_gl_GL_glUseProgram},
+  {"glUniformMatrix4fv", "(III[F)V", (void *)&Java_javaforce_gl_GL_glUniformMatrix4fv},
+  {"glUniform4fv", "(II[F)V", (void *)&Java_javaforce_gl_GL_glUniform4fv},
+  {"glUniform3fv", "(II[F)V", (void *)&Java_javaforce_gl_GL_glUniform3fv},
+  {"glUniform2fv", "(II[F)V", (void *)&Java_javaforce_gl_GL_glUniform2fv},
+  {"glUniform1f", "(IF)V", (void *)&Java_javaforce_gl_GL_glUniform1f},
+  {"glUniform4iv", "(II[I)V", (void *)&Java_javaforce_gl_GL_glUniform4iv},
+  {"glUniform3iv", "(II[I)V", (void *)&Java_javaforce_gl_GL_glUniform3iv},
+  {"glUniform2iv", "(II[I)V", (void *)&Java_javaforce_gl_GL_glUniform2iv},
+  {"glUniform1i", "(II)V", (void *)&Java_javaforce_gl_GL_glUniform1i},
+  {"glVertexAttribPointer", "(IIIIII)V", (void *)&Java_javaforce_gl_GL_glVertexAttribPointer},
+  {"glViewport", "(IIII)V", (void *)&Java_javaforce_gl_GL_glViewport},
+};
+
+extern "C" void gl_register(JNIEnv *env);
+
+void gl_register(JNIEnv *env) {
+  jclass cls;
+
+  cls = findClass(env, "javaforce/gl/GL");
+  registerNatives(env, cls, javaforce_gl_GL, sizeof(javaforce_gl_GL)/sizeof(JNINativeMethod));
 }
