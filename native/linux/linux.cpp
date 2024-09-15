@@ -384,6 +384,8 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
 };
 
+extern void vm_register(JNIEnv *env);
+
 /** Register natives embedded with executable. */
 void registerAllNatives(JNIEnv *env) {
   jclass cls;
@@ -392,16 +394,15 @@ void registerAllNatives(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/LnxNative");
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
-}
 
-extern void vm_register(JNIEnv *env);
+  vm_register(g_env);
+}
 
 /** Continues loading the JVM in a new Thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();
 
   registerAllNatives(g_env);
-  vm_register(g_env);
 
   //load linux shared libraries
   InvokeMethodVoid("javaforce/jni/LnxNative", "load", "()V", NULL);
