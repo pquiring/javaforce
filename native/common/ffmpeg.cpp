@@ -494,7 +494,6 @@ struct FFContext {
   AVFrame *frame;
 
   jintArray jvideo;
-  jshortArray jvideo16;
   int jvideo_length;
 
   jshortArray jaudio;
@@ -1228,10 +1227,6 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
-  if (ctx->jvideo16 != NULL) {
-    e->DeleteGlobalRef(ctx->jvideo16);
-    ctx->jvideo16 = NULL;
-  }
   if (ctx->decode_buffer != NULL) {
     (*_av_free)(ctx->decode_buffer);
     ctx->decode_buffer = NULL;
@@ -1311,80 +1306,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   }
 
   return ctx->jvideo;
-}
-
-JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
-  (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
-{
-  int64_t p_start = currentTimeMillis();
-  FFContext *ctx = getFFContext(e,c);
-  if (ctx == NULL) return NULL;
-  jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-  //there should always be 64 bytes after the data to decode
-  if (length + 64 > ctx->decode_buffer_size) {
-    (*_av_free)(ctx->decode_buffer);
-    while (length + 64 > ctx->decode_buffer_size) {
-      ctx->decode_buffer_size <<= 1;
-    }
-    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
-  }
-  memcpy(ctx->decode_buffer, dataptr + offset, length);
-  uint8_t *pad = dataptr + offset + length;
-  for(int a=0;a<64;a++) {
-    *(pad++) = 0;
-  }
-
-  ctx->pkt->size = length;
-  ctx->pkt->data = ctx->decode_buffer;
-
-  int ret = (*_avcodec_send_packet)(ctx->video_codec_ctx, ctx->pkt);
-  e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
-  ctx->pkt->data = NULL;
-  if (ret < 0) {
-    printf("Error:avcodec_send_packet() == %d\n", ret);
-    ctx->pkt->size = 0;
-    return NULL;
-  }
-
-  while (1) {
-    ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);
-    if (ret < 0) break;
-
-    //setup conversion once width/height are known
-    if (ctx->jvideo16 == NULL) {
-      if (ctx->video_codec_ctx->width == 0 || ctx->video_codec_ctx->height == 0) {
-        printf("MediaVideoDecoder : width/height not known yet\n");
-        return NULL;
-      }
-      if (ctx->width == -1 && ctx->height == -1) {
-        ctx->width = ctx->video_codec_ctx->width;
-        ctx->height = ctx->video_codec_ctx->height;
-      }
-      //create video conversion context
-      ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
-        , ctx->width, ctx->height, AV_PIX_FMT_BGR555
-        , SWS_BILINEAR, NULL, NULL, NULL);
-
-      int px_count = ctx->width * ctx->height;
-      ctx->jvideo_length = px_count;
-      ctx->jvideo16 = (jshortArray)ctx->e->NewGlobalRef(ctx->e->NewShortArray(ctx->jvideo_length));
-    }
-
-    jshort *jvideo_ptr = (jshort*)ctx->e->GetPrimitiveArrayCritical(ctx->jvideo16, &isCopy);
-    if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-    ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
-    ctx->rgb_video_dst_linesize[0] = ctx->width * 2;
-    (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
-      , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
-
-    ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo16, jvideo_ptr, 0);
-  }
-
-  return ctx->jvideo16;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_getWidth
@@ -2428,7 +2349,6 @@ static JNINativeMethod javaforce_media_MediaVideoDecoder[] = {
   {"start", "(III)Z", (void *)&Java_javaforce_media_MediaVideoDecoder_start},
   {"stop", "()V", (void *)&Java_javaforce_media_MediaVideoDecoder_stop},
   {"decode", "([BII)[I", (void *)&Java_javaforce_media_MediaVideoDecoder_decode},
-  {"decode16", "([BII)[S", (void *)&Java_javaforce_media_MediaVideoDecoder_decode16},
   {"getWidth", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_getWidth},
   {"getHeight", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_getHeight},
   {"getFrameRate", "()F", (void *)&Java_javaforce_media_MediaVideoDecoder_getFrameRate},
