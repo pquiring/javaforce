@@ -104,9 +104,9 @@ public class WebRequest {
     String query = getQueryString();
     setParameters(query);
     String type = getContentType();
-    int length = getContentLength();
     if (type != null && type.equals("application/x-www-form-urlencoded")) {
       try {
+        int length = getContentLength();
         byte[] data = JF.readAll(is, length);
         setParameters(new String(data, "UTF-8"));
       } catch (Exception e) {
@@ -146,6 +146,20 @@ public class WebRequest {
 
   public String getParameter(String name) {
     return params.get(name);
+  }
+
+  /** Reads and returns POST data. */
+  public byte[] getData() {
+    String method = getMethod();
+    if (!method.equals("POST")) return null;
+    try {
+      int length = getContentLength();
+      byte[] data = JF.readAll(is, length);
+      return data;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
 
   public boolean isSecure() {
