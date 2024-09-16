@@ -23,8 +23,9 @@ import javax.print.attribute.standard.*;
 import javaforce.service.*;
 
 public class JFPrintServer {
-  private Server server;
+  private static final int port = 33202;
 
+  private Server server;
   private HashMap<String, DocPrintJob> jobs = new HashMap<>();
 
   public void start() {
@@ -40,7 +41,7 @@ public class JFPrintServer {
     private WebServer web;
     public void run() {
       web = new WebServer();
-      web.start(this, 631);
+      web.start(this, port);
     }
 
     public void cancel() {
