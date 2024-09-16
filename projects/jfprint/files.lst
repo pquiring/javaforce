@@ -1,0 +1,5 @@
+/usr/bin/jfprint
+/usr/bin/jfprintsvc
+/lib/systemd/system/jfprint.service
+
+

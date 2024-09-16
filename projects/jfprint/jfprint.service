@@ -1,0 +1,11 @@
+[Unit]
+Description=JavaForce Print Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfprintsvc
+ExecStop=/usr/bin/jfprintsvc --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

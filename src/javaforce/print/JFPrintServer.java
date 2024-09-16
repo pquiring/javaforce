@@ -7,7 +7,7 @@ package javaforce.print;
  * Commands:
  *   /list - list available printers
  *   /query/{name} - query printer : returns list of properties
- *   /print/{name} - send print job (POST = png-data) : returns properties with 'job-id'
+ *   /print/{name} - send print job (POST = png-data) : returns properties with 'jobid'
  *   /status/{jobid} - get print job status
  *
  * @author peter.quiring
@@ -20,26 +20,58 @@ import javax.print.*;
 import javax.print.attribute.*;
 import javax.print.attribute.standard.*;
 
+import javaforce.*;
+import javaforce.jbus.*;
 import javaforce.service.*;
 
 public class JFPrintServer {
   private static final int port = 33202;
 
+  public final static String busPack = "net.sf.jfprint";
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33016;
+    } else {
+      return 777;
+    }
+  }
+
+  public static String getConfigFile() {
+    return JF.getConfigPath() + "/jfprint.cfg";
+  }
+
+  public static String getLogFile() {
+    return JF.getLogPath() + "/jfprint.log";
+  }
+
   private Server server;
   private HashMap<String, DocPrintJob> jobs = new HashMap<>();
 
   public void start() {
+    stop();
     server = new Server();
     server.start();
   }
 
   public void stop() {
-    server.cancel();
+    if (server != null) {
+      server.cancel();
+      server = null;
+    }
+    if (busClient != null) {
+      busClient.close();
+      busClient = null;
+    }
   }
 
   private class Server extends Thread implements WebHandler {
     private WebServer web;
     public void run() {
+      loadConfig();
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       web = new WebServer();
       web.start(this, port);
     }
@@ -160,5 +192,92 @@ public class JFPrintServer {
 
   private PrintService[] getPrinters() {
     return PrintServiceLookup.lookupPrintServices(null, null);
+  }
+
+  private final static String defaultConfig = "#JFPrintServer";
+
+  private void loadConfig() {
+    try {
+      StringBuilder cfg = new StringBuilder();
+      BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
+      while (true) {
+        String ln = br.readLine();
+        if (ln == null) break;
+        cfg.append(ln);
+        cfg.append("\n");
+        ln = ln.trim();
+        int cmt = ln.indexOf('#');
+        if (cmt != -1) ln = ln.substring(0, cmt).trim();
+        if (ln.length() == 0) continue;
+        int idx = ln.indexOf("=");
+        if (idx == -1) continue;
+        String key = ln.substring(0, idx).toLowerCase().trim();
+        String value = ln.substring(idx+1).trim();
+        switch (key) {
+          //TODO
+        }
+      }
+      config = cfg.toString();
+    } catch (FileNotFoundException e) {
+      //create default config
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(defaultConfig.getBytes());
+        fos.close();
+        config = defaultConfig;
+      } catch (Exception e2) {
+        JFLog.log(e2);
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private static JBusServer busServer;
+  private JBusClient busClient;
+  private String config = "#JFPrintServer";
+
+  public static class JBusMethods {
+    public void getConfig(String pack) {
+      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(service.config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      service.stop();
+      service = new JFPrintServer();
+      service.start();
+    }
+  }
+
+  private static JFPrintServer service;
+
+  public static void serviceStart(String[] args) {
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
+    service = new JFPrintServer();
+    service.start();
+  }
+
+  public static void serviceStop() {
+    JFLog.log("DHCP : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
+    service.stop();
   }
 }
