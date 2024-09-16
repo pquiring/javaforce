@@ -11,7 +11,7 @@ import javaforce.*;
 import javaforce.jni.*;
 
 public class MediaCoder {
-  private long ctx = 0;
+  protected long ctx = 0;
   /** Loads the media framework native libraries from native loader. */
   public static void init() {
     File[] sysFolders;

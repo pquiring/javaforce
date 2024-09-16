@@ -1164,7 +1164,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_resize
 
 //rawvideo decoder codebase
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
+JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
   (JNIEnv *e, jobject c, jint codec_id, jint width, jint height)
 {
   FFContext *ctx = createFFContext(e,c);
@@ -1173,7 +1173,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->video_codec == NULL) {
     printf("MediaVideoDecoder : codec == null\n");
-    return JNI_FALSE;
+    return 0;
   }
   ctx->video_codec_ctx = (*_avcodec_alloc_context3)(ctx->video_codec);
 
@@ -1183,7 +1183,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
 
   if (((*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL)) < 0) {
     printf("avcodec_open2() failed\n");
-    return JNI_FALSE;
+    return 0;
   }
 
   if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
@@ -1199,13 +1199,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
   ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
   ctx->decode_buffer_size = 1024*1024;
 
-  return JNI_TRUE;
+  return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
-  (JNIEnv *e, jobject c)
+JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nstop
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  FFContext *ctx = getFFContext(e,c);
+  FFContext *ctx = (FFContext*)ctxptr;
   if (ctx == NULL) return;
   if (ctx->frame != NULL) {
     (*_av_frame_free)((void**)&ctx->frame);
@@ -1235,10 +1235,10 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
   deleteFFContext(e,c,ctx);
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
-  (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
+JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
+  (JNIEnv *e, jobject c, jlong ctxptr, jbyteArray data, jint offset, jint length)
 {
-  FFContext *ctx = getFFContext(e,c);
+  FFContext *ctx = (FFContext*)ctxptr;
   if (ctx == NULL) return NULL;
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
@@ -1308,28 +1308,28 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   return ctx->jvideo;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_getWidth
-  (JNIEnv *e, jobject c)
+JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_ngetWidth
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  FFContext *ctx = getFFContext(e,c);
+  FFContext *ctx = (FFContext*)ctxptr;
   if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->width;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_getHeight
-  (JNIEnv *e, jobject c)
+JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_ngetHeight
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  FFContext *ctx = getFFContext(e,c);
+  FFContext *ctx = (FFContext*)ctxptr;
   if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->height;
 }
 
-JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
-  (JNIEnv *e, jobject c)
+JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_ngetFrameRate
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  FFContext *ctx = getFFContext(e,c);
+  FFContext *ctx = (FFContext*)ctxptr;
   if (ctx == NULL) return 0.0f;
   if (ctx->video_codec_ctx == NULL) return 0;
   if (ctx->video_codec_ctx->framerate.den == 0) return 0;
@@ -2346,12 +2346,12 @@ static JNINativeMethod javaforce_media_MediaEncoder[] = {
 };
 
 static JNINativeMethod javaforce_media_MediaVideoDecoder[] = {
-  {"start", "(III)Z", (void *)&Java_javaforce_media_MediaVideoDecoder_start},
-  {"stop", "()V", (void *)&Java_javaforce_media_MediaVideoDecoder_stop},
-  {"decode", "([BII)[I", (void *)&Java_javaforce_media_MediaVideoDecoder_decode},
-  {"getWidth", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_getWidth},
-  {"getHeight", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_getHeight},
-  {"getFrameRate", "()F", (void *)&Java_javaforce_media_MediaVideoDecoder_getFrameRate},
+  {"nstart", "(III)Z", (void *)&Java_javaforce_media_MediaVideoDecoder_nstart},
+  {"nstop", "()V", (void *)&Java_javaforce_media_MediaVideoDecoder_nstop},
+  {"ndecode", "([BII)[I", (void *)&Java_javaforce_media_MediaVideoDecoder_ndecode},
+  {"ngetWidth", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetWidth},
+  {"ngetHeight", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetHeight},
+  {"ngetFrameRate", "()F", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetFrameRate},
 };
 
 extern "C" void ffmpeg_register(JNIEnv *env);
