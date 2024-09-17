@@ -2544,20 +2544,20 @@ static JNINativeMethod javaforce_media_MediaEncoder[] = {
 };
 
 static JNINativeMethod javaforce_media_MediaAudioDecoder[] = {
-  {"nstart", "(III)Z", (void *)&Java_javaforce_media_MediaAudioDecoder_nstart},
-  {"nstop", "()V", (void *)&Java_javaforce_media_MediaAudioDecoder_nstop},
-  {"ndecode", "([BII)[I", (void *)&Java_javaforce_media_MediaAudioDecoder_ndecode},
-  {"ngetChannels", "()I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetChannels},
-  {"ngetSampleRate", "()I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetSampleRate},
+  {"nstart", "(III)J", (void *)&Java_javaforce_media_MediaAudioDecoder_nstart},
+  {"nstop", "(J)V", (void *)&Java_javaforce_media_MediaAudioDecoder_nstop},
+  {"ndecode", "(J[BII)[S", (void *)&Java_javaforce_media_MediaAudioDecoder_ndecode},
+  {"ngetChannels", "(J)I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetChannels},
+  {"ngetSampleRate", "(J)I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetSampleRate},
 };
 
 static JNINativeMethod javaforce_media_MediaVideoDecoder[] = {
-  {"nstart", "(III)Z", (void *)&Java_javaforce_media_MediaVideoDecoder_nstart},
-  {"nstop", "()V", (void *)&Java_javaforce_media_MediaVideoDecoder_nstop},
-  {"ndecode", "([BII)[I", (void *)&Java_javaforce_media_MediaVideoDecoder_ndecode},
-  {"ngetWidth", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetWidth},
-  {"ngetHeight", "()I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetHeight},
-  {"ngetFrameRate", "()F", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetFrameRate},
+  {"nstart", "(III)J", (void *)&Java_javaforce_media_MediaVideoDecoder_nstart},
+  {"nstop", "(J)V", (void *)&Java_javaforce_media_MediaVideoDecoder_nstop},
+  {"ndecode", "(J[BII)[I", (void *)&Java_javaforce_media_MediaVideoDecoder_ndecode},
+  {"ngetWidth", "(J)I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetWidth},
+  {"ngetHeight", "(J)I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetHeight},
+  {"ngetFrameRate", "(J)F", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetFrameRate},
 };
 
 extern "C" void ffmpeg_register(JNIEnv *env);
