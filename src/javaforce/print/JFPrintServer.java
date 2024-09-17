@@ -68,6 +68,9 @@ public class JFPrintServer {
   private class Server extends Thread implements WebHandler {
     private WebServer web;
     public void run() {
+      JFLog.append(getLogFile(), true);
+      JFLog.setRetention(30);
+      JFLog.log("JFPrint : Starting service");
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
       busClient.setPort(getBusPort());
@@ -273,7 +276,7 @@ public class JFPrintServer {
   }
 
   public static void serviceStop() {
-    JFLog.log("DHCP : Stopping service");
+    JFLog.log("JFPrint : Stopping service");
     if (busServer != null) {
       busServer.close();
       busServer = null;
