@@ -141,6 +141,9 @@ public class JFPrintServer {
           case "status":
             res.write(status(ps[1]));
             break;
+          default:
+            res.write(("JFPrintServer Ready (JF/" + JF.getVersion() + ")").getBytes());
+            break;
         }
         cleanJobs();
       } catch (Exception e) {
