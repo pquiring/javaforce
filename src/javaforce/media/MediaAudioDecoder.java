@@ -16,10 +16,13 @@ public class MediaAudioDecoder extends MediaCoder {
   }
   public native void nstop(long ctx);
   public void stop() {
+    if (ctx == 0) return;
     nstop(ctx);
+    ctx = 0;
   }
   public native short[] ndecode(long ctx, byte[] data, int offset, int length);
   public short[] decode(byte[] data, int offset, int length) {
+    if (ctx == 0) return null;
     return ndecode(ctx, data, offset, length);
   }
   public short[] decode(Packet packet) {
@@ -27,10 +30,12 @@ public class MediaAudioDecoder extends MediaCoder {
   }
   public native int ngetChannels(long ctx);
   public int getChannels() {
+    if (ctx == 0) return -1;
     return ngetChannels(ctx);
   }
   public native int ngetSampleRate(long ctx);
   public int getSampleRate() {
+    if (ctx == 0) return -1;
     return ngetSampleRate(ctx);
   }
 }

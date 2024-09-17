@@ -15,14 +15,14 @@ public class MediaVideoDecoder extends MediaCoder {
     return ctx != 0;
   }
   public native void nstop(long ctx);
-  public boolean stop() {
-    if (ctx == 0) return false;
+  public void stop() {
+    if (ctx == 0) return;
     nstop(ctx);
     ctx = 0;
-    return true;
   }
   public native int[] ndecode(long ctx, byte[] data, int offset, int length);
   public int[] decode(byte[] data, int offset, int length) {
+    if (ctx == 0) return null;
     return ndecode(ctx, data, offset, length);
   }
   public int[] decode(Packet packet) {
@@ -30,14 +30,17 @@ public class MediaVideoDecoder extends MediaCoder {
   }
   public native int ngetWidth(long ctx);
   public int getWidth() {
+    if (ctx == 0) return -1;
     return ngetWidth(ctx);
   }
   public native int ngetHeight(long ctx);
   public int getHeight() {
+    if (ctx == 0) return -1;
     return ngetHeight(ctx);
   }
   public native float ngetFrameRate(long ctx);
   public float getFrameRate() {
+    if (ctx == 0) return -1;
     return ngetFrameRate(ctx);
   }
 }
