@@ -20,7 +20,7 @@
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{1338D0E9-872B-4806-B9CF-D2FBD013E95B}" Bitness="always64">
         <File Id="jfprintsvc.exe" Source="jfprintsvc.exe" KeyPath="yes">
-          <fire:FirewallException Id="FirewallRule" Name="jfPrintServer" Protocol="udp" Port="67" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule" Name="jfPrintServer" Protocol="tcp" Port="33202" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jfprint.exe" Source="jfprint.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
