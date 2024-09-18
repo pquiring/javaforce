@@ -30,7 +30,7 @@ public class GenDEB {
     if (new File("files-debian.lst").exists()) {
       files = "files-debian.lst";
     }
-    if (!new File("/usr/bin/bzip2").exists()) {
+    if (!JF.isWindows() && !new File("/usr/bin/bzip2").exists()) {
       JFLog.log("Error:bzip2 not installed");
       System.exit(1);
     }
