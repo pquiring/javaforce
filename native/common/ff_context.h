@@ -46,7 +46,7 @@ struct FFContext {
   uint8_t* audio_dst_data[4];
   int audio_dst_linesize[4];
 
-  AVPacket *pkt;  //decoders only
+  AVPacket *pkt;
   jboolean pkt_key_frame;
 
   AVFrame *frame;
@@ -60,7 +60,7 @@ struct FFContext {
   //additional raw video decoder fields
   AVCodec *video_codec;
 
-  //additional encoder fields
+  //encoder fields
   AVCodec *audio_codec;
   AVOutputFormat *out_fmt;
   int width, height, fps;
@@ -74,6 +74,10 @@ struct FFContext {
   int audio_frame_size;
   short *audio_buffer;
   int audio_buffer_size;
+
+  uint8_t* encode_buffer;
+  int encode_buffer_size;
+
   int64_t audio_pts;
   int64_t video_pts;
 
@@ -141,6 +145,13 @@ FFContext* getFFContext(JNIEnv *e, jobject c) {
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
   ctx = (FFContext*)e->GetLongField(c, fid_ff_ctx);
   if (ctx == NULL) return NULL;
+  ctx->e = e;
+  ctx->c = c;
+  return ctx;
+}
+
+FFContext* castFFContext(JNIEnv *e, jobject c, jlong ctxptr) {
+  FFContext* ctx = (FFContext*)ctxptr;
   ctx->e = e;
   ctx->c = c;
   return ctx;
