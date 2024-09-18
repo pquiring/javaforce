@@ -259,6 +259,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     return JNI_FALSE;
   }
 
+  //create audio frame
   ctx->audio_frame = (*_av_frame_alloc)();
   if (ctx->audio_frame == NULL) {
     printf("av_frame_alloc() failed!\n");
@@ -282,6 +283,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 && ctx->audio_codec_ctx->sample_rate == ctx->freq) {
     return JNI_TRUE;
   }
+
   //create audio conversion context
   ctx->swr_ctx = (*_swr_alloc)();
   (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
