@@ -138,6 +138,13 @@ public class JF {
     }
   }
 
+  /** Encode text to display in HTML.
+   * Escapes: &amp; &lt; &gt;
+   */
+  public static String encodeHTML(String txt) {
+    return txt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+  }
+
   public static int atoi(String str) {
     if (str.length() == 0) {
       return 0;
