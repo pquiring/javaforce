@@ -17,6 +17,24 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
   }
 }
 
+JNIEXPORT jobject JNICALL Java_javaforce_jni_JFNative_allocate
+  (JNIEnv *e, jclass c, jint size)
+{
+  return e->NewDirectByteBuffer(malloc(size), size);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_free
+  (JNIEnv *e, jclass c, jobject bb)
+{
+  void* ptr = e->GetDirectBufferAddress(bb);
+  free(ptr);
+}
+
+static JNINativeMethod javaforce_jni_JFNative[] = {
+  {"allocate", "(I)Ljava/nio/ByteBuffer;", (void *)&Java_javaforce_jni_JFNative_allocate},
+  {"free", "(Ljava/nio/ByteBuffer;)V", (void *)&Java_javaforce_jni_JFNative_free},
+};
+
 extern "C" void ni_register(JNIEnv *env);
 extern "C" void gl_register(JNIEnv *env);
 extern "C" void glfw_register(JNIEnv *env);
@@ -32,6 +50,9 @@ extern "C" void i2c_register(JNIEnv *env);
 
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
+
+  cls = findClass(env, "javaforce/jni/JFNative");
+  registerNatives(env, cls, javaforce_jni_JFNative, sizeof(javaforce_jni_JFNative)/sizeof(JNINativeMethod));
 
 #ifndef __FreeBSD__
   ni_register(env);

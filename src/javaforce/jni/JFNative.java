@@ -6,6 +6,7 @@ package javaforce.jni;
  */
 
 import java.io.*;
+import java.nio.*;
 import java.util.*;
 
 public class JFNative {
@@ -49,4 +50,10 @@ public class JFNative {
     }
     return false;
   }
+  /** Allocate a Direct ByteBuffer. */
+  public native static ByteBuffer allocate(int size);
+  /** Free memory backing a Direct ByteBuffer.
+   * Failing to call free() will result in memory leak.
+   */
+  public native static void free(ByteBuffer buffer);
 }
