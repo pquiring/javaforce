@@ -109,6 +109,7 @@ public class JFPrintServer {
           case JFPrint.unit_mm: unit = MediaPrintableArea.MM; break;
         }
         byte[] png = req.getData();
+        JFLog.log("print:printer=" + name + ",width=" + width + ",height=" + height + ",unit=" + _unit + ",png=" + png.length);
 
         PrintRequestAttributeSet attribSet = new HashPrintRequestAttributeSet();
         attribSet.add(new MediaPrintableArea(0,0,width,height,unit));
