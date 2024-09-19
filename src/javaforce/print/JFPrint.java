@@ -66,4 +66,26 @@ public class JFPrint {
     }
     return null;
   }
+
+  public static void main(String[] args) {
+    if (args.length != 6) {
+      JFLog.log("Usage:JFPrint server printer file.png width height unit");
+      return;
+    }
+    String server = args[0];
+    String printer = args[1];
+    String file = args[2];
+    String width = args[3];
+    String height = args[4];
+    String unit = args[5];
+    byte[] png = JF.readFile(file);
+    if (png == null) {
+      JFLog.log("unable to open:" + file);
+      return;
+    }
+    String[] ret = print(server, printer, png, width, height, unit);
+    for(String r : ret) {
+      JFLog.log(r);
+    }
+  }
 }
