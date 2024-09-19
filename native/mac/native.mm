@@ -23,6 +23,9 @@
 #include "javaforce_ui_Window.h"
 #include "javaforce_cl_CL.h"
 
+#include "../common/library.h"
+#include "../common/register.h"
+
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
@@ -315,8 +318,6 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
   if (ctx == NULL) return 0;
   return ctx->height;
 }
-
-#include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"
 

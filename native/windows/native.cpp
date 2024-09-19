@@ -33,6 +33,7 @@
 #include "javaforce_cl_CL.h"
 
 #include "../common/library.h"
+#include "../common/register.h"
 
 static char* log_log = NULL;
 static int log_size = 0;

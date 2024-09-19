@@ -41,6 +41,9 @@
 #include "javaforce_net_PacketCapture.h"
 #include "javaforce_cl_CL.h"
 
+#include "../common/library.h"
+#include "../common/register.h"
+
 #ifdef __arm__
   #define __RASPBERRY_PI__
 #endif
@@ -1873,8 +1876,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
   }
   e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
 }
-
-#include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"
 
