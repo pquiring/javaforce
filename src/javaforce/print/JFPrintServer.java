@@ -108,11 +108,18 @@ public class JFPrintServer {
           case JFPrint.unit_inch: unit = MediaPrintableArea.INCH; break;
           case JFPrint.unit_mm: unit = MediaPrintableArea.MM; break;
         }
+        OrientationRequested orientation = OrientationRequested.LANDSCAPE;
+        String _orientation = req.getHeader("orientation");
+        switch (_orientation) {
+          case JFPrint.orientation_landscape: orientation = OrientationRequested.LANDSCAPE; break;
+          case JFPrint.orientation_portrait: orientation = OrientationRequested.PORTRAIT; break;
+        }
         byte[] png = req.getData();
-        JFLog.log("print:printer=" + name + ",width=" + width + ",height=" + height + ",unit=" + _unit + ",png=" + png.length);
+        JFLog.log("print:printer=" + name + ",width=" + width + ",height=" + height + ",unit=" + _unit + ",orientation=" + _orientation + ",png=" + png.length);
 
         PrintRequestAttributeSet attribSet = new HashPrintRequestAttributeSet();
         attribSet.add(new MediaPrintableArea(0,0,width,height,unit));
+        attribSet.add(orientation);
         ByteArrayInputStream is = new ByteArrayInputStream(png);
         Doc myDoc = new SimpleDoc(is, DocFlavor.INPUT_STREAM.PNG, null);
         PrintService def = getPrinter(name);
