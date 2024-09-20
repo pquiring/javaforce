@@ -77,17 +77,29 @@ public class JTrayIcon extends TrayIcon {
   }
 
   public static void main(String[] args) {
-    JFImage img = new JFImage(16, 16);
+    JFImage img = new JFImage();
+    img.loadPNG(JF.class.getResourceAsStream("/javaforce/icons/javaforce.png"));
+    JFImage img16 = new JFImage(16, 16);
+    img16.putJFImageScale(img, 0, 0, 15, 15);
 
     JPopupMenu menu = new JPopupMenu();
-    JMenuItem item = new JMenuItem("item1");
-    menu.add(item);
+    JMenuItem item1 = new JMenuItem("item1");
+    item1.addActionListener((e) -> {
+      JFLog.log("item1");
+    });
+    menu.add(item1);
     JMenuItem item2 = new JMenuItem("item2");
+    item2.addActionListener((e) -> {
+      JFLog.log("item2");
+    });
     menu.add(item2);
     JMenuItem item3 = new JMenuItem("item3");
+    item3.addActionListener((e) -> {
+      JFLog.log("item3");
+    });
     menu.add(item3);
 
-    JTrayIcon icon = new JTrayIcon(img.getImage(), "test", menu);
+    JTrayIcon icon = new JTrayIcon(img16.getImage(), "test", menu);
     try {
       SystemTray.getSystemTray().add(icon);
     } catch (Exception e) {
