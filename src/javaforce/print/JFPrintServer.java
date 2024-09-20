@@ -84,6 +84,14 @@ public class JFPrintServer {
       web = null;
     }
 
+    private String getHeader(WebRequest req, String name, String defaultValue) {
+      String value = req.getHeader(name);
+      if (value == null) {
+        value = defaultValue;
+      }
+      return value;
+    }
+
     public void doPost(WebRequest req, WebResponse res) {
       try {
         String url = req.getURL();  // /print/name
@@ -98,18 +106,18 @@ public class JFPrintServer {
           return;
         }
         String name = ps[1];
-        String _width = req.getHeader("width");
+        String _width = getHeader(req, "width", "8.5");
         float width = Float.valueOf(_width);
-        String _height = req.getHeader("height");
+        String _height = getHeader(req, "height", "11.0");
         float height = Float.valueOf(_height);
-        String _unit = req.getHeader("unit");
+        String _unit = getHeader(req, "unit", JFPrint.unit_inch);
         int unit = MediaPrintableArea.INCH;
         switch (_unit) {
           case JFPrint.unit_inch: unit = MediaPrintableArea.INCH; break;
           case JFPrint.unit_mm: unit = MediaPrintableArea.MM; break;
         }
-        OrientationRequested orientation = OrientationRequested.LANDSCAPE;
-        String _orientation = req.getHeader("orientation");
+        OrientationRequested orientation = OrientationRequested.PORTRAIT;
+        String _orientation = getHeader(req, "orientation", JFPrint.orientation_portrait);
         switch (_orientation) {
           case JFPrint.orientation_landscape: orientation = OrientationRequested.LANDSCAPE; break;
           case JFPrint.orientation_portrait: orientation = OrientationRequested.PORTRAIT; break;
