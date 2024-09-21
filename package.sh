@@ -87,6 +87,7 @@ ant $pkg
 echo Packaging utils
 echo Packaging utils 1>&2
 cd utils
+ant buildall
 ant $pkg
 cd ..
 
