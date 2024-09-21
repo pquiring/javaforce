@@ -30,6 +30,7 @@ public class WinNative {
 
   //Impersonate User
   public static native boolean impersonateUser(String domain, String user, String passwd);
+  public static native boolean createProcessAsUser(String domain, String user, String passwd, String app, String cmdline);
 
   //JDK
   public static native String findJDKHome();

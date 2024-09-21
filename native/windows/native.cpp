@@ -944,7 +944,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
     return JNI_FALSE;
   }
 
-  if (!DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, 0, SecurityAnonymous, TokenPrimary, &hNewToken)){
+  if (!DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityAnonymous, TokenPrimary, &hNewToken)){
     return JNI_FALSE;
   }
 
@@ -954,9 +954,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
 
   if (!CreateEnvironmentBlock(&pEnvBlock, hToken, TRUE)) {
     return JNI_FALSE;
-  } else {
-    dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
   }
+
+  dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
 
   const char *ccmd = e->GetStringUTFChars(cmd, NULL);
 
@@ -1036,6 +1036,91 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
   ok = ImpersonateLoggedOnUser(token);
   if (!ok) {
     CloseHandle(token);
+  }
+  return ok ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
+  (JNIEnv *e, jclass c, jstring domain, jstring user, jstring passwd, jstring app, jstring cmdline)
+{
+  HANDLE token;
+  int ok;
+
+  PROCESS_INFORMATION pi;
+
+  if (false) {
+    //Results in error : 0x522 (1314) : ERROR_PRIVILEGE_NOT_HELD
+
+    STARTUPINFO si;
+    memset(&si, 0, sizeof(STARTUPINFO));
+    si.cb = sizeof(STARTUPINFO);
+    si.lpDesktop = "winsta0\\default";
+
+    const char *cdomain = e->GetStringUTFChars(domain,NULL);
+    const char *cuser = e->GetStringUTFChars(user,NULL);
+    const char *cpasswd = e->GetStringUTFChars(passwd,NULL);
+
+    ok = LogonUser(cuser, cdomain, cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);
+
+    e->ReleaseStringUTFChars(domain, cdomain);
+    e->ReleaseStringUTFChars(user, cuser);
+    e->ReleaseStringUTFChars(passwd, cpasswd);
+    if (!ok) {
+      printf("LogonUser Failed:0x%x\n", GetLastError());
+      return JNI_FALSE;
+    }
+    const char *capp = e->GetStringUTFChars(app,NULL);
+    const char *ccmdline = e->GetStringUTFChars(cmdline,NULL);
+
+    ok = CreateProcessAsUser(token, capp, (LPSTR)ccmdline, NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+
+    e->ReleaseStringUTFChars(app, capp);
+    e->ReleaseStringUTFChars(cmdline, ccmdline);
+    if (!ok) {
+      printf("CreateProcessAsUser Failed:0x%x\n", GetLastError());
+      CloseHandle(token);
+    }
+  } else {
+    STARTUPINFOW si;
+    memset(&si, 0, sizeof(STARTUPINFOW));
+    si.cb = sizeof(STARTUPINFOW);
+    si.lpDesktop = L"winsta0\\default";
+
+    HANDLE hToken;
+    HANDLE hNewToken;
+    LPVOID lpvEnv;
+
+    const jchar *cdomain = e->GetStringChars(domain,NULL);
+    const jchar *cuser = e->GetStringChars(user,NULL);
+    const jchar *cpasswd = e->GetStringChars(passwd,NULL);
+    const jchar *capp = e->GetStringChars(app,NULL);
+    const jchar *ccmdline = e->GetStringChars(cmdline,NULL);
+
+    ok = LogonUserW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &hToken);
+    if (!ok) {
+      printf("LogonUserW Failed:0x%x\n", GetLastError());
+    }
+
+    ok = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityIdentification, TokenPrimary, &hNewToken);
+    if (!ok) {
+      printf("DuplicateTokenEx Failed:0x%x\n", GetLastError());
+    }
+
+    ok = CreateEnvironmentBlock(&lpvEnv, hNewToken, false);
+    if (!ok) {
+      printf("CreateEnvironmentBlock Failed:0x%x\n", GetLastError());
+    }
+
+    ok = CreateProcessWithLogonW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON_WITH_PROFILE, (LPCWSTR)capp, (LPWSTR)ccmdline, CREATE_UNICODE_ENVIRONMENT, lpvEnv, NULL, &si, &pi);
+    if (!ok) {
+      printf("CreateProcessWithLogonW Failed:0x%x\n", GetLastError());
+    }
+
+    e->ReleaseStringChars(app, capp);
+    e->ReleaseStringChars(cmdline, ccmdline);
+    e->ReleaseStringChars(domain, cdomain);
+    e->ReleaseStringChars(user, cuser);
+    e->ReleaseStringChars(passwd, cpasswd);
   }
   return ok ? JNI_TRUE : JNI_FALSE;
 }
@@ -1849,6 +1934,7 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"peAddString", "(JII[B)V", (void *)&Java_javaforce_jni_WinNative_peAddString},
   {"peEnd", "(J)V", (void *)&Java_javaforce_jni_WinNative_peEnd},
   {"impersonateUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_impersonateUser},
+  {"createProcessAsUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_createProcessAsUser},
   {"findJDKHome", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_findJDKHome},
   {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_enableConsoleMode},
   {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_disableConsoleMode},
