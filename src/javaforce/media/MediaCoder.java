@@ -12,7 +12,13 @@ import javaforce.jni.*;
 
 public class MediaCoder {
   protected long ctx = 0;
-  /** Loads the media framework native libraries from native loader. */
+  public int stream;
+
+  public int getStream() {
+    return stream;
+  }
+
+  /** Loads the media framework native libraries. */
   public static void init() {
     File[] sysFolders;
     String ext = "";
