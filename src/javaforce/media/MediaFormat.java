@@ -2,8 +2,6 @@ package javaforce.media;
 
 /** Base class for MediaInput, MediaOutput
  *
- * TODO : move MediaCoder.AV_FORMAT_... here!
- *
  * @author pquiring
  */
 
