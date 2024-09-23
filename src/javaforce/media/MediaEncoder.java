@@ -5,7 +5,7 @@ package javaforce.media;
  * @author pquiring
  */
 
-public class MediaEncoder extends MediaCoder {
+public class MediaEncoder extends MediaFormat {
   //these must be set BEFORE you call start()
   public boolean fps_1000_1001 = false;
   public int framesPerKeyFrame = 12;
@@ -48,6 +48,7 @@ public class MediaEncoder extends MediaCoder {
   public boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec) {
     return nstart(io, width, height, fps, chs, freq, format, video_codec, audio_codec);
   }
+
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
   public void set1000over1001(boolean state) {
     fps_1000_1001 = state;

@@ -531,6 +531,8 @@ static jlong seek_packet(FFContext *ctx, jlong offset, int how) {
 
 //include code bases
 
+#include "ff_format.cpp"
+
 #include "ff_decoder.cpp"
 
 #include "ff_av_decoder.cpp"

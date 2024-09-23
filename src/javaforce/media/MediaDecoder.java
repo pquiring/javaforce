@@ -5,7 +5,7 @@ package javaforce.media;
  * @author pquiring
  */
 
-public class MediaDecoder extends MediaCoder {
+public class MediaDecoder extends MediaFormat {
   /**
    * Starts decoder.
    *
