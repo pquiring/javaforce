@@ -14,9 +14,37 @@ public class MediaEncoder extends MediaCoder {
   public int compressionLevel = -1;
   public int profileLevel = 1;  //1=baseline 2=main 3=high
   private native boolean nstart(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec);
+
+  /** Start encoder.
+   *
+   * Uses default codec for format.
+   *
+   * @param io = MediaIO interface
+   * @param width = width of video (-1 = no video)
+   * @param height = height of video (-1 = no video)
+   * @param fps = frames per second (-1 = no video)
+   * @param chs = audio channels (-1 = no audio)
+   * @param freq = audio frequency (-1 = no audio)
+   * @param format = audio format (see MediaCoder.AV_FORMAT_...)
+   * @param doVideo = enable video stream
+   * @param doAudio = enable audio stream
+   */
   public boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String format, boolean doVideo, boolean doAudio) {
     return nstart(io, width, height, fps, chs, freq, format, doVideo ? -1 : 0, doAudio ? -1 : 0);
   }
+
+  /** Start encoder.
+   *
+   * @param io = MediaIO interface
+   * @param width = width of video (-1 = no video)
+   * @param height = height of video (-1 = no video)
+   * @param fps = frames per second (-1 = no video)
+   * @param chs = audio channels (-1 = no audio)
+   * @param freq = audio frequency (-1 = no audio)
+   * @param format = audio format (see MediaCoder.AV_FORMAT_...)
+   * @param video_codec = video codec to use (-1 = default for format, 0 = no video stream) (see MediaFormat.AV_CODEC_...)
+   * @param audio_codec = audio codec to use (-1 = default for format, 0 = no video stream) (see MediaFormat.AV_CODEC_...)
+   */
   public boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec) {
     return nstart(io, width, height, fps, chs, freq, format, video_codec, audio_codec);
   }

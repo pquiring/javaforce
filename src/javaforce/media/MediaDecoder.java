@@ -6,7 +6,27 @@ package javaforce.media;
  */
 
 public class MediaDecoder extends MediaCoder {
+  /**
+   * Starts decoder.
+   *
+   * @parma io = MediaIO interface
+   * @param new_width = change video width during decoding (-1 = no change)
+   * @param new_height = change video height during decoding (-1 = no change)
+   * @param new_chs = change audio channels during decoding (-1 = no change)
+   * @param new_freq = change audio frequency during decoding (-1 = no change)
+   * @param seekable = do you need to seek position during playback?
+   */
   public native boolean start(MediaIO io, int new_width, int new_height, int new_chs, int new_freq, boolean seekable);
+
+  /**
+   * Starts decoder.
+   *
+   * @parma file = file to write to.
+   * @param new_width = change video width during decoding (-1 = no change)
+   * @param new_height = change video height during decoding (-1 = no change)
+   * @param new_chs = change audio channels during decoding (-1 = no change)
+   * @param new_freq = change audio frequency during decoding (-1 = no change)
+   */
   public native boolean startFile(String file, String input_format, int new_width, int new_height, int chs, int new_freq);
   public native void stop();
   public native int read();
