@@ -4,6 +4,8 @@ package javaforce.print;
  *
  * HTTP based print server on port 33202.
  *
+ * See JFPrint for client side.
+ *
  * Commands:
  *   /list - list available printers
  *   /query/{name} - query printer : returns list of properties

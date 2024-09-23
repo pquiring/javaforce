@@ -92,5 +92,5 @@ public class JFPrint {
     for(String r : ret) {
       JFLog.log(r);
     }
-    }
+  }
 }
