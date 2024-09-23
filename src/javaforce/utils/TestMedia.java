@@ -23,6 +23,7 @@ public class TestMedia implements MediaIO {
     if (args.length == 0) {
       usage();
     }
+    MediaCoder.init();
     for(int a=0;a<args.length;a++) {
       int idx = args[a].indexOf('=');
       if (idx != -1) {
@@ -95,13 +96,15 @@ public class TestMedia implements MediaIO {
     int[] px = new int[640*480];
     short[] sams = new short[7350];
     int i = 0;
+    int video = MediaCoder.AV_CODEC_ID_H265;
+    int audio = MediaCoder.AV_CODEC_ID_AAC;
     do {
       media.size = 0;
       MediaEncoder encoder = new MediaEncoder();
       AudioInput input = new AudioInput();
       media.create(i++);
       if (i == 10) i = 0;
-      encoder.start(media, 640, 480, 24, 2, 44100, "mp4", true, true);
+      encoder.start(media, 640, 480, 24, 2, 44100, "mp4", video, audio);
       int frame_size = encoder.getAudioFramesize() * 2;  //*2=stereo
       JFLog.log("frame_size=" + frame_size);
       if (encoder_audio_src.equals("mic")) {

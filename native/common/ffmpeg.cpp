@@ -103,6 +103,7 @@ int (*_avio_flush)(void* io_ctx);
 void (*_av_dump_format)(AVFormatContext *fmt_ctx, int index, const char* url, int is_output);
 int (*_av_write_trailer)(AVFormatContext *fc);
 int (*_avformat_version)();
+int (*_avformat_query_codec)(const AVOutputFormat *ofmt, int codec_id, int std_compliance);
 
 //avutil functions
 void (*_av_image_copy)(uint8_t* dst_data[],int dst_linesizes[]
@@ -302,6 +303,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(format, (void**)&_av_dump_format, "av_dump_format");
   getFunction(format, (void**)&_av_write_trailer, "av_write_trailer");
   getFunction(format, (void**)&_avformat_version, "avformat_version");
+  getFunction(format, (void**)&_avformat_query_codec, "avformat_query_codec");
 
   getFunction(util, (void**)&_av_image_copy, "av_image_copy");
   getFunction(util, (void**)&_av_get_bytes_per_sample, "av_get_bytes_per_sample");
@@ -564,7 +566,7 @@ static JNINativeMethod javaforce_media_MediaDecoder[] = {
 };
 
 static JNINativeMethod javaforce_media_MediaEncoder[] = {
-  {"start", "(Ljavaforce/media/MediaIO;IIIIILjava/lang/String;ZZ)Z", (void *)&Java_javaforce_media_MediaEncoder_start},
+  {"nstart", "(Ljavaforce/media/MediaIO;IIIIILjava/lang/String;II)Z", (void *)&Java_javaforce_media_MediaEncoder_nstart},
   {"addAudio", "([SII)Z", (void *)&Java_javaforce_media_MediaEncoder_addAudio},
   {"addVideo", "([I)Z", (void *)&Java_javaforce_media_MediaEncoder_addVideo},
   {"getAudioFramesize", "()I", (void *)&Java_javaforce_media_MediaEncoder_getAudioFramesize},

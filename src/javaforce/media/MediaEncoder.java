@@ -13,7 +13,13 @@ public class MediaEncoder extends MediaCoder {
   public int audioBitRate = 128000;
   public int compressionLevel = -1;
   public int profileLevel = 1;  //1=baseline 2=main 3=high
-  public native boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String codec, boolean doVideo, boolean doAudio);
+  private native boolean nstart(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec);
+  public boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String format, boolean doVideo, boolean doAudio) {
+    return nstart(io, width, height, fps, chs, freq, format, doVideo ? -1 : 0, doAudio ? -1 : 0);
+  }
+  public boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec) {
+    return nstart(io, width, height, fps, chs, freq, format, video_codec, audio_codec);
+  }
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
   public void set1000over1001(boolean state) {
     fps_1000_1001 = state;

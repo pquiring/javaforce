@@ -1,10 +1,15 @@
 //encoder codebase
 
-static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
+static jboolean encoder_add_stream(FFContext *ctx, const char *format, int codec_id) {
   printf("encoder_add_stream\n");
   AVCodecContext *codec_ctx;
   AVStream *stream;
   AVCodec *codec;
+
+  if (!(*_avformat_query_codec)(ctx->out_fmt, codec_id, FF_COMPLIANCE_NORMAL)) {
+    printf("Format %s does not support codec %d\n", format, codec_id);
+    return JNI_FALSE;
+  }
 
   codec = (*_avcodec_find_encoder)(codec_id);
   if (codec == NULL) return JNI_FALSE;
@@ -345,17 +350,20 @@ static int io_close2(AVFormatContext *fmt_ctx, AVIOContext *pb) {
 
 static jboolean single_file = JNI_FALSE;  //not working
 
-static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVideo, jboolean doAudio, void*read, void*write, void*seek) {
-  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, codec, NULL);
+static jboolean encoder_start(FFContext *ctx, const char *format, jint video_codec, jint audio_codec, void*read, void*write, void*seek) {
+  jboolean doVideo = video_codec != 0;
+  jboolean doAudio = audio_codec != 0;
+
+  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, format, NULL);
   if (ctx->fmt_ctx == NULL) {
-    printf("Error:Unable to find codec:%s\n", codec);
+    printf("Error:Unable to find format:%s\n", format);
     return JNI_FALSE;
   }
   printf("encoder_start:fmt_ctx=%p:out_fmt=%p\n", ctx->fmt_ctx, ctx->fmt_ctx->oformat);
-  if (strcmp(codec, "dash") == 0) {
+  if (strcmp(format, "dash") == 0) {
     ctx->is_dash = 1;
   }
-  else if (strcmp(codec, "mp4") == 0) {
+  else if (strcmp(format, "mp4") == 0) {
     ctx->is_mp4 = 1;
   }
   if (ff_debug_trace) printf("encoder_start\n");
@@ -381,14 +389,20 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
   if (ff_debug_trace) printf("encoder_start\n");
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
-    if (!encoder_add_stream(ctx, ctx->out_fmt->video_codec)) {
+    if (video_codec == -1) {
+      video_codec = ctx->out_fmt->video_codec;
+    }
+    if (!encoder_add_stream(ctx, format, video_codec)) {
       printf("encoder_add_stream:video failed!\n");
       return JNI_FALSE;
     }
   }
   if (ff_debug_trace) printf("encoder_start\n");
   if ((ctx->out_fmt->audio_codec != AV_CODEC_ID_NONE) && doAudio) {
-    if (!encoder_add_stream(ctx, ctx->out_fmt->audio_codec)) {
+    if (audio_codec == -1) {
+      audio_codec = ctx->out_fmt->audio_codec;
+    }
+    if (!encoder_add_stream(ctx, format, audio_codec)) {
       printf("encoder_add_stream:audio failed!\n");
       return JNI_FALSE;
     }
@@ -458,11 +472,14 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
-  (JNIEnv *e, jobject c, jobject mio, jint width, jint height, jint fps, jint chs, jint freq, jstring codec, jboolean doVideo, jboolean doAudio)
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstart
+  (JNIEnv *e, jobject c, jobject mio, jint width, jint height, jint fps, jint chs, jint freq, jstring format, jint video_codec, jint audio_codec)
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
+
+  jboolean doVideo = video_codec != 0;
+  jboolean doAudio = audio_codec != 0;
 
   if (doVideo && (width <= 0 || height <= 0)) {
     return JNI_FALSE;
@@ -508,9 +525,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   ctx->chs = chs;
   ctx->freq = freq;
 
-  const char *ccodec = e->GetStringUTFChars(codec, NULL);
-  jboolean ret = encoder_start(ctx, ccodec, doVideo, doAudio, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
-  e->ReleaseStringUTFChars(codec, ccodec);
+  const char *cformat = e->GetStringUTFChars(format, NULL);
+  jboolean ret = encoder_start(ctx, cformat, video_codec, audio_codec, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+  e->ReleaseStringUTFChars(format, cformat);
 
   return ret;
 }
