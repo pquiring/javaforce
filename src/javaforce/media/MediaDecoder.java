@@ -22,6 +22,7 @@ public class MediaDecoder extends MediaCoder {
    * Starts decoder.
    *
    * @parma file = file to write to.
+   * @param input_format = format of file (see MediaCoder.AV_FORMAT_...) (NULL = auto detect)
    * @param new_width = change video width during decoding (-1 = no change)
    * @param new_height = change video height during decoding (-1 = no change)
    * @param new_chs = change audio channels during decoding (-1 = no change)
