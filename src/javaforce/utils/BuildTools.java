@@ -106,6 +106,9 @@ public class BuildTools {
     if (!file.endsWith(File.separator + "build.xml")) {
       return new String[0];
     }
+    if (!new File("projects.lst").exists()) {
+      return new String[0];
+    }
     try {
       byte[] data = JF.readFile("projects.lst");
       String[] subs = new String(data).replaceAll("\r", "").split("\n");
