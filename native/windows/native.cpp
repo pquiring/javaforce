@@ -35,6 +35,8 @@
 #include "../common/library.h"
 #include "../common/register.h"
 
+static bool debug = false;
+
 static char* log_log = NULL;
 static int log_size = 0;
 
@@ -671,7 +673,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
 JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetWidth
   (JNIEnv *e, jobject c)
 {
-  printf("CameraGetWidth\n");
+  if (debug) printf("CameraGetWidth\n");
   CamContext *ctx = getCamContext(e,c);
   return ctx->width;
 }
@@ -679,7 +681,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetWidth
 JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
   (JNIEnv *e, jobject c)
 {
-  printf("CameraGetHeight\n");
+  if (debug) printf("CameraGetHeight\n");
   CamContext *ctx = getCamContext(e,c);
   return ctx->height;
 }
