@@ -108,7 +108,7 @@ public class TestMedia implements MediaIO {
         encoder.start(media, 640, 480, 24, 2, 44100, "mp4", video, audio);
       } else {
         String file = "test-" + (i++) + ".mp4";
-        encoder.start(file, 640, 480, 24, 2, 44100, "mp4", video, audio);
+        encoder.startFile(file, 640, 480, 24, 2, 44100, "mp4", video, audio);
         System.out.println("file=" + file);
       }
       if (i == 10) i = 0;
