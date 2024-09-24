@@ -1,5 +1,9 @@
 What's new...
 
+Sept 24/2024 : JF/68.2
+ - added MediaFormat
+ - moved project2,3,4,5 properties to projects.lst
+
 Sept 21/2024 : JF/68.1
  - added MediaAudioDecoder (untested)
  - added JFPrintServer
