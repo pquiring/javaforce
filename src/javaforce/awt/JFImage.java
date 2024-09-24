@@ -3,6 +3,7 @@ package javaforce.awt;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.font.*;
+import java.awt.geom.*;
 import java.io.*;
 import java.util.*;
 
@@ -61,7 +62,9 @@ public class JFImage extends JComponent implements Icon {
     setImageSize(x, y);
   }
 
-  private void init(boolean clear) {
+  private void init(BufferedImage bi, boolean clear) {
+    this.bi = bi;
+    this.imageType = bi.getType();
     g2d = bi.createGraphics();
     buffer = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
     if (clear) fill(0,0,getWidth(),getHeight(), 0);  //fill with black opaque (the default varies by platform)
@@ -71,8 +74,7 @@ public class JFImage extends JComponent implements Icon {
     if (debug) {
       JFLog.log("JFImage.initImage:" + x + "," + y);
     }
-    bi = new BufferedImage(x, y, imageType);
-    init(true);
+    init(new BufferedImage(x, y, imageType), true);
     setPreferredSize(new Dimension(x, y));
   }
 
@@ -149,12 +151,15 @@ public class JFImage extends JComponent implements Icon {
 
   /**
    * Replaced BufferedImage.
-   * Must be TYPE_INT_ARGB or TYPE_INT_RGB type.
+   * If image is not TYPE_INT_ARGB or TYPE_INT_RGB then the pixels are just copied.
    * @param bi - new BufferedImage
    */
   public void setBufferedImage(BufferedImage bi) {
+    if (g2d != null) {
+      g2d.dispose();
+    }
     int newType = bi.getType();
-    if (newType != BufferedImage.TYPE_INT_ARGB || newType != BufferedImage.TYPE_INT_RGB) {
+    if (newType != BufferedImage.TYPE_INT_ARGB && newType != BufferedImage.TYPE_INT_RGB) {
       int x = bi.getWidth();
       int y = bi.getHeight();
       int[] px = bi.getRGB(0, 0, x, y, null, 0, x);  //tmp may not be int[] buffer
@@ -162,9 +167,7 @@ public class JFImage extends JComponent implements Icon {
       putPixels(px, 0, 0, x, y, 0);
       return;
     }
-    this.bi = bi;
-    imageType = bi.getType();
-    init(false);
+    init(bi, false);
   }
 
   public Graphics getGraphics() {
@@ -1253,8 +1256,7 @@ public class JFImage extends JComponent implements Icon {
       int width = cap.getWidth();
       int height = cap.getHeight();
       if (cap.getType() == BufferedImage.TYPE_INT_ARGB) {
-        img.bi = cap;
-        img.init(false);
+        img.init(cap, false);
         return img;
       } else if (cap.getType() == BufferedImage.TYPE_INT_RGB) {
         img.setSize(width, height);
@@ -1319,5 +1321,60 @@ public class JFImage extends JComponent implements Icon {
       buffer[a] &= RGB_MASK;
       buffer[a] |= (px[a] & 0x00ff0000) << 8;
     }
+  }
+
+  public void transform(AffineTransform at) {
+    BufferedImage new_bi = new BufferedImage(getWidth(), getHeight(), imageType);
+    Graphics2D g = new_bi.createGraphics();
+    g.transform(at);
+    g.drawImage(bi, 0, 0, null);
+    g.dispose();
+    init(new_bi, false);
+  }
+
+  public void flipHorizontal() {
+    AffineTransform at = new AffineTransform();
+    at.concatenate(AffineTransform.getScaleInstance(-1, 1));
+    at.concatenate(AffineTransform.getTranslateInstance(-getWidth(), 0));
+    transform(at);
+  }
+
+  public void flipVertical() {
+    AffineTransform at = new AffineTransform();
+    at.concatenate(AffineTransform.getScaleInstance(1, -1));
+    at.concatenate(AffineTransform.getTranslateInstance(0, -getHeight()));
+    transform(at);
+  }
+
+  public void flipBoth() {
+    AffineTransform at = new AffineTransform();
+    at.concatenate(AffineTransform.getScaleInstance(-1, -1));
+    at.concatenate(AffineTransform.getTranslateInstance(-getWidth(), -getHeight()));
+    transform(at);
+  }
+
+  public void rotate(double angle) {
+    int width_2 = getWidth() / 2;
+    int height_2 = getHeight() / 2;
+    AffineTransform at = new AffineTransform();
+    at.concatenate(AffineTransform.getTranslateInstance(width_2, height_2));
+    at.concatenate(AffineTransform.getRotateInstance(angle));
+    at.concatenate(AffineTransform.getTranslateInstance(-width_2, -height_2));
+    transform(at);
+  }
+
+  public void negative() {
+    LookupTable lookup = new LookupTable(0, 4)
+      {
+        public int[] lookupPixel(int[] src, int[] dest)
+        {
+          dest[0] = (int)(255-src[0]);
+          dest[1] = (int)(255-src[1]);
+          dest[2] = (int)(255-src[2]);
+          return dest;
+        }
+      };
+    LookupOp op = new LookupOp(lookup, new RenderingHints(null));
+    init(op.filter(bi, null), false);
   }
 };
