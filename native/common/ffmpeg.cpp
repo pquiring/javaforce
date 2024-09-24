@@ -546,6 +546,13 @@ static JNINativeMethod javaforce_media_MediaCoder[] = {
   {"setLogging", "(Z)V", (void *)&Java_javaforce_media_MediaCoder_setLogging},
 };
 
+static JNINativeMethod javaforce_media_MediaFormat[] = {
+  {"ngetVideoStream", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetVideoStream},
+  {"ngetAudioStream", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetAudioStream},
+  {"ngetVideoCodecID", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetVideoCodecID},
+  {"ngetAudioCodecID", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetAudioCodecID},
+};
+
 static JNINativeMethod javaforce_media_MediaDecoder[] = {
   {"start", "(Ljavaforce/media/MediaIO;IIIIZ)Z", (void *)&Java_javaforce_media_MediaDecoder_start},
   {"startFile", "(Ljava/lang/String;Ljava/lang/String;IIII)Z", (void *)&Java_javaforce_media_MediaDecoder_startFile},
@@ -601,6 +608,9 @@ void ffmpeg_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/media/MediaCoder");
   registerNatives(env, cls, javaforce_media_MediaCoder, sizeof(javaforce_media_MediaCoder)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/media/MediaFormat");
+  registerNatives(env, cls, javaforce_media_MediaFormat, sizeof(javaforce_media_MediaFormat)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/media/MediaDecoder");
   registerNatives(env, cls, javaforce_media_MediaDecoder, sizeof(javaforce_media_MediaDecoder)/sizeof(JNINativeMethod));
