@@ -582,6 +582,7 @@ static JNINativeMethod javaforce_media_MediaEncoder[] = {
   {"addAudioEncoded", "([BII)Z", (void *)&Java_javaforce_media_MediaEncoder_addAudioEncoded},
   {"addVideoEncoded", "([BIIZ)Z", (void *)&Java_javaforce_media_MediaEncoder_addVideoEncoded},
   {"stop", "()V", (void *)&Java_javaforce_media_MediaEncoder_stop},
+  {"flush", "()V", (void *)&Java_javaforce_media_MediaEncoder_flush},
 };
 
 static JNINativeMethod javaforce_media_MediaAudioDecoder[] = {
