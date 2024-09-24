@@ -107,6 +107,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
+  int res;
 
   ctx->mio = e->NewGlobalRef(mio);
   ctx->GetMediaIO();
@@ -115,18 +116,22 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
   if (ctx->io_ctx == NULL) return JNI_FALSE;
 //  ctx->io_ctx->direct = 1;
+
   ctx->fmt_ctx = (*_avformat_alloc_context)();
   ctx->fmt_ctx->pb = ctx->io_ctx;
-  int res;
+
   if ((res = (*_avformat_open_input)((void**)&ctx->fmt_ctx, "stream", NULL, NULL)) != 0) {
     printf("avformat_open_input() failed : %d\n", res);
     return JNI_FALSE;
   }
+
   if ((res = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL)) < 0) {
     printf("avformat_find_stream_info() failed : %d\n", res);
     return JNI_FALSE;
   }
+
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
+
   return decoder_open_codecs(ctx, new_width, new_height, new_chs, new_freq);
 }
 
@@ -135,26 +140,29 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
  *
  * Example: start("/dev/video0", "v4l2", ...);
  *
- * NOTE:input_format may be NULL
+ * NOTE:format may be NULL
  */
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
-  (JNIEnv *e, jobject c, jstring file, jstring input_format, jint new_width, jint new_height, jint new_chs, jint new_freq)
+  (JNIEnv *e, jobject c, jstring file, jstring format, jint new_width, jint new_height, jint new_chs, jint new_freq)
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
   int res;
+
   ctx->fmt_ctx = (*_avformat_alloc_context)();
-  const char *cinput_format = e->GetStringUTFChars(input_format, NULL);
-  if (cinput_format != NULL) {
-    ctx->input_fmt = (*_av_find_input_format)(cinput_format);
+
+  const char *cformat = e->GetStringUTFChars(format, NULL);
+  if (cformat != NULL) {
+    ctx->input_fmt = (*_av_find_input_format)(cformat);
     if (ctx->input_fmt == NULL) {
-      printf("FFMPEG:av_find_input_format failed:%s\n", cinput_format);
-      e->ReleaseStringUTFChars(input_format, cinput_format);
+      printf("FFMPEG:av_find_input_format failed:%s\n", cformat);
+      e->ReleaseStringUTFChars(format, cformat);
       return JNI_FALSE;
     }
   }
-  e->ReleaseStringUTFChars(input_format, cinput_format);
+  e->ReleaseStringUTFChars(format, cformat);
+
   const char *cfile = e->GetStringUTFChars(file, NULL);
   if ((res = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL)) != 0) {
     e->ReleaseStringUTFChars(file, cfile);
@@ -163,12 +171,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
   }
   e->ReleaseStringUTFChars(file, cfile);
 
-  (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
-
   if ((res = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL)) < 0) {
     printf("avformat_find_stream_info() failed : %d\n", res);
     return JNI_FALSE;
   }
+
+  (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
+
   return decoder_open_codecs(ctx, new_width, new_height, new_chs, new_freq);
 }
 

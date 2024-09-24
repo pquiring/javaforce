@@ -24,7 +24,7 @@
 static jboolean ffmpeg_loaded = JNI_FALSE;
 
 static jboolean ff_debug_log = JNI_FALSE;
-static jboolean ff_debug_trace = JNI_FALSE;
+static jboolean ff_debug_trace = JNI_TRUE;
 static jboolean ff_debug_buffer = JNI_FALSE;
 static jboolean ff_debug_box = JNI_FALSE;
 static jboolean ff_debug_time_base = JNI_FALSE;
@@ -80,18 +80,17 @@ int (*_avcodec_receive_frame)(AVCodecContext *ctx, const AVFrame *frame);
 
 //avformat functions
 AVOutputFormat* (*_av_guess_format)(const char* shortName, const char* fileName, const char* mimeType);
-int (*_av_find_best_stream)(AVFormatContext *ic,int type,int wanted_stream_nb,int related_stream
-  ,void** decoder_ret, int flags);
-AVIOContext* (*_avio_alloc_context)(void* buffer,int buffer_size,int write_flag,void* opaque
-  ,void* read,void* write,void* seek);
+int (*_av_find_best_stream)(AVFormatContext *ic,int type,int wanted_stream_nb,int related_stream, void** decoder_ret, int flags);
+AVIOContext* (*_avio_alloc_context)(void* buffer,int buffer_size,int write_flag,void* opaque, void* read,void* write,void* seek);
 AVFormatContext* (*_avformat_alloc_context)();
 int (*_avformat_alloc_output_context2)(AVFormatContext** fmt_ctx, AVOutputFormat* ofmt, const char* name, const char* filename);
+int (*_avio_open)(AVIOContext** io_ctx, const char* file, int flags);
 int (*_avio_close)(void* ctx);
 void (*_avformat_free_context)(AVFormatContext *s);
 int (*_avformat_open_input)(void** ps,const char* filename,void* fmt,void* options);
 int (*_avformat_find_stream_info)(AVFormatContext *ic,void** options);
 int (*_av_read_frame)(AVFormatContext *s,AVPacket *pkt);
-void* (*_av_find_input_format)(const char* name);
+AVInputFormat* (*_av_find_input_format)(const char* name);
 int (*_avformat_seek_file)(AVFormatContext *ctx, int stream_idx, int64_t min_ts, int64_t ts, int64_t max_ts, int flags);
 int (*_av_seek_frame)(AVFormatContext *ctx, int stream_idx, int64_t ts, int flags);
 //encoding
@@ -287,6 +286,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(format, (void**)&_avio_alloc_context, "avio_alloc_context");
   getFunction(format, (void**)&_avformat_alloc_context, "avformat_alloc_context");
   getFunction(format, (void**)&_avformat_alloc_output_context2, "avformat_alloc_output_context2");
+  getFunction(format, (void**)&_avio_open, "avio_open");
   getFunction(format, (void**)&_avio_close, "avio_close");
   getFunction(format, (void**)&_avformat_free_context, "avformat_free_context");
   getFunction(format, (void**)&_avformat_open_input, "avformat_open_input");
@@ -576,6 +576,7 @@ static JNINativeMethod javaforce_media_MediaDecoder[] = {
 
 static JNINativeMethod javaforce_media_MediaEncoder[] = {
   {"nstart", "(Ljavaforce/media/MediaIO;IIIIILjava/lang/String;II)Z", (void *)&Java_javaforce_media_MediaEncoder_nstart},
+  {"nstartFile", "(Ljava/lang/String;IIIIILjava/lang/String;II)Z", (void *)&Java_javaforce_media_MediaEncoder_nstartFile},
   {"addAudio", "([SII)Z", (void *)&Java_javaforce_media_MediaEncoder_addAudio},
   {"addVideo", "([I)Z", (void *)&Java_javaforce_media_MediaEncoder_addVideo},
   {"getAudioFramesize", "()I", (void *)&Java_javaforce_media_MediaEncoder_getAudioFramesize},

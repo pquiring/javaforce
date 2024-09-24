@@ -350,7 +350,7 @@ static int io_close2(AVFormatContext *fmt_ctx, AVIOContext *pb) {
 
 static jboolean single_file = JNI_FALSE;  //not working
 
-static jboolean encoder_start(FFContext *ctx, const char *format, jint video_codec, jint audio_codec, void*read, void*write, void*seek) {
+static jboolean encoder_start(FFContext *ctx, const char *format, jint video_codec, jint audio_codec, const char *file, void*read, void*write, void*seek) {
   jboolean doVideo = video_codec != 0;
   jboolean doAudio = audio_codec != 0;
 
@@ -359,7 +359,9 @@ static jboolean encoder_start(FFContext *ctx, const char *format, jint video_cod
     printf("Error:Unable to find format:%s\n", format);
     return JNI_FALSE;
   }
+
   printf("encoder_start:fmt_ctx=%p:out_fmt=%p\n", ctx->fmt_ctx, ctx->fmt_ctx->oformat);
+
   if (strcmp(format, "dash") == 0) {
     ctx->is_dash = 1;
   }
@@ -367,6 +369,7 @@ static jboolean encoder_start(FFContext *ctx, const char *format, jint video_cod
     ctx->is_mp4 = 1;
   }
   if (ff_debug_trace) printf("encoder_start\n");
+
   if (ctx->is_dash) {
     if (single_file) {
       (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "single_file", 1, 0);
@@ -376,17 +379,24 @@ static jboolean encoder_start(FFContext *ctx, const char *format, jint video_cod
     (*_av_opt_set)(ctx->fmt_ctx->priv_data, "dash_segment_type", "mp4", 0);
 //    (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "ldash", 1, 0);  //enable low latency dash
   } else {
-    void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
-    ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
-    if (ctx->io_ctx == NULL) return JNI_FALSE;
-  //  ctx->io_ctx->direct = 1;
+    if (file == NULL) {
+      void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
+      ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+      if (ctx->io_ctx == NULL) return JNI_FALSE;
+    //  ctx->io_ctx->direct = 1;
+      ctx->fmt_ctx->io_open = &io_open;
+      ctx->fmt_ctx->io_close2 = &io_close2;
+      ctx->fmt_ctx->opaque = ctx;
+    } else {
+      (*_avio_open)(&ctx->io_ctx, file, AVIO_FLAG_READ_WRITE);
+      ctx->io_file = true;
+    }
     printf("io_ctx=%p\n", ctx->io_ctx);
     ctx->fmt_ctx->pb = ctx->io_ctx;
   }
-  ctx->fmt_ctx->io_open = &io_open;
-  ctx->fmt_ctx->io_close2 = &io_close2;
-  ctx->fmt_ctx->opaque = ctx;
+
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
+
   if (ff_debug_trace) printf("encoder_start\n");
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
     if (video_codec == -1) {
@@ -526,7 +536,67 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstart
   ctx->freq = freq;
 
   const char *cformat = e->GetStringUTFChars(format, NULL);
-  jboolean ret = encoder_start(ctx, cformat, video_codec, audio_codec, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+  jboolean ret = encoder_start(ctx, cformat, video_codec, audio_codec, NULL, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+  e->ReleaseStringUTFChars(format, cformat);
+
+  return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstartFile
+  (JNIEnv *e, jobject c, jstring file, jint width, jint height, jint fps, jint chs, jint freq, jstring format, jint video_codec, jint audio_codec)
+{
+  FFContext *ctx = createFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
+
+  jboolean doVideo = video_codec != 0;
+  jboolean doAudio = audio_codec != 0;
+
+  if (doVideo && (width <= 0 || height <= 0)) {
+    return JNI_FALSE;
+  }
+  if (doAudio && (chs <= 0 || freq <= 0)) {
+    return JNI_FALSE;
+  }
+  if (fps <= 0) fps = 24;  //must be valid, even for audio only
+
+  jclass cls_encoder = e->FindClass("javaforce/media/MediaEncoder");
+  jfieldID fid_fps_1000_1001 = e->GetFieldID(cls_encoder, "fps_1000_1001", "Z");
+  jfieldID fid_framesPerKeyFrame = e->GetFieldID(cls_encoder, "framesPerKeyFrame", "I");
+  jfieldID fid_videoBitRate = e->GetFieldID(cls_encoder, "videoBitRate", "I");
+  jfieldID fid_audioBitRate = e->GetFieldID(cls_encoder, "audioBitRate", "I");
+  jfieldID fid_compressionLevel = e->GetFieldID(cls_encoder, "compressionLevel", "I");
+  jfieldID fid_profileLevel = e->GetFieldID(cls_encoder, "profileLevel", "I");
+
+  ctx->config_fps_1000_1001 = e->GetBooleanField(c, fid_fps_1000_1001);
+  ctx->config_gop_size = e->GetIntField(c, fid_framesPerKeyFrame);
+  ctx->config_video_bit_rate = e->GetIntField(c, fid_videoBitRate);
+  ctx->config_audio_bit_rate = e->GetIntField(c, fid_audioBitRate);
+  ctx->config_compressionLevel = e->GetIntField(c, fid_compressionLevel);
+  ctx->config_profileLevel = e->GetIntField(c, fid_profileLevel);
+
+  ctx->org_width = width;
+  ctx->org_height = height;
+  if (((width & 3) != 0) || ((height & 3) != 0)) {
+    printf("Warning : Video resolution not / by 4 : Performance will be degraded!\n");
+    ctx->scaleVideo = JNI_TRUE;
+    //align up to / by 4 pixels
+    width = (width + 3) & 0xfffffffc;
+    height = (height + 3) & 0xfffffffc;
+  } else {
+    ctx->scaleVideo = JNI_FALSE;
+  }
+  ctx->width = width;
+  ctx->height = height;
+  ctx->fps = fps;
+  ctx->chs = chs;
+  ctx->freq = freq;
+
+  const char *cformat = e->GetStringUTFChars(format, NULL);
+  const char *cfile = e->GetStringUTFChars(file, NULL);
+
+  jboolean ret = encoder_start(ctx, cformat, video_codec, audio_codec, cfile, NULL, NULL, NULL);
+
+  e->ReleaseStringUTFChars(file, cfile);
   e->ReleaseStringUTFChars(format, cformat);
 
   return ret;
@@ -929,9 +999,13 @@ static void encoder_stop(FFContext *ctx)
   }
   if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->io_ctx != NULL) {
-    (*_avio_flush)(ctx->io_ctx);
-    (*_av_free)(ctx->io_ctx->buffer);
-    (*_av_free)(ctx->io_ctx);
+    if (ctx->io_file) {
+      (*_avio_close)(ctx->io_ctx);
+    } else {
+      (*_avio_flush)(ctx->io_ctx);
+      (*_av_free)(ctx->io_ctx->buffer);
+      (*_av_free)(ctx->io_ctx);
+    }
     ctx->io_ctx = NULL;
   }
   if (ff_debug_trace) printf("encoder_stop\n");

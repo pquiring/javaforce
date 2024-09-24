@@ -12,8 +12,9 @@ struct FFContext {
   jobject mio;
   AVFormatContext *fmt_ctx;
   AVIOContext *io_ctx;
+  bool io_file;
 
-  void* input_fmt;
+  AVInputFormat* input_fmt;
 
   AVCodecContext *codec_ctx;  //returned by open_codec_context()
 

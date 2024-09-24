@@ -14,6 +14,7 @@ public class MediaEncoder extends MediaFormat {
   public int compressionLevel = -1;
   public int profileLevel = 1;  //1=baseline 2=main 3=high
   private native boolean nstart(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec);
+  private native boolean nstartFile(String file, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec);
 
   /** Start encoder.
    *
@@ -47,6 +48,22 @@ public class MediaEncoder extends MediaFormat {
    */
   public boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec) {
     return nstart(io, width, height, fps, chs, freq, format, video_codec, audio_codec);
+  }
+
+  /** Start encoder.
+   *
+   * @param file = filename to save to.
+   * @param width = width of video (-1 = no video)
+   * @param height = height of video (-1 = no video)
+   * @param fps = frames per second (-1 = no video)
+   * @param chs = audio channels (-1 = no audio)
+   * @param freq = audio frequency (-1 = no audio)
+   * @param format = audio format (see MediaCoder.AV_FORMAT_...)
+   * @param video_codec = video codec to use (-1 = default for format, 0 = no video stream) (see MediaFormat.AV_CODEC_...)
+   * @param audio_codec = audio codec to use (-1 = default for format, 0 = no video stream) (see MediaFormat.AV_CODEC_...)
+   */
+  public boolean start(String file, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec) {
+    return nstartFile(file, width, height, fps, chs, freq, format, video_codec, audio_codec);
   }
 
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
