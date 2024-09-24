@@ -8,7 +8,6 @@ package javaforce.voip;
 public class CodecInfo {
   //common
   public int stream;
-  public int bit_rate;
   public long duration;
 
   //video
@@ -16,9 +15,11 @@ public class CodecInfo {
   public int height;
   public float fps;
   public int keyFrameInterval;
+  public int video_bit_rate;
 
   //audio
   public int chs;
   public int freq;
   public int bits;
+  public int audio_bit_rate;
 }
