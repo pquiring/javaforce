@@ -36,6 +36,10 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="cameraList" pref="370" max="32767" attributes="0"/>
                           <Component id="transcodeBox" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="mirror" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="webView" min="-2" pref="166" max="-2" attributes="0"/>
@@ -50,17 +54,19 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="start" pref="98" max="32767" attributes="0"/>
+                  <Component id="start" max="32767" attributes="0"/>
                   <Component id="webView" alignment="0" max="32767" attributes="0"/>
                   <Component id="stop" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="cameraList" min="-2" pref="42" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="transcodeBox" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="mirror" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="preview" pref="492" max="32767" attributes="0"/>
+              <Component id="preview" pref="487" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -121,6 +127,11 @@
           <Font name="Tahoma" size="18" style="1"/>
         </Property>
         <Property name="text" type="java.lang.String" value="transcode h264 -&gt; dash"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JToggleButton" name="mirror">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Mirror Image"/>
       </Properties>
     </Component>
   </SubComponents>

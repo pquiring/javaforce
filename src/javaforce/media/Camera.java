@@ -10,6 +10,7 @@ package javaforce.media;
 
 public class Camera {
   private long ctx = 0;
+  private int[] mirror;
 
   //web camera (no context - only one use per app)
   private native boolean cameraInit();
@@ -48,6 +49,27 @@ public class Camera {
 
   public int[] getFrame() {
     return cameraGetFrame();
+  }
+
+  public int[] getFrameMirror() {
+    int[] px = cameraGetFrame();
+    if (px == null) return null;
+    //flip image horizontal (mirror)
+    if (mirror == null || mirror.length != px.length) {
+      mirror = new int[px.length];
+    }
+    int width = getWidth();
+    int height = getHeight();
+    int src = 0;
+    int dst = 0;
+    for(int y=0;y<height;y++) {
+      src += width;
+      for(int x=0;x<width;x++) {
+        mirror[dst++] = px[--src];
+      }
+      src += width;
+    }
+    return mirror;
   }
 
   public int getWidth() {

@@ -48,6 +48,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     webView = new javax.swing.JButton();
     cameraList = new javax.swing.JComboBox<>();
     transcodeBox = new javax.swing.JCheckBox();
+    mirror = new javax.swing.JToggleButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Camera Test");
@@ -81,6 +82,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     transcodeBox.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
     transcodeBox.setText("transcode h264 -> dash");
 
+    mirror.setText("Mirror Image");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -96,7 +99,10 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(cameraList, 0, 370, Short.MAX_VALUE)
-              .addComponent(transcodeBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .addComponent(transcodeBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(mirror)
+                .addGap(0, 0, Short.MAX_VALUE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(webView, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
@@ -106,15 +112,17 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(start, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+          .addComponent(start, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(webView, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(stop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(cameraList, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(transcodeBox)))
+            .addComponent(transcodeBox)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(mirror)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+        .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -166,7 +174,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     timer.scheduleAtFixedRate(new TimerTask() {
       public void run() {
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
-          int[] px = camera.getFrame();
+          int[] px = mirror.isSelected() ? camera.getFrameMirror() : camera.getFrame();
           if (px == null) return;  //not ready
           if (img == null) {
             img = new JFImage(width, height);
@@ -211,6 +219,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
    * @param args the command line arguments
    */
   public static void main(String[] args) {
+    MediaCoder.init();
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -221,6 +230,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox<String> cameraList;
+  private javax.swing.JToggleButton mirror;
   private javax.swing.JLabel preview;
   private javax.swing.JButton start;
   private javax.swing.JButton stop;
