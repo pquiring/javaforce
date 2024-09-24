@@ -9,8 +9,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.21"/>
 
-  <property name="project2" value="build-textedit"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce">

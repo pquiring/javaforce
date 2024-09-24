@@ -6,6 +6,7 @@ package javaforce.utils;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -99,6 +100,26 @@ public class BuildTools {
     } catch (Exception e) {
       JFLog.log(e);
       return false;
+    }
+  }
+  public String[] getSubProjects() {
+    if (!file.endsWith(File.separator + "build.xml")) {
+      return new String[0];
+    }
+    try {
+      byte[] data = JF.readFile("projects.lst");
+      String[] subs = new String(data).replaceAll("\r", "").split("\n");
+      //remove empty lines
+      ArrayList<String> list = new ArrayList<>();
+      for(String sub : subs) {
+        sub = sub.trim();
+        if (sub.length() == 0) continue;
+        if (sub.equals("build")) continue;
+        list.add(sub);
+      }
+      return list.toArray(JF.StringArrayType);
+    } catch (Exception e) {
+      return new String[0];
     }
   }
 }

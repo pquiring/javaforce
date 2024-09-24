@@ -12,8 +12,6 @@
   <property name="fedora.depends" value="jfparted, jfapps, jfrepo, cups, pciutils"/>
   <property name="arch.depends" value="jfparted, jfapps, jfrepo, cups, nss"/>
 
-  <property name="project2" value="build-openssl"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce">

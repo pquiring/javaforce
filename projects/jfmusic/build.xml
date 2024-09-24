@@ -14,8 +14,6 @@
   <property name="fedora.depends" value="ffmpeg"/>
   <property name="arch.depends" value="ffmpeg"/>
 
-  <property name="project2" value="build-midi"/>
-
   <import file="${home}/base.xml"/>
 
   <available property="have-dls" file="gm.dls"/>

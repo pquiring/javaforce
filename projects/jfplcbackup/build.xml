@@ -10,8 +10,6 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.2"/>
 
-  <property name="project2" value="build-restore"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-javaforce">

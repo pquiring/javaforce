@@ -9,11 +9,6 @@
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.5"/>
 
-  <property name="project2" value="build-service"/>
-  <property name="project3" value="build-session"/>
-  <property name="project4" value="build-cli"/>
-  <property name="project5" value="build-config"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-javaforce">

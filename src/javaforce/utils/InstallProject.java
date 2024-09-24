@@ -64,9 +64,8 @@ public class InstallProject implements ShellProcessListener {
     System.out.print(str);
   }
   private void doSubProjects() {
-    for(int a=2;a<=5;a++) {
-      String project = tools.getProperty("project" + a);
-      if (project.length() == 0) continue;
+    String[] subs = tools.getSubProjects();
+    for(String project : subs) {
       main(new String[] {project + ".xml"});
     }
   }

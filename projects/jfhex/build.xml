@@ -9,8 +9,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.3"/>
 
-  <property name="project2" value="build-texthex"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce">

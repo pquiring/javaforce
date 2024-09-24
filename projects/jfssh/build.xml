@@ -6,8 +6,6 @@
   <property name="version" value="0.3"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
 
-  <property name="project2" value="build-service"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-javaforce,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-reload4j" description="jar">

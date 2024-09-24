@@ -81,25 +81,9 @@ public class GenExecutable {
     doSubProjects();
   }
   private void doSubProjects() {
-    for(int a=2;a<=5;a++) {
-      String project = tools.getProperty("project" + a);
-      if (project.length() == 0) continue;
-      String buildfile = project + ".xml";
-      ShellProcess sp = new ShellProcess();
-
-      //ant -file buildfile executable
-      ArrayList<String> cmd = new ArrayList<String>();
-      if (JF.isWindows()) {
-        cmd.add("ant.bat");
-      } else {
-        cmd.add("ant");
-      }
-      cmd.add("-file");
-      cmd.add(buildfile);
-      cmd.add("executable");
-
-      JFLog.log("Executing ant -file " + buildfile + " executable");
-      sp.run(cmd.toArray(JF.StringArrayType), true);
+    String[] subs = tools.getSubProjects();
+    for(String project : subs) {
+      main(new String[] {project + ".xml"});
     }
   }
 }
