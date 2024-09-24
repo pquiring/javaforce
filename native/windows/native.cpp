@@ -511,8 +511,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
     int enumWidth = ctx->videoInfo->bmiHeader.biWidth;
     int enumHeight = ctx->videoInfo->bmiHeader.biHeight;
     int bitCount = ctx->videoInfo->bmiHeader.biBitCount;
-    printf("Camera:enumerate:size=%dx%d (%dbpp)\n", enumWidth, enumHeight, bitCount);
-    if (bitCount != 24) {
+    int compression = ctx->videoInfo->bmiHeader.biCompression;
+    printf("Camera:enumerate:size=%dx%d (%dbpp) (%x)\n", enumWidth, enumHeight, bitCount, compression);
+    if (enumWidth == 0 || enumHeight == 0) {
+      FreeMediaType(ctx->mediaType);
+      continue;
+    }
+    if (bitCount == 0) {
       FreeMediaType(ctx->mediaType);
       continue;
     }
