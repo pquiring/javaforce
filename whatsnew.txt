@@ -1,5 +1,10 @@
 What's new...
 
+Sept 25/2024 : JF/68.3
+ - added Camera.getFrameMirror()
+ - fixed camera support on Windows
+   - supports different video modes
+
 Sept 24/2024 : JF/68.2
  - added MediaFormat
  - moved project2,3,4,5 properties to projects.lst
