@@ -12,7 +12,7 @@ import javaforce.jni.*;
 
 public class MediaCoder {
   protected long ctx = 0;
-  public int stream;
+  private int stream;
 
   public int getStream() {
     return stream;
