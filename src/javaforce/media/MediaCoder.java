@@ -18,6 +18,10 @@ public class MediaCoder {
     return stream;
   }
 
+  public void setStream(int stream) {
+    this.stream = stream;
+  }
+
   /** Loads the media framework native libraries. */
   public static void init() {
     File[] sysFolders;
