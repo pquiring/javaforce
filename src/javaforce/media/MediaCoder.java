@@ -22,6 +22,11 @@ public class MediaCoder {
     this.stream = stream;
   }
 
+  /** Returns state of coder.  If true you MUST call stop() or close() to free resources. */
+  public boolean isRunning() {
+    return ctx != 0;
+  }
+
   /** Loads the media framework native libraries. */
   public static void init() {
     File[] sysFolders;
