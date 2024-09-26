@@ -33,6 +33,8 @@ public class SMTPRelay {
   private String smtp_pass;  //login pass (optional)
   private String smtp_from;  //override 'from' email (optional)
 
+  private ArrayList<String> to_filters = new ArrayList<>();
+
   private boolean keepalive = false;  //keep POP3 connection active
   private long interval = 15;  //how often (minutes) to check for new messages
 
@@ -135,20 +137,8 @@ public class SMTPRelay {
         if (debug) JFLog.log("Relay message:" + em.idx + ":size=" + em.size);
         byte[] data = pop3.get(em.idx);
         if (debug) JFLog.log("Message size=" + data.length);
-        smtp = new SMTP();  //client
-        smtp.debug = debug;
-        if (smtp_secure)
-          smtp.connectSSL(smtp_host, smtp_port);
-        else
-          smtp.connect(smtp_host, smtp_port);
-        smtp.login();  //HELO
-        if (smtp_user != null && smtp_pass != null) {
-          if (!smtp.auth(smtp_user, smtp_pass, SMTP.AUTH_LOGIN)) {
-            smtp.disconnect();
-            throw new Exception("SMTP auth failed!");
-          }
-        }
         //decode message and re-send
+        boolean relay = true;
         String msg = new String(data);
         String[] lns = msg.split("\r\n");
         String em_from = null;
@@ -160,8 +150,25 @@ public class SMTPRelay {
           if (sp == -1) continue;
           String key = ln.substring(0, sp).toLowerCase();
           switch (key) {
-            case "from": em_from = getEmail(ln); break;
-            case "to": em_to.add(getEmail(ln)); break;
+            case "from":
+              em_from = getEmail(ln);
+              break;
+            case "to":
+              String to = getEmail(ln);
+              if (to_filters.size() > 0) {
+                boolean matches = false;
+                for(String to_filter : to_filters) {
+                  if (to.toLowerCase().matches(to_filter)) {
+                    matches = true;
+                    break;
+                  }
+                }
+                if (!matches) {
+                  relay = false;
+                }
+              }
+              em_to.add(to);
+              break;
           }
         }
         if (smtp_from != null) {
@@ -170,13 +177,28 @@ public class SMTPRelay {
         }
 
         //send email
-        smtp.from(em_from);
-        for(String to : em_to) {
-          smtp.to(to);
+        if (relay) {
+          smtp = new SMTP();  //client
+          smtp.debug = debug;
+          if (smtp_secure)
+            smtp.connectSSL(smtp_host, smtp_port);
+          else
+            smtp.connect(smtp_host, smtp_port);
+          smtp.login();  //HELO
+          if (smtp_user != null && smtp_pass != null) {
+            if (!smtp.auth(smtp_user, smtp_pass, SMTP.AUTH_LOGIN)) {
+              smtp.disconnect();
+              throw new Exception("SMTP auth failed!");
+            }
+          }
+          smtp.from(em_from);
+          for(String to : em_to) {
+            smtp.to(to);
+          }
+          smtp.data(msg);
+          smtp.disconnect();
+          smtp = null;
         }
-        smtp.data(msg);
-        smtp.disconnect();
-        smtp = null;
         pop3.delete(em.idx);
       }
       if (!keepalive) {
@@ -222,6 +244,7 @@ public class SMTPRelay {
     + "#smtp_user=bob@example.com #optional\n"
     + "#smtp_pass=secret #optional\n"
     + "#smtp_from=bob@example.com #override from email address (optional)\n"
+    + "#to_filter=regexp  #regular expression to email must match (multiple supported) (else msg is discarded)\n"
     + "keepalive=true #keep pop3 connection alive (default = false)\n"
     + "#interval=15 #how often to check for messages (minutes) (default=15)\n"
     ;
@@ -256,12 +279,14 @@ public class SMTPRelay {
           case None:
           case Global:
             switch (key) {
+              //receive config
               case "pop3_host": pop3_host = value; break;
               case "pop3_port": pop3_port = Integer.valueOf(value); break;
               case "pop3_secure": pop3_secure = value.equals("true"); break;
               case "pop3_user": pop3_user = value; break;
               case "pop3_pass": pop3_pass = value; break;
 
+              //send config
               case "smtp_host": smtp_host = value; break;
               case "smtp_port": smtp_port = Integer.valueOf(value); break;
               case "smtp_secure": smtp_secure = value.equals("true"); break;
@@ -269,6 +294,10 @@ public class SMTPRelay {
               case "smtp_pass": smtp_pass = value; break;
               case "smtp_from": smtp_from = value; break;
 
+              //msg filtering
+              case "to_filter": to_filters.add(value.toLowerCase()); break;
+
+              //service config
               case "keepalive": keepalive = value.equals("true"); break;
               case "interval":
                 interval = Integer.valueOf(value);
