@@ -125,6 +125,7 @@ struct FFContext {
 #define ffiobufsiz (64 * 1024)
 
 FFContext* createFFContext(JNIEnv *e, jobject c) {
+  if (!ffmpeg_loaded) return NULL;  //ffmpeg not loaded
   FFContext *ctx;
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");

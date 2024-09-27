@@ -1,13 +1,13 @@
 //encoder codebase
 
-static jboolean encoder_add_stream(FFContext *ctx, const char *format, int codec_id) {
+static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
   printf("encoder_add_stream\n");
   AVCodecContext *codec_ctx;
   AVStream *stream;
   AVCodec *codec;
 
   if (!(*_avformat_query_codec)(ctx->out_fmt, codec_id, FF_COMPLIANCE_NORMAL)) {
-    printf("Format %s does not support codec %d\n", format, codec_id);
+    printf("Output format does not support codec %d\n", codec_id);
     return JNI_FALSE;
   }
 
@@ -402,7 +402,7 @@ static jboolean encoder_start(FFContext *ctx, const char *format, jint video_cod
     if (video_codec == -1) {
       video_codec = ctx->out_fmt->video_codec;
     }
-    if (!encoder_add_stream(ctx, format, video_codec)) {
+    if (!encoder_add_stream(ctx, video_codec)) {
       printf("encoder_add_stream:video failed!\n");
       return JNI_FALSE;
     }
@@ -412,7 +412,7 @@ static jboolean encoder_start(FFContext *ctx, const char *format, jint video_cod
     if (audio_codec == -1) {
       audio_codec = ctx->out_fmt->audio_codec;
     }
-    if (!encoder_add_stream(ctx, format, audio_codec)) {
+    if (!encoder_add_stream(ctx, audio_codec)) {
       printf("encoder_add_stream:audio failed!\n");
       return JNI_FALSE;
     }

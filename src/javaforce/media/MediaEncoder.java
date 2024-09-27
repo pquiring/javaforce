@@ -2,6 +2,8 @@ package javaforce.media;
 
 /** Media encoder.
  *
+ * TODO : deprecate class
+ *
  * @author pquiring
  */
 

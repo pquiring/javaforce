@@ -35,3 +35,21 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioCodecID
 
   return ctx->audio_stream->codecpar->codec_id;
 }
+
+JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoBitRate
+  (JNIEnv *e, jclass c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return 0;
+  if (ctx->video_codec_ctx == NULL) return 0;
+  return ctx->video_codec_ctx->bit_rate;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioBitRate
+  (JNIEnv *e, jclass c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return 0;
+  if (ctx->audio_codec_ctx == NULL) return 0;
+  return ctx->audio_codec_ctx->bit_rate;
+}

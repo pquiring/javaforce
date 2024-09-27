@@ -25,7 +25,7 @@ static int decoder_open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, 
 }
 
 
-static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_height, int new_chs, int new_freq) {
+static jboolean decoder_open_video_codec(FFContext *ctx, int new_width, int new_height) {
   AVCodecContext *codec_ctx;
   if ((ctx->video_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO)) >= 0) {
     ctx->video_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->video_stream_idx];
@@ -52,6 +52,10 @@ static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_heigh
       , SWS_BILINEAR, NULL, NULL, NULL);
   }
 
+  return JNI_TRUE;
+}
+
+static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_freq) {
   if ((ctx->audio_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_AUDIO)) >= 0) {
     ctx->audio_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->audio_stream_idx];
     ctx->audio_codec_ctx = ctx->codec_ctx;
@@ -83,12 +87,15 @@ static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_heigh
     ctx->dst_rate = new_freq;
   }
 
+  return JNI_TRUE;
+}
+
+static jboolean decoder_alloc_frame(FFContext *ctx) {
   if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
-
   return JNI_TRUE;
 }
 
@@ -132,7 +139,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
 
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
-  return decoder_open_codecs(ctx, new_width, new_height, new_chs, new_freq);
+  decoder_open_video_codec(ctx, new_width, new_height);
+  decoder_open_audio_codec(ctx, new_chs, new_freq);
+  decoder_alloc_frame(ctx);
+
+  return JNI_TRUE;
 }
 
 /**
@@ -178,7 +189,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
 
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
-  return decoder_open_codecs(ctx, new_width, new_height, new_chs, new_freq);
+  decoder_open_video_codec(ctx, new_width, new_height);
+  decoder_open_audio_codec(ctx, new_chs, new_freq);
+  decoder_alloc_frame(ctx);
+
+  return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
