@@ -1770,21 +1770,8 @@ Line Colors:
     monitorList = new Vector<String>();
   }
 
-  public void monitorSubscribe(SIPClient sip) {
-    //subscribe for any that belong to sip
-    String server = sip.getRemoteHost();
-    for(int a=0;a<monitorList.size();a++) {
-      String contact = monitorList.get(a);
-      String fields[] = SIP.split(contact);
-      if (fields[2].equalsIgnoreCase(server)) {
-        sip.subscribe(fields[1], "presence", 3600);
-      }
-    }
-  }
-
   public void onRegister(SIPClient sip) {
     if ((Settings.current.usePublish) && (presenceStatus.getSelectedIndex() == 0)) lines[line].sip.publish("open");
-    monitorSubscribe(sip);
   }
 
   public Dimension getPreferredSize() {

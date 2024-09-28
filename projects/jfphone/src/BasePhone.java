@@ -254,6 +254,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (pl.sip == null) continue;
       if (pl.sip.isRegistered()) {
         try {
+          if (monitorUnSubscribe(pl.sip) > 0) {
+            JF.sleep(100);
+          }
           pl.sip.unregister();
         } catch (Exception e) {
           JFLog.log(e);
@@ -1159,6 +1162,36 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     return false;
   }
 
+  public int monitorSubscribe(SIPClient sip) {
+    //subscribe for any that belong to sip
+    int count = 0;
+    String server = sip.getRemoteHost();
+    for(int a=0;a<monitorList.size();a++) {
+      String contact = monitorList.get(a);
+      String fields[] = SIP.split(contact);
+      if (fields[2].equalsIgnoreCase(server)) {
+        sip.subscribe(fields[1], "presence", 3600);
+        count++;
+      }
+    }
+    return count;
+  }
+
+  public int monitorUnSubscribe(SIPClient sip) {
+    //unsubscribe for any that belong to sip
+    int count = 0;
+    String server = sip.getRemoteHost();
+    for(int a=0;a<monitorList.size();a++) {
+      String contact = monitorList.get(a);
+      String fields[] = SIP.split(contact);
+      if (fields[2].equalsIgnoreCase(server)) {
+        sip.subscribe(fields[1], "presence", 0);
+        count++;
+      }
+    }
+    return count;
+  }
+
 //SIPClientInterface interface
 
   /** SIPClientInterface.onRegister() : triggered when a SIPClient has confirmation of a registration with server. */
@@ -1179,6 +1212,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       }
       sip.subscribe(sip.getUser(), "message-summary", Settings.current.sipexpires);  //SUBSCRIBE to self for message-summary event (not needed with Asterisk but X-Lite does it)
       gui.onRegister(sip);
+      monitorSubscribe(sip);
     } else {
       //failed
       for(int a=0;a<6;a++) {

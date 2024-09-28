@@ -263,6 +263,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
 
   /**
    * Subscribe to a user's presence on server.
+   * RFC : 3265
    */
   public boolean subscribe(String subuser, String event, int expires) {
     String subcallid = getcallid();
