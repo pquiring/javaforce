@@ -15,7 +15,7 @@ public class MediaVideoEncoder extends MediaCoder {
   }
   public native long nstart(int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
   public boolean start(CodecInfo info) {
-    if (ctx != 0) return false;
+    if (ctx != 0 || shared) return false;
     ctx = nstart(info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
     return ctx != 0;
   }

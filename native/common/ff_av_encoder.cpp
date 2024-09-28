@@ -150,6 +150,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
 
   ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);
   if (ret < 0) {
+    printf("AudioDecoder:avcodec_receive_packet()=%d\n", ret);
     return NULL;
   }
 

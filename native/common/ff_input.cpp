@@ -78,7 +78,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenIO
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nclose
   (JNIEnv *e, jclass c, jlong ctxptr)
 {
-  FFContext *ctx = getFFContext(e,c);
+  FFContext *ctx = castFFContext(e,c,ctxptr);
   if (ctx == NULL) return JNI_FALSE;
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
@@ -130,6 +130,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nclose
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
+  if (ctx->decode_buffer != NULL) {
+    (*_av_free)(ctx->decode_buffer);
+    ctx->decode_buffer = NULL;
+    ctx->decode_buffer_size = 0;
+  }
   freeFFContext(e,c,ctx);
   return JNI_TRUE;
 }
@@ -142,6 +147,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nopenvideo
 
   decoder_open_video_codec(ctx, new_width, new_height);
 
+  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+  ctx->decode_buffer_size = 1024*1024;
+
   return JNI_TRUE;
 }
 
@@ -152,6 +160,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nopenaudio
   if (ctx == NULL) return JNI_FALSE;
 
   decoder_open_audio_codec(ctx, new_chs, new_freq);
+
+  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+  ctx->decode_buffer_size = 1024*1024;
 
   return JNI_TRUE;
 }

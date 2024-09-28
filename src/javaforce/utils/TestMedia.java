@@ -17,7 +17,7 @@ import javaforce.voip.*;
 
 public class TestMedia implements MediaIO {
   public static void usage() {
-    System.out.println("TestMedia encoder | decoder | output");
+    System.out.println("TestMedia encoder | decoder | output | input");
     System.exit(1);
   }
 
@@ -41,6 +41,7 @@ public class TestMedia implements MediaIO {
         switch (args[a]) {
           case "decoder": decoder(); break;
           case "encoder": encoder(true); break;
+          case "input": input(); break;
           case "output": output(true); break;
           default: usage();
         }
@@ -51,7 +52,9 @@ public class TestMedia implements MediaIO {
   }
 
   public static void decoder() {
-    encoder(false);  //create test.mp4
+    if (!new File("test-0.mp4").exists()) {
+      encoder(false);
+    }
     while (true) {
       TestMedia media = new TestMedia();
       MediaDecoder decoder = new MediaDecoder();
@@ -83,6 +86,47 @@ public class TestMedia implements MediaIO {
       media.close();
     }
   }
+
+  public static void input() {
+    if (!new File("test-0.mp4").exists()) {
+      output(false);
+    }
+    while (true) {
+      TestMedia media = new TestMedia();
+      MediaInput decoder = new MediaInput();
+      media.open("test-0.mp4");
+      decoder.open(media);
+      int pkts = 0;
+      MediaVideoDecoder videoDecoder = decoder.createVideoDecoder();
+      MediaAudioDecoder audioDecoder = decoder.createAudioDecoder();
+      Packet pkt;
+      do {
+        pkt = decoder.readPacket();
+        if (pkt == null || pkt.length == 0) break;
+        pkts++;
+        if (pkt.stream == videoDecoder.getStream()) {
+          int[] px = videoDecoder.decode(pkt);
+          if (px != null) {
+            JFLog.log("video=" + px.length);
+          } else {
+            JFLog.log("no video");
+          }
+        }
+        else if (pkt.stream == audioDecoder.getStream()) {
+          short[] sams = audioDecoder.decode(pkt);
+          if (sams != null) {
+            JFLog.log("audio=" + sams.length);
+          } else {
+            JFLog.log("no audio");
+          }
+        }
+      } while (true);
+      System.out.println("packets=" + pkts);
+      decoder.close();
+      media.close();
+    }
+  }
+
   public static void random(int[] px) {
     Random r = new Random();
     int len = px.length;
@@ -90,6 +134,7 @@ public class TestMedia implements MediaIO {
       px[a] = r.nextInt() | 0xff000000;
     }
   }
+
   public static void random(short[] sams) {
     Random r = new Random();
     int len = sams.length;

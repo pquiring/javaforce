@@ -15,7 +15,7 @@ public class MediaAudioEncoder extends MediaCoder {
   }
   public native long nstart(int codec_id, int bit_rate, int chs, int freq);
   public boolean start(CodecInfo info) {
-    if (ctx != 0) return false;
+    if (ctx != 0 || shared) return false;
     ctx = nstart(info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
     return ctx != 0;
   }

@@ -9,13 +9,13 @@ import javaforce.voip.*;
 
 public class MediaAudioDecoder extends MediaCoder {
   public MediaAudioDecoder() {}
-  public MediaAudioDecoder(MediaInput output) {
-    this.ctx = output.ctx;
+  public MediaAudioDecoder(MediaInput input) {
+    this.ctx = input.ctx;
     shared = true;
   }
   public native long nstart(int codec_id, int new_chs, int new_freq);
   public boolean start(int codec_id, int new_chs, int new_freq) {
-    if (ctx != 0) return false;
+    if (ctx != 0 || shared) return false;
     ctx = nstart(codec_id, new_chs, new_freq);
     return ctx != 0;
   }

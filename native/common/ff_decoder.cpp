@@ -32,16 +32,20 @@ static jboolean decoder_open_video_codec(FFContext *ctx, int new_width, int new_
     ctx->video_codec_ctx = ctx->codec_ctx;
     if (new_width == -1) new_width = ctx->video_codec_ctx->width;
     if (new_height == -1) new_height = ctx->video_codec_ctx->height;
+    ctx->width = new_width;
+    ctx->height = new_height;
     if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height
       , ctx->video_codec_ctx->pix_fmt, 1)) < 0)
     {
+      printf("av_image_alloc failed\n");
       return JNI_FALSE;
     }
     if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
       , new_width, new_height
       , AV_PIX_FMT_BGRA, 1)) < 0)
     {
+      printf("av_image_alloc failed\n");
       return JNI_FALSE;
     }
     ctx->jvideo_length = ctx->rgb_video_dst_bufsize/4;
@@ -62,6 +66,7 @@ static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_fr
     //create audio conversion context
     ctx->swr_ctx = (*_swr_alloc)();
     if (new_chs == -1) new_chs = ctx->audio_codec_ctx->ch_layout.nb_channels;
+    ctx->chs = new_chs;
     AVChannelLayout new_layout;
     switch (new_chs) {
       case 1: (*_av_channel_layout_copy)(&new_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
@@ -74,6 +79,7 @@ static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_fr
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
     if (new_freq == -1) new_freq = ctx->src_rate;
+    ctx->freq = new_freq;
     (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
       &new_layout, ctx->dst_sample_fmt, new_freq,
       &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,

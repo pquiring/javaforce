@@ -9,13 +9,13 @@ import javaforce.voip.*;
 
 public class MediaVideoDecoder extends MediaCoder {
   public MediaVideoDecoder() {}
-  public MediaVideoDecoder(MediaInput output) {
-    this.ctx = output.ctx;
+  public MediaVideoDecoder(MediaInput input) {
+    this.ctx = input.ctx;
     shared = true;
   }
   public native long nstart(int codec_id, int new_width, int new_height);
   public boolean start(int codec_id, int new_width, int new_height) {
-    if (ctx != 0) return false;
+    if (ctx != 0 || shared) return false;
     ctx = nstart(codec_id, new_width, new_height);
     return ctx != 0;
   }

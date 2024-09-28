@@ -75,6 +75,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return NULL;
+
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
@@ -87,6 +88,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     }
     ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
   }
+
   memcpy(ctx->decode_buffer, dataptr + offset, length);
   uint8_t *pad = dataptr + offset + length;
   for(int a=0;a<64;a++) {
@@ -105,75 +107,76 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     return NULL;
   }
 
-  while (1) {
-    ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);
-    if (ret < 0) break;
+  ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);
+  if (ret < 0) {
+    printf("MediaAudioDecoder:avcodec_receive_frame() failed:ret=%d\n", ret);
+    return NULL;
+  }
 
-    //setup conversion once width/height are known
-    if (ctx->jaudio == NULL) {
-      if (ctx->audio_codec_ctx->ch_layout.nb_channels == 0 || ctx->audio_codec_ctx->sample_rate == 0) {
-        printf("MediaAudioDecoder : chs/sample_rate not known yet\n");
-        return NULL;
-      }
-      if (ctx->chs == -1) {
-        ctx->chs = ctx->audio_codec_ctx->ch_layout.nb_channels;
-      }
-      if (ctx->freq == -1) {
-        ctx->freq = ctx->audio_codec_ctx->sample_rate;
-      }
-      //create audio conversion context
-      ctx->swr_ctx = (*_swr_alloc)();
-      AVChannelLayout new_layout;
-      switch (ctx->chs) {
-        case 1: (*_av_channel_layout_copy)(&new_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
-        case 2: (*_av_channel_layout_copy)(&new_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
-        case 4: (*_av_channel_layout_copy)(&new_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
-        default: return JNI_FALSE;
-      }
-      AVChannelLayout src_layout;
-      (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
-      ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
-      ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
-      (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
-        &new_layout, ctx->dst_sample_fmt, ctx->freq,
-        &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
-        0, NULL);
+  //setup conversion once chs/freq are known
+  if (ctx->jaudio == NULL) {
+    if (ctx->audio_codec_ctx->ch_layout.nb_channels == 0 || ctx->audio_codec_ctx->sample_rate == 0) {
+      printf("MediaAudioDecoder : chs/sample_rate not known yet\n");
+      return NULL;
+    }
+    if (ctx->chs == -1) {
+      ctx->chs = ctx->audio_codec_ctx->ch_layout.nb_channels;
+    }
+    if (ctx->freq == -1) {
+      ctx->freq = ctx->audio_codec_ctx->sample_rate;
+    }
+    //create audio conversion context
+    ctx->swr_ctx = (*_swr_alloc)();
+    AVChannelLayout new_layout;
+    switch (ctx->chs) {
+      case 1: (*_av_channel_layout_copy)(&new_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
+      case 2: (*_av_channel_layout_copy)(&new_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
+      case 4: (*_av_channel_layout_copy)(&new_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
+      default: printf("Error:unknown channel layout:%d\n", ctx->chs); return NULL;
+    }
+    AVChannelLayout src_layout;
+    (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
+    ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
+    ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
+    (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
+      &new_layout, ctx->dst_sample_fmt, ctx->freq,
+      &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
+      0, NULL);
 
-      ret = (*_swr_init)(ctx->swr_ctx);
-      if (ret < 0) {
-        printf("resample init failed:%d\n", ret);
-      }
-      ctx->dst_rate = ctx->freq;
+    ret = (*_swr_init)(ctx->swr_ctx);
+    if (ret < 0) {
+      printf("resample init failed:%d\n", ret);
     }
+    ctx->dst_rate = ctx->freq;
+  }
 
-    //convert to new format
-    int dst_nb_samples;
-    dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
-      + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
-    if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
-      , dst_nb_samples, ctx->dst_sample_fmt, 1)) < 0) return NULL_FRAME;
-    int converted_nb_samples = 0;
-    converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
-      , ctx->frame->extended_data, ctx->frame->nb_samples);
-    if (converted_nb_samples < 0) {
-      printf("FFMPEG:Resample failed!\n");
-      return NULL_FRAME;
+  //convert to new format
+  int dst_nb_samples;
+  dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
+    + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
+  if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
+    , dst_nb_samples, ctx->dst_sample_fmt, 1)) < 0) return NULL_FRAME;
+  int converted_nb_samples = 0;
+  converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
+    , ctx->frame->extended_data, ctx->frame->nb_samples);
+  if (converted_nb_samples < 0) {
+    printf("FFMPEG:Resample failed!\n");
+    return NULL;
+  }
+  int count = converted_nb_samples * ctx->dst_nb_channels;
+  if (ctx->jaudio == NULL || ctx->jaudio_length != count) {
+    if (ctx->jaudio != NULL) {
+      //free old audio array
+      e->DeleteGlobalRef(ctx->jaudio);
     }
-    int count = converted_nb_samples * ctx->dst_nb_channels;
-    if (ctx->jaudio == NULL || ctx->jaudio_length != count) {
-      if (ctx->jaudio != NULL) {
-        //free old audio array
-        e->DeleteGlobalRef(ctx->jaudio);
-      }
-      ctx->jaudio_length = count;
-      ctx->jaudio = (jshortArray)e->NewGlobalRef(e->NewShortArray(count));
-    }
-    e->SetShortArrayRegion(ctx->jaudio, 0, ctx->jaudio_length, (const jshort*)ctx->audio_dst_data[0]);
-    //free audio_dst_data
-    if (ctx->audio_dst_data[0] != NULL) {
-      (*_av_free)(ctx->audio_dst_data[0]);
-      ctx->audio_dst_data[0] = NULL;
-    }
+    ctx->jaudio_length = count;
+    ctx->jaudio = (jshortArray)e->NewGlobalRef(e->NewShortArray(count));
+  }
+  e->SetShortArrayRegion(ctx->jaudio, 0, ctx->jaudio_length, (const jshort*)ctx->audio_dst_data[0]);
+  //free audio_dst_data
+  if (ctx->audio_dst_data[0] != NULL) {
+    (*_av_free)(ctx->audio_dst_data[0]);
+    ctx->audio_dst_data[0] = NULL;
   }
 
   return ctx->jaudio;
@@ -304,40 +307,36 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
     return NULL;
   }
 
-  while (1) {
-    ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);
-    if (ret < 0) break;
-
-    //setup conversion once width/height are known
-    if (ctx->jvideo == NULL) {
-      if (ctx->video_codec_ctx->width == 0 || ctx->video_codec_ctx->height == 0) {
-        printf("MediaVideoDecoder : width/height not known yet\n");
-        return NULL;
-      }
-      if (ctx->width == -1 && ctx->height == -1) {
-        ctx->width = ctx->video_codec_ctx->width;
-        ctx->height = ctx->video_codec_ctx->height;
-      }
-      //create video conversion context
-      ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
-        , ctx->width, ctx->height, AV_PIX_FMT_BGRA
-        , SWS_BILINEAR, NULL, NULL, NULL);
-
-      int px_count = ctx->width * ctx->height;
-      ctx->jvideo_length = px_count;
-      ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
-    }
-
-    jint *jvideo_ptr = (jint*)ctx->e->GetPrimitiveArrayCritical(ctx->jvideo, &isCopy);
-    if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-    ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
-    ctx->rgb_video_dst_linesize[0] = ctx->width * 4;
-    (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
-      , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
-
-    ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo, jvideo_ptr, 0);
+  ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);
+  if (ret < 0) {
+    printf("MediaVideoDecoder:avcodec_receive_frame failed():%d\n", ret);
+    return NULL;
   }
+
+  //setup conversion once width/height are known
+  if (ctx->jvideo == NULL) {
+    if (ctx->video_codec_ctx->width == 0 || ctx->video_codec_ctx->height == 0) {
+      printf("MediaVideoDecoder : width/height not known yet\n");
+      return NULL;
+    }
+    if (ctx->width == -1 && ctx->height == -1) {
+      ctx->width = ctx->video_codec_ctx->width;
+      ctx->height = ctx->video_codec_ctx->height;
+    }
+    //create video conversion context
+    ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
+      , ctx->width, ctx->height, AV_PIX_FMT_BGRA
+      , SWS_BILINEAR, NULL, NULL, NULL);
+
+    int px_count = ctx->width * ctx->height;
+    ctx->jvideo_length = px_count;
+    ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
+  }
+
+  (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
+    , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
+
+  e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
 
   return ctx->jvideo;
 }
