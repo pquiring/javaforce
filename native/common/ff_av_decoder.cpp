@@ -3,8 +3,8 @@
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
   (JNIEnv *e, jobject c, jint codec_id, jint chs, jint freq)
 {
-  FFContext *ctx = createFFContext(e,c);
-  if (ctx == NULL) return JNI_FALSE;
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return 0;
 //  printf("context=%p\n", ctx);
   ctx->audio_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->audio_codec == NULL) {
@@ -67,7 +67,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioDecoder_nstop
     ctx->decode_buffer = NULL;
     ctx->decode_buffer_size = 0;
   }
-  deleteFFContext(e,c,ctx);
+  freeFFContext(e,c,ctx);
 }
 
 JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
@@ -201,7 +201,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetSampleRate
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
   (JNIEnv *e, jobject c, jint codec_id, jint width, jint height)
 {
-  FFContext *ctx = createFFContext(e,c);
+  FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
 //  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
@@ -266,7 +266,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nstop
     ctx->decode_buffer = NULL;
     ctx->decode_buffer_size = 0;
   }
-  deleteFFContext(e,c,ctx);
+  freeFFContext(e,c,ctx);
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode

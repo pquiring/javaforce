@@ -3,7 +3,7 @@
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
   (JNIEnv *e, jclass c, jstring file, jstring format)
 {
-  FFContext *ctx = createFFContext(e,c);
+  FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
   int res;
 
@@ -43,7 +43,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenIO
   (JNIEnv *e, jclass c, jobject mio)
 {
-  FFContext *ctx = createFFContext(e,c);
+  FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
   int res;
 
@@ -130,7 +130,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nclose
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
-  deleteFFContext(e,c,ctx);
+  freeFFContext(e,c,ctx);
   return JNI_TRUE;
 }
 

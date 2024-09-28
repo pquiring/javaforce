@@ -124,6 +124,8 @@ struct FFContext {
 
 #define ffiobufsiz (64 * 1024)
 
+//reflection ctx
+
 FFContext* createFFContext(JNIEnv *e, jobject c) {
   if (!ffmpeg_loaded) return NULL;  //ffmpeg not loaded
   FFContext *ctx;
@@ -152,13 +154,6 @@ FFContext* getFFContext(JNIEnv *e, jobject c) {
   return ctx;
 }
 
-FFContext* castFFContext(JNIEnv *e, jobject c, jlong ctxptr) {
-  FFContext* ctx = (FFContext*)ctxptr;
-  ctx->e = e;
-  ctx->c = c;
-  return ctx;
-}
-
 void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
   if (ctx == NULL) return;
   if (ctx->mio != NULL) {
@@ -169,4 +164,32 @@ void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
   e->SetLongField(c,fid_ff_ctx,0);
+}
+
+//jlong ctx
+
+FFContext* newFFContext(JNIEnv *e, jobject c) {
+  if (!ffmpeg_loaded) return NULL;  //ffmpeg not loaded
+  FFContext *ctx;
+  ctx = (FFContext*)(*_av_mallocz)(sizeof(FFContext));
+  ctx->e = e;
+  ctx->c = c;
+  return ctx;
+}
+
+FFContext* castFFContext(JNIEnv *e, jobject c, jlong ctxptr) {
+  if (ctxptr == 0) return NULL;
+  FFContext* ctx = (FFContext*)ctxptr;
+  ctx->e = e;
+  ctx->c = c;
+  return ctx;
+}
+
+void freeFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
+  if (ctx == NULL) return;
+  if (ctx->mio != NULL) {
+    e->DeleteGlobalRef(ctx->mio);
+    ctx->mio = NULL;
+  }
+  (*_av_free)(ctx);
 }

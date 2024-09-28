@@ -8,6 +8,11 @@ package javaforce.media;
 import javaforce.voip.*;
 
 public class MediaAudioDecoder extends MediaCoder {
+  public MediaAudioDecoder() {}
+  public MediaAudioDecoder(MediaInput output) {
+    this.ctx = output.ctx;
+    shared = true;
+  }
   public native long nstart(int codec_id, int new_chs, int new_freq);
   public boolean start(int codec_id, int new_chs, int new_freq) {
     if (ctx != 0) return false;
@@ -16,7 +21,7 @@ public class MediaAudioDecoder extends MediaCoder {
   }
   public native void nstop(long ctx);
   public void stop() {
-    if (ctx == 0) return;
+    if (ctx == 0 || shared) return;
     nstop(ctx);
     ctx = 0;
   }

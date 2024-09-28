@@ -246,9 +246,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
       break;
     }
   }
-  if (ctx->config_compressionLevel != -1) {
-    ctx->video_codec_ctx->compression_level = ctx->config_compressionLevel;
-  }
 
   //open audio codec
   int ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
@@ -273,6 +270,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
   ctx->audio_frame->sample_rate = ctx->freq;
   (*_av_channel_layout_copy)(&ctx->audio_frame->ch_layout, &ctx->audio_codec_ctx->ch_layout);
+  printf("audio:frame_size=%d chs=%d\n", ctx->audio_codec_ctx->frame_size, ctx->chs);
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
@@ -1052,6 +1050,10 @@ static void encoder_stop(FFContext *ctx)
   if (ctx->audio_buffer != NULL) {
     (*_av_free)(ctx->audio_buffer);
     ctx->audio_buffer = NULL;
+  }
+  if (ctx->pkt != NULL) {
+    (*_av_packet_free)(&ctx->pkt);
+    ctx->pkt = NULL;
   }
 }
 

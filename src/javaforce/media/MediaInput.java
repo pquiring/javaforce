@@ -81,7 +81,7 @@ public class MediaInput extends MediaFormat {
    */
   public MediaVideoDecoder createVideoDecoder(int width, int height) {
     if (!nopenvideo(ctx, width, height)) return null;
-    MediaVideoDecoder decoder = new MediaVideoDecoder();
+    MediaVideoDecoder decoder = new MediaVideoDecoder(this);
     decoder.setStream(getVideoStream());
     decoder.start(getVideoCodecID(), width, height);
     return decoder;
@@ -101,7 +101,7 @@ public class MediaInput extends MediaFormat {
    */
   public MediaAudioDecoder createAudioDecoder(int chs, int freq) {
     if (!nopenaudio(ctx, chs, freq)) return null;
-    MediaAudioDecoder decoder = new MediaAudioDecoder();
+    MediaAudioDecoder decoder = new MediaAudioDecoder(this);
     decoder.setStream(getAudioStream());
     decoder.start(getAudioCodecID(), chs, freq);
     return decoder;

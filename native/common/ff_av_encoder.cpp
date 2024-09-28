@@ -1,9 +1,9 @@
 //audio encoder codebase
 
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
-  (JNIEnv *e, jobject c, jint codec_id, jint chs, jint freq)
+  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint chs, jint freq)
 {
-  FFContext *ctx = createFFContext(e,c);
+  FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return 0;
 //  printf("context=%p\n", ctx);
   ctx->audio_codec = (*_avcodec_find_decoder)(codec_id);
@@ -20,6 +20,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
     printf("avcodec_open2() failed\n");
     return 0;
   }
+
+  ctx->config_audio_bit_rate = bit_rate;
+  ctx->chs = chs;
+  ctx->freq = freq;
 
   //create audio frame
   ctx->audio_frame = (*_av_frame_alloc)();
@@ -59,8 +63,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
   //create audio packet
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
 
   ctx->chs = chs;
   ctx->freq = freq;
@@ -97,7 +99,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioEncoder_nstop
     ctx->encode_buffer = NULL;
     ctx->encode_buffer_size = 0;
   }
-  deleteFFContext(e,c,ctx);
+  freeFFContext(e,c,ctx);
 }
 
 static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
@@ -124,6 +126,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   } else {
     ctx->audio_dst_data[0] = (uint8_t*)samples_data;
   }
+
   (*_av_frame_make_writable)(ctx->audio_frame);  //ensure we can write to it now
   ctx->audio_frame->nb_samples = nb_samples;
   buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, ctx->audio_codec_ctx->sample_fmt, 0);
@@ -133,18 +136,22 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
     printf("avcodec_fill_audio_frame() failed:%d\n", res);
     return NULL;
   }
+
   ctx->audio_frame->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
   int ret = (*_avcodec_send_frame)(ctx->audio_codec_ctx, ctx->audio_frame);
   if (ret < 0) {
     printf("avcodec_send_frame() failed!%d\n", ret);
     return NULL;
   }
+
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);
   if (ret < 0) {
     return NULL;
   }
-
-//  ctx->pkt->stream_index = ctx->audio_stream->index;  //TODO : move this to new encoder class
 
   (*_av_packet_rescale_ts)(ctx->pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
   ctx->last_dts = ctx->pkt->dts;
@@ -237,9 +244,9 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioEncoder_ngetAudioFramesize
 //video encoder codebase
 
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
-  (JNIEnv *e, jobject c, jint codec_id, jint width, jint height, jfloat fps, jint keyFrameInterval)
+  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
-  FFContext *ctx = createFFContext(e,c);
+  FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return NULL;
 //  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
@@ -252,6 +259,23 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
   //set default values
   ctx->video_codec_ctx->codec_id = (AVCodecID)codec_id;
   ctx->video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+
+  ctx->config_video_bit_rate = bit_rate;
+  ctx->org_width = width;
+  ctx->org_height = height;
+  if (((width & 3) != 0) || ((height & 3) != 0)) {
+    printf("Warning : Video resolution not / by 4 : Performance will be degraded!\n");
+    ctx->scaleVideo = JNI_TRUE;
+    //align up to / by 4 pixels
+    width = (width + 3) & 0xfffffffc;
+    height = (height + 3) & 0xfffffffc;
+  } else {
+    ctx->scaleVideo = JNI_FALSE;
+  }
+  ctx->width = width;
+  ctx->height = height;
+  ctx->fps = fps;
+  ctx->config_gop_size = keyFrameInterval;
 
   if (((*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL)) < 0) {
     printf("avcodec_open2() failed\n");
@@ -300,7 +324,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoEncoder_nstop
     ctx->encode_buffer = NULL;
     ctx->encode_buffer_size = 0;
   }
-  deleteFFContext(e,c,ctx);
+  freeFFContext(e,c,ctx);
 }
 
 static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
@@ -325,11 +349,15 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
     return NULL;
   }
 
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, ctx->pkt);
   if (ret < 0) {
     return NULL;
   }
-  ctx->pkt->stream_index = ctx->video_stream->index;
+
   (*_av_packet_rescale_ts)(ctx->pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
 //    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
   ctx->last_dts = ctx->pkt->dts;
