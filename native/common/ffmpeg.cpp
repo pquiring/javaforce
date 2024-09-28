@@ -24,7 +24,7 @@
 static jboolean ffmpeg_loaded = JNI_FALSE;
 
 static jboolean ff_debug_log = JNI_FALSE;
-static jboolean ff_debug_trace = JNI_TRUE;
+static jboolean ff_debug_trace = JNI_FALSE;
 static jboolean ff_debug_buffer = JNI_FALSE;
 static jboolean ff_debug_box = JNI_FALSE;
 static jboolean ff_debug_time_base = JNI_FALSE;

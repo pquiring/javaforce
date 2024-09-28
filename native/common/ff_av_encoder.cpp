@@ -236,7 +236,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioEncoder_ngetAudioFramesize
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return NULL;
+  if (ctx == NULL) return 0;
 
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->frame_size;
@@ -248,7 +248,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
   (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
   FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return NULL;
+  if (ctx == NULL) return 0;
 //  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->video_codec == NULL) {
@@ -283,7 +283,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
     return 0;
   }
 
-  if ((ctx->video_frame = (*_av_frame_alloc)()) == NULL) return NULL;
+  if ((ctx->video_frame = (*_av_frame_alloc)()) == NULL) return 0;
 
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
