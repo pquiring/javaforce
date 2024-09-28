@@ -262,7 +262,7 @@ public class SDP implements Cloneable {
       StringBuilder m = new StringBuilder();
       m.append("m=" + stream.getType() + " " + stream.port + " ");
       switch (stream.transport) {
-        case UDP: m.append("UDP/"); break;
+        case UDP: /*m.append("UDP/");*/ break;  //implied
         case TCP: m.append("TCP/"); break;
       }
       if (stream.keyExchange == KeyExchange.DTLS) {
