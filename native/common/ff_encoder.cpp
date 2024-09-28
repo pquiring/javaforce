@@ -754,10 +754,8 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
     if (ret < 0) break;
     pkt->stream_index = ctx->video_stream->index;
     (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-//    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
     ctx->last_dts = pkt->dts;
     ctx->last_pts = pkt->pts;
-//    log_packet("video", ctx->fmt_ctx, pkt);
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
     if (ret < 0) {
       printf("av_interleaved_write_frame() failed!\n");

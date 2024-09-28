@@ -164,6 +164,10 @@ static AVOutputFormat *AVOutputFormat_New() {
   return ofmt;
 }
 
+static void AVPacket_dump(AVPacket *pkt, const char* msg) {
+  printf("AVPacket:%s:pts=%llx dts=%llx duration=%lld pos=%lld time_base=%d/%d\n", msg, pkt->pts, pkt->dts, pkt->duration, pkt->pos, pkt->time_base.num, pkt->time_base.den);
+}
+
 static AVOutputFormat *vpx = NULL;
 
 //av_free_packet is deprecated : easy to implement

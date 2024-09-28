@@ -156,6 +156,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   (*_av_packet_rescale_ts)(ctx->pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
   ctx->last_dts = ctx->pkt->dts;
   ctx->last_pts = ctx->pkt->pts;
+  ctx->last_duration = ctx->pkt->duration;
   if (ctx->swr_ctx != NULL) {
     //free audio_dst_data (only the first pointer : regardless if format was plannar : it's alloced as one large block)
     if (ctx->audio_dst_data[0] != NULL) {
@@ -362,6 +363,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
 //    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
   ctx->last_dts = ctx->pkt->dts;
   ctx->last_pts = ctx->pkt->pts;
+  ctx->last_duration = ctx->pkt->duration;
 //    log_packet("video", ctx->fmt_ctx, pkt);
   ctx->video_pts++;
 

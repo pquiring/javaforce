@@ -84,6 +84,7 @@ struct FFContext {
 
   int64_t last_dts;
   int64_t last_pts;
+  int64_t last_duration;
 
   uint8_t* audio_src_data[4];
 

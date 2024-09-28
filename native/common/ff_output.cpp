@@ -181,20 +181,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nwritePacket
   ctx->pkt->size = length;
   ctx->pkt->stream_index = stream;
 
-  if (stream == 0) {
-    ctx->last_pts++;
-    ctx->last_dts++;
-  }
-
   ctx->pkt->dts = ctx->last_dts;
   ctx->pkt->pts = ctx->last_pts;
-
-  if (ctx->video_stream != NULL && ctx->video_stream->index == stream) {
-    (*_av_packet_rescale_ts)(ctx->pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-  }
-  else if (ctx->audio_stream != NULL && ctx->audio_stream->index == stream) {
-    (*_av_packet_rescale_ts)(ctx->pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-  }
+  ctx->pkt->duration = ctx->last_duration;
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
   ctx->pkt->data = NULL;
