@@ -5,7 +5,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
-  int res;
+  int ret;
 
   ctx->fmt_ctx = (*_avformat_alloc_context)();
 
@@ -13,7 +13,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
   if (cformat != NULL) {
     ctx->input_fmt = (*_av_find_input_format)(cformat);
     if (ctx->input_fmt == NULL) {
-      printf("FFMPEG:av_find_input_format failed:%s\n", cformat);
+      printf("MediaInput:av_find_input_format() failed : %s\n", cformat);
       e->ReleaseStringUTFChars(format, cformat);
       return JNI_FALSE;
     }
@@ -21,15 +21,17 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
   e->ReleaseStringUTFChars(format, cformat);
 
   const char *cfile = e->GetStringUTFChars(file, NULL);
-  if ((res = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL)) != 0) {
+  ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL);
+  if (ret != 0) {
     e->ReleaseStringUTFChars(file, cfile);
-    printf("avformat_open_input() failed : %d\n", res);
+    printf("MediaInput:avformat_open_input() failed : %d\n", ret);
     return JNI_FALSE;
   }
   e->ReleaseStringUTFChars(file, cfile);
 
-  if ((res = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL)) < 0) {
-    printf("avformat_find_stream_info() failed : %d\n", res);
+  ret = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL);
+  if (ret < 0) {
+    printf("MediaInput:avformat_find_stream_info() failed : %d\n", ret);
     return JNI_FALSE;
   }
 
@@ -45,26 +47,31 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenIO
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
-  int res;
+  int ret;
 
   ctx->mio = e->NewGlobalRef(mio);
   ctx->GetMediaIO();
 
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
-  if (ctx->io_ctx == NULL) return JNI_FALSE;
+  if (ctx->io_ctx == NULL) {
+    printf("MediaInput:avio_alloc_context() failed\n");
+    return JNI_FALSE;
+  }
 //  ctx->io_ctx->direct = 1;
 
   ctx->fmt_ctx = (*_avformat_alloc_context)();
   ctx->fmt_ctx->pb = ctx->io_ctx;
 
-  if ((res = (*_avformat_open_input)((void**)&ctx->fmt_ctx, "stream", NULL, NULL)) != 0) {
-    printf("avformat_open_input() failed : %d\n", res);
+  ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, "stream", NULL, NULL);
+  if (ret != 0) {
+    printf("MediaInput:avformat_open_input() failed : %d\n", ret);
     return JNI_FALSE;
   }
 
-  if ((res = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL)) < 0) {
-    printf("avformat_find_stream_info() failed : %d\n", res);
+  ret = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL);
+  if (ret < 0) {
+    printf("MediaInput:avformat_find_stream_info() failed : %d\n", ret);
     return JNI_FALSE;
   }
 
@@ -240,6 +247,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaInput_nread
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
+
   if (ctx->pkt == NULL) {
     printf("MediaDecoder.read():pkt==NULL\n");
     return 0;
@@ -260,6 +268,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_ngetPacketKeyFrame
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
+
   return ctx->pkt_key_frame;
 }
 
@@ -280,9 +289,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nseek
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
+
   //AV_TIME_BASE is 1000000fps
   seconds *= AV_TIME_BASE;
   int ret = (*_av_seek_frame)(ctx->fmt_ctx, -1, seconds, 0);
-  if (ret < 0) printf("av_seek_frame failed:%d\n", ret);
+  if (ret < 0) {
+    printf("MediaInput:av_seek_frame() failed : %d\n", ret);
+  }
   return ret >= 0;
 }

@@ -60,7 +60,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateIO
 
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
-  if (ctx->io_ctx == NULL) return JNI_FALSE;
+  if (ctx->io_ctx == NULL) {
+    printf("MediaOutput:avio_alloc_context() failed\n");
+    return JNI_FALSE;
+  }
 
   ctx->fmt_ctx->pb = ctx->io_ctx;
   ctx->fmt_ctx->io_open = &io_open;
@@ -85,7 +88,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddVideoStream
     codec_id = ctx->out_fmt->video_codec;
   }
   if (!encoder_add_stream(ctx, codec_id)) {
-    printf("encoder_add_stream:video failed!\n");
+    printf("MediaOutput:encoder_add_stream(video) failed\n");
     return -1;
   }
 
@@ -107,7 +110,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddVideoStream
   ctx->config_gop_size = keyFrameInterval;
 
   if (!encoder_init_video(ctx)) {
-    printf("encoder_init_video failed!\n");
+    printf("MediaOutput:encoder_init_video() failed\n");
     return -1;
   }
 
@@ -124,7 +127,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddAudioStream
     codec_id = ctx->out_fmt->audio_codec;
   }
   if (!encoder_add_stream(ctx, codec_id)) {
-    printf("encoder_add_stream:audio failed!\n");
+    printf("MediaOutput:encoder_add_stream(audio) failed\n");
     return -1;
   }
 
@@ -133,7 +136,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddAudioStream
   ctx->freq = freq;
 
   if (!encoder_init_audio(ctx)) {
-    printf("encoder_init_audio failed!\n");
+    printf("MediaOutput:encoder_init_audio() failed\n");
     return -1;
   }
 
@@ -161,7 +164,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nwriteHeader
 
   int ret = (*_avformat_write_header)(ctx->fmt_ctx, NULL);
   if (ret < 0) {
-    printf("avformat_write_header failed! %d\n", ret);
+    printf("MediaOutput:avformat_write_header failed : %d\n", ret);
   }
   return ret >= 0;
 }

@@ -5,6 +5,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return 0;
+  int ret;
 //  printf("context=%p\n", ctx);
   ctx->audio_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->audio_codec == NULL) {
@@ -16,8 +17,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
   //set default values
   ctx->audio_codec_ctx->codec_id = (AVCodecID)codec_id;
 
-  if (((*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL)) < 0) {
-    printf("avcodec_open2() failed\n");
+  ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
+  if (ret < 0) {
+    printf("MediaAudioEncoder:avcodec_open2() failed : %d\n", ret);
     return 0;
   }
 
@@ -28,7 +30,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
   //create audio frame
   ctx->audio_frame = (*_av_frame_alloc)();
   if (ctx->audio_frame == NULL) {
-    printf("av_frame_alloc() failed!\n");
+    printf("MediaAudioEncoder:av_frame_alloc() failed\n");
     return 0;
   }
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
@@ -37,9 +39,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
-  int ret = (*_av_frame_get_buffer)(ctx->audio_frame, 0);
+  ret = (*_av_frame_get_buffer)(ctx->audio_frame, 0);
   if (ret < 0) {
-    printf("av_frame_get_buffer() failed! %d\n", ret);
+    printf("MediaAudioEncoder:av_frame_get_buffer() failed : %d\n", ret);
     return 0;
   }
   if (!ctx->audio_frame_size_variable) {
@@ -56,7 +58,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
 
     ret = (*_swr_init)(ctx->swr_ctx);
     if (ret < 0) {
-      printf("resample init failed:%d\n", ret);
+      printf("MediaAudioEncoder:resample init failed : %d\n", ret);
     }
   }
 
@@ -104,6 +106,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioEncoder_nstop
 
 static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
+  int ret;
   int nb_samples = length / ctx->chs;
   int buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, AV_SAMPLE_FMT_S16, 0);
   void* samples_data = (*_av_mallocz)(buffer_size);
@@ -113,14 +116,13 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   if (ctx->swr_ctx != NULL) {
     //convert sample format (some codecs do not support S16)
     //sample rate is not changed
-    if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->chs
-      , nb_samples, ctx->audio_codec_ctx->sample_fmt, 0)) < 0)
-    {
-      printf("av_samples_alloc failed!\n");
+    ret = (*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->chs
+      , nb_samples, ctx->audio_codec_ctx->sample_fmt, 0);
+    if (ret < 0) {
+      printf("MediaAudioEncoder:av_samples_alloc() failed : %d\n", ret);
       return NULL;
     }
     ctx->audio_src_data[0] = (uint8_t*)samples_data;
-    int ret;
     ret = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples
       , ctx->audio_src_data, nb_samples);
   } else {
@@ -130,17 +132,17 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   (*_av_frame_make_writable)(ctx->audio_frame);  //ensure we can write to it now
   ctx->audio_frame->nb_samples = nb_samples;
   buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, ctx->audio_codec_ctx->sample_fmt, 0);
-  int res = (*_avcodec_fill_audio_frame)(ctx->audio_frame, ctx->chs, ctx->audio_codec_ctx->sample_fmt, ctx->audio_dst_data[0]
+  ret = (*_avcodec_fill_audio_frame)(ctx->audio_frame, ctx->chs, ctx->audio_codec_ctx->sample_fmt, ctx->audio_dst_data[0]
     , buffer_size, 0);
-  if (res < 0) {
-    printf("avcodec_fill_audio_frame() failed:%d\n", res);
+  if (ret < 0) {
+    printf("MediaAudioEncoder:avcodec_fill_audio_frame() failed : %d\n", ret);
     return NULL;
   }
 
   ctx->audio_frame->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-  int ret = (*_avcodec_send_frame)(ctx->audio_codec_ctx, ctx->audio_frame);
+  ret = (*_avcodec_send_frame)(ctx->audio_codec_ctx, ctx->audio_frame);
   if (ret < 0) {
-    printf("avcodec_send_frame() failed!%d\n", ret);
+    printf("MediaAudioEncoder:avcodec_send_frame() failed : %d\n", ret);
     return NULL;
   }
 
@@ -150,7 +152,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
 
   ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);
   if (ret < 0) {
-    printf("AudioDecoder:avcodec_receive_packet()=%d\n", ret);
+    printf("MediaAudioDecoder:avcodec_receive_packet() failed : %d\n", ret);
     return NULL;
   }
 
@@ -250,6 +252,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return 0;
+  int ret;
 //  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->video_codec == NULL) {
@@ -279,8 +282,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
   ctx->fps = fps;
   ctx->config_gop_size = keyFrameInterval;
 
-  if (((*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL)) < 0) {
-    printf("avcodec_open2() failed\n");
+  ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
+  if (ret < 0) {
+    printf("MediaVideoEncoder:avcodec_open2() failed : %d\n", ret);
     return 0;
   }
 
@@ -347,7 +351,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   ctx->video_frame->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
   int ret = (*_avcodec_send_frame)(ctx->video_codec_ctx, ctx->video_frame);
   if (ret < 0) {
-    printf("avcodec_send_frame() failed!\n");
+    printf("MediaVideoEncoder:avcodec_send_frame() failed : %d\n", ret);
     return NULL;
   }
 
@@ -357,6 +361,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
 
   ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, ctx->pkt);
   if (ret < 0) {
+    printf("MediaVideoEncoder:avcodec_receive_packet() failed : %d\n", ret);
     return NULL;
   }
 

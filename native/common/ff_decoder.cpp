@@ -17,7 +17,8 @@ static int decoder_open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, 
     ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);
     (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
 //    ctx->codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
-    if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
+    ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL);
+    if (ret < 0) {
       return ret;
     }
   }
@@ -34,18 +35,19 @@ static jboolean decoder_open_video_codec(FFContext *ctx, int new_width, int new_
     if (new_height == -1) new_height = ctx->video_codec_ctx->height;
     ctx->width = new_width;
     ctx->height = new_height;
-    if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
+    ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height
-      , ctx->video_codec_ctx->pix_fmt, 1)) < 0)
-    {
-      printf("av_image_alloc failed\n");
+      , ctx->video_codec_ctx->pix_fmt, 1);
+    if (ctx->video_dst_bufsize < 0) {
+      printf("MediaDecoder:av_image_alloc failed : %d\n", ctx->video_dst_bufsize);
       return JNI_FALSE;
     }
-    if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
+    ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
       , new_width, new_height
-      , AV_PIX_FMT_BGRA, 1)) < 0)
+      , AV_PIX_FMT_BGRA, 1);
+    if (ctx->rgb_video_dst_bufsize < 0)
     {
-      printf("av_image_alloc failed\n");
+      printf("MediaDecoder:av_image_alloc failed : %d\n", ctx->rgb_video_dst_bufsize);
       return JNI_FALSE;
     }
     ctx->jvideo_length = ctx->rgb_video_dst_bufsize/4;
@@ -72,7 +74,7 @@ static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_fr
       case 1: (*_av_channel_layout_copy)(&new_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
       case 2: (*_av_channel_layout_copy)(&new_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
       case 4: (*_av_channel_layout_copy)(&new_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
-      default: return JNI_FALSE;
+      default: printf("MediaDecoder:unknown channels:%d\n", new_chs); return JNI_FALSE;
     }
     AVChannelLayout src_layout;
     (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
@@ -88,7 +90,7 @@ static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_fr
     int ret;
     ret = (*_swr_init)(ctx->swr_ctx);
     if (ret < 0) {
-      printf("resample init failed:%d\n", ret);
+      printf("MediaDecoder:resample init failed : %d\n", ret);
     }
     ctx->dst_rate = new_freq;
   }
@@ -97,7 +99,10 @@ static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_fr
 }
 
 static jboolean decoder_alloc_frame(FFContext *ctx) {
-  if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
+  if ((ctx->frame = (*_av_frame_alloc)()) == NULL) {
+    printf("MediaDecoder:av_frame_alloc() failed\n");
+    return JNI_FALSE;
+  }
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
   ctx->pkt->data = NULL;
@@ -120,26 +125,31 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
-  int res;
+  int ret;
 
   ctx->mio = e->NewGlobalRef(mio);
   ctx->GetMediaIO();
 
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
-  if (ctx->io_ctx == NULL) return JNI_FALSE;
+  if (ctx->io_ctx == NULL) {
+    printf("MediaDecoder:avio_alloc_context() failed\n");
+    return JNI_FALSE;
+  }
 //  ctx->io_ctx->direct = 1;
 
   ctx->fmt_ctx = (*_avformat_alloc_context)();
   ctx->fmt_ctx->pb = ctx->io_ctx;
 
-  if ((res = (*_avformat_open_input)((void**)&ctx->fmt_ctx, "stream", NULL, NULL)) != 0) {
-    printf("avformat_open_input() failed : %d\n", res);
+  ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, "stream", NULL, NULL);
+  if (ret != 0) {
+    printf("MediaDecoder:avformat_open_input() failed : %d\n", ret);
     return JNI_FALSE;
   }
 
-  if ((res = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL)) < 0) {
-    printf("avformat_find_stream_info() failed : %d\n", res);
+  ret = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL);
+  if (ret < 0) {
+    printf("MediaDecoder:avformat_find_stream_info() failed : %d\n", ret);
     return JNI_FALSE;
   }
 
@@ -165,7 +175,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
-  int res;
+  int ret;
 
   ctx->fmt_ctx = (*_avformat_alloc_context)();
 
@@ -173,7 +183,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
   if (cformat != NULL) {
     ctx->input_fmt = (*_av_find_input_format)(cformat);
     if (ctx->input_fmt == NULL) {
-      printf("FFMPEG:av_find_input_format failed:%s\n", cformat);
+      printf("MediaDecoder:av_find_input_format() failed : %s\n", cformat);
       e->ReleaseStringUTFChars(format, cformat);
       return JNI_FALSE;
     }
@@ -181,15 +191,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
   e->ReleaseStringUTFChars(format, cformat);
 
   const char *cfile = e->GetStringUTFChars(file, NULL);
-  if ((res = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL)) != 0) {
+  ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL);
+  if (ret != 0) {
     e->ReleaseStringUTFChars(file, cfile);
-    printf("avformat_open_input() failed : %d\n", res);
+    printf("MediaDecoder:avformat_open_input() failed : %d\n", ret);
     return JNI_FALSE;
   }
   e->ReleaseStringUTFChars(file, cfile);
 
-  if ((res = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL)) < 0) {
-    printf("avformat_find_stream_info() failed : %d\n", res);
+  ret = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL);
+  if (ret < 0) {
+    printf("MediaDecoder:avformat_find_stream_info() failed : %d\n", ret);
     return JNI_FALSE;
   }
 
@@ -282,7 +294,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
     //extract a video frame
     int ret = (*_avcodec_send_packet)(ctx->video_codec_ctx, ctx->pkt);
     if (ret < 0) {
-      printf("Error:%d\n", ret);
+      printf("MediaDecoder:avcodec_send_packet() failed : %d\n", ret);
       return NULL_FRAME;
     }
     _av_free_packet(ctx->pkt);
@@ -303,7 +315,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
     //extract an audio frame
     int ret = (*_avcodec_send_packet)(ctx->audio_codec_ctx, ctx->pkt);
     if (ret < 0) {
-      printf("Error:%d\n", ret);
+      printf("MediaDecoder:avcodec_send_packet() failed : %d\n", ret);
       return NULL_FRAME;
     }
     _av_free_packet(ctx->pkt);
@@ -315,13 +327,17 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
       int dst_nb_samples;
       dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
         + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
-      if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
-        , dst_nb_samples, ctx->dst_sample_fmt, 1)) < 0) return NULL_FRAME;
+      ret = (*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
+        , dst_nb_samples, ctx->dst_sample_fmt, 1);
+      if (ret < 0) {
+        printf("MediaDecoder:av_samples_alloc failed : %d\n", ret);
+        return NULL_FRAME;
+      }
       int converted_nb_samples = 0;
       converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
         , ctx->frame->extended_data, ctx->frame->nb_samples);
       if (converted_nb_samples < 0) {
-        printf("FFMPEG:Resample failed!\n");
+        printf("MediaDecoder:swr_convert() failed : %d\n", converted_nb_samples);
         return NULL_FRAME;
       }
       int count = converted_nb_samples * ctx->dst_nb_channels;
@@ -436,12 +452,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_seek
 {
   FFContext *ctx = getFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
+
   //AV_TIME_BASE is 1000000fps
   seconds *= AV_TIME_BASE;
-/*      int ret = avformat.avformat_seek_file(fmt_ctx, -1
-    , seconds - AV_TIME_BASE_PARTIAL, seconds, seconds + AV_TIME_BASE_PARTIAL, 0);*/
+/*
+  int ret = avformat.avformat_seek_file(fmt_ctx, -1
+    , seconds - AV_TIME_BASE_PARTIAL, seconds, seconds + AV_TIME_BASE_PARTIAL, 0);
+*/
   int ret = (*_av_seek_frame)(ctx->fmt_ctx, -1, seconds, 0);
-  if (ret < 0) printf("av_seek_frame failed:%d\n", ret);
+  if (ret < 0) {
+    printf("MediaDecoder:av_seek_frame() failed : %d\n", ret);
+  }
   return ret >= 0;
 }
 
@@ -459,6 +480,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getAudioBitRate
 {
   FFContext *ctx = getFFContext(e,c);
   if (ctx == NULL) return 0;
+
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->bit_rate;
 }
@@ -468,6 +490,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_isKeyFrame
 {
   FFContext *ctx = getFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
+
   return ctx->pkt_key_frame;
 }
 
@@ -476,6 +499,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_resize
 {
   FFContext *ctx = getFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
+
   if (ctx->video_stream == NULL) return JNI_FALSE;  //no video
 
   if (ctx->rgb_video_dst_data[0] != NULL) {
@@ -483,9 +507,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_resize
     ctx->rgb_video_dst_data[0] = NULL;
   }
 
-  if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
-    , new_width, new_height
-    , AV_PIX_FMT_BGRA, 1)) < 0) return JNI_FALSE;
+  ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
+    , new_width, new_height, AV_PIX_FMT_BGRA, 1);
+  if (ctx->rgb_video_dst_bufsize < 0) {
+    printf("MediaDecoder:av_image_alloc() failed : %d\n", ctx->rgb_video_dst_bufsize);
+    return JNI_FALSE;
+  }
 
   if (ctx->jvideo != NULL) {
     e->DeleteGlobalRef(ctx->jvideo);

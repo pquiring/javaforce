@@ -5,7 +5,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return 0;
-//  printf("context=%p\n", ctx);
+
+  int ret;
   ctx->audio_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->audio_codec == NULL) {
     printf("MediaAudioDecoder : codec == null\n");
@@ -16,12 +17,17 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
   //set default values
   ctx->audio_codec_ctx->codec_id = (AVCodecID)codec_id;
 
-  if (((*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL)) < 0) {
-    printf("avcodec_open2() failed\n");
+  ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
+  if (ret < 0) {
+    printf("MediaAudioDecoder:avcodec_open2() failed : %d\n", ret);
     return 0;
   }
 
-  if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
+  ctx->frame = (*_av_frame_alloc)();
+  if (ctx->frame == NULL) {
+    printf("MediaAudioDecoder:av_frame_alloc() failed\n");
+    return JNI_FALSE;
+  }
 
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
@@ -102,14 +108,14 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
-    printf("Error:avcodec_send_packet() == %d\n", ret);
+    printf("MediaAudioDecoder:avcodec_send_packet() failed : %d\n", ret);
     ctx->pkt->size = 0;
     return NULL;
   }
 
   ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);
   if (ret < 0) {
-    printf("MediaAudioDecoder:avcodec_receive_frame() failed:ret=%d\n", ret);
+    printf("MediaAudioDecoder:avcodec_receive_frame() failed : %d\n", ret);
     return NULL;
   }
 
@@ -132,7 +138,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
       case 1: (*_av_channel_layout_copy)(&new_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
       case 2: (*_av_channel_layout_copy)(&new_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
       case 4: (*_av_channel_layout_copy)(&new_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
-      default: printf("Error:unknown channel layout:%d\n", ctx->chs); return NULL;
+      default: printf("MediaAudioDecoder:unknown channel layout:%d\n", ctx->chs); return NULL;
     }
     AVChannelLayout src_layout;
     (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
@@ -145,7 +151,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
 
     ret = (*_swr_init)(ctx->swr_ctx);
     if (ret < 0) {
-      printf("resample init failed:%d\n", ret);
+      printf("MediaAudioDecoder:resample init failed : %d\n", ret);
     }
     ctx->dst_rate = ctx->freq;
   }
@@ -154,13 +160,17 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   int dst_nb_samples;
   dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
     + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
-  if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
-    , dst_nb_samples, ctx->dst_sample_fmt, 1)) < 0) return NULL_FRAME;
+  ret = (*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
+    , dst_nb_samples, ctx->dst_sample_fmt, 1);
+  if (ret < 0) {
+    printf("MediaAudioDecoder:av_samples_alloc() failed : %d\n", ret);
+    return NULL_FRAME;
+  }
   int converted_nb_samples = 0;
   converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
     , ctx->frame->extended_data, ctx->frame->nb_samples);
   if (converted_nb_samples < 0) {
-    printf("FFMPEG:Resample failed!\n");
+    printf("MediaAudioDecoder:swr_convert failed : %d\n", converted_nb_samples);
     return NULL;
   }
   int count = converted_nb_samples * ctx->dst_nb_channels;
@@ -206,7 +216,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
-//  printf("context=%p\n", ctx);
+
+  int ret;
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->video_codec == NULL) {
     printf("MediaVideoDecoder : codec == null\n");
@@ -218,12 +229,17 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
   ctx->video_codec_ctx->codec_id = (AVCodecID)codec_id;
   ctx->video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
 
-  if (((*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL)) < 0) {
-    printf("avcodec_open2() failed\n");
+  ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
+  if (ret < 0) {
+    printf("MediaVideoDecoder:avcodec_open2() failed : %d\n", ret);
     return 0;
   }
 
-  if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
+  ctx->frame = (*_av_frame_alloc)();
+  if (ctx->frame == NULL) {
+    printf("MediaAudioDecoder:av_frame_alloc() failed\n");
+    return JNI_FALSE;
+  }
 
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
@@ -302,14 +318,14 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
   e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
-    printf("Error:avcodec_send_packet() == %d\n", ret);
+    printf("MediaVideoDecoder:avcodec_send_packet() failed : %d\n", ret);
     ctx->pkt->size = 0;
     return NULL;
   }
 
   ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);
   if (ret < 0) {
-    printf("MediaVideoDecoder:avcodec_receive_frame failed():%d\n", ret);
+    printf("MediaVideoDecoder:avcodec_receive_frame failed() : %d\n", ret);
     return NULL;
   }
 

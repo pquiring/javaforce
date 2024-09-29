@@ -427,9 +427,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ninit
   e->ReleaseStringUTFChars(jpostproc, postFile);
   e->ReleaseStringUTFChars(jscale, scaleFile);
 
-  if (!ret) return JNI_FALSE;
-
-  //get JNI IDs
+  if (!ret) {
+    printf("ffmpeg_init failed : %d\n", ret);
+    return JNI_FALSE;
+  }
 
   ffmpeg_loaded = JNI_TRUE;
 

@@ -41,6 +41,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoBitRate
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
+
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->bit_rate;
 }
@@ -50,6 +51,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioBitRate
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
+
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->bit_rate;
 }

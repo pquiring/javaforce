@@ -128,7 +128,10 @@ struct FFContext {
 //reflection ctx
 
 FFContext* createFFContext(JNIEnv *e, jobject c) {
-  if (!ffmpeg_loaded) return NULL;  //ffmpeg not loaded
+  if (!ffmpeg_loaded) {
+    printf("MediaCoder.init() not called!\n");
+    return NULL;
+  }
   FFContext *ctx;
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
@@ -170,7 +173,10 @@ void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
 //jlong ctx
 
 FFContext* newFFContext(JNIEnv *e, jobject c) {
-  if (!ffmpeg_loaded) return NULL;  //ffmpeg not loaded
+  if (!ffmpeg_loaded) {
+    printf("MediaCoder.init() not called!\n");
+    return NULL;
+  }
   FFContext *ctx;
   ctx = (FFContext*)(*_av_mallocz)(sizeof(FFContext));
   ctx->e = e;
