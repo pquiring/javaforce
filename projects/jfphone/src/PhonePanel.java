@@ -1359,7 +1359,7 @@ Line Colors:
     if (server.indexOf(':') == -1) server += ":5060";
     JFLog.log("setStatus(" + number + "," + server + "," + status);
     for(int a=0;a<contactList.size();a++) {
-      String contact = contactList.get(a).contact;
+      String contact = contactList.get(a).sip_user;
       String fields[] = SIP.split(contact);
       if (fields[2].indexOf(':') == -1) fields[2] += ":5060";
       if ( (fields[1].equals(number)) && (fields[2].equals(server)) ) {
@@ -1391,7 +1391,7 @@ Line Colors:
 
   /** Updates contact list after a change. */
 
-  public void updateContactList(boolean sub) {
+  public void updateContactList(boolean resub) {
     String fields1[], fields2[];
     //x = "display name" <sip:user@host;tag=...>;tag=...
     //return:    [0]          [1]  [2]   [...][:][...]
@@ -1399,14 +1399,14 @@ Line Colors:
       fields1 = SIP.split(Settings.current.sipcontacts[a]);
       boolean ok = false;
       for(int b=0;b<contactList.size();b++) {
-        fields2 = SIP.split(contactList.get(b).contact);
+        fields2 = SIP.split(contactList.get(b).sip_user);
         if (fields1[0].equals(fields2[0])) {ok = true; break;}
       }
       if (!ok) {
         Contact contact = new Contact(fields1[0], Settings.current.sipcontacts[a]);
         contact.setIcon(ii[PIC_ICON_CLOSED]);
         contactList.add(contact);
-        if (SIP.getFlag2(fields1, "monitor").equals("true")) addMonitor(Settings.current.sipcontacts[a], sub);
+        if (contact.monitor()) addMonitor(contact);
       }
     }
     contactJList.setListData(contactList.toArray(new Contact[0]));
@@ -1421,7 +1421,7 @@ Line Colors:
   /** Call a contact (double-click). */
 
   public void dialContact() {
-    String contact = ((Contact)contactJList.getSelectedValue()).contact;
+    String contact = ((Contact)contactJList.getSelectedValue()).sip_user;
     String fields[] = SIP.split(contact);
     if (line == -1) return;
     if (lines[line].xfer) {
@@ -1556,36 +1556,37 @@ Line Colors:
   /** Edits an existing contact. */
 
   public void editContact() {
-    Contact label = (Contact)contactJList.getSelectedValue();
-    if (label == null) return;
-    String contact = label.contact;
-    String orgcontact = contact;
-    String orgfields[] = SIP.split(contact);
-    String orgname = orgfields[0];
-    contact = EditContact.editContact(null, contact, false);
-    if (contact == null) return;
-    String fields[] = SIP.split(contact);
-    if (!fields[0].equals(orgname)) {
-      Settings.delContact(orgname);
-      if (SIP.getFlag2(orgfields, "monitor").equals("true")) delMonitor(orgcontact);
+    Contact org_contact = (Contact)contactJList.getSelectedValue();
+    if (org_contact == null) return;
+    String org_sip_user = org_contact.sip_user;
+    String org_fields[] = SIP.split(org_sip_user);
+    String org_name = org_fields[0];
+    String new_sip_user = EditContact.editContact(null, org_sip_user, false);
+    if (new_sip_user == null) return;
+    String new_fields[] = SIP.split(new_sip_user);
+    String new_name = new_fields[0];
+    Contact new_contact = new Contact(new_fields[0], new_sip_user);
+    if (!new_name.equals(org_name)) {
+      Settings.delContact(org_name);
+      if (org_contact.monitor()) delMonitor(org_contact);
       for(int a=0;a<contactList.size();a++) {
-        String fields2[] = SIP.split(contactList.get(a).contact);
-        if (fields2[0].equals(orgname)) {
+        String fields[] = SIP.split(contactList.get(a).sip_user);
+        if (fields[0].equals(org_name)) {
           contactList.remove(a);
           break;
         }
       }
     } else {
-      if ((SIP.getFlag2(orgfields, "monitor").equals("true")) && (SIP.getFlag2(fields, "monitor").equals("false"))) delMonitor(orgcontact);
+      if (org_contact.monitor() && !new_contact.monitor()) delMonitor(org_contact);
       for(int a=0;a<contactList.size();a++) {
-        String fields2[] = SIP.split(contactList.get(a).contact);
-        if (fields2[0].equals(fields[0])) {
-          contactList.get(a).contact = contact;
+        String fields[] = SIP.split(contactList.get(a).sip_user);
+        if (fields[0].equals(new_name)) {
+          contactList.get(a).sip_user = new_sip_user;
           break;
         }
       }
     }
-    Settings.setContact(fields[0], contact);
+    Settings.setContact(new_name, new_sip_user);
     updateContactList(true);
     Settings.saveSettings();
   }
@@ -1593,14 +1594,13 @@ Line Colors:
   /** Deletes a contact. */
 
   public void delContact() {
-    Contact label = (Contact)contactJList.getSelectedValue();
-    if (label == null) return;
-    String contact = label.contact;
-    String fields[] = SIP.split(contact);
+    Contact contact = (Contact)contactJList.getSelectedValue();
+    if (contact == null) return;
+    String fields[] = SIP.split(contact.sip_user);
     if (JOptionPane.showConfirmDialog(this, "Delete " + fields[0] + "?", "Delete entry?", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) return;
     Settings.delContact(fields[0]);
     for(int a=0;a<contactList.size();a++) {
-      String fields2[] = SIP.split(contactList.get(a).contact);
+      String fields2[] = SIP.split(contactList.get(a).sip_user);
       if (fields2[0].equals(fields[0])) {
         contactList.remove(a);
         break;
@@ -1615,7 +1615,7 @@ Line Colors:
     if (line == -1) return;
     Contact label = (Contact)contactJList.getSelectedValue();
     if (label == null) return;
-    String contact = label.contact;  //"name" <sip:user@server>... -> [0]=name [1]=user [2]=server ...
+    String contact = label.sip_user;  //"name" <sip:user@server>... -> [0]=name [1]=user [2]=server ...
     String fields[] = SIP.split(contact);
     String msg = JFAWT.getString("Enter Message for:" + fields[1], "");
     if (msg == null) return;
@@ -1718,56 +1718,40 @@ Line Colors:
 
   //NOTE:using "presence" here, could also use "reg" to track registration
 
-  public void addMonitor(String contact, boolean sub) {
+  public void addMonitor(Contact contact) {
 //    JFLog.log("addMonitor:" + contact);
-    String fields[] = SIP.split(contact);
-    //only want first 3 fields in the monitorList
-    String fields3[] = new String[3];
-    fields3[0] = fields[0];
-    fields3[1] = fields[1];
-    fields3[2] = fields[2];
-    String contact3 = SIP.join(fields3);
-    monitorList.add(contact3);
-    if (!sub) return;
+    String fields[] = SIP.split(contact.sip_user);
     //we need to see if a SIP is already registered that we can subscribe to
     for(int a=0;a<6;a++) {
       if (lines[a].sip == null) continue;
       if (!lines[a].sip.isRegistered()) continue;
       if (lines[a].sip.getRemoteHost().equals(fields[3])) {
         //found one that matches
-        lines[a].sip.subscribe(fields3[1], "presence", 3600);
+        contact.callid = lines[a].sip.subscribe(fields[1], "presence", 3600);
         return;
       }
     }
   }
 
-  public void delMonitor(String contact) {
-    String fields[] = SIP.split(contact);
+  public void delMonitor(Contact contact) {
+    String fields[] = SIP.split(contact.sip_user);
     String fields3[] = new String[3];
     fields3[0] = fields[0];
     fields3[1] = fields[1];
     fields3[2] = fields[2];
     String contact3 = SIP.join(fields3);
-    for(int a=0;a<monitorList.size();a++) {
-      if (monitorList.get(a).equals(contact3)) {
-        monitorList.remove(a);
-        break;
-      }
-    }
-    //we need to see if a SIP is already registered that we can subscribe to
+    //we need to see if a SIP is already registered that we can unsubscribe to
     for(int a=0;a<6;a++) {
       if (lines[a].sip == null) continue;
       if (!lines[a].sip.isRegistered()) continue;
       if (lines[a].sip.getRemoteHost().equals(fields[3])) {
         //found one that matches
-        lines[a].sip.subscribe(fields3[1], "presence", 0);
+        lines[a].sip.unsubscribe(contact.callid, fields3[1], "presence");
+        contact.callid = null;
         return;
       }
     }
-  }
-
-  public void clearMonitor() {
-    monitorList = new Vector<String>();
+    contact.callid = null;
   }
 
   public void onRegister(SIPClient sip) {
