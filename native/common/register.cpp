@@ -4,13 +4,13 @@ jclass findClass(JNIEnv *env, const char *clsname) {
   nclass = clsname;
   jclass cls = env->FindClass(clsname);
   if (cls == NULL) {
-    printf("Error:Class not found:%s\n", clsname);
-    exit(1);
+    printf("Warning:Class not found:%s (native methods will not be registered)\n", clsname);
   }
   return cls;
 }
 
 void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint count) {
+  if (cls == NULL) return;
   int res = env->RegisterNatives(cls, methods, count);
   if (res != 0) {
     printf("Registering natives for %s count %d error %d\n", nclass, count, res);
