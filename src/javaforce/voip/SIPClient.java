@@ -264,10 +264,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   /**
    * Subscribe to a user's presence on server.
    * RFC : 3265
+   *
+   * @return Call-ID
    */
-  public boolean subscribe(String subuser, String event, int expires) {
-    String subcallid = getcallid();
-    CallDetails cd = getCallDetails(subcallid);  //new CallDetails
+  public String subscribe(String subuser, String event, int expires) {
+    String callid = getcallid();
+    CallDetails cd = getCallDetails(callid);  //new CallDetails
     cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
@@ -278,11 +280,15 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.expires = expires;
     cd.src.extra = "Accept: multipart/related, application/rlmi+xml, application/pidf+xml\r\nEvent: " + event + "\r\n";
     cd.src.epass = null;
-    return issue(cd, "SUBSCRIBE", false, true);
+    if (!issue(cd, "SUBSCRIBE", false, true)) {
+      return null;
+    }
+    return callid;
   }
 
   /** Unsubscribe a previously subscribed user.
    * Re-sends a subscribe with expires set to zero.
+   * NOTE:Should receive last NOTIFY as confirmation.
    */
   public boolean unsubscribe(String callid, String subuser, String event) {
     CallDetails cd = getCallDetails(callid);
