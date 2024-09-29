@@ -99,7 +99,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public SystemTray tray;
   public TrayIcon icon;
   public MenuItem exit, show;
-  public Vector<Contact> contactList = new Vector<Contact>();
+  public Vector<ContactLabel> contactList = new Vector<ContactLabel>();
   public boolean active = true;
   public boolean muted = false;
 
@@ -1166,11 +1166,10 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     int count = 0;
     String server = sip.getRemoteHost();
     for(int a=0;a<contactList.size();a++) {
-      Contact contact = contactList.get(a);
-      if (!contact.monitor()) continue;
-      String fields[] = SIP.split(contact.sip_user);
-      if (fields[2].equalsIgnoreCase(server)) {
-        contact.callid = sip.subscribe(fields[1], "presence", 3600);
+      ContactLabel label = contactList.get(a);
+      if (!label.monitor()) continue;
+      if (label.contact.server.equalsIgnoreCase(server)) {
+        label.callid = sip.subscribe(label.contact.number, "presence", 3600);
         count++;
       }
     }
@@ -1182,13 +1181,12 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     int count = 0;
     String server = sip.getRemoteHost();
     for(int a=0;a<contactList.size();a++) {
-      Contact contact = contactList.get(a);
-      if (!contact.monitor()) continue;
-      if (contact.callid == null) continue;
-      String fields[] = SIP.split(contact.sip_user);
-      if (fields[2].equalsIgnoreCase(server)) {
-        sip.unsubscribe(contact.callid, fields[1], "presence");
-        contact.callid = null;
+      ContactLabel label = contactList.get(a);
+      if (!label.monitor()) continue;
+      if (label.callid == null) continue;
+      if (label.contact.server.equalsIgnoreCase(server)) {
+        sip.unsubscribe(label.callid, label.contact.number, "presence");
+        label.callid = null;
         count++;
       }
     }

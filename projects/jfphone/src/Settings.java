@@ -36,10 +36,27 @@ public class Settings {
       transport = 0;  //0=UDP 1=TCP 2=TLS
     }
   }
+  public static class Contact {
+    public String name;
+    public String number;
+    public String server;
+    public boolean monitor;
+    public void set(Contact contact) {
+      this.name = contact.name;
+      this.number = contact.number;
+      this.server = contact.server;
+      this.monitor = contact.monitor;
+    }
+    public Contact() {
+      name = "New Name";
+      number = "";
+      server = "";
+    }
+  }
   public int WindowXPos = 0;
   public int WindowYPos = 0;
   public Line lines[];
-  public String sipcontacts[] = new String[0];
+  public Contact[] contacts = new Contact[0];
   public String callLog[] = new String[0];
   public String dndCodeOn = "*78", dndCodeOff = "*79";
   public boolean swVolForce = false;
@@ -191,39 +208,35 @@ public class Settings {
     current.callLog = newcallLog;
     saveSettings();
   }
-  public static void setContact(String name, String contact) {
-    int len = current.sipcontacts.length;
-    int idx;
-    String fields[];
+  public static void setContact(Settings.Contact new_contact) {
+    int len = current.contacts.length;
     for(int a=0;a<len;a++) {
-      fields = SIP.split(current.sipcontacts[a]);
-      if (fields[0].equals(name)) {
-JFLog.log("setting contact : " + fields[0] + " to " + contact);
-        current.sipcontacts[a] = contact;
+      Contact contact = current.contacts[a];
+      if (contact.name.equals(new_contact.name)) {
+        current.contacts[a].number = new_contact.number;
+        current.contacts[a].server = new_contact.server;
+        current.contacts[a].monitor = new_contact.monitor;
         return;
       }
     }
-JFLog.log("adding contact : " + contact);
-    String newContacts[] = new String[len+1];
-    for(int a=0;a<len;a++) {newContacts[a] = current.sipcontacts[a];}
-    newContacts[len] = contact;
-    current.sipcontacts = newContacts;
+    Contact newContacts[] = new Contact[len+1];
+    for(int a=0;a<len;a++) {newContacts[a] = current.contacts[a];}
+    newContacts[len] = new_contact;
+    current.contacts = newContacts;
   }
   public static void delContact(String name) {
-    int len = current.sipcontacts.length;
+    int len = current.contacts.length;
     if (len == 0) return;
-    int idx;
-    String fields[];
     for(int a=0;a<len;a++) {
-      fields = SIP.split(current.sipcontacts[a]);
-      if (fields[0].equalsIgnoreCase(name)) {
+      Contact contact = current.contacts[a];
+      if (contact.name.equalsIgnoreCase(name)) {
         int pos = 0;
-        String newlist[] = new String[len-1];
+        Contact newlist[] = new Contact[len-1];
         for(int b=0;b<len;b++) {
           if (b==a) continue;
-          newlist[pos++] = current.sipcontacts[b];
+          newlist[pos++] = current.contacts[b];
         }
-        current.sipcontacts = newlist;
+        current.contacts = newlist;
         return;
       }
     }

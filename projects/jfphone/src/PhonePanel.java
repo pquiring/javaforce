@@ -911,7 +911,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JTextArea chat;
   private javax.swing.JButton clear;
   private javax.swing.JButton cnf;
-  private javax.swing.JList<Contact> contactJList;
+  private javax.swing.JList<ContactLabel> contactJList;
   private javax.swing.JLabel contactLabel;
   private javax.swing.JLabel contactLabel1;
   private javax.swing.JButton delContact;
@@ -997,10 +997,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
       Settings.saveSettings();
     }
 
-    contactJList.setCellRenderer(new ListCellRenderer<Contact>() {
+    contactJList.setCellRenderer(new ListCellRenderer<ContactLabel>() {
       public Component getListCellRendererComponent(
-        JList<? extends Contact> list,              // the list
-        Contact value,            // value to display
+        JList<? extends ContactLabel> list,              // the list
+        ContactLabel value,            // value to display
         int index,               // cell index
         boolean isSelected,      // is the cell selected
         boolean cellHasFocus)    // does the cell have focus
@@ -1359,10 +1359,8 @@ Line Colors:
     if (server.indexOf(':') == -1) server += ":5060";
     JFLog.log("setStatus(" + number + "," + server + "," + status);
     for(int a=0;a<contactList.size();a++) {
-      String contact = contactList.get(a).sip_user;
-      String fields[] = SIP.split(contact);
-      if (fields[2].indexOf(':') == -1) fields[2] += ":5060";
-      if ( (fields[1].equals(number)) && (fields[2].equals(server)) ) {
+      ContactLabel label = contactList.get(a);
+      if ( (label.contact.number.equals(number)) && (label.contact.server.equals(server)) ) {
         if (status.equals("open")) {
           contactList.get(a).setIcon(ii[PIC_ICON_OPEN]);
           break;
@@ -1392,24 +1390,23 @@ Line Colors:
   /** Updates contact list after a change. */
 
   public void updateContactList(boolean resub) {
-    String fields1[], fields2[];
     //x = "display name" <sip:user@host;tag=...>;tag=...
     //return:    [0]          [1]  [2]   [...][:][...]
-    for(int a=0;a<Settings.current.sipcontacts.length;a++) {
-      fields1 = SIP.split(Settings.current.sipcontacts[a]);
+    for(int a=0;a<Settings.current.contacts.length;a++) {
+      Settings.Contact settings_contact = Settings.current.contacts[a];
       boolean ok = false;
       for(int b=0;b<contactList.size();b++) {
-        fields2 = SIP.split(contactList.get(b).sip_user);
-        if (fields1[0].equals(fields2[0])) {ok = true; break;}
+        ContactLabel label = contactList.get(b);
+        if (label.contact.name.equals(settings_contact.name)) {ok = true; break;}
       }
       if (!ok) {
-        Contact contact = new Contact(fields1[0], Settings.current.sipcontacts[a]);
-        contact.setIcon(ii[PIC_ICON_CLOSED]);
-        contactList.add(contact);
-        if (contact.monitor()) addMonitor(contact);
+        ContactLabel label = new ContactLabel(Settings.current.contacts[a]);
+        label.setIcon(ii[PIC_ICON_CLOSED]);
+        contactList.add(label);
+        if (label.monitor()) addMonitor(label);
       }
     }
-    contactJList.setListData(contactList.toArray(new Contact[0]));
+    contactJList.setListData(contactList.toArray(new ContactLabel[0]));
   }
 
   /** Update recent lists after a change. */
@@ -1421,17 +1418,16 @@ Line Colors:
   /** Call a contact (double-click). */
 
   public void dialContact() {
-    String contact = ((Contact)contactJList.getSelectedValue()).sip_user;
-    String fields[] = SIP.split(contact);
     if (line == -1) return;
+    ContactLabel label = (ContactLabel)contactJList.getSelectedValue();
     if (lines[line].xfer) {
-      lines[line].dial = fields[1];
+      lines[line].dial = label.contact.number;
       updateLine();
       return;
     }
     if (lines[line].incall) return;
-    if (fields[1].length() == 0) return;
-    lines[line].dial = fields[1];
+    if (label.contact.number.length() == 0) return;
+    lines[line].dial = label.contact.number;
     call();
   }
 
@@ -1545,10 +1541,9 @@ Line Colors:
   /** Adds a new contact. */
 
   public void addContact() {
-    String contact = EditContact.editContact(null, "\"New User\"<sip:@>", true);
+    Settings.Contact contact = EditContact.editContact(null, new Settings.Contact());
     if (contact == null) {JFLog.log("Contact is null"); return;}
-    String fields[] = SIP.split(contact);
-    Settings.setContact(fields[0], contact);
+    Settings.setContact(contact);
     updateContactList(true);
     Settings.saveSettings();
   }
@@ -1556,37 +1551,32 @@ Line Colors:
   /** Edits an existing contact. */
 
   public void editContact() {
-    Contact org_contact = (Contact)contactJList.getSelectedValue();
+    ContactLabel org_contact = (ContactLabel)contactJList.getSelectedValue();
     if (org_contact == null) return;
-    String org_sip_user = org_contact.sip_user;
-    String org_fields[] = SIP.split(org_sip_user);
-    String org_name = org_fields[0];
-    String new_sip_user = EditContact.editContact(null, org_sip_user, false);
-    if (new_sip_user == null) return;
-    String new_fields[] = SIP.split(new_sip_user);
-    String new_name = new_fields[0];
-    Contact new_contact = new Contact(new_fields[0], new_sip_user);
-    if (!new_name.equals(org_name)) {
-      Settings.delContact(org_name);
+    Settings.Contact new_contact = EditContact.editContact(null, org_contact.contact);
+    if (new_contact == null) return;
+    if (!new_contact.name.equals(org_contact.contact.name)) {
+      Settings.delContact(org_contact.contact.name);
       if (org_contact.monitor()) delMonitor(org_contact);
       for(int a=0;a<contactList.size();a++) {
-        String fields[] = SIP.split(contactList.get(a).sip_user);
-        if (fields[0].equals(org_name)) {
+        ContactLabel entry = contactList.get(a);
+        if (entry.contact.name.equals(org_contact.contact.name)) {
           contactList.remove(a);
           break;
         }
       }
     } else {
-      if (org_contact.monitor() && !new_contact.monitor()) delMonitor(org_contact);
+      if (org_contact.monitor() && !new_contact.monitor) delMonitor(org_contact);
       for(int a=0;a<contactList.size();a++) {
-        String fields[] = SIP.split(contactList.get(a).sip_user);
-        if (fields[0].equals(new_name)) {
-          contactList.get(a).sip_user = new_sip_user;
+        ContactLabel entry = contactList.get(a);
+        if (entry.contact.name.equals(new_contact.name)) {
+          entry.setText(new_contact.name);
+          entry.contact.set(new_contact);
           break;
         }
       }
     }
-    Settings.setContact(new_name, new_sip_user);
+    Settings.setContact(new_contact);
     updateContactList(true);
     Settings.saveSettings();
   }
@@ -1594,33 +1584,32 @@ Line Colors:
   /** Deletes a contact. */
 
   public void delContact() {
-    Contact contact = (Contact)contactJList.getSelectedValue();
-    if (contact == null) return;
-    String fields[] = SIP.split(contact.sip_user);
-    if (JOptionPane.showConfirmDialog(this, "Delete " + fields[0] + "?", "Delete entry?", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) return;
-    Settings.delContact(fields[0]);
+    ContactLabel label = (ContactLabel)contactJList.getSelectedValue();
+    if (label == null) return;
+    if (JOptionPane.showConfirmDialog(this, "Delete " + label.contact.name + "?", "Delete entry?", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) return;
+    Settings.delContact(label.contact.name);
     for(int a=0;a<contactList.size();a++) {
-      String fields2[] = SIP.split(contactList.get(a).sip_user);
-      if (fields2[0].equals(fields[0])) {
+      ContactLabel entry = contactList.get(a);
+      if (entry.contact.name.equals(label.contact.name)) {
         contactList.remove(a);
         break;
       }
     }
     updateContactList(true);
     Settings.saveSettings();
-    if (SIP.getFlag2(fields, "monitor").equals("true")) delMonitor(contact);
+    if (label.contact.monitor) {
+      delMonitor(label);
+    }
   }
 
   public void sendMessage() {
     if (line == -1) return;
-    Contact label = (Contact)contactJList.getSelectedValue();
+    ContactLabel label = (ContactLabel)contactJList.getSelectedValue();
     if (label == null) return;
-    String contact = label.sip_user;  //"name" <sip:user@server>... -> [0]=name [1]=user [2]=server ...
-    String fields[] = SIP.split(contact);
-    String msg = JFAWT.getString("Enter Message for:" + fields[1], "");
+    String msg = JFAWT.getString("Enter Message for:" + label.contact.name, "");
     if (msg == null) return;
     PhoneLine xline = lines[line];
-    xline.sip.message(fields[1], msg.split("\r\n"));
+    xline.sip.message(label.contact.number, msg.split("\r\n"));
     chatAdd(xline.user, msg.split("\r\n"));
   }
 
@@ -1718,40 +1707,33 @@ Line Colors:
 
   //NOTE:using "presence" here, could also use "reg" to track registration
 
-  public void addMonitor(Contact contact) {
+  public void addMonitor(ContactLabel label) {
 //    JFLog.log("addMonitor:" + contact);
-    String fields[] = SIP.split(contact.sip_user);
     //we need to see if a SIP is already registered that we can subscribe to
     for(int a=0;a<6;a++) {
       if (lines[a].sip == null) continue;
       if (!lines[a].sip.isRegistered()) continue;
-      if (lines[a].sip.getRemoteHost().equals(fields[3])) {
+      if (lines[a].sip.getRemoteHost().equals(label.contact.server)) {
         //found one that matches
-        contact.callid = lines[a].sip.subscribe(fields[1], "presence", 3600);
+        label.callid = lines[a].sip.subscribe(label.contact.number, "presence", 3600);
         return;
       }
     }
   }
 
-  public void delMonitor(Contact contact) {
-    String fields[] = SIP.split(contact.sip_user);
-    String fields3[] = new String[3];
-    fields3[0] = fields[0];
-    fields3[1] = fields[1];
-    fields3[2] = fields[2];
-    String contact3 = SIP.join(fields3);
+  public void delMonitor(ContactLabel label) {
     //we need to see if a SIP is already registered that we can unsubscribe to
     for(int a=0;a<6;a++) {
       if (lines[a].sip == null) continue;
       if (!lines[a].sip.isRegistered()) continue;
-      if (lines[a].sip.getRemoteHost().equals(fields[3])) {
+      if (lines[a].sip.getRemoteHost().equals(label.contact.server)) {
         //found one that matches
-        lines[a].sip.unsubscribe(contact.callid, fields3[1], "presence");
-        contact.callid = null;
+        lines[a].sip.unsubscribe(label.callid, label.contact.number, "presence");
+        label.callid = null;
         return;
       }
     }
-    contact.callid = null;
+    label.callid = null;
   }
 
   public void onRegister(SIPClient sip) {

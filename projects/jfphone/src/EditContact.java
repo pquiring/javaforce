@@ -6,15 +6,11 @@
  * @author pquiring
  */
 
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
-import javaforce.*;
 import javaforce.awt.*;
-import javaforce.voip.*;
 
 public class EditContact extends javax.swing.JDialog {
 
@@ -156,29 +152,30 @@ public class EditContact extends javax.swing.JDialog {
   private javax.swing.JTextField server;
   // End of variables declaration//GEN-END:variables
 
-  private static boolean cancelled = false;
-  private String fields[];
-  private boolean newContact;
+  private boolean cancelled = false;
+  private String org_name;
 
   /** Pops up the EditContact dialog window and returns when the dialog is closed. */
 
-  public static String editContact(java.awt.Frame parent, String contact, boolean newContact) {
+  public static Settings.Contact editContact(java.awt.Frame parent, Settings.Contact contact) {
     EditContact dialog = new EditContact(parent, true);
-    dialog.fields = SIP.split(contact);
-    dialog.name.setText(dialog.fields[0]);
-    dialog.number.setText(dialog.fields[1]);
-    dialog.server.setText(dialog.fields[2]);
-    dialog.monitor.setSelected( SIP.getFlag2(dialog.fields, "monitor").equals("true") );
-    dialog.newContact = newContact;
+    dialog.name.setText(contact.name);
+    dialog.number.setText(contact.number);
+    dialog.server.setText(contact.server);
+    dialog.monitor.setSelected(contact.monitor);
+    dialog.org_name = contact.name;
 
     dialog.setVisible(true);  //doesn't return until dialog is closed
 
-    if (cancelled) return null;
-    dialog.fields[0] = dialog.name.getText();
-    dialog.fields[1] = dialog.number.getText();
-    dialog.fields[2] = dialog.server.getText();
-    dialog.fields = SIP.setFlag2(dialog.fields, "monitor", (dialog.monitor.isSelected() ? "true" : "false"));
-    return SIP.join(dialog.fields);
+    if (dialog.cancelled) return null;
+
+    Settings.Contact new_contact = new Settings.Contact();
+
+    new_contact.name = dialog.name.getText();
+    new_contact.number = dialog.number.getText();
+    new_contact.server = dialog.server.getText();
+    new_contact.monitor = dialog.monitor.isSelected();
+    return new_contact;
   }
 
   private void validateName() {
@@ -276,10 +273,10 @@ public class EditContact extends javax.swing.JDialog {
     if (server.getText().equals(":")) {msg("Invalid server"); return false;}  //this would cause issues with SIP.split()/join()
     if (monitor.isSelected() && (server.getText().length() == 0)) {msg("Invalid server"); return false;}
     //check if name has changed and already exists
-    if ((newContact) || (!name.getText().equals(fields[0]))) {
-      for(int a=0;a<Settings.current.sipcontacts.length;a++) {
-        String sipfields[] = SIP.split(Settings.current.sipcontacts[a]);
-        if (name.getText().equals(sipfields[0])) {
+    if (!name.getText().equals(org_name)) {
+      for(int a=0;a<Settings.current.contacts.length;a++) {
+        Settings.Contact contact = Settings.current.contacts[a];
+        if (name.getText().equals(contact.name)) {
           msg("That contact already exists, choose a different name");
           return false;
         }
