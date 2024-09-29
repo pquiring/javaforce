@@ -42,6 +42,7 @@ jfparted - Partition Editor for jfLinux
 jfpasswords - Passwords Manager
 jfpbx - VoIP PBX Service
 jfphone - VoIP Phone
+jfprint - Print Server
 jfplcbackup - PLC Backup/Restore Utility
 jfpop3 - POP3 Service
 jfprojector - Desktop/Audio Projector
