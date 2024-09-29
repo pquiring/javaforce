@@ -277,6 +277,10 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nstop
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
+  if (ctx->rgb_video_dst_data[0] != NULL) {
+    (*_av_free)(ctx->rgb_video_dst_data[0]);
+    ctx->rgb_video_dst_data[0] = NULL;
+  }
   if (ctx->decode_buffer != NULL) {
     (*_av_free)(ctx->decode_buffer);
     ctx->decode_buffer = NULL;
@@ -333,6 +337,15 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
       ctx->width = ctx->video_codec_ctx->width;
       ctx->height = ctx->video_codec_ctx->height;
     }
+    //create video buffer
+    ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
+      , ctx->width, ctx->height
+      , AV_PIX_FMT_BGRA, 1);
+    if (ctx->rgb_video_dst_bufsize < 0)
+    {
+      printf("MediaVideoDecoder:av_image_alloc() failed : %d\n", ctx->rgb_video_dst_bufsize);
+      return JNI_FALSE;
+    }
     //create video conversion context
     ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
       , ctx->width, ctx->height, AV_PIX_FMT_BGRA
@@ -342,7 +355,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
     ctx->jvideo_length = px_count;
     ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
   }
-
   (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
