@@ -3,6 +3,7 @@ package javaforce.media;
 /** Media encoder.
  *
  * TODO : deprecate class
+ * New code should use MediaOutput instead.
  *
  * @author pquiring
  */
