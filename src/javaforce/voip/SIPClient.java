@@ -281,6 +281,24 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     return issue(cd, "SUBSCRIBE", false, true);
   }
 
+  /** Unsubscribe a previously subscribed user.
+   * Re-sends a subscribe with expires set to zero.
+   */
+  public boolean unsubscribe(String callid, String subuser, String event) {
+    CallDetails cd = getCallDetails(callid);
+    cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
+    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+    cd.src.from = replacetag(cd.src.from, generatetag());
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
+    cd.uri = "sip:" + subuser + "@" + remotehost;
+    cd.src.branch = getbranch();
+    cd.src.cseq++;
+    cd.src.expires = 0;
+    cd.src.extra = "Accept: multipart/related, application/rlmi+xml, application/pidf+xml\r\nEvent: " + event + "\r\n";
+    cd.src.epass = null;
+    return issue(cd, "SUBSCRIBE", false, true);
+  }
+
   /**
    * Send an empty SIP message to server. This should be done periodically to
    * keep firewalls open. Most routers close UDP connections after 60 seconds.

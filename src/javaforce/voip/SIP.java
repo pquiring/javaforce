@@ -85,6 +85,13 @@ public abstract class SIP implements TransportInterface {
 
   /**
    * Splits a To: or From: field in a SIP message into parts.
+   * General format : "display name" &lt;sip:user@host;flags&gt;flags
+   *   [0] = "display name"
+   *   [1] = user
+   *   [2] = host/server
+   *   [...] flags inside brackets
+   *   [x] = :
+   *   [...] flags outside brackets
    */
   public static String[] split(String x) {
     //x = "display name" <sip:user@host ;...   >  ;...
@@ -169,6 +176,7 @@ public abstract class SIP implements TransportInterface {
 
   /**
    * Joins a To: or From: field after it was split into parts.
+   * See split() for general form.
    */
   public static String join(String[] x) {
     //x = "display name" <sip:user@host ;...  > ;...
