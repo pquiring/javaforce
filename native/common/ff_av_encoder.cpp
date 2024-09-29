@@ -171,13 +171,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
 
   jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
 
-  jboolean isCopy;
-  jshort* array_ptr = (jshort*)ctx->e->GetPrimitiveArrayCritical(array, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-  memcpy(array_ptr, ctx->pkt->data, ctx->pkt->size);
-
-  ctx->e->ReleasePrimitiveArrayCritical(array, array_ptr, JNI_COMMIT);
+  ctx->e->SetByteArrayRegion(array, 0, ctx->pkt->size, (jbyte*)ctx->pkt->data);
 
   return array;
 }
@@ -375,13 +369,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
 
   jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
 
-  jboolean isCopy;
-  jshort* array_ptr = (jshort*)ctx->e->GetPrimitiveArrayCritical(array, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-  memcpy(array_ptr, ctx->pkt->data, ctx->pkt->size);
-
-  ctx->e->ReleasePrimitiveArrayCritical(array, array_ptr, JNI_COMMIT);
+  ctx->e->SetByteArrayRegion(array, 0, ctx->pkt->size, (jbyte*)ctx->pkt->data);
 
   return array;
 }

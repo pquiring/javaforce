@@ -83,8 +83,6 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   if (ctx == NULL) return NULL;
 
   jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   //there should always be 64 bytes after the data to decode
   if (length + 64 > ctx->decode_buffer_size) {
@@ -95,8 +93,8 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
   }
 
-  memcpy(ctx->decode_buffer, dataptr + offset, length);
-  uint8_t *pad = dataptr + offset + length;
+  e->GetByteArrayRegion(data, offset, length, (jbyte*)ctx->decode_buffer);
+  uint8_t *pad = ctx->decode_buffer + offset + length;
   for(int a=0;a<64;a++) {
     *(pad++) = 0;
   }
@@ -105,7 +103,6 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   ctx->pkt->data = ctx->decode_buffer;
 
   int ret = (*_avcodec_send_packet)(ctx->audio_codec_ctx, ctx->pkt);
-  e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
     printf("MediaAudioDecoder:avcodec_send_packet() failed : %d\n", ret);
@@ -294,8 +291,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return NULL;
   jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   //there should always be 64 bytes after the data to decode
   if (length + 64 > ctx->decode_buffer_size) {
@@ -305,8 +300,8 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
     }
     ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
   }
-  memcpy(ctx->decode_buffer, dataptr + offset, length);
-  uint8_t *pad = dataptr + offset + length;
+  e->GetByteArrayRegion(data, offset, length, (jbyte*)ctx->decode_buffer);
+  uint8_t *pad = ctx->decode_buffer + offset + length;
   for(int a=0;a<64;a++) {
     *(pad++) = 0;
   }
@@ -315,7 +310,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
   ctx->pkt->data = ctx->decode_buffer;
 
   int ret = (*_avcodec_send_packet)(ctx->video_codec_ctx, ctx->pkt);
-  e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
     printf("MediaVideoDecoder:avcodec_send_packet() failed : %d\n", ret);
