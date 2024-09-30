@@ -1086,7 +1086,7 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"nsuspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsuspend},
   {"nrestore", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestore},
   {"nget", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nget},
-  {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/vm/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
+  {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/webui/tasks/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
 };
 
 static JNINativeMethod javaforce_vm_Secret[] = {
