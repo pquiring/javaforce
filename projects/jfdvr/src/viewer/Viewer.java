@@ -772,7 +772,6 @@ public class Viewer {
               video_buffer.freeNextFrame();
             }
           } else {
-            if (debug) JFLog.log(log, "Playback too slow - skipping a frame");
             skip++;
           }
           current += frameDelay;
