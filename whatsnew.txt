@@ -1,5 +1,19 @@
 What's new...
 
+Sept 30/2024 : JF/69.0
+  - added javaforce.media.MediaInput/MediaOutput
+    - these are designed to replace MediaDecoder/MediaEncoder
+    - they are more modular and simplier design
+    - MediaEncoder/MediaDecoder may be deprecated in the future
+  - javaforce.voip.SIPClient
+    - add unsubscribe(), resubscribe()
+  - jfPhone/1.29
+    - fixed SDP packet (fixes issue #16)
+    - fixed subscribe/unsubscribe (fixes issue #17)
+    - overhauled contact management (existing contact list will be lost)
+  - Video Decoder
+    - fixed memory corruption
+
 Sept 25/2024 : JF/68.3
  - added Camera.getFrameMirror()
  - fixed camera support on Windows
