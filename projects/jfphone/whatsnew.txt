@@ -1,4 +1,8 @@
 CHANGELOG:
+9-30-2024 : v1.29 released
+  - fix : SDP issue
+  - fix : SUBSCRIBE handling
+    - SUBSCRIBE, reSUBSCRIBE and unSUBSCRIBE now work properly
 4-26-2024 : v1.28 released
   - fix : SDP parsing
 2-20-2024 : v1.27 released
