@@ -205,7 +205,6 @@ public class VideoPanel extends javax.swing.JPanel {
   public void setImage(JFImage src) {
     new_img = src;
     if (needPainting) {
-      JFLog.log("Video updating too slow");
       return;
     }
     needPainting = true;

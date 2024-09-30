@@ -1553,7 +1553,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             video_buffer.freeNextFrame();
           }
         } else {
-          JFLog.log("Playback too slow - skipping a frame");
           skip++;
         }
         current += frameDelay;
@@ -1663,7 +1662,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             video_buffer.freeNextFrame();
           }
         } else {
-          JFLog.log("Playback too slow - skipping a frame");
           skip++;
         }
         current += frameDelay;
