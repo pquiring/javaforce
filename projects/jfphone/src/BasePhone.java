@@ -254,7 +254,14 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (pl.sip.isRegistered()) {
         try {
           if (monitorUnSubscribe(pl.sip) > 0) {
-            JF.sleep(100);
+            JFLog.log("Waiting for SUBSCRIBE termination (max 5 secs)");
+            //wait for termination status (max 5 seconds)
+            int count = 50;
+            while (monitorActiveCount(pl.sip) > 0) {
+              JF.sleep(100);
+              count--;
+              if (count == 0) break;
+            }
           }
           pl.sip.unregister();
         } catch (Exception e) {
@@ -1169,7 +1176,11 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       ContactLabel label = contactList.get(a);
       if (!label.monitor()) continue;
       if (label.contact.server.equalsIgnoreCase(server)) {
-        label.callid = sip.subscribe(label.contact.number, "presence", 3600);
+        if (label.callid == null) {
+          label.callid = sip.subscribe(label.contact.number, "presence", 3600);
+        } else {
+          sip.resubscribe(label.callid, label.contact.number, "presence", 3600);
+        }
         count++;
       }
     }
@@ -1191,6 +1202,41 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       }
     }
     return count;
+  }
+
+  public int monitorActiveCount(SIPClient sip) {
+    int count = 0;
+    String server = sip.getRemoteHost();
+    for(int a=0;a<contactList.size();a++) {
+      ContactLabel label = contactList.get(a);
+      if (!label.monitor()) continue;
+      if (label.callid == null) continue;
+      if (label.contact.server.equalsIgnoreCase(server)) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  public void onmonitorSubscribe(String number) {
+    for(int a=0;a<contactList.size();a++) {
+      ContactLabel label = contactList.get(a);
+      if (label.contact.number.equals(number)) {
+        JFLog.log("SUBSCRIBE:active:" + number);
+        return;
+      }
+    }
+  }
+
+  public void onmonitorUnSubscribe(String number) {
+    for(int a=0;a<contactList.size();a++) {
+      ContactLabel label = contactList.get(a);
+      if (label.contact.number.equals(number)) {
+        JFLog.log("SUBSCRIBE:terminated:" + number);
+        label.callid = null;
+        return;
+      }
+    }
   }
 
 //SIPClientInterface interface
@@ -1436,6 +1482,10 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       return;
     }
     if (event.equals("presence")) {
+      String substate = HTTP.getParameter(msg, "Subscription-State");
+      if (substate == null) substate = "";
+      String[] substates = substate.split(";");
+      String state = substates[0];
       String content = String.join("", msg);
       JFLog.log("note:Presence:" + content);
       if (!content.startsWith("<?xml")) {JFLog.log("Not valid presence data (1)"); return;}
@@ -1449,6 +1499,14 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       XML.XMLTag status = xml.getTag(new String[] { "presence", "tuple", "status", "basic" });
       if (status == null) {JFLog.log("Not valid presence data (5)"); return;}
       gui.setStatus(fields[1], fields[2], status.getContent().trim());
+      switch (state) {
+        case "active":
+          onmonitorSubscribe(fields[1]);
+          break;
+        case "terminated":
+          onmonitorUnSubscribe(fields[1]);
+          break;
+      }
       return;
     }
     String parts[] = event.split(";");

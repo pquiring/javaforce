@@ -270,9 +270,13 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public String subscribe(String subuser, String event, int expires) {
     String callid = getcallid();
     CallDetails cd = getCallDetails(callid);  //new CallDetails
-    cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
-    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
-    cd.src.from = replacetag(cd.src.from, generatetag());
+    if (cd.src.to == null) {
+      cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
+    }
+    if (cd.src.from == null) {
+      cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+      cd.src.from = replacetag(cd.src.from, generatetag());
+    }
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.uri = "sip:" + subuser + "@" + remotehost;
     cd.src.branch = getbranch();
@@ -280,10 +284,33 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.expires = expires;
     cd.src.extra = "Accept: multipart/related, application/rlmi+xml, application/pidf+xml\r\nEvent: " + event + "\r\n";
     cd.src.epass = null;
+    cd.authsent = false;
     if (!issue(cd, "SUBSCRIBE", false, true)) {
       return null;
     }
     return callid;
+  }
+
+  /** Resubscribe a previously subscribed user.
+   */
+  public boolean resubscribe(String callid, String subuser, String event, int expires) {
+    CallDetails cd = getCallDetails(callid);
+    if (cd.src.to == null) {
+      cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
+    }
+    if (cd.src.from == null) {
+      cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+      cd.src.from = replacetag(cd.src.from, generatetag());
+    }
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
+    cd.uri = "sip:" + subuser + "@" + remotehost;
+    cd.src.branch = getbranch();
+    cd.src.cseq++;
+    cd.src.expires = expires;
+    cd.src.extra = "Accept: multipart/related, application/rlmi+xml, application/pidf+xml\r\nEvent: " + event + "\r\n";
+    cd.src.epass = null;
+    cd.authsent = false;
+    return issue(cd, "SUBSCRIBE", false, true);
   }
 
   /** Unsubscribe a previously subscribed user.
@@ -292,9 +319,13 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    */
   public boolean unsubscribe(String callid, String subuser, String event) {
     CallDetails cd = getCallDetails(callid);
-    cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
-    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
-    cd.src.from = replacetag(cd.src.from, generatetag());
+    if (cd.src.to == null) {
+      cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
+    }
+    if (cd.src.from == null) {
+      cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+      cd.src.from = replacetag(cd.src.from, generatetag());
+    }
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.uri = "sip:" + subuser + "@" + remotehost;
     cd.src.branch = getbranch();
@@ -302,6 +333,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.expires = 0;
     cd.src.extra = "Accept: multipart/related, application/rlmi+xml, application/pidf+xml\r\nEvent: " + event + "\r\n";
     cd.src.epass = null;
+    cd.authsent = false;
     return issue(cd, "SUBSCRIBE", false, true);
   }
 
@@ -1045,6 +1077,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             if (type == 183) break;  //not used in BYE command
             //call leg ended
             setCallDetails(callid, null);
+          } else if (cmd.equals("SUBSCRIBE")) {
+            //update cd.src.to tag value
+            cd.src.to = cd.dst.to;
           }
           break;
         case 202:
