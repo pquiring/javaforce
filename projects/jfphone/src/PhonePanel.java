@@ -1357,7 +1357,7 @@ Line Colors:
   public void setStatus(String number, String server, String status) {
     //BUG : Assuming port 5060 - TLS uses 5061
     if (server.indexOf(':') == -1) server += ":5060";
-    JFLog.log("setStatus(" + number + "," + server + "," + status);
+    JFLog.log("setStatus:" + number + "," + server + "," + status);
     for(int a=0;a<contactList.size();a++) {
       ContactLabel label = contactList.get(a);
       if ( (label.contact.number.equals(number)) && (label.contact.server.equals(server)) ) {

@@ -148,6 +148,9 @@ public class Settings {
       }
       if (current.sipexpires < 300) current.sipexpires = 300;
       if (current.sipexpires > 3600) current.sipexpires = 3600;
+      if (BasePhone.debug) {
+        current.sipexpires = 120;  //re-register every 2 mins
+      }
       if (current.nat == 1) current.nat = 0;  //beta value (dyndns dropped)
 
       if (current.welcome) {
