@@ -1074,6 +1074,7 @@ static JNINativeMethod javaforce_vm_Storage[] = {
 };
 
 static JNINativeMethod javaforce_vm_VirtualMachine[] = {
+  {"init", "()Z", (void *)&Java_javaforce_vm_VirtualMachine_init},
   {"nlist", "()[Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nlist},
   {"nregister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nregister},
   {"nunregister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nunregister},
