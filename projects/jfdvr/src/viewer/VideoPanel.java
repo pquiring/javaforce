@@ -435,7 +435,6 @@ public class VideoPanel extends javax.swing.JPanel {
 
   private void update() {
     if (needPainting) {
-      if (debug) JFLog.log("Video updating too slow");
       return;
     }
     needPainting = true;
