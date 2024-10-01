@@ -36,8 +36,8 @@
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="number" alignment="1" max="32767" attributes="0"/>
-                          <Component id="server" max="32767" attributes="0"/>
                           <Component id="name" max="32767" attributes="0"/>
+                          <Component id="server" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" attributes="0">
@@ -71,8 +71,8 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="server" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="server" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="monitor" min="-2" max="-2" attributes="0"/>
@@ -133,10 +133,15 @@
         <Property name="text" type="java.lang.String" value="Server:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="server">
+    <Component class="javax.swing.JComboBox" name="server">
       <Properties>
-        <Property name="text" type="java.lang.String" value="server"/>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

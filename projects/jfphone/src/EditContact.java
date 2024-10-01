@@ -8,6 +8,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 
 import javaforce.awt.*;
@@ -19,6 +20,7 @@ public class EditContact extends javax.swing.JDialog {
     super(parent, modal);
     initComponents();
     setPosition();
+    loadServers();
     JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
     JFAWT.assignHotKey(this, save, KeyEvent.VK_ENTER);
   }
@@ -40,7 +42,7 @@ public class EditContact extends javax.swing.JDialog {
     save = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     jLabel3 = new javax.swing.JLabel();
-    server = new javax.swing.JTextField();
+    server = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Edit Contact");
@@ -71,8 +73,6 @@ public class EditContact extends javax.swing.JDialog {
 
     jLabel3.setText("Server:");
 
-    server.setText("server");
-
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -88,8 +88,8 @@ public class EditContact extends javax.swing.JDialog {
             .addGap(10, 10, 10)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(number, javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(server)
-              .addComponent(name)))
+              .addComponent(name)
+              .addComponent(server, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(monitor)
@@ -113,8 +113,8 @@ public class EditContact extends javax.swing.JDialog {
           .addComponent(number, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel3))
+          .addComponent(jLabel3)
+          .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(monitor)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -149,11 +149,12 @@ public class EditContact extends javax.swing.JDialog {
   private javax.swing.JTextField name;
   private javax.swing.JTextField number;
   private javax.swing.JButton save;
-  private javax.swing.JTextField server;
+  private javax.swing.JComboBox<String> server;
   // End of variables declaration//GEN-END:variables
 
   private boolean cancelled = false;
   private String org_name;
+  private ArrayList<String> servers = new ArrayList<>();
 
   /** Pops up the EditContact dialog window and returns when the dialog is closed. */
 
@@ -161,7 +162,7 @@ public class EditContact extends javax.swing.JDialog {
     EditContact dialog = new EditContact(parent, true);
     dialog.name.setText(contact.name);
     dialog.number.setText(contact.number);
-    dialog.server.setText(contact.server);
+    dialog.setServer(contact.server);
     dialog.monitor.setSelected(contact.monitor);
     dialog.org_name = contact.name;
 
@@ -173,7 +174,7 @@ public class EditContact extends javax.swing.JDialog {
 
     new_contact.name = dialog.name.getText();
     new_contact.number = dialog.number.getText();
-    new_contact.server = dialog.server.getText();
+    new_contact.server = dialog.getServer();
     new_contact.monitor = dialog.monitor.isSelected();
     return new_contact;
   }
@@ -225,41 +226,6 @@ public class EditContact extends javax.swing.JDialog {
     number.setText(newtext);
   }
 
-  private void validateServer() {
-    //make sure server has only alpha,numeric and '.', '-'
-    String text = server.getText();
-    String newtext = "";
-    boolean clean = true;
-    char ch;
-    for(int a=0;a<text.length();a++) {
-      ch = text.charAt(a);
-      if ((ch >= '0') && (ch <= '9')) {
-        newtext += ch;
-        continue;
-      }
-      if ((ch >= 'a') && (ch <= 'z')) {
-        newtext += ch;
-        continue;
-      }
-      if ((ch >= 'A') && (ch <= 'Z')) {
-        newtext += ch;
-        continue;
-      }
-      switch (ch) {
-        case '.':
-        case '-':
-        case ':':
-          newtext += ch;
-          continue;
-        default:
-          clean = false;
-          break;
-      }
-    }
-    if (clean) return;
-    server.setText(newtext);
-  }
-
   private void msg(String msg) {
     JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
@@ -267,11 +233,9 @@ public class EditContact extends javax.swing.JDialog {
   private boolean valid() {
     validateName();
     validateNumber();
-    validateServer();
     if (name.getText().length() == 0) {msg("Invalid name"); return false;}
     if (number.getText().length() == 0) {msg("Invalid number"); return false;}
-    if (server.getText().equals(":")) {msg("Invalid server"); return false;}  //this would cause issues with SIP.split()/join()
-    if (monitor.isSelected() && (server.getText().length() == 0)) {msg("Invalid server"); return false;}
+    if (server.getSelectedIndex() == -1) {msg("Invalid server"); return false;}
     //check if name has changed and already exists
     if (!name.getText().equals(org_name)) {
       for(int a=0;a<Settings.current.contacts.length;a++) {
@@ -288,5 +252,29 @@ public class EditContact extends javax.swing.JDialog {
     Dimension d = getSize();
     Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setLocation(s.width/2 - d.width/2, s.height/2 - d.height/2);
+  }
+  private void loadServers() {
+    for(int a=0;a<Settings.current.lines.length;a++) {
+      Settings.Line line = Settings.current.lines[a];
+      if (a > 0 && line.same != -1) continue;
+      String host = Settings.current.lines[a].host;
+      servers.add(host);
+      String acct = "Account:" + Settings.current.lines[a].name + "@" + host;
+      server.addItem(acct);
+    }
+  }
+  private String getServer() {
+    int idx = server.getSelectedIndex();
+    if (idx == -1) return null;
+    return servers.get(idx);
+  }
+  private void setServer(String value) {
+    for(int a=0;a<servers.size();a++) {
+      String elem = servers.get(a);
+      if (elem.equals(value)) {
+        server.setSelectedIndex(a);
+        return;
+      }
+    }
   }
 }
