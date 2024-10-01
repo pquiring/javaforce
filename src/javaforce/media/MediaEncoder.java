@@ -62,8 +62,8 @@ public class MediaEncoder extends MediaFormat {
    * @param chs = audio channels (-1 = no audio)
    * @param freq = audio frequency (-1 = no audio)
    * @param format = audio format (see MediaCoder.AV_FORMAT_...)
-   * @param video_codec = video codec to use (-1 = default for format, 0 = no video stream) (see MediaFormat.AV_CODEC_...)
-   * @param audio_codec = audio codec to use (-1 = default for format, 0 = no video stream) (see MediaFormat.AV_CODEC_...)
+   * @param video_codec = video codec to use (-1 = default for format, 0 = no video stream) (see MediaCoder.AV_CODEC_...)
+   * @param audio_codec = audio codec to use (-1 = default for format, 0 = no video stream) (see MediaCoder.AV_CODEC_...)
    */
   public boolean startFile(String file, int width, int height, int fps, int chs, int freq, String format, int video_codec, int audio_codec) {
     return nstartFile(file, width, height, fps, chs, freq, format, video_codec, audio_codec);

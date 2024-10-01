@@ -118,8 +118,12 @@ public class MediaCoder {
   //apple
   public static final String AV_FORMAT_ID_MOV = "mov";
 
-  //video codecs (VideoDecoder)
+  /** No codec (for encoding only) */
   public static final int AV_CODEC_ID_NONE = 0;
+  /** Select default codec for format (for encoding only) */
+  public static final int AV_CODEC_ID_DEFAULT = -1;
+
+  //video codecs (VideoDecoder)
   public static final int AV_CODEC_ID_MPEG1VIDEO = 1;
   public static final int AV_CODEC_ID_MPEG2VIDEO = 2;
   public static final int AV_CODEC_ID_H263 = 4;
