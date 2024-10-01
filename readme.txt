@@ -68,6 +68,7 @@ JavaForce Ant tasks:
 --------------------
 get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
 get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader)
+  ffmpeg-win64 versions 5.1.2 , 6.1.2 , 7.0.2 are now available (you must edit versions.xml)
 jre-base : pre-link JRE for creating native packages (msi, dmg)
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support

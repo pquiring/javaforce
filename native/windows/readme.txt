@@ -60,4 +60,5 @@ You still need to download ffmpeg libraries
 
 Notes
 -----
-  - the apps MUST use the EXACT same version of ffmpeg you build against
+  - apps MUST use the EXACT same MAJOR version of ffmpeg you build against
+  - downloads are available for 5.1.2 , 6.1.2 and 7.0.2 (you must change ..\..\versions.xml)
