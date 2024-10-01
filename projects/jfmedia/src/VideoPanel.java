@@ -160,7 +160,7 @@ public class VideoPanel extends javax.swing.JPanel {
   private javax.swing.JSlider time;
   // End of variables declaration//GEN-END:variables
 
-  private JFImage img, new_img;
+  private JFImage img, new_img, scaled;
   private boolean needPainting = false;
   private java.util.Timer timer;
   private int cnt = 0;
@@ -228,13 +228,14 @@ public class VideoPanel extends javax.swing.JPanel {
       int iw = img.getWidth();
       int ih = img.getHeight();
       if (((iw != w) || (ih != h))) {
-        JFLog.log("VideoPanel:image scaled");
-        JFImage scaled = new JFImage();
-        scaled.setImageSize(w, h);
+        if (scaled == null || scaled.getWidth() != w || scaled.getHeight() != h) {
+          scaled = new JFImage(w, h);
+        }
         scaled.getGraphics().drawImage(img.getImage(), 0,0, w,h, 0,0, iw,ih, null);
-        img = scaled;
+        g.drawImage(scaled.getImage(), 0, 0, null);
+      } else {
+        g.drawImage(img.getImage(), 0, 0, null);
       }
-      g.drawImage(img.getImage(), 0, 0, null);
     }
     needPainting = false;
   }
