@@ -28,6 +28,7 @@ Compiling using pre-built ffmpeg headers/libraries
   ant
 
   - where ${ffmpeg-version} can be found in ../../versions.xml
+  - downloads are available for 5.1.2 , 6.1.2 and 7.0.2 (you must change ..\..\versions.xml)
 
 Compiling using ffmpeg downloaded manually
 ------------------------------------------
@@ -49,16 +50,17 @@ Compiling using ffmpeg downloaded manually
 
 Downloading pre-built binaries
 ------------------------------
-If you have problems compiling you can always download pre-built binaries hosted on sourceforge:
+  If you have problems compiling you can always download pre-built binaries hosted on sourceforge:
 
-  ant get-bin
+    ant get-bin
 
-You still need to download ffmpeg libraries
+  You still need to download ffmpeg libraries
 
-  cd ../..
-  ant get-ffmpeg-win64-bin
+    cd ../..
+    ant get-ffmpeg-win64-bin
+
+  This download is compiled against the version of ffmpeg currently in ..\..\versions.xml
 
 Notes
 -----
   - apps MUST use the EXACT same MAJOR version of ffmpeg you build against
-  - downloads are available for 5.1.2 , 6.1.2 and 7.0.2 (you must change ..\..\versions.xml)
