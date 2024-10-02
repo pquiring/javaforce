@@ -447,6 +447,7 @@ bool loadProperties() {
   int res;
   struct Header header;
 
+  javahome[0] = 0;
   xoptions[0] = 0;
 
 #ifdef _JF_SERVICE
@@ -527,6 +528,47 @@ char* strlwr(char* str) {
   return str;
 }
 
+bool exists(char *file) {
+  if (access(file, F_OK) == 0) return true;
+  return false;
+}
+
+bool findJavaHomeEnvironment() {
+  //try to find JRE in JAVA_HOME environment variable
+  char* env_java_home;
+  env_java_home = getenv("JAVA_HOME");
+  if (env_java_home == NULL) return false;
+  strcpy(javahome, env_java_home);
+  int sl = strlen(javahome);
+  strcat(javahome, "/lib/server/libjvm.so");
+  if (exists(javahome)) {
+    javahome[sl] = 0;
+    return true;
+  }
+  return false;
+}
+
+bool findJavaHomeApp() {
+  //try /usr/bin/java
+  char *java_home = resolvelink("/usr/bin/java");
+  if (java_home == NULL) {
+    return false;
+  }
+  strcpy(javahome, java_home);
+  //remove /bin/java from javahome
+  char *_java = strrchr(javahome, '/');
+  *_java = 0;
+  char *_bin = strrchr(javahome, '/');
+  *_bin = 0;
+  int sl = strlen(javahome);
+  strcat(javahome, "/lib/server/libjvm.so");
+  if (exists(javahome)) {
+    javahome[sl] = 0;
+    return true;
+  }
+  return false;
+}
+
 bool try_graal() {
   strcpy(dll, "/usr/lib/");
   strcat(dll, mainclass);
@@ -537,27 +579,13 @@ bool try_graal() {
 }
 
 bool try_jvm() {
-  //get java home
-
-  //try JAVA_HOME first
-  char* java_home;
-
-  java_home = getenv("JAVA_HOME");
-  if (java_home != NULL) {
-    strcpy(javahome, java_home);
-  } else {
-    //try /usr/bin/java
-    java_home = resolvelink("/usr/bin/java");
-    if (java_home == NULL) {
-      error("Unable to find java");
-      return false;
+  if (javahome[0] == 0) {
+    if (findJavaHomeEnvironment() == 0) {
+      if (findJavaHomeApp() == 0) {
+        error("Unable to find java");
+        return false;
+      }
     }
-    strcpy(javahome, java_home);
-    //remove /bin/java from javahome
-    char *_java = strrchr(javahome, '/');
-    *_java = 0;
-    char *_bin = strrchr(javahome, '/');
-    *_bin = 0;
   }
 
   strcat(javahome, "/lib");
