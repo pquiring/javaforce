@@ -147,6 +147,7 @@ The native loaders in /bin enable JMX debugging support on port 9010.
 These loaders are used when you run an app with "ant run".
 From VisualVM you can connect to the JMX as localhost:9010
 You can also enable debug support by adding DEBUG=true to the project .cfg file to have it enabled in the generated executable.
+Also try adding -Xlog:gc*:gc.log to the OPTIONS= in the project .cfg file.  Then while the app is running use 'tail -f gc.log' from a terminal to watch memory usage.
 This should be removed for any public release.
 
 Requirements
