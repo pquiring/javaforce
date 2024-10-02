@@ -1,12 +1,13 @@
 <project name="native" default="windows" basedir=".">
   <description>native</description>
   <property name="home" value="../.."/>
-  <property environment="env"/>
   <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib sas.lib wtsapi32.lib"/>
+  <import file="${home}/versions.xml"/>
 
   <target name="windows" description="create windows native files">
+    <echo>ffmpeg-src=${home}/ffmpeg-src/${ffmpeg-version}</echo>
     <!-- native library -->
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' /I '../opencl' native.cpp /c /Fo: native.obj"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${home}/ffmpeg-src/${ffmpeg-version}' /I '../headers' /I '../opencl' native.cpp /c /Fo: native.obj"/>
     <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw.obj"/>
     <exec command="cl /I '../glfw/include' glfw-null.c /c /Fo: glfw-null.obj"/>
     <exec command="lib /nologo /out:native.lib native.obj glfw.obj glfw-null.obj"/>
@@ -30,13 +31,13 @@
 
   <target name="get-bin" description="download pre-built binaries">
     <sequential>
-      <get src="http://javaforce.sourceforge.net/jf-bin-win64.zip" dest="${home}/jf-bin-win64.zip" usetimestamp="true"/>
+      <get src="http://javaforce.sourceforge.net/ffmpeg/win64/amd64/jf-bin-win64-ffmpeg${ffmpeg-version}.zip" dest="${home}/jf-bin-win64.zip" usetimestamp="true"/>
       <unzip src="${home}/jf-bin-win64.zip" dest="${home}"/>
     </sequential>
   </target>
 
   <target name="zip-bin" description="zip pre-built binaries">
-    <zip destfile="${home}/jf-bin-win64.zip">
+    <zip destfile="${home}/jf-bin-win64-ffmpeg${ffmpeg-version}.zip">
       <fileset dir="${home}">
         <include name="bin/*.exe"/>
         <include name="native/*.exe"/>

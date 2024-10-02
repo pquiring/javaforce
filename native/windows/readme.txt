@@ -24,7 +24,6 @@ Compiling using pre-built ffmpeg headers/libraries
   ant get-ffmpeg-win64-src
   ant get-ffmpeg-win64-bin
   cd native/windows
-  set FFMPEG_HOME=../../ffmpeg-src/${ffmpeg-version}
   ant
 
   - where ${ffmpeg-version} can be found in ../../versions.xml
@@ -58,8 +57,6 @@ Downloading pre-built binaries
 
     cd ../..
     ant get-ffmpeg-win64-bin
-
-  This download is compiled against the version of ffmpeg currently in ..\..\versions.xml
 
 Notes
 -----
