@@ -6,8 +6,9 @@ package javaforce.jni;
  */
 
 public class Library {
-  public String name, path;
-  public String match, libmatch;
+  public String name;
+  public String path;
+  public String match;
 
   public Library(String name) {
     this.name = name;

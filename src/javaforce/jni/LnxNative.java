@@ -17,7 +17,7 @@ import javaforce.linux.*;
 
 public class LnxNative {
   private static void load() {
-    Library[] libs = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
+    Library[] libs = {new Library("X11"), new Library("GL"), new Library("v4l2")};
     JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so");
     lnxInit(libs[0].path, libs[1].path, libs[2].path);
   }

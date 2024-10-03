@@ -24,7 +24,7 @@ public class CL implements AutoCloseable {
       ext = ".dll";
       name = name.toLowerCase();
     } else if (JF.isMac()) {
-      sysFolders = new File[] {new File("/System/Library/Frameworks/OpenCL.framework/Versions/Current/OpenCL"), new File(apphome), new File(".")};
+      sysFolders = new File[] {new File("/System/Library/Frameworks/OpenCL.framework/Versions/Current/Libraries"), new File(apphome), new File(".")};
       ext = ".dylib";
     } else {
       sysFolders = new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())};
