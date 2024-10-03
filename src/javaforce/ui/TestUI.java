@@ -19,7 +19,7 @@ public class TestUI implements WindowEvents {
     window.create(Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "TestUI", 1024, 512, window);
     window.show();
     window.setWindowListener(new TestUI());
-    GL.glInit();
+    GL.init();
     window.setContent(createUI());
     window.setScale(2);
     render.run();
