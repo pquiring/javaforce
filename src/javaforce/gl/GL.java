@@ -36,7 +36,7 @@ public class GL {
    * Mac : Call anytime.
    *
    */
-  public static native boolean glInit();
+  public static native boolean init();
 
   public static final boolean debug = false;  //enable to see lots of debug info
 

@@ -191,31 +191,30 @@ static long getX11ID(JNIEnv *e, jobject c) {
 
 #include "../common/gl.cpp"
 
+jboolean glPlatformInit() {
+  return JNI_TRUE;
+}
+
+jboolean glGetFunction(void **funcPtr, const char *name)
+{
+  void *func;
+  func = (void*)(*_glXGetProcAddress)(name);  //get OpenGL 1.x function
+  if (func == NULL) {
+    func = (void*)dlsym(xgl, name);  //get OpenGL 2.0+ function
+  }
+  if (func != NULL) {
+    *funcPtr = func;
+    return JNI_TRUE;
+  } else {
+    printf("OpenGL:Error:Can not find function:%s\n", name);
+    return JNI_FALSE;
+  }
+}
+
 JNIEXPORT void JNICALL Java_javaforce_ui_Window_nseticon
   (JNIEnv *e, jclass c, jlong id, jstring filename, jint x, jint y)
 {
   //TODO
-}
-
-//this func must be called only when a valid OpenGL context is set
-JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
-  (JNIEnv *e, jclass c)
-{
-  if (funcs[0].func != NULL) return JNI_TRUE;  //already done
-  if (xgl == NULL) return JNI_FALSE;
-  void *func;
-  for(int a=0;a<GL_NO_FUNCS;a++) {
-    func = (void*)(*_glXGetProcAddress)(funcs[a].name);  //get OpenGL 1.x function
-    if (func == NULL) {
-      func = (void*)dlsym(xgl, funcs[a].name);  //get OpenGL 2.0+ function
-      if (func == NULL) {
-        printf("glInit:Error:Can not find function:%s\n", funcs[a].name);
-        continue;
-      }
-    }
-    funcs[a].func = func;
-  }
-  return JNI_TRUE;
 }
 
 //camera API

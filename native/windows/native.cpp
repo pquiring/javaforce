@@ -85,11 +85,8 @@ JNIEXPORT void JNICALL Java_javaforce_ui_Window_nseticon
 
 #include "../common/gl.cpp"
 
-//this func must be called only when a valid OpenGL context is set
-JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
-  (JNIEnv *e, jclass c)
+jboolean glPlatformInit()
 {
-  if (funcs[0].func != NULL) return JNI_TRUE;  //already done
   if (wgl == NULL) {
     wgl = LoadLibrary("opengl32.dll");
     if (wgl == NULL) {
@@ -97,19 +94,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
       return JNI_FALSE;
     }
   }
-  void *func;
-  for(int a=0;a<GL_NO_FUNCS;a++) {
-    func = (void*)wglGetProcAddress(funcs[a].name);  //get OpenGL 1.x function
-    if (func == NULL) {
-      func = (void*)GetProcAddress(wgl, funcs[a].name);  //get OpenGL 2.0+ function
-      if (func == NULL) {
-        printf("glInit:Error:Can not find function:%s\n", funcs[a].name);
-        continue;
-      }
-    }
-    funcs[a].func = func;
-  }
   return JNI_TRUE;
+}
+
+jboolean glGetFunction(void **funcPtr, const char *name)
+{
+  void *func;
+  func = (void*)wglGetProcAddress(name);  //get OpenGL 1.x function
+  if (func == NULL) {
+    func = (void*)GetProcAddress(wgl, name);  //get OpenGL 2.0+ function
+  }
+  if (func != NULL) {
+    *funcPtr = func;
+    return JNI_TRUE;
+  } else {
+    printf("OpenGL:Error:Can not find function:%s\n", name);
+    return JNI_FALSE;
+  }
 }
 
 //Camera API

@@ -36,22 +36,24 @@
 
 #include "../common/gl.cpp"
 
-JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
-  (JNIEnv *e, jclass c)
+void *gl;
+
+jboolean glPlatformInit() {
+  gl = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/OpenGL.dylib", RTLD_LAZY | RTLD_GLOBAL);
+  return gl != NULL;
+}
+
+jboolean glGetFunction(void **funcPtr, const char *name)
 {
-  if (funcs[0].func != NULL) return JNI_TRUE;  //already done
   void *func;
-  void *gl = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/OpenGL.dylib", RTLD_LAZY | RTLD_GLOBAL);
-  if (gl == NULL) return JNI_FALSE;
-  for(int a=0;a<GL_NO_FUNCS;a++) {
-    func = (void*)dlsym(gl, funcs[a].name);
-    if (func == NULL) {
-      printf("glInit:Error:Can not find function:%s\n", funcs[a].name);
-      continue;
-    }
-    funcs[a].func = func;
+  func = (void*)dlsym(gl, name);
+  if (func != NULL) {
+    *funcPtr = func;
+    return JNI_TRUE;
+  } else {
+    printf("OpenGL:Error:Can not find function:%s\n", name);
+    return JNI_FALSE;
   }
-  return JNI_TRUE;
 }
 
 //camera API

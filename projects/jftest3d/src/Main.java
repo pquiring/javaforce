@@ -16,7 +16,7 @@ public class Main implements WindowEvents {
     gl.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "Test", 512, 512, null);
     gl.show();
     gl.setWindowListener(new Main());
-    GL.glInit();  //must call AFTER window is created
+    GL.init();  //must call AFTER window is created
     code = new GLCode(true);
     code.init();
     while (true) {

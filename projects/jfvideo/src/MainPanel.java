@@ -23,7 +23,7 @@ public class MainPanel extends javax.swing.JPanel {
     gl = new Window();
     gl.init();
     gl.create(0,"jfVideo",1,1,null);  //invisible window
-    GL.glInit();
+    GL.init();
   }
 
   /**
