@@ -77,7 +77,6 @@ void (*_glXSwapBuffers)(void *x11, int win);
 void* (*_glXChooseVisual)(void *x11, int res, int *attrs);
 
 void *v4l2 = NULL;
-
 int (*_v4l2_open)(const char *file, int oflag, ...);
 int (*_v4l2_close)(int fd);
 int (*_v4l2_dup)(int fd);
@@ -95,7 +94,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       printf("Warning:dlopen(libjawt.so) unsuccessful\n");
       return JNI_FALSE;
     }
-    _JAWT_GetAWT = (jboolean (JNICALL *)(JNIEnv *e, JAWT *c))dlsym(jawt, "JAWT_GetAWT");
+    getFunction(jawt, (void**)&_JAWT_GetAWT, "JAWT_GetAWT");
   }
   if (x11 == NULL && libX11_so != NULL) {
     const char *clibX11_so = e->GetStringUTFChars(libX11_so,NULL);
@@ -105,8 +104,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       printf("Warning:dlopen(libX11.so) unsuccessful\n");
       return JNI_FALSE;
     }
-    _XOpenDisplay = (void* (*)(void*))dlsym(xgl, "XOpenDisplay");
-    _XCloseDisplay = (void (*)(void*))dlsym(xgl, "XCloseDisplay");
+    getFunction(x11, (void**)&_XOpenDisplay, "XOpenDisplay");
+    getFunction(x11, (void**)&_XCloseDisplay, "XCloseDisplay");
   }
   if (xgl == NULL && libgl_so != NULL) {
     const char *clibgl_so = e->GetStringUTFChars(libgl_so,NULL);
@@ -116,12 +115,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       printf("Warning:dlopen(libGL.so) unsuccessful\n");
       return JNI_FALSE;
     }
-    _glXCreateContext = (void* (*)(void*,void*,void*,int))dlsym(xgl, "glXCreateContext");
-    _glXDestroyContext = (int (*)(void*, void*))dlsym(xgl, "glXDestroyContext");
-    _glXMakeCurrent = (int (*)(void*,int,void*))dlsym(xgl, "glXMakeCurrent");
-    _glXGetProcAddress = (void* (*)(const char *))dlsym(xgl, "glXGetProcAddress");
-    _glXSwapBuffers = (void (*)(void*,int))dlsym(xgl, "glXSwapBuffers");
-    _glXChooseVisual = (void* (*)(void*,int,int*))dlsym(xgl, "glXChooseVisual");
+    getFunction(xgl, (void**)&_glXCreateContext, "glXCreateContext");
+    getFunction(xgl, (void**)&_glXDestroyContext, "glXDestroyContext");
+    getFunction(xgl, (void**)&_glXMakeCurrent, "glXMakeCurrent");
+    getFunction(xgl, (void**)&_glXGetProcAddress, "glXGetProcAddress");
+    getFunction(xgl, (void**)&_glXSwapBuffers, "glXSwapBuffers");
+    getFunction(xgl, (void**)&_glXChooseVisual, "glXChooseVisual");
   }
   if (v4l2 == NULL && libv4l2_so != NULL) {
     const char *clibv4l2_so = e->GetStringUTFChars(libv4l2_so,NULL);
@@ -131,13 +130,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       printf("Warning:dlopen(libv4l2.so) unsuccessful\n");
       return JNI_FALSE;
     }
-    _v4l2_open = (int (*)(const char *file, int oflag, ...))dlsym(v4l2, "v4l2_open");
-    _v4l2_close = (int (*)(int))dlsym(v4l2, "v4l2_close");
-    _v4l2_dup = (int (*)(int))dlsym(v4l2, "v4l2_dup");
-    _v4l2_ioctl = (int (*)(int, unsigned long int, ...))dlsym(v4l2, "v4l2_ioctl");
-    _v4l2_read = (int (*)(int, void*, size_t))dlsym(v4l2, "v4l2_read");
-    _v4l2_mmap = (void* (*)(void *, size_t, int, int, int, int64_t))dlsym(v4l2, "v4l2_mmap");
-    _v4l2_munmap = (int (*)(void *, size_t))dlsym(v4l2, "v4l2_munmap");
+    getFunction(v4l2, (void**)&_v4l2_open, "v4l2_open");
+    getFunction(v4l2, (void**)&_v4l2_close, "v4l2_close");
+    getFunction(v4l2, (void**)&_v4l2_dup, "v4l2_dup");
+    getFunction(v4l2, (void**)&_v4l2_ioctl, "v4l2_ioctl");
+    getFunction(v4l2, (void**)&_v4l2_read, "v4l2_read");
+    getFunction(v4l2, (void**)&_v4l2_mmap, "v4l2_mmap");
+    getFunction(v4l2, (void**)&_v4l2_munmap, "v4l2_munmap");
   }
 
   return JNI_TRUE;
