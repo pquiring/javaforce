@@ -18,25 +18,7 @@ import javaforce.linux.*;
 public class LnxNative {
   private static void load() {
     Library[] libs = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
-    if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so")) {
-      for(int a=0;a<libs.length;a++) {
-        if (libs[a].path == null) {
-          System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
-          if (libs[a].name.equals("libX11")) {
-            have_x11 = false;
-          }
-          else if (libs[a].name.equals("libGL")) {
-            have_gl = false;
-          }
-          else if (libs[a].name.equals("libfuse")) {
-            have_fuse = false;
-          }
-          else if (libs[a].name.equals("libv4l2")) {
-            have_v4l2 = false;
-          }
-        }
-      }
-    }
+    JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so");
     lnxInit(libs[0].path, libs[1].path, libs[2].path);
   }
 

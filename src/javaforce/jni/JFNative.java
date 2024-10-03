@@ -9,6 +9,8 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 
+import javaforce.*;
+
 public class JFNative {
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File[] folders, Library[] libs, String ext) {
@@ -48,10 +50,14 @@ public class JFNative {
         }
       }
     }
+    boolean ok = true;
     for(int i=0;i<libs.length;i++) {
-      if (libs[i].path == null) return false;
+      if (libs[i].path == null) {
+        JFLog.log("Unable to find library:" + libs[i].name);
+        ok = false;
+      }
     }
-    return false;
+    return ok;
   }
   /** Allocate a Direct ByteBuffer. */
   public native static ByteBuffer allocate(int size);
