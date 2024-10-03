@@ -7,13 +7,9 @@ package javaforce.jni;
 
 public class Library {
   public String name, path;
-  public boolean once;
+  public String match, libmatch;
 
   public Library(String name) {
     this.name = name;
-  }
-  public Library(String name, boolean once) {
-    this.name = name;
-    this.once = once;
   }
 }

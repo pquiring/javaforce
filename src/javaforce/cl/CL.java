@@ -31,7 +31,7 @@ public class CL implements AutoCloseable {
       ext = ".so";
     }
     Library[] libs = {new Library(name)};
-    JFNative.findLibraries(sysFolders, libs, ext, libs.length);
+    JFNative.findLibraries(sysFolders, libs, ext);
     if (libs[0].path == null) {
       JFLog.log("Error:Unable to find OpenCL library");
       return false;

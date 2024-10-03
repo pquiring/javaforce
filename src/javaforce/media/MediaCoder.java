@@ -54,7 +54,7 @@ public class MediaCoder {
       , new Library("postproc")
       , new Library("swresample")
     };
-    JFNative.findLibraries(sysFolders, libs, ext, libs.length-1);
+    JFNative.findLibraries(sysFolders, libs, ext);
     if (!haveLibs(libs)) {
       for(int a=0;a<libs.length;a++) {
         if (libs[a].path == null) {

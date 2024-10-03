@@ -46,7 +46,7 @@ public class PacketCapture {
     }
     if (JF.isUnix()) {
       Library so = new Library("pcap");
-      JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so", 1);
+      JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
       return ninit(null, so.path);
     }
     return false;
