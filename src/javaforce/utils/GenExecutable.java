@@ -10,7 +10,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class GenExecutable {
+public class GenExecutable implements ShellProcessListener {
   private BuildTools tools;
   public static void main(String[] args) {
     if (args.length != 1) {
@@ -80,10 +80,28 @@ public class GenExecutable {
     }
     doSubProjects();
   }
+  public void shellProcessOutput(String str) {
+    System.out.print(str);
+  }
   private void doSubProjects() {
     String[] subs = tools.getSubProjects();
     for(String project : subs) {
-      main(new String[] {project + ".xml"});
+      ShellProcess sp = new ShellProcess();
+      sp.addListener(this);
+      String buildfile = project + ".xml";
+      //ant -file buildfile install
+      ArrayList<String> cmd = new ArrayList<String>();
+      if (JF.isWindows()) {
+        cmd.add("ant.bat");
+      } else {
+        cmd.add("ant");
+      }
+      cmd.add("-file");
+      cmd.add(buildfile);
+      cmd.add("executable");
+
+      JFLog.log("Executing ant -file " + buildfile + " executable");
+      sp.run(cmd.toArray(JF.StringArrayType), true);
     }
   }
 }
