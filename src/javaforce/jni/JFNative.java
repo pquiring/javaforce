@@ -12,7 +12,6 @@ import java.util.*;
 public class JFNative {
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File[] folders, Library[] libs, String ext) {
-    int needed = libs.length;
     for(int i=0;i<libs.length;i++) {
       libs[i].match = libs[i].name + "([-][0-9]*)?" + ext + "([.][0-9]*)*";
       libs[i].libmatch = "lib" + libs[i].match;
@@ -39,16 +38,18 @@ public class JFNative {
         if (file.isDirectory()) {
           continue;
         } else if (fileName.contains(ext)) {
-          int cnt = 0;
           for(int b=0;b<libs.length;b++) {
+            if (libs[b].path != null) continue;
             if (fileName.matches(libs[b].match) || fileName.matches(libs[b].libmatch)) {
               libs[b].path = file.getAbsolutePath();
-              cnt++;
+              break;
             }
           }
-          if (cnt == needed) return true;
         }
       }
+    }
+    for(int i=0;i<libs.length;i++) {
+      if (libs[i].path == null) return false;
     }
     return false;
   }
