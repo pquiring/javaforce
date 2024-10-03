@@ -1,5 +1,12 @@
 What's new...
 
+Oct 3/2024 : JF/69.1
+  - jfDVR/0.31
+    - increased viewer max memory size to 12GB
+  - jfPhone/1.30
+    - EditContact : server field is now a combobox
+  - fix : linux loader finds proper libs
+
 Sept 30/2024 : JF/69.0
   - added javaforce.media.MediaInput/MediaOutput
     - these are designed to replace MediaDecoder/MediaEncoder
