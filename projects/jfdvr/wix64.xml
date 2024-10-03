@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{DAF6D3A4-EAA6-4748-80FD-D1B7AEE46365}" Version="0.30" Language="1033" Name="jfDVR" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{DAF6D3A4-EAA6-4748-80FD-D1B7AEE46365}" Version="0.31" Language="1033" Name="jfDVR" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />

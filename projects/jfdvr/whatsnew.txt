@@ -1,3 +1,6 @@
+Oct 3, 2024 : 0.31 released!
+  - fix : increased viewer max memory size to 12GB
+
 Sept 10, 2024 : 0.30 released!
   - new : camera viewer can now look back at recordings
   - new : viewer can download snippets
