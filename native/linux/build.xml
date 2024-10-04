@@ -1,7 +1,7 @@
 <project name="native" default="help" basedir=".">
   <description>native</description>
   <property environment="env"/>
-  <property name="libs" value="-ldl -lpthread -lpam -lncurses -lstdc++ -lm"/>
+  <property name="libs" value="-ldl -lpthread -lncurses -lstdc++ -lm"/>
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 

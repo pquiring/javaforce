@@ -105,8 +105,13 @@ int (*_v4l2_read)(int fd, void* buffer, size_t n);
 void* (*_v4l2_mmap)(void *start, size_t length, int prot, int flags, int fd, int64_t offset);
 int (*_v4l2_munmap)(void *_start, size_t length);
 
+void *pam = NULL;
+int (*_pam_start)(const char *service_name, const char *user, const struct pam_conv *pam_conversation, pam_handle_t **pamh);
+int (*_pam_authenticate)(pam_handle_t *pamh, int flags);
+int (*_pam_end)(pam_handle_t *pamh, int pam_status);
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
-  (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so)
+  (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so)
 {
   if (jawt == NULL) {
     jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
@@ -178,7 +183,18 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       getFunction(v4l2, (void**)&_v4l2_munmap, "v4l2_munmap");
     }
   }
-
+  if (pam == NULL && libpam_so != NULL) {
+    const char *clibpam_so = e->GetStringUTFChars(libpam_so,NULL);
+    pam = dlopen(clibpam_so, RTLD_LAZY | RTLD_GLOBAL);
+    e->ReleaseStringUTFChars(libpam_so, clibpam_so);
+    if (pam == NULL) {
+      printf("Warning:dlopen(libpam.so) unsuccessful\n");
+    } else {
+      getFunction(pam, (void**)&_pam_start, "pam_start");
+      getFunction(pam, (void**)&_pam_authenticate, "pam_authenticate");
+      getFunction(pam, (void**)&_pam_end, "pam_end");
+    }
+  }
   return JNI_TRUE;
 }
 
@@ -1612,7 +1628,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
   conv.conv = &pam_callback;
   conv.appdata_ptr = NULL;
 
-  int res = pam_start(cbackend, pam_user, &conv, &handle);
+  int res = (*_pam_start)(cbackend, pam_user, &conv, &handle);
   if (res != 0) {
     e->ReleaseStringUTFChars(backend, cbackend);
     e->ReleaseStringUTFChars(user, pam_user);
@@ -1621,9 +1637,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
     printf("pam_start() failed:%d:%d\n", res, errno);
     return JNI_FALSE;
   }
-  res = pam_authenticate(handle, PAM_SILENT);
+  res = (*_pam_authenticate)(handle, PAM_SILENT);
   printf("pam_authenticate():%d:%d\n", res, errno);
-  pam_end(handle, 0);
+  (*_pam_end)(handle, 0);
   if (pam_responses != NULL) {
 //      free(pam_responses);  //crashes if password was wrong - memory leak for now???
     pam_responses = NULL;
@@ -1960,7 +1976,7 @@ void camera_register(JNIEnv *env) {
 
 //Linux native methods
 static JNINativeMethod javaforce_jni_LnxNative[] = {
-  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
+  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
   {"lnxServiceStop", "()Z", (void *)&Java_javaforce_jni_LnxNative_lnxServiceStop},
   {"comOpen", "(Ljava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_comOpen},
   {"comClose", "(I)V", (void *)&Java_javaforce_jni_LnxNative_comClose},
