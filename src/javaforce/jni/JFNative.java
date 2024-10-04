@@ -43,10 +43,13 @@ public class JFNative {
           continue;
         } else if (fileName.contains(ext)) {
           for(int b=0;b<libs.length;b++) {
-            if (libs[b].path != null) continue;
             if (fileName.matches(libs[b].match)) {
-              libs[b].path = file.getAbsolutePath();
-              break;
+              //always use longer paths (shorter ones are often ld scripts that dlopen does not understand)
+              String path = file.getAbsolutePath();
+              if ((libs[b].path == null) || (path.length() > libs[b].path.length())) {
+                libs[b].path = path;
+                break;
+              }
             }
           }
         }

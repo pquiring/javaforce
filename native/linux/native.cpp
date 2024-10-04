@@ -110,8 +110,18 @@ int (*_pam_start)(const char *service_name, const char *user, const struct pam_c
 int (*_pam_authenticate)(pam_handle_t *pamh, int flags);
 int (*_pam_end)(pam_handle_t *pamh, int pam_status);
 
+void *ncurses = NULL;
+WINDOW* (*_initscr)();
+int (*_raw)();
+int (*_noecho)();
+void (*_wtimeout)(WINDOW *win, int delay);
+int (*_wgetch)(WINDOW *win);
+int (*_ungetch)(int ch);
+int (*_endwin)();
+WINDOW *_stdscr;
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
-  (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so)
+  (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so, jstring libncurses_so)
 {
   if (jawt == NULL) {
     jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
@@ -193,6 +203,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       getFunction(pam, (void**)&_pam_start, "pam_start");
       getFunction(pam, (void**)&_pam_authenticate, "pam_authenticate");
       getFunction(pam, (void**)&_pam_end, "pam_end");
+    }
+  }
+  if (ncurses == NULL && libncurses_so != NULL) {
+    const char *clibncurses_so = e->GetStringUTFChars(libncurses_so,NULL);
+    ncurses = dlopen(clibncurses_so, RTLD_LAZY | RTLD_GLOBAL);
+    e->ReleaseStringUTFChars(libncurses_so, clibncurses_so);
+    if (ncurses == NULL) {
+      printf("Warning:dlopen(libncurses.so) unsuccessful\n");
+    } else {
+      getFunction(ncurses, (void**)&_initscr, "initscr");
+      getFunction(ncurses, (void**)&_raw, "raw");
+      getFunction(ncurses, (void**)&_noecho, "noecho");
+      getFunction(ncurses, (void**)&_wtimeout, "wtimeout");
+      getFunction(ncurses, (void**)&_wgetch, "wgetch");
+      getFunction(ncurses, (void**)&_ungetch, "ungetch");
+      getFunction(ncurses, (void**)&_endwin, "endwin");
+      getFunction(ncurses, (void**)&_stdscr, "stdscr");
     }
   }
   return JNI_TRUE;
@@ -1825,18 +1852,18 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_enableConsoleMode
   (JNIEnv *e, jclass c)
 {
   console_buffer[0] = 0;
-  initscr();
-  raw();
-  noecho();
-  wtimeout(stdscr, 0);
-  wgetch(stdscr);  //first call to wgetch() clears the screen
-  wtimeout(stdscr, -1);
+  (*_initscr)();
+  (*_raw)();
+  (*_noecho)();
+  (*_wtimeout)(_stdscr, 0);
+  (*_wgetch)(_stdscr);  //first call to wgetch() clears the screen
+  (*_wtimeout)(_stdscr, -1);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_disableConsoleMode
   (JNIEnv *e, jclass c)
 {
-  endwin();
+  (*_endwin)();
 }
 
 JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
@@ -1847,24 +1874,24 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
     StringCopy(console_buffer, console_buffer+1);
     return (jchar)ret;
   }
-  wtimeout(stdscr, -1);
-  char ch = wgetch(stdscr);
+  (*_wtimeout)(_stdscr, -1);
+  char ch = (*_wgetch)(_stdscr);
   if (ch == 0x1b) {
     //is it Escape key or ANSI code???
-    wtimeout(stdscr, 100);
-    char ch2 = wgetch(stdscr);  //waits 100ms max
+    (*_wtimeout)(_stdscr, 100);
+    char ch2 = (*_wgetch)(_stdscr);  //waits 100ms max
     if (ch2 == ERR) {
       StringCopy(console_buffer, "[1~");  //custom ansi code for esc
     } else {
       if (ch2 == 0x1b) {
-        ungetch(ch2);
+        (*_ungetch)(ch2);
         StringCopy(console_buffer, "[1~");  //custom ansi code for esc
       } else {
         console_buffer[0] = ch2;
         console_buffer[1] = 0;
       }
     }
-    wtimeout(stdscr, -1);
+    (*_wtimeout)(_stdscr, -1);
   }
   return (jchar)ch;
 }
@@ -1873,25 +1900,25 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
   (JNIEnv *e, jclass c)
 {
   if (console_buffer[0] != 0) return JNI_TRUE;
-  wtimeout(stdscr, 0);
-  char ch = wgetch(stdscr);
+  (*_wtimeout)(_stdscr, 0);
+  char ch = (*_wgetch)(_stdscr);
   if (ch == 0x1b) {
     console_buffer[0] = 0x1b;
     //is it Escape key or ANSI code???
-    wtimeout(stdscr, 100);
-    char ch2 = wgetch(stdscr);  //waits 100ms max
+    (*_wtimeout)(_stdscr, 100);
+    char ch2 = (*_wgetch)(_stdscr);  //waits 100ms max
     if (ch2 == ERR) {
       StringCopy(console_buffer+1, "[1~");  //custom ansi code for esc
     } else {
       if (ch2 == 0x1b) {
-        ungetch(ch2);
+        (*_ungetch)(ch2);
         StringCopy(console_buffer+1, "[1~");  //custom ansi code for esc
       } else {
         console_buffer[1] = ch2;
         console_buffer[2] = 0;
       }
     }
-    wtimeout(stdscr, -1);
+    (*_wtimeout)(_stdscr, -1);
   }
   if (ch == ERR) {
     return JNI_FALSE;
@@ -1976,7 +2003,7 @@ void camera_register(JNIEnv *env) {
 
 //Linux native methods
 static JNINativeMethod javaforce_jni_LnxNative[] = {
-  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
+  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
   {"lnxServiceStop", "()Z", (void *)&Java_javaforce_jni_LnxNative_lnxServiceStop},
   {"comOpen", "(Ljava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_comOpen},
   {"comClose", "(I)V", (void *)&Java_javaforce_jni_LnxNative_comClose},

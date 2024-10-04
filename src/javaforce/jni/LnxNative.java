@@ -17,9 +17,9 @@ import javaforce.linux.*;
 
 public class LnxNative {
   private static void load() {
-    Library[] libs = {new Library("X11"), new Library("GL"), new Library("v4l2"), new Library("pam")};
+    Library[] libs = {new Library("X11"), new Library("GL"), new Library("v4l2"), new Library("pam"), new Library("ncurses")};
     JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so");
-    lnxInit(libs[0].path, libs[1].path, libs[2].path, libs[3].path);
+    lnxInit(libs[0].path, libs[1].path, libs[2].path, libs[3].path, libs[4].path);
   }
 
   /** Returns CPU arch lib folder. */
@@ -62,7 +62,7 @@ public class LnxNative {
     }
   }
 
-  private static native boolean lnxInit(String libX11, String libGL, String libv4l2, String pam);
+  private static native boolean lnxInit(String libX11, String libGL, String libv4l2, String pam, String ncurses);
   /** Creates a unix socket which commands to the service can be issued.
    * Only supported command is "stop".  (see lnxServiceRequestStop())
    * Socket file is stored at /usr/lib/systemd/system/{service}.socket
