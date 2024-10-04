@@ -65,8 +65,28 @@ void* jawt = NULL;
 jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 
 void* x11 = NULL;
-void* (*_XOpenDisplay)(void*);
+Display* (*_XOpenDisplay)(void*);
 void (*_XCloseDisplay)(void*);
+Atom (*_XInternAtom)(Display *display, char *atom_name, Bool only_if_exists);
+int (*_XChangeProperty)(Display *display, Window w, Atom property, Atom type, int format, int mode, const unsigned char* data, int nelements);
+Status (*_XSendEvent)(Display *display, Window w, Bool propagate, long event_mask, XEvent *event_send);
+void (*_XSetSelectionOwner)(Display *display, Atom selection, Window owner, Time time);
+int (*_XSelectInput)(Display *display, Window w, long event_mask);
+void (*_XMapWindow)(Display *display, Window w);
+void (*_XUnmapWindow)(Display *display, Window w);
+void (*_XNextEvent)(Display *display, XEvent *event_return);
+Status (*_XIconifyWindow)(Display *display, Window w, int screen_number);
+void (*_XRaiseWindow)(Display *display, Window w);
+KeyCode (*_XKeysymToKeycode)(Display *display, KeySym keysym);
+void (*_XGetInputFocus)(Display *display, Window *focus_return, int *revert_to_return);
+Window (*_XDefaultRootWindow)(Display *display);
+int (*_XMoveResizeWindow)(Display *display, Window w, int x, int y, unsigned width, unsigned height);
+int (*_XReparentWindow)(Display *display, Window w, Window parent, int x, int y);
+Window (*_XCreateSimpleWindow)(Display *display, Window parent, int x,  int  y,  unsigned  int width,  unsigned  int  height,  unsigned  int  border_width, unsigned long border, unsigned long background);
+int (*_XGetWindowProperty)(Display *display, Window w, Atom property, long long_offset, long long_length, Bool _delete, Atom req_type, Atom *actual_type_return, int *actual_format_return, unsigned long *nitems_return, unsigned long *bytes_after_return, unsigned char **prop_return);
+int (*_XFree)(void *data);
+Status (*_XGetClassHint)(Display *display, Window w, XClassHint *class_hints_return);
+Status (*_XFetchName)(Display *display, Window w, char **window_name_return);
 
 void* xgl = NULL;
 void* (*_glXCreateContext)(void *x11, void *vi, void *shareList, int directRender);
@@ -102,10 +122,30 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     e->ReleaseStringUTFChars(libX11_so, clibX11_so);
     if (x11 == NULL) {
       printf("Warning:dlopen(libX11.so) unsuccessful\n");
-      return JNI_FALSE;
+    } else {
+      getFunction(x11, (void**)&_XOpenDisplay, "XOpenDisplay");
+      getFunction(x11, (void**)&_XCloseDisplay, "XCloseDisplay");
+      getFunction(x11, (void**)&_XInternAtom, "XInternAtom");
+      getFunction(x11, (void**)&_XChangeProperty, "XChangeProperty");
+      getFunction(x11, (void**)&_XSendEvent, "XSendEvent");
+      getFunction(x11, (void**)&_XSetSelectionOwner, "XSetSelectionOwner");
+      getFunction(x11, (void**)&_XSelectInput, "XSelectInput");
+      getFunction(x11, (void**)&_XMapWindow, "XMapWindow");
+      getFunction(x11, (void**)&_XUnmapWindow, "XUnmapWindow");
+      getFunction(x11, (void**)&_XNextEvent, "XNextEvent");
+      getFunction(x11, (void**)&_XIconifyWindow, "XIconifyWindow");
+      getFunction(x11, (void**)&_XRaiseWindow, "XRaiseWindow");
+      getFunction(x11, (void**)&_XKeysymToKeycode, "XKeysymToKeycode");
+      getFunction(x11, (void**)&_XGetInputFocus, "XGetInputFocus");
+      getFunction(x11, (void**)&_XDefaultRootWindow, "XDefaultRootWindow");
+      getFunction(x11, (void**)&_XMoveResizeWindow, "XMoveResizeWindow");
+      getFunction(x11, (void**)&_XReparentWindow, "XReparentWindow");
+      getFunction(x11, (void**)&_XCreateSimpleWindow, "XCreateSimpleWindow");
+      getFunction(x11, (void**)&_XGetWindowProperty, "XGetWindowProperty");
+      getFunction(x11, (void**)&_XFree, "XFree");
+      getFunction(x11, (void**)&_XGetClassHint, "XGetClassHint");
+      getFunction(x11, (void**)&_XFetchName, "XFetchName");
     }
-    getFunction(x11, (void**)&_XOpenDisplay, "XOpenDisplay");
-    getFunction(x11, (void**)&_XCloseDisplay, "XCloseDisplay");
   }
   if (xgl == NULL && libgl_so != NULL) {
     const char *clibgl_so = e->GetStringUTFChars(libgl_so,NULL);
@@ -113,14 +153,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     e->ReleaseStringUTFChars(libgl_so, clibgl_so);
     if (xgl == NULL) {
       printf("Warning:dlopen(libGL.so) unsuccessful\n");
-      return JNI_FALSE;
+    } else {
+      getFunction(xgl, (void**)&_glXCreateContext, "glXCreateContext");
+      getFunction(xgl, (void**)&_glXDestroyContext, "glXDestroyContext");
+      getFunction(xgl, (void**)&_glXMakeCurrent, "glXMakeCurrent");
+      getFunction(xgl, (void**)&_glXGetProcAddress, "glXGetProcAddress");
+      getFunction(xgl, (void**)&_glXSwapBuffers, "glXSwapBuffers");
+      getFunction(xgl, (void**)&_glXChooseVisual, "glXChooseVisual");
     }
-    getFunction(xgl, (void**)&_glXCreateContext, "glXCreateContext");
-    getFunction(xgl, (void**)&_glXDestroyContext, "glXDestroyContext");
-    getFunction(xgl, (void**)&_glXMakeCurrent, "glXMakeCurrent");
-    getFunction(xgl, (void**)&_glXGetProcAddress, "glXGetProcAddress");
-    getFunction(xgl, (void**)&_glXSwapBuffers, "glXSwapBuffers");
-    getFunction(xgl, (void**)&_glXChooseVisual, "glXChooseVisual");
   }
   if (v4l2 == NULL && libv4l2_so != NULL) {
     const char *clibv4l2_so = e->GetStringUTFChars(libv4l2_so,NULL);
@@ -128,15 +168,15 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     e->ReleaseStringUTFChars(libv4l2_so, clibv4l2_so);
     if (v4l2 == NULL) {
       printf("Warning:dlopen(libv4l2.so) unsuccessful\n");
-      return JNI_FALSE;
+    } else {
+      getFunction(v4l2, (void**)&_v4l2_open, "v4l2_open");
+      getFunction(v4l2, (void**)&_v4l2_close, "v4l2_close");
+      getFunction(v4l2, (void**)&_v4l2_dup, "v4l2_dup");
+      getFunction(v4l2, (void**)&_v4l2_ioctl, "v4l2_ioctl");
+      getFunction(v4l2, (void**)&_v4l2_read, "v4l2_read");
+      getFunction(v4l2, (void**)&_v4l2_mmap, "v4l2_mmap");
+      getFunction(v4l2, (void**)&_v4l2_munmap, "v4l2_munmap");
     }
-    getFunction(v4l2, (void**)&_v4l2_open, "v4l2_open");
-    getFunction(v4l2, (void**)&_v4l2_close, "v4l2_close");
-    getFunction(v4l2, (void**)&_v4l2_dup, "v4l2_dup");
-    getFunction(v4l2, (void**)&_v4l2_ioctl, "v4l2_ioctl");
-    getFunction(v4l2, (void**)&_v4l2_read, "v4l2_read");
-    getFunction(v4l2, (void**)&_v4l2_mmap, "v4l2_mmap");
-    getFunction(v4l2, (void**)&_v4l2_munmap, "v4l2_munmap");
   }
 
   return JNI_TRUE;
@@ -898,54 +938,54 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_x11_1get_1id
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1desktop
   (JNIEnv *e, jclass c, jlong xid)
 {
-  Display* display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
   int ret;
   Atom* states = (Atom*)malloc(sizeof(Atom) * 4);
   Atom* types = (Atom*)malloc(sizeof(Atom) * 1);
   for(int a=0;a<2;a++) {
-    Atom state = XInternAtom(display, "_NET_WM_STATE", 0);
-    states[0] = XInternAtom(display, "_NET_WM_STATE_BELOW", 0);
-    states[1] = XInternAtom(display, "_NET_WM_STATE_SKIP_PAGER", 0);
-    states[2] = XInternAtom(display, "_NET_WM_STATE_SKIP_TASKBAR", 0);
-    states[3] = XInternAtom(display, "_NET_WM_STATE_STICKY", 0);
-    ret = XChangeProperty(display, xid, state, XA_ATOM, 32, PropModeReplace, (const unsigned char*)states, 4);
-    Atom type = XInternAtom(display, "_NET_WM_WINDOW_TYPE", 0);
-    types[0] = XInternAtom(display, "_NET_WM_WINDOW_TYPE_DESKTOP", 0);
-    ret = XChangeProperty(display, xid, type, XA_ATOM, 32, PropModeReplace, (const unsigned char*)types, 1);
+    Atom state = (*_XInternAtom)(display, "_NET_WM_STATE", 0);
+    states[0] = (*_XInternAtom)(display, "_NET_WM_STATE_BELOW", 0);
+    states[1] = (*_XInternAtom)(display, "_NET_WM_STATE_SKIP_PAGER", 0);
+    states[2] = (*_XInternAtom)(display, "_NET_WM_STATE_SKIP_TASKBAR", 0);
+    states[3] = (*_XInternAtom)(display, "_NET_WM_STATE_STICKY", 0);
+    ret = (*_XChangeProperty)(display, xid, state, XA_ATOM, 32, PropModeReplace, (const unsigned char*)states, 4);
+    Atom type = (*_XInternAtom)(display, "_NET_WM_WINDOW_TYPE", 0);
+    types[0] = (*_XInternAtom)(display, "_NET_WM_WINDOW_TYPE_DESKTOP", 0);
+    ret = (*_XChangeProperty)(display, xid, type, XA_ATOM, 32, PropModeReplace, (const unsigned char*)types, 1);
   }
   free(states);
   free(types);
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1dock
   (JNIEnv *e, jclass c, jlong xid)
 {
-  Display* display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
   int ret;
   Atom* states = (Atom*)malloc(sizeof(Atom) * 4);
   Atom* types = (Atom*)malloc(sizeof(Atom) * 1);
   for(int a=0;a<2;a++) {
-    Atom state = XInternAtom(display, "_NET_WM_STATE", 0);
-    states[0] = XInternAtom(display, "_NET_WM_STATE_ABOVE", 0);
-    states[1] = XInternAtom(display, "_NET_WM_STATE_SKIP_PAGER", 0);
-    states[2] = XInternAtom(display, "_NET_WM_STATE_SKIP_TASKBAR", 0);
-    states[3] = XInternAtom(display, "_NET_WM_STATE_STICKY", 0);
-    ret = XChangeProperty(display, xid, state, XA_ATOM, 32, PropModeReplace, (const unsigned char*)states, 4);
-    Atom type = XInternAtom(display, "_NET_WM_WINDOW_TYPE", 0);
-    types[0] = XInternAtom(display, "_NET_WM_WINDOW_TYPE_DOCK", 0);
-    ret = XChangeProperty(display, xid, type, XA_ATOM, 32, PropModeReplace, (const unsigned char*)types, 1);
+    Atom state = (*_XInternAtom)(display, "_NET_WM_STATE", 0);
+    states[0] = (*_XInternAtom)(display, "_NET_WM_STATE_ABOVE", 0);
+    states[1] = (*_XInternAtom)(display, "_NET_WM_STATE_SKIP_PAGER", 0);
+    states[2] = (*_XInternAtom)(display, "_NET_WM_STATE_SKIP_TASKBAR", 0);
+    states[3] = (*_XInternAtom)(display, "_NET_WM_STATE_STICKY", 0);
+    ret = (*_XChangeProperty)(display, xid, state, XA_ATOM, 32, PropModeReplace, (const unsigned char*)states, 4);
+    Atom type = (*_XInternAtom)(display, "_NET_WM_WINDOW_TYPE", 0);
+    types[0] = (*_XInternAtom)(display, "_NET_WM_WINDOW_TYPE_DOCK", 0);
+    ret = (*_XChangeProperty)(display, xid, type, XA_ATOM, 32, PropModeReplace, (const unsigned char*)types, 1);
   }
   free(states);
   free(types);
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1strut
   (JNIEnv *e, jclass c, jlong xid, jint panelHeight, jint x, jint y, jint width, jint height)
 {
-  Display *display = XOpenDisplay(NULL);
-  Atom strut = XInternAtom(display, "_NET_WM_STRUT_PARTIAL", 0);
+  Display* display = (*_XOpenDisplay)(NULL);
+  Atom strut = (*_XInternAtom)(display, "_NET_WM_STRUT_PARTIAL", 0);
   Atom *values = (Atom*)malloc(sizeof(Atom) * 12);
   values[0]=(Atom)0;  //left
   values[1]=(Atom)0;  //right
@@ -959,9 +999,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1strut
   values[9]=(Atom)(width-1);  //top_end_x
   values[10]=(Atom)0;  //bottom_start_x
   values[11]=(Atom)(width-1);  //bottom_end_x
-  XChangeProperty(display, xid, strut, XA_CARDINAL, 32, PropModeReplace, (const unsigned char*)values, 12);
+  (*_XChangeProperty)(display, xid, strut, XA_CARDINAL, 32, PropModeReplace, (const unsigned char*)values, 12);
   free(values);
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 #define MAX_TRAY_ICONS 64
@@ -1011,7 +1051,7 @@ static void tray_move_icons() {
   y = y1;
   for(a=0;a<MAX_TRAY_ICONS;a++) {
     if (tray_icons[a] == 0) continue;
-    XMoveResizeWindow(tray_display, tray_icons[a], x, y, tray_icon_size, tray_icon_size);
+    (*_XMoveResizeWindow)(tray_display, tray_icons[a], x, y, tray_icon_size, tray_icon_size);
     if (y == y1 && tray_rows > 1) {
       y = y2;
     } else {
@@ -1028,7 +1068,7 @@ static void tray_move_icons() {
   tray_width = sx;
   int sy = tray_height;  //tray_rows * (tray_icon_size + tray_pad) + tray_pad;
 //    JFLog.log("Tray Position:" + px + "," + py + ",size=" + sx + "," + sy);
-  XMoveResizeWindow(tray_display, tray_window, px, py, sx, sy);
+  (*_XMoveResizeWindow)(tray_display, tray_window, px, py, sx, sy);
 }
 
 static void tray_add_icon(XID w) {
@@ -1041,9 +1081,9 @@ static void tray_add_icon(XID w) {
       break;
     }
   }
-  XReparentWindow(tray_display, w, tray_window, 0, 0);
+  (*_XReparentWindow)(tray_display, w, tray_window, 0, 0);
   tray_move_icons();
-  XMapWindow(tray_display, w);
+  (*_XMapWindow)(tray_display, w);
   x11_tray_e->CallVoidMethod(x11_listener, mid_x11_listener_trayIconAdded);
   if (x11_tray_e->ExceptionCheck()) x11_tray_e->ExceptionClear();
 }
@@ -1111,12 +1151,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1main
   } else {
     tray_rows = 1;
   }
-  tray_display = XOpenDisplay(NULL);
-  Atom tray_atom = XInternAtom(tray_display, "_NET_SYSTEM_TRAY_S0", False);
-  tray_opcode = XInternAtom(tray_display, "_NET_SYSTEM_TRAY_OPCODE", False);
-//  tray_data = XInternAtom(tray_display, "_NET_SYSTEM_TRAY_MESSAGE_DATA", False);
+  Display* display = (*_XOpenDisplay)(NULL);
+  Atom tray_atom = (*_XInternAtom)(tray_display, "_NET_SYSTEM_TRAY_S0", False);
+  tray_opcode = (*_XInternAtom)(tray_display, "_NET_SYSTEM_TRAY_OPCODE", False);
+//  tray_data = (*_XInternAtom)(tray_display, "_NET_SYSTEM_TRAY_MESSAGE_DATA", False);
 
-  tray_window = XCreateSimpleWindow(
+  tray_window = (*_XCreateSimpleWindow)(
     tray_display,
     (XID)pid,  //parent id
     trayPos - tray_icon_size - 4 - borderSize, borderSize,  //pos
@@ -1125,16 +1165,16 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1main
     (0xcccccc),  //border clr
     (0xdddddd));  //backgnd clr
 
-  XSetSelectionOwner(tray_display, tray_atom, tray_window, CurrentTime);
+  (*_XSetSelectionOwner)(tray_display, tray_atom, tray_window, CurrentTime);
 
   //get DestroyNotify events
-  XSelectInput(tray_display, tray_window, SubstructureNotifyMask);
+  (*_XSelectInput)(tray_display, tray_window, SubstructureNotifyMask);
 
-  XMapWindow(tray_display, tray_window);
+  (*_XMapWindow)(tray_display, tray_window);
 
   tray_active = JNI_TRUE;
   while (tray_active) {
-    XNextEvent(tray_display, &ev);
+    (*_XNextEvent)(tray_display, &ev);
     switch (ev.type) {
       case ClientMessage:
         tray_client_message((XClientMessageEvent*)&ev);
@@ -1145,7 +1185,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1main
     }
   }
 
-  XCloseDisplay(tray_display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1reposition
@@ -1160,7 +1200,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1reposition
     tray_rows = 1;
   }
   //X11 is not thread safe so can't call tray_move_icons() from here, send a msg instead
-  Display *display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
 
   XClientMessageEvent event;
 
@@ -1171,9 +1211,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1reposition
   event.format = 32;
   event.data.l[1] = SYSTEM_TRAY_REPOSITION;
 
-  XSendEvent(display, event.window, True, 0, (XEvent*)&event);
+  (*_XSendEvent)(display, event.window, True, 0, (XEvent*)&event);
 
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1width
@@ -1186,7 +1226,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1stop
   (JNIEnv *e, jclass c)
 {
   tray_active = JNI_FALSE;
-  Display *display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
 
   XClientMessageEvent event;
 
@@ -1197,9 +1237,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1stop
   event.format = 32;
   event.data.l[1] = SYSTEM_TRAY_STOP;
 
-  XSendEvent(display, event.window, True, 0, (XEvent*)&event);
+  (*_XSendEvent)(display, event.window, True, 0, (XEvent*)&event);
 
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1listener
@@ -1224,28 +1264,28 @@ static void x11_update_window_list(Display *display) {
   XID newList[MAX_WINDOWS];
   int newListSize = 0;
 
-  XID root_window = XDefaultRootWindow(display);
+  XID root_window = (*_XDefaultRootWindow)(display);
 
-  Atom net_client_list = XInternAtom(display, "_NET_CLIENT_LIST", False);
-//    Atom net_client_list_stacking = XInternAtom(display, "_NET_CLIENT_LIST_STACKING", False);
-  Atom net_name = XInternAtom(display, "_NET_WM_NAME", False);
-  Atom net_pid = XInternAtom(display, "_NET_WM_PID", False);
-  Atom net_state = XInternAtom(display, "_NET_WM_STATE", False);
-  Atom net_skip_taskbar = XInternAtom(display, "_NET_WM_STATE_SKIP_TASKBAR", False);
+  Atom net_client_list = (*_XInternAtom)(display, "_NET_CLIENT_LIST", False);
+//    Atom net_client_list_stacking = (*_XInternAtom)(display, "_NET_CLIENT_LIST_STACKING", False);
+  Atom net_name = (*_XInternAtom)(display, "_NET_WM_NAME", False);
+  Atom net_pid = (*_XInternAtom)(display, "_NET_WM_PID", False);
+  Atom net_state = (*_XInternAtom)(display, "_NET_WM_STATE", False);
+  Atom net_skip_taskbar = (*_XInternAtom)(display, "_NET_WM_STATE_SKIP_TASKBAR", False);
 
   unsigned char *prop;
   unsigned long nItems;
   Atom l1;
   unsigned long l2;
   int i1;
-  XGetWindowProperty(display, root_window, net_client_list, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
+  (*_XGetWindowProperty)(display, root_window, net_client_list, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
   int nWindows = nItems;
   XID *list = (XID*)prop;
   for(int a=0;a<nWindows;a++) {
     XID xid = list[a];
 
     //check state for skip taskbar
-    XGetWindowProperty(display, xid, net_state, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
+    (*_XGetWindowProperty)(display, xid, net_state, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
     if (nItems > 0) {
       Atom* atoms = (Atom*)prop;
       jboolean found = JNI_FALSE;
@@ -1254,12 +1294,12 @@ static void x11_update_window_list(Display *display) {
           found = JNI_TRUE;
         }
       }
-      XFree(prop);
+      (*_XFree)(prop);
       if (found) continue;
     }
 
     //get window pid
-    XGetWindowProperty(display, xid, net_pid, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
+    (*_XGetWindowProperty)(display, xid, net_pid, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
     int pid = -1;
     XID *xids = NULL;
     if (nItems > 0) {
@@ -1268,7 +1308,7 @@ static void x11_update_window_list(Display *display) {
     }
 
     //get title
-    XGetWindowProperty(display, xid, net_name, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
+    (*_XGetWindowProperty)(display, xid, net_name, 0, 1024, False, AnyPropertyType, &l1, &i1, &nItems, &l2, &prop);
     char *title = NULL;
     if (nItems > 0) {
       title = (char*)prop;
@@ -1276,12 +1316,12 @@ static void x11_update_window_list(Display *display) {
 
     //get name
     char *name = NULL;
-    XFetchName(display, xid, &name);
+    (*_XFetchName)(display, xid, &name);
 
     //get res_name, res_class
     char *res_name = NULL, *res_class = NULL;
     XClassHint hint;
-    XGetClassHint(display, xid, &hint);
+    (*_XGetClassHint)(display, xid, &hint);
     res_name = hint.res_name;
     res_class = hint.res_class;
 
@@ -1301,23 +1341,23 @@ static void x11_update_window_list(Display *display) {
     if (jres_name != NULL) x11_window_e->DeleteLocalRef(jres_name);
     if (jres_class != NULL) x11_window_e->DeleteLocalRef(jres_class);
     if (xids != NULL) {
-      XFree(xids);
+      (*_XFree)(xids);
     }
     if (title != NULL) {
-      XFree(title);
+      (*_XFree)(title);
     }
     if (name != NULL) {
-      XFree(name);
+      (*_XFree)(name);
     }
     if (res_name != NULL) {
-      XFree(res_name);
+      (*_XFree)(res_name);
     }
     if (res_class != NULL) {
-      XFree(res_class);
+      (*_XFree)(res_class);
     }
     newList[newListSize++] = xid;
   }
-  XFree(list);
+  (*_XFree)(list);
 
   //add newList to currentList
   for(int a=0;a<newListSize;a++) {
@@ -1332,7 +1372,7 @@ static void x11_update_window_list(Display *display) {
     if (!found) {
       if (window_list_size == MAX_WINDOWS) break;  //Ohoh
       window_list[window_list_size] = xid;
-      window_list_event_mask[window_list_size] = XSelectInput(display, xid, PropertyChangeMask);
+      window_list_event_mask[window_list_size] = (*_XSelectInput)(display, xid, PropertyChangeMask);
       window_list_size++;
     }
   }
@@ -1347,7 +1387,7 @@ static void x11_update_window_list(Display *display) {
       }
     }
     if (!found) {
-      XSelectInput(display, xid, window_list_event_mask[a]);
+      (*_XSelectInput)(display, xid, window_list_event_mask[a]);
       for(int z=a+1;z<window_list_size;z++) {
         window_list[z-1] = window_list[z];
         window_list_event_mask[z-1] = window_list_event_mask[z];
@@ -1372,21 +1412,21 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1window_1list_1main
 
   XEvent ev;
 
-  Display *display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
 
-  XID root_window = XDefaultRootWindow(display);
+  XID root_window = (*_XDefaultRootWindow)(display);
 
-  Atom net_client_list = XInternAtom(display, "_NET_CLIENT_LIST", False);
-  Atom net_client_list_stacking = XInternAtom(display, "_NET_CLIENT_LIST_STACKING", False);
-  Atom net_name = XInternAtom(display, "_NET_WM_NAME", False);
-  Atom net_pid = XInternAtom(display, "_NET_WM_PID", False);
-  Atom net_state = XInternAtom(display, "_NET_WM_STATE", False);
+  Atom net_client_list = (*_XInternAtom)(display, "_NET_CLIENT_LIST", False);
+  Atom net_client_list_stacking = (*_XInternAtom)(display, "_NET_CLIENT_LIST_STACKING", False);
+  Atom net_name = (*_XInternAtom)(display, "_NET_WM_NAME", False);
+  Atom net_pid = (*_XInternAtom)(display, "_NET_WM_PID", False);
+  Atom net_state = (*_XInternAtom)(display, "_NET_WM_STATE", False);
 
-  XSelectInput(display, root_window, PropertyChangeMask);
+  (*_XSelectInput)(display, root_window, PropertyChangeMask);
 
   window_list_active = JNI_TRUE;
   while (window_list_active) {
-    XNextEvent(display, &ev);
+    (*_XNextEvent)(display, &ev);
     switch (ev.type) {
       case PropertyNotify:
         XPropertyEvent *xpropertyevent = (XPropertyEvent*)&ev;
@@ -1407,7 +1447,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1window_1list_1main
     }
   }
 
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1window_1list_1stop
@@ -1420,44 +1460,44 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1window_1list_1stop
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1minimize_1all
   (JNIEnv *e, jclass c)
 {
-  Display *display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
   //TODO : need to lock list ???
   for(int a=0;a<window_list_size;a++) {
-    XIconifyWindow(display, window_list[a], 0);
+    (*_XIconifyWindow)(display, window_list[a], 0);
   }
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1raise_1window
   (JNIEnv *e, jclass c, jlong xid)
 {
-  Display *display = XOpenDisplay(NULL);
-  XRaiseWindow(display, (XID)xid);
-  XCloseDisplay(display);
+  Display* display = (*_XOpenDisplay)(NULL);
+  (*_XRaiseWindow)(display, (XID)xid);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1map_1window
   (JNIEnv *e, jclass c, jlong xid)
 {
-  Display *display = XOpenDisplay(NULL);
-  XMapWindow(display, (XID)xid);
-  XCloseDisplay(display);
+  Display* display = (*_XOpenDisplay)(NULL);
+  (*_XMapWindow)(display, (XID)xid);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1unmap_1window
   (JNIEnv *e, jclass c, jlong xid)
 {
-  Display *display = XOpenDisplay(NULL);
-  XUnmapWindow(display, (XID)xid);
-  XCloseDisplay(display);
+  Display* display = (*_XOpenDisplay)(NULL);
+  (*_XUnmapWindow)(display, (XID)xid);
+  (*_XCloseDisplay)(display);
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_x11_1keysym_1to_1keycode
   (JNIEnv *e, jclass c, jchar keysym)
 {
-  Display *display = XOpenDisplay(NULL);
-  int keycode = XKeysymToKeycode(display, keysym);
-  XCloseDisplay(display);
+  Display* display = (*_XOpenDisplay)(NULL);
+  int keycode = (*_XKeysymToKeycode)(display, keysym);
+  (*_XCloseDisplay)(display);
   switch (keysym) {
     case '!':
     case '@':
@@ -1477,11 +1517,11 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_x11_1keysym_1to_1keycode
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__IZ
   (JNIEnv *e, jclass c, jint keycode, jboolean down)
 {
-  Display *display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
 
   Window x11id;
   int revert;
-  XGetInputFocus(display, &x11id, &revert);
+  (*_XGetInputFocus)(display, &x11id, &revert);
 
   XKeyEvent event;
 
@@ -1489,7 +1529,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__IZ
   event.keycode = keycode & 0xff;
   event.display = display;
   event.window = x11id;
-  event.root = XDefaultRootWindow(display);
+  event.root = (*_XDefaultRootWindow)(display);
   event.subwindow = None;
   event.time = CurrentTime;
   event.x = 1;
@@ -1499,9 +1539,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__IZ
   event.same_screen = True;
   if ((keycode & 0x100) == 0x100) event.state = ShiftMask;
 
-  int status = XSendEvent(display, event.window, True, down ? KeyPressMask : KeyReleaseMask, (XEvent*)&event);
+  int status = (*_XSendEvent)(display, event.window, True, down ? KeyPressMask : KeyReleaseMask, (XEvent*)&event);
 
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 
   return status != 0;
 }
@@ -1509,7 +1549,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__IZ
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__JIZ
   (JNIEnv *e, jclass c, jlong id, jint keycode, jboolean down)
 {
-  Display *display = XOpenDisplay(NULL);
+  Display* display = (*_XOpenDisplay)(NULL);
 
   XKeyEvent event;
 
@@ -1517,7 +1557,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__JIZ
   event.keycode = keycode & 0xff;
   event.display = display;
   event.window = (Window)id;
-  event.root = XDefaultRootWindow(display);
+  event.root = (*_XDefaultRootWindow)(display);
   event.subwindow = None;
   event.time = CurrentTime;
   event.x = 1;
@@ -1527,9 +1567,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_x11_1send_1event__JIZ
   event.same_screen = True;
   if ((keycode & 0x100) == 0x100) event.state = ShiftMask;
 
-  int status = XSendEvent(display, event.window, True, down ? KeyPressMask : KeyReleaseMask, (XEvent*)&event);
+  int status = (*_XSendEvent)(display, event.window, True, down ? KeyPressMask : KeyReleaseMask, (XEvent*)&event);
 
-  XCloseDisplay(display);
+  (*_XCloseDisplay)(display);
 
   return status != 0;
 }
