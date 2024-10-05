@@ -34,6 +34,8 @@ public class RTP implements STUN.Listener {
 
   public Object userobj;  //free to use
   public static boolean debug = false;  //set to true and recompile to get a lot of output
+
+  //https://en.wikipedia.org/wiki/RTP_payload_formats
   public final static Codec CODEC_UNKNOWN = new Codec("?", -1);
   public final static Codec CODEC_G711u = new Codec("PCMU", 0);  //patent expired
   public final static Codec CODEC_GSM = new Codec("GSM", 3);  //patent expired
@@ -44,6 +46,7 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired (2020-07-01)
   //dynamic ids (96-127)
   public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 96);
+  public final static Codec CODEC_SPEEX = new Codec("SPEEX", 97);
   public final static Codec CODEC_VP8 = new Codec("VP8", 100);  //open source (Google!)
   public final static Codec CODEC_VP9 = new Codec("VP9", 101);  //open source (Google!)
   public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 110);  //patent expired
