@@ -10,6 +10,10 @@ package javaforce.voip;
  */
 
 public interface RTPAudioCoder {
+  /** Sets RTP payload ID.
+   * This value is exchanged in SDP packets.
+   * For most audio codecs this value is fixed and ignored.
+   */
   public void setid(int id);
   public byte[] encode(short[] src16);
   public short[] decode(byte[] src8, int off);

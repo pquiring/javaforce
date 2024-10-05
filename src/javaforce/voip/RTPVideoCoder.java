@@ -13,6 +13,10 @@ package javaforce.voip;
  */
 
 public interface RTPVideoCoder {
+  /** Sets RTP payload ID.
+   * This value is exchanged in SDP packets.
+   * For some video codecs this value is fixed and ignored.
+   */
   public void setid(int id);
   public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr);
   public void decode(byte[] rtp, int offset, int length, PacketReceiver pr);
