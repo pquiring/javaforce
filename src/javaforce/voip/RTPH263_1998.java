@@ -13,7 +13,7 @@ package javaforce.voip;
  * @author pquiring
  */
 
-public class RTPH263_1998 extends RTPVideoCoder {
+public class RTPH263_1998 implements RTPVideoCoder {
 
   private Packet packet;
   private int lastseqnum = -1;
@@ -31,9 +31,14 @@ public class RTPH263_1998 extends RTPVideoCoder {
   private static final int M = 0x80;  //M bit
 
   public RTPH263_1998() {
-    ssrc = random.nextInt();
+    ssrc = new java.util.Random().nextInt();
     packet = new Packet();
     packet.data = new byte[maxSize];
+  }
+
+  private int rtp_id;
+  public void setid(int id) {
+    rtp_id = id;
   }
 
   private int find_best_length(byte[] data, int offset, int length) {
@@ -46,7 +51,7 @@ public class RTPH263_1998 extends RTPVideoCoder {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr) {
     int len = length;
     int packetLength;
     int pos = offset;
@@ -64,7 +69,7 @@ public class RTPH263_1998 extends RTPVideoCoder {
         packetLength = len;
       }
       packet.length = packetLength + 12 + 2;  //12=RTP.length 2=rtp_h263+_header.length
-      RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
+      RTPChannel.buildHeader(packet.data, rtp_id, seqnum++, timestamp, ssrc, len == packetLength);
       //build H.263 header (2 bytes)
       packet.data[12] = (byte)(p ? 0x20 : 0x00);
 //      packet.data[13] = 0x00;

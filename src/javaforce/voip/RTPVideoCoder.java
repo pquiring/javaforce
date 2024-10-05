@@ -7,10 +7,8 @@ package javaforce.voip;
  * @author pquiring
  */
 
-import java.util.*;
-
-public abstract class RTPVideoCoder {
-  public Random random = new Random();
-  public abstract void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr);
+public interface RTPVideoCoder {
+  public void setid(int id);
+  public abstract void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr);
   public abstract void decode(byte[] rtp, int offset, int length, PacketReceiver pr);
 }

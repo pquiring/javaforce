@@ -62,7 +62,7 @@ public class MediaServer {
   //reads media file and streams to player
   private class Reader extends Thread implements PacketReceiver {
     private Media media;
-    private int codec_id;
+    private int av_codec_id;
     private RTPVideoCoder rtp_coder;
     public void run() {
       loadFile();
@@ -89,7 +89,7 @@ public class MediaServer {
         }
         //encode codec packet into RTP packets
         //TODO : get RTP codec ID ??? 96 ???
-        rtp_coder.encode(frame.data, frame.offset, frame.length, 0, 0, 96, this);
+        rtp_coder.encode(frame.data, frame.offset, frame.length, 0, 0, this);
       }
       if (download) {
         if (debug_download) JFLog.log("download complete");
@@ -131,11 +131,12 @@ public class MediaServer {
         return;
       }
       if (rtp_coder == null) {
-        codec_id = media.getStreamIDs()[0];
-        switch (codec_id) {
+        av_codec_id = media.getStreamIDs()[0];
+        switch (av_codec_id) {
           case MediaCoder.AV_CODEC_ID_H264: rtp_coder = new RTPH264(); break;
           case MediaCoder.AV_CODEC_ID_H265: rtp_coder = new RTPH265(); break;
         }
+        rtp_coder.setid(96);  //TODO : get from SDP
       }
       media.seekTime(ts_current);
     }

@@ -17,14 +17,17 @@ package javaforce.voip;
  * @author pquiring
  */
 
-import java.util.*;
-
 import javaforce.*;
 
-public class RTPH263 extends RTPVideoCoder {
+public class RTPH263 implements RTPVideoCoder {
 
   public RTPH263() {
-    ssrc = random.nextInt();
+    ssrc = new java.util.Random().nextInt();
+  }
+
+  private int rtp_id;
+  public void setid(int id) {
+    rtp_id = id;
   }
 
   private int find_best_length(byte[] data, int offset, int length) {
@@ -37,7 +40,7 @@ public class RTPH263 extends RTPVideoCoder {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr) {
     //TODO
   }
 

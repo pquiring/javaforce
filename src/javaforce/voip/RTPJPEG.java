@@ -12,7 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPJPEG extends RTPVideoCoder {
+public class RTPJPEG implements RTPVideoCoder {
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 8(rtp_jpeg_header) = 1438 bytes payload per packet
   private static final int mtu = 1438;
@@ -26,13 +26,18 @@ public class RTPJPEG extends RTPVideoCoder {
   private static final int M = 0x80;  //M bit
 
   public RTPJPEG() {
-    ssrc = random.nextInt();
+    ssrc = new java.util.Random().nextInt();
     packet = new Packet();
     packet.data = new byte[maxSize];
   }
 
+  private int rtp_id;
+  public void setid(int id) {
+    rtp_id = id;
+  }
+
   /** Encodes a raw JPEG data into multiple RTP packets. */
-  public void encode(byte[] jpeg, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] jpeg, int offset, int length, int x, int y, PacketReceiver pr) {
     int cnt = (length + mtu - 1) / mtu;
     int len = length;
     int packetLength;

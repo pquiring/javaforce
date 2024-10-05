@@ -11,7 +11,7 @@ package javaforce.voip;
 import javaforce.*;
 import javaforce.media.*;
 
-public class RTPH265 extends RTPVideoCoder {
+public class RTPH265 implements RTPVideoCoder {
 
   private static boolean debug = false;
 
@@ -39,9 +39,14 @@ public class RTPH265 extends RTPVideoCoder {
   private static final int LAYER_TID = 1;  //LAYER | TID (must not be zero)
 
   public RTPH265() {
-    ssrc = random.nextInt();
+    ssrc = new java.util.Random().nextInt();
     packet = new Packet();
     packet.data = new byte[maxSize];
+  }
+
+  private int rtp_id;
+  public void setid(int id) {
+    rtp_id = id;
   }
 
   public void setLog(int id) {
@@ -66,7 +71,7 @@ public class RTPH265 extends RTPVideoCoder {
    *
    * TODO : Use AP packets to increase efficiency.
    */
-  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr) {
     int len = length;
     int packetLength;
     int pos = offset;
@@ -90,7 +95,7 @@ public class RTPH265 extends RTPVideoCoder {
         boolean first = true;
         while (packetLength > nalLength) {
           packet.length = 12 + 3 + nalLength;
-          RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, false);
+          RTPChannel.buildHeader(packet.data, rtp_id, seqnum++, timestamp, ssrc, false);
           //NAL header (16 bit)
           packet.data[12] = FU << 1;
           packet.data[13] = LAYER_TID;
@@ -110,7 +115,7 @@ public class RTPH265 extends RTPVideoCoder {
         //add last NAL packet
         nalLength = packetLength;
         packet.length = 12 + 3 + nalLength;
-        RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == nalLength);
+        RTPChannel.buildHeader(packet.data, rtp_id, seqnum++, timestamp, ssrc, len == nalLength);
         //NAL header (16 bit)
         packet.data[12] = FU << 1;
         packet.data[13] = LAYER_TID;
@@ -126,7 +131,7 @@ public class RTPH265 extends RTPVideoCoder {
       } else {
         //full NAL packet "as is"
         packet.length = packetLength + 12;  //12=RTP.length
-        RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
+        RTPChannel.buildHeader(packet.data, rtp_id, seqnum++, timestamp, ssrc, len == packetLength);
         System.arraycopy(data, pos, packet.data, 12, packetLength);
         pr.onPacket(packet);
         pos += packetLength;

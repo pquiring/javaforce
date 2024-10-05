@@ -12,7 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPVP9 extends RTPVideoCoder {
+public class RTPVP9 implements RTPVideoCoder {
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 1 (VP9) = 1445 bytes payload per packet
   private static final int mtu = 1445;
@@ -36,13 +36,18 @@ public class RTPVP9 extends RTPVideoCoder {
   private static final int V = 0x02;  //Scalability structure present
 
   public RTPVP9() {
-    ssrc = random.nextInt();
+    ssrc = new java.util.Random().nextInt();
     packet = new Packet();
     packet.data = new byte[maxSize];
   }
 
+  private int rtp_id;
+  public void setid(int id) {
+    rtp_id = id;
+  }
+
   /** Encodes raw VP9 packet into multiple RTP packets. */
-  public void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr) {
     int len = length;
     int packetLength;
     int pos = offset;
@@ -56,7 +61,7 @@ public class RTPVP9 extends RTPVideoCoder {
       }
       packet.length = packetLength + 1 + 12;  //1=VP9 header, 12=RTP.length
       last = len == packetLength;
-      RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, last);
+      RTPChannel.buildHeader(packet.data, rtp_id, seqnum++, timestamp, ssrc, last);
       if (first) {
         packet.data[12] = (byte)(data[0] | B);
         first = false;
