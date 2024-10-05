@@ -1436,12 +1436,12 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
     }
 
-    public void rtpH264(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
+    public void rtpH264(RTPChannel rtp, RTPVideoCoder coder, byte[] buf, int offset, int length) {
       try {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
         lastPacket = System.currentTimeMillis();
-        codec.decode(buf, 0, length, this);
+        coder.decode(buf, 0, length, this);
       } catch (Exception e) {
         JFLog.log(log, e);
       }
