@@ -529,6 +529,10 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         newAstream.addCodec(RTP.CODEC_SPEEX);
         break;
       }
+      if ((enabledCodecs[a].equals(RTP.CODEC_SPEEX16.name)) && (astream.hasCodec(RTP.CODEC_SPEEX16))) {
+        newAstream.addCodec(RTP.CODEC_SPEEX16);
+        break;
+      }
     }
 
     if (!pl.disableVideo && vstream != null) {

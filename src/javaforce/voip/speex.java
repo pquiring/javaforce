@@ -19,11 +19,13 @@ public class speex implements RTPAudioCoder {
   private SpeexDecoder decoder = new SpeexDecoder();
   private RTP rtp;
   private int rtp_id;
+  private int rate;
 
-  public speex(RTP rtp) {
+  public speex(RTP rtp, int rate) {
     this.rtp = rtp;
-    encoder.init(0, 4, 8000, 1);
-    decoder.init(0, 8000, 1, false);
+    this.rate = rate;
+    encoder.init(0, 4, rate, 1);
+    decoder.init(0, rate, 1, false);
   }
 
   public void setid(int id) {
@@ -36,7 +38,7 @@ public class speex implements RTPAudioCoder {
   public byte[] encode(short[] samples) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, rtp_id, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
-    encoder.processData(samples, 0, 160);
+    encoder.processData(samples, 0, samples.length);
     if (debug) {
       JFLog.log("speex:encoded.size=" + encoder.getProcessedDataByteSize());
     }
@@ -72,17 +74,19 @@ public class speex implements RTPAudioCoder {
     return decoded;
   }
 
-  public int getSampleRate() {return 8000;}
+  public int getSampleRate() {return rate;}
 
   public static void main(String[] args) {
     try {
+      debug = true;
       RTP rtp = new RTP();
       SDP sdp = new SDP();
       sdp.setIP("1.2.3.4");
       SDP.Stream stream = sdp.addStream(SDP.Type.audio);
       rtp.createChannel(stream);
-      speex sx = new speex(rtp);
-      short[] samples = new short[160];
+      speex sx = new speex(rtp, 16000);
+      int cnt = 160;
+      short[] samples = new short[cnt];
       Random r = new Random();
       for(int a=0;a<160;a++) {
         samples[a] = (short)(r.nextInt(0xffff) - 0x7fff);

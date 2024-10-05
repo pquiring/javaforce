@@ -37,12 +37,6 @@ public class RTPChannel {
 
   public RTP rtp;
   public SDP.Stream stream;
-  public RTPAudioCoder coder_speex;
-  public RTPAudioCoder coder_g711u;
-  public RTPAudioCoder coder_g711a;
-  public RTPAudioCoder coder_g722;
-  public RTPAudioCoder coder_g729a;
-  public RTPAudioCoder coder_gsm;
   public RTPAudioCoder coder;  //selected audio encoder
   public int log;
 
@@ -279,41 +273,55 @@ public class RTPChannel {
         speex_id = codec_speex.id;
       }
 
-      coder_g711u = new g711u(rtp);
-      coder_g711a = new g711a(rtp);
-      coder_gsm = new gsm(rtp);
-      coder_g722 = new g722(rtp);
-      coder_g729a = new g729a(rtp);
-      coder_speex = new speex(rtp);
+      Codec codec_speex16 = stream.getCodec(RTP.CODEC_SPEEX16);
+      if (codec_speex16 != null) {
+        speex_id = codec_speex16.id;
+      }
+
+      Codec codec_speex32 = stream.getCodec(RTP.CODEC_SPEEX32);
+      if (codec_speex32 != null) {
+        speex_id = codec_speex32.id;
+      }
+
       if (stream.type == SDP.Type.audio) {
         //must use first available codec
         coder = null;
         for(int a=0;a<stream.codecs.length;a++) {
           Codec codec = stream.codecs[a];
           if (codec.equals(RTP.CODEC_G711u)) {
-            coder = coder_g711u;
+            coder = new g711u(rtp);
             JFLog.log(log, "codec = g711u");
             break;
           } else if (codec.equals(RTP.CODEC_G711a)) {
-            coder = coder_g711a;
+            coder = new g711a(rtp);
             JFLog.log(log, "codec = g711a");
             break;
           } else if (codec.equals(RTP.CODEC_GSM)) {
-            coder = coder_gsm;
+            coder = new gsm(rtp);
             JFLog.log(log, "codec = gsm");
             break;
           } else if (codec.equals(RTP.CODEC_G722)) {
-            coder = coder_g722;
+            coder = new g722(rtp);
             JFLog.log(log, "codec = g722");
             break;
           } else if (codec.equals(RTP.CODEC_G729a)) {
-            coder = coder_g729a;
+            coder = new g729a(rtp);
             JFLog.log(log, "codec = g729a");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX)) {
-            coder = coder_speex;
+            coder = new speex(rtp, codec.rate);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex");
+            break;
+          } else if (codec.equals(RTP.CODEC_SPEEX16)) {
+            coder = new speex(rtp, codec.rate);
+            coder.setid(codec.id);
+            JFLog.log(log, "codec = speex16");
+            break;
+          } else if (codec.equals(RTP.CODEC_SPEEX32)) {
+            coder = new speex(rtp, codec.rate);
+            coder.setid(codec.id);
+            JFLog.log(log, "codec = speex32");
             break;
           }
         }
@@ -393,17 +401,21 @@ public class RTPChannel {
     stream = new_stream;
     if (stream.type == SDP.Type.audio) {
       if (new_stream.hasCodec(RTP.CODEC_G711u)) {
-        coder = coder_g711u;
+        coder = new g711u(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_G711a)) {
-        coder = coder_g711a;
+        coder = new g711a(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_GSM)) {
-        coder = coder_gsm;
+        coder = new gsm(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_G722)) {
-        coder = coder_g722;
+        coder = new g722(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_G729a)) {
-        coder = coder_g729a;
+        coder = new g729a(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX)) {
-        coder = coder_speex;
+        coder = new speex(rtp, 8000);
+      } else if (new_stream.hasCodec(RTP.CODEC_SPEEX16)) {
+        coder = new speex(rtp, 16000);
+      } else if (new_stream.hasCodec(RTP.CODEC_SPEEX32)) {
+        coder = new speex(rtp, 32000);
       }
       dtmf = new DTMF(coder.getSampleRate());
     }
@@ -432,7 +444,7 @@ public class RTPChannel {
             JFLog.log(log, "RTP:Bad g711u length");
             break;
           }
-          addSamples(coder_g711u.decode(data, off));
+          addSamples(coder.decode(data, off));
           rtp.iface.rtpSamples(this);
           break;
         case 3:
@@ -441,7 +453,7 @@ public class RTPChannel {
             JFLog.log(log, "RTP:Bad gsm length");
             break;
           }
-          addSamples(coder_gsm.decode(data, off));
+          addSamples(coder.decode(data, off));
           rtp.iface.rtpSamples(this);
           break;
         case 8:
@@ -450,7 +462,7 @@ public class RTPChannel {
             JFLog.log(log, "RTP:Bad g711a length");
             break;
           }
-          addSamples(coder_g711a.decode(data, off));
+          addSamples(coder.decode(data, off));
           rtp.iface.rtpSamples(this);
           break;
         case 9:
@@ -459,7 +471,7 @@ public class RTPChannel {
             JFLog.log(log, "RTP:Bad g722 length");
             break;
           }
-          addSamples(coder_g722.decode(data, off));
+          addSamples(coder.decode(data, off));
           rtp.iface.rtpSamples(this);
           break;
         case 18:
@@ -468,7 +480,7 @@ public class RTPChannel {
             JFLog.log(log, "RTP:Bad g729a length");
             break;
           }
-          addSamples(coder_g729a.decode(data, off));
+          addSamples(coder.decode(data, off));
           rtp.iface.rtpSamples(this);
           break;
         case 26:
@@ -518,6 +530,12 @@ public class RTPChannel {
         rtp.iface.rtpPacket(this, CodecType.H263_1998, data, off, len);
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
+      } else if (id == speex_id) {
+        if (len != 20 + 12) {
+          JFLog.log(log, "RTP:Bad speex length");
+        }
+        addSamples(coder.decode(data, off));
+        rtp.iface.rtpSamples(this);
       } else {
         if (debug) JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);
       }

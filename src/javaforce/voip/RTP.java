@@ -36,17 +36,19 @@ public class RTP implements STUN.Listener {
   public static boolean debug = false;  //set to true and recompile to get a lot of output
 
   //https://en.wikipedia.org/wiki/RTP_payload_formats
-  public final static Codec CODEC_UNKNOWN = new Codec("?", -1);
-  public final static Codec CODEC_G711u = new Codec("PCMU", 0);  //patent expired
-  public final static Codec CODEC_GSM = new Codec("GSM", 3);  //patent expired
-  public final static Codec CODEC_G711a = new Codec("PCMA", 8);  //patent expired
-  public final static Codec CODEC_G722 = new Codec("G722", 9);  //patent expired
-  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent expired (2017-01-01)
+  public final static Codec CODEC_UNKNOWN = new Codec("?");
+  public final static Codec CODEC_G711u = new Codec("PCMU", 0, 8000);  //patent expired
+  public final static Codec CODEC_GSM = new Codec("GSM", 3, 8000);  //patent expired
+  public final static Codec CODEC_G711a = new Codec("PCMA", 8, 8000);  //patent expired
+  public final static Codec CODEC_G722 = new Codec("G722", 9, 8000);  //patent expired (NOTE:is really 16000)
+  public final static Codec CODEC_G729a = new Codec("G729", 18, 8000);  //patent expired (2017-01-01)
   public final static Codec CODEC_JPEG = new Codec("JPEG", 26);  //public domain
   public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired (2020-07-01)
   //dynamic ids (96-127)
   public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 96);
-  public final static Codec CODEC_SPEEX = new Codec("speex", 97);
+  public final static Codec CODEC_SPEEX = new Codec("speex", 97, 8000);  //speex
+  public final static Codec CODEC_SPEEX16 = new Codec("speex", 98, 16000);  //speex16
+  public final static Codec CODEC_SPEEX32 = new Codec("speex", 99, 32000);  //speex32
   public final static Codec CODEC_VP8 = new Codec("VP8", 100);  //open source (Google!)
   public final static Codec CODEC_VP9 = new Codec("VP9", 101);  //open source (Google!)
   public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 110);  //patent expired

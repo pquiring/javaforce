@@ -319,6 +319,14 @@ public class SDP implements Cloneable {
         content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX).id + " speex/8000");
         content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
       }
+      if (stream.hasCodec(RTP.CODEC_SPEEX16)) {
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX).id + " speex/16000");
+        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
+      }
+      if (stream.hasCodec(RTP.CODEC_SPEEX32)) {
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX).id + " speex/32000");
+        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
+      }
       if (stream.type == Type.audio) {
         content.add("a=rtpmap:" + rfc2833.id + " telephone-event/8000");
         content.add("a=fmtp:" + rfc2833.id + " 0-15");
@@ -444,7 +452,7 @@ public class SDP implements Cloneable {
         for(int b=3;b<f.length;b++) {
           int id = JF.atoi(f[b]);
           if (id < 96) {
-            stream.addCodec(new Codec(SIP.getCodecName(id), id));
+            stream.addCodec(new Codec(SIP.getCodecName(id), id, 8000));
           }
         }
       } else if (ln.startsWith("a=")) {
@@ -453,8 +461,9 @@ public class SDP implements Cloneable {
           String[] f = ln.substring(9).split(" ");
           int id = JF.atoi(f[0]);
           String[] n = f[1].split("/");
+          int rate = JF.atoi(n[1]);
           if (id >= 96) {
-            stream.addCodec(new Codec(n[0], id));
+            stream.addCodec(new Codec(n[0], id, rate));
           }
         }
         else if (ln.startsWith("a=sendrecv")) {
