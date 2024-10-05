@@ -28,11 +28,12 @@ public class g729a implements RTPAudioCoder {
     this.rtp = rtp;
   }
 
+  public void setid(int id) {};  //ignored - fixed value
+
   private byte[] encoded = new byte[20 + 12];  //((160 / 80) * 10) + 12
 
   //samples must be 160 samples
-  //id ignored (fixed)
-  public byte[] encode(short[] samples, int id) {
+  public byte[] encode(short[] samples) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, 18, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.encode(encoded, 12, samples, 0, 160 / 80);  //output, outputOffset, input, inputOffset, # 80 samples packets (2)

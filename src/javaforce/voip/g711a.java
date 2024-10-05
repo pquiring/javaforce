@@ -23,6 +23,9 @@ public class g711a implements RTPAudioCoder {
   public g711a(RTP rtp) {
     this.rtp = rtp;
   }
+
+  public void setid(int id) {};  //ignored - fixed value
+
   private static short[] alaw_lut;  //signed
   private static int[] exp_lut = {
 		1,1,2,2,3,3,3,3,
@@ -67,8 +70,7 @@ public class g711a implements RTPAudioCoder {
   private byte[] encoded = new byte[160 + 12];
 
   //samples must be 160 samples
-  //id ignored (fixed)
-  public byte[] encode(short[] samples, int id) {
+  public byte[] encode(short[] samples) {
     int sign, exponent, mantissa, mag;
     byte alawbyte;
     short sample;

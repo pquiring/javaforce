@@ -32,6 +32,8 @@ public class g722 implements RTPAudioCoder {
     }
   }
 
+  public void setid(int id) {};  //ignored - fixed value
+
   private static class Band {
     int s, sp, sz;
     int[] r = new int[3];
@@ -197,8 +199,7 @@ public class g722 implements RTPAudioCoder {
     band.s = saturate(band.sp + band.sz);
   }
 
-  //id ignored (fixed)
-  public byte[] encode(short[] src16, int id) {
+  public byte[] encode(short[] src16) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, 9, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
 

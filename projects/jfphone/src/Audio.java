@@ -504,7 +504,7 @@ public class Audio {
     return null;
   }
 
-  private byte[] encode(Coder coder, short in[], int bufIdx) {
+  private byte[] encode(RTPAudioCoder coder, short in[], int bufIdx) {
     byte encoded[] = null;
     int rate = coder.getSampleRate();
     switch (rate) {
@@ -520,7 +520,7 @@ public class Audio {
     return encoded;
   }
 
-  private byte[] encodeSilence(Coder coder) {
+  private byte[] encodeSilence(RTPAudioCoder coder) {
     byte encoded[] = null;
     int rate = coder.getSampleRate();
     switch (rate) {

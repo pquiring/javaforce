@@ -16,12 +16,13 @@ public class gsm implements RTPAudioCoder {
     this.rtp = rtp;
   }
 
+  public void setid(int id) {};  //ignored - fixed value
+
   private byte[] edata = new byte[33];
   private byte[] encoded = new byte[33 + 12];
 
   //samples must be 160 samples
-  //id ignored (fixed)
-  public byte[] encode(short[] samples, int id) {
+  public byte[] encode(short[] samples) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, 3, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.encode(samples, edata);

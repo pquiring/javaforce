@@ -32,7 +32,6 @@ public class PhoneLine {
 
   public RTP audioRTP, videoRTP;
   public SDP sdp, localsdp;
-  public Coder coder;  //selected codec [en]coder
 
   public int clr = -1;
 

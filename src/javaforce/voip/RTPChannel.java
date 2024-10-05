@@ -312,6 +312,7 @@ public class RTPChannel {
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX)) {
             coder = coder_speex;
+            coder.setid(codec.id);
             JFLog.log(log, "codec = speex");
             break;
           }
