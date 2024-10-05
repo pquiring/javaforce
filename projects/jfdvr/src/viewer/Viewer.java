@@ -504,7 +504,7 @@ public class Viewer {
       }
     }
 
-    public void rtpCodec(RTPChannel rtp, RTPCodec codec, byte[] buf, int offset, int length) {
+    public void rtpCodec(RTPChannel rtp, RTPVideoCoder coder, byte[] buf, int offset, int length) {
       if (debug_packets) {
         int seq = RTPChannel.getseqnum(buf, offset);
         JFLog.log(log, "rtpCodec:packet:" + seq);
@@ -513,7 +513,7 @@ public class Viewer {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
         lastPacket = System.currentTimeMillis();
-        codec.decode(buf, 0, length, this);
+        coder.decode(buf, 0, length, this);
       } catch (Exception e) {
         JFLog.log(log, e);
       }
