@@ -14,7 +14,7 @@ package javaforce.voip;
  *
  */
 
-public class g722 implements Coder {
+public class g722 implements RTPAudioCoder {
 
   private int bits_per_sample = 8;  //6=48k,7=56k,8=64k
   private boolean eight_k = false;  //8k (16k)
@@ -197,7 +197,8 @@ public class g722 implements Coder {
     band.s = saturate(band.sp + band.sz);
   }
 
-  public byte[] encode(short[] src16) {
+  //id ignored (fixed)
+  public byte[] encode(short[] src16, int id) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, 9, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
 

@@ -12,7 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPVP9 extends RTPCodec {
+public class RTPVP9 extends RTPVideoCoder {
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 1 (VP9) = 1445 bytes payload per packet
   private static final int mtu = 1445;

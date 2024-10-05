@@ -16,7 +16,7 @@ import javaforce.*;
  * Encodes/decodes g711 packets (U-Law). (North America format)
  */
 
-public class g711u implements Coder {
+public class g711u implements RTPAudioCoder {
 
   private RTP rtp;
 
@@ -70,7 +70,8 @@ public class g711u implements Coder {
   private byte[] encoded = new byte[160 + 12];
 
   //samples must be 160 samples
-  public byte[] encode(short[] samples) {
+  //id ignored (fixed)
+  public byte[] encode(short[] samples, int id) {
     int sign, exponent, mantissa;
     byte ulawbyte;
     short sample;

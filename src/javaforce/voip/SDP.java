@@ -315,6 +315,10 @@ public class SDP implements Cloneable {
         content.add("a=fmtp:18 annexb=no");
         content.add("a=silenceSupp:off - - - -");
       }
+      if (stream.hasCodec(RTP.CODEC_SPEEX)) {
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX).id + " speex/8000");
+        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
+      }
       if (stream.type == Type.audio) {
         content.add("a=rtpmap:" + rfc2833.id + " telephone-event/8000");
         content.add("a=fmtp:" + rfc2833.id + " 0-15");

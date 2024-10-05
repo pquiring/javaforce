@@ -13,7 +13,7 @@ package javaforce.voip;
  * @author pquiring
  */
 
-public class RTPH263_1998 extends RTPCodec {
+public class RTPH263_1998 extends RTPVideoCoder {
 
   private Packet packet;
   private int lastseqnum = -1;

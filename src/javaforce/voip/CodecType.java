@@ -16,6 +16,7 @@ public class CodecType {
   public static final int G711a = 11;
   public static final int GSM = 12;
   public static final int G729 = 13;
+  public static final int SPEEX = 14;
   public static final int JPEG = 20;
   public static final int VP8 = 30;
   public static final int VP9 = 31;

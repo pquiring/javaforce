@@ -17,6 +17,7 @@ public class RTPChannel {
   protected short turn1ch, turn2ch;
   //dynnamic codec payload ids
   private int rfc2833_id = -1;
+  private int speex_id = -1;
   private int vp8_id = -1;
   private int vp9_id = -1;
   private int h263_1998_id = -1;
@@ -36,8 +37,13 @@ public class RTPChannel {
 
   public RTP rtp;
   public SDP.Stream stream;
-  public Coder coder_g711u, coder_g711a, coder_g722, coder_g729a, coder_gsm;
-  public Coder coder;  //selected audio encoder
+  public RTPAudioCoder coder_speex;
+  public RTPAudioCoder coder_g711u;
+  public RTPAudioCoder coder_g711a;
+  public RTPAudioCoder coder_g722;
+  public RTPAudioCoder coder_g729a;
+  public RTPAudioCoder coder_gsm;
+  public RTPAudioCoder coder;  //selected audio encoder
   public int log;
 
   public static boolean debug = false;
@@ -268,11 +274,17 @@ public class RTPChannel {
         h263_2000_id = codec_h263_2000.id;
       }
 
+      Codec codec_speex = stream.getCodec(RTP.CODEC_SPEEX);
+      if (codec_speex != null) {
+        speex_id = codec_speex.id;
+      }
+
       coder_g711u = new g711u(rtp);
       coder_g711a = new g711a(rtp);
       coder_gsm = new gsm(rtp);
       coder_g722 = new g722(rtp);
       coder_g729a = new g729a(rtp);
+      coder_speex = new speex(rtp);
       if (stream.type == SDP.Type.audio) {
         //must use first available codec
         coder = null;
@@ -297,6 +309,10 @@ public class RTPChannel {
           } else if (codec.equals(RTP.CODEC_G729a)) {
             coder = coder_g729a;
             JFLog.log(log, "codec = g729a");
+            break;
+          } else if (codec.equals(RTP.CODEC_SPEEX)) {
+            coder = coder_speex;
+            JFLog.log(log, "codec = speex");
             break;
           }
         }
@@ -385,6 +401,8 @@ public class RTPChannel {
         coder = coder_g722;
       } else if (new_stream.hasCodec(RTP.CODEC_G729a)) {
         coder = coder_g729a;
+      } else if (new_stream.hasCodec(RTP.CODEC_SPEEX)) {
+        coder = coder_speex;
       }
       dtmf = new DTMF(coder.getSampleRate());
     }

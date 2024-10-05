@@ -11,7 +11,7 @@ package javaforce.voip;
 import javaforce.*;
 import javaforce.media.*;
 
-public class RTPH265 extends RTPCodec {
+public class RTPH265 extends RTPVideoCoder {
 
   private static boolean debug = false;
 

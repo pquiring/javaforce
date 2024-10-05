@@ -9,7 +9,7 @@ package javaforce.voip;
 
 import java.util.*;
 
-public abstract class RTPCodec {
+public abstract class RTPVideoCoder {
   public Random random = new Random();
   public abstract void encode(byte[] data, int offset, int length, int x, int y, int id, PacketReceiver pr);
   public abstract void decode(byte[] rtp, int offset, int length, PacketReceiver pr);

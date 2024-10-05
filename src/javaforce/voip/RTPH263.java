@@ -21,7 +21,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPH263 extends RTPCodec {
+public class RTPH263 extends RTPVideoCoder {
 
   public RTPH263() {
     ssrc = random.nextInt();

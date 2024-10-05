@@ -12,7 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPJPEG extends RTPCodec {
+public class RTPJPEG extends RTPVideoCoder {
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 8(rtp_jpeg_header) = 1438 bytes payload per packet
   private static final int mtu = 1438;

@@ -18,7 +18,7 @@ import javaforce.codec.g729a.*;
  *
  * http://tools.ietf.org/html/rfc4749
  */
-public class g729a implements Coder {
+public class g729a implements RTPAudioCoder {
 
   private Encoder encoder = new Encoder();
   private Decoder decoder = new Decoder();
@@ -31,7 +31,8 @@ public class g729a implements Coder {
   private byte[] encoded = new byte[20 + 12];  //((160 / 80) * 10) + 12
 
   //samples must be 160 samples
-  public byte[] encode(short[] samples) {
+  //id ignored (fixed)
+  public byte[] encode(short[] samples, int id) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, 18, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.encode(encoded, 12, samples, 0, 160 / 80);  //output, outputOffset, input, inputOffset, # 80 samples packets (2)
