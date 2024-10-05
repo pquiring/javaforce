@@ -1,6 +1,11 @@
 package javaforce.voip;
 
-/** RTPCodec
+/** RTPVideoCoder
+ *
+ * Base interface for all video codec encoders/decoders.
+ *
+ * Encoders build RTP packets from encoded video data.
+ * Decoders build encoded video data from RTP packets.
  *
  * NOTE : Each derived class should be used for encoder or decoded (never both).
  *
@@ -9,6 +14,6 @@ package javaforce.voip;
 
 public interface RTPVideoCoder {
   public void setid(int id);
-  public abstract void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr);
-  public abstract void decode(byte[] rtp, int offset, int length, PacketReceiver pr);
+  public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr);
+  public void decode(byte[] rtp, int offset, int length, PacketReceiver pr);
 }
