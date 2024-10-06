@@ -35,6 +35,10 @@ public class speex implements RTPAudioCoder {
     this.rtp_id = id;
   }
 
+  public int getPacketSize() {
+    return 20;
+  }
+
   private byte[] encoded = new byte[20 + 12];  //((160 / 80) * 10) + 12
 
   //samples must be 160 samples

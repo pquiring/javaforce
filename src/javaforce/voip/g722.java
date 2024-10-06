@@ -34,6 +34,10 @@ public class g722 implements RTPAudioCoder {
 
   public void setid(int id) {};  //ignored - fixed value
 
+  public int getPacketSize() {
+    return 160;
+  }
+
   private static class Band {
     int s, sp, sz;
     int[] r = new int[3];

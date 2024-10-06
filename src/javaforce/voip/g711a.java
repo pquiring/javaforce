@@ -26,6 +26,10 @@ public class g711a implements RTPAudioCoder {
 
   public void setid(int id) {};  //ignored - fixed value
 
+  public int getPacketSize() {
+    return 160;
+  }
+
   private static short[] alaw_lut;  //signed
   private static int[] exp_lut = {
 		1,1,2,2,3,3,3,3,

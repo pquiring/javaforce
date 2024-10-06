@@ -30,6 +30,10 @@ public class g729a implements RTPAudioCoder {
 
   public void setid(int id) {};  //ignored - fixed value
 
+  public int getPacketSize() {
+    return 20;
+  }
+
   private byte[] encoded = new byte[20 + 12];  //((160 / 80) * 10) + 12
 
   //samples must be 160 samples

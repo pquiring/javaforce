@@ -18,6 +18,10 @@ public class gsm implements RTPAudioCoder {
 
   public void setid(int id) {};  //ignored - fixed value
 
+  public int getPacketSize() {
+    return 33;
+  }
+
   private byte[] edata = new byte[33];
   private byte[] encoded = new byte[33 + 12];
 

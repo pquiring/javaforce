@@ -18,4 +18,5 @@ public interface RTPAudioCoder {
   public byte[] encode(short[] src16);
   public short[] decode(byte[] src8, int off);
   public int getSampleRate();
+  public int getPacketSize();
 }

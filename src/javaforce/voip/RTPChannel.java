@@ -439,45 +439,13 @@ public class RTPChannel {
     if (id < 96) {
       switch (id) {
         case 0:
-          dtmfSent = false;  //just in case end of dtmf was not received
-          if (len != 160 + 12) {
-            JFLog.log(log, "RTP:Bad g711u length");
-            break;
-          }
-          addSamples(coder.decode(data, off));
-          rtp.iface.rtpSamples(this);
-          break;
         case 3:
-          dtmfSent = false;  //just in case end of dtmf was not received
-          if (len != 33 + 12) {
-            JFLog.log(log, "RTP:Bad gsm length");
-            break;
-          }
-          addSamples(coder.decode(data, off));
-          rtp.iface.rtpSamples(this);
-          break;
         case 8:
-          dtmfSent = false;  //just in case end of dtmf was not received
-          if (len != 160 + 12) {
-            JFLog.log(log, "RTP:Bad g711a length");
-            break;
-          }
-          addSamples(coder.decode(data, off));
-          rtp.iface.rtpSamples(this);
-          break;
         case 9:
-          dtmfSent = false;  //just in case end of dtmf was not received
-          if (len != 160 + 12) {
-            JFLog.log(log, "RTP:Bad g722 length");
-            break;
-          }
-          addSamples(coder.decode(data, off));
-          rtp.iface.rtpSamples(this);
-          break;
         case 18:
           dtmfSent = false;  //just in case end of dtmf was not received
-          if (len != 20 + 12) {
-            JFLog.log(log, "RTP:Bad g729a length");
+          if (len != coder.getPacketSize() + 12) {  //12 = RTP header
+            JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
             break;
           }
           addSamples(coder.decode(data, off));
