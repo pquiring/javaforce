@@ -444,7 +444,8 @@ public class RTPChannel {
         case 9:
         case 18:
           dtmfSent = false;  //just in case end of dtmf was not received
-          if (len != coder.getPacketSize() + 12) {  //12 = RTP header
+          int packetSize = coder.getPacketSize();
+          if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
             JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
             break;
           }
@@ -499,7 +500,8 @@ public class RTPChannel {
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
       } else if (id == speex_id) {
-        if (len != coder.getPacketSize() + 12) {  //12 = RTP header
+          int packetSize = coder.getPacketSize();
+          if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
             JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
         }
         addSamples(coder.decode(data, off));
