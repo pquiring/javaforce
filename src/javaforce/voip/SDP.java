@@ -257,7 +257,10 @@ public class SDP implements Cloneable {
     if (fingerprint != null) content.add("a=fingerprint:sha-256 " + fingerprint);
     for(int a=0;a<streams.length;a++) {
       Stream stream = streams[a];
-      if (stream.codecs.length == 0) continue;
+      if (stream.codecs.length == 0) {
+        JFLog.log("Error:SDP:Stream with no codecs!");
+        continue;
+      }
       Codec rfc2833 = stream.getCodec(RTP.CODEC_RFC2833);
       StringBuilder m = new StringBuilder();
       m.append("m=" + stream.getType() + " " + stream.port + " ");
@@ -462,9 +465,10 @@ public class SDP implements Cloneable {
           String[] f = ln.substring(9).split(" ");
           int id = JF.atoi(f[0]);
           String[] n = f[1].split("/");
+          String name = n[0].toUpperCase();
           int rate = JF.atoi(n[1]);
           if (id >= 96) {
-            stream.addCodec(new Codec(n[0], id, rate));
+            stream.addCodec(new Codec(name, id, rate));
           }
         }
         else if (ln.startsWith("a=sendrecv")) {
