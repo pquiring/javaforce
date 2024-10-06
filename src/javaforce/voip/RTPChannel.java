@@ -499,8 +499,8 @@ public class RTPChannel {
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
       } else if (id == speex_id) {
-        if (len != 20 + 12) {
-          JFLog.log(log, "RTP:Bad speex length");
+        if (len != coder.getPacketSize() + 12) {  //12 = RTP header
+            JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
         }
         addSamples(coder.decode(data, off));
         rtp.iface.rtpSamples(this);
