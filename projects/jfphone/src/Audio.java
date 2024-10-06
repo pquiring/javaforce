@@ -11,15 +11,18 @@ public class Audio {
   private short silence[] = new short[882];
   private short silence8[] = new short[160];
   private short silence16[] = new short[320];
+  private short silence32[] = new short[640];
   private short mixed[] = new short[882];
   private short recording[] = new short[882];
   private short indata8[] = new short[160];
   private short indata16[] = new short[320];
+  private short indata32[] = new short[640];
   private short outdata[] = new short[882];  //read from mic
   private short ringing[] = new short[882];
   private short callWaiting[] = new short[882];
   private short data8[] = new short[160];
   private short data16[] = new short[320];
+  private short data32[] = new short[640];
   private AudioOutput output;
   private AudioInput input;
   private Timer timer;
@@ -408,9 +411,14 @@ public class Audio {
                 mix(mixed, indata8, 9);
               }
               break;
-            case 16000:  //G722
+            case 16000:  //G722, speex16
               if (channel.getSamples(indata16) && doline) {
                 mix(mixed, indata16, 9);
+              }
+              break;
+            case 32000:  //speex32
+              if (channel.getSamples(indata32) && doline) {
+                mix(mixed, indata32, 9);
               }
               break;
           }
@@ -500,6 +508,9 @@ public class Audio {
       case 16000:
         if (!channel.getSamples(lines[idx].samples16)) return null;
         return lines[idx].samples16;
+      case 32000:
+        if (!channel.getSamples(lines[idx].samples32)) return null;
+        return lines[idx].samples32;
     }
     return null;
   }
@@ -516,6 +527,10 @@ public class Audio {
         interpolate(data16, in, bufIdx);
         encoded = coder.encode(data16);
         break;
+      case 32000:
+        interpolate(data32, in, bufIdx);
+        encoded = coder.encode(data32);
+        break;
     }
     return encoded;
   }
@@ -529,6 +544,9 @@ public class Audio {
         break;
       case 16000:
         encoded = coder.encode(silence16);
+        break;
+      case 32000:
+        encoded = coder.encode(silence32);
         break;
     }
     return encoded;

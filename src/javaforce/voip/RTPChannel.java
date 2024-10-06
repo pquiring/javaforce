@@ -26,7 +26,7 @@ public class RTPChannel {
   private int h265_id = -1;
   private char dtmfChar;
   private boolean dtmfSent = false;
-  private AudioBuffer buffer = new AudioBuffer(8000, 1, 2);  //freq, chs, seconds
+  private AudioBuffer buffer = new AudioBuffer(32000, 1, 2);  //freq, chs, seconds
   private DTMF dtmf;
   private static short[] silence8 = new short[160];
   private static short[] silence16 = new short[320];

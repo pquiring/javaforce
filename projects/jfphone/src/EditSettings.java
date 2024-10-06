@@ -2766,6 +2766,7 @@ public class EditSettings extends javax.swing.JDialog {
       if (codecs[a].equals("G729")) enabledAudioCodecsList.addElement("g729a");
       if (codecs[a].equals("SPEEX")) enabledAudioCodecsList.addElement("speex");
       if (codecs[a].equals("SPEEX16")) enabledAudioCodecsList.addElement("speex16");
+      if (codecs[a].equals("SPEEX32")) enabledAudioCodecsList.addElement("speex32");
     }
     if (!Settings.current.hasAudioCodec(RTP.CODEC_G711u)) {
       disabledAudioCodecsList.addElement("g711u");
@@ -2787,6 +2788,9 @@ public class EditSettings extends javax.swing.JDialog {
     }
     if (!Settings.current.hasAudioCodec(RTP.CODEC_SPEEX16)) {
       disabledAudioCodecsList.addElement("speex16");
+    }
+    if (!Settings.current.hasAudioCodec(RTP.CODEC_SPEEX32)) {
+      disabledAudioCodecsList.addElement("speex32");
     }
 //video codecs
     if ((Settings.current.videoCodecs == null) || (Settings.current.videoCodecs.length() == 0)) {
@@ -3090,6 +3094,7 @@ public class EditSettings extends javax.swing.JDialog {
       if (codec.equals("g729a")) sb.append("G729");
       if (codec.equals("speex")) sb.append("SPEEX");
       if (codec.equals("speex16")) sb.append("SPEEX16");
+      if (codec.equals("speex32")) sb.append("SPEEX32");
     }
     return sb.toString();
   }
