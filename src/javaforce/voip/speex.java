@@ -10,8 +10,6 @@ import javaforce.codec.speex.*;
  *
  * RFC 5574
  *
- * NOTE : At 16k and 32k the RTP packet size is the same.
- *        There is just more packets per second.
  */
 
 public class speex implements RTPAudioCoder {
@@ -29,6 +27,23 @@ public class speex implements RTPAudioCoder {
     this.rate = rate;
     encoder.init(0, 4, rate, 1);
     decoder.init(0, rate, 1, false);
+    switch (rate) {
+      case 8000:
+        //1 frame per RTP packet
+        encoded = new byte[12 + 20 * 1];
+        decoded = new short[160];
+        break;
+      case 16000:
+        //2 frames per RTP packet
+        encoded = new byte[12 + 20 * 2];
+        decoded = new short[160 * 2];
+        break;
+      case 32000:
+        //4 frames per RTP packet
+        encoded = new byte[12 + 20 * 4];
+        decoded = new short[160 * 4];
+        break;
+    }
   }
 
   public void setid(int id) {
@@ -39,25 +54,31 @@ public class speex implements RTPAudioCoder {
     return 20;
   }
 
-  private byte[] encoded = new byte[20 + 12];  //((160 / 80) * 10) + 12
+  private byte[] encoded;
 
-  //samples must be 160 samples
+  //samples must be multiple of 160 samples
   public byte[] encode(short[] samples) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, rtp_id, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
-    encoder.processData(samples, 0, samples.length);
-    if (debug) {
-      JFLog.log("speex:encoded.size=" + encoder.getProcessedDataByteSize());
+    int out_offset = 12;
+    int in_offset = 0;
+    while (in_offset < samples.length) {
+      encoder.processData(samples, in_offset, 160);
+      if (debug) {
+        JFLog.log("speex:encoded.size=" + encoder.getProcessedDataByteSize());
+      }
+      encoder.getProcessedData(encoded, out_offset);
+      out_offset += 20;
+      in_offset += 160;
     }
-    encoder.getProcessedData(encoded, 12);
     return encoded;
   }
 
   private int decode_timestamp;
 
-  private short[] decoded = new short[160];
+  private short[] decoded;
 
-  //encoded must be 20+12 bytes at least
+  //encoded must be 20*x+12 bytes at least (x = # of frames)
   public short[] decode(byte[] encoded, int off) {
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
@@ -68,12 +89,18 @@ public class speex implements RTPAudioCoder {
       }
       this.decode_timestamp = decode_timestamp;
     }
+    int in_offset = 12;
+    int out_offset = 0;
     try {
-      decoder.processData(encoded, 12, 20);
-      if (debug) {
-        JFLog.log("speex.decoded.size=" + decoder.getProcessedDataByteSize() / 2);
+      while (out_offset < decoded.length) {
+        decoder.processData(encoded, in_offset, 20);
+        if (debug) {
+          JFLog.log("speex.decoded.size=" + decoder.getProcessedDataByteSize() / 2);
+        }
+        decoder.getProcessedData(decoded, out_offset);
+        in_offset += 20;
+        out_offset += 160;
       }
-      decoder.getProcessedData(decoded, 0);
     } catch (Exception e) {
       JFLog.log("Error:speex:decode:" + e);
       JFLog.log(e);
