@@ -9,6 +9,9 @@ import javaforce.codec.speex.*;
  * Encodes/decodes speex packets.
  *
  * RFC 5574
+ *
+ * NOTE : At 16k and 32k the RTP packet size is the same.
+ *        There is just more packets per second.
  */
 
 public class speex implements RTPAudioCoder {
