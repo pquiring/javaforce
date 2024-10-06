@@ -615,6 +615,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (enabledCodecs[a].equals(RTP.CODEC_GSM.name)) stream.addCodec(RTP.CODEC_GSM);
       if (enabledCodecs[a].equals(RTP.CODEC_G722.name)) stream.addCodec(RTP.CODEC_G722);
       if (enabledCodecs[a].equals(RTP.CODEC_SPEEX.name)) stream.addCodec(RTP.CODEC_SPEEX);
+      if (enabledCodecs[a].equals(RTP.CODEC_SPEEX16.name)) stream.addCodec(RTP.CODEC_SPEEX16);
     }
     if (!pl.disableVideo && Settings.current.nativeVideo) {
       stream = sdp.addStream(SDP.Type.video);
@@ -662,6 +663,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         && (!astream.hasCodec(RTP.CODEC_GSM) || !Settings.current.hasAudioCodec(RTP.CODEC_GSM))
         && (!astream.hasCodec(RTP.CODEC_G722) || !Settings.current.hasAudioCodec(RTP.CODEC_G722))
         && (!astream.hasCodec(RTP.CODEC_SPEEX) || !Settings.current.hasAudioCodec(RTP.CODEC_SPEEX))
+        && (!astream.hasCodec(RTP.CODEC_SPEEX16) || !Settings.current.hasAudioCodec(RTP.CODEC_SPEEX16))
       )
       {
         JFLog.log("err:callAccept() : No compatible audio codec offered");
@@ -752,6 +754,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         && (!astream.hasCodec(RTP.CODEC_GSM) || !Settings.current.hasAudioCodec(RTP.CODEC_GSM))
         && (!astream.hasCodec(RTP.CODEC_G722) || !Settings.current.hasAudioCodec(RTP.CODEC_G722))
         && (!astream.hasCodec(RTP.CODEC_SPEEX) || !Settings.current.hasAudioCodec(RTP.CODEC_SPEEX))
+        && (!astream.hasCodec(RTP.CODEC_SPEEX16) || !Settings.current.hasAudioCodec(RTP.CODEC_SPEEX16))
       )
       {
         JFLog.log("err:callInviteSuccess() : No compatible audio codec returned");
@@ -1160,6 +1163,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     if (SIP.hasCodec(astream.codecs, RTP.CODEC_GSM)) acnt++;
     if (SIP.hasCodec(astream.codecs, RTP.CODEC_G722)) acnt++;
     if (SIP.hasCodec(astream.codecs, RTP.CODEC_SPEEX)) acnt++;
+    if (SIP.hasCodec(astream.codecs, RTP.CODEC_SPEEX16)) acnt++;
 
     if (vstream != null) {
       if (SIP.hasCodec(vstream.codecs, RTP.CODEC_JPEG)) vcnt++;

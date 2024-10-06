@@ -1,6 +1,5 @@
 package javaforce.voip;
 
-import java.net.*;
 import java.util.*;
 
 import javaforce.*;

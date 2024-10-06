@@ -530,7 +530,7 @@ public abstract class SIP implements TransportInterface {
   public static boolean hasCodec(Codec[] codecs, Codec codec) {
     for (int a = 0; a < codecs.length; a++) {
       Codec c = codecs[a];
-      if (c.name.equals(codec.name) && (c.rate == codec.rate)) {
+      if (c.name.equals(codec.name) && (codec.rate == -1 || c.rate == codec.rate)) {
         return true;
       }
     }
@@ -560,7 +560,7 @@ public abstract class SIP implements TransportInterface {
     int pos = 0;
     for (int a = 0; a < codecs.length; a++) {
       Codec c = codecs[a];
-      if (c.name.equals(codec.name) && (c.rate == codec.rate)) {
+      if (c.name.equals(codec.name) && (codec.rate == -1 || c.rate == codec.rate)) {
         continue;
       }
       newCodecs[pos++] = codecs[a];
@@ -575,7 +575,7 @@ public abstract class SIP implements TransportInterface {
   public static Codec getCodec(Codec[] codecs, Codec codec) {
     for (int a = 0; a < codecs.length; a++) {
       Codec c = codecs[a];
-      if (c.name.equals(codec.name) && (c.rate == codec.rate)) {
+      if (c.name.equals(codec.name) && (codec.rate == -1 || c.rate == codec.rate)) {
         return c;
       }
     }

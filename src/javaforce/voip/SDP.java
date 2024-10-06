@@ -320,12 +320,12 @@ public class SDP implements Cloneable {
         content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
       }
       if (stream.hasCodec(RTP.CODEC_SPEEX16)) {
-        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX).id + " speex/16000");
-        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX16).id + " speex/16000");
+        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX16).id + " mode=\"4,any\"");
       }
       if (stream.hasCodec(RTP.CODEC_SPEEX32)) {
-        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX).id + " speex/32000");
-        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX).id + " mode=\"4,any\"");
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX32).id + " speex/32000");
+        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX32).id + " mode=\"4,any\"");
       }
       if (stream.type == Type.audio) {
         content.add("a=rtpmap:" + rfc2833.id + " telephone-event/8000");
@@ -452,7 +452,8 @@ public class SDP implements Cloneable {
         for(int b=3;b<f.length;b++) {
           int id = JF.atoi(f[b]);
           if (id < 96) {
-            stream.addCodec(new Codec(SIP.getCodecName(id), id, 8000));
+            //NOTE : 8000 is okay but should use a codec lookup table
+            stream.addCodec(new Codec(SIP.getCodecName(id), id, stream.type == SDP.Type.audio ? 8000 : -1));
           }
         }
       } else if (ln.startsWith("a=")) {

@@ -4,7 +4,7 @@ public class Codec {
 
   public final String name;  //"PCMU", "PCMA", "G729" , "JPEG", "H263", "H264", "telephone-event"
   public final int id;       // 0       8       18       26      34      dyn     dyn
-  public final int rate;     //8000, 16000, 32000
+  public final int rate;     //8000, 16000, 32000 (-1 = variable/unknown)
 
   public Codec() {
     name = "";
