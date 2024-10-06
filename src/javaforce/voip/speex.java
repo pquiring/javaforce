@@ -21,6 +21,7 @@ public class speex implements RTPAudioCoder {
   private RTP rtp;
   private int rtp_id;
   private int rate;
+  private int packetSize;
 
   public speex(RTP rtp, int rate) {
     this.rtp = rtp;
@@ -30,17 +31,20 @@ public class speex implements RTPAudioCoder {
     switch (rate) {
       case 8000:
         //1 frame per RTP packet
-        encoded = new byte[12 + 20 * 1];
+        packetSize = 20 * 1;
+        encoded = new byte[12 + packetSize];
         decoded = new short[160];
         break;
       case 16000:
         //2 frames per RTP packet
-        encoded = new byte[12 + 20 * 2];
+        packetSize = 20 * 2;
+        encoded = new byte[12 + packetSize];
         decoded = new short[160 * 2];
         break;
       case 32000:
         //4 frames per RTP packet
-        encoded = new byte[12 + 20 * 4];
+        packetSize = 20 * 4;
+        encoded = new byte[12 + packetSize];
         decoded = new short[160 * 4];
         break;
     }
@@ -51,7 +55,7 @@ public class speex implements RTPAudioCoder {
   }
 
   public int getPacketSize() {
-    return 20;
+    return packetSize;
   }
 
   private byte[] encoded;
