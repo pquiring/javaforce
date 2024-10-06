@@ -65,12 +65,12 @@ function debian {
   #configure JavaForce repository
   if [ ! -f javaforce.list ]; then
     echo Download javaforce.list
-    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$ARCH/javaforce.list
+    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.list
     chmod 644 javaforce.list
   fi
   if [ ! -f javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$ARCH/javaforce.gpg
+    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.gpg
     chmod 644 javaforce.gpg
   fi
 
@@ -97,7 +97,7 @@ function fedora {
   #configure JavaForce repository
   if [ ! -f javaforce.repo ]; then
     echo Download javaforce.repo
-    wget -NP /etc/yum.repos.d http://javaforce.sf.net/fedora/$HOSTTYPE/javaforce.repo
+    wget -NP /etc/yum.repos.d http://javaforce.sf.net/fedora/$VERSION_ID/$HOSTTYPE/javaforce.repo
     chmod 644 javaforce.repo
   fi
 
