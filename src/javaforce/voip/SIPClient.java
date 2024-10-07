@@ -777,7 +777,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.uri = "im:" + to + "@" + remotehost + ":" + remoteport;
+    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
     cd.src.cseq++;
@@ -806,7 +806,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.authsent = false;
     cd.src.extra = null;
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
-    cd.uri = "im:" + to + "@" + remotehost + ":" + remoteport;
+    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.sdp = msg;
     if (!issue(cd, "MESSAGE", true, true)) {
