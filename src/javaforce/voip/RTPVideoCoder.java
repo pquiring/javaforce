@@ -18,6 +18,13 @@ public interface RTPVideoCoder {
    * For some video codecs this value is fixed and ignored.
    */
   public void setid(int id);
+  /** Encodes encoded video into multiple RTP packets.
+   * PacketReceiver will receive RTP packets.
+   */
   public void encode(byte[] data, int offset, int length, int x, int y, PacketReceiver pr);
+  /** Decodes RTP packets(s) into encoded video data.
+   * PacketReceiver will receive encoded video data packets which can be
+   * decoded to raw video frames using MediaVideoDecoder.
+   */
   public void decode(byte[] rtp, int offset, int length, PacketReceiver pr);
 }

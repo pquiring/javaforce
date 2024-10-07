@@ -15,8 +15,14 @@ public interface RTPAudioCoder {
    * For most audio codecs this value is fixed and ignored.
    */
   public void setid(int id);
+  /** Encodes audio samples into RTP packet. */
   public byte[] encode(short[] src16);
+  /** Decodes RTP packet into audio samples. */
   public short[] decode(byte[] src8, int off);
+  /** Returns sample rate. */
   public int getSampleRate();
+  /** Returns encoded packet size (excluding RTP header)
+   * -1 = variable sized
+   */
   public int getPacketSize();
 }
