@@ -1,8 +1,8 @@
 What's new...
 
 Oct 7/2024 : JF/70.0
-  - VoIP : added speex 8k,16k,32k audio codec (issue #20)
-  - VoIP : use "sip" prefix in URI for message() (issue #21)
+  - VoIP : added speex 8k,16k,32k audio codec (issue #21)
+  - VoIP : use "sip" prefix in URI for message() (issue #22)
     - default can be changed with SIPClient.setMessageURI()
   - jfPhone/1.31
     - added support for speex,speex16,speex32
