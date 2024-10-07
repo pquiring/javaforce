@@ -17,8 +17,8 @@ public class speex implements RTPAudioCoder {
   private static boolean debug = false;
 
   private int mode = 0;  //0=NB 1=WB 2=UWB
-  private int quality = 5;  //0-10
-  private boolean enhanced = false;
+  private static int quality = 5;  //0-10
+  private static boolean enhanced = false;
 
   private SpeexEncoder encoder = new SpeexEncoder();
   private SpeexDecoder decoder = new SpeexDecoder();
@@ -56,6 +56,24 @@ public class speex implements RTPAudioCoder {
 
   public int getPacketSize() {
     return -1;  //variable sized
+  }
+
+  /** Set encoder quality (0-10)
+   * Default = 5.
+   * Affects only new speex instances.
+   */
+  public void setQuality(int value) {
+    if (value < 0) value = 0;
+    if (value > 10) value = 10;
+    quality = value;
+  }
+
+  /** Set decoder enhanced mode.
+   * Default = false
+   * Affects only new speex instances.
+   */
+  public void setEnhancedMode(boolean mode) {
+    enhanced = mode;
   }
 
   private byte[] encoded;
