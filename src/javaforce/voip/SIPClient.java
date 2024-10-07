@@ -26,6 +26,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   private static boolean use_rport = true;
   private HashMap<String, CallDetails> cdlist;
   private boolean registered;
+  private String message_uri_prefix = "sip";
   private static NAT nat = NAT.None;
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
   private static String stunHost, stunUser, stunPass;
@@ -777,7 +778,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
+    cd.uri = message_uri_prefix + ":" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
     cd.src.cseq++;
@@ -806,13 +807,21 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.authsent = false;
     cd.src.extra = null;
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
-    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
+    cd.uri = message_uri_prefix + ":" + to + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.sdp = msg;
     if (!issue(cd, "MESSAGE", true, true)) {
       return null;
     }
     return callid;
+  }
+
+  /** Sets URI prefix for message()
+   * Default = "sip"
+   * Some servers user "im".
+   */
+  public void setMessageURI(String prefix) {
+    message_uri_prefix = prefix;
   }
 
   /**
