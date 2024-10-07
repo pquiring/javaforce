@@ -1,5 +1,22 @@
 What's new...
 
+Oct 7/2024 : JF/70.0
+  - VoIP : added speex 8k,16k,32k audio codec (issue #20)
+  - VoIP : use "sip" prefix in URI for message() (issue #21)
+    - default can be changed with SIPClient.setMessageURI()
+  - jfPhone/1.31
+    - added support for speex,speex16,speex32
+  - debian/fedora repos
+    - URL now includes a component for OS version
+    - this is required mainly because of ffmpeg
+    - sym links are used for old URLs
+      - debian:bookworm
+      - fedora:40
+  - linux loader improvements
+    - no longer links against X11 and other libs
+      - only libc and libm are required
+    - improved Java location detection
+
 Oct 3/2024 : JF/69.1
   - jfDVR/0.31
     - increased viewer max memory size to 12GB
