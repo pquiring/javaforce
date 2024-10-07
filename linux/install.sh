@@ -63,12 +63,12 @@ function debian {
   apt -y install wget
 
   #configure JavaForce repository
-  if [ ! -f javaforce.list ]; then
+  if [ ! -f /etc/apt/sources.list.d/javaforce.list ]; then
     echo Download javaforce.list
     wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.list
     chmod 644 javaforce.list
   fi
-  if [ ! -f javaforce.gpg ]; then
+  if [ ! -f /etc/apt/trusted.gpg.d/javaforce.gpg ]; then
     echo Download javaforce.gpg
     wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.gpg
     chmod 644 javaforce.gpg
@@ -95,7 +95,7 @@ function fedora {
   dnf -y install wget
 
   #configure JavaForce repository
-  if [ ! -f javaforce.repo ]; then
+  if [ ! -f /etc/yum.repos.d/javaforce.repo ]; then
     echo Download javaforce.repo
     wget -NP /etc/yum.repos.d http://javaforce.sf.net/fedora/$VERSION_ID/$HOSTTYPE/javaforce.repo
     chmod 644 javaforce.repo
@@ -132,7 +132,7 @@ function arch {
   echo "SigLevel = TrustAll" >> /etc/pacman.conf
   echo "Server = http://javaforce.sourceforge.net/arch/$HOSTTYPE" >> /etc/pacman.conf
 
-  if [ ! -f javaforce.gpg ]; then
+  if [ ! -f /tmp/javaforce.gpg ]; then
     echo Download javaforce.gpg
     wget -NP /tmp http://javaforce.sf.net/arch/$HOSTTYPE/javaforce.gpg
     chmod 644 javaforce.gpg
