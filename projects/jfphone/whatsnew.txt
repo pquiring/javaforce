@@ -1,4 +1,6 @@
 CHANGELOG:
+10-7-2024 : v1.31 released
+  - new : added speex audio codec (8k, 16k, 32k)
 10-3-2024 : v1.30 released
   - new : EditContact now shows server selection as a combobox
 9-30-2024 : v1.29 released
