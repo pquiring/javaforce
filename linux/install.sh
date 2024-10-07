@@ -3,12 +3,23 @@
 # install jfLinux onto pre-installed minimal linux
 
 DESKTOP=ask
-if [ "$1" = "--desktop=no" ]; then
-  DESKTOP=no
-fi
-if [ "$1" = "--desktop=yes" ]; then
-  DESKTOP=yes
-fi
+JAVAFORCE=yes
+
+for arg in "$@"
+do
+  if [ "$arg" = "--desktop=no" ]; then
+    DESKTOP=no
+  fi
+  if [ "$arg" = "--desktop=yes" ]; then
+    DESKTOP=yes
+  fi
+  if [ "$arg" = "--javaforce=no" ]; then
+    JAVAFORCE=no
+  fi
+  if [ "$arg" = "--javaforce=yes" ]; then
+    JAVAFORCE=yes
+  fi
+done
 
 function detectos {
   if [ ! -f /etc/os-release ]; then
@@ -75,7 +86,9 @@ function debian {
   fi
 
   apt update
-  apt --yes install javaforce
+  if [ $JAVAFORCE = "yes" ]; then
+    apt --yes install javaforce
+  fi
 
   if [ $DESKTOP = "ask" ]; then
     read -p "Install jfLinux Desktop Environment? " -n 1 -r
@@ -102,7 +115,9 @@ function fedora {
   fi
 
   dnf update
-  dnf -y install javaforce
+  if [ $JAVAFORCE = "yes" ]; then
+    dnf -y install javaforce
+  fi
 
   if [ $DESKTOP = "ask" ]; then
     read -p "Install jfLinux Desktop Environment? " -n 1 -r
@@ -145,7 +160,9 @@ function arch {
   #update everything
   pacman -Syy
 
-  pacman -S --noconfirm javaforce
+  if [ $JAVAFORCE = "yes" ]; then
+    pacman -S --noconfirm javaforce
+  fi
 
   if [ $DESKTOP = "ask" ]; then
     read -p "Install jfLinux Desktop Environment? " -n 1 -r
