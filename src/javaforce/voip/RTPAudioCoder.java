@@ -18,7 +18,7 @@ public interface RTPAudioCoder {
   /** Encodes audio samples into RTP packet. */
   public byte[] encode(short[] src16);
   /** Decodes RTP packet into audio samples. */
-  public short[] decode(byte[] src8, int off);
+  public short[] decode(byte[] src8, int off, int length);
   /** Returns sample rate. */
   public int getSampleRate();
   /** Returns encoded packet size (excluding RTP header)

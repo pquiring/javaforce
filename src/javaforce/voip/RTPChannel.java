@@ -449,7 +449,7 @@ public class RTPChannel {
             JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
             break;
           }
-          addSamples(coder.decode(data, off));
+          addSamples(coder.decode(data, off, len));
           rtp.iface.rtpSamples(this);
           break;
         case 26:
@@ -504,7 +504,7 @@ public class RTPChannel {
           if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
             JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
         }
-        addSamples(coder.decode(data, off));
+        addSamples(coder.decode(data, off, len));
         rtp.iface.rtpSamples(this);
       } else {
         if (debug) JFLog.log("RTPChannel:unknown codec id:" + id + ":" + rtp);

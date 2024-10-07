@@ -113,7 +113,7 @@ public class g711u implements RTPAudioCoder {
   private short[] decoded = new short[160];
 
   //encoded must be 160+12 bytes at least
-  public short[] decode(byte[] encoded, int off) {
+  public short[] decode(byte[] encoded, int off, int length) {
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;

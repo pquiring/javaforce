@@ -80,7 +80,7 @@ public class speex implements RTPAudioCoder {
 
   private short[] decoded;
 
-  public short[] decode(byte[] encoded, int off) {
+  public short[] decode(byte[] encoded, int off, int length) {
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;
@@ -91,7 +91,7 @@ public class speex implements RTPAudioCoder {
       this.decode_timestamp = decode_timestamp;
     }
     try {
-      decoder.processData(encoded, 12, encoded.length - 12);
+      decoder.processData(encoded, 12, length - 12);
       if (debug) {
         JFLog.log("speex.decoded.size=" + decoder.getProcessedDataByteSize() / 2);
       }
@@ -120,7 +120,7 @@ public class speex implements RTPAudioCoder {
       }
       byte[] data = sx.encode(samples);
       short[] out;
-      out = sx.decode(data, 0);
+      out = sx.decode(data, 0, data.length);
       JFLog.log("out.length=" + out.length);
     } catch (Exception e) {
       JFLog.log(e);

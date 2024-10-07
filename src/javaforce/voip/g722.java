@@ -386,7 +386,7 @@ public class g722 implements RTPAudioCoder {
 
   private final short[] decoded = new short[320];
 
-  public short[] decode(byte[] src8, int off) {
+  public short[] decode(byte[] src8, int off, int length) {
     int dlowt;
     int rlow;
     int ihigh;
