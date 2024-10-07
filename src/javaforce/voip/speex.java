@@ -25,27 +25,29 @@ public class speex implements RTPAudioCoder {
   private RTP rtp;
   private int rtp_id;
   private int rate;
+  private int nsamples;
 
   public speex(RTP rtp, int rate) {
     this.rtp = rtp;
     this.rate = rate;
     switch (rate) {
       case 8000:
-        decoded = new short[160];
+        nsamples = 160;
         mode = 0;
         break;
       case 16000:
-        decoded = new short[160 * 2];
+        nsamples = 160 * 2;
         mode = 1;
         break;
       case 32000:
-        decoded = new short[160 * 4];
+        nsamples = 160 * 4;
         mode = 2;
         break;
     }
     encoder.init(mode, quality, rate, 1);
     decoder.init(mode, rate, 1, enhanced);
     encoded = new byte[12];
+    decoded = new short[nsamples];
   }
 
   public void setid(int id) {
@@ -60,8 +62,6 @@ public class speex implements RTPAudioCoder {
 
   //samples must be multiple of 160 samples
   public byte[] encode(short[] samples) {
-    RTPChannel rtpChannel = rtp.getDefaultChannel();
-    RTPChannel.buildHeader(encoded, rtp_id, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.processData(samples, 0, samples.length);
     int encoded_length = encoder.getProcessedDataByteSize();
     if (debug) {
@@ -71,6 +71,8 @@ public class speex implements RTPAudioCoder {
       encoded = new byte[encoded_length + 12];
     }
     encoder.getProcessedData(encoded, 12);
+    RTPChannel rtpChannel = rtp.getDefaultChannel();
+    RTPChannel.buildHeader(encoded, rtp_id, rtpChannel.getseqnum(), rtpChannel.gettimestamp(nsamples), rtpChannel.getssrc(), false);
     return encoded;
   }
 
@@ -84,7 +86,7 @@ public class speex implements RTPAudioCoder {
       this.decode_timestamp = decode_timestamp;
     } else {
       if (RTP.debug) {
-        JFLog.log("G729a:timestamp = " + decode_timestamp + ":" + ((this.decode_timestamp + 160 == decode_timestamp) ? "ok" : "lost packet"));
+        JFLog.log("speex:timestamp = " + decode_timestamp + ":" + ((this.decode_timestamp + nsamples == decode_timestamp) ? "ok" : "lost packet"));
       }
       this.decode_timestamp = decode_timestamp;
     }
@@ -105,17 +107,15 @@ public class speex implements RTPAudioCoder {
 
   private static void test(int rate) {
     try {
-      int mult = rate / 8000;
       RTP rtp = new RTP();
       SDP sdp = new SDP();
       sdp.setIP("1.2.3.4");
       SDP.Stream stream = sdp.addStream(SDP.Type.audio);
       rtp.createChannel(stream);
       speex sx = new speex(rtp, rate);
-      int cnt = 160 * mult;
-      short[] samples = new short[cnt];
+      short[] samples = new short[sx.nsamples];
       Random r = new Random();
-      for(int a=0;a<cnt;a++) {
+      for(int a=0;a<sx.nsamples;a++) {
         samples[a] = (short)(r.nextInt(0xffff) - 0x7fff);
       }
       byte[] data = sx.encode(samples);
