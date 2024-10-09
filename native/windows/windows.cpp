@@ -651,10 +651,11 @@ bool try_graal() {
 bool try_jvm() {
   sprintf(err_msg, "Unable to find Java");
   if (javahome[0] == 0) {
-    if (findJavaHomeEnvironment() == 0) {
-      if (findJavaHomeRegistry() == 0) {
-        if (findJavaHomeAppFolder() == 0) {
-          if (findJavaHomeAppDataFolder() == 0) {
+    //use app supplied java before system supplied
+    if (findJavaHomeAppFolder() == 0) {
+      if (findJavaHomeAppDataFolder() == 0) {
+        if (findJavaHomeEnvironment() == 0) {
+          if (findJavaHomeRegistry() == 0) {
             error(err_msg);
             return false;
           }

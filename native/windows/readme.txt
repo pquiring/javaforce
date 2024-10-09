@@ -40,7 +40,6 @@ Compiling using ffmpeg downloaded manually
     - run "bash configure --disable-x86asm"
     - cygwin must be in path
     - you do not need to make it, only the headers are needed
-  - set FFMEG_HOME=../../ffmpeg-src/${ffmpeg-version}
   - run ant
   - you'll need to find shared libraries from ffmpeg.org and extract to ../../ffmpeg-bin/${ffmpeg-version}
   - I don't recommend trying to compile ffmpeg yourself
