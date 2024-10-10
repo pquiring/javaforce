@@ -15,12 +15,23 @@ public class VideoBuffer {
   private JFImage[] images;
   private int head = 0, tail = 0;
   private boolean headInUse, tailInUse;
+  private int width, height;
 
   public VideoBuffer(int width, int height, int frames) {
     images = new JFImage[frames];
     for(int a=0;a<frames;a++) {
       images[a] = new JFImage(width, height);
     }
+    this.width = width;
+    this.height = height;
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
   }
 
   //head functions

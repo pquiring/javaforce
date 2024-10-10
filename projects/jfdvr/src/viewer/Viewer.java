@@ -81,8 +81,8 @@ public class Viewer {
     JFLog.log("" + System.currentTimeMillis() + ":" + msg);
   }
 
-  private final int buffer_seconds = 4;
-  private final int pre_buffer_seconds = 2;
+  private final int buffer_frames = 4;
+  private final int pre_buffer_frames = 2;
   private int new_width, new_height;
   private boolean resizeVideo;
   private Object sizeLock = new Object();
@@ -99,7 +99,6 @@ public class Viewer {
     private long lastPacket;
     private long lastKeepAlive;
     private int decoded_frame[];
-    private int decoded_x, decoded_y, decoded_xy;
     private int log = 0;
     private boolean grid;
     private int gx, gy;
@@ -334,12 +333,10 @@ public class Viewer {
         } else {
           JFLog.log(log, "FPS=" + fps);
         }
-        decoded_x = ViewerApp.self.getWidth();
-        decoded_y = ViewerApp.self.getHeight();
-        decoded_xy = decoded_x * decoded_y;
-        width = decoded_x;
-        height = decoded_y;
-        video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+        //use default size until real size is known
+        width = 640;
+        height = 480;
+        video_buffer = new VideoBuffer(width, height, buffer_frames);
         int av_codec = -1;
         if (stream.hasCodec(RTP.CODEC_H264)) {
           av_codec = MediaCoder.AV_CODEC_ID_H264;
@@ -353,7 +350,7 @@ public class Viewer {
           JFLog.log(log, "DVR Viewer:No supported codec detected");
           return;
         }
-        status = video_decoder.start(av_codec, decoded_x, decoded_y);
+        status = video_decoder.start(av_codec, -1, -1);
         if (!status) {
           JFLog.log(log, "Error:MediaVideoDecoder.start() failed");
           return;
@@ -513,6 +510,7 @@ public class Viewer {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
         lastPacket = System.currentTimeMillis();
+        //decode RTP packets into video codec packets
         coder.decode(buf, 0, length, this);
       } catch (Exception e) {
         JFLog.log(log, e);
@@ -571,24 +569,24 @@ public class Viewer {
           packets.reset();
           return;
         } else {
-          if (false) {
-            int video_width = video_decoder.getWidth();
-            int video_height = video_decoder.getHeight();
-            float video_fps = video_decoder.getFrameRate();
-            JFLog.log(log, "Note : detected width/height=" + video_width + "x" + video_height);
-            JFLog.log(log, "Note : detected FPS=" + video_fps);
+          int video_width = video_decoder.getWidth();
+          int video_height = video_decoder.getHeight();
+          float video_fps = video_decoder.getFrameRate();
+          if ((video_buffer.getWidth() != video_width) || (video_buffer.getHeight() != video_height)) {
+            //change video_buffer size
+            video_buffer = new VideoBuffer(video_width, video_height, buffer_frames);
+            width = video_width;
+            height = video_height;
           }
-          if (width > 0 && height > 0) {
-            JFImage img = video_buffer.getNewFrame();
-            if (img != null) {
-              if ((img.getWidth() != width) || (img.getHeight() != height)) {
-                img.setSize(width, height);
-              }
-              img.putPixels(decoded_frame, 0, 0, width, height, 0);
-              video_buffer.freeNewFrame();
-            } else {
-              if (debug_buffers) JFLog.log(log, "Warning : VideoBuffer overflow");
-            }
+          if (video_fps != fps && video_fps > 0) {
+            fps = video_fps;
+          }
+          JFImage img = video_buffer.getNewFrame();
+          if (img != null) {
+            img.putPixels(decoded_frame, 0, 0, width, height, 0);
+            video_buffer.freeNewFrame();
+          } else {
+            if (debug_buffers) JFLog.log(log, "Warning : VideoBuffer overflow");
           }
         }
       } catch (Exception e) {
@@ -600,6 +598,7 @@ public class Viewer {
     }
 
     public class PlayAudioVideoThread extends Thread {
+      private float cur_fps;
       public void run() {
         double frameDelay = -1;
         double samplesPerFrame = (44100.0 * ((double)chs)) / fps;
@@ -610,6 +609,7 @@ public class Viewer {
         short samples[] = new short[audio_bufsiz];
         double current = System.currentTimeMillis();
         int skip = 0;
+        cur_fps = fps;
         while (playing) {
           if (video_buffer == null) {
             JF.sleep(100);
@@ -619,17 +619,18 @@ public class Viewer {
             JF.sleep(100);
             continue;
           }
-          if (frameDelay == -1) {
+          if (frameDelay == -1 || cur_fps != fps) {
             if (fps == -1) {
               JF.sleep(100);
               continue;
             }
             frameDelay = 1000.0f / fps;
+            cur_fps = fps;
           }
           if (preBuffering) {
             //wait till buffers are 50% full before starting
             while (playing && preBuffering) {
-              if (video_buffer.size() >= (fps * pre_buffer_seconds)) break;
+              if (video_buffer.size() >= pre_buffer_frames) break;
               JF.sleep(25);
             }
             preBuffering = false;
@@ -699,7 +700,7 @@ public class Viewer {
           if (preBuffering) {
             //wait till buffers are 50% full before starting
             while (playing && preBuffering) {
-              if (audio_buffer.size() >= (44100 * chs * pre_buffer_seconds)) break;
+              if (audio_buffer.size() >= (44100 * chs * pre_buffer_frames)) break;
               JF.sleep(25);
             }
             preBuffering = false;
@@ -728,26 +729,29 @@ public class Viewer {
       }
     }
     public class PlayVideoOnlyThread extends Thread {
+      private float cur_fps;
       public void run() {
         double frameDelay = -1;
         double current = System.currentTimeMillis();
         int skip = 0;
+        cur_fps  = fps;
         while (playing) {
           if (video_buffer == null) {
             JF.sleep(100);
             continue;
           }
-          if (frameDelay == -1) {
+          if (frameDelay == -1 || cur_fps != fps) {
             if (fps == -1) {
               JF.sleep(100);
               continue;
             }
             frameDelay = 1000.0f / fps;
+            cur_fps = fps;
           }
           if (preBuffering) {
             //wait till buffers are 50% full before starting
             while (playing && preBuffering) {
-              if (video_buffer.size() >= (fps * pre_buffer_seconds)) break;
+              if (video_buffer.size() >= pre_buffer_frames) break;
               JF.sleep(25);
             }
             preBuffering = false;
