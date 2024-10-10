@@ -6,6 +6,7 @@ jboolean glPlatformInit();
 jboolean glGetFunction(void **funcPtr, const char *name);  //platform impl
 
 void (*_glActiveTexture)(int);
+void (*_glAlphaFunc)(int,int);
 void (*_glAttachShader)(int,int);
 void (*_glBindBuffer)(int,int);
 void (*_glBindFramebuffer)(int,int);
@@ -75,6 +76,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_init
 {
   if (!glPlatformInit()) return JNI_FALSE;
   glGetFunction((void**)&_glActiveTexture,"glActiveTexture");
+  glGetFunction((void**)&_glAlphaFunc,"glAlphaFunc");
   glGetFunction((void**)&_glAttachShader,"glAttachShader");
   glGetFunction((void**)&_glBindBuffer,"glBindBuffer");
   glGetFunction((void**)&_glBindFramebuffer,"glBindFramebuffer");
@@ -145,6 +147,12 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glActiveTexture
   (JNIEnv *e, jclass c, jint i1)
 {
   (*_glActiveTexture)(i1);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GL_glAlphaFunc
+  (JNIEnv *e, jclass c, jint i1, jint i2)
+{
+  (*_glAlphaFunc)(i1, i2);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glAttachShader
@@ -623,6 +631,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glViewport
 static JNINativeMethod javaforce_gl_GL[] = {
   {"init", "()Z", (void *)&Java_javaforce_gl_GL_init},
   {"glActiveTexture", "(I)V", (void *)&Java_javaforce_gl_GL_glActiveTexture},
+  {"glAlphaFunc", "(II)V", (void *)&Java_javaforce_gl_GL_glAlphaFunc},
   {"glAttachShader", "(II)V", (void *)&Java_javaforce_gl_GL_glAttachShader},
   {"glBindBuffer", "(II)V", (void *)&Java_javaforce_gl_GL_glBindBuffer},
   {"glBindFramebuffer", "(II)V", (void *)&Java_javaforce_gl_GL_glBindFramebuffer},

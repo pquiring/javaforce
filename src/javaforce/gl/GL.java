@@ -94,6 +94,7 @@ public class GL {
   public static final int GL_DEPTH_BUFFER_BIT= 0x0100;
   public static final int GL_STENCIL_BUFFER_BIT = 0x0400;
   public static final int GL_STENCIL_TEST = 0x0B90;
+  public static final int GL_ALPHA_TEST = 0x0BC0;
   public static final int GL_ARRAY_BUFFER = 0x8892;
   public static final int GL_STATIC_DRAW = 0x88e4;
   public static final int GL_STREAM_DRAW = 0x88e0;
@@ -182,6 +183,7 @@ public class GL {
   }
 
   public static native void glActiveTexture(int i1);
+  public static native void glAlphaFunc(int i1, int i2);
   public static native void glAttachShader(int i1, int i2);
   public static native void glBindBuffer(int i1, int i2);
   public static native void glBindFramebuffer(int i1, int i2);
