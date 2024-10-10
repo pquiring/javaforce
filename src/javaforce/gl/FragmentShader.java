@@ -14,6 +14,7 @@ package javaforce.gl;
 
 public class FragmentShader {
   public static String source =
+"#version 330\n" +
 "varying vec2 vTextureCoord1;\n" +
 "varying vec2 vTextureCoord2;\n" +
 "varying float vLength;\n" +

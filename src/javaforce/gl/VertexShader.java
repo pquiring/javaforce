@@ -15,6 +15,7 @@ package javaforce.gl;
 
 public class VertexShader {
   public static String source =
+"#version 330\n" +
 "attribute vec3 aVertexPosition;\n" +
 "attribute vec2 aTextureCoord1;\n" +
 "attribute vec2 aTextureCoord2;\n" +
