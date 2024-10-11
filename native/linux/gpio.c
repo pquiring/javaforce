@@ -8,7 +8,7 @@
 
 #include "javaforce_pi_GPIO.h"
 
-#include "..\common\register.h"
+#include "../common/register.h"
 
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)

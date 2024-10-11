@@ -7,7 +7,7 @@
 
 #include "javaforce_pi_I2C.h"
 
-#include "..\common\register.h"
+#include "../common/register.h"
 
 static int file_i2c;
 
