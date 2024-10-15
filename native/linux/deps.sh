@@ -41,6 +41,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 function debian {
+  apt update
   apt --yes install g++ default-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev libvirt-dev zlib1g-dev sudo libv4l-0
 }
 
@@ -49,6 +50,7 @@ function fedora {
 }
 
 function arch {
+  pacman -Sy
   pacman -S --noconfirm jdk17-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
 }
 
