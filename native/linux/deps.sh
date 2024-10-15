@@ -51,7 +51,7 @@ function fedora {
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm jdk17-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
+  pacman -S --noconfirm gcc jdk17-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
 }
 
 function freebsd {
