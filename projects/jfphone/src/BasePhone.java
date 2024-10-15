@@ -506,35 +506,35 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     String enabledCodecs[] = Settings.current.getAudioCodecs();
     for(int a=0;a<enabledCodecs.length;a++) {
       if ((enabledCodecs[a].equals(RTP.CODEC_G729a.name)) && (astream.hasCodec(RTP.CODEC_G729a))) {
-        newAstream.addCodec(RTP.CODEC_G729a);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_G729a));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_G711u.name)) && (astream.hasCodec(RTP.CODEC_G711u))) {
-        newAstream.addCodec(RTP.CODEC_G711u);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_G711u));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_G711a.name)) && (astream.hasCodec(RTP.CODEC_G711a))) {
-        newAstream.addCodec(RTP.CODEC_G711a);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_G711a));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_GSM.name)) && (astream.hasCodec(RTP.CODEC_GSM))) {
-        newAstream.addCodec(RTP.CODEC_GSM);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_GSM));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_G722.name)) && (astream.hasCodec(RTP.CODEC_G722))) {
-        newAstream.addCodec(RTP.CODEC_G722);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_G722));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_SPEEX.name)) && (astream.hasCodec(RTP.CODEC_SPEEX))) {
-        newAstream.addCodec(RTP.CODEC_SPEEX);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_SPEEX));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_SPEEX16.name)) && (astream.hasCodec(RTP.CODEC_SPEEX16))) {
-        newAstream.addCodec(RTP.CODEC_SPEEX16);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_SPEEX16));
         break;
       }
       if ((enabledCodecs[a].equals(RTP.CODEC_SPEEX32.name)) && (astream.hasCodec(RTP.CODEC_SPEEX32))) {
-        newAstream.addCodec(RTP.CODEC_SPEEX32);
+        newAstream.addCodec(astream.getCodec(RTP.CODEC_SPEEX32));
         break;
       }
     }
@@ -543,35 +543,35 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       enabledCodecs = Settings.current.getVideoCodecs();
       for(int a=0;a<enabledCodecs.length;a++) {
         if ((enabledCodecs[a].equals(RTP.CODEC_JPEG.name)) && (vstream.hasCodec(RTP.CODEC_JPEG))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_JPEG);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_JPEG));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_H263.name)) && (vstream.hasCodec(RTP.CODEC_H263))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_H263);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_H263));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_H263_1998.name)) && (vstream.hasCodec(RTP.CODEC_H263_1998))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_H263_1998);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_H263_1998));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_H263_2000.name)) && (vstream.hasCodec(RTP.CODEC_H263_2000))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_H263_2000);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_H263_2000));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_H264.name)) && (vstream.hasCodec(RTP.CODEC_H264))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_H264);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_H264));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_H265.name)) && (vstream.hasCodec(RTP.CODEC_H265))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_H265);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_H265));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_VP8.name)) && (vstream.hasCodec(RTP.CODEC_VP8))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_VP8);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_VP8));
           break;
         }
         if ((enabledCodecs[a].equals(RTP.CODEC_VP9.name)) && (vstream.hasCodec(RTP.CODEC_VP9))) {
-          addVideoStream(pl, sdp, vstream, RTP.CODEC_VP9);
+          addVideoStream(pl, sdp, vstream, vstream.getCodec(RTP.CODEC_VP9));
           break;
         }
       }

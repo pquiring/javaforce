@@ -42,7 +42,7 @@ public class Codec {
   }
 
   public boolean equals(Codec other) {
-    return name.equals(other.name) && rate == other.rate;
+    return name.equals(other.name) && (rate == -1 || other.rate == -1 || rate == other.rate);
   }
 
   public String toString() {
