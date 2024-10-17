@@ -118,7 +118,6 @@ public class SFTP {
   }
 
   public void download_file(File remote, File local) {
-    total = 0;
     try {
       FileOutputStream fos = new FileOutputStream(local);
       InputStream is = channel.read(path + "/" +remote.getName());
@@ -130,7 +129,6 @@ public class SFTP {
   }
 
   public void upload_file(File local, File remote) {
-    total = 0;
     try {
       FileInputStream fis = new FileInputStream(local);
       OutputStream os = channel.write(path + "/" +remote.getName());
@@ -180,15 +178,11 @@ public class SFTP {
     }
   }
 
-  private int total;
-
-  //TODO : progress monitor
-
-  public void progress_init() {
-    total = 0;
-  }
-
-  public void progress_count(long l) {
-    total += l;
+  public void remote_delete_folder(String file) {
+    try {
+      channel.rmdir(file);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }
