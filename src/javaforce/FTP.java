@@ -7,6 +7,9 @@ import javax.net.ssl.*;
 
 /**
  * FTP client class. Supports Passive and Active mode.
+ *
+ * See connectSSL() to implement FTPS.
+ *
  */
 public class FTP {
 
@@ -84,6 +87,10 @@ public class FTP {
     }
     disconnect();  //not valid FTP site
     return false;
+  }
+
+  public boolean connectSSL(String host) throws Exception {
+    return connectSSL(host, 990);
   }
 
   public boolean connectSSL(String host, int port) throws Exception {
