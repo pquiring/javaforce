@@ -597,7 +597,11 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     SDP sdp = new SDP();
     SDP.Stream stream = sdp.addStream(SDP.Type.audio);
     stream.content = "audio1";
-    stream.port = pl.audioRTP.getlocalrtpport();
+    if (pl.audioRTP != null) {
+      stream.port = pl.audioRTP.getlocalrtpport();
+    } else {
+      stream.port = 0;  //OPTIONS
+    }
     if (pl.srtp) {
       stream.profile = SDP.Profile.SAVP;
       if (!pl.dtls) {
@@ -1591,6 +1595,18 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
 
   public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String[] msg) {
     gui.chatAdd(fromnumber, msg);
+  }
+
+  /** SIPClientInterface.onMessage() : triggered when server requests phone codecs. */
+
+  public SDP onOptions(SIPClient client, String callid) {
+    for(int a=0;a<6;a++) {
+      PhoneLine pl = lines[a];
+      if (pl.sip == client) {
+        return getLocalSDPInvite(pl);
+      }
+    }
+    return null;
   }
 
   /** Processes keyboard input. */

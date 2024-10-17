@@ -354,6 +354,10 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
   public void onMessage(SIPClient sip, String callid, String fromid, String fromnumber, String[] msg) {
   }
 
+  public SDP onOptions(SIPClient sip, String callid) {
+    return null;
+  }
+
   //http://tools.ietf.org/html/rfc5763 - Secure RTP (fingerprint)
 
   private String convertSDPtoWebSDP(RTC rtc, String[] sdp) {

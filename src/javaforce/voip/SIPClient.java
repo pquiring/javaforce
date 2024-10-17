@@ -1049,6 +1049,14 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             reply(cd, "MESSAGE", 200, "OK", false, false);
             break;
           }
+          if (req.equals("OPTIONS")) {
+            SDP sdp = iface.onOptions(this, callid);
+            if (sdp != null) {
+              cd.sdp = sdp.build(localhost);
+              reply(cd, cmd, 200, "OK", true, false);
+              break;
+            }
+          }
           reply(cd, cmd, 405, "Method Not Allowed", false, false);
           break;
         case 100:

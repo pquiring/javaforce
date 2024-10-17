@@ -62,4 +62,12 @@ public interface SIPClientInterface {
    * Instant message received.
    */
   public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String[] msg);
+
+  /**
+   * Server has requested capabilities of phone.
+   *
+   * Return SDP with codecs available.
+   * Return null to ignore OPTIONS request.
+   */
+  public SDP onOptions(SIPClient client, String callid);
 }
