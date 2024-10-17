@@ -9,11 +9,11 @@ import javaforce.awt.*;
 public class SiteFTPS extends SiteFTP {
   public boolean connect(SiteDetails sd) {
     try {
-      ftp = new FTP();
+      ftp = new FTPS();
       ftp.setLogging(true);
       ftp.addProgressListener(this);
       setStatus("Connecting...");
-      if (!ftp.connectSSL(sd.host, Integer.valueOf(sd.port))) {
+      if (!ftp.connect(sd.host, Integer.valueOf(sd.port))) {
         throw new Exception("Connection failed");
       }
       setStatus("Login...");
