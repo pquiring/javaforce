@@ -583,7 +583,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         req.append("\r\n");
       }
     }
-    req.append("Contact: " + cdsd.contact + "\r\n");
+    if (cd.src.contact == null) {
+      cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
+    }
+    req.append("Contact: " + cd.src.contact + "\r\n");
     req.append("To: " + join(cdsd.to) + "\r\n");
     req.append("From: " + join(cdsd.from) + "\r\n");
     req.append("Call-ID: " + cd.callid + "\r\n");
