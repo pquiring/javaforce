@@ -62,18 +62,20 @@ public class speex implements RTPAudioCoder {
    * Default = 5.
    * Affects only new speex instances.
    */
-  public void setQuality(int value) {
+  public speex setQuality(int value) {
     if (value < 0) value = 0;
     if (value > 10) value = 10;
     quality = value;
+    return this;
   }
 
   /** Set decoder enhanced mode.
    * Default = false
    * Affects only new speex instances.
    */
-  public void setEnhancedMode(boolean mode) {
+  public speex setEnhancedMode(boolean mode) {
     enhanced = mode;
+    return this;
   }
 
   private byte[] encoded;

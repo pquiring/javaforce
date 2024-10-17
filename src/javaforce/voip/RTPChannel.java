@@ -34,6 +34,8 @@ public class RTPChannel {
   private long lastPacket = 0;
   protected boolean active = false;
   private MusicOnHold moh = new MusicOnHold();
+  private static int speex_quality = 5;
+  private static boolean speex_enhanced_decoder = false;
 
   public RTP rtp;
   public SDP.Stream stream;
@@ -309,17 +311,17 @@ public class RTPChannel {
             JFLog.log(log, "codec = g729a");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX)) {
-            coder = new speex(rtp, codec.rate);
+            coder = new speex(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX16)) {
-            coder = new speex(rtp, codec.rate);
+            coder = new speex(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex16");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX32)) {
-            coder = new speex(rtp, codec.rate);
+            coder = new speex(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex32");
             break;
@@ -546,6 +548,24 @@ public class RTPChannel {
 
   private void addSamples(short[] data) {
     buffer.add(data, 0, data.length);
+  }
+
+  /** Set speex encoder quality (0-10)
+   * Default = 5.
+   * Affects only new speex instances.
+   */
+  public static void setSpeexQuality(int value) {
+    if (value < 0) value = 0;
+    if (value > 10) value = 10;
+    speex_quality = value;
+  }
+
+  /** Set speex decoder enhanced mode.
+   * Default = false
+   * Affects only new speex instances.
+   */
+  public static void setSpeexEnhancedMode(boolean mode) {
+    speex_enhanced_decoder = mode;
   }
 
   public String toString() {

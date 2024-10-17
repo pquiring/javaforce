@@ -1887,10 +1887,16 @@ Line Colors:
     }
   }
 
+  private void setCodecs() {
+    RTPChannel.setSpeexQuality(Settings.current.speex_quality);
+    RTPChannel.setSpeexEnhancedMode(Settings.current.speex_enhanced_decoder);
+  }
+
   private void reset() {
     setPortRanges();
     setNAT();
     setFonts();
+    setCodecs();
     JFLog.setEnabled(!Settings.current.disableLogging);
     wc.setPanelAlwaysOnTop(Settings.current.alwaysOnTop);
     updateContactList(false);

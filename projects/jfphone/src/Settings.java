@@ -81,6 +81,8 @@ public class Settings {
   public boolean disableEnhanced = false;
   public String audioCodecs = "G729,PCMU";
   public String videoCodecs = "VP8,H264,H263-1998,H263-2000,JPEG";  //BUG:H263 incomplete
+  public int speex_quality = 5;
+  public boolean speex_enhanced_decoder = false;
   public boolean reinvite = true;  //reinvite when returned multiple codecs
   public boolean autohold = false;  //auto hold/unhold when switching between active lines
   public int volPlaySW = 75, volRecSW = 75;  //playback / recording vol levels (software)

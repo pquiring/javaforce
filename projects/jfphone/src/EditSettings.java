@@ -124,6 +124,10 @@ public class EditSettings extends javax.swing.JDialog {
     downloadPath = new javax.swing.JTextField();
     selectDownloadPath = new javax.swing.JButton();
     keepAudioOpen = new javax.swing.JCheckBox();
+    jPanel4 = new javax.swing.JPanel();
+    jLabel71 = new javax.swing.JLabel();
+    speex_quality = new javax.swing.JSpinner();
+    speex_enhanced_decoder = new javax.swing.JCheckBox();
     video = new javax.swing.JPanel();
     jPanel14 = new javax.swing.JPanel();
     useNativeVideo = new javax.swing.JRadioButton();
@@ -740,7 +744,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addGroup(jPanel17Layout.createSequentialGroup()
             .addComponent(jLabel30)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(downloadPath, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+            .addComponent(downloadPath, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(selectDownloadPath))
           .addGroup(jPanel17Layout.createSequentialGroup()
@@ -761,6 +765,42 @@ public class EditSettings extends javax.swing.JDialog {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
+    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Codec Options"));
+
+    jLabel71.setText("Speex Quality");
+
+    speex_quality.setModel(new javax.swing.SpinnerNumberModel(5, 1, 10, 1));
+    speex_quality.setToolTipText("Default = 5");
+
+    speex_enhanced_decoder.setText("Speex Enhanced Decoder");
+    speex_enhanced_decoder.setToolTipText("Default = off");
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(speex_enhanced_decoder, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(jPanel4Layout.createSequentialGroup()
+            .addComponent(jLabel71)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(speex_quality)))
+        .addContainerGap())
+    );
+    jPanel4Layout.setVerticalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel4Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel71)
+          .addComponent(speex_quality, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(speex_enhanced_decoder)
+        .addContainerGap(29, Short.MAX_VALUE))
+    );
+
     javax.swing.GroupLayout audioLayout = new javax.swing.GroupLayout(audio);
     audio.setLayout(audioLayout);
     audioLayout.setHorizontalGroup(
@@ -770,8 +810,9 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(audioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
           .addComponent(jPanel15, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(148, Short.MAX_VALUE))
+          .addComponent(jPanel17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(165, Short.MAX_VALUE))
     );
     audioLayout.setVerticalGroup(
       audioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -782,6 +823,8 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
     );
 
@@ -1900,6 +1943,11 @@ public class EditSettings extends javax.swing.JDialog {
         .addContainerGap()
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(dns_system)
+              .addComponent(dns_custom))
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(jPanel3Layout.createSequentialGroup()
             .addGap(21, 21, 21)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel38)
@@ -1910,15 +1958,8 @@ public class EditSettings extends javax.swing.JDialog {
               .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jLabel70)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dns_server))))
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGap(21, 21, 21)
-            .addComponent(jLabel40, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE))
-          .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(dns_system)
-              .addComponent(dns_custom))
-            .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(dns_server))
+              .addComponent(jLabel40, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE))))
         .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
@@ -2387,6 +2428,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel69;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel70;
+  private javax.swing.JLabel jLabel71;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JPanel jPanel1;
@@ -2401,6 +2443,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JPanel jPanel21;
   private javax.swing.JPanel jPanel22;
   private javax.swing.JPanel jPanel3;
+  private javax.swing.JPanel jPanel4;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JScrollPane jScrollPane3;
@@ -2518,6 +2561,8 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.ButtonGroup soundGroup;
   private javax.swing.JTextField speakerDelay;
   private javax.swing.JTextField speakerThreshold;
+  private javax.swing.JCheckBox speex_enhanced_decoder;
+  private javax.swing.JSpinner speex_quality;
   private javax.swing.JTabbedPane tabs;
   private javax.swing.JPanel topology;
   private javax.swing.JRadioButton useNativeVideo;
@@ -2792,6 +2837,8 @@ public class EditSettings extends javax.swing.JDialog {
     if (!Settings.current.hasAudioCodec(RTP.CODEC_SPEEX32)) {
       disabledAudioCodecsList.addElement("speex32");
     }
+    speex_quality.setValue(Settings.current.speex_quality);
+    speex_enhanced_decoder.setSelected(Settings.current.speex_enhanced_decoder);
 //video codecs
     if ((Settings.current.videoCodecs == null) || (Settings.current.videoCodecs.length() == 0)) {
       Settings.current.videoCodecs = "VP8,VP9,H264,H265,H263-1998,H263-2000,JPEG";
@@ -2994,6 +3041,9 @@ public class EditSettings extends javax.swing.JDialog {
     Settings.current.autohold = autohold.isSelected();
     Settings.current.audioCodecs = getAudioCodecs();
     Settings.current.videoCodecs = getVideoCodecs();
+
+    Settings.current.speex_quality = (Integer)speex_quality.getValue();
+    Settings.current.speex_enhanced_decoder = speex_enhanced_decoder.isSelected();
 
     if (disableVideo.isSelected()) Settings.current.nativeVideo = false;
     if (useNativeVideo.isSelected()) Settings.current.nativeVideo = true;
