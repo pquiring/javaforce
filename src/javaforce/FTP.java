@@ -3,12 +3,9 @@ package javaforce;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.net.ssl.*;
 
 /**
  * FTP client class. Supports Passive and Active mode.
- *
- * See connectSSL() to implement FTPS.
  *
  */
 public class FTP {
@@ -17,19 +14,19 @@ public class FTP {
     public void setProgress(int value);
   }
 
-  private Socket s;
+  protected Socket s;
   private Socket ds;
-  private InputStream is;
-  private OutputStream os;
-  private BufferedReader br;
+  protected InputStream is;
+  protected OutputStream os;
+  protected BufferedReader br;
   private boolean passive = true;
-  private String host;  //passive host
+  protected String host;  //passive host
   private int pasvport; //passive port
   private ServerSocket ss;  //active socket
   private ProgressListener progress;
   private boolean aborted = false;
-  private boolean active = true;
-  private Reader reader;
+  protected boolean active = true;
+  protected Reader reader;
 
   public static boolean debug = false;
   public static boolean debug_log = false;
@@ -75,46 +72,6 @@ public class FTP {
   public boolean connect(String host, int port) throws Exception {
     active = true;
     s = new Socket(host, port);
-    is = s.getInputStream();
-    br = new BufferedReader(new InputStreamReader(is));
-    os = s.getOutputStream();
-    this.host = host;
-    reader = new Reader();
-    reader.start();
-    wait4Response();
-    if (getLastResponse().startsWith("220")) {
-      return true;
-    }
-    disconnect();  //not valid FTP site
-    return false;
-  }
-
-  public boolean connectSSL(String host) throws Exception {
-    return connectSSL(host, 990);
-  }
-
-  public boolean connectSSL(String host, int port) throws Exception {
-    active = true;
-    TrustManager[] trustAllCerts = new TrustManager[]{
-      new X509TrustManager() {
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-          return null;
-        }
-
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-        }
-
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-        }
-      }
-    };
-    // Let us create the factory where we can set some parameters for the connection
-    SSLContext sc = SSLContext.getInstance("SSL");
-    sc.init(null, trustAllCerts, new java.security.SecureRandom());
-//      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();  //this method will only work with trusted certs
-    SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-    SSLSocket ssl = (SSLSocket) sslsocketfactory.createSocket(host, port);
-    s = (Socket) ssl;
     is = s.getInputStream();
     br = new BufferedReader(new InputStreamReader(is));
     os = s.getOutputStream();
@@ -360,6 +317,14 @@ public class FTP {
   }
   private final int BUFSIZ = 64 * 1024;
 
+  protected ServerSocket createServerSocket() throws Exception {
+    return new ServerSocket();
+  }
+
+  protected Socket connectData(String host, int port) throws Exception {
+    return new Socket(host, port);
+  }
+
   private void getPort() throws Exception {
     if (passive) {
       cmd("pasv");
@@ -377,7 +342,7 @@ public class FTP {
       int lo = Integer.valueOf(strs[5].substring(0, strs[5].indexOf(")")));
       pasvport = (hi << 8) + lo;
     } else {
-      ss = new ServerSocket();
+      ss = createServerSocket();
       int hi = ss.getLocalPort() >> 8;
       int lo = ss.getLocalPort() & 0xff;
       cmd("port " + s.getLocalAddress().getHostAddress().replaceAll("[.]", ",") + "," + hi + "," + lo);
@@ -388,7 +353,7 @@ public class FTP {
       }
     }
     if (passive) {
-      ds = new Socket(host, pasvport);
+      ds = connectData(host, pasvport);
     } else {
       ds = ss.accept();
     }
@@ -483,7 +448,7 @@ public class FTP {
     ds = null;
   }
 
-  private void wait4Response() throws Exception {
+  protected void wait4Response() throws Exception {
     while (!aborted) {
       synchronized(response) {
         int size = response.size();
@@ -496,7 +461,7 @@ public class FTP {
     }
   }
 
-  private class Reader extends Thread {
+  protected class Reader extends Thread {
     public void run() {
       while (active) {
         try {
