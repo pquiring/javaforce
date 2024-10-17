@@ -1,3 +1,5 @@
+package javaforce;
+
 /** FTP over SSH
  *
  * Using Apache SSHD.
@@ -17,42 +19,32 @@ import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.impl.DefaultSftpClientFactory;
 
-public class SiteSFTP extends SiteFTP {
+public class SFTP {
   private SshClient client;  //ssh
   private ClientSession session;
   private SftpClient channel;
   private String path;
+  private boolean aborted;
 
-  public boolean connect(SiteDetails sd) {
+  public boolean connect(String host, int port, String username, String password, String key) {
     try {
-      setStatus("Connecting...");
       client = SshClient.setUpDefaultClient();
       client.start();
-      ConnectFuture cf = client.connect(sd.username, sd.host, JF.atoi(sd.port));
+      ConnectFuture cf = client.connect(username, host, port);
       session = cf.verify().getSession();
 //System.out.println("session = " + jschsession);
-      if (sd.sshKey.length() == 0) {
-        session.addPasswordIdentity(sd.password);
+      if (key == null || key.length() == 0) {
+        session.addPasswordIdentity(password);
       } else {
-        JFLog.log("using key:" + sd.sshKey);
+        JFLog.log("using key:" + key);
         JFLog.log("TODO : set ssh key");
-        //session.addPublicKeyIdentity(sd.sshKey);
+        //session.addPublicKeyIdentity(sshKey);
       }
-      setStatus("Login...");
       session.auth().verify(30000);
       channel = DefaultSftpClientFactory.INSTANCE.createSftpClient(session);
-//System.out.println("channel = " + channel);
-      if (sd.remoteDir.length() > 0) {
-        path = channel.canonicalPath(sd.remoteDir);
-      } else {
-        path = channel.canonicalPath(".");
-      }
-      remote_ls();
-      setStatus(null);
     } catch (Exception e) {
       JFAWT.showMessage("Error", "Error:" + e);
       JFLog.log(e);
-      closeSite();
       return false;
     }
     return true;
@@ -83,23 +75,18 @@ public class SiteSFTP extends SiteFTP {
   }
 
   @SuppressWarnings("unchecked")
-  public void remote_ls() {
+  public String[] remote_ls() {
     try {
-      String wd = remote_pwd();
-      remoteDir.setText(wd);
-      remoteDir.setText(wd);
       Iterable<SftpClient.DirEntry> ls;
       ls = channel.readDir(path);
-      StringBuilder lsstr = new StringBuilder();
+      ArrayList<String> files = new ArrayList<>();
       for(SftpClient.DirEntry e : ls) {
-        lsstr.append(e.getFilename());
-        lsstr.append("\n");
+        files.add(e.getFilename());
       }
-      parseRemote(wd, lsstr.toString());
+      return files.toArray(JF.StringArrayType);
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
+      return null;
     }
   }
 
@@ -112,9 +99,7 @@ public class SiteSFTP extends SiteFTP {
       }
       remote_ls();
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -140,9 +125,7 @@ public class SiteSFTP extends SiteFTP {
       copy(is, fos);
       is.close();
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -153,9 +136,7 @@ public class SiteSFTP extends SiteFTP {
       OutputStream os = channel.write(path + "/" +remote.getName());
       copy(fis, os);
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -168,9 +149,7 @@ public class SiteSFTP extends SiteFTP {
     try {
       channel.mkdir(file);
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -178,29 +157,7 @@ public class SiteSFTP extends SiteFTP {
     try {
       channel.remove(file);
    } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
-    }
-  }
-
-  public void remote_delete_folder(String file) {
-    try {
-      channel.rmdir(file);
-      //update remoteTree
-      int idx = file.lastIndexOf("/");
-      if (idx != -1) file = file.substring(idx+1);
-      for(int a=0;a<remoteTag.getChildCount();a++) {
-        XMLTree.XMLTag child = remoteTag.getChildAt(a);
-        if (child.getName().equals(file)) {
-          remoteFolders.deleteTag(child);
-          break;
-        }
-      }
-    } catch (Exception e) {
-      setStatus("Error:" + e);
-      JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -208,9 +165,7 @@ public class SiteSFTP extends SiteFTP {
     try {
       channel.rename(from, to);
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -221,9 +176,7 @@ public class SiteSFTP extends SiteFTP {
       channel.setStat(remoteFile, attr);
       remote_chdir(".");  //refresh
     } catch (Exception e) {
-      setStatus("Error:" + e);
       JFLog.log(e);
-      addLog("Error:" + e);
     }
   }
 
@@ -237,6 +190,5 @@ public class SiteSFTP extends SiteFTP {
 
   public void progress_count(long l) {
     total += l;
-    setProgress(total);
   }
 }
