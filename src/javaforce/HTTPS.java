@@ -6,9 +6,6 @@ package javaforce;
  */
 
 public class HTTPS extends HTTP {
-  static {
-    JF.initHttps(KeyMgmt.getDefaultClient());
-  }
   public boolean open(String host) {
     return open(host, 443);
   }

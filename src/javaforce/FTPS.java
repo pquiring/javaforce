@@ -9,10 +9,6 @@ import java.io.*;
 import java.net.*;
 
 public class FTPS extends FTP {
-  static {
-    JF.initHttps(KeyMgmt.getDefaultClient());
-  }
-
   public boolean connect(String host) throws Exception {
     return connect(host, 990);
   }
