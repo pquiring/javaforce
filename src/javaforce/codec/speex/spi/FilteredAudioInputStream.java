@@ -180,7 +180,7 @@ public abstract class FilteredAudioInputStream
      * @param in     the underlying input stream.
      * @param format the format of this stream's audio data.
      * @param length the length in sample frames of the data in this stream.
-     * @throws IllegalArgumentException if size <= 0 or presize <= 0.
+     * @throws IllegalArgumentException if size &lt;= 0 or presize &lt;= 0.
      */
     public FilteredAudioInputStream(final InputStream in,
                                     final AudioFormat format,
@@ -198,7 +198,7 @@ public abstract class FilteredAudioInputStream
      * @param format the format of this stream's audio data.
      * @param length the length in sample frames of the data in this stream.
      * @param size   the buffer sizes.
-     * @throws IllegalArgumentException if size <= 0.
+     * @throws IllegalArgumentException if size &lt;= 0.
      */
     public FilteredAudioInputStream(final InputStream in,
                                     final AudioFormat format,
@@ -218,7 +218,7 @@ public abstract class FilteredAudioInputStream
      * @param length  the length in sample frames of the data in this stream.
      * @param size    the buffer size.
      * @param presize the prebuffer size.
-     * @throws IllegalArgumentException if size <= 0 or presize <= 0.
+     * @throws IllegalArgumentException if size &lt;= 0 or presize &lt;= 0.
      */
     public FilteredAudioInputStream(final InputStream in,
                                     final AudioFormat format,

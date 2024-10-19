@@ -31,7 +31,7 @@ public class MediaDecoder extends MediaFormat {
    * @param new_chs = change audio channels during decoding (-1 = no change)
    * @param new_freq = change audio frequency during decoding (-1 = no change)
    */
-  public native boolean startFile(String file, String format, int new_width, int new_height, int chs, int new_freq);
+  public native boolean startFile(String file, String format, int new_width, int new_height, int new_chs, int new_freq);
 
   public native void stop();
   public native int read();

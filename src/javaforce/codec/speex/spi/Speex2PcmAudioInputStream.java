@@ -134,7 +134,7 @@ public class Speex2PcmAudioInputStream
      * @param format the target format of this stream's audio data.
      * @param length the length in sample frames of the data in this stream.
      * @param size   the buffer size.
-     * @throws IllegalArgumentException if size <= 0.
+     * @throws IllegalArgumentException if size &lt;= 0.
      */
     public Speex2PcmAudioInputStream(final InputStream in,
                                      final AudioFormat format,

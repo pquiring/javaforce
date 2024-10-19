@@ -258,7 +258,7 @@ public class KeyMgmt {
    * @param storefile = file name
    * @param storepass = keystorepass
    * @param alias = key pair alias
-   * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
+   * @param params = KeyParams
    * @param keypass = keystore and keypass
    */
   public static KeyMgmt create(String storefile, String storepass, String alias, KeyParams params, String keypass) {
@@ -320,7 +320,7 @@ public class KeyMgmt {
   /** Creates new private/public keys.
    *
    * @param alias = new key pair alias
-   * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
+   * @param params = KeyParams
    * @param keypass = keypass
    */
   public boolean create(String alias, KeyParams params, String keypass) {
@@ -384,7 +384,7 @@ public class KeyMgmt {
   /** Creates new private/public keys and sign by existing key/pair.
    *
    * @param alias = new key pair alias
-   * @param dname = distinguished name, ie: CN=javaforce.sourceforge.net, O=server, OU=webserver, C=CA
+   * @param params = KeyParams
    * @param keypass = key password
    * @param signerAlias = existing key to sign with
    * @param signerKeyPass = signer key password

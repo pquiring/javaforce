@@ -52,10 +52,10 @@ public class MediaOutput extends MediaFormat {
    * All media streams must be added before calling write()
    *
    * @param info.width/height = video dimension
-   * @param info.fps = frames per second
-   * @param info.keyFrameInterval = key frame interval
-   * @param info.video_codec = video codec (0=default for format)
-   * @param info.video_bit_rate = video bit rate (default = 1Mb/s)
+   *        info.fps = frames per second
+   *        info.keyFrameInterval = key frame interval
+   *        info.video_codec = video codec (0=default for format)
+   *        info.video_bit_rate = video bit rate (default = 1Mb/s)
    * @return true if successful
    *         info.stream = stream index
    *         info.video_codec = selected codec
@@ -78,9 +78,9 @@ public class MediaOutput extends MediaFormat {
    * All media streams must be added before calling write()
    *
    * @param info.chs = audio channels
-   * @param info.freq = audio sample rate
-   * @param info.audio_codec = audio codec (0=default for format)
-   * @param info.audio_bit_rate = audio bit rate (default = 128Kb/s)
+   *        info.freq = audio sample rate
+   *        info.audio_codec = audio codec (0=default for format)
+   *        info.audio_bit_rate = audio bit rate (default = 128Kb/s)
    * @return true is successful
    *         info.stream = stream index
    *         info.audio_codec = selected codec
