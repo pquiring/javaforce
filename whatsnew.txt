@@ -2,8 +2,8 @@ What's new...
 
 Oct 18/2024 : JF/71.0
   - VoIP improvements
-    - fix : missing contact in BYE reply
-    - add : reply to OPTIONS request
+    - fix : missing contact in BYE reply (fix issue #23)
+    - add : reply to OPTIONS request (fix issue #24)
   - added FTPS and SFTP
   - jfPhone/1.32
 
