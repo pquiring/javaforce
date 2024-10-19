@@ -151,24 +151,24 @@ public class Matrix implements Cloneable {
     float sz = 1.0f;
 
     m[ 0 ] = ( 1.0f - ( yy + zz ) ) * sx;
-		m[ 1 ] = ( xy + wz ) * sx;
-		m[ 2 ] = ( xz - wy ) * sx;
-		m[ 3 ] = 0.0f;
+    m[ 1 ] = ( xy + wz ) * sx;
+    m[ 2 ] = ( xz - wy ) * sx;
+    m[ 3 ] = 0.0f;
 
-		m[ 4 ] = ( xy - wz ) * sy;
-		m[ 5 ] = ( 1.0f - ( xx + zz ) ) * sy;
-		m[ 6 ] = ( yz + wx ) * sy;
-		m[ 7 ] = 0.0f;
+    m[ 4 ] = ( xy - wz ) * sy;
+    m[ 5 ] = ( 1.0f - ( xx + zz ) ) * sy;
+    m[ 6 ] = ( yz + wx ) * sy;
+    m[ 7 ] = 0.0f;
 
-		m[ 8 ] = ( xz + wy ) * sz;
-		m[ 9 ] = ( yz - wx ) * sz;
-		m[ 10 ] = ( 1.0f - ( xx + yy ) ) * sz;
-		m[ 11 ] = 0.0f;
+    m[ 8 ] = ( xz + wy ) * sz;
+    m[ 9 ] = ( yz - wx ) * sz;
+    m[ 10 ] = ( 1.0f - ( xx + yy ) ) * sz;
+    m[ 11 ] = 0.0f;
 
-		m[ 12 ] = 0.0f;  //pos x
-		m[ 13 ] = 0.0f;  //pos y
-		m[ 14 ] = 0.0f;  //pos z
-		m[ 15 ] = 1.0f;
+    m[ 12 ] = 0.0f;  //pos x
+    m[ 13 ] = 0.0f;  //pos y
+    m[ 14 ] = 0.0f;  //pos z
+    m[ 15 ] = 1.0f;
   }
 
   public void setAATranslate(float angle, float x, float y, float z, float tx, float ty, float tz) {
@@ -279,6 +279,7 @@ public class Matrix implements Cloneable {
       r[i+1*4] = a0 * src.m[0+1*4] + a1 * src.m[1+1*4] + a2 * src.m[2+1*4];
       r[i+2*4] = a0 * src.m[0+2*4] + a1 * src.m[1+2*4] + a2 * src.m[2+2*4];
     }
+    //copy translation values
     for(int a=0;a<4;a++) r[a+3*4] = m[a+3*4];
     //swap m/r
     float[] x;
@@ -293,7 +294,7 @@ public class Matrix implements Cloneable {
   }
 
   /** Multiply another 3x1 matrix with this one (3x3 part only)
-   *  Effectively rotates the GLVector3 by the rotation of this matrix
+   *  Effectively rotates the Vector3 by the rotation of this matrix
    */
   public void mult(Vector3 dest) {
     float nx, ny, nz;

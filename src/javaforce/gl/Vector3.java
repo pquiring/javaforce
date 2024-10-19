@@ -90,6 +90,6 @@ public class Vector3 {
   }
 
   public String toString() {
-    return String.format("%.3f,%.3f,%.3f\r\n", v[0], v[1], v[2]);
+    return String.format("%.3f,%.3f,%.3f", v[0], v[1], v[2]);
   }
 };

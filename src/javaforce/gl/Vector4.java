@@ -75,6 +75,6 @@ public class Vector4 {
     return (float) Math.sqrt(_x * _x + _y * _y + _z * _z);
   }
   public String toString() {
-    return String.format("%.3f,%.3f,%.3f,%.3f\r\n", v[0], v[1], v[2], v[3]);
+    return String.format("%.3f,%.3f,%.3f,%.3f", v[0], v[1], v[2], v[3]);
   }
 };

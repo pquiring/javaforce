@@ -44,6 +44,6 @@ public class Plane3 {
   }
 
   public void print() {
-    System.out.println(String.format("GLPlane:%7.3f,%7.3f,%7.3f : %7.3f", normal.v[0], normal.v[1], normal.v[2], d));
+    System.out.println(String.format("Plane3:%7.3f,%7.3f,%7.3f : %7.3f", normal.v[0], normal.v[1], normal.v[2], d));
   }
 }

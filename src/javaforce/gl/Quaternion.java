@@ -82,6 +82,6 @@ public class Quaternion {
   }
 
   public String toString() {
-    return String.format("%.3f,%.3f,%.3f,%.3f\r\n", w, x, y, z);
+    return String.format("%.3f,%.3f,%.3f,%.3f", w, x, y, z);
   }
 };
