@@ -1052,7 +1052,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           if (req.equals("OPTIONS")) {
             SDP sdp = iface.onOptions(this, callid);
             if (sdp != null) {
-              cd.sdp = sdp.build(localhost);
+              cd.src.sdp = sdp;
+              cd.sdp = buildsdp(cd, cd.src);
               reply(cd, cmd, 200, "OK", true, false);
               break;
             }
