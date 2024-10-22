@@ -39,6 +39,11 @@ public class MainPanel extends javax.swing.JPanel {
     jPanel2 = new javax.swing.JPanel();
     shareHome = new javax.swing.JCheckBox();
     consoleSession = new javax.swing.JCheckBox();
+    sdl = new javax.swing.JCheckBox();
+    jLabel4 = new javax.swing.JLabel();
+    username = new javax.swing.JTextField();
+    jLabel5 = new javax.swing.JLabel();
+    password = new javax.swing.JTextField();
     jPanel1 = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     port = new javax.swing.JTextField();
@@ -68,6 +73,12 @@ public class MainPanel extends javax.swing.JPanel {
 
     consoleSession.setText("Connect to Console Session");
 
+    sdl.setText("SDL");
+
+    jLabel4.setText("Username");
+
+    jLabel5.setText("Password");
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -76,7 +87,18 @@ public class MainPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(shareHome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(consoleSession, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE))
+          .addComponent(consoleSession, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel4)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(username))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(sdl)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(password)))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
@@ -86,7 +108,17 @@ public class MainPanel extends javax.swing.JPanel {
         .addComponent(shareHome)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(consoleSession)
-        .addContainerGap(34, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(sdl)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel4)
+          .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel5)
+          .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(26, Short.MAX_VALUE))
     );
 
     tabs.addTab("RDP", jPanel2);
@@ -113,7 +145,7 @@ public class MainPanel extends javax.swing.JPanel {
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
           .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(60, Short.MAX_VALUE))
+        .addContainerGap(138, Short.MAX_VALUE))
     );
 
     tabs.addTab("VNC", jPanel1);
@@ -167,7 +199,7 @@ public class MainPanel extends javax.swing.JPanel {
           .addComponent(jLabel2)
           .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(connect)
@@ -224,12 +256,17 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
+  private javax.swing.JTextField password;
   private javax.swing.JTextField port;
   private javax.swing.JComboBox<String> protocol;
+  private javax.swing.JCheckBox sdl;
   private javax.swing.JCheckBox shareHome;
   private javax.swing.JTabbedPane tabs;
+  private javax.swing.JTextField username;
   // End of variables declaration//GEN-END:variables
 
   public static class Connection {
@@ -246,16 +283,36 @@ public class MainPanel extends javax.swing.JPanel {
   private String configFile;
   private boolean loading = true;
 
+  private boolean exists(String file) {
+    return new File("/usr/bin/" + file).exists();
+  }
+
   private void connectRDP() {
     ArrayList<String> cmd = new ArrayList<String>();
     try {
-      cmd.add("rdesktop");
-      if (shareHome.isSelected()) {
-        cmd.add("-r");
-        cmd.add("disk:linux=" + JF.getUserPath());
+      if (JF.isWindows()) {
+        if (sdl.isSelected()) {
+          cmd.add("sdl-freerdp");
+        } else {
+          cmd.add("wfreerdp");
+        }
+      } else {
+        if (sdl.isSelected()) {
+          if (exists("sdl-freerdp")) cmd.add("sdl-freerdp");
+          else if (exists("sdl-freerdp3")) cmd.add("sdl-freerdp3");
+        } else {
+          //wayland
+          if (exists("wlfreerdp")) cmd.add("wlfreerdp");
+          else if (exists("wlfreerdp3")) cmd.add("wlfreerdp3");
+        }
       }
-      if (consoleSession.isSelected()) cmd.add("-0");
-      cmd.add((String)computer.getSelectedItem());
+      if (shareHome.isSelected()) {
+        cmd.add("/drive:home=" + JF.getUserPath());
+      }
+      if (consoleSession.isSelected()) cmd.add("+admin");
+      cmd.add("/u:" + username.getText());
+      cmd.add("/p:" + password.getText());
+      cmd.add("/v:" + (String)computer.getSelectedItem());
       Runtime.getRuntime().exec(cmd.toArray(new String[0]));
     } catch (Exception e) {
       JFAWT.showError("Error", "Failed to execute rdesktop");

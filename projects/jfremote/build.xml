@@ -8,9 +8,9 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.1"/>
 
-  <property name="debian.depends" value="jfvnc, rdesktop"/>
-  <property name="fedora.depends" value="jfvnc, rdesktop"/>
-  <property name="arch.depends" value="jfvnc, rdesktop"/>
+  <property name="debian.depends" value="jfvnc, freerdp3-sdl, freerdp3-wayland"/>
+  <property name="fedora.depends" value="jfvnc, freerdp"/>
+  <property name="arch.depends" value="jfvnc, freerdp"/>
 
   <import file="${home}/base.xml"/>
 
