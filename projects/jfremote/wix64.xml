@@ -23,6 +23,7 @@
         <File Id="jfremote.jar" Source="jfremote.jar" KeyPath="yes" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jfremote.exe" Source="jfremote.exe" />
+        <File Id="jfvnc.exe" Source="jfvnc.exe" />
         <File Id="wfreerdp.exe" Source="wfreerdp.exe" />
         <File Id="sdlfreerdp.exe" Source="sdl-freerdp.exe" />
       </Component>
