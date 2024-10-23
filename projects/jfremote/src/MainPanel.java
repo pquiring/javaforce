@@ -43,7 +43,10 @@ public class MainPanel extends javax.swing.JPanel {
     jLabel4 = new javax.swing.JLabel();
     username = new javax.swing.JTextField();
     jLabel5 = new javax.swing.JLabel();
-    password = new javax.swing.JTextField();
+    password = new javax.swing.JPasswordField();
+    jLabel6 = new javax.swing.JLabel();
+    size = new javax.swing.JTextField();
+    fullscreen = new javax.swing.JCheckBox();
     jPanel1 = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     port = new javax.swing.JTextField();
@@ -79,6 +82,12 @@ public class MainPanel extends javax.swing.JPanel {
 
     jLabel5.setText("Password");
 
+    jLabel6.setText("Screen size");
+
+    size.setText("1920x1080");
+
+    fullscreen.setText("Fullscreen");
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -86,19 +95,28 @@ public class MainPanel extends javax.swing.JPanel {
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(shareHome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(consoleSession, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
           .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel4)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(username))
+            .addComponent(shareHome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(43, 43, 43))
+          .addComponent(consoleSession, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
           .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(sdl)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel5)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(password)))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(sdl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fullscreen))
+              .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                  .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                  .addComponent(username)
+                  .addComponent(password)
+                  .addComponent(size, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE))))
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
@@ -109,16 +127,22 @@ public class MainPanel extends javax.swing.JPanel {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(consoleSession)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(sdl)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel4)
-          .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(sdl)
+          .addComponent(fullscreen))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel5)
-          .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(26, Short.MAX_VALUE))
+          .addComponent(jLabel6)
+          .addComponent(size, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5))
+        .addContainerGap(18, Short.MAX_VALUE))
     );
 
     tabs.addTab("RDP", jPanel2);
@@ -135,8 +159,8 @@ public class MainPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addComponent(jLabel3)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(port, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
-        .addContainerGap())
+        .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addContainerGap(83, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,7 +169,7 @@ public class MainPanel extends javax.swing.JPanel {
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
           .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(138, Short.MAX_VALUE))
+        .addContainerGap(152, Short.MAX_VALUE))
     );
 
     tabs.addTab("VNC", jPanel1);
@@ -171,6 +195,7 @@ public class MainPanel extends javax.swing.JPanel {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(tabs)
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel1)
@@ -179,7 +204,6 @@ public class MainPanel extends javax.swing.JPanel {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(protocol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(computer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-          .addComponent(tabs, javax.swing.GroupLayout.Alignment.TRAILING)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(clear)
@@ -199,7 +223,7 @@ public class MainPanel extends javax.swing.JPanel {
           .addComponent(jLabel2)
           .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(connect)
@@ -234,10 +258,16 @@ public class MainPanel extends javax.swing.JPanel {
     if (loading) return;
     int idx = computer.getSelectedIndex();
     if (idx == -1) return;
-    port.setText("" + config.connection[idx].port);
-    protocol.setSelectedItem(config.connection[idx].protocol);
-    shareHome.setSelected(config.connection[idx].shareHome);
-    consoleSession.setSelected(config.connection[idx].consoleSession);
+    Connection connection = config.getConnection(idx);
+    port.setText("" + connection.port);
+    protocol.setSelectedItem(connection.protocol);
+    shareHome.setSelected(connection.shareHome);
+    consoleSession.setSelected(connection.consoleSession);
+    sdl.setSelected(connection.sdl);
+    fullscreen.setSelected(connection.fullscreen);
+    username.setText(connection.user);
+    password.setText(connection.pass);
+    size.setText(connection.size);
   }//GEN-LAST:event_computerItemStateChanged
 
   private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
@@ -246,6 +276,11 @@ public class MainPanel extends javax.swing.JPanel {
     port.setText("0");
     shareHome.setSelected(true);
     consoleSession.setSelected(false);
+    sdl.setSelected(false);
+    fullscreen.setSelected(false);
+    username.setText("");
+    password.setText("");
+    size.setText("1920x1080");
   }//GEN-LAST:event_clearActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -253,30 +288,43 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JComboBox<String> computer;
   private javax.swing.JButton connect;
   private javax.swing.JCheckBox consoleSession;
+  private javax.swing.JCheckBox fullscreen;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
-  private javax.swing.JTextField password;
+  private javax.swing.JPasswordField password;
   private javax.swing.JTextField port;
   private javax.swing.JComboBox<String> protocol;
   private javax.swing.JCheckBox sdl;
   private javax.swing.JCheckBox shareHome;
+  private javax.swing.JTextField size;
   private javax.swing.JTabbedPane tabs;
   private javax.swing.JTextField username;
   // End of variables declaration//GEN-END:variables
 
   public static class Connection {
     public String host, protocol;
+    //VNC
     public int port;
-    public boolean shareHome, consoleSession;
+    //RDP
+    public boolean shareHome;
+    public boolean consoleSession;
+    public boolean sdl;
+    public boolean fullscreen;
+    public String size;
+    public String user, pass;
   }
 
   public static class Config {
     public Connection connection[];
+    public Connection getConnection(int idx) {
+      return connection[idx];
+    }
   }
 
   private Config config;
@@ -300,18 +348,29 @@ public class MainPanel extends javax.swing.JPanel {
         if (sdl.isSelected()) {
           if (exists("sdl-freerdp")) cmd.add("sdl-freerdp");
           else if (exists("sdl-freerdp3")) cmd.add("sdl-freerdp3");
+          else throw new Exception("sdl-freerdp not found");
         } else {
           //wayland
           if (exists("wlfreerdp")) cmd.add("wlfreerdp");
           else if (exists("wlfreerdp3")) cmd.add("wlfreerdp3");
+          else throw new Exception("wlfreerdp not found");
         }
       }
       if (shareHome.isSelected()) {
         cmd.add("/drive:home=" + JF.getUserPath());
       }
       if (consoleSession.isSelected()) cmd.add("+admin");
+      cmd.add("+clipboard");
+      cmd.add("+dynamic-resolution");
+      cmd.add("/floatbar:sticky:on,default:visible,show:fullscreen");  //not working yet
+      if (size.getText().length() > 0) {
+        cmd.add("/size:" + size.getText());
+      }
+      if (fullscreen.isSelected()) {
+        cmd.add("+f");
+      }
       cmd.add("/u:" + username.getText());
-      cmd.add("/p:" + password.getText());
+      cmd.add("/p:" + new String(password.getPassword()));
       cmd.add("/v:" + (String)computer.getSelectedItem());
       Runtime.getRuntime().exec(cmd.toArray(new String[0]));
     } catch (Exception e) {
@@ -322,7 +381,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void connectVNC() {
     String host = (String)computer.getSelectedItem();
     String p = port.getText();
-    if (!p.equals("0")) host += ":" + p;
+    if (p.length() > 0 && !p.equals("0")) host += ":" + p;
     try {
       String cmd[] = {"jfvnc", host};
       Runtime.getRuntime().exec(cmd);
@@ -367,10 +426,8 @@ public class MainPanel extends javax.swing.JPanel {
     for(int a=0;a<config.connection.length;a++) {
       if (config.connection[a].host.equalsIgnoreCase(host)) {
         //update entry
-        config.connection[a].port = JF.atoi(port.getText());
-        config.connection[a].protocol = (String)protocol.getSelectedItem();
-        config.connection[a].shareHome = shareHome.isSelected();
-        config.connection[a].consoleSession = consoleSession.isSelected();
+        Connection connection = config.getConnection(a);
+        saveHost(connection);
         return;
       }
     }
@@ -380,10 +437,22 @@ public class MainPanel extends javax.swing.JPanel {
     config.connection = newList;
     int idx = config.connection.length - 1;
     config.connection[idx] = new Connection();
-    config.connection[idx].host = host;
-    config.connection[idx].port = JF.atoi(port.getText());
-    config.connection[idx].protocol = (String)protocol.getSelectedItem();
-    config.connection[idx].shareHome = shareHome.isSelected();
-    config.connection[idx].consoleSession = consoleSession.isSelected();
+    Connection connection = config.getConnection(idx);
+    connection.host = host;
+    saveHost(connection);
+  }
+
+  private void saveHost(Connection connection) {
+    connection.protocol = (String)protocol.getSelectedItem();
+    //VNC
+    connection.port = JF.atoi(port.getText());
+    //RDP
+    connection.shareHome = shareHome.isSelected();
+    connection.consoleSession = consoleSession.isSelected();
+    connection.sdl = sdl.isSelected();
+    connection.fullscreen = fullscreen.isSelected();
+    connection.size = size.getText();
+    connection.user = username.getText();
+    connection.pass = new String(password.getPassword());
   }
 }
