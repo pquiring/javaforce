@@ -807,7 +807,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
               if (read == 0) {
                 JF.sleep(10);
               }
-            } while (read != 1);
+            } while (read != 1 && connected);
             return data[0];
           }
           public int read(byte buf[]) throws IOException {
@@ -818,7 +818,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
               if (read == 0) {
                 JF.sleep(10);
               }
-            } while (read <= 0);
+            } while (read <= 0 && connected);
             return read;
           }
         };

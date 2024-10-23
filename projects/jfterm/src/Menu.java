@@ -55,6 +55,18 @@ public class Menu {
     });
     menu.add(item);
 
+    item = new JMenuItem("Close Tab");
+    item.setMnemonic('C');
+    item.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        if (tabs.getTabCount() == 0) return;
+        Buffer buffer = (Buffer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
+        if (buffer == null) return;
+        buffer.close();
+      }
+    });
+    menu.add(item);
+
     item = new JMenuItem("Log...");
     item.setMnemonic('L');
     item.addActionListener(new java.awt.event.ActionListener() {
