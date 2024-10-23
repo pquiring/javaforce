@@ -6,6 +6,7 @@
   <property name="src" location="."/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.1"/>
 
   <property name="debian.depends" value="jfvnc, freerdp3-sdl, freerdp3-wayland"/>
@@ -32,6 +33,13 @@
         <attribute name="Main-Class" value="RemoteDesktopApp"/>
       </manifest>
     </jar>
+  </target>
+
+  <target name="get-win64-bin" description="download exes for Win64">
+    <echo message="Downloading: wfreerdp"/>
+    <get src="https://ci.freerdp.com/job/freerdp-nightly-windows/arch=win64,label=vs2017/lastSuccessfulBuild/artifact/install/bin/wfreerdp.exe" dest="wfreerdp.exe"/>
+    <echo message="Downloading: sdl-freerdp"/>
+    <get src="https://ci.freerdp.com/job/freerdp-nightly-windows/arch=win64,label=vs2017/lastSuccessfulBuild/artifact/install/bin/sdl-freerdp.exe" dest="sdl-freerdp.exe"/>
   </target>
 
   <!-- sudo ant install -->
