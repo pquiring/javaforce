@@ -175,16 +175,9 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
   }
 
   public void output(char buf[]) {
-    if (sd.localecho) input(buf, buf.length);
-    byte tmp[] = char2byte(buf, buf.length);
-    try {
-      out.write(tmp);
-      out.flush();
-    } catch (Exception e) {
-      JFLog.log(e);
-      if (!closed) {
-        close();
-      }
+    for(char ch : buf) {
+      output(ch);
+      JF.sleep(10);
     }
   }
   public void output(char ch) {
