@@ -16,10 +16,11 @@ public class MainPanel extends javax.swing.JPanel {
   /**
    * Creates new form MainPanel
    */
-  public MainPanel() {
+  public MainPanel(javax.swing.JRootPane root) {
     initComponents();
     configFile = JF.getUserPath() + "/.jfremote.xml";
     loadConfig();
+    JFAWT.assignHotKey(root, connect, java.awt.event.KeyEvent.VK_ENTER);
   }
 
   /**

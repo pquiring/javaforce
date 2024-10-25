@@ -13,7 +13,7 @@ public class RemoteApp extends javax.swing.JFrame {
    */
   public RemoteApp() {
     initComponents();
-    MainPanel panel = new MainPanel();
+    MainPanel panel = new MainPanel(getRootPane());
     setContentPane(panel);
     pack();
     Dimension d = getPreferredSize();
