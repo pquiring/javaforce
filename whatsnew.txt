@@ -1,5 +1,18 @@
 What's new...
 
+Oct 25/2024 : JF/72.0
+  - VoIP improvements
+    - improve SDP returned by OPTIONS request (was missing IP)
+  - jfPhone/1.33
+  - jfRemote/0.2
+    - replaced rdesktop with freerdp (available for Windows too)
+    - created Windows MSI package
+  - jfTerm/0.23
+    - added CloseTab menu option
+    - slowed down paste operation
+  - jfMQTT/0.5
+    - viewer : added clear messages button
+
 Oct 18/2024 : JF/71.0
   - VoIP improvements
     - fix : missing contact in BYE reply (fix issue #23)
