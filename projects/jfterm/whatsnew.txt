@@ -1,5 +1,8 @@
 What's new...
 
+Oct 25/2024 - 0.23 released!
+  - fix : slow down paste operation
+
 Jun 8/2024 - 0.22 released!
   - fix : SSH support
 
