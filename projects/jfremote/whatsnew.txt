@@ -1,0 +1,4 @@
+2024-10-25 : v0.2
+  - replaced rdesktop with freerdp
+  - added more RDP options
+  - created MSI package
