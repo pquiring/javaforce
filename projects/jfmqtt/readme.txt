@@ -1,7 +1,9 @@
-MQTT Server
-===========
+MQTT
+====
 
 MQTT Server on port 1883.
+
+MQTT Viewer.
 
 Supports:
  - user/pass authentication

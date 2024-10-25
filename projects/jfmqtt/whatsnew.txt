@@ -1,3 +1,6 @@
+2024-10-25 - v0.5
+  - viewer : add clear messages button
+
 2024-08-21 - v0.4
   - added user/pass auth
   - fixed unsubscribe message
