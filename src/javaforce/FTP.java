@@ -524,4 +524,8 @@ public class FTP {
     timer.cancel();
     timer = null;
   }
+
+  public static void main(String[] args) {
+    //TODO : create cli
+  }
 }

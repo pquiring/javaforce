@@ -8,6 +8,14 @@ public class Matrix implements Cloneable {
   private Matrix mat;  //only need m[], setAA(), setTranslate(), setScale(), set(), get()
   private Vector3 vec;
 
+  public static final int TX = 0+3*4;
+  public static final int TY = 1+3*4;
+  public static final int TZ = 2+3*4;
+
+  public static final int SX = 0+0*4;
+  public static final int SY = 1+1*4;
+  public static final int SZ = 2+2*4;
+
   public Matrix() {
     setIdentity();
     mat = new Matrix(false);  //do not need mat,vec,r in mat
@@ -178,16 +186,16 @@ public class Matrix implements Cloneable {
 
   public void setTranslate(float x, float y, float z) {
     setIdentity();
-    m[0+3*4] = x;
-    m[1+3*4] = y;
-    m[2+3*4] = z;
+    m[TX] = x;
+    m[TY] = y;
+    m[TZ] = z;
   }
 
   public void setScale(float x, float y, float z) {
     setIdentity();
-    m[0+0*4] = x;
-    m[1+1*4] = y;
-    m[2+2*4] = z;
+    m[SX] = x;
+    m[SY] = y;
+    m[SZ] = z;
   }
 
   /** Adds rotation assuming there is currently no translation. */
@@ -224,9 +232,9 @@ public class Matrix implements Cloneable {
 
   /** Adds translation assuming there is currently no rotation. */
   public void addTranslate(float tx, float ty, float tz) {
-    m[0+3*4] += tx;
-    m[1+3*4] += ty;
-    m[2+3*4] += tz;
+    m[TX] += tx;
+    m[TY] += ty;
+    m[TZ] += tz;
   }
 
   /** Adds translation assuming there is currently no rotation. */
@@ -237,6 +245,23 @@ public class Matrix implements Cloneable {
   /** Adds translation with current rotation. */
   public void addTranslate2(float tx, float ty, float tz) {
     mat.setTranslate(tx, ty, tz);
+    mult4x4(mat);
+  }
+
+  /** Adds translation adjusted for scaling assuming there is currently no rotation.
+   * Warning : Any zero scaling will result in divide by zero.
+   */
+  public void addTranslate3(float tx, float ty, float tz) {
+    m[TX] += tx / m[SX];
+    m[TY] += ty / m[SY];
+    m[TZ] += tz / m[SZ];
+  }
+
+  /** Adds translation adjusted for scaling with current rotation.
+   * Warning : Any zero scaling will result in divide by zero.
+   */
+  public void addTranslate4(float tx, float ty, float tz) {
+    mat.setTranslate(tx / m[SX], ty / m[SY], tz / m[SZ]);
     mult4x4(mat);
   }
 
