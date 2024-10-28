@@ -21,7 +21,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
 
   private static JFImage image;
   private int buttons;
-  private boolean is_fullscreen;
+  private static boolean is_fullscreen;
   private VNC vnc_windowed;
   private VNC vnc_fullscreen;
 
@@ -37,6 +37,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     this.host = host;
     this.port = port;
     this.pass = pass;
+    this.vnc_windowed = this;
     new Connect().start();
   }
 
@@ -47,8 +48,6 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     is_fullscreen = true;
     initComponents();
     this.remove(tools);
-    setupEvents();
-    scroll.setViewportView(image);
   }
 
   /**
@@ -221,8 +220,9 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       image.addMouseMotionListener(this);
       image.addMouseListener(this);
       image.setFocusable(true);
+      image.addKeyListener(this);
     }
-    this.addKeyListener(this);
+    addKeyListener(this);
   }
 
   public void keyDown(int code) {
@@ -274,13 +274,16 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     try {
       if (is_fullscreen) {
         JFLog.log("!fullscreen");
-        dispose();
+        vnc_fullscreen.dispose();
         vnc_windowed.setVisible(true);
+        vnc_windowed.scroll.setViewportView(image);
+        is_fullscreen = false;
       } else {
         JFLog.log("fullscreen");
-        setVisible(false);
+        vnc_windowed.setVisible(false);
         vnc_fullscreen = new VNC(this);
         vnc_fullscreen.setVisible(true);
+        vnc_fullscreen.scroll.setViewportView(image);
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(vnc_fullscreen);
       }
     } catch (Exception e) {
