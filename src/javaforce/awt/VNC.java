@@ -121,6 +121,8 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     });
     tools.add(fullscreen);
 
+    scroll.setBorder(null);
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
