@@ -334,7 +334,7 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JTextField vnc_port;
   // End of variables declaration//GEN-END:variables
 
-  public static class Connection {
+  public static class Connection implements Comparable<Connection> {
     public String host, protocol;
     //VNC
     public int port;
@@ -346,12 +346,19 @@ public class MainPanel extends javax.swing.JPanel {
     public boolean fullscreen;
     public String size;
     public String user, pass;
+
+    public int compareTo(Connection o) {
+      return host.compareTo(o.host);
+    }
   }
 
   public static class Config {
     public Connection connection[];
     public Connection getConnection(int idx) {
       return connection[idx];
+    }
+    public void sort() {
+      Arrays.sort(connection);
     }
   }
 
@@ -437,10 +444,11 @@ public class MainPanel extends javax.swing.JPanel {
       FileInputStream fis = new FileInputStream(configFile);
       xml.read(fis);
       xml.writeClass(config);
+      fis.close();
+      config.sort();
       for(int a=0;a<config.connection.length;a++) {
         computer.addItem(config.connection[a].host);
       }
-      fis.close();
     } catch (Exception e) {
       config = new Config();
       config.connection = new Connection[0];
