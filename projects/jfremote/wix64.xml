@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{9A9B72DF-563B-4DA5-B9C4-2E518D867393}" Version="0.2" Language="1033" Name="jfremote" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{9A9B72DF-563B-4DA5-B9C4-2E518D867393}" Version="0.2" Language="1033" Name="jfRemote" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
@@ -33,7 +33,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{C99DF36B-9456-46EE-81FD-1ACB3C3A8F72}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfremote" Description="remote Editor" Target="[APPLICATIONROOTDIRECTORY]jfremote.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRemote" Description="remote Editor" Target="[APPLICATIONROOTDIRECTORY]jfremote.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfremote" Name="installed" Type="integer" Value="1" KeyPath="yes" />
