@@ -385,11 +385,19 @@ public class RFB {
     return name;
   }
 
-  private static int getPixel(byte[] data, int offset) {
+  private static int getPixelBGR(byte[] data, int offset) {
     int ret;
     ret = ((int) data[offset + 2] & 0xff) << 16;
     ret += ((int) data[offset + 1] & 0xff) << 8;
     ret += ((int) data[offset + 0] & 0xff);
+    return ret;
+  }
+
+  private static int getPixelRGB(byte[] data, int offset) {
+    int ret;
+    ret = ((int) data[offset + 0] & 0xff) << 16;
+    ret += ((int) data[offset + 1] & 0xff) << 8;
+    ret += ((int) data[offset + 2] & 0xff);
     return ret;
   }
 
@@ -1078,7 +1086,7 @@ public class RFB {
     int stride = width - rect.width;
     for(int y = y1;y <= y2;y++) {
       for(int x = x1;x <= x2;x++) {
-        px = getPixel(data, src) | JFImage.OPAQUE;
+        px = getPixelBGR(data, src) | JFImage.OPAQUE;
         buffer[dst] = px;
         src += 4;
         dst++;
@@ -1110,12 +1118,12 @@ public class RFB {
   private void readRectRRE(Rectangle rect) {
     byte[] pkt = read(8);
     int cnt = BE.getuint32(pkt, 0);
-    int clr = getPixel(pkt, 4);
+    int clr = getPixelBGR(pkt, 4);
     fill(rect, clr);
     Rectangle subrect = new Rectangle();
     for(int a=0;a<cnt;a++) {
       pkt = read(12);
-      clr = getPixel(pkt, 0);
+      clr = getPixelBGR(pkt, 0);
       subrect.x = rect.x + BE.getuint16(pkt, 4);
       subrect.y = rect.y + BE.getuint16(pkt, 6);
       subrect.width = BE.getuint16(pkt, 8);
@@ -1127,12 +1135,12 @@ public class RFB {
   private void readRectCoRRE(Rectangle rect) {
     byte[] pkt = read(8);
     int cnt = BE.getuint32(pkt, 0);
-    int clr = getPixel(pkt, 4);
+    int clr = getPixelBGR(pkt, 4);
     fill(rect, clr);
     Rectangle subrect = new Rectangle();
     for(int a=0;a<cnt;a++) {
       pkt = read(8);
-      clr = getPixel(pkt, 0);
+      clr = getPixelBGR(pkt, 0);
       subrect.x = rect.x + pkt[4] & 0xff;
       subrect.y = rect.y + pkt[5] & 0xff;
       subrect.width = pkt[6] & 0xff;
@@ -1191,7 +1199,7 @@ public class RFB {
         hextile_bg = colors[cbuf[0] & 0xff];
       } else {
         cbuf = read(4);
-        hextile_bg = getPixel(cbuf, 0);
+        hextile_bg = getPixelBGR(cbuf, 0);
       }
       if (debug) {
         JFLog.log("RFB:HexTile:bg=0x" + Integer.toString(hextile_bg, 16));
@@ -1206,7 +1214,7 @@ public class RFB {
         hextile_fg = colors[cbuf[0] & 0xff];
       } else {
         cbuf = read(4);
-        hextile_fg = getPixel(cbuf, 0);
+        hextile_fg = getPixelBGR(cbuf, 0);
       }
       if (debug) {
         JFLog.log("RFB:HexTile:fg=0x" + Integer.toString(hextile_bg, 16));
@@ -1259,7 +1267,7 @@ public class RFB {
     } else {
       // Full-color (24-bit) version for colored sub-rectangles.
       for (int j = 0; j < nSubRects; j++) {
-        hextile_fg = getPixel(buf, i);
+        hextile_fg = getPixelBGR(buf, i);
         i += 4;
         b1 = buf[i++] & 0xff;
         b2 = buf[i++] & 0xff;
@@ -1312,7 +1320,7 @@ public class RFB {
         }
         offset = dy * width + r.x;
         for (int i = 0; i < r.width; i++) {
-          buffer[offset + i] = getPixel(buf, i*4) | JFImage.OPAQUE;
+          buffer[offset + i] = getPixelBGR(buf, i*4) | JFImage.OPAQUE;
         }
       }
     }
@@ -1366,8 +1374,8 @@ public class RFB {
         int idx = readByte();
         clr = colors[idx];
       } else {
-        byte[] buf = read(4);
-        clr = getPixel(buf, 0);
+        byte[] buf = read(3);
+        clr = getPixelRGB(buf, 0);
       }
       fill(r, clr);
       return;
@@ -1402,7 +1410,7 @@ public class RFB {
         } else {
           byte[] buf = read(numColors * 3);  //TPIXEL
           for (int i = 0; i < numColors; i++) {
-            palette24[i] = getPixel(buf, i * 3) | JFImage.OPAQUE;
+            palette24[i] = getPixelRGB(buf, i * 3) | JFImage.OPAQUE;
           }
         }
         if (numColors == 2) {
@@ -1462,7 +1470,7 @@ public class RFB {
             buf = read(r.width * 3);  //TPIXEL
             offset = dy * width + r.x;
             for (i = 0; i < r.width; i++) {
-              buffer[offset + i] = getPixel(buf, i * 3) | JFImage.OPAQUE;
+              buffer[offset + i] = getPixelRGB(buf, i * 3) | JFImage.OPAQUE;
             }
           }
         }
@@ -1525,7 +1533,7 @@ public class RFB {
           for (int dy = 0; dy < r.height; dy++) {
             destOffset = (r.y + dy) * width + r.x;
             for (i = 0; i < r.width; i++) {
-              buffer[destOffset + i] = getPixel(buf, srcOffset) | JFImage.OPAQUE;
+              buffer[destOffset + i] = getPixelRGB(buf, srcOffset) | JFImage.OPAQUE;
               srcOffset += 3;  //TPIXEL
             }
           }
@@ -1593,7 +1601,7 @@ public class RFB {
         pix[c] = (byte) (prevRow[c] + buf[dy * r.width * 3 + c]);
         thisRow[c] = pix[c];
       }
-      buffer[offset++] = getPixel(pix, 0);
+      buffer[offset++] = getPixelRGB(pix, 0);
 
       /* Remaining pixels of a row */
       for (dx = 1; dx < r.width; dx++) {
@@ -1607,7 +1615,7 @@ public class RFB {
           pix[c] = (byte) (est[c] + buf[(dy * r.width + dx) * 3 + c]);
           thisRow[dx * 3 + c] = pix[c];
         }
-        buffer[offset++] = getPixel(pix, 0);
+        buffer[offset++] = getPixelRGB(pix, 0);
       }
 
       System.arraycopy(thisRow, 0, prevRow, 0, r.width * 3);
