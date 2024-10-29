@@ -237,7 +237,7 @@ public class Install extends IPanel implements ShellProcessListener {
         cmd.add("sudo");
         cmd.add("rsync");
         cmd.add("-aHAXvn");  //archive + H A X + verbose + dry run
-        if (Linux.distro == Linux.DistroTypes.Ubuntu)
+        if (Linux.distro == Linux.DistroTypes.Debian)
           cmd.add("/rofs/.");
         else
           cmd.add("/mnt/src/.");
@@ -265,7 +265,7 @@ public class Install extends IPanel implements ShellProcessListener {
       cmd.add("sudo");
       cmd.add("rsync");
       cmd.add("-aHAXv");  //archive + H A X + verbose
-      if (Linux.distro == Linux.DistroTypes.Ubuntu)
+      if (Linux.distro == Linux.DistroTypes.Debian)
         cmd.add("/rofs/.");
       else
         cmd.add("/mnt/src/.");
@@ -335,7 +335,7 @@ public class Install extends IPanel implements ShellProcessListener {
         cmd.add("-m");
         cmd.add("-G");
         switch (Linux.distro) {
-          case Ubuntu: cmd.add("sudo"); break;  //allows sudo (Ubuntu 12.04)
+          case Debian: cmd.add("sudo"); break;  //allows sudo (Ubuntu 12.04)
 //        cmd.add("admin");  //allows sudo (Ubuntu 11.10)
           case Fedora: cmd.add("wheel"); break;  //allows sudo (Fedora)
         }
@@ -674,7 +674,7 @@ public class Install extends IPanel implements ShellProcessListener {
         cmd.add("chroot");
         cmd.add("/mnt/install");
         switch (Linux.distro) {
-          case Ubuntu:
+          case Debian:
             cmd.add("apt");
             cmd.add("--yes");
             break;
@@ -685,7 +685,7 @@ public class Install extends IPanel implements ShellProcessListener {
         }
         cmd.add("remove");
         switch (Linux.distro) {
-          case Ubuntu:
+          case Debian:
             cmd.add("casper");
             cmd.add("lupin-casper");
             break;

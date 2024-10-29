@@ -48,7 +48,7 @@ public class ConfigApp extends javax.swing.JFrame {
     }
     Linux.detectDistro();
     switch (Linux.distro) {
-      case Ubuntu: break;
+      case Debian: break;
       case Fedora: break;
       case Arch: break;
       default:

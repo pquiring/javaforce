@@ -25,7 +25,7 @@ public class Linux {
   }
 
   public static enum DistroTypes {
-    Unknown, Ubuntu, Fedora, Arch
+    Unknown, Debian, Fedora, Arch
   };
   public static DistroTypes distro = DistroTypes.Unknown;
 
@@ -46,7 +46,7 @@ public class Linux {
         fis.close();
         String id = props.getProperty("ID");
         if (id.equals("debian") || id.equals("ubuntu")) {
-          distro = DistroTypes.Ubuntu;
+          distro = DistroTypes.Debian;
           JFLog.log("Detected Linux:debian");
           return true;
         }
@@ -333,7 +333,7 @@ public class Linux {
   public static boolean installPackage(String pkg, String desc) {
     detectDistro();
     switch (distro) {
-      case Ubuntu:
+      case Debian:
         return apt("install", pkg, desc);
       case Fedora:
         return yum("install", pkg, desc);
@@ -346,7 +346,7 @@ public class Linux {
   public static boolean removePackage(String pkg, String desc) {
     detectDistro();
     switch (distro) {
-      case Ubuntu:
+      case Debian:
         return apt("autoremove", pkg, desc);
       case Fedora:
         return yum("remove", pkg, desc);
@@ -473,7 +473,7 @@ public class Linux {
   public static String[][] searchPackages(String regex) {
     detectDistro();
     switch (distro) {
-      case Ubuntu:
+      case Debian:
         return ubuntu_searchPackages(regex);
       case Fedora:
         return fedora_searchPackages(regex);
@@ -571,7 +571,7 @@ public class Linux {
   public static void updateInstalled() {
     detectDistro();
     switch (distro) {
-      case Ubuntu:
+      case Debian:
         ubuntu_updateInstalled();
         break;
       case Fedora:
@@ -1323,7 +1323,7 @@ public class Linux {
     detectDistro();
     // see /etc/pam.d/ for available back ends
     switch (distro) {
-      case Ubuntu: backend = "passwd"; break;
+      case Debian: backend = "passwd"; break;
       case Fedora: backend = "password-auth"; break;
       case Arch: backend = "system-auth"; break;
       default: return false;

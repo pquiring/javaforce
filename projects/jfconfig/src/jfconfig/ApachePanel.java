@@ -24,9 +24,9 @@ public class ApachePanel extends javax.swing.JPanel {
     loadConfig();
     ConfigApp.This.setTitle("Config : Apache");
     Linux.detectDistro();
-    if (Linux.distro != Linux.DistroTypes.Ubuntu) {
+    if (Linux.distro != Linux.DistroTypes.Debian) {
       runWizard.setEnabled(false);
-      runWizard.setToolTipText("Requires Ubuntu");
+      runWizard.setToolTipText("Requires Debian");
     }
   }
 

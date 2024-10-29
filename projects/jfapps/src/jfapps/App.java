@@ -119,7 +119,7 @@ public class App extends javax.swing.JPanel {
     if (pkg.equals("pdf")) {
       Linux.detectDistro();
       switch (Linux.distro) {
-        case Ubuntu:
+        case Debian:
           switch (Linux.detectBits()) {
             case 32: url = "http://ardownload.adobe.com/pub/adobe/reader/unix/9.x/9.5.1/enu/AdbeRdr9.5.1-1_i386linux_enu.deb"; break;
             case 64: url = null; break;
@@ -135,7 +135,7 @@ public class App extends javax.swing.JPanel {
     } else if (pkg.equals("chrome")) {
       Linux.detectDistro();
       switch (Linux.distro) {
-        case Ubuntu:
+        case Debian:
           switch (Linux.detectBits()) {
             case 32: url = "https://dl.google.com/linux/direct/google-chrome-stable_current_i386.deb"; break;
             case 64: url = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"; break;
@@ -151,7 +151,7 @@ public class App extends javax.swing.JPanel {
     } else if (pkg.equals("flash")) {
       Linux.detectDistro();
       switch (Linux.distro) {
-        case Ubuntu:
+        case Debian:
           switch (Linux.detectBits()) {
             case 32: url = null; break;
             case 64: url = null; break;
@@ -236,7 +236,7 @@ public class App extends javax.swing.JPanel {
 //            tmpFile.delete();  //test
 
             //some apps need other packages, "apt -f install" will fix that
-            if (Linux.distro == Linux.DistroTypes.Ubuntu) {
+            if (Linux.distro == Linux.DistroTypes.Debian) {
               ShellProcess sp = new ShellProcess();
               sp.removeEnvironmentVariable("TERM");
               sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");

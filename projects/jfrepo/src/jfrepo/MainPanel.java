@@ -180,14 +180,14 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private int col = -1;
   private String country = "none";
   private Mirror mirror = null;
-  private void ubuntu_parseTag(XML.XMLTag tag) {
+  private void debian_parseTag(XML.XMLTag tag) {
     for(int i=0;i<tag.getChildCount();i++) {
       XML.XMLTag child = tag.getChildAt(i);
       String name = child.getName();  //th, span, a
       if (name.equals("tr")) col = 0;
       if (name.equals("th")) col++;
       if (child.getChildCount() > 0) {
-        ubuntu_parseTag(child);
+        debian_parseTag(child);
       } else {
         if (name.equals("th")) {
           if (col == 1) {
@@ -348,21 +348,21 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void initMirrors() {
     switch (Linux.distro) {
-      case Ubuntu: ubuntu_initMirrors(); break;
+      case Debian: debian_initMirrors(); break;
       case Fedora: fedora_initMirrors(); break;
     }
   }
 
-  private void ubuntu_initMirrors() {
+  private void debian_initMirrors() {
     InputStream is;
     BufferedReader rd;
     String line;
     StringBuffer file;
     int i1,i2;
-    //load saved system mirrors = /etc/jfrepo-ubuntu.list
+    //load saved system mirrors = /etc/jfrepo-debian.list
     ArrayList<Mirror> systemList = new ArrayList<Mirror>();
     try {
-      FileInputStream fis = new FileInputStream("/etc/jfrepo-ubuntu.list");
+      FileInputStream fis = new FileInputStream("/etc/jfrepo-debian.list");
       byte buf[] = JF.readAll(fis);
       fis.close();
       String lns[] = new String(buf, "UTF-8").split("\n");
@@ -384,10 +384,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     } catch (Exception e) {
       JFLog.log(e);
     }
-    //load saved personal mirrors = ~/.jfrepo-ubuntu.list
+    //load saved personal mirrors = ~/.jfrepo-debian.list
     ArrayList<Mirror> userList = new ArrayList<Mirror>();
     try {
-      FileInputStream fis = new FileInputStream(JF.getUserPath() + "/.jfrepo-ubuntu.list");
+      FileInputStream fis = new FileInputStream(JF.getUserPath() + "/.jfrepo-debian.list");
       byte buf[] = JF.readAll(fis);
       fis.close();
       String lns[] = new String(buf, "UTF-8").split("\n");
@@ -409,6 +409,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     } catch (Exception e) {
       JFLog.log(e);
     }
+    //TODO : use debian lists instead !!!
     //load URL = https://launchpad.net/ubuntu/+archivemirrors
     JFLog.log("Loading mirrors list...");
     JF.initHttps(KeyMgmt.getDefaultClient());
@@ -432,7 +433,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         XML xml = new XML();
         ByteArrayInputStream buf = new ByteArrayInputStream(mirrorsList.getBytes());
         xml.read(buf);
-        ubuntu_parseTag(xml.root);
+        debian_parseTag(xml.root);
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -478,9 +479,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       m = mirrors.get(j);
       if (m.isNew) getLocation(m);
     }
-    //save any new mirrors to ~/.jfrepo-ubuntu.list
+    //save any new mirrors to ~/.jfrepo-debian.list
     try {
-      FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/.jfrepo-ubuntu.list", true);
+      FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/.jfrepo-debian.list", true);
       int cnt = 0;
       for(int j=0;j<mirrors.size();j++) {
         m = mirrors.get(j);
@@ -491,7 +492,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         fos.write(ln.getBytes());
       }
       fos.close();
-      JFLog.log("Wrote " + cnt + " new entries to ~/.jfrepo-ubuntu.list");
+      JFLog.log("Wrote " + cnt + " new entries to ~/.jfrepo-debian.list");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -694,7 +695,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   public void loadRepo() {
     switch (Linux.distro) {
-      case Ubuntu: _loadRepo("/etc/apt/sources.list"); break;
+      case Debian: _loadRepo("/etc/apt/sources.list"); break;
       case Fedora: _loadRepo("/etc/yum.repo.d/fedora.repo"); break;
     }
   }
@@ -735,12 +736,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void applyRepo() {
     switch (Linux.distro) {
-      case Ubuntu: ubuntu_applyRepo(); break;
+      case Debian: debian_applyRepo(); break;
       case Fedora: fedora_applyRepo(); break;
     }
   }
 
-  private void ubuntu_applyRepo() {
+  private void debian_applyRepo() {
     if (selIdx == -1) {
       JFAWT.showError("Error", "Please select a site first");
       return;
@@ -774,7 +775,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       list = list.replaceAll("[$]NAME[$]", m.name);
       if ((selURL == null) || (selURL.equals("null"))) throw new Exception("internal error");  //shouldn't happen
       list = list.replaceAll("[$]URL[$]", selURL);
-      File tmpFile = File.createTempFile("ubuntu", ".repo");
+      File tmpFile = File.createTempFile("debian", ".repo");
       FileOutputStream fos = new FileOutputStream(tmpFile);
       fos.write(list.getBytes());
       fos.close();

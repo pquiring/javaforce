@@ -200,7 +200,7 @@ public class FixStuffPanel extends javax.swing.JPanel {
   private void fixTomcatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixTomcatActionPerformed
     Linux.detectDistro();
     switch (Linux.distro) {
-      case Ubuntu:
+      case Debian:
         if (!Linux.isInstalled("libcap2-bin")) {
           if (!Linux.installPackage("libcap2-bin", "setcap tool")) {
             JFAWT.showError("Error", "Failed to install required tool");
