@@ -56,9 +56,9 @@ public class MainPanel extends javax.swing.JPanel {
     username = new javax.swing.JTextField();
     password = new javax.swing.JPasswordField();
 
-    jLabel1.setText("Computer:");
+    jLabel1.setText("Computer");
 
-    jLabel2.setText("Protocol:");
+    jLabel2.setText("Protocol");
 
     protocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "RDP", "VNC" }));
     protocol.addItemListener(new java.awt.event.ItemListener() {
@@ -131,7 +131,8 @@ public class MainPanel extends javax.swing.JPanel {
 
     tabs.addTab("RDP", jPanel2);
 
-    jLabel3.setText("Port:");
+    jLabel3.setText("Port");
+    jLabel3.setToolTipText("Default (0) = 5900");
 
     vnc_port.setText("0");
 

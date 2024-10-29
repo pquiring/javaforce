@@ -86,12 +86,12 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Computer:"/>
+        <Property name="text" type="java.lang.String" value="Computer"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Protocol:"/>
+        <Property name="text" type="java.lang.String" value="Protocol"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JComboBox" name="protocol">
@@ -271,7 +271,8 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="jLabel3">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Port:"/>
+                <Property name="text" type="java.lang.String" value="Port"/>
+                <Property name="toolTipText" type="java.lang.String" value="Default (0) = 5900"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="vnc_port">
