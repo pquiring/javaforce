@@ -1,1 +1,7 @@
-#see files-debian.lst and files-fedora.lst
+/usr/share/java/jfrepo.jar
+/usr/bin/jfrepo
+/usr/share/jfhelp/jfrepo.html
+/usr/share/applications/jfrepo.desktop
+/usr/share/icons/hicolor/48x48/apps/jfrepo.png
+/etc/jfrepo-debian.list
+/etc/jfrepo-fedora.list
