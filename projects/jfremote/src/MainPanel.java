@@ -41,18 +41,20 @@ public class MainPanel extends javax.swing.JPanel {
     shareHome = new javax.swing.JCheckBox();
     consoleSession = new javax.swing.JCheckBox();
     sdl = new javax.swing.JCheckBox();
-    jLabel4 = new javax.swing.JLabel();
-    username = new javax.swing.JTextField();
-    jLabel5 = new javax.swing.JLabel();
-    password = new javax.swing.JPasswordField();
     jLabel6 = new javax.swing.JLabel();
     size = new javax.swing.JTextField();
     fullscreen = new javax.swing.JCheckBox();
     jPanel1 = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
-    port = new javax.swing.JTextField();
+    vnc_port = new javax.swing.JTextField();
+    jLabel7 = new javax.swing.JLabel();
+    vnc_encodings = new javax.swing.JComboBox<>();
     connect = new javax.swing.JButton();
     clear = new javax.swing.JButton();
+    jLabel5 = new javax.swing.JLabel();
+    jLabel4 = new javax.swing.JLabel();
+    username = new javax.swing.JTextField();
+    password = new javax.swing.JPasswordField();
 
     jLabel1.setText("Computer:");
 
@@ -79,10 +81,6 @@ public class MainPanel extends javax.swing.JPanel {
 
     sdl.setText("SDL");
 
-    jLabel4.setText("Username");
-
-    jLabel5.setText("Password");
-
     jLabel6.setText("Screen size");
 
     size.setText("1920x1080");
@@ -99,7 +97,7 @@ public class MainPanel extends javax.swing.JPanel {
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(shareHome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGap(43, 43, 43))
-          .addComponent(consoleSession, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+          .addComponent(consoleSession, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(jPanel2Layout.createSequentialGroup()
@@ -107,16 +105,9 @@ public class MainPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fullscreen))
               .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                  .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                  .addComponent(jLabel5))
+                .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                  .addComponent(username)
-                  .addComponent(password)
-                  .addComponent(size, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE))))
+                .addComponent(size, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
@@ -135,33 +126,32 @@ public class MainPanel extends javax.swing.JPanel {
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel6)
           .addComponent(size, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel4))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel5))
-        .addContainerGap(18, Short.MAX_VALUE))
+        .addContainerGap(29, Short.MAX_VALUE))
     );
 
     tabs.addTab("RDP", jPanel2);
 
     jLabel3.setText("Port:");
 
-    port.setText("0");
+    vnc_port.setText("0");
+
+    jLabel7.setText("Encodings");
+
+    vnc_encodings.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Fast", "Lean" }));
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jLabel3)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jLabel7)
+          .addComponent(jLabel3))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(83, Short.MAX_VALUE))
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(vnc_port)
+          .addComponent(vnc_encodings, 0, 153, Short.MAX_VALUE))
+        .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,8 +159,12 @@ public class MainPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
-          .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(152, Short.MAX_VALUE))
+          .addComponent(vnc_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel7)
+          .addComponent(vnc_encodings, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(79, Short.MAX_VALUE))
     );
 
     tabs.addTab("VNC", jPanel1);
@@ -189,6 +183,17 @@ public class MainPanel extends javax.swing.JPanel {
       }
     });
 
+    jLabel5.setText("Password");
+
+    jLabel4.setText("Username");
+    jLabel4.setToolTipText("Not used in VNC");
+
+    username.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        usernameActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -197,19 +202,24 @@ public class MainPanel extends javax.swing.JPanel {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(tabs)
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel1)
-              .addComponent(jLabel2))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(protocol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(computer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(clear)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(connect)))
+            .addComponent(connect))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+              .addComponent(jLabel5))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(password)
+              .addComponent(computer, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(protocol, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(username, javax.swing.GroupLayout.Alignment.TRAILING))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -224,7 +234,15 @@ public class MainPanel extends javax.swing.JPanel {
           .addComponent(jLabel2)
           .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(connect)
@@ -260,7 +278,8 @@ public class MainPanel extends javax.swing.JPanel {
     int idx = computer.getSelectedIndex();
     if (idx == -1) return;
     Connection connection = config.getConnection(idx);
-    port.setText("" + connection.port);
+    vnc_port.setText("" + connection.port);
+    vnc_encodings.setSelectedIndex(connection.encoding);
     protocol.setSelectedItem(connection.protocol);
     shareHome.setSelected(connection.shareHome);
     consoleSession.setSelected(connection.consoleSession);
@@ -274,7 +293,8 @@ public class MainPanel extends javax.swing.JPanel {
   private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
     computer.setSelectedItem("");
     protocol.setSelectedIndex(0);
-    port.setText("0");
+    vnc_port.setText("0");
+    vnc_encodings.setSelectedIndex(0);  //fast
     shareHome.setSelected(true);
     consoleSession.setSelected(false);
     sdl.setSelected(false);
@@ -283,6 +303,10 @@ public class MainPanel extends javax.swing.JPanel {
     password.setText("");
     size.setText("1920x1080");
   }//GEN-LAST:event_clearActionPerformed
+
+  private void usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_usernameActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton clear;
@@ -296,22 +320,25 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPasswordField password;
-  private javax.swing.JTextField port;
   private javax.swing.JComboBox<String> protocol;
   private javax.swing.JCheckBox sdl;
   private javax.swing.JCheckBox shareHome;
   private javax.swing.JTextField size;
   private javax.swing.JTabbedPane tabs;
   private javax.swing.JTextField username;
+  private javax.swing.JComboBox<String> vnc_encodings;
+  private javax.swing.JTextField vnc_port;
   // End of variables declaration//GEN-END:variables
 
   public static class Connection {
     public String host, protocol;
     //VNC
     public int port;
+    public int encoding;  //0=fast 1=lean
     //RDP
     public boolean shareHome;
     public boolean consoleSession;
@@ -381,10 +408,21 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void connectVNC() {
     String host = (String)computer.getSelectedItem();
-    String p = port.getText();
+    String p = vnc_port.getText();
     if (p.length() > 0 && !p.equals("0")) host += ":" + p;
+    int encodingIndex = vnc_encodings.getSelectedIndex();
+    String encodings = "";
+    switch (encodingIndex) {
+      case 0: encodings = "--fast"; break;
+      case 1: encodings = "--lean"; break;
+    }
+    String user = username.getText();  //not used in VNC
+    String pass = new String(password.getPassword());
+    if (pass.length() == 0) {
+      pass = "\"\"";  //empty string
+    }
     try {
-      String cmd[] = {"jfvnc", host};
+      String cmd[] = {"jfvnc", host, pass, encodings};
       Runtime.getRuntime().exec(cmd);
     } catch (Exception e) {
       JFAWT.showError("Error", "Failed to execute jfvnc");
@@ -445,15 +483,16 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void saveHost(Connection connection) {
     connection.protocol = (String)protocol.getSelectedItem();
+    connection.user = username.getText();
+    connection.pass = new String(password.getPassword());
     //VNC
-    connection.port = JF.atoi(port.getText());
+    connection.port = JF.atoi(vnc_port.getText());
+    connection.encoding = vnc_encodings.getSelectedIndex();
     //RDP
     connection.shareHome = shareHome.isSelected();
     connection.consoleSession = consoleSession.isSelected();
     connection.sdl = sdl.isSelected();
     connection.fullscreen = fullscreen.isSelected();
     connection.size = size.getText();
-    connection.user = username.getText();
-    connection.pass = new String(password.getPassword());
   }
 }
