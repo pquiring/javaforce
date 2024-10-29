@@ -1,3 +1,9 @@
+2024-10-29 : v0.3
+  - fixed VNC fullscreen mode
+  - support VNC using password field (don't have to type in every time)
+  - fixed VNC tight encoding
+  - added VNC encodings selection (fast or lean)
+
 2024-10-25 : v0.2
   - replaced rdesktop with freerdp
   - added more RDP options
