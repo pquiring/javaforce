@@ -45,6 +45,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   public VNC(VNC windowed) {
     vnc_windowed = windowed;
     scroll = new javax.swing.JScrollPane();
+    scroll.setBorder(null);
     setUndecorated(true);
     setContentPane(scroll);
     is_fullscreen = true;
