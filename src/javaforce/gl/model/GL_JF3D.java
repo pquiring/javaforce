@@ -124,7 +124,7 @@ public class GL_JF3D {
           for(int a=0;a<fcnt;a++) {
             String txt = readString();
             model.textures.add(txt);
-//            JFLog.log("Texture=" + txt);
+            if (debug) JFLog.log("JF3D:Texture=" + txt);
           }
           if (head_ver > 0) {
             //future reserved
@@ -134,6 +134,7 @@ public class GL_JF3D {
           obj = new Object3();
           model.addObject(obj);
           obj.name = readString();
+          if (debug) JFLog.log("JF3D:Object=" + obj.name);
           obj.type = readuint32();
           obj.org.x = readfloat();
           obj.org.y = readfloat();
@@ -144,6 +145,7 @@ public class GL_JF3D {
             float fy = readfloat();
             float fz = readfloat();
             obj.addVertex(new float[] {fx, fy, fz});
+            if (debug) JFLog.log("JF3D:Vertex:" + fx + "," + fy + "," + fz);
           }
           int pcnt = readuint32();  //poly count
           switch (obj.type) {
@@ -162,6 +164,7 @@ public class GL_JF3D {
             if (pt >= vcnt) {
               JFLog.log("Error:Poly includes invalid vertex !!!");
             }
+            if (debug) JFLog.log("JF3D:Poly:" + pt);
             obj.addPoly(new int[] {pt});
           }
           break;
@@ -177,6 +180,7 @@ public class GL_JF3D {
             float u = readfloat();
             float v = readfloat();
             map.addText(new float[] {u, v});
+            if (debug) JFLog.log("JF3D:UV:" + u + "," + v);
           }
           break;
         default:
@@ -299,5 +303,10 @@ public class GL_JF3D {
       }
     }
     os.write(baos.toByteArray());
+  }
+  public static void main(String[] args) {
+    GL_JF3D jf3d = new GL_JF3D();
+    jf3d.debug = true;
+    jf3d.load(args[0]);
   }
 }

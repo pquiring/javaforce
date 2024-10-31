@@ -3,20 +3,13 @@ package javaforce.gl.model;
 import java.io.*;
 import java.util.*;
 import javaforce.*;
-import javaforce.gl.GL;
-import javaforce.gl.GL;
-import javaforce.gl.Model;
-import javaforce.gl.Model;
-import javaforce.gl.Object3;
-import javaforce.gl.Object3;
-import javaforce.gl.UVMap;
-import javaforce.gl.UVMap;
+import javaforce.gl.*;
 
 /**
  * Blender .blend reader
  *
  * NOTE:
- *   Supports Blender v2.63+
+ *   Supports Blender v2.63+ thru 4.02 (some versions in between may not be supported)
  *   Supports objects with multiple UVMaps
  *   Rotation/Scale on objects are ignored, please rotate/scale in edit mode (the vertex data)
  *   BHead chunks can have duplicate old pointer addresses in which case they must be used in order.
@@ -24,15 +17,23 @@ import javaforce.gl.UVMap;
  * TODO:
  *   Animation data
  *
- * Blender Source : https://git.blender.org/gitweb/gitweb.cgi/blender.git/tree/HEAD:/source/blender
+ * Blender Source : https://github.com/blender/blender/tree/main
  *   - look in blenloader and makesdna folders
  *   - most important to understand DNA : makesdna/intern/dna_genfile.c:init_structDNA()
  *   - also see doc/blender_file_format/mystery_of_the_blend.html
+ *   - see https://github.com/blender/blender/tree/main/source/blender/blenloader/intern
  *
  * @author pquiring
  */
 
 public class GL_BLEND {
+
+  public static boolean debug = false;
+  public static boolean debugDNA = false;
+  public static boolean debugScene = false;  //obsolete
+  public static boolean debugCD = false;
+  public static boolean debugCDProp = false;
+
   private byte[] data;
   private int datapos;
 
@@ -45,12 +46,16 @@ public class GL_BLEND {
   private float[] org = new float[3];
   private boolean haveDups;
 
-  private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
+  private HashMap<Long, Chunk> chunk_map = new HashMap<Long, Chunk>();
 
+// typedef enum ID_Type {...} see https://github.com/blender/blender/blob/main/source/blender/makesdna/DNA_ID_enums.h
   private static final int ID_ME = 0x454d;  //ME (mesh)
   private static final int ID_OB = 0x424f;  //OB (object)
   private static final int ID_SC = 0x4353;  //SCE (scene)
   private static final int ID_DNA1 = 0x31414e44;  //DNA1
+
+// typedef enum ObjectType {...} see https://github.com/blender/blender/blob/main/source/blender/makesdna/DNA_object_types.h
+  private static final int OB_MESH             = 1;  //only one of interest
 
 // typedef enum CustomDataType {...}
   private static final int CD_MVERT            = 0;
@@ -100,19 +105,31 @@ public class GL_BLEND {
   private static final int CD_TESSLOOPNORMAL   = 40;
   private static final int CD_CUSTOMLOOPNORMAL = 41;
 
-  private static final int CD_NUMTYPES         = 42;
+  private static final int CD_SCULPT_FACE_SETS = 42;
+  private static final int CD_LOCATION = 43;  //unused
+  private static final int CD_RADIUS = 44;  //unused
+  private static final int CD_PROP_INT8 = 45;
+  private static final int CD_PROP_INT32_2D = 46;
+  private static final int CD_PROP_COLOR = 47;
+  private static final int CD_PROP_FLOAT3 = 48;  //vertex:xyz
+  private static final int CD_PROP_FLOAT2 = 49;
+  private static final int CD_PROP_BOOL = 50;
+  private static final int CD_HAIRLENGTH = 51;  //unused
+  private static final int CD_PROP_QUATERNION = 52;
+
+  private static final int CD_NUMTYPES         = 53;
 
   //DNA stuff
   private ArrayList<String> names = new ArrayList<String>();  //member names
   private ArrayList<String> types = new ArrayList<String>();  //struct names
   private ArrayList<Short> typelen = new ArrayList<Short>();
-  private class struct {
+  private class struct {  //struct SDNA_Struct
     short typeidx;  //index into types
-    short nr;  //# of members
+    short mem_nr;  //# of members
     String name;
     ArrayList<member> members = new ArrayList<member>();
   }
-  private class member {
+  private class member {  //struct SDNA_Struct
     short typelenidx;  //index into typelen
     short nameidx;  //index into names
     String name;
@@ -251,7 +268,7 @@ public class GL_BLEND {
   }
   private Chunk findChunkByPtr(long ptr) {
     if (ptr == 0) return null;
-    Chunk chunk = chunks.get(ptr);
+    Chunk chunk = chunk_map.get(ptr);
     if (chunk == null) return null;
     if (chunk.dup) {
 //      JFLog.log("Duplicate:" + Long.toString(ptr, 16) + ",idx=" + chunk.dupidx);
@@ -264,13 +281,16 @@ public class GL_BLEND {
     return chunk;
   }
   private class Vertex {
-    float[] xyz;
+    float[] xyz = new float[3];
+  }
+  private class UV {
+    float[] uv = new float[2];
   }
   private Model loadBlend(InputStream is) throws Exception {
     setData(JF.readAll(is));
 
     if (data.length < 12) {
-      throw new Exception("GL_BLEND:File too small");
+      throw new Exception("BLEND:File too small");
     }
 
     model = new Model();
@@ -283,18 +303,18 @@ public class GL_BLEND {
       case '-': x64 = true; break;
       case '_': x64 = false; break;
       default:
-        throw new Exception("GL_BLEND:Unknown bit size");
+        throw new Exception("BLEND:Unknown bit size");
     }
 
     switch (data[8]) {
       case 'v': le = true; break;
       case 'V': le = false; break;
       default:
-        throw new Exception("GL_BLEND:Unknown Endianness");
+        throw new Exception("BLEND:Unknown Endianness");
     }
 
     String version = new String(data, 9, 3);
-//    JFLog.log("Blender file version:" + version);
+    JFLog.log("Blender file version:" + version);
     int ver = Integer.valueOf(version);
     if (ver < 263) {
       throw new Exception("Error:Blender file too old, can not read.");
@@ -307,7 +327,7 @@ public class GL_BLEND {
       Chunk chunk = new Chunk();
       chunk.filepos = datapos;
       chunk.read();
-      Chunk ochunk = chunks.get(chunk.ptr);
+      Chunk ochunk = chunk_map.get(chunk.ptr);
       if (ochunk != null) {
         if (!haveDups) {
           JFLog.log("Warning:This file contains duplicate BHeads.");
@@ -319,19 +339,20 @@ public class GL_BLEND {
         }
         ochunk.nextdup = chunk;
       } else {
-        chunks.put(chunk.ptr, chunk);
+        chunk_map.put(chunk.ptr, chunk);
       }
     }
 
-    int chunkCnt = chunks.size();
-    Chunk[] chunkArray = chunks.values().toArray(new Chunk[chunkCnt]);
-    Chunk raw;
+    int chunkCnt = chunk_map.size();
+    Chunk[] chunks = chunk_map.values().toArray(new Chunk[chunkCnt]);
 
     //2nd phase - parse DNA chunk
-    for(int i=0;i<chunkCnt;i++) {
-      if (chunkArray[i].id == ID_DNA1) {
-        raw = chunkArray[i];
-        setData(raw.raw);
+    for(Chunk chunk : chunks) {
+      if (chunk.id == ID_DNA1) {
+        if (debug) {
+          JFLog.log("Blend:ID_DNA1 @ " + chunk.ptr);
+        }
+        setData(chunk.raw);
         //SDNA
         String SDNA = readString(4);
         if (!SDNA.equals("SDNA")) throw new Exception("Bad DNA Struct:SDNA");
@@ -341,7 +362,7 @@ public class GL_BLEND {
         int nr_names = readuint32();
         for(int a=0;a<nr_names;a++) {
           String str = readString();
-//          JFLog.log("name=" + str);
+          if (debugDNA) JFLog.log("DNA.name=" + str);
           names.add(str);
         }
         //align pointer
@@ -353,7 +374,7 @@ public class GL_BLEND {
         int nr_types = readuint32();
         for(int a=0;a<nr_types;a++) {
           String str = readString();
-//          JFLog.log("type=" + str);
+          if (debugDNA) JFLog.log("DNA.type=" + str);
           types.add(str);
         }
         //align pointer
@@ -375,17 +396,17 @@ public class GL_BLEND {
         for(int a=0;a<nr_structs;a++) {
           struct s = new struct();
           s.typeidx = readuint16();
-          s.nr = readuint16();
+          s.mem_nr = readuint16();
           s.name = types.get(s.typeidx);
-//          JFLog.log("struct:" + s.name + "==" + a);
-          for(int b=0;b<s.nr;b++) {
+          if (debugDNA) JFLog.log("DNA.struct:" + s.name + "==" + a);
+          for(int b=0;b<s.mem_nr;b++) {
             member m = new member();
             m.typelenidx = readuint16();
             m.nameidx = readuint16();
             m.name = names.get(m.nameidx);
             m.typelen = typelen.get(m.typelenidx);
             m.size = calcMemberSize(m);
-//            JFLog.log("  member:" + m.name + "=" + m.length);
+            if (debugDNA) JFLog.log("  member:" + m.name + "=" + m.typelen);
             s.members.add(m);
           }
           structs.add(s);
@@ -395,23 +416,42 @@ public class GL_BLEND {
     }
 
     //3nd phase - now look for objects and piece together chunks
-    for(int i=0;i<chunkCnt;i++) {
-      if (chunkArray[i].id == ID_SC) {
-        setData(chunkArray[i].raw);
-        Scene scene = new Scene();
-        scene.read();
-        long ptr = scene.last;
-        while (ptr != 0) {
-          Chunk chunk = findChunkByPtr(ptr);
-          if (chunk == null) break;
+    for(Chunk chunk : chunks) {
+      if (chunk.id == ID_SC) {
+        if (debug) {
+          JFLog.log("Blend:ID_SC @ " + chunk.ptr);
+        }
+        if (false) {  //ignore - use Objects instead
           setData(chunk.raw);
-          Base base = new Base();
-          base.read();
-          chunk = findChunkByPtr(base.object);
-          if (chunk.id == ID_OB) {
-            readObject(chunk);
+          Scene scene = new Scene();
+          scene.read();
+          long ptr = scene.last;
+          if (debug) JFLog.log("  scene.last=" + ptr);
+          while (ptr != 0) {
+            Chunk chunk2 = findChunkByPtr(ptr);
+            if (chunk2 == null) break;
+            setData(chunk2.raw);
+            Base base = new Base();
+            base.read();
+            chunk2 = findChunkByPtr(base.object);
+            if (chunk2.id == ID_OB) {
+              readObject(chunk2);
+            }
+            ptr = base.prev;
           }
-          ptr = base.prev;
+        }
+      }
+
+      if (chunk.id == ID_OB) {
+        if (debug) {
+          JFLog.log("Blend:ID_OB @ " + chunk.ptr);
+        }
+        readObject(chunk);
+      }
+
+      if (chunk.id == ID_ME) {
+        if (debug) {
+          JFLog.log("Blend:ID_ME @ " + chunk.ptr);
         }
       }
     }
@@ -420,61 +460,77 @@ public class GL_BLEND {
   }
 
   private void readObject(Chunk chunk) throws Exception {
-    ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
-    ArrayList<Integer> loopList = new ArrayList<Integer>();
     setData(chunk.raw);
     bObject bObj = new bObject();
     bObj.read();
-//        JFLog.log("object.type=" + bObj.type);
-    if (bObj.type != 1) return;  //not a mesh object (could be camera, light, etc.)
+    if (debug) JFLog.log("Blend:object.type=" + bObj.type);
+    if (bObj.type != OB_MESH) return;  //not a mesh object (could be camera, light, etc.)
     obj = new Object3();
     model.addObject(obj);
     obj.name = bObj.id.name.substring(2);
-//    JFLog.log("object=" + obj.name);
-    chunk = findChunkByPtr(bObj.data);
-    if (chunk == null) {
-      throw new Exception("GL_BLEND:Unable to find Mesh for Object");
-    }
-    Mesh mesh = new Mesh();
-    setData(chunk.raw);
-//        JFLog.log("Mesh@" + Integer.toString(raw.fileOffset, 16));
-    mesh.read();
     obj.org.x = bObj.loc[0];
     org[0] = bObj.loc[0];
     obj.org.y = bObj.loc[1];
     org[1] = bObj.loc[1];
     obj.org.z = bObj.loc[2];
     org[2] = bObj.loc[2];
-    //find mvert
-    chunk = findChunkByPtr(mesh.mvert);
+    if (debug) JFLog.log("Blend:object.name=" + obj.name + ",org=" + org[0] + "," + org[1] + "," + org[2]);
+    chunk = findChunkByPtr(bObj.data);
     if (chunk == null) {
-      throw new Exception("GL_BLEND:Unable to find MVert for Mesh");
+      throw new Exception("BLEND:Unable to find Mesh for Object");
     }
+    readMesh(chunk);
+  }
+
+  private void readMesh(Chunk chunk) throws Exception {
+    ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+    ArrayList<Integer> loopList = new ArrayList<Integer>();
+    Mesh mesh = new Mesh();
     setData(chunk.raw);
-    for(int a=0;a<chunk.nr;a++) {
-      MVert mvert = new MVert();
-      mvert.read();
-//          obj.addVertex(mvert.co);
-      Vertex v = new Vertex();
-      v.xyz = mvert.v;
-      vertexList.add(v);
+    if (debug) JFLog.log("Blend.Mesh @ " + chunk.fileOffset);
+    mesh.read();
+    //find mvert (obsolete)
+    if (mesh.mvert != 0) {
+      chunk = findChunkByPtr(mesh.mvert);
+      if (chunk == null) {
+        JFLog.log("BLEND:Unable to find MVert for Mesh:" + mesh.mvert);
+        mesh.mvert = 0;
+      } else {
+        setData(chunk.raw);
+        for(int a=0;a<chunk.array_nr;a++) {
+          MVert mvert = new MVert();
+          mvert.read();
+    //          obj.addVertex(mvert.co);
+          Vertex v = new Vertex();
+          v.xyz[0] = mvert.v[0];
+          v.xyz[1] = mvert.v[1];
+          v.xyz[2] = mvert.v[2];
+          vertexList.add(v);
+          if (debugCDProp) JFLog.log("PROP_FLOAT3:" + v.xyz[0] + "," + v.xyz[1] + "," + v.xyz[2]);
+        }
+      }
     }
-    //find mloop
-    chunk = findChunkByPtr(mesh.mloop);
-    if (chunk == null) {
-      throw new Exception("GL_BLEND:Unable to find MLoop for Mesh");
-    }
-    setData(chunk.raw);
-    for(int a=0;a<chunk.nr;a++) {
-      MLoop mloop = new MLoop();
-      mloop.read();
-      loopList.add(mloop.v);
+    //find mloop (obsolete)
+    if (mesh.mloop != 0) {
+      chunk = findChunkByPtr(mesh.mloop);
+      if (chunk == null) {
+        JFLog.log("BLEND:Unable to find MLoop for Mesh:" + mesh.mloop);
+        mesh.mloop = 0;
+      } else {
+        setData(chunk.raw);
+        for(int a=0;a<chunk.array_nr;a++) {
+          MLoop mloop = new MLoop();
+          mloop.read();
+          loopList.add(mloop.v);
+          if (debugCDProp) JFLog.log("PROP_INT_LOOP:" + mloop.v);
+        }
+      }
     }
     //find mloopuv
 /*  //use the UVMaps in the CustomData instead - this is only the active one
     raw = findChunkByPtr(mesh.mloopuv);
     if (raw == null) {
-      throw new Exception("GL_BLEND:Unable to find MLoopUV for Mesh");
+      throw new Exception("BLEND:Unable to find MLoopUV for Mesh");
     }
     setData(raw.raw);
     JFLog.log("MLoopUV:nr=" + raw.nr);
@@ -484,84 +540,184 @@ public class GL_BLEND {
     }
 */
     //find mpoly
-    chunk = findChunkByPtr(mesh.mpoly);
-    if (chunk == null) {
-      throw new Exception("GL_BLEND:Unable to find MPoly for Mesh");
-    }
-    setData(chunk.raw);
-//TODO : calc which vertex needed to be dup'ed for each unique uv value (Blender does this in their 3ds export script)
-    int type = -1;
-    int pcnt = -1;
-    int vidx = 0;
-    //MPoly = faces
-    for(int a=0;a<chunk.nr;a++) {
-      MPoly mpoly = new MPoly();
-      mpoly.read();
-      switch (mpoly.totloop) {
-        case 3:
-          if (type == GL.GL_QUADS) {
-            throw new Exception("GL_BLEND:Mixed QUADS/TRIANGLES not supported");
+    if (mesh.mpoly != 0) {
+      chunk = findChunkByPtr(mesh.mpoly);
+      if (chunk == null) {
+        JFLog.log("BLEND:Unable to find MPoly for Mesh:" + mesh.mpoly);
+        mesh.mpoly = 0;
+      } else {
+        setData(chunk.raw);
+        //TODO : calc which vertex needed to be dup'ed for each unique uv value (Blender does this in their 3ds export script)
+        int type = -1;
+        int pcnt = -1;
+        int vidx = 0;
+        //MPoly = faces
+        for(int a=0;a<chunk.array_nr;a++) {
+          MPoly mpoly = new MPoly();
+          mpoly.read();
+          switch (mpoly.totloop) {
+            case 3:
+              if (type == GL.GL_QUADS) {
+                throw new Exception("BLEND:Mixed QUADS/TRIANGLES not supported");
+              }
+              type = GL.GL_TRIANGLES;
+              pcnt = 3;
+              break;
+            case 4:
+              if (type == GL.GL_TRIANGLES) {
+                throw new Exception("BLEND:Mixed QUADS/TRIANGLES not supported");
+              }
+              type = GL.GL_QUADS;
+              pcnt = 4;
+              break;
+            default:
+              throw new Exception("BLEND:Polygon not supported:nr=" + mpoly.totloop);
           }
-          type = GL.GL_TRIANGLES;
-          pcnt = 3;
-          break;
-        case 4:
-          if (type == GL.GL_TRIANGLES) {
-            throw new Exception("GL_BLEND:Mixed QUADS/TRIANGLES not supported");
+          int loopidx = mpoly.loopstart;
+          if (debugCDProp) JFLog.log("PROP_INT_START:" + loopidx);
+          int[] poly = new int[1];
+          for(int p=0;p<pcnt;p++) {
+            int idx = loopList.get(loopidx++);
+            if (debugCDProp) JFLog.log("PROP_INT_POLY:" + idx);
+            obj.addVertex(vertexList.get(idx).xyz);
+            poly[0] = vidx++;
+            obj.addPoly(poly);
           }
-          type = GL.GL_QUADS;
-          pcnt = 4;
-          break;
-        default:
-          throw new Exception("GL_BLEND:Polygon not supported:nr=" + mpoly.totloop);
-      }
-      int loopidx = mpoly.loopstart;
-      for(int p=0;p<pcnt;p++) {
-        int idx = loopList.get(loopidx++);
-        obj.addVertex(vertexList.get(idx).xyz);
-        obj.addPoly(new int[] {vidx++});
+        }
+        obj.type = type;
+        if (debugCDProp) JFLog.log("Blend:obj.type=" + obj.type);
       }
     }
-    obj.type = type;
     //find customdata types
-    readLayer(mesh.vdata.layers, "vdata");
-    readLayer(mesh.edata.layers, "edata");
-    readLayer(mesh.fdata.layers, "fdata");
-    readLayer(mesh.pdata.layers, "pdata");
-    readLayer(mesh.ldata.layers, "ldata");
+    readCustomDataLayer(mesh, mesh.vdata, "vdata", vertexList, loopList);  //vert_data
+    readCustomDataLayer(mesh, mesh.edata, "edata", vertexList, loopList);  //edge_data
+    readCustomDataLayer(mesh, mesh.fdata, "fdata", vertexList, loopList);  //face_data
+    readCustomDataLayer(mesh, mesh.pdata, "pdata", vertexList, loopList);  //poly_data
+    readCustomDataLayer(mesh, mesh.ldata, "ldata", vertexList, loopList);  //layer_data
   }
-  private void readLayer(long layers, String name) throws Exception {
-    if (layers == 0) return;
-//    JFLog.log(name + ".layers=" + Long.toString(layers, 16));
-    Chunk raw = findChunkByPtr(layers);
+  private void readCustomDataLayer(Mesh mesh, CustomData cd, String name, ArrayList<Vertex> vertexList, ArrayList<Integer> loopList) throws Exception {
+    if (debugCD) JFLog.log("readLayer:" + name + ".layers=" + Long.toString(cd.layers, 16));
+    if (cd == null || cd.layers == 0) return;
+    Chunk raw = findChunkByPtr(cd.layers);
     if (raw == null) {
-      throw new Exception("GL_BLEND:Unable to find " + name + ".layers for Mesh");
+      throw new Exception("BLEND:Unable to find " + name + ".layers for Mesh");
     }
     setData(raw.raw);
-//    JFLog.log("#layers=" + raw.nr);
-    for(int a=0;a<raw.nr;a++) {
+    if (debugCD) JFLog.log("readLayer:#layers=" + cd.totlayer + ",max=" + cd.maxlayer);
+    for(int a=0;a<cd.totlayer;a++) {
       CustomDataLayer layer = new CustomDataLayer();
       layer.read();
       String layer_name = layer.name;
       if (layer.data == 0) {
-//        JFLog.log("layer.data == null");
+        if (debugCD) JFLog.log("readLayer:layer.data == null");
         continue;
       }
       Chunk layer_data = findChunkByPtr(layer.data);
       if (layer_data == null) {
-        throw new Exception("GL_BLEND:Unable to find " + name + ".layers.data for Mesh");
+        throw new Exception("BLEND:Unable to find " + name + ".layers.data for Mesh");
       }
       Context ctx = pushData();
       setData(layer_data.raw);
-//      JFLog.log("layer.data=" + Long.toString(layer.data, 16) + ",type==" + layer.type + ",a=" + a);
+      if (debugCD) JFLog.log("layer.data=" + Long.toString(layer.data, 16) + ",type=" + layer.type + ",a=" + a + ",nr=" + layer_data.array_nr + ",size=" + layer_data.raw.length);
       switch (layer.type) {
-        case CD_MTEXPOLY: {  //15
+        case CD_MVERT: {  //0 (obsolete)
+          //only use if mvert was missing
+          if (mesh.mvert == 0) {
+            MVert mvert = new MVert();
+            if (debugCD) JFLog.log("Vertex:" + layer_data.array_nr);
+            for(int i=0;i<layer_data.array_nr;i++) {
+              mvert.read();
+              Vertex v = new Vertex();
+              v.xyz[0] = mvert.v[0];
+              v.xyz[1] = mvert.v[1];
+              v.xyz[2] = mvert.v[2];
+              vertexList.add(v);
+              obj.addVertex(v.xyz);
+            }
+          }
+          break;
+        }
+        case CD_PROP_INT: {  //11
+          //poly lists
+          //24 per cube
+          //NOTE : There are 2 lists : the 2nd one looks invalid ???
+          if (loopList.isEmpty()) {
+            int pcnt = -1;
+            obj.type = GL.GL_QUADS;  //TODO : find proper type
+            pcnt = 4;
+            if (debugCDProp) JFLog.log("Blend:obj.type=" + obj.type);
+            int[] poly = new int[pcnt];
+            int pi = 0;
+            int vidx = 0;
+            if (debugCD) JFLog.log("Poly:" + layer_data.array_nr);
+            for(int i=0;i<layer_data.array_nr;i++) {
+              int idx = readuint32();
+              if (debugCDProp) JFLog.log("PROP_INT:" + idx);
+              loopList.add(idx);
+              obj.addVertex(vertexList.get(idx).xyz);
+              poly[pi++] = vidx++;
+              if (pi == pcnt) {
+                obj.addPoly(poly);
+                pi = 0;
+              }
+            }
+          }
+          break;
+        }
+        case CD_PROP_FLOAT2: {  //49
+          //UV coords
+          //24 per cube
+          if (obj.getUVMaps() == 0) {
+            int tidx = model.addTexture("fake.png");
+            UVMap map = obj.createUVMap();
+            map.name = layer_name;
+            map.textureIndex = tidx;
+            float[] uv = new float[2];
+            if (debugCD) JFLog.log("UV:" + layer_data.array_nr);
+            for(int i=0;i<layer_data.array_nr;i++) {
+              uv[0] = readfloat();
+              uv[1] = readfloat();
+              uv[1] = 1.0f - uv[1];  //invert V(y)
+              if (debugCDProp) JFLog.log("PROP_FLOAT2:" + uv[0] + "," + uv[1]);
+              obj.addText(uv);
+            }
+          }
+          break;
+        }
+        case CD_PROP_FLOAT3: {  //48
+          //vertex list (only use if mvert was missing)
+          //8 per cube
+          if (mesh.mvert == 0) {
+            if (debugCD) JFLog.log("Vertex:" + layer_data.array_nr);
+            for(int i=0;i<layer_data.array_nr;i++) {
+              Vertex v = new Vertex();
+              v.xyz[0] = readfloat() + org[0];
+              v.xyz[1] = readfloat() + org[1];
+              v.xyz[2] = readfloat() + org[2];
+              if (debugCDProp) JFLog.log("PROP_FLOAT3:" + v.xyz[0] + "," + v.xyz[1] + "," + v.xyz[2]);
+              vertexList.add(v);
+            }
+          }
+          break;
+        }
+        case CD_PROP_INT32_2D: {  //46
+          //12 per cube - edges? (not used)
+          if (debugCD) JFLog.log("Edge:" + layer_data.array_nr);
+          for(int i=0;i<layer_data.array_nr;i++) {
+            int v1 = readuint32();
+            int v2 = readuint32();
+//            if (debugCDProp) JFLog.log("PROP_INT32_2D:" + v1 + "," + v2);
+          }
+          break;
+        }
+        case CD_MTEXPOLY: {  //15 (obsolete)
           //NOTE:There is a MTexPoly per face, I only read the first
+          //contains texture filenames
           MTexPoly tex = new MTexPoly();
           tex.read();
           Chunk imageChunk = findChunkByPtr(tex.tpage);
           if (imageChunk == null) {
-            throw new Exception("GL_BLEND:No texture found for UVMap:" + a);
+            throw new Exception("BLEND:No texture found for UVMap:" + a);
           }
           setData(imageChunk.raw);
           Image image = new Image();
@@ -582,22 +738,23 @@ public class GL_BLEND {
             tn = tn.substring(tnidx+1);
           }
           int tidx = model.addTexture(tn);
+          if (debugCDProp) JFLog.log("Blend:texture=" + tn + "=" + tidx);
           map.textureIndex = tidx;
           map.name = layer_name;
-//          JFLog.log("texpoly=" + map.name);
+          if (debugCD) JFLog.log("texpoly=" + map.name);
           break;
         }
-        case CD_MLOOPUV: { //16
-          //There is a UV per face per vertex
+        case CD_MLOOPUV: { //16 (obsolete)
+          //UV per face per vertex
           if (a >= obj.getUVMaps()) {
             obj.createUVMap();
           }
-//          JFLog.log("loopuv.nr=" + layer_data.nr);
-          for(int b=0;b<layer_data.nr;b++) {
+          for(int i=0;i<layer_data.array_nr;i++) {
             MLoopUV uv = new MLoopUV();
             uv.read();
             uv.uv[1] = 1.0f - uv.uv[1];  //invert V(y)
             obj.addText(uv.uv, a);
+            if (debugCDProp) JFLog.log("PROP_FLOAT2:" + uv.uv[0] + "," + uv.uv[1]);
           }
           break;
         }
@@ -605,13 +762,13 @@ public class GL_BLEND {
       popData(ctx);
     }
   }
-  private class Chunk {
-    //BHead
+
+  private class Chunk {  //struct BHead
     int id;
     int len;
     long ptr;  //the actual memory address of this chunk when it was saved to disk !!!
     int SDNAnr;
-    int nr;  //array count of struct
+    int array_nr;  //array count of struct
 
     byte raw[];
 
@@ -627,7 +784,7 @@ public class GL_BLEND {
       len = readuint32();
       ptr = readptr();
       SDNAnr = readuint32();
-      nr = readuint32();
+      array_nr = readuint32();
       fileOffset = datapos;
       if (len == 0) return;
       raw = new byte[len];
@@ -638,9 +795,9 @@ public class GL_BLEND {
     String name;
     void read() throws Exception {
       struct s = getStruct("ID");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
-        if (m.name.equals("name[66]")) {
+        if (m.name.startsWith("name[")) {
           name = readString(m.size);
         }
         else {
@@ -654,14 +811,18 @@ public class GL_BLEND {
     long last;
     void read() throws Exception {
       struct s = getStruct("Scene");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
-        if (m.name.equals("base")) {
-          first = readptr();
-          last = readptr();
-        }
-        else {
-          datapos += m.size;
+        if (debugScene) JFLog.log("  member:" + m.name + ",size=" + m.size);
+        switch (m.name) {
+          case "base":
+            first = readptr();
+            last = readptr();
+            if (debug) JFLog.log("  scene.first=" + first + ",last=" + last);
+            break;
+          default:
+            datapos += m.size;
+            break;
         }
       }
     }
@@ -672,7 +833,7 @@ public class GL_BLEND {
     long object;
     void read() throws Exception {
       struct s = getStruct("Base");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("*next")) {
           next = readptr();
@@ -689,6 +850,7 @@ public class GL_BLEND {
       }
     }
   }
+  //see https://github.com/blender/blender/blob/main/source/blender/makesdna/DNA_object_types.h
   private class bObject {
     ID id = new ID();
     int type;
@@ -696,7 +858,7 @@ public class GL_BLEND {
     float loc[] = new float[3];  //Location (aka Origin)
     void read() throws Exception {
       struct s = getStruct("Object");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("*data")) {
           data = readptr();
@@ -718,14 +880,19 @@ public class GL_BLEND {
   }
   private class CustomData {
     long layers;  //->CustomDataLayer
+    int totlayer;  //# of layers used
+    int maxlayer;  //# of layers avail
     void read(String name) throws Exception {
       struct s = getStruct("CustomData");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("*layers")) {
           layers = readptr();
-        }
-        else {
+        } else if (m.name.equals("totlayer")) {
+          totlayer = readuint32();
+        } else if (m.name.equals("maxlayer")) {
+          maxlayer = readuint32();
+        } else {
           datapos += m.size;
         }
       }
@@ -737,12 +904,12 @@ public class GL_BLEND {
     long data;        /* layer data */
     void read() throws Exception {
       struct s = getStruct("CustomDataLayer");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("type")) {
           type = readuint32();
         }
-        else if (m.name.equals("name[64]")) {
+        else if (m.name.startsWith("name[")) {
           name = readString(m.size);
         }
         else if (m.name.equals("*data")) {
@@ -757,14 +924,14 @@ public class GL_BLEND {
   private class Mesh {
     ID id = new ID();
     long mpoly, mloop, mloopuv, mvert;
-    CustomData vdata = new CustomData();
-    CustomData edata = new CustomData();
-    CustomData fdata = new CustomData();
-    CustomData pdata = new CustomData();
-    CustomData ldata = new CustomData();
+    CustomData vdata = new CustomData();  //vert_data
+    CustomData edata = new CustomData();  //edge_data
+    CustomData fdata = new CustomData();  //face_data
+    CustomData pdata = new CustomData();  //poly_data (obsolete)
+    CustomData ldata = new CustomData();  //loop_data (obsolete)
     void read() throws Exception {
       struct s = getStruct("Mesh");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("*mpoly")) {
           mpoly = readptr();
@@ -778,13 +945,13 @@ public class GL_BLEND {
         else if (m.name.equals("*mvert")) {
           mvert = readptr();
         }
-        else if (m.name.equals("vdata")) {
+        else if (m.name.equals("vdata") || m.name.equals("vert_data")) {
           vdata.read("vdata");
         }
-        else if (m.name.equals("edata")) {
+        else if (m.name.equals("edata") || m.name.equals("edge_data")) {
           edata.read("edata");
         }
-        else if (m.name.equals("fdata")) {
+        else if (m.name.equals("fdata") || m.name.equals("face_data")) {
           fdata.read("fdata");
         }
         else if (m.name.equals("pdata")) {
@@ -806,7 +973,7 @@ public class GL_BLEND {
     float v[] = new float[3];
     void read() throws Exception {
       struct s = getStruct("MVert");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("co[3]")) {
           for(int b=0;b<3;b++) {
@@ -825,7 +992,7 @@ public class GL_BLEND {
     int totloop;
     void read() throws Exception {
       struct s = getStruct("MPoly");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("loopstart")) {
           loopstart = readuint32();
@@ -843,7 +1010,7 @@ public class GL_BLEND {
     int v;  /* vertex index */
     void read() throws Exception {
       struct s = getStruct("MLoop");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("v")) {
           v = readuint32();
@@ -858,7 +1025,7 @@ public class GL_BLEND {
     long tpage;  //Image
     void read() throws Exception {
       struct s = getStruct("MTexPoly");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("*tpage")) {
           tpage = readptr();
@@ -873,7 +1040,7 @@ public class GL_BLEND {
     float uv[] = new float[2];
     void read() throws Exception {
       struct s = getStruct("MLoopUV");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
         if (m.name.equals("uv[2]")) {
           uv[0] = readfloat();
@@ -890,9 +1057,9 @@ public class GL_BLEND {
     String name;
     void read() throws Exception {
       struct s = getStruct("Image");
-      for(int a=0;a<s.nr;a++) {
+      for(int a=0;a<s.mem_nr;a++) {
         member m = s.members.get(a);
-        if (m.name.equals("name[1024]")) {
+        if (m.name.startsWith("name[")) {
           name = readString(m.size);
         }
         else if (m.name.equals("id")) {
