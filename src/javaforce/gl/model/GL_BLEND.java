@@ -171,7 +171,10 @@ public class GL_BLEND {
 
   public Model load(String filename) {
     try {
-      return loadBlend(new FileInputStream(filename));
+      InputStream is = new FileInputStream(filename);
+      Model model = loadBlend(is);
+      is.close();
+      return model;
     } catch (Exception e) {
       e.printStackTrace();
       return null;

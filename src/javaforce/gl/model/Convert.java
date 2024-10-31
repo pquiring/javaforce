@@ -18,7 +18,7 @@ public class Convert {
     System.out.println("Desc : Convert");
     System.out.println("  Usage : infile outfile");
     System.out.println("  Usage : infolder outfolder");
-    System.out.println("In formats: .3ds .blend");
+    System.out.println("In formats: .3ds .blend .obj");
     System.out.println("Out format: .jf3d");
     System.exit(0);
   }
@@ -52,11 +52,15 @@ public class Convert {
     if (in.toLowerCase().endsWith(".3ds")) {
       GL_3DS _3ds = new GL_3DS();
       model = _3ds.load(in);
-    } else
-    if (in.toLowerCase().endsWith(".blend")) {
+    } else if (in.toLowerCase().endsWith(".blend")) {
       GL_BLEND blend = new GL_BLEND();
       model = blend.load(in);
-    } else usage();
+    } else if (in.toLowerCase().endsWith(".obj")) {
+      GL_OBJ obj = new GL_OBJ();
+      model = obj.load(in);
+    } else {
+      usage();
+    }
     if (model == null) {
       JFLog.log("ModelConvert:Error:Load mesh failed:" + in);
       return;
@@ -70,10 +74,12 @@ public class Convert {
     for(int a=0;a<ins.length;a++) {
       File f = ins[a];
       if (f.isDirectory()) continue;
-      if (!f.getName().endsWith(".blend")) continue;
-      String _in = f.getAbsolutePath();
       String fn = f.getName();
-      String _out = out + "/" + fn.substring(0, fn.length() - 6) + ".jf3d";
+      if (!fn.endsWith(".3ds") && !fn.endsWith(".blend") && !fn.endsWith(".obj")) continue;
+      int extlen = 4;
+      if (fn.endsWith(".blend")) extlen = 6;
+      String _in = f.getAbsolutePath();
+      String _out = out + "/" + fn.substring(0, fn.length() - extlen) + ".jf3d";
       doFile(_in, _out);
     }
   }

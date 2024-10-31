@@ -52,7 +52,10 @@ public class GL_JF3D {
 
   public Model load(String filename) {
     try {
-      return loadJF3D(new FileInputStream(filename));
+      InputStream is = new FileInputStream(filename);
+      Model model = loadJF3D(is);
+      is.close();
+      return model;
     } catch (Exception e) {
       e.printStackTrace();
       return null;

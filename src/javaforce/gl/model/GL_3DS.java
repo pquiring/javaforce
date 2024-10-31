@@ -37,7 +37,10 @@ public class GL_3DS {
 
   public Model load(String filename) {
     try {
-      return load3ds(new FileInputStream(filename));
+      InputStream is = new FileInputStream(filename);
+      Model model = load3ds(is);
+      is.close();
+      return model;
     } catch (Exception e) {
       e.printStackTrace();
       return null;
