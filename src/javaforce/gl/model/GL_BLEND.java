@@ -17,7 +17,7 @@ import javaforce.gl.*;
  * TODO:
  *   Animation data
  *
- * Blender Source : https://github.com/blender/blender/tree/main
+ * Blender Source : https://github.com/blender/blender
  *   - look in blenloader and makesdna folders
  *   - most important to understand DNA : makesdna/intern/dna_genfile.c:init_structDNA()
  *   - also see doc/blender_file_format/mystery_of_the_blend.html
@@ -52,12 +52,18 @@ public class GL_BLEND {
   private static final int ID_ME = 0x454d;  //ME (mesh)
   private static final int ID_OB = 0x424f;  //OB (object)
   private static final int ID_SC = 0x4353;  //SCE (scene)
+  private static final int ID_BR = 0x5242;  //BR (brush)
+  private static final int ID_WM = 0x4d57;  //WM (WindowManager)
+  private static final int ID_SN = 0x4e53;  //SCRN (screen) (deprecated)
+  private static final int ID_LS = 0x534c;  //LS (FreestyleLineStyle)
+  private static final int ID_WO = 0x4f57;  //WO (World)
   private static final int ID_DNA1 = 0x31414e44;  //DNA1
+  private static final int ID_DATA = 0x41544144;  //DATA
 
 // typedef enum ObjectType {...} see https://github.com/blender/blender/blob/main/source/blender/makesdna/DNA_object_types.h
   private static final int OB_MESH             = 1;  //only one of interest
 
-// typedef enum CustomDataType {...}
+// typedef enum CustomDataType {...} see https://github.com/blender/blender/blob/main/source/blender/makesdna/DNA_customdata_types.h
   private static final int CD_MVERT            = 0;
   private static final int CD_MSTICKY          = 1;  /* DEPRECATED */
   private static final int CD_MDEFORMVERT      = 2;
@@ -417,6 +423,9 @@ public class GL_BLEND {
 
     //3nd phase - now look for objects and piece together chunks
     for(Chunk chunk : chunks) {
+      if (debugDNA) {
+        JFLog.log("Chunk.id=0x" + Integer.toString(chunk.id, 16) + ",pos=0x" + Integer.toString(chunk.fileOffset, 16) + ",size=" + chunk.getSize());
+      }
       if (chunk.id == ID_SC) {
         if (debug) {
           JFLog.log("Blend:ID_SC @ " + chunk.ptr);
@@ -612,6 +621,7 @@ public class GL_BLEND {
         if (debugCD) JFLog.log("readLayer:layer.data == null");
         continue;
       }
+      if (debugCD) JFLog.log("layer.name=" + layer.name);
       Chunk layer_data = findChunkByPtr(layer.data);
       if (layer_data == null) {
         throw new Exception("BLEND:Unable to find " + name + ".layers.data for Mesh");
@@ -660,6 +670,11 @@ public class GL_BLEND {
                 obj.addPoly(poly);
                 pi = 0;
               }
+            }
+          } else {
+            for(int i=0;i<layer_data.array_nr;i++) {
+              int idx = readuint32();
+              if (debugCDProp) JFLog.log("PROP_INT_2:" + idx);
             }
           }
           break;
@@ -772,13 +787,13 @@ public class GL_BLEND {
 
     byte raw[];
 
-    int filepos;  //for debugging
+    int filepos;  //offset before header (for debugging)
+    int fileOffset;  //offset after header
 
     boolean dup;
     int dupidx;
     Chunk nextdup;
 
-    int fileOffset;
     void read() {
       id = readuint32();
       len = readuint32();
@@ -789,6 +804,10 @@ public class GL_BLEND {
       if (len == 0) return;
       raw = new byte[len];
       readByteArray(raw);
+    }
+    int getSize() {
+      if (raw == null) return 0;
+      return raw.length;
     }
   }
   private class ID {
