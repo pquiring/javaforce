@@ -26,6 +26,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   private VNC vnc_fullscreen;
 
   public static boolean debug;
+  public static boolean debugKeys;
 
   private static boolean fast = true;
 
@@ -493,7 +494,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   public void keyPressed(KeyEvent e) {
     char ch = e.getKeyChar();
     int code = e.getKeyCode();
-    if (debug) {
+    if (debugKeys) {
       JFLog.log("VNC:KeyPressed:" + Integer.toString(ch) + ":" + code);
     }
     if (e.isAltDown() && e.isShiftDown() && e.isControlDown()) {
@@ -503,35 +504,27 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       e.consume();
       return;
     }
-    if (ch == KeyEvent.CHAR_UNDEFINED) {
-      keyDown(VNCRobot.convertJavaKeyCode(code));
-    } else {
-      if (e.isControlDown()) {
-        ch += 0x60;
-      }
-      if (ch < 0x20) {
-        ch = (char)VNCRobot.convertJavaKeyCode(ch);
-      }
-      keyDown(ch);
+    if (ch == KeyEvent.CHAR_UNDEFINED || ch < 0x20) {
+      ch = (char)VNCRobot.convertJavaKeyCode(code);
     }
+    if (e.isControlDown() || e.isAltDown()) {
+      ch = Character.toLowerCase(ch);
+    }
+    keyDown(ch);
   }
 
   public void keyReleased(KeyEvent e) {
     char ch = e.getKeyChar();
     int code = e.getKeyCode();
-    if (debug) {
+    if (debugKeys) {
       JFLog.log("VNC:KeyReleased:" + Integer.toString(ch) + ":" + code);
     }
-    if (ch == KeyEvent.CHAR_UNDEFINED) {
-      keyUp(VNCRobot.convertJavaKeyCode(code));
-    } else {
-      if (e.isControlDown()) {
-        ch += 0x60;
-      }
-      if (ch < 0x20) {
-        ch = (char)VNCRobot.convertJavaKeyCode(ch);
-      }
-      keyUp(ch);
+    if (ch == KeyEvent.CHAR_UNDEFINED || ch < 0x20) {
+      ch = (char)VNCRobot.convertJavaKeyCode(code);
     }
+    if (e.isControlDown() || e.isAltDown()) {
+      ch = Character.toLowerCase(ch);
+    }
+    keyUp(ch);
   }
 }

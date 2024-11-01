@@ -38,6 +38,7 @@ public class RFB {
   private static final int MAX_TEXT_LENGTH = 1024 * 1024;
 
   public static boolean debug;
+  public static boolean debugKey;
 
   //pixel formats
   public static int PF_RGB = 1;  //Java
@@ -903,7 +904,7 @@ public class RFB {
   }
 
   public void writeKeyEvent(int code, boolean down) {
-    if (debug) {
+    if (debugKey) {
       JFLog.log(log, "RFB:write KeyEvent");
     }
     byte[] pkt = new byte[8];
