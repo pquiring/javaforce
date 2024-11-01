@@ -145,13 +145,14 @@ public class MainPanel extends javax.swing.JPanel {
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel1Layout.createSequentialGroup()
+        .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jLabel7)
-          .addComponent(jLabel3))
+          .addComponent(jLabel3)
+          .addComponent(jLabel7))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(vnc_port)
-          .addComponent(vnc_encodings, 0, 153, Short.MAX_VALUE))
+          .addComponent(vnc_encodings, 0, 147, Short.MAX_VALUE)
+          .addComponent(vnc_port))
         .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
