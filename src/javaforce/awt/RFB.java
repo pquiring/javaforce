@@ -1104,15 +1104,12 @@ public class RFB {
     int x2 = x1 + rect.width - 1;
     int y1 = rect.y;
     int y2 = y1 + rect.height - 1;
-    int sx = srcx;
-    int sy = srcy;
+    int[] src = image.getPixels(srcx, srcy, rect.width, rect.height);
+    int soff = 0;
     for(int y = y1;y <= y2;y++) {
-      sx = srcx;
       for(int x = x1;x <= x2;x++) {
-        buffer[y * width + x] = buffer[sy * width + sx];
-        sx++;
+        buffer[y * width + x] = src[soff++];
       }
-      sy++;
     }
   }
 
