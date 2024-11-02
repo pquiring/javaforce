@@ -695,6 +695,13 @@ void trim(char *str, char ch) {
   }
 }
 
+void replace(char *str, char find, char with) {
+  while (*str) {
+    if (*str == find) *str = with;
+    str++;
+  }
+}
+
 /** Main entry point. */
 int main(int argc, char **argv)
 {
@@ -709,6 +716,8 @@ int main(int argc, char **argv)
   if (!loadProperties()) {
     return 2;
   }
+
+  replace(mainclass, '/', '.');
 
   if (try_graal()) {
     graal = true;
