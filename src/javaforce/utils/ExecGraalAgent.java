@@ -43,6 +43,7 @@ public class ExecGraalAgent implements ShellProcessListener {
 
     String classpath = props.getProperty("CLASSPATH");
     String mainclass = props.getProperty("MAINCLASS");
+    String service = props.getProperty("SERVICE");
     String graalargs = props.getProperty("GRAALARGS");
     if (graalargs == null) {
       graalargs = "";
@@ -62,7 +63,17 @@ public class ExecGraalAgent implements ShellProcessListener {
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("java");
+    String home = tools.getProperty("home");
+    String exec = "jfexec";
+    if (service != null) {
+      exec += "s";
+    }
+    exec += "d";  //use debug version
+    if (JF.isWindows()) {
+      exec += ".exe";
+    }
+
+    cmd.add(exec);
     cmd.add("-agentlib:native-image-agent=config-output-dir=META-INF/native-image");
     cmd.add("-cp");
     if (JF.isWindows()) {
