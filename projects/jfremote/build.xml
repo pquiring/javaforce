@@ -7,7 +7,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
-  <property name="version" value="0.3"/>
+  <property name="version" value="0.4"/>
 
   <property name="debian.depends" value="jfvnc, freerdp3-sdl, freerdp3-wayland"/>
   <property name="fedora.depends" value="jfvnc, freerdp"/>

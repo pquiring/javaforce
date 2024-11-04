@@ -1,3 +1,7 @@
+2024-11-04 : v0.4
+  - fixed VNC copy rect encoding
+  - fixed VNC key combos
+
 2024-10-29 : v0.3
   - fixed VNC fullscreen mode
   - support VNC using password field (don't have to type in every time)
