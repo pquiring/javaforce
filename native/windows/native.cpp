@@ -1898,6 +1898,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "../common/pcap.cpp"
 
+#include "../speexsdp/speexsdp.c"
+
 #include "vss.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
