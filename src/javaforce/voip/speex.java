@@ -210,6 +210,10 @@ public class speex implements RTPAudioCoder {
     long ctx = speex_dsp_init(8000);
 
     speex_dsp_denoise(ctx, mic);
+
+    speex_dsp_echo(ctx, mic, spk, out);
+
+    speex_dsp_uninit(ctx);
   }
 
   public static void main(String[] args) {
