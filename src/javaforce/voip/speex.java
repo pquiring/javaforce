@@ -149,7 +149,47 @@ public class speex implements RTPAudioCoder {
 
   //these are some Speex optional digital signal processing (DSP) functions
 
-  
+  private native static long speexdspinit(int sample_rate);
+
+  /** Allocate speex DSP context.
+   * Audio buffers should be 160 samples.
+   *
+   *  @param sample_rate = sample rate (8k, 16k or 32k)
+   *  @return ctx
+   */
+  public static long speex_dsp_init(int sample_rate) {
+    return speexdspinit(sample_rate);
+  }
+
+  public native static void speexdspuninit(long ctx);
+  /** Free speex DSP context
+   *
+   * @param ctx = speex context
+   */
+  public static void speex_dsp_uninit(long ctx) {
+    speexdspuninit(ctx);
+  }
+
+  public native static void speexdspdenoise(long ctx, short[] audio);
+  /** Performs denoise function.
+   *
+   * @param ctx = speex context
+   * @param audio = audio samples
+   */
+  public static void speex_dsp_denoise(long ctx, short[] audio) {
+    speexdspdenoise(ctx, audio);
+  }
+
+  public native static void speexdspecho(long ctx, short[] audio_out, short[] audio_mic);
+  /** Performs echo cancellation.
+   *
+   * @param ctx = speex context
+   * @param audio_out = outbound audio (not modified)
+   * @param audio_mic = mic audio (modified)
+   */
+  public static void speex_dsp_echo(long ctx, short[] audio_out, short[] audio_mic) {
+    speexdspecho(ctx, audio_out, audio_mic);
+  }
 
   public static void main(String[] args) {
     debug = true;

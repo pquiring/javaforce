@@ -1995,4 +1995,6 @@ void winnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/WinNative");
   registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
+
+  speex_dsp_register(env);
 }
