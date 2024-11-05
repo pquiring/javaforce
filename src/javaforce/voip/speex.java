@@ -180,15 +180,15 @@ public class speex implements RTPAudioCoder {
     speexdspdenoise(ctx, audio);
   }
 
-  public native static void speexdspecho(long ctx, short[] audio_out, short[] audio_mic);
+  public native static void speexdspecho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
   /** Performs echo cancellation.
    *
    * @param ctx = speex context
    * @param audio_out = outbound audio (not modified)
    * @param audio_mic = mic audio (modified)
    */
-  public static void speex_dsp_echo(long ctx, short[] audio_out, short[] audio_mic) {
-    speexdspecho(ctx, audio_out, audio_mic);
+  public static void speex_dsp_echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out) {
+    speexdspecho(ctx, audio_mic, audio_spk, audio_out);
   }
 
   public static void main(String[] args) {
