@@ -147,6 +147,10 @@ public class speex implements RTPAudioCoder {
     }
   }
 
+  //these are some Speex optional digital signal processing (DSP) functions
+
+  
+
   public static void main(String[] args) {
     debug = true;
     test(8000);

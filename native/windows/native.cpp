@@ -1898,7 +1898,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "../common/pcap.cpp"
 
-#include "../speexsdp/speexsdp.c"
+#include "../speexdsp/speex_dsp.c"
 
 #include "vss.cpp"
 
