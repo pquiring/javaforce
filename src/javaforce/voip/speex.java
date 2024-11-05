@@ -191,10 +191,32 @@ public class speex implements RTPAudioCoder {
     speexdspecho(ctx, audio_mic, audio_spk, audio_out);
   }
 
+  private static void noise(short[] audio) {
+    Random r = new Random();
+    int len = audio.length;
+    for(int i = 0;i<len;i++) {
+      audio[i] = (short)(r.nextInt(0xffff) - 0x7fff);
+    }
+  }
+
+  private static void test_dsp() {
+    short[] mic = new short[160];
+    short[] spk = new short[160];
+    short[] out = new short[160];
+
+    noise(mic);
+    noise(spk);
+
+    long ctx = speex_dsp_init(8000);
+
+    speex_dsp_denoise(ctx, mic);
+  }
+
   public static void main(String[] args) {
     debug = true;
     test(8000);
     test(16000);
     test(32000);
+    test_dsp();
   }
 }

@@ -27,10 +27,12 @@ JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
   SpeexPreprocessState *pps = speex_preprocess_state_init(160, sample_rate);
   i=1;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_DENOISE, &i);
+#ifndef FIXED_POINT
   i=0;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_AGC, &i);
   i=8000;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_AGC_LEVEL, &i);
+#endif
   i=0;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_DEREVERB, &i);
   f=0;
