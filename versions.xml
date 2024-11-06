@@ -4,6 +4,7 @@
   <property name="javaforce-version" value="72.0"/>
   <!-- native dependancies versions -->
   <property name="glfw-version" value="3.4"/>
+  <!-- ffmpeg version only used in Windows -->
   <property name="ffmpeg-version" value="5.1.2"/>
   <property name="opencl-version" value="v2024.05.08"/>
   <!-- Maven Java Dependancies versions -->
