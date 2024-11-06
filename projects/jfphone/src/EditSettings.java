@@ -124,6 +124,7 @@ public class EditSettings extends javax.swing.JDialog {
     downloadPath = new javax.swing.JTextField();
     selectDownloadPath = new javax.swing.JButton();
     keepAudioOpen = new javax.swing.JCheckBox();
+    dsp_echo_cancel = new javax.swing.JCheckBox();
     jPanel4 = new javax.swing.JPanel();
     jLabel71 = new javax.swing.JLabel();
     speex_quality = new javax.swing.JSpinner();
@@ -734,6 +735,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     keepAudioOpen.setText("Keep Audio Open");
 
+    dsp_echo_cancel.setText("Use DSP Echo Cancellation with Speaker Phone (experimental)");
+
     javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
     jPanel17.setLayout(jPanel17Layout);
     jPanel17Layout.setHorizontalGroup(
@@ -748,7 +751,9 @@ public class EditSettings extends javax.swing.JDialog {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(selectDownloadPath))
           .addGroup(jPanel17Layout.createSequentialGroup()
-            .addComponent(keepAudioOpen)
+            .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(keepAudioOpen)
+              .addComponent(dsp_echo_cancel))
             .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
@@ -762,6 +767,8 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(selectDownloadPath))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(keepAudioOpen)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(dsp_echo_cancel)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -798,7 +805,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(speex_quality, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(speex_enhanced_decoder)
-        .addContainerGap(29, Short.MAX_VALUE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout audioLayout = new javax.swing.GroupLayout(audio);
@@ -825,7 +832,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
+        .addContainerGap(45, Short.MAX_VALUE))
     );
 
     tabs.addTab("Audio", audio);
@@ -2350,6 +2357,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JRadioButton dns_system;
   private javax.swing.JComboBox<String> dns_transport;
   private javax.swing.JTextField downloadPath;
+  private javax.swing.JCheckBox dsp_echo_cancel;
   private javax.swing.JPanel eKey;
   private javax.swing.JList<String> enabled_audio_codecs;
   private javax.swing.JList<String> enabled_video_codecs;
@@ -2792,6 +2800,7 @@ public class EditSettings extends javax.swing.JDialog {
     exitWhenClosed.setSelected(Settings.current.exitWhenClosed);
     alwaysOnTop.setSelected(Settings.current.alwaysOnTop);
     keepAudioOpen.setSelected(Settings.current.keepAudioOpen);
+    dsp_echo_cancel.setSelected(Settings.current.dsp_echo_cancel);
     smallerFont.setSelected(Settings.current.smallerFont);
     usePublish.setSelected(Settings.current.usePublish);
     reinvite.setSelected(Settings.current.reinvite);
@@ -3035,6 +3044,7 @@ public class EditSettings extends javax.swing.JDialog {
     Settings.current.exitWhenClosed = exitWhenClosed.isSelected();
     Settings.current.alwaysOnTop = alwaysOnTop.isSelected();
     Settings.current.keepAudioOpen = keepAudioOpen.isSelected();
+    Settings.current.dsp_echo_cancel = dsp_echo_cancel.isSelected();
     Settings.current.smallerFont = smallerFont.isSelected();
     Settings.current.usePublish = usePublish.isSelected();
     Settings.current.reinvite = reinvite.isSelected();

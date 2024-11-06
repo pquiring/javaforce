@@ -21,7 +21,10 @@ public class Settings {
   public static class Line {
     public int same;  //0-5 (-1=disabled) (ignored for lines[0])
     public String name, user, auth, pass, host;
-    public boolean disableVideo, srtp, dtls, siplog;
+    public boolean disableVideo;
+    public boolean srtp;
+    public boolean dtls;
+    public boolean siplog;
     public int transport;
     public Line() {
       same = 0;
@@ -30,9 +33,6 @@ public class Settings {
       auth = new String();
       pass = new String();
       host = new String();
-      disableVideo = false;
-      srtp = false;
-      dtls = false;
       transport = 0;  //0=UDP 1=TCP 2=TLS
     }
   }
@@ -103,6 +103,7 @@ public class Settings {
   public boolean dns_system = true;
   public int dns_transport = 0;  //0=UDP 1=DOH [2=DOT]
   public String dns_server = "8.8.8.8";
+  public boolean dsp_echo_cancel;  //use speex DSP echo cancellation
 
   //static = do not save these settings
   public static boolean aa;

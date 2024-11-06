@@ -544,7 +544,7 @@
                       <Component id="jPanel17" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace pref="45" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -814,8 +814,11 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="selectDownloadPath" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="keepAudioOpen" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="keepAudioOpen" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="dsp_echo_cancel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
@@ -834,6 +837,8 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="keepAudioOpen" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="dsp_echo_cancel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -858,6 +863,11 @@
                 <Component class="javax.swing.JCheckBox" name="keepAudioOpen">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Keep Audio Open"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="dsp_echo_cancel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Use DSP Echo Cancellation with Speaker Phone (experimental)"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -898,7 +908,7 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="speex_enhanced_decoder" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="29" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>

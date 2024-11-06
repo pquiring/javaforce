@@ -44,7 +44,8 @@ public class Audio {
   private int underBufferCount;
   private javaforce.voip.Wav inWav, outWav;
   private int speakerDelay = 0;
-  private int sampleRate, sampleRate50, sampleRate50x2;
+  private int sampleRate, sampleRate50;
+  private long dsp_ctx = 0;
 
   /** Init audio system.  Audio needs access to the lines and the MeterController to send audio levels back to the panel. */
 
@@ -53,9 +54,10 @@ public class Audio {
     this.mc = mc;
     sampleRate = 44100;
     sampleRate50 = sampleRate / 50;
-    sampleRate50x2 = sampleRate50 * 2;
     //setup inbound ring tone
     loadRingTones();
+
+    dsp_ctx = speex.speex_dsp_init(32000);
 
     if (!start()) return false;
 
@@ -174,6 +176,10 @@ public class Audio {
       record = null;
     }
     stop();
+    if (dsp_ctx != 0) {
+      speex.speex_dsp_uninit(dsp_ctx);
+      dsp_ctx = 0;
+    }
     inWav = null;
     outWav = null;
   }
@@ -269,7 +275,7 @@ public class Audio {
       if (Math.abs(buf[a]) > lvl) lvl = Math.abs(buf[a]);
     }
     mc.setMeterPlay(lvl * 100 / 32768);
-    if ((Settings.current.speakerMode) && (lvl >= Settings.current.speakerThreshold)) {
+    if (Settings.current.speakerMode && !Settings.current.dsp_echo_cancel && (lvl >= Settings.current.speakerThreshold)) {
       if (speakerDelay <= 0) {
         mc.setSpeakerStatus(false);
       }
@@ -436,7 +442,12 @@ public class Audio {
       if (record != null) System.arraycopy(mixed, 0, recording, 0, 882);
       //do recording
       if (!active) return;
-      if (!read(outdata)) {
+      if (read(outdata)) {
+        underBufferCount = 0;
+        if (Settings.current.speakerMode && Settings.current.dsp_echo_cancel && dsp_ctx != 0) {
+          speex.speex_dsp_echo(dsp_ctx, outdata, mixed, outdata);
+        }
+      } else {
         underBufferCount++;
         if (underBufferCount > 10) {  //a few is normal
           JFLog.log("Audio:mic underbuffer");
