@@ -21,10 +21,11 @@ JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
 {
   int i;
   float f;
+  int bufsiz = sample_rate / 50;
 
   DSP *ctx = (DSP*)malloc(sizeof(DSP));
 
-  SpeexPreprocessState *pps = speex_preprocess_state_init(160, sample_rate);
+  SpeexPreprocessState *pps = speex_preprocess_state_init(bufsiz, sample_rate);
   i=1;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_DENOISE, &i);
 #ifndef FIXED_POINT
@@ -40,7 +41,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
   f=0;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
 
-  SpeexEchoState *es = speex_echo_state_init(160, 1024);
+  SpeexEchoState *es = speex_echo_state_init(bufsiz, bufsiz * 4);
   speex_echo_ctl(es, SPEEX_ECHO_SET_SAMPLING_RATE, &sample_rate);
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_ECHO_STATE, es);
 
@@ -64,7 +65,7 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspdenoise
   DSP *c_ctx = (DSP*)ctx;
   jshort* c_audio = (jshort*)e->GetPrimitiveArrayCritical(audio, NULL);
   speex_preprocess_run(c_ctx->pps, c_audio);
-  e->ReleasePrimitiveArrayCritical(audio, c_audio, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(audio, c_audio, 0);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspecho
@@ -76,9 +77,9 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspecho
   jshort* c_audio_out = (jshort*)e->GetPrimitiveArrayCritical(audio_out, NULL);
   speex_echo_cancellation(c_ctx->es, c_audio_mic, c_audio_spk, c_audio_out);
   speex_preprocess_run(c_ctx->pps, c_audio_out);
-  e->ReleasePrimitiveArrayCritical(audio_mic, c_audio_mic, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(audio_spk, c_audio_spk, JNI_COMMIT);
-  e->ReleasePrimitiveArrayCritical(audio_out, c_audio_out, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(audio_mic, c_audio_mic, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(audio_spk, c_audio_spk, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(audio_out, c_audio_out, 0);
 }
 
 static JNINativeMethod javaforce_voip_speex[] = {

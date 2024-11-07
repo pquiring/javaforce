@@ -18,6 +18,7 @@ public class Audio {
   private short indata16[] = new short[320];
   private short indata32[] = new short[640];
   private short outdata[] = new short[882];  //read from mic
+  private short dspdata[] = new short[882];
   private short ringing[] = new short[882];
   private short callWaiting[] = new short[882];
   private short data8[] = new short[160];
@@ -445,7 +446,8 @@ public class Audio {
       if (read(outdata)) {
         underBufferCount = 0;
         if (Settings.current.speakerMode && Settings.current.dsp_echo_cancel && dsp_ctx != 0) {
-          speex.speex_dsp_echo(dsp_ctx, outdata, mixed, outdata);
+          speex.speex_dsp_echo(dsp_ctx, outdata, mixed, dspdata);
+          System.arraycopy(dspdata, 0, outdata, 0, 882);
         }
       } else {
         underBufferCount++;
