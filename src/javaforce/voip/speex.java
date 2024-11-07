@@ -199,6 +199,15 @@ public class speex implements RTPAudioCoder {
     }
   }
 
+  private static long avg(short[] audio) {
+    long sum = 0;
+    int len = audio.length;
+    for(int i=0;i<len;i++) {
+      sum += audio[i];
+    }
+    return sum / len;
+  }
+
   private static void test_dsp() {
     short[] mic = new short[160];
     short[] spk = new short[160];
@@ -209,9 +218,14 @@ public class speex implements RTPAudioCoder {
 
     long ctx = speex_dsp_init(8000);
 
+    JFLog.log("spk.avg=" + avg(spk));
+
+    JFLog.log("mic.avg=" + avg(mic));
     speex_dsp_denoise(ctx, mic);
+    JFLog.log("mic.avg=" + avg(mic));
 
     speex_dsp_echo(ctx, mic, spk, out);
+    JFLog.log("out.avg=" + avg(out));
 
     speex_dsp_uninit(ctx);
   }
