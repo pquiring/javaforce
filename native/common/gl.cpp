@@ -16,6 +16,7 @@ void (*_glBlendFunc)(int,int);
 void (*_glBufferData)(int,void*,void *,int);
 void (*_glClear)(int);
 void (*_glClearColor)(float,float,float,float);
+void (*_glClearStencil)(int);
 void (*_glColorMask)(jboolean,jboolean,jboolean,jboolean);
 void (*_glCompileShader)(int);
 int (*_glCreateProgram)();
@@ -86,6 +87,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_init
   glGetFunction((void**)&_glBufferData,"glBufferData");
   glGetFunction((void**)&_glClear,"glClear");
   glGetFunction((void**)&_glClearColor,"glClearColor");
+  glGetFunction((void**)&_glClearStencil,"glClearStencil");
   glGetFunction((void**)&_glColorMask,"glColorMask");
   glGetFunction((void**)&_glCompileShader,"glCompileShader");
   glGetFunction((void**)&_glCreateProgram,"glCreateProgram");
@@ -233,6 +235,12 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glClearColor
   (JNIEnv *e, jclass c, jfloat f1, jfloat f2, jfloat f3, jfloat f4)
 {
   (*_glClearColor)(f1,f2,f3,f4);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GL_glClearStencil
+  (JNIEnv *e, jclass c, jint s1)
+{
+  (*_glClearStencil)(s1);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glColorMask

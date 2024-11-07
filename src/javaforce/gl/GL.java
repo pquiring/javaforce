@@ -9,6 +9,7 @@ package javaforce.gl;
  *
  * Notes:
  *   - only supports OpenGL 2.0 or better (1.x not supported)
+ *   - targeting OpenGL 3.3 API
  *   - only call GL functions from the EDT (event dispatching thread)
  *   - Supports Windows, Linux and MacOSX.VI or better (aka SnowLeopard)
  *   - if there are functions or constants missing feel free to add them
@@ -94,6 +95,14 @@ public class GL {
   public static final int GL_DEPTH_BUFFER_BIT= 0x0100;
   public static final int GL_STENCIL_BUFFER_BIT = 0x0400;
   public static final int GL_STENCIL_TEST = 0x0B90;
+  public static final int GL_STENCIL_CLEAR_VALUE = 0x0B91;
+  public static final int GL_STENCIL_FUNC = 0x0B92;
+  public static final int GL_STENCIL_VALUE_MASK = 0x0B93;
+  public static final int GL_STENCIL_FAIL = 0x0B94;
+  public static final int GL_STENCIL_PASS_DEPTH_FAIL = 0x0B95;
+  public static final int GL_STENCIL_PASS_DEPTH_PASS = 0x0B96;
+  public static final int GL_STENCIL_REF = 0x0B97;
+  public static final int GL_STENCIL_WRITEMASK = 0x0B98;
   public static final int GL_ALPHA_TEST = 0x0BC0;
   public static final int GL_ARRAY_BUFFER = 0x8892;
   public static final int GL_STATIC_DRAW = 0x88e4;
@@ -197,6 +206,7 @@ public class GL {
   public static native void glClear(int flags);
   public static native void glClearColor(float r, float g, float b, float a);
   public static native void glColorMask(boolean r, boolean g, boolean b, boolean a);
+  public static native void glClearStencil(int s);
   public static native void glCompileShader(int id);
   public static native int glCreateProgram();
   public static native int glCreateShader(int type);
