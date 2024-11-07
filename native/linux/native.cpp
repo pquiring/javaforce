@@ -1980,6 +1980,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 
 #include "../common/vm.cpp"
 
+#include "../speexdsp/speex_dsp.c"
+
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
   {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
