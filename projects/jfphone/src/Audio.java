@@ -58,7 +58,7 @@ public class Audio {
     //setup inbound ring tone
     loadRingTones();
 
-    dsp_ctx = speex.speex_dsp_init(32000);
+    dsp_ctx = speex.speex_dsp_init(44100);
 
     if (!start()) return false;
 
