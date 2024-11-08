@@ -45,6 +45,9 @@ public class JSON {
       }
       return null;
     }
+    public int getChildCount() {
+      return children.size();
+    }
 
     public String toString() {
       return key + "=" + value;
@@ -57,12 +60,23 @@ public class JSON {
     readElement(root, str.trim());
     return root;
   }
+  /** Parses a JSON string from InputStream. */
+  public static Element parseStream(InputStream is) throws Exception {
+    try {
+      byte[] data = is.readAllBytes();
+      return parse(new String(data, "UTF-8"));
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+  /** Parses a JSON string from a File. */
   public static Element parseFile(String file) throws Exception {
     try {
       FileInputStream fis = new FileInputStream(file);
-      byte[] data = fis.readAllBytes();
+      Element root = parseStream(fis);
       fis.close();
-      return parse(new String(data, "UTF-8"));
+      return root;
     } catch (Exception e) {
       JFLog.log(e);
       return null;
