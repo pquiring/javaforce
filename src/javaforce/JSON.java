@@ -43,6 +43,7 @@ public class JSON {
           return child;
         }
       }
+      JFLog.log("JSON:Child not found:" + name);
       return null;
     }
     public Element getChild(int idx) {
@@ -53,14 +54,38 @@ public class JSON {
     }
 
     public String toString() {
-      return key + "=" + value;
+      StringBuilder sb = new StringBuilder();
+      sb.append("{");
+      sb.append(key + "=" + value);
+      if (children.size() > 0) {
+        sb.append("[");
+        boolean first = true;
+        for(Element child : children) {
+          if (first) {
+            first = false;
+          } else {
+            sb.append(",");
+          }
+          sb.append(child.toString());
+        }
+        sb.append("]");
+      }
+      sb.append("}\r\n");
+      return sb.toString();
+    }
+
+    public void print() {
+      System.out.println(toString());
     }
   }
   /** Parses a JSON string. */
   public static Element parse(String str) throws Exception {
     Element root = new Element();
     root.key = "root";
-    readElement(root, str.trim());
+    JSON json = new JSON();
+    json.json = str.trim().toCharArray();
+    json.len = json.json.length;
+    json.readElement(root);
     return root;
   }
   /** Parses a JSON string from InputStream. */
@@ -85,19 +110,25 @@ public class JSON {
       return null;
     }
   }
-  /* reads key : returns str left over */
-  private static String readKey(Element e, String str) throws Exception {
-    if (debug) JFLog.log("readKey");
+  private char[] json;
+  private int len;
+  private int pos;
+  private void trim() {
+    while (pos < len && Character.isWhitespace(json[pos])) {
+      pos++;
+    }
+  }
+  private void readKey(Element e) throws Exception {
+    if (debug) JFLog.log("readKey:pos=" + pos);
     boolean quote = false;
-    int pos = 0;
     e.key = "";
     while (true) {
-      char ch = str.charAt(pos++);
+      char ch = json[pos++];
       if (ch == '\"') {
         if (quote) {
           quote = false;
         } else {
-          if (e.key.length() > 0) throw new Exception("bad key name");
+          if (e.key.length() > 0) throw new Exception("bad key name:" + e.key + ":pos=" + pos);
           quote = true;
         }
         continue;
@@ -111,53 +142,59 @@ public class JSON {
           case '\n':
           case '\t':
           case ',':
-            if (e.key.length() > 0) return str.substring(pos);
+            if (e.key.length() > 0) return;
             break;
           case '}':
-            return str.substring(pos-1);
+            pos--;
+            return;
           case ':':
-            if (e.key.length() == 0) throw new Exception("no key name");
-            return str.substring(pos);
+            if (e.key.length() == 0) throw new Exception("no key name:pos=" + pos);
+            return;
           case '{':
           case '[':
           case ']':
-            throw new Exception("bad key name:" + ch + ":" + e.key + ":" + str.substring(pos, pos+10));
+            throw new Exception("bad key name:" + ch + ":" + e.key + ":pos=" + pos);
           default:
             e.key += ch;
         }
       }
     }
   }
-  private static String readArray(Element e, String key, String str) throws Exception {
+  private void readArray(Element parent) throws Exception {
     if (debug) JFLog.log("readArray [");
     while (true) {
-      str = str.trim();
-      if (str.startsWith("]")) {
-        if (debug) JFLog.log("]");
-        return str.substring(1);
+      trim();
+      if (json[pos] == ']') {
+        if (debug) JFLog.log("] //end of array");
+        pos++;
+        return;
       }
       Element child = new Element();
-      child.key = key;  //repeat key for each array element
-      str = readValue(child, str, true);
+      child.key = "";
+      readValue(child, true);
       if ((child.value.length() > 0) || (child.children.size() > 0)) {
-        if (debug) JFLog.log(child.key + "=" + child.value);
-        e.children.add(child);
+        if (child.value.length() > 0) {
+          if (debug) JFLog.log("value=" + child.value);
+        }
+        parent.children.add(child);
+      }
+      if (json[pos] == '}') {
+        pos++;
       }
     }
   }
-  /* reads value : returns str left over */
-  private static String readValue(Element e, String str, boolean array) throws Exception {
-    if (debug) JFLog.log("readValue");
+  private void readValue(Element e, boolean array) throws Exception {
+    if (debug) JFLog.log("readValue:array=" + array + ":pos=" + pos);
     boolean quote = false, escape = false;
-    int pos = 0;
     e.value = "";
     while (true) {
-      char ch = str.charAt(pos++);
+      trim();
+      char ch = json[pos++];
       if ((ch == '\"') && (!escape)) {
         if (quote) {
-          return str.substring(pos);
+          return;
         } else {
-          if (e.value.length() > 0) throw new Exception("bad value");
+          if (e.value.length() > 0) throw new Exception("bad value:pos=" + pos);
           quote = true;
         }
         continue;
@@ -181,33 +218,29 @@ public class JSON {
         }
       } else {
         switch (ch) {
-          case ' ':
-          case '\r':
-          case '\n':
-          case '\t':
           case ',':
-            if (e.value.length() > 0) {
-              return str.substring(pos);
-            }
-            break;
+            return;
           case ':':
-            if (e.value.length() > 0) throw new Exception("bad value");
+            if (e.value.length() > 0) throw new Exception("bad value:pos=" + pos);
             break;
           case '{':
-            if (e.value.length() > 0) throw new Exception("bad value");
-            return readElement(e, str.substring(pos-1));
+            if (e.value.length() > 0) throw new Exception("bad value:pos=" + pos);
+            pos--;
+            readElement(e);
+            return;
           case '}':
-            if (e.value.length() > 0) {
-              return str.substring(pos-1);
-            }
-            throw new Exception("bad value");
+            if (array) throw new Exception("bad array:pos=" + pos);
+            pos--;
+            return;
           case '[':
-            if (e.value.length() > 0) throw new Exception("bad value");
-            return str.substring(pos-1);
+            if (e.value.length() > 0) throw new Exception("bad value:pos=" + pos);
+            readArray(e);
+            return;
           case ']':
-            if (!array) throw new Exception("bad array");
-            return str.substring(pos-1);
-          default:
+            if (!array) throw new Exception("bad array:pos=" + pos);
+            pos--;
+            return;
+          default: {
             if (escape) {
               switch (ch) {
                 case 'n': e.value += "\n"; break;
@@ -221,46 +254,36 @@ public class JSON {
             } else {
               e.value += ch;
             }
+          }
         }
       }
     }
   }
-  private static String readOpen(String str) throws Exception {
-    int pos = 0;
-    while (true) {
-      char ch = str.charAt(pos++);
-      switch (ch) {
-        case '{': return str.substring(pos);
-        case ' ':
-        case 9:
-          continue;
-      }
-      throw new Exception("bad json string");
-    }
+  private void readOpen() throws Exception {
+    trim();
+    if (json[pos++] == '{') return;
+    throw new Exception("bad json string:pos=" + pos);
   }
-  private static String readElement(Element e, String str) throws Exception {
+  private void readElement(Element e) throws Exception {
     //str = { ... }
-    if (debug) JFLog.log("readTuple {");
-    str = readOpen(str);
-    while (str.length() > 0) {
-      if (str.startsWith("}")) {
-        if (debug) JFLog.log("}");
-        return str.substring(1);
+    if (debug) JFLog.log("readElement {");
+    readOpen();
+    while (pos < len) {
+      trim();
+      char ch = json[pos];
+      if (ch == '}') {
+        if (debug) JFLog.log("} //end of element");
+        return;
       }
-      if (debug) JFLog.log("char=" + str.charAt(0));
       Element child = new Element();
-      str = readKey(child, str);
+      readKey(child);
       if (debug) JFLog.log("key=" + child.key);
-      str = readValue(child, str, false);
-      if (str.startsWith("[")) {
-        str = readArray(e, child.key, str.substring(1));
-        continue;
-      }
+      readValue(child, false);
       if (debug) JFLog.log("value=" + child.value);
       e.children.add(child);
     }
-    return str;
   }
+  /** Escape string to valid json text. */
   public static String escape(String in) {
     if (in == null) return "null";
     StringBuilder sb = new StringBuilder();
@@ -297,7 +320,8 @@ public class JSON {
   public static void main(String[] args) {
     try {
       JSON.debug = true;
-      JSON.parseFile(args[0]);
+      Element test = JSON.parseFile(args[0]);
+      test.print();
     } catch (Exception e) {
       JFLog.log(e);
     }
