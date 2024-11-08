@@ -45,6 +45,9 @@ public class JSON {
       }
       return null;
     }
+    public Element getChild(int idx) {
+      return children.get(idx);
+    }
     public int getChildCount() {
       return children.size();
     }
