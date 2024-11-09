@@ -52,26 +52,38 @@ public class ModelJSON implements Model_IO {
             Element name = box.getChild("name");
             Element pvt = box.getChild("pivot");
             float[] pvts = getValues(pvt);
-            Element rot = box.getChild("rotation");
-            float[] rots = getValues(rot);
+            //Element rot = box.getChild("rotation");  //optional
+            //float[] rots = getValues(rot);
             Element cubes = box.getChild("cubes");
             for(Element cube : cubes.children) {
               Element org = cube.getChild("origin");
               //origin is lowest coord of cube in all 3 dims
               float[] orgs = getValues(org);
-              float x = orgs[0];
-              float y = orgs[1];
-              float z = orgs[2];
               Element size = cube.getChild("size");
               float[] sizes = getValues(size);
-              width = sizes[0];  //x
-              height = sizes[1];  //y
-              depth = sizes[2];  //z
               Element uv = cube.getChild("uv");
               float[] uvs = getValues(uv);
               //text coords have 0,0 at top left corner
               float u = uvs[0];
               float v = uvs[1];
+              Element _inflate = cube.getChild("inflate");
+              if (_inflate != null) {
+                float inflate = getValue(_inflate.value) / scale;
+                float inflate_2 = inflate * 2.0f;
+                sizes[0] += inflate_2;
+                sizes[1] += inflate_2;
+                sizes[2] += inflate_2;
+                orgs[0] -= inflate;
+                orgs[1] -= inflate;
+                orgs[2] -= inflate;
+              }
+              Element _mirror = cube.getChild("mirror");
+              float x = orgs[0];
+              float y = orgs[1];
+              float z = orgs[2];
+              width = sizes[0];  //x
+              height = sizes[1];  //y
+              depth = sizes[2];  //z
               {
                 Object3 obj = new Object3();
                 obj.type = GL.GL_QUADS;
