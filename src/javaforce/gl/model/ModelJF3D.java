@@ -30,7 +30,7 @@ import javaforce.gl.UVMap;
  * @author pquiring
  */
 
-public class GL_JF3D {
+public class ModelJF3D {
   private byte[] data;
   private int datapos;
   private int skip;
@@ -308,7 +308,7 @@ public class GL_JF3D {
     os.write(baos.toByteArray());
   }
   public static void main(String[] args) {
-    GL_JF3D jf3d = new GL_JF3D();
+    ModelJF3D jf3d = new ModelJF3D();
     jf3d.debug = true;
     jf3d.load(args[0]);
   }

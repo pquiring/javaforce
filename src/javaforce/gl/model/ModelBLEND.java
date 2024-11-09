@@ -26,7 +26,7 @@ import javaforce.gl.*;
  * @author pquiring
  */
 
-public class GL_BLEND {
+public class ModelBLEND {
 
   public static boolean debug = false;
   public static boolean debugDNA = false;

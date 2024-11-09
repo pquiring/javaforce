@@ -21,7 +21,7 @@ import javaforce.gl.UVMap;
  * @author pquiring
  */
 
-public class GL_3DS {
+public class Model3DS {
 //Loading//
   private static final int _3DS_FLG_TENSION     =  0x01;
   private static final int _3DS_FLG_CONTINUITY  =  0x02;

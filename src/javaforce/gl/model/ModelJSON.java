@@ -16,19 +16,19 @@ import javaforce.*;
 import static javaforce.JSON.Element;
 import javaforce.gl.*;
 
-public class GL_JSON {
+public class ModelJSON {
   private static boolean debug = false;
   public float scale = 16.0f;
   private float tw, th;
   private float width, height, depth;
-  public GL_JSON(float scale) {
+  public ModelJSON(float scale) {
     this.scale = scale;
   }
   public Model load(InputStream is) {
     Model model = new Model();
     try {
       String json = new String(is.readAllBytes());
-      GL_JSON.debug = debug;
+      ModelJSON.debug = debug;
       Element root = JSON.parse(json);
       if (debug) {
         root.print();

@@ -6,9 +6,9 @@ package javaforce.gl.model;
  * @author pquiring
  */
 
-import javaforce.gl.model.GL_BLEND;
-import javaforce.gl.model.GL_JF3D;
-import javaforce.gl.model.GL_3DS;
+import javaforce.gl.model.ModelBLEND;
+import javaforce.gl.model.ModelJF3D;
+import javaforce.gl.model.Model3DS;
 import java.io.*;
 import javaforce.JFLog;
 import javaforce.gl.Model;
@@ -50,13 +50,13 @@ public class Convert {
     }
     Model model = null;
     if (in.toLowerCase().endsWith(".3ds")) {
-      GL_3DS _3ds = new GL_3DS();
+      Model3DS _3ds = new Model3DS();
       model = _3ds.load(in);
     } else if (in.toLowerCase().endsWith(".blend")) {
-      GL_BLEND blend = new GL_BLEND();
+      ModelBLEND blend = new ModelBLEND();
       model = blend.load(in);
     } else if (in.toLowerCase().endsWith(".obj")) {
-      GL_OBJ obj = new GL_OBJ();
+      ModelOBJ obj = new ModelOBJ();
       model = obj.load(in);
     } else {
       usage();
@@ -65,7 +65,7 @@ public class Convert {
       JFLog.log("ModelConvert:Error:Load mesh failed:" + in);
       return;
     }
-    GL_JF3D jf3d = new GL_JF3D();
+    ModelJF3D jf3d = new ModelJF3D();
     jf3d.save(model, out);
     System.out.println("Converted " + in + " to " + out);
   }

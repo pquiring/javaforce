@@ -13,7 +13,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.gl.*;
 
-public class GL_OBJ {
+public class ModelOBJ {
   private static boolean debug = false;
   public Model load(String filename) {
     try {

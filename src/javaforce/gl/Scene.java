@@ -284,7 +284,7 @@ public class Scene {
       return mod;
     }
 
-    GL_3DS loader = new GL_3DS();
+    Model3DS loader = new Model3DS();
     mod = loader.load(fn);
     if (mod == null) return null;
     mtl.put(fn, mod);
@@ -305,7 +305,7 @@ public class Scene {
       return mod;
     }
 
-    GL_BLEND loader = new GL_BLEND();
+    ModelBLEND loader = new ModelBLEND();
     mod = loader.load(fn);
     if (mod == null) return null;
     mtl.put(fn, mod);
@@ -326,7 +326,7 @@ public class Scene {
       return mod;
     }
 
-    GL_JF3D loader = new GL_JF3D();
+    ModelJF3D loader = new ModelJF3D();
     mod = loader.load(fn);
     if (mod == null) return null;
     mtl.put(fn, mod);
