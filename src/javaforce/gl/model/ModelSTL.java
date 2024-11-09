@@ -7,6 +7,17 @@ package javaforce.gl.model;
  * @author pquiring
  */
 
-public class ModelSTL {
+import java.io.*;
+
+import javaforce.gl.*;
+
+public class ModelSTL implements Model_IO {
+
+  public Model load(InputStream is) {
+    return null;
+  }
+  public boolean save(Model model, OutputStream os) {
+    return false;
+  }
 
 }

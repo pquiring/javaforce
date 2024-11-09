@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores one vector that intersects point (x,y,z) with optional w component (default = 1.0f). */
+/** Stores one vector (x,y,z) with optional w component (default = 1.0f). */
 
 public class Vector4 {
   public float[] v = new float[4];

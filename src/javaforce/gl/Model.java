@@ -1,14 +1,13 @@
 package javaforce.gl;
 
 import java.util.*;
-import java.io.*;
 
 import javaforce.*;
 
-/** <code>Model</code> is a set of <code>GLObject</code>'s that all share the same base orientation (rotation, translation, scale)
- * Each object can also have its own orientation in addition to this
- * Usually a 3DS file is loaded into one GLModel.
- * Each Object in the 3DS file will be stored into GLObject's.
+/** <code>Model</code> is a set of <code>Object3</code>'s that all share the same base orientation (rotation, translation, scale)
+ * Each object can also have its own orientation.
+ *
+ * See javaforce.gl.model for import/export classes.
  */
 
 public class Model implements Cloneable {

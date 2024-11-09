@@ -26,7 +26,7 @@ import javaforce.gl.*;
  * @author pquiring
  */
 
-public class ModelBLEND {
+public class ModelBLEND implements Model_IO {
 
   public static boolean debug = false;
   public static boolean debugDNA = false;
@@ -1092,5 +1092,8 @@ public class ModelBLEND {
         }
       }
     }
+  }
+  public boolean save(Model model, OutputStream os) {
+    return false;
   }
 }

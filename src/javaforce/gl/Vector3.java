@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores one vector that intersects point (x,y,z). */
+/** Stores one vector (x,y,z). */
 
 public class Vector3 {
   public float[] v = new float[3];

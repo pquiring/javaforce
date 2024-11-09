@@ -13,7 +13,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.gl.*;
 
-public class ModelOBJ {
+public class ModelOBJ implements Model_IO {
   private static boolean debug = false;
   public Model load(String filename) {
     try {
@@ -116,5 +116,8 @@ public class ModelOBJ {
       uv[0] = in[0];
       uv[1] = in[1];
     }
+  }
+  public boolean save(Model model, OutputStream os) {
+    return false;
   }
 }

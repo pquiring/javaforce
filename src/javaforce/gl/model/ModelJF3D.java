@@ -30,7 +30,7 @@ import javaforce.gl.UVMap;
  * @author pquiring
  */
 
-public class ModelJF3D {
+public class ModelJF3D implements Model_IO {
   private byte[] data;
   private int datapos;
   private int skip;

@@ -16,7 +16,7 @@ import javaforce.*;
 import static javaforce.JSON.Element;
 import javaforce.gl.*;
 
-public class ModelJSON {
+public class ModelJSON implements Model_IO {
   private static boolean debug = false;
   public float scale = 16.0f;
   private float tw, th;
@@ -322,6 +322,10 @@ public class ModelJSON {
       values[i] = Float.valueOf(child.value);
     }
     return values;
+  }
+
+  public boolean save(Model model, OutputStream os) {
+    return false;
   }
 }
 

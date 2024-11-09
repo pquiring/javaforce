@@ -21,7 +21,7 @@ import javaforce.gl.UVMap;
  * @author pquiring
  */
 
-public class Model3DS {
+public class Model3DS implements Model_IO {
 //Loading//
   private static final int _3DS_FLG_TENSION     =  0x01;
   private static final int _3DS_FLG_CONTINUITY  =  0x02;
@@ -452,5 +452,8 @@ public class Model3DS {
   private static class material {
     String name;
     String filename;
+  }
+  public boolean save(Model model, OutputStream os) {
+    return false;
   }
 }
