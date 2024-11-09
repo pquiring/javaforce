@@ -28,7 +28,7 @@ public class ModelJSON implements Model_IO {
     Model model = new Model();
     try {
       String json = new String(is.readAllBytes());
-      ModelJSON.debug = debug;
+      JSON.debug = debug;
       Element root = JSON.parse(json);
       if (debug) {
         root.print();
