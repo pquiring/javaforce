@@ -45,6 +45,7 @@
   </target>
 
   <target name="depnatives">
+    <!-- legacy task when javaforce native code was in shared libraries -->
   </target>
 
   <target name="ffmpeg">
