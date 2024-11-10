@@ -2,14 +2,7 @@ package javaforce.gl.model;
 
 import java.io.*;
 import javaforce.*;
-import javaforce.gl.GL;
-import javaforce.gl.GL;
-import javaforce.gl.Model;
-import javaforce.gl.Model;
-import javaforce.gl.Object3;
-import javaforce.gl.Object3;
-import javaforce.gl.UVMap;
-import javaforce.gl.UVMap;
+import javaforce.gl.*;
 
 /**
  * JF3D - New format designed for JavaForce

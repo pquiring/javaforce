@@ -4,6 +4,9 @@ package javaforce.gl.model;
  *
  * https://en.wikipedia.org/wiki/Wavefront_.obj_file
  *
+ * NOTE:
+ *  - obj files are missing pivot (origin) data making them limited is usage
+ *
  * @author pquiring
  */
 
