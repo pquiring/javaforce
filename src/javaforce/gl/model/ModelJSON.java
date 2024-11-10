@@ -21,6 +21,7 @@ public class ModelJSON implements Model_IO {
   public float scale = 16.0f;
   private float tw, th;
   private float width, height, depth;
+  private boolean mirror;
   public ModelJSON(float scale) {
     this.scale = scale;
   }
@@ -78,6 +79,7 @@ public class ModelJSON implements Model_IO {
                 orgs[2] -= inflate;
               }
               Element _mirror = cube.getChild("mirror");
+              mirror = _mirror != null && _mirror.value.equals("true");
               float x = orgs[0];
               float y = orgs[1];
               float z = orgs[2];
@@ -99,25 +101,33 @@ public class ModelJSON implements Model_IO {
                 //uv starts high, bring down to origin
                 v += depth + height;
 
-                addFaceW(obj, x, y, z, u, v);
+                if (mirror)
+                  addFaceW(obj, x, y, z, u + depth + width, v);
+                else
+                  addFaceW(obj, x, y, z, u, v);
 
                 //move to S
                 z += depth;
                 u += depth;
 
                 addFaceS(obj, x, y, z, u, v);
+                if (mirror) mirror(obj);
 
                 //move to E
                 x += width;
                 u += width;
 
-                addFaceE(obj, x, y, z, u, v);
+                if (mirror)
+                  addFaceE(obj, x, y, z, u - depth - width, v);
+                else
+                  addFaceE(obj, x, y, z, u, v);
 
                 //move to N
                 z -= depth;
                 u += depth;
 
                 addFaceN(obj, x, y, z, u, v);
+                if (mirror) mirror(obj);
 
                 //move to B (two steps)
                 x -= width;
@@ -126,12 +136,14 @@ public class ModelJSON implements Model_IO {
                 u -= depth;
 
                 addFaceB(obj, x, y, z, u, v);
+                if (mirror) mirror(obj);
 
                 //move to A
                 y += height;
                 u -= width;
 
                 addFaceA(obj, x, y, z, u, v);
+                if (mirror) mirror(obj);
               }
             }
           }
@@ -309,6 +321,25 @@ public class ModelJSON implements Model_IO {
       pts[a] = vidx++;
     }
     obj.addPoly(pts);
+  }
+
+  private void mirror(Object3 obj) {
+    //mirror u text coord in vertex 1 <-> 2 and 3 <-> 4
+    float[] uv = obj.getUVMap(0).uvl.getBuffer();
+    int idx = obj.getVertexCount();
+    int v1 = (idx - 4) * 2;
+    int v2 = (idx - 3) * 2;
+    int v3 = (idx - 2) * 2;
+    int v4 = (idx - 1) * 2;
+    float tmp;
+    //swap 1 <-> 2
+    tmp = uv[v1];
+    uv[v1] = uv[v2];
+    uv[v2] = tmp;
+    //swap 3 <-> 4
+    tmp = uv[v3];
+    uv[v3] = uv[v4];
+    uv[v4] = tmp;
   }
 
   private void addVertex(Object3 obj, float x, float y, float z, float u, float v) {
