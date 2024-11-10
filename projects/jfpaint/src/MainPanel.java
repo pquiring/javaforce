@@ -627,7 +627,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       unselectTool(curIdx);
       updateStatus();
     }
-    int idx = getidx();
+    int idx = getTabIdx();
     curIdx = idx;
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
@@ -648,55 +648,55 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void selBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selBoxActionPerformed
     if (selectedTool == tools.selBox) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.selBox);
   }//GEN-LAST:event_selBoxActionPerformed
 
   private void fillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fillActionPerformed
     if (selectedTool == tools.fill) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.fill);
   }//GEN-LAST:event_fillActionPerformed
 
   private void pickColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pickColorActionPerformed
     if (selectedTool == tools.pickColor) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.pickColor);
   }//GEN-LAST:event_pickColorActionPerformed
 
   private void pencilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pencilActionPerformed
     if (selectedTool == tools.pencil) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.pencil);
   }//GEN-LAST:event_pencilActionPerformed
 
   private void textActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textActionPerformed
     if (selectedTool == tools.text) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.text);
   }//GEN-LAST:event_textActionPerformed
 
   private void curveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_curveActionPerformed
     if (selectedTool == tools.curve) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.curve);
   }//GEN-LAST:event_curveActionPerformed
 
   private void lineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lineActionPerformed
     if (selectedTool == tools.line) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.line);
   }//GEN-LAST:event_lineActionPerformed
 
   private void boxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxActionPerformed
     if (selectedTool == tools.box) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.box);
   }//GEN-LAST:event_boxActionPerformed
 
   private void circleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_circleActionPerformed
     if (selectedTool == tools.circle) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.circle);
   }//GEN-LAST:event_circleActionPerformed
 
@@ -712,7 +712,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void subActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subActionPerformed
     if (selectedTool == tools.sub) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.sub);
   }//GEN-LAST:event_subActionPerformed
 
@@ -721,7 +721,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }//GEN-LAST:event_swapActionPerformed
 
   private void rotateCWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateCWActionPerformed
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     pc.rotateCW();
     pc.resizeBorder();
     pc.parentPanel.revalidate();
@@ -729,7 +729,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }//GEN-LAST:event_rotateCWActionPerformed
 
   private void rotateCCWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateCCWActionPerformed
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     pc.rotateCCW();
     pc.resizeBorder();
     pc.parentPanel.revalidate();
@@ -737,13 +737,13 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }//GEN-LAST:event_rotateCCWActionPerformed
 
   private void flipVertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flipVertActionPerformed
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     pc.flipVert();
     pc.repaint();
   }//GEN-LAST:event_flipVertActionPerformed
 
   private void flipHorzActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_flipHorzActionPerformed
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     pc.flipHorz();
     pc.repaint();
   }//GEN-LAST:event_flipHorzActionPerformed
@@ -752,7 +752,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     GetXY dialog = new GetXY(frame, true, "Scale Image (percentage)", 100, 100);
     dialog.setVisible(true);
     if (!dialog.accepted()) return;
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     int orgLayer = pc.getColorLayer();
     if (orgLayer != 0) {
       pc.changeColorLayer(0);
@@ -775,7 +775,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }//GEN-LAST:event_selectFontActionPerformed
 
   private void changeSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeSizeActionPerformed
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     int ox = pc.getUnscaledWidth();
     int oy = pc.getUnscaledHeight();
     GetXY dialog = new GetXY(frame, true, "Set Image Size (pixels)", ox, oy);
@@ -806,7 +806,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }//GEN-LAST:event_paintModeActionPerformed
 
   private void backswapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backswapActionPerformed
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -819,7 +819,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (layers != null) {
       layers.dispose();
     } else {
-      int idx = getidx();
+      int idx = getTabIdx();
       if (idx == -1) return;
       PaintCanvas pc = imageTabs.get(idx).pc;
       if (pc == null) return;
@@ -856,7 +856,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void stampActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stampActionPerformed
     if (selectedTool == tools.stamp) return;
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
     selectTool(tools.stamp);
   }//GEN-LAST:event_stampActionPerformed
 
@@ -930,7 +930,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public boolean haveSel;
   public int selX1, selY1, selX2, selY2;
   public Clip clips[] = new Clip[10];
-  public int cidx = 0;
+  public int cidx = 0;  //clips index
   public int cx[] = new int[4], cy[] = new int[4];  //curve points
   public int cpt = -1;  //current curve point (0-3)
   public int gx[] = new int[2], gy[] = new int[2];  //grad points
@@ -1094,7 +1094,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void loadTab(String filename) {
     if (filename.length() == 0) return;
-    int idx = getidx();
+    int idx = getTabIdx();
     ImageTab tab = imageTabs.get(idx);
     boolean emptyFile;
     //check if current page is "untitled" and !dirty
@@ -1160,7 +1160,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     return tab;
   }
 
-  private int getidx() { return tabs.getSelectedIndex(); }
+  private int getTabIdx() { return tabs.getSelectedIndex(); }
 
   private boolean loadImage(PaintCanvas pc, String filename) {
     pc.disableScale = true;
@@ -1259,7 +1259,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   private void updateStatus() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) {status.setText("?"); return;}
     if (getGradPoints) {
       status.setText("Draw a line to define Gradient start and end points.");
@@ -1293,7 +1293,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     GetXY dialog = new GetXY(frame, true, "New Image (pixels)", init_x, init_y);
     dialog.setVisible(true);
     if (!dialog.accepted()) return;
-    int idx = getidx();
+    int idx = getTabIdx();
     ImageTab tab = imageTabs.get(idx);
     if (!(tab.filename.toString().equals("untitled") && imageTabs.get(idx).pc.dirty == false)) {
       addTab("untitled");
@@ -1306,7 +1306,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   public boolean closeTab(boolean exiting) {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (tabs.getTabCount() == 0) return true;
     if (imageTabs.get(idx).pc.dirty) {
       switch (JFAWT.showConfirm3("Save?", "Save first?")) {
@@ -1327,7 +1327,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   public boolean saveTab() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (imageTabs.get(idx).filename.toString().equals("untitled")) {
       return saveAs();
     }
@@ -1398,7 +1398,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   public boolean saveAs() {
-    int idx = getidx();
+    int idx = getTabIdx();
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("JFPAINT", "jfpaint"));
@@ -1437,7 +1437,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   private void selectAll() {
-    int idx = getidx();
+    int idx = getTabIdx();
     unselectTool(idx);
     selBox.setSelected(true);
     selectTool(tools.selBox);
@@ -1514,7 +1514,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     aset.add(OrientationRequested.LANDSCAPE);
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    int idx = getidx();
+    int idx = getTabIdx();
     PaintCanvas pc = imageTabs.get(idx).pc;
     JFImage img = pc.combineImageLayers();
     img.savePNG(baos);
@@ -1536,7 +1536,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int tmp;
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
-    int idx = getidx();
+    int idx = getTabIdx();
     int w = selX2-selX1+1;
     int h = selY2-selY1+1;
     PaintCanvas pc = imageTabs.get(idx).pc;
@@ -1551,7 +1551,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int tmp;
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
-    int idx = getidx();
+    int idx = getTabIdx();
     clips[cidx].x = selX2-selX1+1;
     clips[cidx].y = selY2-selY1+1;
     PaintCanvas pc = imageTabs.get(idx).pc;
@@ -1575,7 +1575,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int tmp;
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
-    int idx = getidx();
+    int idx = getTabIdx();
     clips[cidx].x = selX2-selX1+1;
     clips[cidx].y = selY2-selY1+1;
     PaintCanvas pc = imageTabs.get(idx).pc;
@@ -1600,7 +1600,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         e.printStackTrace();
       }
     }
-    int idx = getidx();
+    int idx = getTabIdx();
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (selectedTool != tools.selBox) {
       unselectTool(idx);
@@ -1723,23 +1723,23 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   private void undo() {
-    unselectTool(getidx());
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    unselectTool(getTabIdx());
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     pc.disableScale = true;
     pc.undo();
     pc.disableScale = false;
   }
 
   private void redo() {
-    unselectTool(getidx());
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    unselectTool(getTabIdx());
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     pc.disableScale = true;
     pc.redo();
     pc.disableScale = false;
   }
 
   private void repaintImage() {
-    int idx = getidx();
+    int idx = getTabIdx();
     imageTabs.get(idx).pc.repaint();
   }
 
@@ -1872,7 +1872,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         case box:
           break;
         default:
-          unselectTool(getidx());
+          unselectTool(getTabIdx());
           box.doClick();
           break;
       }
@@ -2004,7 +2004,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   public void changeScale() {
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     int newScale = -1;
     switch (zoom.getValue()) {
       case 0: newScale = 25; break;
@@ -2023,11 +2023,11 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   public void actionPerformed(ActionEvent e) {
     //Swing Timer
-    repaintTool(imageTabs.get(getidx()).pc);
+    repaintTool(imageTabs.get(getTabIdx()).pc);
   }
 
   public void doPaste(boolean sysClipBoard) {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     unselectTool(idx);
     selBox.setSelected(true);
@@ -2115,11 +2115,31 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     }
   }
 
+  private void selectTab(int idx) {
+    if (idx >= imageTabs.size()) return;
+    unselectTool(getTabIdx());
+    tabs.setSelectedIndex(idx);
+  }
+
+  private void prevTab() {
+    int idx = getTabIdx();
+    idx--;
+    if (idx == -1) idx = imageTabs.size() - 1;
+    selectTab(idx);
+  }
+
+  private void nextTab() {
+    int idx = getTabIdx();
+    idx++;
+    if (idx == imageTabs.size()) idx = 0;
+    selectTab(idx);
+  }
+
   public void keyPressed(KeyEvent evt) {
     //Key Pressed
     int f1 = evt.getKeyCode();
     int f2 = evt.getModifiersEx() & JFAWT.KEY_MASKS;
-    int idx = getidx();
+    int idx = getTabIdx();
     if ((f1 == KeyEvent.VK_F1) && (f2 == 0)) {
       JOptionPane.showMessageDialog(this,
         "jfpaint/" + version + "\n\n" +
@@ -2139,7 +2159,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         , "Help", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    if ((f1 == KeyEvent.VK_ESCAPE) && (f2 == 0)) { unselectTool(getidx()); return; }
+    if ((f1 == KeyEvent.VK_ESCAPE) && (f2 == 0)) { unselectTool(getTabIdx()); return; }
     if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { addTab("untitled"); return; }
     if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { saveTab(); return; }
     if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { saveAs(); return; }
@@ -2153,17 +2173,18 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
       idx = f1 - KeyEvent.VK_0;
       if (idx == 0) idx = 9; else idx--;
-      if (idx >= imageTabs.size()) return;
-      unselectTool(getidx());
-      tabs.setSelectedIndex(idx);
+      selectTab(idx);
       return;
     }
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_MINUS)) {selectTab(10);}
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_EQUALS)) {selectTab(11);}
+    if ((f1 == KeyEvent.VK_PAGE_UP) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { prevTab(); return; }
+    if ((f1 == KeyEvent.VK_PAGE_DOWN) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { nextTab(); return; }
     if ((f2 == KeyEvent.CTRL_DOWN_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
+      //select clipboard
       cidx = f1 - KeyEvent.VK_0;
       return;
     }
-    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_MINUS)) {unselectTool(getidx()); tabs.setSelectedIndex(10);}
-    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_EQUALS)) {unselectTool(getidx()); tabs.setSelectedIndex(11);}
   }
 
   public void keyReleased(KeyEvent e) {}
@@ -2349,7 +2370,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         selY1 = y - (cy / 2);
         selX2 = selX1 + cx;
         selY2 = selY1 + cy;
-        drawSel(imageTabs.get(getidx()).pc);
+        drawSel(imageTabs.get(getTabIdx()).pc);
         pc.repaint();
         break;
     }
@@ -2490,7 +2511,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       if (b.borderType == Border.Types.corner) {
         changeSize(b.pc, x - b.pc.sx, y - b.pc.sy, true);
       }
-      imageTabs.get(getidx()).scroll.doLayout();
+      imageTabs.get(getTabIdx()).scroll.doLayout();
       doLayout();
       return;
     }
@@ -2652,7 +2673,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
   public void keyTypedOnImage(char key) {
     if (selectedTool != tools.text) return;
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     if (key == 8) {
       if (textText.length() > 0) textText = textText.substring(0,textText.length()-1);
     } else if (key == 10) {
@@ -2667,7 +2688,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     return colorLayer.getSelectedIndex();
   }
   public void layerChanged() {
-    int idx = getidx();
+    int idx = getTabIdx();
     unselectTool(idx);
     switch (selectedTool) {
       case selBox:
@@ -2715,7 +2736,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     return true;
   }
   public void addLayer() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2723,7 +2744,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.repaint();
   }
   public void delLayer() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2731,7 +2752,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.repaint();
   }
   public void editLayer() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2741,7 +2762,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.name[layer] = newName;
   }
   public void dupLayer() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2753,7 +2774,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.repaint();
   }
   public void mergeLayer() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2765,7 +2786,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.repaint();
   }
   public void moveLayerUp() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2776,7 +2797,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.repaint();
   }
   public void moveLayerDown() {
-    int idx = getidx();
+    int idx = getTabIdx();
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
@@ -2788,7 +2809,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
   public void crop() {
     if (!haveSel) return;
-    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    PaintCanvas pc = imageTabs.get(getTabIdx()).pc;
     int ox = pc.getUnscaledWidth();
     int oy = pc.getUnscaledHeight();
     int sx = selX2 - selX1 + 1;
@@ -2796,6 +2817,6 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     changeSize(pc, sx - ox, sy - oy, false);
     pc.img[pc.getImageLayer()].fill(0, 0, sx, sy, backClr, true);
     pasteSel(0, 0, false);
-    unselectTool(getidx());
+    unselectTool(getTabIdx());
   }
 }
