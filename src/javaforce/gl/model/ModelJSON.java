@@ -56,6 +56,7 @@ public class ModelJSON implements Model_IO {
             //Element rot = box.getChild("rotation");  //optional
             //float[] rots = getValues(rot);
             Element cubes = box.getChild("cubes");
+            if (cubes == null) continue;
             for(Element cube : cubes.children) {
               Element org = cube.getChild("origin");
               //origin is lowest coord of cube in all 3 dims
