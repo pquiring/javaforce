@@ -17,6 +17,8 @@ public class Model implements Cloneable {
   public boolean visible = true;
   public int refcnt;
 
+  public static boolean debug = false;
+
   public Model() {
     m = new Matrix();
     m.setIdentity();
@@ -49,7 +51,7 @@ public class Model implements Cloneable {
         return o;
       }
     }
-    JFLog.log("GLModel:Could not find object:" + name);
+    if (debug) JFLog.log("Model:Could not find object:" + name);
     return null;
   }
   public void setIdentity() {
