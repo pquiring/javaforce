@@ -62,6 +62,10 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspuninit
 JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspdenoise
   (JNIEnv *e, jclass o, jlong ctx, jshortArray audio)
 {
+  if (ctx == 0) {
+    printf("speex_dsp_denoise() called with null ctx");
+    return;
+  }
   DSP *c_ctx = (DSP*)ctx;
   jshort* c_audio = (jshort*)e->GetPrimitiveArrayCritical(audio, NULL);
   speex_preprocess_run(c_ctx->pps, c_audio);
@@ -71,6 +75,10 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspdenoise
 JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspecho
   (JNIEnv *e, jclass o, jlong ctx, jshortArray audio_mic, jshortArray audio_spk, jshortArray audio_out)
 {
+  if (ctx == 0) {
+    printf("speex_dsp_echo() called with null ctx");
+    return;
+  }
   DSP *c_ctx = (DSP*)ctx;
   jshort* c_audio_mic = (jshort*)e->GetPrimitiveArrayCritical(audio_mic, NULL);
   jshort* c_audio_spk = (jshort*)e->GetPrimitiveArrayCritical(audio_spk, NULL);
