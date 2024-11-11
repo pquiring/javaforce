@@ -11,7 +11,7 @@ import javax.swing.*;
 
 import javaforce.*;
 
-public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
+public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, KeyEventDispatcher {
 
   private static RFB rfb;
 
@@ -35,6 +35,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
    */
   public VNC(String host, int port, String pass) {
     initComponents();
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this);
     this.host = host;
     this.port = port;
     this.pass = pass;
@@ -220,6 +221,18 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   private javax.swing.JToolBar tools;
   // End of variables declaration//GEN-END:variables
 
+  public boolean dispatchKeyEvent(KeyEvent e) {
+    if (debugKeys) {
+      JFLog.log("dispatchKeyEvent:" + e);
+    }
+    if ((e.getSource() instanceof JFImage) && (e.getKeyCode() == e.VK_TAB) && ((e.getModifiersEx() & JFAWT.KEY_MASKS) == 0)) {
+      switch (e.getID()) {
+        case KeyEvent.KEY_PRESSED: keyPressed(e); break;
+        case KeyEvent.KEY_RELEASED: keyReleased(e); break;
+      }
+    }
+    return false;  //pass on as normal
+  }
 
   public void setupEvents() {
     if (!is_fullscreen) {

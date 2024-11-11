@@ -43,7 +43,7 @@ public interface VNCRobot {
         key = RFB.VK_LEFT;
         break;
       case KeyEvent.VK_UP:
-        key = RFB.VK_RIGHT;
+        key = RFB.VK_UP;
         break;
       case KeyEvent.VK_RIGHT:
         key = RFB.VK_RIGHT;

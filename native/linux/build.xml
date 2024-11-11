@@ -5,7 +5,7 @@
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <target name="linux" description="create linux native so for x64">
+  <target name="linux" description="create linux natives for x64">
     <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
@@ -29,7 +29,7 @@
     </delete>
   </target>
 
-  <target name="freebsd" description="create linux native so for x64/freebsd">
+  <target name="freebsd" description="create linux natives for x64/freebsd">
     <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/freebsd -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
@@ -50,7 +50,7 @@
     </delete>
   </target>
 
-  <target name="arm64" description="create linux native so for arm64">
+  <target name="arm64" description="create linux natives for arm64">
     <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
