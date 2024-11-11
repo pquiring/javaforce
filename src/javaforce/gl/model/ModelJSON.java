@@ -99,27 +99,15 @@ public class ModelJSON implements Model_IO {
                 obj.name = name.value;
                 //each face starts at bottom left corner of texture
                 //start @ origin (x,y,z)
-                //uv starts high, bring down to origin
+                //uv starts high, bring down to first face (E)
                 v += depth + height;
-
-                if (mirror)
-                  addFaceW(obj, x, y, z, u + depth + width, v);
-                else
-                  addFaceW(obj, x, y, z, u, v);
-
-                //move to S
-                z += depth;
-                u += depth;
-
-                addFaceS(obj, x, y, z, u, v);
-                if (mirror) mirror(obj);
 
                 //move to E
                 x += width;
-                u += width;
+                z += depth;
 
                 if (mirror)
-                  addFaceE(obj, x, y, z, u - depth - width, v);
+                  addFaceE(obj, x, y, z, u + depth + width, v);
                 else
                   addFaceE(obj, x, y, z, u, v);
 
@@ -130,9 +118,23 @@ public class ModelJSON implements Model_IO {
                 addFaceN(obj, x, y, z, u, v);
                 if (mirror) mirror(obj);
 
-                //move to B (two steps)
+                //move to W
                 x -= width;
+                u += width;
+
+                if (mirror)
+                  addFaceW(obj, x, y, z, u - depth - width, v);
+                else
+                  addFaceW(obj, x, y, z, u, v);
+
+                //move to S
                 z += depth;
+                u += depth;
+
+                addFaceS(obj, x, y, z, u, v);
+                if (mirror) mirror(obj);
+
+                //move to B (two steps)
                 v -= height;
                 u -= depth;
 
