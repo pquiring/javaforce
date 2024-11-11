@@ -114,6 +114,9 @@ public interface VNCRobot {
       case KeyEvent.VK_DELETE:
         key = RFB.VK_DELETE;
         break;
+      case KeyEvent.VK_CONTEXT_MENU:
+        key = RFB.VK_CONTEXT_MENU;
+        break;
     }
     return key;
   }
