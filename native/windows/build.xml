@@ -23,10 +23,6 @@
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecwd.exe /link /subsystem:windows /entry:mainCRTStartup"/>
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecd.exe /link /subsystem:console"/>
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG /D_JF_CLI_SERVICE windows.cpp native.lib ${winlibs} /Fe: ../../bin/jfexecsd.exe /link /subsystem:console"/>
-
-    <delete>
-      <fileset dir="." includes="*.obj"/>
-    </delete>
   </target>
 
   <target name="get-bin" description="download pre-built binaries">
@@ -45,4 +41,10 @@
     </zip>
   </target>
 
+  <target name="clean">
+    <delete>
+      <fileset dir="." includes="*.obj"/>
+      <fileset dir="." includes="*.lib"/>
+    </delete>
+  </target>
 </project>

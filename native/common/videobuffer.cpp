@@ -4,6 +4,12 @@
   #endif
 #endif
 
+#ifndef __amd64__
+  #ifndef __aarch64__
+    #define __amd64__
+  #endif
+#endif
+
 #ifdef __amd64__
   #include "amd64.cpp"
 #endif
