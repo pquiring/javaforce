@@ -1135,7 +1135,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
 
 //find JDK Home
 
-JNIEXPORT jstring Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jclass c) {
+JNIEXPORT jstring JNICALL Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jclass c) {
   //try to find JDK in Registry
   HKEY key, subkey;
   int type;
