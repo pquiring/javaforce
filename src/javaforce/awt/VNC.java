@@ -239,6 +239,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
       image.addMouseListener(this);
       image.addMouseMotionListener(this);
       image.addMouseListener(this);
+      image.addMouseWheelListener(this);
       image.setFocusable(true);
       image.addKeyListener(this);
     }
@@ -491,12 +492,15 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     int x = e.getX();
     int y = e.getY();
     int wheel = e.getWheelRotation();
-    if (wheel > 0) {
+    buttons &= 0x7;
+    if (wheel < 0) {
       buttons |= 8;
     }
-    if (wheel < 0) {
+    if (wheel > 0) {
       buttons |= 16;
     }
+    mouse(x, y, buttons);
+    buttons &= 0x7;
     mouse(x, y, buttons);
   }
 
