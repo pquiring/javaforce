@@ -1,5 +1,8 @@
 Whatsnew ...
 
+Nov 14, 2024 - v0.28 released!
+  - new : added CTRL+PAGE_UP/PAGE_DN to cycle thru tabs
+
 May 30, 2023 - v0.27 released!
   - new : added support for tiff,svg files
 
