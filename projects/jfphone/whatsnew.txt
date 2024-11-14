@@ -1,4 +1,6 @@
 CHANGELOG:
+11-14-2024 : v1.34 released
+  - new : added DSP echo cancellation option
 10-25-2024 : v1.33 released
   - fix : SDP missing IP in OPTIONS reply
 10-18-2024 : v1.32 released

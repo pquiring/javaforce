@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.33" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
+  <Package UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.34" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
