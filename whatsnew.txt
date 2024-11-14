@@ -1,6 +1,6 @@
 What's new...
 
-Nov 14/2024 : 0.73
+Nov 14/2024 : JF/73.0
  - fix VNC copy rect encoding
  - fix VNC key events and mouse wheel events
  - jfRemote/0.4 & 0.5
