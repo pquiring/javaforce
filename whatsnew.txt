@@ -1,5 +1,22 @@
 What's new...
 
+Nov 11/2024 : 0.73
+ - fix VNC copy rect encoding
+ - fix VNC key events and mouse wheel events
+ - jfRemote/0.4 & 0.5
+   - VNC improvements
+ - improve .blend 3d file loading
+ - add .obj 3d file loading
+ - add .json 3d file loading
+ - improve graal support
+ - add speex DSP (user request)
+ - jfPhone/1.34
+   - add option to use speex DSP for echo cancellation
+   - used only in speaker phone mode
+   - can be used with any codec
+ - jfPaint/0.28
+   - add CTRL+PAGE_UP/PAGE_DOWN to cycle thru tabs
+
 Oct 25/2024 : JF/72.0
   - VoIP improvements
     - improve SDP returned by OPTIONS request (was missing IP)
