@@ -741,8 +741,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       cd.src.epass = null;
     }
     cd.authsent = false;
-    if (cd.dst.to != null) cd.src.to = cd.dst.to;  //update tag if avail
-    if (cd.dst.from != null) cd.src.from = cd.dst.from;  //is this line even needed???
+    if (cd.dst.to != null) {
+      //update tag
+      cd.src.to = cd.dst.to;
+    }
     cd.src.extra = null;
     cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     boolean ret = issue(cd, "CANCEL", false, true);
@@ -838,8 +840,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.sdp = buildsdp(cd, cd.src);
     reply(cd, "INVITE", 200, "OK", true, false);
     //need to swap to/from for BYE (only if accept()ing a call)
-    cd.src.to = cd.dst.from.clone();
-    cd.src.from = cd.dst.to.clone();
+    cd.src.to = cd.dst.from;
+    cd.src.from = cd.dst.to;
     //copy all other needed fields
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.branch = cd.dst.branch;
@@ -1088,8 +1090,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             }
           } else if (cmd.equals("INVITE")) {
             cd.dst.sdp = getSDP(msg);
-            //update cd.src.to tag value
-            cd.src.to = cd.dst.to;
+            if (cd.dst.to != null) {
+              //update tag
+              cd.src.to = cd.dst.to;
+            }
             cd.src.epass = null;
             cd.src.routelist = cd.dst.routelist;  //RFC 2543 6.29
             if (type == 200) issue(cd, "ACK", false, true);
@@ -1099,8 +1103,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             //call leg ended
             setCallDetails(callid, null);
           } else if (cmd.equals("SUBSCRIBE")) {
-            //update cd.src.to tag value
-            cd.src.to = cd.dst.to;
+            if (cd.dst.to != null) {
+              //update tag
+              cd.src.to = cd.dst.to;
+            }
           }
           break;
         case 202:
@@ -1114,7 +1120,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             JFLog.log("Server Error : Double " + type);
           } else {
             String[] src_to = cd.src.to;
-            cd.src.to = cd.dst.to;  //update to (tag may have been added)
+            if (cd.dst.to != null) {
+              //update tag
+              cd.src.to = cd.dst.to;
+            }
             if (iface != null) {
               if (cmd.equals("INVITE")) {
                 //only issue ACK for call setup (INVITE)
@@ -1156,7 +1165,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           break;
         case 404:  //no one there
         case 486:  //busy
-          if (cd.dst.to != null) cd.src.to = cd.dst.to;
+          if (cd.dst.to != null) {
+            //update tag
+            cd.src.to = cd.dst.to;
+          }
           cd.src.epass = null;
           cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
@@ -1168,7 +1180,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           break;
         default:
           //treat all other codes as a cancel
-          if (cd.dst.to != null) cd.src.to = cd.dst.to;
+          if (cd.dst.to != null) {
+            //update tag
+            cd.src.to = cd.dst.to;
+          }
           cd.src.epass = null;
           cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
