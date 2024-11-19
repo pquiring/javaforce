@@ -259,6 +259,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     boolean dirty;
     File filename;
     boolean bUnix;
+    boolean utf16;
     long ts;
   };
   private Vector<page> pages;
@@ -380,6 +381,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private page addpage(String title) {
     page pg = new page();
     pg.bUnix = Settings.settings.bUnix;
+    pg.utf16 = false;
     pg.panel = JFAWT.createJPanel(new GridLayout(), null);
     pg.txt = createJFTextArea();
     pg.scroll = new JScrollPane(pg.txt);
@@ -414,8 +416,12 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       if (!pages.get(idx).bUnix) {
         tmp = tmp.replaceAll("\n", "\r\n");
       }
+      String encoding = "UTF-8";
+      if (pages.get(idx).utf16) {
+        encoding = "UTF-16";
+      }
       FileOutputStream fos = new FileOutputStream(pages.get(idx).filename);
-      fos.write(tmp.getBytes("UTF-8"));
+      fos.write(tmp.getBytes(encoding));
       fos.close();
       pages.get(idx).ts = pages.get(idx).filename.lastModified();
       tabs.setTitleAt(idx, pages.get(idx).filename.getName());
@@ -525,7 +531,9 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       bLoading = true;
       String encoding = "UTF-8";
       if (size >= 2) {
-        if (((txt[0] & 0xff) == 0xff && (txt[1] & 0xff) == 0xfe) || (txt[1] == 0)) {
+        int c1 = txt[0] & 0xff;
+        int c2 = txt[1] & 0xff;
+        if ((c1 == 0xff && c2 == 0xfe) || (c1 == 0xfe && c2 == 0xff) || (txt[1] == 0)) {
           encoding = "UTF-16";
         }
       }
@@ -538,6 +546,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         }
       }
       pages.get(idx).bUnix = bUnix;
+      pages.get(idx).utf16 = encoding.equals("UTF-16");
       setText(pages.get(idx).txt, str);
       pages.get(idx).txt.setCaretPosition(0);
       bLoading = false;
@@ -898,6 +907,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
             page pg = pages.get(idx);
             txt = pg.txt;
             boolean bUnix = pg.bUnix;
+            boolean utf = pg.utf16;
             int cp, px, py;
             try {
               cp = txt.getCaretPosition();
@@ -917,10 +927,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
               info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
               JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
             } else {
-              EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix);
+              EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix, utf);
               info.setVisible(true);
               if (info.accepted) {
                 pg.bUnix = info.getUnix();
+                pg.utf16 = info.getUTF16();
               }
             }
             return;

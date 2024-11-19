@@ -13,7 +13,7 @@ public class EditDocInfo extends javax.swing.JDialog {
   /**
    * Creates new form EditDocInfo
    */
-  public EditDocInfo(java.awt.Frame parent, boolean modal, String file, int lines, int x, int y, boolean unix) {
+  public EditDocInfo(java.awt.Frame parent, boolean modal, String file, int lines, int x, int y, boolean unix, boolean utf16) {
     super(parent, modal);
     initComponents();
     this.file.setText(file);
@@ -21,6 +21,7 @@ public class EditDocInfo extends javax.swing.JDialog {
     this.x.setText(String.format("%d",x));
     this.y.setText(String.format("%d",y));
     this.eol.setSelectedIndex(unix ? 1 : 0);
+    this.utf.setSelectedIndex(utf16 ? 1 : 0);
     JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
     JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
     JFAWT.centerWindow(this);
@@ -48,6 +49,8 @@ public class EditDocInfo extends javax.swing.JDialog {
     jLabel5 = new javax.swing.JLabel();
     jLabel6 = new javax.swing.JLabel();
     y = new javax.swing.JTextField();
+    jLabel7 = new javax.swing.JLabel();
+    utf = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Document Info");
@@ -92,6 +95,10 @@ public class EditDocInfo extends javax.swing.JDialog {
     y.setMinimumSize(new java.awt.Dimension(100, 22));
     y.setPreferredSize(new java.awt.Dimension(100, 22));
 
+    jLabel7.setText("UTF");
+
+    utf.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8", "16" }));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -108,6 +115,15 @@ public class EditDocInfo extends javax.swing.JDialog {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(lines))
           .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel4)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(eol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGap(0, 262, Short.MAX_VALUE)
+            .addComponent(cancel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(ok))
+          .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel5)
@@ -119,14 +135,9 @@ public class EditDocInfo extends javax.swing.JDialog {
             .addComponent(y, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(0, 0, Short.MAX_VALUE))
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel4)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(eol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 262, Short.MAX_VALUE)
-            .addComponent(cancel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(ok)))
+            .addComponent(jLabel7)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(utf, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -148,9 +159,13 @@ public class EditDocInfo extends javax.swing.JDialog {
           .addComponent(jLabel6)
           .addComponent(y, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jLabel4)
-          .addComponent(eol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(eol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel7)
+          .addComponent(utf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(ok)
@@ -180,8 +195,10 @@ public class EditDocInfo extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
   private javax.swing.JTextField lines;
   private javax.swing.JButton ok;
+  private javax.swing.JComboBox<String> utf;
   private javax.swing.JTextField x;
   private javax.swing.JTextField y;
   // End of variables declaration//GEN-END:variables
@@ -190,5 +207,9 @@ public class EditDocInfo extends javax.swing.JDialog {
 
   public boolean getUnix() {
     return eol.getSelectedIndex() == 1;
+  }
+
+  public boolean getUTF16() {
+    return utf.getSelectedIndex() == 1;
   }
 }
