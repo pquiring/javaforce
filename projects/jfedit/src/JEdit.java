@@ -533,7 +533,9 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       if (size >= 2) {
         int c1 = txt[0] & 0xff;
         int c2 = txt[1] & 0xff;
-        if ((c1 == 0xff && c2 == 0xfe) || (c1 == 0xfe && c2 == 0xff) || (txt[1] == 0)) {
+        //ff fe = UTF-16 little endian (MS) (xx 00)
+        //fe ff = UTF-16 big endian (Java)  (00 xx)
+        if ((c1 == 0xff && c2 == 0xfe) || (c1 == 0xfe && c2 == 0xff) || (c1 == 0) || (c2 == 0)) {
           encoding = "UTF-16";
         }
       }
