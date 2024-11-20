@@ -1,5 +1,5 @@
 /*
- * jfhexbig.java
+ * JHexBig.java
  *
  * Created on July 30, 2007, 10:13 AM
  */
@@ -21,10 +21,10 @@ import javax.swing.text.*;
 import javaforce.*;
 import javaforce.awt.*;
 
-public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
+public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
 
   /** Creates new form jfhexbig */
-  public jfhexbig() {
+  public JHexBig() {
     initComponents();
     initApp();
     //allow TAB usage by disabling key binding to focus traversal
@@ -156,10 +156,10 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     FormListener() {}
     public void actionPerformed(java.awt.event.ActionEvent evt) {
       if (evt.getSource() == prev) {
-        jfhexbig.this.prevActionPerformed(evt);
+        prevActionPerformed(evt);
       }
       else if (evt.getSource() == next) {
-        jfhexbig.this.nextActionPerformed(evt);
+        nextActionPerformed(evt);
       }
     }
 
@@ -167,14 +167,14 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     }
 
     public void componentMoved(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == jfhexbig.this) {
-        jfhexbig.this.formComponentMoved(evt);
+      if (evt.getSource() == this) {
+        formComponentMoved(evt);
       }
     }
 
     public void componentResized(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == jfhexbig.this) {
-        jfhexbig.this.formComponentResized(evt);
+      if (evt.getSource() == this) {
+        formComponentResized(evt);
       }
     }
 
@@ -183,7 +183,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
 
     public void keyPressed(java.awt.event.KeyEvent evt) {
       if (evt.getSource() == tabs) {
-        jfhexbig.this.tabsKeyPressed(evt);
+        tabsKeyPressed(evt);
       }
     }
 
@@ -195,7 +195,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
 
     public void mouseClicked(java.awt.event.MouseEvent evt) {
       if (evt.getSource() == tabs) {
-        jfhexbig.this.tabsMouseClicked(evt);
+        tabsMouseClicked(evt);
       }
     }
 
@@ -218,8 +218,8 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     }
 
     public void windowClosing(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == jfhexbig.this) {
-        jfhexbig.this.formWindowClosing(evt);
+      if (evt.getSource() == this) {
+        formWindowClosing(evt);
       }
     }
 
@@ -236,14 +236,14 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     }
 
     public void windowStateChanged(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == jfhexbig.this) {
-        jfhexbig.this.formWindowStateChanged(evt);
+      if (evt.getSource() == this) {
+        formWindowStateChanged(evt);
       }
     }
 
     public void stateChanged(javax.swing.event.ChangeEvent evt) {
       if (evt.getSource() == tabs) {
-        jfhexbig.this.tabsStateChanged(evt);
+        tabsStateChanged(evt);
       }
     }
   }// </editor-fold>//GEN-END:initComponents
@@ -358,12 +358,12 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
   public static String args[];
   public static void main(String args[]) {
     if (JF.isUnix() && System.getenv("DISPLAY") == null) {
-      THex.main(args);
+      THexBig.main(args);
     } else {
-      jfhexbig.args = args;
+      JHexBig.args = args;
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
-          new jfhexbig().setVisible(true);
+          new JHexBig().setVisible(true);
         }
       });
     }

@@ -18,7 +18,7 @@ import javaforce.awt.*;
 
 public class Hex extends JComponent implements KeyListener/*, MouseListener*/ {
 
-  public Hex(jfhexbig jh) {
+  public Hex(JHexBig jh) {
     this.jh = jh;
     setFocusable(true);
     data = new byte[512];
@@ -32,7 +32,7 @@ public class Hex extends JComponent implements KeyListener/*, MouseListener*/ {
   public int length;
 
   //private data
-  private jfhexbig jh;
+  private JHexBig jh;
   private static int fx, fy;  //font size x/y
   private static int baseline;
   private static Color foreColor = Color.BLACK, backColor = Color.WHITE;

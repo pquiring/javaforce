@@ -12,7 +12,7 @@ import javaforce.*;
 import javaforce.ansi.server.*;
 import javaforce.jni.*;
 
-public class THex implements KeyEvents {
+public class THexBig implements KeyEvents {
   public static String args[];
   public ArrayList<Tab> tabs = new ArrayList<Tab>();
   public int tabidx;
@@ -691,9 +691,9 @@ public class THex implements KeyEvents {
   }
 
   public static void main(String args[]) {
-    THex.args = args;
+    THexBig.args = args;
     ANSI.enableConsoleMode();
-    new THex().run();
+    new THexBig().run();
     ANSI.disableConsoleMode();
   }
 
@@ -783,7 +783,7 @@ public class THex implements KeyEvents {
   }
 
   public void loadConfig() {
-    jfhexbig.loadcfg(false);
+    JHexBig.loadcfg(false);
   }
 
   public void processArgs() {
