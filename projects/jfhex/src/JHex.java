@@ -403,33 +403,35 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   private int getidx() { return tabs.getSelectedIndex(); }
   private boolean savepage() {
     int idx = getidx();
-    if (pages.get(idx).dirty == false) return true;
-    if (pages.get(idx).filename.toString().equals("untitled")) {return savepageas();}
+    page pg = pages.get(idx);
+    if (pg.dirty == false) return true;
+    if (pg.filename.toString().equals("untitled")) {return savepageas();}
     String tmp;
     try {
-      tmp = pages.get(idx).hex.getText();
-      FileOutputStream fos = new FileOutputStream(pages.get(idx).filename);
+      tmp = pg.hex.getText();
+      FileOutputStream fos = new FileOutputStream(pg.filename);
       byte data[] = tmp.getBytes("ISO-8859-1");
       fos.write(data);
       fos.close();
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
-      pages.get(idx).dirty = false;
+      tabs.setTitleAt(idx, pg.filename.getName());
+      pg.dirty = false;
       return true;
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to save '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to save '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
       return false;
     }
   }
   private boolean savepageas() {
     int idx = getidx();
+    page pg = pages.get(idx);
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(JF.getCurrentPath()));
     if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-      pages.get(idx).dirty = true;
-      pages.get(idx).filename = chooser.getSelectedFile();
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
+      pg.dirty = true;
+      pg.filename = chooser.getSelectedFile();
+      tabs.setTitleAt(idx, pg.filename.getName());
       return savepage();
     }
     return false;
@@ -440,9 +442,10 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   }
   private boolean closepage() {
     int idx = getidx();
-    if (pages.get(idx).dirty) {
+    page pg = pages.get(idx);
+    if (pg.dirty) {
       //confirm to Save : Yes/No/Cancel
-      switch (JOptionPane.showConfirmDialog(this, "Do you wish to save '" + pages.get(idx).filename.toString() + "' ?", "Confirm",
+      switch (JOptionPane.showConfirmDialog(this, "Do you wish to save '" + pg.filename.toString() + "' ?", "Confirm",
         JOptionPane.YES_NO_CANCEL_OPTION)) {
         case JOptionPane.YES_OPTION:
           if (!savepage()) return false;
@@ -461,21 +464,22 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   }
   private void openpage() {
     int idx = getidx();
+    page pg = pages.get(idx);
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(JF.getCurrentPath()));
     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       //check if current page is "untitled" and !dirty
-      if (pages.get(idx).filename.toString().equals("untitled") && pages.get(idx).dirty == false) {
+      if (pg.filename.toString().equals("untitled") && pg.dirty == false) {
         //load on current page
-        pages.get(idx).filename = chooser.getSelectedFile();
+        pg.filename = chooser.getSelectedFile();
       } else {
         addpage(chooser.getSelectedFile().getAbsolutePath(), "");
         idx = tabs.getTabCount() - 1;
       }
       loadpage(idx);
-      pages.get(idx).hex.grabFocus();
+      pg.hex.grabFocus();
     }
   }
   private void loadpages(String filespec) {
@@ -495,13 +499,14 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
   }
   private void loadpage(int idx) {
+    page pg = pages.get(idx);
     byte txt[];
-    if ((pages.get(idx).filename.toString().indexOf("*") != -1) || (pages.get(idx).filename.toString().indexOf("?") != -1)) {
+    if ((pg.filename.toString().indexOf("*") != -1) || (pg.filename.toString().indexOf("?") != -1)) {
       closepage(idx);
       return;
     }
     try {
-      File file = pages.get(idx).filename;
+      File file = pg.filename;
       if (!file.exists()) return;
       FileInputStream fis = new FileInputStream(file);
       txt = new byte[fis.available()];
@@ -509,11 +514,11 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
       fis.close();
       bLoading = true;
       setText(idx, new String(txt, "ISO-8859-1"));
-      pages.get(idx).hex.setCaretPosition(0);
+      pg.hex.setCaretPosition(0);
       bLoading = false;
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
+      tabs.setTitleAt(idx, pg.filename.getName());
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to open '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to open '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
       closepage(idx);
     }
   }
@@ -599,12 +604,13 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     String str;
     int line;
     int idx = getidx();
+    page pg = pages.get(idx);
     try {
       str = JOptionPane.showInputDialog(this, "Enter hex offset?",
         "Goto", JOptionPane.QUESTION_MESSAGE);
       if (str == null) return;
       line = JF.atox(str);
-      pages.get(idx).hex.setCaretPosition(line);
+      pg.hex.setCaretPosition(line);
     } catch (Exception e1) {}
   }
   private boolean isActive(Process proc) {
@@ -676,13 +682,15 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     if (bLoading) return;
     int idx = getidx();
     if (idx < 0 || idx >= pages.size()) return;
-    if (pages.get(idx).dirty == false) {
-      pages.get(idx).dirty = true;
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName() + " *");
+    page pg = pages.get(idx);
+    if (pg.dirty == false) {
+      pg.dirty = true;
+      tabs.setTitleAt(idx, pg.filename.getName() + " *");
     }
   }
   public void setText(int idx, String txt) {
-    pages.get(idx).hex.setText(txt);
+    page pg = pages.get(idx);
+    pg.hex.setText(txt);
   }
   public String binary2String(String in) {
     //in = "XX..."

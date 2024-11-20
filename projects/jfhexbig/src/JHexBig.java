@@ -369,8 +369,8 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
   private void tabsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabsMouseClicked
     int idx = tabs.getSelectedIndex();
     if (idx < 0 || idx >= pages.size()) return;
-    Page page = pages.get(idx);
-    page.hex.grabFocus();
+    Page pg = pages.get(idx);
+    pg.hex.grabFocus();
     System.out.println("tabs clicked");
   }//GEN-LAST:event_tabsMouseClicked
 
@@ -544,15 +544,16 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
   private int getidx() { return tabs.getSelectedIndex(); }
   private boolean savepage() {
     int idx = getidx();
-    if (pages.get(idx).dirty == false) return true;
-    if (pages.get(idx).filename.toString().equals("untitled")) {return false;}  //savepageas();}
+    Page pg = pages.get(idx);
+    if (pg.dirty == false) return true;
+    if (pg.filename.toString().equals("untitled")) {return false;}  //savepageas();}
     try {
       writeBlock(idx);
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
-      pages.get(idx).dirty = false;
+      tabs.setTitleAt(idx, pg.filename.getName());
+      pg.dirty = false;
       return true;
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to save '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to save '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
       return false;
     }
   }
@@ -562,9 +563,10 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
   }
   private boolean closepage() {
     int idx = getidx();
-    if (pages.get(idx).dirty) {
+    Page pg = pages.get(idx);
+    if (pg.dirty) {
       //confirm to Save : Yes/No/Cancel
-      switch (JOptionPane.showConfirmDialog(this, "Do you wish to save '" + pages.get(idx).filename.toString() + "' ?", "Confirm",
+      switch (JOptionPane.showConfirmDialog(this, "Do you wish to save '" + pg.filename.toString() + "' ?", "Confirm",
         JOptionPane.YES_NO_CANCEL_OPTION)) {
         case JOptionPane.YES_OPTION:
           if (!savepage()) return false;
@@ -583,21 +585,22 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
   }
   private void openpage() {
     int idx = getidx();
+    Page pg = pages.get(idx);
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(JF.getCurrentPath()));
     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       //check if current Page is "untitled" and !dirty
-      if (pages.get(idx).filename.toString().equals("untitled") && pages.get(idx).dirty == false) {
+      if (pg.filename.toString().equals("untitled") && pg.dirty == false) {
         //load on current Page
-        pages.get(idx).filename = chooser.getSelectedFile();
+        pg.filename = chooser.getSelectedFile();
       } else {
         addpage(chooser.getSelectedFile().getAbsolutePath(), new byte[0]);
         idx = tabs.getTabCount() - 1;
       }
       loadpage(idx);
-      pages.get(idx).hex.grabFocus();
+      pg.hex.grabFocus();
     }
   }
   private void loadpages(String filespec) {
@@ -617,28 +620,28 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     }
   }
   private void loadpage(int idx) {
-    byte txt[];
-    if ((pages.get(idx).filename.toString().indexOf("*") != -1) || (pages.get(idx).filename.toString().indexOf("?") != -1)) {
+    Page pg = pages.get(idx);
+    if ((pg.filename.toString().indexOf("*") != -1) || (pg.filename.toString().indexOf("?") != -1)) {
       closepage(idx);
       return;
     }
     try {
       readBlock(idx);
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
+      tabs.setTitleAt(idx, pg.filename.getName());
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to open '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to open '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
       closepage(idx);
     }
   }
   private void readBlock(int idx) throws Exception {
-    Page page = pages.get(idx);
-    File file = page.filename;
+    Page pg = pages.get(idx);
+    File file = pg.filename;
     if (!file.exists()) throw new Exception("file not found");
     RandomAccessFile fis = new RandomAccessFile(file, "r");
     long len = fis.length();
-    if (page.block * 512 > len) {fis.close(); throw new Exception("beyond eof");}
+    if (pg.block * 512 > len) {fis.close(); throw new Exception("beyond eof");}
     byte[] txt = new byte[512];
-    fis.seek(page.block * 512);
+    fis.seek(pg.block * 512);
     int read = fis.read(txt);
     fis.close();
     if (read != 512) {
@@ -648,31 +651,31 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     }
     bLoading = true;
     setData(idx, txt);
-    page.hex.setCaretPosition(0);
+    pg.hex.setCaretPosition(0);
     bLoading = false;
   }
   private void writeBlock(int idx) throws Exception {
-    Page page = pages.get(idx);
-    byte tmp[] = page.hex.getData();
-    File file = page.filename;
+    Page pg = pages.get(idx);
+    byte tmp[] = pg.hex.getData();
+    File file = pg.filename;
     if (!file.exists()) throw new Exception("file not found");
     RandomAccessFile fos = new RandomAccessFile(file, "rw");
     long len = fos.length();
-    if (page.block * 512 > len) throw new Exception("write failed");
-    fos.seek(page.block * 512);
+    if (pg.block * 512 > len) throw new Exception("write failed");
+    fos.seek(pg.block * 512);
     fos.write(tmp);
     fos.close();
   }
   private void updateStats(int idx) {
     if (idx < 0 || idx >= pages.size()) return;
-    Page page = pages.get(idx);
-    block.setText("" + page.block);
-    offset.setText("" + page.block * 512);
+    Page pg = pages.get(idx);
+    block.setText("" + pg.block);
+    offset.setText("" + pg.block * 512);
   }
   private void doNextBlock() {
     int idx = getidx();
-    Page page = pages.get(idx);
-    if (page.dirty) {
+    Page pg = pages.get(idx);
+    if (pg.dirty) {
       try {
         writeBlock(idx);
       } catch (Exception e) {
@@ -680,14 +683,14 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
         return;
       }
     }
-    page.block++;
-    try { readBlock(idx); } catch (Exception e) {page.block--;}
+    pg.block++;
+    try { readBlock(idx); } catch (Exception e) {pg.block--;}
     updateStats(idx);
   }
   private void doPrevBlock() {
     int idx = getidx();
-    Page page = pages.get(idx);
-    if (page.dirty) {
+    Page pg = pages.get(idx);
+    if (pg.dirty) {
       try {
         writeBlock(idx);
       } catch (Exception e) {
@@ -695,8 +698,8 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
         return;
       }
     }
-    if (page.block == 0) return;
-    page.block--;
+    if (pg.block == 0) return;
+    pg.block--;
     try { readBlock(idx); } catch (Exception e) {}
     updateStats(idx);
   }
@@ -784,13 +787,13 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     String str;
     int pos;
     int idx = getidx();
-    Page page = pages.get(idx);
+    Page pg = pages.get(idx);
     try {
       str = JOptionPane.showInputDialog(this, "Enter hex offset?",
         "Goto", JOptionPane.QUESTION_MESSAGE);
       if (str == null) return;
       pos = JF.atox(str);
-      if (page.dirty) {
+      if (pg.dirty) {
         try {
           writeBlock(idx);
         } catch (Exception e) {
@@ -798,10 +801,10 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
           return;
         }
       }
-      page.block = pos / 512;
-      pos -= (page.block * 512);
+      pg.block = pos / 512;
+      pos -= (pg.block * 512);
       readBlock(idx);
-      page.hex.setCaretPosition(pos);
+      pg.hex.setCaretPosition(pos);
       updateStats(idx);
     } catch (Exception e1) {}
   }
@@ -874,13 +877,15 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     if (bLoading) return;
     int idx = getidx();
     if (idx < 0 || idx >= pages.size()) return;
-    if (pages.get(idx).dirty == false) {
-      pages.get(idx).dirty = true;
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName() + " *");
+    Page pg = pages.get(idx);
+    if (pg.dirty == false) {
+      pg.dirty = true;
+      tabs.setTitleAt(idx, pg.filename.getName() + " *");
     }
   }
   public void setData(int idx, byte data[]) {
-    pages.get(idx).hex.setData(data);
+    Page pg = pages.get(idx);
+    pg.hex.setData(data);
   }
   public String binary2String(String in) {
     //in = "XX..."
