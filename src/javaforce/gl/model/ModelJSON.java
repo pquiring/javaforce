@@ -41,6 +41,7 @@ public class ModelJSON implements Model_IO {
   }
   public Model load(InputStream is) {
     Model model = new Model();
+    int mapidx = 0;
     try {
       String json = new String(is.readAllBytes());
       JSON.debug = debug;
@@ -104,7 +105,8 @@ public class ModelJSON implements Model_IO {
               {
                 Object3 obj = new Object3();
                 obj.type = GL.GL_QUADS;
-                obj.createUVMap();
+                UVMap map = obj.createUVMap();
+                map.name = "map-" + mapidx++;
                 model.addObject(obj);
                 //set origin (pivot)
                 obj.org.x = pvts[0] / scale;
