@@ -22,8 +22,22 @@ public class ModelJSON implements Model_IO {
   private float tw, th;
   private float width, height, depth;
   private boolean mirror;
+  public ModelJSON() {
+    this.scale = 16f;
+  }
   public ModelJSON(float scale) {
     this.scale = scale;
+  }
+  public Model load(String filename) {
+    try {
+      InputStream is = new FileInputStream(filename);
+      Model model = load(is);
+      is.close();
+      return model;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
   public Model load(InputStream is) {
     Model model = new Model();

@@ -21,7 +21,7 @@ public class ModelOBJ implements Model_IO {
   public Model load(String filename) {
     try {
       InputStream is = new FileInputStream(filename);
-      Model model = loadObj(is);
+      Model model = load(is);
       is.close();
       return model;
     } catch (Exception e) {
@@ -30,14 +30,6 @@ public class ModelOBJ implements Model_IO {
     }
   }
   public Model load(InputStream is) {
-    try {
-      return loadObj(is);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-  private Model loadObj(InputStream is) {
     try {
       Model model = new Model();
       Object3 object = null;

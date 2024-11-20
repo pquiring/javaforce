@@ -6,12 +6,11 @@ package javaforce.gl.model;
  * @author pquiring
  */
 
-import javaforce.gl.model.ModelBLEND;
-import javaforce.gl.model.ModelJF3D;
-import javaforce.gl.model.Model3DS;
 import java.io.*;
-import javaforce.JFLog;
-import javaforce.gl.Model;
+
+import javaforce.*;
+import javaforce.gl.*;
+import javaforce.gl.model.*;
 
 public class Convert {
   public static void usage() {
@@ -58,6 +57,9 @@ public class Convert {
     } else if (in.toLowerCase().endsWith(".obj")) {
       ModelOBJ obj = new ModelOBJ();
       model = obj.load(in);
+    } else if (in.toLowerCase().endsWith(".json")) {
+      ModelJSON obj = new ModelJSON();
+      model = obj.load(in);
     } else {
       usage();
     }
@@ -75,8 +77,9 @@ public class Convert {
       File f = ins[a];
       if (f.isDirectory()) continue;
       String fn = f.getName();
-      if (!fn.endsWith(".3ds") && !fn.endsWith(".blend") && !fn.endsWith(".obj")) continue;
+      if (!fn.endsWith(".3ds") && !fn.endsWith(".blend") && !fn.endsWith(".obj") && !fn.endsWith(".json")) continue;
       int extlen = 4;
+      if (fn.endsWith(".json")) extlen = 5;
       if (fn.endsWith(".blend")) extlen = 6;
       String _in = f.getAbsolutePath();
       String _out = out + "/" + fn.substring(0, fn.length() - extlen) + ".jf3d";
