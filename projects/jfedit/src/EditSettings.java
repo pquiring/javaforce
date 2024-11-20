@@ -46,6 +46,8 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel3 = new javax.swing.JLabel();
     jLabel4 = new javax.swing.JLabel();
     cbTabToSpaces = new javax.swing.JCheckBox();
+    jLabel5 = new javax.swing.JLabel();
+    encoding = new javax.swing.JComboBox<>();
 
     FormListener formListener = new FormListener();
 
@@ -103,6 +105,10 @@ public class EditSettings extends javax.swing.JDialog {
     cbTabToSpaces.setMargin(new java.awt.Insets(0, 0, 0, 0));
     cbTabToSpaces.setPreferredSize(new java.awt.Dimension(131, 15));
 
+    jLabel5.setText("Default Encoding");
+
+    encoding.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UTF-8", "UTF-16BE", "UTF-16LE" }));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -121,7 +127,7 @@ public class EditSettings extends javax.swing.JDialog {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
               .addComponent(sTabSize)
-              .addComponent(sFontSize, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)))
+              .addComponent(sFontSize)))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -133,7 +139,11 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(cbLineWrap)
           .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
             .addComponent(cbTabToSpaces, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(cbClean, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addComponent(cbClean, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(encoding, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(199, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -154,6 +164,10 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(eol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel3)
           .addComponent(jLabel4))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel5)
+          .addComponent(encoding, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbClean)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -162,7 +176,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(cbLineWrap)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbTabToSpaces, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
+        .addGap(24, 24, 24)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(bOk)
           .addComponent(bCancel))
@@ -272,11 +286,13 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox cbLineWrap;
   private javax.swing.JCheckBox cbPreserve;
   private javax.swing.JCheckBox cbTabToSpaces;
+  private javax.swing.JComboBox<String> encoding;
   private javax.swing.JComboBox<String> eol;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
   private javax.swing.JSpinner sFontSize;
   private javax.swing.JSpinner sTabSize;
   // End of variables declaration//GEN-END:variables
@@ -292,10 +308,30 @@ public class EditSettings extends javax.swing.JDialog {
     dialog.setVisible(true);
   }
 
+  private int loadEncoding() {
+    if (settings.encoding == null) return 0;
+    switch (settings.encoding) {
+      case Encodings.utf8: return 0;
+      case Encodings.utf16be: return 1;
+      case Encodings.utf16le: return 2;
+    }
+    return 0;
+  }
+
+  private String saveEncoding() {
+    switch (encoding.getSelectedIndex()) {
+      case 0: return Encodings.utf8;
+      case 1: return Encodings.utf16be;
+      case 2: return Encodings.utf16le;
+    }
+    return Encodings.utf8;
+  }
+
   private void load() {
     sFontSize.setValue(settings.fontSize);
     cbPreserve.setSelected(settings.bPreserve);
     eol.setSelectedIndex(settings.bUnix ? 1 : 0);
+    encoding.setSelectedIndex(loadEncoding());
     cbClean.setSelected(settings.bClean);
     sTabSize.setValue(settings.tabSize);
     cbAutoIndent.setSelected(settings.bAutoIndent);
@@ -307,6 +343,7 @@ public class EditSettings extends javax.swing.JDialog {
     settings.fontSize = ((Integer)sFontSize.getValue()).intValue();
     settings.bPreserve = cbPreserve.isSelected();
     settings.bUnix = eol.getSelectedIndex() == 1;
+    settings.encoding = saveEncoding();
     settings.bClean = cbClean.isSelected();
     settings.tabSize = ((Integer)sTabSize.getValue()).intValue();
     settings.bAutoIndent = cbAutoIndent.isSelected();

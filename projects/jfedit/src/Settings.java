@@ -3,6 +3,7 @@ public class Settings {
 
   public boolean bPreserve = true;
   public boolean bUnix = true;
+  public String encoding = Encodings.utf8;
   public boolean bClean = false;
   public int fontSize = 12;
   public boolean bWindowMax = false;

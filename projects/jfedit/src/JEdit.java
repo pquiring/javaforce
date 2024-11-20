@@ -259,7 +259,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     boolean dirty;
     File filename;
     boolean bUnix;
-    boolean utf16;
+    String encoding;
     long ts;
   };
   private Vector<page> pages;
@@ -381,7 +381,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private page addpage(String title) {
     page pg = new page();
     pg.bUnix = Settings.settings.bUnix;
-    pg.utf16 = false;
+    pg.encoding = Settings.settings.encoding;
     pg.panel = JFAWT.createJPanel(new GridLayout(), null);
     pg.txt = createJFTextArea();
     pg.scroll = new JScrollPane(pg.txt);
@@ -398,50 +398,48 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private int getidx() { return tabs.getSelectedIndex(); }
   private boolean savepage() {
     int idx = getidx();
-    if (pages.get(idx).dirty == false) return true;
-    if (pages.get(idx).filename.toString().equals("untitled")) {return savepageas();}
+    page pg = pages.get(idx);
+    if (pg.dirty == false) return true;
+    if (pg.filename.toString().equals("untitled")) {return savepageas();}
     String tmp;
     try {
-      tmp = pages.get(idx).txt.getText();
+      tmp = pg.txt.getText();
       if (Settings.settings.bClean) {
         boolean cleaned = false;
         while (tmp.indexOf(" \n") != -1) {tmp = tmp.replaceAll(" \n" ,"\n");cleaned = true;}
         if (cleaned) {
-          int pos = pages.get(idx).txt.getCaretPosition();
-          int line = pages.get(idx).txt.getLineOfOffset(pos);
-          setText(pages.get(idx).txt, tmp);
-          pages.get(idx).txt.setCaretPosition(pages.get(idx).txt.getLineStartOffset(line));
+          int pos = pg.txt.getCaretPosition();
+          int line = pg.txt.getLineOfOffset(pos);
+          setText(pg.txt, tmp);
+          pg.txt.setCaretPosition(pg.txt.getLineStartOffset(line));
         }
       }
-      if (!pages.get(idx).bUnix) {
+      if (!pg.bUnix) {
         tmp = tmp.replaceAll("\n", "\r\n");
       }
-      String encoding = "UTF-8";
-      if (pages.get(idx).utf16) {
-        encoding = "UTF-16";
-      }
       FileOutputStream fos = new FileOutputStream(pages.get(idx).filename);
-      fos.write(tmp.getBytes(encoding));
+      fos.write(tmp.getBytes(pg.encoding));
       fos.close();
-      pages.get(idx).ts = pages.get(idx).filename.lastModified();
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
-      pages.get(idx).dirty = false;
+      pg.ts = pg.filename.lastModified();
+      tabs.setTitleAt(idx, pg.filename.getName());
+      pg.dirty = false;
       return true;
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to save '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to save '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
       return false;
     }
   }
   private boolean savepageas() {
     int idx = getidx();
+    page pg = pages.get(idx);
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(JF.getCurrentPath()));
     if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-      pages.get(idx).dirty = true;
-      pages.get(idx).filename = chooser.getSelectedFile();
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
+      pg.dirty = true;
+      pg.filename = chooser.getSelectedFile();
+      tabs.setTitleAt(idx, pg.filename.getName());
       return savepage();
     }
     return false;
@@ -452,9 +450,10 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private boolean closepage() {
     int idx = getidx();
-    if (pages.get(idx).dirty) {
+    page pg = pages.get(idx);
+    if (pg.dirty) {
       //confirm to Save : Yes/No/Cancel
-      switch (JOptionPane.showConfirmDialog(this, "Do you wish to save '" + pages.get(idx).filename.toString() + "' ?", "Confirm",
+      switch (JOptionPane.showConfirmDialog(this, "Do you wish to save '" + pg.filename.toString() + "' ?", "Confirm",
         JOptionPane.YES_NO_CANCEL_OPTION)) {
         case JOptionPane.YES_OPTION:
           if (!savepage()) return false;
@@ -474,21 +473,22 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private void openpage() {
     int idx = getidx();
+    page pg = pages.get(idx);
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(JF.getCurrentPath()));
     if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
       //check if current page is "untitled" and !dirty
-      if (pages.get(idx).filename.toString().equals("untitled") && pages.get(idx).dirty == false) {
+      if (pg.filename.toString().equals("untitled") && pg.dirty == false) {
         //load on current page
-        pages.get(idx).filename = chooser.getSelectedFile();
+        pg.filename = chooser.getSelectedFile();
       } else {
         addpage(chooser.getSelectedFile().getAbsolutePath());
         idx = tabs.getTabCount() - 1;
       }
       loadpage(idx);
-      pages.get(idx).txt.grabFocus();
+      pg.txt.grabFocus();
     }
   }
   private void loadpages(String filespec) {
@@ -508,13 +508,14 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
   }
   private void loadpage(int idx) {
+    page pg = pages.get(idx);
     byte txt[];
-    if ((pages.get(idx).filename.toString().indexOf("*") != -1) || (pages.get(idx).filename.toString().indexOf("?") != -1)) {
+    if ((pg.filename.toString().indexOf("*") != -1) || (pg.filename.toString().indexOf("?") != -1)) {
       closepage(idx);
       return;
     }
     try {
-      File file = pages.get(idx).filename;
+      File file = pg.filename;
       if (!file.exists()) return;
       int size = (int)file.length();
       FileInputStream fis = new FileInputStream(file);
@@ -527,19 +528,23 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       txt = new byte[size];
       fis.read(txt);
       fis.close();
-      pages.get(idx).ts = pages.get(idx).filename.lastModified();
+      pg.ts = pg.filename.lastModified();
       bLoading = true;
-      String encoding = "UTF-8";
+      //detect encoding
+      pg.encoding = Encodings.utf8;
       if (size >= 2) {
         int c1 = txt[0] & 0xff;
         int c2 = txt[1] & 0xff;
         //ff fe = UTF-16 little endian (MS) (xx 00)
+        if ((c1 == 0xff && c2 == 0xfe) || (c2 == 0)) {
+          pg.encoding = Encodings.utf16le;
+        }
         //fe ff = UTF-16 big endian (Java)  (00 xx)
-        if ((c1 == 0xff && c2 == 0xfe) || (c1 == 0xfe && c2 == 0xff) || (c1 == 0) || (c2 == 0)) {
-          encoding = "UTF-16";
+        if ((c1 == 0xfe && c2 == 0xff) || (c1 == 0)) {
+          pg.encoding = Encodings.utf16be;
         }
       }
-      String str = new String(txt, encoding);
+      String str = new String(txt, pg.encoding);
       boolean bUnix = Settings.settings.bUnix;
       if (Settings.settings.bPreserve) {
         int lf = str.indexOf("\n");
@@ -547,14 +552,13 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
           if (txt[lf-1] == '\r') bUnix = false; else bUnix = true;
         }
       }
-      pages.get(idx).bUnix = bUnix;
-      pages.get(idx).utf16 = encoding.equals("UTF-16");
-      setText(pages.get(idx).txt, str);
-      pages.get(idx).txt.setCaretPosition(0);
+      pg.bUnix = bUnix;
+      setText(pg.txt, str);
+      pg.txt.setCaretPosition(0);
       bLoading = false;
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName());
+      tabs.setTitleAt(idx, pg.filename.getName());
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to open '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to open '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
       closepage(idx);
     }
   }
@@ -576,12 +580,13 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private boolean findagain(boolean quiet) {
     int idx = getidx();
+    page pg = pages.get(idx);
     if (findstr == null || findstr.length() == 0) return false;
-    String txt = pages.get(idx).txt.getText();
+    String txt = pg.txt.getText();
     int txtlen = txt.length();
     int findstrlen = findstr.length();
     int pos = -1;
-    for(int a=pages.get(idx).txt.getCaretPosition();a<txt.length();a++) {
+    for(int a=pg.txt.getCaretPosition();a<txt.length();a++) {
       if (txt.regionMatches(!findcw, a, findstr, 0, findstrlen)) {
         if (findww) {
           if ((a > 0) && (isChar(txt.charAt(a-1)))) continue;
@@ -592,8 +597,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       }
     }
     if (pos == -1) {if (!quiet) notfound(); return false;}
-    pages.get(idx).txt.setCaretPosition(pos);
-    pages.get(idx).txt.select(pos, pos + findstr.length());
+    pg.txt.setCaretPosition(pos);
+    pg.txt.select(pos, pos + findstr.length());
     return true;
   }
   private void replace() {
@@ -607,12 +612,14 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private void replace_replace() {
     int idx = getidx();
-    pages.get(idx).txt.replaceSelection(repstr);
+    page pg = pages.get(idx);
+    pg.txt.replaceSelection(repstr);
   }
   private void replace_all() {
     int idx = getidx();
+    page pg = pages.get(idx);
     int cnt = 0;
-    JFTextArea txt = pages.get(idx).txt;
+    JFTextArea txt = pg.txt;
     txt.setCaretPosition(0);
     while (true) {
       if (!replace_find()) break;
@@ -627,13 +634,14 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     String str;
     int line;
     int idx = getidx();
+    page pg = pages.get(idx);
     try {
       str = JOptionPane.showInputDialog(this, "Which line?",
         "Goto", JOptionPane.QUESTION_MESSAGE);
       if (str == null) return;
       line = JF.atoi(str) - 1;
       if (line < 0) return;
-      pages.get(idx).txt.setCaretPosition(pages.get(idx).txt.getLineStartOffset(line));
+      pg.txt.setCaretPosition(pg.txt.getLineStartOffset(line));
     } catch (Exception e2) {}
   }
   private boolean isActive(Process proc) {
@@ -686,10 +694,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private void print() {
     int idx = getidx();
+    page pg = pages.get(idx);
     try {
-      pages.get(idx).txt.print();  //Java 1.6
+      pg.txt.print();  //Java 1.6
     } catch (Exception e) {
-      JOptionPane.showMessageDialog(this, "Failed to print '" + pages.get(idx).filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(this, "Failed to print '" + pg.filename.toString() + "'", "Warning", JOptionPane.ERROR_MESSAGE);
     }
   }
   private void exit() {
@@ -714,9 +723,10 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     if (bLoading) return;
     int idx = getidx();
     if (idx < 0 || idx >= pages.size()) return;
-    if (pages.get(idx).dirty == false) {
-      pages.get(idx).dirty = true;
-      tabs.setTitleAt(idx, pages.get(idx).filename.getName() + " *");
+    page pg = pages.get(idx);
+    if (pg.dirty == false) {
+      pg.dirty = true;
+      tabs.setTitleAt(idx, pg.filename.getName() + " *");
     }
   }
   public void setText(JFTextArea ta, String txt) {
@@ -786,7 +796,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void shift_left(char ch) {
     if (pages.size() == 0) return;
     int idx = getidx();
-    JFTextArea txt = pages.get(idx).txt;
+    page pg = pages.get(idx);
+    JFTextArea txt = pg.txt;
     int ss = txt.getSelectionStart();
     int se = txt.getSelectionEnd();
     if (ss == se) return;
@@ -804,7 +815,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void shift_right(char ch) {
     if (pages.size() == 0) return;
     int idx = getidx();
-    JFTextArea txt = pages.get(idx).txt;
+    page pg = pages.get(idx);
+    JFTextArea txt = pg.txt;
     int ss = txt.getSelectionStart();
     int se = txt.getSelectionEnd();
     if (ss == se) return;
@@ -827,7 +839,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void lowercase() {
     if (pages.size() == 0) return;
     int idx = getidx();
-    JFTextArea txt = pages.get(idx).txt;
+    page pg = pages.get(idx);
+    JFTextArea txt = pg.txt;
     int ss = txt.getSelectionStart();
     int se = txt.getSelectionEnd();
     if (ss == se) return;
@@ -839,7 +852,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void uppercase() {
     if (pages.size() == 0) return;
     int idx = getidx();
-    JFTextArea txt = pages.get(idx).txt;
+    page pg = pages.get(idx);
+    JFTextArea txt = pg.txt;
     int ss = txt.getSelectionStart();
     int se = txt.getSelectionEnd();
     if (ss == se) return;
@@ -909,7 +923,6 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
             page pg = pages.get(idx);
             txt = pg.txt;
             boolean bUnix = pg.bUnix;
-            boolean utf = pg.utf16;
             int cp, px, py;
             try {
               cp = txt.getCaretPosition();
@@ -929,11 +942,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
               info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
               JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
             } else {
-              EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix, utf);
+              EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix, pg.encoding);
               info.setVisible(true);
               if (info.accepted) {
                 pg.bUnix = info.getUnix();
-                pg.utf16 = info.getUTF16();
+                pg.encoding = info.getEncoding();
               }
             }
             return;

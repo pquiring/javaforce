@@ -13,7 +13,7 @@ public class EditDocInfo extends javax.swing.JDialog {
   /**
    * Creates new form EditDocInfo
    */
-  public EditDocInfo(java.awt.Frame parent, boolean modal, String file, int lines, int x, int y, boolean unix, boolean utf16) {
+  public EditDocInfo(java.awt.Frame parent, boolean modal, String file, int lines, int x, int y, boolean unix, String encoding) {
     super(parent, modal);
     initComponents();
     this.file.setText(file);
@@ -21,7 +21,11 @@ public class EditDocInfo extends javax.swing.JDialog {
     this.x.setText(String.format("%d",x));
     this.y.setText(String.format("%d",y));
     this.eol.setSelectedIndex(unix ? 1 : 0);
-    this.utf.setSelectedIndex(utf16 ? 1 : 0);
+    switch (encoding) {
+      case Encodings.utf8: this.encoding.setSelectedIndex(0); break;
+      case Encodings.utf16be: this.encoding.setSelectedIndex(1); break;
+      case Encodings.utf16le: this.encoding.setSelectedIndex(2); break;
+    }
     JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
     JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
     JFAWT.centerWindow(this);
@@ -50,7 +54,7 @@ public class EditDocInfo extends javax.swing.JDialog {
     jLabel6 = new javax.swing.JLabel();
     y = new javax.swing.JTextField();
     jLabel7 = new javax.swing.JLabel();
-    utf = new javax.swing.JComboBox<>();
+    encoding = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Document Info");
@@ -95,9 +99,9 @@ public class EditDocInfo extends javax.swing.JDialog {
     y.setMinimumSize(new java.awt.Dimension(100, 22));
     y.setPreferredSize(new java.awt.Dimension(100, 22));
 
-    jLabel7.setText("UTF");
+    jLabel7.setText("Encoding:");
 
-    utf.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8", "16" }));
+    encoding.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UTF-8", "UTF-16BE", "UTF-16LE" }));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -137,7 +141,7 @@ public class EditDocInfo extends javax.swing.JDialog {
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel7)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(utf, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addComponent(encoding, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -165,7 +169,7 @@ public class EditDocInfo extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel7)
-          .addComponent(utf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(encoding, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(ok)
@@ -187,6 +191,7 @@ public class EditDocInfo extends javax.swing.JDialog {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancel;
+  private javax.swing.JComboBox<String> encoding;
   private javax.swing.JComboBox<String> eol;
   private javax.swing.JTextField file;
   private javax.swing.JLabel jLabel1;
@@ -198,7 +203,6 @@ public class EditDocInfo extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel7;
   private javax.swing.JTextField lines;
   private javax.swing.JButton ok;
-  private javax.swing.JComboBox<String> utf;
   private javax.swing.JTextField x;
   private javax.swing.JTextField y;
   // End of variables declaration//GEN-END:variables
@@ -209,7 +213,12 @@ public class EditDocInfo extends javax.swing.JDialog {
     return eol.getSelectedIndex() == 1;
   }
 
-  public boolean getUTF16() {
-    return utf.getSelectedIndex() == 1;
+  public String getEncoding() {
+    switch (encoding.getSelectedIndex()) {
+      case 0: return Encodings.utf8;
+      case 1: return Encodings.utf16be;
+      case 2: return Encodings.utf16le;
+    }
+    return null;
   }
 }
