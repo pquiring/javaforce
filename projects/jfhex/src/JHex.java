@@ -87,14 +87,14 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
 
     public void componentMoved(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == JHex.this) {
-        JHex.this.formComponentMoved(evt);
+      if (evt.getSource() == this) {
+        formComponentMoved(evt);
       }
     }
 
     public void componentResized(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == JHex.this) {
-        JHex.this.formComponentResized(evt);
+      if (evt.getSource() == this) {
+        formComponentResized(evt);
       }
     }
 
@@ -103,7 +103,7 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
 
     public void keyPressed(java.awt.event.KeyEvent evt) {
       if (evt.getSource() == tabs) {
-        JHex.this.tabsKeyPressed(evt);
+        tabsKeyPressed(evt);
       }
     }
 
@@ -120,8 +120,8 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
 
     public void windowClosing(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == JHex.this) {
-        JHex.this.formWindowClosing(evt);
+      if (evt.getSource() == this) {
+        formWindowClosing(evt);
       }
     }
 
@@ -138,14 +138,14 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
 
     public void windowStateChanged(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == JHex.this) {
-        JHex.this.formWindowStateChanged(evt);
+      if (evt.getSource() == this) {
+        formWindowStateChanged(evt);
       }
     }
 
     public void stateChanged(javax.swing.event.ChangeEvent evt) {
       if (evt.getSource() == tabs) {
-        JHex.this.tabsStateChanged(evt);
+        tabsStateChanged(evt);
       }
     }
   }// </editor-fold>//GEN-END:initComponents
@@ -178,7 +178,6 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     int idx;
     switch (mod) {
       case 0:
-      case KeyEvent.SHIFT_DOWN_MASK:
         switch (key) {
           case KeyEvent.VK_F1: {
             JOptionPane.showMessageDialog(this,
@@ -208,11 +207,14 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
             for(int a=0;a<cnt;a++) {
               pages.get(a).hex.repaint();
             }
+            break;
           }
           case KeyEvent.VK_F3: {
             findagain(false); break;
           }
         }
+        break;
+      case KeyEvent.SHIFT_DOWN_MASK:
         break;
       case KeyEvent.CTRL_DOWN_MASK:
         switch (key) {
@@ -228,8 +230,8 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
           case KeyEvent.VK_E: { execute(); break; }
           case KeyEvent.VK_B: { find_bin(); break; }
           case KeyEvent.VK_T: { replace_bin(); break; }
-          case KeyEvent.VK_PAGE_UP: { prevtab(); evt.consume(); return; }
-          case KeyEvent.VK_PAGE_DOWN: { nexttab(); evt.consume(); return; }
+          case KeyEvent.VK_PAGE_UP: { prevtab(); evt.consume(); break; }
+          case KeyEvent.VK_PAGE_DOWN: { nexttab(); evt.consume(); break; }
         }
         break;
       case KeyEvent.ALT_DOWN_MASK:
