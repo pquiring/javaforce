@@ -1,5 +1,5 @@
 /*
- * jfhex.java
+ * JHex.java
  *
  * Created on July 30, 2007, 10:13 AM
  */
@@ -23,10 +23,10 @@ import javax.swing.text.*;
 
 import javaforce.awt.*;
 
-public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
+public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
 
-  /** Creates new form jfhex */
-  public jfhex() {
+  /** Creates new form JHex */
+  public JHex() {
     initComponents();
     initApp();
     //allow TAB usage by disabling key binding to focus traversal
@@ -87,14 +87,14 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
 
     public void componentMoved(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == jfhex.this) {
-        jfhex.this.formComponentMoved(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formComponentMoved(evt);
       }
     }
 
     public void componentResized(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == jfhex.this) {
-        jfhex.this.formComponentResized(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formComponentResized(evt);
       }
     }
 
@@ -103,7 +103,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
 
     public void keyPressed(java.awt.event.KeyEvent evt) {
       if (evt.getSource() == tabs) {
-        jfhex.this.tabsKeyPressed(evt);
+        JHex.this.tabsKeyPressed(evt);
       }
     }
 
@@ -120,8 +120,8 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
 
     public void windowClosing(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == jfhex.this) {
-        jfhex.this.formWindowClosing(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formWindowClosing(evt);
       }
     }
 
@@ -138,14 +138,14 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
 
     public void windowStateChanged(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == jfhex.this) {
-        jfhex.this.formWindowStateChanged(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formWindowStateChanged(evt);
       }
     }
 
     public void stateChanged(javax.swing.event.ChangeEvent evt) {
       if (evt.getSource() == tabs) {
-        jfhex.this.tabsStateChanged(evt);
+        JHex.this.tabsStateChanged(evt);
       }
     }
   }// </editor-fold>//GEN-END:initComponents
@@ -173,60 +173,79 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void tabsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tabsKeyPressed
     //Key Pressed
     updateStatus();
-    int f1 = evt.getKeyCode();
-    int f2 = evt.getModifiersEx() & JFAWT.KEY_MASKS;
+    int key = evt.getKeyCode();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     int idx;
-    if ((f1 == KeyEvent.VK_F1) && (f2 == 0)) {
-      JOptionPane.showMessageDialog(this,
-        "jfhex/" + JF.getVersion() + "\n\n" +
-        "F1 = Help\n" +
-        "F2 = Edit Settings\n" +
-        "CTRL-O = Open\n" +
-        "CTRL-W = Close\n" +
-        "CTRL-S = Save\n" +
-        "CTRL-Q = Save As\n" +
-        "CTRL-F = Find (string)\n" +
-        "CTRL-G/F3 = Find Again\n" +
-        "CTRL-R = Replace (string)\n" +
-        "CTRL-B = Find (binary)\n" +
-        "CTRL-T = Replace (binary)\n" +
-        "CTRL-L = Goto Byte Offset\n" +
-        "CTRL-E = Execute Command\n" +
-        "ALT-# = Switch to document\n\n"
-        , "Help", JOptionPane.INFORMATION_MESSAGE);
-      return;
+    switch (mod) {
+      case 0:
+      case KeyEvent.SHIFT_DOWN_MASK:
+        switch (key) {
+          case KeyEvent.VK_F1: {
+            JOptionPane.showMessageDialog(this,
+              "JHex/" + JF.getVersion() + "\n\n" +
+              "F1 = Help\n" +
+              "F2 = Edit Settings\n" +
+              "CTRL-O = Open\n" +
+              "CTRL-W = Close\n" +
+              "CTRL-S = Save\n" +
+              "CTRL-Q = Save As\n" +
+              "CTRL-F = Find (string)\n" +
+              "CTRL-G/F3 = Find Again\n" +
+              "CTRL-R = Replace (string)\n" +
+              "CTRL-B = Find (binary)\n" +
+              "CTRL-T = Replace (binary)\n" +
+              "CTRL-L = Goto Byte Offset\n" +
+              "CTRL-E = Execute Command\n" +
+              "ALT-# = Switch to document\n\n"
+              , "Help", JOptionPane.INFORMATION_MESSAGE);
+            break;
+          }
+          case KeyEvent.VK_F2: {
+            EditSettings.editSettings(this);
+            Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
+            Hex.changeFont(Settings.fnt);
+            int cnt = pages.size();
+            for(int a=0;a<cnt;a++) {
+              pages.get(a).hex.repaint();
+            }
+          }
+          case KeyEvent.VK_F3: {
+            findagain(false); break;
+          }
+        }
+        break;
+      case KeyEvent.CTRL_DOWN_MASK:
+        switch (key) {
+          case KeyEvent.VK_N: { addpage("untitled", ""); break; }
+          case KeyEvent.VK_S: { savepage(); break; }
+          case KeyEvent.VK_Q: { savepageas(); break; }
+          case KeyEvent.VK_W: { closepage(); break; }
+          case KeyEvent.VK_O: { openpage(); break; }
+          case KeyEvent.VK_F: { find(); break; }
+          case KeyEvent.VK_G: { findagain(false); break; }
+          case KeyEvent.VK_R: { replace(); break; }
+          case KeyEvent.VK_L: { gotopos(); break; }
+          case KeyEvent.VK_E: { execute(); break; }
+          case KeyEvent.VK_B: { find_bin(); break; }
+          case KeyEvent.VK_T: { replace_bin(); break; }
+          case KeyEvent.VK_PAGE_UP: { prevtab(); evt.consume(); return; }
+          case KeyEvent.VK_PAGE_DOWN: { nexttab(); evt.consume(); return; }
+        }
+        break;
+      case KeyEvent.ALT_DOWN_MASK:
+        if ((key >= KeyEvent.VK_0) && (key <= KeyEvent.VK_9)) {
+          idx = key - KeyEvent.VK_0;
+          if (idx == 0) idx = 9; else idx--;
+          if (idx >= pages.size()) break;
+          tabs.setSelectedIndex(idx);
+          break;
+        }
+        switch (key) {
+          case KeyEvent.VK_MINUS: tabs.setSelectedIndex(10); break;
+          case KeyEvent.VK_EQUALS: tabs.setSelectedIndex(11); break;
+        }
+        break;
     }
-    if ((f1 == KeyEvent.VK_F2) && (f2 == 0)) {
-      EditSettings.editSettings(this);
-      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
-      Hex.changeFont(Settings.fnt);
-      int cnt = pages.size();
-      for(int a=0;a<cnt;a++) {
-        pages.get(a).hex.repaint();
-      }
-    }
-    if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { addpage("untitled", ""); return; }
-    if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { savepage(); return; }
-    if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { savepageas(); return; }
-    if ((f1 == KeyEvent.VK_W) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { closepage(); return; }
-    if ((f1 == KeyEvent.VK_O) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { openpage(); return; }
-    if ((f1 == KeyEvent.VK_F) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { find(); return; }
-    if ((f1 == KeyEvent.VK_G) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { findagain(false); return; }
-    if ((f1 == KeyEvent.VK_F3) && (f2 == 0)) { findagain(false); return; }
-    if ((f1 == KeyEvent.VK_R) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { replace(); return; }
-    if ((f1 == KeyEvent.VK_L) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { gotopos(); return; }
-    if ((f1 == KeyEvent.VK_E) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { execute(); return; }
-    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
-      idx = f1 - KeyEvent.VK_0;
-      if (idx == 0) idx = 9; else idx--;
-      if (idx >= pages.size()) return;
-      tabs.setSelectedIndex(idx);
-      return;
-    }
-    if ((f1 == KeyEvent.VK_B) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { find_bin(); return; }
-    if ((f1 == KeyEvent.VK_T) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { replace_bin(); return; }
-    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_MINUS)) tabs.setSelectedIndex(10);
-    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_EQUALS)) tabs.setSelectedIndex(11);
   }//GEN-LAST:event_tabsKeyPressed
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -242,13 +261,13 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
    */
   public static String args[];
   public static void main(String args[]) {
-    jfhex.args = args;
+    JHex.args = args;
     if (JF.isUnix() && System.getenv("DISPLAY") == null) {
       THex.main(args);
     } else {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
-          new jfhex().setVisible(true);
+          new JHex().setVisible(true);
         }
       });
     }
@@ -270,7 +289,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private boolean bLoading = false;
 
   private void initApp() {
-    setTitle("jfhex");
+    setTitle("JHex");
     pages = new Vector<page>();
     loadcfg(true);
     setSize(Settings.WindowXSize, Settings.WindowYSize);
@@ -285,11 +304,11 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   public static void loadcfg(boolean gui) {
     XML xml = new XML();
-    String filename = JF.getUserPath() + "/.jfhex.xml";
+    String filename = JF.getUserPath() + "/.JHex.xml";
     File file = new File(filename);
     if (!file.exists()) return;  //doesn't exist
     if (!xml.read(filename)) return;  //bad cfg
-    if (!xml.root.name.equals("jfhex")) return;  //bad cfg
+    if (!xml.root.name.equals("JHex")) return;  //bad cfg
     xml.writeClass(xml.root, new Settings());
     if (gui) {
       Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
@@ -298,9 +317,9 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   public void savecfg() {
     XML xml = new XML();
     XML.XMLTag tag;
-    xml.root.name = "jfhex";
+    xml.root.name = "JHex";
     xml.readClass(xml.root, new Settings());
-    String filename = JF.getUserPath() + "/.jfhex.xml";
+    String filename = JF.getUserPath() + "/.JHex.xml";
     xml.write(filename);
   }
 //find data
@@ -700,5 +719,17 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     Hex hex = pg.hex;
     long offset = hex.getOffset();
     status.setText("Offset:0x" + Long.toString(offset, 16));
+  }
+  public void prevtab() {
+    int idx = tabs.getSelectedIndex();
+    idx--;
+    if (idx == -1) idx = pages.size() - 1;
+    tabs.setSelectedIndex(idx);
+  }
+  public void nexttab() {
+    int idx = tabs.getSelectedIndex();
+    idx++;
+    if (idx == pages.size()) idx = 0;
+    tabs.setSelectedIndex(idx);
   }
 }

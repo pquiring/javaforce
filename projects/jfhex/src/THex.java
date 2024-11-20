@@ -723,7 +723,7 @@ public class THex implements KeyEvents {
   }
 
   public void loadConfig() {
-    jfhex.loadcfg(false);
+    JHex.loadcfg(false);
   }
 
   public void processArgs() {
