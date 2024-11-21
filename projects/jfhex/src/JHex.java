@@ -48,7 +48,7 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
 
     FormListener formListener = new FormListener();
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     addWindowListener(formListener);
     addComponentListener(formListener);
     addWindowStateListener(formListener);
@@ -87,14 +87,14 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
 
     public void componentMoved(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == this) {
-        formComponentMoved(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formComponentMoved(evt);
       }
     }
 
     public void componentResized(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == this) {
-        formComponentResized(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formComponentResized(evt);
       }
     }
 
@@ -103,7 +103,7 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
 
     public void keyPressed(java.awt.event.KeyEvent evt) {
       if (evt.getSource() == tabs) {
-        tabsKeyPressed(evt);
+        JHex.this.tabsKeyPressed(evt);
       }
     }
 
@@ -120,8 +120,8 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
 
     public void windowClosing(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == this) {
-        formWindowClosing(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formWindowClosing(evt);
       }
     }
 
@@ -138,14 +138,14 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     }
 
     public void windowStateChanged(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == this) {
-        formWindowStateChanged(evt);
+      if (evt.getSource() == JHex.this) {
+        JHex.this.formWindowStateChanged(evt);
       }
     }
 
     public void stateChanged(javax.swing.event.ChangeEvent evt) {
       if (evt.getSource() == tabs) {
-        tabsStateChanged(evt);
+        JHex.this.tabsStateChanged(evt);
       }
     }
   }// </editor-fold>//GEN-END:initComponents

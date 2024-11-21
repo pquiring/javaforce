@@ -52,7 +52,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
 
     FormListener formListener = new FormListener();
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     addWindowListener(formListener);
     addComponentListener(formListener);
     addWindowStateListener(formListener);
@@ -155,11 +155,11 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
   private class FormListener implements java.awt.event.ActionListener, java.awt.event.ComponentListener, java.awt.event.KeyListener, java.awt.event.MouseListener, java.awt.event.WindowListener, java.awt.event.WindowStateListener, javax.swing.event.ChangeListener {
     FormListener() {}
     public void actionPerformed(java.awt.event.ActionEvent evt) {
-      if (evt.getSource() == prev) {
-        prevActionPerformed(evt);
+      if (evt.getSource() == next) {
+        JHexBig.this.nextActionPerformed(evt);
       }
-      else if (evt.getSource() == next) {
-        nextActionPerformed(evt);
+      else if (evt.getSource() == prev) {
+        JHexBig.this.prevActionPerformed(evt);
       }
     }
 
@@ -167,14 +167,14 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     }
 
     public void componentMoved(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == this) {
-        formComponentMoved(evt);
+      if (evt.getSource() == JHexBig.this) {
+        JHexBig.this.formComponentMoved(evt);
       }
     }
 
     public void componentResized(java.awt.event.ComponentEvent evt) {
-      if (evt.getSource() == this) {
-        formComponentResized(evt);
+      if (evt.getSource() == JHexBig.this) {
+        JHexBig.this.formComponentResized(evt);
       }
     }
 
@@ -183,7 +183,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
 
     public void keyPressed(java.awt.event.KeyEvent evt) {
       if (evt.getSource() == tabs) {
-        tabsKeyPressed(evt);
+        JHexBig.this.tabsKeyPressed(evt);
       }
     }
 
@@ -195,7 +195,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
 
     public void mouseClicked(java.awt.event.MouseEvent evt) {
       if (evt.getSource() == tabs) {
-        tabsMouseClicked(evt);
+        JHexBig.this.tabsMouseClicked(evt);
       }
     }
 
@@ -218,8 +218,8 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     }
 
     public void windowClosing(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == this) {
-        formWindowClosing(evt);
+      if (evt.getSource() == JHexBig.this) {
+        JHexBig.this.formWindowClosing(evt);
       }
     }
 
@@ -236,14 +236,14 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     }
 
     public void windowStateChanged(java.awt.event.WindowEvent evt) {
-      if (evt.getSource() == this) {
-        formWindowStateChanged(evt);
+      if (evt.getSource() == JHexBig.this) {
+        JHexBig.this.formWindowStateChanged(evt);
       }
     }
 
     public void stateChanged(javax.swing.event.ChangeEvent evt) {
       if (evt.getSource() == tabs) {
-        tabsStateChanged(evt);
+        JHexBig.this.tabsStateChanged(evt);
       }
     }
   }// </editor-fold>//GEN-END:initComponents
