@@ -151,23 +151,23 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   }// </editor-fold>//GEN-END:initComponents
 
   private void formComponentMoved(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentMoved
-    if (Settings.bWindowMax) return;
+    if (Settings.current.bWindowMax) return;
     Point loc = getLocation();
-    Settings.WindowXPos = loc.x;
-    Settings.WindowYPos = loc.y;
+    Settings.current.WindowXPos = loc.x;
+    Settings.current.WindowYPos = loc.y;
   }//GEN-LAST:event_formComponentMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
 //    System.out.println("resized");
-    if (Settings.bWindowMax) return;
+    if (Settings.current.bWindowMax) return;
     Dimension size = getSize();
-    Settings.WindowXSize = size.width;
-    Settings.WindowYSize = size.height;
+    Settings.current.WindowXSize = size.width;
+    Settings.current.WindowYSize = size.height;
   }//GEN-LAST:event_formComponentResized
 
   private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
 //    System.out.println("stateChanged");
-    Settings.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
+    Settings.current.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
   }//GEN-LAST:event_formWindowStateChanged
 
   private void tabsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tabsKeyPressed
@@ -201,8 +201,8 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
           }
           case KeyEvent.VK_F2: {
             EditSettings.editSettings(this);
-            Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
-            Hex.changeFont(Settings.fnt);
+            fnt = JFAWT.getMonospacedFont(0, Settings.current.fontSize);
+            Hex.changeFont(fnt);
             int cnt = pages.size();
             for(int a=0;a<cnt;a++) {
               pages.get(a).hex.repaint();
@@ -280,6 +280,7 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   private javax.swing.JLabel status;
   private javax.swing.JTabbedPane tabs;
   // End of variables declaration//GEN-END:variables
+
   private class page {
     JPanel panel;
     JScrollPane scroll;
@@ -289,14 +290,15 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
   };
   private Vector<page> pages;
   private boolean bLoading = false;
+  public static java.awt.Font fnt = new java.awt.Font("monospaced", java.awt.Font.PLAIN, 14);
 
   private void initApp() {
     setTitle("JHex");
     pages = new Vector<page>();
     loadcfg(true);
-    setSize(Settings.WindowXSize, Settings.WindowYSize);
-    setLocation(Settings.WindowXPos, Settings.WindowYPos);
-    if (Settings.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
+    setSize(Settings.current.WindowXSize, Settings.current.WindowYSize);
+    setLocation(Settings.current.WindowXPos, Settings.current.WindowYPos);
+    if (Settings.current.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
     if (args != null) {
       for(int a=0;a<args.length;a++) loadpages(args[a]);
     }
@@ -305,15 +307,16 @@ public class JHex extends javax.swing.JFrame implements FindEvent, ReplaceEvent,
     pages.get(0).hex.grabFocus();
   }
   public static void loadcfg(boolean gui) {
+    Settings.current = new Settings();
     XML xml = new XML();
-    String filename = JF.getUserPath() + "/.JHex.xml";
+    String filename = JF.getUserPath() + "/.jfhex.xml";
     File file = new File(filename);
     if (!file.exists()) return;  //doesn't exist
     if (!xml.read(filename)) return;  //bad cfg
     if (!xml.root.name.equals("JHex")) return;  //bad cfg
     xml.writeClass(xml.root, new Settings());
     if (gui) {
-      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
+      fnt = JFAWT.getMonospacedFont(0, Settings.current.fontSize);
     }
   }
   public void savecfg() {

@@ -23,7 +23,7 @@ public class Hex extends JComponent implements KeyListener {
     setFocusable(true);
     txt = new StringBuffer();
     addKeyListener(this);
-    changeFont(Settings.fnt);
+    changeFont(JHex.fnt);
     setText("");
   }
 
@@ -46,7 +46,7 @@ public class Hex extends JComponent implements KeyListener {
   private final int INF = 0x7fff;
 
   public static void changeFont(Font newFont) {
-    int metrics[] = JFAWT.getFontMetrics(Settings.fnt);
+    int metrics[] = JFAWT.getFontMetrics(JHex.fnt);
     fx = metrics[0];
     fy = metrics[1] + metrics[2];
     baseline = metrics[2];
@@ -96,7 +96,7 @@ public class Hex extends JComponent implements KeyListener {
     int endy;
     starty = r.y / fy;
     endy = (r.y + r.height) / fy + 1;
-    g.setFont(Settings.fnt);
+    g.setFont(JHex.fnt);
     char ch;
     //clear
     g.setColor(backColor);

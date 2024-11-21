@@ -250,23 +250,23 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
 
   private void formComponentMoved(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentMoved
 //    System.out.println("moved");
-    if (Settings.bWindowMax) return;
+    if (Settings.current.bWindowMax) return;
     Point loc = getLocation();
-    Settings.WindowXPos = loc.x;
-    Settings.WindowYPos = loc.y;
+    Settings.current.WindowXPos = loc.x;
+    Settings.current.WindowYPos = loc.y;
   }//GEN-LAST:event_formComponentMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
 //    System.out.println("resized");
-    if (Settings.bWindowMax) return;
+    if (Settings.current.bWindowMax) return;
     Dimension size = getSize();
-    Settings.WindowXSize = size.width;
-    Settings.WindowYSize = size.height;
+    Settings.current.WindowXSize = size.width;
+    Settings.current.WindowYSize = size.height;
   }//GEN-LAST:event_formComponentResized
 
   private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
 //    System.out.println("stateChanged");
-    Settings.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
+    Settings.current.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
   }//GEN-LAST:event_formWindowStateChanged
 
   private void tabsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tabsKeyPressed
@@ -300,7 +300,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
           }
           case KeyEvent.VK_F2: {
             EditSettings.editSettings(this);
-            Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
+            Settings.fnt = JFAWT.getMonospacedFont(0, Settings.current.fontSize);
             Hex.changeFont(Settings.fnt);
             int cnt = pages.size();
             for(int a=0;a<cnt;a++) {
@@ -417,9 +417,9 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     setTitle("jfhexbig");
     pages = new Vector<Page>();
     loadcfg(true);
-    setSize(Settings.WindowXSize, Settings.WindowYSize);
-    setLocation(Settings.WindowXPos, Settings.WindowYPos);
-    if (Settings.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
+    setSize(Settings.current.WindowXSize, Settings.current.WindowYSize);
+    setLocation(Settings.current.WindowXPos, Settings.current.WindowYPos);
+    if (Settings.current.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
     if (args != null) {
       for(int a=0;a<args.length;a++) loadpages(args[a]);
     }
@@ -428,15 +428,16 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     pages.get(0).hex.grabFocus();
   }
   public static void loadcfg(boolean gui) {
+    Settings.current = new Settings();
     XML xml = new XML();
-    String filename = JF.getUserPath() + "/.jfhex.xml";
+    String filename = JF.getUserPath() + "/.jfhexbig.xml";
     File file = new File(filename);
     if (!file.exists()) return;  //doesn't exist
     if (!xml.read(filename)) return;  //bad cfg
     if (!xml.root.name.equals("jfhex")) return;  //bad cfg
-    xml.writeClass(xml.root, new Settings());
+    xml.writeClass(xml.root, Settings.current);
     if (gui) {
-      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
+      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.current.fontSize);
     }
   }
   public void savecfg() {
@@ -444,7 +445,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
     XML.XMLTag tag;
     xml.root.name = "jfhex";
     xml.readClass(xml.root, new Settings());
-    String filename = JF.getUserPath() + "/.jfhex.xml";
+    String filename = JF.getUserPath() + "/.jfhexbig.xml";
     xml.write(filename);
   }
 //find data

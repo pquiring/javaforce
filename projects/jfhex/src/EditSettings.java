@@ -176,11 +176,11 @@ public class EditSettings extends javax.swing.JDialog {
   }
 
   private void load() {
-    sFontSize.setValue(Settings.fontSize);
+    sFontSize.setValue(Settings.current.fontSize);
   }
 
   private void save() {
-    Settings.fontSize = ((Integer)sFontSize.getValue()).intValue();
+    Settings.current.fontSize = ((Integer)sFontSize.getValue()).intValue();
   }
 
 }
