@@ -295,7 +295,7 @@ public class ModelJSON implements Model_IO {
     addVertex(obj, x, y, z, u, v);
 
     z -= depth;
-    v += depth;
+    v -= depth;
 
     addVertex(obj, x, y, z, u, v);
 
@@ -305,7 +305,7 @@ public class ModelJSON implements Model_IO {
     addVertex(obj, x, y, z, u, v);
 
     z += depth;
-    v -= depth;
+    v += depth;
 
     addVertex(obj, x, y, z, u, v);
 
