@@ -149,7 +149,7 @@ public class speex implements RTPAudioCoder {
 
   //these are some Speex optional digital signal processing (DSP) functions
 
-  private native static long speexdspinit(int sample_rate);
+  private native static long speexdspinit(int sample_rate, int echo_buffers);
 
   /** Allocate speex DSP context.
    * Audio buffers should be 160 samples.
@@ -158,7 +158,18 @@ public class speex implements RTPAudioCoder {
    *  @return ctx
    */
   public static long speex_dsp_init(int sample_rate) {
-    return speexdspinit(sample_rate);
+    return speexdspinit(sample_rate, -1);
+  }
+
+  /** Allocate speex DSP context.
+   * Audio buffers should be 160 samples.
+   *
+   *  @param sample_rate = sample rate (8k, 16k or 32k)
+   *  @param echo_buffers = # of buffers to allocate for echo cancellation (-1=default of 4)
+   *  @return ctx
+   */
+  public static long speex_dsp_init(int sample_rate, int echo_buffers) {
+    return speexdspinit(sample_rate, echo_buffers);
   }
 
   public native static void speexdspuninit(long ctx);
@@ -216,7 +227,7 @@ public class speex implements RTPAudioCoder {
     noise(mic);
     noise(spk);
 
-    long ctx = speex_dsp_init(8000);
+    long ctx = speex_dsp_init(8000, -1);
 
     JFLog.log("spk.avg=" + avg(spk));
 

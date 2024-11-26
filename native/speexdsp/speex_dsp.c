@@ -17,11 +17,13 @@ struct DSP {
 };
 
 JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
-  (JNIEnv *e, jclass o, jint sample_rate)
+  (JNIEnv *e, jclass o, jint sample_rate, jint echo_buffers)
 {
   int i;
   float f;
   int bufsiz = sample_rate / 50;
+
+  if (echo_buffers == -1) echo_buffers = 4;
 
   DSP *ctx = (DSP*)malloc(sizeof(DSP));
 
@@ -41,7 +43,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
   f=0;
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_DEREVERB_LEVEL, &f);
 
-  SpeexEchoState *es = speex_echo_state_init(bufsiz, bufsiz * 4);
+  SpeexEchoState *es = speex_echo_state_init(bufsiz, bufsiz * echo_buffers);
   speex_echo_ctl(es, SPEEX_ECHO_SET_SAMPLING_RATE, &sample_rate);
   speex_preprocess_ctl(pps, SPEEX_PREPROCESS_SET_ECHO_STATE, es);
 
