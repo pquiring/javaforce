@@ -1,3 +1,6 @@
+2024-11-27 : v0.6
+  - fixed more VNC key binding issues
+
 2024-11-13 : v0.5
   - fixed more VNC key codes
   - fixed mouse scroll wheel events
