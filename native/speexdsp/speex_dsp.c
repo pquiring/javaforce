@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspecho
 }
 
 static JNINativeMethod javaforce_voip_speex[] = {
-  {"speexdspinit", "(I)J", (void *)&Java_javaforce_voip_speex_speexdspinit},
+  {"speexdspinit", "(II)J", (void *)&Java_javaforce_voip_speex_speexdspinit},
   {"speexdspuninit", "(J)V", (void *)&Java_javaforce_voip_speex_speexdspuninit},
   {"speexdspdenoise", "(J[S)V", (void *)&Java_javaforce_voip_speex_speexdspdenoise},
   {"speexdspecho", "(J[S[S[S)V", (void *)&Java_javaforce_voip_speex_speexdspecho},
