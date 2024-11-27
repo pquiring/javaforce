@@ -1,5 +1,11 @@
 What's new...
 
+Nov 27/2024 : JF/74.0
+ - fix more VNC key binding issues
+ - added speex DSP init : echo cancel buffer size param (user request)
+ - jfHex/HexBig : added Page Up/down
+ - gl.ModelJSON : fixed face order
+
 Nov 14/2024 : JF/73.0
  - fix VNC copy rect encoding
  - fix VNC key events and mouse wheel events
