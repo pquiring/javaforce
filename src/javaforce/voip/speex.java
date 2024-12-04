@@ -163,11 +163,11 @@ public class speex implements RTPAudioCoder {
   }
 
   /** Allocate speex DSP context.
-   * Audio buffers should be 160 samples.
+   * Audio buffers should be 160 samples (50 per second, 20ms each).
    * NOTE : speex SDP functions do NOT require the use of speex codec.
    *
    *  @param sample_rate = sample rate
-   *  @param echo_buffers = # of buffers to allocate for echo cancellation (-1=default of 4)
+   *  @param echo_buffers = # of buffers to allocate for echo cancellation (-1=default of 10)
    *  @return ctx
    */
   public static long speex_dsp_init(int sample_rate, int echo_buffers) {

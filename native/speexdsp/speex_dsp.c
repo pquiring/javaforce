@@ -23,7 +23,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
   float f;
   int bufsiz = sample_rate / 50;
 
-  if (echo_buffers == -1) echo_buffers = 4;
+  if (echo_buffers == -1) echo_buffers = 10;
 
   DSP *ctx = (DSP*)malloc(sizeof(DSP));
 
