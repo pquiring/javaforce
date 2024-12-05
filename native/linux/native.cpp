@@ -118,7 +118,7 @@ void (*_wtimeout)(WINDOW *win, int delay);
 int (*_wgetch)(WINDOW *win);
 int (*_ungetch)(int ch);
 int (*_endwin)();
-WINDOW *_stdscr;
+WINDOW **_stdscr;
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so, jstring libncurses_so)
@@ -1855,9 +1855,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_enableConsoleMode
   (*_initscr)();
   (*_raw)();
   (*_noecho)();
-  (*_wtimeout)(_stdscr, 0);
-  (*_wgetch)(_stdscr);  //first call to wgetch() clears the screen
-  (*_wtimeout)(_stdscr, -1);
+  (*_wtimeout)(*_stdscr, 0);
+  (*_wgetch)(*_stdscr);  //first call to wgetch() clears the screen
+  (*_wtimeout)(*_stdscr, -1);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_disableConsoleMode
@@ -1874,12 +1874,12 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
     StringCopy(console_buffer, console_buffer+1);
     return (jchar)ret;
   }
-  (*_wtimeout)(_stdscr, -1);
-  char ch = (*_wgetch)(_stdscr);
+  (*_wtimeout)(*_stdscr, -1);
+  char ch = (*_wgetch)(*_stdscr);
   if (ch == 0x1b) {
     //is it Escape key or ANSI code???
-    (*_wtimeout)(_stdscr, 100);
-    char ch2 = (*_wgetch)(_stdscr);  //waits 100ms max
+    (*_wtimeout)(*_stdscr, 100);
+    char ch2 = (*_wgetch)(*_stdscr);  //waits 100ms max
     if (ch2 == ERR) {
       StringCopy(console_buffer, "[1~");  //custom ansi code for esc
     } else {
@@ -1891,7 +1891,7 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
         console_buffer[1] = 0;
       }
     }
-    (*_wtimeout)(_stdscr, -1);
+    (*_wtimeout)(*_stdscr, -1);
   }
   return (jchar)ch;
 }
@@ -1900,13 +1900,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
   (JNIEnv *e, jclass c)
 {
   if (console_buffer[0] != 0) return JNI_TRUE;
-  (*_wtimeout)(_stdscr, 0);
-  char ch = (*_wgetch)(_stdscr);
+  (*_wtimeout)(*_stdscr, 0);
+  char ch = (*_wgetch)(*_stdscr);
   if (ch == 0x1b) {
     console_buffer[0] = 0x1b;
     //is it Escape key or ANSI code???
-    (*_wtimeout)(_stdscr, 100);
-    char ch2 = (*_wgetch)(_stdscr);  //waits 100ms max
+    (*_wtimeout)(*_stdscr, 100);
+    char ch2 = (*_wgetch)(*_stdscr);  //waits 100ms max
     if (ch2 == ERR) {
       StringCopy(console_buffer+1, "[1~");  //custom ansi code for esc
     } else {
@@ -1918,7 +1918,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
         console_buffer[2] = 0;
       }
     }
-    (*_wtimeout)(_stdscr, -1);
+    (*_wtimeout)(*_stdscr, -1);
   }
   if (ch == ERR) {
     return JNI_FALSE;
