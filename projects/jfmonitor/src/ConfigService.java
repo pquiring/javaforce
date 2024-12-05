@@ -816,6 +816,7 @@ public class ConfigService implements WebUIHandler {
       }
       if (ui.vlan_vlan == null) {
         //create vlan
+        Task create = null;
         if (true) {
           Task task = new Task("Create VLAN") {
             public void doTask() {
@@ -832,9 +833,10 @@ public class ConfigService implements WebUIHandler {
             }
           };
           Tasks.tasks.addTask(ui.tasks, task);
+          create = task;
         }
         if (_ip.length() > 0) {
-          Task task = new Task("Create VLAN IP") {
+          Task task = new Task("Create VLAN IP", create) {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
@@ -851,7 +853,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (!_stp) {
-          Task task = new Task("Disable VLAN STP") {
+          Task task = new Task("Disable VLAN STP", create) {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
@@ -868,7 +870,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (_dhcp_relay.length() > 0) {
-          Task task = new Task("Set VLAN DHCP Relay") {
+          Task task = new Task("Set VLAN DHCP Relay", create) {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
@@ -885,7 +887,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (_shutdown) {
-          Task task = new Task("Set VLAN Shutdown") {
+          Task task = new Task("Set VLAN Shutdown", create) {
             public void doTask() {
               try {
                 if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {

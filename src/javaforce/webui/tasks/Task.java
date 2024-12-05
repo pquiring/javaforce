@@ -28,12 +28,26 @@ public class Task extends Thread implements Status {
   public Panel tasks;
   public TaskUI taskui;
 
+  public Task parent;
+
+  /** Creates new task with action. */
   public Task(String action) {
     this.action = action;
   }
 
+  /** Creates new task with action and parent task.
+   * Execution will wait until parent is completed.
+   */
+  public Task(String action, Task parent) {
+    this.action = action;
+    this.parent = parent;
+  }
+
   public final void run() {
     try {
+      if (parent != null) {
+        Tasks.tasks.wait(parent);
+      }
       doTask();
     } catch (Exception e) {
       JFLog.log(e);

@@ -95,6 +95,14 @@ public class Tasks extends Thread {
     JFLog.log("Task completed:" + task.action + ":result=" + task.result);
   }
 
+  /** Waits until task is completed. */
+  public void wait(Task task) {
+    //TODO : create sync list
+    while (task.ts_stop == 0) {
+      JF.sleep(100);
+    }
+  }
+
   public void removeTask(Task task) {
     synchronized (lock) {
       taskList.remove(task);
