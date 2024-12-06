@@ -45,7 +45,10 @@ static void append_domain_stat(char* uuid, int year, int month, int day, int hou
   char file[256];
   sprintf(file, "/var/jfkvm/stats/%s/%s-%04d-%02d-%02d-%02d.stat", uuid, type, year, month, day, hour);
   int fd = open(file, O_WRONLY | O_APPEND | O_CREAT, 0600);
-  if (fd == -1) return;  //TODO : log error
+  if (fd == -1) {
+    printf("vm-stats:open() failed:file=%s\n", file);
+    return;
+  }
   struct {
     jlong sample;
     jlong v1, v2, v3;
@@ -54,8 +57,13 @@ static void append_domain_stat(char* uuid, int year, int month, int day, int hou
   r.v1 = v1;
   r.v2 = v2;
   r.v3 = v3;
-  write(fd, &r, 4 * sizeof(jlong));
-  close(fd);
+  int len = 4 * sizeof(jlong);
+  if (write(fd, &r, len) != len) {
+    printf("vm-stats:write() failed:file=%s\n", file);
+  }
+  if (close(fd) != 0) {
+    printf("vm-stats:close() failed:file=%s\n", file);
+  }
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VMHost_get_1all_1stats

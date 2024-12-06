@@ -165,7 +165,7 @@ static AVOutputFormat *AVOutputFormat_New() {
 }
 
 static void AVPacket_dump(AVPacket *pkt, const char* msg) {
-  printf("AVPacket:%s:pts=%llx dts=%llx duration=%lld pos=%lld time_base=%d/%d\n", msg, pkt->pts, pkt->dts, pkt->duration, pkt->pos, pkt->time_base.num, pkt->time_base.den);
+  printf("AVPacket:%s:pts=%llx dts=%llx duration=%lld pos=%lld time_base=%d/%d\n", msg, (unsigned long long int)pkt->pts, (unsigned long long int)pkt->dts, (long long int)pkt->duration, (long long int)pkt->pos, pkt->time_base.num, pkt->time_base.den);
 }
 
 static AVOutputFormat *vpx = NULL;
