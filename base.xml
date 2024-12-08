@@ -18,18 +18,25 @@
         <fileset refid="classpath"/>
       </classpath>
     </javadoc>
-    <zip destfile="${app}-${version}-javadoc.jar">
+    <zip destfile="${app}-javadoc.jar">
       <fileset dir="javadoc" includes="**/*"/>
     </zip>
   </target>
 
   <target name="src" description="generate src archive">
-    <zip destfile="${app}-${version}-sources.jar">
+    <zip destfile="${app}-sources.jar">
       <fileset dir="src" includes="**/*"/>
     </zip>
   </target>
 
   <property environment="environment"/>
+
+  <target name="maven" depends="src,javadoc,jar" description="generate deployment artifacts for maven">
+    <copy file="${app}.jar" tofile="${app}-${version}.jar"/>
+    <copy file="${app}-javadoc.jar" tofile="${app}-${version}-javadoc.jar"/>
+    <copy file="${app}-sources.jar" tofile="${app}-${version}-sources.jar"/>
+    <copy file="pom.xml" tofile="${app}-${version}.pom"/>
+  </target>
 
   <target name="sign" description="generate asc files">
     <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}.jar"/>
@@ -38,9 +45,7 @@
     <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}.pom"/>
   </target>
 
-  <target name="deploy" depends="src,javadoc,jar" description="generate deployment artifacts">
-    <copy file="${app}.jar" tofile="${app}-${version}.jar"/>
-    <copy file="pom.xml" tofile="${app}-${version}.pom"/>
+  <target name="deploy" depends="maven" description="generate deployment artifacts for manual upload to maven">
     <antcall target="sign"/>
   </target>
 
