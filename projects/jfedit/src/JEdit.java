@@ -486,6 +486,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       } else {
         addpage(chooser.getSelectedFile().getAbsolutePath());
         idx = tabs.getTabCount() - 1;
+        pg = pages.get(idx);
       }
       loadpage(idx);
       pg.txt.grabFocus();
