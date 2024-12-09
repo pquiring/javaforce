@@ -69,7 +69,8 @@ public class Publish {
       http.setHeader("Authorization", "Bearer " + getBearer());
       http.open("central.sonatype.com");
       byte[] deploymentID = http.post("/api/v1/publisher/upload?publishingType=USER_MANAGED", new HTTP.Part[] {part});
-      System.out.println("Reply=" + new String(deploymentID));
+      System.out.println("DeploymentID=" + new String(deploymentID));
+      http.close();
     } catch (Exception e) {
       JFLog.log(e);
     }

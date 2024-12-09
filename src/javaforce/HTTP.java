@@ -17,6 +17,7 @@ public class HTTP {
   protected int port;
   private Parameters request_headers = new Parameters();
   private Parameters reply_headers = new Parameters();
+  private String accept = "*/*";
   private int code = -1;
   public static boolean debug = false;
   private Progress progress;
@@ -34,6 +35,8 @@ public class HTTP {
   public static final String partTypeHTML = "text/html";
   /** Part Type for binary data. */
   public static final String partTypeStream = "application/octet-stream";
+  /** Part Type for zip file. */
+  public static final String partTypeZip = "application/x-zip-compressed";
 
   private final static int bufsiz = 1024;
 
@@ -326,6 +329,10 @@ public class HTTP {
     return code;
   }
 
+  public void setAccept(String accept) {
+    this.accept = accept;
+  }
+
   private int read(Buffer buf, int length) throws Exception {
     if (buf.count >= length) return length;
     int maxlength = buf.buf.length - buf.pos - buf.count;
@@ -567,8 +574,9 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("GET " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
+    req.append("User-Agent: JavaForce.HTTP\r\n");
     req.append("Content-Length: 0\r\n");
-    req.append("Accept: */*\r\n");
+    req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
     req.append("\r\n");
@@ -609,15 +617,22 @@ public class HTTP {
     write(boundary.getBytes());
   }
 
-  private void sendPart(Part part) throws Exception {
-    write(("Content-Disposition: form-data; name=\"" + part.name + "\"").getBytes());
+  private String makePart(Part part) {
+    StringBuilder buf = new StringBuilder();
+    buf.append(("Content-Disposition: form-data; name=\"" + part.name + "\""));
     if (part.filename != null) {
-      write(("; filename=\"" + part.filename + "\"").getBytes());
+      buf.append(("; filename=\"" + part.filename + "\""));
     }
-    write("\r\n".getBytes());
-    write(("Content-Type: " + part.mimeType).getBytes());
-    write("\r\n".getBytes());
-    write("\r\n".getBytes());  //end of headers
+    buf.append("\r\n");
+    buf.append(("Content-Type: " + part.mimeType + "\r\n"));
+    buf.append(("Content-Length: " + part.data.length + "\r\n"));
+    buf.append("\r\n");  //end of headers
+    return buf.toString();
+  }
+
+  private void sendPart(Part part) throws Exception {
+    String buf = makePart(part);
+    sendString(buf);
   }
 
   /** HTTP POST using url with post data encoding with mimeType = multipart/form-data.
@@ -629,13 +644,33 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("POST " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
-    req.append("Accept: */*\r\n");
+    req.append("User-Agent: JavaForce.HTTP\r\n");
+    req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
     String mimeType = formTypeMultiPart;
     String boundary = "----JavaForceHTTP" + System.currentTimeMillis();
+    int boundary_length = boundary.length();
     req.append("Content-Type: " + mimeType + "; boundary=" + boundary + "\r\n");
-    //TODO : calc Content-Length
+    long length = 0;
+    {
+      boolean first = true;
+      for(Part part : parts) {
+        if (first) {
+          first = false;
+        } else {
+          length += 2;  //\r\n
+        }
+        length += 2 + boundary_length;
+        length += 2;  //\r\n
+        length += makePart(part).length();
+        length += part.data.length;
+        length += 2;  //\r\n
+        length += 2 + boundary_length;
+      }
+      length += 4;  //hashes + \r\n
+    }
+    req.append("Content-Length: " + length + "\r\n");
     req.append("\r\n");
     try {
       sendString(req.toString());
@@ -677,7 +712,8 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("POST " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
-    req.append("Accept: */*\r\n");
+    req.append("User-Agent: JavaForce.HTTP\r\n");
+    req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
     req.append("\r\n");
