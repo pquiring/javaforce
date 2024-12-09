@@ -6,13 +6,17 @@
   <property name="jarpath" value="."/>
   <property name="jdkver" value="17"/>
   <property name="lib" value="${home}/lib"/>
+
+  <property name="maven-app-version" value="${maven}/${app}/${version}"/>
+
   <property name="debian.depends" value="javaforce"/>
   <property name="fedora.depends" value="javaforce"/>
   <property name="arch.depends"   value="javaforce"/>
 
   <import file="versions.xml"/>
 
-  <target name="javadoc" description="generate java documentation">
+  <available property="have-javadoc" file="${app}-javadoc.jar"/>
+  <target name="javadoc" unless="have-javadoc" description="generate java documentation">
     <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none">
       <classpath>
         <fileset refid="classpath"/>
@@ -38,15 +42,52 @@
     <copy file="pom.xml" tofile="${app}-${version}.pom"/>
   </target>
 
-  <target name="sign" description="generate asc files">
+  <target name="sign" description="generate asc,md5,sha1 files">
+    <delete>
+      <fileset dir="." includes="${app}-${version}*.asc"/>
+      <fileset dir="." includes="${app}-${version}*.md5"/>
+      <fileset dir="." includes="${app}-${version}*.sha1"/>
+    </delete>
+    <!-- generate .asc files -->
     <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}.jar"/>
     <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}-sources.jar"/>
     <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}-javadoc.jar"/>
     <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}.pom"/>
+    <!-- generate .md5 files -->
+    <checksum file="${app}-${version}.jar" algorithm="md5"/>
+    <checksum file="${app}-${version}-sources.jar" algorithm="md5"/>
+    <checksum file="${app}-${version}-javadoc.jar" algorithm="md5"/>
+    <checksum file="${app}-${version}.pom" algorithm="md5"/>
+    <!-- generate .sha1 files -->
+    <checksum file="${app}-${version}.jar" algorithm="sha1"/>
+    <checksum file="${app}-${version}-sources.jar" algorithm="sha1"/>
+    <checksum file="${app}-${version}-javadoc.jar" algorithm="sha1"/>
+    <checksum file="${app}-${version}.pom" algorithm="sha1"/>
   </target>
 
   <target name="deploy" depends="maven" description="generate deployment artifacts for manual upload to maven">
-    <antcall target="sign"/>
+    <sequential>
+      <antcall target="sign"/>
+      <mkdir dir="${maven-app-version}"/>
+      <copy todir="${maven-app-version}">
+				<fileset dir=".">
+          <include name="${app}-${version}*.jar"/>
+          <include name="${app}-${version}*.pom"/>
+          <include name="${app}-${version}*.asc"/>
+          <include name="${app}-${version}*.md5"/>
+          <include name="${app}-${version}*.sha1"/>
+        </fileset>
+      </copy>
+      <delete file="central-bundle.zip"/>
+      <zip destfile="central-bundle.zip">
+        <fileset dir=".">
+          <include name="${maven-app-version}/**/*"/>
+        </fileset>
+      </zip>
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.Publish" fork="true" jvm="${home}/bin/jfexec">
+        <arg value="central-bundle.zip"/>
+      </java>
+    </sequential>
   </target>
 
   <target name="depnatives">

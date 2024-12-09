@@ -35,6 +35,12 @@ public class BuildTools {
     return tag.content;
   }
 
+  public String getTag(String[] path) {
+    XML.XMLTag tag = xml.getTag(path);
+    if (tag == null) return "";
+    return tag.content;
+  }
+
   public String getProperty(String name) {
     //<project> <property name="name" value="value">
     int cnt = xml.root.getChildCount();

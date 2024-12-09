@@ -7,6 +7,7 @@
   <property name="build" location="classes"/>
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
+  <property name="maven" value="io/github/pquiring"/>
 
   <property environment="env"/>
 
@@ -27,9 +28,11 @@
     <include name="slf4j-api.jar"/>
   </fileset>
 
-  <import file="base.xml"/>
+  <import file="versions.xml"/>
 
   <property name="version" value="${javaforce-version}"/>
+
+  <import file="base.xml"/>
 
   <!-- get native dependancies -->
 

@@ -22,7 +22,18 @@ public class HTTP {
   private Progress progress;
   private static int timeout = 30000;
 
+  //form types : see RFC 1867, 7568
+  /** Form Type for URL encoded data. */
   public static final String formType = "application/x-www-form-urlencoded";
+  /** Form Type for multipart data (supports files). */
+  public static final String formTypeMultiPart = "multipart/form-data";
+
+  /** Part Type for plain text. */
+  public static final String partTypeText = "text/plain";
+  /** Part Type for html text. */
+  public static final String partTypeHTML = "text/html";
+  /** Part Type for binary data. */
+  public static final String partTypeStream = "application/octet-stream";
 
   private final static int bufsiz = 1024;
 
@@ -97,6 +108,14 @@ public class HTTP {
       }
       return params;
     }
+  }
+
+  /** Part a of multipart POST */
+  public static class Part {
+    public String name;
+    public String mimeType;
+    public String filename;  //optional
+    public byte[] data;
   }
 
   /** Progress Listener */
@@ -334,12 +353,16 @@ public class HTTP {
     os.write(data);
   }
 
-  private void sendRequest(String req) throws Exception {
-    write(req.getBytes("UTF-8"));
+  private void sendString(String req) throws Exception {
+    write(req.getBytes());
   }
 
   private void sendData(byte[] data) throws Exception {
     write(data);
+  }
+
+  private void sendEnter() throws Exception {
+    write("\r\n".getBytes());
   }
 
   private boolean endOfHeaders(Buffer buf) {
@@ -553,7 +576,7 @@ public class HTTP {
       JFLog.log("request=" + req.toString());
     }
     try {
-      sendRequest(req.toString());
+      sendString(req.toString());
       return getReply(os);
     } catch (Exception e) {
       JFLog.log(e);
@@ -577,6 +600,74 @@ public class HTTP {
     return new String(get(url));
   }
 
+  private void sendBoundaryHashes() throws Exception {
+    write("--".getBytes());
+  }
+
+  private void sendBoundary(String boundary) throws Exception {
+    sendBoundaryHashes();
+    write(boundary.getBytes());
+  }
+
+  private void sendPart(Part part) throws Exception {
+    write(("Content-Disposition: form-data; name=\"" + part.name + "\"").getBytes());
+    if (part.filename != null) {
+      write(("; filename=\"" + part.filename + "\"").getBytes());
+    }
+    write("\r\n".getBytes());
+    write(("Content-Type: " + part.mimeType).getBytes());
+    write("\r\n".getBytes());
+    write("\r\n".getBytes());  //end of headers
+  }
+
+  /** HTTP POST using url with post data encoding with mimeType = multipart/form-data.
+   * Writes content to OutputStream.
+   */
+  public boolean post(String url, Part[] parts, OutputStream os) {
+    code = -1;
+    if (s == null) return false;
+    StringBuilder req = new StringBuilder();
+    req.append("POST " + url + " HTTP/1.1\r\n");
+    req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
+    req.append("Accept: */*\r\n");
+    req.append("Accept-Encoding: chunked\r\n");
+    appendHeaders(req);
+    String mimeType = formTypeMultiPart;
+    String boundary = "----JavaForceHTTP" + System.currentTimeMillis();
+    req.append("Content-Type: " + mimeType + "; boundary=" + boundary + "\r\n");
+    //TODO : calc Content-Length
+    req.append("\r\n");
+    try {
+      sendString(req.toString());
+      boolean first = true;
+      for(Part part : parts) {
+        if (first) {
+          first = false;
+        } else {
+          sendEnter();
+        }
+        sendBoundary(boundary);
+        sendEnter();
+        sendPart(part);
+        sendData(part.data);
+        sendEnter();
+        sendBoundary(boundary);
+      }
+      sendBoundaryHashes();  //end of transmission
+      sendEnter();
+      return getReply(os);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public byte[] post(String url, Part[] parts) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    if (!post(url, parts, baos)) return null;
+    return baos.toByteArray();
+  }
+
   /** HTTP POST using url with post data encoding with mimeType.
    * Writes content to OutputStream.
    */
@@ -586,14 +677,12 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("POST " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
-    req.append("Content-Length: " + data.length + "\r\n");
-    req.append("Content-Type: " + mimeType + "\r\n");
     req.append("Accept: */*\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
     req.append("\r\n");
     try {
-      sendRequest(req.toString());
+      sendString(req.toString());
       sendData(data);
       return getReply(os);
     } catch (Exception e) {
@@ -622,6 +711,7 @@ public class HTTP {
   public static void main(String[] args) {
     HTTP http = new HTTP();
     String html;
+    byte[] data;
     boolean print = false;
     if (args.length > 0 && args[0].equals("print")) print = true;
 
@@ -632,7 +722,6 @@ public class HTTP {
     http.close();
     if (html == null || html.length() == 0) {
       System.out.println("Error:HTTP.get() failed");
-      return;
     }
     if (print) System.out.println(html);
 
@@ -641,9 +730,25 @@ public class HTTP {
     http.close();
     if (html == null || html.length() == 0) {
       System.out.println("Error:HTTP.get() failed");
-      return;
     }
     if (print) System.out.println(html);
+
+    //test post file to example.com
+    Part part = new Part();
+    part.name = "file";
+    part.filename = "file.zip";
+    part.data = new byte[] {1,2,3};
+    part.mimeType = partTypeStream;
+    http.open("example.com");
+    data = http.post("/upload", new Part[] {part});
+    http.close();
+    if (data == null || data.length == 0) {
+      System.out.println("Error:HTTP.post() failed");
+      return;
+    }
+    if (print) {
+      System.out.println(new String(data));
+    }
   }
 
   /**

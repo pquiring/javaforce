@@ -14,20 +14,29 @@ import javaforce.service.*;
 
 public class web implements WebHandler {
   private static boolean debug;
+  private static boolean nosecure;
   public static void main(String[] args) {
-    System.out.println("Starting web server on port 443/80...");
     WebServer server = new WebServer();
-    server.start(new web(), 443, KeyMgmt.getDefaultClient());
     for(String arg : args) {
       switch (arg) {
         case "debug":
           debug = true;
           server.debug = true;
           break;
+        case "nosecure":
+          nosecure = true;
+          break;
       }
     }
-    WebServerRedir redir = new WebServerRedir();
-    redir.start(80, 443);
+    if (nosecure) {
+      System.out.println("Starting web server on port 80...");
+      server.start(new web(), 80);
+    } else {
+      System.out.println("Starting web server on port 443/80...");
+      server.start(new web(), 443, KeyMgmt.getDefaultClient());
+      WebServerRedir redir = new WebServerRedir();
+      redir.start(80, 443);
+    }
   }
 
   public void doPost(WebRequest req, WebResponse res) {
