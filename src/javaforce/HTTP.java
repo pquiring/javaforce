@@ -22,6 +22,7 @@ public class HTTP {
   public static boolean debug = false;
   private Progress progress;
   private static int timeout = 30000;
+  private static String user_agent = "JavaForce.HTTP";
 
   //form types : see RFC 1867, 7568
   /** Form Type for URL encoded data. */
@@ -329,8 +330,14 @@ public class HTTP {
     return code;
   }
 
+  /** Set Accept header value. */
   public void setAccept(String accept) {
     this.accept = accept;
+  }
+
+  /** Set User-Agent header value. */
+  public static void setUserAgent(String ua) {
+    user_agent = ua;
   }
 
   private int read(Buffer buf, int length) throws Exception {
@@ -574,7 +581,7 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("GET " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
-    req.append("User-Agent: JavaForce.HTTP\r\n");
+    req.append("User-Agent: " + user_agent + "\r\n");
     req.append("Content-Length: 0\r\n");
     req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
@@ -644,7 +651,7 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("POST " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
-    req.append("User-Agent: JavaForce.HTTP\r\n");
+    req.append("User-Agent: " + user_agent + "\r\n");
     req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
@@ -712,7 +719,7 @@ public class HTTP {
     StringBuilder req = new StringBuilder();
     req.append("POST " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
-    req.append("User-Agent: JavaForce.HTTP\r\n");
+    req.append("User-Agent: " + user_agent + "\r\n");
     req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
