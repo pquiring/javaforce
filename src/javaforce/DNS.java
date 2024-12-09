@@ -383,7 +383,7 @@ public class DNS {
     try {
       HTTPS https = new HTTPS();
       https.open(server.getHostString(), server.getPort());
-      byte[] reply = https.post("/dns-query", Arrays.copyOf(request.getData(), request.getSize()), "application/dns-message");
+      byte[] reply = https.post("/dns-query", Arrays.copyOf(request.getData(), request.getSize()), "application/dns");
       return new Packet(reply);
     } catch (Exception e) {
       JFLog.log(e);

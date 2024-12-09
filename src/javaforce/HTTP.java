@@ -642,7 +642,7 @@ public class HTTP {
     sendString(buf);
   }
 
-  /** HTTP POST using url with post data encoding with mimeType = multipart/form-data.
+  /** HTTP POST (multipart/form-data encoded)
    * Writes content to OutputStream.
    */
   public boolean post(String url, Part[] parts, OutputStream os) {
@@ -655,10 +655,9 @@ public class HTTP {
     req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
     appendHeaders(req);
-    String mimeType = formTypeMultiPart;
     String boundary = "----JavaForceHTTP" + System.currentTimeMillis();
     int boundary_length = boundary.length();
-    req.append("Content-Type: " + mimeType + "; boundary=" + boundary + "\r\n");
+    req.append("Content-Type: " + formTypeMultiPart + "; boundary=" + boundary + "\r\n");
     long length = 0;
     {
       boolean first = true;
@@ -704,16 +703,19 @@ public class HTTP {
     }
   }
 
+  /** HTTP POST (multipart/form-data encoded)
+   * @return content (null on error)
+   */
   public byte[] post(String url, Part[] parts) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     if (!post(url, parts, baos)) return null;
     return baos.toByteArray();
   }
 
-  /** HTTP POST using url with post data encoding with mimeType.
+  /** HTTP POST (URL encoded)
    * Writes content to OutputStream.
    */
-  public boolean post(String url, byte[] data, String mimeType, OutputStream os) {
+  public boolean post(String url, byte[] data, OutputStream os, String encType) {
     code = -1;
     if (s == null) return false;
     StringBuilder req = new StringBuilder();
@@ -722,6 +724,11 @@ public class HTTP {
     req.append("User-Agent: " + user_agent + "\r\n");
     req.append("Accept: " + accept + "\r\n");
     req.append("Accept-Encoding: chunked\r\n");
+    if (encType == null) {
+      encType = "application/x-www-form-urlencoded";
+    }
+    req.append("Content-Type: " + encType + "\r\n");
+    req.append("Content-Length: " + data.length);
     appendHeaders(req);
     req.append("\r\n");
     try {
@@ -734,20 +741,36 @@ public class HTTP {
     }
   }
 
-  /** HTTP POST using url with post data encoding with mimeType.
+  /** HTTP POST (URL encoded)
+   * Writes content to OutputStream.
+   */
+  public boolean post(String url, byte[] data, OutputStream os) {
+    return post(url, data, os, null);
+  }
+
+  /** HTTP POST (URL encoded)
    * Returns content as byte[]
    */
-  public byte[] post(String url, byte[] data, String mimeType) {
+  public byte[] post(String url, byte[] data) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    if (!post(url, data, mimeType, baos)) return null;
+    if (!post(url, data, baos, null)) return null;
     return baos.toByteArray();
   }
 
-  /** HTTP POST using url with post data encoding with mimeType.
+  /** HTTP POST (URL encoded)
+   * Returns content as byte[]
+   */
+  public byte[] post(String url, byte[] data, String encType) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    if (!post(url, data, baos, encType)) return null;
+    return baos.toByteArray();
+  }
+
+  /** HTTP POST using url with post data using enctype = application/x-www-form-urlencoded.
    * Returns content as String.
    */
-  public String postString(String url, byte[] data, String mimeType) {
-    return new String(post(url, data, mimeType));
+  public String postString(String url, byte[] data) {
+    return new String(post(url, data));
   }
 
   /** Test HTTP */
