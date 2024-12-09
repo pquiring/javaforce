@@ -599,6 +599,7 @@ public class JHexBig extends javax.swing.JFrame implements FindEvent, ReplaceEve
       } else {
         addpage(chooser.getSelectedFile().getAbsolutePath(), new byte[0]);
         idx = tabs.getTabCount() - 1;
+        pg = pages.get(idx);
       }
       loadpage(idx);
       pg.hex.grabFocus();
