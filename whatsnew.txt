@@ -1,5 +1,9 @@
 What's new...
 
+Dec 9/2024 : JF/74.1
+ - new : added automated maven deployment : ant deploy
+ - fix jfMonitor: create VLAN before modifying it
+
 Nov 27/2024 : JF/74.0
  - fix more VNC key binding issues
  - added speex DSP init : echo cancel buffer size param (user request)

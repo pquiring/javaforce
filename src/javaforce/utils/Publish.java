@@ -17,7 +17,7 @@ public class Publish {
   public static void main(String[] args) {
     new Publish().publish(args);
   }
-  public static boolean debug = true;
+  public static boolean debug = false;
   private void usage() {
     System.out.println("Usage : javaforce.utils.Publish central-bundle.zip");
   }

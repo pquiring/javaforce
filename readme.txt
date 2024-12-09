@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 74.0
+Version 74.1
 
 Description
 ===========
@@ -46,7 +46,7 @@ Before checking out the source make sure to configure line endings:
 Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
-  git checkout tags/74.0
+  git checkout tags/74.1
   ant
 Next build the native launchers.
 
@@ -80,7 +80,9 @@ jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
 run : execute program from command line (with debugging support enabled)
 javadoc : build javadoc api files
-deploy : build maven deployment artifacts (requires pom.xml)
+deploy : build maven deployment artifacts (requires pom.xml) and publish to sonatype
+  - must define 'maven' property which is groupId
+  - auth token must be defined in ~/.m2/settings.xml
 executable : build native launcher
  - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
  - a project property "apptype" can be defined as:
@@ -125,6 +127,7 @@ The Maven repo is used to download dependancies using ant tasks.
 The mvn tool is currently not required.
 A pom.xml is supplied for JF but is missing dependancies for now, the minimum is included
 to create deployment artifacts.
+Use ant task deploy instead of using mvn.
 
 Graal Support
 -------------
