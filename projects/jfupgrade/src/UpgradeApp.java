@@ -83,12 +83,12 @@ public class UpgradeApp extends javax.swing.JFrame {
     sp.removeEnvironmentVariable("TERM");
     String output;
     switch (Linux.distro) {
-      case Ubuntu:
+      case Debian:
         output = sp.run(new String[] {"apt", "--yes", "update"}, true);
         if (output == null) {
           System.out.println("Error : Failed to exec apt");
         } else {
-          ubuntuGetCounts();
+          debianGetCounts();
         }
         break;
       case Fedora:
@@ -102,7 +102,7 @@ public class UpgradeApp extends javax.swing.JFrame {
     }
   }
 
-  private static void ubuntuGetCounts() {
+  private static void debianGetCounts() {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     String output = sp.run(new String[] {"apt", "--yes", "upgrade", "-s"}, false);

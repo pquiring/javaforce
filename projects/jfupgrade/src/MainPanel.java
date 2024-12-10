@@ -180,8 +180,8 @@ public class MainPanel extends javax.swing.JPanel {
     progress.setIndeterminate(true);
     status.setText("Getting list of available upgrades...");
     switch (Linux.distro) {
-      case Ubuntu:
-        ubuntu_listUpgrades();
+      case Debian:
+        debian_listUpgrades();
         break;
       case Fedora:
         fedora_listUpgrades();
@@ -190,7 +190,7 @@ public class MainPanel extends javax.swing.JPanel {
     progress.setIndeterminate(false);
   }
 
-  private void ubuntu_listUpgrades() {
+  private void debian_listUpgrades() {
     upgradeAll.setSelected(false);
     upgradeAll.setEnabled(false);
     ShellProcess sp = new ShellProcess();
@@ -298,8 +298,8 @@ public class MainPanel extends javax.swing.JPanel {
     progress.setIndeterminate(true);
     status.setText("Checking for upgrades...");
     switch (Linux.distro) {
-      case Ubuntu:
-        ubuntu_check();
+      case Debian:
+        debian_check();
         break;
       case Fedora:
         fedora_check();
@@ -308,7 +308,7 @@ public class MainPanel extends javax.swing.JPanel {
     progress.setIndeterminate(false);
   }
 
-  private void ubuntu_check() {
+  private void debian_check() {
     check.setEnabled(false);
     upgrade.setEnabled(false);
     ShellProcess sp = new ShellProcess();
@@ -353,8 +353,8 @@ public class MainPanel extends javax.swing.JPanel {
       }
     }
     switch (Linux.distro) {
-      case Ubuntu:
-        ok = ubuntu_upgrade();
+      case Debian:
+        ok = debian_upgrade();
         break;
       case Fedora:
         ok = fedora_upgrade();
@@ -378,7 +378,7 @@ public class MainPanel extends javax.swing.JPanel {
     }
   }
 
-  private boolean ubuntu_upgrade() {
+  private boolean debian_upgrade() {
     check.setEnabled(false);
     upgrade.setEnabled(false);
     ShellProcess sp = new ShellProcess();
