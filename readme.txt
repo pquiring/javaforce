@@ -56,13 +56,13 @@ Native loaders are in /native
 JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI.
 See readme.txt in each platform folder for more info.
 
-Building jfLinux
+Building jfLinux (optional)
 ----------------
 After building Javaforce and the native components you can run package.sh to package everything.
 Supported distros : Debian, Fedora, Arch.
 FreeBSD is currently not supported (open issue if you would like to see FreeBSD packager task and repo created)
 All packages are stored in /repo and can then be processed and uploaded to a repo server.
-Packages are hosted on sourceforge.net which can be installed thur the jfLinux install process.
+Packages are hosted on sourceforge.net which can be installed through the jfLinux install process.
 
 JavaForce Ant tasks:
 --------------------
