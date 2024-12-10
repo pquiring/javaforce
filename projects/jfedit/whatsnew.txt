@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+12-10-2024 : v0.22
+  - fix : set focus on open new tab
+
 5-4-2024 : v0.21
   - new : support UTF-16 files
 

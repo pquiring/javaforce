@@ -23,7 +23,7 @@ import javaforce.awt.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
-  private String getVersion() { return "0.21"; }
+  private String getVersion() { return "0.22"; }
 
   /** Creates new form jfedit */
   public JEdit() {
