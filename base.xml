@@ -15,9 +15,8 @@
 
   <import file="versions.xml"/>
 
-  <available property="have-javadoc" file="${app}-javadoc.jar"/>
-  <target name="javadoc" unless="have-javadoc" description="generate java documentation">
-    <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none">
+  <target name="javadoc" description="generate java documentation">
+    <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none -quiet">
       <classpath>
         <fileset refid="classpath"/>
       </classpath>
@@ -42,7 +41,7 @@
     <copy file="pom.xml" tofile="${app}-${version}.pom"/>
   </target>
 
-  <target name="sign" description="generate asc,md5,sha1 files">
+  <target name="sign" depends="maven" description="generate asc,md5,sha1 files">
     <delete>
       <fileset dir="." includes="${app}-${version}*.asc"/>
       <fileset dir="." includes="${app}-${version}*.md5"/>
@@ -65,9 +64,8 @@
     <checksum file="${app}-${version}.pom" algorithm="sha1"/>
   </target>
 
-  <target name="deploy" depends="maven" description="generate deployment artifacts for manual upload to maven">
+  <target name="deploy" depends="sign" description="generate deployment artifacts for manual upload to maven">
     <sequential>
-      <antcall target="sign"/>
       <mkdir dir="${maven-app-version}"/>
       <copy todir="${maven-app-version}">
 				<fileset dir=".">
