@@ -12,7 +12,7 @@ public class MediaDecoder extends MediaFormat {
   /**
    * Starts decoder.
    *
-   * @parma io = MediaIO interface
+   * @param io = MediaIO interface
    * @param new_width = change video width during decoding (-1 = no change)
    * @param new_height = change video height during decoding (-1 = no change)
    * @param new_chs = change audio channels during decoding (-1 = no change)
@@ -24,7 +24,7 @@ public class MediaDecoder extends MediaFormat {
   /**
    * Starts decoder.
    *
-   * @parma file = file to write to.
+   * @param file = file to write to.
    * @param format = format of file (see MediaCoder.AV_FORMAT_...) (NULL = auto detect)
    * @param new_width = change video width during decoding (-1 = no change)
    * @param new_height = change video height during decoding (-1 = no change)

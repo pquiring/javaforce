@@ -16,6 +16,8 @@
   <import file="versions.xml"/>
 
   <target name="javadoc" description="generate java documentation">
+    <delete dir="javadoc"/>
+    <mkdir dir="javadoc"/>
     <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none -quiet">
       <classpath>
         <fileset refid="classpath"/>
