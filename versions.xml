@@ -1,7 +1,7 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- Note : any changes should be reflected in lib/package.sh -->
   <!-- JavaForce version -->
-  <property name="javaforce-version" value="74.1"/>
+  <property name="javaforce-version" value="74.2"/>
   <!-- native dependancies versions -->
   <property name="glfw-version" value="3.4"/>
   <!-- ffmpeg version only used in Windows -->

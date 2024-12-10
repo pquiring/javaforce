@@ -1,5 +1,14 @@
 What's new...
 
+Dec 10/2024 : JF/74.2
+ - jfMonitor/0.17
+  - fix : VLAN creation issue
+ - jfEdit/0.22
+  - fix : new tab focus
+ - jfHex[Big]/0.4
+  - fix : new tab focus
+ - fixed issue with using libncurses (linux)
+
 Dec 9/2024 : JF/74.1
  - new : added automated maven deployment : ant deploy
  - fix jfMonitor: create VLAN before modifying it
