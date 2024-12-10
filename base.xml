@@ -18,10 +18,12 @@
   <target name="javadoc" description="generate java documentation">
     <delete dir="javadoc"/>
     <mkdir dir="javadoc"/>
-    <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none -quiet">
+    <javadoc sourcepath="src" destdir="javadoc">
       <classpath>
         <fileset refid="classpath"/>
       </classpath>
+			<arg value="-Xdoclint:none"/>
+			<arg value="-quiet"/>
     </javadoc>
     <zip destfile="${app}-javadoc.jar">
       <fileset dir="javadoc" includes="**/*"/>
