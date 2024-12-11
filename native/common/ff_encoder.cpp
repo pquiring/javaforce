@@ -190,6 +190,7 @@ static jboolean encoder_init_video(FFContext *ctx) {
 static jboolean encoder_init_audio(FFContext *ctx) {
   printf("encoder_init_audio:codec_ctx=%p:codec=%p:stream=%p\n", ctx->audio_codec_ctx, ctx->audio_codec, ctx->audio_stream);
 
+  //NOTE : ffmpeg/7.1 has deprecated AVCodec.sample_fmts : must use avcodec_get_supported_config() instead which was only added in 7.1
   if (ctx->audio_codec->sample_fmts != NULL) {
     bool have_fmt = false;
     for(int idx=0;;idx++) {
