@@ -88,6 +88,7 @@
       </zip>
       <java classpath="${home}/javaforce.jar" classname="javaforce.utils.Publish" fork="true" jvm="${home}/bin/jfexec">
         <arg value="central-bundle.zip"/>
+        <arg value="USER_MANAGED"/>
       </java>
     </sequential>
   </target>

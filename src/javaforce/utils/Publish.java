@@ -19,7 +19,7 @@ public class Publish {
   }
   public static boolean debug = false;
   private void usage() {
-    System.out.println("Usage : javaforce.utils.Publish central-bundle.zip");
+    System.out.println("Usage : javaforce.utils.Publish central-bundle.zip [publishingType]");
   }
   private void error(String msg) {
     System.out.println("Error : javaforce.utils.Publish : " + msg);
@@ -68,11 +68,16 @@ public class Publish {
       HTTP http = new HTTPS();
       http.setHeader("Authorization", "Bearer " + getBearer());
       http.open("central.sonatype.com");
-      byte[] deploymentID = http.post("/api/v1/publisher/upload?publishingType=USER_MANAGED", new HTTP.Part[] {part});
+      String url = "/api/v1/publisher/upload";
+      if (args.length > 1) {
+        url += "?publishingType=" + args[1];
+      }
+      byte[] deploymentID = http.post(url, new HTTP.Part[] {part});
       System.out.println("DeploymentID=" + new String(deploymentID));
       http.close();
     } catch (Exception e) {
       JFLog.log(e);
+      error("exception occured");
     }
   }
 }
