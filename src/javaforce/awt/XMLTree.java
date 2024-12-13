@@ -4,10 +4,11 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import java.awt.*;
-import javaforce.JF;
-import javaforce.JFLog;
+
 import javax.swing.tree.*;
 import javax.swing.event.*;
+
+import javaforce.*;
 
 /**
  * XML is a TreeModel data model that encapsules a complete XML file.<br> Each
@@ -32,7 +33,6 @@ public class XMLTree implements TreeModelListener {
   private DefaultTreeModel treemodel;
   private boolean useContentForName = false;
   private boolean useNameAttributeForName = false;
-  private boolean useUniqueNames = true;
   private boolean fireEvents = true;
   private boolean ignoreEvents = false;
 
@@ -149,18 +149,17 @@ public class XMLTree implements TreeModelListener {
     public void setName(String newName) {
       //check if name="..." is in attrs, else use name
       XMLAttr attr;
-      boolean ok = false;
-      for (Iterator i = attrs.iterator(); i.hasNext();) {
-        attr = (XMLAttr) i.next();
-        if (attr.name.equals("name")) {
-          attr.value = newName;
-          ok = true;
-          break;
+      if (useNameAttributeForName) {
+        for (Iterator i = attrs.iterator(); i.hasNext();) {
+          attr = (XMLAttr) i.next();
+          if (attr.name.equals("name")) {
+            attr.value = newName;
+            changedTag(this);
+            return;
+          }
         }
       }
-      if (!ok) {
-        name = newName;
-      }
+      name = newName;
       changedTag(this);
     }
 

@@ -146,18 +146,17 @@ public class XMLTree implements TreeModelListener {
     public void setName(String newName) {
       //check if name="..." is in attrs, else use name
       XMLAttr attr;
-      boolean ok = false;
-      for (Iterator i = attrs.iterator(); i.hasNext();) {
-        attr = (XMLAttr) i.next();
-        if (attr.name.equals("name")) {
-          attr.value = newName;
-          ok = true;
-          break;
+      if (useNameAttributeForName) {
+        for (Iterator i = attrs.iterator(); i.hasNext();) {
+          attr = (XMLAttr) i.next();
+          if (attr.name.equals("name")) {
+            attr.value = newName;
+            changedTag(this);
+            return;
+          }
         }
       }
-      if (!ok) {
-        name = newName;
-      }
+      name = newName;
       changedTag(this);
     }
 
