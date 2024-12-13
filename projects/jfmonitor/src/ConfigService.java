@@ -815,6 +815,7 @@ public class ConfigService implements WebUIHandler {
         }
       }
       if (ui.vlan_vlan == null) {
+        ui.vlan_vlan = new VLAN("vlan" + _id, _name);
         //create vlan
         Task create = null;
         if (true) {
