@@ -23,9 +23,7 @@ public class MainPanel extends javax.swing.JPanel {
   public MainPanel() {
     initComponents();
     This = this;
-    safe.setUseUniqueNames(true);
     safe.setUseAttributeNameForName(true);
-    safeGroups.setUseUniqueNames(true);
     safeGroups.setUseAttributeNameForName(true);
     safe.setRoot("group", "name=\"Passwords\"", "");
     Config.loadConfig();

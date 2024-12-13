@@ -79,7 +79,6 @@ public class XMLTree implements TreeModelListener {
   public class XMLTag extends DefaultMutableTreeNode {
     public String name = "";
     public ArrayList<XMLAttr> attrs;
-    public String uname = "";  //unique name (usually same as name)
     public String content = "";
     /**
      * Tag is a singleton
@@ -141,18 +140,14 @@ public class XMLTree implements TreeModelListener {
           return argName;
         }
       }
-      if (useUniqueNames) {
-        return uname;
-      } else {
-        return name;
-      }
+      return name;
     }
 
     /**
      * Sets the name for this node.
      */
     public void setName(String newName) {
-      //check if name="..." is in attrs, else use name (and update uname)
+      //check if name="..." is in attrs, else use name
       XMLAttr attr;
       boolean ok = false;
       for (Iterator i = attrs.iterator(); i.hasNext();) {
@@ -166,7 +161,7 @@ public class XMLTree implements TreeModelListener {
       if (!ok) {
         name = newName;
       }
-      setuname(this);
+      changedTag(this);
     }
 
     /**
@@ -390,48 +385,6 @@ public class XMLTree implements TreeModelListener {
     }
   }
 
-  private void setuname(XMLTag tag) {
-    XMLTag parent = tag.getParent();
-    String uname = tag.name;
-    XMLAttr attr;
-    for (Iterator i = tag.attrs.iterator(); i.hasNext();) {
-      attr = (XMLAttr) i.next();
-      if (attr.name.equalsIgnoreCase("name")) {
-        uname = attr.value;
-        break;
-      }
-    }
-    String orguname = uname;
-    if (parent == null) {
-      tag.uname = uname;
-      changedTag(tag);
-      return;
-    }
-    boolean ok;
-    int idx = 1;
-    int size = parent.getChildCount();
-    while (true) {
-      ok = true;
-      for (int a = 0; a < size; a++) {
-        XMLTag child = (XMLTag) parent.getChildAt(a);
-        if (child == tag) {
-          continue;
-        }
-        if (child.getName().equalsIgnoreCase(uname)) {
-          ok = false;
-          break;
-        }
-      }
-      if (ok) {
-        break;
-      }
-      uname = orguname + idx;
-      idx++;
-    }
-    tag.uname = uname;
-    changedTag(tag);
-  }
-
   /**
    * Reads the entire tree from a XML file from filename. No call handler is
    * used.
@@ -506,7 +459,6 @@ public class XMLTree implements TreeModelListener {
               return false;
             }  //already read the XML header
             header.name = tagpart.content;
-            header.uname = header.name;
             string2attrs(header, tagpart.attrs);
             if (event != null) {
               event.XMLTagAdded(header);
@@ -527,7 +479,6 @@ public class XMLTree implements TreeModelListener {
             }  //already found a root tag
             bRoot = true;
             root.name = tagpart.content;
-            root.uname = root.name;
             string2attrs(root, tagpart.attrs);
             if (event != null) {
               event.XMLTagAdded(root);
@@ -685,7 +636,6 @@ public class XMLTree implements TreeModelListener {
   private void clearTag(XMLTag tag) {
     tag.name = "";
     tag.attrs = new ArrayList<XMLAttr>();
-    tag.uname = "";
     tag.content = "";
   }
 
@@ -729,7 +679,7 @@ public class XMLTree implements TreeModelListener {
    */
   public XMLTag addTag(XMLTag targetParent, XMLTag tag) {
     treemodel.insertNodeInto(tag, targetParent, targetParent.getChildCount());
-    setuname(tag);
+    changedTag(tag);
     if (event != null) {
       event.XMLTagAdded(tag);
     }
@@ -780,7 +730,6 @@ public class XMLTree implements TreeModelListener {
    */
   public void setRoot(String name, String attrs, String content) {
     root.name = name;
-    root.uname = name;
     string2attrs(root, attrs);
     root.content = content;
     changedTag(root);
@@ -853,12 +802,7 @@ public class XMLTree implements TreeModelListener {
     tag.name = name;
     string2attrs(tag, attrs);
     tag.content = content;
-    if (tag.getParent() != null) {
-      setuname(tag);
-    } else {
-      tag.uname = name;
-      changedTag(tag);
-    }
+    changedTag(tag);
     if (event != null) {
       event.XMLTagAdded(tag);
     }
@@ -903,22 +847,6 @@ public class XMLTree implements TreeModelListener {
    */
   public boolean getUseAttributeNameForName() {
     return useNameAttributeForName;
-  }
-
-  /**
-   * Forces getName() to return unique names.
-   *
-   * @param state
-   */
-  public void setUseUniqueNames(boolean state) {
-    useUniqueNames = state;
-  }
-
-  /**
-   * Forces getName() to return the tags content instead of the actual name.
-   */
-  public boolean getUseUniqueNames() {
-    return useUniqueNames;
   }
 
   /**

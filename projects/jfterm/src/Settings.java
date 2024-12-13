@@ -67,7 +67,6 @@ public class Settings {
   public static void loadSettings() {
     String fn = JF.getUserPath() + "/.jfterm.xml";
     XMLTree xml = new XMLTree();
-    xml.setUseUniqueNames(false);
     xml.read(fn);
     XMLTree.XMLTag tag = xml.getTag(new Object[] {"jfterm", "settings"});
     if (tag == null) return;  //no settings found
@@ -78,7 +77,6 @@ public class Settings {
   public static void saveSettings() {
     String fn = JF.getUserPath() + "/.jfterm.xml";
     XMLTree xml = new XMLTree();
-    xml.setUseUniqueNames(false);
     xml.root.setName("jfterm");
     XMLTree.XMLTag tag = xml.addTag(xml.root, "settings", "", "");
     xml.readClass(tag, settings);

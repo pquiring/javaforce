@@ -579,7 +579,6 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     }
     config.cameraKey = camera.list.toArray(new CameraKey[0]);
     XMLTree projectXML = new XMLTree();
-    projectXML.setUseUniqueNames(false);
     projectXML.readClass("jfvideo", config);
     projectXML.write(projectFile);
   }
@@ -588,7 +587,6 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     projectFile = fn;
     XMLTree projectXML = new XMLTree();
     projectXML.read(projectFile);
-    projectXML.setUseUniqueNames(false);
     projectXML.writeClass(config);
     for(int a=0;a<config.track.length;a++) {
       TrackPanel track = this.addTrack();
