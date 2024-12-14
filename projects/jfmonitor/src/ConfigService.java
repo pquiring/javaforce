@@ -1558,7 +1558,7 @@ public class ConfigService implements WebUIHandler {
     opt_net_mon.addClickListener( (MouseEvent me, Component c) -> {
       ui.setRightPanel(serverMonitorNetwork());
     });
-    Button opt_hw_mon = new Button("Monitor Hardware");
+    Button opt_hw_mon = new Button("Hardware Monitor");
     list.add(opt_hw_mon);
     opt_hw_mon.setWidth(leftSize);
     opt_hw_mon.addClickListener( (MouseEvent me, Component c) -> {
