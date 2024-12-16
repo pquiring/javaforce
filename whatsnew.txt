@@ -1,5 +1,10 @@
 What's new...
 
+Dec 16/2024 : JF/75.0
+ - jfMonitor/0.18
+  - fix : more VLAN creation issues
+ - build system improvements
+
 Dec 10/2024 : JF/74.2
  - jfMonitor/0.17
   - fix : VLAN creation issue
