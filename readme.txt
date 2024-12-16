@@ -123,11 +123,9 @@ dmg : build Mac dmg file using hdiutil (mac only)
 
 Maven
 -----
-The Maven repo is used to download dependancies using ant tasks.
-The mvn tool is currently not required.
-A pom.xml is supplied for JF but is missing dependancies for now, the minimum is included
-to create deployment artifacts.
-Use ant task deploy instead of using mvn.
+Ant tasks are used to download dependancies and upload projects to Maven Central.
+The mvn tool is not required (way too complex).
+A minimal pom.xml is required to upload projects to Maven Central (sonatype).
 
 Graal Support
 -------------
