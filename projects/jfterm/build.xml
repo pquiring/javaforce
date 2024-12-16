@@ -21,7 +21,7 @@
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}" deprecation="true" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" deprecation="true" release="${jdkver}" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
       <classpath>
         <fileset dir="." includes="sshd-core.jar"/>
