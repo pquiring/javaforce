@@ -15,10 +15,8 @@
  */
 package javaforce;
 
-import javaforce.*;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.util.Vector;
+import java.io.*;
+import java.util.*;
 
 /**
  * This is a simple class for parsing command line options.
@@ -27,17 +25,17 @@ import java.util.Vector;
  */
 public class ParseArgs extends JF {
 
-  public Vector<String> arg_opts;
-  public Vector<String> arg_vals;
-  public Vector<String> arg_names;
+  public ArrayList<String> arg_opts;
+  public ArrayList<String> arg_vals;
+  public ArrayList<String> arg_names;
   public boolean arg_decoderefs = true;  //set to false to ignore @reffiles
   public boolean arg_stripenter = true;  //set to false to keep ENTER codes in arguments (see \examples\winmsg)
   public boolean arg_decodeopts = true;  //set to false to use arg_names only
 
   public ParseArgs() {
-    arg_opts = new Vector<String>();
-    arg_vals = new Vector<String>();
-    arg_names = new Vector<String>();
+    arg_opts = new ArrayList<String>();
+    arg_vals = new ArrayList<String>();
+    arg_names = new ArrayList<String>();
   }
 
   public void arg_parse(String[] args) {
