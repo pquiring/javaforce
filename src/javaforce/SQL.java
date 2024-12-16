@@ -96,6 +96,16 @@ public class SQL {
     return JF.filter(str, JF.filter_numeric);
   }
 
+  /** Returns only numbers in string with single sign (- or +). */
+  public static String signed_numbers(String str) {
+    String sign = "";
+    if (str.startsWith("-") || str.startsWith("+")) {
+      sign = str.substring(0, 1);
+      str = str.substring(1);
+    }
+    return sign + numbers(str);
+  }
+
   /** Returns only letters in quotes in string. */
   public static String letters(String str) {
     return "\'" + JF.filter(str, JF.filter_alpha)+ "\'";
