@@ -17,7 +17,7 @@
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}" debug="true" target="${jdkver}" source="${jdkver}" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" debug="true" release="${java-version}" includeantruntime="false">
       <classpath>
         <pathelement location="servlet-api.jar"/>
         <pathelement location="websocket-api.jar"/>

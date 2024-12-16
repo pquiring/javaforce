@@ -1,11 +1,14 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- Note : any changes should be reflected in lib/package.sh -->
+  <!-- Java version -->
+  <property name="java-version" value="17"/>
   <!-- JavaForce version -->
   <property name="javaforce-version" value="74.2"/>
   <!-- native dependancies versions -->
   <property name="glfw-version" value="3.4"/>
   <!-- ffmpeg version only used in Windows -->
   <property name="ffmpeg-version" value="7.0.2"/>
+  <!-- opencl headers version -->
   <property name="opencl-version" value="v2024.05.08"/>
   <!-- Maven Java Dependancies versions -->
   <property name="twelvemonkeys-version" value="3.9.4"/>

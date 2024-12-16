@@ -18,7 +18,7 @@
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}" release="${jdkver}" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" release="${java-version}" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
     </javac>
   </target>
