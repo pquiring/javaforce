@@ -379,7 +379,7 @@ public class MainPanel extends javax.swing.JPanel {
   private boolean loading = true;
 
   private boolean exists(String file) {
-    return new File("/usr/bin/" + file).exists();
+    return new File(file).exists();
   }
 
   private void connectRDP() {
@@ -396,13 +396,13 @@ public class MainPanel extends javax.swing.JPanel {
         }
       } else {
         if (sdl.isSelected()) {
-          if (exists("sdl-freerdp")) cmd.add("sdl-freerdp");
-          else if (exists("sdl-freerdp3")) cmd.add("sdl-freerdp3");
+          if (exists("/usr/bin/sdl-freerdp")) cmd.add("/usr/bin/sdl-freerdp");
+          else if (exists("/usr/bin/sdl-freerdp3")) cmd.add("/usr/bin/sdl-freerdp3");
           else throw new Exception("sdl-freerdp not found");
         } else {
           //wayland
-          if (exists("wlfreerdp")) cmd.add("wlfreerdp");
-          else if (exists("wlfreerdp3")) cmd.add("wlfreerdp3");
+          if (exists("/usr/bin/wlfreerdp")) cmd.add("/usr/bin/wlfreerdp");
+          else if (exists("/usr/bin/wlfreerdp3")) cmd.add("/usr/bin/wlfreerdp3");
           else throw new Exception("wlfreerdp not found");
         }
       }
