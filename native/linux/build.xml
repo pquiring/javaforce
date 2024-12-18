@@ -1,4 +1,4 @@
-<project name="native" default="help" basedir=".">
+<project name="native" default="linux" basedir=".">
   <description>native</description>
   <property environment="env"/>
   <property name="libs" value="-lm"/>
@@ -7,77 +7,25 @@
 
   <target name="linux" description="create linux natives for x64">
     <!-- build native library -->
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
-    <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
-    <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw-null.c -c -o glfw-null.o -fPIC"/>
-    <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
-
-    <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu  -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu  -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64s.bin"/>
-    <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
-    <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
-    <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
-
-    <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a ${libs} -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -o ../../bin/jfexecsd"/>
-
-    <delete>
-      <fileset dir="." includes="*.o"/>
-    </delete>
-  </target>
-
-  <target name="freebsd" description="create linux natives for x64/freebsd">
-    <!-- build native library -->
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/freebsd -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
+    <exec command="gcc ${opt} -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw-null.c -c -o glfw-null.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
     <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -linotify -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -linotify -o ../linux64s.bin"/>
-
-    <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -linotify -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl ${libs} -linotify -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -linotify -o ../../bin/jfexecsd"/>
-
-    <delete>
-      <fileset dir="." includes="*.o"/>
-    </delete>
-  </target>
-
-  <target name="arm64" description="create linux natives for arm64">
-    <!-- build native library -->
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
-    <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
-    <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw-null.c -c -o glfw-null.o -fPIC"/>
-    <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
-
-    <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE  -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64s.bin"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64.bin"/>
+    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64s.bin"/>
     <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
     <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
     <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
 
     <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a ${libs} -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -o ../../bin/jfexecsd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -o ../../bin/jfexec"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a ${libs} -o ../../bin/jfexecd"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -o ../../bin/jfexecsd"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
     </delete>
   </target>
-
-  <target name="help">
-    <echo>ant linux : build intel x86 64bit (Debian/Ubuntu/Fedora/Arch)</echo>
-    <echo>ant freebsd : build intel x86 64bit (FreeBSD)</echo>
-    <echo>ant arm64 : build ARM 64bit</echo>
-  </target>
-
 </project>
