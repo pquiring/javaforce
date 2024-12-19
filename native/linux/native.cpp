@@ -9,7 +9,9 @@
 #endif
 #include <sys/ioctl.h>  //ioctl
 #include <sys/mman.h>  //mmap
+#ifndef __FreeBSD__
 #include <sys/inotify.h>
+#endif  //__FreeBSD__
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -904,7 +906,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptySetSize
 
 #ifdef __FreeBSD__
 #define execvpe exect  //different name
+#ifndef IUTF8
 #define IUTF8 0  //not supported
+#endif
 #endif
 
 JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
@@ -1684,6 +1688,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
 
 //inotify
 
+#ifndef __FreeBSD__
+
 JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1init
   (JNIEnv *e, jclass c)
 {
@@ -1721,6 +1727,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_inotify_1close
 {
   close(fd);
 }
+
+#endif  //__FreeBSD__
 
 //misc
 
@@ -2023,11 +2031,13 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"ptyWrite", "(J[B)V", (void *)&Java_javaforce_jni_LnxNative_ptyWrite},
   {"ptySetSize", "(JII)V", (void *)&Java_javaforce_jni_LnxNative_ptySetSize},
   {"ptyChildExec", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_ptyChildExec},
+#ifndef __FreeBSD__
   {"inotify_init", "()I", (void *)&Java_javaforce_jni_LnxNative_inotify_1init},
   {"inotify_add_watch", "(ILjava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1add_1watch},
   {"inotify_rm_watch", "(II)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1rm_1watch},
   {"inotify_read", "(I)[B", (void *)&Java_javaforce_jni_LnxNative_inotify_1read},
   {"inotify_close", "(I)V", (void *)&Java_javaforce_jni_LnxNative_inotify_1close},
+#endif
   {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_LnxNative_x11_1get_1id},
   {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1desktop},
   {"x11_set_dock", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1dock},

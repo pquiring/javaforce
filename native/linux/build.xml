@@ -1,35 +1,43 @@
 <project name="native" default="linux" basedir=".">
   <description>native</description>
   <property environment="env"/>
-  <property name="libs" value="-lm"/>
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <target name="linux" description="create linux natives for x64">
-    <!-- build native library -->
-    <exec command="gcc ${opt} -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
-    <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
-    <exec command="gcc ${opt} -I ../glfw/include glfw-null.c -c -o glfw-null.o -fPIC"/>
-    <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
+  <macrodef name="build" description="create linux natives for x64">
+    <attribute name="libs"/>
+    <attribute name="linux"/>
+    <sequential>
+      <!-- build native library -->
+      <exec command="gcc ${opt} -I /usr/include/ffmpeg -I ${java.home}/include/@{linux} -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
+      <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
+      <exec command="gcc ${opt} -I ../glfw/include glfw-null.c -c -o glfw-null.o -fPIC"/>
+      <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
-    <!-- build native executables -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64.bin"/>
-    <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a ${libs} -o ../linux64s.bin"/>
-    <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
-    <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
-    <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
+      <!-- build native executables -->
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a @{libs} -o ../linux64.bin"/>
+      <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings linux.cpp native.a @{libs} -o ../linux64s.bin"/>
+      <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
+      <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
+      <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
 
-    <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a ${libs} -o ../../bin/jfexec"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a ${libs} -o ../../bin/jfexecd"/>
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a ${libs} -o ../../bin/jfexecsd"/>
+      <!-- build cli version -->
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI linux.cpp native.a @{libs} -o ../../bin/jfexec"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a @{libs} -o ../../bin/jfexecd"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a @{libs} -o ../../bin/jfexecsd"/>
 
-    <delete>
-      <fileset dir="." includes="*.o"/>
-    </delete>
+      <delete>
+        <fileset dir="." includes="*.o"/>
+      </delete>
+    </sequential>
+  </macrodef>
+
+  <target name="linux">
+    <build libs="-lm" linux="linux"/>
   </target>
 
   <target name="freebsd" description="freebsd fixes">
-    <symlink link="${java.home}/include/linux" resource="${java.home}/include/freebsd"/>
+    <!-- -lpthread is not required with glibc 2.34 except on FreeBSD -->
+    <build libs="-lm -lpthread" linux="freebsd"/>
   </target>
 </project>
