@@ -1,10 +1,9 @@
 <project name="native" default="linux" basedir=".">
   <description>native</description>
-  <property environment="env"/>
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <macrodef name="build" description="create linux natives for x64">
+  <macrodef name="build" description="create linux natives">
     <attribute name="libs"/>
     <attribute name="linux"/>
     <sequential>
