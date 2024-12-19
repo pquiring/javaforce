@@ -1,3 +1,6 @@
+2024-12-19 : v0.7
+  - fixed linux support
+
 2024-11-27 : v0.6
   - fixed more VNC key binding issues
 
