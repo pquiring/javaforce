@@ -1,7 +1,7 @@
 <project name="native" default="windows" basedir=".">
   <description>native</description>
   <property name="home" value="../.."/>
-  <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib wtsapi32.lib"/>
+  <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib"/>
   <import file="${home}/versions.xml"/>
 
   <target name="windows" description="create windows native files">
