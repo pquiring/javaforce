@@ -1,5 +1,9 @@
 What's new...
 
+Dec 19/2024 : JF/75.1
+ - improved native loaders & build scripts
+ - fixed FreeBSD support
+
 Dec 16/2024 : JF/75.0
  - jfMonitor/0.18
   - fix : more VLAN creation issues
