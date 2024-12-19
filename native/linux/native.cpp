@@ -707,7 +707,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
   return ctx->height;
 }
 
-#endif
+#endif  //__FreeBSD__
 
 //com port API
 
@@ -1982,6 +1982,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 
 #include "../speexdsp/speex_dsp.c"
 
+#ifndef __FreeBSD__
+
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
   {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
@@ -2002,6 +2004,8 @@ void camera_register(JNIEnv *env) {
   cls = findClass(env, "javaforce/media/Camera");
   registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
 }
+
+#endif  //__FreeBSD__
 
 //Linux native methods
 static JNINativeMethod javaforce_jni_LnxNative[] = {
