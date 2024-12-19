@@ -35,8 +35,7 @@
     <build libs="-lm" linux="linux"/>
   </target>
 
-  <target name="freebsd" description="freebsd fixes">
-    <!-- -lpthread is not required with glibc 2.34 except on FreeBSD -->
+  <target name="freebsd">
     <build libs="-lm -lpthread" linux="freebsd"/>
   </target>
 </project>
