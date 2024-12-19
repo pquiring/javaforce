@@ -983,10 +983,13 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
   return (jlong)hNewToken;
 }
 
+JF_LIB_HANDLE lib_sas;
+void (*_SendSAS)(bool asUser);
+
 JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateCtrlAltDel
   (JNIEnv *e, jclass c)
 {
-  SendSAS(false);
+  (*_SendSAS)(false);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_setInputDesktop
@@ -1995,6 +1998,13 @@ void winnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/WinNative");
   registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
+
+  lib_sas = loadLibrary("sas.dll");
+  if (lib_sas == NULL) {
+    printf("Warning:Unable to open sas.dll");
+  } else {
+    getFunction(lib_sas, (void**)&_SendSAS, "SendSAS");
+  }
 
   speex_dsp_register(env);
 }
