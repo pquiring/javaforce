@@ -28,4 +28,8 @@
       <fileset dir="." includes="*.o"/>
     </delete>
   </target>
+
+  <target name="freebsd" description="freebsd fixes">
+    <symlink link="${java.home}/include/linux" resource="${java.home}/include/freebsd"/>
+  </target>
 </project>
