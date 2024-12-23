@@ -59,7 +59,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">llrp.jar;jdom.jar;sshd-core.jar;sshd-common.jar;sshd-sftp.jar;sshd-scp.jar;mina-core.jar;batik-all.jar;bcprov.jar;bctls.jar;slf4j-api.jar</classpath>
+                <classpath mode="compile">llrp.jar;jdom.jar;sshd-core.jar;sshd-common.jar;sshd-sftp.jar;sshd-scp.jar;mina-core.jar;batik-all.jar;bcprov.jar;bctls.jar;slf4j-api.jar;plc4j-api.jar</classpath>
                 <source-level>17</source-level>
             </compilation-unit>
         </java-data>

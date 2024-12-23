@@ -207,6 +207,11 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
+  <available property="have-plc4j-api" file="${lib}/plc4j-api-${plc4j-version}.jar"/>
+  <target name="get-plc4j-api" unless="have-plc4j-api">
+    <maven name="plc4j-api" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
   <target name="getjars">
     <!-- depends via antcalls -->
     <antcall target="get-twelvemonkeys-common-lang"/>
@@ -249,5 +254,6 @@
     <antcall target="get-batik-all"/>
     <antcall target="get-xmlgraphics-commons"/>
     <antcall target="get-xml-apis-ext"/>
+    <antcall target="get-plc4j-api"/>
   </target>
 </project>

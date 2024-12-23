@@ -26,6 +26,7 @@
     <include name="sshd-scp.jar"/>
     <include name="batik-all.jar"/>
     <include name="slf4j-api.jar"/>
+    <include name="plc4j-api.jar"/>
   </fileset>
 
   <import file="versions.xml"/>
@@ -104,6 +105,7 @@
     <antcall target="jar-batik-all"/>
     <antcall target="jar-xmlgraphics-commons"/>
     <antcall target="jar-xml-apis-ext"/>
+    <antcall target="jar-plc4j-api"/>
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

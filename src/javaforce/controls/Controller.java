@@ -20,6 +20,8 @@ import javaforce.controls.ni.*;
 import javaforce.controls.jfc.*;
 import javaforce.media.*;
 
+import org.apache.plc4x.java.api.*;
+
 public class Controller {
   private boolean connected;
   private Socket socket;

@@ -164,4 +164,8 @@
   <target name="jar-xml-apis-ext">
     <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
   </target>
+
+  <target name="jar-plc4j-api">
+    <copyjar name="plc4j-api" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
 </project>
