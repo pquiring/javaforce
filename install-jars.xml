@@ -168,4 +168,12 @@
   <target name="jar-plc4j-api">
     <copyjar name="plc4j-api" version="${plc4j-version}" path="${jarpath}"/>
   </target>
+
+  <target name="jar-plc4j-spi">
+    <copyjar name="plc4j-spi" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-driver-s7">
+    <copyjar name="plc4j-driver-s7" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
 </project>

@@ -11,6 +11,7 @@ package javaforce.controls;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 import javaforce.*;
 import javaforce.controls.s7.*;
@@ -21,13 +22,20 @@ import javaforce.controls.jfc.*;
 import javaforce.media.*;
 
 import org.apache.plc4x.java.api.*;
+import org.apache.plc4x.java.api.messages.*;
+import org.apache.plc4x.java.api.model.*;
+import org.apache.plc4x.java.api.types.*;
+import org.apache.plc4x.java.api.value.*;
 
 public class Controller {
   private boolean connected;
   private Socket socket;
   private InputStream is;
   private OutputStream os;
-  private int plc;
+  private PlcConnection plcConn;
+  private PlcDriver plcDrv;
+  private int plcType;
+  private int plcSubType;
   private DAQmx daq;
   private Object lock = new Object();  //read/write lock
   private static Object s7_connect_lock = new Object();
@@ -56,15 +64,13 @@ public class Controller {
     timeout = ms;
   }
 
-  /** Connects to a PLC. */
-
-  /*
+  /** Connects to a PLC.
    *
-   * url = "S7:host"
-   * url = "MODBUS:host"
-   * url = "AB:host"
-   * url = "NI:device/options"
-   * url = "MIC:name"  (int16 data type , <default> will use default mic)
+   * url = "S7://host"
+   * url = "MODBUS://host"
+   * url = "AB://host"
+   * url = "NI://device/options"
+   * url = "MIC://name"  (int16 data type , %lt;default%gt; will use default mic)
    *
    */
   public boolean connect(String url) {
@@ -74,8 +80,26 @@ public class Controller {
       JFLog.log("Controller:connect():url == null");
       return false;
     }
+    if (url.contains("://")) {
+      //Apache PLC4J
+      plcType = ControllerType.PLC4J;
+      int idx = url.indexOf(':');
+      String driver = url.substring(0, idx).toUpperCase();
+      switch (driver) {
+        case "S7": plcSubType = ControllerType.S7; break;
+        case "AB": plcSubType = ControllerType.AB; break;
+      }
+      try {
+        plcConn = PlcDriverManager.getDefault().getConnectionManager().getConnection(url);
+        plcDrv = PlcDriverManager.getDefault().getDriver(driver);
+        return true;
+      } catch (Exception e) {
+        JFLog.log(e);
+        return false;
+      }
+    }
     if (url.startsWith("S7:")) {
-      plc = ControllerType.S7;
+      plcType = ControllerType.S7;
       String host = url.substring(3);
       synchronized(s7_connect_lock) {
         try {
@@ -121,7 +145,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("MODBUS:")) {
-      plc = ControllerType.MB;
+      plcType = ControllerType.MB;
       String host = url.substring(7);
       try {
         connect(host, 502);
@@ -137,7 +161,7 @@ public class Controller {
     }
     if (url.startsWith("AB:")) {
       ab_context = new ABContext();
-      plc = ControllerType.AB;
+      plcType = ControllerType.AB;
       String host = url.substring(3);
       try {
         connect(host, 44818);
@@ -170,7 +194,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("NI:")) {
-      plc = ControllerType.NI;
+      plcType = ControllerType.NI;
       daq = new DAQmx();
       connected = daq.connect(url.substring(3));
       if (!connected) {
@@ -180,7 +204,7 @@ public class Controller {
       return connected;
     }
     if (url.startsWith("MIC:")) {
-      plc = ControllerType.MIC;
+      plcType = ControllerType.MIC;
       mic = new AudioInput();
       micBufferSize = (int)(44100.0 / (1000.0 / rate));
       micBuffer = new short[micBufferSize];
@@ -217,7 +241,7 @@ public class Controller {
   /** Disconnects from PLC. */
   public boolean disconnect() {
     if (!connected) return false;
-    switch (plc) {
+    switch (plcType) {
       case ControllerType.S7:
       case ControllerType.MB:
       case ControllerType.AB:
@@ -288,7 +312,7 @@ public class Controller {
     addr = addr.toUpperCase();
     synchronized(lock) {
       if (!connected) return false;
-      switch (plc) {
+      switch (plcType) {
         case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
           if (s7.data_type == S7Types.BIT) {
@@ -428,7 +452,27 @@ public class Controller {
     addr = addr.toUpperCase();
     synchronized(lock) {
       if (!connected) return null;
-      switch (plc) {
+      switch (plcType) {
+      case ControllerType.PLC4J:
+        try {
+          PlcReadRequest.Builder reader = plcConn.readRequestBuilder();
+          switch (plcSubType) {
+            case ControllerType.S7: if (!addr.startsWith("%")) addr = "%" + addr; break;
+          }
+          //why is plcConn.parseTagAddress() @deprecated ?
+          PlcTag plcTag = plcDrv.prepareTag(addr);
+          reader.addTag("tag0", plcTag);
+          PlcReadResponse data = reader.build().execute().get(5000, TimeUnit.MILLISECONDS);
+          PlcValue value = data.getPlcValue("tag0");
+          if (value != null) {
+            return value.getRaw();
+          } else {
+            return empty;
+          }
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+        break;
         case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
           if (s7 == null) return null;
@@ -545,13 +589,45 @@ public class Controller {
     }
   }
 
+  private static byte[] empty = new byte[0];
+
  /** Reads multiple data tags from PLC. (only S7 is currently supported) */
   public byte[][] read(String[] addr) {
     if (!connected) return null;
     for(int a=0;a<addr.length;a++) {
       addr[a] = addr[a].toUpperCase();
     }
-    switch (plc) {
+    switch (plcType) {
+      case ControllerType.PLC4J:
+        try {
+          PlcReadRequest.Builder reader = plcConn.readRequestBuilder();
+          int idx = 0;
+          for(String tag : addr) {
+            switch (plcSubType) {
+              case ControllerType.S7: if (!tag.startsWith("%")) tag = "%" + tag; break;
+            }
+            //why is plcConn.parseTagAddress() @deprecated ?
+            PlcTag plcTag = plcDrv.prepareTag(tag);
+            reader.addTag("tag" + idx, plcTag);
+            idx++;
+          }
+          PlcReadResponse data = reader.build().execute().get(5000, TimeUnit.MILLISECONDS);
+          byte[][] ret = new byte[addr.length][];
+          idx = 0;
+          for(String tag : data.getTagNames()) {
+            PlcValue value = data.getPlcValue("tag" + idx);
+            if (value != null) {
+              ret[idx] = value.getRaw();
+            } else {
+              ret[idx] = empty;
+            }
+            idx++;
+          }
+          return ret;
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+        break;
       case ControllerType.S7: {
         S7Data[] s7 = new S7Data[addr.length];
         for(int a=0;a<addr.length;a++) {
@@ -667,9 +743,9 @@ public class Controller {
   }
 
   public boolean isConnected() {
-    if (plc == 0) return false;
+    if (plcType == 0) return false;
     try {
-      switch (plc) {
+      switch (plcType) {
         case ControllerType.S7:
         case ControllerType.AB:
         case ControllerType.MB:
@@ -688,7 +764,7 @@ public class Controller {
 
   /** Returns true is controller is Big Endian byte order. */
   public boolean isBE() {
-    switch (plc) {
+    switch (plcType) {
       case ControllerType.JF: return false;
       case ControllerType.S7: return true;
       case ControllerType.AB: return false;

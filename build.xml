@@ -105,7 +105,10 @@
     <antcall target="jar-batik-all"/>
     <antcall target="jar-xmlgraphics-commons"/>
     <antcall target="jar-xml-apis-ext"/>
+    <antcall target="jar-commons-lang3"/>
     <antcall target="jar-plc4j-api"/>
+    <antcall target="jar-plc4j-spi"/>
+    <antcall target="jar-plc4j-driver-s7"/>
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
