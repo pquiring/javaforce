@@ -165,6 +165,10 @@
     <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-netty-all">
+    <copyjar name="netty-all" version="${netty-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-plc4j-api">
     <copyjar name="plc4j-api" version="${plc4j-version}" path="${jarpath}"/>
   </target>

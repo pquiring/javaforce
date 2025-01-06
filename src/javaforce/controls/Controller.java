@@ -50,6 +50,7 @@ public class Controller {
   public Exception lastException;
 
   public static boolean debug;
+  private static boolean netty;
 
   public void setRate(float rate) {
     this.rate = rate;
@@ -82,6 +83,11 @@ public class Controller {
     }
     if (url.contains("://")) {
       //Apache PLC4J
+      if (!netty) {
+        netty = true;
+        JFLog.log("Disabling netty unsafe usage!");
+        System.setProperty("io.netty.noUnsafe", "true");
+      }
       plcType = ControllerType.PLC4J;
       int idx = url.indexOf(':');
       String driver = url.substring(0, idx).toUpperCase();

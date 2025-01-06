@@ -106,6 +106,7 @@
     <antcall target="jar-xmlgraphics-commons"/>
     <antcall target="jar-xml-apis-ext"/>
     <antcall target="jar-commons-lang3"/>
+    <antcall target="jar-netty-all"/>
     <antcall target="jar-plc4j-api"/>
     <antcall target="jar-plc4j-spi"/>
     <antcall target="jar-plc4j-driver-s7"/>
