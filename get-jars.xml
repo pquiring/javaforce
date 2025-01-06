@@ -222,6 +222,16 @@
     <maven name="plc4j-spi" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
+  <available property="have-plc4j-transport-tcp" file="${lib}/plc4j-transport-tcp-${plc4j-version}.jar"/>
+  <target name="get-plc4j-transport-tcp" unless="have-plc4j-transport-tcp">
+    <maven name="plc4j-transport-tcp" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <available property="have-plc4j-transport-udp" file="${lib}/plc4j-transport-udp-${plc4j-version}.jar"/>
+  <target name="get-plc4j-transport-udp" unless="have-plc4j-transport-udp">
+    <maven name="plc4j-transport-udp" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
   <available property="have-plc4j-driver-s7" file="${lib}/plc4j-driver-s7-${plc4j-version}.jar"/>
   <target name="get-plc4j-driver-s7" unless="have-plc4j-driver-s7">
     <maven name="plc4j-driver-s7" path="org/apache/plc4x" version="${plc4j-version}"/>
@@ -271,6 +281,8 @@
     <antcall target="get-xml-apis-ext"/>
     <antcall target="get-plc4j-api"/>
     <antcall target="get-plc4j-spi"/>
+    <antcall target="get-plc4j-transport-tcp"/>
+    <antcall target="get-plc4j-transport-udp"/>
     <antcall target="get-plc4j-driver-s7"/>
   </target>
 </project>

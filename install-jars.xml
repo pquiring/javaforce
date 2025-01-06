@@ -177,6 +177,14 @@
     <copyjar name="plc4j-spi" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-plc4j-transport-tcp">
+    <copyjar name="plc4j-transport-tcp" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-plc4j-transport-udp">
+    <copyjar name="plc4j-transport-udp" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-plc4j-driver-s7">
     <copyjar name="plc4j-driver-s7" version="${plc4j-version}" path="${jarpath}"/>
   </target>

@@ -109,6 +109,8 @@
     <antcall target="jar-netty-all"/>
     <antcall target="jar-plc4j-api"/>
     <antcall target="jar-plc4j-spi"/>
+    <antcall target="jar-plc4j-transport-tcp"/>
+    <antcall target="jar-plc4j-transport-udp"/>
     <antcall target="jar-plc4j-driver-s7"/>
   </target>
 
