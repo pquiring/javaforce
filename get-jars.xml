@@ -279,6 +279,7 @@
     <antcall target="get-batik-all"/>
     <antcall target="get-xmlgraphics-commons"/>
     <antcall target="get-xml-apis-ext"/>
+    <antcall target="get-netty-all"/>
     <antcall target="get-plc4j-api"/>
     <antcall target="get-plc4j-spi"/>
     <antcall target="get-plc4j-transport-tcp"/>
