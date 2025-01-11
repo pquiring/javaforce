@@ -2,8 +2,9 @@ jfLinux
 =======
 
 Desc:
+  This folder contains scripts to install the JavaForce Linux (jfLinux) package repos.
   jfLinux is a complete desktop environment (DE) using the JavaForce library and related apps.
-  The installation script will install the JF software repo and optionally install the DE.
+  The installation script will install the package repo and optionally install the DE.
   Installing the DE is not required to use other JF apps.
 
 Status:
@@ -27,8 +28,8 @@ To install on a minimal Linux system follow these steps:
 Follow prompts to install the JF Desktop Environment if desired.
 
 Currently supported:
-  debian : amd64
-  fedora : amd64
+  debian : amd64 arm64 (includes Ubuntu)
+  fedora : amd64 arm64
   arch : amd64
 
 Note about Arch installation:
