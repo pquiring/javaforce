@@ -143,6 +143,7 @@ public class MediaCoder {
   public static final int AV_CODEC_ID_VORBIS = 0x15005;
   public static final int AV_CODEC_ID_FLAC = 0x1500c;
   public static final int AV_CODEC_ID_GSM_MS = 0x1501e;
+  public static final int AV_CODEC_ID_SPEEX = 0x15023;
   public static final int AV_CODEC_ID_OPUS = 0x1503c;
 
   //returned by MediaDecoder.read()
