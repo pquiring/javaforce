@@ -5,6 +5,8 @@
     <copyjar name="javaforce" version="${javaforce-version}" path="${jarpath}"/>
   </target>
 
+  <!-- twelvemonkeys -->
+
   <target name="jar-twelvemonkeys-common-lang">
     <copyjar name="common-lang" version="${twelvemonkeys-version}" path="${jarpath}"/>
   </target>
@@ -29,6 +31,8 @@
     <copyjar name="imageio-tiff" version="${twelvemonkeys-version}" path="${jarpath}"/>
   </target>
 
+  <!-- others -->
+
   <target name="jar-derby">
     <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
   </target>
@@ -37,6 +41,8 @@
     <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
   </target>
 
+  <!-- sql connectors -->
+
   <target name="jar-mssql-jdbc">
     <copyjar name="mssql-jdbc" version="${mssql-jdbc-version}" path="${jarpath}"/>
   </target>
@@ -44,6 +50,8 @@
   <target name="jar-mysql-connector">
     <copyjar name="mysql-connector" version="${mysql-connector-version}" path="${jarpath}"/>
   </target>
+
+  <!-- bouncycastle -->
 
   <target name="jar-bcprov">
     <copyjar name="bcprov" version="${bouncycastle-version}" path="${jarpath}"/>
@@ -57,6 +65,8 @@
     <copyjar name="bcutil" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
+  <!-- tomcat api (servlets) -->
+
   <target name="jar-servlet-api">
     <copyjar name="servlet-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
@@ -68,6 +78,22 @@
   <target name="jar-websocket-api">
     <copyjar name="websocket-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
+
+  <!-- jakarta api (servlets) -->
+
+  <target name="jar-jakarta-servlet-api">
+    <copyjar name="jakarta-servlet-api" version="${jakarta-servlet-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jakarta-jsp-api">
+    <copyjar name="jakarta-jsp-api" version="${jakarta-jsp-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jakarta-websocket-api">
+    <copyjar name="jakarta-websocket-api" version="${jakarta-websocket-version}" path="${jarpath}"/>
+  </target>
+
+  <!-- others -->
 
   <target name="jar-filters">
     <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
@@ -85,6 +111,8 @@
     <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
   </target>
 
+  <!-- log4j -->
+
   <target name="jar-log4j-core">
     <copyjar name="log4j-core" version="${log4j-version}" path="${jarpath}"/>
   </target>
@@ -96,6 +124,8 @@
   <target name="jar-log4j-1.2-api">
     <copyjar name="log4j-1.2-api" version="${log4j-version}" path="${jarpath}"/>
   </target>
+
+  <!-- slf4j -->
 
   <target name="jar-slf4j-api">
     <copyjar name="slf4j-api" version="${slf4j-version}" path="${jarpath}"/>
@@ -116,6 +146,8 @@
   <target name="jar-slf4j-reload4j">
     <copyjar name="slf4j-reload4j" version="${slf4j-version}" path="${jarpath}"/>
   </target>
+
+  <!-- mina/ssh -->
 
   <target name="jar-mina-core">
     <copyjar name="mina-core" version="${mina-version}" path="${jarpath}"/>
@@ -141,6 +173,8 @@
     <copyjar name="sshd-scp" version="${sshd-version}" path="${jarpath}"/>
   </target>
 
+  <!-- others -->
+
   <target name="jar-jargs">
     <copyjar name="jargs" version="${jargs-version}" path="${jarpath}"/>
   </target>
@@ -165,6 +199,8 @@
     <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
   </target>
 
+  <!-- netty -->
+
   <target name="jar-netty-common">
     <copyjar name="netty-common" version="${netty-version}" path="${jarpath}"/>
   </target>
@@ -184,6 +220,8 @@
   <target name="jar-netty-codec">
     <copyjar name="netty-codec" version="${netty-version}" path="${jarpath}"/>
   </target>
+
+  <!-- plc4j -->
 
   <target name="jar-plc4j-api">
     <copyjar name="plc4j-api" version="${plc4j-version}" path="${jarpath}"/>

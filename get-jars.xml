@@ -1,6 +1,8 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- get java dependancies -->
 
+  <!-- twelvemonkeys -->
+
   <available property="have-twelvemonkeys-common-lang" file="${lib}/common-lang-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-common-lang" unless="have-twelvemonkeys-common-lang">
     <maven name="common-lang" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
@@ -31,6 +33,8 @@
     <maven name="imageio-tiff" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
   </target>
 
+  <!-- others -->
+
   <available property="have-bfg" file="${lib}/bfg-${bfg-version}.jar"/>
   <target name="get-bfg" unless="have-bfg">
     <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
@@ -46,6 +50,8 @@
     <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
   </target>
 
+  <!-- sql connectors -->
+
   <available property="have-mssql-jdbc" file="${lib}/mssql-jdbc-${mssql-jdbc-version}.jar"/>
   <target name="get-mssql-jdbc" unless="have-mssql-jdbc">
     <maven name="mssql-jdbc" path="com/microsoft/sqlserver" version="${mssql-jdbc-version}"/>
@@ -55,6 +61,8 @@
   <target name="get-mysql-connector" unless="have-mysql-connector">
     <maven name="mysql-connector-j" dest="mysql-connector" path="com/mysql" version="${mysql-connector-version}"/>
   </target>
+
+  <!-- bouncycastle -->
 
   <available property="have-bcprov" file="${lib}/bcprov-${bouncycastle-version}.jar"/>
   <target name="get-bcprov" unless="have-bcprov">
@@ -71,6 +79,8 @@
     <maven name="bcutil-jdk18on" dest="bcutil" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
+  <!-- tomcat api (servlets) -->
+
   <available property="have-servlet-api" file="${lib}/servlet-api-${tomcat-version}.jar"/>
   <target name="get-servlet-api" unless="have-servlet-api">
     <maven name="tomcat-servlet-api" dest="servlet-api" path="org/apache/tomcat" version="${tomcat-version}"/>
@@ -85,6 +95,25 @@
   <target name="get-websocket-api" unless="have-websocket-api">
     <maven name="tomcat-websocket-api" dest="websocket-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
+
+  <!-- jakarta api (servlets) -->
+
+  <available property="have-jakarta-servlet-api" file="${lib}/jakarta-servlet-api-${jakarta-servlet-version}.jar"/>
+  <target name="get-jakarta-servlet-api" unless="have-jakarta-servlet-api">
+    <maven name="jakarta.servlet-api" dest="jakarta-servlet-api" path="jakarta/servlet" version="${jakarta-servlet-version}"/>
+  </target>
+
+  <available property="have-jakarta-jsp-api" file="${lib}/jakarta-jsp-api-${jakarta-jsp-version}.jar"/>
+  <target name="get-jakarta-jsp-api" unless="have-jakarta-jsp-api">
+    <maven name="jakarta.servlet.jsp-api" dest="jakarta-jsp-api" path="jakarta/servlet/jsp" version="${jakarta-jsp-version}"/>
+  </target>
+
+  <available property="have-jakarta-websocket-api" file="${lib}/jakarta-websocket-api-${jakarta-websocket-version}.jar"/>
+  <target name="get-jakarta-websocket-api" unless="have-jakarta-websocket-api">
+    <maven name="jakarta.websocket-api" dest="jakarta-websocket-api" path="jakarta/websocket" version="${jakarta-websocket-version}"/>
+  </target>
+
+  <!-- others -->
 
   <available property="have-filters" file="${lib}/filters-${filters-version}.jar"/>
   <target name="get-filters" unless="have-filters">
@@ -106,6 +135,8 @@
     <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
   </target>
 
+  <!-- log4j -->
+
   <available property="have-log4j-core" file="${lib}/log4j-core-${log4j-version}.jar"/>
   <target name="get-log4j-core" unless="have-log4j-core">
     <maven name="log4j-core" path="org/apache/logging/log4j" version="${log4j-version}"/>
@@ -121,6 +152,8 @@
   <target name="get-log4j12" unless="have-log4j12">
     <maven name="log4j-1.2-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
   </target>
+
+  <!-- slf4j -->
 
   <available property="have-slf4j-api" file="${lib}/slf4j-api-${slf4j-version}.jar"/>
   <target name="get-slf4j-api" unless="have-slf4j-api">
@@ -146,6 +179,8 @@
   <target name="get-slf4j-reload4j" unless="have-slf4j-reload4j">
     <maven name="slf4j-reload4j" path="org/slf4j" version="${slf4j-version}"/>
   </target>
+
+  <!-- mina/ssh -->
 
   <available property="have-mina-core" file="${lib}/mina-core-${mina-version}.jar"/>
   <target name="get-mina-core" unless="have-mina-core">
@@ -177,6 +212,8 @@
     <maven name="sshd-scp" path="org/apache/sshd" version="${sshd-version}"/>
   </target>
 
+  <!-- others -->
+
   <available property="have-jargs" file="${lib}/jargs-${jargs-version}.jar"/>
   <target name="get-jargs" unless="have-jargs">
     <maven name="jargs" path="io/github/pquiring" version="${jargs-version}"/>
@@ -207,6 +244,8 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
+  <!-- netty -->
+
   <available property="have-netty-common" file="${lib}/netty-common-${netty-version}.jar"/>
   <target name="get-netty-common" unless="have-netty-common">
     <maven name="netty-common" path="io/netty" version="${netty-version}"/>
@@ -231,6 +270,8 @@
   <target name="get-netty-codec" unless="have-netty-codec">
     <maven name="netty-codec" path="io/netty" version="${netty-version}"/>
   </target>
+
+  <!-- plc4j -->
 
   <available property="have-plc4j-api" file="${lib}/plc4j-api-${plc4j-version}.jar"/>
   <target name="get-plc4j-api" unless="have-plc4j-api">
@@ -275,6 +316,9 @@
     <antcall target="get-servlet-api"/>
     <antcall target="get-jsp-api"/>
     <antcall target="get-websocket-api"/>
+    <antcall target="get-jakarta-servlet-api"/>
+    <antcall target="get-jakarta-jsp-api"/>
+    <antcall target="get-jakarta-websocket-api"/>
     <antcall target="get-filters"/>
     <antcall target="get-bacnet"/>
     <antcall target="get-xerces"/>
