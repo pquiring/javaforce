@@ -165,8 +165,24 @@
     <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-netty-all">
-    <copyjar name="netty-all" version="${netty-version}" path="${jarpath}"/>
+  <target name="jar-netty-common">
+    <copyjar name="netty-common" version="${netty-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-netty-buffer">
+    <copyjar name="netty-buffer" version="${netty-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-netty-transport">
+    <copyjar name="netty-transport" version="${netty-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-netty-handler">
+    <copyjar name="netty-handler" version="${netty-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-netty-codec">
+    <copyjar name="netty-codec" version="${netty-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-plc4j-api">

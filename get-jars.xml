@@ -207,9 +207,29 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
-  <available property="have-netty-all" file="${lib}/netty-all-${netty-version}.jar"/>
-  <target name="get-netty-all" unless="have-netty-all">
-    <maven name="netty-all" path="io/netty" version="${netty-version}"/>
+  <available property="have-netty-common" file="${lib}/netty-common-${netty-version}.jar"/>
+  <target name="get-netty-common" unless="have-netty-common">
+    <maven name="netty-common" path="io/netty" version="${netty-version}"/>
+  </target>
+
+  <available property="have-netty-buffer" file="${lib}/netty-buffer-${netty-version}.jar"/>
+  <target name="get-netty-buffer" unless="have-netty-buffer">
+    <maven name="netty-buffer" path="io/netty" version="${netty-version}"/>
+  </target>
+
+  <available property="have-netty-transport" file="${lib}/netty-transport-${netty-version}.jar"/>
+  <target name="get-netty-transport" unless="have-netty-transport">
+    <maven name="netty-transport" path="io/netty" version="${netty-version}"/>
+  </target>
+
+  <available property="have-netty-handler" file="${lib}/netty-handler-${netty-version}.jar"/>
+  <target name="get-netty-handler" unless="have-netty-handler">
+    <maven name="netty-handler" path="io/netty" version="${netty-version}"/>
+  </target>
+
+  <available property="have-netty-codec" file="${lib}/netty-codec-${netty-version}.jar"/>
+  <target name="get-netty-codec" unless="have-netty-codec">
+    <maven name="netty-codec" path="io/netty" version="${netty-version}"/>
   </target>
 
   <available property="have-plc4j-api" file="${lib}/plc4j-api-${plc4j-version}.jar"/>
@@ -279,7 +299,11 @@
     <antcall target="get-batik-all"/>
     <antcall target="get-xmlgraphics-commons"/>
     <antcall target="get-xml-apis-ext"/>
-    <antcall target="get-netty-all"/>
+    <antcall target="get-netty-common"/>
+    <antcall target="get-netty-buffer"/>
+    <antcall target="get-netty-transport"/>
+    <antcall target="get-netty-handler"/>
+    <antcall target="get-netty-codec"/>
     <antcall target="get-plc4j-api"/>
     <antcall target="get-plc4j-spi"/>
     <antcall target="get-plc4j-transport-tcp"/>

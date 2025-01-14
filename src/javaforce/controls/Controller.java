@@ -86,6 +86,7 @@ public class Controller {
       if (!netty) {
         netty = true;
         JFLog.log("Disabling netty unsafe usage!");
+        System.setProperty("org.jboss.netty.debug", "true");
         System.setProperty("io.netty.allocator.numDirectArenas", "0");
         System.setProperty("io.netty.noPreferDirect", "true");
         System.setProperty("io.netty.noUnsafe", "true");
