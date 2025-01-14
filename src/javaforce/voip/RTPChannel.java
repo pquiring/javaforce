@@ -413,11 +413,11 @@ public class RTPChannel {
       } else if (new_stream.hasCodec(RTP.CODEC_G729a)) {
         coder = new g729a(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX)) {
-        coder = new speex(rtp, 8000);
+        coder = new speex(rtp, 8000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX16)) {
-        coder = new speex(rtp, 16000);
+        coder = new speex(rtp, 16000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX32)) {
-        coder = new speex(rtp, 32000);
+        coder = new speex(rtp, 32000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
       }
       dtmf = new DTMF(coder.getSampleRate());
     }
