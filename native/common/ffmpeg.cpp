@@ -137,6 +137,7 @@ AVFrame* (*_av_frame_alloc)();
 void (*_av_frame_free)(void** frame);
 void (*_av_buffer_unref)(AVBufferRef **buf);
 int (*_av_channel_layout_copy) (AVChannelLayout* dst, const AVChannelLayout* src);
+char* (*_av_strerror)(int errnum, char* buf, size_t bufsiz);
 int (*_avutil_version)();
 
 //swresample functions (audio resample)
@@ -339,6 +340,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_free, "av_frame_free");
   getFunction(util, (void**)&_av_buffer_unref, "av_buffer_unref");
   getFunction(util, (void**)&_av_channel_layout_copy, "av_channel_layout_copy");
+  getFunction(util, (void**)&_av_strerror, "av_strerror");
   getFunction(util, (void**)&_avutil_version, "avutil_version");
 
   getFunction(scale, (void**)&_sws_getContext, "sws_getContext");

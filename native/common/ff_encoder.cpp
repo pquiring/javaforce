@@ -228,8 +228,13 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   }
   ctx->audio_codec_ctx->time_base.num = 1;
   ctx->audio_codec_ctx->time_base.den = ctx->freq;
-  ctx->audio_stream->time_base.num = 1;
-  ctx->audio_stream->time_base.den = ctx->freq;
+  if (ctx->audio_stream != NULL) {
+    ctx->audio_stream->time_base.num = 1;
+    ctx->audio_stream->time_base.den = ctx->freq;
+  }
+  if (ctx->audio_codec_ctx->frame_size == 0) {
+    ctx->audio_codec_ctx->frame_size = 160;
+  }
 
   //set audio codec options
   switch (ctx->audio_codec_ctx->codec_id) {
@@ -246,8 +251,10 @@ static jboolean encoder_init_audio(FFContext *ctx) {
         ctx->audio_codec_ctx->sample_rate = 48000;
         ctx->audio_codec_ctx->time_base.num = 1;
         ctx->audio_codec_ctx->time_base.den = 48000;
-        ctx->audio_stream->time_base.num = 1;
-        ctx->audio_stream->time_base.den = 48000;
+        if (ctx->audio_stream != NULL) {
+          ctx->audio_stream->time_base.num = 1;
+          ctx->audio_stream->time_base.den = 48000;
+        }
       }
       break;
     }
@@ -258,6 +265,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   }
 
   //open audio codec
+  if (ff_debug_log) printf("avcodec_open2\n");
   int ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
   if (ret < 0) {
     printf("MediaEncoder:avcodec_open2() failed : %d\n", ret);
@@ -265,10 +273,12 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   }
 
   //copy params (after codec is opened)
-  ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
-  if (ret < 0) {
-    printf("MediaEncoder:avcodec_parameters_from_context() failed : %d\n", ret);
-    return JNI_FALSE;
+  if (ctx->audio_stream != NULL) {
+    ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
+    if (ret < 0) {
+      printf("MediaEncoder:avcodec_parameters_from_context() failed : %d\n", ret);
+      return JNI_FALSE;
+    }
   }
 
   //create audio frame
@@ -280,7 +290,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
   ctx->audio_frame->sample_rate = ctx->freq;
   (*_av_channel_layout_copy)(&ctx->audio_frame->ch_layout, &ctx->audio_codec_ctx->ch_layout);
-  printf("audio:frame_size=%d chs=%d\n", ctx->audio_codec_ctx->frame_size, ctx->chs);
+  printf("encoder_init_audio:frame_size=%d chs=%d\n", ctx->audio_codec_ctx->frame_size, ctx->chs);
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
@@ -307,6 +317,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   ret = (*_swr_init)(ctx->swr_ctx);
   if (ret < 0) {
     printf("MediaEncoder:resample init failed : %d\n", ret);
+    return JNI_FALSE;
   }
   return JNI_TRUE;
 }

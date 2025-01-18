@@ -1,3 +1,5 @@
+//ffmpeg struct context
+
 struct FFContext {
   JNIEnv *e;  //only valid during native function
   jobject c;  //only valid during native function
@@ -120,6 +122,13 @@ struct FFContext {
     mid_ff_read = e->GetMethodID(cls_mio, "read", "(Ljavaforce/media/MediaCoder;[B)I");
     mid_ff_write = e->GetMethodID(cls_mio, "write", "(Ljavaforce/media/MediaCoder;[B)I");
     mid_ff_seek = e->GetMethodID(cls_mio, "seek", "(Ljavaforce/media/MediaCoder;JI)J");
+  }
+
+  char errmsg[256];
+
+  char* error_string(int errnum) {
+    (*_av_strerror)(errnum, errmsg, 256);
+    return errmsg;
   }
 };
 

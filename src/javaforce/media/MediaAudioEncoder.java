@@ -5,6 +5,7 @@ package javaforce.media;
  * @author pquiring
  */
 
+import javaforce.*;
 import javaforce.voip.*;
 
 public class MediaAudioEncoder extends MediaCoder {
@@ -28,13 +29,19 @@ public class MediaAudioEncoder extends MediaCoder {
   private Packet packet;
   public native byte[] nencode(long ctx, short[] samples, int offset, int length);
   public Packet encode(short[] samples, int offset, int length) {
-    if (ctx == 0) return null;
+    if (ctx == 0) {
+      JFLog.log("MediaAudioEncoder no ctx");
+      return null;
+    }
     if (packet == null) {
       packet = new Packet();
       packet.stream = getStream();
     }
     packet.data = nencode(ctx, samples, offset, length);
-    if (packet.data == null) return null;
+    if (packet.data == null) {
+      JFLog.log("MediaAudioEncoder.nencode:data == null");
+      return null;
+    }
     packet.length = packet.data.length;
     return packet;
   }
