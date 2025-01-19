@@ -116,9 +116,6 @@ static jboolean decoder_alloc_frame(FFContext *ctx) {
     return JNI_FALSE;
   }
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
   return JNI_TRUE;
 }
 

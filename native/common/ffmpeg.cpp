@@ -157,6 +157,9 @@ void (*_sws_freeContext)(void* ctx);
 
 static AVPacket *AVPacket_New() {
   AVPacket *pkt = (AVPacket*)(*_av_mallocz)(sizeof(AVPacket));
+  (*_av_init_packet)(pkt);
+  pkt->data = NULL;
+  pkt->size = 0;
   return pkt;
 }
 

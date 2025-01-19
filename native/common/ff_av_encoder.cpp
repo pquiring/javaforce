@@ -28,10 +28,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
 
   //create audio packet
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-
-  ctx->encode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-  ctx->encode_buffer_size = 1024*1024;
 
   return (jlong)ctx;
 }
@@ -56,11 +52,6 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioEncoder_nstop
   if (ctx->pkt != NULL) {
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
-  }
-  if (ctx->encode_buffer != NULL) {
-    (*_av_free)(ctx->encode_buffer);
-    ctx->encode_buffer = NULL;
-    ctx->encode_buffer_size = 0;
   }
   freeFFContext(e,c,ctx);
 }
@@ -264,15 +255,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
   if ((ctx->video_frame = (*_av_frame_alloc)()) == NULL) return 0;
 
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
 
   ctx->width = width;
   ctx->height = height;
-
-  ctx->encode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-  ctx->encode_buffer_size = 1024*1024;
 
   return (jlong)ctx;
 }
@@ -297,11 +282,6 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoEncoder_nstop
   if (ctx->pkt != NULL) {
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
-  }
-  if (ctx->encode_buffer != NULL) {
-    (*_av_free)(ctx->encode_buffer);
-    ctx->encode_buffer = NULL;
-    ctx->encode_buffer_size = 0;
   }
   freeFFContext(e,c,ctx);
 }

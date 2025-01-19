@@ -78,9 +78,6 @@ struct FFContext {
   short *audio_buffer;
   int audio_buffer_size;
 
-  uint8_t* encode_buffer;
-  int encode_buffer_size;
-
   int64_t audio_pts;
   int64_t video_pts;
 

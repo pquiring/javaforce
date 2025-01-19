@@ -32,9 +32,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateFile
   printf("MediaOutput.ncreateFile() : ctx=%p fmt_ctx=%p out_fmt=%p\n", ctx, ctx->fmt_ctx, ctx->out_fmt);
 
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
 
   return (jlong)ctx;
 }
@@ -76,9 +73,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateIO
   ctx->last_dts = -1;
 
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
 
   printf("MediaOutput.ncreateIO() = %p\n", ctx);
 

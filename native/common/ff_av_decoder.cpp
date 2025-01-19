@@ -30,9 +30,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
   }
 
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
 
   ctx->chs = chs;
   ctx->freq = freq;
@@ -239,9 +236,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
   }
 
   ctx->pkt = AVPacket_New();
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
 
   ctx->width = width;
   ctx->height = height;

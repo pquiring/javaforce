@@ -559,6 +559,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstart
   ctx->chs = chs;
   ctx->freq = freq;
 
+  ctx->pkt = AVPacket_New();
+
   const char *cformat = e->GetStringUTFChars(format, NULL);
   jboolean ret = encoder_start(ctx, cformat, video_codec, audio_codec, NULL, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
   e->ReleaseStringUTFChars(format, cformat);
@@ -617,6 +619,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstartFile
   ctx->chs = chs;
   ctx->freq = freq;
 
+  ctx->pkt = AVPacket_New();
+
   const char *cformat = e->GetStringUTFChars(format, NULL);
   const char *cfile = e->GetStringUTFChars(file, NULL);
 
@@ -635,8 +639,10 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
   void* samples_data = (*_av_mallocz)(buffer_size);
   //copy sams -> samples_data
   memcpy(samples_data, sams + offset, length * 2);
-  AVPacket *pkt = AVPacket_New();
-  (*_av_init_packet)(pkt);
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   int ret;
 
   if (ctx->swr_ctx != NULL) {
@@ -671,19 +677,18 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
     return JNI_FALSE;
   }
   while (1) {
-    ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, pkt);
+    ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);
     if (ret < 0) break;
-    pkt->stream_index = ctx->audio_stream->index;
-    (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-    ctx->last_dts = pkt->dts;
-    ctx->last_pts = pkt->pts;
-//    log_packet("audio", ctx->fmt_ctx, pkt);
-    ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
+    ctx->pkt->stream_index = ctx->audio_stream->index;
+    (*_av_packet_rescale_ts)(ctx->pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+    ctx->last_dts = ctx->pkt->dts;
+    ctx->last_pts = ctx->pkt->pts;
+//    log_packet("audio", ctx->fmt_ctx, ctx->pkt);
+    ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
     if (ret < 0) {
       printf("MediaEncoder:av_interleaved_write_frame() failed : %d\n", ret);
     }
   }
-  (*_av_packet_free)(&pkt);
   (*_av_free)(samples_data);
   if (ctx->swr_ctx != NULL) {
     //free audio_dst_data (only the first pointer : regardless if format was plannar : it's alloced as one large block)
@@ -769,8 +774,6 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
     //copy px -> ctx->video_frame->data[0];
     memcpy(ctx->video_frame->data[0], px, length);
   }
-  AVPacket *pkt = AVPacket_New();
-  (*_av_init_packet)(pkt);
   ctx->video_frame->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
   int ret = (*_avcodec_send_frame)(ctx->video_codec_ctx, ctx->video_frame);
   if (ret < 0) {
@@ -779,18 +782,17 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
   }
 
   while (1) {
-    ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, pkt);
+    ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, ctx->pkt);
     if (ret < 0) break;
-    pkt->stream_index = ctx->video_stream->index;
-    (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-    ctx->last_dts = pkt->dts;
-    ctx->last_pts = pkt->pts;
-    ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
+    ctx->pkt->stream_index = ctx->video_stream->index;
+    (*_av_packet_rescale_ts)(ctx->pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+    ctx->last_dts = ctx->pkt->dts;
+    ctx->last_pts = ctx->pkt->pts;
+    ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
     if (ret < 0) {
       printf("MediaEncoder:av_interleaved_write_frame() failed : %d\n", ret);
     }
   }
-  (*_av_packet_free)(&pkt);
   ctx->video_pts++;
   return JNI_TRUE;
 }
@@ -831,25 +833,22 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaEncoder_getLastPTS
 }
 
 static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size, jboolean ts, jlong dts, jlong pts) {
-  AVPacket *pkt = AVPacket_New();
-  (*_av_init_packet)(pkt);
-  pkt->data = (uint8_t*)data;
-  pkt->size = size;
-  pkt->stream_index = ctx->audio_stream->index;
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
+  ctx->pkt->stream_index = ctx->audio_stream->index;
 
   if (ts) {
-    pkt->dts = dts;
-    pkt->pts = pts;
+    ctx->pkt->dts = dts;
+    ctx->pkt->pts = pts;
   } else {
-    pkt->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-    pkt->dts = pkt->pts;
-    (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+    ctx->pkt->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+    ctx->pkt->dts = ctx->pkt->pts;
+    (*_av_packet_rescale_ts)(ctx->pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
   }
 
-  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
-  pkt->data = NULL;
-  pkt->size = 0;
-  (*_av_packet_free)(&pkt);
+  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
   ctx->audio_pts++;
   return ret == 0;
 }
@@ -889,29 +888,26 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncodedTS
 }
 
 static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame, jboolean ts, jlong dts, jlong pts) {
-  AVPacket *pkt = AVPacket_New();
-  (*_av_init_packet)(pkt);
-  pkt->data = (uint8_t*)data;
-  pkt->size = size;
-  pkt->stream_index = ctx->video_stream->index;
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = (uint8_t*)data;
+  ctx->pkt->size = size;
+
+  ctx->pkt->stream_index = ctx->video_stream->index;
   if (key_frame) {
-    pkt->flags = AV_PKT_FLAG_KEY;
+    ctx->pkt->flags = AV_PKT_FLAG_KEY;
   }
 
   if (ts) {
-    pkt->dts = dts;
-    pkt->pts = pts;
+    ctx->pkt->dts = dts;
+    ctx->pkt->pts = pts;
   } else {
-    pkt->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-    pkt->dts = pkt->pts;
-    (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-//    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
+    ctx->pkt->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+    ctx->pkt->dts = ctx->pkt->pts;
+    (*_av_packet_rescale_ts)(ctx->pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+//    printf("packet:%lld/%lld/%lld\n", ctx->pkt->dts, ctx->pkt->pts, ctx->pkt->duration);
   }
 
-  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
-  pkt->data = NULL;
-  pkt->size = 0;
-  (*_av_packet_free)(&pkt);
+  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
   ctx->video_pts++;
   return ret == 0;
 }
@@ -961,8 +957,10 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaEncoder_getAudioFramesize
 }
 
 static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStream *stream, jboolean endOfStream) {
-  AVPacket *pkt = AVPacket_New();
-  (*_av_init_packet)(pkt);
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   int ret;
 
   //signal end of input
@@ -974,16 +972,15 @@ static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStrea
     }
   }
   while (1) {
-    ret = (*_avcodec_receive_packet)(codec_ctx, pkt);
+    ret = (*_avcodec_receive_packet)(codec_ctx, ctx->pkt);
     if (ret < 0) break;
-    pkt->stream_index = stream->index;
-    (*_av_packet_rescale_ts)(pkt, codec_ctx->time_base, stream->time_base);
-    ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
+    ctx->pkt->stream_index = stream->index;
+    (*_av_packet_rescale_ts)(ctx->pkt, codec_ctx->time_base, stream->time_base);
+    ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
     if (ret < 0) {
       printf("MediaEncoder:av_interleaved_write_frame() failed : %d\n", ret);
     }
   }
-  (*_av_packet_free)(&pkt);
   return JNI_TRUE;
 }
 
@@ -1079,6 +1076,8 @@ static void encoder_stop(FFContext *ctx)
     ctx->audio_buffer = NULL;
   }
   if (ctx->pkt != NULL) {
+    ctx->pkt->data = NULL;
+    ctx->pkt->size = 0;
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
