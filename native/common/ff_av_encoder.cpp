@@ -118,7 +118,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
 
   ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);
   if (ret < 0) {
-    printf("MediaAudioEncoder:avcodec_receive_packet() failed : %d\n", ret);
+    printf("MediaAudioEncoder:avcodec_receive_packet() failed : %d:%s\n", ret, ctx->error_string(ret));
     return NULL;
   }
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:receive_frame:%d\n", ret);

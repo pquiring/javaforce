@@ -174,6 +174,7 @@ public class TestMedia implements MediaIO {
       }
       System.out.println("Audio Frame Size=" + encoder.getAudioFramesize());
       for(int a=0;a<24 * encoder_seconds;a++) {
+        JFLog.log("loop=" + a);
         random(px);
         if (encoder_audio_src.equals("mic")) {
           while (!input.read(sams)) {
@@ -237,6 +238,7 @@ public class TestMedia implements MediaIO {
       }
       System.out.println("Audio Frame Size=" + audioEncoder.getAudioFramesize());
       for(int a=0;a<24 * encoder_seconds;a++) {
+        JFLog.log("loop=" + a);
         random(px);
         packet = videoEncoder.encode(px, 0, px.length);
         if (packet != null) {
