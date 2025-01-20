@@ -165,6 +165,10 @@
     <copy file="filters.jar" todir="/usr/share/java"/>
   </target>
 
+  <target name="jre-all" description="build JRE with all modules included">
+    <exec command="jlink --module-path ${java.home}/jmods --add-modules ALL-MODULE-PATH --output jre_all"/>
+  </target>
+
   <target name="jre-base" description="build JRE for bundled JRE builds with only base">
     <exec command="jlink --module-path ${java.home}/jmods --add-modules ${jre-base} --output jre_base"/>
     <delete>
