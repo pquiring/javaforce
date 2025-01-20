@@ -135,12 +135,18 @@ public class TestMedia implements MediaIO {
     }
   }
 
+  private static AudioGenerate audio_gen = new AudioGenerate();
+
   public static void random(short[] sams) {
     Random r = new Random();
     int len = sams.length;
     for(int a=0;a<len;a++) {
       sams[a] = (short)(r.nextInt(65536) - 32768);
     }
+  }
+
+  public static void sine(short[] sams) {
+    audio_gen.generate(sams, AudioGenerate.SINE, 44100, 5000, 1.0f);
   }
 
   public static int encoder_seconds = 4;
@@ -181,7 +187,7 @@ public class TestMedia implements MediaIO {
             JF.sleep(50);
           }
         } else {
-          random(sams);
+          sine(sams);
         }
         encoder.addVideo(px);
         encoder.addAudio(sams);
@@ -249,7 +255,7 @@ public class TestMedia implements MediaIO {
             JF.sleep(50);
           }
         } else {
-          random(sams);
+          sine(sams);
         }
         packet = audioEncoder.encode(sams, 0, sams.length);
         if (packet != null) {
