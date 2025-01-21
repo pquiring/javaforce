@@ -242,7 +242,7 @@ public class Wav {
       int newLen = orgLen + len;
       short[] newBuf = new short[newLen];
       System.arraycopy(samples16, 0, newBuf, 0, orgLen);
-      System.arraycopy(samples, 0, samples16, orgLen, len);
+      System.arraycopy(samples, 0, newBuf, orgLen, len);
       samples16 = newBuf;
     }
     dataLength += len;
@@ -258,7 +258,7 @@ public class Wav {
       int newLen = orgLen + len;
       int[] newBuf = new int[newLen];
       System.arraycopy(samples32, 0, newBuf, 0, orgLen);
-      System.arraycopy(samples, 0, samples32, orgLen, len);
+      System.arraycopy(samples, 0, newBuf, orgLen, len);
       samples32 = newBuf;
     }
     dataLength += len;
