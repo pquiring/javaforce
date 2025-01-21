@@ -5,8 +5,13 @@ import java.nio.*;
 
 import javaforce.*;
 
-/** Load .wav audio files (supports 16,24,32bit,1-2 channels,any frequency,PCM only)
- * Note:readAllSamples() does not convert 24bit samples.
+/** Wav audio file
+ *
+ * Supports:
+ *   bits : 16,24,32bit (24bit converted to 32bit on load)
+ *   channels : 1-2
+ *   frequency : any
+ *   format : PCM only
  */
 
 public class Wav {
@@ -20,12 +25,22 @@ public class Wav {
   public int[] samples32;  //if readAllSamples() was called
   public int dataLength;  //bytes
 
-  private InputStream wav = null;
+  private InputStream is = null;
+
+  /** Create Wav instance for loading only. */
+  public Wav() {}
+
+  /** Create Wav instance for loading or saving. */
+  public Wav(int chs, int bits, int rate) {
+    this.chs = chs;
+    this.bits = bits;
+    this.rate = rate;
+  }
 
   public boolean load(String fn) {
     try {
-      wav = new FileInputStream(fn);
-      return load(wav);
+      is = new FileInputStream(fn);
+      return load(is);
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -33,18 +48,18 @@ public class Wav {
   }
 
   public boolean load(InputStream is) {
-    wav = is;
+    is = is;
     errmsg = "";
     try {
       byte[] data = new byte[30];
       //read RIFF header (20 bytes);
-      wav.read(data, 0, 20);
+      is.read(data, 0, 20);
       if (!LE.getString(data, 0, 4).equals("RIFF")) throw new Exception("wav is not a valid WAV file (RIFF)");
       if (!LE.getString(data, 8, 4).equals("WAVE")) throw new Exception("wav is not a valid WAV file (WAVE)");
       if (!LE.getString(data, 12, 4).equals("fmt ")) throw new Exception("wav is not a valid WAV file (fmt )");
       int fmtsiz = LE.getuint32(data, 16);
       if ((fmtsiz < 16) || (fmtsiz > 30)) throw new Exception("wav is not a valid WAV file (fmtsiz)");
-      wav.read(data, 0, fmtsiz);
+      is.read(data, 0, fmtsiz);
       if (LE.getuint16(data, 0) != 1) throw new Exception("wav is not PCM");
       chs = LE.getuint16(data, 2);
       if (chs < 1 || chs > 2) throw new Exception("wav is not supported (# chs)");
@@ -57,34 +72,34 @@ public class Wav {
         case 32: bytes = 4; break;
         default: throw new Exception("wav is not supported (bits="+bits+")");
       }
-      wav.read(data, 0, 8);
+      is.read(data, 0, 8);
       while (true) {
         dataLength = LE.getuint32(data, 4);
         if (LE.getString(data, 0, 4).equals("data")) break;
         //ignore chunk (FACT, INFO, etc.)
-        wav.skip(dataLength);
-        wav.read(data, 0, 8);
+        is.skip(dataLength);
+        is.read(data, 0, 8);
       }
     } catch (java.io.FileNotFoundException e2) {
       errmsg = "WAV file not found";
-      try { if (wav != null) wav.close(); } catch (Exception e3) {}
+      try { if (is != null) is.close(); } catch (Exception e3) {}
       return false;
     } catch (Exception e1) {
       errmsg = e1.toString();
-      try { if (wav != null) wav.close(); } catch (Exception e4) {}
+      try { if (is != null) is.close(); } catch (Exception e4) {}
       return false;
     }
     return true;
   }
   /** Closes wav file */
   public void close() {
-    try { wav.close(); } catch (Exception e) {}
+    try { is.close(); } catch (Exception e) {}
   }
   /** Reads all samples and closes file. */
   public boolean readAllSamples() {
     try {
-      samples8 = JF.readAll(wav, dataLength);
-      wav.close();
+      samples8 = JF.readAll(is, dataLength);
+      is.close();
       switch (bits) {
         case 8: return true;
         case 24:
@@ -120,7 +135,7 @@ public class Wav {
   public byte[] readSamples(int nSamples) {
     int byteLength = nSamples*bytes*chs;
     byte[] read8;
-    read8 = JF.readAll(wav, byteLength);
+    read8 = JF.readAll(is, byteLength);
     if (read8 == null) return null;
     byte[] read32;
     int lenXchs = nSamples * chs, pos = 0, pos24 = 0;
@@ -158,6 +173,7 @@ public class Wav {
     return null;
   }
 
+  /** Save wav to file (supports 16/32bit only) */
   public boolean save(String fn) {
     try {
       FileOutputStream fos = new FileOutputStream(fn);
@@ -170,9 +186,10 @@ public class Wav {
     }
   }
 
-  /** Save entire wav file (supports 16/32bit only) */
+  /** Save wav to file (supports 16/32bit only) */
   public boolean save(OutputStream os) {
     if (bits != 16 && bits != 32) return false;
+    if (rate == 0) return false;
     int size = 0;
     switch (bits) {
       case 16:
@@ -192,7 +209,7 @@ public class Wav {
       LE.setString(data, 8, 4, "WAVE");
       LE.setString(data, 12, 4, "fmt ");
       LE.setuint32(data, 16, 16);  //fmt size
-      os.write(data, 0, 20);
+      os.write(data, 0, data.length);
       //write fmt header (16 bytes)
       data = new byte[16 + 4 + 4];
       LE.setuint16(data, 0, 1);  //PCM
@@ -203,7 +220,7 @@ public class Wav {
       LE.setuint16(data, 14, bits);
       LE.setString(data, 16, 4, "data");
       LE.setuint32(data, 20, size);
-      os.write(data, 0, 16 + 4 + 4);
+      os.write(data, 0, data.length);
       switch (bits) {
         case 16: os.write(LE.shortArray2byteArray(samples16, null)); break;
         case 32: os.write(LE.intArray2byteArray(samples32, null)); break;
@@ -213,5 +230,37 @@ public class Wav {
       return false;
     }
     return false;
+  }
+
+  public void add(short[] samples) {
+    int len = samples.length;
+    if (samples16 == null) {
+      samples16 = new short[len];
+      System.arraycopy(samples, 0, samples16, 0, len);
+    } else {
+      int orgLen = samples16.length;
+      int newLen = orgLen + len;
+      short[] newBuf = new short[newLen];
+      System.arraycopy(samples16, 0, newBuf, 0, orgLen);
+      System.arraycopy(samples, 0, samples16, orgLen, len);
+      samples16 = newBuf;
+    }
+    dataLength += len;
+  }
+
+  public void add(int[] samples) {
+    int len = samples.length;
+    if (samples32 == null) {
+      samples32 = new int[len];
+      System.arraycopy(samples, 0, samples32, 0, len);
+    } else {
+      int orgLen = samples32.length;
+      int newLen = orgLen + len;
+      int[] newBuf = new int[newLen];
+      System.arraycopy(samples32, 0, newBuf, 0, orgLen);
+      System.arraycopy(samples, 0, samples32, orgLen, len);
+      samples32 = newBuf;
+    }
+    dataLength += len;
   }
 }

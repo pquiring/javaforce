@@ -7,7 +7,7 @@ import java.io.*;
  *  Samples are returned in 20ms blocks (last partial block is chopped).
  */
 
-public class Wav {
+public class Wav8k {
   public short[] samples;
   public String errmsg;
   private int pos, len;

@@ -12,7 +12,7 @@ public class MusicOnHold {
   private int idx = 0;
   private int off = 0;
   private static final int freq = 500;
-  private static Wav wav;
+  private static Wav8k wav;
   private int wavIdx;
 
   /** Fills next 20ms (160 samples) into buffer with MOH */
@@ -44,7 +44,7 @@ public class MusicOnHold {
   }
 
   public static void loadWav(String fn) {
-    wav = new Wav();
+    wav = new Wav8k();
     if (!wav.load(fn)) {
       wav = null;
     }
