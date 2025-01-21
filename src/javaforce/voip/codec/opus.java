@@ -25,7 +25,7 @@ public class opus implements RTPAudioCoder {
   public opus(RTP rtp, int rate) {
     this.rtp = rtp;
     this.rate = rate;
-    this.nsamples = 160;
+    this.nsamples = 960;
   }
 
   public void setid(int id) {
@@ -74,7 +74,7 @@ public class opus implements RTPAudioCoder {
   }
 
   public int getPacketSize() {
-    return 160;
+    return 960;
   }
 
   public void close() {
