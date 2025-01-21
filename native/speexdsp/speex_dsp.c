@@ -16,7 +16,7 @@ struct DSP {
   SpeexEchoState *es;
 };
 
-JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
+JNIEXPORT jlong JNICALL Java_javaforce_voip_codec_speex_speexdspinit
   (JNIEnv *e, jclass o, jint sample_rate, jint echo_buffers)
 {
   int i;
@@ -52,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_voip_speex_speexdspinit
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspuninit
+JNIEXPORT void JNICALL Java_javaforce_voip_codec_speex_speexdspuninit
   (JNIEnv *e, jclass o, jlong ctx)
 {
   if (ctx == 0) return;
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspuninit
   speex_echo_state_destroy(c_ctx->es);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspdenoise
+JNIEXPORT void JNICALL Java_javaforce_voip_codec_speex_speexdspdenoise
   (JNIEnv *e, jclass o, jlong ctx, jshortArray audio)
 {
   if (ctx == 0) {
@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspdenoise
   e->ReleasePrimitiveArrayCritical(audio, c_audio, 0);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspecho
+JNIEXPORT void JNICALL Java_javaforce_voip_codec_speex_speexdspecho
   (JNIEnv *e, jclass o, jlong ctx, jshortArray audio_mic, jshortArray audio_spk, jshortArray audio_out)
 {
   if (ctx == 0) {
@@ -92,11 +92,11 @@ JNIEXPORT void JNICALL Java_javaforce_voip_speex_speexdspecho
   e->ReleasePrimitiveArrayCritical(audio_out, c_audio_out, 0);
 }
 
-static JNINativeMethod javaforce_voip_speex[] = {
-  {"speexdspinit", "(II)J", (void *)&Java_javaforce_voip_speex_speexdspinit},
-  {"speexdspuninit", "(J)V", (void *)&Java_javaforce_voip_speex_speexdspuninit},
-  {"speexdspdenoise", "(J[S)V", (void *)&Java_javaforce_voip_speex_speexdspdenoise},
-  {"speexdspecho", "(J[S[S[S)V", (void *)&Java_javaforce_voip_speex_speexdspecho},
+static JNINativeMethod javaforce_voip_codec_speex[] = {
+  {"speexdspinit", "(II)J", (void *)&Java_javaforce_voip_codec_speex_speexdspinit},
+  {"speexdspuninit", "(J)V", (void *)&Java_javaforce_voip_codec_speex_speexdspuninit},
+  {"speexdspdenoise", "(J[S)V", (void *)&Java_javaforce_voip_codec_speex_speexdspdenoise},
+  {"speexdspecho", "(J[S[S[S)V", (void *)&Java_javaforce_voip_codec_speex_speexdspecho},
 };
 
 extern "C" void speex_dsp_register(JNIEnv *env);
@@ -104,6 +104,6 @@ extern "C" void speex_dsp_register(JNIEnv *env);
 void speex_dsp_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/voip/speex");
-  registerNatives(env, cls, javaforce_voip_speex, sizeof(javaforce_voip_speex)/sizeof(JNINativeMethod));
+  cls = findClass(env, "javaforce/voip/codec/speex");
+  registerNatives(env, cls, javaforce_voip_codec_speex, sizeof(javaforce_voip_codec_speex)/sizeof(JNINativeMethod));
 }
