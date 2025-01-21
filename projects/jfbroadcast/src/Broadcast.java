@@ -1605,7 +1605,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   boolean registered;
   short silence[] = new short[160];
   short tmp[] = new short[160];
-  Wav wav[];
+  Wav8k wav[];
   SQL psql;  //persistant sql connection
   String dbname = "broadcast";
   String listid;
@@ -2375,10 +2375,10 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     fixList(true, false);
 
     //load WAV file(s)
-    wav = new Wav[NUMQUESTIONS];
+    wav = new Wav8k[NUMQUESTIONS];
     int cnt = 0;
     for(int a=0;a<NUMQUESTIONS;a++) {
-      wav[a] = new Wav();
+      wav[a] = new Wav8k();
       if (!questions.enabled[a]) continue;
       if (!wav[a].load(questions.wav[a])) {
         setStatus(wav[a].errmsg);

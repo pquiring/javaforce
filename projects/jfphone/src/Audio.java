@@ -43,7 +43,7 @@ public class Audio {
   private int deactivateDelay;
   private static final int deactivateDelayInit = 50 * 5;  //5 seconds
   private int underBufferCount;
-  private javaforce.voip.Wav inWav, outWav;
+  private javaforce.voip.Wav8k inWav, outWav;
   private int speakerDelay = 0;
   private int sampleRate, sampleRate50;
   private long dsp_ctx = 0;
@@ -74,28 +74,28 @@ public class Audio {
   private void loadRingTones() {
     if (Settings.current.inRingtone.startsWith("*")) {
       if (Settings.current.inRingtone.equals("*RING")) {
-        inWav = new javaforce.voip.Wav();
+        inWav = new javaforce.voip.Wav8k();
         inWav.load(getClass().getResourceAsStream("ringing.wav"));
       } else if (Settings.current.inRingtone.equals("*NA")) {
         initInRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
       } else if (Settings.current.inRingtone.equals("*UK")) {
         initInRinging(400, 450, 400, 200, 400, 2000);  //UK
       } else {
-        inWav = new javaforce.voip.Wav();
+        inWav = new javaforce.voip.Wav8k();
         inWav.load(getClass().getResourceAsStream("ringing.wav"));
       }
     } else {
-      inWav = new javaforce.voip.Wav();
+      inWav = new javaforce.voip.Wav8k();
       if (!inWav.load(Settings.current.inRingtone)) {
         JFLog.log("Failed to load : " + Settings.current.inRingtone);
-        inWav = new javaforce.voip.Wav();
+        inWav = new javaforce.voip.Wav8k();
         inWav.load(getClass().getResourceAsStream("ringing.wav"));
       }
     }
     //setup outbound ringback tone
     if (Settings.current.outRingtone.startsWith("*")) {
       if (Settings.current.outRingtone.equals("*RING")) {
-        outWav = new javaforce.voip.Wav();
+        outWav = new javaforce.voip.Wav8k();
         outWav.load(getClass().getResourceAsStream("ringing.wav"));
       } else if (Settings.current.outRingtone.equals("*NA")) {
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
@@ -105,7 +105,7 @@ public class Audio {
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
       }
     } else {
-      outWav = new javaforce.voip.Wav();
+      outWav = new javaforce.voip.Wav8k();
       if (!outWav.load(Settings.current.outRingtone)) {
         JFLog.log("Failed to load : " + Settings.current.outRingtone);
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
