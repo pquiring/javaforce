@@ -260,6 +260,7 @@ public class RTP implements STUN.Listener {
         stun2 = null;
       }
     }
+    freeChannels();
   }
 
   private void freeWorkers() {
@@ -276,6 +277,13 @@ public class RTP implements STUN.Listener {
       } catch (Exception e2) {
       }
       worker2 = null;
+    }
+  }
+
+  private void freeChannels() {
+    while (channels.size() > 0) {
+      RTPChannel channel = channels.remove(0);
+      channel.stop();
     }
   }
 
@@ -344,8 +352,9 @@ public class RTP implements STUN.Listener {
     return channel;
   }
 
-  /** Remote RTPChannel */
+  /** Remove RTPChannel */
   public void removeChannel(RTPChannel channel) {
+    channel.stop();
     channels.remove(channel);
   }
 

@@ -250,4 +250,6 @@ public class speex implements RTPAudioCoder {
     test(32000);
     test_dsp();
   }
+
+  public void close() {}
 }

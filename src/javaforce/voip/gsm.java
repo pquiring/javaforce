@@ -63,4 +63,6 @@ public class gsm implements RTPAudioCoder {
   }
 
   public int getSampleRate() {return 8000;}
+
+  public void close() {}
 }

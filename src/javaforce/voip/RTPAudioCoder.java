@@ -25,4 +25,6 @@ public interface RTPAudioCoder {
    * -1 = variable sized
    */
   public int getPacketSize();
+  /** Free any resources. */
+  public void close();
 }

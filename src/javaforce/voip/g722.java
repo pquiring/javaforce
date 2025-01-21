@@ -535,4 +535,6 @@ public class g722 implements RTPAudioCoder {
   }
 
   public int getSampleRate() {return 16000;}
+
+  public void close() {}
 }

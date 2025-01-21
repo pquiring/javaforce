@@ -64,4 +64,6 @@ public class g729a implements RTPAudioCoder {
   }
 
   public int getSampleRate() {return 8000;}
+
+  public void close() {}
 }

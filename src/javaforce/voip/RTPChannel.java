@@ -395,6 +395,13 @@ public class RTPChannel {
     return true;
   }
 
+  public void stop() {
+    if (coder != null) {
+      coder.close();
+      coder = null;
+    }
+  }
+
   /**
    * Changes the SDP.Stream for this RTP session. Could occur in a SIP reINVITE.
    */
@@ -402,6 +409,10 @@ public class RTPChannel {
     lastPacket = System.currentTimeMillis();
     stream = new_stream;
     if (stream.type == SDP.Type.audio) {
+      if (coder != null) {
+        coder.close();
+        coder = null;
+      }
       if (new_stream.hasCodec(RTP.CODEC_G711u)) {
         coder = new g711u(rtp);
       } else if (new_stream.hasCodec(RTP.CODEC_G711a)) {

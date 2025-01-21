@@ -127,4 +127,6 @@ public class g711a implements RTPAudioCoder {
   }
 
   public int getSampleRate() {return 8000;}
+
+  public void close() {}
 }

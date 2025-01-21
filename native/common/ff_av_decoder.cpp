@@ -34,6 +34,17 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
   ctx->chs = chs;
   ctx->freq = freq;
 
+  if (ctx->chs != -1) {
+    switch (ctx->chs) {
+      case 1: (*_av_channel_layout_copy)(&ctx->audio_codec_ctx->ch_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
+      case 2: (*_av_channel_layout_copy)(&ctx->audio_codec_ctx->ch_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
+      case 4: (*_av_channel_layout_copy)(&ctx->audio_codec_ctx->ch_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
+    }
+  }
+  if (ctx->freq != -1) {
+    ctx->audio_codec_ctx->sample_rate = ctx->freq;
+  }
+
   ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
   ctx->decode_buffer_size = 1024*1024;
 
@@ -121,9 +132,11 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     }
     if (ctx->chs == -1) {
       ctx->chs = ctx->audio_codec_ctx->ch_layout.nb_channels;
+      printf("MediaAudioDecoder : chs=%d\n", ctx->chs);
     }
     if (ctx->freq == -1) {
       ctx->freq = ctx->audio_codec_ctx->sample_rate;
+      printf("MediaAudioDecoder : freq=%d\n", ctx->freq);
     }
     //create audio conversion context
     ctx->swr_ctx = (*_swr_alloc)();
@@ -138,6 +151,9 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
+    if (ff_debug_log) printf("MediaAudioDecoder.swr_alloc_set_opts2:%p,%d,%d,%p,%d,%d\n", 
+      &new_layout, ctx->dst_sample_fmt, ctx->freq,
+      &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate);
     (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
       &new_layout, ctx->dst_sample_fmt, ctx->freq,
       &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
@@ -154,6 +170,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   int dst_nb_samples;
   dst_nb_samples = (int)(*_av_rescale_rnd)((*_swr_get_delay)(ctx->swr_ctx, ctx->src_rate)
     + ctx->frame->nb_samples, ctx->dst_rate, ctx->src_rate, AV_ROUND_UP);
+  if (ff_debug_log) printf("MediaAudioDecoder.av_samples_alloc:%d,%d,%d\n", ctx->dst_nb_channels, dst_nb_samples, ctx->dst_sample_fmt);
   ret = (*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->dst_nb_channels
     , dst_nb_samples, ctx->dst_sample_fmt, 1);
   if (ret < 0) {
