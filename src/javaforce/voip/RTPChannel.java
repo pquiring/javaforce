@@ -5,6 +5,7 @@ import java.net.*;
 
 import javaforce.*;
 import javaforce.media.*;
+import javaforce.voip.codec.*;
 
 public class RTPChannel {
 

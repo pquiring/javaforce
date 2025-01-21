@@ -1,4 +1,4 @@
-package javaforce.voip;
+package javaforce.voip.codec;
 
 /** opus rtp coder
  *
@@ -9,6 +9,7 @@ package javaforce.voip;
 
 import javaforce.*;
 import javaforce.codec.opus.*;
+import javaforce.voip.*;
 
 public class opus implements RTPAudioCoder {
 

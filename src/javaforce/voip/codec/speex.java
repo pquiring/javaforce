@@ -1,9 +1,10 @@
-package javaforce.voip;
+package javaforce.voip.codec;
 
 import java.util.*;
 
 import javaforce.*;
 import javaforce.codec.speex.*;
+import javaforce.voip.*;
 
 /**
  * Encodes/decodes speex packets.

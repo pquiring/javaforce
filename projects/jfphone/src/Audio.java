@@ -3,6 +3,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.media.*;
 import javaforce.voip.*;
+import javaforce.voip.codec.*;
 
 /** Handles all aspects of audio processing (recording, playback, ringing sounds, conference mixing, etc.) */
 

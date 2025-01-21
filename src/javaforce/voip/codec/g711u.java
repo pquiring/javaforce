@@ -1,4 +1,4 @@
-package javaforce.voip;
+package javaforce.voip.codec;
 
 /*
  struct rtp_header {
@@ -11,6 +11,7 @@ package javaforce.voip;
  */
 
 import javaforce.*;
+import javaforce.voip.*;
 
 /**
  * Encodes/decodes g711 packets (U-Law). (North America format)

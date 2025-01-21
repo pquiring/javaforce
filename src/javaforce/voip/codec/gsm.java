@@ -1,7 +1,8 @@
-package javaforce.voip;
+package javaforce.voip.codec;
 
 import javaforce.*;
 import javaforce.codec.gsm.*;
+import javaforce.voip.*;
 
 /**
  * Encodes/decodes GSM packets.
