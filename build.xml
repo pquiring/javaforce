@@ -54,11 +54,6 @@
     <exec command="git checkout -q tags/${opencl-version}" dir="native/opencl"/>
   </target>
 
-  <available property="have-opus" file="native/opus/include/opus.h"/>
-  <target name="get-opus" unless="have-opus" description="download opus">
-    <exec command="git clone https://github.com/xiph/opus.git native/opus"/>
-  </target>
-
   <!-- download ffmpeg (windows only) -->
 
   <target name="get-ffmpeg-win64-bin" description="download ffmpeg for Win64">
@@ -88,7 +83,6 @@
     <antcall target="get-glfw"/>
     <antcall target="get-stb"/>
     <antcall target="get-opencl"/>
-    <antcall target="get-opus"/>
     <antcall target="get-repo"/>
     <antcall target="getjars"/>
     <antcall target="jar-jcifs"/>
