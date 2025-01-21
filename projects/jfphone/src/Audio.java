@@ -597,7 +597,13 @@ public class Audio {
    * Uses linear interpolation if out.length != in.length
    *
    * bufIdx : array index into lastSamples to store last sample used in interpolation
-   *
+   *   0-5 = conf : line/voice
+   *     6 = conf : call waiting tone
+   *     7 = conf : dtmf
+   *     8 = single : dtmf
+   *     9 = single : line/voice
+   *    10 = single : call waiting tone
+   *    11 = all : ringing tone
    */
 
   public void mix(short out[], short in[], int bufIdx) {
