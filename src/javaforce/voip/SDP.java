@@ -330,6 +330,10 @@ public class SDP implements Cloneable {
         content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_SPEEX32).id + " speex/32000");
         content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_SPEEX32).id + " mode=\"4,any\"");
       }
+      if (stream.hasCodec(RTP.CODEC_OPUS)) {
+        content.add("a=rtpmap:" + stream.getCodec(RTP.CODEC_OPUS).id + " opus/48000/2");
+        content.add("a=fmtp:" + stream.getCodec(RTP.CODEC_OPUS).id + " stereo=\"0\"");  //disable stereo
+      }
       if (stream.type == Type.audio) {
         content.add("a=rtpmap:" + rfc2833.id + " telephone-event/8000");
         content.add("a=fmtp:" + rfc2833.id + " 0-15");
@@ -461,7 +465,7 @@ public class SDP implements Cloneable {
         }
       } else if (ln.startsWith("a=")) {
         if (ln.startsWith("a=rtpmap:")) {
-          //a=rtpmap:<id> <name>/<bitrate>
+          //a=rtpmap:<id> <name>/<bitrate>[/channels]
           String[] f = ln.substring(9).split(" ");
           int id = JF.atoi(f[0]);
           String[] n = f[1].split("/");

@@ -12,18 +12,21 @@ public class Audio {
   private short silence8[] = new short[160];
   private short silence16[] = new short[320];
   private short silence32[] = new short[640];
+  private short silence48[] = new short[960];
   private short mixed[] = new short[882];
   private short recording[] = new short[882];
   private short indata8[] = new short[160];
   private short indata16[] = new short[320];
   private short indata32[] = new short[640];
-  private short outdata[] = new short[882];  //read from mic
+  private short indata48[] = new short[960];
+  private short outdata[] = new short[882];
   private short dspdata[] = new short[882];
   private short ringing[] = new short[882];
   private short callWaiting[] = new short[882];
   private short data8[] = new short[160];
   private short data16[] = new short[320];
   private short data32[] = new short[640];
+  private short data48[] = new short[960];
   private AudioOutput output;
   private AudioInput input;
   private Timer timer;
@@ -43,7 +46,7 @@ public class Audio {
   private int deactivateDelay;
   private static final int deactivateDelayInit = 50 * 5;  //5 seconds
   private int underBufferCount;
-  private javaforce.voip.Wav8k inWav, outWav;
+  private Wav8k inWav, outWav;
   private int speakerDelay = 0;
   private int sampleRate, sampleRate50;
   private long dsp_ctx = 0;
@@ -74,28 +77,28 @@ public class Audio {
   private void loadRingTones() {
     if (Settings.current.inRingtone.startsWith("*")) {
       if (Settings.current.inRingtone.equals("*RING")) {
-        inWav = new javaforce.voip.Wav8k();
+        inWav = new Wav8k();
         inWav.load(getClass().getResourceAsStream("ringing.wav"));
       } else if (Settings.current.inRingtone.equals("*NA")) {
         initInRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
       } else if (Settings.current.inRingtone.equals("*UK")) {
         initInRinging(400, 450, 400, 200, 400, 2000);  //UK
       } else {
-        inWav = new javaforce.voip.Wav8k();
+        inWav = new Wav8k();
         inWav.load(getClass().getResourceAsStream("ringing.wav"));
       }
     } else {
-      inWav = new javaforce.voip.Wav8k();
+      inWav = new Wav8k();
       if (!inWav.load(Settings.current.inRingtone)) {
         JFLog.log("Failed to load : " + Settings.current.inRingtone);
-        inWav = new javaforce.voip.Wav8k();
+        inWav = new Wav8k();
         inWav.load(getClass().getResourceAsStream("ringing.wav"));
       }
     }
     //setup outbound ringback tone
     if (Settings.current.outRingtone.startsWith("*")) {
       if (Settings.current.outRingtone.equals("*RING")) {
-        outWav = new javaforce.voip.Wav8k();
+        outWav = new Wav8k();
         outWav.load(getClass().getResourceAsStream("ringing.wav"));
       } else if (Settings.current.outRingtone.equals("*NA")) {
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
@@ -105,7 +108,7 @@ public class Audio {
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
       }
     } else {
-      outWav = new javaforce.voip.Wav8k();
+      outWav = new Wav8k();
       if (!outWav.load(Settings.current.outRingtone)) {
         JFLog.log("Failed to load : " + Settings.current.outRingtone);
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
@@ -428,6 +431,11 @@ public class Audio {
                 mix(mixed, indata32, 9);
               }
               break;
+            case 48000:  //opus
+              if (channel.getSamples(indata48) && doline) {
+                mix(mixed, indata48, 9);
+              }
+              break;
           }
           if (doline) {
             if (inRinging) mix(mixed, getCallWaiting(), 10);
@@ -492,7 +500,11 @@ public class Audio {
             if (BasePhone.debug) {
               JFLog.log("Audio:writeRTP");
             }
-            lines[a].audioRTP.getDefaultChannel().writeRTP(encoded,0,encoded.length);
+            if (encoded == null) {
+              JFLog.log("Error:audio encoded == null:Codec=" + lines[a].audioRTP.getDefaultChannel().coder);
+            } else {
+              lines[a].audioRTP.getDefaultChannel().writeRTP(encoded,0,encoded.length);
+            }
           }
         }
         if (lines[a].dtmfend) {
@@ -524,6 +536,9 @@ public class Audio {
       case 32000:
         if (!channel.getSamples(lines[idx].samples32)) return null;
         return lines[idx].samples32;
+      case 48000:
+        if (!channel.getSamples(lines[idx].samples48)) return null;
+        return lines[idx].samples48;
     }
     return null;
   }
@@ -544,6 +559,10 @@ public class Audio {
         interpolate(data32, in, bufIdx);
         encoded = coder.encode(data32);
         break;
+      case 48000:
+        interpolate(data48, in, bufIdx);
+        encoded = coder.encode(data48);
+        break;
     }
     return encoded;
   }
@@ -560,6 +579,9 @@ public class Audio {
         break;
       case 32000:
         encoded = coder.encode(silence32);
+        break;
+      case 48000:
+        encoded = coder.encode(silence48);
         break;
     }
     return encoded;

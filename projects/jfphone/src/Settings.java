@@ -138,6 +138,7 @@ public class Settings {
         && !current.hasAudioCodec(RTP.CODEC_SPEEX)
         && !current.hasAudioCodec(RTP.CODEC_SPEEX16)
         && !current.hasAudioCodec(RTP.CODEC_SPEEX32)
+        && !current.hasAudioCodec(RTP.CODEC_OPUS)
          )
       {
         current.audioCodecs = "G729,PCMU";

@@ -325,6 +325,11 @@ public class RTPChannel {
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex32");
             break;
+          } else if (codec.equals(RTP.CODEC_OPUS)) {
+            coder = new opus(rtp, codec.rate);
+            coder.setid(codec.id);
+            JFLog.log(log, "codec = opus");
+            break;
           }
         }
         if (coder == null) {
@@ -429,6 +434,8 @@ public class RTPChannel {
         coder = new speex(rtp, 16000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX32)) {
         coder = new speex(rtp, 32000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+      } else if (new_stream.hasCodec(RTP.CODEC_OPUS)) {
+        coder = new opus(rtp, 48000);
       }
       dtmf = new DTMF(coder.getSampleRate());
     }

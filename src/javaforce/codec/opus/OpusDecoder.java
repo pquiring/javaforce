@@ -25,6 +25,9 @@ public class OpusDecoder {
   }
 
   public short[] decode(byte[] data, int off, int length) {
+    if (decoder == null) {
+      open();
+    }
     while (true) {
       short[] sams = decoder.decode(data, off, length);
       if (sams == null || sams.length == 0) {

@@ -32,6 +32,9 @@ public class OpusEncoder {
   }
 
   public byte[] encode(short[] data) {
+    if (encoder == null) {
+      open();
+    }
     while (true) {
       Packet packet = encoder.encode(data, 0, data.length);
       if (packet == null || packet.length == 0) {

@@ -12,8 +12,8 @@ import javaforce.codec.opus.*;
 
 public class opus implements RTPAudioCoder {
 
-  private OpusEncoder encoder = new OpusEncoder();
-  private OpusDecoder decoder = new OpusDecoder();
+  private OpusEncoder encoder;
+  private OpusDecoder decoder;
   private RTP rtp;
   private int rtp_id;
   private int rate;
@@ -34,6 +34,10 @@ public class opus implements RTPAudioCoder {
   private byte[] encoded;
 
   public byte[] encode(short[] samples) {
+    if (encoder == null) {
+      encoder = new OpusEncoder();
+      encoder.open();
+    }
     byte[] packet = encoder.encode(samples);
     int encoded_length = packet.length;
     if (encoded == null || encoded.length != encoded_length + 12) {
@@ -48,6 +52,10 @@ public class opus implements RTPAudioCoder {
   private int decode_timestamp;
 
   public short[] decode(byte[] encoded, int off, int length) {
+    if (decoder == null) {
+      decoder = new OpusDecoder();
+      decoder.open();
+    }
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;
@@ -69,9 +77,13 @@ public class opus implements RTPAudioCoder {
   }
 
   public void close() {
-    encoder.close();
-    encoder = null;
-    decoder.close();
-    decoder = null;
+    if (encoder != null) {
+      encoder.close();
+      encoder = null;
+    }
+    if (decoder != null) {
+      decoder.close();
+      decoder = null;
+    }
   }
 }

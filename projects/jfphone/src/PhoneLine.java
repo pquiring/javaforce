@@ -42,6 +42,7 @@ public class PhoneLine {
   public short samples8[] = new short[160];
   public short samples16[] = new short[320];
   public short samples32[] = new short[640];
+  public short samples48[] = new short[960];
 
   //RFC 2833 - DTMF
   public char dtmf = 'x';
