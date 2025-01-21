@@ -74,7 +74,7 @@ public class opus implements RTPAudioCoder {
   }
 
   public int getPacketSize() {
-    return 960;
+    return -1;  //variable sized
   }
 
   public void close() {
