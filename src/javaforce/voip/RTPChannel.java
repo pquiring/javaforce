@@ -19,6 +19,7 @@ public class RTPChannel {
   //dynnamic codec payload ids
   private int rfc2833_id = -1;
   private int speex_id = -1;
+  private int opus_id = -1;
   private int vp8_id = -1;
   private int vp9_id = -1;
   private int h263_1998_id = -1;
@@ -286,6 +287,11 @@ public class RTPChannel {
         speex_id = codec_speex32.id;
       }
 
+      Codec codec_opus = stream.getCodec(RTP.CODEC_OPUS);
+      if (codec_opus != null) {
+        opus_id = codec_opus.id;
+      }
+
       if (stream.type == SDP.Type.audio) {
         //must use first available codec
         coder = null;
@@ -521,8 +527,15 @@ public class RTPChannel {
       } else if (id == h263_2000_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
       } else if (id == speex_id) {
-          int packetSize = coder.getPacketSize();
-          if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
+        int packetSize = coder.getPacketSize();
+        if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
+            JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
+        }
+        addSamples(coder.decode(data, off, len));
+        rtp.iface.rtpSamples(this);
+      } else if (id == opus_id) {
+        int packetSize = coder.getPacketSize();
+        if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
             JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
         }
         addSamples(coder.decode(data, off, len));
