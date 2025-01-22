@@ -579,6 +579,7 @@ public class RTPChannel {
   }
 
   private void addSamples(short[] data) {
+    if (data == null) return;
     buffer.add(data, 0, data.length);
   }
 
