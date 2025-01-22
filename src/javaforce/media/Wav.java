@@ -15,15 +15,15 @@ import javaforce.*;
  */
 
 public class Wav {
-  public String errmsg;  //last errmsg if any
-  public int chs = -1;  //# channels
-  public int rate = -1;  //sample rate (freq)
-  public int bits = -1;  //bits per sample
-  public int bytes = -1;  //byte per sample
-  public byte[] samples8;  //if readAllSamples() was called
-  public short[] samples16;  //if readAllSamples() was called
-  public int[] samples32;  //if readAllSamples() was called
-  public int dataLength;  //bytes
+  private String errmsg;  //last errmsg if any
+  private int chs = -1;  //# channels
+  private int rate = -1;  //sample rate (freq)
+  private int bits = -1;  //bits per sample
+  private int bytes = -1;  //byte per sample
+  private byte[] samples8;  //if readAllSamples() was called
+  private short[] samples16;  //if readAllSamples() was called
+  private int[] samples32;  //if readAllSamples() was called
+  private int dataLength;  //bytes
 
   private InputStream is = null;
 
@@ -32,9 +32,9 @@ public class Wav {
 
   /** Create Wav instance for loading or saving. */
   public Wav(int chs, int bits, int rate) {
-    this.chs = chs;
-    this.bits = bits;
-    this.rate = rate;
+    setChannels(chs);
+    setBits(bits);
+    setSampleRate(rate);
   }
 
   public boolean load(String fn) {
@@ -42,6 +42,7 @@ public class Wav {
       is = new FileInputStream(fn);
       return load(is);
     } catch (Exception e) {
+      errmsg = e.toString();
       JFLog.log(e);
       return false;
     }
@@ -126,6 +127,7 @@ public class Wav {
       }
       return true;
     } catch (Exception e) {
+      errmsg = e.toString();
       JFLog.log(e);
       return false;
     }
@@ -181,6 +183,7 @@ public class Wav {
       fos.close();
       return ret;
     } catch (Exception e) {
+      errmsg = e.toString();
       JFLog.log(e);
       return false;
     }
@@ -262,5 +265,36 @@ public class Wav {
       samples32 = newBuf;
     }
     dataLength += len;
+  }
+
+  public short[] getSamples16() {
+    return samples16;
+  }
+
+  public int[] getSamples32() {
+    return samples32;
+  }
+
+  public int getChannels() {return chs;}
+
+  public void setChannels(int chs) {this.chs = chs;}
+
+  public int getSampleRate() {return rate;}
+
+  public void setSampleRate(int rate) {this.rate = rate;}
+
+  public int getBits() {return bits;}
+
+  public void setBits(int bits) {
+    this.bits = bits;
+    switch (bits) {
+      case 16: bytes = 2; break;
+      case 24: bytes = 3; break;
+      case 32: bytes = 4; break;
+    }
+  }
+
+  public String getError() {
+    return errmsg;
   }
 }

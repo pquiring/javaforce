@@ -732,7 +732,7 @@ public class Music {
     Wav wav = new Wav();
     wav.load(fn);
     wav.readAllSamples();
-    return soundLoad(wav.samples16, loopStart, loopEnd, sustainStart, sustainEnd, attenuation, 0x3c);
+    return soundLoad(wav.getSamples16(), loopStart, loopEnd, sustainStart, sustainEnd, attenuation, 0x3c);
   }
   public void soundRemove(int idx) {
     loadedSounds.remove(idx);
@@ -849,7 +849,7 @@ public class Music {
     Wav wav = new Wav();
     if (!wav.load(fn)) return false;
     wav.readAllSamples();
-    return addSamples(name, wav.samples16, loopStart, loopEnd, sustainStart, sustainEnd, attenuation);
+    return addSamples(name, wav.getSamples16(), loopStart, loopEnd, sustainStart, sustainEnd, attenuation);
   }
 
   public void removeSamples(int idx) {
