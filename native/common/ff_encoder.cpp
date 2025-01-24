@@ -232,9 +232,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     ctx->audio_stream->time_base.num = 1;
     ctx->audio_stream->time_base.den = ctx->freq;
   }
-  if (ctx->audio_codec_ctx->frame_size == 0) {
-    ctx->audio_codec_ctx->frame_size = 160;
-  }
 
   //set audio codec options
   switch (ctx->audio_codec_ctx->codec_id) {
@@ -270,6 +267,10 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   if (ret < 0) {
     printf("MediaEncoder:avcodec_open2() failed : %d\n", ret);
     return JNI_FALSE;
+  }
+
+  if (ctx->audio_codec_ctx->frame_size == 0) {
+    ctx->audio_codec_ctx->frame_size = 160;
   }
 
   //copy params (after codec is opened)
