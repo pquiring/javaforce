@@ -1,5 +1,10 @@
 What's new...
 
+Jan 24/2025 : JF/76.0
+ - new : added opus codec
+ - jfPhone/1.35
+ - init support for Apache PLC4J (not working yet)
+
 Dec 19/2024 : JF/75.1
  - improved native loaders & build scripts
  - fixed FreeBSD support
