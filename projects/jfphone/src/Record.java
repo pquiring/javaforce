@@ -22,10 +22,7 @@ public class Record extends Thread {
 
   public Record() {
     sample_rate = Settings.current.sample_rate;
-    switch (sample_rate) {
-      case 44100: bufsiz = 882; break;
-      case 48000: bufsiz = 960; break;
-    }
+    bufsiz = sample_rate / 50;  //882 or 960
     buf8 = new byte[bufsiz * 2];
     buffer = new AudioBuffer(sample_rate, 1, 2);
   }

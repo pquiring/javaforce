@@ -55,9 +55,8 @@ public class Audio {
   private int speakerDelay = 0;
   private long dsp_ctx = 0;
   private int sample_rate;
-  private int sample_rate_50;
   private float f_sample_rate;
-  private int bufsiz;  //44100 = 882 : 48000 = 960
+  private int bufsiz;  //44100 = 882 : 48000 = 960 (20ms buffer : 50 buffers per second)
 
   /** Init audio system.  Audio needs access to the lines and the MeterController to send audio levels back to the panel. */
 
@@ -67,12 +66,7 @@ public class Audio {
 
     sample_rate = Settings.current.sample_rate;
     f_sample_rate = sample_rate;
-    sample_rate_50 = sample_rate / 50;
-
-    switch (sample_rate) {
-      case 44100: bufsiz = 882; break;
-      case 48000: bufsiz = 960; break;
-    }
+    bufsiz = sample_rate / 50;  //882 or 960
 
     dtmf = new DTMF(sample_rate);
 
@@ -153,11 +147,11 @@ public class Audio {
     input.listDevices();
     deactivateDelay = deactivateDelayInit;
     underBufferCount = 0;
-    if (!input.start(1, sample_rate, 16, sample_rate_50, Settings.current.audioInput)) {
+    if (!input.start(1, sample_rate, 16, bufsiz, Settings.current.audioInput)) {
       JFLog.log("Input.start() failed");
       return false;
     }
-    if (!output.start(1, sample_rate, 16, sample_rate_50, Settings.current.audioOutput)) {
+    if (!output.start(1, sample_rate, 16, bufsiz, Settings.current.audioOutput)) {
       JFLog.log("Output.start() failed");
       return false;
     }
