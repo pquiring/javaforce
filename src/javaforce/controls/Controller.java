@@ -67,11 +67,11 @@ public class Controller {
 
   /** Connects to a PLC.
    *
-   * url = "S7://host"
-   * url = "MODBUS://host"
-   * url = "AB://host"
-   * url = "NI://device/options"
-   * url = "MIC://name"  (int16 data type , %lt;default%gt; will use default mic)
+   * url = "S7:host"
+   * url = "MODBUS:host"
+   * url = "AB:host"
+   * url = "NI:device/options"
+   * url = "MIC:name"  (int16 data type , %lt;default%gt; will use default mic)
    *
    */
   public boolean connect(String url) {
