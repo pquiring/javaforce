@@ -1,4 +1,6 @@
 CHANGELOG:
+1-24-2025 : v1.35 released
+  - new : added opus codec
 11-14-2024 : v1.34 released
   - new : added DSP echo cancellation option
 10-25-2024 : v1.33 released
