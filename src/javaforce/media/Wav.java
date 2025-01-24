@@ -24,6 +24,7 @@ public class Wav {
   private short[] samples16;  //if readAllSamples() was called
   private int[] samples32;  //if readAllSamples() was called
   private int dataLength;  //bytes
+  private int pos;  //if using getSamples20ms()
 
   private InputStream is = null;
 
@@ -292,6 +293,20 @@ public class Wav {
       case 24: bytes = 3; break;
       case 32: bytes = 4; break;
     }
+  }
+
+  private short[] samples20 = new short[160];
+
+  public short[] getSamples20ms() {
+    if (samples16 == null || samples16.length < 160) return null;
+    if (pos + 160 > samples16.length) pos = 0;
+    System.arraycopy(samples16, pos, samples20, 0, 160);
+    pos += 160;
+    return samples20;
+  }
+
+  public void reset() {
+    pos = 0;
   }
 
   public String getError() {
