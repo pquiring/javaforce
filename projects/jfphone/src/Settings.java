@@ -104,6 +104,7 @@ public class Settings {
   public int dns_transport = 0;  //0=UDP 1=DOH [2=DOT]
   public String dns_server = "8.8.8.8";
   public boolean dsp_echo_cancel;  //use speex DSP echo cancellation
+  public int sample_rate = 48000;  //44100 or 48000
 
   //static = do not save these settings
   public static boolean aa;
@@ -166,6 +167,10 @@ public class Settings {
           if (current.lines[a].user.length() > 0) cnt++;
         }
         if (cnt > 0) current.welcome = false;
+      }
+
+      if (current.sample_rate != 44100 && current.sample_rate != 48000) {
+        current.sample_rate = 48000;
       }
 
       JFLog.log("loadSettings ok");

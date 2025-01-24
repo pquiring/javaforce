@@ -108,6 +108,8 @@ public class EditSettings extends javax.swing.JDialog {
     audioInput = new javax.swing.JComboBox<>();
     audioOutput = new javax.swing.JComboBox<>();
     jLabel19 = new javax.swing.JLabel();
+    jLabel72 = new javax.swing.JLabel();
+    sample_rate = new javax.swing.JComboBox<>();
     jPanel15 = new javax.swing.JPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
     disabled_audio_codecs = new javax.swing.JList<>();
@@ -595,6 +597,10 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel19.setText("Audio Output:");
 
+    jLabel72.setText("Sample Rate");
+
+    sample_rate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "44100", "48000" }));
+
     javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
     jPanel13.setLayout(jPanel13Layout);
     jPanel13Layout.setHorizontalGroup(
@@ -603,9 +609,13 @@ public class EditSettings extends javax.swing.JDialog {
         .addContainerGap()
         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel19)
-          .addComponent(jLabel20))
+          .addComponent(jLabel20)
+          .addComponent(jLabel72))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel13Layout.createSequentialGroup()
+            .addComponent(sample_rate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, Short.MAX_VALUE))
           .addComponent(audioOutput, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(audioInput, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
@@ -620,7 +630,11 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel20)
           .addComponent(audioInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(0, 8, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel72)
+          .addComponent(sample_rate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Audio Codecs"));
@@ -832,7 +846,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(45, Short.MAX_VALUE))
+        .addContainerGap(19, Short.MAX_VALUE))
     );
 
     tabs.addTab("Audio", audio);
@@ -2437,6 +2451,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel70;
   private javax.swing.JLabel jLabel71;
+  private javax.swing.JLabel jLabel72;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JPanel jPanel1;
@@ -2558,6 +2573,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox rtpRange;
   private javax.swing.JTextField rtpmax;
   private javax.swing.JTextField rtpmin;
+  private javax.swing.JComboBox<String> sample_rate;
   private javax.swing.JButton selectDownloadPath;
   private javax.swing.JButton selectInRingtone;
   private javax.swing.JButton selectOutRingtone;
@@ -2933,6 +2949,8 @@ public class EditSettings extends javax.swing.JDialog {
     dns_transport.setSelectedIndex(Settings.current.dns_transport);
     dns_server.setText(Settings.current.dns_server);
 
+    sample_rate.setSelectedIndex(Settings.current.sample_rate == 44100 ? 0 : 1);
+
     updateAudio();
 
     updateVideo();
@@ -3064,6 +3082,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     Settings.current.audioInput = (String)audioInput.getSelectedItem();
     Settings.current.audioOutput = (String)audioOutput.getSelectedItem();
+
+    Settings.current.sample_rate = sample_rate.getSelectedIndex() == 0 ? 44100 : 48000;
 
     Settings.current.videoDevice = (String)videoDevice.getSelectedItem();
 //    Settings.current.videoResolution = (String)videoResolution.getSelectedItem();

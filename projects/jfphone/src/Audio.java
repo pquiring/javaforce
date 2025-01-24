@@ -9,25 +9,29 @@ import javaforce.voip.codec.*;
 
 public class Audio {
   //audio data
-  private short silence[] = new short[882];
   private short silence8[] = new short[160];
   private short silence16[] = new short[320];
   private short silence32[] = new short[640];
   private short silence48[] = new short[960];
-  private short mixed[] = new short[882];
-  private short recording[] = new short[882];
+
   private short indata8[] = new short[160];
   private short indata16[] = new short[320];
   private short indata32[] = new short[640];
   private short indata48[] = new short[960];
-  private short outdata[] = new short[882];
-  private short dspdata[] = new short[882];
-  private short ringing[] = new short[882];
-  private short callWaiting[] = new short[882];
+
   private short data8[] = new short[160];
   private short data16[] = new short[320];
   private short data32[] = new short[640];
   private short data48[] = new short[960];
+
+  private short mixed[] = null;
+  private short recording[] = null;
+  private short outdata[] = null;
+  private short dspdata[] = null;
+  private short ringing[] = null;
+  private short callWaiting[] = null;
+  private short silence[] = null;
+
   private AudioOutput output;
   private AudioInput input;
   private Timer timer;
@@ -41,7 +45,7 @@ public class Audio {
   private MeterController mc;
   private int volPlay = 100, volRec = 100;
   private boolean mute = false;
-  private DTMF dtmf = new DTMF(44100);
+  private DTMF dtmf;
   private boolean active = false;
   private Object activeLock = new Object();
   private int deactivateDelay;
@@ -49,20 +53,43 @@ public class Audio {
   private int underBufferCount;
   private Wav8k inWav, outWav;
   private int speakerDelay = 0;
-  private int sampleRate, sampleRate50;
   private long dsp_ctx = 0;
+  private int sample_rate;
+  private int sample_rate_50;
+  private float f_sample_rate;
+  private int bufsiz;  //44100 = 882 : 48000 = 960
 
   /** Init audio system.  Audio needs access to the lines and the MeterController to send audio levels back to the panel. */
 
   public boolean init(PhoneLine lines[], MeterController mc) {
     this.lines = lines;
     this.mc = mc;
-    sampleRate = 44100;
-    sampleRate50 = sampleRate / 50;
+
+    sample_rate = Settings.current.sample_rate;
+    f_sample_rate = sample_rate;
+    sample_rate_50 = sample_rate / 50;
+
+    switch (sample_rate) {
+      case 44100: bufsiz = 882; break;
+      case 48000: bufsiz = 960; break;
+    }
+
+    dtmf = new DTMF(sample_rate);
+
+    waitTheta = pi2 * 440.0 / f_sample_rate;
+
+    mixed = new short[bufsiz];
+    recording = new short[bufsiz];
+    outdata = new short[bufsiz];
+    dspdata = new short[bufsiz];
+    ringing = new short[bufsiz];
+    callWaiting = new short[bufsiz];
+    silence = new short[bufsiz];
+
     //setup inbound ring tone
     loadRingTones();
 
-    dsp_ctx = speex.speex_dsp_init(44100);
+    dsp_ctx = speex.speex_dsp_init(sample_rate);
 
     if (!start()) return false;
 
@@ -72,6 +99,7 @@ public class Audio {
         process();
       }
     }, 0, 20);
+
     return true;
   }
 
@@ -125,11 +153,11 @@ public class Audio {
     input.listDevices();
     deactivateDelay = deactivateDelayInit;
     underBufferCount = 0;
-    if (!input.start(1, sampleRate, 16, sampleRate50, Settings.current.audioInput)) {
+    if (!input.start(1, sample_rate, 16, sample_rate_50, Settings.current.audioInput)) {
       JFLog.log("Input.start() failed");
       return false;
     }
-    if (!output.start(1, sampleRate, 16, sampleRate50, Settings.current.audioOutput)) {
+    if (!output.start(1, sample_rate, 16, sample_rate_50, Settings.current.audioOutput)) {
       JFLog.log("Output.start() failed");
       return false;
     }
@@ -266,7 +294,7 @@ public class Audio {
 
   private void write(short buf[]) {
     if (player == null || !active) return;
-    scaleBufferVolume(buf, 882, volPlay);
+    scaleBufferVolume(buf, bufsiz, volPlay);
     if (primeOutput) {
       player.add(silence);
       primeOutput = false;
@@ -276,7 +304,7 @@ public class Audio {
       player.lock.notify();
     }
     int lvl = 0;
-    for (int a = 0; a < 882; a++) {
+    for (int a = 0; a < bufsiz; a++) {
       if (Math.abs(buf[a]) > lvl) lvl = Math.abs(buf[a]);
     }
     mc.setMeterPlay(lvl * 100 / 32768);
@@ -301,7 +329,7 @@ public class Audio {
     mc.setMeterRec(lvl * 100 / 32768);
     if (speakerDelay > 0) {
       speakerDelay -= 20;
-      System.arraycopy(silence, 0, buf, 0, 882);
+      System.arraycopy(silence, 0, buf, 0, bufsiz);
       if (speakerDelay <= 0) {
         mc.setSpeakerStatus(true);
       }
@@ -392,7 +420,7 @@ public class Audio {
       }
       if ((cc > 1) && (line != -1) && (lines[line].cnf)) {
         //conference mode
-        System.arraycopy(silence, 0, mixed, 0, 882);
+        System.arraycopy(silence, 0, mixed, 0, bufsiz);
         for (int a = 0; a < 6; a++) {
           if (lines[a].talking) {
             lines[a].samples = getSamples(a);
@@ -406,7 +434,7 @@ public class Audio {
         write(mixed);
       } else {
         //single mode
-        System.arraycopy(silence, 0, mixed, 0, 882);
+        System.arraycopy(silence, 0, mixed, 0, bufsiz);
         if (line != -1) {
           if (lines[line].dtmf != 'x') mix(mixed, dtmf.getSamples(lines[line].dtmf), 8);
         }
@@ -449,24 +477,24 @@ public class Audio {
           if (active) write(mixed);
         }
       }
-      if (record != null) System.arraycopy(mixed, 0, recording, 0, 882);
+      if (record != null) System.arraycopy(mixed, 0, recording, 0, bufsiz);
       //do recording
       if (!active) return;
       if (read(outdata)) {
         underBufferCount = 0;
         if (Settings.current.speakerMode && Settings.current.dsp_echo_cancel && dsp_ctx != 0) {
           speex.speex_dsp_echo(dsp_ctx, outdata, mixed, dspdata);
-          System.arraycopy(dspdata, 0, outdata, 0, 882);
+          System.arraycopy(dspdata, 0, outdata, 0, bufsiz);
         }
       } else {
         underBufferCount++;
         if (underBufferCount > 10) {  //a few is normal
           JFLog.log("Audio:mic underbuffer");
         }
-        System.arraycopy(silence, 0, outdata, 0, 882);
+        System.arraycopy(silence, 0, outdata, 0, bufsiz);
       }
       if (mute) {
-        System.arraycopy(silence, 0, outdata, 0, 882);
+        System.arraycopy(silence, 0, outdata, 0, bufsiz);
       }
       for (int a = 0; a < 6; a++) {
         if ((lines[a].talking) && (!lines[a].hld)) {
@@ -476,7 +504,7 @@ public class Audio {
           } else {
             if ((lines[a].cnf) && (cc > 1)) {
               //conference mode (mix = outdata + all other cnf lines except this one)
-              System.arraycopy(outdata, 0, mixed, 0, 882);
+              System.arraycopy(outdata, 0, mixed, 0, bufsiz);
               for (int b = 0; b < 6; b++) {
                 if (b == a) continue;
                 if ((lines[b].talking) && (lines[b].cnf) && (!lines[b].hld) && (lines[b].samples != null)) mix(mixed, lines[b].samples, 12 + b);
@@ -755,19 +783,19 @@ public class Audio {
         return silence;
       }
       //freq1
-      double theta1 = pi2 * outRingFreq1 / 44100.0;
-      for (int a = 0; a < 882; a++) {
+      double theta1 = pi2 * outRingFreq1 / f_sample_rate;
+      for (int a = 0; a < bufsiz; a++) {
         ringing[a] = (short) (Math.sin(outRingFreq1Pos) * ringVol);
         outRingFreq1Pos += theta1;
       }
       //freq2
-      double theta2 = pi2 * outRingFreq2 / 44100.0;
-      for (int a = 0; a < 882; a++) {
+      double theta2 = pi2 * outRingFreq2 / f_sample_rate;
+      for (int a = 0; a < bufsiz; a++) {
         ringing[a] += (short) (Math.sin(outRingFreq2Pos) * ringVol);
         outRingFreq2Pos += theta2;
       }
-      outRingFreqCount += 882;
-      if (outRingFreqCount == 44100) {
+      outRingFreqCount += bufsiz;
+      if (outRingFreqCount == Settings.current.sample_rate) {
         outRingFreqCount = 0;
         outRingFreq1Pos = 0.0;
         outRingFreq2Pos = 0.0;
@@ -788,19 +816,19 @@ public class Audio {
         return silence;
       }
       //freq1
-      double theta1 = pi2 * inRingFreq1 / 44100.0;
-      for (int a = 0; a < 882; a++) {
+      double theta1 = pi2 * inRingFreq1 / f_sample_rate;
+      for (int a = 0; a < bufsiz; a++) {
         ringing[a] = (short) (Math.sin(inRingFreq1Pos) * ringVol);
         inRingFreq1Pos += theta1;
       }
       //freq2
-      double theta2 = pi2 * inRingFreq2 / 44100.0;
-      for (int a = 0; a < 882; a++) {
+      double theta2 = pi2 * inRingFreq2 / f_sample_rate;
+      for (int a = 0; a < bufsiz; a++) {
         ringing[a] = (short) (Math.sin(inRingFreq2Pos) * ringVol);
         inRingFreq2Pos += theta2;
       }
-      inRingFreqCount += 882;
-      if (inRingFreqCount == 44100) {
+      inRingFreqCount += bufsiz;
+      if (inRingFreqCount == sample_rate) {
         inRingFreqCount = 0;
         inRingFreq1Pos = 0.0;
         inRingFreq2Pos = 0.0;
@@ -812,7 +840,7 @@ public class Audio {
 
   private int waitCount;
   private double waitPos;
-  private static final double waitTheta = pi2 * 440.0 / 44100.0;
+  private double waitTheta;
   private int waitCycle;
 
   /** Returns next 20ms of a generated call waiting sound (beep beep). */
@@ -828,12 +856,12 @@ public class Audio {
       return silence;
     }
     //440
-    for (int a = 0; a < 882; a++) {
+    for (int a = 0; a < bufsiz; a++) {
       callWaiting[a] = (short) (Math.sin(waitPos) * ringVol);
       waitPos += waitTheta;
     }
-    waitCount += 882;
-    if (waitCount == 44100) {
+    waitCount += bufsiz;
+    if (waitCount == sample_rate) {
       waitCount = 0;
       waitPos = 0.0;
     }
@@ -845,18 +873,18 @@ public class Audio {
   private class Player extends Thread {
     private volatile boolean playerActive = true;
     private volatile boolean done = false;
-    private AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
+    private AudioBuffer buffer = new AudioBuffer(sample_rate, 1, 2);  //freq, chs, seconds
     public final Object lock = new Object();
     public void run() {
-      short buf[] = new short[882];
+      short buf[] = new short[bufsiz];
       while (playerActive) {
         synchronized(lock) {
-          if (buffer.size() < 882) {
+          if (buffer.size() < bufsiz) {
             try { lock.wait(); } catch (Exception e) {}
           }
-          if (buffer.size() < 882) continue;
+          if (buffer.size() < bufsiz) continue;
         }
-        buffer.get(buf, 0, 882);
+        buffer.get(buf, 0, bufsiz);
         synchronized(activeLock) {
           if (active) {
             output.write(buf);
@@ -866,7 +894,7 @@ public class Audio {
       done = true;
     }
     public void add(short buf[]) {
-      buffer.add(buf, 0, 882);
+      buffer.add(buf, 0, bufsiz);
     }
     public void flush() {
       buffer.clear();
@@ -884,14 +912,14 @@ public class Audio {
   private class Reader extends Thread {
     private volatile boolean readerActive = true;
     private volatile boolean done = false;
-    private AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
+    private AudioBuffer buffer = new AudioBuffer(sample_rate, 1, 2);  //freq, chs, seconds
     public void run() {
-      short buf[] = new short[882];
+      short buf[] = new short[bufsiz];
       while (readerActive) {
         synchronized(activeLock) {
           if (active) {
             if (input.read(buf)) {
-              buffer.add(buf, 0, 882);
+              buffer.add(buf, 0, bufsiz);
               continue;
             }
           }
