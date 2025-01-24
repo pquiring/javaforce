@@ -335,7 +335,7 @@ public class DLS {
         throw new Exception("WAV load failed");
       }
       wav.readAllSamples();
-      i.samples = wav.samples16;
+      i.samples = wav.getSamples16();
       return i;
     } catch (Exception e) {
       JFLog.log(e);
