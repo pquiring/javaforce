@@ -294,7 +294,7 @@ public class RTPChannel {
 
       if (stream.type == SDP.Type.audio) {
         //must use first available codec
-        coder = null;
+        stop();
         for(int a=0;a<stream.codecs.length;a++) {
           Codec codec = stream.codecs[a];
           if (codec.equals(RTP.CODEC_G711u)) {
@@ -420,29 +420,44 @@ public class RTPChannel {
   public boolean change(SDP.Stream new_stream) {
     lastPacket = System.currentTimeMillis();
     stream = new_stream;
+    JFLog.log(log, "RTPChannel.change():" + new_stream);
     if (stream.type == SDP.Type.audio) {
-      if (coder != null) {
-        coder.close();
-        coder = null;
-      }
+      stop();
       if (new_stream.hasCodec(RTP.CODEC_G711u)) {
         coder = new g711u(rtp);
+        JFLog.log(log, "codec = g711u");
       } else if (new_stream.hasCodec(RTP.CODEC_G711a)) {
         coder = new g711a(rtp);
+        JFLog.log(log, "codec = g711a");
       } else if (new_stream.hasCodec(RTP.CODEC_GSM)) {
         coder = new gsm(rtp);
+        JFLog.log(log, "codec = gsm");
       } else if (new_stream.hasCodec(RTP.CODEC_G722)) {
         coder = new g722(rtp);
+        JFLog.log(log, "codec = g722");
       } else if (new_stream.hasCodec(RTP.CODEC_G729a)) {
         coder = new g729a(rtp);
+        JFLog.log(log, "codec = g729a");
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX)) {
+        Codec codec = new_stream.getCodec(RTP.CODEC_SPEEX);
         coder = new speex(rtp, 8000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+        coder.setid(codec.id);
+        JFLog.log(log, "codec = speex");
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX16)) {
+        Codec codec = new_stream.getCodec(RTP.CODEC_SPEEX16);
         coder = new speex(rtp, 16000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+        coder.setid(codec.id);
+        JFLog.log(log, "codec = speex16");
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX32)) {
+        Codec codec = new_stream.getCodec(RTP.CODEC_SPEEX32);
         coder = new speex(rtp, 32000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+        coder.setid(codec.id);
+        JFLog.log(log, "codec = speex32");
       } else if (new_stream.hasCodec(RTP.CODEC_OPUS)) {
+        Codec codec = new_stream.getCodec(RTP.CODEC_OPUS);
         coder = new opus(rtp, 48000);
+        coder.setid(codec.id);
+        JFLog.log(log, "codec = opus");
       }
       dtmf = new DTMF(coder.getSampleRate());
     }

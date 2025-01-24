@@ -38,7 +38,7 @@ public class OpusEncoder {
     while (true) {
       Packet packet = encoder.encode(data, 0, data.length);
       if (packet == null || packet.length == 0) {
-        JFLog.log("OpusEncoder:packet == null");
+        JFLog.log("OpusEncoder:packet == null:frame=" + data.length);
         break;
       }
       return packet.data;
