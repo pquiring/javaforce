@@ -235,10 +235,10 @@ public class TrackPanel extends javax.swing.JPanel {
   private void importWav(Wav wav) {
     JFLog.log("importing wav");
     MainHeader main = new MainHeader();
-    main.channels = wav.chs;
-    main.rate = wav.rate;
-    main.bits = wav.bits;
-    main.bytes = wav.bytes;
+    main.channels = wav.getChannels();
+    main.rate = wav.getSampleRate();
+    main.bits = wav.getBits();
+    main.bytes = wav.getBytes();
     if (main.bits == 24) {
       //must upgrade to 32bits, there is no 24bit integer
       main.bits = 32;
@@ -249,7 +249,7 @@ public class TrackPanel extends javax.swing.JPanel {
     bits = main.bits;
     bytes = main.bytes;
     writeMainHeader();
-    long length = wav.dataLength/wav.bytes/wav.chs;  //in samples
+    long length = wav.getLength()/wav.getBytes()/wav.getChannels();  //in samples
     totalLength = length;
     JFTask task = new JFTask() {
       public boolean work() {

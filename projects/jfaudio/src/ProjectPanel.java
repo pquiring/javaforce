@@ -260,7 +260,7 @@ public class ProjectPanel extends javax.swing.JPanel {
     int tid = genTrackID();
     Wav wav = new Wav();
     if (!wav.load(fn)) {
-      JFAWT.showError("Error", wav.errmsg);
+      JFAWT.showError("Error", wav.getError());
       return;
     }
     String trackPath = path + "/" + tid;
