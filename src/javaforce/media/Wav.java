@@ -295,6 +295,14 @@ public class Wav {
     }
   }
 
+  public int getBytes() {
+    return bytes;
+  }
+
+  public int getLength() {
+    return dataLength;
+  }
+
   private short[] samples20 = new short[160];
 
   public short[] getSamples20ms() {
