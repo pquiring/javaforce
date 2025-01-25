@@ -21,6 +21,8 @@ import javaforce.utils.*;
 public class VNCServer {
   public final static String busPack = "net.sf.jfvnc";
 
+  private VNCWebServer web;
+
   private boolean start() {
     config = loadConfig();
     return start(config.password, config.port, true);
@@ -50,6 +52,8 @@ public class VNCServer {
         session_server = new VNCSessionServer();
         session_server.start();
       }
+      web = new VNCWebServer();
+      web.start(getWebPort());
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -74,6 +78,10 @@ public class VNCServer {
       busClient.close();
       busClient = null;
     }
+    if (web != null) {
+      web.stop();
+      web = null;
+    }
   }
 
   private Server server;
@@ -92,6 +100,7 @@ public class VNCServer {
     }
     public String password;
     public int port = 5900;
+    public int webport = 5800;
     public String user;  //linux only
     public String display = ":0";  //linux only (default = :0)
 
@@ -126,8 +135,15 @@ public class VNCServer {
       String port = props.getProperty("port");
       if (port != null) {
         config.port = JF.atoi(port);
-        if (config.port < 0 || config.port > 65535) {
+        if (config.port < 1 || config.port > 65535) {
           config.port = 5900;
+        }
+      }
+      String webport = props.getProperty("webport");
+      if (webport != null) {
+        config.webport = JF.atoi(webport);
+        if (config.webport < 1 || config.webport > 65535) {
+          config.webport = 5800;
         }
       }
       if (JF.isUnix()) {
@@ -156,6 +172,11 @@ public class VNCServer {
       JFLog.log(e);
       return null;
     }
+  }
+
+  private static int getWebPort() {
+    if (config == null) return 5800;
+    return config.webport;
   }
 
   private static String randomPassword() {
