@@ -5214,7 +5214,7 @@ public class ConfigService implements WebUIHandler {
       JFLog.log("VNC:sess==null");
       return null;
     }
-    WebConsole console = new WebConsole(sess.vm.getVNC(), Config.current.vnc_password, canvas);
+    VNCWebConsole console = new VNCWebConsole(sess.vm.getVNC(), Config.current.vnc_password, canvas);
     panel.add(canvas);
     //setup canvas events (must setup before sent to client)
     canvas.addMouseDownListener((me, cmp) -> {
