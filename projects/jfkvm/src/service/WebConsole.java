@@ -8,38 +8,33 @@ package service;
  */
 
 import java.awt.event.KeyEvent;
+
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.webui.*;
 
 public class WebConsole extends Thread {
-  public HTTP.Parameters params;
-  public Canvas canvas;
+  private int vnc_port;
+  private String vnc_password;
+  private Canvas canvas;
 
   private RFB rfb;
   private WebUIClient client;
 
   private static final boolean debug = false;
 
-  public WebConsole() {
+  public WebConsole(int vnc_port, String password, Canvas canvas) {
+    this.vnc_port = vnc_port;
+    this.vnc_password = password;
+    this.canvas = canvas;
   }
 
   public void run() {
-    String id = params.get("id");
-    if (id == null) {
-      JFLog.log("VNC:vmname==null");
-      return;
-    }
-    ConsoleSession sess = ConsoleSession.get(id);
-    if (id == null) {
-      JFLog.log("VNC:sess==null");
-      return;
-    }
     rfb = new RFB();
     if (debug) {
       RFB.debug = true;
     }
-    if (!rfb.connect("127.0.0.1", sess.vm.getVNC())) {
+    if (!rfb.connect("127.0.0.1", vnc_port)) {
       JFLog.log("VNC:connection failed");
       return;
     }
@@ -60,7 +55,7 @@ public class WebConsole extends Thread {
         break;
       case RFB.AUTH_VNC:
         byte[] challenge = rfb.readAuthChallenge();
-        byte[] response = RFB.encodeResponse(challenge, Config.current.vnc_password.getBytes());
+        byte[] response = RFB.encodeResponse(challenge, vnc_password.getBytes());
         rfb.writeAuthResponse(response);
         ok = rfb.readAuthResult();
         break;

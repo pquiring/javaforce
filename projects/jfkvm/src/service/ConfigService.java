@@ -5194,8 +5194,6 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getWebConsole(HTTP.Parameters params) {
-    WebConsole console = new WebConsole();
-    console.params = params;
     Panel panel = new Panel();
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -5206,8 +5204,18 @@ public class ConfigService implements WebUIHandler {
     Button winkey = new Button("WinKey");
     tools.add(winkey);
     Canvas canvas = new Canvas();
+    String id = params.get("id");
+    if (id == null) {
+      JFLog.log("VNC:vmname==null");
+      return null;
+    }
+    ConsoleSession sess = ConsoleSession.get(id);
+    if (sess == null) {
+      JFLog.log("VNC:sess==null");
+      return null;
+    }
+    WebConsole console = new WebConsole(sess.vm.getVNC(), Config.current.vnc_password, canvas);
     panel.add(canvas);
-    console.canvas = canvas;
     //setup canvas events (must setup before sent to client)
     canvas.addMouseDownListener((me, cmp) -> {
       console.mouse(me.x, me.y, me.buttons);

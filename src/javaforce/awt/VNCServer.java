@@ -2,6 +2,8 @@ package javaforce.awt;
 
 /** VNCServer.
  *
+ * Default port : 5900
+ *
  * @author peter.quiring
  */
 
