@@ -100,6 +100,7 @@ public class VNCServer {
     }
     public String password;
     public int port = 5900;
+    public boolean web = true;
     public int webport = 5800;
     public String user;  //linux only
     public String display = ":0";  //linux only (default = :0)
@@ -107,6 +108,8 @@ public class VNCServer {
     public String toString() {
       StringBuilder sb = new StringBuilder();
       sb.append("port=" + port + "\n");
+      sb.append("web=" + web + "\n");
+      sb.append("webport=" + webport + "\n");
       sb.append("password=" + password + "\n");
       if (user != null) {
         sb.append("user=" + user + "\n");
@@ -138,6 +141,10 @@ public class VNCServer {
         if (config.port < 1 || config.port > 65535) {
           config.port = 5900;
         }
+      }
+      String web = props.getProperty("web");
+      if (web != null) {
+        config.web = web.equals("true");
       }
       String webport = props.getProperty("webport");
       if (webport != null) {
