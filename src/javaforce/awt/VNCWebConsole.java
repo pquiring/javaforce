@@ -81,61 +81,67 @@ public class VNCWebConsole extends Thread {
     return panel;
   }
 
+  private boolean connected() {
+    return client.isConnected();
+  }
+
   public void run() {
-    rfb = new RFB();
     if (debug) {
       RFB.debug = true;
     }
-    if (!rfb.connect("127.0.0.1", vnc_port)) {
-      JFLog.log("VNC:connection failed");
-      return;
-    }
-    float server_version = rfb.readVersion();
-    rfb.writeVersion(RFB.VERSION_3_8);
-    byte[] auths = rfb.readAuthTypes();
-    if (auths == null || auths.length == 0) {
-      JFLog.log("VNC:No auth types available");
-      return;
-    }
-    rfb.writeAuthType(auths[0]);
-    boolean ok = false;
-    switch (auths[0]) {
-      case RFB.AUTH_FAIL:
-        break;
-      case RFB.AUTH_NONE:
-        ok = true;
-        break;
-      case RFB.AUTH_VNC:
-        byte[] challenge = rfb.readAuthChallenge();
-        byte[] response = RFB.encodeResponse(challenge, vnc_password.getBytes());
-        rfb.writeAuthResponse(response);
-        ok = rfb.readAuthResult();
-        break;
-    }
+    while (connected()) {
+      rfb = new RFB();
+      if (!rfb.connect("127.0.0.1", vnc_port)) {
+        JFLog.log("VNC:connection failed");
+        return;
+      }
+      float server_version = rfb.readVersion();
+      rfb.writeVersion(RFB.VERSION_3_8);
+      byte[] auths = rfb.readAuthTypes();
+      if (auths == null || auths.length == 0) {
+        JFLog.log("VNC:No auth types available");
+        return;
+      }
+      rfb.writeAuthType(auths[0]);
+      boolean ok = false;
+      switch (auths[0]) {
+        case RFB.AUTH_FAIL:
+          break;
+        case RFB.AUTH_NONE:
+          ok = true;
+          break;
+        case RFB.AUTH_VNC:
+          byte[] challenge = rfb.readAuthChallenge();
+          byte[] response = RFB.encodeResponse(challenge, vnc_password.getBytes());
+          rfb.writeAuthResponse(response);
+          ok = rfb.readAuthResult();
+          break;
+      }
 
-    if (!ok) {
-      JFLog.log("VNC:auth failed");
-      return;
+      if (!ok) {
+        JFLog.log("VNC:auth failed");
+        return;
+      }
+
+      rfb.writeClientInit(true);
+      if (!rfb.readServerInit()) {
+        JFLog.log("VNC:server init failed");
+        return;
+      }
+
+      //setup canvas size
+      {
+        int width = rfb.getWidth();
+        int height = rfb.getHeight();
+        canvas.setSize(width, height);
+      }
+
+      client = canvas.getClient();
+
+      canvas.setFocus();
+
+      main();
     }
-
-    rfb.writeClientInit(true);
-    if (!rfb.readServerInit()) {
-      JFLog.log("VNC:server init failed");
-      return;
-    }
-
-    //setup canvas size
-    {
-      int width = rfb.getWidth();
-      int height = rfb.getHeight();
-      canvas.setSize(width, height);
-    }
-
-    client = canvas.getClient();
-
-    canvas.setFocus();
-
-    main();
   }
 
   public void refresh() {
@@ -214,7 +220,7 @@ public class VNCWebConsole extends Thread {
       rfb.writeBufferUpdateRequest(0, 0, width, height, false);
     }
     try {
-      while (client.isConnected()) {
+      while (connected()) {
         int msg = rfb.readMessageType();
         switch (msg) {
           case RFB.S_MSG_CLOSE:
