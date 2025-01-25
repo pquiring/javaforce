@@ -31,6 +31,7 @@ Currently supported:
   debian : amd64 arm64 (includes Ubuntu)
   fedora : amd64 arm64
   arch : amd64
+Full details are here : https://pquiring.github.io/repo/javaforce-status.txt
 
 Note about Arch installation:
   Arch Linux has a very simple installation guide or a script to automate the task which I recommend using.
