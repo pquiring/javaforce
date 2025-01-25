@@ -52,8 +52,10 @@ public class VNCServer {
         session_server = new VNCSessionServer();
         session_server.start();
       }
-      web = new VNCWebServer();
-      web.start(getWebPort());
+      if (config.web) {
+        web = new VNCWebServer();
+        web.start(getWebPort());
+      }
       return true;
     } catch (Exception e) {
       JFLog.log(e);
