@@ -120,6 +120,7 @@ public abstract class Component {
       for(Event event : pendingEvents) {
         sendEvent(event.msg, event.args);
       }
+      pendingEvents.clear();
     }
   }
 
@@ -138,7 +139,7 @@ public abstract class Component {
   }
   /** Invokes getClient().sendEvent() */
   public void sendEvent(String msg, String[] args) {
-    if (client != null) {
+    if (isLoaded()) {
       client . sendEvent(id, msg, args);
     } else {
       if (pendingEvents == null) pendingEvents = new ArrayList<>();
@@ -150,17 +151,20 @@ public abstract class Component {
   }
   /** Invokes getClient().sendData() */
   public void sendData(byte[] data) {
-    if (client != null) {
+    if (isLoaded()) {
       client . sendData(data);
     }
   }
+  /** Triggers onresize event on client side. */
   public void sendOnResize() {
     sendEvent("onresize", null);
   }
   public void setClass(String cls) {
     classes.clear();
     classes.add(cls);
-    sendEvent("setclass", new String [] {"cls=" + cls});
+    if (isLoaded()) {
+      sendEvent("setclass", new String [] {"cls=" + cls});
+    }
   }
   public boolean hasClass(String cls) {
     return classes.contains(cls);
@@ -168,11 +172,15 @@ public abstract class Component {
   public void addClass(String cls) {
     if (hasClass(cls)) return;
     classes.add(cls);
-    sendEvent("addclass", new String[] {"cls=" + cls});
+    if (isLoaded()) {
+      sendEvent("addclass", new String[] {"cls=" + cls});
+    }
   }
   public void removeClass(String cls) {
     classes.remove(cls);
-    sendEvent("delclass", new String[] {"cls=" + cls});
+    if (isLoaded()) {
+      sendEvent("delclass", new String[] {"cls=" + cls});
+    }
   }
 
   public void setFlex(boolean state) {
@@ -282,7 +290,9 @@ public abstract class Component {
     this.height = height;
     if (width > 0) {setStyle("width", width + "px");}
     if (height > 0) {setStyle("height", height + "px");}
-    sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
+    if (isLoaded()) {
+      sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
+    }
   }
   public int getX() {
     return x;
@@ -293,7 +303,9 @@ public abstract class Component {
   public void setWidth(int width) {
     this.width = width;
     setStyle("width", width + "px");
-    sendEvent("setwidth", new String[] {"w=" + width});
+    if (isLoaded()) {
+      sendEvent("setwidth", new String[] {"w=" + width});
+    }
   }
   public void setMaxWidth() {
     setStyle("width", "100%");
@@ -310,7 +322,9 @@ public abstract class Component {
   public void setHeight(int height) {
     this.height = height;
     setStyle("height", height + "px");
-    sendEvent("setheight", new String[] {"h=" + height});
+    if (isLoaded()) {
+      sendEvent("setheight", new String[] {"h=" + height});
+    }
   }
   public void setMaxHeight() {
     setStyle("height", "100%");
@@ -322,7 +336,9 @@ public abstract class Component {
     this.clr = clr;
     String style = String.format("#%06x", clr);
     setStyle("color", style);
-    sendEvent("setclr", new String[] {"clr=" + style});
+    if (isLoaded()) {
+      sendEvent("setclr", new String[] {"clr=" + style});
+    }
   }
   public int getColor() {
     return clr;
@@ -331,7 +347,9 @@ public abstract class Component {
     this.backclr = clr;
     String style = String.format("#%06x", clr);
     setStyle("background-color", style);
-    sendEvent("setbackclr", new String[] {"clr=" + style});
+    if (isLoaded()) {
+      sendEvent("setbackclr", new String[] {"clr=" + style});
+    }
   }
   public int getBackColor() {
     return backclr;
@@ -340,7 +358,9 @@ public abstract class Component {
     this.borderclr = clr;
     String style = String.format("#%06x", clr);
     setStyle("border-color", style);
-    sendEvent("setborderclr", new String[] {"clr=" + style});
+    if (isLoaded()) {
+      sendEvent("setborderclr", new String[] {"clr=" + style});
+    }
   }
   public int getBorderColor() {
     return borderclr;
@@ -394,15 +414,23 @@ public abstract class Component {
   public void setVisible(boolean state) {
     isVisible = state;
     if (state) {
-      sendEvent("display", new String[] {"val="});  //reset to css rules
+      if (isLoaded()) {
+        sendEvent("display", new String[] {"val="});  //reset to css rules
+      }
       setStyle("display", "");
     } else {
-      sendEvent("display", new String[] {"val=none"});
+      if (isLoaded()) {
+        sendEvent("display", new String[] {"val=none"});
+      }
       setStyle("display", "none");
     }
     for(int a=0;a<visible.length;a++) {
       visible[a].onVisible(this, state);
     }
+  }
+
+  public boolean isLoaded() {
+    return client != null;
   }
 
   public boolean isVisible() {
@@ -414,7 +442,9 @@ public abstract class Component {
   }
 
   public void setPosition(int x, int y) {
-    sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
+    if (isLoaded()) {
+      sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
+    }
     this.x = x;
     this.y = y;
     setStyle("left", x + "px");
@@ -455,16 +485,56 @@ public abstract class Component {
     sendEvent("focus", null);
   }
 
-  public void scale(float x, float y) {
-    sendEvent("scale", new String[] {"x=" + x,"y=" + y});
+  public void settransform(String transform) {
+    setStyle("transform", transform);
+    if (isLoaded()) {
+      sendEvent("settransform", new String[] {"transform=" + transform});
+    }
   }
+
+  public String gettransform() {
+    return getStyle("transform");
+  }
+
+  private String scale;
+
+  public void scale(float x, float y) {
+    scale = "scale(" + x + "," + y + ")";
+    settransform(build_transform());
+  }
+
+  private String rotate;
 
   public void rotate(float deg) {
-    sendEvent("rotate", new String[] {"angle=" + deg + "deg"});
+    rotate = "rotate(" + deg + "deg)";
+    settransform(build_transform());
   }
 
+  private String translate;
+
   public void translate(float x, float y) {
-    sendEvent("translate", new String[] {"x=" + x,"y=" + y});
+    translate = "translate(" + x + "px," + y + "px)";
+    settransform(build_transform());
+  }
+
+  private String build_transform() {
+    StringBuilder transform = new StringBuilder();
+    if (scale != null) {
+      transform.append(scale);
+    }
+    if (rotate != null) {
+      if (transform.length() > 0) {
+        transform.append(" ");
+      }
+      transform.append(rotate);
+    }
+    if (translate != null) {
+      if (transform.length() > 0) {
+        transform.append(" ");
+      }
+      transform.append(translate);
+    }
+    return transform.toString();
   }
 
   public static final int DRAG_MOVE = 1;
