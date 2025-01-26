@@ -5194,16 +5194,6 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getWebConsole(HTTP.Parameters params) {
-    Panel panel = new Panel();
-    ToolBar tools = new ToolBar();
-    panel.add(tools);
-    Button refresh = new Button("Refresh");
-    tools.add(refresh);
-    Button cad = new Button("C+A+D");
-    tools.add(cad);
-    Button winkey = new Button("WinKey");
-    tools.add(winkey);
-    Canvas canvas = new Canvas();
     String id = params.get("id");
     if (id == null) {
       JFLog.log("VNC:vmname==null");
@@ -5214,45 +5204,7 @@ public class ConfigService implements WebUIHandler {
       JFLog.log("VNC:sess==null");
       return null;
     }
-    VNCWebConsole console = new VNCWebConsole(sess.vm.getVNC(), Config.current.vnc_password, canvas);
-    panel.add(canvas);
-    //setup canvas events (must setup before sent to client)
-    canvas.addMouseDownListener((me, cmp) -> {
-      console.mouse(me.x, me.y, me.buttons);
-      canvas.setFocus();
-    });
-    canvas.addMouseUpListener((me, cmp) -> {
-      console.mouse(me.x, me.y, me.buttons);
-    });
-    canvas.addMouseMoveListener((me, cmp) -> {
-      console.mouse(me.x, me.y, me.buttons);
-    });
-    canvas.addKeyDownListenerPreventDefault((ke, cmp) -> {
-      if (ke.keyChar != 0) {
-        console.keyDown(ke.keyChar, false);
-      } else {
-        console.keyDown(ke.keyCode, true);
-      }
-    });
-    canvas.addKeyUpListenerPreventDefault((ke, cmp) -> {
-      if (ke.keyChar != 0) {
-        console.keyUp(ke.keyChar, false);
-      } else {
-        console.keyUp(ke.keyCode, true);
-      }
-    });
-    //setup button events
-    refresh.addClickListener((me, cmp) -> {
-      console.refresh();
-    });
-    cad.addClickListener((me, cmp) -> {
-      console.cad();
-    });
-    winkey.addClickListener((me, cmp) -> {
-      console.winkey();
-    });
-    console.start();
-    return panel;
+    return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, true);
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
