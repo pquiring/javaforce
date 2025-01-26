@@ -235,6 +235,15 @@ function wsevent(event) {
     case "onresize":
       element.onresize();
       break;
+    case "scale":
+      element.style.transform = 'scale(' + msg.x + ',' + msg.y + ')';
+      break;
+    case "rotate":
+      element.style.transform = 'rotate(' + msg.angle + ')';
+      break;
+    case "translate":
+      element.style.transform = 'translate(' + msg.x + ',' + msg.y + ')';
+      break;
     case "enabledrag":
       enableDrag(msg.id, msg.type, msg.x1, msg.y1, msg.x2, msg.y2);
       break;

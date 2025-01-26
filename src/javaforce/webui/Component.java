@@ -455,6 +455,18 @@ public abstract class Component {
     sendEvent("focus", null);
   }
 
+  public void scale(float x, float y) {
+    sendEvent("scale", new String[] {"x=" + x,"y=" + y});
+  }
+
+  public void rotate(float deg) {
+    sendEvent("rotate", new String[] {"angle=" + deg + "deg"});
+  }
+
+  public void translate(float x, float y) {
+    sendEvent("translate", new String[] {"x=" + x,"y=" + y});
+  }
+
   public static final int DRAG_MOVE = 1;
   public static final int DRAG_NS = 2;
   public static final int DRAG_EW = 3;
