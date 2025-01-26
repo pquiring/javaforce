@@ -68,7 +68,13 @@ public class VNCWebServer implements WebUIHandler {
         port = 5900;
       }
     }
-    return VNCWebConsole.createPanel(port, params.get("password"));
+    boolean toolbar = true;
+    String param_toolbar = params.get("toolbar");
+    if (param_toolbar != null) {
+      toolbar = param_toolbar.equals("true");
+    }
+    //TODO : create get password panel
+    return VNCWebConsole.createPanel(port, params.get("password"), toolbar);
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {

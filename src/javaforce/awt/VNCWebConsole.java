@@ -29,18 +29,30 @@ public class VNCWebConsole extends Thread {
     this.canvas = canvas;
   }
 
-  public static Panel createPanel(int vnc_port, String password) {
+  public static Panel createPanel(int vnc_port, String password, boolean toolbar) {
     Panel panel = new Panel();
-    ToolBar tools = new ToolBar();
-    panel.add(tools);
-    Button refresh = new Button("Refresh");
-    tools.add(refresh);
-    Button cad = new Button("C+A+D");
-    tools.add(cad);
-    Button winkey = new Button("WinKey");
-    tools.add(winkey);
     Canvas canvas = new Canvas();
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, canvas);
+    if (toolbar) {
+      ToolBar tools = new ToolBar();
+      panel.add(tools);
+      Button refresh = new Button("Refresh");
+      tools.add(refresh);
+      Button cad = new Button("C+A+D");
+      tools.add(cad);
+      Button winkey = new Button("WinKey");
+      tools.add(winkey);
+      //setup button events
+      refresh.addClickListener((me, cmp) -> {
+        console.refresh();
+      });
+      cad.addClickListener((me, cmp) -> {
+        console.cad();
+      });
+      winkey.addClickListener((me, cmp) -> {
+        console.winkey();
+      });
+    }
     panel.add(canvas);
     //setup canvas events (must setup before sent to client)
     canvas.addMouseDownListener((me, cmp) -> {
@@ -66,16 +78,6 @@ public class VNCWebConsole extends Thread {
       } else {
         console.keyUp(ke.keyCode, true);
       }
-    });
-    //setup button events
-    refresh.addClickListener((me, cmp) -> {
-      console.refresh();
-    });
-    cad.addClickListener((me, cmp) -> {
-      console.cad();
-    });
-    winkey.addClickListener((me, cmp) -> {
-      console.winkey();
     });
     console.start();
     return panel;
