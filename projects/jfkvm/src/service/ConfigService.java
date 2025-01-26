@@ -5204,7 +5204,7 @@ public class ConfigService implements WebUIHandler {
       JFLog.log("VNC:sess==null");
       return null;
     }
-    return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, true);
+    return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, VNCWebConsole.OPT_TOOLBAR);
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {

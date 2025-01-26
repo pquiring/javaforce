@@ -23,13 +23,18 @@ public class VNCWebConsole extends Thread {
 
   private static final boolean debug = false;
 
+  public static final int OPT_TOOLBAR = 1;
+  public static final int OPT_SCALE = 2;
+
   public VNCWebConsole(int vnc_port, String password, Canvas canvas) {
     this.vnc_port = vnc_port;
     this.vnc_password = password;
     this.canvas = canvas;
   }
 
-  public static Panel createPanel(int vnc_port, String password, boolean toolbar) {
+  public static Panel createPanel(int vnc_port, String password, int opts) {
+    boolean toolbar = (opts & OPT_TOOLBAR) != 0;
+    boolean scale = (opts & OPT_SCALE) != 0;
     Panel panel = new Panel();
     Canvas canvas = new Canvas();
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, canvas);
