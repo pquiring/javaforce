@@ -498,21 +498,21 @@ public abstract class Component {
 
   private String scale;
 
-  public void scale(float x, float y) {
+  public void setscale(float x, float y) {
     scale = "scale(" + x + "," + y + ")";
     settransform(build_transform());
   }
 
   private String rotate;
 
-  public void rotate(float deg) {
+  public void setrotate(float deg) {
     rotate = "rotate(" + deg + "deg)";
     settransform(build_transform());
   }
 
   private String translate;
 
-  public void translate(float x, float y) {
+  public void settranslate(float x, float y) {
     translate = "translate(" + x + "px," + y + "px)";
     settransform(build_transform());
   }

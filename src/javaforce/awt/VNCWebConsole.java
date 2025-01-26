@@ -12,11 +12,13 @@ import java.awt.event.KeyEvent;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.webui.*;
+import javaforce.webui.event.*;
 
-public class VNCWebConsole extends Thread {
+public class VNCWebConsole extends Thread implements Resized {
   private int vnc_port;
   private String vnc_password;
   private Canvas canvas;
+  private Panel root;
 
   private RFB rfb;
   private WebUIClient client;
@@ -33,12 +35,14 @@ public class VNCWebConsole extends Thread {
   }
 
   public static Panel createPanel(int vnc_port, String password, int opts) {
-    boolean toolbar = (opts & OPT_TOOLBAR) != 0;
-    boolean scale = (opts & OPT_SCALE) != 0;
+    boolean opt_toolbar = (opts & OPT_TOOLBAR) != 0;
+    boolean opt_scale = (opts & OPT_SCALE) != 0;
     Panel panel = new Panel();
     Canvas canvas = new Canvas();
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, canvas);
-    if (toolbar) {
+    console.root = panel;
+    canvas.addResizedListener(console);
+    if (opt_toolbar) {
       ToolBar tools = new ToolBar();
       panel.add(tools);
       Button refresh = new Button("Refresh");
@@ -47,6 +51,8 @@ public class VNCWebConsole extends Thread {
       tools.add(cad);
       Button winkey = new Button("WinKey");
       tools.add(winkey);
+      Button scale = new Button("Scale");
+      tools.add(scale);
       //setup button events
       refresh.addClickListener((me, cmp) -> {
         console.refresh();
@@ -56,6 +62,9 @@ public class VNCWebConsole extends Thread {
       });
       winkey.addClickListener((me, cmp) -> {
         console.winkey();
+      });
+      scale.addClickListener((me, cmp) -> {
+        console.scale();
       });
     }
     panel.add(canvas);
@@ -85,6 +94,9 @@ public class VNCWebConsole extends Thread {
       }
     });
     console.start();
+    if (opt_scale) {
+      console.scale();
+    }
     return panel;
   }
 
@@ -187,6 +199,37 @@ public class VNCWebConsole extends Thread {
     keyUp(KeyEvent.VK_ESCAPE, true);
     JF.sleep(10);
     keyUp(KeyEvent.VK_CONTROL, true);
+  }
+
+  private boolean scaled;
+
+  public void scale() {
+    if (scaled) {
+      scaled = false;
+      canvas.setscale(1.0f, 1.0f);
+    } else {
+      scaled = true;
+      onResized(canvas, canvas.getWidth(), canvas.getHeight());
+    }
+  }
+
+  public void onResized(Component cmp, int width, int height) {
+    if (scaled) {
+      float root_width = root.getWidth();
+      float root_height = root.getHeight();
+      if (root_width == 0 || root_height == 0) return;  //not loaded yet
+      float canvas_width = width;
+      if (width == 0) {
+        canvas_width = root_width;
+      }
+      float canvas_height = height;
+      if (height == 0) {
+        canvas_height = root_height;
+      }
+      float scale_width = root_width / canvas_width;
+      float scale_height = root_height / canvas_height;
+      canvas.setscale(scale_width, scale_height);
+    }
   }
 
   public void mouse(int x, int y, int buttons) {
