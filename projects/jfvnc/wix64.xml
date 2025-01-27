@@ -27,6 +27,7 @@
         <File Id="jfvnc.exe" Source="jfvnc.exe" />
         <File Id="jfvnccli.exe" Source="jfvnccli.exe" />
         <File Id="jfvncconfig.exe" Source="jfvncconfig.exe" />
+        <File Id="jfvncsession.exe" Source="jfvncsession.exe" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfVNCServer" DisplayName="jfVNCServer" Description="jf VNC Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfVNCServer" Wait="yes" />
       </Component>
