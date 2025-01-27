@@ -516,6 +516,7 @@ bool findJavaHomeEnvironment() {
     javahome[sl] = 0;
     return true;
   }
+  javahome[0] = 0;
   return false;
 }
 
@@ -529,6 +530,7 @@ bool findJavaHomeAppFolder() {
     javahome[sl] = 0;
     return true;
   }
+  javahome[0] = 0;
   return false;
 }
 
@@ -547,6 +549,7 @@ bool findJavaHomeAppDataFolder() {
     javahome[sl] = 0;
     return true;
   }
+  javahome[0] = 0;
   return false;
 }
 
@@ -668,6 +671,10 @@ bool try_jvm() {
     //expand environment strings
     ExpandEnvironmentStrings(javahome, expanded, MAX_PATH);
     strcpy(javahome, expanded);
+  }
+
+  if (debug) {
+    printf("JAVAHOME=%s\n", javahome);
   }
 
   //add $JAVA_HOME/bin to DLL search path (this is required to find MSVCRT DLLs)
