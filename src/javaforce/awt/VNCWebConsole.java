@@ -108,11 +108,13 @@ public class VNCWebConsole extends Thread implements Resized {
     if (debug) {
       RFB.debug = true;
     }
+    client = canvas.getClient();
     while (connected()) {
       rfb = new RFB();
       if (!rfb.connect("127.0.0.1", vnc_port)) {
         JFLog.log("VNC:connection failed");
-        return;
+        JF.sleep(1000);
+        continue;
       }
       float server_version = rfb.readVersion();
       rfb.writeVersion(RFB.VERSION_3_8);
@@ -145,7 +147,8 @@ public class VNCWebConsole extends Thread implements Resized {
       rfb.writeClientInit(true);
       if (!rfb.readServerInit()) {
         JFLog.log("VNC:server init failed");
-        return;
+        JF.sleep(1000);
+        continue;
       }
 
       //setup canvas size
@@ -155,11 +158,11 @@ public class VNCWebConsole extends Thread implements Resized {
         canvas.setSize(width, height);
       }
 
-      client = canvas.getClient();
-
       canvas.setFocus();
 
       main();
+
+      rfb.disconnect();
     }
   }
 
