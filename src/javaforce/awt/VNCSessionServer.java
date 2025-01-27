@@ -78,7 +78,10 @@ public class VNCSessionServer {
       while (client == null) {
         try {lock.wait(1000);} catch (Exception e) {}
         count--;
-        if (count == 0) return null;
+        if (count == 0) {
+          JFLog.log("VNCSessionServer:Error:Unable to acquire Client (VNCSessionClient did not start).");
+          return null;
+        }
       }
       Client ret = client;
       client = null;
@@ -117,10 +120,10 @@ public class VNCSessionServer {
           int newsid = WinNative.getSessionID();
           if ((newsid != -1) && (newsid != sid)) {
             if (!WinNative.setSessionID(token, newsid)) {
-              JFLog.log("setSessionID failed");
+              JFLog.log("VNCSessionServer:setSessionID failed");
             }
             if (debug) {
-              JFLog.log("Update Session:old=" + sid + ":new=" + newsid + ":token=0x" + Long.toString(token, 16));
+              JFLog.log("VNCSessionServer:Update Session:old=" + sid + ":new=" + newsid + ":token=0x" + Long.toString(token, 16));
             }
             sid = newsid;
           }
