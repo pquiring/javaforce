@@ -41,8 +41,8 @@ public class RFB {
   public static boolean debugKey;
 
   //pixel formats
-  public static int PF_RGB = 1;  //Java
-  public static int PF_BGR = 2;  //tightVNC
+  public static int PF_RGB = 1;  //BE : Java
+  public static int PF_BGR = 2;  //LE : tightVNC (default)
 
   public static class Rectangle {
     public Rectangle() {}
@@ -161,18 +161,24 @@ public class RFB {
       pkt[offset++] = (byte)b_shift;
     }
 
-    public static PixelFormat create_24bpp() {
+    public static PixelFormat create_24bpp(boolean be) {
       PixelFormat pf = new PixelFormat();
       pf.bpp = 32;
       pf.depth = 24;
-      pf.be = false;
+      pf.be = be;
       pf.tc = true;
       pf.r_max = 0xff;
       pf.g_max = 0xff;
       pf.b_max = 0xff;
-      pf.r_shift = 16;
-      pf.g_shift = 8;
-      pf.b_shift = 0;
+      if (be) {
+        pf.r_shift = 0;
+        pf.g_shift = 8;
+        pf.b_shift = 16;
+      } else {
+        pf.r_shift = 16;
+        pf.g_shift = 8;
+        pf.b_shift = 0;
+      }
       return pf;
     }
 
@@ -750,7 +756,7 @@ public class RFB {
       setSize();
       BE.setuint16(pkt, 0, width);
       BE.setuint16(pkt, 2, height);
-      pf = PixelFormat.create_24bpp();
+      pf = PixelFormat.create_24bpp(false);
       pf.encode(pkt, 4);
     }
     {
@@ -771,6 +777,7 @@ public class RFB {
   public static final int C_MSG_CUT_TEXT = 6;
 
   public PixelFormat readPixelFormat() {
+    //NOTE : cmd byte is already read
     PixelFormat pf = new PixelFormat();
     byte[] pkt = read(19);
     pf.decode(pkt, 3);
@@ -784,7 +791,7 @@ public class RFB {
     byte[] pkt = new byte[20];
     pkt[0] = C_MSG_SET_PIXEL_FORMAT;
     //1-3 = padding
-    PixelFormat pf = PixelFormat.create_24bpp();
+    PixelFormat pf = PixelFormat.create_24bpp(true);  //Java is BE
     pf.encode(pkt, 4);
     write(pkt);
   }
