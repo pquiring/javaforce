@@ -1,6 +1,6 @@
 package javaforce.awt;
 
-/** WebConsole
+/** VNCWebConsole
  *
  * Connects to local VNC server and render output thru WebUI.
  *
@@ -100,7 +100,7 @@ public class VNCWebConsole extends Thread implements Resized {
     return panel;
   }
 
-  private boolean connected() {
+  private boolean isConnected() {
     return client.isConnected();
   }
 
@@ -109,10 +109,10 @@ public class VNCWebConsole extends Thread implements Resized {
       RFB.debug = true;
     }
     client = canvas.getClient();
-    while (connected()) {
+    while (isConnected()) {
       rfb = new RFB();
       if (!rfb.connect("127.0.0.1", vnc_port)) {
-        JFLog.log("VNC:connection failed");
+        JFLog.log("VNCWeb:connection failed");
         JF.sleep(1000);
         continue;
       }
@@ -120,7 +120,7 @@ public class VNCWebConsole extends Thread implements Resized {
       rfb.writeVersion(RFB.VERSION_3_8);
       byte[] auths = rfb.readAuthTypes();
       if (auths == null || auths.length == 0) {
-        JFLog.log("VNC:No auth types available");
+        JFLog.log("VNCWeb:No auth types available");
         return;
       }
       rfb.writeAuthType(auths[0]);
@@ -140,13 +140,13 @@ public class VNCWebConsole extends Thread implements Resized {
       }
 
       if (!ok) {
-        JFLog.log("VNC:auth failed");
+        JFLog.log("VNCWeb:auth failed");
         return;
       }
 
       rfb.writeClientInit(true);
       if (!rfb.readServerInit()) {
-        JFLog.log("VNC:server init failed");
+        JFLog.log("VNCWeb:server init failed");
         JF.sleep(1000);
         continue;
       }
@@ -170,14 +170,14 @@ public class VNCWebConsole extends Thread implements Resized {
     int width = rfb.getWidth();
     int height = rfb.getHeight();
     if (debug) {
-      JFLog.log("VNC:refresh:" + width + "x" + height);
+      JFLog.log("VNCWeb:refresh:" + width + "x" + height);
     }
     rfb.writeBufferUpdateRequest(0, 0, width, height, false);
   }
 
   public void cad() {
     if (debug) {
-      JFLog.log("VNC:C+A+D");
+      JFLog.log("VNCWeb:C+A+D");
     }
     keyDown(KeyEvent.VK_CONTROL, true);
     keyDown(KeyEvent.VK_ALT, true);
@@ -193,7 +193,7 @@ public class VNCWebConsole extends Thread implements Resized {
   public void winkey() {
     //this is done with CTRL+ESC sequence
     if (debug) {
-      JFLog.log("VNC:WinKey");
+      JFLog.log("VNCWeb:WinKey");
     }
     keyDown(KeyEvent.VK_CONTROL, true);
     JF.sleep(10);
@@ -236,7 +236,7 @@ public class VNCWebConsole extends Thread implements Resized {
   }
 
   public void mouse(int x, int y, int buttons) {
-    if (rfb == null) return;
+    if (rfb == null || !rfb.isConnected()) return;
     //need to swap b2 and b3
     boolean b1 = (buttons & 0x01) != 0;
     boolean b2 = (buttons & 0x02) != 0;
@@ -249,7 +249,7 @@ public class VNCWebConsole extends Thread implements Resized {
   }
 
   public void keyDown(int code, boolean convert) {
-    if (rfb == null) return;
+    if (rfb == null || !rfb.isConnected()) return;
     if (convert) {
       code = VNCRobot.convertJavaKeyCode(code);
     }
@@ -257,7 +257,7 @@ public class VNCWebConsole extends Thread implements Resized {
   }
 
   public void keyUp(int code, boolean convert) {
-    if (rfb == null) return;
+    if (rfb == null || !rfb.isConnected()) return;
     if (convert) {
       code = VNCRobot.convertJavaKeyCode(code);
     }
@@ -273,11 +273,11 @@ public class VNCWebConsole extends Thread implements Resized {
       rfb.writeBufferUpdateRequest(0, 0, width, height, false);
     }
     try {
-      while (connected()) {
+      while (isConnected() && rfb.isConnected()) {
         int msg = rfb.readMessageType();
         switch (msg) {
           case RFB.S_MSG_CLOSE:
-            JFLog.log("VNC:Connection closed");
+            JFLog.log("VNCWeb:Connection closed");
             return;
           case RFB.S_MSG_BUFFER_UPDATE:
             RFB.Rectangle rect = rfb.readBufferUpdate();
@@ -302,7 +302,7 @@ public class VNCWebConsole extends Thread implements Resized {
             rfb.readCutText();
             break;
           default:
-            JFLog.log("VNC:Unknown msg:" + msg);
+            JFLog.log("VNCWeb:Unknown msg:" + msg);
             break;
         }
       }
