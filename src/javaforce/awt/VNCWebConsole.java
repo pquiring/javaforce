@@ -17,10 +17,10 @@ import javaforce.webui.event.*;
 public class VNCWebConsole extends Thread implements Resized {
   private int vnc_port;
   private String vnc_password;
+  private int opts;
   private Panel panel;
   private ToolBar tools;
   private Canvas canvas;
-
   private RFB rfb;
   private WebUIClient client;
 
@@ -29,31 +29,31 @@ public class VNCWebConsole extends Thread implements Resized {
   public static final int OPT_TOOLBAR = 1;
   public static final int OPT_SCALE = 2;
 
-  public VNCWebConsole(int vnc_port, String password, Canvas canvas) {
+  public VNCWebConsole(int vnc_port, String password, int opts, Canvas canvas) {
     this.vnc_port = vnc_port;
     this.vnc_password = password;
+    this.opts = opts;
     this.canvas = canvas;
   }
 
-  private static Panel createLoginPanel() {
-    //TODO!!!
-    return null;
+  private static Panel createLoginPanel(int vnc_port, int opts, WebUIClient client) {
+    return new LoginPanel("VNCWeb", false, (user,pass) -> {
+      Panel panel = createPanel(vnc_port, pass, opts, client);
+      client.setPanel(panel);
+      return true;
+    });
   }
 
   public static Panel createPanel(int vnc_port, String password, int opts, WebUIClient client) {
     if (password == null) {
-      return new LoginPanel("VNCWeb", false, (user,pass) -> {
-        Panel panel = createPanel(vnc_port, pass, opts, client);
-        client.setPanel(panel);
-        return true;
-      });
+      return createLoginPanel(vnc_port, opts, client);
     }
     boolean opt_toolbar = (opts & OPT_TOOLBAR) != 0;
     boolean opt_scale = (opts & OPT_SCALE) != 0;
     Panel panel = new Panel();
     Canvas canvas = new Canvas();
     canvas.setSize(0, 0);
-    VNCWebConsole console = new VNCWebConsole(vnc_port, password, canvas);
+    VNCWebConsole console = new VNCWebConsole(vnc_port, password, opts, canvas);
     console.panel = panel;
     canvas.addResizedListener(console);
     panel.addResizedListener(console);
@@ -162,7 +162,7 @@ public class VNCWebConsole extends Thread implements Resized {
 
       if (!ok) {
         JFLog.log("VNCWeb:auth failed");
-        client.setPanel(createLoginPanel());
+        client.setPanel(createLoginPanel(vnc_port, opts, client));
         return;
       }
 
