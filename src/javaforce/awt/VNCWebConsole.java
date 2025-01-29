@@ -17,8 +17,9 @@ import javaforce.webui.event.*;
 public class VNCWebConsole extends Thread implements Resized {
   private int vnc_port;
   private String vnc_password;
+  private Panel panel;
+  private ToolBar tools;
   private Canvas canvas;
-  private Panel root;
 
   private RFB rfb;
   private WebUIClient client;
@@ -40,10 +41,14 @@ public class VNCWebConsole extends Thread implements Resized {
     Panel panel = new Panel();
     Canvas canvas = new Canvas();
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, canvas);
-    console.root = panel;
+    console.panel = panel;
     canvas.addResizedListener(console);
+    panel.addResizedListener(console);
+    panel.requestSize();
+    canvas.settransformorigin(0, 0);
     if (opt_toolbar) {
       ToolBar tools = new ToolBar();
+      console.tools = tools;
       panel.add(tools);
       Button refresh = new Button("Refresh");
       tools.add(refresh);
@@ -66,6 +71,8 @@ public class VNCWebConsole extends Thread implements Resized {
       scale.addClickListener((me, cmp) -> {
         console.scale();
       });
+      tools.addResizedListener(console);
+      tools.requestSize();
     }
     panel.add(canvas);
     //setup canvas events (must setup before sent to client)
@@ -93,10 +100,10 @@ public class VNCWebConsole extends Thread implements Resized {
         console.keyUp(ke.keyCode, true);
       }
     });
-    console.start();
     if (opt_scale) {
       console.scale();
     }
+    console.start();
     return panel;
   }
 
@@ -108,7 +115,7 @@ public class VNCWebConsole extends Thread implements Resized {
     if (debug) {
       RFB.debug = true;
     }
-    client = canvas.getClient();
+    client = canvas.getClient();  //waits until panel is loaded
     while (isConnected()) {
       rfb = new RFB();
       if (!rfb.connect("127.0.0.1", vnc_port)) {
@@ -212,27 +219,32 @@ public class VNCWebConsole extends Thread implements Resized {
       canvas.setscale(1.0f, 1.0f);
     } else {
       scaled = true;
-      onResized(canvas, canvas.getWidth(), canvas.getHeight());
+      canvas.requestSize();  //triggers onResized()
     }
   }
 
   public void onResized(Component cmp, int width, int height) {
-    if (scaled) {
-      float root_width = root.getWidth();
-      float root_height = root.getHeight();
-      if (root_width == 0 || root_height == 0) return;  //not loaded yet
-      float canvas_width = width;
-      if (width == 0) {
-        canvas_width = root_width;
-      }
-      float canvas_height = height;
-      if (height == 0) {
-        canvas_height = root_height;
-      }
-      float scale_width = root_width / canvas_width;
-      float scale_height = root_height / canvas_height;
-      canvas.setscale(scale_width, scale_height);
+    if (!scaled) return;
+    if (cmp != canvas) return;
+    float panel_width = panel.getWidth();
+    float panel_height = panel.getHeight();
+    if (panel_width == 0 || panel_height == 0) {
+      JFLog.log("VNCWeb:scale:panel size not known yet");
+      return;
     }
+    if (tools != null) {
+      float tools_height = tools.getHeight();
+      if (tools_height == 0) {
+        JFLog.log("VNCWeb:scale:tools size not known yet");
+        return;
+      }
+      panel_height -= tools_height;
+    }
+    float canvas_width = width;
+    float canvas_height = height;
+    float scale_width = panel_width / canvas_width;
+    float scale_height = panel_height / canvas_height;
+    canvas.setscale(scale_width, scale_height);
   }
 
   public void mouse(int x, int y, int buttons) {
