@@ -24,7 +24,7 @@ public class VNCWebConsole extends Thread implements Resized {
   private RFB rfb;
   private WebUIClient client;
 
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   public static final int OPT_TOOLBAR = 1;
   public static final int OPT_SCALE = 2;
@@ -36,12 +36,17 @@ public class VNCWebConsole extends Thread implements Resized {
   }
 
   private static Panel createLoginPanel() {
+    //TODO!!!
     return null;
   }
 
-  public static Panel createPanel(int vnc_port, String password, int opts) {
+  public static Panel createPanel(int vnc_port, String password, int opts, WebUIClient client) {
     if (password == null) {
-      //TODO : return login panel
+      return new LoginPanel("VNCWeb", false, (user,pass) -> {
+        Panel panel = createPanel(vnc_port, pass, opts, client);
+        client.setPanel(panel);
+        return true;
+      });
     }
     boolean opt_toolbar = (opts & OPT_TOOLBAR) != 0;
     boolean opt_scale = (opts & OPT_SCALE) != 0;
@@ -125,6 +130,7 @@ public class VNCWebConsole extends Thread implements Resized {
     }
     client = canvas.getClient();  //waits until panel is loaded
     while (isConnected()) {
+      //TODO : show connecting msg...
       rfb = new RFB();
       if (!rfb.connect("127.0.0.1", vnc_port)) {
         JFLog.log("VNCWeb:connection failed");
@@ -178,6 +184,7 @@ public class VNCWebConsole extends Thread implements Resized {
 
       if (init_scaled) {
         scale();
+        init_scaled = false;
       }
 
       main();

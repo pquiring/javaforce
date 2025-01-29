@@ -200,7 +200,7 @@ public class ConfigService implements WebUIHandler {
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     if (name.equals("console")) {
-      return getWebConsole(params);
+      return getWebConsole(params, client);
     }
     if (Config.passwd == null) {
       return installPanel(client);
@@ -5193,7 +5193,7 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
-  public Panel getWebConsole(HTTP.Parameters params) {
+  public Panel getWebConsole(HTTP.Parameters params, WebUIClient client) {
     String id = params.get("id");
     if (id == null) {
       JFLog.log("VNC:vmname==null");
@@ -5204,7 +5204,7 @@ public class ConfigService implements WebUIHandler {
       JFLog.log("VNC:sess==null");
       return null;
     }
-    return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, VNCWebConsole.OPT_TOOLBAR);
+    return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, VNCWebConsole.OPT_TOOLBAR, client);
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
