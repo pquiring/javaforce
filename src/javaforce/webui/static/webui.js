@@ -238,6 +238,9 @@ function wsevent(event) {
     case "settransform":
       element.style.transform = msg.transform;
       break;
+    case "settransformorigin":
+      element.style.transformorigin = msg.transformorigin;
+      break;
     case "enabledrag":
       enableDrag(msg.id, msg.type, msg.x1, msg.y1, msg.x2, msg.y2);
       break;

@@ -496,6 +496,21 @@ public abstract class Component {
     return getStyle("transform");
   }
 
+  public void settransformorigin(float x, float y) {
+    settransformorigin(x + "px " + y + "px");
+  }
+
+  public void settransformorigin(String origin) {
+    setStyle("transform-origin", origin);
+    if (isLoaded()) {
+      sendEvent("settransformorigin", new String[] {"transformorigin=" + origin});
+    }
+  }
+
+  public String gettransformorigin() {
+    return getStyle("transform-origin");
+  }
+
   private String scale;
 
   public void setscale(float x, float y) {
