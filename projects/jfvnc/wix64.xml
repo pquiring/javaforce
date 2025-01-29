@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.5" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.6" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />

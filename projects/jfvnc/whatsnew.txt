@@ -1,3 +1,6 @@
+2025-01-29 : v0.6
+  - added web access support
+
 2024-09-10 : v0.5
   - jfvnccli.exe can now install/remove windows service
 

@@ -14,5 +14,8 @@ VNC Server:
    - linux location : /etc
    password=password   #must be 8 chars long
    port=5900           #port to listen on (default = 5900)
+   web=true            #enable VNC Web access
+   webport=5800        #port for web access (http)
+   websecureport=5843  #port for web access (https)
    user=username       #user to grab Xauthority from (Linux X11 only)
    display=:0          #display (Linux X11 only)
