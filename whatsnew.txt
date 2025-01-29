@@ -1,5 +1,8 @@
 What's new...
 
+Jan 29/2025 : JF/77.0
+ - new : VNC server now includes web-based interface on port (8500 & 8543)
+
 Jan 24/2025 : JF/76.0
  - new : added opus codec
  - jfPhone/1.35
