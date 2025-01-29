@@ -24,7 +24,7 @@ public class VNCWebConsole extends Thread implements Resized {
   private RFB rfb;
   private WebUIClient client;
 
-  private static final boolean debug = false;
+  private static final boolean debug = true;
 
   public static final int OPT_TOOLBAR = 1;
   public static final int OPT_SCALE = 2;
@@ -35,11 +35,19 @@ public class VNCWebConsole extends Thread implements Resized {
     this.canvas = canvas;
   }
 
+  private static Panel createLoginPanel() {
+    return null;
+  }
+
   public static Panel createPanel(int vnc_port, String password, int opts) {
+    if (password == null) {
+      //TODO : return login panel
+    }
     boolean opt_toolbar = (opts & OPT_TOOLBAR) != 0;
     boolean opt_scale = (opts & OPT_SCALE) != 0;
     Panel panel = new Panel();
     Canvas canvas = new Canvas();
+    canvas.setSize(0, 0);
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, canvas);
     console.panel = panel;
     canvas.addResizedListener(console);
@@ -101,7 +109,7 @@ public class VNCWebConsole extends Thread implements Resized {
       }
     });
     if (opt_scale) {
-      console.scale();
+      console.init_scaled = true;
     }
     console.start();
     return panel;
@@ -148,6 +156,7 @@ public class VNCWebConsole extends Thread implements Resized {
 
       if (!ok) {
         JFLog.log("VNCWeb:auth failed");
+        client.setPanel(createLoginPanel());
         return;
       }
 
@@ -166,6 +175,10 @@ public class VNCWebConsole extends Thread implements Resized {
       }
 
       canvas.setFocus();
+
+      if (init_scaled) {
+        scale();
+      }
 
       main();
 
@@ -211,6 +224,7 @@ public class VNCWebConsole extends Thread implements Resized {
     keyUp(KeyEvent.VK_CONTROL, true);
   }
 
+  private boolean init_scaled;
   private boolean scaled;
 
   public void scale() {
@@ -226,6 +240,7 @@ public class VNCWebConsole extends Thread implements Resized {
   public void onResized(Component cmp, int width, int height) {
     if (!scaled) return;
     if (cmp != canvas) return;
+    if (width == 0 || height == 0) return;
     float panel_width = panel.getWidth();
     float panel_height = panel.getHeight();
     if (panel_width == 0 || panel_height == 0) {
@@ -242,6 +257,9 @@ public class VNCWebConsole extends Thread implements Resized {
     }
     float canvas_width = width;
     float canvas_height = height;
+    if (debug) {
+      JFLog.log("scale:" + panel_width + "," + panel_height + ":" + canvas_width + "," + canvas_height);
+    }
     float scale_width = panel_width / canvas_width;
     float scale_height = panel_height / canvas_height;
     canvas.setscale(scale_width, scale_height);

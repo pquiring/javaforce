@@ -20,12 +20,8 @@ public class Canvas extends Container {
     StringBuilder sb = new StringBuilder();
     sb.append("<canvas" + getAttrs());
     //the width and height must be specified
-    if (width != 0) {
-      sb.append(" width='" + width + "'");
-    }
-    if (height != 0) {
-      sb.append(" height='" + height + "'");
-    }
+    sb.append(" width='" + width + "'");
+    sb.append(" height='" + height + "'");
     sb.append(">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {

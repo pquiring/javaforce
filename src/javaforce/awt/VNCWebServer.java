@@ -77,8 +77,16 @@ public class VNCWebServer implements WebUIHandler {
     if (toolbar) {
       opts |= VNCWebConsole.OPT_TOOLBAR;
     }
-    //TODO : create get password panel
-    return VNCWebConsole.createPanel(port, params.get("password"), opts);
+    boolean scale = false;
+    String param_scale = params.get("scale");
+    if (param_scale != null) {
+      scale = param_scale.equals("true");
+    }
+    if (scale) {
+      opts |= VNCWebConsole.OPT_SCALE;
+    }
+    String password = params.get("password");
+    return VNCWebConsole.createPanel(port, password, opts);
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
