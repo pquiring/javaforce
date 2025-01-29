@@ -2284,8 +2284,6 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
     Button console_web = new Button("Web Console");
     tools.add(console_web);
-    Button console_vnc = new Button("VNC Console");
-    tools.add(console_vnc);
     Button monitor = new Button("Monitor");
     tools.add(monitor);
     Button start = new Button("Start");
@@ -2345,18 +2343,6 @@ public class ConfigService implements WebUIHandler {
 
     refresh.addClickListener((me, cmp) -> {
       ui.setRightPanel(vmsPanel(ui));
-    });
-
-    console_vnc.addClickListener((me, cmp) -> {
-      int idx = table.getSelectedRow();
-      if (idx == -1) return;
-      VirtualMachine vm = vms[idx];
-      if (vm.getState() != VirtualMachine.STATE_ON) {
-        errmsg.setText("VM is not active");
-        return;
-      }
-      ui.message_message.setText("Open VNC client to " + Config.current.fqn + ":" + vm.getVNC() + "<br>Password:" + Config.current.vnc_password);
-      ui.message_popup.setVisible(true);
     });
 
     console_web.addClickListener((me, cmp) -> {

@@ -442,7 +442,7 @@ public class VirtualMachine implements Serializable {
       //remote viewing
       if (vm.vnc != -1) {
         xml.append("<graphics type='vnc' port='" + vm.vnc + "' autoport='no' sharePolicy='allow-exclusive' passwd='" + provider.getVNCPassword() + "'>");
-        xml.append("<listen type='address' address='0.0.0.0'/>");
+        xml.append("<listen type='address' address='127.0.0.1'/>");
         xml.append("</graphics>");
       }
       if (hardware.disks != null) {
