@@ -686,8 +686,8 @@ function onMouseMove(event, element) {
   var msg = {
     event: "mousemove",
     id: element.id,
-    x: event.clientX,
-    y: event.clientY,
+    x: event.offsetX,
+    y: event.offsetY,
     b: event.buttons
   };
   ws.send(JSON.stringify(msg));
@@ -697,8 +697,8 @@ function onMouseDown(event, element) {
   var msg = {
     event: "mousedown",
     id: element.id,
-    x: event.clientX,
-    y: event.clientY,
+    x: event.offsetX,
+    y: event.offsetY,
     b: event.buttons
   };
   ws.send(JSON.stringify(msg));
@@ -708,8 +708,8 @@ function onMouseUp(event, element) {
   var msg = {
     event: "mouseup",
     id: element.id,
-    x: event.clientX,
-    y: event.clientY,
+    x: event.offsetX,
+    y: event.offsetY,
     b: event.buttons
   };
   ws.send(JSON.stringify(msg));
