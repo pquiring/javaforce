@@ -22,6 +22,7 @@
         <File Id="jfvncsvc.exe" Source="jfvncsvc.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule5900" Name="jfVNCServer5900" Protocol="tcp" Port="5900" Scope="any" IgnoreFailure="yes" Profile="all" />
           <fire:FirewallException Id="FirewallRule5800" Name="jfVNCServer5800" Protocol="tcp" Port="5800" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule5843" Name="jfVNCServer5843" Protocol="tcp" Port="5843" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jfvnc.exe" Source="jfvnc.exe" />

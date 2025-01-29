@@ -18,20 +18,27 @@ import javaforce.service.*;
 
 public class VNCWebServer implements WebUIHandler {
 
+  public WebUIServer secure_server;
   public WebUIServer server;
   private KeyMgmt keys;
 
-  public void start(int port) {
+  public void start(int port, int secure_port) {
     initSecureWebKeys();
-    JFLog.log("VNCWebServer starting on port " + port + "...");
     server = new WebUIServer();
-    server.start(this, port, keys);
+    server.start(this, port);
+    secure_server = new WebUIServer();
+    secure_server.start(this, secure_port, keys);
   }
 
   public void stop() {
-    if (server == null) return;
-    server.stop();
-    server = null;
+    if (server != null) {
+      server.stop();
+      server = null;
+    }
+    if (secure_server != null) {
+      secure_server.stop();
+      secure_server = null;
+    }
   }
 
   private void initSecureWebKeys() {

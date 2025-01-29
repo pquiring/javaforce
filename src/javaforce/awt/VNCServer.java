@@ -54,7 +54,7 @@ public class VNCServer {
       }
       if (config.web) {
         web = new VNCWebServer();
-        web.start(getWebPort());
+        web.start(getWebPort(), getWebSecurePort());
       }
       return true;
     } catch (Exception e) {
@@ -104,6 +104,7 @@ public class VNCServer {
     public int port = 5900;
     public boolean web = true;
     public int webport = 5800;
+    public int websecureport = 5843;
     public String user;  //linux only
     public String display = ":0";  //linux only (default = :0)
 
@@ -112,6 +113,7 @@ public class VNCServer {
       sb.append("port=" + port + "\n");
       sb.append("web=" + web + "\n");
       sb.append("webport=" + webport + "\n");
+      sb.append("websecureport=" + websecureport + "\n");
       sb.append("password=" + password + "\n");
       if (user != null) {
         sb.append("user=" + user + "\n");
@@ -155,6 +157,13 @@ public class VNCServer {
           config.webport = 5800;
         }
       }
+      String websecureport = props.getProperty("websecureport");
+      if (websecureport != null) {
+        config.websecureport = JF.atoi(websecureport);
+        if (config.websecureport < 1 || config.websecureport > 65535) {
+          config.websecureport = 5843;
+        }
+      }
       if (JF.isUnix()) {
         String user = props.getProperty("user");
         if (user != null) {
@@ -186,6 +195,11 @@ public class VNCServer {
   private static int getWebPort() {
     if (config == null) return 5800;
     return config.webport;
+  }
+
+  private static int getWebSecurePort() {
+    if (config == null) return 5843;
+    return config.websecureport;
   }
 
   private static String randomPassword() {
