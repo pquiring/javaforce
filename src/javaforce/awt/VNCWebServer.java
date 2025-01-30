@@ -3,6 +3,7 @@ package javaforce.awt;
 /** VNC Web Server
  *
  * Default port : 5800
+ * Secure port : 5843
  *
  * @author pquiring
  */
