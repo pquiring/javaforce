@@ -224,16 +224,28 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     String _server = server.getText();
     String _topic = topic.getText();
     boolean _secure = secure.isSelected();
+    int port = -1;
+    if (_secure) {
+      port = 8883;
+    } else {
+      port = 1883;
+    }
+    int idx = _server.indexOf(':');
+    if (idx != -1) {
+      String _port = _server.substring(idx + 1);
+      _server = _server.substring(0, idx);
+      port = JF.atoi(_port);
+    }
     msgs.setText("Connecting to " + _server + "...");
     client = new MQTT();
     if (_secure) {
-      if (!client.connect(_server, keys)) {
+      if (!client.connect(_server, port, keys)) {
         msgs.setText("Connection failed!");
         client = null;
         return;
       }
     } else {
-      if (!client.connect(_server)) {
+      if (!client.connect(_server, port)) {
         msgs.setText("Connection failed!");
         client = null;
         return;
