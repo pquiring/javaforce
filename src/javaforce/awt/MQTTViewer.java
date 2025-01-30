@@ -5,6 +5,8 @@ package javaforce.awt;
  * @author peter.quiring
  */
 
+import java.io.*;
+
 import javaforce.*;
 
 public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
@@ -14,6 +16,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
    */
   public MQTTViewer() {
     initComponents();
+    initSecureWebKeys();
     if (args.length > 0) {
       server.setText(args[0]);
       if (args.length > 1) {
@@ -21,6 +24,11 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
         username.setText(args[1]);
         if (args.length > 2) {
           password.setText(args[2]);
+          if (args.length > 3) {
+            switch (args[3]) {
+              case "-secure": secure.setSelected(true); break;
+            }
+          }
         }
       }
     }
@@ -47,6 +55,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     jLabel4 = new javax.swing.JLabel();
     password = new javax.swing.JTextField();
     clear = new javax.swing.JButton();
+    secure = new javax.swing.JCheckBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("MQTT Viewer");
@@ -91,6 +100,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       }
     });
 
+    secure.setText("Secure");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -98,7 +109,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 884, Short.MAX_VALUE)
+          .addComponent(jScrollPane1)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -117,6 +128,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
             .addComponent(jLabel4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(secure)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(clear)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -136,7 +149,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel4)
           .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(clear))
+          .addComponent(clear)
+          .addComponent(secure))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
@@ -180,6 +194,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea msgs;
   private javax.swing.JTextField password;
+  private javax.swing.JCheckBox secure;
   private javax.swing.JTextField server;
   private javax.swing.JButton start;
   private javax.swing.JTextField topic;
@@ -187,6 +202,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   // End of variables declaration//GEN-END:variables
 
   private MQTT client;
+  private KeyMgmt keys;
+
   private static String[] args;
 
   public boolean message(String topic, String msg) {
@@ -206,11 +223,21 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   public void start_new() {
     String _server = server.getText();
     String _topic = topic.getText();
+    boolean _secure = secure.isSelected();
     msgs.setText("Connecting to " + _server + "...");
     client = new MQTT();
-    if (!client.connect(_server)) {
-      msgs.setText("Connection failed!");
-      client = null;
+    if (_secure) {
+      if (!client.connect(_server, keys)) {
+        msgs.setText("Connection failed!");
+        client = null;
+        return;
+      }
+    } else {
+      if (!client.connect(_server)) {
+        msgs.setText("Connection failed!");
+        client = null;
+        return;
+      }
     }
     if (authenticate.isSelected()) {
       String _user = username.getText();
@@ -239,6 +266,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     authenticate.setEnabled(state);
     username.setEditable(state);
     password.setEditable(state);
+    secure.setEnabled(state);
   }
 
   private void clear() {
@@ -246,6 +274,31 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       msgs.setText("");
     } else {
       msgs.setText("Connected to " + server.getText() + "\r\n");
+    }
+  }
+
+  private void initSecureWebKeys() {
+    String keyfile = JF.getUserPath() + "/jfmqtt.key";
+    String password = "password";
+    KeyParams params = new KeyParams();
+    params.dname = "CN=jfmqtt.sourceforge.net, O=client, OU=mqtt, C=CA";
+    if (new File(keyfile).exists()) {
+      //load existing keys
+      keys = new KeyMgmt();
+      try {
+        FileInputStream fis = new FileInputStream(keyfile);
+        keys.open(fis, password);
+        fis.close();
+      } catch (Exception e) {
+        if (!keys.isValid()) {
+          //generate random keys
+          keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
+        }
+        JFLog.log(e);
+      }
+    } else {
+      //generate random keys
+      keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
     }
   }
 }

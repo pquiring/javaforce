@@ -43,6 +43,28 @@ public class MQTT {
     }
   }
 
+  /** Connects to MQTT service port over TLS. */
+  public boolean connect(String host, KeyMgmt keys) {
+    return connect(host, 8883, keys);
+  }
+
+  /** Connects to MQTT service port over TLS. */
+  public boolean connect(String host, int port, KeyMgmt keys) {
+    disconnect();
+    try {
+      s = new Socket(host, port);
+      s = JF.connectSSL(s, keys);  //upgrade to SSL
+      is = s.getInputStream();
+      os = s.getOutputStream();
+      worker = new Worker(s);
+      worker.start();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   /** Disconnects from MQTT service port. */
   public void disconnect() {
     if (debug) {
