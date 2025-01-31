@@ -17,6 +17,8 @@ public class MQTTServer {
 
   private static MQTTServer service;
   private static JBusServer busServer;
+  private ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
+
   public static void serviceStart(String[] args) {
     service = new MQTTServer();
     service.start();
@@ -62,6 +64,10 @@ public class MQTTServer {
     return JF.getConfigPath() + "/jfmqtt.cfg";
   }
 
+  private static String getKeyFile() {
+    return JF.getConfigPath() + "/jfmqtt.key";
+  }
+
   public void setListener(MQTTEvents events) {
     this.events = events;
   }
@@ -74,9 +80,12 @@ public class MQTTServer {
   public void stop() {
     if (server == null) return;
     server.active = false;
-    if (ss != null) {
-      try {ss.close();} catch (Exception e) {}
-      ss = null;
+    synchronized(lock) {
+      ServerWorker[] sa = servers.toArray(new ServerWorker[0]);
+      for(ServerWorker s : sa) {
+        s.close();
+      }
+      servers.clear();
     }
     if (forwarder != null) {
       forwarder.stop();
@@ -86,11 +95,15 @@ public class MQTTServer {
       busClient.close();
       busClient = null;
     }
+    synchronized(server) {
+      server.notify();
+    }
     server = null;
   }
 
   private static class Config {
     public int port = 1883;
+    public int secure = 8883;
     public String user, pass;
     public String forward;
     public int forward_port = 1883;
@@ -101,6 +114,7 @@ public class MQTTServer {
 
   private static String defaultConfig
     = "port=1883\n"
+    + "secure=8883\n"
     + "#user=username\n"
     + "#pass=password\n"
     + "#forward=host\n"
@@ -123,6 +137,13 @@ public class MQTTServer {
         config.port = JF.atoi(port);
         if (config.port <= 0 || config.port > 65535) {
           config.port = 1883;
+        }
+      }
+      String secure = props.getProperty("secure");
+      if (secure != null) {
+        config.secure = JF.atoi(secure);
+        if (config.secure <= 0 || config.secure > 65535) {
+          config.secure = 1883;
         }
       }
       String user = props.getProperty("user");
@@ -257,7 +278,6 @@ public class MQTTServer {
   private HashMap<String, Topic> topics = new HashMap<>();
   private MQTTEvents events;
 
-  private ServerSocket ss;
   private MQTTForward forwarder;
   private JBusClient busClient;
 
@@ -284,9 +304,58 @@ public class MQTTServer {
         busClient = new JBusClient(busPack, new JBusMethods());
         busClient.setPort(getBusPort());
         busClient.start();
+        if (config.port > 0) {
+          ServerWorker worker = new ServerWorker(config.port, false);
+          worker.start();
+          servers.add(worker);
+        }
+        if (config.secure > 0) {
+          ServerWorker worker = new ServerWorker(config.secure, true);
+          worker.start();
+          servers.add(worker);
+        }
+        while(active) {
+          synchronized(this) {
+            wait();
+          }
+        }
         JFLog.log("MQTTServer starting on port " + config.port + "...");
-        ss = new ServerSocket(config.port);
-        while (active) {
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+  }
+
+  private class ServerWorker extends Thread {
+    private ServerSocket ss;
+    private int port;
+    private boolean secure;
+
+    public boolean worker_active;
+
+    public ServerWorker(int port, boolean secure) {
+      this.port = port;
+      this.secure = secure;
+    }
+
+    public void run() {
+      try {
+        if (secure) {
+          JFLog.log("CreateServerSocketSSL");
+          KeyMgmt keys = new KeyMgmt();
+          if (new File(getKeyFile()).exists()) {
+            FileInputStream fis = new FileInputStream(getKeyFile());
+            keys.open(fis, "password");
+            fis.close();
+          } else {
+            JFLog.log("Warning:Server SSL Keys not generated!");
+            return;
+          }
+          ss = JF.createServerSocketSSL(port, keys);
+        } else {
+          ss = new ServerSocket(port);
+        }
+        while (worker_active) {
           Socket s = ss.accept();
           Client client = new Client(s);
           client.start();
@@ -294,6 +363,12 @@ public class MQTTServer {
       } catch (Exception e) {
         JFLog.log(e);
       }
+    }
+
+    public void close() {
+      worker_active = false;
+      try { ss.close(); } catch (Exception e) {}
+      ss = null;
     }
   }
 
@@ -757,6 +832,18 @@ public class MQTTServer {
       service.stop();
       service = new MQTTServer();
       service.start();
+    }
+    public void genKeys(String pack) {
+      if (KeyMgmt.keytool(new String[] {
+        "-genkey", "-debug", "-alias", "jfftp", "-keypass", "password", "-storepass", "password",
+        "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfftp.sourceforge.net, OU=user, O=server, C=CA",
+        "-keyalg" , "RSA", "-keysize", "2048"
+      })) {
+        JFLog.log("Generated Keys");
+        service.busClient.call(pack, "getKeys", service.busClient.quote("OK"));
+      } else {
+        service.busClient.call(pack, "getKeys", service.busClient.quote("ERROR"));
+      }
     }
   }
 }

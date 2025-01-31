@@ -59,6 +59,7 @@ public class MQTTApp extends javax.swing.JFrame {
     jScrollPane1 = new javax.swing.JScrollPane();
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
+    gen_keys = new javax.swing.JButton();
     viewLog = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -80,6 +81,13 @@ public class MQTTApp extends javax.swing.JFrame {
 
     jLabel1.setText("MQTT Configuration:");
 
+    gen_keys.setText("Generate SSL Key");
+    gen_keys.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        gen_keysActionPerformed(evt);
+      }
+    });
+
     viewLog.setText("View Log");
     viewLog.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -91,15 +99,17 @@ public class MQTTApp extends javax.swing.JFrame {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(jScrollPane1)
+          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
             .addComponent(viewLog)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(gen_keys)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 307, Short.MAX_VALUE)
             .addComponent(save))
-          .addGroup(layout.createSequentialGroup()
+          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
@@ -114,7 +124,8 @@ public class MQTTApp extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(save)
-          .addComponent(viewLog))
+          .addComponent(viewLog)
+          .addComponent(gen_keys))
         .addContainerGap())
     );
 
@@ -131,6 +142,10 @@ public class MQTTApp extends javax.swing.JFrame {
     showViewLog();
   }//GEN-LAST:event_viewLogActionPerformed
 
+  private void gen_keysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gen_keysActionPerformed
+    genKeys();
+  }//GEN-LAST:event_gen_keysActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -145,6 +160,7 @@ public class MQTTApp extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextArea config;
+  private javax.swing.JButton gen_keys;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
@@ -161,6 +177,10 @@ public class MQTTApp extends javax.swing.JFrame {
     viewer.setVisible(true);
   }
 
+  private void genKeys() {
+    busClient.call(FTPServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
+  }
+
   public JBusClient busClient;
 
   public class JBusMethods {
@@ -171,6 +191,17 @@ public class MQTTApp extends javax.swing.JFrame {
           config.setText(JBusClient.decodeString(_cfg));
           config.setEnabled(true);
           save.setEnabled(true);
+        }
+      });
+    }
+    public void getKeys(String status) {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          if (status.equals("OK")) {
+            JFAWT.showMessage("GenKeys", "OK");
+          } else {
+            JFAWT.showError("GenKeys", "Error");
+          }
         }
       });
     }

@@ -323,6 +323,7 @@ public class FTPServer {
             fis.close();
           } else {
             JFLog.log("Warning:Server SSL Keys not generated!");
+            return;
           }
           ss = JF.createServerSocketSSL(keys);
         } else {
@@ -357,6 +358,7 @@ public class FTPServer {
     }
 
     public void close() {
+      worker_active = false;
       try { ss.close(); } catch (Exception e) {}
       ss = null;
     }
