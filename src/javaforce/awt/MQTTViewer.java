@@ -56,6 +56,11 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     password = new javax.swing.JTextField();
     clear = new javax.swing.JButton();
     secure = new javax.swing.JCheckBox();
+    jLabel5 = new javax.swing.JLabel();
+    send_topic = new javax.swing.JTextField();
+    jLabel6 = new javax.swing.JLabel();
+    send_msg = new javax.swing.JTextField();
+    send = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("MQTT Viewer");
@@ -102,6 +107,21 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
     secure.setText("Secure");
 
+    jLabel5.setText("Topic");
+
+    send_topic.setText("uns.topic");
+
+    jLabel6.setText("Msg");
+
+    send_msg.setText("{data}");
+
+    send.setText("Send");
+    send.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        sendActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -133,7 +153,17 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(clear)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(start)))
+            .addComponent(start))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(send_topic, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel6)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(send_msg)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(send)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -156,7 +186,14 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addComponent(jLabel2)
           .addComponent(topic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 629, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(send_topic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel6)
+          .addComponent(jLabel5)
+          .addComponent(send_msg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(send))
         .addContainerGap())
     );
 
@@ -170,6 +207,10 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
     clear();
   }//GEN-LAST:event_clearActionPerformed
+
+  private void sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendActionPerformed
+    send();
+  }//GEN-LAST:event_sendActionPerformed
 
   /**
    * @param args the command line arguments
@@ -191,10 +232,15 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea msgs;
   private javax.swing.JTextField password;
   private javax.swing.JCheckBox secure;
+  private javax.swing.JButton send;
+  private javax.swing.JTextField send_msg;
+  private javax.swing.JTextField send_topic;
   private javax.swing.JTextField server;
   private javax.swing.JButton start;
   private javax.swing.JTextField topic;
@@ -287,6 +333,12 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     } else {
       msgs.setText("Connected to " + server.getText() + "\r\n");
     }
+  }
+
+  private void send() {
+    String topic = send_topic.getText();
+    String msg = send_msg.getText();
+    client.publish(topic, msg);
   }
 
   private void initSecureWebKeys() {
