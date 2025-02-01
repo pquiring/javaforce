@@ -109,7 +109,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
     jLabel5.setText("Topic");
 
-    send_topic.setText("uns.topic");
+    send_topic.setText("uns/topic");
 
     jLabel6.setText("Msg");
 

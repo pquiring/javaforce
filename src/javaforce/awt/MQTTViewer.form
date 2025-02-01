@@ -211,7 +211,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="send_topic">
       <Properties>
-        <Property name="text" type="java.lang.String" value="uns.topic"/>
+        <Property name="text" type="java.lang.String" value="uns/topic"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
