@@ -174,6 +174,7 @@ JavaVMInitArgs *BuildArgs() {
   } else {
     opts[nOpts++] = CreateClassPath();
   }
+  opts[nOpts++] = (char*)"-Djavaforce.loader=true";
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {

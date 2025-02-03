@@ -94,7 +94,12 @@
   </target>
 
   <target name="depnatives">
-    <!-- legacy task when javaforce native code was in shared libraries -->
+    <!-- copy optional shared library to app folder -->
+    <copy todir=".">
+      <fileset dir="${home}/native" includes="*.dll"/>
+      <fileset dir="${home}/native" includes="*.so"/>
+      <fileset dir="${home}/native" includes="*.dylib"/>
+    </copy>
   </target>
 
   <target name="ffmpeg">

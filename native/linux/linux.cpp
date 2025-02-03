@@ -271,6 +271,7 @@ JavaVMInitArgs *BuildArgs() {
   } else {
     opts[nOpts++] = CreateClassPath();
   }
+  opts[nOpts++] = (char*)"-Djavaforce.loader=true";
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -326,7 +327,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxServiceStop(JNIEnv *e
   return InvokeMethodVoid(mainclass, "serviceStop", "()V", NULL);
 }
 
-#include "../common/register.cpp"
+#include "../common/register.h"
 
 extern "C" void lnxnative_register(JNIEnv *env);
 

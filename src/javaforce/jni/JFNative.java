@@ -12,6 +12,28 @@ import java.util.*;
 import javaforce.*;
 
 public class JFNative {
+
+  static {
+    load();
+  }
+
+  public static void load() {
+    String loader = System.getProperty("javaforce.loader");
+    if (loader != null) return;
+    System.out.println("Loading javaforce native library...");
+    String path = JF.getCurrentPath();
+    String file = "/jfnative64";
+    String ext = "";
+    if (JF.isWindows()) {
+      ext = ".dll";
+    } else if (JF.isMac()) {
+      ext = ".dylib";
+    } else {
+      ext = ".so";
+    }
+    System.load(path + file + ext);
+  }
+
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File[] folders, Library[] libs, String ext) {
     for(int i=0;i<libs.length;i++) {

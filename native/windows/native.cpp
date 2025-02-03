@@ -2008,3 +2008,11 @@ void winnative_register(JNIEnv *env) {
 
   speex_dsp_register(env);
 }
+
+#include "../common/register.cpp"
+
+/** DLL Entry Point. */
+BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+  return TRUE;
+}

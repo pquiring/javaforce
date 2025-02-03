@@ -2081,3 +2081,5 @@ void lnxnative_register(JNIEnv *env) {
   cls = findClass(env, "javaforce/jni/LnxNative");
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
 }
+
+#include "../common/register.cpp"

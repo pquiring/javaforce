@@ -25,6 +25,8 @@
       <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a @{libs} -o ../../bin/jfexecd"/>
       <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE linux.cpp native.a @{libs} -o ../../bin/jfexecsd"/>
 
+      <!-- build shared library (optional) -->
+      <exec command="gcc ${opt} -shared native.o glfw.o glfw-null.o @{libs} -o ../jfnative64.so"/>
       <delete>
         <fileset dir="." includes="*.o"/>
       </delete>

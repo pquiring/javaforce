@@ -279,6 +279,7 @@ JavaVMInitArgs *BuildArgs() {
   } else {
     opts[nOpts++] = CreateClassPath();
   }
+  opts[nOpts++] = (char*)"-Djavaforce.loader=true";
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -335,7 +336,7 @@ void AttachJVM() {
   g_jvm->AttachCurrentThread((void**)&g_env, NULL);
 }
 
-#include "../common/register.cpp"
+#include "../common/register.h"
 
 extern "C" void winnative_register(JNIEnv *env);
 
