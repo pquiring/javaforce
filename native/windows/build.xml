@@ -41,6 +41,7 @@
       <fileset dir="${home}">
         <include name="bin/*.exe"/>
         <include name="native/*.exe"/>
+        <include name="native/*.dll"/>
       </fileset>
     </zip>
   </target>

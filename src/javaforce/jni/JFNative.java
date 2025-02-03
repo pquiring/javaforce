@@ -17,6 +17,9 @@ public class JFNative {
     load();
   }
 
+  /** Loads the JavaForce native library (optional).
+   * This library is not needed if the JavaForce loaders are used.
+   */
   public static void load() {
     String loader = System.getProperty("javaforce.loader");
     if (loader != null) return;
