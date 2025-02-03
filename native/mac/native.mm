@@ -24,7 +24,8 @@
 #include "javaforce_cl_CL.h"
 
 #include "../common/library.h"
-#include "../common/register.h"
+#include "../common/
+h"
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
@@ -353,3 +354,5 @@ void camera_register(JNIEnv *env) {
   cls = findClass(env, "javaforce/media/Camera");
   registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
 }
+
+#include "../common/register.cpp"

@@ -204,7 +204,7 @@ JavaVMInitArgs *BuildArgs() {
   return args;
 }
 
-#include "../common/register.cpp"
+#include "../common/register.h"
 
 /** Register natives embedded with executable. */
 void registerAllNatives(JNIEnv *env) {
