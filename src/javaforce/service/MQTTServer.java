@@ -107,6 +107,7 @@ public class MQTTServer {
     public String user, pass;
     public String forward;
     public int forward_port = 1883;
+    public boolean forward_secure;
     public String forward_topic = "#";
     public String forward_user;
     public String forward_pass;
@@ -118,7 +119,8 @@ public class MQTTServer {
     + "#user=username\n"
     + "#pass=password\n"
     + "#forward=host\n"
-    + "#forward.port=1883\n"
+    + "#forward.port=1883 or 8883\n"
+    + "#forward.secure=true\n"
     + "#forward.topic=#\n"
     + "#forward.user=username\n"
     + "#forward.pass=password\n"
@@ -158,22 +160,26 @@ public class MQTTServer {
       if (forward != null) {
         config.forward = forward;
       }
-      String forward_port = props.getProperty("forward_port");
+      String forward_port = props.getProperty("forward.port");
       if (forward_port != null) {
         config.forward_port = JF.atoi(forward_port);
         if (config.forward_port <= 0 || config.forward_port > 65535) {
           config.forward_port = 1883;
         }
       }
-      String forward_topic = props.getProperty("forward_topic");
+      String forward_secure = props.getProperty("forward.secure");
+      if (forward_port != null) {
+        config.forward_secure = forward_secure.equals("true");
+      }
+      String forward_topic = props.getProperty("forward.topic");
       if (forward_topic != null) {
         config.forward_topic = forward_topic;
       }
-      String forward_user = props.getProperty("forward_user");
+      String forward_user = props.getProperty("forward.user");
       if (forward_user != null) {
         config.forward_user = forward_user;
       }
-      String forward_pass = props.getProperty("forward_pass");
+      String forward_pass = props.getProperty("forward.pass");
       if (forward_pass != null) {
         config.forward_pass = forward_pass;
       }
@@ -191,6 +197,21 @@ public class MQTTServer {
     } catch (Exception e) {
       JFLog.log(e);
       return new Config();
+    }
+  }
+
+  private void loadKeys() {
+    try {
+      keys = new KeyMgmt();
+      if (new File(getKeyFile()).exists()) {
+        FileInputStream fis = new FileInputStream(getKeyFile());
+        keys.open(fis, "password");
+        fis.close();
+      } else {
+        JFLog.log("Warning:Server SSL Keys not generated!");
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 
@@ -277,6 +298,7 @@ public class MQTTServer {
   private Object lock = new Object();
   private HashMap<String, Topic> topics = new HashMap<>();
   private MQTTEvents events;
+  private KeyMgmt keys;
 
   private MQTTForward forwarder;
   private JBusClient busClient;
@@ -293,12 +315,17 @@ public class MQTTServer {
       try {
         JFLog.append(getLogFile(), true);
         config = loadConfig();
+        loadKeys();
         if (config.forward != null) {
           forwarder = new MQTTForward();
+          KeyMgmt forward_keys = null;
+          if (config.forward_secure) {
+            forward_keys = keys;
+          }
           if (config.forward_user != null && config.forward_pass != null) {
-            forwarder.start(config.forward, config.forward_port, config.forward_user, config.forward_pass);
+            forwarder.start(config.forward, config.forward_port, forward_keys, config.forward_user, config.forward_pass);
           } else {
-            forwarder.start(config.forward, config.forward_port);
+            forwarder.start(config.forward, config.forward_port, forward_keys);
           }
         }
         busClient = new JBusClient(busPack, new JBusMethods());
@@ -342,15 +369,6 @@ public class MQTTServer {
       try {
         if (secure) {
           JFLog.log("CreateServerSocketSSL");
-          KeyMgmt keys = new KeyMgmt();
-          if (new File(getKeyFile()).exists()) {
-            FileInputStream fis = new FileInputStream(getKeyFile());
-            keys.open(fis, "password");
-            fis.close();
-          } else {
-            JFLog.log("Warning:Server SSL Keys not generated!");
-            return;
-          }
           ss = JF.createServerSocketSSL(port, keys);
         } else {
           ss = new ServerSocket(port);

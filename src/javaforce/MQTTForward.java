@@ -15,6 +15,7 @@ import javaforce.*;
 public class MQTTForward {
   private String host;
   private int port = 1883;
+  private KeyMgmt keys;
   private String user;
   private String pass;
   private int max_queue_size = 1000;
@@ -36,16 +37,29 @@ public class MQTTForward {
   private boolean active;
 
   public void start(String host, int port) {
-    start(host, port, null, null);
+    start(host, port, null, null, null);
+  }
+
+  public void start(String host, int port, KeyMgmt keys) {
+    start(host, port, keys, null, null);
   }
 
   public void start(String host, String user, String pass) {
-    start(host, 1883, user, pass);
+    start(host, 1883, null, user, pass);
+  }
+
+  public void start(String host, KeyMgmt keys, String user, String pass) {
+    start(host, 1883, keys, user, pass);
   }
 
   public void start(String host, int port, String user, String pass) {
+    start(host, port, null, user, pass);
+  }
+
+  public void start(String host, int port, KeyMgmt keys, String user, String pass) {
     this.host = host;
     this.port = port;
+    this.keys = keys;
     this.user = user;
     this.pass = pass;
     active = true;
@@ -105,15 +119,22 @@ public class MQTTForward {
           }
           while (client == null) {
             client = new MQTT();
-            if (client.connect(host, port)) {
+            if (keys == null) {
+              if (!client.connect(host, port)) {
+                client = null;
+              }
+            } else {
+              if (!client.connect(host, port, keys)) {
+                client = null;
+              }
+            }
+            if (client != null) {
               if (user != null && pass != null) {
                 client.connect(user, pass);
               } else {
                 client.connect();
               }
               break;
-            } else {
-              client = null;
             }
             if (!client.isConnected()) {
               client = null;
