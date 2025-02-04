@@ -17,10 +17,13 @@ public class JFNative {
     load();
   }
 
+  private static boolean loaded = false;
+
   /** Loads the JavaForce native library (optional).
    * This library is not needed if the JavaForce loaders are used.
    */
   public static void load() {
+    if (loaded) return;
     String loader = System.getProperty("javaforce.loader");
     if (loader != null) return;
     System.out.println("Loading javaforce native library...");
@@ -34,7 +37,12 @@ public class JFNative {
     } else {
       ext = ".so";
     }
-    System.load(path + file + ext);
+    try {
+      System.load(path + file + ext);
+    } catch(Throwable t) {
+      JFLog.log(t);
+    }
+    loaded = true;
   }
 
   /** Find native libraries in folder (recursive). */

@@ -27,7 +27,7 @@ Folders
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
  /lib       - generated and dependancies jar files
- /native    - native loaders that register native methods and start program main method
+ /native    - native loaders that load the java system and classpath, register native methods and start program main method
  /projects  - source for all sub-projects
  /iso       - scripts to build jfLinux iso (outdated)
  /linux     - scripts to install JavaForce repo for Linux
