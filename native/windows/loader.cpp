@@ -1,4 +1,6 @@
-//Java Launcher Win32/64
+//Java Loader for Win64
+
+// Desc : Loads the Java system, classpath and passes control to the main method
 
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
@@ -6,8 +8,8 @@
 // - supports console apps (type "console")
 // - supports windows services (type "service")
 // - define java.app.home to find exe/dll files
-// - support graal
-// - native functions are now included in executable
+// - supports graal
+// - native functions are included in executable (or loaded from shared library)
 
 #include <windows.h>
 #include <io.h>

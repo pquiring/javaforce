@@ -1,9 +1,11 @@
-//Java Launcher Linux
+//Java Loader for Linux
+
+// Desc : Loads the Java system, classpath and passes control to the main method
 
 // - supports passing command line options to java main()
-// - now loads CLASSPATH and MAINCLASS from embedded resource file (*.cfg)
-// - now globbs arguments (see ExpandStringArray())
-// - native functions are now included in executable
+// - loads CLASSPATH and MAINCLASS from embedded resource file (*.cfg)
+// - globbs arguments (see ExpandStringArray())
+// - native functions are included in executable (or loaded from shared library)
 
 #include <stdlib.h>
 #include <stdio.h>

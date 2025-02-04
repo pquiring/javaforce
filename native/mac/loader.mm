@@ -1,10 +1,13 @@
-//Java Launcher Mac
+//Java Loader for Mac
+
+// Desc : Loads the Java system, classpath and passes control to the main method
 
 // - supports passing command line options to java main()
-// - now loads CLASSPATH and MAINCLASS from resource file (*.cfg)
-// - now globbs arguments (see ExpandStringArray())
-// - now support AWT
-// - define java.app.home to find exe/dll files
+// - loads CLASSPATH and MAINCLASS from resource file (*.cfg)
+// - globbs arguments (see ExpandStringArray())
+// - supports AWT
+// - supports graal
+// - defines java.app.home to find app files
 
 #include <stdlib.h>
 #include <stdio.h>
