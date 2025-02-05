@@ -1,5 +1,13 @@
 What's new...
 
+Feb 5/2025 : JF/78.0
+ - jfMQTT/0.6
+   - added SSL support (port 8883)
+ - MQTTViewer
+   - added SSL and subscribe/send buttons
+ - jfKVM/2.4
+   - removed direct VNC - only web console available
+
 Jan 29/2025 : JF/77.0
  - new : VNC server now includes web-based interface on port (5800 & 5843)
 
