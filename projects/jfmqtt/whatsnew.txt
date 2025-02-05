@@ -1,3 +1,7 @@
+2025-02-05 - v0.6
+  - server : added SSL support (port 8883)
+  - viewer : added SSL support, subscribe button, send button
+
 2024-10-25 - v0.5
   - viewer : add clear messages button
 

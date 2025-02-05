@@ -1,7 +1,7 @@
 MQTT
 ====
 
-MQTT Server on port 1883.
+MQTT Server on port 1883/8883(SSL).
 
 MQTT Viewer.
 
