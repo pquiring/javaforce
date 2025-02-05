@@ -368,9 +368,10 @@ public class MQTTServer {
     public void run() {
       try {
         if (secure) {
-          JFLog.log("CreateServerSocketSSL");
+          JFLog.log("CreateServerSocketSSL:" + port);
           ss = JF.createServerSocketSSL(port, keys);
         } else {
+          JFLog.log("CreateServerSocket:" + port);
           ss = new ServerSocket(port);
         }
         while (worker_active) {

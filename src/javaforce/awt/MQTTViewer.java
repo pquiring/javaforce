@@ -282,7 +282,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       _server = _server.substring(0, idx);
       port = JF.atoi(_port);
     }
-    msgs.setText("Connecting to " + _server + "...");
+    msgs.setText("Connecting to " + _server + ":" + port + "...");
     client = new MQTT();
     if (_secure) {
       if (!client.connect(_server, port, keys)) {
