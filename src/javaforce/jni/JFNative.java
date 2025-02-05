@@ -29,14 +29,7 @@ public class JFNative {
     System.out.println("Loading javaforce native library...");
     String path = JF.getCurrentPath();
     String file = "/jfnative64";
-    String ext = "";
-    if (JF.isWindows()) {
-      ext = ".dll";
-    } else if (JF.isMac()) {
-      ext = ".dylib";
-    } else {
-      ext = ".so";
-    }
+    String ext = Library.getExt();
     try {
       System.load(path + file + ext);
     } catch(Throwable t) {
