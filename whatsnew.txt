@@ -7,6 +7,9 @@ Feb 5/2025 : JF/78.0
    - added SSL and subscribe/send buttons
  - jfKVM/2.4
    - removed direct VNC - only web console available
+ - brought back the native library (dll,so,dylib)
+   - not required when using native loaders
+   - for those that prefer using java.exe
 
 Jan 29/2025 : JF/77.0
  - new : VNC server now includes web-based interface on port (5800 & 5843)
