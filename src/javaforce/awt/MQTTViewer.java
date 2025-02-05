@@ -17,6 +17,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   public MQTTViewer() {
     initComponents();
     initSecureWebKeys();
+    setState(true);
     if (args.length > 0) {
       server.setText(args[0]);
       if (args.length > 1) {
@@ -61,6 +62,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     jLabel6 = new javax.swing.JLabel();
     send_msg = new javax.swing.JTextField();
     send = new javax.swing.JButton();
+    subscribe = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("MQTT Viewer");
@@ -122,6 +124,13 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       }
     });
 
+    subscribe.setText("Subscribe");
+    subscribe.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        subscribeActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -133,7 +142,9 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(topic))
+            .addComponent(topic)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(subscribe))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -182,11 +193,13 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addComponent(clear)
           .addComponent(secure))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel2)
-          .addComponent(topic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(jLabel2)
+            .addComponent(topic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(subscribe, javax.swing.GroupLayout.Alignment.TRAILING))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(send_topic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -211,6 +224,10 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private void sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendActionPerformed
     send();
   }//GEN-LAST:event_sendActionPerformed
+
+  private void subscribeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subscribeActionPerformed
+    subscribe();
+  }//GEN-LAST:event_subscribeActionPerformed
 
   /**
    * @param args the command line arguments
@@ -243,6 +260,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   private javax.swing.JTextField send_topic;
   private javax.swing.JTextField server;
   private javax.swing.JButton start;
+  private javax.swing.JButton subscribe;
   private javax.swing.JTextField topic;
   private javax.swing.JTextField username;
   // End of variables declaration//GEN-END:variables
@@ -252,9 +270,13 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
   private static String[] args;
 
+  public void addText(String msg) {
+    msgs.setText(msgs.getText() + msg);
+  }
+
   public boolean message(String topic, String msg) {
     String ln = topic + "=" + msg + "\r\n";
-    msgs.setText(msgs.getText() + ln);
+    addText(ln);
     return true;
   }
 
@@ -268,7 +290,6 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
   public void start_new() {
     String _server = server.getText();
-    String _topic = topic.getText();
     boolean _secure = secure.isSelected();
     int port = -1;
     if (_secure) {
@@ -306,25 +327,36 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     }
     msgs.setText("Connected to " + _server + "\r\n");
     client.setListener(this);
-    client.subscribe(_topic);
     start.setText("Stop");
     setState(false);
   }
 
   public void stop() {
-    client.disconnect();
-    client = null;
+    if (client != null) {
+      client.disconnect();
+      client = null;
+    }
     start.setText("Start");
     setState(true);
   }
 
+  public void subscribe() {
+    if (client == null) return;
+    String _topic = topic.getText();
+    client.subscribe(_topic);
+    addText("Subscribed to : " + _topic + "\r\n");
+  }
+
   private void setState(boolean state) {
     server.setEditable(state);
-    topic.setEditable(state);
     authenticate.setEnabled(state);
     username.setEditable(state);
     password.setEditable(state);
     secure.setEnabled(state);
+
+    topic.setEditable(!state);
+    subscribe.setEnabled(!state);
+    send.setEnabled(!state);
   }
 
   private void clear() {
@@ -336,6 +368,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   }
 
   private void send() {
+    if (client == null) return;
     String topic = send_topic.getText();
     String msg = send_msg.getText();
     client.publish(topic, msg);
