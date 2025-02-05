@@ -31,8 +31,8 @@ public class MQTTServer {
     }
     for(String arg : args) {
       switch (arg) {
-        case "debug": debug = true; break;
-        case "debug_msg": debug_msg = true; break;
+        case "debug": debug = true; JFLog.log("debug enabled"); break;
+        case "debug_msg": debug_msg = true; JFLog.log("debug messages enabled");break;
       }
     }
   }
@@ -346,7 +346,6 @@ public class MQTTServer {
             wait();
           }
         }
-        JFLog.log("MQTTServer starting on port " + config.port + "...");
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -374,6 +373,7 @@ public class MQTTServer {
           JFLog.log("CreateServerSocket:" + port);
           ss = new ServerSocket(port);
         }
+        worker_active = true;
         while (worker_active) {
           Socket s = ss.accept();
           Client client = new Client(s);
@@ -386,8 +386,10 @@ public class MQTTServer {
 
     public void close() {
       worker_active = false;
-      try { ss.close(); } catch (Exception e) {}
-      ss = null;
+      if (ss != null) {
+        try { ss.close(); } catch (Exception e) {}
+        ss = null;
+      }
     }
   }
 
