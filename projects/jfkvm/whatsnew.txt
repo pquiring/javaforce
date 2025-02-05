@@ -1,3 +1,6 @@
+2025-02-05 : 2.4 released!
+  - new : removed direct VNC - Web VNC only
+
 2024-06-05 : 2.3 released!
   - new : added TPM support
   - fix : UI improvements and fixes
