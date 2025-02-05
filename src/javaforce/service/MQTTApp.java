@@ -178,7 +178,7 @@ public class MQTTApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(FTPServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(MQTTServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   public JBusClient busClient;
