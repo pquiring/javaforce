@@ -59,11 +59,11 @@ See readme.txt in each platform folder for more info.
 
 Building jfLinux (optional)
 ----------------
-After building Javaforce and the native components you can run package.sh to package everything.
+After building Javaforce and the native components you can run package.sh to build and package everything for a Linux repo.
 Supported distros : Debian, Fedora, Arch.
 FreeBSD is currently not supported (open issue if you would like to see FreeBSD packager task and repo created)
 All packages are stored in /repo and can then be processed and uploaded to a repo server.
-Packages are hosted on sourceforge.net which can be installed through the jfLinux install process.
+Pre-built packages are hosted on sourceforge.net which can be installed through the jfLinux install process (see /linux).
 
 JavaForce Ant tasks:
 --------------------
@@ -71,7 +71,7 @@ get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
 get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader)
   ffmpeg-win64 versions 5.1.2 , 6.1.2 , 7.0.2 are now available (you must edit versions.xml)
 jre-all : pre-link JRE with all modules
-jre-base : pre-link JRE for creating native packages (msi, dmg)
+jre-base : pre-link JRE with minimal modules for console apps/services
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support
 
@@ -109,7 +109,7 @@ msi : build Windows msi file with JRE bundled
   - install wix tool (requires dotnet 6+)
     dotnet tool install --global wix
   - wix64.xml file
-  - jre pre-linked for native packaging (see above)
+  - jre pre-linked for native packaging (see jre-* tasks above)
   - install wix extensions:
     wix extension add -g WixToolset.UI.wixext
     wix extension add -g WixToolset.Firewall.wixext
@@ -118,7 +118,7 @@ msi : build Windows msi file with JRE bundled
     wix convert wix64.xml
 dmg : build Mac dmg file using hdiutil (mac only)
  - dmg creation requires:
-  - jre prep for native packaging (see above)
+  - jre pre-linked for native packaging (see jre-* tasks above)
   - Info.plist, ${app}.icns and macfiles.lst
   - see projects/jfedit or projects/jfpaint for only examples
   - jfimageconvert can convert images to .icns file format (mac icons)
