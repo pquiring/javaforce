@@ -629,6 +629,9 @@ public class MQTTServer {
           //reply = header , size , ack_flags, return_code=0, props
           reply[0] = (byte)(CMD_CONNECT_ACK << 4);
           setPacketLength(reply);
+          if (events != null) {
+            events.onConnect();
+          }
           break;
         }
         case CMD_PUBLISH: {
@@ -686,7 +689,7 @@ public class MQTTServer {
             }
           }
           if (events != null) {
-            events.message(topic_name, msg);
+            events.onMessage(topic_name, msg);
           }
           if (forwarder != null) {
             forwarder.publish(topic_name, msg);
@@ -757,6 +760,9 @@ public class MQTTServer {
               topic.subscribe(this);
             }
             if (debug_msg) JFLog.log("SUBSCRIBE:" + ip + ":" + topic_name);
+            if (events != null) {
+              events.onSubscribe(topic_name);
+            }
             pos++;  //subscribe options
           }
           reply = new byte[5];

@@ -432,6 +432,9 @@ public class MQTT {
       switch (cmd) {
         case CMD_CONNECT_ACK:
           if (debug_msg) JFLog.log("connect_ack");
+          if (events != null) {
+            events.onConnect();
+          }
           break;
         case CMD_PUBLISH: {
           boolean dup = (packet[0] & 0x08) != 0;
@@ -480,7 +483,7 @@ public class MQTT {
             }
           }
           if (events != null) {
-            events.message(topic_name, msg);
+            events.onMessage(topic_name, msg);
           }
           break;
         }
@@ -501,7 +504,11 @@ public class MQTT {
           //???
           break;
         case CMD_SUBSCRIBE_ACK:
+          //TODO : decode topic ?
           if (debug_msg) JFLog.log("subscribe_ack");
+          if (events != null) {
+            events.onSubscribe(null);
+          }
           break;
         case CMD_PING:
           reply = new byte[2];
@@ -536,6 +543,17 @@ public class MQTT {
     System.out.println("Usage:MQTT server [-u user] [-p pass] [subscribe topic]");
   }
 
+  private static class TestEvents implements MQTTEvents {
+    public void onConnect() {
+      JFLog.log("connected");
+    }
+    public void onSubscribe(String topic) {}
+    public void onMessage(String topic, String msg) {
+      JFLog.log("msg:" + topic + "=" + msg);
+      resub = topic;
+    }
+  }
+
   public static void main(String[] args) {
     if (args.length < 1) {
       usage();
@@ -543,12 +561,7 @@ public class MQTT {
     }
     try {
       MQTT client = new MQTT();
-      client.setListener((topic, msg) -> {
-        JFLog.log("msg:" + topic + "=" + msg);
-        client.unsubscribe(topic);
-        resub = topic;
-        return true;
-      });
+      client.setListener(new TestEvents());
       String host = args[0];
       String cmd = null;
       String topic = null;

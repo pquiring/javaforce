@@ -6,5 +6,7 @@ package javaforce;
  */
 
 public interface MQTTEvents {
-  public boolean message(String topic, String msg);
+  public void onConnect();
+  public void onSubscribe(String topic);
+  public void onMessage(String topic, String msg);
 }
