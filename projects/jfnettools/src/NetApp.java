@@ -26,6 +26,10 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     centerWindow(this);
     latency = new int[latencyLabel.getWidth()];
     createMap(25, 25, "ssid");
+    if (JF.isWindows()) {
+      wifi_config.setVisible(false);
+      heatmap_config.setVisible(false);
+    }
   }
 
   /**
@@ -128,9 +132,9 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     heatmap_spot = new javax.swing.JButton();
     heatmap_scroll_pane = new javax.swing.JScrollPane();
     heatmap_image = new javax.swing.JLabel();
-    jLabel22 = new javax.swing.JLabel();
+    heatmap_project = new javax.swing.JLabel();
     heatmap_export = new javax.swing.JButton();
-    jLabel23 = new javax.swing.JLabel();
+    heatmap_current_spot = new javax.swing.JLabel();
     heatmap_config = new javax.swing.JButton();
     heatmap_start = new javax.swing.JButton();
 
@@ -880,7 +884,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     });
     heatmap_scroll_pane.setViewportView(heatmap_image);
 
-    jLabel22.setText("Map : ssid : 25 x 25");
+    heatmap_project.setText("Map : ssid : 25 x 25");
 
     heatmap_export.setText("Export PNG");
     heatmap_export.addActionListener(new java.awt.event.ActionListener() {
@@ -889,7 +893,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       }
     });
 
-    jLabel23.setText("Spot : 1, 1");
+    heatmap_current_spot.setText("Spot : 1, 1");
 
     heatmap_config.setText("Config");
     heatmap_config.addActionListener(new java.awt.event.ActionListener() {
@@ -927,8 +931,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             .addComponent(heatmap_start)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(heatmap_spot))
-          .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(heatmap_project, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(heatmap_current_spot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     jPanel11Layout.setVerticalGroup(
@@ -944,9 +948,9 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
           .addComponent(heatmap_config)
           .addComponent(heatmap_start))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel22)
+        .addComponent(heatmap_project)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel23)
+        .addComponent(heatmap_current_spot)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(heatmap_scroll_pane, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
         .addContainerGap())
@@ -1156,10 +1160,12 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JButton fileStart;
   private javax.swing.JLabel fileStatus;
   private javax.swing.JButton heatmap_config;
+  private javax.swing.JLabel heatmap_current_spot;
   private javax.swing.JButton heatmap_export;
   private javax.swing.JLabel heatmap_image;
   private javax.swing.JButton heatmap_load;
   private javax.swing.JButton heatmap_new;
+  private javax.swing.JLabel heatmap_project;
   private javax.swing.JButton heatmap_save;
   private javax.swing.JScrollPane heatmap_scroll_pane;
   private javax.swing.JButton heatmap_spot;
@@ -1180,8 +1186,6 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JLabel jLabel19;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel20;
-  private javax.swing.JLabel jLabel22;
-  private javax.swing.JLabel jLabel23;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
@@ -1568,12 +1572,18 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     spot_x = -1;
     spot_y = -1;
     updateMap();
+    setProjectLabel();
+  }
+
+  private void setProjectLabel() {
+    heatmap_project.setText("Map : " + map.ssid + " : " + map.x + "," + map.y);
   }
 
   private static int WHITE = 0xffffffff;
   private static int BLACK = 0xff000000;
 
   private JFImage updateMap() {
+    heatmap_current_spot.setText("Spot: " + spot_x + "," + spot_y);
     int x = map.x;
     int y = map.y;
     int fx = map.x * 10;
@@ -1617,6 +1627,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     if (filename == null) return;
     map.load(filename);
     updateMap();
+    setProjectLabel();
   }
 
   private void heatmap_save() {
@@ -1643,6 +1654,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     if (wifi == null) return;
     //adjust signal strength
     map.map[spot_y][spot_x] = getSpotSignalStrength();
+    updateMap();
   }
 
   private int INF = 1000;  //invalid dbm

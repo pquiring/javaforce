@@ -1286,8 +1286,8 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="heatmap_spot" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jLabel22" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jLabel23" alignment="0" max="32767" attributes="0"/>
+                              <Component id="heatmap_project" alignment="0" max="32767" attributes="0"/>
+                              <Component id="heatmap_current_spot" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -1307,9 +1307,9 @@
                               <Component id="heatmap_start" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel22" min="-2" max="-2" attributes="0"/>
+                          <Component id="heatmap_project" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel23" min="-2" max="-2" attributes="0"/>
+                          <Component id="heatmap_current_spot" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="heatmap_scroll_pane" pref="398" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1365,7 +1365,7 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JLabel" name="jLabel22">
+                <Component class="javax.swing.JLabel" name="heatmap_project">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Map : ssid : 25 x 25"/>
                   </Properties>
@@ -1378,7 +1378,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="heatmap_exportActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel23">
+                <Component class="javax.swing.JLabel" name="heatmap_current_spot">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Spot : 1, 1"/>
                   </Properties>
