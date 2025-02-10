@@ -3,13 +3,17 @@
  * @author pquiring
  */
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
-public class NetApp extends javax.swing.JFrame {
+import javaforce.*;
+import javaforce.awt.*;
+
+public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback {
 
   public static String version = "0.5";
 
@@ -21,6 +25,7 @@ public class NetApp extends javax.swing.JFrame {
     setTitle("Net Tools/" + version);
     centerWindow(this);
     latency = new int[latencyLabel.getWidth()];
+    createMap(25, 25, "ssid");
   }
 
   /**
@@ -32,7 +37,7 @@ public class NetApp extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jTabbedPane1 = new javax.swing.JTabbedPane();
+    tabs = new javax.swing.JTabbedPane();
     bandwidth = new javax.swing.JPanel();
     jPanel8 = new javax.swing.JPanel();
     jLabel4 = new javax.swing.JLabel();
@@ -109,6 +114,25 @@ public class NetApp extends javax.swing.JFrame {
     fileSelect = new javax.swing.JButton();
     fileStatus = new javax.swing.JLabel();
     fileStart = new javax.swing.JButton();
+    wifi_analyzer = new javax.swing.JPanel();
+    jPanel4 = new javax.swing.JPanel();
+    wifi_start = new javax.swing.JButton();
+    jScrollPane4 = new javax.swing.JScrollPane();
+    wifi_table = new javax.swing.JTable();
+    wifi_config = new javax.swing.JButton();
+    wifi_heatmap = new javax.swing.JPanel();
+    jPanel11 = new javax.swing.JPanel();
+    heatmap_new = new javax.swing.JButton();
+    heatmap_load = new javax.swing.JButton();
+    heatmap_save = new javax.swing.JButton();
+    heatmap_spot = new javax.swing.JButton();
+    heatmap_scroll_pane = new javax.swing.JScrollPane();
+    heatmap_image = new javax.swing.JLabel();
+    jLabel22 = new javax.swing.JLabel();
+    heatmap_export = new javax.swing.JButton();
+    jLabel23 = new javax.swing.JLabel();
+    heatmap_config = new javax.swing.JButton();
+    heatmap_start = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Net Tools");
@@ -165,7 +189,7 @@ public class NetApp extends javax.swing.JFrame {
           .addGroup(jPanel9Layout.createSequentialGroup()
             .addComponent(jLabel6)
             .addGap(18, 18, 18)
-            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)))
+            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel9Layout.setVerticalGroup(
@@ -217,7 +241,7 @@ public class NetApp extends javax.swing.JFrame {
         .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(latencyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel10Layout.createSequentialGroup()
-            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(clientStart2))
           .addGroup(jPanel10Layout.createSequentialGroup()
@@ -359,7 +383,7 @@ public class NetApp extends javax.swing.JFrame {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("Bandwidth", bandwidth);
+    tabs.addTab("Bandwidth", bandwidth);
 
     jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Ping"));
 
@@ -388,7 +412,7 @@ public class NetApp extends javax.swing.JFrame {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(pingHost))
           .addGroup(jPanel5Layout.createSequentialGroup()
-            .addComponent(pingStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+            .addComponent(pingStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(pingStart)))
         .addContainerGap())
@@ -569,10 +593,10 @@ public class NetApp extends javax.swing.JFrame {
         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(100, Short.MAX_VALUE))
+        .addContainerGap(108, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("Tools", tools);
+    tabs.addTab("Tools", tools);
 
     jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("NetMap"));
 
@@ -624,7 +648,7 @@ public class NetApp extends javax.swing.JFrame {
             .addComponent(jLabel20)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(netmap_timeout, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 307, Short.MAX_VALUE)
             .addComponent(netmap_start)))
         .addContainerGap())
     );
@@ -646,7 +670,7 @@ public class NetApp extends javax.swing.JFrame {
           .addComponent(jLabel20)
           .addComponent(netmap_timeout, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 387, Short.MAX_VALUE)
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 386, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -667,7 +691,7 @@ public class NetApp extends javax.swing.JFrame {
         .addContainerGap())
     );
 
-    jTabbedPane1.addTab("NetMap", netmap);
+    tabs.addTab("NetMap", netmap);
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("File Read Benchmark (SSD)"));
 
@@ -699,7 +723,7 @@ public class NetApp extends javax.swing.JFrame {
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(jLabel10)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(fileFile, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+            .addComponent(fileFile, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(fileSelect))
           .addGroup(jPanel2Layout.createSequentialGroup()
@@ -737,23 +761,224 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(miscLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(426, Short.MAX_VALUE))
+        .addContainerGap(425, Short.MAX_VALUE))
     );
 
-    jTabbedPane1.addTab("Misc", misc);
+    tabs.addTab("Misc", misc);
+
+    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Wifi Analyzer"));
+
+    wifi_start.setText("Start");
+    wifi_start.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        wifi_startActionPerformed(evt);
+      }
+    });
+
+    wifi_table.setModel(new javax.swing.table.DefaultTableModel(
+      new Object [][] {
+        {null, null, null, null},
+        {null, null, null, null},
+        {null, null, null, null},
+        {null, null, null, null}
+      },
+      new String [] {
+        "SSID", "Freq", "Signal", "Type"
+      }
+    ));
+    jScrollPane4.setViewportView(wifi_table);
+
+    wifi_config.setText("Config");
+    wifi_config.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        wifi_configActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
+          .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+            .addComponent(wifi_start)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(wifi_config)
+            .addGap(0, 0, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    jPanel4Layout.setVerticalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel4Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(wifi_start)
+          .addComponent(wifi_config))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+
+    javax.swing.GroupLayout wifi_analyzerLayout = new javax.swing.GroupLayout(wifi_analyzer);
+    wifi_analyzer.setLayout(wifi_analyzerLayout);
+    wifi_analyzerLayout.setHorizontalGroup(
+      wifi_analyzerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(wifi_analyzerLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+    wifi_analyzerLayout.setVerticalGroup(
+      wifi_analyzerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(wifi_analyzerLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+
+    tabs.addTab("Wifi Analyzer", wifi_analyzer);
+
+    jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Wifi HeatMap"));
+
+    heatmap_new.setText("New");
+    heatmap_new.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_newActionPerformed(evt);
+      }
+    });
+
+    heatmap_load.setText("Load");
+    heatmap_load.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_loadActionPerformed(evt);
+      }
+    });
+
+    heatmap_save.setText("Save");
+    heatmap_save.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_saveActionPerformed(evt);
+      }
+    });
+
+    heatmap_spot.setText("Analyze Spot");
+    heatmap_spot.setEnabled(false);
+    heatmap_spot.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_spotActionPerformed(evt);
+      }
+    });
+
+    heatmap_image.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        heatmap_imageMouseClicked(evt);
+      }
+    });
+    heatmap_scroll_pane.setViewportView(heatmap_image);
+
+    jLabel22.setText("Map : ssid : 25 x 25");
+
+    heatmap_export.setText("Export PNG");
+    heatmap_export.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_exportActionPerformed(evt);
+      }
+    });
+
+    jLabel23.setText("Spot : 1, 1");
+
+    heatmap_config.setText("Config");
+    heatmap_config.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_configActionPerformed(evt);
+      }
+    });
+
+    heatmap_start.setText("Start");
+    heatmap_start.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        heatmap_startActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+    jPanel11.setLayout(jPanel11Layout);
+    jPanel11Layout.setHorizontalGroup(
+      jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel11Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(heatmap_scroll_pane, javax.swing.GroupLayout.Alignment.TRAILING)
+          .addGroup(jPanel11Layout.createSequentialGroup()
+            .addComponent(heatmap_new)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(heatmap_load)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(heatmap_save)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(heatmap_export)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(heatmap_config)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+            .addComponent(heatmap_start)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(heatmap_spot))
+          .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap())
+    );
+    jPanel11Layout.setVerticalGroup(
+      jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel11Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(heatmap_new)
+          .addComponent(heatmap_load)
+          .addComponent(heatmap_save)
+          .addComponent(heatmap_spot)
+          .addComponent(heatmap_export)
+          .addComponent(heatmap_config)
+          .addComponent(heatmap_start))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel22)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel23)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(heatmap_scroll_pane, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+
+    javax.swing.GroupLayout wifi_heatmapLayout = new javax.swing.GroupLayout(wifi_heatmap);
+    wifi_heatmap.setLayout(wifi_heatmapLayout);
+    wifi_heatmapLayout.setHorizontalGroup(
+      wifi_heatmapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(wifi_heatmapLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+    wifi_heatmapLayout.setVerticalGroup(
+      wifi_heatmapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(wifi_heatmapLayout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
+    );
+
+    tabs.addTab("Wifi HeatMap", wifi_heatmap);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
+      .addComponent(tabs)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jTabbedPane1)
+      .addComponent(tabs)
     );
 
     pack();
@@ -838,6 +1063,46 @@ public class NetApp extends javax.swing.JFrame {
     netmap_map_start();
   }//GEN-LAST:event_netmap_startActionPerformed
 
+  private void wifi_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wifi_startActionPerformed
+    wifi_start();
+  }//GEN-LAST:event_wifi_startActionPerformed
+
+  private void heatmap_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_startActionPerformed
+    wifi_start();
+  }//GEN-LAST:event_heatmap_startActionPerformed
+
+  private void heatmap_newActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_newActionPerformed
+    heatmap_new();
+  }//GEN-LAST:event_heatmap_newActionPerformed
+
+  private void heatmap_loadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_loadActionPerformed
+    heatmap_load();
+  }//GEN-LAST:event_heatmap_loadActionPerformed
+
+  private void heatmap_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_saveActionPerformed
+    heatmap_save();
+  }//GEN-LAST:event_heatmap_saveActionPerformed
+
+  private void heatmap_exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_exportActionPerformed
+    heatmap_export();
+  }//GEN-LAST:event_heatmap_exportActionPerformed
+
+  private void wifi_configActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wifi_configActionPerformed
+    wifi_config();
+  }//GEN-LAST:event_wifi_configActionPerformed
+
+  private void heatmap_configActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_configActionPerformed
+    wifi_config();
+  }//GEN-LAST:event_heatmap_configActionPerformed
+
+  private void heatmap_spotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heatmap_spotActionPerformed
+    heatmap_spot();
+  }//GEN-LAST:event_heatmap_spotActionPerformed
+
+  private void heatmap_imageMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_heatmap_imageMouseClicked
+    click_spot(evt.getX(), evt.getY());
+  }//GEN-LAST:event_heatmap_imageMouseClicked
+
   /**
    * @param args the command line arguments
    */
@@ -889,6 +1154,15 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JButton fileSelect;
   private javax.swing.JButton fileStart;
   private javax.swing.JLabel fileStatus;
+  private javax.swing.JButton heatmap_config;
+  private javax.swing.JButton heatmap_export;
+  private javax.swing.JLabel heatmap_image;
+  private javax.swing.JButton heatmap_load;
+  private javax.swing.JButton heatmap_new;
+  private javax.swing.JButton heatmap_save;
+  private javax.swing.JScrollPane heatmap_scroll_pane;
+  private javax.swing.JButton heatmap_spot;
+  private javax.swing.JButton heatmap_start;
   private javax.swing.JTextField internetIP;
   private javax.swing.JTextField intranetIP;
   private javax.swing.JLabel ipStatus;
@@ -905,6 +1179,8 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel19;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel20;
+  private javax.swing.JLabel jLabel22;
+  private javax.swing.JLabel jLabel23;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
@@ -914,8 +1190,10 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel9;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel10;
+  private javax.swing.JPanel jPanel11;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
+  private javax.swing.JPanel jPanel4;
   private javax.swing.JPanel jPanel5;
   private javax.swing.JPanel jPanel6;
   private javax.swing.JPanel jPanel7;
@@ -923,7 +1201,7 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JPanel jPanel9;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
-  private javax.swing.JTabbedPane jTabbedPane1;
+  private javax.swing.JScrollPane jScrollPane4;
   private javax.swing.JLabel latencyLabel;
   private javax.swing.JTextField latencyMaxEver;
   private javax.swing.JTextField latencyMaxWindow;
@@ -940,8 +1218,14 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JTextField serverPort;
   private javax.swing.JButton serverStart;
   private javax.swing.JLabel serverStatus;
+  private javax.swing.JTabbedPane tabs;
   private javax.swing.JPanel tools;
   private javax.swing.JTextField upSpeed;
+  private javax.swing.JPanel wifi_analyzer;
+  private javax.swing.JButton wifi_config;
+  private javax.swing.JPanel wifi_heatmap;
+  private javax.swing.JButton wifi_start;
+  private javax.swing.JTable wifi_table;
   // End of variables declaration//GEN-END:variables
 
   public Server server;
@@ -1201,5 +1485,171 @@ public class NetApp extends javax.swing.JFrame {
     netmap_host.setEditable(state);
     netmap_ports.setEditable(state);
     netmap_timeout.setEditable(state);
+  }
+
+  private WifiAnalyzer wifi;
+
+  private void wifi_start() {
+    if (wifi == null) {
+      wifi = new WifiAnalyzer();
+      wifi.setCallback(this);
+      wifi.start();
+      wifi_start.setText("Stop");
+      wifi_config.setEnabled(false);
+      heatmap_config.setEnabled(false);
+      heatmap_start.setText("Stop");
+      heatmap_spot.setEnabled(true);
+    } else {
+      wifi.cancel();
+      wifi = null;
+      wifi_start.setText("Start");
+      wifi_config.setEnabled(true);
+      heatmap_config.setEnabled(true);
+      heatmap_start.setText("Start");
+      heatmap_spot.setEnabled(false);
+    }
+  }
+
+  public void callback(SSID[] ssids) {
+    java.awt.EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        DefaultTableModel model = (DefaultTableModel)wifi_table.getModel();
+        while (model.getRowCount() > 0) {
+          model.removeRow(0);
+        }
+        for(SSID ssid : ssids) {
+          for(SSID.AP ap : ssid.aps) {
+            model.addRow(new String[] {ssid.ssid, Integer.toString(ap.channel), Integer.toString(ap.dbm), ssid.encryption});
+          }
+        }
+      }
+    });
+  }
+
+  private void wifi_config() {
+    if (JF.isWindows()) {
+      JFAWT.showMessage("No config", "No config needed for Windows");
+    } else {
+      WifiAnalyzer.device = JFAWT.getString("Enter Wifi Device", WifiAnalyzer.device);
+    }
+  }
+
+  private HeatMap map;
+
+  private int spot_x = -1, spot_y = -1;
+
+  private void heatmap_new() {
+    GetWifiHeatMap dialog = new GetWifiHeatMap(this, true);
+    dialog.setVisible(true);
+    if (!dialog.accepted) return;
+    createMap(dialog.getWidth(), dialog.getHeight(), dialog.getSSID());
+  }
+
+  private void createMap(int x, int y, String ssid) {
+    map = new HeatMap();
+    map.x = x;
+    map.y = y;
+    map.ssid = ssid;
+    map.map = new int[y][x];
+    spot_x = -1;
+    spot_y = -1;
+    updateMap();
+  }
+
+  private static int WHITE = 0xffffffff;
+  private static int BLACK = 0xff000000;
+
+  private JFImage updateMap() {
+    int x = map.x * 10;
+    int y = map.y * 10;
+    JFImage img = new JFImage(x, y);
+    img.fill(0, 0, x, y, WHITE);
+    for(int yp=0;yp<y;yp++) {
+      for(int xp=0;xp<x;xp++) {
+        int clr = 0;
+        int sig = map.map[yp][xp];
+        if (sig < -100 || sig > -50) {
+          sig = 0;  //invalid value
+        }
+        if (sig == 0) {
+          clr = 0xffffff;
+        } else {
+          //gradient : -100 (red) to -50 (green)
+          sig = ((-sig - 50) * 2);  //0-100%
+          int red = (100 - sig) * 255;
+          int grn = sig * 255;
+          clr = red << 16 + grn << 8;
+        }
+        clr |= 0xff000000;
+        img.fill(xp * 10, yp * 10, 10, 10, clr);
+        if (spot_x == xp && spot_y == yp) {
+          img.box(xp * 10, yp * 10, 10, 10, BLACK);
+        }
+      }
+    }
+    heatmap_image.setSize(img.getSize());
+    heatmap_image.setIcon(img);
+    return img;
+  }
+
+  private String[][] heatmap_files = new String[][] {
+    {"HeatMap", "heatmap"}
+  };
+
+  private void heatmap_load() {
+    String filename = JFAWT.getOpenFile(JF.getUserPath(), heatmap_files);
+    if (filename == null) return;
+    map.load(filename);
+    updateMap();
+  }
+
+  private void heatmap_save() {
+    String filename = JFAWT.getSaveAsFile(JF.getUserPath(), heatmap_files);
+    if (filename == null) return;
+    map.save(filename);
+  }
+
+  private String[][] png_files = new String[][] {
+    {"PNG Image", "png"}
+  };
+
+  private void heatmap_export() {
+    JFImage img = updateMap();
+    String filename = JFAWT.getSaveAsFile(JF.getUserPath(), png_files);
+    if (filename == null) return;
+    img.savePNG(filename);
+  }
+
+  private void heatmap_spot() {
+    if (spot_x == -1 || spot_y == -1) return;
+    if (wifi == null) return;
+    //adjust signal strength
+    map.map[spot_y][spot_x] = getSpotSignalStrength();
+  }
+
+  private int INF = 1000;  //invalid dbm
+
+  private int getSpotSignalStrength() {
+    SSID[] ssids = wifi.query();
+    for(SSID ssid : ssids) {
+      if (ssid.ssid.equals(map.ssid)) {
+        int best = -INF;  //-50 thru -100
+        for(SSID.AP ap : ssid.aps) {
+          if (ap.dbm > best) {
+            best = ap.dbm;
+          }
+        }
+        if (best != -INF) {
+          return best;
+        }
+      }
+    }
+    return 0;
+  }
+
+  private void click_spot(int x, int y) {
+    spot_x = x / 10;
+    spot_y = y / 10;
+    updateMap();
   }
 }

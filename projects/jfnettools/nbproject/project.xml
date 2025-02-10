@@ -16,14 +16,14 @@ auxiliary.show.customizer.message=<message>
             <properties/>
             <folders>
                 <source-folder>
-                    <label>src</label>
-                    <type>java</type>
-                    <location>src</location>
+                    <label>jnettest</label>
+                    <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
                 <source-folder>
-                    <label>jnettest</label>
-                    <location>.</location>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>
@@ -60,6 +60,7 @@ auxiliary.show.customizer.message=<message>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src</package-root>
+                <classpath mode="compile">javaforce.jar</classpath>
                 <source-level>11</source-level>
             </compilation-unit>
         </java-data>

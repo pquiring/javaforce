@@ -6,17 +6,20 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="version" value="0.5"/>
+  <property name="classpath" location="javaforce.jar"/>
 
   <import file="${home}/base.xml"/>
 
-  <target name="compile" depends="depnatives" description="compile the source">
+  <target name="depjars" depends="jar-javaforce">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" release="${java-version}" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
     </javac>
   </target>
-
-  <target name="depjars" />
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
@@ -36,6 +39,7 @@
     <zip destfile="jfnettools-${version}.zip">
       <fileset dir=".">
         <include name="*.jar"/>
+        <include name="*.exe"/>
         <include name="*.txt"/>
       </fileset>
     </zip>
