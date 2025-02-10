@@ -1532,8 +1532,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         if (wifi != null) {
-          wifi.cancel();
-          wifi = null;
+          wifi_start();
         }
         JFAWT.showError("Error", msg);
       }
