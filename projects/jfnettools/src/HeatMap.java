@@ -35,7 +35,48 @@ public class HeatMap {
     }
   }
 
+  private void reset() {
+    x = -1;
+    y = -1;
+    ssid = null;
+    map = null;
+  }
+
   public void load(String filename) {
-    //TODO
+    byte[] data = null;
+    try {
+      FileInputStream fis = new FileInputStream(filename);
+      data = fis.readAllBytes();
+      fis.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return;
+    }
+    reset();
+    int xp = 0;
+    int yp = 0;
+    String[] lns = new String(data).split(JF.eol);
+    for(String ln : lns) {
+      int idx = ln.indexOf('=');
+      if (idx == -1) continue;
+      String tag = ln.substring(0, idx);
+      String value = ln.substring(idx + 1);
+      switch (tag) {
+        case "x": x = Integer.valueOf(value); break;
+        case "y": y = Integer.valueOf(value); break;
+        case "ssid": ssid = value; break;
+        case "row":
+          if (map == null) {
+            map = new int[y][x];
+          }
+          String[] xs = value.split("[,]");
+          xp = 0;
+          for(String xv : xs) {
+            map[yp][xp++] = Integer.valueOf(xv);
+          }
+          yp++;
+          break;
+      }
+    }
   }
 }
