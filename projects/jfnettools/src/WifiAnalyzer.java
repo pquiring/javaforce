@@ -16,6 +16,7 @@ public class WifiAnalyzer extends Thread {
   private boolean active;
   public static interface Callback {
     public void callback(SSID[] ssids);
+    public void error(String msg);
   }
   private Callback callback;
 
@@ -26,7 +27,12 @@ public class WifiAnalyzer extends Thread {
     while (active) {
       ssids = query_ssids();
       if (callback != null) {
-        callback.callback(ssids);
+        if (ssids != null) {
+          callback.callback(ssids);
+        }
+        if (error != null) {
+          callback.error(error);
+        }
       }
       JF.sleep(1000);
     }
@@ -56,7 +62,7 @@ public class WifiAnalyzer extends Thread {
     ShellProcess sp = new ShellProcess();
     String out = sp.run(new String[] {"netsh", "wlan", "show", "all"}, true);
     if (out == null) {
-      error = "null output";
+      error = "WifiAnalyzer:null output";
       JFLog.log("WifiAnalyzer:output == null");
       return null;
     }
@@ -69,12 +75,12 @@ public class WifiAnalyzer extends Thread {
       ln = ln.trim();
       if (ln.length() == 0) continue;
       if (ln.equals("Access is denied.")) {
-        error = "access denied";
+        error = "WifiAnalyzer:access denied";
         JFLog.log("WifiAnalyzer:Access is denied.");
         return null;
       }
       if (ln.contains("need location permission")) {
-        error = "need location permission";
+        error = "WifiAnalyzer:need location permission";
         JFLog.log("WifiAnalyzer:Need location permission.");
         return null;
       }

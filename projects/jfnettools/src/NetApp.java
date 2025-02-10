@@ -1510,6 +1510,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     }
   }
 
+  //interface WifiAnalyzer.Callback
+
   public void callback(SSID[] ssids) {
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -1522,6 +1524,18 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             model.addRow(new String[] {ssid.ssid, Integer.toString(ap.channel), Integer.toString(ap.dbm), ssid.encryption});
           }
         }
+      }
+    });
+  }
+
+  public void error(String msg) {
+    java.awt.EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        if (wifi != null) {
+          wifi.cancel();
+          wifi = null;
+        }
+        JFAWT.showError("Error", msg);
       }
     });
   }
