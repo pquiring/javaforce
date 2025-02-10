@@ -872,6 +872,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       }
     });
 
+    heatmap_image.setVerticalAlignment(javax.swing.SwingConstants.TOP);
     heatmap_image.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
         heatmap_imageMouseClicked(evt);
@@ -1573,10 +1574,12 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private static int BLACK = 0xff000000;
 
   private JFImage updateMap() {
-    int x = map.x * 10;
-    int y = map.y * 10;
-    JFImage img = new JFImage(x, y);
-    img.fill(0, 0, x, y, WHITE);
+    int x = map.x;
+    int y = map.y;
+    int fx = map.x * 10;
+    int fy = map.y * 10;
+    JFImage img = new JFImage(fx, fy);
+    img.fill(0, 0, fx, fy, WHITE);
     for(int yp=0;yp<y;yp++) {
       for(int xp=0;xp<x;xp++) {
         int clr = 0;
@@ -1595,10 +1598,10 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
         }
         clr |= 0xff000000;
         img.fill(xp * 10, yp * 10, 10, 10, clr);
-        if (spot_x == xp && spot_y == yp) {
-          img.box(xp * 10, yp * 10, 10, 10, BLACK);
-        }
       }
+    }
+    if (spot_x != -1 && spot_y != -1) {
+      img.box(spot_x * 10, spot_y * 10, 9, 9, BLACK);
     }
     heatmap_image.setSize(img.getSize());
     heatmap_image.setIcon(img);
@@ -1665,6 +1668,10 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private void click_spot(int x, int y) {
     spot_x = x / 10;
     spot_y = y / 10;
+    if ((spot_x >= map.x) || (spot_y >= map.y)) {
+      spot_x = -1;
+      spot_y = -1;
+    }
     updateMap();
   }
 }

@@ -1356,6 +1356,9 @@
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
                     <Component class="javax.swing.JLabel" name="heatmap_image">
+                      <Properties>
+                        <Property name="verticalAlignment" type="int" value="1"/>
+                      </Properties>
                       <Events>
                         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="heatmap_imageMouseClicked"/>
                       </Events>
