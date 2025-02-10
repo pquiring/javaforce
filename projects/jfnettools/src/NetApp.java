@@ -1627,6 +1627,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   };
 
   private void heatmap_export() {
+    spot_x = -1;
+    spot_y = -1;
     JFImage img = updateMap();
     String filename = JFAWT.getSaveAsFile(JF.getUserPath(), png_files);
     if (filename == null) return;
