@@ -1642,6 +1642,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     JFImage img = updateMap();
     String filename = JFAWT.getSaveAsFile(JF.getUserPath(), png_files);
     if (filename == null) return;
+    img.box(0, 0, img.getWidth() - 1, img.getHeight() - 1, BLACK);
     img.savePNG(filename);
   }
 
