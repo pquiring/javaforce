@@ -12,6 +12,13 @@ public class HeatMap {
   public String ssid;
   public int[][] map;  //dBm values [y][x]
 
+  public HeatMap(int x, int y, String ssid) {
+    this.x = x;
+    this.y = y;
+    this.ssid = ssid;
+    map = new int[y][x];
+  }
+
   public void save(String filename) {
     StringBuilder sb = new StringBuilder();
     sb.append("ssid=" + ssid + JF.eol);
@@ -21,7 +28,7 @@ public class HeatMap {
       sb.append("row=");
       for(int _x=0;_x<x;_x++) {
         if (_x > 0) sb.append(",");
-        sb.append(Integer.toString(map[y][x]));
+        sb.append(Integer.toString(map[_y][_x]));
       }
       sb.append(JF.eol);
     }

@@ -1564,11 +1564,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   }
 
   private void createMap(int x, int y, String ssid) {
-    map = new HeatMap();
-    map.x = x;
-    map.y = y;
-    map.ssid = ssid;
-    map.map = new int[y][x];
+    map = new HeatMap(x, y, ssid);
     spot_x = -1;
     spot_y = -1;
     updateMap();
