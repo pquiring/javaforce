@@ -16,7 +16,7 @@ import javaforce.awt.*;
 
 public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback {
 
-  public static String version = "0.5";
+  public static String version = "0.6";
 
   /**
    * Creates new form NetApp
