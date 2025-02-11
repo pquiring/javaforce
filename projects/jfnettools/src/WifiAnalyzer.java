@@ -175,6 +175,9 @@ public class WifiAnalyzer extends Thread {
         //get next tag value
         i1 = idx + 1;
         i2 = ln.indexOf(' ', i1);
+        if (i2 == -1) {
+          i2 = ln.length();
+        }
         tag = ln.substring(i1, i2);
       }
       switch (tag) {
