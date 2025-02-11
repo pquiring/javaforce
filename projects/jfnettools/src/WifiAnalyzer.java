@@ -181,6 +181,9 @@ public class WifiAnalyzer extends Thread {
         case "BSS":
           i1 = idx + 1;
           i2 = ln.indexOf('(');
+          if (i2 == -1) {
+            i2 = ln.length();
+          }
           mac = ln.substring(i1, i2).trim();
           break;
         case "signal:":
