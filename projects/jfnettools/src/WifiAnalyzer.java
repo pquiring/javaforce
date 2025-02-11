@@ -155,7 +155,7 @@ public class WifiAnalyzer extends Thread {
       return null;
     }
     ShellProcess sp = new ShellProcess();
-    String out = sp.run(new String[] {"/usr/bin/iw", "dev", device, "scan"}, true);
+    String out = sp.run(new String[] {"/usr/sbin/iw", "dev", device, "scan"}, true);
     String[] lns = out.split("\n");
     String mac = null;
     String signal = null;
