@@ -201,7 +201,7 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="downSpeed" pref="480" max="32767" attributes="0"/>
+                                      <Component id="downSpeed" pref="638" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -284,7 +284,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="latencyLabel" max="32767" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="clientStatus2" pref="509" max="32767" attributes="0"/>
+                                      <Component id="clientStatus2" pref="667" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="clientStart2" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -512,7 +512,7 @@
                                   <Component id="pingHost" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" attributes="0">
-                                  <Component id="pingStatus" pref="531" max="32767" attributes="0"/>
+                                  <Component id="pingStatus" pref="689" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="pingStart" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -871,7 +871,7 @@
                                   <Component id="jLabel20" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="netmap_timeout" min="-2" pref="94" max="-2" attributes="0"/>
-                                  <EmptySpace pref="307" max="32767" attributes="0"/>
+                                  <EmptySpace pref="465" max="32767" attributes="0"/>
                                   <Component id="netmap_start" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1017,7 +1017,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="fileFile" pref="504" max="32767" attributes="0"/>
+                                  <Component id="fileFile" pref="662" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="fileSelect" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -1128,7 +1128,7 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jScrollPane4" pref="609" max="32767" attributes="0"/>
+                              <Component id="jScrollPane4" pref="767" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="wifi_start" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1280,7 +1280,9 @@
                                   <Component id="heatmap_export" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="heatmap_config" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="31" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="heatmap_signal" pref="177" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="heatmap_start" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="heatmap_spot" min="-2" max="-2" attributes="0"/>
@@ -1304,6 +1306,7 @@
                               <Component id="heatmap_export" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="heatmap_config" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="heatmap_start" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="heatmap_signal" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="heatmap_project" min="-2" max="-2" attributes="0"/>
@@ -1405,6 +1408,11 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="heatmap_startActionPerformed"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JLabel" name="heatmap_signal">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Signal : 0 dBm"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

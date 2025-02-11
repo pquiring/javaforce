@@ -149,6 +149,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     heatmap_current_spot = new javax.swing.JLabel();
     heatmap_config = new javax.swing.JButton();
     heatmap_start = new javax.swing.JButton();
+    heatmap_signal = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Net Tools");
@@ -204,7 +205,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
           .addGroup(jPanel9Layout.createSequentialGroup()
             .addComponent(jLabel6)
             .addGap(18, 18, 18)
-            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)))
+            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel9Layout.setVerticalGroup(
@@ -256,7 +257,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
         .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(latencyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel10Layout.createSequentialGroup()
-            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
+            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, 667, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(clientStart2))
           .addGroup(jPanel10Layout.createSequentialGroup()
@@ -427,7 +428,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(pingHost))
           .addGroup(jPanel5Layout.createSequentialGroup()
-            .addComponent(pingStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+            .addComponent(pingStatus, javax.swing.GroupLayout.DEFAULT_SIZE, 689, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(pingStart)))
         .addContainerGap())
@@ -663,7 +664,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             .addComponent(jLabel20)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(netmap_timeout, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 307, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 465, Short.MAX_VALUE)
             .addComponent(netmap_start)))
         .addContainerGap())
     );
@@ -738,7 +739,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(jLabel10)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(fileFile, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+            .addComponent(fileFile, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(fileSelect))
           .addGroup(jPanel2Layout.createSequentialGroup()
@@ -817,7 +818,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
+          .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 767, Short.MAX_VALUE)
           .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
             .addComponent(wifi_start)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -931,6 +932,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       }
     });
 
+    heatmap_signal.setText("Signal : 0 dBm");
+
     javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
     jPanel11.setLayout(jPanel11Layout);
     jPanel11Layout.setHorizontalGroup(
@@ -949,7 +952,9 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             .addComponent(heatmap_export)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(heatmap_config)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(heatmap_signal, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(heatmap_start)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(heatmap_spot))
@@ -968,7 +973,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
           .addComponent(heatmap_spot)
           .addComponent(heatmap_export)
           .addComponent(heatmap_config)
-          .addComponent(heatmap_start))
+          .addComponent(heatmap_start)
+          .addComponent(heatmap_signal))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(heatmap_project)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1193,6 +1199,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JLabel heatmap_project;
   private javax.swing.JButton heatmap_save;
   private javax.swing.JScrollPane heatmap_scroll_pane;
+  private javax.swing.JLabel heatmap_signal;
   private javax.swing.JButton heatmap_spot;
   private javax.swing.JButton heatmap_start;
   private javax.swing.JLabel heatmap_view;
@@ -1556,6 +1563,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             model.addRow(new String[] {ssid.ssid, Integer.toString(ap.channel), Integer.toString(ap.dbm), ssid.encryption});
           }
         }
+        int signal = getSpotSignalStrength();
+        heatmap_signal.setText("Signal : " + signal + " dBm");
       }
     });
   }
