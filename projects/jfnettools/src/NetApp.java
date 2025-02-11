@@ -4,6 +4,7 @@
  */
 
 import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -27,9 +28,20 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     latency = new int[latencyLabel.getWidth()];
     createMap(25, 25, "ssid");
     if (JF.isWindows()) {
+      //Wifi config not required on Windows
       wifi_config.setVisible(false);
       heatmap_config.setVisible(false);
     }
+    if (false) {
+      heatmap_image.setFocusable(true);
+      heatmap_image.addMouseListener(new MouseAdapter() {
+        public void mousePressed(MouseEvent e) {
+          heatmap_click(e.getX(), e.getY());
+        }
+      });
+      heatmap_scroll_pane.setViewportView(heatmap_image);
+    }
+    heatmap_view.setIcon(heatmap_image);
   }
 
   /**
@@ -131,7 +143,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     heatmap_save = new javax.swing.JButton();
     heatmap_spot = new javax.swing.JButton();
     heatmap_scroll_pane = new javax.swing.JScrollPane();
-    heatmap_image = new javax.swing.JLabel();
+    heatmap_view = new javax.swing.JLabel();
     heatmap_project = new javax.swing.JLabel();
     heatmap_export = new javax.swing.JButton();
     heatmap_current_spot = new javax.swing.JLabel();
@@ -140,7 +152,6 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Net Tools");
-    setResizable(false);
 
     jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Client"));
 
@@ -876,13 +887,24 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       }
     });
 
-    heatmap_image.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-    heatmap_image.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseClicked(java.awt.event.MouseEvent evt) {
-        heatmap_imageMouseClicked(evt);
+    heatmap_scroll_pane.setFocusable(false);
+
+    heatmap_view.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+    heatmap_view.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+    heatmap_view.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+    heatmap_view.setOpaque(true);
+    heatmap_view.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+    heatmap_view.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        heatmap_viewMousePressed(evt);
       }
     });
-    heatmap_scroll_pane.setViewportView(heatmap_image);
+    heatmap_view.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyPressed(java.awt.event.KeyEvent evt) {
+        heatmap_viewKeyPressed(evt);
+      }
+    });
+    heatmap_scroll_pane.setViewportView(heatmap_view);
 
     heatmap_project.setText("Map : ssid : 25 x 25");
 
@@ -1104,9 +1126,13 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     heatmap_spot();
   }//GEN-LAST:event_heatmap_spotActionPerformed
 
-  private void heatmap_imageMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_heatmap_imageMouseClicked
-    click_spot(evt.getX(), evt.getY());
-  }//GEN-LAST:event_heatmap_imageMouseClicked
+  private void heatmap_viewMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_heatmap_viewMousePressed
+    heatmap_click(evt.getX(), evt.getY());
+  }//GEN-LAST:event_heatmap_viewMousePressed
+
+  private void heatmap_viewKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_heatmap_viewKeyPressed
+    heatmap_keypressed(evt);
+  }//GEN-LAST:event_heatmap_viewKeyPressed
 
   /**
    * @param args the command line arguments
@@ -1162,7 +1188,6 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JButton heatmap_config;
   private javax.swing.JLabel heatmap_current_spot;
   private javax.swing.JButton heatmap_export;
-  private javax.swing.JLabel heatmap_image;
   private javax.swing.JButton heatmap_load;
   private javax.swing.JButton heatmap_new;
   private javax.swing.JLabel heatmap_project;
@@ -1170,6 +1195,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JScrollPane heatmap_scroll_pane;
   private javax.swing.JButton heatmap_spot;
   private javax.swing.JButton heatmap_start;
+  private javax.swing.JLabel heatmap_view;
   private javax.swing.JTextField internetIP;
   private javax.swing.JTextField intranetIP;
   private javax.swing.JLabel ipStatus;
@@ -1241,6 +1267,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   public int latency[];
   public char mode;
   public int maxEver, maxWindow;  //latency values
+  public JFImage heatmap_image;
 
   private char getMode() {
     return ((String)clientMode.getSelectedItem()).charAt(0);
@@ -1561,6 +1588,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     dialog.setVisible(true);
     if (!dialog.accepted) return;
     createMap(dialog.getMapWidth(), dialog.getMapHeight(), dialog.getSSID());
+    revalidate();
   }
 
   private void createMap(int x, int y, String ssid) {
@@ -1578,14 +1606,18 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private static int WHITE = 0xffffffff;
   private static int BLACK = 0xff000000;
 
-  private JFImage updateMap() {
+  private void updateMap() {
     heatmap_current_spot.setText("Spot: " + spot_x + "," + spot_y);
     int x = map.x;
     int y = map.y;
     int fx = map.x * 10;
     int fy = map.y * 10;
-    JFImage img = new JFImage(fx, fy);
-    img.fill(0, 0, fx, fy, WHITE);
+    if (heatmap_image == null) {
+      heatmap_image = new JFImage(fx, fy);
+    } else {
+      heatmap_image.setSize(fx, fy);
+    }
+    heatmap_image.fill(0, 0, fx, fy, WHITE);
     for(int yp=0;yp<y;yp++) {
       for(int xp=0;xp<x;xp++) {
         int clr = 0;
@@ -1603,15 +1635,15 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
           clr = red << 16 + grn << 8;
         }
         clr |= 0xff000000;
-        img.fill(xp * 10, yp * 10, 10, 10, clr);
+        heatmap_image.fill(xp * 10, yp * 10, 10, 10, clr);
       }
     }
     if (spot_x != -1 && spot_y != -1) {
-      img.box(spot_x * 10, spot_y * 10, 9, 9, BLACK);
+      heatmap_image.box(spot_x * 10, spot_y * 10, 9, 9, BLACK);
     }
-    heatmap_image.setSize(img.getSize());
-    heatmap_image.setIcon(img);
-    return img;
+    heatmap_view.setSize(heatmap_image.getSize());
+    heatmap_view.setIcon(heatmap_image);
+    heatmap_view.repaint();
   }
 
   private String[][] heatmap_files = new String[][] {
@@ -1639,11 +1671,12 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private void heatmap_export() {
     spot_x = -1;
     spot_y = -1;
-    JFImage img = updateMap();
     String filename = JFAWT.getSaveAsFile(JF.getUserPath(), png_files);
     if (filename == null) return;
-    img.box(0, 0, img.getWidth() - 1, img.getHeight() - 1, BLACK);
-    img.savePNG(filename);
+    updateMap();
+    heatmap_image.box(0, 0, heatmap_image.getWidth() - 1, heatmap_image.getHeight() - 1, BLACK);
+    heatmap_image.savePNG(filename);
+    updateMap();
   }
 
   private void heatmap_spot() {
@@ -1674,7 +1707,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     return 0;
   }
 
-  private void click_spot(int x, int y) {
+  private void heatmap_click(int x, int y) {
     spot_x = x / 10;
     spot_y = y / 10;
     if ((spot_x >= map.x) || (spot_y >= map.y)) {
@@ -1682,5 +1715,51 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       spot_y = -1;
     }
     updateMap();
+    heatmap_view.requestFocus();
+  }
+
+  private void heatmap_keypressed(KeyEvent evt) {
+    int mods = evt.getModifiersEx() & JFAWT.KEY_MASKS;
+    int code = evt.getKeyCode();
+    if (mods == 0) {
+      //normal keys
+      if (spot_x == -1 || spot_y == -1) return;
+      switch (code) {
+        case KeyEvent.VK_UP:
+          if (spot_y > 0) {
+            spot_y--;
+          }
+          break;
+        case KeyEvent.VK_DOWN:
+          if (spot_y < map.y-1) {
+            spot_y++;
+          }
+          break;
+        case KeyEvent.VK_LEFT:
+          if (spot_x > 0) {
+            spot_x--;
+          }
+          break;
+        case KeyEvent.VK_RIGHT:
+          if (spot_x < map.x-1) {
+            spot_x++;
+          }
+          break;
+        case KeyEvent.VK_SPACE:
+          heatmap_spot();
+          break;
+      }
+      updateMap();
+      evt.consume();
+    }
+    else if (mods == KeyEvent.ALT_DOWN_MASK) {
+      //alt keys
+    }
+    else if (mods == KeyEvent.CTRL_DOWN_MASK) {
+      //ctrl keys
+    }
+    else if (mods == KeyEvent.SHIFT_DOWN_MASK) {
+      //shift keys
+    }
   }
 }
