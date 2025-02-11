@@ -144,6 +144,7 @@ public class WifiAnalyzer extends Thread {
       }
     }
     SSID ss = new SSID();
+    ss.ssid = ssid;
     ssid_list.add(ss);
     return ss;
   }
