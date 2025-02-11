@@ -1,5 +1,17 @@
 What's new...
 
+Feb 11/2025 : JF/79.0
+ - jfMQTT/0.7
+   - added more events : onConnect(), onSubscribe
+ - jfNetTools/0.6
+   - added Wifi Analyzer and Wifi HeatMap tabs
+   - now deps on JavaForce
+ - the gpg key that signs all JavaForce repos hosted on sourceforge.net has expired on 2025-02-06
+   key will be extended another 50 years but you will have to re-run:
+     /linux/install.sh --update=yes
+   to reload the gpg key AFTER the repo has been upgraded to JF/79.0
+   see /linux for more details
+
 Feb 5/2025 : JF/78.0
  - jfMQTT/0.6
    - added SSL support (port 8883)

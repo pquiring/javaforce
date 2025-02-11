@@ -3,7 +3,7 @@
   <!-- Java version -->
   <property name="java-version" value="17"/>
   <!-- JavaForce version -->
-  <property name="javaforce-version" value="78.0"/>
+  <property name="javaforce-version" value="79.0"/>
   <!-- native dependancies versions -->
   <property name="glfw-version" value="3.4"/>
   <!-- ffmpeg version only used in Windows -->
