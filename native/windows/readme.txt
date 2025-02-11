@@ -1,10 +1,10 @@
-Windows Natives/Loader
-======================
+Windows Loader
+==============
 
 Desc
 ----
 
-  - These C++ sources build the Windows launcher and native API used by JavaForce
+  - These C++ sources build the Windows loader and native API used by JavaForce
   - java.exe is never used to run Java apps within JavaForce
   - the native API provides features that are currently unavailable in Java
 
@@ -14,7 +14,7 @@ Requirements:
   - MS Visual C++ compiler (Visual Studio : Full or Build Tools)
     - Run vcvars64.bat to setup build environment
       - there is a shortcut in the start menu under Visual Studio called "Developer Command Prompt"
-    - Java and Ant in your path
+  - Java and Ant in your path
   - ffmpeg headers
 
 Compiling using pre-built ffmpeg headers/libraries
