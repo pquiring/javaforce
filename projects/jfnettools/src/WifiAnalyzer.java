@@ -187,6 +187,10 @@ public class WifiAnalyzer extends Thread {
           i1 = idx + 1;
           i2 = ln.indexOf("dBm");
           signal = ln.substring(i1, i2).trim();
+          idx = signal.indexOf('.');
+          if (idx != -1) {
+            signal = signal.substring(0, idx);
+          }
           break;
         case "freq":
           i1 = idx + 1;
