@@ -4,6 +4,7 @@
 
 DESKTOP=ask
 JAVAFORCE=yes
+UPDATE=no
 
 for arg in "$@"
 do
@@ -18,6 +19,12 @@ do
   fi
   if [ "$arg" = "--javaforce=yes" ]; then
     JAVAFORCE=yes
+  fi
+  if [ "$arg" = "--update=no" ]; then
+    UPDATE=no
+  fi
+  if [ "$arg" = "--update=yes" ]; then
+    UPDATE=yes
   fi
 done
 
@@ -78,6 +85,9 @@ function debian {
     echo Download javaforce.list
     wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.list
     chmod 644 javaforce.list
+  fi
+  if [ $UPDATE = "yes" ]; then
+    rm /etc/apt/trusted.gpg.d/javaforce.gpg
   fi
   if [ ! -f /etc/apt/trusted.gpg.d/javaforce.gpg ]; then
     echo Download javaforce.gpg
@@ -147,10 +157,14 @@ function arch {
   echo "SigLevel = TrustAll" >> /etc/pacman.conf
   echo "Server = http://javaforce.sourceforge.net/arch/$HOSTTYPE" >> /etc/pacman.conf
 
+  if [ $UPDATE = "yes" ]; then
+    rm /tmp/javaforce.gpg
+  fi
+
   if [ ! -f /tmp/javaforce.gpg ]; then
     echo Download javaforce.gpg
     wget -NP /tmp http://javaforce.sf.net/arch/$HOSTTYPE/javaforce.gpg
-    chmod 644 javaforce.gpg
+    chmod 644 /tmp/javaforce.gpg
   fi
 
   pacman-key --add /tmp/javaforce.gpg
