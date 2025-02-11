@@ -1,3 +1,6 @@
+2025-02-11 - v0.7
+  - viewer : added more event messages : onConnect, onSubscribe
+
 2025-02-05 - v0.6
   - server : added SSL support (port 8883)
   - viewer : added SSL support, subscribe button, send button

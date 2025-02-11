@@ -4,7 +4,7 @@
   <property name="app" value="jfmqtt"/>
   <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
-  <property name="version" value="0.6"/>
+  <property name="version" value="0.7"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
 
   <import file="${home}/base.xml"/>
