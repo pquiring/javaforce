@@ -49,6 +49,7 @@ char expanded[MAX_PATH];
 char dll[MAX_PATH];
 int size = MAX_PATH;
 HMODULE jvm_dll;
+HMODULE awt_dll;
 int (*CreateJavaVM)(JavaVM**,void**,void*);
 HANDLE thread_handle;
 int thread_id;
@@ -690,6 +691,16 @@ bool try_jvm() {
   if ((jvm_dll = LoadLibrary(dll)) == NULL) {
     error("Unable to open jvm.dll");
     return false;
+  }
+
+  //load awt.dll if present : otherwise awt.dll is loaded later which may fail to find MSVCRT DLLs if not installed on system
+  strcpy(dll, javahome);
+  strcat(dll, "\\bin\\awt.dll");
+  if ((awt_dll = LoadLibrary(dll)) == NULL) {
+    //this may fail for console/service apps anyways
+    if (debug) {
+      printf("Warning:failed to load awt.dll\r\n");
+    }
   }
 
   //restore default DLL search path (without default some apps have file related issues)
