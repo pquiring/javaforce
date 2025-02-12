@@ -51,7 +51,7 @@ function fedora {
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm jdk17-openjdk apache-ant git
+  pacman -S --noconfirm jdk17-openjdk apache-ant git sudo
 }
 
 function freebsd {
