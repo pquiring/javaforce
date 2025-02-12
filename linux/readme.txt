@@ -40,6 +40,15 @@ Currently supported
   arch : amd64
 Full details are here : https://pquiring.github.io/repo/javaforce-status.txt
 
+key expired
+-----------
+For systems that had the JavaForce repos added prior to version 79.0
+the key used to sign packages hosted on sourceforge.net expired on 2025-2-6.
+Debian users will need to re-run install.sh with --update=yes to re-download the new key.
+Fedora users should automatically update since the key is refereced in the javaforce.repo file.
+Arch users may need to re-run install.sh with --update=yes
+The new key will expire in 50 years (2075).
+
 Note about Arch installation
 ----------------------------
   Arch Linux has a very simple installation guide or a script to automate the task which I recommend using.
