@@ -42,16 +42,16 @@ fi
 
 function debian {
   apt update
-  apt --yes install default-jdk ant git
+  apt --yes install default-jdk ant git unzip sudo gnupg
 }
 
 function fedora {
-  dnf -y install java-17-openjdk-devel ant git
+  dnf -y install java-17-openjdk-devel ant git unzip sudo gnupg
 }
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm jdk17-openjdk apache-ant git sudo
+  pacman -S --noconfirm jdk17-openjdk apache-ant git unzip sudo gnupg
 }
 
 function freebsd {
