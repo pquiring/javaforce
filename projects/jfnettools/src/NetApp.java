@@ -1621,6 +1621,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     int count = model.getRowCount();
     for(int y=0;y<count;y++) {
       for(int x=0;x<5;x++) {
+        if (x > 0) sb.append(",");
         String value = (String)model.getValueAt(y, x);
         sb.append(value);
       }
