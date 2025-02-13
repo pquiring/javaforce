@@ -1621,7 +1621,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private static int BLACK = 0xff000000;
 
   private void updateMap() {
-    heatmap_current_spot.setText("Spot: " + spot_x + "," + spot_y);
+    heatmap_current_spot.setText("Spot: " + spot_x + "," + spot_y + " : " + get_spot_value());
     int x = map.x;
     int y = map.y;
     int fx = map.x * 10;
@@ -1643,10 +1643,10 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
           clr = 0xffffff;
         } else {
           //gradient : -100 (red) to -50 (green)
-          sig = ((-sig - 50) * 2);  //0-100%
-          int red = (100 - sig) * 255;
-          int grn = sig * 255;
-          clr = red << 16 + grn << 8;
+          sig = ((100 - (-sig)) * 2);  //0-100%
+          int red = ((100 - sig) * 255) / 100;
+          int grn = (sig * 255) / 100;
+          clr = (red << 16) + (grn << 8);  //RGB
         }
         clr |= 0xff000000;
         heatmap_image.fill(xp * 10, yp * 10, 10, 10, clr);
@@ -1658,6 +1658,11 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     heatmap_view.setSize(heatmap_image.getSize());
     heatmap_view.setIcon(heatmap_image);
     heatmap_view.repaint();
+  }
+
+  private int get_spot_value() {
+    if (spot_x == -1 || spot_y == -1) return 0;
+    return map.map[spot_y][spot_x];
   }
 
   private String[][] heatmap_files = new String[][] {
