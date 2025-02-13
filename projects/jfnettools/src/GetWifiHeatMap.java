@@ -62,9 +62,9 @@ public class GetWifiHeatMap extends javax.swing.JDialog {
 
     ssid.setText("ssid");
 
-    x.setModel(new javax.swing.SpinnerNumberModel(25, 5, 1000, 1));
+    x.setModel(new javax.swing.SpinnerNumberModel(25, 2, 1000, 1));
 
-    y.setModel(new javax.swing.SpinnerNumberModel(25, 5, 1000, 1));
+    y.setModel(new javax.swing.SpinnerNumberModel(25, 2, 1000, 1));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);

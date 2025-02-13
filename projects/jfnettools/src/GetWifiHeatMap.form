@@ -124,14 +124,14 @@
     <Component class="javax.swing.JSpinner" name="x">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="25" maximum="1000" minimum="5" numberType="java.lang.Integer" stepSize="1" type="number"/>
+          <SpinnerModel initial="25" maximum="1000" minimum="2" numberType="java.lang.Integer" stepSize="1" type="number"/>
         </Property>
       </Properties>
     </Component>
     <Component class="javax.swing.JSpinner" name="y">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="25" maximum="1000" minimum="5" numberType="java.lang.Integer" stepSize="1" type="number"/>
+          <SpinnerModel initial="25" maximum="1000" minimum="2" numberType="java.lang.Integer" stepSize="1" type="number"/>
         </Property>
       </Properties>
     </Component>
