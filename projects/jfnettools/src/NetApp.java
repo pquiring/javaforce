@@ -136,6 +136,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     jScrollPane4 = new javax.swing.JScrollPane();
     wifi_table = new javax.swing.JTable();
     wifi_config = new javax.swing.JButton();
+    wifi_export = new javax.swing.JButton();
     wifi_heatmap = new javax.swing.JPanel();
     jPanel11 = new javax.swing.JPanel();
     heatmap_new = new javax.swing.JButton();
@@ -816,6 +817,13 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       }
     });
 
+    wifi_export.setText("Export");
+    wifi_export.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        wifi_exportActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
     jPanel4.setLayout(jPanel4Layout);
     jPanel4Layout.setHorizontalGroup(
@@ -828,7 +836,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
             .addComponent(wifi_start)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(wifi_config)
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(wifi_export)))
         .addContainerGap())
     );
     jPanel4Layout.setVerticalGroup(
@@ -837,7 +846,8 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
         .addContainerGap()
         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(wifi_start)
-          .addComponent(wifi_config))
+          .addComponent(wifi_config)
+          .addComponent(wifi_export))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
         .addContainerGap())
@@ -1145,6 +1155,10 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
     heatmap_keypressed(evt);
   }//GEN-LAST:event_heatmap_viewKeyPressed
 
+  private void wifi_exportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wifi_exportActionPerformed
+    wifi_export();
+  }//GEN-LAST:event_wifi_exportActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -1266,6 +1280,7 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
   private javax.swing.JTextField upSpeed;
   private javax.swing.JPanel wifi_analyzer;
   private javax.swing.JButton wifi_config;
+  private javax.swing.JButton wifi_export;
   private javax.swing.JPanel wifi_heatmap;
   private javax.swing.JButton wifi_start;
   private javax.swing.JTable wifi_table;
@@ -1590,6 +1605,35 @@ public class NetApp extends javax.swing.JFrame implements WifiAnalyzer.Callback 
       JFAWT.showMessage("No config", "No config needed for Windows");
     } else {
       WifiAnalyzer.device = JFAWT.getString("Enter Wifi Device", WifiAnalyzer.device);
+    }
+  }
+
+  private String[][] csv_files = new String[][] {
+    {"CSV", "csv"}
+  };
+
+  private void wifi_export() {
+    String filename = JFAWT.getSaveAsFile(JF.getUserPath(), csv_files);
+    if (filename == null) return;
+    StringBuilder sb = new StringBuilder();
+    sb.append("ssid,frequency,signal,authorization,encryption"); sb.append(JF.eol);
+    DefaultTableModel model = (DefaultTableModel)wifi_table.getModel();
+    int count = model.getRowCount();
+    for(int y=0;y<count;y++) {
+      for(int x=0;x<5;x++) {
+        String value = (String)model.getValueAt(x, y);
+        sb.append(value);
+      }
+      sb.append(JF.eol);
+    }
+    byte[] data = sb.toString().getBytes();
+    try {
+      FileOutputStream fos = new FileOutputStream(filename);
+      fos.write(data);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+      JFAWT.showError("Error", e.toString());
     }
   }
 

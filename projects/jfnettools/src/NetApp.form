@@ -1133,7 +1133,8 @@
                                   <Component id="wifi_start" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="wifi_config" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="wifi_export" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1147,6 +1148,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="wifi_start" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="wifi_config" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="wifi_export" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jScrollPane4" pref="442" max="32767" attributes="0"/>
@@ -1224,6 +1226,14 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wifi_configActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="wifi_export">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Export"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="wifi_exportActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
