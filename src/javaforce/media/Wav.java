@@ -50,7 +50,7 @@ public class Wav {
   }
 
   public boolean load(InputStream is) {
-    is = is;
+    this.is = is;
     errmsg = "";
     try {
       byte[] data = new byte[30];
