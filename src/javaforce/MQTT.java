@@ -19,6 +19,7 @@ public class MQTT {
   private OutputStream os;
   private MQTTEvents events;
   private Worker worker;
+  private long last_packet;
   public static boolean debug = false;
   public static boolean debug_msg = false;
 
@@ -29,18 +30,7 @@ public class MQTT {
 
   /** Connects to MQTT service port. */
   public boolean connect(String host, int port) {
-    disconnect();
-    try {
-      s = new Socket(host, port);
-      is = s.getInputStream();
-      os = s.getOutputStream();
-      worker = new Worker(s);
-      worker.start();
-      return true;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return false;
-    }
+    return connect(host, port, null);
   }
 
   /** Connects to MQTT service port over TLS. */
@@ -53,11 +43,14 @@ public class MQTT {
     disconnect();
     try {
       s = new Socket(host, port);
-      s = JF.connectSSL(s, keys);  //upgrade to SSL
+      if (keys != null) {
+        s = JF.connectSSL(s, keys);  //upgrade to SSL
+      }
       is = s.getInputStream();
       os = s.getOutputStream();
       worker = new Worker(s);
       worker.start();
+      last_packet = System.currentTimeMillis();
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -90,6 +83,11 @@ public class MQTT {
 
   public void setListener(MQTTEvents events) {
     this.events = events;
+  }
+
+  /** Get last packet received time stamp. */
+  public long getLastPacketTimestamp() {
+    return last_packet;
   }
 
   private int calcPacketLength(boolean has_id, int topic_length, boolean has_opts, int msg_length) {
@@ -405,6 +403,7 @@ public class MQTT {
             }
             if (packetLength == -1) continue;
             if (totalRead < totalLength) continue;
+            last_packet = System.currentTimeMillis();
             try {
               process(buf, totalLength, packetLength);
             } catch (Exception e) {
@@ -516,6 +515,8 @@ public class MQTT {
 //          setPacketLength(reply);  //zero
           if (debug_msg) JFLog.log("PING:" + ip);
           break;
+        case CMD_PONG:
+          break;
         case CMD_DISCONNECT:
           active = false;
           break;
@@ -551,6 +552,12 @@ public class MQTT {
     public void onMessage(String topic, String msg) {
       JFLog.log("msg:" + topic + "=" + msg);
       resub = topic;
+    }
+    public void onPing() {
+      JFLog.log("ping");
+    }
+    public void onPong() {
+      JFLog.log("pong");
     }
   }
 

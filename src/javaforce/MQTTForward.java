@@ -20,6 +20,7 @@ public class MQTTForward {
   private String pass;
   private int max_queue_size = 1000;
   private int keep_alive = 30;
+  private long last_packet = -1;
 
   private static class Entry {
     public Entry(String topic, String msg) {
@@ -142,6 +143,12 @@ public class MQTTForward {
         count = 0;
         try {
           synchronized (client_lock) {
+            if (keep_alive > 0) {
+              long timeout = System.currentTimeMillis() - (keep_alive * 1000 * 2);
+              if (client.getLastPacketTimestamp() < timeout) {
+                reconnect();
+              }
+            }
             if (client != null && !client.isConnected()) {
               client.disconnect();
               client = null;
