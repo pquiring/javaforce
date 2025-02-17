@@ -1,5 +1,11 @@
 What's new...
 
+Feb 17/2025 : JF/79.1
+ - jfNetTools/0.7
+   - fixes to Wifi HeatMap colors
+   - add Wifi Analyzer export
+ - javaforce.media.Wav : fix load() function
+
 Feb 11/2025 : JF/79.0
  - jfMQTT/0.7
    - added more events : onConnect(), onSubscribe
