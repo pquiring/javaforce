@@ -275,10 +275,12 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   }
 
   public void onConnect() {
-    addText("connection accepted!");
+    addText("connection accepted!\r\n");
   }
 
-  public void onSubscribe(String topic) {}
+  public void onSubscribe(String topic) {
+    addText("subscribe accepted!\r\n");
+  }
 
   public void onMessage(String topic, String msg) {
     String ln = topic + "=" + msg + "\r\n";
