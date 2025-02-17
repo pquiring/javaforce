@@ -19,6 +19,7 @@ public class MQTTForward {
   private String user;
   private String pass;
   private int max_queue_size = 1000;
+  private int keep_alive = 30;
 
   private static class Entry {
     public Entry(String topic, String msg) {
@@ -29,9 +30,11 @@ public class MQTTForward {
     public String msg;
   }
 
-  private Object lock = new Object();
   private ArrayList<Entry> queue = new ArrayList<>();
+  private Object queue_lock = new Object();
+
   private MQTT client;
+  private Object client_lock = new Object();
 
   private Server server;
   private boolean active;
@@ -80,21 +83,37 @@ public class MQTTForward {
   }
 
   public void publish(String topic, String msg) {  //tag:value
-    synchronized (lock) {
+    synchronized (queue_lock) {
       if (queue.size() > max_queue_size) {
         JFLog.log("Error:MQTTForward Queue > " + max_queue_size);
         return;
       }
       queue.add(new Entry(topic, msg));
-      lock.notify();
+      queue_lock.notify();
+    }
+  }
+
+  /** Set keep alive interval in seconds (default = 30) (0 = disabled)
+   * Send a ping() to maintain connection.
+   */
+  public void setKeepAlive(int value) {
+    keep_alive = value;
+  }
+
+  public void reconnect() {
+    synchronized (client_lock) {
+      if (client != null) {
+        client.disconnect();
+        client = null;
+      }
     }
   }
 
   private Entry remove() {
     while (active) {
-      synchronized (lock) {
+      synchronized (queue_lock) {
         if (queue.size() == 0) {
-          try { lock.wait(1000); } catch (Exception e) {}
+          try { queue_lock.wait(500); } catch (Exception e) {}
           return null;
         }
         Entry entry = queue.remove(0);
@@ -105,44 +124,59 @@ public class MQTTForward {
   }
 
   private class Server extends Thread {
+    public int count;
     public void run() {
       while (active) {
         Entry entry = remove();
         if (entry == null) {
-          JF.sleep(1000);
-          continue;
-        }
-        try {
-          if (client != null && !client.isConnected()) {
-            client.disconnect();
-            client = null;
-          }
-          while (client == null) {
-            client = new MQTT();
-            if (keys == null) {
-              if (!client.connect(host, port)) {
-                client = null;
-              }
-            } else {
-              if (!client.connect(host, port, keys)) {
-                client = null;
-              }
-            }
-            if (client != null) {
-              if (user != null && pass != null) {
-                client.connect(user, pass);
-              } else {
-                client.connect();
-              }
+          JF.sleep(500);
+          if (keep_alive > 0) {
+            count++;
+            if (count >= keep_alive) {
+              count = 0;
               break;
             }
-            if (!client.isConnected()) {
+          }
+          continue;
+        }
+        count = 0;
+        try {
+          synchronized (client_lock) {
+            if (client != null && !client.isConnected()) {
+              client.disconnect();
               client = null;
-              JF.sleep(1000);
-              continue;
+            }
+            while (client == null) {
+              client = new MQTT();
+              if (keys == null) {
+                if (!client.connect(host, port)) {
+                  client = null;
+                }
+              } else {
+                if (!client.connect(host, port, keys)) {
+                  client = null;
+                }
+              }
+              if (client != null) {
+                if (user != null && pass != null) {
+                  client.connect(user, pass);
+                } else {
+                  client.connect();
+                }
+                break;
+              }
+              if (!client.isConnected()) {
+                client = null;
+                JF.sleep(1000);
+                continue;
+              }
+            }
+            if (entry != null) {
+              client.publish(entry.topic, entry.msg);
+            } else {
+              client.ping();
             }
           }
-          client.publish(entry.topic, entry.msg);
         } catch (Exception e) {
           JFLog.log(e);
         }
