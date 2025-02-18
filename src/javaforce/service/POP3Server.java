@@ -791,6 +791,14 @@ public class POP3Server {
   private JBusClient busClient;
   private String config;
 
+  public static boolean createKeys() {
+    return KeyMgmt.keytool(new String[] {
+      "-genkey", "-debug", "-alias", "jfpop3", "-keypass", "password", "-storepass", "password",
+      "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfpop3.sourceforge.net, OU=user, O=server, C=CA",
+      "-keyalg" , "RSA", "-keysize", "2048"
+    });
+  }
+
   public static class JBusMethods {
     public void getConfig(String pack) {
       pop3.busClient.call(pack, "getConfig", pop3.busClient.quote(pop3.busClient.encodeString(pop3.config)));
@@ -814,11 +822,7 @@ public class POP3Server {
     }
 
     public void genKeys(String pack) {
-      if (KeyMgmt.keytool(new String[] {
-        "-genkey", "-debug", "-alias", "jfpop3", "-keypass", "password", "-storepass", "password",
-        "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfpop3.sourceforge.net, OU=user, O=server, C=CA",
-        "-keyalg" , "RSA", "-keysize", "2048"
-      })) {
+      if (createKeys()) {
         JFLog.log("Generated Keys");
         pop3.busClient.call(pack, "getKeys", pop3.busClient.quote("OK"));
       } else {

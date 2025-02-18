@@ -665,6 +665,14 @@ public class SMTPServer {
   private JBusClient busClient;
   private String config;
 
+  public static boolean createKeys() {
+    return KeyMgmt.keytool(new String[] {
+      "-genkey", "-debug", "-alias", "jfsmtp", "-keypass", "password", "-storepass", "password",
+      "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfsmtp.sourceforge.net, OU=user, O=server, C=CA",
+      "-keyalg" , "RSA", "-keysize", "2048"
+    });
+  }
+
   public static class JBusMethods {
     public void getConfig(String pack) {
       smtp.busClient.call(pack, "getConfig", smtp.busClient.quote(smtp.busClient.encodeString(smtp.config)));
@@ -688,11 +696,7 @@ public class SMTPServer {
     }
 
     public void genKeys(String pack) {
-      if (KeyMgmt.keytool(new String[] {
-        "-genkey", "-debug", "-alias", "jfsmtp", "-keypass", "password", "-storepass", "password",
-        "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfsmtp.sourceforge.net, OU=user, O=server, C=CA",
-        "-keyalg" , "RSA", "-keysize", "2048"
-      })) {
+      if (createKeys()) {
         JFLog.log("Generated Keys");
         smtp.busClient.call(pack, "getKeys", smtp.busClient.quote("OK"));
       } else {

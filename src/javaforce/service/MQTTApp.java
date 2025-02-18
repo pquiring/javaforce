@@ -150,6 +150,14 @@ public class MQTTApp extends javax.swing.JFrame {
    * @param args the command line arguments
    */
   public static void main(String[] args) {
+    for(String arg : args) {
+      switch (arg) {
+        case "createKeys":
+          MQTTServer.createKeys();
+          System.exit(0);
+          break;
+      }
+    }
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {

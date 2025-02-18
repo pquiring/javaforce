@@ -1090,6 +1090,14 @@ public class SOCKSServer {
   private JBusClient busClient;
   private String config;
 
+  public static boolean createKeys() {
+    return KeyMgmt.keytool(new String[] {
+      "-genkey", "-debug", "-alias", "jfsocks", "-keypass", "password", "-storepass", "password",
+      "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfsocks.sourceforge.net, OU=user, O=server, C=CA",
+      "-keyalg" , "RSA", "-keysize", "2048"
+    });
+  }
+
   public static class JBusMethods {
     public void getConfig(String pack) {
       socks.busClient.call(pack, "getConfig", socks.busClient.quote(socks.busClient.encodeString(socks.config)));
@@ -1113,11 +1121,7 @@ public class SOCKSServer {
     }
 
     public void genKeys(String pack) {
-      if (KeyMgmt.keytool(new String[] {
-        "-genkey", "-debug", "-alias", "jfsocks", "-keypass", "password", "-storepass", "password",
-        "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfsocks.sourceforge.net, OU=user, O=server, C=CA",
-        "-keyalg" , "RSA", "-keysize", "2048"
-      })) {
+      if (createKeys()) {
         JFLog.log("Generated Keys");
         socks.busClient.call(pack, "genKeysStatus", socks.busClient.quote("OK"));
       } else {

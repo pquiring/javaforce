@@ -984,6 +984,14 @@ public class FTPServer {
   private JBusClient busClient;
   private String config;
 
+  public static boolean createKeys() {
+    return KeyMgmt.keytool(new String[] {
+      "-genkey", "-debug", "-alias", "jfftp", "-keypass", "password", "-storepass", "password",
+      "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfftp.sourceforge.net, OU=user, O=server, C=CA",
+      "-keyalg" , "RSA", "-keysize", "2048"
+    });
+  }
+
   public static class JBusMethods {
     public void getConfig(String pack) {
       ftp.busClient.call(pack, "getConfig", ftp.busClient.quote(ftp.busClient.encodeString(ftp.config)));
@@ -1007,11 +1015,7 @@ public class FTPServer {
     }
 
     public void genKeys(String pack) {
-      if (KeyMgmt.keytool(new String[] {
-        "-genkey", "-debug", "-alias", "jfftp", "-keypass", "password", "-storepass", "password",
-        "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfftp.sourceforge.net, OU=user, O=server, C=CA",
-        "-keyalg" , "RSA", "-keysize", "2048"
-      })) {
+      if (createKeys()) {
         JFLog.log("Generated Keys");
         ftp.busClient.call(pack, "getKeys", ftp.busClient.quote("OK"));
       } else {
