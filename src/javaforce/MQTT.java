@@ -20,8 +20,15 @@ public class MQTT {
   private MQTTEvents events;
   private Worker worker;
   private long last_packet;
-  public static boolean debug = false;
-  public static boolean debug_msg = false;
+
+  private static boolean debug = false;
+  private static boolean debug_msg = false;
+
+  //wildcards
+  public static final String wildcard_single_level = "+";
+  public static final String wildcard_multi_level = "#";
+  public static final char wildcard_single_level_char = '+';
+  public static final char wildcard_multi_level_char = '#';
 
   /** Connects to MQTT service port. */
   public boolean connect(String host) {

@@ -12,6 +12,8 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
+import static javaforce.MQTT.*;
+
 public class MQTTServer {
   public final static String busPack = "net.sf.jfmqtt";
 
@@ -108,7 +110,7 @@ public class MQTTServer {
     public String forward;
     public int forward_port = 1883;
     public boolean forward_secure;
-    public String forward_topic = "#";
+    public String forward_topic = wildcard_multi_level;
     public String forward_user;
     public String forward_pass;
   }
@@ -121,7 +123,7 @@ public class MQTTServer {
     + "#forward=host\n"
     + "#forward.port=1883 or 8883\n"
     + "#forward.secure=true\n"
-    + "#forward.topic=#\n"
+    + "#forward.topic=" + wildcard_multi_level + "\n"
     + "#forward.user=username\n"
     + "#forward.pass=password\n"
   ;
@@ -216,8 +218,8 @@ public class MQTTServer {
   }
 
   public static boolean hasWildcard(String topic) {
-    if (topic.indexOf('+') != -1) return true;
-    if (topic.indexOf('#') != -1) return true;
+    if (topic.indexOf(wildcard_single_level_char) != -1) return true;
+    if (topic.indexOf(wildcard_multi_level_char) != -1) return true;
     return false;
   }
 
@@ -271,11 +273,11 @@ public class MQTTServer {
         if (wi == ws.length) return false;
         String w = ws[wi];
         wi++;
-        if (w.equals("+")) {
+        if (w.equals(wildcard_single_level)) {
           //match any section
           continue;
         }
-        if (w.equals("#")) {
+        if (w.equals(wildcard_multi_level)) {
           //match remainder
           return true;
         }
@@ -286,7 +288,7 @@ public class MQTTServer {
       }
       if (wi != ws.length) {
         String w = ws[wi];
-        if (w.equals("#")) return true;
+        if (w.equals(wildcard_multi_level)) return true;
         return false;
       }
       return true;
