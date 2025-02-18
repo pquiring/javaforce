@@ -145,15 +145,14 @@ public class MQTTForward {
         count = 0;
         try {
           synchronized (client_lock) {
-            if (keep_alive > 0) {
+            if (client != null && keep_alive > 0) {
               long timeout = System.currentTimeMillis() - (keep_alive * 1000 * 2);
               if (client.getLastPacketTimestamp() < timeout) {
                 reconnect();
               }
             }
             if (client != null && !client.isConnected()) {
-              client.disconnect();
-              client = null;
+              reconnect();
             }
             while (client == null) {
               client = new MQTT();
@@ -172,12 +171,15 @@ public class MQTTForward {
                 } else {
                   client.connect();
                 }
-                break;
               }
-              if (!client.isConnected()) {
-                client = null;
-                JF.sleep(1000);
-                continue;
+              if (client != null) {
+                if (!client.isConnected()) {
+                  client = null;
+                  JF.sleep(1000);
+                } else {
+                  //connection okay : TODO : wait for connect() confirmation
+                  break;
+                }
               }
             }
             if (entry != null) {
