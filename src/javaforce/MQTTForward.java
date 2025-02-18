@@ -135,10 +135,12 @@ public class MQTTForward {
             count++;
             if (count >= keep_alive) {
               count = 0;
-              break;
+            } else {
+              continue;
             }
+          } else {
+            continue;
           }
-          continue;
         }
         count = 0;
         try {
