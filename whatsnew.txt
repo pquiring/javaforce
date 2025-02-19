@@ -1,5 +1,10 @@
 What's new...
 
+Feb 19/2025 : JF/79.2
+ - jfMQTT/0.8
+   - fixed MQTTForward issues
+   - added option to generate SSL keys from command line
+
 Feb 17/2025 : JF/79.1
  - jfNetTools/0.7
    - fixes to Wifi HeatMap colors
