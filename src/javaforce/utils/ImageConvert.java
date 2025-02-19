@@ -7,7 +7,7 @@ public class ImageConvert {
   public static void main(String[] args) {
     if (args.length < 2) {
       System.out.println("Usage : ImageConvert filein fileout [{index} | {width height}]");
-      System.out.println("Suppports : jpg, png, bmp, ico, icns(output only), svg(input only)");
+      System.out.println("Suppports : jpg, png, bmp, svg, ico, icns(output only)");
       System.out.println("    index : ico index (input only) (default = 0)");
       System.out.println("    width height : svg size (input only) (default = 256 256)");
       return;
@@ -15,6 +15,7 @@ public class ImageConvert {
     try {
       JFImage img = new JFImage();
       String infmt = args[0].substring(args[0].lastIndexOf(".")+1).toLowerCase();
+      JFLog.log("infmt=" + infmt);
       if (infmt.equals("jpg")) {
         if (!img.loadJPG(args[0])) throw new Exception("Load failed");
       } else if (infmt.equals("png")) {
@@ -41,12 +42,15 @@ public class ImageConvert {
         throw new Exception("Unsupported input type:" + infmt);
       }
       String outfmt = args[1].substring(args[1].lastIndexOf(".")+1).toLowerCase();
+      JFLog.log("outfmt=" + outfmt);
       if (outfmt.equals("jpg")) {
         if (!img.saveJPG(args[1])) throw new Exception("Save failed");
       } else if (outfmt.equals("png")) {
         if (!img.savePNG(args[1])) throw new Exception("Save failed");
       } else if (outfmt.equals("bmp")) {
         if (!img.saveBMP(args[1])) throw new Exception("Save failed");
+      } else if (outfmt.equals("svg")) {
+        if (!img.saveSVG(args[1])) throw new Exception("Save failed");
       } else if (outfmt.equals("ico")) {
         if (!img.saveICO(args[1])) throw new Exception("Save failed");
       } else if (outfmt.equals("icns")) {
@@ -59,4 +63,4 @@ public class ImageConvert {
       JFLog.log(e);
     }
   }
-};
+}

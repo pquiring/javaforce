@@ -244,6 +244,11 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
+  <available property="have-jsvg" file="${lib}/jsvg-${jsvg-version}.jar"/>
+  <target name="get-jsvg" unless="have-jsvg">
+    <maven name="jsvg" path="com/github/weisj" version="${jsvg-version}"/>
+  </target>
+
   <!-- netty -->
 
   <available property="have-netty-common" file="${lib}/netty-common-${netty-version}.jar"/>
@@ -343,6 +348,7 @@
     <antcall target="get-batik-all"/>
     <antcall target="get-xmlgraphics-commons"/>
     <antcall target="get-xml-apis-ext"/>
+    <antcall target="get-jsvg"/>
     <antcall target="get-netty-common"/>
     <antcall target="get-netty-buffer"/>
     <antcall target="get-netty-transport"/>

@@ -25,6 +25,7 @@
     <include name="sshd-sftp.jar"/>
     <include name="sshd-scp.jar"/>
     <include name="batik-all.jar"/>
+    <include name="jsvg.jar"/>
     <include name="slf4j-api.jar"/>
     <include name="plc4j-api.jar"/>
   </fileset>
@@ -108,6 +109,7 @@
     <antcall target="jar-xmlgraphics-commons"/>
     <antcall target="jar-xml-apis-ext"/>
     <antcall target="jar-commons-lang3"/>
+    <antcall target="jar-jsvg"/>
     <antcall target="jar-netty-common"/>
     <antcall target="jar-netty-buffer"/>
     <antcall target="jar-netty-transport"/>
