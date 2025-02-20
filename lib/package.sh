@@ -3,7 +3,7 @@
 # package all dep jars
 
 # convert '-' properties to '_' properties
-sed 's/-/_/g' ../versions.properties > versions.properites
+sed 's/-/_/1' ../versions.properties > versions.properites
 . versions.properties
 rm versions.properties
 
@@ -57,7 +57,6 @@ function package {
 
 detectos
 
-# Note : these versions must match ..\versions.xml
 package jcifs jfcifs $jcifs_version
 package derby jfderby $derby_version
 package sshd-core jfsshd-core $sshd_version
