@@ -640,6 +640,7 @@ public class MQTTServer {
           boolean retain = (packet[0] & 0x01) != 0;
           if (qos == QOS_3) throw new Exception("malformed packet");
           topicLength = getStringLength(packet, pos);
+          pos += 2;
           if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
           topic_name = getString(packet, pos, topicLength);
           pos += topicLength;

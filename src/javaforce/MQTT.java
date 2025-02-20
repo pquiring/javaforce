@@ -20,7 +20,7 @@ public class MQTT {
   private MQTTEvents events;
   private Worker worker;
   private long last_packet;
-  private int ver = 5;  //fixed value
+  private int ver = 5;
 
   private static boolean debug = false;
   private static boolean debug_msg = false;
@@ -31,8 +31,11 @@ public class MQTT {
   public static final char wildcard_single_level_char = '+';
   public static final char wildcard_multi_level_char = '#';
 
-  /** Sets protocol version.  (default = 5)
+  /** Sets protocol version.
    * Must be set before connect()
+   *
+   * @param ver = 4 or 5 (default = 5)
+   *
    */
   public void setVersion(int ver) {
     if (s != null) return;
@@ -469,7 +472,7 @@ public class MQTT {
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
       short id = 0;
-      int pos;
+      int pos = 1 + getLengthBytes(packetLength);
       int topicLength;
       String topic_name;
       int msgLength;
@@ -486,7 +489,6 @@ public class MQTT {
           boolean dup = (packet[0] & 0x08) != 0;
           byte qos = (byte)((packet[0] & 0x06) >> 1);
           boolean retain = (packet[0] & 0x01) != 0;
-          pos = 1 + getLengthBytes(packetLength);
           topicLength = getStringLength(packet, pos);
           if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
           pos += 2;
@@ -497,12 +499,14 @@ public class MQTT {
             if (debug) JFLog.log("id=" + id);
             pos += 2;
           }
-          int props_length = getLength(packet, pos, totalLength);
-          if (props_length == -1) throw new Exception("malformed packet");
-          int props_length_bytes = getLengthBytes(props_length);
-          pos += props_length_bytes;
-          if (props_length > 0) {
+          if (ver == 5) {
+            int props_length = getLength(packet, pos, totalLength);
+            if (props_length == -1) throw new Exception("malformed packet");
+            int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
+            if (props_length > 0) {
+              pos += props_length_bytes;
+            }
           }
           msgLength = totalLength - pos;
           if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
