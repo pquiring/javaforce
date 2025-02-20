@@ -5,7 +5,7 @@
 # This script will package these dep jars to be placed in the JavaForce repos
 
 # convert '-' properties to '_' properties
-sed 's/-/_/1' ../versions.properties > versions.properties
+sed -E ':a; s/^-*([^=]*)-/\1_/; ta' ../versions.properties > versions.properties
 . versions.properties
 rm versions.properties
 
