@@ -3,7 +3,7 @@
   <property name="home" value="../.."/>
   <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib"/>
   <property name="objs" value="native.obj glfw.obj glfw-null.obj"/>
-  <import file="${home}/versions.xml"/>
+  <property file="${home}/versions.properties"/>
 
   <target name="windows" description="create windows native files">
     <echo>ffmpeg-src=${home}/ffmpeg-src/${ffmpeg-version}</echo>
