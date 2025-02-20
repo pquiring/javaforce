@@ -12,7 +12,7 @@ import javaforce.*;
 
 public class BuildTools {
   private XML xml;
-  private BuildTools versions;
+  private Properties versions;
   private String file;
   private boolean debug = false;
 
@@ -76,8 +76,15 @@ public class BuildTools {
   public String getVersion(String name) {
     String home = getProperty("home");
     if (versions == null) {
-      versions = new BuildTools();
-      versions.loadXML(home + "/versions.xml");
+      try {
+        versions = new Properties();
+        FileInputStream fis = new FileInputStream(home + "/versions.properties");
+        versions.load(fis);
+        fis.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
     }
     return versions.getProperty(name);
   }

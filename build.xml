@@ -29,7 +29,7 @@
     <include name="plc4j-api.jar"/>
   </fileset>
 
-  <import file="versions.xml"/>
+  <property file="versions.properties"/>
 
   <property name="version" value="${javaforce-version}"/>
 

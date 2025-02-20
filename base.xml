@@ -12,7 +12,7 @@
   <property name="fedora.depends" value="javaforce"/>
   <property name="arch.depends"   value="javaforce"/>
 
-  <import file="versions.xml"/>
+  <property file="${home}/versions.properties"/>
 
   <target name="javadoc" description="generate java documentation archive">
     <delete dir="javadoc"/>
