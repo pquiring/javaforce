@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # package all dep jars
-
-# convert '-' properties to '_' properties
-sed 's/-/_/1' ../versions.properties > versions.properites
-. versions.properties
-rm versions.properties
-
 # Many dep jars are not found or outdated within most Linux repos
 # This script will package these dep jars to be placed in the JavaForce repos
+
+# convert '-' properties to '_' properties
+sed 's/-/_/1' ../versions.properties > versions.properties
+. versions.properties
+rm versions.properties
 
 function detectos {
   if [ ! -f /etc/os-release ]; then
