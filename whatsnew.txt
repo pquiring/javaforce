@@ -1,5 +1,12 @@
 What's new...
 
+Feb 20/2025 : JF/80.0
+ - following NetBeans lead batik has been replaced with jsvg for SVG support
+   - reduces # of deps
+ - jfMQTT/0.9
+   - fixed issues with different protocol versions
+ - versions.xml -> versions.properties
+
 Feb 19/2025 : JF/79.2
  - jfMQTT/0.8
    - fixed MQTTForward issues

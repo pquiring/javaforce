@@ -34,6 +34,10 @@ public class MQTT {
   /** Sets protocol version.
    * Must be set before connect()
    *
+   * Version 3 = MQTT/3.1  (not supported)
+   * Version 4 = MQTT/3.1.1
+   * Version 5 = MQTT/5.0
+   *
    * @param ver = 4 or 5 (default = 5)
    *
    */
