@@ -279,6 +279,9 @@ public class MQTT {
     setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
+    if (id == 0x7fff) {
+      id = 1;
+    }
     pos += 2;
     if (ver == 5) {
       pos++;  //properties length
@@ -310,6 +313,9 @@ public class MQTT {
     setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
+    if (id == 0x7fff) {
+      id = 1;
+    }
     pos += 2;
     if (ver == 5) {
       pos++;  //properties length
