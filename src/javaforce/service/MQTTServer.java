@@ -581,7 +581,7 @@ public class MQTTServer {
             int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
             if (props_length > 0) {
-              pos += props_length_bytes;
+              pos += props_length;
             }
           }
 
@@ -655,7 +655,7 @@ public class MQTTServer {
             int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
             if (props_length > 0) {
-              pos += props_length_bytes;
+              pos += props_length;
             }
           }
           msgLength = totalLength - pos;
@@ -738,7 +738,7 @@ public class MQTTServer {
             int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
             if (props_length > 0) {
-              pos += props_length_bytes;
+              pos += props_length;
             }
           }
           while (pos < totalLength) {
@@ -784,7 +784,7 @@ public class MQTTServer {
             int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
             if (props_length > 0) {
-              pos += props_length_bytes;
+              pos += props_length;
             }
           }
           while (pos < totalLength) {
