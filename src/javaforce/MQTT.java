@@ -20,6 +20,7 @@ public class MQTT {
   private MQTTEvents events;
   private Worker worker;
   private long last_packet;
+  private int ver = 5;  //fixed value
 
   private static boolean debug = false;
   private static boolean debug_msg = false;
@@ -29,6 +30,15 @@ public class MQTT {
   public static final String wildcard_multi_level = "#";
   public static final char wildcard_single_level_char = '+';
   public static final char wildcard_multi_level_char = '#';
+
+  /** Sets protocol version.  (default = 5)
+   * Must be set before connect()
+   */
+  public void setVersion(int ver) {
+    if (s != null) return;
+    if (ver < 4 || ver > 5) return;
+    this.ver = ver;
+  }
 
   /** Connects to MQTT service port. */
   public boolean connect(String host) {
@@ -110,7 +120,9 @@ public class MQTT {
     if (has_opts) {
       length++;  //sub : topic options
     }
-    length++;  //properties
+    if (ver == 5) {
+      length++;  //properties
+    }
     if (msg_length > 0) {
       length += msg_length;
     }
@@ -119,27 +131,33 @@ public class MQTT {
 
   /** Send MQTT CONNECT command. */
   public void connect() {
-    byte[] packet = new byte[17 + 8];
-    packet[0] = (byte)(CMD_CONNECT << 4);
-    packet[1] = 15 + 8;  //packet length
-    packet[2] = 0;
-    packet[3] = 4;  //string length (short)
-    packet[4] = 'M';
-    packet[5] = 'Q';
-    packet[6] = 'T';
-    packet[7] = 'T';
-    packet[8] = 5;  //protocol version
-    packet[9] = (byte)(FLAG_CLEAN_START);  //connect flags
-    packet[10] = 0;
-    packet[11] = 120;  //keep alive interval (2 mins)
-    packet[12] = 0;  //properties length
-    packet[13] = 0;
-    packet[14] = 2 + 8;  //client id length (short)
-    packet[15] = 'J';  //client id
-    packet[16] = 'F';
+    int length = 16 + 8;
+    if (ver == 5) length++;  //properties
+    byte[] packet = new byte[length];
+    int pos = 0;
+    packet[pos++] = (byte)(CMD_CONNECT << 4);
+    packet[pos++] = 15 + 8;  //packet length
+    packet[pos++] = 0;
+    packet[pos++] = 4;  //string length (short)
+    packet[pos++] = 'M';
+    packet[pos++] = 'Q';
+    packet[pos++] = 'T';
+    packet[pos++] = 'T';
+    packet[pos++] = 5;  //protocol version
+    packet[pos++] = (byte)(FLAG_CLEAN_START);  //connect flags
+    packet[pos++] = 0;
+    packet[pos++] = 120;  //keep alive interval (2 mins)
+    if (ver == 5) {
+      packet[pos++] = 0;  //properties length
+    }
+    packet[pos++] = 0;
+    packet[pos++] = 2 + 8;  //client id length (short)
+    packet[pos++] = 'J';  //client id
+    packet[pos++] = 'F';
     Random r = new Random();
     String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
-    System.arraycopy(hex.getBytes(), 0, packet, 17, 8);
+    System.arraycopy(hex.getBytes(), 0, packet, pos, 8);
+    pos += 8;
     try {
       os.write(packet);
     } catch (Exception e) {
@@ -154,7 +172,8 @@ public class MQTT {
     int user_length = user_bytes.length;
     byte[] pass_bytes = pass.getBytes();
     int pass_length = pass_bytes.length;
-    int packet_length = 15 + 8 + 2 + user_length + 2 + pass_length;
+    int packet_length = 14 + 8 + 2 + user_length + 2 + pass_length;
+    if (ver == 5) packet_length++;  //properties
     int length_bytes = getLengthBytes(packet_length);
     byte[] packet = new byte[1 + length_bytes + packet_length];
     int pos = 0;
@@ -171,7 +190,9 @@ public class MQTT {
     packet[pos++] = (byte)(FLAG_CLEAN_START + FLAG_USER + FLAG_PASS);  //connect flags
     packet[pos++] = 0;
     packet[pos++] = 120;  //keep alive interval (2 mins)
-    packet[pos++] = 0;  //properties length
+    if (ver == 5) {
+      packet[pos++] = 0;  //properties length
+    }
     packet[pos++] = 0;
     packet[pos++] = 2 + 8;  //client id length (short)
     packet[pos++] = 'J';  //client id
@@ -204,27 +225,31 @@ public class MQTT {
   private short id = 0x0001;
 
   /** Send MQTT PUBLISH command. */
-  public void publish(String topic, String msg) {
+  public void publish(String topic, String msg, byte qos) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
     byte[] msg_bytes = msg.getBytes();
     int msg_length = msg_bytes.length;
-    int length = calcPacketLength(true, topic_length, false, msg_length);
+    int length = calcPacketLength(qos > 0, topic_length, false, msg_length);
     int length_bytes = getLengthBytes(length);
     byte[] packet = new byte[1 + length_bytes + length];
-    packet[0] = (byte)((CMD_PUBLISH << 4) | QOS_1 << 1);
+    packet[0] = (byte)((CMD_PUBLISH << 4) | qos << 1);
     setPacketLength(packet, length_bytes);
     int pos = 1 + length_bytes;
     setStringLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
     pos += topic_length;
-    setPacketID(packet, pos, id++);
-    if (id == 0x7fff) {
-      id = 1;
+    if (qos > 0) {
+      setPacketID(packet, pos, id++);
+      if (id == 0x7fff) {
+        id = 1;
+      }
+      pos += 2;
     }
-    pos += 2;
-    pos++;  //properties length
+    if (ver == 5) {
+      pos++;  //properties length
+    }
     System.arraycopy(msg_bytes, 0, packet, pos, msg_length);
     pos += msg_length;
     if (debug) {
@@ -236,6 +261,11 @@ public class MQTT {
       disconnect();
       JFLog.log(e);
     }
+  }
+
+  /** Send MQTT PUBLISH command. (QOS = 0) */
+  public void publish(String topic, String msg) {
+    publish(topic, msg, QOS_0);
   }
 
   /** Send MQTT SUBSCRIBE command. */
@@ -250,7 +280,9 @@ public class MQTT {
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
-    pos++;  //properties length
+    if (ver == 5) {
+      pos++;  //properties length
+    }
     setStringLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
@@ -279,7 +311,9 @@ public class MQTT {
     int pos = 1 + length_bytes;
     setPacketID(packet, pos, id++);
     pos += 2;
-    pos++;  //properties length
+    if (ver == 5) {
+      pos++;  //properties length
+    }
     setStringLength(packet, pos, (short)topic_length);
     pos += 2;
     System.arraycopy(topic_bytes, 0, packet, pos, topic_length);

@@ -225,25 +225,21 @@ public class MQTTServer {
 
   private static class Topic {
     private String name;
-    private byte[] pkt;  //retained publish
-    private int pkt_length;
+    private String value;  //retained value
     private ArrayList<Client> subs = new ArrayList<>();
     private Object lock = new Object();
     public static Topic[] TopicArrayType = new Topic[0];
     public Topic(String name) {
       this.name = name;
     }
-    public void publish(byte[] pkt, int length, boolean retain) {
-      //mask off flags : dup, retain
-      pkt[0] &= 0xf6;
+    public void publish(String value, boolean retain) {
       if (retain) {
-        this.pkt = pkt.clone();
-        this.pkt_length = length;
+        this.value = value;
       }
       synchronized (lock) {
         for(Client sub : subs.toArray(ClientArrayType)) {
           try {
-            sub.publish(pkt, length);
+            sub.publish(name, value, QOS_0);
           } catch (Exception e) {
             unsubscribe(sub);
           }
@@ -254,8 +250,8 @@ public class MQTTServer {
       synchronized (lock) {
         subs.add(client);
       }
-      if (pkt != null) {
-        try {client.publish(pkt, pkt_length);} catch (Exception e) {}
+      if (value != null) {
+        try {client.publish(name, value, QOS_0);} catch (Exception e) {}
       }
     }
     public void unsubscribe(Client client) {
@@ -426,6 +422,7 @@ public class MQTTServer {
     }
   }
 
+  /** Get variable sized length. */
   private int getLength(byte[] data, int pos, int length) {
     int multi = 1;
     int value = 0;
@@ -449,20 +446,6 @@ public class MQTTServer {
 
   private short getPacketID(byte[] data, int idPosition) {
     return (short)BE.getuint16(data, idPosition);
-  }
-
-  private void setPacketLength(byte[] packet) {
-    int value = packet.length - 2;
-    int pos = 1;
-    byte ebyte;
-    do {
-      ebyte = (byte)(value % 0x80);
-      value /= 0x80;
-      if (value > 0) {
-        ebyte |= 0x80;
-      }
-      packet[pos++] = ebyte;
-    } while (value > 0);
   }
 
   private void setPacketID(byte[] data, int offset, short id) {
@@ -496,9 +479,9 @@ public class MQTTServer {
   public static final byte RESERVED = 0;
   public static final byte RESERVED_2 = 2;
 
-  public static final byte QOS_0 = 0;
-  public static final byte QOS_1 = 1;
-  public static final byte QOS_2 = 2;
+  public static final byte QOS_0 = 0;  //fire and forget (no reply)
+  public static final byte QOS_1 = 1;  //CMD_PUBLISH_ACK reply
+  public static final byte QOS_2 = 2;  //CMD_PUBLISH_REC reply, CMD_PUBLISH_REL request, CMD_PUBLISH_CMP reply
   public static final byte QOS_3 = 3;  //not used
 
   public static final byte FLAG_CLEAN_START = 2;
@@ -515,6 +498,8 @@ public class MQTTServer {
     public boolean client_active = true;
     public String client_id;
     public boolean auth;
+    public int ver = 4;
+    public int keep_alive;
     public Client(Socket s) {
       this.s = s;
     }
@@ -574,7 +559,7 @@ public class MQTTServer {
       byte[] reply = null;
       byte cmd = (byte)((packet[0] & 0xf0) >> 4);
       short id = 0;
-      int pos;
+      int pos = 1 + getLengthBytes(packetLength);
       int topicLength;
       String topic_name;
       int msgLength;
@@ -582,17 +567,22 @@ public class MQTTServer {
       if (debug) JFLog.log("cmd=" + cmd);
       switch (cmd) {
         case CMD_CONNECT: {
-          pos = 1 + getLengthBytes(packetLength);
-          int ver = packet[pos + 6];  //should be 5
+          //packet[pos + 0] = length_msb = 0x00
+          //packet[pos + 1] = length_msb = 0x04
+          //packet[pos + 2] thru [pos + 5] = "MQTT"
+          ver = packet[pos + 6];  //4 or 5
           int flags = packet[pos + 7];
+          keep_alive = BE.getuint16(packet, pos + 8);
           pos += 10;
 
-          int props_length = getLength(packet, pos, totalLength);
-          if (props_length == -1) throw new Exception("malformed packet");
-          int props_length_bytes = getLengthBytes(props_length);
-          pos += props_length_bytes;
-          if (props_length > 0) {
+          if (ver == 5) {
+            int props_length = getLength(packet, pos, totalLength);
+            if (props_length == -1) throw new Exception("malformed packet");
+            int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
+            if (props_length > 0) {
+              pos += props_length_bytes;
+            }
           }
 
           int client_id_length = BE.getuint16(packet, pos);
@@ -627,8 +617,11 @@ public class MQTTServer {
             }
             auth = true;
           }
-          reply = new byte[5];
-          //reply = header , size , ack_flags, return_code=0, props
+          switch (ver) {
+            case 4: reply = new byte[4]; break;
+            case 5: reply = new byte[5]; break;  //adds props
+          }
+          //reply = header , size , ack_flags, return_code=0, [props]
           reply[0] = (byte)(CMD_CONNECT_ACK << 4);
           setPacketLength(reply);
           if (events != null) {
@@ -646,10 +639,8 @@ public class MQTTServer {
           byte qos = (byte)((packet[0] & 0x06) >> 1);
           boolean retain = (packet[0] & 0x01) != 0;
           if (qos == QOS_3) throw new Exception("malformed packet");
-          pos = 1 + getLengthBytes(packetLength);
           topicLength = getStringLength(packet, pos);
           if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
-          pos += 2;
           topic_name = getString(packet, pos, topicLength);
           pos += topicLength;
           if (qos > 0) {
@@ -657,19 +648,21 @@ public class MQTTServer {
             if (debug) JFLog.log("id=" + id);
             pos += 2;
           }
-          int props_length = getLength(packet, pos, totalLength);
-          if (props_length == -1) throw new Exception("malformed packet");
-          int props_length_bytes = getLengthBytes(props_length);
-          pos += props_length_bytes;
-          if (props_length > 0) {
+          if (ver == 5) {
+            int props_length = getLength(packet, pos, totalLength);
+            if (props_length == -1) throw new Exception("malformed packet");
+            int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
+            if (props_length > 0) {
+              pos += props_length_bytes;
+            }
           }
           msgLength = totalLength - pos;
           if (debug) JFLog.log("msg=" + pos + "/" + msgLength);
           msg = new String(packet, pos, msgLength);
           if (debug_msg) JFLog.log("PUBLISH:" + ip + ":" + topic_name + ":" + msg);
           Topic topic = getTopic(topic_name);
-          topic.publish(packet, totalLength, retain);
+          topic.publish(msg, retain);
           switch (qos) {
             case QOS_1: {
               //CMD_PUBLISH_ACK
@@ -703,14 +696,14 @@ public class MQTTServer {
             disconnect();
             break;
           }
-          //???
+          //??? should not get ???
           break;
         case CMD_PUBLISH_REC:
           if (!auth) {
             disconnect();
             break;
           }
-          //???
+          //??? should not get ???
           break;
         case CMD_PUBLISH_REL:
           if (!auth) {
@@ -735,16 +728,17 @@ public class MQTTServer {
             disconnect();
             break;
           }
-          //cmd, size, id, topic
-          pos = 1 + getLengthBytes(packetLength);
+          //cmd, size, id, [props], topic
           id = getPacketID(packet, pos);
           if (debug) JFLog.log("id=" + id);
           pos += 2;
-          int props_length = getLength(packet, pos, totalLength);
-          int props_length_bytes = getLengthBytes(props_length);
-          pos += props_length_bytes;
-          if (props_length > 0) {
+          if (ver == 5) {
+            int props_length = getLength(packet, pos, totalLength);
+            int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
+            if (props_length > 0) {
+              pos += props_length_bytes;
+            }
           }
           while (pos < totalLength) {
             topicLength = getStringLength(packet, pos);
@@ -765,7 +759,7 @@ public class MQTTServer {
             if (events != null) {
               events.onSubscribe(topic_name);
             }
-            pos++;  //subscribe options
+            pos++;  //subscribe options (QOS)
           }
           reply = new byte[5];
           //header , size , id_hi, id_lo, return_code=0
@@ -780,16 +774,17 @@ public class MQTTServer {
             break;
           }
           //cmd, size, id, topic
-          pos = 1 + getLengthBytes(packetLength);
           id = getPacketID(packet, pos);
           if (debug) JFLog.log("id=" + id);
           pos += 2;
-          int props_length = getLength(packet, pos, totalLength);
-          if (props_length == -1) throw new Exception("malformed packet");
-          int props_length_bytes = getLengthBytes(props_length);
-          pos += props_length_bytes;
-          if (props_length > 0) {
+          if (ver == 5) {
+            int props_length = getLength(packet, pos, totalLength);
+            if (props_length == -1) throw new Exception("malformed packet");
+            int props_length_bytes = getLengthBytes(props_length);
             pos += props_length_bytes;
+            if (props_length > 0) {
+              pos += props_length_bytes;
+            }
           }
           while (pos < totalLength) {
             topicLength = getStringLength(packet, pos);
@@ -801,9 +796,9 @@ public class MQTTServer {
             topic.unsubscribe(this);
             if (debug_msg) JFLog.log("UNSUB:" + ip + ":" + topic_name);
           }
-          reply = new byte[5];
+          reply = new byte[4];
           reply[0] = (byte)(CMD_UNSUBSCRIBE_ACK << 4);
-          //header , size , id_hi, id_lo, reason=0
+          //header , size , id_hi, id_lo
           setPacketLength(reply);
           setPacketID(reply, 2, id);
           break;
@@ -829,14 +824,104 @@ public class MQTTServer {
     private void send(byte[] reply) throws Exception {
       os.write(reply);
     }
-    public void publish(byte[] pkt, int length) throws Exception {
-      os.write(pkt, 0, length);
+    private short id = 0x0001;
+    public void publish(String topic, String msg, byte qos) throws Exception {
+      //each client could require different publish based on version (4 or 5)
+      byte[] topic_bytes = topic.getBytes();
+      int topic_length = topic_bytes.length;
+      byte[] msg_bytes = msg.getBytes();
+      int msg_length = msg_bytes.length;
+      int length = calcPacketLength(qos > 0, topic_length, false, msg_length);
+      int length_bytes = getLengthBytes(length);
+      byte[] packet = new byte[1 + length_bytes + length];
+      packet[0] = (byte)((CMD_PUBLISH << 4) | qos << 1);
+      setPacketLength(packet, length_bytes);
+      int pos = 1 + length_bytes;
+      setStringLength(packet, pos, (short)topic_length);
+      pos += 2;
+      System.arraycopy(topic_bytes, 0, packet, pos, topic_length);
+      pos += topic_length;
+      if (qos > 0) {
+        setPacketID(packet, pos, id++);
+        if (id == 0x7fff) {
+          id = 1;
+        }
+        pos += 2;
+      }
+      if (ver == 5) {
+        pos++;  //properties length
+      }
+      System.arraycopy(msg_bytes, 0, packet, pos, msg_length);
+      pos += msg_length;
+      if (debug) {
+        JFLog.log("publish:" + topic + "=" + msg);
+      }
+      try {
+        os.write(packet);
+      } catch (Exception e) {
+        disconnect();
+        JFLog.log(e);
+      }
     }
     private void disconnect() {
       unsubscribeAll(this);
       client_active = false;
       try {s.close();} catch (Exception e) {}
       s = null;
+    }
+
+    private int calcPacketLength(boolean has_id, int topic_length, boolean has_opts, int msg_length) {
+      //does NOT include the header or length itself
+      int length = 0;
+      if (has_id) {
+        length += 2;  //id
+      }
+      if (topic_length > 0) {
+        length += 2;  //short length;
+        length += topic_length;
+      }
+      if (has_opts) {
+        length++;  //sub : topic options
+      }
+      if (ver == 5) {
+        length++;  //properties
+      }
+      if (msg_length > 0) {
+        length += msg_length;
+      }
+      return length;
+    }
+
+    private void setPacketLength(byte[] packet) {
+      int value = packet.length - 2;
+      int pos = 1;
+      byte ebyte;
+      do {
+        ebyte = (byte)(value % 0x80);
+        value /= 0x80;
+        if (value > 0) {
+          ebyte |= 0x80;
+        }
+        packet[pos++] = ebyte;
+      } while (value > 0);
+    }
+
+    private void setPacketLength(byte[] packet, int length_bytes) {
+      int value = packet.length - 1 - length_bytes;
+      int pos = 1;
+      byte ebyte;
+      do {
+        ebyte = (byte)(value % 0x80);
+        value /= 0x80;
+        if (value > 0) {
+          ebyte |= 0x80;
+        }
+        packet[pos++] = ebyte;
+      } while (value > 0);
+    }
+
+    private void setStringLength(byte[] data, int offset, short length) {
+      BE.setuint16(data, offset, length);
     }
   }
 
