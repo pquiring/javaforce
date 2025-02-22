@@ -11,7 +11,7 @@
 
   <property environment="env"/>
 
-  <property file="jf.properties"/>
+  <property file="javaforce.properties"/>
 
   <fileset dir="." id="classpath">
     <include name="bcprov.jar"/>

@@ -5,9 +5,9 @@
 # This script will package these dep jars to be placed in the JavaForce repos
 
 # convert '-' properties to '_' properties
-sed -E ':a; s/^-*([^=]*)-/\1_/; ta' ../versions.properties > versions.properties
-. versions.properties
-rm versions.properties
+java -cp ../javaforce.jar javaforce.utils.ConvertProperties ../versions.properties versions_properties
+. versions_properties
+rm versions_properties
 
 function detectos {
   if [ ! -f /etc/os-release ]; then
@@ -57,6 +57,7 @@ function package {
 detectos
 
 package jcifs jfcifs $jcifs_version
+package jsvg jfsvg $jsvg_version
 package derby jfderby $derby_version
 package sshd-core jfsshd-core $sshd_version
 package sshd-common jfsshd-common $sshd_version
