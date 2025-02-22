@@ -69,6 +69,7 @@ package slf4j-nop jfslf4j-nop $slf4j_version
 package slf4j-reload4j jfslf4j-reload4j $slf4j_version
 package slf4j-simple jfslf4j-simple $slf4j_version
 package llrp jfllrp $llrp_version
+package filters jffilters $filters_version
 package bcprov jfbcprov $bouncycastle_version
 package bctls jfbctls $bouncycastle_version
 package bcutil jfbcutil $bouncycastle_version
