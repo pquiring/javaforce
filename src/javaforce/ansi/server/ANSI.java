@@ -455,6 +455,7 @@ public class ANSI {
       if (bufsize < 3) return;
       char code = buffer.charAt(bufsize-1);
       if (code != '~' && !Character.isAlphabetic(code)) return;
+      if (debug) JFLog.log("buffer=" + getKeyBuffer());
       //decode numbers
       int numc = 0;
       if (Character.isDigit(buffer.charAt(2))) {
