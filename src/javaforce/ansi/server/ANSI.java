@@ -50,17 +50,11 @@ public class ANSI {
   }
 
   public static void enableConsoleMode() {
-    if (JF.isWindows())
-      WinNative.enableConsoleMode();
-    else
-      LnxNative.enableConsoleMode();
+    Console.enableConsoleMode();
   }
 
   public static void disableConsoleMode() {
-    if (JF.isWindows())
-      WinNative.disableConsoleMode();
-    else
-      LnxNative.disableConsoleMode();
+    Console.disableConsoleMode();
   }
 
   public boolean getConsoleSize() {
@@ -87,11 +81,7 @@ public class ANSI {
   }
 
   public boolean kbhit() {
-    if (JF.isWindows()) {
-      return WinNative.peekConsole();
-    } else {
-      return LnxNative.peekConsole();
-    }
+    return Console.kbhit();
   }
 
   public char readConsole() {

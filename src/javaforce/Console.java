@@ -55,27 +55,46 @@ public class Console {
     };
   }
 
-  public static void main(String[] args) {
-    if (isWindows) {
+  public static void enableConsoleMode() {
+    if (JF.isWindows())
       WinNative.enableConsoleMode();
-    } else {
+    else
       LnxNative.enableConsoleMode();
+  }
+
+  public static void disableConsoleMode() {
+    if (JF.isWindows())
+      WinNative.disableConsoleMode();
+    else
+      LnxNative.disableConsoleMode();
+  }
+
+  public static boolean kbhit() {
+    if (JF.isWindows()) {
+      return WinNative.peekConsole();
+    } else {
+      return LnxNative.peekConsole();
     }
+  }
+
+  public static void main(String[] args) {
+    enableConsoleMode();
     InputStream is = getInputStream();
     JFLog.log("Press q to quit");
+    int ch = 0;
     while (true) {
       try {
-        int ch = is.read();
-        JFLog.log("ch=" + ch);
+        if (kbhit()) {
+          ch = is.read();
+          JFLog.log("ch=" + ch);
+        } else {
+          JF.sleep(100);
+        }
         if (ch=='q') break;
       } catch (Exception e) {
         break;
       }
     }
-    if (isWindows) {
-      WinNative.disableConsoleMode();
-    } else {
-      LnxNative.disableConsoleMode();
-    }
+    disableConsoleMode();
   }
 }
