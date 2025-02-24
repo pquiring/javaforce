@@ -13,6 +13,9 @@ import javaforce.*;
 import javaforce.ansi.server.*;
 
 public class Tetris extends TimerTask implements KeyEvents {
+
+  private boolean debug = true;
+
   private ANSI ansi;
   private int height;
   private int width;
@@ -484,6 +487,7 @@ public class Tetris extends TimerTask implements KeyEvents {
   }
 
   public void keyPressed(int keyCode, int keyMods) {
+    if (debug) JFLog.log("keyPressed:" + keyCode + ":" + keyMods + ":" + ansi.getKeyBuffer());
     if (keyMods != 0) return;
     switch (keyCode) {
       case KeyEvent.VK_LEFT:

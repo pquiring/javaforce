@@ -17,6 +17,8 @@ import javaforce.*;
 import javaforce.jni.*;
 
 public class ANSI {
+  private static boolean debug = true;
+
   private final static char ESC = 0x1b;
   private StringBuffer buffer = new StringBuffer();
   private KeyEvents keyEvents;
@@ -428,6 +430,12 @@ public class ANSI {
       if (nums[a] == digit) return true;
     }
     return false;
+  }
+
+  public String getKeyBuffer() {
+    if (buffer.length() == 0) return "";
+    if (buffer.length() == 1) return buffer.toString();
+    return buffer.toString().substring(1);  //remove ESC code
   }
 
   public void process() {
