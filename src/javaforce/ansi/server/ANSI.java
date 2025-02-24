@@ -17,7 +17,7 @@ import javaforce.*;
 import javaforce.jni.*;
 
 public class ANSI {
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   private final static char ESC = 0x1b;
   private StringBuffer buffer = new StringBuffer();
