@@ -14,7 +14,7 @@ import javaforce.ansi.server.*;
 
 public class Tetris extends TimerTask implements KeyEvents {
 
-  private boolean debug = true;
+  private boolean debug = false;
 
   private ANSI ansi;
   private int height;
