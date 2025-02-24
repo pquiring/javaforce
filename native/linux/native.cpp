@@ -46,6 +46,8 @@
 #include "../common/library.h"
 #include "../common/register.h"
 
+static bool debug = false;
+
 #ifdef __arm__
   #define __RASPBERRY_PI__
 #endif
@@ -1884,10 +1886,12 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
   }
   (*_wtimeout)(*_stdscr, -1);
   char ch = (*_wgetch)(*_stdscr);
+  if (debug) printf("ch=%d\n", ch);
   if (ch == 0x1b) {
     //is it Escape key or ANSI code???
     (*_wtimeout)(*_stdscr, 100);
     char ch2 = (*_wgetch)(*_stdscr);  //waits 100ms max
+    if (debug) printf("ch2=%d\n", ch);
     if (ch2 == ERR) {
       StringCopy(console_buffer, "[1~");  //custom ansi code for esc
     } else {

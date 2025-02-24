@@ -54,4 +54,28 @@ public class Console {
       }
     };
   }
+
+  public static void main(String[] args) {
+    if (isWindows) {
+      WinNative.enableConsoleMode();
+    } else {
+      LnxNative.enableConsoleMode();
+    }
+    InputStream is = getInputStream();
+    JFLog.log("Press q to quit");
+    while (true) {
+      try {
+        int ch = is.read();
+        JFLog.log("ch=" + ch);
+        if (ch=='q') break;
+      } catch (Exception e) {
+        break;
+      }
+    }
+    if (isWindows) {
+      WinNative.disableConsoleMode();
+    } else {
+      LnxNative.disableConsoleMode();
+    }
+  }
 }
