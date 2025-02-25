@@ -1,5 +1,13 @@
 What's new...
 
+Feb 25/2025 : JF/81.0
+ - cleanup linux packages
+ - RFB : fix HexTile encoding
+ - jfVNC/0.7
+ - jfRemote/0.8
+ - jfKVM/2.5
+   - check write access to storage before staring VM 
+
 Feb 20/2025 : JF/80.0
  - following NetBeans lead batik has been replaced with jsvg for SVG support
    - reduces # of deps

@@ -79,12 +79,12 @@ public class VirtualMachine implements Serializable {
       FileInputStream fis = new FileInputStream(file);
       byte[] verify = fis.readAllBytes();
       fis.close();
-      if (verify.length != data.length) {
-        throw new Exception("check_write_access:verify.length != data.length");
+      if (verify == null || verify.length != data.length) {
+        throw new Exception("check_write_access:failed");
       }
       for(int a=0;a<data.length;a++) {
         if (verify[a] != data[a]) {
-          throw new Exception("check_write_access:verify != data");
+          throw new Exception("check_write_access:failed");
         }
       }
       file.delete();
