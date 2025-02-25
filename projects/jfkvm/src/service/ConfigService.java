@@ -2282,8 +2282,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(edit);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
-    Button console_web = new Button("Web Console");
-    tools.add(console_web);
+    Button console = new Button("Console");
+    tools.add(console);
     Button monitor = new Button("Monitor");
     tools.add(monitor);
     Button start = new Button("Start");
@@ -2345,7 +2345,7 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(vmsPanel(ui));
     });
 
-    console_web.addClickListener((me, cmp) -> {
+    console.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       VirtualMachine vm = vms[idx];
