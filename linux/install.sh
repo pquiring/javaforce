@@ -106,6 +106,7 @@ function debian {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       DESKTOP=yes
     fi
+    echo
   fi
   if [ $DESKTOP = "yes" ]; then
     apt --yes install jflogon jfdesktop jfconfig jfapps
@@ -135,6 +136,7 @@ function fedora {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       DESKTOP=yes
     fi
+    echo
   fi
   if [ $DESKTOP = "yes" ]; then
     dnf -y install jflogon jfdesktop jfconfig jfapps
@@ -184,6 +186,7 @@ function arch {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
       DESKTOP=yes
     fi
+    echo
   fi
   if [ $DESKTOP = "yes" ]; then
     pacman -S --noconfirm jflogon jfdesktop jfconfig jfapps
