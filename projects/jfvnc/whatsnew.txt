@@ -1,3 +1,6 @@
+2025-02-25 : v0.7
+  - fixed HexTile encoding
+
 2025-01-29 : v0.6
   - added web access support
 
