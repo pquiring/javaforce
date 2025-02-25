@@ -1125,6 +1125,7 @@ public class RFB {
   }
 
   private void readRectRRE(Rectangle rect) {
+    //BUG : the pixels appear to be uint16 compressed?
     if (debugEncoding) {
       JFLog.log(log, "RFB:read RectType[]=" + TYPE_RRE + ":rect=" + rect);
     }
