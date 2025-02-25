@@ -1131,6 +1131,9 @@ public class RFB {
     byte[] pkt = read(8);
     int cnt = BE.getuint32(pkt, 0);
     int clr = getPixelBGR(pkt, 4 + 1);
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:RRE:clr=" + Integer.toString(clr, 16));
+    }
     fill(rect, clr);
     Rectangle subrect = new Rectangle();
     for(int a=0;a<cnt;a++) {
@@ -1140,6 +1143,9 @@ public class RFB {
       subrect.y = rect.y + BE.getuint16(pkt, 6);
       subrect.width = BE.getuint16(pkt, 8);
       subrect.height = BE.getuint16(pkt, 10);
+      if (debugEncoding) {
+        JFLog.log(log, "RFB:RRE:SubRect=" + subrect + ",clr=" + Integer.toString(clr, 16));
+      }
       fill(subrect, clr);
     }
   }
