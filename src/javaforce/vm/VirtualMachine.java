@@ -66,9 +66,40 @@ public class VirtualMachine implements Serializable {
     new File("/var/jfkvm/stats/" + uuid).mkdir();
   }
 
+  public boolean check_write_access() {
+    File file = new File(getPath() + "/jfkvm-test.tmp");
+    byte[] data = Long.toString(System.currentTimeMillis()).getBytes();
+    try {
+      if (file.exists()) {
+        file.delete();
+      }
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(data);
+      fos.close();
+      FileInputStream fis = new FileInputStream(file);
+      byte[] verify = fis.readAllBytes();
+      fis.close();
+      if (verify.length != data.length) {
+        throw new Exception("check_write_access:verify.length != data.length");
+      }
+      for(int a=0;a<data.length;a++) {
+        if (verify[a] != data[a]) {
+          throw new Exception("check_write_access:verify != data");
+        }
+      }
+      file.delete();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      try { file.delete(); } catch (Exception e2) {}
+      return false;
+    }
+  }
+
   //virDomainCreate
   private native static boolean nstart(String name);
   public boolean start() {
+    if (!check_write_access()) return false;
     create_stats_folder();
     return nstart(name);
   }
