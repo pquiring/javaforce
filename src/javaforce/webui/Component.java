@@ -632,7 +632,7 @@ public abstract class Component {
             char keyChar = (char)0;
             if (value.length() == 1) {
               keyChar = value.charAt(0);
-              keyCode = Character.toUpperCase(value.charAt(0));
+              keyCode = Character.toUpperCase(keyChar);
             } else {
               switch (value) {
                 case "Enter": keyCode = VK_ENTER; break;
@@ -653,7 +653,7 @@ public abstract class Component {
                 case "PageDown": keyCode = VK_PAGE_DOWN; break;
                 case "\\\\": keyChar = '\\'; break;
                 case "Backspace": keyCode = VK_BACK_SPACE; break;
-                default: JFLog.log("webui:unknown key code:" + value);
+                default: JFLog.log("webui:unknown key code:" + value + ",length=" + value.length());
               }
             }
             ke.keyChar = keyChar;

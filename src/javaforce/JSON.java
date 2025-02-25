@@ -192,7 +192,7 @@ public class JSON {
     boolean quote = false, escape = false;
     e.value = "";
     while (true) {
-      trim();
+      if (!quote) trim();
       char ch = json[pos++];
       if ((ch == '\"') && (!escape)) {
         if (quote) {

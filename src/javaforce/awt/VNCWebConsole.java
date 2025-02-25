@@ -25,6 +25,7 @@ public class VNCWebConsole extends Thread implements Resized {
   private WebUIClient client;
 
   private static final boolean debug = false;
+  private static final boolean debugKeys = false;
 
   public static final int OPT_TOOLBAR = 1;
   public static final int OPT_SCALE = 2;
@@ -100,6 +101,9 @@ public class VNCWebConsole extends Thread implements Resized {
       console.mouse(me.x, me.y, me.buttons);
     });
     canvas.addKeyDownListenerPreventDefault((ke, cmp) -> {
+      if (debugKeys) {
+        JFLog.log("keyDown:" + ke);
+      }
       if (ke.keyChar != 0) {
         console.keyDown(ke.keyChar, false);
       } else {

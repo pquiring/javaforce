@@ -29,4 +29,8 @@ public class KeyEvent {
   public static int VK_PAGE_UP = 33;
   public static int VK_PAGE_DOWN = 34;
   public static int VK_BACK_SPACE = 8;
+
+  public String toString() {
+    return "KeyEvent:keyCode=" + keyCode + ":keyChar=" + (int)keyChar;
+  }
 }

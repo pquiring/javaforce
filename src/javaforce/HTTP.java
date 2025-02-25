@@ -75,7 +75,10 @@ public class HTTP {
         int idx = ln.indexOf(equals);
         if (idx == -1) continue;
         String key = ln.substring(0, idx).trim();
-        String value = ln.substring(idx + 1).trim();
+        String value = ln.substring(idx + 1);
+        if (value.length() > 1) {
+          value = value.trim();
+        }
         p.put(key, value);
       }
       return p;
@@ -445,7 +448,10 @@ public class HTTP {
       int idx = ln.indexOf(':');
       if (idx == -1) continue;
       String key = ln.substring(0, idx).trim();
-      String value = ln.substring(idx+1).trim();
+      String value = ln.substring(idx+1);
+      if (value.length() > 1) {
+        value = value.trim();
+      }
       reply_headers.put(key, value);
       if (debug) System.out.println("Reply:" + key + "=" + value);
       switch (key.toLowerCase()) {
@@ -830,7 +836,10 @@ public class HTTP {
       int idx = param.indexOf(":");
       if (idx == -1) continue;
       String key = param.substring(0, idx).trim();
-      String value = param.substring(idx + 1).trim();
+      String value = param.substring(idx + 1);
+      if (value.length() > 1) {
+        value = value.trim();
+      }
       if (key.equalsIgnoreCase(name)) {
         return value;
       }
@@ -852,7 +861,10 @@ public class HTTP {
       int idx = param.indexOf(":");
       if (idx == -1) continue;
       String key = param.substring(0, idx).trim();
-      String value = param.substring(idx + 1).trim();
+      String value = param.substring(idx + 1);
+      if (value.length() > 1) {
+        value = value.trim();
+      }
       if (key.equalsIgnoreCase(name)) {
         lst.add(value);
       }
