@@ -49,15 +49,11 @@ Fedora users should automatically update since the key is referenced in the java
 Arch users may need to re-run install.sh with --update=yes
 The new key will expire in 50 years (2075).
 
-Note about Arch installation
-----------------------------
-  Arch Linux has a very simple installation guide or a script to automate the task which I recommend using.
-  The installation script will throw an exception unless you prep the keyring.
-  To install from the script run these commands:
-    pacman-key --init
-    pacman-key --populate archlinux
-    archinstall
-  Within the install program make sure to select destination drive, drive partitioning, select minimal profile, set root password,
-  create user and setup networking manually.
+package changes
+---------------
+For systems that had the JavaForce repos added prior to version 81.0
+some package dep changes may brake some packages which prevents upgrading.
+In most cases the fix is suggested by your package tool.
+Debian : apt --fix-broken install
 
 Thanks!
