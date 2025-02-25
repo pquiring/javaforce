@@ -38,11 +38,12 @@ public class RFB {
   private static final int MAX_TEXT_LENGTH = 1024 * 1024;
 
   public static boolean debug;
+  public static boolean debugEncoding;
   public static boolean debugKey;
 
   //pixel formats
-  public static int PF_RGB = 1;  //BE : Java
-  public static int PF_BGR = 2;  //LE : tightVNC (default)
+  public static int PF_LE_RGB = 0;  //LE : tightVNC (default)
+  public static int PF_BE_BGR = 1;  //BE : Java
 
   public static class Rectangle {
     public Rectangle() {}
@@ -183,8 +184,8 @@ public class RFB {
     }
 
     public int getFormat() {
-      if (be) return PF_BGR;  //default
-      return PF_RGB;
+      if (be) return PF_LE_RGB;  //default
+      return PF_BE_BGR;
     }
 
     public String toString() {
@@ -850,7 +851,7 @@ public class RFB {
     //order in preference
     writeEncodings(new int[] {
       TYPE_HEXTILE,
-      TYPE_COPY_RECT,
+      TYPE_RECT_COPY,
       TYPE_CORRE,
       TYPE_RRE,
       TYPE_RAW,
@@ -872,7 +873,7 @@ public class RFB {
       TYPE_TIGHT,
       TYPE_ZLIB,
       TYPE_HEXTILE,
-      TYPE_COPY_RECT,
+      TYPE_RECT_COPY,
       TYPE_CORRE,
       TYPE_RRE,
       TYPE_RAW,
@@ -1016,7 +1017,7 @@ public class RFB {
 
   //vnc encoding types                            // decode | encode
   public static final int TYPE_RAW = 0;           // yes    | yes
-  public static final int TYPE_COPY_RECT = 1;     // yes    | no
+  public static final int TYPE_RECT_COPY = 1;     // yes    | no
   public static final int TYPE_RRE = 2;           // yes    | no
   public static final int TYPE_CORRE = 4;         // yes    | no
   public static final int TYPE_HEXTILE = 5;       // yes    | no
@@ -1049,19 +1050,16 @@ public class RFB {
 
   private void readRectangle(Rectangle full) {
     byte[] pkt = read(12);
+    int encoding = BE.getuint32(pkt, 8);
     Rectangle rect = new Rectangle();
     rect.x = BE.getuint16(pkt, 0);
     rect.y = BE.getuint16(pkt, 2);
     rect.width = BE.getuint16(pkt, 4);
     rect.height = BE.getuint16(pkt, 6);
     full.add(rect);
-    int encoding = BE.getuint32(pkt, 8);
-    if (debug) {
-      JFLog.log(log, "RFB:read RectType[]=" + encoding + ":rect=" + rect);
-    }
     switch (encoding) {
       case TYPE_RAW: readRectRaw(rect); break;
-      case TYPE_COPY_RECT: readRectRect(rect); break;
+      case TYPE_RECT_COPY: readRectCopy(rect); break;
       case TYPE_RRE: readRectRRE(rect); break;
       case TYPE_CORRE: readRectCoRRE(rect); break;
       case TYPE_HEXTILE: readRectHexTile(rect); break;
@@ -1083,6 +1081,9 @@ public class RFB {
   }
 
   private void readRectRaw(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_RAW + ":rect=" + rect);
+    }
     byte[] data = read(rect.width * rect.height * 4);
     int src = 0;
     int px;
@@ -1094,7 +1095,7 @@ public class RFB {
     int stride = width - rect.width;
     for(int y = y1;y <= y2;y++) {
       for(int x = x1;x <= x2;x++) {
-        px = getPixelBGR(data, src) | JFImage.OPAQUE;
+        px = getPixelBGR(data, src + 1) | JFImage.OPAQUE;
         buffer[dst] = px;
         src += 4;
         dst++;
@@ -1103,7 +1104,10 @@ public class RFB {
     }
   }
 
-  private void readRectRect(Rectangle rect) {
+  private void readRectCopy(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_RECT_COPY + ":rect=" + rect);
+    }
     byte[] pkt = read(4);
     int srcx = BE.getuint16(pkt, 0);
     int srcy = BE.getuint16(pkt, 2);
@@ -1121,14 +1125,17 @@ public class RFB {
   }
 
   private void readRectRRE(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_RRE + ":rect=" + rect);
+    }
     byte[] pkt = read(8);
     int cnt = BE.getuint32(pkt, 0);
-    int clr = getPixelBGR(pkt, 4);
+    int clr = getPixelBGR(pkt, 4 + 1);
     fill(rect, clr);
     Rectangle subrect = new Rectangle();
     for(int a=0;a<cnt;a++) {
       pkt = read(12);
-      clr = getPixelBGR(pkt, 0);
+      clr = getPixelBGR(pkt, 0 + 1);
       subrect.x = rect.x + BE.getuint16(pkt, 4);
       subrect.y = rect.y + BE.getuint16(pkt, 6);
       subrect.width = BE.getuint16(pkt, 8);
@@ -1138,14 +1145,17 @@ public class RFB {
   }
 
   private void readRectCoRRE(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_CORRE + ":rect=" + rect);
+    }
     byte[] pkt = read(8);
     int cnt = BE.getuint32(pkt, 0);
-    int clr = getPixelBGR(pkt, 4);
+    int clr = getPixelBGR(pkt, 4 + 1);
     fill(rect, clr);
     Rectangle subrect = new Rectangle();
     for(int a=0;a<cnt;a++) {
       pkt = read(8);
-      clr = getPixelBGR(pkt, 0);
+      clr = getPixelBGR(pkt, 0 + 1);
       subrect.x = rect.x + pkt[4] & 0xff;
       subrect.y = rect.y + pkt[5] & 0xff;
       subrect.width = pkt[6] & 0xff;
@@ -1157,19 +1167,22 @@ public class RFB {
   private int hextile_bg = 0;
   private int hextile_fg = 0;
 
-  private void readRectHexTile(Rectangle r) {
+  private void readRectHexTile(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_HEXTILE + ":rect=" + rect);
+    }
     hextile_bg = 0;
     hextile_fg = 0;
-    for (int ty = r.y; ty < r.y + r.height; ty += 16) {
+    for (int ty = rect.y; ty < rect.y + rect.height; ty += 16) {
       int th = 16;
-      if (r.y + r.height - ty < 16) {
-        th = r.y + r.height - ty;
+      if (rect.y + rect.height - ty < 16) {
+        th = rect.y + rect.height - ty;
       }
 
-      for (int tx = r.x; tx < r.x + r.width; tx += 16) {
+      for (int tx = rect.x; tx < rect.x + rect.width; tx += 16) {
         int tw = 16;
-        if (r.x + r.width - tx < 16) {
-          tw = r.x + r.width - tx;
+        if (rect.x + rect.width - tx < 16) {
+          tw = rect.x + rect.width - tx;
         }
         hextileSubrect(new Rectangle(tx, ty, tw, th));
       }
@@ -1187,8 +1200,8 @@ public class RFB {
   private void hextileSubrect(Rectangle sr) {
     int subencoding = readByte();
 
-    if (debug) {
-      JFLog.log(log, "RFB:HexTile:subType=0x" + Integer.toString(subencoding, 16));
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:HexTile:subType=0x" + Integer.toString(subencoding, 16) + ",rect=" + sr);
     }
 
     if ((subencoding & HEXTILE_RAW) != 0) {
@@ -1204,9 +1217,9 @@ public class RFB {
         hextile_bg = colors[cbuf[0] & 0xff];
       } else {
         cbuf = read(4);
-        hextile_bg = getPixelBGR(cbuf, 0);
+        hextile_bg = getPixelBGR(cbuf, 1);
       }
-      if (debug) {
+      if (debugEncoding) {
         JFLog.log("RFB:HexTile:bg=0x" + Integer.toString(hextile_bg, 16));
       }
     }
@@ -1219,9 +1232,9 @@ public class RFB {
         hextile_fg = colors[cbuf[0] & 0xff];
       } else {
         cbuf = read(4);
-        hextile_fg = getPixelBGR(cbuf, 0);
+        hextile_fg = getPixelBGR(cbuf, 1);
       }
-      if (debug) {
+      if (debugEncoding) {
         JFLog.log("RFB:HexTile:fg=0x" + Integer.toString(hextile_bg, 16));
       }
     }
@@ -1233,7 +1246,7 @@ public class RFB {
 
     int nSubRects = readByte();
 
-    if (debug) {
+    if (debugEncoding) {
       JFLog.log("RFB:HexTile:SubRects=" + nSubRects);
     }
 
@@ -1255,24 +1268,31 @@ public class RFB {
         sy = sr.y + (b1 & 0xf);
         sw = (b2 >> 4) + 1;
         sh = (b2 & 0xf) + 1;
+        if (debugEncoding) {
+          JFLog.log("RFB:HexTile:SubRect=" + sx + "," + sy + ":" + sw + "," + sh);
+        }
         fill(new Rectangle(sx, sy, sw, sh), hextile_fg);
       }
     } else if (bytesPixel == 1) {
       // BGR233 (8-bit color) version for colored sub-rectangles.
+      int hextile_sub;
       for (int j = 0; j < nSubRects; j++) {
-        hextile_fg = colors[buf[i++] & 0xff];
+        hextile_sub = colors[buf[i++] & 0xff];
         b1 = buf[i++] & 0xff;
         b2 = buf[i++] & 0xff;
         sx = sr.x + (b1 >> 4);
         sy = sr.y + (b1 & 0xf);
         sw = (b2 >> 4) + 1;
         sh = (b2 & 0xf) + 1;
-        fill(new Rectangle(sx, sy, sw, sh), hextile_fg);
+        if (debugEncoding) {
+          JFLog.log("RFB:HexTile:SubRectColored8=" + sx + "," + sy + ":" + sw + "," + sh);
+        }
+        fill(new Rectangle(sx, sy, sw, sh), hextile_sub);
       }
     } else {
       // Full-color (24-bit) version for colored sub-rectangles.
       for (int j = 0; j < nSubRects; j++) {
-        hextile_fg = getPixelBGR(buf, i);
+        int hextile_sg = getPixelBGR(buf, i + 1);
         i += 4;
         b1 = buf[i++] & 0xff;
         b2 = buf[i++] & 0xff;
@@ -1280,14 +1300,20 @@ public class RFB {
         sy = sr.y + (b1 & 0xf);
         sw = (b2 >> 4) + 1;
         sh = (b2 & 0xf) + 1;
-        fill(new Rectangle(sx, sy, sw, sh), hextile_fg);
+        if (debugEncoding) {
+          JFLog.log("RFB:HexTile:SubRectColored32=" + sx + "," + sy + ":" + sw + "," + sh);
+        }
+        fill(new Rectangle(sx, sy, sw, sh), hextile_sg);
       }
     }
   }
 
   private Inflater zlibInflater;
 
-  void readRectZlib(Rectangle r) {
+  void readRectZlib(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_ZLIB + ":rect=" + rect);
+    }
     int nBytes = readInt();
     byte[] input = read(nBytes);
 
@@ -1296,23 +1322,23 @@ public class RFB {
     }
     zlibInflater.setInput(input);
 
-    int x1 = r.x;
-    int y1 = r.y;
-    int x2 = x1 + r.width - 1;
-    int y2 = y1 + r.height - 1;
+    int x1 = rect.x;
+    int y1 = rect.y;
+    int x2 = x1 + rect.width - 1;
+    int y2 = y1 + rect.height - 1;
 
     if (bytesPixel == 1) {
       //TODO : support 8bpp zlib
       byte[] pixels8 = null;
       for (int dy = y1; dy <= y2; dy++) {
         try {
-          zlibInflater.inflate(pixels8, dy * width + x1, r.width);
+          zlibInflater.inflate(pixels8, dy * width + x1, rect.width);
         } catch (Exception e) {
           JFLog.log(log, e);
         }
       }
     } else {
-      byte[] buf = new byte[r.width * 4];
+      byte[] buf = new byte[rect.width * 4];
       int offset;
       for (int dy = y1; dy <= y2; dy++) {
         try {
@@ -1323,18 +1349,21 @@ public class RFB {
         } catch (Exception e) {
           JFLog.log(log, e);
         }
-        offset = dy * width + r.x;
-        for (int i = 0; i < r.width; i++) {
-          buffer[offset + i] = getPixelBGR(buf, i*4) | JFImage.OPAQUE;
+        offset = dy * width + rect.x;
+        for (int i = 0; i < rect.width; i++) {
+          buffer[offset + i] = getPixelBGR(buf, i*4 + 1) | JFImage.OPAQUE;
         }
       }
     }
   }
 
-  private void readRectCursor(Rectangle r) {
-    int cursorLen = r.width * r.height * bytesPixel;
+  private void readRectCursor(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_CURSOR + ":rect=" + rect);
+    }
+    int cursorLen = rect.width * rect.height * bytesPixel;
     byte[] cursor = read(cursorLen);
-    int bitmaskLen = ((r.width + 7) / 8) * r.height;
+    int bitmaskLen = ((rect.width + 7) / 8) * rect.height;
     byte[] bitmask = read(bitmaskLen);
   }
 
@@ -1351,7 +1380,10 @@ public class RFB {
 
   private final static int TIGHT_MIN_TO_COMPRESS = 12;
 
-  private void readRectTight(Rectangle r) {
+  private void readRectTight(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_TIGHT + ":rect=" + rect);
+    }
     int comp_ctl = readByte();
 
     // Flush zlib streams if we are told to do so.
@@ -1382,7 +1414,7 @@ public class RFB {
         byte[] buf = read(3);
         clr = getPixelRGB(buf, 0);
       }
-      fill(r, clr);
+      fill(rect, clr);
       return;
     }
 
@@ -1393,12 +1425,12 @@ public class RFB {
         JFLog.log(log, "RFB:Error:Unable to load JPEG image");
         return;
       }
-      image.putJFImage(tmp, r.x, r.y);
+      image.putJFImage(tmp, rect.x, rect.y);
       return;
     }
 
     // Read filter id and parameters.
-    int numColors = 0, rowSize = r.width;
+    int numColors = 0, rowSize = rect.width;
     byte[] palette8 = new byte[2];
     int[] palette24 = new int[256];
     boolean useGradient = false;
@@ -1419,7 +1451,7 @@ public class RFB {
           }
         }
         if (numColors == 2) {
-          rowSize = (r.width + 7) / 8;
+          rowSize = (rect.width + 7) / 8;
         }
       } else if (filter_id == TIGHT_FILTER_GRADIENT) {
         useGradient = true;
@@ -1433,7 +1465,7 @@ public class RFB {
     }
 
     // Read, optionally uncompress and decode data.
-    int dataSize = r.height * rowSize;
+    int dataSize = rect.height * rowSize;
     if (dataSize < TIGHT_MIN_TO_COMPRESS) {
       // Data size is small - not compressed with zlib.
       if (numColors != 0) {
@@ -1442,39 +1474,39 @@ public class RFB {
         if (numColors == 2) {
           // Two colors.
           if (bytesPixel == 1) {
-            decodeMonoData(r, indexedData, palette8);
+            decodeMonoData(rect, indexedData, palette8);
           } else {
-            decodeMonoData(r, indexedData, palette24);
+            decodeMonoData(rect, indexedData, palette24);
           }
         } else {
           // 3..255 colors (assuming bytesPixel == 4).
           int i = 0;
-          for (int dy = r.y; dy < r.y + r.height; dy++) {
-            for (int dx = r.x; dx < r.x + r.width; dx++) {
+          for (int dy = rect.y; dy < rect.y + rect.height; dy++) {
+            for (int dx = rect.x; dx < rect.x + rect.width; dx++) {
               buffer[dy * width + dx] = palette24[indexedData[i++] & 0xff];
             }
           }
         }
       } else if (useGradient) {
         // "Gradient"-processed data
-        byte[] buf = read(r.width * r.height * 3);  //TPIXEL
-        decodeGradientData(r, buf);
+        byte[] buf = read(rect.width * rect.height * 3);  //TPIXEL
+        decodeGradientData(rect, buf);
       } else {
         // Raw truecolor data.
         if (bytesPixel == 1) {
-          for (int dy = r.y; dy < r.y + r.height; dy++) {
-            byte[] pixels8 = read(r.width);
+          for (int dy = rect.y; dy < rect.y + rect.height; dy++) {
+            byte[] pixels8 = read(rect.width);
             for(int a=0;a<pixels8.length;a++) {
-              buffer[a] = pixels8[dy * width + r.x] | JFImage.OPAQUE;
+              buffer[a] = pixels8[dy * width + rect.x] | JFImage.OPAQUE;
             }
           }
         } else {
           byte[] buf;
           int i, offset;
-          for (int dy = r.y; dy < r.y + r.height; dy++) {
-            buf = read(r.width * 3);  //TPIXEL
-            offset = dy * width + r.x;
-            for (i = 0; i < r.width; i++) {
+          for (int dy = rect.y; dy < rect.y + rect.height; dy++) {
+            buf = read(rect.width * 3);  //TPIXEL
+            offset = dy * width + rect.x;
+            for (i = 0; i < rect.width; i++) {
               buffer[offset + i] = getPixelRGB(buf, i * 3) | JFImage.OPAQUE;
             }
           }
@@ -1506,38 +1538,38 @@ public class RFB {
         if (numColors == 2) {
           // Two colors.
           if (bytesPixel == 1) {
-            decodeMonoData(r, buf, palette8);
+            decodeMonoData(rect, buf, palette8);
           } else {
-            decodeMonoData(r, buf, palette24);
+            decodeMonoData(rect, buf, palette24);
           }
         } else {
           // More than two colors (assuming bytesPixel == 4).
           int i = 0;
-          for (int dy = r.y; dy < r.y + r.height; dy++) {
-            for (int dx = r.x; dx < r.x + r.width; dx++) {
+          for (int dy = rect.y; dy < rect.y + rect.height; dy++) {
+            for (int dx = rect.x; dx < rect.x + rect.width; dx++) {
               buffer[dy * width + dx] = palette24[buf[i++] & 0xff];
             }
           }
         }
       } else if (useGradient) {
         // Compressed "Gradient"-filtered data (assuming bytesPixel == 4).
-        decodeGradientData(r, buf);
+        decodeGradientData(rect, buf);
       } else {
         // Compressed truecolor data.
         if (bytesPixel == 1) {
-          int destOffset = r.y * width + r.x;
-          for (int dy = 0; dy < r.height; dy++) {
-            for(int x = 0;x<r.width; x++) {
-              buffer[destOffset] = buf[dy * r.width + x] | JFImage.OPAQUE;
+          int destOffset = rect.y * width + rect.x;
+          for (int dy = 0; dy < rect.height; dy++) {
+            for(int x = 0;x<rect.width; x++) {
+              buffer[destOffset] = buf[dy * rect.width + x] | JFImage.OPAQUE;
             }
             destOffset += width;
           }
         } else {
           int srcOffset = 0;
           int destOffset, i;
-          for (int dy = 0; dy < r.height; dy++) {
-            destOffset = (r.y + dy) * width + r.x;
-            for (i = 0; i < r.width; i++) {
+          for (int dy = 0; dy < rect.height; dy++) {
+            destOffset = (rect.y + dy) * width + rect.x;
+            for (i = 0; i < rect.width; i++) {
               buffer[destOffset + i] = getPixelRGB(buf, srcOffset) | JFImage.OPAQUE;
               srcOffset += 3;  //TPIXEL
             }
@@ -1628,16 +1660,22 @@ public class RFB {
     }
   }
 
-  private void readRectDesktopSize(Rectangle r) {
+  private void readRectDesktopSize(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_DESKTOP_SIZE + ":rect=" + rect);
+    }
     //framebuffer size changed
-    width = r.width;
-    height = r.height;
+    width = rect.width;
+    height = rect.height;
     setSize();
   }
 
-  private void readPointerPos(Rectangle r) {
-    mx = r.x;
-    my = r.y;
+  private void readPointerPos(Rectangle rect) {
+    if (debugEncoding) {
+      JFLog.log(log, "RFB:read RectType[]=" + TYPE_POINTER_POS + ":rect=" + rect);
+    }
+    mx = rect.x;
+    my = rect.y;
     if (debug) {
       JFLog.log("Pointer Pos:" + mx + "," + my);
     }

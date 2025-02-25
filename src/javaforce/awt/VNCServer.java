@@ -296,7 +296,7 @@ public class VNCServer {
     private Updater updater;
     private boolean connected;
     private int buttons;
-    private int pf = RFB.PF_BGR;  //LE : default for VNC
+    private int pf = RFB.PF_LE_RGB;  //LE : default for VNC
     public Client(Socket s, VNCRobot robot) {
       this.s = s;
       this.robot = robot;

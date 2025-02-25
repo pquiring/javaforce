@@ -39,7 +39,7 @@ public class VNCJavaRobot implements VNCRobot {
 
   public int[] getScreenCapture(int pf) {
     int[] rgb = JFImage.createScreenCapture(screen).getBuffer();
-    if (pf == RFB.PF_RGB) return rgb;
+    if (pf == RFB.PF_BE_BGR) return rgb;
     return RFB.swapPixelFormat(rgb);
   }
 
