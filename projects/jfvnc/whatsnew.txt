@@ -1,3 +1,6 @@
+2025-02-26 : v0.8
+  - fixed key binding issues in web console
+
 2025-02-25 : v0.7
   - fixed HexTile encoding
 
