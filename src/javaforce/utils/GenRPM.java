@@ -39,7 +39,7 @@ public class GenRPM {
 
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
-    String version = tools.getProperty("version");
+    String version = tools.getProperty("version").replaceAll("-", "_");
     String home = tools.getProperty("home");
 
     switch (apptype) {
