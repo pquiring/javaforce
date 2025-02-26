@@ -1,5 +1,11 @@
 What's new...
 
+Feb 26/2025 : JF/81.1
+ - fix JSON : do not trim() quoted values
+   - fixes key bindings in VNC Web Console
+ - jfVNC/0.8
+ - jfKVM/2.6
+
 Feb 25/2025 : JF/81.0
  - cleanup linux packages
  - RFB : fix HexTile encoding
