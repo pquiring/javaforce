@@ -203,7 +203,7 @@ public class GenPkgInfo {
       StringBuffer sb = new StringBuffer();
       sb.append("Buildroot: /.\n");
       sb.append("Name: " + app + apptype + "\n");
-      sb.append("Version: " + ver + "\n");
+      sb.append("Version: " + ver.replaceAll("-", "_") + "\n");
       sb.append("Release: 1\n");
       sb.append("License: LGPL\n");
 /*
