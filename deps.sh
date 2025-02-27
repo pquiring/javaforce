@@ -46,12 +46,12 @@ function debian {
 }
 
 function fedora {
-  dnf -y install java-17-openjdk-devel ant git unzip sudo gnupg
+  dnf -y install java-latest-openjdk-devel ant git unzip sudo gnupg
 }
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm jdk17-openjdk apache-ant git unzip sudo gnupg
+  pacman -S --noconfirm jdk-openjdk apache-ant git unzip sudo gnupg
 }
 
 function freebsd {
