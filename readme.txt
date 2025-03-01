@@ -50,9 +50,9 @@ Checkout Javaforce and a specific version:
   ant
 Next build the native loaders.
 
-Building native loaders with native API (FFmpeg, OpenGL, OpenCL, Camera)
-------------------------------------------------------------------------
-Native loaders are in /native
+Building native loaders
+-----------------------
+Native loaders are in /native which includes native API for FFmpeg, OpenGL, OpenCL and Camera.
 JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI.
 The native methods are also placed in a shared library in case you prefer not to use the custom loaders.
 See readme.txt in each platform folder for more info.
