@@ -2,9 +2,13 @@ package javaforce.utils;
 
 import java.util.*;
 
+import javaforce.*;
 import javaforce.awt.*;
+import javaforce.cl.*;
 
-/**
+/** CPU Hogger
+ *
+ * Utility that consumes 100% CPU for system stress testing.
  *
  * @author User
  */
@@ -16,6 +20,8 @@ public class CPUHogger extends javax.swing.JFrame {
   public CPUHogger() {
     initComponents();
     JFAWT.centerWindow(this);
+    selection.add(select_cpu);
+    selection.add(select_gpu);
   }
 
   /**
@@ -27,10 +33,13 @@ public class CPUHogger extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    selection = new javax.swing.ButtonGroup();
     jLabel1 = new javax.swing.JLabel();
     threads = new javax.swing.JSpinner();
     start = new javax.swing.JButton();
     status = new javax.swing.JLabel();
+    select_cpu = new javax.swing.JRadioButton();
+    select_gpu = new javax.swing.JRadioButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("CPU Hogger");
@@ -48,6 +57,11 @@ public class CPUHogger extends javax.swing.JFrame {
 
     status.setText("Status : Idle");
 
+    select_cpu.setSelected(true);
+    select_cpu.setText("CPU");
+
+    select_gpu.setText("GPU");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -60,7 +74,12 @@ public class CPUHogger extends javax.swing.JFrame {
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(threads, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)))
+            .addComponent(threads, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(select_cpu)
+              .addComponent(select_gpu))
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -70,11 +89,15 @@ public class CPUHogger extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
           .addComponent(threads, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(select_cpu)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(select_gpu)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addComponent(start)
         .addGap(18, 18, 18)
         .addComponent(status)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap())
     );
 
     pack();
@@ -98,6 +121,9 @@ public class CPUHogger extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JRadioButton select_cpu;
+  private javax.swing.JRadioButton select_gpu;
+  private javax.swing.ButtonGroup selection;
   private javax.swing.JButton start;
   private javax.swing.JLabel status;
   private javax.swing.JSpinner threads;
@@ -113,22 +139,35 @@ public class CPUHogger extends javax.swing.JFrame {
       status.setText("Status : Idle");
     } else {
       running = true;
-      startThreads();
+      if (select_cpu.isSelected()) {
+        startCPUThreads();
+      }
+      if (select_gpu.isSelected()) {
+        startGPUThreads();
+      }
       start.setText("stop");
       int cnt = (Integer)threads.getValue();
       status.setText("Status : " + cnt + " threads running");
     }
   }
 
-  private void startThreads() {
+  private void startCPUThreads() {
     int cnt = (Integer)threads.getValue();
     for(int a=0;a<cnt;a++) {
-      Hogger hogger = new Hogger();
+      CPU hogger = new CPU();
       hogger.start();
     }
   }
 
-  private class Hogger extends Thread {
+  private void startGPUThreads() {
+    int cnt = (Integer)threads.getValue();
+    for(int a=0;a<cnt;a++) {
+      GPU hogger = new GPU();
+      hogger.start();
+    }
+  }
+
+  private class CPU extends Thread {
     public int c = 0;
     public void run() {
       Random r = new Random();
@@ -141,6 +180,90 @@ public class CPUHogger extends javax.swing.JFrame {
     }
     private int convert(double d) {
       return (int)(d + 1);
+    }
+  }
+
+  private static boolean cl_init;
+
+  private class GPU extends Thread {
+    public void run() {
+      Random r = new Random();
+      if (cl_init == false) {
+        if (!CL.init()) {
+          JFAWT.showError("Error", "OpenCL init failed");
+          return;
+        }
+      }
+      load();
+      while (running) {
+        test();
+      }
+      unload();
+    }
+    private CL cl;
+    private static final int SIZE = 64 * 1024;
+    private long kernel;
+    private long input;
+    private long output;
+    private float[] data;
+    private float[] results;
+    private Random r = new Random();
+
+    public void load() {
+      try {
+        cl = CL.create(
+          "__kernel void square(__global float* input, __global float* output) { int i = get_global_id(0); output[i] = input[i] * input[i]; }",
+          CL.TYPE_GPU);
+        kernel = cl.kernel("square");
+        input = cl.createWriteBuffer(Float.BYTES * SIZE);
+        output = cl.createReadBuffer(Float.BYTES * SIZE);
+        data = new float[SIZE];
+        results = new float[SIZE];
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+
+    public void unload() {
+      data = null;
+      results = null;
+      if (cl == null) return;
+      cl.freeBuffer(input);
+      cl.freeBuffer(output);
+      cl.freeKernel(kernel);
+      cl.close();
+      cl = null;
+    }
+
+    public void test() {
+      try {
+        for(int i=0;i<SIZE;i++) {
+          data[i] = r.nextFloat();
+        }
+
+        cl.writeBuffer(input, data);
+
+        cl.setArg(kernel, 0, input);
+        cl.setArg(kernel, 1, output);
+
+        cl.execute(kernel, SIZE);
+
+        cl.readBuffer(output, results);
+
+        //confirm results
+        int correct = 0;
+        for(int i=0;i<SIZE;i++) {
+          if (results[i] == data[i] * data[i]) {
+            correct++;
+          }
+        }
+
+        if (correct != SIZE) {
+          throw new Exception("CL test failed!");
+        }
+      } catch (Throwable t) {
+        JFLog.log(t);
+      }
     }
   }
 }
