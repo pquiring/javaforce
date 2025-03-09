@@ -14,6 +14,8 @@ import javaforce.cl.*;
  */
 public class CPUHogger extends javax.swing.JFrame {
 
+  public static boolean debug = false;
+
   /**
    * Creates new form CPUHogger
    */
@@ -104,7 +106,7 @@ public class CPUHogger extends javax.swing.JFrame {
   }// </editor-fold>//GEN-END:initComponents
 
   private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
-    start();
+    startTest();
   }//GEN-LAST:event_startActionPerformed
 
   /**
@@ -132,7 +134,7 @@ public class CPUHogger extends javax.swing.JFrame {
 
   private volatile boolean running = false;
 
-  private void start() {
+  private void startTest() {
     if (running) {
       running = false;
       start.setText("Start");
@@ -154,7 +156,7 @@ public class CPUHogger extends javax.swing.JFrame {
   private void startCPUThreads() {
     int cnt = (Integer)threads.getValue();
     for(int a=0;a<cnt;a++) {
-      CPU hogger = new CPU();
+      CPU hogger = new CPU(a);
       hogger.start();
     }
   }
@@ -162,13 +164,17 @@ public class CPUHogger extends javax.swing.JFrame {
   private void startGPUThreads() {
     int cnt = (Integer)threads.getValue();
     for(int a=0;a<cnt;a++) {
-      GPU hogger = new GPU();
+      GPU hogger = new GPU(a);
       hogger.start();
     }
   }
 
   private class CPU extends Thread {
+    public int id;
     public int c = 0;
+    public CPU(int id) {
+      this.id = id;
+    }
     public void run() {
       Random r = new Random();
       while (running) {
@@ -183,15 +189,26 @@ public class CPUHogger extends javax.swing.JFrame {
     }
   }
 
+  private static Object cl_lock = new Object();
   private static boolean cl_init;
 
   private class GPU extends Thread {
+    public int id;
+    public GPU(int id) {
+      this.id = id;
+    }
     public void run() {
       Random r = new Random();
-      if (cl_init == false) {
-        if (!CL.init()) {
-          JFAWT.showError("Error", "OpenCL init failed");
-          return;
+      synchronized (cl_lock) {
+        if (!cl_init) {
+          if (!CL.init()) {
+            JFAWT.showError("Error", "OpenCL init failed");
+            if (running) {
+              startTest();
+            }
+            return;
+          }
+          cl_init = true;
         }
       }
       load();
@@ -261,6 +278,7 @@ public class CPUHogger extends javax.swing.JFrame {
         if (correct != SIZE) {
           throw new Exception("CL test failed!");
         }
+        if (debug) System.out.print(Integer.toString(id));
       } catch (Throwable t) {
         JFLog.log(t);
       }
