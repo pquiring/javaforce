@@ -216,67 +216,37 @@ public class CPUHogger extends javax.swing.JFrame {
       }
       unload();
     }
-    private CL cl;
-    private static final int SIZE = 64 * 1024;
-    private long kernel;
-    private long input;
-    private long output;
-    private float[] data;
-    private float[] results;
+    private Compute cmp;
+    private static final int SIZE = 32;
+    private static final int SIZE_SIZE = 32 * 32;
+    private float[] in1;
+    private float[] in2;
+    private float[] out;
     private Random r = new Random();
 
     public void load() {
       try {
-        cl = CL.create(
-          "__kernel void square(__global float* input, __global float* output) { int i = get_global_id(0); output[i] = input[i] * input[i]; }",
-          CL.TYPE_GPU);
-        kernel = cl.kernel("square");
-        input = cl.createWriteBuffer(Float.BYTES * SIZE);
-        output = cl.createReadBuffer(Float.BYTES * SIZE);
-        data = new float[SIZE];
-        results = new float[SIZE];
+        cmp = new Compute();
+        cmp.init(CL.TYPE_GPU);
+        in1 = new float[SIZE_SIZE];
+        in2 = new float[SIZE_SIZE];
+        out = new float[SIZE_SIZE];
+        for(int i=0;i<SIZE_SIZE;i++) {
+          in1[i] = r.nextFloat();
+          in2[i] = r.nextFloat();
+        }
       } catch (Exception e) {
         JFLog.log(e);
       }
     }
 
     public void unload() {
-      data = null;
-      results = null;
-      if (cl == null) return;
-      cl.freeBuffer(input);
-      cl.freeBuffer(output);
-      cl.freeKernel(kernel);
-      cl.close();
-      cl = null;
     }
 
     public void test() {
       try {
-        for(int i=0;i<SIZE;i++) {
-          data[i] = r.nextFloat();
-        }
+        cmp.matrix_mult(SIZE, SIZE, SIZE, in1, in2, out);
 
-        cl.writeBuffer(input, data);
-
-        cl.setArg(kernel, 0, input);
-        cl.setArg(kernel, 1, output);
-
-        cl.execute(kernel, SIZE);
-
-        cl.readBuffer(output, results);
-
-        //confirm results
-        int correct = 0;
-        for(int i=0;i<SIZE;i++) {
-          if (results[i] == data[i] * data[i]) {
-            correct++;
-          }
-        }
-
-        if (correct != SIZE) {
-          throw new Exception("CL test failed!");
-        }
         if (debug) System.out.print(Integer.toString(id));
       } catch (Throwable t) {
         JFLog.log(t);
