@@ -75,14 +75,15 @@ public class Compute {
     }
     long input0 = cl.createWriteBuffer(Float.BYTES * size);
     long output = cl.createReadBuffer(Float.BYTES * size);
+    boolean ret;
     cl.writeBuffer(input0, a);
     cl.setArg(k_array_square, 0, input0);
     cl.setArg(k_array_square, 1, output);
-    cl.execute(k_array_square, size);
+    ret = cl.execute(k_array_square, size);
     cl.readBuffer(output, b);
     cl.freeBuffer(input0);
     cl.freeBuffer(output);
-    return true;
+    return ret;
   }
 
   /** array multiple.
@@ -113,17 +114,18 @@ public class Compute {
     long input0 = cl.createWriteBuffer(Float.BYTES * size);
     long input1 = cl.createWriteBuffer(Float.BYTES * size);
     long output = cl.createReadBuffer(Float.BYTES * size);
+    boolean ret;
     cl.writeBuffer(input0, a);
     cl.writeBuffer(input1, b);
     cl.setArg(k_array_mult, 0, input0);
     cl.setArg(k_array_mult, 1, input1);
     cl.setArg(k_array_mult, 2, output);
-    cl.execute(k_array_mult, size);
+    ret = cl.execute(k_array_mult, size);
     cl.readBuffer(output, c);
     cl.freeBuffer(input0);
     cl.freeBuffer(input1);
     cl.freeBuffer(output);
-    return true;
+    return ret;
   }
 
   /** matrix multiple.
@@ -141,9 +143,9 @@ public class Compute {
    * M .A.   .C.
    *   ...   ...
    *
-   * @param as = a size
-   * @param bs = b size
-   * @param ks = common size
+   * @param as = a size (M)
+   * @param bs = b size (N)
+   * @param ks = common size (K)
    * @param a = input array
    * @param b = input array
    * @param c = output array
@@ -167,6 +169,7 @@ public class Compute {
     long input0 = cl.createWriteBuffer(Float.BYTES * a_size);
     long input1 = cl.createWriteBuffer(Float.BYTES * b_size);
     long output = cl.createReadBuffer(Float.BYTES * c_size);
+    boolean ret;
     cl.writeBuffer(input0, a);
     cl.writeBuffer(input1, b);
     cl.setArg(k_matrix_mult, 0, as);  //M
@@ -175,11 +178,11 @@ public class Compute {
     cl.setArg(k_matrix_mult, 3, input0);  //A
     cl.setArg(k_matrix_mult, 4, input1);  //B
     cl.setArg(k_matrix_mult, 5, output);  //C
-    cl.execute2(k_matrix_mult, as, bs);
+    ret = cl.execute2(k_matrix_mult, as, bs);
     cl.readBuffer(output, c);
     cl.freeBuffer(input0);
     cl.freeBuffer(input1);
     cl.freeBuffer(output);
-    return true;
+    return ret;
   }
 }
