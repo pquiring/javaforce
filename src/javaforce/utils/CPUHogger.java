@@ -14,7 +14,7 @@ import javaforce.cl.*;
  */
 public class CPUHogger extends javax.swing.JFrame {
 
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   /**
    * Creates new form CPUHogger
@@ -241,6 +241,10 @@ public class CPUHogger extends javax.swing.JFrame {
     }
 
     public void unload() {
+      if (cmp != null) {
+        cmp.uninit();
+        cmp = null;
+      }
     }
 
     public void test() {

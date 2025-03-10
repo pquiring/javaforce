@@ -45,7 +45,9 @@ public class Compute {
   }
   public void uninit() {
     if (cl != null) {
+      cl.freeKernel(k_array_square);
       cl.freeKernel(k_array_mult);
+      cl.freeKernel(k_matrix_mult);
       cl.close();
       cl = null;
     }

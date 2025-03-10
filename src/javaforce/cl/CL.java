@@ -181,8 +181,11 @@ public class CL implements AutoCloseable {
       //confirm results
       int correct = 0;
       for(int i=0;i<SIZE;i++) {
-        if (b[i] == a[i] * a[i]) {
+        float res = a[i] * a[i];
+        if (b[i] == res) {
           correct++;
+        } else {
+          JFLog.log("error:b[]=" + b[i] + ",expected=" + res);
         }
       }
 
@@ -224,7 +227,7 @@ public class CL implements AutoCloseable {
           if (c[i] == res) {
             correct++;
           } else {
-            JFLog.log("c[] = " + c[i] + ":res=" + res);
+            JFLog.log("error:c[] = " + c[i] + ":expected=" + res);
           }
         }
       }
