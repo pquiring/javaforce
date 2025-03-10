@@ -85,7 +85,7 @@ public class Compute {
 
   /** array multiple.
    *
-   * c[i] = x[i] * y[i];
+   * c[i] = a[i] * b[i];
    *
    * @param a = input array
    * @param b = input array
