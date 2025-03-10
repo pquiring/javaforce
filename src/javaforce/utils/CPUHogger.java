@@ -198,7 +198,6 @@ public class CPUHogger extends javax.swing.JFrame {
       this.id = id;
     }
     public void run() {
-      Random r = new Random();
       synchronized (cl_lock) {
         if (!cl_init) {
           if (!CL.init()) {

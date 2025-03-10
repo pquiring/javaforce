@@ -84,6 +84,12 @@ public class CL implements AutoCloseable {
     return nsetArg(ctx, kernel, idx, value);
   }
 
+  public boolean setArg(long kernel, int idx, int value) {
+    byte[] tmp = new byte[4];
+    LE.setuint32(tmp, 0, value);
+    return nsetArg(ctx, kernel, idx, tmp);
+  }
+
   public boolean setArg(long kernel, int idx, long value) {
     byte[] tmp = new byte[8];
     LE.setuint64(tmp, 0, value);
@@ -105,6 +111,10 @@ public class CL implements AutoCloseable {
   private static native boolean nexecute(long ctx, long kernel, int count);
 
   public boolean execute(long kernel, int count) {return nexecute(ctx, kernel, count);}
+
+  private static native boolean nexecute2(long ctx, long kernel, int count1, int count2);
+
+  public boolean execute2(long kernel, int count1, int count2) {return nexecute2(ctx, kernel, count1, count2);}
 
   private static native boolean nreadBufferi8(long ctx, long buffer, byte[] value);
 
@@ -139,52 +149,87 @@ public class CL implements AutoCloseable {
     }
   }
 
-  private static final int SIZE = 64 * 1024;
-
   public static void main(String[] args) {
+    Compute compute = new Compute();
     if (!init()) {
       JFLog.log("OpenCL init failed");
       System.exit(1);
     }
-    System.out.println("Starting Java test...");
+    if (!compute.init(TYPE_GPU)) {
+      JFLog.log("Compute init failed");
+      System.exit(1);
+    }
+    int SIZE;
+    int SIZE_SIZE;
+    Random rand = new Random();
+    System.out.println("Starting tests...");
+    //array_square
     try {
-      CL cl = CL.create(
-        "__kernel void square(__global float* input, __global float* output) { int i = get_global_id(0); output[i] = input[i] * input[i]; }",
-        TYPE_GPU);
-      long kernel = cl.kernel("square");
-      long input = cl.createWriteBuffer(Float.BYTES * SIZE);
-      long output = cl.createReadBuffer(Float.BYTES * SIZE);
-
-      float[] data = new float[SIZE];
-      Random r = new Random();
+      SIZE = 64 * 1024;
+      float[] a = new float[SIZE];
       for(int i=0;i<SIZE;i++) {
-        data[i] = r.nextFloat();
+        a[i] = rand.nextFloat();
       }
-      float[] results = new float[SIZE];
+      float[] b = new float[SIZE];
 
-      cl.writeBuffer(input, data);
-
-      cl.setArg(kernel, 0, input);
-      cl.setArg(kernel, 1, output);
-
-      cl.execute(kernel, SIZE);
-
-      cl.readBuffer(output, results);
-
-      cl.freeBuffer(input);
-      cl.freeBuffer(output);
-      cl.freeKernel(kernel);
-      cl.close();
+      compute.array_square(a, b);
 
       //confirm results
       int correct = 0;
       for(int i=0;i<SIZE;i++) {
-        if (results[i] == data[i] * data[i]) {
+        if (b[i] == a[i] * a[i]) {
           correct++;
         }
       }
 
-      System.out.println("java test:" + correct + "/" + SIZE + " are correct");
+      System.out.println("array_square:" + correct + "/" + SIZE + " are correct");
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
+    //matrix_mult
+    try {
+      boolean identity = true;
+      SIZE = 3;  //3*3 = 9
+      SIZE_SIZE = SIZE * SIZE;
+      float[] a = new float[SIZE_SIZE];
+      float[] b = new float[SIZE_SIZE];
+      float[] c = new float[SIZE_SIZE];
+      int idx = 0;
+      for(int row=0;row<SIZE;row++) {
+        for(int col=0;col<SIZE;col++) {
+          a[idx] = rand.nextFloat();
+          if (identity) {
+            b[idx] = (row == col ? 1 : 0);  //identity matrix
+          } else {
+            b[idx] = rand.nextFloat();
+          }
+          idx++;
+        }
+      }
+      compute.matrix_mult(SIZE, SIZE, SIZE, a, b, c);
+
+      //confirm results
+      int correct = 0;
+      for(int row=0;row<SIZE;row++) {
+        for(int col=0;col<SIZE;col++) {
+          int i = col * SIZE + row;
+          float res = 0;
+          for(int k=0;k<SIZE;k++) {
+            res += a[k * SIZE + row] * b[col * SIZE + k];
+          }
+          if (c[i] == res) {
+            correct++;
+          } else {
+            JFLog.log("c[] = " + c[i] + ":res=" + res);
+          }
+        }
+      }
+      if (true) {
+        javaforce.Console.printArray(a);
+        javaforce.Console.printArray(b);
+        javaforce.Console.printArray(c);
+      }
+      System.out.println("matrix_mult:" + correct + "/" + SIZE_SIZE + " are correct");
     } catch (Throwable t) {
       JFLog.log(t);
     }

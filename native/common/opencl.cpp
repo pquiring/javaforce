@@ -10,6 +10,7 @@
 JF_LIB_HANDLE opencl = NULL;
 
 static jboolean opencl_loaded = JNI_FALSE;
+static jboolean opencl_debug = JNI_FALSE;
 
 //functions
 clBuildProgram_fn _clBuildProgram;
@@ -346,7 +347,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   res = (*_clGetPlatformIDs)(1, &platform_id, NULL);
 
   if (res != CL_SUCCESS) {
-    printf("Error: Failed to get platform id!\n");
+    printf("Error: Failed to get platform id!%d\n", res);
     return JNI_FALSE;
   }
 
@@ -354,7 +355,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   res = (*_clGetDeviceIDs)(platform_id, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL);
 
   if (res != CL_SUCCESS) {
-    printf("Error: Failed to get device id!\n");
+    printf("Error: Failed to get device id!:%d\n", res);
     return JNI_FALSE;
   }
 
@@ -549,11 +550,15 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
   if (err != CL_SUCCESS)
   {
     size_t len;
-    char buffer[2048];
+    char buffer[1024 * 16];
 
     printf("Error: Failed to build program executable!\n");
-    (*_clGetProgramBuildInfo)(ctx->program, ctx->device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
-    printf("%s\n", buffer);
+    err = (*_clGetProgramBuildInfo)(ctx->program, ctx->device_id, CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &len);
+    if (err == CL_SUCCESS) {
+      printf("%s\n", buffer);
+    } else {
+      printf("clGetProgramBuildInfo failed:%d\n", err);
+    }
     free(ctx);
     return 0;
   }
@@ -674,10 +679,56 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
     return JNI_FALSE;
   }
 
+  if (opencl_debug) {
+    printf("local = %zu\n", local);
+  }
+
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 1, NULL, &global, &local, 0, NULL, NULL);
   if (err)
   {
-    printf("Error: Failed to execute kernel!\n");
+    printf("Error: Failed to execute kernel!%d\n", err);
+    return JNI_FALSE;
+  }
+
+  (*_clFinish)(ctx->commands);
+
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute2
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count1, jint count2)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  int size = count1 * count2;
+
+  size_t globals[2];
+  globals[0] = count1;
+  globals[1] = count2;
+  size_t local;
+  size_t locals[2];
+
+  //see CL_DEVICE_MAX_WORK_ITEM_SIZES
+
+  int err = (*_clGetKernelWorkGroupInfo)((cl_kernel)kernel, ctx->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to retrieve kernel work group info! %d\n", err);
+    return JNI_FALSE;
+  }
+
+  if (opencl_debug) {
+    printf("local = %zu\n", local);
+  }
+
+  locals[0] = 1;
+  locals[1] = 1;
+
+  err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 2, NULL, globals, locals, 0, NULL, NULL);
+  if (err)
+  {
+    printf("Error: Failed to execute2 kernel!%d\n", err);
     return JNI_FALSE;
   }
 
@@ -773,6 +824,7 @@ static JNINativeMethod javaforce_cl_CL[] = {
   {"nwriteBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferi8},
   {"nwriteBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferf32},
   {"nexecute", "(JJI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
+  {"nexecute2", "(JJII)Z", (void *)&Java_javaforce_cl_CL_nexecute2},
   {"nreadBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nreadBufferi8},
   {"nreadBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nreadBufferf32},
   {"nfreeKernel", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeKernel},

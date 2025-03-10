@@ -77,6 +77,90 @@ public class Console {
     }
   }
 
+  public static <T> void printArray(T[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(a[i].toString());
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
+  public static void printArray(byte[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(Byte.toString(a[i]));
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
+  public static void printArray(short[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(Short.toString(a[i]));
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
+  public static void printArray(int[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(Integer.toString(a[i]));
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
+  public static void printArray(long[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(Long.toString(a[i]));
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
+  public static void printArray(float[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(Float.toString(a[i]));
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
+  public static void printArray(double[] a) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    int size = a.length;
+    for(int i=0;i<size;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(Double.toString(a[i]));
+    }
+    sb.append("}");
+    System.out.println(sb.toString());
+  }
+
   public static void main(String[] args) {
     enableConsoleMode();
     InputStream is = getInputStream();
