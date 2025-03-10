@@ -42,6 +42,8 @@ public class CPUHogger extends javax.swing.JFrame {
     status = new javax.swing.JLabel();
     select_cpu = new javax.swing.JRadioButton();
     select_gpu = new javax.swing.JRadioButton();
+    jLabel2 = new javax.swing.JLabel();
+    matrix_size = new javax.swing.JTextField();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("CPU Hogger");
@@ -64,6 +66,10 @@ public class CPUHogger extends javax.swing.JFrame {
 
     select_gpu.setText("GPU");
 
+    jLabel2.setText("Matrix Size");
+
+    matrix_size.setText("256");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -78,10 +84,14 @@ public class CPUHogger extends javax.swing.JFrame {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(threads, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE))
           .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(select_cpu)
-              .addComponent(select_gpu))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addComponent(select_cpu)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(select_gpu)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel2)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(matrix_size)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -94,7 +104,10 @@ public class CPUHogger extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(select_cpu)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(select_gpu)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(select_gpu)
+          .addComponent(jLabel2)
+          .addComponent(matrix_size, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addComponent(start)
         .addGap(18, 18, 18)
@@ -123,6 +136,8 @@ public class CPUHogger extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
+  private javax.swing.JTextField matrix_size;
   private javax.swing.JRadioButton select_cpu;
   private javax.swing.JRadioButton select_gpu;
   private javax.swing.ButtonGroup selection;
@@ -163,8 +178,9 @@ public class CPUHogger extends javax.swing.JFrame {
 
   private void startGPUThreads() {
     int cnt = (Integer)threads.getValue();
+    int mat_size = Integer.valueOf(matrix_size.getText());
     for(int a=0;a<cnt;a++) {
-      GPU hogger = new GPU(a);
+      GPU hogger = new GPU(a, mat_size);
       hogger.start();
     }
   }
@@ -191,20 +207,25 @@ public class CPUHogger extends javax.swing.JFrame {
 
   private static Object cl_lock = new Object();
   private static boolean cl_init;
+  private static boolean cl_fail;
 
   private class GPU extends Thread {
     public int id;
-    public GPU(int id) {
+    public GPU(int id, int matrix_size) {
       this.id = id;
+      SIZE = matrix_size;
+      SIZE_SIZE = SIZE * SIZE;
     }
     public void run() {
       synchronized (cl_lock) {
+        if (cl_fail) return;
         if (!cl_init) {
           if (!CL.init()) {
-            JFAWT.showError("Error", "OpenCL init failed");
+            cl_fail = true;
             if (running) {
               startTest();
             }
+            JFAWT.showError("Error", "OpenCL init failed");
             return;
           }
           cl_init = true;
@@ -217,8 +238,8 @@ public class CPUHogger extends javax.swing.JFrame {
       unload();
     }
     private Compute cmp;
-    private static final int SIZE = 32;
-    private static final int SIZE_SIZE = 32 * 32;
+    private static int SIZE;
+    private static int SIZE_SIZE;
     private float[] in1;
     private float[] in2;
     private float[] out;
