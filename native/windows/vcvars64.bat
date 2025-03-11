@@ -12,7 +12,7 @@ if "%1"=="detect" goto detect
 
 if not "%VCVER%"=="" goto end
 
-SET VCVER=14.42.34433
+SET VCVER=14.43.34808
 SET WINVER=10.0.22621.0
 
 echo VCYEAR=%VCYEAR%
