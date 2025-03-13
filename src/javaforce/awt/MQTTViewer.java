@@ -26,8 +26,21 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
         if (args.length > 2) {
           password.setText(args[2]);
           if (args.length > 3) {
-            switch (args[3]) {
-              case "-secure": secure.setSelected(true); break;
+            for(int a=3;a<args.length;a++) {
+              String arg = args[a];
+              String key, value;
+              int idx = arg.indexOf('=');
+              if (idx == -1) {
+                key = arg;
+                value = "";
+              } else {
+                key = arg.substring(0, idx);
+                value = arg.substring(idx + 1);
+              }
+              switch (key) {
+                case "-secure": secure.setSelected(true); break;
+                case "-topic": topic.setText(value); break;
+              }
             }
           }
         }
