@@ -702,8 +702,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute2
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  int size = count1 * count2;
-
   size_t globals[2];
   globals[0] = count1;
   globals[1] = count2;
@@ -744,8 +742,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute3
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  int size = count1 * count2;
-
   size_t globals[3];
   globals[0] = count1;
   globals[1] = count2;
@@ -771,6 +767,50 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute3
   locals[2] = 1;
 
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 3, NULL, globals, locals, 0, NULL, NULL);
+  if (err)
+  {
+    printf("Error: Failed to execute3 kernel!%d\n", err);
+    return JNI_FALSE;
+  }
+
+  (*_clFinish)(ctx->commands);
+
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute4
+  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3, jint count4)
+{
+  if (ctx_ptr == 0) return JNI_FALSE;
+  CLContext *ctx = (CLContext*)ctx_ptr;
+
+  size_t globals[4];
+  globals[0] = count1;
+  globals[1] = count2;
+  globals[2] = count3;
+  globals[3] = count4;
+  size_t local;
+  size_t locals[4];
+
+  //see CL_DEVICE_MAX_WORK_ITEM_SIZES
+
+  int err = (*_clGetKernelWorkGroupInfo)((cl_kernel)kernel, ctx->device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
+  if (err != CL_SUCCESS)
+  {
+    printf("Error: Failed to retrieve kernel work group info! %d\n", err);
+    return JNI_FALSE;
+  }
+
+  if (opencl_debug) {
+    printf("local = %zu\n", local);
+  }
+
+  locals[0] = 1;
+  locals[1] = 1;
+  locals[2] = 1;
+  locals[3] = 1;
+
+  err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 4, NULL, globals, locals, 0, NULL, NULL);
   if (err)
   {
     printf("Error: Failed to execute3 kernel!%d\n", err);
@@ -871,6 +911,7 @@ static JNINativeMethod javaforce_cl_CL[] = {
   {"nexecute", "(JJI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
   {"nexecute2", "(JJII)Z", (void *)&Java_javaforce_cl_CL_nexecute2},
   {"nexecute3", "(JJIII)Z", (void *)&Java_javaforce_cl_CL_nexecute3},
+  {"nexecute4", "(JJIIII)Z", (void *)&Java_javaforce_cl_CL_nexecute4},
   {"nreadBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nreadBufferi8},
   {"nreadBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nreadBufferf32},
   {"nfreeKernel", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeKernel},

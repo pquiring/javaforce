@@ -120,6 +120,10 @@ public class CL implements AutoCloseable {
 
   public boolean execute3(long kernel, int count1, int count2, int count3) {return nexecute3(ctx, kernel, count1, count2, count3);}
 
+  private static native boolean nexecute4(long ctx, long kernel, int count1, int count2, int count3, int count4);
+
+  public boolean execute4(long kernel, int count1, int count2, int count3, int count4) {return nexecute4(ctx, kernel, count1, count2, count3, count4);}
+
   private static native boolean nreadBufferi8(long ctx, long buffer, byte[] value);
 
   public boolean readBuffer(long buffer, byte[] data) {
