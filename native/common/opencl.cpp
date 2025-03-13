@@ -11,6 +11,7 @@ JF_LIB_HANDLE opencl = NULL;
 
 static jboolean opencl_loaded = JNI_FALSE;
 static jboolean opencl_debug = JNI_FALSE;
+static jboolean opencl_debug_test = JNI_FALSE;
 
 //functions
 clBuildProgram_fn _clBuildProgram;
@@ -310,9 +311,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
 
   if (!ret) return JNI_FALSE;
 
-  //get JNI IDs
-
   opencl_loaded = JNI_TRUE;
+
+  if (!opencl_debug_test) return JNI_TRUE;
 
   //do a simple test
 
