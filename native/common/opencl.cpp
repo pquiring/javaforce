@@ -10,7 +10,7 @@
 JF_LIB_HANDLE opencl = NULL;
 
 static jboolean opencl_loaded = JNI_FALSE;
-static jboolean opencl_debug = JNI_TRUE;
+static jboolean opencl_debug = JNI_FALSE;
 static jboolean opencl_test = JNI_FALSE;
 
 //functions
@@ -495,6 +495,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
   int res, err;
   CLContext *ctx = (CLContext*)malloc(sizeof(CLContext));
   memset(ctx, 0, sizeof(CLContext));
+
+  if (opencl_debug) {
+    printf("ctx=%p\n", ctx);
+  }
 
   //get platform_id
   res = (*_clGetPlatformIDs)(1, &ctx->platform_id, NULL);
