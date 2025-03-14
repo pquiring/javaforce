@@ -10,8 +10,8 @@
 JF_LIB_HANDLE opencl = NULL;
 
 static jboolean opencl_loaded = JNI_FALSE;
-static jboolean opencl_debug = JNI_FALSE;
-static jboolean opencl_debug_test = JNI_FALSE;
+static jboolean opencl_debug = JNI_TRUE;
+static jboolean opencl_test = JNI_FALSE;
 
 //functions
 clBuildProgram_fn _clBuildProgram;
@@ -313,7 +313,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
 
   opencl_loaded = JNI_TRUE;
 
-  if (!opencl_debug_test) return JNI_TRUE;
+  if (!opencl_test) return JNI_TRUE;
 
   //do a simple test
 
@@ -505,6 +505,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
     return 0;
   }
 
+  if (opencl_debug) {
+    printf("platform_id=%p\n", ctx->platform_id);
+  }
+
   //get device_id
   res = (*_clGetDeviceIDs)(ctx->platform_id, type, 1, &ctx->device_id, NULL);
 
@@ -512,6 +516,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
     printf("Error: Failed to get device id!\n");
     free(ctx);
     return 0;
+  }
+
+  if (opencl_debug) {
+    printf("device_id=%p\n", ctx->device_id);
   }
 
   // Create a compute context
@@ -523,6 +531,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
     return 0;
   }
 
+  if (opencl_debug) {
+    printf("context=%p\n", ctx->context);
+  }
+
   // Create a command commands
   ctx->commands = (*_clCreateCommandQueueWithProperties)(ctx->context, ctx->device_id, NULL, &err);
   if (!ctx->commands)
@@ -530,6 +542,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
     printf("Error: Failed to create a command commands!\n");
     free(ctx);
     return 0;
+  }
+
+  if (opencl_debug) {
+    printf("commands=%p\n", ctx->commands);
   }
 
   const char *c_src = e->GetStringUTFChars(src, NULL);
