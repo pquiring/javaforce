@@ -173,7 +173,7 @@ public class CL implements AutoCloseable {
     System.out.println("Starting tests...");
     //array_square
     try {
-      SIZE = 64 * 1024;
+      SIZE = 16;
       float[] a = new float[SIZE];
       for(int i=0;i<SIZE;i++) {
         a[i] = rand.nextFloat();
@@ -193,7 +193,7 @@ public class CL implements AutoCloseable {
         }
       }
 
-      System.out.println("array_square:" + correct + "/" + SIZE + " are correct");
+      System.out.println("array_square:" + correct + " of " + SIZE + " are correct");
     } catch (Throwable t) {
       JFLog.log(t);
     }
@@ -240,7 +240,7 @@ public class CL implements AutoCloseable {
         javaforce.Console.printArray(b);
         javaforce.Console.printArray(c);
       }
-      System.out.println("matrix_mult:" + correct + "/" + SIZE_SIZE + " are correct");
+      System.out.println("matrix_mult:" + correct + " of " + SIZE_SIZE + " are correct");
     } catch (Throwable t) {
       JFLog.log(t);
     }

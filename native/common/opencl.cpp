@@ -681,7 +681,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
   }
 
   if (opencl_debug) {
-    printf("local = %zu\n", local);
+    printf("max_local = %zu\n", local);
+  }
+
+	if (local > count) {
+    local = count;
   }
 
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 1, NULL, &global, &local, 0, NULL, NULL);
@@ -718,11 +722,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute2
   }
 
   if (opencl_debug) {
-    printf("local = %zu\n", local);
+    printf("max_local = %zu\n", local);
   }
 
-  locals[0] = 1;
-  locals[1] = 1;
+  locals[0] = count1 > local ? local : count1;
+  locals[1] = count2 > local ? local : count2;
 
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 2, NULL, globals, locals, 0, NULL, NULL);
   if (err)
@@ -759,12 +763,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute3
   }
 
   if (opencl_debug) {
-    printf("local = %zu\n", local);
+    printf("max_local = %zu\n", local);
   }
 
-  locals[0] = 1;
-  locals[1] = 1;
-  locals[2] = 1;
+  locals[0] = count1 > local ? local : count1;
+  locals[1] = count2 > local ? local : count2;
+  locals[2] = count3 > local ? local : count3;
 
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 3, NULL, globals, locals, 0, NULL, NULL);
   if (err)
@@ -802,13 +806,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute4
   }
 
   if (opencl_debug) {
-    printf("local = %zu\n", local);
+    printf("max_local = %zu\n", local);
   }
 
-  locals[0] = 1;
-  locals[1] = 1;
-  locals[2] = 1;
-  locals[3] = 1;
+  locals[0] = count1 > local ? local : count1;
+  locals[1] = count2 > local ? local : count2;
+  locals[2] = count3 > local ? local : count3;
+  locals[3] = count4 > local ? local : count4;
 
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 4, NULL, globals, locals, 0, NULL, NULL);
   if (err)
