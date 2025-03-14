@@ -813,7 +813,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute4
   err = (*_clEnqueueNDRangeKernel)(ctx->commands, (cl_kernel)kernel, 4, NULL, globals, locals, 0, NULL, NULL);
   if (err)
   {
-    printf("Error: Failed to execute3 kernel!%d\n", err);
+    printf("Error: Failed to execute4 kernel!%d\n", err);
     return JNI_FALSE;
   }
 
