@@ -1,3 +1,6 @@
+2025-03-17 - v0.10
+  - added -topic command line arg
+
 2025-02-20 - v0.9
   - fixed issues with different MQTT client protocol versions
 
