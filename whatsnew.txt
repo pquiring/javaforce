@@ -1,5 +1,14 @@
 What's new...
 
+Mar 17/2025 : JF/82.0
+ - opencl
+   - added execute2(), execute3(), execute4() for multi dimensional kernels
+   - fixed local res calcs
+   - Compute class : added 2d matrix multiple kernel
+ - MQTTViewer
+   - added -topic command line argument
+ - jfMQTT/0.10
+
 Feb 26/2025 : JF/81.1
  - fix JSON : do not trim() quoted values
    - fixes key bindings in VNC Web Console

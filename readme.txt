@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 81.1
+Version 82.0
 
 Description
 ===========
@@ -46,7 +46,7 @@ Before checking out the source make sure to configure line endings:
 Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
-  git checkout tags/81.1
+  git checkout tags/82.0
   ant
 Next build the native loaders.
 
