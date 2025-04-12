@@ -140,7 +140,9 @@ public class JFPrintServer {
         res.write(("jobid:" + jobid).getBytes());
         cleanJobs();
       } catch (Exception e) {
-        try {res.write(e.toString().getBytes());} catch (Exception e2) {}
+        String ex = e.toString();
+        try {res.write(ex.getBytes());} catch (Exception e2) {}
+        JFLog.log(ex);
       }
     }
 
