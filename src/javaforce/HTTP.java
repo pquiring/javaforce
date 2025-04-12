@@ -734,7 +734,7 @@ public class HTTP {
       encType = "application/x-www-form-urlencoded";
     }
     req.append("Content-Type: " + encType + "\r\n");
-    req.append("Content-Length: " + data.length);
+    req.append("Content-Length: " + data.length + "\r\n");
     appendHeaders(req);
     req.append("\r\n");
     try {
