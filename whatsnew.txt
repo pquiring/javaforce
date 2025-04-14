@@ -1,5 +1,8 @@
 What's new...
 
+Apr 14/2025 : JF/82.1
+ - fix : HTTP regression : Content-Length missing \r\n in post() method
+
 Mar 17/2025 : JF/82.0
  - opencl
    - added execute2(), execute3(), execute4() for multi dimensional kernels
