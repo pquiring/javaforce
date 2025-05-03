@@ -38,8 +38,8 @@
   <target name="get-freerdp-bin" description="download exes for Win64">
     <echo message="Downloading: wfreerdp"/>
     <get src="https://ci.freerdp.com/job/freerdp-nightly-windows/arch=win64,label=vs2017/lastSuccessfulBuild/artifact/install/bin/wfreerdp.exe" dest="wfreerdp.exe"/>
-    <echo message="Downloading: sdl-freerdp"/>
-    <get src="https://ci.freerdp.com/job/freerdp-nightly-windows/arch=win64,label=vs2017/lastSuccessfulBuild/artifact/install/bin/sdl-freerdp.exe" dest="sdl-freerdp.exe"/>
+    <echo message="Downloading: sdl3-freerdp"/>
+    <get src="https://ci.freerdp.com/job/freerdp-nightly-windows/arch=win64,label=vs2017/lastSuccessfulBuild/artifact/install/bin/sdl3-freerdp.exe" dest="sdl-freerdp.exe"/>
     <echo message="Copying: jfvnc"/>
   </target>
 
