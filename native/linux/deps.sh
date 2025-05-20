@@ -46,12 +46,12 @@ function debian {
 }
 
 function fedora {
-  dnf -y install gcc-c++ java-17-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel libvirt-devel ncurses-devel rpm-build libv4l
+  dnf -y install gcc-c++ java-21-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel libvirt-devel ncurses-devel rpm-build libv4l
 }
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm gcc jdk17-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
+  pacman -S --noconfirm gcc jdk21-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
 }
 
 function freebsd {
