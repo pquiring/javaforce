@@ -84,7 +84,7 @@ function debian {
   if [ ! -f /etc/apt/sources.list.d/javaforce.list ]; then
     echo Download javaforce.list
     wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.list
-    chmod 644 javaforce.list
+    chmod 644 /etc/apt/sources.list.d/javaforce.list
   fi
   if [ $UPDATE = "yes" ]; then
     rm /etc/apt/trusted.gpg.d/javaforce.gpg
@@ -92,7 +92,7 @@ function debian {
   if [ ! -f /etc/apt/trusted.gpg.d/javaforce.gpg ]; then
     echo Download javaforce.gpg
     wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.gpg
-    chmod 644 javaforce.gpg
+    chmod 644 /etc/apt/trusted.gpg.d/javaforce.gpg
   fi
 
   apt update
@@ -122,7 +122,7 @@ function fedora {
   if [ ! -f /etc/yum.repos.d/javaforce.repo ]; then
     echo Download javaforce.repo
     wget -NP /etc/yum.repos.d http://javaforce.sf.net/fedora/$VERSION_ID/$HOSTTYPE/javaforce.repo
-    chmod 644 javaforce.repo
+    chmod 644 /etc/yum.repos.d/javaforce.repo
   fi
 
   dnf update
