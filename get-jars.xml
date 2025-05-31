@@ -50,16 +50,16 @@
     <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
   </target>
 
-  <!-- sql connectors -->
+  <!-- sql drivers -->
 
   <available property="have-mssql-jdbc" file="${lib}/mssql-jdbc-${mssql-jdbc-version}.jar"/>
   <target name="get-mssql-jdbc" unless="have-mssql-jdbc">
     <maven name="mssql-jdbc" path="com/microsoft/sqlserver" version="${mssql-jdbc-version}"/>
   </target>
 
-  <available property="have-mysql-connector" file="${lib}/mysql-connector-${mysql-connector-version}.jar"/>
-  <target name="get-mysql-connector" unless="have-mysql-connector">
-    <maven name="mysql-connector-j" dest="mysql-connector" path="com/mysql" version="${mysql-connector-version}"/>
+  <available property="have-mysql-jdbc" file="${lib}/mysql-jdbc-${mysql-jdbc-version}.jar"/>
+  <target name="get-mysql-jdbc" unless="have-mysql-jdbc">
+    <maven name="mysql-connector-j" dest="mysql-jdbc" path="com/mysql" version="${mysql-jdbc-version}"/>
   </target>
 
   <!-- bouncycastle -->
@@ -314,7 +314,7 @@
     <antcall target="get-derby"/>
     <antcall target="get-jcifs"/>
     <antcall target="get-mssql-jdbc"/>
-    <antcall target="get-mysql-connector"/>
+    <antcall target="get-mysql-jdbc"/>
     <antcall target="get-bcprov"/>
     <antcall target="get-bctls"/>
     <antcall target="get-bcutil"/>

@@ -41,14 +41,14 @@
     <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
   </target>
 
-  <!-- sql connectors -->
+  <!-- sql drivers -->
 
   <target name="jar-mssql-jdbc">
     <copyjar name="mssql-jdbc" version="${mssql-jdbc-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-mysql-connector">
-    <copyjar name="mysql-connector" version="${mysql-connector-version}" path="${jarpath}"/>
+  <target name="jar-mysql-jdbc">
+    <copyjar name="mysql-jdbc" version="${mysql-jdbc-version}" path="${jarpath}"/>
   </target>
 
   <!-- bouncycastle -->
