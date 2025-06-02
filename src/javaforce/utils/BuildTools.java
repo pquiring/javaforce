@@ -138,4 +138,17 @@ public class BuildTools {
       return new String[0];
     }
   }
+
+  /** Returns /etc/os-release property. */
+  public static String getOSRelease(String name) {
+    try {
+      Properties os_release = new Properties();
+      FileInputStream fis = new FileInputStream("/etc/os-release");
+      os_release.load(fis);
+      fis.close();
+      return os_release.getProperty(name);
+    } catch (Exception e) {
+      return "null";
+    }
+  }
 }

@@ -92,9 +92,11 @@ public class GenDEB {
       new File(data).delete();
       JF.deletePathEx("deb");
 
+      String release = BuildTools.getOSRelease("VERSION_CODENAME");
+
       System.out.println(out + " created!");
       if (new File(home + "/repo/debian/readme.txt").exists()) {
-        if (!JF.moveFile(out, home + "/repo/debian/" + arch + "/" + out)) throw new Exception("move failed");
+        if (!JF.moveFile(out, home + "/repo/debian/" + release + "/" + arch + "/" + out)) throw new Exception("move failed");
       }
       System.exit(0);
     } catch (Exception e) {

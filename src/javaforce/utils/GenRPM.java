@@ -85,8 +85,9 @@ public class GenRPM {
       }
       rt.exec(new String[] {"mv", JF.getUserPath() + "/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
       System.out.println(out + " created!");
+      String version_id = BuildTools.getOSRelease("VERSION_ID");
       if (new File(home + "/repo/fedora/readme.txt").exists()) {
-        if (!JF.moveFile(out, home + "/repo/fedora/" + archext + "/" + out)) throw new Exception("move failed");
+        if (!JF.moveFile(out, home + "/repo/fedora/" + version_id + "/" + archext + "/" + out)) throw new Exception("move failed");
       }
       System.exit(0);
     } catch (Exception e) {
