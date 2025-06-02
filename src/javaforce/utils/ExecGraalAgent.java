@@ -64,6 +64,7 @@ public class ExecGraalAgent implements ShellProcessListener {
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
     String home = tools.getProperty("home");
+    String HOME = System.getenv("HOME");
     String exec = "jfexec";
     if (service != null) {
       exec += "s";
@@ -71,9 +72,11 @@ public class ExecGraalAgent implements ShellProcessListener {
     exec += "d";  //use debug version
     if (JF.isWindows()) {
       exec += ".exe";
+    } else {
+      home = HOME;
     }
 
-    cmd.add(exec);
+    cmd.add(home + "/bin/" + exec);
     cmd.add("-agentlib:native-image-agent=config-output-dir=META-INF/native-image");
     cmd.add("-cp");
     if (JF.isWindows()) {

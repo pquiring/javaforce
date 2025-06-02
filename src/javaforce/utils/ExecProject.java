@@ -45,6 +45,8 @@ public class ExecProject implements ShellProcessListener {
       switch (apptype) {
 //        case "window": exec += "w"; break;  //for debugging purposes do not use 'w' version
       }
+    } else {
+      home = System.getProperty("HOME");
     }
 
     Properties props = new Properties();
