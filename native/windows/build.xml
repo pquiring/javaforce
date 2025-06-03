@@ -37,17 +37,17 @@
 
   <target name="get-bin" description="download pre-built binaries">
     <sequential>
+      <mkdir dir="${user.home}/bin"/>
       <get src="http://javaforce.sourceforge.net/ffmpeg/win64/amd64/jf-bin-win64-ffmpeg${ffmpeg-version}.zip" dest="${home}/jf-bin-win64.zip" usetimestamp="true"/>
-      <unzip src="${home}/jf-bin-win64.zip" dest="${home}"/>
+      <unzip src="${home}/jf-bin-win64.zip" dest="${user.home}/bin"/>
     </sequential>
   </target>
 
   <target name="zip-bin" description="zip pre-built binaries">
     <zip destfile="${home}/jf-bin-win64-ffmpeg${ffmpeg-version}.zip">
-      <fileset dir="${home}">
-        <include name="bin/*.exe"/>
-        <include name="native/*.exe"/>
-        <include name="native/*.dll"/>
+      <fileset dir="${user.home}/bin">
+        <include name="*.exe"/>
+        <include name="*.dll"/>
       </fileset>
     </zip>
   </target>
