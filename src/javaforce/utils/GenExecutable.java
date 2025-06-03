@@ -26,8 +26,7 @@ public class GenExecutable implements ShellProcessListener {
   public void run(String buildfile) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
-    String home = tools.getProperty("home");
-    String HOME = System.getenv("HOME");
+    String user_home = System.getProperty("user.home");
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
     String ico = tools.getProperty("ico");
@@ -50,7 +49,7 @@ public class GenExecutable implements ShellProcessListener {
           case "client": app = app + "-client"; break;
           case "server": app = app + "-server"; break;
         }
-        if (!JF.copyFile(home + "/native/win64" + type + ".exe", app + ".exe")) {
+        if (!JF.copyFile(user_home + "/bin/win64" + type + ".exe", app + ".exe")) {
           throw new Exception("copy error:" + app + ".exe");
         }
         if (!new File(app + ".exe").exists()) {
@@ -63,7 +62,7 @@ public class GenExecutable implements ShellProcessListener {
           case "client": app = app + "-client"; break;
           case "server": app = app + "-server"; break;
         }
-        JF.copyFile(HOME + "/bin/mac64.bin", app);
+        JF.copyFile(user_home + "/bin/mac64.bin", app);
       } else {
         //linux
         switch (apptype) {
@@ -72,7 +71,7 @@ public class GenExecutable implements ShellProcessListener {
           case "client": app = app + "-client"; break;
           case "server": app = app + "-server"; break;
         }
-        JF.copyFile(HOME + "/bin/linux64" + type + ".bin", app + ".bin");
+        JF.copyFile(user_home + "/bin/linux64" + type + ".bin", app + ".bin");
         ResourceManager.main(new String[] {app + ".bin", cfg});
       }
       System.out.println("Native Executable generated!");

@@ -4,12 +4,10 @@
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <property environment="env"/>
-
   <property name="libs" value="-ldl -lpthread"/>
 
   <target name="mac" description="create mac native so">
-    <mkdir dir="${env.HOME}/bin"/>
+    <mkdir dir="${user.home}/bin"/>
     <!-- build native library -->
     <exec command="gcc ${opt} -I ${env.FFMPEG_HOME} -I ${java.home} -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers native.mm -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.m -c -o glfw.o -fPIC"/>
@@ -17,11 +15,11 @@
 	  <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
     <!-- build native executable -->
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers loader.mm ${libs} -o ${env.HOME}/bin/mac64.bin"/>
+    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers loader.mm ${libs} -o ${user.home}/bin/mac64.bin"/>
 
     <!-- build native cli executable -->
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI loader.mm ${libs} -o ${env.HOME}/bin/jfexec"/>
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI -D_JF_DEBUG loader.mm ${libs} -o ${env.HOME}/bin/jfexecd"/>
+    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI loader.mm ${libs} -o ${user.home}/bin/jfexec"/>
+    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI -D_JF_DEBUG loader.mm ${libs} -o ${user.home}/bin/jfexecd"/>
 
     <delete>
       <fileset dir=".">

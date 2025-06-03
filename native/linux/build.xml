@@ -3,13 +3,11 @@
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <property environment="env"/>
-
   <macrodef name="build" description="create linux natives">
     <attribute name="libs"/>
     <attribute name="linux"/>
     <sequential>
-      <mkdir dir="${env.HOME}/bin"/>
+      <mkdir dir="${user.home}/bin"/>
       <!-- build native library -->
       <exec command="gcc ${opt} -I /usr/include/ffmpeg -I ${java.home}/include/@{linux} -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
       <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
@@ -17,19 +15,19 @@
       <exec command="ar r native.a native.o glfw.o glfw-null.o"/>
 
       <!-- build native executables -->
-      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings loader.cpp native.a @{libs} -o ${env.HOME}/bin/linux64.bin"/>
-      <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings loader.cpp native.a @{libs} -o ${env.HOME}/bin/linux64s.bin"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings loader.cpp native.a @{libs} -o ${user.home}/bin/linux64.bin"/>
+      <exec command="gcc ${opt} -D_JF_SERVICE -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings loader.cpp native.a @{libs} -o ${user.home}/bin/linux64s.bin"/>
       <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
-      <exec command="strip -R .note.gnu.build-id ${env.HOME}/bin/linux64.bin"/>
-      <exec command="strip -R .note.gnu.build-id ${env.HOME}/bin/linux64s.bin"/>
+      <exec command="strip -R .note.gnu.build-id ${user.home}/bin/linux64.bin"/>
+      <exec command="strip -R .note.gnu.build-id ${user.home}/bin/linux64s.bin"/>
 
       <!-- build cli version -->
-      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI loader.cpp native.a @{libs} -o ${env.HOME}/bin/jfexec"/>
-      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG loader.cpp native.a @{libs} -o ${env.HOME}/bin/jfexecd"/>
-      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE loader.cpp native.a @{libs} -o ${env.HOME}/bin/jfexecsd"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI loader.cpp native.a @{libs} -o ${user.home}/bin/jfexec"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG loader.cpp native.a @{libs} -o ${user.home}/bin/jfexecd"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE loader.cpp native.a @{libs} -o ${user.home}/bin/jfexecsd"/>
 
       <!-- build shared library (optional) -->
-      <exec command="gcc ${opt} -shared native.o glfw.o glfw-null.o @{libs} -o ${env.HOME}/bin/jfnative64.so"/>
+      <exec command="gcc ${opt} -shared native.o glfw.o glfw-null.o @{libs} -o ${user.home}/bin/jfnative64.so"/>
 
       <delete>
         <fileset dir=".">
