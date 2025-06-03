@@ -27,7 +27,7 @@
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG /D_JF_CLI_SERVICE loader.cpp native.lib ${winlibs} /Fe: ${user.home}/bin/jfexecsd.exe /link /subsystem:console"/>
 
     <!-- native shared library (optional) -->
-    <exec command="cl /LD /MT ${objs} ${winlibs} libcmt.lib /Fe: ../jfnative64.dll /link /MACHINE:X64"/>
+    <exec command="cl /LD /MT ${objs} ${winlibs} libcmt.lib /Fe: ${user.home}/bin/jfnative64.dll /link /MACHINE:X64"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>
