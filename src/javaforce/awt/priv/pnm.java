@@ -44,7 +44,7 @@ public class pnm {
       if (type == TYPE_BIT_ASCII || type == TYPE_BIT_BIN) throw new Exception("pmg:bit format not supported");
       if (type < TYPE_GRAY_BIN) throw new Exception("pmg:ascii format not supported");
       pos += 3;
-      if (data[pos] == '#') {
+      while (data[pos] == '#') {
         //skip comment
         while (data[pos] != '\n') {
           pos++;
