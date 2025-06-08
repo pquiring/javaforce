@@ -1085,6 +1085,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("BMP", "bmp"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("TIFF", "tiff"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("PGM", "pgm"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("PPM", "ppm"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("XPM", "xpm"));
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(currentPath));
@@ -1239,12 +1241,16 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       if (!size.accepted) return false;
       if (size.w <= 0 || size.h <= 0) return false;
       result = img.loadSVG(filename, size.w, size.h);
-    } else if (format.equals("jpg"))
+    } else if (format.equals("jpg") || format.equals("jpeg"))
       result = img.loadJPG(filename);
     else if (format.equals("xpm"))
       result = img.loadXPM(filename);
     else if (format.equals("tiff"))
       result = img.loadTIFF(filename);
+    else if (format.equals("pgm"))
+      result = img.loadPGM(filename);
+    else if (format.equals("ppm"))
+      result = img.loadPPM(filename);
     else
       result = img.load(filename);
     if (result && !multi) {
@@ -1382,10 +1388,15 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         saved = img.saveBMP(filename);
       else if (format.equals("svg"))
         saved = img.saveSVG(filename);
-      else if (format.equals("jpg"))
+      else if (format.equals("jpg") || format.equals("jpeg"))
         saved = img.saveJPG(filename);
       else if (format.equals("tiff"))
         saved = img.saveTIFF(filename);
+      else if (format.equals("pgm"))
+        saved = img.savePGM(filename);
+      else if (format.equals("ppm"))
+        saved = img.savePPM(filename);
+      //XPM.save() not supported
       else
         saved = img.save(filename, format);
       if (!saved) {
@@ -1406,6 +1417,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("TIFF", "tiff"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("BMP", "bmp"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("PGM", "pgm"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("PPM", "ppm"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("SVG", "svg"));
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(currentPath));
@@ -1461,6 +1474,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (format.equals("jpg")) return "jpg";
     if (format.equals("jpeg")) return "jpg";
     if (format.equals("svg")) return "svg";
+    if (format.equals("pgm")) return "pgm";
+    if (format.equals("ppm")) return "ppm";
     if (format.equals("xpm")) return "xpm";
     if (format.equals("tiff")) return "tiff";
     System.out.println("Unsupported format:" + format);

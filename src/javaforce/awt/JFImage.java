@@ -601,6 +601,96 @@ public class JFImage extends JComponent implements Icon {
     return savemulti(out, imgs, "tiff");
   }
 
+  //PGM support (8bit gray scale)
+
+  public boolean loadPGM(String filename) {
+    try {
+      return loadPGM(new FileInputStream(filename));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  public boolean savePGM(String filename) {
+    try {
+      return savePGM(new FileOutputStream(filename));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  public boolean loadPGM(InputStream in) {
+    int[] buf;
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
+    buf = pnm.load(in, size);
+    try {in.close();} catch (Exception e) {e.printStackTrace();}
+    if (buf == null) {
+      JFLog.log("loadPGM() failed! null returned");
+      return false;
+    }
+    if (size.width == 0 || size.height == 0) {
+      JFLog.log("loadPGM() failed! image size zero");
+      return false;
+    }
+    setImageSize(size.width, size.height);
+    putPixels(buf, 0, 0, size.width, size.height, 0);
+    return true;
+  }
+
+  public boolean savePGM(OutputStream out) {
+    int[] pixels;
+    pixels = getPixels(0, 0, getWidth(), getHeight());
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
+    return pnm.save(out, pixels, size, pnm.TYPE_GRAY_BIN);
+  }
+
+  //PPM support (24bit color)
+
+  public boolean loadPPM(String filename) {
+    try {
+      return loadPPM(new FileInputStream(filename));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  public boolean savePPM(String filename) {
+    try {
+      return savePPM(new FileOutputStream(filename));
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  public boolean loadPPM(InputStream in) {
+    int[] buf;
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
+    buf = pnm.load(in, size);
+    try {in.close();} catch (Exception e) {e.printStackTrace();}
+    if (buf == null) {
+      JFLog.log("loadPPM() failed! null returned");
+      return false;
+    }
+    if (size.width == 0 || size.height == 0) {
+      JFLog.log("loadPPM() failed! image size zero");
+      return false;
+    }
+    setImageSize(size.width, size.height);
+    putPixels(buf, 0, 0, size.width, size.height, 0);
+    return true;
+  }
+
+  public boolean savePPM(OutputStream out) {
+    int[] pixels;
+    pixels = getPixels(0, 0, getWidth(), getHeight());
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
+    return pnm.save(out, pixels, size, pnm.TYPE_COLOR_BIN);
+  }
+
   /** Puts pixels . */
   public void putJFImage(JFImage img, int x, int y) {
     int[] px = img.getPixels();

@@ -15,6 +15,10 @@ public class Color {
   public static int MASK_GREEN = 0x0000ff00;
   public static int MASK_BLUE = 0x000000ff;
 
+  public static int SHIFT_RED = 16;
+  public static int SHIFT_GREEN = 8;
+  public static int SHIFT_BLUE = 0;
+
   public static int black = 0x000000;
   public static int light_red = 0xee9090;
   public static int dark_red = 0x770000;
