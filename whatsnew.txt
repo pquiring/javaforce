@@ -1,5 +1,9 @@
 What's new...
 
+Jun 9/2025 : JF/83.0
+  - new : added support for .pgm and .ppm image files
+  - jfPaint/0.29
+
 Apr 14/2025 : JF/82.1
  - fix : HTTP regression : Content-Length missing \r\n in post() method
 
