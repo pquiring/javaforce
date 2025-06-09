@@ -1,5 +1,8 @@
 Whatsnew ...
 
+Jun 9, 2025 - v0.29 released!
+  - new : added support for .pgm and .ppm image files
+
 Nov 14, 2024 - v0.28 released!
   - new : added CTRL+PAGE_UP/PAGE_DN to cycle thru tabs
 
