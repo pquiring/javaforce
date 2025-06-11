@@ -83,7 +83,7 @@ public class pnm {
       switch (type) {
         case TYPE_GRAY_BIN: {
           for(int a=0;a<pxs;a++) {
-            int val = data[pos++];
+            int val = data[pos++] & 0xff;
             val = (val + (val << 8) + (val << 16)) + Color.OPAQUE;  //gray scale
             px[off++] = val;
           }
@@ -91,9 +91,9 @@ public class pnm {
         }
         case TYPE_COLOR_BIN: {
           for(int a=0;a<pxs;a++) {
-            int r = data[pos++];
-            int g = data[pos++];
-            int b = data[pos++];
+            int r = data[pos++] & 0xff;
+            int g = data[pos++] & 0xff;
+            int b = data[pos++] & 0xff;
             int val = (b + (g << 8) + (r << 16)) + Color.OPAQUE;
             px[off++] = val;
           }
