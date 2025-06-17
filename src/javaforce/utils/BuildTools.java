@@ -146,7 +146,14 @@ public class BuildTools {
       FileInputStream fis = new FileInputStream("/etc/os-release");
       os_release.load(fis);
       fis.close();
-      return os_release.getProperty(name);
+      String value = os_release.getProperty(name);
+      if (value == null) return null;
+      int strlen = value.length();
+      if ((value.charAt(0) == '\"') && (value.charAt(strlen-1) == '\"')) {
+        //remove quotes
+        value = value.substring(1, strlen-1);
+      }
+      return value;
     } catch (Exception e) {
       return "null";
     }
