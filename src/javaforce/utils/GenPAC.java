@@ -81,7 +81,7 @@ public class GenPAC {
       new File(files_tmp).delete();
       System.out.println(out + " created!");
       if (new File(home + "/repo/arch/readme.txt").exists()) {
-        if (!JF.moveFile(out, home + "/repo/arch/" + archext + "/" + out)) throw new Exception("move failed");
+        if (!JF.moveFile(out, home + "/repo/arch/latest/" + archext + "/" + out)) throw new Exception("move failed");
       }
       System.exit(0);
     } catch (Exception e) {

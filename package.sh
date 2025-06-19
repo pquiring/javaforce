@@ -17,6 +17,7 @@ function detectos {
       pkg=deb
       PKG=DEB
       OS=debian
+      RELEASE=$VERSION_CODENAME
       case $HOSTTYPE in
       x86_64)
         ARCH=amd64
@@ -35,12 +36,14 @@ function detectos {
       pkg=rpm
       PKG=RPM
       OS=fedora
+      RELEASE=$VERSION_ID
       ARCH=$HOSTTYPE
       ;;
     arch)
       pkg=pac
       PKG=PAC
       OS=arch
+      RELEASE=latest
       ARCH=$HOSTTYPE
       pacman -S sudo
       ;;
@@ -70,11 +73,11 @@ if [ ! -f repo/readme.txt ]; then
 fi
 
 #clean repo
-echo cleaning repo/$OS/$ARCH/
-cd repo/$OS/$ARCH
+echo cleaning repo/$OS/$RELEASE/$ARCH/
+cd repo/$OS/$RELEASE/$ARCH
 chmod +x clean.sh
 ./clean.sh
-cd ../../..
+cd ../../../..
 
 #force rebuild everything
 find -name "*.class" | xargs rm 2>/dev/null
