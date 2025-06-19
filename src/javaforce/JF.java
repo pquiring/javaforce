@@ -1891,4 +1891,18 @@ public class JF {
   public static String generateUUID() {
     return UUID.randomUUID().toString();
   }
+
+  /** Sorts an array of Files with folders first. */
+  public static void sort(File[] files) {
+    Arrays.sort(files, new Comparator<File>() {
+      public int compare(File f1, File f2) {
+        boolean f1_dir = f1.isDirectory();
+        boolean f2_dir = f2.isDirectory();
+        if (f1_dir != f2_dir) {
+          if (f1_dir && !f2_dir) return -1; else return 1;
+        }
+        return f1.getName().compareTo(f2.getName());
+      }
+    });
+  }
 }
