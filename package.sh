@@ -13,7 +13,7 @@ function detectos {
   fi
   . /etc/os-release
   case $ID in
-    debian | ubuntu)
+    debian)
       pkg=deb
       PKG=DEB
       OS=debian
@@ -46,6 +46,12 @@ function detectos {
       RELEASE=latest
       ARCH=$HOSTTYPE
       pacman -S sudo
+      ;;
+    ubuntu)
+      #VERSION_CODENAME varies
+      echo Ubuntu not supported for packaging, please use Debian!
+      echo Debian repo can be used in Ubuntu.
+      exit
       ;;
     *)
       echo Unknown os detected!
