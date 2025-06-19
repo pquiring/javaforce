@@ -1,3 +1,6 @@
+2025-06-19 : 2.7 released!
+  - fix : issues with web console
+
 2025-02-26 : 2.6 released!
   - fix : some key bindings in web console
 
