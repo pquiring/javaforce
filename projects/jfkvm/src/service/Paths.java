@@ -36,5 +36,6 @@ public class Paths {
     new File(statsPath).mkdirs();
     JFLog.append(logsPath + "/jfkvm.log", true);
     JFLog.setRetention(30);
+    JFLog.setShowCause(true);
   }
 }
