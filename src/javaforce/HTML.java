@@ -127,4 +127,20 @@ public class HTML {
     }
     return sb.toString();
   }
+  /** Adds css file. */
+  public static String addCSSfile(String file) {
+    return "<link type='stylesheet' href='" + file + "'>";
+  }
+  /** Adds css styles inline. */
+  public static String addCSSinline(String styles) {
+    return "<style>" + styles + "</style>";
+  }
+  /** Adds js file. */
+  public static String addJSfile(String file) {
+    return "<script src='" + file + "'></script>";
+  }
+  /** Adds js code inline. */
+  public static String addJSinline(String script) {
+    return "<script>" + script + "</script>";
+  }
 }
