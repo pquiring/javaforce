@@ -8,6 +8,7 @@ package javaforce.webui;
 import java.io.*;
 
 import javaforce.awt.JFImage;
+import javaforce.JFLog;
 
 public class Canvas extends Container {
   private Rectangle rect;
@@ -50,11 +51,15 @@ public class Canvas extends Container {
   }
   /** Draw an image on canvas. */
   public void drawImage(JFImage image, Point at) {
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    image.savePNG(os);
-    byte[] data = os.toByteArray();
-    sendData(data);
-    sendEvent("drawimage", new String[] {"x=" + at.x, "y=" + at.y});
+    try {
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      image.savePNG(os);
+      byte[] data = os.toByteArray();
+      sendData(data);
+      sendEvent("drawimage", new String[] {"x=" + at.x, "y=" + at.y});
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
   public void onDrawRect(Rectangle rect) {
     this.rect = rect;
