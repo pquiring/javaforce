@@ -59,7 +59,7 @@ if [ ! -f javaforce.jar ]; then
   exit
 fi
 
-if [ ! -f native/linux64.bin ]; then
+if [ ! -f ~/bin/linux64.bin ]; then
   echo Please build native first!
   exit
 fi
