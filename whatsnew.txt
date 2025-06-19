@@ -1,5 +1,11 @@
 What's new...
 
+Jun 19/2025 : JF/83.1
+  - fix : image .pgm/.ppm loading
+    - jfPaint/0.30
+  - fix : VNCWebConsole drawImage issues
+    - jfKVM/2.7
+
 Jun 9/2025 : JF/83.0
   - new : added support for .pgm and .ppm image files
   - jfPaint/0.29
