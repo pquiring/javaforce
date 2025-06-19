@@ -1,5 +1,8 @@
 Whatsnew ...
 
+Jun 19, 2025 - v0.30 released!
+  - fix : .pgm/.ppm image loading
+
 Jun 9, 2025 - v0.29 released!
   - new : added support for .pgm and .ppm image files
 
