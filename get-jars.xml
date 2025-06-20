@@ -249,6 +249,11 @@
     <maven name="jsvg" path="com/github/weisj" version="${jsvg-version}"/>
   </target>
 
+  <available property="have-tinyradius" file="${lib}/tinyradius-${tinyradius-version}.jar"/>
+  <target name="get-tinyradius" unless="have-tinyradius">
+    <maven name="tinyradius" path="org/tinyradius" version="${tinyradius-version}"/>
+  </target>
+
   <!-- netty -->
 
   <available property="have-netty-common" file="${lib}/netty-common-${netty-version}.jar"/>
@@ -349,6 +354,7 @@
     <antcall target="get-xmlgraphics-commons"/>
     <antcall target="get-xml-apis-ext"/>
     <antcall target="get-jsvg"/>
+    <antcall target="get-tinyradius"/>
     <antcall target="get-netty-common"/>
     <antcall target="get-netty-buffer"/>
     <antcall target="get-netty-transport"/>
