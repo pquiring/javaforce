@@ -1728,9 +1728,6 @@ public class ConfigService implements WebUIHandler {
     row.add(iqn_generate);
     grid.addRow(new Component[] {new Label("iSCSI Initiator IQN"), row});
 
-    TextField vnc_password = new TextField(Config.current.vnc_password);
-    grid.addRow(new Component[] {new Label("VNC Password"), vnc_password});
-
     row = new Row();
     TextField stats_days = new TextField(Integer.toString(Config.current.stats_days));
     row.add(stats_days);
@@ -1755,12 +1752,6 @@ public class ConfigService implements WebUIHandler {
 
     save.addClickListener((me, cmp) -> {
       msg.setText("");
-      String new_vnc_password = vmm.cleanName(vnc_password.getText());
-      if (new_vnc_password.length() != 8) {
-        vnc_password.setText(new_vnc_password);
-        errmsg.setText("Error:VNC Password must be 8 chars");
-        return;
-      }
       String _stats_days_str = vmm.cleanNumber(stats_days.getText());
       if (_stats_days_str.length() == 0 || !_stats_days_str.equals(stats_days.getText())) {
         errmsg.setText("Error:Stats Retention is invalid");
@@ -1772,31 +1763,11 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       errmsg.setText("");
-      String old_vnc_password = Config.current.vnc_password;
       Config.current.fqn = fqn.getText();
-      Config.current.vnc_password = new_vnc_password;
       Config.current.stats_days = _stats_days_int;
       Storage.setSystemIQN(iqn.getText());
       Config.current.save();
       msg.setText("Settings saved");
-      if (!new_vnc_password.equals(old_vnc_password)) {
-        //re-register all VMs
-        int fail_count = 0;
-        VirtualMachine[] vms = VirtualMachine.list();
-        for(VirtualMachine vm : vms) {
-          Hardware hw = vm.loadHardware();
-          if (hw == null) {
-            fail_count++;
-            continue;
-          }
-          if (!vm.reregister(hw, vmm)) {
-            fail_count++;
-          }
-        }
-        if (fail_count > 0) {
-          errmsg.setText("Warning:Unable to re-register some VMs. VNC Password change may not be updated!");
-        }
-      }
     });
 
     iqn_generate.addClickListener((me, cmp) -> {
