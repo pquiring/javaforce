@@ -33,23 +33,6 @@
     <maven name="imageio-tiff" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
   </target>
 
-  <!-- others -->
-
-  <available property="have-bfg" file="${lib}/bfg-${bfg-version}.jar"/>
-  <target name="get-bfg" unless="have-bfg">
-    <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
-  </target>
-
-  <available property="have-derby" file="${lib}/derby-${derby-version}.jar"/>
-  <target name="get-derby" unless="have-derby">
-    <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
-  </target>
-
-  <available property="have-jcifs" file="${lib}/jcifs-${jcifs-version}.jar"/>
-  <target name="get-jcifs" unless="have-jcifs">
-    <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
-  </target>
-
   <!-- sql drivers -->
 
   <available property="have-mssql-jdbc" file="${lib}/mssql-jdbc-${mssql-jdbc-version}.jar"/>
@@ -111,28 +94,6 @@
   <available property="have-jakarta-websocket-api" file="${lib}/jakarta-websocket-api-${jakarta-websocket-version}.jar"/>
   <target name="get-jakarta-websocket-api" unless="have-jakarta-websocket-api">
     <maven name="jakarta.websocket-api" dest="jakarta-websocket-api" path="jakarta/websocket" version="${jakarta-websocket-version}"/>
-  </target>
-
-  <!-- others -->
-
-  <available property="have-filters" file="${lib}/filters-${filters-version}.jar"/>
-  <target name="get-filters" unless="have-filters">
-    <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
-  </target>
-
-  <available property="have-bacnet" file="${lib}/bacnet-${bacnet-version}.jar"/>
-  <target name="get-bacnet" unless="have-bacnet">
-    <maven name="bacnet4j" dest="bacnet" path="repository/ias-release/com/infiniteautomation" version="${bacnet-version}" repo="https://maven.mangoautomation.net"/>
-  </target>
-
-  <available property="have-xerces" file="${lib}/xerces-${xerces-version}.jar"/>
-  <target name="get-xerces" unless="have-xerces">
-    <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
-  </target>
-
-  <available property="have-jdom" file="${lib}/jdom-${jdom-version}.jar"/>
-  <target name="get-jdom" unless="have-jdom">
-    <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
   </target>
 
   <!-- log4j -->
@@ -212,53 +173,6 @@
     <maven name="sshd-scp" path="org/apache/sshd" version="${sshd-version}"/>
   </target>
 
-  <!-- others -->
-
-  <available property="have-jargs" file="${lib}/jargs-${jargs-version}.jar"/>
-  <target name="get-jargs" unless="have-jargs">
-    <maven name="jargs" path="io/github/pquiring" version="${jargs-version}"/>
-  </target>
-
-  <available property="have-llrp" file="${lib}/llrp-${llrp-version}.jar"/>
-  <target name="get-llrp" unless="have-llrp">
-    <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
-  </target>
-
-  <available property="have-commons-lang3" file="${lib}/commons-lang3-${commons-lang3-version}.jar"/>
-  <target name="get-commons-lang3" unless="have-commons-lang3">
-    <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
-  </target>
-
-  <available property="have-batik-all" file="${lib}/batik-all-${batik-version}.jar"/>
-  <target name="get-batik-all" unless="have-batik-all">
-    <maven name="batik-all" path="org/apache/xmlgraphics" version="${batik-version}"/>
-  </target>
-
-  <available property="have-xmlgraphics-commons" file="${lib}/xmlgraphics-commons-${xmlgraphics-commons-version}.jar"/>
-  <target name="get-xmlgraphics-commons" unless="have-xmlgraphics-commons">
-    <maven name="xmlgraphics-commons" path="org/apache/xmlgraphics" version="${xmlgraphics-commons-version}"/>
-  </target>
-
-  <available property="have-xml-apis-ext" file="${lib}/xml-apis-ext-${xml-apis-ext-version}.jar"/>
-  <target name="get-xml-apis-ext" unless="have-xml-apis-ext">
-    <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
-  </target>
-
-  <available property="have-jsvg" file="${lib}/jsvg-${jsvg-version}.jar"/>
-  <target name="get-jsvg" unless="have-jsvg">
-    <maven name="jsvg" path="com/github/weisj" version="${jsvg-version}"/>
-  </target>
-
-  <available property="have-tinyradius" file="${lib}/tinyradius-${tinyradius-version}.jar"/>
-  <target name="get-tinyradius" unless="have-tinyradius">
-    <maven name="tinyradius" path="org/tinyradius" version="${tinyradius-version}"/>
-  </target>
-
-  <available property="have-protobuf" file="${lib}/protobuf-${protobuf-version}.jar"/>
-  <target name="get-protobuf" unless="have-protobuf">
-    <maven name="protobuf-java" dest="protobuf" path="com/google/protobuf" version="${protobuf-version}"/>
-  </target>
-
   <!-- netty -->
 
   <available property="have-netty-common" file="${lib}/netty-common-${netty-version}.jar"/>
@@ -311,6 +225,88 @@
   <available property="have-plc4j-driver-s7" file="${lib}/plc4j-driver-s7-${plc4j-version}.jar"/>
   <target name="get-plc4j-driver-s7" unless="have-plc4j-driver-s7">
     <maven name="plc4j-driver-s7" path="org/apache/plc4x" version="${plc4j-version}"/>
+  </target>
+
+  <!-- others -->
+
+  <available property="have-bfg" file="${lib}/bfg-${bfg-version}.jar"/>
+  <target name="get-bfg" unless="have-bfg">
+    <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
+  </target>
+
+  <available property="have-derby" file="${lib}/derby-${derby-version}.jar"/>
+  <target name="get-derby" unless="have-derby">
+    <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
+  </target>
+
+  <available property="have-jcifs" file="${lib}/jcifs-${jcifs-version}.jar"/>
+  <target name="get-jcifs" unless="have-jcifs">
+    <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
+  </target>
+
+  <available property="have-filters" file="${lib}/filters-${filters-version}.jar"/>
+  <target name="get-filters" unless="have-filters">
+    <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
+  </target>
+
+  <available property="have-bacnet" file="${lib}/bacnet-${bacnet-version}.jar"/>
+  <target name="get-bacnet" unless="have-bacnet">
+    <maven name="bacnet4j" dest="bacnet" path="repository/ias-release/com/infiniteautomation" version="${bacnet-version}" repo="https://maven.mangoautomation.net"/>
+  </target>
+
+  <available property="have-xerces" file="${lib}/xerces-${xerces-version}.jar"/>
+  <target name="get-xerces" unless="have-xerces">
+    <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
+  </target>
+
+  <available property="have-jdom" file="${lib}/jdom-${jdom-version}.jar"/>
+  <target name="get-jdom" unless="have-jdom">
+    <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
+  </target>
+
+  <available property="have-jargs" file="${lib}/jargs-${jargs-version}.jar"/>
+  <target name="get-jargs" unless="have-jargs">
+    <maven name="jargs" path="io/github/pquiring" version="${jargs-version}"/>
+  </target>
+
+  <available property="have-llrp" file="${lib}/llrp-${llrp-version}.jar"/>
+  <target name="get-llrp" unless="have-llrp">
+    <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
+  </target>
+
+  <available property="have-commons-lang3" file="${lib}/commons-lang3-${commons-lang3-version}.jar"/>
+  <target name="get-commons-lang3" unless="have-commons-lang3">
+    <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
+  </target>
+
+  <available property="have-batik-all" file="${lib}/batik-all-${batik-version}.jar"/>
+  <target name="get-batik-all" unless="have-batik-all">
+    <maven name="batik-all" path="org/apache/xmlgraphics" version="${batik-version}"/>
+  </target>
+
+  <available property="have-xmlgraphics-commons" file="${lib}/xmlgraphics-commons-${xmlgraphics-commons-version}.jar"/>
+  <target name="get-xmlgraphics-commons" unless="have-xmlgraphics-commons">
+    <maven name="xmlgraphics-commons" path="org/apache/xmlgraphics" version="${xmlgraphics-commons-version}"/>
+  </target>
+
+  <available property="have-xml-apis-ext" file="${lib}/xml-apis-ext-${xml-apis-ext-version}.jar"/>
+  <target name="get-xml-apis-ext" unless="have-xml-apis-ext">
+    <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
+  </target>
+
+  <available property="have-jsvg" file="${lib}/jsvg-${jsvg-version}.jar"/>
+  <target name="get-jsvg" unless="have-jsvg">
+    <maven name="jsvg" path="com/github/weisj" version="${jsvg-version}"/>
+  </target>
+
+  <available property="have-tinyradius" file="${lib}/tinyradius-${tinyradius-version}.jar"/>
+  <target name="get-tinyradius" unless="have-tinyradius">
+    <maven name="tinyradius" path="org/tinyradius" version="${tinyradius-version}"/>
+  </target>
+
+  <available property="have-protobuf" file="${lib}/protobuf-${protobuf-version}.jar"/>
+  <target name="get-protobuf" unless="have-protobuf">
+    <maven name="protobuf-java" dest="protobuf" path="com/google/protobuf" version="${protobuf-version}"/>
   </target>
 
   <target name="getjars">

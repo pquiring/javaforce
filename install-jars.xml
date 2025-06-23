@@ -31,16 +31,6 @@
     <copyjar name="imageio-tiff" version="${twelvemonkeys-version}" path="${jarpath}"/>
   </target>
 
-  <!-- others -->
-
-  <target name="jar-derby">
-    <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-jcifs">
-    <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
-  </target>
-
   <!-- sql drivers -->
 
   <target name="jar-mssql-jdbc">
@@ -91,24 +81,6 @@
 
   <target name="jar-jakarta-websocket-api">
     <copyjar name="jakarta-websocket-api" version="${jakarta-websocket-version}" path="${jarpath}"/>
-  </target>
-
-  <!-- others -->
-
-  <target name="jar-filters">
-    <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-bacnet">
-    <copyjar name="bacnet" version="${bacnet-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-xerces">
-    <copyjar name="xerces" version="${xerces-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-jdom">
-    <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
   </target>
 
   <!-- log4j -->
@@ -173,44 +145,6 @@
     <copyjar name="sshd-scp" version="${sshd-version}" path="${jarpath}"/>
   </target>
 
-  <!-- others -->
-
-  <target name="jar-jargs">
-    <copyjar name="jargs" version="${jargs-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-llrp">
-    <copyjar name="llrp" version="${llrp-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-commons-lang3">
-    <copyjar name="commons-lang3" version="${commons-lang3-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-batik-all">
-    <copyjar name="batik-all" version="${batik-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-xmlgraphics-commons">
-    <copyjar name="xmlgraphics-commons" version="${xmlgraphics-commons-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-xml-apis-ext">
-    <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-jsvg">
-    <copyjar name="jsvg" version="${jsvg-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-tinyradius">
-    <copyjar name="tinyradius" version="${tinyradius-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-protobuf">
-    <copyjar name="protobuf" version="${protobuf-version}" path="${jarpath}"/>
-  </target>
-
   <!-- netty -->
 
   <target name="jar-netty-common">
@@ -253,5 +187,67 @@
 
   <target name="jar-plc4j-driver-s7">
     <copyjar name="plc4j-driver-s7" version="${plc4j-version}" path="${jarpath}"/>
+  </target>
+
+  <!-- others -->
+
+  <target name="jar-derby">
+    <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jcifs">
+    <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-filters">
+    <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-bacnet">
+    <copyjar name="bacnet" version="${bacnet-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-xerces">
+    <copyjar name="xerces" version="${xerces-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jdom">
+    <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jargs">
+    <copyjar name="jargs" version="${jargs-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-llrp">
+    <copyjar name="llrp" version="${llrp-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-commons-lang3">
+    <copyjar name="commons-lang3" version="${commons-lang3-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-batik-all">
+    <copyjar name="batik-all" version="${batik-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-xmlgraphics-commons">
+    <copyjar name="xmlgraphics-commons" version="${xmlgraphics-commons-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-xml-apis-ext">
+    <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jsvg">
+    <copyjar name="jsvg" version="${jsvg-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-tinyradius">
+    <copyjar name="tinyradius" version="${tinyradius-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-protobuf">
+    <copyjar name="protobuf" version="${protobuf-version}" path="${jarpath}"/>
   </target>
 </project>
