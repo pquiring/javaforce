@@ -254,6 +254,11 @@
     <maven name="tinyradius" path="org/tinyradius" version="${tinyradius-version}"/>
   </target>
 
+  <available property="have-protobuf" file="${lib}/protobuf-${protobuf-version}.jar"/>
+  <target name="get-protobuf" unless="have-protobuf">
+    <maven name="protobuf-java" dest="protobuf" path="com/google/protobuf" version="${protobuf-version}"/>
+  </target>
+
   <!-- netty -->
 
   <available property="have-netty-common" file="${lib}/netty-common-${netty-version}.jar"/>
@@ -355,6 +360,7 @@
     <antcall target="get-xml-apis-ext"/>
     <antcall target="get-jsvg"/>
     <antcall target="get-tinyradius"/>
+    <antcall target="get-protobuf"/>
     <antcall target="get-netty-common"/>
     <antcall target="get-netty-buffer"/>
     <antcall target="get-netty-transport"/>

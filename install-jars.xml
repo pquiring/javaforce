@@ -207,6 +207,10 @@
     <copyjar name="tinyradius" version="${tinyradius-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-protobuf">
+    <copyjar name="protobuf" version="${protobuf-version}" path="${jarpath}"/>
+  </target>
+
   <!-- netty -->
 
   <target name="jar-netty-common">
