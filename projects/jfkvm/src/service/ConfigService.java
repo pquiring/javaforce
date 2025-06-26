@@ -1613,7 +1613,8 @@ public class ConfigService implements WebUIHandler {
     TextArea msg = new TextArea(
       "Welcome to jfKVM!\n" +
       "\n" +
-      "jfKVM is a Virtual Machine Management System (libvirt)\n" +
+      "jfKVM is a Type1 hypervisor using Linux KVM/QEMU\n" +
+      "Virtual Machine Management System using libvirt\n" +
       "Designed to be a drop-in replacement for VMWare ESXi hypervisor.\n" +
       "\n" +
       "Features supported:\n" +
