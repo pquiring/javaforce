@@ -1692,6 +1692,14 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private static final int HOST_WELCOME = 0;
+  private static final int HOST_INFO = 1;
+  private static final int HOST_CONFIG = 2;
+  private static final int HOST_AUTOSTART = 3;
+  private static final int HOST_CLUSTER = 4;
+  private static final int HOST_ADMIN = 5;
+  private static final int HOST_SERVICES = 6;
+
   private Panel hostPanel(UI ui, int idx) {
     TabPanel panel = new TabPanel();
     panel.addTab(welcomePanel(ui), "Welcome");
@@ -1978,7 +1986,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     refresh.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui, 3));
+      ui.setRightPanel(hostPanel(ui, HOST_CLUSTER));
     });
 
     help.addClickListener((me, cmp) -> {
@@ -2025,7 +2033,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         Config.current.token = JF.generateUUID();
         Config.current.save();
-        ui.setRightPanel(hostPanel(ui, 3));
+        ui.setRightPanel(hostPanel(ui, HOST_CLUSTER));
       };
       ui.confirm_popup.setVisible(true);
     });
@@ -2101,7 +2109,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         String host = hosts[idx].host;
         Config.current.removeHost(host);
-        ui.setRightPanel(hostPanel(ui, 3));
+        ui.setRightPanel(hostPanel(ui, HOST_CLUSTER));
       };
       ui.confirm_button.setText("Remove");
       ui.confirm_popup.setVisible(true);
@@ -2219,7 +2227,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     refresh.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui, 5));
+      ui.setRightPanel(hostPanel(ui, HOST_SERVICES));
     });
 
     start.addClickListener((me, cmp) -> {
