@@ -263,7 +263,7 @@ public class ConfigService implements WebUIHandler {
     ui.left_right_split = ui.left_right_split;
     ui.left_right_split.setDividerPosition(leftSize);
     ui.left_right_split.setLeftComponent(leftPanel(ui, leftSize));
-    ui.left_right_split.setRightComponent(welcomePanel(ui));
+    ui.left_right_split.setRightComponent(hostPanel(ui, 0));
 
     Panel tasks = tasksPanel(ui);
 
@@ -1572,9 +1572,6 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     ListBox list = new ListBox();
     panel.add(list);
-    Button welcome = new Button("Welcome");
-    welcome.setWidth(size);
-    list.add(welcome);
     Button host = new Button("Host");
     host.setWidth(size);
     list.add(host);
@@ -1587,9 +1584,6 @@ public class ConfigService implements WebUIHandler {
     Button networks = new Button("Network");
     networks.setWidth(size);
     list.add(networks);
-    welcome.addClickListener((me, cmp) -> {
-      ui.setRightPanel(welcomePanel(ui));
-    });
     host.addClickListener((me, cmp) -> {
       ui.setRightPanel(hostPanel(ui, 0));
     });
@@ -1661,11 +1655,15 @@ public class ConfigService implements WebUIHandler {
       cmp.getClient().openURL("https://github.com/pquiring/javaforce/issues");
     });
 
+    panel.setMaxWidth();
+    panel.setMaxHeight();
+
     return panel;
   }
 
   private Panel hostPanel(UI ui, int idx) {
     TabPanel panel = new TabPanel();
+    panel.addTab(welcomePanel(ui), "Welcome");
     panel.addTab(hostInfoPanel(ui), "Info");
     panel.addTab(hostConfigPanel(ui), "Settings");
     panel.addTab(hostAutoStartPanel(ui), "Auto Start");
@@ -5474,5 +5472,10 @@ public class ConfigService implements WebUIHandler {
   }
 
   public void clientDisconnected(WebUIClient client) {
+  }
+
+  public static void main(String[] args) {
+    ConfigService test = new ConfigService();
+    test.start();
   }
 }
