@@ -221,7 +221,7 @@ function wsevent(event) {
       break;
     }
     case "settab":
-      openTab(null, parseInt(msg.idx), msg.tabs, msg.row);
+      openTab(null, parseInt(msg.idx), msg.panel, msg.row, msg.tabs);
       break;
     case "focus":
       element.focus();
@@ -478,8 +478,11 @@ function sendText(id, text) {
   ws.send(JSON.stringify(msg));
 }
 
-function openTab(event, idx, tabsid, rowid) {
+function openTab(event, idx, panelid, rowid, tabsid) {
+  var panel = document.getElementById(panelid);
+  var row = document.getElementById(rowid);
   var tabs = document.getElementById(tabsid);
+
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
   var node;
@@ -494,9 +497,9 @@ function openTab(event, idx, tabsid, rowid) {
     }
   }
 
-  onresizeTabPanel(event, tabsid);
-
   if (rowid === null) return;
+
+  onresizeTabPanel(event, panelid, rowid, tabsid);
 
   var row = document.getElementById(rowid);
   nodes = row.childNodes;
@@ -513,21 +516,12 @@ function openTab(event, idx, tabsid, rowid) {
   }
 }
 
-function onresizeTabPanel(event, tabsid) {
+function onresizeTabPanel(event, panelid, rowid, tabsid) {
+  var panel = document.getElementById(panelid);
+  var row = document.getElementById(rowid);
   var tabs = document.getElementById(tabsid);
-  var nodes = tabs.childNodes;
-  var cnt = nodes.length;
-  var maxWidth = tabs.offsetWidth;
-  var maxHeight = tabs.offsetHeight;
-  var width, height;
-  for(i = 0;i < cnt;i++) {
-    width = nodes[i].offsetWidth;
-    if (width > maxWidth) maxWidth = width;
-    height = nodes[i].offsetHeight;
-    if (height > maxHeight) maxHeight = height;
-  }
-  tabs.style.width = maxWidth + "px";
-  tabs.style.height = maxHeight + "px";
+  tabs.style.width = panel.offsetWidth + "px";
+  tabs.style.height = (panel.offsetHeight - row.offsetHeight) + "px";
 }
 
 function onresizeSplitPanelWidth(event, element, id1, id2, id3) {

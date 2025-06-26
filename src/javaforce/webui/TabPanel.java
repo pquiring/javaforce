@@ -52,9 +52,9 @@ public class TabPanel extends Panel {
     int cnt = row.count();
     for(int a=0;a<cnt;a++) {
       Component c = row.get(a);
-      c.addEvent("onclick", "openTab(event," + a + ",\"" + tabs.id + "\",\"" + row.id + "\");");
+      c.addEvent("onclick", "openTab(event," + a + ",\"" + id + "\",\"" + row.id + "\",\"" + tabs.id + "\");");
     }
-    addEvent("onresize", "onresizeTabPanel(event,\"" + tabs.id + "\");");
+    addEvent("onresize", "onresizeTabPanel(event,\"" + id + "\",\"" + row.id + "\",\"" + tabs.id + "\");");
   }
   public void onLoaded(String[] args) {
     super.onLoaded(args);
