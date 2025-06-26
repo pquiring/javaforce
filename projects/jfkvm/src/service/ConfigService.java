@@ -1136,6 +1136,12 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     ui.device_usb_init = () -> {
       boolean create = ui.device == null;
       String _sel = null;
@@ -1162,8 +1168,12 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = device.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.device = ui.devices[idx];
       if (ui.device_complete != null) {
         ui.device_complete.run();
@@ -1199,6 +1209,12 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     ui.device_pci_init = () -> {
       boolean create = ui.device == null;
       String _sel = null;
@@ -1225,8 +1241,12 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = device.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.device = ui.devices[idx];
       if (ui.device_complete != null) {
         ui.device_complete.run();
@@ -1414,6 +1434,12 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     ui.ctrl_model_init = () -> {
       boolean create = ui.ctrl == null;
       type.setText(ui.ctrl_type);
@@ -1442,8 +1468,12 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = model.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.ctrl.model = model.getSelectedText();
       if (ui.ctrl_model_complete != null) {
         ui.ctrl_model_complete.run();
@@ -2030,8 +2060,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     gluster.addClickListener((me, cmp) -> {
+      remote_errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        remote_errmsg.setText("Error:no selection");
+        return;
+      }
       Host host = hosts[idx];
       String host_host = host.host;
       if (!host.online) {
@@ -2057,8 +2091,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     remove.addClickListener((me, cmp) -> {
+      remote_errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        remote_errmsg.setText("Error:no selection");
+        return;
+      }
       ui.confirm_message.setText("Remove Host:" + hosts[idx].host);
       ui.confirm_action = () -> {
         String host = hosts[idx].host;
@@ -2163,6 +2201,12 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
     Table table = new Table(new int[] {100, 75, 50}, col_height, 3, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
@@ -2179,8 +2223,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Task task = new Task("Start Service") {
         public void doTask() {
           try {
@@ -2195,8 +2243,12 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
     stop.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Task task = new Task("Stop Service") {
         public void doTask() {
           try {
@@ -2211,8 +2263,12 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
     enable.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Task task = new Task("Enable Service") {
         public void doTask() {
           try {
@@ -2227,8 +2283,12 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
     disable.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Task task = new Task("Disable Service") {
         public void doTask() {
           try {
@@ -2306,8 +2366,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       Hardware hardware = vm.loadHardware();
       if (hardware == null) {
@@ -2322,8 +2386,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     console.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() != VirtualMachine.STATE_ON) {
         errmsg.setText("VM is not active");
@@ -2338,8 +2406,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     monitor.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() != VirtualMachine.STATE_ON) {
         errmsg.setText("VM is not active");
@@ -2349,8 +2421,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() != VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is already powered on.");
@@ -2375,8 +2451,12 @@ public class ConfigService implements WebUIHandler {
 
     //stop
     stop.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() == VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is already stopped.");
@@ -2401,8 +2481,12 @@ public class ConfigService implements WebUIHandler {
 
     //restart
     restart.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() == VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is not live.");
@@ -2427,8 +2511,12 @@ public class ConfigService implements WebUIHandler {
 
     //poweroff
     poweroff.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() == VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:VM is already powered down.");
@@ -2452,8 +2540,12 @@ public class ConfigService implements WebUIHandler {
     });
 
     clone.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() != VirtualMachine.STATE_OFF) {
         errmsg.setText("Can not data clone live VM");
@@ -2463,15 +2555,23 @@ public class ConfigService implements WebUIHandler {
     });
 
     migrate.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       ui.setRightPanel(vmMigratePanel(vm, ui));
     });
 
     unreg.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       VirtualMachine vm = vms[idx];
       if (vm.getState() != VirtualMachine.STATE_OFF) {
         errmsg.setText("Error:Can not unregister a live VM.");
@@ -2832,8 +2932,12 @@ public class ConfigService implements WebUIHandler {
       ui.browse_popup.setVisible(true);
     });
     b_disk_edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = disk_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.vm_disk = ui.hardware.disks.get(idx);
       ui.vm_disk_init.run();
       ui.vm_disk_complete = () -> {
@@ -2843,8 +2947,12 @@ public class ConfigService implements WebUIHandler {
       ui.vm_disk_popup.setVisible(true);
     });
     b_disk_delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = disk_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Disk disk = ui.hardware.disks.get(idx);
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Disk : " + disk.name);
@@ -2865,8 +2973,12 @@ public class ConfigService implements WebUIHandler {
       ui.vm_network_popup.setVisible(true);
     });
     b_net_edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = net_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.vm_network = hardware.networks.get(idx);
       ui.vm_network_complete = () -> {
         net_list.remove(idx);
@@ -2876,16 +2988,24 @@ public class ConfigService implements WebUIHandler {
       ui.vm_network_popup.setVisible(true);
     });
     b_net_addr.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = net_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.vm_network = hardware.networks.get(idx);
       ui.device_addr_addr = ui.vm_network;
       ui.device_addr_pci_init.run();
       ui.device_addr_pci_popup.setVisible(true);
     });
     b_net_delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = net_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       net_list.remove(idx);
       hardware.removeNetwork(hardware.networks.get(idx));
     });
@@ -2909,8 +3029,12 @@ public class ConfigService implements WebUIHandler {
       ui.device_pci_popup.setVisible(true);
     });
     b_dev_addr.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = dev_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Device device = ui.hardware.devices.get(idx);
       ui.device_addr_addr = device.guest_addr;
       switch (device.type) {
@@ -2925,8 +3049,12 @@ public class ConfigService implements WebUIHandler {
       }
     });
     b_dev_delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = dev_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Device device = ui.hardware.devices.get(idx);
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Device : " + device.name);
@@ -2971,8 +3099,12 @@ public class ConfigService implements WebUIHandler {
       ui.ctrl_model_popup.setVisible(true);
     });
     b_ctrl_edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = ctrl_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       ui.ctrl = ui.hardware.controllers.get(idx);
       ui.ctrl_type = ui.ctrl.type;
       switch (ui.ctrl.type) {
@@ -2991,16 +3123,24 @@ public class ConfigService implements WebUIHandler {
       ui.ctrl_model_popup.setVisible(true);
     });
     b_ctrl_addr.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = ctrl_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Controller ctrl = ui.hardware.controllers.get(idx);
       ui.device_addr_addr = ctrl;
       ui.device_addr_pci_init.run();
       ui.device_addr_pci_popup.setVisible(true);
     });
     b_ctrl_delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = ctrl_list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Controller ctrl = ui.hardware.controllers.get(idx);
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Controller : " + ctrl.toString());
@@ -3187,8 +3327,12 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
 
     next.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage dest = pools.get(idx);
       if (dest.name.equals(vm.pool)) {
         errmsg.setText("That VM is already in that storage pool");
@@ -3292,7 +3436,10 @@ public class ConfigService implements WebUIHandler {
     next.addClickListener((me, cmp) -> {
       errmsg.setText("");
       int idx = list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Host dest = hosts[idx];
       if (!dest.online) {
         errmsg.setText("Remote Host is offline");
@@ -3416,8 +3563,12 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
 
     next.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = list.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage dest = pools.get(idx);
       String _new_name = vmm.cleanName(new_name.getText());
       if (_new_name.length() == 0) {
@@ -3721,8 +3872,12 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(addStoragePanel(ui));
     });
     edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = pools.get(idx);
       ui.setRightPanel(editStoragePanel(pool, ui));
     });
@@ -3730,8 +3885,12 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(storagePanel(ui));
     });
     browse.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = pools.get(idx);
       ui.browse_path = pool.getPath();
       ui.browse_filters = filter_all;
@@ -3791,8 +3950,12 @@ public class ConfigService implements WebUIHandler {
       ui.browse_popup.setVisible(true);
     });
     start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = pools.get(idx);
       Task task = new Task("Start Pool : " + pool.name) {
         public void doTask() {
@@ -3824,8 +3987,12 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
     stop.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = pools.get(idx);
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop storage pool:" + pool.name);
@@ -3852,8 +4019,12 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     mount.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = pools.get(idx);
       if (pool.type != Storage.TYPE_ISCSI && pool.type != Storage.TYPE_GLUSTER) {
         errmsg.setText("Can only mount iSCSI/Gluster storage pools, use start for other types");
@@ -3875,8 +4046,12 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
     unmount.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = pools.get(idx);
       if (pool.type != Storage.TYPE_ISCSI && pool.type != Storage.TYPE_GLUSTER) {
         errmsg.setText("Can only unmount iSCSI/Gluster storage pools, use stop for other types");
@@ -3958,8 +4133,12 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(storageFormatPanel(pool, ui));
     });
     gluster_volume_create.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       if (!Config.current.gluster_ready()) {
         errmsg.setText("Not all hosts are probed with Gluster");
         return;
@@ -3988,8 +4167,12 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     gluster_volume_start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       if (!Config.current.gluster_ready()) {
         errmsg.setText("Not all hosts are probed with Gluster");
         return;
@@ -4018,8 +4201,12 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
-      if (idx == -1) return;
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
       Storage pool = Config.current.pools.get(idx);
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete storage pool");
@@ -4646,6 +4833,12 @@ public class ConfigService implements WebUIHandler {
       tools.add(link_down);
 
       row = new Row();
+      panel.add(row);
+      Label errmsg = new Label("");
+      errmsg.setColor(Color.red);
+      row.add(errmsg);
+
+      row = new Row();
       tab.add(row);
       Label msg = new Label("");
       row.add(msg);
@@ -4677,16 +4870,24 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_up.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         NetworkInterface nic = ui.nics_iface[idx];
         nic.link_up();
         msg.setText("Link UP:" + nic.name);
       });
 
       link_down.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         NetworkInterface nic = ui.nics_iface[idx];
         nic.link_down();
         msg.setText("Link DOWN:" + nic.name);
@@ -4713,6 +4914,12 @@ public class ConfigService implements WebUIHandler {
       tools.add(delete);
       Button help = new Button("Help");
       tools.add(help);
+
+      row = new Row();
+      panel.add(row);
+      Label errmsg = new Label("");
+      errmsg.setColor(Color.red);
+      row.add(errmsg);
 
       row = new Row();
       tab.add(row);
@@ -4760,8 +4967,12 @@ public class ConfigService implements WebUIHandler {
       });
 */
       delete.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         NetworkBridge nic = ui.nics_bridge[idx];
         ui.confirm_action = () -> {
           if (nic.remove()) {
@@ -4803,6 +5014,12 @@ public class ConfigService implements WebUIHandler {
       tools.add(help);
 
       row = new Row();
+      panel.add(row);
+      Label errmsg = new Label("");
+      errmsg.setColor(Color.red);
+      row.add(errmsg);
+
+      row = new Row();
       tab.add(row);
       Table table = new Table(new int[] {100, 50, 50}, col_height, 3, 0);
       row.add(table);
@@ -4834,15 +5051,23 @@ public class ConfigService implements WebUIHandler {
         ui.network_vlan_popup.setVisible(true);
       });
       edit.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         ui.network_vlan = Config.current.vlans.get(idx);
         ui.network_vlan_init.run();
         ui.network_vlan_popup.setVisible(true);
       });
       delete.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         NetworkVLAN nic = Config.current.vlans.get(idx);
         if (nic.getUsage() > 0) {
           ui.message_message.setText("Network is in use");
@@ -4934,8 +5159,12 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_up.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         NetworkVirtual nic = ui.nics_virt.get(idx);
         nic.link_up();
         nic.set_ip();
@@ -4944,8 +5173,12 @@ public class ConfigService implements WebUIHandler {
       });
 
       link_down.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         NetworkVirtual nic = ui.nics_virt.get(idx);
         nic.link_down();
         errmsg.setText("");
@@ -4967,8 +5200,12 @@ public class ConfigService implements WebUIHandler {
 
 /*
       edit.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         errmsg.setText("");
         msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
@@ -4983,8 +5220,12 @@ public class ConfigService implements WebUIHandler {
 
 /*
       start.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         errmsg.setText("");
         msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
@@ -4996,8 +5237,12 @@ public class ConfigService implements WebUIHandler {
       });
 
       stop.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         errmsg.setText("");
         msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
@@ -5010,8 +5255,12 @@ public class ConfigService implements WebUIHandler {
 */
 
       delete.addClickListener((me, cmp) -> {
+        errmsg.setText("");
         int idx = table.getSelectedRow();
-        if (idx == -1) return;
+        if (idx == -1) {
+          errmsg.setText("Error:no selection");
+          return;
+        }
         errmsg.setText("");
         msg.setText("");
         NetworkVirtual nic = ui.nics_virt.get(idx);
@@ -5479,10 +5728,5 @@ public class ConfigService implements WebUIHandler {
   }
 
   public void clientDisconnected(WebUIClient client) {
-  }
-
-  public static void main(String[] args) {
-    ConfigService test = new ConfigService();
-    test.start();
   }
 }
