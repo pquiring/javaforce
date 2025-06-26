@@ -1903,6 +1903,16 @@ public class ConfigService implements WebUIHandler {
     Button connect = new Button("Connect");
     row.add(connect);
 
+    row = new Row();
+    panel.add(row);
+    Label local_errmsg = new Label("");
+    local_errmsg.setColor(Color.red);
+    row.add(local_errmsg);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Remote Hosts:"));
+
     ToolBar tools2 = new ToolBar();
     panel.add(tools2);
     Button gluster = new Button("Gluster Probe");
@@ -1912,13 +1922,9 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    row = new Row();
-    panel.add(row);
-    row.add(new Label("Remote Hosts:"));
+    Label remote_errmsg = new Label("");
+    remote_errmsg.setColor(Color.red);
+    row.add(remote_errmsg);
 
     row = new Row();
     panel.add(row);
@@ -1950,11 +1956,11 @@ public class ConfigService implements WebUIHandler {
 
     local_key_generate.addClickListener((me, cmp) -> {
       if (Config.current.isKeyValid()) {
-        errmsg.setText("Key is already valid");
+        local_errmsg.setText("Key is already valid");
         return;
       }
       if (genkey) {
-        errmsg.setText("Busy");
+        local_errmsg.setText("Busy");
         return;
       }
       Task task = new Task("Generate Key") {
@@ -1998,7 +2004,7 @@ public class ConfigService implements WebUIHandler {
       String _remote_host = remote_host.getText();
       String _remote_token = remote_token.getText();
       if (_remote_host.equals(Config.current.fqn) || _remote_host.equals("localhost") || _remote_host.equals("127.0.0.1")) {
-        errmsg.setText("Can not connect to localhost");
+        local_errmsg.setText("Can not connect to localhost");
         return;
       }
       Task task = new Task("Connect to host:" + _remote_host) {
@@ -2028,7 +2034,7 @@ public class ConfigService implements WebUIHandler {
       Host host = hosts[idx];
       String host_host = host.host;
       if (!host.online) {
-        errmsg.setText("Host is not online");
+        remote_errmsg.setText("Host is not online");
         return;
       }
       Task task = new Task("Gluster Probe host:" + host_host) {
