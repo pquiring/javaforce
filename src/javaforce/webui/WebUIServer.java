@@ -109,6 +109,14 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     } else if (url.startsWith("/api/")) {
       data = handler.getResource(url, params, res);
       res.addHeader("Cache-Control: no-store");
+    } else if (url.startsWith("/icons/")) {
+      try {
+        InputStream is = this.getClass().getResourceAsStream("/javaforce/icons/32/" + url.substring(6));
+        data = is.readAllBytes();
+        is.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     } else {
       int idx = url.indexOf('.');
       if (idx == -1) {
