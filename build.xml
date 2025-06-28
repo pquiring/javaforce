@@ -103,7 +103,6 @@
     <antcall target="jar-slf4j-nop"/>
     <antcall target="jar-log4j-core"/>
     <antcall target="jar-log4j-api"/>
-    <antcall target="jar-log4j-1.2-api"/>
     <antcall target="jar-jsvg"/>
     <antcall target="jar-netty-common"/>
     <antcall target="jar-netty-buffer"/>
