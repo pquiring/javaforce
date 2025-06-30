@@ -437,19 +437,23 @@ public class KeyMgr extends javax.swing.JDialog {
       usage();
       return;
     }
-    switch (args[0]) {
-      case "open": {
-        KeyMgr dialog = new KeyMgr(args[1], args[2]);
-        dialog.setVisible(true);
-        break;
+    try {
+      switch (args[0]) {
+        case "open": {
+          KeyMgr dialog = new KeyMgr(args[1], args[2]);
+          dialog.setVisible(true);
+          break;
+        }
+        case "create": {
+          KeyMgmt keys = new KeyMgmt();
+          keys.create(args[1], args[2]);
+          KeyMgr dialog = new KeyMgr(keys);
+          dialog.setVisible(true);
+          break;
+        }
       }
-      case "create": {
-        KeyMgmt keys = new KeyMgmt();
-        keys.create(args[1], args[2]);
-        KeyMgr dialog = new KeyMgr(keys);
-        dialog.setVisible(true);
-        break;
-      }
+    } catch (Exception e) {
+      JFLog.log(e);
     }
     System.exit(0);
   }
