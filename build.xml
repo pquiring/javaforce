@@ -149,10 +149,6 @@
 
   <target name="install" description="install files">
     <copy file="javaforce.jar" todir="/usr/share/java"/>
-    <copy file="bcprov.jar" todir="/usr/share/java"/>
-    <copy file="bctls.jar" todir="/usr/share/java"/>
-    <copy file="bcutil.jar" todir="/usr/share/java"/>
-    <copy file="filters.jar" todir="/usr/share/java"/>
   </target>
 
   <target name="jre-all" description="build JRE with all modules included">
