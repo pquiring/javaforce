@@ -1,6 +1,6 @@
 package service;
 
-/** Config
+/** KVM Config
  *
  * @author pquiring
  */
@@ -242,6 +242,7 @@ public class Config implements Serializable {
   }
 
   public void validateHosts() {
+    //TODO
   }
 
   public void addNetworkVLAN(NetworkVLAN network) {
