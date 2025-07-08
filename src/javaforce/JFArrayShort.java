@@ -47,6 +47,18 @@ public class JFArrayShort {
     count = newcount;
   }
 
+  public void set(short[] s, int pos) {
+    int newcount = pos + s.length;
+    if (newcount > buf.length) {
+      buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+    }
+    System.arraycopy(s, 0, buf, pos, s.length);
+  }
+
+  public short[] toArray(int pos, int length) {
+    return Arrays.copyOfRange(buf, pos, pos + length);
+  }
+
   public short[] toArray() {
     return Arrays.copyOf(buf, count);
   }

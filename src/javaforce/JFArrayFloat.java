@@ -47,8 +47,20 @@ public class JFArrayFloat {
     count = newcount;
   }
 
+  public void set(float[] s, int pos) {
+    int newcount = pos + s.length;
+    if (newcount > buf.length) {
+      buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+    }
+    System.arraycopy(s, 0, buf, pos, s.length);
+  }
+
   public float[] toArray() {
     return Arrays.copyOf(buf, count);
+  }
+
+  public float[] toArray(int pos, int length) {
+    return Arrays.copyOfRange(buf, pos, pos + length);
   }
 
   //returns the backing buffer (size may be larger than expected)
