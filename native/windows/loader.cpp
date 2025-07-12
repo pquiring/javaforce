@@ -262,6 +262,13 @@ JavaVMInitArgs *BuildArgs() {
 
 #ifdef DEBUG
   debug = true;
+#else
+  char jf_debug[64];
+  jf_debug[0] = 0; 
+  GetEnvironmentVariable("JF_DEBUG", jf_debug, 64);
+  if (strcmp(jf_debug, "true") == 0) {
+    debug = true;
+  }
 #endif
 
   if (debug) {
