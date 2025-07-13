@@ -253,6 +253,10 @@ JavaVMInitArgs *BuildArgs() {
 
 #ifdef _JF_DEBUG
   debug = true;
+#else
+  if (getenv("JF_DEBUG") != NULL) {
+    debug = true;
+  }
 #endif
 
   if (debug) {
