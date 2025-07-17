@@ -179,7 +179,7 @@ public class MQTTApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(MQTTServer.getLogFile());
+      viewer = new ViewLog(new File(MQTTServer.getLogFile()));
       viewer.setTitle("MQTT Log");
     }
     viewer.setVisible(true);

@@ -7,8 +7,8 @@ package javaforce.service;
  * Created : Sept 14, 2020
  */
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -213,7 +213,7 @@ public class SOCKSApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(SOCKSServer.getLogFile());
+      viewer = new ViewLog(new File(SOCKSServer.getLogFile()));
       viewer.setTitle("SOCKS Log");
     }
     viewer.setVisible(true);

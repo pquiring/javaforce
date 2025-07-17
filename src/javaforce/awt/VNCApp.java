@@ -7,6 +7,7 @@ package javaforce.awt;
  * Created : Nov 16, 2013
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -171,7 +172,7 @@ public class VNCApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewLog == null || viewLog.isClosed) {
-      viewLog = new ViewLog(VNCServer.getLogFile());
+      viewLog = new ViewLog(new File(VNCServer.getLogFile()));
       viewLog.setTitle("VNC Log");
     }
     viewLog.setVisible(true);
@@ -179,7 +180,7 @@ public class VNCApp extends javax.swing.JFrame {
 
   public void showViewStatus() {
     if (viewStatus == null || viewStatus.isClosed()) {
-      viewStatus = new ViewLog("loading".getBytes());
+      viewStatus = new ViewLog("loading");
       viewStatus.setTitle("VNC Status");
       viewStatus.setRefresh(new Runnable() {
         public void run() {

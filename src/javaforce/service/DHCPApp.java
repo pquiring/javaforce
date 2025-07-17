@@ -155,7 +155,7 @@ public class DHCPApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(DHCPServer.getLogFile());
+      viewer = new ViewLog(new File(DHCPServer.getLogFile()));
       viewer.setTitle("DHCP Log");
     }
     viewer.setVisible(true);

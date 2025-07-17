@@ -99,7 +99,7 @@ public class ProgressDialog extends javax.swing.JDialog implements JFTaskListene
     if (results == null) {
       task.abort();
     } else {
-      ViewLog log = new ViewLog(results.getBytes());
+      ViewLog log = new ViewLog(results);
       log.setVisible(true);
     }
   }//GEN-LAST:event_cancelActionPerformed

@@ -155,7 +155,7 @@ public class ViewJFLog extends javax.swing.JDialog {
     final String file = args[0];
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new ViewLog(file).setVisible(true);
+        new ViewLog(new File(file)).setVisible(true);
       }
     });
   }

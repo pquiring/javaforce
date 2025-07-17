@@ -7,6 +7,7 @@ package javaforce.service;
  * Created : Nov 16, 2013
  */
 
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -153,7 +154,7 @@ public class DNSApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(DNSServer.getLogFile());
+      viewer = new ViewLog(new File(DNSServer.getLogFile()));
       viewer.setTitle("DNS Log");
     }
     viewer.setVisible(true);

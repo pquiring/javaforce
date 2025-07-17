@@ -7,6 +7,7 @@ package javaforce.service;
  * Created : Nov 16, 2013
  */
 
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -193,7 +194,7 @@ public class POP3App extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(POP3Server.getLogFile());
+      viewer = new ViewLog(new File(POP3Server.getLogFile()));
       viewer.setTitle("POP3 Log");
     }
     viewer.setVisible(true);

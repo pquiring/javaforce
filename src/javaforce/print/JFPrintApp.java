@@ -155,7 +155,7 @@ public class JFPrintApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(JFPrintServer.getLogFile());
+      viewer = new ViewLog(new File(JFPrintServer.getLogFile()));
       viewer.setTitle("JFPrint Log");
     }
     viewer.setVisible(true);

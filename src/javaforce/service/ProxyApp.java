@@ -7,6 +7,7 @@ package javaforce.service;
  * Created : Nov 16, 2013
  */
 
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -154,7 +155,7 @@ public class ProxyApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(ProxyServer.getLogFile());
+      viewer = new ViewLog(new File(ProxyServer.getLogFile()));
       viewer.setTitle("Proxy Log");
     }
     viewer.setVisible(true);

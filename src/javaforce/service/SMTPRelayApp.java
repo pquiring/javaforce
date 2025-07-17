@@ -7,6 +7,7 @@ package javaforce.service;
  * Created : Nov 16, 2013
  */
 
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -169,7 +170,7 @@ public class SMTPRelayApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(SMTPRelay.getLogFile());
+      viewer = new ViewLog(new File(SMTPRelay.getLogFile()));
       viewer.setTitle("SMTPRelay Log");
     }
     viewer.setVisible(true);

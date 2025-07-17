@@ -12,16 +12,16 @@ import javaforce.*;
 public class ViewLog extends javax.swing.JDialog {
 
   //file
-  private String file;
+  private File file;
 
   //text
   private Runnable refresh;
-  private byte[] msg;
+  private String msg;
 
   /**
    * Creates new form ViewLog
    */
-  public ViewLog(String file) {
+  public ViewLog(File file) {
     super((javax.swing.JFrame)null, true);
     initComponents();
     init();
@@ -29,7 +29,7 @@ public class ViewLog extends javax.swing.JDialog {
     load(file);
   }
 
-  public ViewLog(byte[] msg) {
+  public ViewLog(String msg) {
     super((javax.swing.JFrame)null, true);
     initComponents();
     init();
@@ -37,7 +37,7 @@ public class ViewLog extends javax.swing.JDialog {
     load(msg);
   }
 
-  public ViewLog(byte[] msg, Runnable refresh) {
+  public ViewLog(String msg, Runnable refresh) {
     super((javax.swing.JFrame)null, true);
     initComponents();
     init();
@@ -140,7 +140,7 @@ public class ViewLog extends javax.swing.JDialog {
     final String file = args[0];
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new ViewLog(file).setVisible(true);
+        new ViewLog(new File(file)).setVisible(true);
       }
     });
   }
@@ -152,23 +152,23 @@ public class ViewLog extends javax.swing.JDialog {
   private javax.swing.JTextArea txt;
   // End of variables declaration//GEN-END:variables
 
-  private void load(String file) {
+  private void load(File file) {
     try {
       FileInputStream fis = new FileInputStream(file);
       byte[] txt = JF.readAll(fis);
-      load(txt);
+      load(new String(txt));
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  private void load(byte[] data) {
-    txt.setText(new String(data));
+  private void load(String msg) {
+    txt.setText(msg);
   }
 
   public void setText(String msg) {
-    this.msg = msg.getBytes();
-    load(msg.getBytes());
+    this.msg = msg;
+    load(msg);
   }
 
   public void setRefresh(Runnable refresh) {
