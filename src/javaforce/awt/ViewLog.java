@@ -11,6 +11,13 @@ import javaforce.*;
 
 public class ViewLog extends javax.swing.JDialog {
 
+  //file
+  private String file;
+
+  //text
+  private Runnable refresh;
+  private byte[] msg;
+
   /**
    * Creates new form ViewLog
    */
@@ -18,27 +25,25 @@ public class ViewLog extends javax.swing.JDialog {
     super((javax.swing.JFrame)null, true);
     initComponents();
     init();
-    try {
-      FileInputStream fis = new FileInputStream(file);
-      byte[] txt = JF.readAll(fis);
-      load(txt);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    this.file = file;
+    load(file);
   }
 
-  public ViewLog(InputStream is) {
+  public ViewLog(byte[] msg) {
     super((javax.swing.JFrame)null, true);
     initComponents();
     init();
-    load(JF.readAll(is));
+    this.msg = msg;
+    load(msg);
   }
 
-  public ViewLog(byte[] txt) {
+  public ViewLog(byte[] msg, Runnable refresh) {
     super((javax.swing.JFrame)null, true);
     initComponents();
     init();
-    load(txt);
+    this.msg = msg;
+    this.refresh = refresh;
+    load(msg);
   }
 
   private void init() {
@@ -57,6 +62,7 @@ public class ViewLog extends javax.swing.JDialog {
     close = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     txt = new javax.swing.JTextArea();
+    bRefresh = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     addWindowListener(new java.awt.event.WindowAdapter() {
@@ -75,7 +81,15 @@ public class ViewLog extends javax.swing.JDialog {
     txt.setEditable(false);
     txt.setColumns(20);
     txt.setRows(5);
+    txt.setText("[loading...]");
     jScrollPane1.setViewportView(txt);
+
+    bRefresh.setText("Refresh");
+    bRefresh.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        bRefreshActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -85,7 +99,8 @@ public class ViewLog extends javax.swing.JDialog {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(bRefresh)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(close))
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE))
         .addContainerGap())
@@ -96,7 +111,9 @@ public class ViewLog extends javax.swing.JDialog {
         .addContainerGap()
         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(close)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(close)
+          .addComponent(bRefresh))
         .addContainerGap())
     );
 
@@ -112,6 +129,10 @@ public class ViewLog extends javax.swing.JDialog {
     isClosed = true;
   }//GEN-LAST:event_formWindowClosing
 
+  private void bRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRefreshActionPerformed
+    doRefresh();
+  }//GEN-LAST:event_bRefreshActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -125,14 +146,45 @@ public class ViewLog extends javax.swing.JDialog {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton bRefresh;
   private javax.swing.JButton close;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea txt;
   // End of variables declaration//GEN-END:variables
 
+  private void load(String file) {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      byte[] txt = JF.readAll(fis);
+      load(txt);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   private void load(byte[] data) {
     txt.setText(new String(data));
   }
 
+  public void setText(String msg) {
+    this.msg = msg.getBytes();
+    load(msg.getBytes());
+  }
+
+  public void setRefresh(Runnable refresh) {
+    this.refresh = refresh;
+  }
+
+  private void doRefresh() {
+    if (file != null) load(file);
+    if (refresh != null) {
+      refresh.run();
+    }
+  }
+
   public boolean isClosed = false;
+
+  public boolean isClosed() {
+    return isClosed;
+  }
 }

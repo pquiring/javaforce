@@ -132,7 +132,9 @@ public class JBusClient extends Thread {
         types[a] = args[a].getClass();  //String.class
       }
     }
+    if (debug) JFLog.log("jbusclient:lookup method");
     Method method = cls.getMethod(call_func, types);
+    if (debug) JFLog.log("jbusclient:invoke method");
     method.invoke(obj, args);
   }
 

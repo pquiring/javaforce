@@ -7,16 +7,15 @@ package javaforce.awt;
  * Created : Nov 16, 2013
  */
 
-import java.io.*;
-import java.net.*;
 import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jbus.*;
 
 public class VNCApp extends javax.swing.JFrame {
+
+  private static boolean debug = false;
 
   /**
    * Creates new form VNCApp
@@ -32,7 +31,7 @@ public class VNCApp extends javax.swing.JFrame {
         busClient = new JBusClient(VNCServer.busPack + ".client" + r.nextInt(), new JBusMethods());
         busClient.setPort(VNCServer.getBusPort());
         busClient.start();
-        busClient.call(VNCServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(VNCServer.busPack, "getConfig", JBusClient.quote(busClient.pack));
       }
     }.start();
     JFAWT.centerWindow(this);
@@ -59,7 +58,8 @@ public class VNCApp extends javax.swing.JFrame {
     jScrollPane1 = new javax.swing.JScrollPane();
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
-    viewLog = new javax.swing.JButton();
+    bViewLog = new javax.swing.JButton();
+    bStatus = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("VNC Server");
@@ -80,10 +80,17 @@ public class VNCApp extends javax.swing.JFrame {
 
     jLabel1.setText("VNC Configuration:");
 
-    viewLog.setText("View Log");
-    viewLog.addActionListener(new java.awt.event.ActionListener() {
+    bViewLog.setText("View Log");
+    bViewLog.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        viewLogActionPerformed(evt);
+        bViewLogActionPerformed(evt);
+      }
+    });
+
+    bStatus.setText("Status");
+    bStatus.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        bStatusActionPerformed(evt);
       }
     });
 
@@ -96,7 +103,9 @@ public class VNCApp extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(viewLog)
+            .addComponent(bViewLog)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(bStatus)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
@@ -114,7 +123,8 @@ public class VNCApp extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(save)
-          .addComponent(viewLog))
+          .addComponent(bViewLog)
+          .addComponent(bStatus))
         .addContainerGap())
     );
 
@@ -127,9 +137,13 @@ public class VNCApp extends javax.swing.JFrame {
     JFAWT.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
 
-  private void viewLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLogActionPerformed
+  private void bViewLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bViewLogActionPerformed
     showViewLog();
-  }//GEN-LAST:event_viewLogActionPerformed
+  }//GEN-LAST:event_bViewLogActionPerformed
+
+  private void bStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStatusActionPerformed
+    showViewStatus();
+  }//GEN-LAST:event_bStatusActionPerformed
 
   /**
    * @param args the command line arguments
@@ -144,21 +158,41 @@ public class VNCApp extends javax.swing.JFrame {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton bStatus;
+  private javax.swing.JButton bViewLog;
   private javax.swing.JTextArea config;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
-  private javax.swing.JButton viewLog;
   // End of variables declaration//GEN-END:variables
 
-  public ViewLog viewer;
+  public ViewLog viewLog;
+  public ViewLog viewStatus;
 
   public void showViewLog() {
-    if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(VNCServer.getLogFile());
-      viewer.setTitle("VNC Log");
+    if (viewLog == null || viewLog.isClosed) {
+      viewLog = new ViewLog(VNCServer.getLogFile());
+      viewLog.setTitle("VNC Log");
     }
-    viewer.setVisible(true);
+    viewLog.setVisible(true);
+  }
+
+  public void showViewStatus() {
+    if (viewStatus == null || viewStatus.isClosed()) {
+      viewStatus = new ViewLog("loading".getBytes());
+      viewStatus.setTitle("VNC Status");
+      viewStatus.setRefresh(new Runnable() {
+        public void run() {
+          requestStatus();
+        }
+      });
+      requestStatus();
+      viewStatus.setVisible(true);
+    }
+  }
+
+  public void requestStatus() {
+    busClient.call(VNCServer.busPack, "getStatus", JBusClient.quote(busClient.pack));
   }
 
   public JBusClient busClient;
@@ -173,6 +207,13 @@ public class VNCApp extends javax.swing.JFrame {
           save.setEnabled(true);
         }
       });
+    }
+    public void getStatus(String status) {
+      if (debug) JFLog.log("gotStatus=" + status);
+      status = JBusClient.decodeString(status);
+      if (viewStatus != null) {
+        viewStatus.setText(status);
+      }
     }
   }
 }

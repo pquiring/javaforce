@@ -257,6 +257,25 @@ public class VNCServer {
     return users[0].getName();
   }
 
+  private ArrayList<Client> clients = new ArrayList<>();
+  private Object clientsLock = new Object();
+
+  private void addClient(Client client) {
+    synchronized (clientsLock) {
+      clients.add(client);
+    }
+  }
+
+  private void removeClient(Client client) {
+    synchronized (clientsLock) {
+      clients.remove(client);
+    }
+  }
+
+  private int getClientCount() {
+    return clients.size();
+  }
+
   private class Server extends Thread {
     public void run() {
       VNCRobot robot;
@@ -277,6 +296,7 @@ public class VNCServer {
             continue;
           }
           Client client = new Client(s, robot);
+          addClient(client);
           client.start();
         } catch (Exception e) {
           JFLog.log(e);
@@ -442,8 +462,9 @@ public class VNCServer {
         close();
       }
       synchronized (lock) {
-        robot.close();
+        try{robot.close();} catch (Exception e) {}
       }
+      removeClient(this);
     }
     public void close() {
       connected = false;
@@ -676,6 +697,17 @@ public class VNCServer {
     }
   }
 
+  public String getStatus() {
+    StringBuilder msg = new StringBuilder();
+    try {
+      msg.append("Service active on port:" + service.config.port + "\n");
+      msg.append("Clients active:" + getClientCount() + "\n");
+    } catch (Exception e) {
+      msg.append("Exception:" + e);
+    }
+    return msg.toString();
+  }
+
   public static class JBusMethods {
     public void getConfig(String pack) {
       byte[] cfg = JF.readFile(getConfigFile());
@@ -697,6 +729,15 @@ public class VNCServer {
       service.stop();
       service = new VNCServer();
       service.start();
+    }
+    public void getStatus(String pack) {
+      String status = null;
+      if (service != null) {
+        status = service.getStatus();
+      } else {
+        status = "Service not running!";
+      }
+      service.busClient.call(pack, "getStatus", JBusClient.quote(JBusClient.encodeString(status)));
     }
   }
 }
