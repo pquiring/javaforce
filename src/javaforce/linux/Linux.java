@@ -19,9 +19,9 @@ import javaforce.jni.*;
 
 public class Linux {
 
-  /** Returns jfLinux ISO version. */
+  /** Returns Linux version as float. */
   public static String getVersion() {
-    return JF.getVersion();
+    return getOSRelease("VERSION_ID");
   }
 
   public static enum DistroTypes {
@@ -37,29 +37,21 @@ public class Linux {
       return true;
     }
     try {
-      //Debian/Ubuntu : /etc/os-release
-      File lsb = new File("/etc/os-release");
-      if (lsb.exists()) {
-        FileInputStream fis = new FileInputStream(lsb);
-        Properties props = new Properties();
-        props.load(fis);
-        fis.close();
-        String id = props.getProperty("ID");
-        if (id.equals("debian") || id.equals("ubuntu")) {
-          distro = DistroTypes.Debian;
-          JFLog.log("Detected Linux:debian");
-          return true;
-        }
-        if (id.equals("fedora")) {
-          distro = DistroTypes.Fedora;
-          JFLog.log("Detected Linux:fedora");
-          return true;
-        }
-        if (id.equals("arch")) {
-          distro = DistroTypes.Arch;
-          JFLog.log("Detected Linux:arch");
-          return true;
-        }
+      String id = getOSRelease("ID");
+      if (id.equals("debian") || id.equals("ubuntu")) {
+        distro = DistroTypes.Debian;
+        JFLog.log("Detected Linux:debian");
+        return true;
+      }
+      if (id.equals("fedora")) {
+        distro = DistroTypes.Fedora;
+        JFLog.log("Detected Linux:fedora");
+        return true;
+      }
+      if (id.equals("arch")) {
+        distro = DistroTypes.Arch;
+        JFLog.log("Detected Linux:arch");
+        return true;
       }
       JFLog.log("Error:Unknown distro");
     } catch (Exception e) {
@@ -1344,6 +1336,85 @@ public class Linux {
 
   public static void setenv(String name, String value) {
     LnxNative.setenv(name, value);
+  }
+
+  public static String getHostname() {
+    try {
+      FileInputStream fis = new FileInputStream("/etc/hostname");
+      String hostname = new String(fis.readAllBytes()).trim();
+      fis.close();
+      return hostname;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return "localhost";
+    }
+  }
+
+  public static String getDistro() {
+    detectDistro();
+    switch (distro) {
+      case Debian: return "Debian";
+      case Fedora: return "Fedora";
+      case Arch: return "Arch";
+      default: return "unknown";
+    }
+  }
+
+  /** Returns /etc/os-release property. */
+  public static String getOSRelease(String name) {
+    try {
+      Properties os_release = new Properties();
+      FileInputStream fis = new FileInputStream("/etc/os-release");
+      os_release.load(fis);
+      fis.close();
+      String value = os_release.getProperty(name);
+      if (value == null) return null;
+      int strlen = value.length();
+      if ((value.charAt(0) == '\"') && (value.charAt(strlen-1) == '\"')) {
+        //remove quotes
+        value = value.substring(1, strlen-1);
+      }
+      return value;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /** Adds public ssh key to /root/.ssh/authorized_keys */
+  public static boolean addsshkey(String key) {
+    //key = "type" "base64" "user"
+    String[] ks = key.split(" ");
+    if (ks.length < 2) return false;  //invalid key
+    try {
+      File dotssh = new File("/root/.ssh");
+      if (!dotssh.exists()) {
+        dotssh.mkdir();
+      }
+      File file = new File("/root/.ssh/authorized_keys");
+      String content = null;
+      if (!file.exists()) {
+        content = key;
+      } else {
+        FileInputStream fis = new FileInputStream(file);
+        content = new String(fis.readAllBytes());
+        fis.close();
+        //append to content 'if' key does not exist
+        String[] lns = content.split("\n");
+        for(String ln : lns) {
+          if (ln.trim().startsWith("#")) continue;
+          String[] fs = ln.split(" ");  //type, base64, user
+          if (fs.length < 2) continue;
+          if (fs[1].equals(ks[1])) return true;  //already exists
+        }
+      }
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(content.getBytes());
+      fos.close();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
   }
 
   /* Test */
