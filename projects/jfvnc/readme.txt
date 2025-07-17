@@ -4,10 +4,10 @@ VNC Viewer:
 
 VNC Server:
 
- - jfvncsvc.exe : service based which runs in the background
+ - jfvncsvc.exe : service based server which runs in the background
    - jfvncsession.exe : used internally by service for each connection
    - supports Windows and Linux (X11)
- - jfvnccli.exe : app based which runs as a user app with limited functionality
+ - jfvnccli.exe : app based server which runs as a user app with limited functionality
    - useful in logon scripts, etc.
  - config file : jfvncserver.cfg
    - windows location : %ProgramData% (usually C:\ProgramData)
