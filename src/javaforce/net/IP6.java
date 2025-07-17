@@ -10,11 +10,27 @@ package javaforce.net;
  */
 
 import java.net.*;
+import java.util.*;
 
 import javaforce.*;
 
 public class IP6 {
+  /** IP6 Address. */
   public short[] ip = new short[8];
+  /** Local device (optional) */
+  public String device;
+  public IP6() {
+  }
+  public IP6(String ip6) {
+    setIP(ip6);
+  }
+  public IP6(String ip6, String device) {
+    setIP(ip6);
+    this.device = device;
+  }
+  public IP6(IP6 ip6) {
+    setIP(ip6);
+  }
   public static boolean isIP(String str) {
     int double_idx = str.indexOf("::");
     boolean compressed = double_idx != -1;
@@ -66,6 +82,12 @@ public class IP6 {
   }
   public boolean setIP(InetAddress addr) {
     return setIP(addr.getHostAddress());
+  }
+  public boolean setIP(IP6 o) {
+    for(int a=0;a<8;a++) {
+      ip[a] = o.ip[a];
+    }
+    return true;
   }
   public InetAddress toInetAddress() {
     try {
@@ -152,13 +174,38 @@ public class IP6 {
     return ip6;
   }
 
+  /** Return list of local IP4 addresses. */
+  public static IP6[] list() {
+    ArrayList<IP6> list = new ArrayList<>();
+    try {
+      Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+      for (NetworkInterface networkInterface : Collections.list(networkInterfaces)) {
+        if (networkInterface.isUp() && !networkInterface.isLoopback()) {
+          Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+          String device = networkInterface.getDisplayName();
+          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+            if (inetAddress.isSiteLocalAddress()) {
+              String ip = inetAddress.getHostAddress();
+              if (isIP(ip)) {
+                list.add(new IP6(ip, device));
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return list.toArray(new IP6[list.size()]);
+  }
+
   public static void test(String ip) {
     IP6 ip6 = new IP6();
     ip6.setIP(ip);
     JFLog.log(IP6.isIP(ip) + "=" + ip + "=" + ip6.toString());
   }
 
-  public static void main(String[] args) {
+  public static void tests() {
     test("1:2:3:4:5:6:7:8");
     test("1111:4444:7777:aaaa:bbbb:cccc:dddd:ffff");
     test("1:2:3::8");
@@ -175,5 +222,23 @@ public class IP6 {
     ip4.setIP("255.255.255.0");
     JFLog.log("IP4=" + ip4.toString() + " to IP6=" + ip4.toIP6().toString() + " back IP4=" + ip4.toIP6().toIP4().toString());
     JFLog.log("IP4.loopback.toIP6.isIP4=" + IP4.getLoopbackIP().toIP6().isIP4());
+  }
+
+  private static void list_ips() {
+    IP6[] list = list();
+    for(IP6 ip : list) {
+      System.out.println(ip.device + "=" + ip.toString());
+    }
+  }
+
+  public static void main(String[] args) {
+    if (args.length == 0) {
+      System.out.println("Usage:IP6 {tests | list}");
+      return;
+    }
+    switch (args[0]) {
+      case "tests": tests(); break;
+      case "list": list_ips(); break;
+    }
   }
 }

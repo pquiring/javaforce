@@ -10,15 +10,23 @@ package javaforce.net;
  */
 
 import java.net.*;
+import java.util.*;
 
 import javaforce.*;
 
 public class IP4 implements Comparable<IP4> {
+  /** IP4 Address. */
   public byte[] ip = new byte[4];
+  /** Local device (optional) */
+  public String device;
   public IP4() {
   }
   public IP4(String str) {
     setIP(str);
+  }
+  public IP4(String str, String device) {
+    setIP(str);
+    this.device = device;
   }
   public IP4(IP4 ip4) {
     setIP(ip4);
@@ -140,6 +148,31 @@ public class IP4 implements Comparable<IP4> {
     return ip4;
   }
 
+  /** Return list of local IP4 addresses. */
+  public static IP4[] list() {
+    ArrayList<IP4> list = new ArrayList<>();
+    try {
+      Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+      for (NetworkInterface networkInterface : Collections.list(networkInterfaces)) {
+        if (!networkInterface.isLoopback()) {
+          Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+          String device = networkInterface.getDisplayName();
+          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+            if (inetAddress.isSiteLocalAddress()) {
+              String ip = inetAddress.getHostAddress();
+              if (isIP(ip)) {
+                list.add(new IP4(ip, device));
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return list.toArray(new IP4[list.size()]);
+  }
+
   public static void test(String ip, boolean expect) {
     IP4 ip4 = new IP4();
     boolean res = ip4.setIP(ip);
@@ -149,7 +182,7 @@ public class IP4 implements Comparable<IP4> {
     JFLog.log(IP4.isIP(ip) + ":" + ip + ":" + ip4.toString());
   }
 
-  public static void main(String[] args) {
+  private static void tests() {
     test("1.1.1.1", true);
     test("127.0.0.1", true);
     test("255.255.255.0", true);
@@ -158,6 +191,24 @@ public class IP4 implements Comparable<IP4> {
     test("127..0.1", false);
     test("127.0.0.1.", false);
     JFLog.log("loopback=" + getLoopbackIP().toString());
+  }
+
+  private static void list_ips() {
+    IP4[] list = list();
+    for(IP4 ip : list) {
+      System.out.println(ip.device + "=" + ip.toString());
+    }
+  }
+
+  public static void main(String[] args) {
+    if (args.length == 0) {
+      System.out.println("Usage:IP4 {tests | list}");
+      return;
+    }
+    switch (args[0]) {
+      case "tests": tests(); break;
+      case "list": list_ips(); break;
+    }
   }
 
   public int compareTo(IP4 o) {
