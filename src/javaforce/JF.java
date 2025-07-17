@@ -436,7 +436,7 @@ public class JF {
   }
 
   public static byte[] read(InputStream in, int max) {
-    byte ret[] = new byte[max];
+    byte[] ret = new byte[max];
     try {
       int read = in.read(ret);
       if (read == max) {
@@ -445,7 +445,7 @@ public class JF {
       if (read == 0) {
         return null;
       }
-      byte ret2[] = new byte[read];
+      byte[] ret2 = new byte[read];
       System.arraycopy(ret, 0, ret2, 0, read);
       return ret2;
     } catch (Exception e) {
@@ -457,7 +457,7 @@ public class JF {
   public static byte[] readAll(InputStream in) {
     try {
       int len = in.available();
-      byte ret[] = new byte[len];
+      byte[] ret = new byte[len];
       int pos = 0;
       while (pos < len) {
         int read = in.read(ret, pos, len - pos);
@@ -475,7 +475,7 @@ public class JF {
 
   public static byte[] readAll(InputStream in, int len) {
     try {
-      byte ret[] = new byte[len];
+      byte[] ret = new byte[len];
       int pos = 0;
       while (pos < len) {
         int read = in.read(ret, pos, len - pos);
@@ -491,7 +491,7 @@ public class JF {
     }
   }
 
-  public static boolean readAll(InputStream in, byte buf[], int pos, int len) {
+  public static boolean readAll(InputStream in, byte[] buf, int pos, int len) {
     int end = pos + len;
     try {
       while (pos < end) {
@@ -509,7 +509,7 @@ public class JF {
     }
   }
 
-  public static boolean readAll(RandomAccessFile in, byte buf[], int pos, int len) {
+  public static boolean readAll(RandomAccessFile in, byte[] buf, int pos, int len) {
     int end = pos + len;
     try {
       while (pos < end) {
@@ -529,8 +529,8 @@ public class JF {
 
   public static byte[] readAll(InputStream in, Socket s) {
     try {
-      byte tmp[] = new byte[1500];
-      byte ret[] = new byte[0];
+      byte[] tmp = new byte[1500];
+      byte[] ret = new byte[0];
       while (in.available() > 0 || s.isConnected()) {
         int read = in.read(tmp);
         if (read <= 0) {
@@ -587,7 +587,7 @@ public class JF {
   }
 
   public static int readuint8(InputStream in) {
-    byte data[] = new byte[1];
+    byte[] data = new byte[1];
     try {
       if (in.read(data) != 1) {
         return -1;
@@ -600,7 +600,7 @@ public class JF {
   }
 
   public static int readuint16(InputStream in) {
-    byte data[] = new byte[2];
+    byte[] data = new byte[2];
     try {
       if (in.read(data) != 2) {
         return -1;
@@ -616,7 +616,7 @@ public class JF {
   }
 
   public static int readuint32(InputStream in) {
-    byte data[] = new byte[4];
+    byte[] data = new byte[4];
     try {
       if (in.read(data) != 4) {
         return -1;
@@ -634,7 +634,7 @@ public class JF {
   }
 
   public static long readuint64(InputStream in) {
-    byte data[] = new byte[8];
+    byte[] data = new byte[8];
     try {
       if (in.read(data) != 8) {
         return -1;
@@ -665,7 +665,7 @@ public class JF {
     return Double.longBitsToDouble(bits);
   }
 
-  public static boolean write(OutputStream out, byte data[]) {
+  public static boolean write(OutputStream out, byte[] data) {
     try {
       out.write(data);
       return true;
@@ -679,7 +679,7 @@ public class JF {
     return write(out, str.getBytes());
   }
 
-  public static boolean write(OutputStream out, byte data[], int offset, int length) {
+  public static boolean write(OutputStream out, byte[] data, int offset, int length) {
     try {
       out.write(data, offset, length);
       return true;
@@ -764,7 +764,7 @@ public class JF {
 
   public static boolean copyAll(InputStream is, OutputStream os) {
     try {
-      byte buf[] = new byte[1024];
+      byte[] buf = new byte[1024];
       while (is.available() > 0) {
         int read = is.read(buf);
         if (read == 0) {
@@ -824,7 +824,7 @@ public class JF {
 
   public static boolean copyAll(InputStream is, OutputStream os, long length) {
     try {
-      byte buf[] = new byte[1024];
+      byte[] buf = new byte[1024];
       int copied = 0;
       while (copied < length) {
         int read = is.read(buf);
@@ -853,8 +853,8 @@ public class JF {
   public static boolean wildcardCompare(String fnstr, String wcstr, boolean caseSensitive) {
     //wc = "*.txt"
     //fn = "filename.txt"
-    char fn[] = fnstr.toCharArray();
-    char wc[] = wcstr.toCharArray();
+    char[] fn = fnstr.toCharArray();
+    char[] wc= wcstr.toCharArray();
     int fnp = 0, wcp = 0;
     char wcc, fnc;
     int sl, a;
@@ -916,11 +916,11 @@ public class JF {
     return str.toCharArray();
   }
 
-  public static char[] truncstr(char str[], int newlength) {
+  public static char[] truncstr(char[] str, int newlength) {
     if (newlength == 0) {
       return null;
     }
-    char ret[] = new char[newlength];
+    char[] ret = new char[newlength];
     if (newlength <= str.length) {
       System.arraycopy(str, 0, ret, 0, ret.length);
     } else {
@@ -932,24 +932,24 @@ public class JF {
     return ret;
   }
 
-  public static char[] strcpy(char str[]) {
-    char ret[] = new char[str.length];
+  public static char[] strcpy(char[] str) {
+    char[] ret = new char[str.length];
     System.arraycopy(str, 0, ret, 0, str.length);
     return ret;
   }
 
-  public static char[] strcat(char s1[], char s2[]) {
+  public static char[] strcat(char[] s1, char[] s2) {
     if (s1 == null) {
       s1 = new char[0];
     }
-    char ret[] = new char[s1.length + s2.length];
+    char[] ret = new char[s1.length + s2.length];
     System.arraycopy(s1, 0, ret, 0, s1.length);
     System.arraycopy(s2, 0, ret, s1.length, s2.length);
     return ret;
   }
 
-  public static char[] strcat(char str[], char ch) {
-    char ret[];
+  public static char[] strcat(char[] str, char ch) {
+    char[] ret;
     if (str == null) {
       ret = new char[1];
       ret[0] = ch;
@@ -961,7 +961,7 @@ public class JF {
     return ret;
   }
 
-  public static String createString(char str[]) {
+  public static String createString(char[] str) {
     return new String(str);
   }
 
@@ -973,19 +973,19 @@ public class JF {
     return s1.equalsIgnoreCase(s2);
   }
 
-  public static boolean strcmp(char s1[], char s2[]) {
+  public static boolean strcmp(char[] s1, char[] s2) {
     return strcmp(new String(s1), new String(s2));
   }
 
-  public static boolean stricmp(char s1[], char s2[]) {
+  public static boolean stricmp(char[] s1, char[] s2) {
     return stricmp(new String(s1), new String(s2));
   }
 
-  public static void memcpy(Object src[], int srcpos, Object dest[], int destpos, int len) {
+  public static void memcpy(Object[] src, int srcpos, Object[] dest, int destpos, int len) {
     System.arraycopy(src, srcpos, dest, destpos, len);
   }
 
-  public static boolean memcmp(byte m1[], int m1pos, byte[] m2, int m2pos, int len) {
+  public static boolean memcmp(byte[] m1, int m1pos, byte[] m2, int m2pos, int len) {
     for (int a = 0; a < len; a++) {
       if (m1[m1pos + a] != m2[m2pos + a]) {
         return false;
@@ -994,7 +994,7 @@ public class JF {
     return true;
   }
 
-  public static boolean memicmp(byte m1[], int m1pos, byte[] m2, int m2pos, int len) {
+  public static boolean memicmp(byte[] m1, int m1pos, byte[] m2, int m2pos, int len) {
     char c1, c2;
     for (int a = 0; a < len; a++) {
       c1 = Character.toUpperCase((char) m1[m1pos + a]);
@@ -1053,56 +1053,56 @@ public class JF {
   @SuppressWarnings("unchecked")
   public static <T> T[] copyOfExcluding(T[] array, int idx) {
     Class<?> cls = array.getClass().getComponentType();
-    T newArray[] = (T[]) Array.newInstance(cls, array.length - 1);
+    T[] newArray = (T[]) Array.newInstance(cls, array.length - 1);
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static boolean[] copyOfExcluding(boolean[] array, int idx) {
-    boolean newArray[] = new boolean[array.length - 1];
+    boolean[] newArray = new boolean[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static byte[] copyOfExcluding(byte[] array, int idx) {
-    byte newArray[] = new byte[array.length - 1];
+    byte[] newArray = new byte[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static short[] copyOfExcluding(short[] array, int idx) {
-    short newArray[] = new short[array.length - 1];
+    short[] newArray = new short[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static int[] copyOfExcluding(int[] array, int idx) {
-    int newArray[] = new int[array.length - 1];
+    int[] newArray = new int[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static float[] copyOfExcluding(float[] array, int idx) {
-    float newArray[] = new float[array.length - 1];
+    float[] newArray = new float[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static double[] copyOfExcluding(double[] array, int idx) {
-    double newArray[] = new double[array.length - 1];
+    double[] newArray = new double[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
   }
 
   public static char[] copyOfExcluding(char[] array, int idx) {
-    char newArray[] = new char[array.length - 1];
+    char[] newArray = new char[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
@@ -1113,7 +1113,7 @@ public class JF {
   @SuppressWarnings("unchecked")
   public static <T> T[] copyOfInsert(T[] array, int idx, T insert) {
     Class<?> cls = array.getClass().getComponentType();
-    T newArray[] = (T[]) Array.newInstance(cls, array.length + 1);
+    T[] newArray = (T[]) Array.newInstance(cls, array.length + 1);
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1121,7 +1121,7 @@ public class JF {
   }
 
   public static boolean[] copyOfInsert(boolean[] array, int idx, boolean insert) {
-    boolean newArray[] = new boolean[array.length + 1];
+    boolean[] newArray = new boolean[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1129,7 +1129,7 @@ public class JF {
   }
 
   public static byte[] copyOfInsert(byte[] array, int idx, byte insert) {
-    byte newArray[] = new byte[array.length + 1];
+    byte[] newArray = new byte[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1137,7 +1137,7 @@ public class JF {
   }
 
   public static short[] copyOfInsert(short[] array, int idx, short insert) {
-    short newArray[] = new short[array.length + 1];
+    short[] newArray = new short[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1145,7 +1145,7 @@ public class JF {
   }
 
   public static int[] copyOfInsert(int[] array, int idx, int insert) {
-    int newArray[] = new int[array.length + 1];
+    int[] newArray = new int[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1153,7 +1153,7 @@ public class JF {
   }
 
   public static long[] copyOfInsert(long[] array, int idx, long insert) {
-    long newArray[] = new long[array.length + 1];
+    long[] newArray = new long[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1161,7 +1161,7 @@ public class JF {
   }
 
   public static float[] copyOfInsert(float[] array, int idx, float insert) {
-    float newArray[] = new float[array.length + 1];
+    float[] newArray = new float[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1169,7 +1169,7 @@ public class JF {
   }
 
   public static double[] copyOfInsert(double[] array, int idx, double insert) {
-    double newArray[] = new double[array.length + 1];
+    double[] newArray = new double[array.length + 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
     newArray[idx] = insert;
@@ -1343,7 +1343,7 @@ public class JF {
 
   /** Joins array of strings placing a delimit in between each string.
    */
-  public static String join(String delimit, String strings[]) {
+  public static String join(String delimit, String[] strings) {
     StringBuilder sb = new StringBuilder();
     for(int a=0;a<strings.length;a++) {
       if (a > 0) sb.append(delimit);
@@ -1354,7 +1354,7 @@ public class JF {
 
   /** Joins array of strings placing a delimit in between each string.
    */
-  public static String join(String delimit, String strings[], int startIdx) {
+  public static String join(String delimit, String[] strings, int startIdx) {
     StringBuilder sb = new StringBuilder();
     for(int a=startIdx;a<strings.length;a++) {
       if (a > startIdx) sb.append(delimit);
@@ -1391,7 +1391,7 @@ public class JF {
    *  Performs argument globbing (wildcards).
    *  Used by native launcher.
    * (same as sun.launcher.LauncherHelper) */
-  public static String[] expandArgs(String args[]) {
+  public static String[] expandArgs(String[] args) {
     ArrayList<String> list = new ArrayList<String>();
 
     boolean caseSensitive = !isWindows();
@@ -1409,7 +1409,7 @@ public class JF {
           list.add(args[a]);
           continue;
         }
-        File files[] = parent.listFiles();
+        File[] files = parent.listFiles();
         if (files == null) {
           list.add(args[a]);
           continue;
@@ -1456,7 +1456,7 @@ public class JF {
     try {
       File folder = new File(path);
       if (!folder.isDirectory()) return;
-      File files[] = new File(path).listFiles();
+      File[] files = new File(path).listFiles();
       if (files == null) return;
       for(int a=0;a<files.length;a++) {
         File file = files[a];
@@ -1473,7 +1473,7 @@ public class JF {
   }
 
   private static void zipPath(ZipOutputStream zos, String path, String base) throws Exception {
-    File files[] = new File(path).listFiles();
+    File[] files = new File(path).listFiles();
     for(int a=0;a<files.length;a++) {
       File file = files[a];
       String name = file.getName();
@@ -1551,7 +1551,7 @@ public class JF {
 
   public static String[] splitQuoted(String in, char token) {
     ArrayList<String> s = new ArrayList<String>();
-    char ca[] = in.toCharArray();
+    char[] ca = in.toCharArray();
     int off = 0;
     boolean quote1 = false;
     boolean quote2 = false;

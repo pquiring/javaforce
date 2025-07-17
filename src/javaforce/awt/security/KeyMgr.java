@@ -654,7 +654,7 @@ public class KeyMgr extends javax.swing.JDialog {
       Key key = ks.getKey(alias, pwd);
       txt.append(key.toString());
       txt.append(crt.toString());
-      ViewLog log = new ViewLog(txt.toString().getBytes());
+      ViewLog log = new ViewLog(txt.toString());
       log.setVisible(true);
     } catch (Exception e) {
       JFLog.log(e);

@@ -29,7 +29,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" pref="583" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="viewLog" min="-2" max="-2" attributes="0"/>
+                      <Component id="bViewLog" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="bStatus" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="save" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -52,7 +54,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="save" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="viewLog" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bViewLog" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bStatus" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -91,12 +94,20 @@
         <Property name="text" type="java.lang.String" value="VNC Configuration:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="viewLog">
+    <Component class="javax.swing.JButton" name="bViewLog">
       <Properties>
         <Property name="text" type="java.lang.String" value="View Log"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewLogActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bViewLogActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="bStatus">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Status"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bStatusActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
