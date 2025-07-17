@@ -10,6 +10,7 @@ package javaforce.utils;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.linux.*;
 
 public class GenDEB {
   private BuildTools tools;
@@ -92,7 +93,7 @@ public class GenDEB {
       new File(data).delete();
       JF.deletePathEx("deb");
 
-      String release = BuildTools.getOSRelease("VERSION_CODENAME");
+      String release = Linux.getOSRelease("VERSION_CODENAME");
 
       System.out.println(out + " created!");
       if (new File(home + "/repo/debian/readme.txt").exists()) {

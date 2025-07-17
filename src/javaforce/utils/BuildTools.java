@@ -98,9 +98,10 @@ public class BuildTools {
         JFLog.log("Error:" + files_lst + " not found");
         return false;
       }
+      cleanFiles(files_lst);
       FileInputStream fis = new FileInputStream(files);
-      byte[] lst = fis.readAllBytes();
-      String[] lns = new String(lst).replaceAll("\r","").split("\n");
+      String[] lns = new String(fis.readAllBytes()).split("\n");
+      fis.close();
       for(String ln : lns) {
         if (ln.length() == 0) continue;
         File file = new File(ln);
@@ -138,24 +139,19 @@ public class BuildTools {
       return new String[0];
     }
   }
-
-  /** Returns /etc/os-release property. */
-  public static String getOSRelease(String name) {
+  public static void cleanFiles(String files) {
+    //remove \r from files
     try {
-      Properties os_release = new Properties();
-      FileInputStream fis = new FileInputStream("/etc/os-release");
-      os_release.load(fis);
+      FileInputStream fis = new FileInputStream(files);
+      String content = new String(fis.readAllBytes());
       fis.close();
-      String value = os_release.getProperty(name);
-      if (value == null) return null;
-      int strlen = value.length();
-      if ((value.charAt(0) == '\"') && (value.charAt(strlen-1) == '\"')) {
-        //remove quotes
-        value = value.substring(1, strlen-1);
-      }
-      return value;
+      String clean = content.replaceAll("\r", "");
+      if (content.equals(clean)) return;
+      FileOutputStream fos = new FileOutputStream(files);
+      fos.write(clean.getBytes());
+      fos.close();
     } catch (Exception e) {
-      return "null";
+      JFLog.log(e);
     }
   }
 }
