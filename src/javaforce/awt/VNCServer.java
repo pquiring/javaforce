@@ -24,28 +24,34 @@ public class VNCServer {
   private VNCWebServer web;
 
   private boolean start() {
-    config = loadConfig();
-    return start(config.password, config.port, true);
+    return start(loadConfig(), true);
   }
 
   public boolean start(String pass) {
-    return start(pass, 5900, false);
+    Config config = new Config();
+    config.password = pass;
+    config.port = 5900;
+    return start(config, false);
   }
 
   public boolean start(String pass, int port) {
-    return start(pass, port, false);
+    Config config = new Config();
+    config.password = pass;
+    config.port = port;
+    return start(config, false);
   }
 
-  private boolean start(String pass, int port, boolean service_mode) {
+  private boolean start(Config config, boolean service_mode) {
     if (active) {
       stop();
     }
-    this.pass = RFB.checkPassword(pass);
+    this.config = config;
+    config.validate();
     this.service_mode = service_mode;
     try {
-      JFLog.log("VNCServer starting on port " + port + "...");
+      JFLog.log("VNCServer starting on port " + config.port + "...");
       active = true;
-      ss = new ServerSocket(port);
+      ss = new ServerSocket(config.port);
       server = new Server();
       server.start();
       if (service_mode) {
@@ -85,6 +91,9 @@ public class VNCServer {
       web = null;
     }
   }
+  public void setViewOnlyPassword(String viewonly_password) {
+    config.viewonly = viewonly_password;
+  }
 
   private Server server;
   private ServerSocket ss;
@@ -92,21 +101,35 @@ public class VNCServer {
   private JBusClient busClient;
   private boolean active;
   private boolean service_mode;
-  private String pass;
   private static boolean debug = false;
   public static final boolean update_sid = false;  //unfortunately java does not support switching the session ID - a new process must be created
 
   private static class Config {
-    public Config(String password) {
-      this.password = password;
-    }
-    public String password;
+    public String password;  //full control password
+    public String viewonly;  //view only password
     public int port = 5900;
     public boolean web = true;
     public int webport = 5800;
     public int websecureport = 5843;
+    public int delay = 100;  //screen poll delay
     public String user;  //linux only
     public String display = ":0";  //linux only (default = :0)
+
+    private static final int min_delay = 100;
+    private static final int max_delay = 5 * 1000;
+
+    public void validate() {
+      password = RFB.checkPassword(password);
+      if (viewonly != null) {
+        viewonly = RFB.checkPassword(viewonly);
+      }
+      if (delay < min_delay) {
+        delay = min_delay;
+      }
+      if (delay > max_delay) {
+        delay = max_delay;
+      }
+    }
 
     public String toString() {
       StringBuilder sb = new StringBuilder();
@@ -115,6 +138,12 @@ public class VNCServer {
       sb.append("webport=" + webport + "\n");
       sb.append("websecureport=" + websecureport + "\n");
       sb.append("password=" + password + "\n");
+      sb.append("delay=" + delay + "\n");
+      if (viewonly != null) {
+        sb.append("viewonly=" + viewonly + "\n");
+      } else {
+        sb.append("#viewonly=password\n");
+      }
       if (user != null) {
         sb.append("user=" + user + "\n");
       } else {
@@ -132,12 +161,18 @@ public class VNCServer {
       Properties props = new Properties();
       props.load(fis);
       fis.close();
-      Config config = new Config(null);
+      Config config = new Config();
       String password = props.getProperty("password");
       if (password != null) {
-        config.password = RFB.checkPassword(password);
+        config.password = password;
       } else {
         config.password = randomPassword();
+      }
+      String viewonly = props.getProperty("viewonly");
+      if (viewonly != null) {
+        config.viewonly = viewonly;
+      } else {
+        config.viewonly = randomPassword();
       }
       String port = props.getProperty("port");
       if (port != null) {
@@ -164,6 +199,10 @@ public class VNCServer {
           config.websecureport = 5843;
         }
       }
+      String delaystr = props.getProperty("delay");
+      if (delaystr != null) {
+        config.delay = JF.atoi(delaystr);
+      }
       if (JF.isUnix()) {
         String user = props.getProperty("user");
         if (user != null) {
@@ -174,10 +213,13 @@ public class VNCServer {
           config.display = display;
         }
       }
+      config.validate();
       return config;
     } catch (FileNotFoundException e) {
       //create default config
-      Config config = new Config(randomPassword());
+      Config config = new Config();
+      config.password = randomPassword();
+      config.viewonly = randomPassword();
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(config.toString().getBytes());
@@ -315,6 +357,7 @@ public class VNCServer {
     private Rectangle size;
     private Updater updater;
     private boolean connected;
+    private boolean control;
     private int buttons;
     private int pf = RFB.PF_LE_RGB;  //LE : default for VNC
     public Client(Socket s, VNCRobot robot) {
@@ -332,15 +375,22 @@ public class VNCServer {
         byte type = rfb.readAuthType();
         if (type != RFB.AUTH_VNC) throw new Exception("Auth failed");
         byte[] challenge = rfb.writeAuthChallenge();
-        byte[] response = RFB.encodeResponse(challenge, pass.getBytes());
-        byte[] reply = rfb.readAuthChallenge();
-        for(int a=0;a<16;a++) {
-          if (response[a] != reply[a]) {
-            rfb.writeAuthResult(false);
-            throw new Exception("Auth Failed");
-          }
+        byte[] password_encoded = RFB.encodeResponse(challenge, config.password.getBytes());
+        byte[] viewonly_encoded = null;
+        if (viewonly_encoded != null) {
+          viewonly_encoded = RFB.encodeResponse(challenge, config.viewonly.getBytes());
         }
-        rfb.writeAuthResult(true);
+        byte[] reply = rfb.readAuthChallenge();
+        if (Arrays.equals(password_encoded, reply)) {
+          rfb.writeAuthResult(true);
+          control = true;
+        } else if (viewonly_encoded != null && Arrays.equals(viewonly_encoded, reply)) {
+          rfb.writeAuthResult(true);
+          control = false;
+        } else {
+          rfb.writeAuthResult(false);
+          throw new Exception("Auth Failed");
+        }
         size = robot.getScreenSize();
         rfb.writeServerInit(size.width, size.height);
         rfb.readClientInit();
@@ -365,6 +415,7 @@ public class VNCServer {
             }
             case RFB.C_MSG_MOUSE_EVENT: {
               RFB.RFBMouseEvent event = rfb.readMouseEvent();
+              if (!control) break;
               try {
                 synchronized (lock) {
                   robot.mouseMove(event.x, event.y);
@@ -388,6 +439,7 @@ public class VNCServer {
             }
             case RFB.C_MSG_KEY_EVENT: {
               RFB.RFBKeyEvent event = rfb.readKeyEvent();
+              if (!control) break;
               if (debug) {
                 JFLog.log("KeyEvent:" + (event.down ? "down" : "up"));
                 JFLog.log("old.key=0x" + Integer.toString(event.code, 16));
@@ -452,6 +504,7 @@ public class VNCServer {
             }
             case RFB.C_MSG_CUT_TEXT: {
               String text = rfb.readCutText();
+              if (!control) break;
               //ignored
               break;
             }
@@ -572,7 +625,7 @@ public class VNCServer {
                 rfb.writeBufferUpdate(rect, -1);
               }
             }
-            JF.sleep(100);
+            JF.sleep(config.delay);
           }
         } catch (Exception e) {
           JFLog.log(e);
