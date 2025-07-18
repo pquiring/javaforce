@@ -51,13 +51,21 @@ public class Backend implements KeyEventDispatcher {
     return formula.get(idx).equals(op);
   }
 
+  private String removeDecimal(String str) {
+    int idx = str.indexOf(".");
+    if (idx == -1)
+      return str;
+    else
+      return str.substring(0, idx);
+  }
+
   private long getLong(int idx) {
     String str = formula.get(idx);
     int stridx = str.indexOf(",");
     if (stridx == -1)
-      return Long.valueOf(str.substring(1), radix);  //assume current radix
+      return Long.valueOf(removeDecimal(str.substring(1)), radix);  //assume current radix
     else
-      return Long.valueOf(str.substring(1, stridx), Integer.valueOf(str.substring(stridx+1)));
+      return Long.valueOf(removeDecimal(str.substring(1, stridx)), Integer.valueOf(str.substring(stridx+1)));
   }
 
   private double getDouble(int idx) {
