@@ -155,7 +155,7 @@ public class IP4 implements Comparable<IP4> {
       Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
       for (NetworkInterface networkInterface : Collections.list(networkInterfaces)) {
         if (networkInterface.isLoopback()) continue;
-        if (!up && !networkInterface.isUp()) continue;
+        if (up && !networkInterface.isUp()) continue;
         Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
         String device = networkInterface.getDisplayName();
         for (InetAddress inetAddress : Collections.list(inetAddresses)) {
@@ -175,7 +175,7 @@ public class IP4 implements Comparable<IP4> {
 
   /** Return list of all local IP4 addresses. */
   public static IP4[] list() {
-    return list(true);
+    return list(false);
   }
 
   public static void test(String ip, boolean expect) {
