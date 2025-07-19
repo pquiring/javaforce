@@ -148,7 +148,9 @@ public class IP4 implements Comparable<IP4> {
     return ip4;
   }
 
-  /** Return list of local IP4 addresses. */
+  /** Return list of local IP4 addresses.
+   * @param up = list only NICs that are up.
+   */
   public static IP4[] list(boolean up) {
     ArrayList<IP4> list = new ArrayList<>();
     try {

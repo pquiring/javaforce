@@ -174,7 +174,9 @@ public class IP6 {
     return ip6;
   }
 
-  /** Return list of local IP6 addresses. */
+  /** Return list of local IP6 addresses.
+   * @param up = list only NICs that are up.
+   */
   public static IP6[] list(boolean up) {
     ArrayList<IP6> list = new ArrayList<>();
     try {
