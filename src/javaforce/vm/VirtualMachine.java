@@ -528,6 +528,9 @@ public class VirtualMachine implements Serializable {
       public String getServerHostname() {
         return "127.0.0.1";
       }
+      public boolean addsshkey(String host, String key) {
+        return false;
+      }
     }));
   }
 }

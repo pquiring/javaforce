@@ -23,7 +23,7 @@ import static javaforce.webui.Component.*;
 import static javaforce.webui.event.KeyEvent.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "2.7";
+  public static String version = "3.0";
   public static String appname = "jfKVM";
   public static boolean debug = false;
   public WebUIServer server;
@@ -192,6 +192,7 @@ public class ConfigService implements WebUIHandler {
     }
 
     public void setRightPanel(Panel panel) {
+      if (panel == null) return;
       right_panel = panel;
       resize();
       left_right_split.setRightComponent(panel);
@@ -1752,24 +1753,27 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Row row;
 
-    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    GridLayout grid = new GridLayout(3, 0, new int[] {RIGHT, LEFT, LEFT});
     panel.add(grid);
 
-    TextField fqn = new TextField(Config.current.fqn);
-    grid.addRow(new Component[] {new Label("Host FQN"), fqn});
+    String ip = Config.current.ip_mgmt;
+    IP4[] ips = IP4.list(true);
+    if (ip.length() == 0 && ips != null && ips.length > 0) {
+      ip = ips[0].toString();
+    }
+    TextField ip_mgmt = new TextField(ip);
+    grid.addRow(new Component[] {new Label("Management IP"), ip_mgmt});
 
-    row = new Row();
+    ip = Config.current.ip_storage;
+    TextField ip_storage = new TextField(ip);
+    grid.addRow(new Component[] {new Label("Storage IP"), ip_storage, new Label("(optional)")});
+
     TextField iqn = new TextField(Storage.getSystemIQN());
-    row.add(iqn);
     Button iqn_generate = new Button("Generate");
-    row.add(iqn_generate);
-    grid.addRow(new Component[] {new Label("iSCSI Initiator IQN"), row});
+    grid.addRow(new Component[] {new Label("iSCSI Initiator IQN"), iqn, iqn_generate});
 
-    row = new Row();
     TextField stats_days = new TextField(Integer.toString(Config.current.stats_days));
-    row.add(stats_days);
-    row.add(new Label("(1-365) (default:3)"));
-    grid.addRow(new Component[] {new Label("Stats Retention (days)"), row});
+    grid.addRow(new Component[] {new Label("Stats Retention (days)"), stats_days, new Label("(1-365) (default:3)")});
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -1800,7 +1804,8 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       errmsg.setText("");
-      Config.current.fqn = fqn.getText();
+      Config.current.ip_mgmt = ip_mgmt.getText();
+      Config.current.ip_storage = ip_storage.getText();
       Config.current.stats_days = _stats_days_int;
       Storage.setSystemIQN(iqn.getText());
       Config.current.save();
@@ -1808,8 +1813,8 @@ public class ConfigService implements WebUIHandler {
     });
 
     iqn_generate.addClickListener((me, cmp) -> {
-      Config.current.fqn = fqn.getText();
-      iqn.setText(IQN.generate(Config.current.fqn));
+      Config.current.ip_mgmt = ip_mgmt.getText();
+      iqn.setText(IQN.generate(Config.current.ip_mgmt));
       msg.setText("Client IQN regenerated");
     });
 
@@ -1936,7 +1941,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Remote Token:"));
     TextField remote_token = new TextField("");
     row.add(remote_token);
-    row.add(new Label("Remote Host:"));
+    row.add(new Label("Remote Host IP:"));
     TextField remote_host = new TextField("");
     row.add(remote_host);
     Button connect = new Button("Connect");
@@ -1956,6 +1961,8 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools2);
     Button gluster = new Button("Gluster Probe");
     tools2.add(gluster);
+    Button ceph = new Button("Ceph Setup");
+    tools2.add(ceph);
     Button remove = new Button("Remove Host");
     tools2.add(remove);
 
@@ -2042,7 +2049,11 @@ public class ConfigService implements WebUIHandler {
       //download to clusterPath
       String _remote_host = remote_host.getText();
       String _remote_token = remote_token.getText();
-      if (_remote_host.equals(Config.current.fqn) || _remote_host.equals("localhost") || _remote_host.equals("127.0.0.1")) {
+      if (!IP4.isIP(_remote_host)) {
+        local_errmsg.setText("Remote Host IP address required!");
+        return;
+      }
+      if (_remote_host.equals(Config.current.ip_mgmt) || _remote_host.equals("127.0.0.1")) {
         local_errmsg.setText("Can not connect to localhost");
         return;
       }
@@ -2091,6 +2102,54 @@ public class ConfigService implements WebUIHandler {
             }
           } catch (Exception e) {
             setStatus("Probe failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+    });
+
+    ceph.addClickListener((me, cmp) -> {
+      remote_errmsg.setText("");
+      if (hosts.length < 2) {
+        remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
+        return;
+      }
+      for(Host host : hosts) {
+        if (!host.online || !host.valid) {
+          remote_errmsg.setText("Host is not online:" + host.hostname);
+          return;
+        }
+      }
+      Task task = new Task("Ceph setup") {
+        public void doTask() {
+          try {
+            //check if already setup
+            if (Ceph.ceph_exists()) {
+              setStatus("Ceph is already setup!");
+              return;
+            }
+
+            //check for known broken versions
+            String distro = Linux.getDistro();
+            if (distro == null) distro = "unknown";
+            String verstr = Linux.getVersion();
+            if (verstr == null) verstr = "0";
+            float verfloat = Float.valueOf(verstr);
+            if (distro.equals("Debian") && verfloat < 13) {
+              //Debian/12 is known to have broken Ceph version
+              setStatus("Debian/12 or less is not supported, please upgrade!");
+              return;
+            }
+
+            //start ceph setup progress
+            if (Ceph.ceph_setup(this)) {
+              setStatus("Completed");
+            } else {
+              setStatus("Ceph setup failed, check logs.");
+            }
+          } catch (Exception e) {
+            setStatus("Ceph setup failed, check logs.");
             JFLog.log(e);
           }
         }
@@ -4007,7 +4066,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         Task task = new Task("Stop Pool : " + pool.name) {
           public void doTask() {
-            if (pool.type == Storage.TYPE_ISCSI || pool.type == Storage.TYPE_GLUSTER) {
+            if (pool.isMountedManually()) {
               if (pool.mounted()) {
                 if (!pool.unmount()) {
                   setResult("Error occured, see logs.");
@@ -4034,8 +4093,8 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Storage pool = pools.get(idx);
-      if (pool.type != Storage.TYPE_ISCSI && pool.type != Storage.TYPE_GLUSTER) {
-        errmsg.setText("Can only mount iSCSI/Gluster storage pools, use start for other types");
+      if (!pool.isMountedManually()) {
+        errmsg.setText("Can only mount iSCSI, Gluster, Ceph storage pools, use start for other types");
         return;
       }
       if (pool.getState() != Storage.STATE_ON) {
@@ -4061,8 +4120,8 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Storage pool = pools.get(idx);
-      if (pool.type != Storage.TYPE_ISCSI && pool.type != Storage.TYPE_GLUSTER) {
-        errmsg.setText("Can only unmount iSCSI/Gluster storage pools, use stop for other types");
+      if (!pool.isMountedManually()) {
+        errmsg.setText("Can only unmount iSCSI, Gluster, Ceph storage pools, use stop for other types");
         return;
       }
       if (pool.getState() != Storage.STATE_ON) {
@@ -4137,6 +4196,11 @@ public class ConfigService implements WebUIHandler {
           ui.message_popup.setVisible(true);
           return;
         }
+      }
+      if (pool.type == Storage.TYPE_CEPHFS) {
+        ui.message_message.setText("Can not format CephFS storage");
+        ui.message_popup.setVisible(true);
+        return;
       }
       ui.setRightPanel(storageFormatPanel(pool, ui));
     });
@@ -4258,6 +4322,9 @@ public class ConfigService implements WebUIHandler {
     type.add("local_part", "Local Partition");
 //    type.add("local_disk", "Local Disk");  //TODO
     type.add("gluster", "Gluster");
+    if (Ceph.ceph_exists()) {
+      type.add("cephfs", "CephFS");
+    }
     row.add(type);
 
     ToolBar tools = new ToolBar();
@@ -4301,6 +4368,14 @@ public class ConfigService implements WebUIHandler {
         case "gluster":
           ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_GLUSTER, _name, null), true, ui));
           break;
+        case "cephfs":
+          //check if cephfs already exists
+          if (Config.current.hasPool(Storage.TYPE_CEPHFS)) {
+            errmsg.setText("CephFS already exists!");
+            return;
+          }
+          ui.setRightPanel(local_StoragePanel(new Storage(Storage.TYPE_CEPHFS, _name, null, "admin@.cephfs=/"), true, ui));
+          break;
       }
     });
     cancel.addClickListener((me, cmp) -> {
@@ -4316,6 +4391,7 @@ public class ConfigService implements WebUIHandler {
       case Storage.TYPE_ISCSI: return iscsi_StoragePanel(store, false, ui);
       case Storage.TYPE_LOCAL_PART: return local_StoragePanel(store, false, ui);
       case Storage.TYPE_GLUSTER: return local_StoragePanel(store, false, ui);
+      case Storage.TYPE_CEPHFS: return local_StoragePanel(store, false, ui);
     }
     return null;
   }
@@ -4522,12 +4598,14 @@ public class ConfigService implements WebUIHandler {
     if (pool.path != null) {
       dev.add(pool.path, pool.path);
     }
-    String[] parts = Storage.listLocalParts();
-    for(String part : parts) {
-      if (pool.path != null) {
-        if (pool.path.equals(part)) continue;
+    if (pool.type != Storage.TYPE_CEPHFS) {
+      String[] parts = Storage.listLocalParts();
+      for(String part : parts) {
+        if (pool.path != null) {
+          if (pool.path.equals(part)) continue;
+        }
+        dev.add(part, part);
       }
-      dev.add(part, part);
     }
 
     ToolBar tools = new ToolBar();
@@ -4557,9 +4635,11 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:device invalid");
         return;
       }
-      if (!new File(_dev).exists()) {
-        errmsg.setText("Error:device not found");
-        return;
+      if (pool.type != Storage.TYPE_CEPHFS) {
+        if (!new File(_dev).exists()) {
+          errmsg.setText("Error:device not found");
+          return;
+        }
       }
       if (false) {
         //convert /dev/sd? to /dev/disk/by-uuid/UUID
@@ -4572,7 +4652,7 @@ public class ConfigService implements WebUIHandler {
         _dev = "/dev/disk/by-uuid/" + uuid;
       }
       if (pool.type == Storage.TYPE_GLUSTER) {
-        pool.host = Config.current.fqn;
+        pool.host = Config.current.ip_storage;
       }
       pool.path = _dev;
       if (!pool.register()) {
@@ -4928,10 +5008,6 @@ public class ConfigService implements WebUIHandler {
       Label errmsg = new Label("");
       errmsg.setColor(Color.red);
       row.add(errmsg);
-
-      row = new Row();
-      tab.add(row);
-      row.add(new Label("NOTE : 'os' bridges are required for VLAN tagging guest networks. Please convert 'br' bridges if present."));
 
       row = new Row();
       tab.add(row);
@@ -5463,6 +5539,65 @@ public class ConfigService implements WebUIHandler {
           return null;
         }
       }
+      case "addsshkey": {
+        String token = params.get("token");
+        if (token == null) {
+          JFLog.log("token not supplied");
+          return null;
+        }
+        if (!token.equals(Config.current.token)) {
+          JFLog.log("token invalid");
+          return null;
+        }
+        String sshkey = params.get("sshkey");
+        if (sshkey == null) {
+          JFLog.log("sshkey not supplied");
+          return null;
+        }
+        JFLog.log("addsshkey");
+        if (Linux.addsshkey(sshkey)) {
+          return "okay".getBytes();
+        } else {
+          return "error".getBytes();
+        }
+      }
+      case "ceph_setup_start": {
+        String token = params.get("token");
+        if (token == null) {
+          JFLog.log("token not supplied");
+          return null;
+        }
+        if (!token.equals(Config.current.token)) {
+          JFLog.log("token invalid");
+          return null;
+        }
+        if (Config.current.ceph_setup) {
+          return "busy".getBytes();
+        }
+        String hostname = params.get("hostname");
+        if (hostname == null) return null;
+        Host host = Config.current.getHostByHostname(hostname);
+        if (host == null) return null;
+        host.ceph_setup = true;
+        return "okay".getBytes();
+      }
+      case "ceph_setup_complete": {
+        String token = params.get("token");
+        if (token == null) {
+          JFLog.log("token not supplied");
+          return null;
+        }
+        if (!token.equals(Config.current.token)) {
+          JFLog.log("token invalid");
+          return null;
+        }
+        String hostname = params.get("hostname");
+        if (hostname == null) return null;
+        Host host = Config.current.getHostByHostname(hostname);
+        if (host == null) return null;
+        host.ceph_setup = false;
+        return "okay".getBytes();
+      }
       case "notify": {
         String token = params.get("token");
         String msg = params.get("msg");
@@ -5480,6 +5615,9 @@ public class ConfigService implements WebUIHandler {
       }
       case "gethostname": {
         return VMHost.getHostname().getBytes();
+      }
+      case "getstorageip": {
+        return Config.current.ip_storage.getBytes();
       }
       case "checkvncport": {
         String port = params.get("port");

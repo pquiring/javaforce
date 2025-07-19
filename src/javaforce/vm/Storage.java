@@ -27,14 +27,25 @@ public class Storage implements Serializable {
     }
   }
 
+  public Storage(int type, String name, String uuid, String path) {
+    this.type = type;
+    this.name = name;
+    if (uuid == null) {
+      this.uuid = JF.generateUUID();
+    } else {
+      this.uuid = uuid;
+    }
+    this.path = path;
+  }
+
   public int type;
   public String name;
   public String uuid;
 
-  public String host;  //nfs, iscsi, gluster
+  public String host;  //nfs, iscsi, gluster (host)
   public String target;  //iscsi
-  public String path;  //nfs, local, gluster (device)
-  public String user;
+  public String path;  //nfs, local, gluster (device), cephfs
+  public String user;  //iscsi
   //public String pass;  //saved as Secret (stored in /root/secret)
 
   public static final int TYPE_LOCAL_PART = 1;  //local partition
@@ -42,6 +53,7 @@ public class Storage implements Serializable {
   public static final int TYPE_NFS = 3;
   public static final int TYPE_ISCSI = 4;
   public static final int TYPE_GLUSTER = 5;
+  public static final int TYPE_CEPHFS = 6;
 
   public static final int STATE_OFF = 0;
   public static final int STATE_ON = 1;
@@ -71,13 +83,14 @@ public class Storage implements Serializable {
   //virDomainCreate
   private native static boolean nstart(String name);
   public boolean start() {
+    //create folder under /volumes
     new File(getPath()).mkdir();
     if (type == TYPE_GLUSTER) {
-      new File(getBrick()).mkdirs();
+      new File(getGlusterBrick()).mkdirs();
     }
     boolean res = nstart(name);
     if (type == TYPE_GLUSTER && mounted()) {
-      new File(getVolume()).mkdirs();
+      new File(getGlusterVolume()).mkdirs();
     }
     return res;
   }
@@ -151,6 +164,7 @@ public class Storage implements Serializable {
       case TYPE_NFS: return "NFS";
       case TYPE_ISCSI: return "iSCSI";
       case TYPE_GLUSTER: return "Gluster";
+      case TYPE_CEPHFS: return "CephFS";
     }
     return "???";
   }
@@ -186,6 +200,7 @@ public class Storage implements Serializable {
       case TYPE_NFS: return host + ":" + path;
       case TYPE_ISCSI: return "/dev/disk/by-path/" + getiSCSIPath();
       case TYPE_GLUSTER: return path;
+      case TYPE_CEPHFS: return path;
     }
     return null;
   }
@@ -263,9 +278,9 @@ sr0  rom  1024M
     return parts.toArray(JF.StringArrayType);
   }
 
-  /** Mount iSCSI/Gluster pools. start() will already mount other types. */
+  /** Mount iSCSI,Gluster,Ceph pools. start() will already mount other types. */
   public boolean mount() {
-    if (type != TYPE_ISCSI && type != TYPE_GLUSTER) return false;
+    if (!isMountedManually()) return false;
     String dev = null;
     String mount = null;
     ArrayList<String> cmd = new ArrayList<>();
@@ -283,6 +298,13 @@ sr0  rom  1024M
         cmd.add("glusterfs");
         break;
       }
+      case TYPE_CEPHFS: {
+        dev = getDevice();
+        mount = getPath();
+        cmd.add("-t");
+        cmd.add("ceph");
+        break;
+      }
     }
     cmd.add(dev);
     cmd.add(mount);
@@ -294,7 +316,7 @@ sr0  rom  1024M
     return sp.getErrorLevel() == 0;
   }
 
-  /** Unmount iSCSI pool. stop() will already unmount other types. */
+  /** Unmount iSCSI, Gluster pools. stop() will already unmount other types. */
   public boolean unmount() {
     if (type != TYPE_ISCSI && type != TYPE_GLUSTER) return false;
     ShellProcess sp = new ShellProcess();
@@ -306,6 +328,7 @@ sr0  rom  1024M
 
   public boolean mounted() {
     String dev = null;
+    String path = getPath();
     switch (type) {
       default:
         dev = getDevice();
@@ -325,6 +348,8 @@ sr0  rom  1024M
         if (ln.length() == 0) continue;
         String[] fs = ln.split("[ ]");
         if (fs[0].equals(dev)) return true;
+        if (fs.length == 1) continue;
+        if (fs[1].equals(path)) return true;
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -351,6 +376,7 @@ sr0  rom  1024M
   /** Format local partition or iSCSI target. */
   public boolean format(int fmt) {
     if (type == TYPE_NFS) return false;  //can not format NFS
+    if (type == TYPE_CEPHFS) return false;  //can not format CephFS
     if (fmt < 1 || fmt > 4) return false;
     ArrayList<String> cmd = new ArrayList<>();
     switch (fmt) {
@@ -390,12 +416,12 @@ sr0  rom  1024M
   }
 
   /** Returns gluster brick path. */
-  public String getBrick() {
+  public String getGlusterBrick() {
     return "/gluster/volumes/" + name;
   }
 
   /** Returns gluster volume path within brick path. */
-  public String getVolume() {
+  public String getGlusterVolume() {
     return "/gluster/volumes/" + name + "/" + name;
   }
 
@@ -414,7 +440,7 @@ sr0  rom  1024M
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/sbin/blockdev", "--getsize64", getDevice()}, true);
     output = JF.filter(output, JF.filter_numeric);
-    if (output.length() == 0) return null;
+    if (output.length() == 0) return new Size(0);
     return new Size(Long.valueOf(output));
   }
 
@@ -468,7 +494,7 @@ sr0  rom  1024M
     cmd.add("replica");
     cmd.add(Integer.toString(hosts.length));
     for(String host : hosts) {
-      cmd.add(host + ":" + getVolume());
+      cmd.add(host + ":" + getGlusterVolume());
     }
     cmd.add("force");
     JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
@@ -490,13 +516,21 @@ sr0  rom  1024M
     return sp.getErrorLevel() == 0;
   }
 
+  public boolean isMountedManually() {
+    if (type == TYPE_ISCSI) return true;
+    if (type == TYPE_GLUSTER) return true;
+    if (type == TYPE_CEPHFS) return true;
+    return false;
+  }
+
   private String createXML() {
     switch (type) {
       case TYPE_ISCSI: return createXML_iSCSI(name, uuid, host, target, user);
       case TYPE_NFS: return createXML_NFS(name, uuid, host, path, getPath());
       case TYPE_LOCAL_PART: return createXML_Local_Part(name, uuid, path, getPath());
       case TYPE_LOCAL_DISK: return createXML_Local_Disk(name, uuid, path, getPath());
-      case TYPE_GLUSTER: return createXML_Gluster(name, uuid, path, getBrick());
+      case TYPE_GLUSTER: return createXML_Gluster(name, uuid, path, getGlusterBrick());
+      case TYPE_CEPHFS: return createXML_Ceph(name, uuid, path, getPath());
     }
     return null;
   }
@@ -572,7 +606,7 @@ sr0  rom  1024M
     sb.append("  <uuid>" + uuid + "</uuid>");
     sb.append("  <source>");
     sb.append("    <device path='" + localDevice + "'/>");
-    sb.append("    <format type='raw'/>");
+    sb.append("    <format type='gpt'/>");
     sb.append("  </source>");
     sb.append("  <target>");
     sb.append("    <path>/dev</path>");
@@ -607,12 +641,39 @@ sr0  rom  1024M
     return sb.toString();
   }
 
+  private static String createXML_Ceph(String name, String uuid, String path, String mountPath) {
+    //libvirt currently does NOT support cephfs, so a fake "dir" is used for now.
+    StringBuilder sb = new StringBuilder();
+    sb.append("<pool type='dir' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
+    sb.append("  <name>" + name + "</name>");
+    sb.append("  <uuid>" + uuid + "</uuid>");
+    if (false) {
+      sb.append("  <source>");
+      sb.append("    <device path='" + path + "'/>");
+      sb.append("    <format type='cephfs'/>");
+      sb.append("  </source>");
+    }
+    sb.append("  <target>");
+    sb.append("    <path>" + mountPath + "</path>");
+    sb.append("  </target>");
+    sb.append("  <fs:mount_opts>");
+    sb.append("    <fs:option name='noexec'/>");
+    sb.append("    <fs:option name='nosuid'/>");
+    sb.append("    <fs:option name='nodev'/>");
+    sb.append("  </fs:mount_opts>");
+    sb.append("</pool>");
+    return sb.toString();
+  }
+
   private static void usage() {
     JFLog.log("Usage: Storage {command} [args]");
     JFLog.log("  mount {type} ...");
-    JFLog.log("    mount iscsi {host} {target} {initiator}");
+    JFLog.log("    mount part {device}");
+//    JFLog.log("    mount disk {device}");
+    JFLog.log("    mount iscsi {host} {target}");
     JFLog.log("    mount nfs {host} {srcPath}");
-    JFLog.log("    mount local {device}");
+//    Gluster ???
+    JFLog.log("    mount cephfs {device}");
     JFLog.log("  unmount {mountPath}");
     System.exit(1);
   }
@@ -626,7 +687,7 @@ sr0  rom  1024M
         if (args.length < 3) usage();
         switch (args[1]) {
           case "iscsi": {
-            if (args.length < 6) usage();
+            if (args.length < 4) usage();
             Storage store = new Storage(TYPE_ISCSI, args[1], null);
             store.host = args[2];
             store.target = args[3];
@@ -635,7 +696,7 @@ sr0  rom  1024M
             break;
           }
           case "nfs": {
-            if (args.length < 7) usage();
+            if (args.length < 4) usage();
             Storage store = new Storage(TYPE_NFS, args[1], null);
             store.host = args[2];
             store.path = args[3];
@@ -644,16 +705,26 @@ sr0  rom  1024M
             break;
           }
           case "part": {
-            if (args.length < 5) usage();
+            if (args.length < 3) usage();
             Storage store = new Storage(TYPE_LOCAL_PART, args[1], null);
             store.path = args[2];
             boolean res = store.register();
             JFLog.log("res=" + res);
             break;
           }
+/*
           case "disk": {
-            if (args.length < 5) usage();
+            if (args.length < 3) usage();
             Storage store = new Storage(TYPE_LOCAL_DISK, args[1], null);
+            store.path = args[2];
+            boolean res = store.register();
+            JFLog.log("res=" + res);
+            break;
+          }
+*/
+          case "cephfs": {
+            if (args.length < 3) usage();
+            Storage store = new Storage(TYPE_CEPHFS, args[1], null);
             store.path = args[2];
             boolean res = store.register();
             JFLog.log("res=" + res);

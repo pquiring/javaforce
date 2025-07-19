@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.linux.*;
 import javaforce.vm.*;
 import javaforce.webui.tasks.*;
 
@@ -190,6 +191,16 @@ public class VMM implements VMProvider {
   }
 
   public String getServerHostname() {
-    return Config.current.fqn;
+    return Linux.getHostname();
+  }
+
+  public boolean addsshkey(String hostname, String sshkey) {
+    Host[] hosts = Config.current.hosts.values().toArray(new Host[0]);
+    for(Host host : hosts) {
+      if (host.hostname.equals(hostname)) {
+        return host.addsshkey(sshkey);
+      }
+    }
+    return false;
   }
 }

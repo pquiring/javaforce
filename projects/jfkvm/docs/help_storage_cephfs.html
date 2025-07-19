@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfKVM</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfKVM : Storage</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+CephFS Storage:
+===============
+
+Desc:
+-----
+Replicated file system for storage pools (Red Hat) (vSAN).
+
+Requirements:
+-------------
+
+Three or more servers in a cluster.
+Each server has available partitions.
+
+Instructions:
+-------------
+
+First go to the <a href="help_cluster.html">Cluster</a> screen and perform a 'Ceph Setup'.
+
+Add a new Storage Pool, select CephFS on each server.
+
+CephFS is always mounted to /volumes/cephfs.
+
+Ceph CLI:
+---------
+
+View Status:
+  ceph status
+
+View available disks:
+  ceph orch device ls
+
+Zap disk:
+  ceph orch device zap {host} {device} --force
+
+Add all available disks:
+  ceph orch apply osd --all-available-devices  
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfkvm">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfkvm">GitHub</a>
+
+</pre>
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

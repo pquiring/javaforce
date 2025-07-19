@@ -24,6 +24,7 @@ Local Partition - local partition (ext4)
 NFS - remote NFS file storage (files)
 iSCSI - remote iSCSI shared disk block storage (gfs2, ocfs2)
 Gluster - local replicated disk block storage
+CephFS - local replicated file system
 
 Actions:
 --------
@@ -46,8 +47,13 @@ iSCSI currently support two <b>shared disk</b> formats that require special setu
 
 Gluster: [since 0.9]
 --------
-Gluster is a <b>replicated disk</b> storage pool (vSAN).
+Gluster is a <b>replicated disk</b> storage pool (vSAN) [deprecated]
   <a href="help_storage_gluster.html">Gluster : (Red Hat)</a>
+
+CephFS: [since 3.0]
+-------
+CephFS is a <b>replicated file system</b> storage pool (vSAN).
+  <a href="help_storage_cephfs.html">CephFS : (Red Hat)</a>
 
 </pre>
 <br><br>

@@ -1406,7 +1406,9 @@ public class Linux {
           if (fs.length < 2) continue;
           if (fs[1].equals(ks[1])) return true;  //already exists
         }
+        content += key;
       }
+      content += "\n";
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(content.getBytes());
       fos.close();

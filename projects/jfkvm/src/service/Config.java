@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.linux.*;
+import javaforce.net.*;
 import javaforce.vm.*;
 
 public class Config implements Serializable {
@@ -16,11 +18,14 @@ public class Config implements Serializable {
   public static Config current;
 
   //config settings
-  public String fqn;
+  public String ip_mgmt;
+  public String ip_storage;
   public String token;
   public int auto_start_delay = 60;
   public int stats_days = 3;
   public ArrayList<String> auto_start_vms = new ArrayList<>();
+
+  public transient boolean ceph_setup;  //ceph setup in progress
 
   //storage pools
   public ArrayList<Storage> pools = new ArrayList<>();
@@ -45,8 +50,11 @@ public class Config implements Serializable {
   }
 
   private void valid() {
-    if (fqn == null) {
-      fqn = "localhost.localdomain";
+    if (ip_mgmt == null) {
+      ip_mgmt = "";
+    }
+    if (ip_storage == null) {
+      ip_storage = "";
     }
     if (pools == null) {
       pools = new ArrayList<>();
@@ -200,10 +208,18 @@ public class Config implements Serializable {
     Host[] hosts = getHosts();
     int idx = 0;
     for(Host host : hosts) {
-      names[idx++] = host.host;
+      names[idx++] = host.hostname;
     }
-    names[idx] = fqn;
+    names[idx] = Linux.getHostname();
     return names;
+  }
+
+  public Host getHostByHostname(String hostname) {
+    Host[] hosts = getHosts();
+    for(Host host : hosts) {
+      if (host.hostname.equals(hostname)) return host;
+    }
+    return null;
   }
 
   public boolean gluster_ready() {
@@ -322,5 +338,23 @@ public class Config implements Serializable {
       }
     }
     return sb.toString();
+  }
+
+  public boolean hasPool(int type) {
+    for(Storage pool : pools) {
+      if (pool.type == type) return true;
+    }
+    return false;
+  }
+
+  public HostDetails[] toHostDetails() {
+    int cnt = hosts.size();
+    HostDetails[] list = new HostDetails[cnt];
+    String[] keys = hosts.keySet().toArray(JF.StringArrayType);
+    int offset = 0;
+    for(String key : keys) {
+      list[offset++] = hosts.get(key).toHostDetails();
+    }
+    return list;
   }
 }

@@ -6,8 +6,10 @@ package service;
  */
 
 import java.io.*;
+import java.net.*;
 
 import javaforce.*;
+import javaforce.net.*;
 
 public class Host implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -15,14 +17,16 @@ public class Host implements Serializable {
   public static boolean debug = false;  //disable version checks during development
 
   public String token;
-  public String host;  //domain name or ip
+  public String host;  //ip address
   public String hostname;  //hostname
+  public transient String ip_storage;  //storage ip
 
   //transient data
   public transient boolean online;
   public transient boolean valid;
   public transient float version;
   public transient boolean gluster;
+  public transient boolean ceph_setup;  //ceph setup in progress
 
   public String[] getState() {
     return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid), Boolean.toString(gluster)};
@@ -86,6 +90,22 @@ public class Host implements Serializable {
     }
   }
 
+  public String getStorageIP() {
+    if (!isValid(3.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      byte[] data = https.get("/api/getstorageip");
+      https.close();
+      if (data == null || data.length == 0) return null;
+      ip_storage = new String(data);
+      return ip_storage;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return host;
+    }
+  }
+
   public int getNetworkVLAN(String name) {
     if (!isValid(0.6f)) return -1;
     try {
@@ -99,5 +119,39 @@ public class Host implements Serializable {
       JFLog.log(e);
       return -1;
     }
+  }
+
+  public boolean addsshkey(String sshkey) {
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      byte[] result = https.get("/api/addsshkey?sshkey=" + JF.encodeURL(sshkey) + "&token=" + token);
+      https.close();
+      return new String(result).equals("okay");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public boolean setCephSetup() {
+    //TODO
+    return true;
+  }
+
+  public boolean setCephComplete() {
+    //TODO
+    return true;
+  }
+
+  public HostDetails toHostDetails() {
+    HostDetails hd = new HostDetails();
+    hd.hostname = hostname;
+    hd.ip4 = host;
+    return hd;
+  }
+
+  public String toString() {
+    return hostname;
   }
 }

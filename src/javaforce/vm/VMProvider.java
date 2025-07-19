@@ -18,4 +18,6 @@ public interface VMProvider {
   public String getVNCPassword();
   /** Provides server host name */
   public String getServerHostname();
+  /** Install SSH Key on remote host. */
+  public boolean addsshkey(String hostname, String sshkey);
 }
