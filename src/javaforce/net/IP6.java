@@ -174,21 +174,21 @@ public class IP6 {
     return ip6;
   }
 
-  /** Return list of local IP4 addresses. */
-  public static IP6[] list() {
+  /** Return list of local IP6 addresses. */
+  public static IP6[] list(boolean up) {
     ArrayList<IP6> list = new ArrayList<>();
     try {
       Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
       for (NetworkInterface networkInterface : Collections.list(networkInterfaces)) {
-        if (networkInterface.isUp() && !networkInterface.isLoopback()) {
-          Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-          String device = networkInterface.getDisplayName();
-          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-            if (inetAddress.isSiteLocalAddress()) {
-              String ip = inetAddress.getHostAddress();
-              if (isIP(ip)) {
-                list.add(new IP6(ip, device));
-              }
+        if (networkInterface.isLoopback()) continue;
+        if (!up && !networkInterface.isUp()) continue;
+        Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+        String device = networkInterface.getDisplayName();
+        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+          if (inetAddress.isSiteLocalAddress()) {
+            String ip = inetAddress.getHostAddress();
+            if (isIP(ip)) {
+              list.add(new IP6(ip, device));
             }
           }
         }
@@ -197,6 +197,11 @@ public class IP6 {
       JFLog.log(e);
     }
     return list.toArray(new IP6[list.size()]);
+  }
+
+  /** Return list of all local IP6 addresses. */
+  public static IP6[] list() {
+    return list(true);
   }
 
   public static void test(String ip) {

@@ -149,20 +149,20 @@ public class IP4 implements Comparable<IP4> {
   }
 
   /** Return list of local IP4 addresses. */
-  public static IP4[] list() {
+  public static IP4[] list(boolean up) {
     ArrayList<IP4> list = new ArrayList<>();
     try {
       Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
       for (NetworkInterface networkInterface : Collections.list(networkInterfaces)) {
-        if (!networkInterface.isLoopback()) {
-          Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-          String device = networkInterface.getDisplayName();
-          for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-            if (inetAddress.isSiteLocalAddress()) {
-              String ip = inetAddress.getHostAddress();
-              if (isIP(ip)) {
-                list.add(new IP4(ip, device));
-              }
+        if (networkInterface.isLoopback()) continue;
+        if (!up && !networkInterface.isUp()) continue;
+        Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+        String device = networkInterface.getDisplayName();
+        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+          if (inetAddress.isSiteLocalAddress()) {
+            String ip = inetAddress.getHostAddress();
+            if (isIP(ip)) {
+              list.add(new IP4(ip, device));
             }
           }
         }
@@ -171,6 +171,11 @@ public class IP4 implements Comparable<IP4> {
       JFLog.log(e);
     }
     return list.toArray(new IP4[list.size()]);
+  }
+
+  /** Return list of all local IP4 addresses. */
+  public static IP4[] list() {
+    return list(true);
   }
 
   public static void test(String ip, boolean expect) {
