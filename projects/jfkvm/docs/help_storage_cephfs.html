@@ -22,16 +22,15 @@ Requirements:
 -------------
 
 Three or more servers in a cluster.
-Each server has available partitions.
+Each server has available disks.
 
 Instructions:
 -------------
 
-First go to the <a href="help_cluster.html">Cluster</a> screen and perform a 'Ceph Setup'.
+First go to the <a href="help_cluster.html">Cluster</a> screen,
+connect to other hosts and then perform a 'Ceph Setup'.
 
 Add a new Storage Pool, select CephFS on each server.
-
-CephFS is always mounted to /volumes/cephfs.
 
 Ceph CLI:
 ---------
@@ -47,6 +46,10 @@ Zap disk:
 
 Add all available disks:
   ceph orch apply osd --all-available-devices  
+
+Notes:
+------
+ - if the initial setup missed some disks, you can zap them and then re-add them.
 
 </pre>
 <br><br>
