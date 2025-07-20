@@ -19,11 +19,11 @@ import javaforce.webui.tasks.*;
 import service.*;
 
 public class Ceph {
-  public static boolean ceph_exists() {
+  public static boolean exists() {
     return new File("/etc/ceph/ceph.conf").exists();
   }
 
-  public static boolean ceph_setup(Task task) {
+  public static boolean setup(Task task) {
     Host[] hosts = Config.current.hosts.values().toArray(new Host[0]);
     try {
       for(Host host : hosts) {
@@ -189,6 +189,21 @@ public class Ceph {
         host.setCephComplete();
       }
       return false;
+    }
+  }
+  public static String getStatus() {
+    try {
+      ShellProcess sp = new ShellProcess();
+      String output = sp.run(new String[] {"/usr/bin/ceph", "status"}, true);
+      int error_level = sp.getErrorLevel();
+      if (error_level != 0) throw new Exception("ceph status failed!");
+      output = output.replaceAll("\n", " ");
+      int i1 = output.indexOf("HEALTH_");
+      if (i1 == -1) throw new Exception("HEALTH not found");
+      int i2 = output.indexOf(' ', i1);
+      return output.substring(i1, i2);
+    } catch (Exception e) {
+      return "Unknown";
     }
   }
   public static void main(String[] args) {

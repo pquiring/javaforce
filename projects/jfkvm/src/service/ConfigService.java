@@ -1965,10 +1965,7 @@ public class ConfigService implements WebUIHandler {
     Button gluster = new Button("Gluster Probe");
     tools2.add(gluster);
     Button ceph = null;
-    if (Ceph.ceph_exists()) {
-      ceph = new Button("Ceph Admin");
-      tools2.add(ceph);
-    } else {
+    if (!Ceph.exists()) {
       ceph = new Button("Ceph Setup");
       tools2.add(ceph);
     }
@@ -2118,11 +2115,7 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
 
-    if (Ceph.ceph_exists()) {
-      ceph.addClickListener((me, cmp) -> {
-        cmp.getClient().openURL("https://" + Config.current.ip_mgmt + ":8443");
-      });
-    } else {
+    if (ceph != null) {
       ceph.addClickListener((me, cmp) -> {
         remote_errmsg.setText("");
         if (hosts.length < 2) {
@@ -2141,7 +2134,7 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 //check if already setup
-                if (Ceph.ceph_exists()) {
+                if (Ceph.exists()) {
                   setStatus("Ceph is already setup!");
                   return;
                 }
@@ -2160,7 +2153,7 @@ public class ConfigService implements WebUIHandler {
 
                 //start ceph setup progress
                 Config.current.ceph_setup = true;
-                if (Ceph.ceph_setup(this)) {
+                if (Ceph.setup(this)) {
                   setStatus("Completed");
                 } else {
                   setStatus("Ceph setup failed, check logs.");
@@ -3957,6 +3950,20 @@ public class ConfigService implements WebUIHandler {
       table.addRow(pool.getStates());
     }
 
+    if (Ceph.exists()) {
+      row = new Row();
+      panel.add(row);
+
+      Button ceph = new Button("Ceph Admin");
+      row.add(ceph);
+
+      ceph.addClickListener((me, cmp) -> {
+        cmp.getClient().openURL("https://" + Config.current.ip_mgmt + ":8443");
+      });
+
+      row.add(new Label("Ceph Status:" + Ceph.getStatus()));
+    }
+
     add.addClickListener((me, cmp) -> {
       ui.setRightPanel(addStoragePanel(ui));
     });
@@ -4344,7 +4351,7 @@ public class ConfigService implements WebUIHandler {
     type.add("local_part", "Local Partition");
 //    type.add("local_disk", "Local Disk");  //TODO
     type.add("gluster", "Gluster");
-    if (Ceph.ceph_exists()) {
+    if (Ceph.exists()) {
       type.add("cephfs", "CephFS");
     }
     row.add(type);
