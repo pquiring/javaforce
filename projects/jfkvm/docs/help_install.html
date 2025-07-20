@@ -16,13 +16,14 @@ Installing jfKVM:
 
 Requirements:
 -------------
-  Server with two NICs and two storage disks.
+  Server with two (or three) NICs and two or more storage disks.
     Two network cards:
-      - one for management interface (web based)
-      - one for virtual machines and server virtual network interfaces
+      - one for management interface (web based) (1GB)
+      - one for virtual machines and server virtual network interfaces (10GB+)
+      - one for storage (ceph) (10GB+) (optional)
     Two storage disks:
       - one for linux distro (recommend Debian)
-      - another for local storage pool (optional but recommended for testing)
+      - one or more for local storage pool (optional) (ceph)
   Distros: Debian, Fedora or Arch.
     - only Debian is tested
 

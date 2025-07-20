@@ -27,10 +27,20 @@ Each server has available disks.
 Instructions:
 -------------
 
-First go to the <a href="help_cluster.html">Cluster</a> screen,
-connect to other hosts and then perform a 'Ceph Setup'.
+First go to the <a href="help_cluster.html">Cluster</a> screen and connect all hosts to each other.
 
-Add a new Storage Pool, select CephFS on each server.
+Perform a 'Ceph Setup' on one of the servers.
+
+On each server add a new storage pool, selecting CephFS.
+
+Recommended:
+------------
+
+A third network interface (10GB+) should be used.  
+Create a bridge on the interface and a virtual server interface on the bridge.  
+Or configure the switch where this physical interface resides with a native VLAN on desired VLAN.
+In the server settings screen set the Storage IP to this server interface IP address.
+This will allow you to place the ceph traffic on its own VLAN.
 
 Ceph CLI:
 ---------
