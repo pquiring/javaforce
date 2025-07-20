@@ -5053,10 +5053,7 @@ public class ConfigService implements WebUIHandler {
       create.addClickListener((me, cmp) -> {
         ui.network_bridge = null;
         ui.network_bridge_complete = () -> {
-          NetworkBridge[] nics1 = NetworkBridge.list();
-          for (NetworkBridge nic : nics1) {
-            table.addRow(new String[] {nic.name, nic.type, nic.iface});
-          }
+          init.run();
         };
         ui.network_bridge_init.run();
         ui.network_bridge_popup.setVisible(true);
