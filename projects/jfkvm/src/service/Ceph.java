@@ -24,20 +24,19 @@ public class Ceph {
   }
 
   public static boolean ceph_setup(Task task) {
+    Host[] hosts = Config.current.hosts.values().toArray(new Host[0]);
     try {
-      Host[] hosts = Config.current.hosts.values().toArray(new Host[0]);
       for(Host host : hosts) {
         if (!host.isValid(3.0f)) {
-          JFLog.log("ceph:host is not valid:" + host.hostname);
-          return false;
+          throw new Exception("ceph:host is not valid:" + host.hostname);
         }
         if (host.getStorageIP() == null || host.ip_storage == null || host.ip_storage.length() == 0) {
-          JFLog.log("ceph:host is missing Storage IP:" + host.hostname);
-          return false;
+          throw new Exception("ceph:host is missing Storage IP:" + host.hostname);
         }
-        if (!host.setCephSetup()) {
-          JFLog.log("ceph:host rejected ceph setup:" + host.hostname);
-          return false;
+      }
+      for(Host host : hosts) {
+        if (!host.setCephStart()) {
+          throw new Exception("ceph:host rejected ceph setup:" + host.hostname);
         }
       }
       //bootstrap ceph
@@ -56,23 +55,20 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("cephadm:" + output);
         if (status != 0) {
-          JFLog.log("ceph:cephadm failed!");
-          return false;
+          throw new Exception("ceph:cephadm failed!");
         }
       }
       task.setStatus("Installing sshkeys...");
       File sshkeyfile = new File("/etc/ceph/ceph.pub");
       if (!sshkeyfile.exists()) {
-        JFLog.log("ceph:/etc/ceph/ceph.pub not found!");
-        return false;
+        throw new Exception("ceph:/etc/ceph/ceph.pub not found!");
       }
       FileInputStream sshkeyin = new FileInputStream(sshkeyfile);
       String sshkey = new String(sshkeyin.readAllBytes());
       sshkeyin.close();
       for(Host host : hosts) {
         if (!host.addsshkey(sshkey)) {
-          JFLog.log("ceph:failed to copy ssh key to host:" + host);
-          return false;
+          throw new Exception("ceph:failed to copy ssh key to host:" + host);
         }
       }
       task.setStatus("Joining other nodes...");
@@ -88,8 +84,7 @@ public class Ceph {
           int status = sp.getErrorLevel();
           JFLog.log("ceph orch host add:" + output);
           if (status != 0) {
-            JFLog.log("ceph:ceph orch host add failed!");
-            return false;
+            throw new Exception("ceph:ceph orch host add failed!");
           }
           if (hosts_sb.length() > 0) {
             hosts_sb.append(",");
@@ -106,8 +101,7 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("ceph orch apply osd:" + output);
         if (status != 0) {
-          JFLog.log("ceph:ceph orch apply osd failed!");
-          return false;
+          throw new Exception("ceph:ceph orch apply osd failed!");
         }
       }
       task.setStatus("Adding monitors...");
@@ -124,8 +118,7 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("ceph orch apply mon:" + output);
         if (status != 0) {
-          JFLog.log("ceph:ceph orch apply mon failed!");
-          return false;
+          throw new Exception("ceph:ceph orch apply mon failed!");
         }
       }
       task.setStatus("Adding managers...");
@@ -142,8 +135,7 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("ceph orch apply mgr:" + output);
         if (status != 0) {
-          JFLog.log("ceph:ceph orch apply mgr failed!");
-          return false;
+          throw new Exception("ceph:ceph orch apply mgr failed!");
         }
       }
       task.setStatus("Creating pool...");
@@ -154,8 +146,7 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("ceph osd pool create:" + output);
         if (status != 0) {
-          JFLog.log("ceph:ceph osd pool create failed!");
-          return false;
+          throw new Exception("ceph:ceph osd pool create failed!");
         }
       }
       task.setStatus("Creating file system...");
@@ -166,8 +157,7 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("ceph fs new:" + output);
         if (status != 0) {
-          JFLog.log("ceph:ceph fs new failed!");
-          return false;
+          throw new Exception("ceph:ceph fs new failed!");
         }
       }
       task.setStatus("Adding meta data services...");
@@ -185,8 +175,7 @@ public class Ceph {
         int status = sp.getErrorLevel();
         JFLog.log("ceph orch apply mds:" + output);
         if (status != 0) {
-          JFLog.log("ceph:ceph orch apply mds failed!");
-          return false;
+          throw new Exception("ceph:ceph orch apply mds failed!");
         }
       }
       for(Host host : hosts) {
@@ -195,9 +184,12 @@ public class Ceph {
       return true;
     } catch (Exception e) {
       JFLog.log(e);
-      task.setStatus("Error:Exception occured, see logs.");
+      task.setStatus(e.getMessage());
+      for(Host host : hosts) {
+        host.setCephComplete();
+      }
+      return false;
     }
-    return false;
   }
   public static void main(String[] args) {
     //test addsshkeys

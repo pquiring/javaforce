@@ -2159,11 +2159,13 @@ public class ConfigService implements WebUIHandler {
                 }
 
                 //start ceph setup progress
+                Config.current.ceph_setup = true;
                 if (Ceph.ceph_setup(this)) {
                   setStatus("Completed");
                 } else {
                   setStatus("Ceph setup failed, check logs.");
                 }
+                Config.current.ceph_setup = false;
               } catch (Exception e) {
                 setStatus("Ceph setup failed, check logs.");
                 JFLog.log(e);
@@ -5595,6 +5597,9 @@ public class ConfigService implements WebUIHandler {
         if (hostname == null) return null;
         Host host = Config.current.getHostByHostname(hostname);
         if (host == null) return null;
+        if (Config.current.ceph_setup) {
+          return "busy".getBytes();
+        }
         host.ceph_setup = true;
         return "okay".getBytes();
       }

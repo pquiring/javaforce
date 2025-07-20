@@ -10,11 +10,12 @@ import java.net.*;
 
 import javaforce.*;
 import javaforce.net.*;
+import javaforce.linux.*;
 
 public class Host implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public static boolean debug = false;  //disable version checks during development
+  public static boolean debug = false;
 
   public String token;
   public String host;  //ip address
@@ -33,7 +34,7 @@ public class Host implements Serializable {
   }
 
   public boolean isValid(float min_ver) {
-    return online && valid && (version >= min_ver || debug);
+    return online && valid && (version >= min_ver);
   }
 
   public boolean isValid() {
@@ -134,14 +135,30 @@ public class Host implements Serializable {
     }
   }
 
-  public boolean setCephSetup() {
-    //TODO
-    return true;
+  public boolean setCephStart() {
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      byte[] result = https.get("/api/ceph_setup_start?hostname=" + Linux.getHostname() + "&token=" + token);
+      https.close();
+      return new String(result).equals("okay");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
   }
 
   public boolean setCephComplete() {
-    //TODO
-    return true;
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      byte[] result = https.get("/api/ceph_setup_complete?hostname=" + Linux.getHostname() + "&token=" + token);
+      https.close();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
   }
 
   public HostDetails toHostDetails() {
