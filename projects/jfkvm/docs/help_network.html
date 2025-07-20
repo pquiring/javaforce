@@ -26,6 +26,11 @@ Virtual Switch (bridge)
 This is a bridge that all virtual machines and server virtual interfaces connect to.
 The bridge should be connected to a secondary physical network interface (not the physical management interface).
 
+  Types:
+  ------
+  br = bridge (used by docker, openvpn, etc.)
+  os = open switch (used to jfKVM to connect guests to VLANs and create server virtual interfaces)
+
 Server Virtual NIC
 ------------------
 
