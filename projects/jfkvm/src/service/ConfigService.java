@@ -1961,8 +1961,14 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools2);
     Button gluster = new Button("Gluster Probe");
     tools2.add(gluster);
-    Button ceph = new Button("Ceph Setup");
-    tools2.add(ceph);
+    Button ceph = null;
+    if (Ceph.ceph_exists()) {
+      ceph = new Button("Ceph Admin");
+      tools2.add(ceph);
+    } else {
+      ceph = new Button("Ceph Setup");
+      tools2.add(ceph);
+    }
     Button remove = new Button("Remove Host");
     tools2.add(remove);
 
@@ -2109,53 +2115,64 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
 
-    ceph.addClickListener((me, cmp) -> {
-      remote_errmsg.setText("");
-      if (hosts.length < 2) {
-        remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
-        return;
-      }
-      for(Host host : hosts) {
-        if (!host.online || !host.valid) {
-          remote_errmsg.setText("Host is not online:" + host.hostname);
+    if (Ceph.ceph_exists()) {
+      ceph.addClickListener((me, cmp) -> {
+        cmp.getClient().openURL("https://" + Config.current.ip_mgmt + ":8443");
+      });
+    } else {
+      ceph.addClickListener((me, cmp) -> {
+        remote_errmsg.setText("");
+        if (hosts.length < 2) {
+          remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
           return;
         }
-      }
-      Task task = new Task("Ceph setup") {
-        public void doTask() {
-          try {
-            //check if already setup
-            if (Ceph.ceph_exists()) {
-              setStatus("Ceph is already setup!");
-              return;
-            }
-
-            //check for known broken versions
-            String distro = Linux.getDistro();
-            if (distro == null) distro = "unknown";
-            String verstr = Linux.getVersion();
-            if (verstr == null) verstr = "0";
-            float verfloat = Float.valueOf(verstr);
-            if (distro.equals("Debian") && verfloat < 13) {
-              //Debian/12 is known to have broken Ceph version
-              setStatus("Debian/12 or less is not supported, please upgrade!");
-              return;
-            }
-
-            //start ceph setup progress
-            if (Ceph.ceph_setup(this)) {
-              setStatus("Completed");
-            } else {
-              setStatus("Ceph setup failed, check logs.");
-            }
-          } catch (Exception e) {
-            setStatus("Ceph setup failed, check logs.");
-            JFLog.log(e);
+        for(Host host : hosts) {
+          if (!host.online || !host.valid) {
+            remote_errmsg.setText("Host is not online:" + host.hostname);
+            return;
           }
         }
-      };
-      Tasks.tasks.addTask(ui.tasks, task);
-    });
+        ui.confirm_message.setText("Ceph setup");
+        ui.confirm_action = () -> {
+          Task task = new Task("Ceph setup") {
+            public void doTask() {
+              try {
+                //check if already setup
+                if (Ceph.ceph_exists()) {
+                  setStatus("Ceph is already setup!");
+                  return;
+                }
+
+                //check for known broken versions
+                String distro = Linux.getDistro();
+                if (distro == null) distro = "unknown";
+                String verstr = Linux.getVersion();
+                if (verstr == null) verstr = "0";
+                float verfloat = Float.valueOf(verstr);
+                if (distro.equals("Debian") && verfloat < 13) {
+                  //Debian/12 is known to have broken Ceph version
+                  setStatus("Debian/12 or less is not supported, please upgrade!");
+                  return;
+                }
+
+                //start ceph setup progress
+                if (Ceph.ceph_setup(this)) {
+                  setStatus("Completed");
+                } else {
+                  setStatus("Ceph setup failed, check logs.");
+                }
+              } catch (Exception e) {
+                setStatus("Ceph setup failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(ui.tasks, task);
+        };
+        ui.confirm_button.setText("Start");
+        ui.confirm_popup.setVisible(true);
+      });
+    }
 
     remove.addClickListener((me, cmp) -> {
       remote_errmsg.setText("");
