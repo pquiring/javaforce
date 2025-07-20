@@ -46,6 +46,10 @@ public class TaskUI extends Row {
     result.setText(task.result);
   }
 
+  public void updateMessage(Task task) {
+    result.setText(task.result);
+  }
+
   public Label action;
   public Label start;
   public Label end;

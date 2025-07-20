@@ -64,6 +64,9 @@ public class Task extends Thread implements Status {
 
   public void setStatus(String msg) {
     result = msg;
+    if (taskui != null) {
+      taskui.updateMessage(this);
+    }
   }
 
   public void setPercent(int value) {
