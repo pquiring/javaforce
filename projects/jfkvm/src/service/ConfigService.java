@@ -1106,6 +1106,9 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Config.current.addNetworkVirtual(nic);
+      if (ui.network_virtual_complete != null) {
+        ui.network_virtual_complete.run();
+      }
       ui.network_virtual_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
@@ -5291,7 +5294,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.network_virtual = null;
-        ui.network_virtual_complete = null;
+        ui.network_virtual_complete = () -> {init.run();};
         ui.network_virtual_init.run();
         ui.network_virtual_popup.setVisible(true);
       });
