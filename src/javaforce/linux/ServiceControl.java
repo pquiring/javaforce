@@ -8,40 +8,44 @@ package javaforce.linux;
 import javaforce.*;
 
 public class ServiceControl {
+  public static int logid = 0;
+  public static void setLog(int id) {
+    logid = id;
+  }
   public static boolean start(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "start", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     return sp.getErrorLevel() == 0;
   }
   public static boolean stop(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "stop", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     return sp.getErrorLevel() == 0;
   }
   public static boolean restart(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "restart", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     return sp.getErrorLevel() == 0;
   }
   public static boolean enable(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "enable", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     return sp.getErrorLevel() == 0;
   }
   public static boolean disable(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "disable", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     return sp.getErrorLevel() == 0;
   }
   public static boolean isEnabled(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "status", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     boolean enabled = false;
     boolean active = false;
     String[] lns = output.split("\n");
@@ -65,7 +69,7 @@ public class ServiceControl {
   public static boolean isActive(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "status", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     boolean enabled = false;
     boolean active = false;
     String[] lns = output.split("\n");
@@ -90,7 +94,7 @@ public class ServiceControl {
   public static String[] getStates(String name) {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/systemctl", "status", name}, true);
-    JFLog.log(output);
+    JFLog.log(logid, output);
     String enabled = "n/a";
     String active = "n/a";
     String[] lns = output.split("\n");
