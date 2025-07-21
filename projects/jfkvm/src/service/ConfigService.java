@@ -1980,7 +1980,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 150, 75, 75, 75, 75, 75}, col_height, 7, 0);
+    Table table = new Table(new int[] {150, 150, 75, 75, 75, 100, 100}, col_height, 7, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
