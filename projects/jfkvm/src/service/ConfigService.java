@@ -5627,6 +5627,13 @@ public class ConfigService implements WebUIHandler {
         host.ceph_setup = false;
         return "okay".getBytes();
       }
+      case "ceph_status": {
+        if (Ceph.exists()) {
+          return Ceph.getStatus().getBytes();
+        } else {
+          return "Not setup".getBytes();
+        }
+      }
       case "notify": {
         String token = params.get("token");
         String msg = params.get("msg");
