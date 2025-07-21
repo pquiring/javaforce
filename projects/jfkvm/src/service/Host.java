@@ -52,8 +52,9 @@ public class Host implements Serializable {
   public boolean getVersion() {
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/getver");
+      https.close();
       if (data == null) throw new Exception("offline");
       String str = new String(data);
       version = Float.valueOf(str);
@@ -67,7 +68,7 @@ public class Host implements Serializable {
   public boolean notify(String msg, String name) {
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       https.get("/api/notify?msg=" + msg + "&name=" + name + "&token=" + token);
       https.close();
       return true;
@@ -81,7 +82,7 @@ public class Host implements Serializable {
     if (!isValid(0.6f)) return null;
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/gethostname");
       https.close();
       if (data == null || data.length == 0) return null;
@@ -96,7 +97,7 @@ public class Host implements Serializable {
     if (!isValid(3.0f)) return null;
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/getstorageip");
       https.close();
       if (data == null || data.length == 0) return null;
@@ -112,7 +113,7 @@ public class Host implements Serializable {
     if (!isValid(0.6f)) return -1;
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/getnetworkvlan?network=" + name + "&token=" + token);
       https.close();
       if (data == null || data.length == 0) return -1;
@@ -126,7 +127,7 @@ public class Host implements Serializable {
   public boolean addsshkey(String sshkey) {
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] result = https.get("/api/addsshkey?sshkey=" + JF.encodeURL(sshkey) + "&token=" + token);
       https.close();
       return new String(result).equals("okay");
@@ -140,7 +141,7 @@ public class Host implements Serializable {
     if (!isValid(3.0f)) return null;
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/gluster_status");
       https.close();
       if (data == null || data.length == 0) return null;
@@ -155,7 +156,7 @@ public class Host implements Serializable {
     if (!isValid(3.0f)) return null;
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/ceph_status");
       https.close();
       if (data == null || data.length == 0) return null;
@@ -169,7 +170,7 @@ public class Host implements Serializable {
   public boolean setCephStart() {
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] result = https.get("/api/ceph_setup_start?hostname=" + Linux.getHostname() + "&token=" + token);
       https.close();
       return new String(result).equals("okay");
@@ -182,7 +183,7 @@ public class Host implements Serializable {
   public boolean setCephComplete() {
     try {
       HTTPS https = new HTTPS();
-      https.open(host);
+      if (!https.open(host)) throw new Exception("connect failed");
       byte[] result = https.get("/api/ceph_setup_complete?hostname=" + Linux.getHostname() + "&token=" + token);
       https.close();
       return true;

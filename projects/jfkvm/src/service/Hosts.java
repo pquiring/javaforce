@@ -36,6 +36,7 @@ public class Hosts extends Thread {
           secs60 = 0;
         }
       }
+      JF.sleep(1000);
     }
   }
 

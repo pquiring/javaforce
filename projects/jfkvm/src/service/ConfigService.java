@@ -1980,7 +1980,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 150, 75, 75, 75, 100, 100}, col_height, 7, 0);
+    Table table = new Table(new int[] {150, 150, 75, 75, 75, 150, 150}, col_height, 7, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -1996,6 +1996,41 @@ public class ConfigService implements WebUIHandler {
       }
     } catch (Exception e) {
       JFLog.log(e);
+    }
+
+    if (Gluster.exists()) {
+      row = new Row();
+      panel.add(row);
+
+      row.add(new Label("Gluster Status: "));
+
+      Label gluster_status = new Label("Checking...");
+      row.add(gluster_status);
+
+      new Thread() { public void run() {
+        gluster_status.setText(Gluster.getStatus());
+      } }.start();
+    }
+
+    if (Ceph.exists()) {
+      row = new Row();
+      panel.add(row);
+
+      Button ceph_admin = new Button("Ceph Admin");
+      row.add(ceph_admin);
+
+      ceph_admin.addClickListener((me, cmp) -> {
+        cmp.getClient().openURL("https://" + Config.current.ip_mgmt + ":8443");
+      });
+
+      row.add(new Label("Ceph Status: "));
+
+      Label ceph_status = new Label("Checking...");
+      row.add(ceph_status);
+
+      new Thread() { public void run() {
+        ceph_status.setText(Ceph.getStatus());
+      } }.start();
     }
 
     refresh.addClickListener((me, cmp) -> {
@@ -2067,7 +2102,7 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             HTTPS https = new HTTPS();
-            https.open(_remote_host);
+            if (!https.open(_remote_host)) throw new Exception("connect failed");
             byte[] data = https.get("/api/keyfile?token=" + _remote_token);
             if (Config.current.saveHost(_remote_host, data, _remote_token)) {
               setStatus("Connected to host:" + _remote_host);
@@ -3948,20 +3983,6 @@ public class ConfigService implements WebUIHandler {
     for(Storage pool : pools) {
       //TODO : this can block if pool is remote and offline
       table.addRow(pool.getStates());
-    }
-
-    if (Ceph.exists()) {
-      row = new Row();
-      panel.add(row);
-
-      Button ceph = new Button("Ceph Admin");
-      row.add(ceph);
-
-      ceph.addClickListener((me, cmp) -> {
-        cmp.getClient().openURL("https://" + Config.current.ip_mgmt + ":8443");
-      });
-
-      row.add(new Label("Ceph Status:" + Ceph.getStatus()));
     }
 
     add.addClickListener((me, cmp) -> {

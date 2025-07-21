@@ -1225,6 +1225,7 @@ public class JF {
 
   public static String serverKeysAlias = "root";
 
+  /** Configures HttpsURLConnection to accept any certificate. */
   public static void initHttps(KeyMgmt keys) {
     if (initedHttps) return;
     initedHttps = true;
