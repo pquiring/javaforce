@@ -20,7 +20,7 @@ public class Gluster {
   public static String getStatus() {
     try {
       ShellProcess sp = new ShellProcess();
-      String output = sp.run(new String[] {"/usr/bin/gluster", "volume", "info"}, true);
+      String output = sp.run(new String[] {"/usr/sbin/gluster", "volume", "info"}, true);
       int error_level = sp.getErrorLevel();
       if (error_level != 0) throw new Exception("gluster status failed!");
       String[] lns = output.split("\n");
