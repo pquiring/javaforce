@@ -2100,7 +2100,7 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Gluster Probe host:" + host_host) {
         public void doTask() {
           try {
-            if (Storage.gluster_probe(host_host)) {
+            if (Gluster.probe(host_host)) {
               Hosts.hosts.check_now();
               setStatus("Completed");
             } else {
@@ -4240,7 +4240,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      if (!Config.current.gluster_ready()) {
+      if (!Gluster.ready()) {
         errmsg.setText("Not all hosts are probed with Gluster");
         return;
       }
@@ -4251,7 +4251,7 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Create Gluster Volume:" + pool.name) {
           public void doTask() {
             try {
-              if (pool.gluster_volume_create(Config.current.getHostNames())) {
+              if (Gluster.volume_create(Config.current.getHostNames(), pool.getName(), pool.getGlusterVolume())) {
                 setStatus("Completed");
               } else {
                 setStatus("Error occured, check logs.");
@@ -4274,7 +4274,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      if (!Config.current.gluster_ready()) {
+      if (!Gluster.ready()) {
         errmsg.setText("Not all hosts are probed with Gluster");
         return;
       }
@@ -4285,7 +4285,7 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Start Gluster Volume:" + pool.name) {
           public void doTask() {
             try {
-              if (pool.gluster_volume_start()) {
+              if (Gluster.volume_start(pool.getName())) {
                 setStatus("Completed");
               } else {
                 setStatus("Error occured, check logs.");
@@ -5585,6 +5585,13 @@ public class ConfigService implements WebUIHandler {
           return "okay".getBytes();
         } else {
           return "error".getBytes();
+        }
+      }
+      case "gluster_status": {
+        if (Gluster.exists()) {
+          return Gluster.getStatus().getBytes();
+        } else {
+          return "Not setup".getBytes();
         }
       }
       case "ceph_setup_start": {

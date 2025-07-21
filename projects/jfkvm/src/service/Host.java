@@ -26,12 +26,12 @@ public class Host implements Serializable {
   public transient boolean online;
   public transient boolean valid;
   public transient float version;
-  public transient boolean gluster;
+  public transient String gluster_status;
   public transient boolean ceph_setup;  //ceph setup in progress
   public transient String ceph_status;
 
   public String[] getState() {
-    return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid), Boolean.toString(gluster), ceph_status};
+    return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid), gluster_status, ceph_status};
   }
 
   public boolean isValid(float min_ver) {
@@ -133,6 +133,21 @@ public class Host implements Serializable {
     } catch (Exception e) {
       JFLog.log(e);
       return false;
+    }
+  }
+
+  public String getGlusterStatus() {
+    if (!isValid(3.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      https.open(host);
+      byte[] data = https.get("/api/gluster_status");
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return host;
     }
   }
 

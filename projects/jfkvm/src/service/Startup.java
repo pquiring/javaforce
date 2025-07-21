@@ -63,7 +63,7 @@ public class Startup extends Thread {
            pool.start();
           }
           if (pool.type == Storage.TYPE_GLUSTER) {
-            pool.gluster_volume_start();
+            Gluster.volume_start(pool.getName());
           }
           if (pool.isMountedManually()) {
             if (!pool.mounted()) {

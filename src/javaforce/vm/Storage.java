@@ -146,6 +146,10 @@ public class Storage implements Serializable {
     return false;
   }
 
+  public String getName() {
+    return name;
+  }
+
   public String getStateString() {
     int state = getState();
     switch (state) {
@@ -477,13 +481,6 @@ sr0  rom  1024M
     return new Size(total);
   }
 
-  public static boolean gluster_probe(String host) {
-    ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/sbin/gluster", "peer", "probe", host}, true);
-    JFLog.log(output);
-    return sp.getErrorLevel() == 0;
-  }
-
   public boolean gluster_volume_create(String[] hosts) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<>();
@@ -497,19 +494,6 @@ sr0  rom  1024M
       cmd.add(host + ":" + getGlusterVolume());
     }
     cmd.add("force");
-    JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
-    String output = sp.run(cmd.toArray(JF.StringArrayType), true);
-    JFLog.log(output);
-    return sp.getErrorLevel() == 0;
-  }
-
-  public boolean gluster_volume_start() {
-    ShellProcess sp = new ShellProcess();
-    ArrayList<String> cmd = new ArrayList<>();
-    cmd.add("/usr/sbin/gluster");
-    cmd.add("volume");
-    cmd.add("start");
-    cmd.add(name);
     JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);

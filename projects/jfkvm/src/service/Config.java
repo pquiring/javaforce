@@ -222,14 +222,6 @@ public class Config implements Serializable {
     return null;
   }
 
-  public boolean gluster_ready() {
-    Host[] hosts = getHosts();
-    for(Host host : hosts) {
-      if (!host.online || !host.gluster) return false;
-    }
-    return true;
-  }
-
   private void upgradeHosts() {
     //up to version 0.3 the host was a String of token
     String[] keys = hosts.keySet().toArray(JF.StringArrayType);

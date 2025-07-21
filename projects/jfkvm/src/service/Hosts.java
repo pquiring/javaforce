@@ -41,28 +41,12 @@ public class Hosts extends Thread {
 
   public boolean check_hosts;
 
-  private String[] gluster_hosts = new String[0];
-
   public class CheckHosts extends Thread {
     //run every minute
     public void run() {
       check_hosts = true;
-      try {
-        //get gluster status
-        ShellProcess sp = new ShellProcess();
-        String out = sp.run(new String[] {"/usr/sbin/gluster", "peer", "status"}, true);
-        String[] lns = out.split("\n");
-        ArrayList<String> hosts = new ArrayList<>();
-        for(String ln : lns) {
-          if (ln.startsWith("Hostname:")) {
-            ln = ln.substring(9);
-            hosts.add(ln.trim());
-          }
-        }
-        gluster_hosts = hosts.toArray(JF.StringArrayType);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
+      boolean gluster = Gluster.exists();
+      boolean ceph = Ceph.exists();
       try {
         Host[] hosts = Config.current.getHosts();
         for(Host host : hosts) {
@@ -74,17 +58,22 @@ public class Hosts extends Thread {
               host.hostname = host.getHostname();
               Config.current.save();
             }
-            host.gluster = getGlusterState(host.host);
-            if (Ceph.exists()) {
+            if (gluster) {
+              host.gluster_status = host.getGlusterStatus();
+            } else {
+              host.gluster_status = "false";
+            }
+            if (ceph) {
               host.ceph_status = host.getCephStatus();
             } else {
-              host.ceph_status = "n/a";
+              host.ceph_status = "false";
             }
           } catch (Exception e) {
             JFLog.log(e);
             host.online = false;
             host.valid = false;
-            host.gluster = false;
+            host.gluster_status = "false";
+            host.ceph_status = "false";
           }
         }
       } catch (Exception e) {
@@ -93,13 +82,6 @@ public class Hosts extends Thread {
       Config.current.validateHosts();
       check_hosts = false;
     }
-  }
-
-  private boolean getGlusterState(String host) {
-    for(String gluster_host : gluster_hosts) {
-      if (gluster_host.equals(host)) return true;
-    }
-    return false;
   }
 
   public void check_now() {
