@@ -176,7 +176,8 @@ public class Storage implements Serializable {
   public String[] getStates() {
     String size, free;
     boolean on = getState() == STATE_ON;
-    if (on && mounted()) {
+    boolean mounted = mounted();
+    if (on && mounted) {
       size = getTotalSize().toString();
       free = getFreeSize().toString();
     } else {
@@ -187,7 +188,7 @@ public class Storage implements Serializable {
       }
       free = "n/a";
     }
-    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted()), size, free};
+    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted), size, free};
   }
 
   private String getiSCSIPath() {

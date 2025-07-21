@@ -185,6 +185,7 @@ public class ConfigService implements WebUIHandler {
     public NetworkVLAN[] nics_vlans;
 
     public void resize() {
+      if (right_panel == null || top_bottom_split == null || left_right_split == null || client == null) return;
       int height = top_bottom_split.getDividerPosition();
       right_panel.setHeight(height);
       int width = client.getWidth() - left_right_split.getDividerPosition();
