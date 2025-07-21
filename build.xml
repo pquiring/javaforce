@@ -77,7 +77,7 @@
     <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
-  <target name="depjars">
+  <target name="depjars" unless="fast-build">
     <!-- depends via antcalls -->
     <antcall target="depnatives"/>
     <antcall target="get-glfw"/>
@@ -116,7 +116,7 @@
     <antcall target="jar-plc4j-driver-s7"/>
   </target>
 
-  <target name="compile" depends="depjars" description="compile the source">
+  <target name="compile" depends="depjars" unless="fast-build" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" release="${java-version}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
@@ -126,7 +126,7 @@
     </javac>
   </target>
 
-  <target name="jar" depends="depjars,compile" description="build jar file">
+  <target name="jar" depends="depjars,compile" unless="fast-build" description="build jar file">
     <!-- Build jar file from class files -->
     <jar destfile="javaforce.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="${src}">
