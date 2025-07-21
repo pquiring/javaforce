@@ -5,15 +5,13 @@ package service;
  * @author peter.quiring
  */
 
-import java.util.*;
-
 import javaforce.*;
 
 public class Hosts extends Thread {
   public static Hosts hosts;
   private boolean active = true;
   private Object secs_lock = new Object();
-  private int secs60 = 60;
+  private int secs = 30;
 
   public static void init() {
     hosts = new Hosts();
@@ -28,12 +26,12 @@ public class Hosts extends Thread {
     HTTP.setTimeout(5000);
     while (active) {
       synchronized (secs_lock) {
-        secs60++;
-        if (secs60 > 60) {
+        secs++;
+        if (secs > 60) {
           if (!check_hosts) {
             new CheckHosts().start();
           }
-          secs60 = 0;
+          secs = 0;
         }
       }
       JF.sleep(1000);
@@ -87,7 +85,7 @@ public class Hosts extends Thread {
 
   public void check_now() {
     synchronized (secs_lock) {
-      secs60 = 60;
+      secs = 60;
     }
   }
 }
