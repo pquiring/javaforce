@@ -14,8 +14,7 @@ import javaforce.*;
 
 public class Gluster {
   public static boolean exists() {
-    //BUG : this file always exists
-    return new File("/etc/glusterfs/glusterd.vol").exists();
+    return new File("/var/run/glusterd.pid").exists();
   }
 
   public static String getStatus() {
