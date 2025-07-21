@@ -75,6 +75,11 @@ public class Hosts extends Thread {
               Config.current.save();
             }
             host.gluster = getGlusterState(host.host);
+            if (Ceph.exists()) {
+              host.ceph_status = host.getCephStatus();
+            } else {
+              host.ceph_status = "n/a";
+            }
           } catch (Exception e) {
             JFLog.log(e);
             host.online = false;
