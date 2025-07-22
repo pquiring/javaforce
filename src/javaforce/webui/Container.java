@@ -17,6 +17,7 @@ public class Container extends Component {
   }
   public void init() {
     super.init();
+    addEvent("onresize", "onresizeContainer(event, this);");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       get(a).init();

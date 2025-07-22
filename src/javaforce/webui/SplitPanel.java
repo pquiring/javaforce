@@ -10,7 +10,7 @@ public class SplitPanel extends Panel {
   private int pos = 50;  //pixels of left/top component
 
   private Container div;
-  private Container t1, t2;  //NOTE:table-cells ignore specify sizes
+  private Container t1, t2;  //NOTE:table-cells ignore specified sizes
   private Container c1, c2;
 
   public static final int VERTICAL = 1;
@@ -143,18 +143,22 @@ public class SplitPanel extends Panel {
 
   public void setLeftComponent(Component c) {
     c1.set(0, c);
+    this.sendOnResize();
   }
 
   public void setTopComponent(Component c) {
     c1.set(0, c);
+    this.sendOnResize();
   }
 
   public void setRightComponent(Component c) {
     c2.set(0, c);
+    this.sendOnResize();
   }
 
   public void setBottomComponent(Component c) {
     c2.set(0, c);
+    this.sendOnResize();
   }
 
   public void onEvent(String event, String[] args) {

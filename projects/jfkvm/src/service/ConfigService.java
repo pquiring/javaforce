@@ -1656,7 +1656,7 @@ public class ConfigService implements WebUIHandler {
       " - Linux and Windows guests\n" +
       " - Disks : vmdk, qcow2, iso (thick and thin provisioning)\n" +
       " - Networking : bridge, guests on VLANs\n" +
-      " - Storage Pools : Local Disk Partition, NFS, iSCSI Shared Disks, Gluster Replicated Disks (vSAN)\n" +
+      " - Storage Pools : Local Disk Partition, NFS, iSCSI Shared Disks, Gluster and Ceph Replicated Disks (vSAN)\n" +
       " - provide guest with direct access to host devices\n" +
       " - import vmware machines\n" +
       " - live/offline compute migration\n" +
@@ -2425,7 +2425,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   private Panel vmsPanel(UI ui) {
-    TabPanel panel = new TabPanel();
+    Panel panel = new Panel();
     Row row;
 
     ToolBar tools = new ToolBar();

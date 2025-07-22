@@ -72,10 +72,10 @@ function wsevent(event) {
     return;
   }
   var msg = JSON.parse(event.data);
-  console.log("event:" + msg.event + " id=" + msg.id + " tid=" + msg.tid);
+  console.log("event:" + msg.event + " id=" + msg.id);
   var element = document.getElementById(msg.id);
   if (element === null) {
-    console.log("element not found:" + msg.id);
+    console.log("ERROR : element not found:" + msg.id);
     return;
   }
   if (element.gl) {
@@ -103,11 +103,11 @@ function wsevent(event) {
       break;
     case "sethtml":
       element.innerHTML = msg.html;
+      element.dispatchEvent(new Event('resize'));
       sendOnLoaded(msg.id);
       break;
     case "setroot":
       root = document.getElementById(msg.root);
-      root.dispatchEvent(new Event('resize'));
       break;
     case "setsrc":
       element.src = msg.src;
@@ -207,17 +207,23 @@ function wsevent(event) {
       break;
     case "add":
       temp.innerHTML = msg.html;
+      console.log('  add child:' + temp.firstChild.id);
       element.appendChild(temp.firstChild);
       temp.innerHTML = '';
+      body.dispatchEvent(new Event('resize'));
       break;
     case "addbefore":
       temp.innerHTML = msg.html;
+      console.log('  add child:' + temp.firstChild.id);
       element.insertBefore(temp.firstChild, document.getElementById(msg.beforeid));
       temp.innerHTML = '';
+      body.dispatchEvent(new Event('resize'));
       break;
     case "remove": {
+      console.log('  remove child:' + msg.child);
       var child = document.getElementById(msg.child);
       element.removeChild(child);
+      body.dispatchEvent(new Event('resize'));
       break;
     }
     case "settab":
@@ -233,7 +239,7 @@ function wsevent(event) {
       sendPong(msg.id);
       break;
     case "onresize":
-      element.onresize();
+      element.dispatchEvent(new Event('resize'));
       break;
     case "settransform":
       element.style.transform = msg.transform;
@@ -414,21 +420,22 @@ function onmousedownBody(event, element) {
 
 function onresizeBody(event, element) {
   if (ws === null) return;
+  console.log('onresizeBody');
   sendSize('body');
-  if (root !== null) {
-    root.dispatchEvent(new Event('resize'));
+  //element = Window {body, document, etc.}
+  onresizeContainer(event, element.body);
+}
+
+function onresizeContainer(event, element) {
+  console.log('onresizeContainer: id=' + element.id);
+  var nodes = element.childNodes;
+  var cnt = nodes.length;
+  var node;
+  for(var i = 0;i < cnt;i++) {
+    node = nodes[i];
+    if (typeof node.id === 'undefined') continue;
+    node.dispatchEvent(new Event('resize'));
   }
-}
-
-function onresizePanel2(event, element, child) {
-  child.style.width = getWidth(element) + "px";
-  child.style.height = getHeight(element) + "px";
-  child.dispatchEvent(new Event('resize'));
-}
-
-function onresizePanel(event, element, childid) {
-  var child = document.getElementById(childid);
-  onresizePanel2(event, element, child);
 }
 
 function onClick(event, element) {
@@ -486,7 +493,7 @@ function openTab(event, idx, panelid, rowid, tabsid) {
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
   var node;
-  for(i = 0;i < cnt;i++) {
+  for(var i = 0;i < cnt;i++) {
     node = nodes[i];
     if (i === idx) {
       node.classList.add("tabcontentshown");
@@ -504,7 +511,7 @@ function openTab(event, idx, panelid, rowid, tabsid) {
   var row = document.getElementById(rowid);
   nodes = row.childNodes;
   cnt = nodes.length;
-  for(i = 0;i < cnt;i++) {
+  for(var i = 0;i < cnt;i++) {
     node = nodes[i];
     if (i === idx) {
       node.classList.add("tabactive");
@@ -517,14 +524,17 @@ function openTab(event, idx, panelid, rowid, tabsid) {
 }
 
 function onresizeTabPanel(event, panelid, rowid, tabsid) {
+  console.log('onresizeTabPanel: id=' + panelid);
   var panel = document.getElementById(panelid);
   var row = document.getElementById(rowid);
   var tabs = document.getElementById(tabsid);
   tabs.style.width = panel.offsetWidth + "px";
   tabs.style.height = (panel.offsetHeight - row.offsetHeight) + "px";
+  onresizeContainer(event, panel);
 }
 
 function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
+  console.log('onresizeSplitPanelWidth: id=' + element.id);
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
@@ -537,11 +547,12 @@ function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
   element3.style.height = height + "px";
   element3.parentElement.style.width = width3 + "px";
   element3.parentElement.style.height = height + "px";
-  element3.dispatchEvent(new Event('resize'));
   sendDividerPos(element.id, width1);
+  onresizeContainer(event, element);
 }
 
 function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
+  console.log('onresizeSplitPanelHeight: id=' + element.id);
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
@@ -554,8 +565,8 @@ function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
   element3.style.height = height3 + "px";
   element3.parentElement.style.width = width + "px";
   element3.parentElement.style.height = height3 + "px";
-  element3.dispatchEvent(new Event('resize'));
   sendDividerPos(element.id, height1);
+  onresizeContainer(event, element);
 }
 
 function onmousedownSplitPanel(event, element, id1, id2, id3, top, dir) {
@@ -593,14 +604,12 @@ function onmousemoveSplitPanel(event, element) {
       var height = splitDragging.startY + (event.clientY - splitDragging.mouseY);
       splitDragging.element1.style.height = height + "px";  //c
       splitDragging.element1.parentElement.style.height = height + "px";  //t
-      onresizePanel2(new Event('resize'), splitDragging.element1, splitDragging.element1.firstChild);
       onresizeSplitPanelHeight(new Event('resize'), splitDragging.top_element, splitDragging.id1, splitDragging.id2, splitDragging.id3);
       break;
     case 'v':
       var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
       splitDragging.element1.style.width = width + "px";  //c
       splitDragging.element1.parentElement.style.width = width + "px";  //t
-      onresizePanel2(new Event('resize'), splitDragging.element1, splitDragging.element1.firstChild);
       onresizeSplitPanelWidth(new Event('resize'), splitDragging.top_element, splitDragging.id1, splitDragging.id2, splitDragging.id3);
       break;
   }
@@ -780,6 +789,7 @@ function closePanel(event, element) {
 }
 
 function onResize(event, element) {
+  console.log('onResize: id=' + element.id);
   sendSize(element.id);
 }
 

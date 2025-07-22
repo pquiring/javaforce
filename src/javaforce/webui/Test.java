@@ -31,7 +31,7 @@ public class Test implements WebUIHandler {
 
   public void clientConnected(WebUIClient client) {}
   public void clientDisconnected(WebUIClient client) {
-    System.exit(0);
+    //System.exit(0);
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {

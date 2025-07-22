@@ -29,24 +29,6 @@ public class Panel extends Container {
       case AUTO: addClass("overflow-auto"); break;
     }
   }
-  public void init() {
-    super.init();
-    //if there is only one child component (excluding popup items) that is a panel than adjust it's size when this panel resizes
-    int cnt = count();
-    int pcnt = 0;
-    Component pcmp = null;
-    for(int a=0;a<cnt;a++) {
-      Component child = get(a);
-      if (child.isPopup()) continue;
-      if (child instanceof Panel) {
-        pcmp = child;
-      }
-      pcnt++;
-    }
-    if (pcnt == 1 && pcmp != null) {
-      addEvent("onresize", "onresizePanel(event, this,\"" + pcmp.id + "\");");
-    }
-  }
 
   public void onLoaded(String[] args) {
     super.onLoaded(args);

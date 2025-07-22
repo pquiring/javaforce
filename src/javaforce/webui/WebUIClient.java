@@ -197,7 +197,6 @@ public class WebUIClient {
       socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
     }
   }
-  private int tid = 1;
   public void sendEvent(String id, String event, String args[]) {
     if (!isReady) return;
     if (id == null) {
@@ -212,12 +211,6 @@ public class WebUIClient {
     log.append(str);
     if (id != null) {
       str = ",\"id\":\"" + id + "\"";
-      sb.append(str);
-      log.append(str);
-    }
-    if (WebUIServer.debug_tid) {
-      //add transaction id for debugging
-      str = ",\"tid\":\"" + (tid++) + "\"";
       sb.append(str);
       log.append(str);
     }
