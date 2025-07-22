@@ -4949,470 +4949,459 @@ public class ConfigService implements WebUIHandler {
 
   private Panel networkPanel(UI ui) {
     TabPanel panel = new TabPanel();
-    networkPanel_vlans(panel, ui);
-    networkPanel_bridges(panel, ui);
-    networkPanel_virt(panel, ui);
-    networkPanel_iface(panel, ui);
+    panel.addTab(networkPanel_vlans(ui), "Networks");
+    panel.addTab(networkPanel_bridges(ui), "Virtual Switches");
+    panel.addTab(networkPanel_virt(ui), "Server Virtual NICs");
+    panel.addTab(networkPanel_iface(ui), "Physical NICs");
     return panel;
   }
 
-  private void networkPanel_iface(TabPanel panel, UI ui) {
-    {
-      Panel tab = new Panel();
-      panel.addTab(tab, "Physical NICs");
-      Row row;
+  private Panel networkPanel_iface(UI ui) {
+    Panel tab = new Panel();
+    Row row;
 
-      ToolBar tools = new ToolBar();
-      tab.add(tools);
-      Button refresh = new Button("Refresh");
-      tools.add(refresh);
-      Button link_up = new Button("Link UP");
-      tools.add(link_up);
-      Button link_down = new Button("Link DOWN");
-      tools.add(link_down);
+    ToolBar tools = new ToolBar();
+    tab.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button link_up = new Button("Link UP");
+    tools.add(link_up);
+    Button link_down = new Button("Link DOWN");
+    tools.add(link_down);
 
-      row = new Row();
-      panel.add(row);
-      Label errmsg = new Label("");
-      errmsg.setColor(Color.red);
-      row.add(errmsg);
+    row = new Row();
+    tab.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
-      row = new Row();
-      tab.add(row);
-      Label msg = new Label("");
-      row.add(msg);
+    row = new Row();
+    tab.add(row);
+    Label msg = new Label("");
+    row.add(msg);
 
-      row = new Row();
-      tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50}, col_height, 4, 0);
-      row.add(table);
-      table.setSelectionMode(Table.SELECT_ROW);
-      table.setBorder(true);
-      table.setHeader(true);
+    row = new Row();
+    tab.add(row);
+    Table table = new Table(new int[] {100, 200, 150, 50}, col_height, 4, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
 
-      Runnable init;
+    Runnable init;
 
-      init = () -> {
-        table.removeAll();
-        table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "Link"});
-        ui.nics_iface = NetworkInterface.listPhysical();
-        for(NetworkInterface nic : ui.nics_iface) {
-          if (nic.name.equals("lo")) continue;
-          if (nic.name.equals("ovs-system")) continue;
-          table.addRow(nic.getState());
-        }
-      };
+    init = () -> {
+      table.removeAll();
+      table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "Link"});
+      ui.nics_iface = NetworkInterface.listPhysical();
+      for(NetworkInterface nic : ui.nics_iface) {
+        if (nic.name.equals("lo")) continue;
+        if (nic.name.equals("ovs-system")) continue;
+        table.addRow(nic.getState());
+      }
+    };
+    init.run();
+
+    refresh.addClickListener((me, cmp) -> {
       init.run();
+    });
 
-      refresh.addClickListener((me, cmp) -> {
-        init.run();
-      });
+    link_up.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      NetworkInterface nic = ui.nics_iface[idx];
+      nic.link_up();
+      msg.setText("Link UP:" + nic.name);
+    });
 
-      link_up.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        NetworkInterface nic = ui.nics_iface[idx];
-        nic.link_up();
-        msg.setText("Link UP:" + nic.name);
-      });
-
-      link_down.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        NetworkInterface nic = ui.nics_iface[idx];
-        nic.link_down();
-        msg.setText("Link DOWN:" + nic.name);
-      });
-    }
+    link_down.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      NetworkInterface nic = ui.nics_iface[idx];
+      nic.link_down();
+      msg.setText("Link DOWN:" + nic.name);
+    });
+    return tab;
   }
 
-  private void networkPanel_bridges(TabPanel panel, UI ui) {
-    //bridges (virtual switches)
-    {
-      Panel tab = new Panel();
-      panel.addTab(tab, "Virtual Switches");
-      Row row;
+  private Panel networkPanel_bridges(UI ui) {
+    Panel tab = new Panel();
+    Row row;
 
-      ToolBar tools = new ToolBar();
-      tab.add(tools);
-      Button refresh = new Button("Refresh");
-      tools.add(refresh);
-      Button create = new Button("Create");
-      tools.add(create);
+    ToolBar tools = new ToolBar();
+    tab.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button create = new Button("Create");
+    tools.add(create);
 //      Button edit = new Button("Edit");
 //      tools.add(edit);
-      Button delete = new Button("Delete");
-      tools.add(delete);
-      Button help = new Button("Help");
-      tools.add(help);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+    Button help = new Button("Help");
+    tools.add(help);
 
-      row = new Row();
-      panel.add(row);
-      Label errmsg = new Label("");
-      errmsg.setColor(Color.red);
-      row.add(errmsg);
+    row = new Row();
+    tab.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
-      row = new Row();
-      tab.add(row);
-      Table table = new Table(new int[] {100, 50, 100}, col_height, 3, 0);
-      row.add(table);
-      table.setSelectionMode(Table.SELECT_ROW);
-      table.setBorder(true);
-      table.setHeader(true);
+    row = new Row();
+    tab.add(row);
+    Table table = new Table(new int[] {100, 50, 100}, col_height, 3, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
 
-      Runnable init;
+    Runnable init;
 
-      init = () -> {
-        table.removeAll();
-        table.addRow(new String[] {"Name", "Type", "Interface"});
-        ui.nics_bridge = NetworkBridge.list();
-        for(NetworkBridge nic : ui.nics_bridge) {
-          table.addRow(new String[] {nic.name, nic.type, nic.iface});
+    init = () -> {
+      table.removeAll();
+      table.addRow(new String[] {"Name", "Type", "Interface"});
+      ui.nics_bridge = NetworkBridge.list();
+      for(NetworkBridge nic : ui.nics_bridge) {
+        table.addRow(new String[] {nic.name, nic.type, nic.iface});
+      }
+    };
+    init.run();
+
+    refresh.addClickListener((me, cmp) -> {
+      init.run();
+    });
+
+    create.addClickListener((me, cmp) -> {
+      ui.network_bridge = null;
+      ui.network_bridge_complete = () -> {
+        init.run();
+      };
+      ui.network_bridge_init.run();
+      ui.network_bridge_popup.setVisible(true);
+    });
+/*
+    edit.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      //TODO : edit virtual switch (bridge): edit/remove nics, etc.
+    });
+*/
+    delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      NetworkBridge nic = ui.nics_bridge[idx];
+      ui.confirm_action = () -> {
+        if (nic.remove()) {
+          table.removeRow(idx);
+        } else {
+          ui.message_message.setText("Failed to remove bridge, see logs.");
+          ui.message_popup.setVisible(true);
         }
       };
-      init.run();
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete Bridge:" + nic.name);
+      ui.confirm_popup.setVisible(true);
+    });
 
-      refresh.addClickListener((me, cmp) -> {
-        init.run();
-      });
-
-      create.addClickListener((me, cmp) -> {
-        ui.network_bridge = null;
-        ui.network_bridge_complete = () -> {
-          init.run();
-        };
-        ui.network_bridge_init.run();
-        ui.network_bridge_popup.setVisible(true);
-      });
-/*
-      edit.addClickListener((me, cmp) -> {
-        int idx = table.getSelectedRow();
-        //TODO : edit virtual switch (bridge): edit/remove nics, etc.
-      });
-*/
-      delete.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        NetworkBridge nic = ui.nics_bridge[idx];
-        ui.confirm_action = () -> {
-          if (nic.remove()) {
-            table.removeRow(idx);
-          } else {
-            ui.message_message.setText("Failed to remove bridge, see logs.");
-            ui.message_popup.setVisible(true);
-          }
-        };
-        ui.confirm_button.setText("Delete");
-        ui.confirm_message.setText("Delete Bridge:" + nic.name);
-        ui.confirm_popup.setVisible(true);
-      });
-
-      help.addClickListener((me, cmp) -> {
-        cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
-      });
-    }
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
+    });
+    return tab;
   }
 
-  private void networkPanel_vlans(TabPanel panel, UI ui) {
-    //network VLANs
-    {
-      Panel tab = new Panel();
-      panel.addTab(tab, "Networks");
-      Row row;
+  private Panel networkPanel_vlans(UI ui) {
+    Panel tab = new Panel();
+    Row row;
 
-      ToolBar tools = new ToolBar();
-      tab.add(tools);
-      Button refresh = new Button("Refresh");
-      tools.add(refresh);
-      Button create = new Button("Create");
-      tools.add(create);
-      Button edit = new Button("Edit");
-      tools.add(edit);
-      Button delete = new Button("Delete");
-      tools.add(delete);
-      Button help = new Button("Help");
-      tools.add(help);
+    ToolBar tools = new ToolBar();
+    tab.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button create = new Button("Create");
+    tools.add(create);
+    Button edit = new Button("Edit");
+    tools.add(edit);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+    Button help = new Button("Help");
+    tools.add(help);
 
-      row = new Row();
-      panel.add(row);
-      Label errmsg = new Label("");
-      errmsg.setColor(Color.red);
-      row.add(errmsg);
+    row = new Row();
+    tab.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
-      row = new Row();
-      tab.add(row);
-      Table table = new Table(new int[] {100, 50, 50}, col_height, 3, 0);
-      row.add(table);
-      table.setSelectionMode(Table.SELECT_ROW);
-      table.setBorder(true);
-      table.setHeader(true);
+    row = new Row();
+    tab.add(row);
+    Table table = new Table(new int[] {100, 50, 50}, col_height, 3, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
 
-      ui.network_vlan_complete = () -> {
-        table.removeAll();
-        table.addRow(new String[] {"Name", "VLAN", "Usage"});
-        for(NetworkVLAN nic : Config.current.vlans) {
-          table.addRow(new String[] {nic.name, Integer.toString(nic.vlan), Integer.toString(nic.getUsage())});
-        }
-      };
+    ui.network_vlan_complete = () -> {
+      table.removeAll();
+      table.addRow(new String[] {"Name", "VLAN", "Usage"});
+      for(NetworkVLAN nic : Config.current.vlans) {
+        table.addRow(new String[] {nic.name, Integer.toString(nic.vlan), Integer.toString(nic.getUsage())});
+      }
+    };
+    ui.network_vlan_complete.run();
+
+    refresh.addClickListener((me, cmp) -> {
       ui.network_vlan_complete.run();
+    });
 
-      refresh.addClickListener((me, cmp) -> {
+    create.addClickListener((me, cmp) -> {
+      if (NetworkBridge.list(NetworkBridge.TYPE_OS).length == 0) {
+        ui.message_message.setText("Must create bridge (virtual switch) first.");
+        ui.message_popup.setVisible(true);
+        return;
+      }
+      ui.network_vlan = null;
+      ui.network_vlan_init.run();
+      ui.network_vlan_popup.setVisible(true);
+    });
+    edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      ui.network_vlan = Config.current.vlans.get(idx);
+      ui.network_vlan_init.run();
+      ui.network_vlan_popup.setVisible(true);
+    });
+    delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      NetworkVLAN nic = Config.current.vlans.get(idx);
+      if (nic.getUsage() > 0) {
+        ui.message_message.setText("Network is in use");
+        ui.message_popup.setVisible(true);
+        return;
+      }
+      ui.confirm_action = () -> {
+        int idx1 = table.getSelectedRow();
+        NetworkVLAN nic1 = Config.current.vlans.get(idx1);
+        Config.current.removeNetworkVLAN(nic1);
         ui.network_vlan_complete.run();
-      });
-
-      create.addClickListener((me, cmp) -> {
-        if (NetworkBridge.list(NetworkBridge.TYPE_OS).length == 0) {
-          ui.message_message.setText("Must create bridge (virtual switch) first.");
-          ui.message_popup.setVisible(true);
-          return;
-        }
-        ui.network_vlan = null;
-        ui.network_vlan_init.run();
-        ui.network_vlan_popup.setVisible(true);
-      });
-      edit.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        ui.network_vlan = Config.current.vlans.get(idx);
-        ui.network_vlan_init.run();
-        ui.network_vlan_popup.setVisible(true);
-      });
-      delete.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        NetworkVLAN nic = Config.current.vlans.get(idx);
-        if (nic.getUsage() > 0) {
-          ui.message_message.setText("Network is in use");
-          ui.message_popup.setVisible(true);
-          return;
-        }
-        ui.confirm_action = () -> {
-          int idx1 = table.getSelectedRow();
-          NetworkVLAN nic1 = Config.current.vlans.get(idx1);
-          Config.current.removeNetworkVLAN(nic1);
-          ui.network_vlan_complete.run();
-        };
-        ui.confirm_button.setText("Delete");
-        ui.confirm_message.setText("Delete VLAN:" + nic.name);
-        ui.confirm_popup.setVisible(true);
-      });
-      help.addClickListener((me, cmp) -> {
-        cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
-      });
-    }
+      };
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete VLAN:" + nic.name);
+      ui.confirm_popup.setVisible(true);
+    });
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
+    });
+    return tab;
   }
 
-  private void networkPanel_virt(TabPanel panel, UI ui) {
-    //server nics
-    {
-      Panel tab = new Panel();
-      panel.addTab(tab, "Server Virtual NICs");
-      Row row;
+  private Panel networkPanel_virt(UI ui) {
+    Panel tab = new Panel();
+    Row row;
 
-      ToolBar tools = new ToolBar();
-      tab.add(tools);
-      Button refresh = new Button("Refresh");
-      tools.add(refresh);
-      Button link_up = new Button("Link UP");
-      tools.add(link_up);
-      Button link_down = new Button("Link DOWN");
-      tools.add(link_down);
-      Button create = new Button("Create");
-      tools.add(create);
+    ToolBar tools = new ToolBar();
+    tab.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button link_up = new Button("Link UP");
+    tools.add(link_up);
+    Button link_down = new Button("Link DOWN");
+    tools.add(link_down);
+    Button create = new Button("Create");
+    tools.add(create);
 //      Button edit = new Button("Edit");
 //      tools.add(edit);
 /*
-      Button start = new Button("Start");
-      tools.add(start);
-      Button stop = new Button("Stop");
-      tools.add(stop);
+    Button start = new Button("Start");
+    tools.add(start);
+    Button stop = new Button("Stop");
+    tools.add(stop);
 */
-      Button delete = new Button("Delete");
-      tools.add(delete);
-      Button help = new Button("Help");
-      tools.add(help);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+    Button help = new Button("Help");
+    tools.add(help);
 
-      row = new Row();
-      tab.add(row);
-      Label errmsg = new Label("");
-      row.add(errmsg);
-      errmsg.setColor(Color.red);
+    row = new Row();
+    tab.add(row);
+    Label errmsg = new Label("");
+    row.add(errmsg);
+    errmsg.setColor(Color.red);
 
-      row = new Row();
-      tab.add(row);
-      Label msg = new Label("");
-      row.add(msg);
+    row = new Row();
+    tab.add(row);
+    Label msg = new Label("");
+    row.add(msg);
 
-      row = new Row();
-      tab.add(row);
-      Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, col_height, 6, 0);
-      row.add(table);
-      table.setSelectionMode(Table.SELECT_ROW);
-      table.setBorder(true);
-      table.setHeader(true);
+    row = new Row();
+    tab.add(row);
+    Table table = new Table(new int[] {100, 200, 150, 50, 100, 50}, col_height, 6, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
 
-      Runnable init;
+    Runnable init;
 
-      init = () -> {
-        table.removeAll();
-        table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "VLAN", "Bridge", "Link"});
-        ui.nics_virt = Config.current.nics;
-        NetworkVirtual.getInfo(ui.nics_virt.toArray(new NetworkVirtual[0]));
-        for(NetworkVirtual nic : ui.nics_virt) {
-          table.addRow(nic.getState());
+    init = () -> {
+      table.removeAll();
+      table.addRow(new String[] {"Name", "IP/NetMask", "MAC", "VLAN", "Bridge", "Link"});
+      ui.nics_virt = Config.current.nics;
+      NetworkVirtual.getInfo(ui.nics_virt.toArray(new NetworkVirtual[0]));
+      for(NetworkVirtual nic : ui.nics_virt) {
+        table.addRow(nic.getState());
+      }
+    };
+    init.run();
+
+    refresh.addClickListener((me, cmp) -> {
+      init.run();
+      errmsg.setText("");
+      msg.setText("");
+    });
+
+    link_up.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      NetworkVirtual nic = ui.nics_virt.get(idx);
+      nic.link_up();
+      nic.set_ip();
+      errmsg.setText("");
+      msg.setText("Link UP:" + nic.name);
+    });
+
+    link_down.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      NetworkVirtual nic = ui.nics_virt.get(idx);
+      nic.link_down();
+      errmsg.setText("");
+      msg.setText("Link DOWN:" + nic.name);
+    });
+
+    create.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      msg.setText("");
+      if (NetworkBridge.list().length == 0) {
+        errmsg.setText("Error:No bridges exist");
+        return;
+      }
+      ui.network_virtual = null;
+      ui.network_virtual_complete = () -> {init.run();};
+      ui.network_virtual_init.run();
+      ui.network_virtual_popup.setVisible(true);
+    });
+
+/*
+    edit.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      errmsg.setText("");
+      msg.setText("");
+      NetworkVirtual nic = ui.nics_virt.get(idx);
+      ui.network_virtual = nic;
+      ui.network_virtual_init.run();
+      ui.network_virtual_complete = () -> {
+        Config.current.save();
+      };
+      ui.network_virtual_popup.setVisible(true);
+    });
+*/
+
+/*
+    start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      errmsg.setText("");
+      msg.setText("");
+      NetworkVirtual nic = ui.nics_virt.get(idx);
+      if (!nic.start()) {
+        errmsg.setText("Error:Failed to start nic:" + nic.name);
+      } else {
+        msg.setText("Started Virtual nic:" + nic.name);
+      }
+    });
+
+    stop.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      errmsg.setText("");
+      msg.setText("");
+      NetworkVirtual nic = ui.nics_virt.get(idx);
+      if (!nic.stop()) {
+        errmsg.setText("Error:Failed to stop nic:" + nic.name);
+      } else {
+        msg.setText("Stopped Virtual nic:" + nic.name);
+      }
+    });
+*/
+
+    delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      errmsg.setText("");
+      msg.setText("");
+      NetworkVirtual nic = ui.nics_virt.get(idx);
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete Virtual nic : " + nic.name);
+      ui.confirm_action = () -> {
+        if (nic.remove()) {
+          table.removeRow(idx);
+          Config.current.removeNetworkVirtual(nic);
+        } else {
+          errmsg.setText("Error:Failed to remove Virtual nic:" + nic.name);
         }
       };
-      init.run();
+      ui.confirm_popup.setVisible(true);
+    });
 
-      refresh.addClickListener((me, cmp) -> {
-        init.run();
-        errmsg.setText("");
-        msg.setText("");
-      });
-
-      link_up.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        NetworkVirtual nic = ui.nics_virt.get(idx);
-        nic.link_up();
-        nic.set_ip();
-        errmsg.setText("");
-        msg.setText("Link UP:" + nic.name);
-      });
-
-      link_down.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        NetworkVirtual nic = ui.nics_virt.get(idx);
-        nic.link_down();
-        errmsg.setText("");
-        msg.setText("Link DOWN:" + nic.name);
-      });
-
-      create.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        msg.setText("");
-        if (NetworkBridge.list().length == 0) {
-          errmsg.setText("Error:No bridges exist");
-          return;
-        }
-        ui.network_virtual = null;
-        ui.network_virtual_complete = () -> {init.run();};
-        ui.network_virtual_init.run();
-        ui.network_virtual_popup.setVisible(true);
-      });
-
-/*
-      edit.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        errmsg.setText("");
-        msg.setText("");
-        NetworkVirtual nic = ui.nics_virt.get(idx);
-        ui.network_virtual = nic;
-        ui.network_virtual_init.run();
-        ui.network_virtual_complete = () -> {
-          Config.current.save();
-        };
-        ui.network_virtual_popup.setVisible(true);
-      });
-*/
-
-/*
-      start.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        errmsg.setText("");
-        msg.setText("");
-        NetworkVirtual nic = ui.nics_virt.get(idx);
-        if (!nic.start()) {
-          errmsg.setText("Error:Failed to start nic:" + nic.name);
-        } else {
-          msg.setText("Started Virtual nic:" + nic.name);
-        }
-      });
-
-      stop.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        errmsg.setText("");
-        msg.setText("");
-        NetworkVirtual nic = ui.nics_virt.get(idx);
-        if (!nic.stop()) {
-          errmsg.setText("Error:Failed to stop nic:" + nic.name);
-        } else {
-          msg.setText("Stopped Virtual nic:" + nic.name);
-        }
-      });
-*/
-
-      delete.addClickListener((me, cmp) -> {
-        errmsg.setText("");
-        int idx = table.getSelectedRow();
-        if (idx == -1) {
-          errmsg.setText("Error:no selection");
-          return;
-        }
-        errmsg.setText("");
-        msg.setText("");
-        NetworkVirtual nic = ui.nics_virt.get(idx);
-        ui.confirm_button.setText("Delete");
-        ui.confirm_message.setText("Delete Virtual nic : " + nic.name);
-        ui.confirm_action = () -> {
-          if (nic.remove()) {
-            table.removeRow(idx);
-            Config.current.removeNetworkVirtual(nic);
-          } else {
-            errmsg.setText("Error:Failed to remove Virtual nic:" + nic.name);
-          }
-        };
-        ui.confirm_popup.setVisible(true);
-      });
-
-      help.addClickListener((me, cmp) -> {
-        cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
-      });
-    }
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
+    });
+    return tab;
   }
 
   private String getPool(String path_file) {
