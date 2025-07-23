@@ -1,5 +1,11 @@
 What's new...
 
+Jul 23/2025 : JF/84.0
+  - jfKVM/3.0
+    - added ceph replicated storage support
+  - jfVNC Server/0.9
+    - added status screen
+
 Jun 19/2025 : JF/83.1
   - fix : image .pgm/.ppm loading
     - jfPaint/0.30
