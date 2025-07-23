@@ -265,7 +265,7 @@ public class ConfigService implements WebUIHandler {
     ui.left_right_split = ui.left_right_split;
     ui.left_right_split.setDividerPosition(leftSize);
     ui.left_right_split.setLeftComponent(leftPanel(ui, leftSize));
-    ui.left_right_split.setRightComponent(hostPanel(ui, 0));
+    ui.left_right_split.setRightComponent(hostPanel(ui, HOST_WELCOME));
 
     Panel tasks = tasksPanel(ui);
 
@@ -1620,7 +1620,7 @@ public class ConfigService implements WebUIHandler {
     networks.setWidth(size);
     list.add(networks);
     host.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui, 0));
+      ui.setRightPanel(hostPanel(ui, HOST_WELCOME));
     });
     vms.addClickListener((me, cmp) -> {
       ui.setRightPanel(vmsPanel(ui));
@@ -1747,7 +1747,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label(Long.toString(cpu_load) + '%'));
 
     refresh.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui, 0));
+      ui.setRightPanel(hostPanel(ui, HOST_INFO));
     });
 
     return panel;
