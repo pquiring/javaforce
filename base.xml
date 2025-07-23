@@ -183,7 +183,7 @@
 
   <target name="installapp" depends="executable">
     <sequential>
-      <exec command="sudo ant -f ${ant.file} installapproot"/>
+      <exec command="/usr/bin/sudo ant -f ${ant.file} installapproot"/>
     </sequential>
   </target>
 
@@ -196,7 +196,7 @@
 
   <target name="uninstallapp" depends="">
     <sequential>
-      <exec command="sudo ant -f ${ant.file} uninstallapproot"/>
+      <exec command="/usr/bin/sudo ant -f ${ant.file} uninstallapproot"/>
     </sequential>
   </target>
 
