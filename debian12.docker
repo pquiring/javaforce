@@ -1,0 +1,25 @@
+#Debian/12 (bookworm) with build tools
+
+#To build: docker build -f debian12.docker -t amd64/debian12 .
+
+#see https://docs.docker.com/reference/dockerfile/
+
+FROM debian:bookworm
+
+WORKDIR /opt
+
+#install JF deps
+
+COPY deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#install Linux native deps
+
+COPY native/linux/deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#cleanup
+
+RUN rm /opt/deps.sh

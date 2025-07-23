@@ -1,0 +1,25 @@
+#Fedora/42 with build tools
+
+#To build: docker build -f fedora42.docker -t amd64/fedora42 .
+
+#see https://docs.docker.com/reference/dockerfile/
+
+FROM fedora:42
+
+WORKDIR /opt
+
+#install JF deps
+
+COPY deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#install Linux native deps
+
+COPY native/linux/deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#cleanup
+
+RUN rm /opt/deps.sh
