@@ -1,3 +1,8 @@
+2025-07-23 : 3.0 released!
+  - new : ceph replicated storage added
+    - one click setup
+    - see online help for more info
+
 2025-06-19 : 2.7 released!
   - fix : issues with web console
 
