@@ -30,7 +30,6 @@ function detectos {
         exit
         ;;
       esac
-      sudo apt install bzip2
       ;;
     fedora)
       pkg=rpm
@@ -45,7 +44,6 @@ function detectos {
       OS=arch
       RELEASE=latest
       ARCH=$HOSTTYPE
-      pacman -S sudo
       ;;
     ubuntu)
       #VERSION_CODENAME varies

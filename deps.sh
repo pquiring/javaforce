@@ -42,7 +42,7 @@ fi
 
 function debian {
   apt update
-  apt --yes install default-jdk ant git unzip sudo gnupg
+  apt --yes install default-jdk ant git unzip sudo gnupg bzip2
 }
 
 function fedora {
