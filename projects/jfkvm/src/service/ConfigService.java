@@ -1793,13 +1793,13 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Shutdown host?");
       ui.confirm_button.setText("Shutdown");
       ui.confirm_action = () -> {
-        Task task = new Task("Reboot") {
+        Task task = new Task("Shutdown") {
           public void doTask() {
             try {
               Linux.shutdown();
               setStatus("Completed");
             } catch (Exception e) {
-              setStatus("Error:Reboot failed, check logs.");
+              setStatus("Error:Shutdown failed, check logs.");
               JFLog.log(e);
             }
             genkey = false;
