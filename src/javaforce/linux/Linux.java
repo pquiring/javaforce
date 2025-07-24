@@ -1419,6 +1419,20 @@ public class Linux {
     }
   }
 
+  /** Reboot system. */
+  public static void reboot() {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/sbin/reboot"}, true);
+    JFLog.log(output);
+  }
+
+  /** Shutdown system. */
+  public static void shutdown() {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/sbin/shutdown", "-h", "now"}, true);
+    JFLog.log(output);
+  }
+
   /* Test */
   public static void main(String args[]) {
     x11_set_listener(new X11Listener() {

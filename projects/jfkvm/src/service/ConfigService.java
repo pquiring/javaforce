@@ -1698,7 +1698,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   private static final int HOST_WELCOME = 0;
-  private static final int HOST_INFO = 1;
+  private static final int HOST_HOST = 1;
   private static final int HOST_CONFIG = 2;
   private static final int HOST_AUTOSTART = 3;
   private static final int HOST_CLUSTER = 4;
@@ -1708,7 +1708,7 @@ public class ConfigService implements WebUIHandler {
   private Panel hostPanel(UI ui, int idx) {
     TabPanel panel = new TabPanel();
     panel.addTab(welcomePanel(ui), "Welcome");
-    panel.addTab(hostInfoPanel(ui), "Info");
+    panel.addTab(hostHostPanel(ui), "Host");
     panel.addTab(hostConfigPanel(ui), "Settings");
     panel.addTab(hostAutoStartPanel(ui), "Auto Start");
     panel.addTab(hostClusterPanel(ui), "Cluster");
@@ -1718,7 +1718,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel hostInfoPanel(UI ui) {
+  private Panel hostHostPanel(UI ui) {
     Panel panel = new Panel();
     panel.add(new Label("jfKVM/" + version));
     Row row;
@@ -1727,6 +1727,16 @@ public class ConfigService implements WebUIHandler {
     panel.add(tools);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
+    Button reboot = new Button("Reboot");
+    tools.add(reboot);
+    Button shutdown = new Button("Shutdown");
+    tools.add(shutdown);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
 
     row = new Row();
     panel.add(row);
@@ -1747,7 +1757,57 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label(Long.toString(cpu_load) + '%'));
 
     refresh.addClickListener((me, cmp) -> {
-      ui.setRightPanel(hostPanel(ui, HOST_INFO));
+      ui.setRightPanel(hostPanel(ui, HOST_HOST));
+    });
+
+    reboot.addClickListener((me, cmp) -> {
+      if (vmm.any_vm_running()) {
+        errmsg.setText("Please shutdown or suspend VMs before rebooting host!");
+        return;
+      }
+      ui.confirm_message.setText("Reboot host?");
+      ui.confirm_button.setText("Reboot");
+      ui.confirm_action = () -> {
+        Task task = new Task("Reboot") {
+          public void doTask() {
+            try {
+              Linux.reboot();
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:Reboot failed, check logs.");
+              JFLog.log(e);
+            }
+            genkey = false;
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    shutdown.addClickListener((me, cmp) -> {
+      if (vmm.any_vm_running()) {
+        errmsg.setText("Please shutdown or suspend VMs before host shutdown!");
+        return;
+      }
+      ui.confirm_message.setText("Shutdown host?");
+      ui.confirm_button.setText("Shutdown");
+      ui.confirm_action = () -> {
+        Task task = new Task("Reboot") {
+          public void doTask() {
+            try {
+              Linux.shutdown();
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:Reboot failed, check logs.");
+              JFLog.log(e);
+            }
+            genkey = false;
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
     });
 
     return panel;

@@ -203,4 +203,12 @@ public class VMM implements VMProvider {
     }
     return false;
   }
+
+  public boolean any_vm_running() {
+    VirtualMachine[] vms = VirtualMachine.list();
+    for(VirtualMachine vm : vms) {
+      if (vm.getState() == VirtualMachine.STATE_ON) return true;
+    }
+    return false;
+  }
 }
