@@ -1,5 +1,5 @@
 /**
- * Telnet.java
+ * TelnetDecoder.java
  *
  * Processes telnet codes.
  *
