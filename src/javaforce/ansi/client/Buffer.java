@@ -29,7 +29,7 @@ import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 
-public class Buffer {
+public class Buffer implements Screen {
 
   public Settings settings;
   public BufferViewer viewer;
@@ -48,7 +48,7 @@ public class Buffer {
       backColor = settings.backColor;
       gotoPos(1,1);
       ansi = new ANSI(this, settings.protocol.equals("telnet"));
-      telnet = new Telnet();
+      telnet = new TelnetDecoder();
       utf8 = new UTF8();
       timer = new java.util.Timer();
       timer.schedule(new TimerTask() {
@@ -97,7 +97,7 @@ public class Buffer {
   private SSLSocket ssl;  //ssl
   /** Number of lines that user can scroll back to. */
   public int scrollBack;
-  private Telnet telnet;
+  private TelnetDecoder telnet;
   public ANSI ansi;
   private UTF8 utf8;
   /** Current Telnet/ANSI code */
@@ -326,8 +326,8 @@ public class Buffer {
   public void setReverse(boolean state) {
     reverse = state;
   }
-  public Color getForeColor() { return foreColor; }
-  public Color getBackColor() { return backColor; }
+  public int getForeColor() { return foreColor.getRGB(); }
+  public int getBackColor() { return backColor.getRGB(); }
 
   public void clrscr() {
     for(int pos=0;pos<sx * (sy+scrollBack);pos++) {
@@ -442,6 +442,9 @@ public class Buffer {
     autowrap = state;
   }
 
+  public int getsx() {return sx;}
+  public int getsy() {return sy;}
+
   public int getx() {return cx + 1;}
   public int gety() {return cy + 1;}
   public void gotoPos(int x,int y) {
@@ -509,13 +512,17 @@ public class Buffer {
     if (timer != null) {timer.cancel(); timer = null;}
   }
 
+  public String getTermType() {
+    return settings.termType;
+  }
+
   //these methods are overloaded to allow such functionality
   public void nextTab() {System.out.println("nextTab");}
   public void prevTab() {System.out.println("prevTab");}
   public void setTab(int idx) {System.out.println("setTab" + idx);}
   public void setName(String str) {}
 
-  /** This thread handles the actual setSiteDetailsing and reading the input.*/
+  /** This thread handles reading the input.*/
   private class Reader extends Thread {
     public void run() {
       while (!closed) {
@@ -561,7 +568,9 @@ public class Buffer {
   }
 
   public void signalRepaint(boolean findScreen, boolean revalidate) {
-    viewer.signalRepaint(findScreen, revalidate);
+    if (viewer != null) {
+      viewer.signalRepaint(findScreen, revalidate);
+    }
   }
 
   public void copy() {
@@ -617,7 +626,7 @@ public class Buffer {
 
   private void sendTT() {
     //trigger a request for TT ???
-    input(new char[] {Telnet.IAC, Telnet.SB, Telnet.TO_TT, Telnet.IAC, Telnet.SE}, 5);
+    input(new char[] {TelnetDecoder.IAC, TelnetDecoder.SB, TelnetDecoder.TO_TT, TelnetDecoder.IAC, TelnetDecoder.SE}, 5);
   }
 
   private void pty_setsize() {
@@ -697,8 +706,9 @@ public class Buffer {
 
   private boolean connectLocal() {
     try {
+      settings.termArgs[0] = settings.termApp;
       pty = LnxPty.exec(settings.termApp
-        , new String[] {settings.termApp, "-i", "-l", null}
+        , settings.termArgs
         , LnxPty.makeEnvironment(new String[] {"TERM=" + settings.termType}));
       if (pty == null) throw new Exception("pty failed");
       in = new InputStream() {

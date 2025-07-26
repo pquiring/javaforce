@@ -35,10 +35,10 @@ public class Settings {
   public String protocol = "telnet";
   public String termType = "vt100";
   public String termApp;  //bash
+  public String[] termArgs = {null, "-i", "-l", null};  //arg[0] = termApp, null terminated
 
   //ssh info
   public String sshKey;  //file
   public String username, password;
   public boolean x11;
-
 }

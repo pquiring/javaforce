@@ -10,9 +10,9 @@
 
 package javaforce.ansi.client;
 
-public class Telnet extends javaforce.Telnet {
+public class TelnetDecoder extends javaforce.Telnet {
 
-  public boolean decode(char[] code, int codelen, Buffer buffer) {
+  public boolean decode(char[] code, int codelen, Screen screen) {
     char[] res = new char[3];
     res[0] = IAC;
     if (codelen < 2) return false;
@@ -26,23 +26,23 @@ public class Telnet extends javaforce.Telnet {
           case TO_TT:
           case TO_SGO:
           case TO_TM:
-            send(WILL, code[2], buffer);
+            send(WILL, code[2], screen);
             return true;
           default:
-            send(WONT, code[2], buffer);
+            send(WONT, code[2], screen);
             return true;
         }
       case DONT:
-        send(WONT, code[2], buffer);
+        send(WONT, code[2], screen);
         return true;
       case SB:
         //decode sub-parameter(s)
         if (!((code[codelen-2] == IAC) && (code[codelen-1] == SE))) return false;
         //IAC SB TO_TT TT_REQUEST ... IAC SE
         if (code[2] == TO_TT && code[3] == TT_REQUEST) {
-          buffer.output(pre_tt);
-          buffer.output(buffer.settings.termType.toCharArray());
-          buffer.output(post_tt);
+          screen.output(pre_tt);
+          screen.output(screen.getTermType().toCharArray());
+          screen.output(post_tt);
           return true;
         }
         return true;  //ignore unknown sub code
@@ -50,11 +50,11 @@ public class Telnet extends javaforce.Telnet {
         return true;  //ignore unknown code
     }
   }
-  private static void send(char ww, char code, Buffer buffer) {
+  private static void send(char ww, char code, Screen screen) {
     char[] response = new char[3];
     response[0] = IAC;
     response[1] = ww;
     response[2] = code;
-    buffer.output(response);
+    screen.output(response);
   }
 }

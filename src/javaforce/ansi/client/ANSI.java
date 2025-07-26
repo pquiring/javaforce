@@ -15,9 +15,9 @@ import javaforce.*;
 
 public class ANSI {
 
-  public ANSI(Buffer buffer, boolean telnet) {
-    orgForeColor = buffer.getForeColor();
-    orgBackColor = buffer.getBackColor();
+  public ANSI(Screen screen, boolean telnet) {
+    orgForeColor = new Color(screen.getForeColor());
+    orgBackColor = new Color(screen.getBackColor());
   }
 
   public final static char ESC = 0x1b;
@@ -58,7 +58,7 @@ public class ANSI {
     return ret;
   }
 
-  public void keyPressed(int keyCode, int keyMods, Buffer buffer) {
+  public void keyPressed(int keyCode, int keyMods, Screen screen) {
     //an easy way to find codes is to run "xterm sh" and press keys - "sh" doesn't understand ANSI and echo'es them back
     String str = null;
     if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
@@ -97,7 +97,7 @@ public class ANSI {
         case KeyEvent.VK_F8: str = "" + ESC + "[34~"; break;  //KEY_F20
       }
     }
-    if (str != null) buffer.output(str.toCharArray());
+    if (str != null) screen.output(str.toCharArray());
     if (keyMods != 0) return;
     switch (keyCode) {
       case KeyEvent.VK_UP:   str = "" + ESC + "" + altcode + "A"; break;
@@ -114,7 +114,7 @@ public class ANSI {
       case KeyEvent.VK_F4:   str = "" + ESC + altcode + "S"; break;
       case KeyEvent.VK_F5:
         if (telnet)
-          str = "" + Telnet.IAC + Telnet.BRK;  //BREAK
+          str = "" + TelnetDecoder.IAC + TelnetDecoder.BRK;  //BREAK
         else
           str = "" + ESC + "[15~";
         break;
@@ -130,15 +130,15 @@ public class ANSI {
       case KeyEvent.VK_PAGE_UP:    str = "" + ESC + "[5~"; break;  //PREV
       case KeyEvent.VK_PAGE_DOWN:  str = "" + ESC + "[6~"; break;  //NEXT
 
-      case KeyEvent.VK_PAUSE: str = "" + Telnet.IAC + Telnet.BRK; break;  //BREAK
+      case KeyEvent.VK_PAUSE: str = "" + TelnetDecoder.IAC + TelnetDecoder.BRK; break;  //BREAK
     }
-    if (str != null) buffer.output(str.toCharArray());
+    if (str != null) screen.output(str.toCharArray());
   }
 
-  public boolean decode(char[] code, int codelen, Buffer buffer) {
+  public boolean decode(char[] code, int codelen, Screen screen) {
     int x,y;
-    x = buffer.getx();
-    y = buffer.gety();
+    x = screen.getx();
+    y = screen.gety();
     if (codelen < 2) return false;
     switch (code[1]) {
       case 'H':
@@ -146,16 +146,16 @@ public class ANSI {
         JFLog.log("ANSI:Not implemented:" + code[1]);
         return true;
       case 'M':  //move cursor up one (scroll down if needed)
-        if (y <= buffer.gety1())
-          buffer.scrollDown(1);
+        if (y <= screen.gety1())
+          screen.scrollDown(1);
         else
-          buffer.gotoPos(x, y - 1);
+          screen.gotoPos(x, y - 1);
         return true;
       case 'D':  //move cursor down one (scroll up if needed)
-        if (y >= buffer.gety2())
-          buffer.scrollUp(1);
+        if (y >= screen.gety2())
+          screen.scrollUp(1);
         else
-          buffer.gotoPos(x, y + 1);
+          screen.gotoPos(x, y + 1);
         return true;
       case '7':
         //save cursor pos
@@ -165,7 +165,7 @@ public class ANSI {
       case '8':
         //restore cursor pos
         if (savedx == -1) return true;
-        buffer.gotoPos(savedx, savedy);
+        screen.gotoPos(savedx, savedy);
         return true;
       case '=':
         keypadMode = true;
@@ -217,7 +217,7 @@ public class ANSI {
               for(int a=0;a<numc;a++) {
                 switch (nums[a]) {
                   case 1: altcode = 'O'; break;  //cursor key mode : control/app functions
-                  case 7: buffer.setAutoWrap(false); break;
+                  case 7: screen.setAutoWrap(false); break;
                   case 12: break;  //TODO : start blinking cursor
                   case 25: break;  //TODO : show cursor
                   default: JFLog.log("ANSI:Unknown [ ? h:" + nums[a]);
@@ -228,7 +228,7 @@ public class ANSI {
               for(int a=0;a<numc;a++) {
                 switch (nums[a]) {
                   case 1: altcode = '['; break;  //cursor key mode : ANSI control sequences
-                  case 7: buffer.setAutoWrap(true); break;
+                  case 7: screen.setAutoWrap(true); break;
                   case 12: break;  //TODO : stop blinking cursor
                   case 25: break;  //TODO : hide cursor
                   default: JFLog.log("ANSI:Unknown [ ? l:" + nums[a]);
@@ -248,17 +248,17 @@ public class ANSI {
             switch (nums[0]) {
               case 0:
                 //from cursor to end of screen
-                for(int a=x;a<=buffer.sx;a++) buffer.setChar(a, y, ' ');  //erase partial line
-                for(int b=y+1;b<=buffer.sy;b++) for(int a=1;a<=buffer.sx;a++) buffer.setChar(a, b, ' ');
+                for(int a=x;a<=screen.getsx();a++) screen.setChar(a, y, ' ');  //erase partial line
+                for(int b=y+1;b<=screen.getsy();b++) for(int a=1;a<=screen.getsx();a++) screen.setChar(a, b, ' ');
                 break;
               case 1:
                 //from begining to cursor
-                for(int a=1;a<x;a++) buffer.setChar(a, y, ' ');  //erase partial line
-                for(int b=1;b<y;b++) for(int a=1;a<=buffer.sx;a++) buffer.setChar(a, b, ' ');
+                for(int a=1;a<x;a++) screen.setChar(a, y, ' ');  //erase partial line
+                for(int b=1;b<y;b++) for(int a=1;a<=screen.getsx();a++) screen.setChar(a, b, ' ');
                 break;
               case 2:
                 //entire screen (reposition cursor to (1,1) too)
-                buffer.clrscr();
+                screen.clrscr();
                 break;
             }
             break;
@@ -267,15 +267,15 @@ public class ANSI {
             switch (nums[0]) {
               case 0:
                 //erase from cursor to end of line
-                for(int a=x;a<=buffer.sx;a++) buffer.setChar(a, y, ' ');
+                for(int a=x;a<=screen.getsx();a++) screen.setChar(a, y, ' ');
                 break;
               case 1:
                 //from beginning of line to cursor
-                for(int a=1;a<x;a++) buffer.setChar(a, y, ' ');
+                for(int a=1;a<x;a++) screen.setChar(a, y, ' ');
                 break;
               case 2:
                 //whole line
-                for(int a=1;a<=buffer.sx;a++) buffer.setChar(a, y, ' ');
+                for(int a=1;a<=screen.getsx();a++) screen.setChar(a, y, ' ');
                 break;
             }
             break;
@@ -285,41 +285,41 @@ public class ANSI {
             if (numc == 1 && nums[0] == 0) numc = 0;
             switch (numc) {
               case 2:
-                buffer.gotoPos(min(buffer.sx,nums[1]),min(buffer.sy,nums[0]));
+                screen.gotoPos(min(screen.getsx(),nums[1]),min(screen.getsy(),nums[0]));
                 break;
               case 1:
-                buffer.gotoPos(1, min(buffer.sy,nums[0]));
+                screen.gotoPos(1, min(screen.getsy(),nums[0]));
                 break;
               case 0:
-                buffer.gotoPos(1,1);
+                screen.gotoPos(1,1);
                 break;
             }
             break;
           case 'A': //up
-            if (numc == 0) nums[0] = 1; if (y-nums[0]>1 ) buffer.gotoPos(x,y-nums[0]); else buffer.gotoPos(x,1);
+            if (numc == 0) nums[0] = 1; if (y-nums[0]>1 ) screen.gotoPos(x,y-nums[0]); else screen.gotoPos(x,1);
             break;
           case 'B': //down
-            if (numc == 0) nums[0] = 1; if (y+nums[0]<buffer.sy) buffer.gotoPos(x,y+nums[0]); else buffer.gotoPos(x,buffer.sy);
+            if (numc == 0) nums[0] = 1; if (y+nums[0]<screen.getsy()) screen.gotoPos(x,y+nums[0]); else screen.gotoPos(x,screen.getsy());
             break;
           case 'C': //forward
-            if (numc == 0) nums[0] = 1; if (x+nums[0]<buffer.sx) buffer.gotoPos(x+nums[0],y); else buffer.gotoPos(buffer.sx,y);
+            if (numc == 0) nums[0] = 1; if (x+nums[0]<screen.getsx()) screen.gotoPos(x+nums[0],y); else screen.gotoPos(screen.getsx(),y);
             break;
           case 'D': //backwards
-            if (numc == 0) nums[0] = 1; if (x-nums[0]>1 ) buffer.gotoPos(x-nums[0],y); else buffer.gotoPos(1,y);
+            if (numc == 0) nums[0] = 1; if (x-nums[0]>1 ) screen.gotoPos(x-nums[0],y); else screen.gotoPos(1,y);
             break;
           case 'L': //insert lines (only if within margin area)
-            if ((y < buffer.gety1()) || (y > buffer.gety2())) break;
+            if ((y < screen.gety1()) || (y > screen.gety2())) break;
             if (numc == 0) nums[0] = 1;
-            int oy1 = buffer.gety1();
-            buffer.sety1(y);
-            buffer.scrollDown(nums[0]);
-            buffer.sety1(oy1);
+            int oy1 = screen.gety1();
+            screen.sety1(y);
+            screen.scrollDown(nums[0]);
+            screen.sety1(oy1);
             break;
           case 'r':
             //define rows that scroll (margin)
             if (numc != 2) break;
-            buffer.sety1(nums[0]);
-            buffer.sety2(nums[1]);
+            screen.sety1(nums[0]);
+            screen.sety2(nums[1]);
             break;
           case 'm':
             //colour
@@ -332,51 +332,51 @@ public class ANSI {
               if (nums[a] == 0) {
                 //normal
                 high = 0;
-                buffer.setBlinker(false);
-                buffer.setReverse(false);
-                buffer.setForeColor(orgForeColor);
-                buffer.setBackColor(orgBackColor);
+                screen.setBlinker(false);
+                screen.setReverse(false);
+                screen.setForeColor(orgForeColor.getRGB());
+                screen.setBackColor(orgBackColor.getRGB());
                 continue;
               }
 //              if (nums[a] == 4) {continue;}  //underline (not implemented)
-              if (nums[a] == 5) {buffer.setBlinker(true); continue;}
-              if (nums[a] == 7) {buffer.setReverse(true); continue;}  //reverse
+              if (nums[a] == 5) {screen.setBlinker(true); continue;}
+              if (nums[a] == 7) {screen.setReverse(true); continue;}  //reverse
 //              if (nums[a] == 8) {continue;}  //invisible (not implemented) [vt300]
 //              if (nums[a] == 24) {continue;}  //not underline (not implemented)
-              if (nums[a] == 25) {buffer.setBlinker(false); continue;}
-              if (nums[a] == 27) {buffer.setReverse(false); continue;}  //Positive (not inverse)
+              if (nums[a] == 25) {screen.setBlinker(false); continue;}
+              if (nums[a] == 27) {screen.setReverse(false); continue;}  //Positive (not inverse)
 //              if (nums[a] == 28) {continue;}  //visible (not implemented) [vt300]
-              if ((nums[a] >= 30) && (nums[a] <= 37)) {buffer.setForeColor(clrs[high][nums[a]-30]); continue;}
-              if (nums[a] == 39) {buffer.setForeColor(orgForeColor); continue;}  //default (org)
-              if ((nums[a] >= 40) && (nums[a] <= 47)) {buffer.setBackColor(clrs[0][nums[a]-40]); continue;}
-              if (nums[a] == 49) {buffer.setBackColor(orgBackColor); continue;}  //default (org)
+              if ((nums[a] >= 30) && (nums[a] <= 37)) {screen.setForeColor(clrs[high][nums[a]-30]); continue;}
+              if (nums[a] == 39) {screen.setForeColor(orgForeColor.getRGB()); continue;}  //default (org)
+              if ((nums[a] >= 40) && (nums[a] <= 47)) {screen.setBackColor(clrs[0][nums[a]-40]); continue;}
+              if (nums[a] == 49) {screen.setBackColor(orgBackColor.getRGB()); continue;}  //default (org)
             }
             break;
           case 'n':
             //query cursor position "ESC[row;colR"
             if ((numc != 1) || (nums[0] != 6)) break;
-            String str = "" + ESC + '[' + buffer.gety() + ';' + buffer.getx() + 'R';
-            buffer.output(str.toCharArray());
+            String str = "" + ESC + '[' + screen.gety() + ';' + screen.getx() + 'R';
+            screen.output(str.toCharArray());
             break;
           case 'P':
             //delete nums[0] chars at cursor
             if (numc == 0) {numc = 1; nums[0] = 1;}
-            for(int cnt=0;cnt<nums[0];cnt++) buffer.delete();
+            for(int cnt=0;cnt<nums[0];cnt++) screen.delete();
             break;
           case '@':
             //insert nums[0] chars at cursor
             if (numc == 0) {numc = 1; nums[0] = 1;}
-            for(int cnt=0;cnt<nums[0];cnt++) buffer.insert();
+            for(int cnt=0;cnt<nums[0];cnt++) screen.insert();
             break;
           case 's':
             //save cursor pos
-            savedx = buffer.getx();
-            savedy = buffer.gety();
+            savedx = screen.getx();
+            savedy = screen.gety();
             break;
           case 'u':
             //restore cursor pos
             if (savedx == -1) return true;
-            buffer.gotoPos(savedx, savedy);
+            screen.gotoPos(savedx, savedy);
             break;
           case 'g':  //not implemented
             //0 = clear tab stop at cursor location
@@ -384,26 +384,26 @@ public class ANSI {
             break;
           case 'd':  //line position absolute (default = 1)
             if (numc == 0) nums[0] = 1;
-            buffer.gotoPos(x, nums[0]);
+            screen.gotoPos(x, nums[0]);
             break;
           case 'e':  //line position relative (default = row+1)
             if (numc == 0) nums[0] = 1;
-            buffer.gotoPos(x, y + nums[0]);
+            screen.gotoPos(x, y + nums[0]);
             break;
           case 'G':  //column position absolute (default = 1)
             if (numc == 0) nums[0] = 1;
-            buffer.gotoPos(nums[0], y);
+            screen.gotoPos(nums[0], y);
             break;
           case 'X':  //delete 'x' chars
             if (numc == 0) nums[0] = 1;
             int cnt = nums[0];
             while (cnt > 0) {
-              buffer.setChar(x, y, ' ');
+              screen.setChar(x, y, ' ');
               x++;
-              if (x == buffer.sx+1) {
+              if (x == screen.getsx()+1) {
                 x = 1;
                 y++;
-                if (y == buffer.sy+1) break;
+                if (y == screen.getsy()+1) break;
               }
               cnt--;
             }
