@@ -13,6 +13,11 @@ span {
   box-sizing: border-box;
 }
 
+pre {
+  margin: 0px;
+  box-sizing: border-box;
+}
+
 select {
   margin: 0px;
   vertical-align: top;
