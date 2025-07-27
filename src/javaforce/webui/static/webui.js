@@ -226,6 +226,13 @@ function wsevent(event) {
       body.dispatchEvent(new Event('resize'));
       break;
     }
+    case "replace": {
+      temp.innerHTML = msg.html;
+      element.replaceWith(temp.firstChild);
+      temp.innerHTML = '';
+      body.dispatchEvent(new Event('resize'));
+      break;
+    }
     case "settab":
       openTab(null, parseInt(msg.idx), msg.panel, msg.row, msg.tabs);
       break;
