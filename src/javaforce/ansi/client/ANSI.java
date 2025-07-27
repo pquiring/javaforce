@@ -220,6 +220,7 @@ public class ANSI {
                   case 7: screen.setAutoWrap(false); break;
                   case 12: break;  //TODO : start blinking cursor
                   case 25: break;  //TODO : show cursor
+                  case 2004: break;  //bracketed paste mode
                   default: JFLog.log("ANSI:Unknown [ ? h:" + nums[a]);
                 }
               }
@@ -231,6 +232,7 @@ public class ANSI {
                   case 7: screen.setAutoWrap(true); break;
                   case 12: break;  //TODO : stop blinking cursor
                   case 25: break;  //TODO : hide cursor
+                  case 2004: break;  //bracketed paste mode
                   default: JFLog.log("ANSI:Unknown [ ? l:" + nums[a]);
                 }
               }

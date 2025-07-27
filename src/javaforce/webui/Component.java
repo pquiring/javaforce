@@ -481,6 +481,10 @@ public abstract class Component {
       removeClass("border");
   }
 
+  public void setFocusable() {
+    addAttr("tabindex", "0");
+  }
+
   public void setFocus() {
     sendEvent("focus", null);
   }
