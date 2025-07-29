@@ -49,7 +49,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
       backColor = Settings.settings.backColor;
       gotoPos(1,1);
       ansi = new ANSI(this, sd.protocol.equals("telnet"));
-      telnet = new Telnet();
+      telnet = new TelnetDecoder();
       utf8 = new UTF8();
       timer = new java.util.Timer();
       timer.schedule(new TimerTask() {
@@ -120,7 +120,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
   private SSLSocket ssl;  //ssl
   /** Number of lines that user can scroll back to. */
   private int scrollBack;
-  private Telnet telnet;
+  private TelnetDecoder telnet;
   private ANSI ansi;
   private UTF8 utf8;
   /** Current Telnet/ANSI code */
@@ -780,7 +780,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
 
   private void sendTT() {
     //trigger a request for TT ???
-    input(new char[] {Telnet.IAC, Telnet.SB, Telnet.TO_TT, Telnet.IAC, Telnet.SE}, 5);
+    input(new char[] {TelnetDecoder.IAC, TelnetDecoder.SB, TelnetDecoder.TO_TT, TelnetDecoder.IAC, TelnetDecoder.SE}, 5);
   }
 
   private void pty_setsize() {
