@@ -1,5 +1,5 @@
 /*
- * Buffer.java
+ * BufferComponent.java
  *
  * Created on August 2, 2007, 7:48 PM
  *
@@ -28,9 +28,9 @@ import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 
-public class Buffer extends JComponent implements KeyListener, MouseListener, MouseMotionListener, Screen {
+public class BufferComponent extends JComponent implements KeyListener, MouseListener, MouseMotionListener, Screen {
 
-  public Buffer() {
+  public BufferComponent() {
     changeFont();
   }
 

@@ -43,7 +43,7 @@ public class Script {
     chpos = 0;
   }
 
-  public void input(char ch, Buffer buffer) {
+  public void input(char ch, BufferComponent buffer) {
     if (!waiting) return;
     if (buflen == waitsiz) {
       for(int a=0;a<buflen-1;a++) buf[a] = buf[a+1];
@@ -61,7 +61,7 @@ public class Script {
   /**
    * Load and execute a script (*.scr)
    */
-  public static Script load(Buffer buffer) {
+  public static Script load(BufferComponent buffer) {
 
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -128,7 +128,7 @@ public class Script {
     return ret;
   }
 
-  public synchronized boolean process(Buffer buffer) {
+  public synchronized boolean process(BufferComponent buffer) {
     String cmd = "", arg  = "";
     if (waiting) return false;
     if (pos >= script.length) return true;
