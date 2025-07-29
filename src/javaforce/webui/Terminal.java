@@ -141,7 +141,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     setMaxHeight();
     setFocusable();
     if (debug) JFLog.log("Terminal:" + sx + "x" + sy);
-    ANSI.debug = true;
+    ANSI.debug = debug;
   }
 
   public void init() {
