@@ -205,18 +205,22 @@ public class ANSI {
         }
         break;
       case ']':  //operating system command
-        if (code[codelen-1] != 7) return false;  //incomplete
         //OSC is currently not supported
-        break;
+        if (code[codelen-1] == 7) return true;
+        if (code[codelen-2] == ESC && code[codelen-1] == '\\') return true;
+        return false;
       case '[':  //control sequence introducer
+        char cmd = code[codelen-1];
         if (!(
-          ((code[codelen-1]) >= 'A' && (code[codelen-1] <= 'Z')) ||
-          ((code[codelen-1]) >= 'a' && (code[codelen-1] <= 'z')) ||
-          ((code[codelen-1]) == '~') ||
-          ((code[codelen-1]) == '@'))) return false;  //incomplete
+          (cmd >= 'A' && cmd <= 'Z') ||
+          (cmd >= 'a' && cmd <= 'z') ||
+          (cmd == '~') || (cmd == '@')))
+        {
+          return false;
+        }
         if (code[2] == '?') {
           decodeNums(code, codelen, 3);
-          switch (code[codelen-1]) {
+          switch (cmd) {
             case 'h':  //set private functions
               for(int a=0;a<numc;a++) {
                 switch (nums[a]) {
@@ -248,7 +252,7 @@ public class ANSI {
           }
         }
         decodeNums(code, codelen, 2);
-        switch (code[codelen-1]) {
+        switch (cmd) {
           case 'J':
             if (numc == 0) nums[0] = 0;
             switch (nums[0]) {
