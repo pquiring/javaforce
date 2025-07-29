@@ -16,6 +16,7 @@ span {
 pre {
   margin: 0px;
   box-sizing: border-box;
+  display: inline;
 }
 
 select {

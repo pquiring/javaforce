@@ -15,6 +15,8 @@ import javaforce.*;
 
 public class ANSI {
 
+  public static boolean debug = false;
+
   public ANSI(Screen screen, boolean telnet) {
     orgForeColor = new Color(screen.getForeColor());
     orgBackColor = new Color(screen.getBackColor());
@@ -131,11 +133,13 @@ public class ANSI {
       case KeyEvent.VK_PAGE_DOWN:  str = "" + ESC + "[6~"; break;  //NEXT
 
       case KeyEvent.VK_PAUSE: str = "" + TelnetDecoder.IAC + TelnetDecoder.BRK; break;  //BREAK
+      default: str = "" + (char)keyCode;
     }
     if (str != null) screen.output(str.toCharArray());
   }
 
   public boolean decode(char[] code, int codelen, Screen screen) {
+    if (debug) JFLog.log("ANSI.decode:" + codelen);
     int x,y;
     x = screen.getx();
     y = screen.gety();
@@ -349,8 +353,28 @@ public class ANSI {
               if (nums[a] == 27) {screen.setReverse(false); continue;}  //Positive (not inverse)
 //              if (nums[a] == 28) {continue;}  //visible (not implemented) [vt300]
               if ((nums[a] >= 30) && (nums[a] <= 37)) {screen.setForeColor(clrs[high][nums[a]-30]); continue;}
+              if (nums[a] == 38) {
+                //foreColor = r;g;b
+                if (numc > 3) {
+                  int r = nums[numc-3];
+                  int g = nums[numc-2];
+                  int b = nums[numc-1];
+                  screen.setForeColor(r << 16 | g << 8 | b);
+                }
+                break;
+              }
               if (nums[a] == 39) {screen.setForeColor(orgForeColor.getRGB()); continue;}  //default (org)
               if ((nums[a] >= 40) && (nums[a] <= 47)) {screen.setBackColor(clrs[0][nums[a]-40]); continue;}
+              if (nums[a] == 48) {
+                //backColor = r;g;b
+                if (numc > 3) {
+                  int r = nums[numc-3];
+                  int g = nums[numc-2];
+                  int b = nums[numc-1];
+                  screen.setBackColor(r << 16 | g << 8 | b);
+                }
+                break;
+              }
               if (nums[a] == 49) {screen.setBackColor(orgBackColor.getRGB()); continue;}  //default (org)
             }
             break;
