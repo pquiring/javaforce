@@ -21,13 +21,14 @@ import javaforce.awt.*;
 import javaforce.jni.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
+import javaforce.ansi.client.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 
-public class Buffer extends JComponent implements KeyListener, MouseListener, MouseMotionListener {
+public class Buffer extends JComponent implements KeyListener, MouseListener, MouseMotionListener, Screen {
 
   public Buffer() {
     changeFont();
@@ -372,8 +373,8 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
   public void setReverse(boolean state) {
     reverse = state;
   }
-  public Color getForeColor() { return foreColor; }
-  public Color getBackColor() { return backColor; }
+  public int getForeColor() { return foreColor.getRGB(); }
+  public int getBackColor() { return backColor.getRGB(); }
 
   public void repaint(boolean showCursor) {
     if (showCursor) scrollRectToVisible(new Rectangle(0,fy * scrollBack,fx * sx, fy * (scrollBack + sy)));
@@ -557,6 +558,8 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
 
   public int getx() {return cx + 1;}
   public int gety() {return cy + 1;}
+  public int getsx() {return sx;}
+  public int getsy() {return sy;}
   public void gotoPos(int x,int y) {
     cx = x-1;
     if (cx < 0) cx = 0;
@@ -601,6 +604,10 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
   public void insert() {
     for(int p=sx-2;p>=cx;p--) chars[(cy+scrollBack) * sx + p + 1] = chars[(cy+scrollBack) * sx + p];
     chars[(cy+scrollBack) * sx + cx] = new Char(foreColor, backColor, blinker);
+  }
+
+  public String getTermType() {
+    return Settings.settings.termType;
   }
 
   public void close() {
