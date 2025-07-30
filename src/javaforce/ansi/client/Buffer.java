@@ -31,10 +31,10 @@ import org.apache.sshd.client.session.ClientSession;
 
 public class Buffer implements Screen {
 
-  public Settings settings;
+  public Profile settings;
   public BufferViewer viewer;
 
-  public Buffer(BufferViewer viewer, Settings settings) {
+  public Buffer(BufferViewer viewer, Profile settings) {
     this.viewer = viewer;
     this.settings = settings;
   }

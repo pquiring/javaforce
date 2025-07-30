@@ -27,9 +27,9 @@ import javaforce.jni.win.*;
 public class BufferViewer extends JComponent implements KeyListener, MouseListener, MouseMotionListener {
 
   public Buffer buffer;
-  public Settings settings;
+  public Profile settings;
 
-  public BufferViewer(Buffer buffer, Settings settings) {
+  public BufferViewer(Buffer buffer, Profile settings) {
     this.buffer = buffer;
     changeFont();
   }

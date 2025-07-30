@@ -1,13 +1,13 @@
 package javaforce.ansi.client;
 
-/** Telnet Settings
+/** Site Profile
  *
  * @author pquiring
  */
 
 import java.awt.*;
 
-public class Settings {
+public class Profile {
   public Color foreColor = Color.black;
   public Color backColor = Color.white;
   public Color cursorColor = Color.black;
