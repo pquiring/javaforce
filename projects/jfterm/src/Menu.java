@@ -10,6 +10,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.ansi.client.*;
 
 public class Menu {
   private static JTabbedPane tabs;
@@ -48,9 +49,9 @@ public class Menu {
     item.setMnemonic('S');
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        SiteDetails sdArray[] = SiteMgr.showSiteMgr(null);
+        Profile[] sdArray = SiteMgr.showSiteMgr(null);
         if (sdArray == null) return;
-        for(SiteDetails sd : sdArray) connect(sd);
+        for(Profile sd : sdArray) connect(sd);
       }
     });
     menu.add(item);
@@ -229,7 +230,7 @@ public class Menu {
     return menuBar;
   }
 
-  public static void connect(SiteDetails sd) {
+  public static void connect(Profile sd) {
 
     BufferComponent buffer = new BufferComponent() {
       public void close() {
@@ -280,7 +281,7 @@ public class Menu {
   }
 
   public static void localAction() {
-    SiteDetails sd = new SiteDetails();
+    Profile sd = new Profile();
     sd.autoSize = true;
     sd.protocol = "local";
     sd.name = "localhost";

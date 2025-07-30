@@ -15,6 +15,7 @@ import javax.swing.filechooser.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.ansi.client.*;
 
 public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
 
@@ -551,18 +552,18 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         if (selectedTag.getChildAt(a).name.equals("site")) cnt++;
       }
       if (cnt == 0) return;
-      retValue = new SiteDetails[cnt];
+      retValue = new Profile[cnt];
       cnt = 0;
       for(int a=0;a<selectedTag.getChildCount();a++) {
         child = selectedTag.getChildAt(a);
         if (child.name.equals("site")) {
-          retValue[cnt] = new SiteDetails();
+          retValue[cnt] = new Profile();
           retValue[cnt].name = child.getName();
           for(int b=0;b<child.getChildCount();b++) {
             child2 = child.getChildAt(b);
             if (child2.name.equals("host")) retValue[cnt].host = child2.content;
             if (child2.name.equals("protocol")) retValue[cnt].protocol = child2.content;
-            if (child2.name.equals("port")) retValue[cnt].port = child2.content;
+            if (child2.name.equals("port")) retValue[cnt].port = JF.atoi(child2.content);
             if (child2.name.equals("username")) retValue[cnt].username = child2.content;
             if (child2.name.equals("password")) retValue[cnt].password = decodePassword(child2.content);
             if (child2.name.equals("sshkey")) retValue[cnt].sshKey = child2.content;
@@ -583,12 +584,12 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     if (!validFields()) return;
     bSaveActionPerformed(null);
     saveAll();
-    retValue = new SiteDetails[1];
-    retValue[0] = new SiteDetails();
+    retValue = new Profile[1];
+    retValue[0] = new Profile();
     retValue[0].name = tName.getText();
     retValue[0].host = tHost.getText();
     retValue[0].protocol = protocols[cbProtocol.getSelectedIndex()];
-    retValue[0].port = tPort.getText();
+    retValue[0].port = JF.atoi(tPort.getText());
     retValue[0].username = tUsername.getText();
     retValue[0].password = new String(tPassword.getPassword());
     retValue[0].sshKey = tSSHKey.getText();
@@ -596,7 +597,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     retValue[0].sy = getRows(getRows());
     retValue[0].autoSize = cbAutoSize.isSelected();
     retValue[0].x11 = cbX11.isSelected();
-    retValue[0].localecho = cbLocalEcho.isSelected();
+    retValue[0].localEcho = cbLocalEcho.isSelected();
     retValue[0].utf8 = utf8.isSelected();
     setVisible(false);
   }//GEN-LAST:event_bConnectActionPerformed
@@ -660,9 +661,9 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   private String ports[] = { "23", "22", "443", "0" };
   private XMLTree xml = new XMLTree();
   private XMLTree.XMLTag selectedTag = null;
-  private SiteDetails retValue[] = null;
+  private Profile retValue[] = null;
   private XMLTree.XMLTag sitesTag = null;
-  public static SiteDetails[] showSiteMgr(Frame parent) {
+  public static Profile[] showSiteMgr(Frame parent) {
     SiteMgr mgr = new SiteMgr(parent, true);
     mgr.loadAll();
     mgr.setVisible(true);  //modal = true, therefore this func does not return till dialog is closed

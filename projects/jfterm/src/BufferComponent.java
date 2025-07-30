@@ -144,7 +144,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
   private boolean connected = false, connecting = false;
   private boolean failed = false;
   private Frame parent;
-  private SiteDetails sd;
+  private Profile sd;
   /** eol means we are 1 char beyond the end of a line but haven't moved down to the next line yet */
   private boolean eol = false;
   private boolean closed = false;
@@ -182,7 +182,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
     }
   }
   public void output(char ch) {
-    if (sd.localecho) input(ch);
+    if (sd.localEcho) input(ch);
     try {
       out.write(new byte[] {(byte)ch});
       out.flush();
@@ -765,7 +765,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
     signalRepaint(true);
   }
 
-  public void setSiteDetails(SiteDetails sd) {
+  public void setSiteDetails(Profile sd) {
     this.sd = sd;
   }
 
@@ -790,7 +790,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
 
   private WinCom wincom;
   private LnxCom lnxcom;
-  private boolean connectCom(SiteDetails sd) {
+  private boolean connectCom(Profile sd) {
     try {
       if (!Settings.hasComm) throw new Exception("no com support");
       String f[] = sd.host.split(",");  //com1,56000
@@ -866,7 +866,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
     }
   }
 
-  private boolean connectLocal(SiteDetails sd) {
+  private boolean connectLocal(Profile sd) {
     try {
       pty = LnxPty.exec(Settings.settings.termApp
         , new String[] {Settings.settings.termApp, "-i", "-l", null}
@@ -892,9 +892,9 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
     return false;
   }
 
-  private boolean connectTelnet(SiteDetails sd) {
+  private boolean connectTelnet(Profile sd) {
     try {
-      s = new Socket(sd.host, JF.atoi(sd.port));
+      s = new Socket(sd.host, sd.port);
       in = s.getInputStream();
       out = s.getOutputStream();
       return true;
@@ -923,7 +923,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
 //    channel.setPtyType(Settings.settings.termType, sd.sx, sd.sy, sd.sx * 8, sd.sy * 8);
   }
 
-  private boolean connectSSH(Frame parent, SiteDetails sd) {
+  private boolean connectSSH(Frame parent, Profile sd) {
     try{
       if (sd.sshKey.length() == 0) {
         if (sd.password.length() == 0) sd.password = GetPassword.getPassword(parent);
@@ -934,7 +934,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
       client.start();
       JFLog.log("TODO : set knownhosts");
       //setKnownHosts(JF.getUserPath() + "/.jfterm-knownhosts");
-      ConnectFuture cf = client.connect(sd.username, sd.host, JF.atoi(sd.port));
+      ConnectFuture cf = client.connect(sd.username, sd.host, sd.port);
       session = cf.verify().getSession();
       if (sd.x11) {
         JFLog.log("TODO : set X11 host / port");
@@ -987,7 +987,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
     }
   }
 
-  private boolean connectSSL(SiteDetails sd) {
+  private boolean connectSSL(Profile sd) {
     try {
       TrustManager[] trustAllCerts = new TrustManager[] {
         new X509TrustManager() {
@@ -1003,7 +1003,7 @@ public class BufferComponent extends JComponent implements KeyListener, MouseLis
       sc.init(null, trustAllCerts, new java.security.SecureRandom());
 //      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();  //this method will only work with trusted certs
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-      ssl = (SSLSocket) sslsocketfactory.createSocket(sd.host, JF.atoi(sd.port));
+      ssl = (SSLSocket) sslsocketfactory.createSocket(sd.host, sd.port);
       s = (Socket)ssl;
       in = s.getInputStream();
       out = s.getOutputStream();
