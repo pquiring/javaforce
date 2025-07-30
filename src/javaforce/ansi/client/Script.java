@@ -162,7 +162,7 @@ public class Script {
       }
       if (cmd.equalsIgnoreCase("hitkey")) {
         try {
-          java.awt.event.KeyEvent ke = new java.awt.event.KeyEvent(buffer.viewer, 0, 0, 0, 0, ' ');
+          java.awt.event.KeyEvent ke = new java.awt.event.KeyEvent(buffer.ui.getComponent(), 0, 0, 0, 0, ' ');
           Class<?> c = ke.getClass();
           Field f = c.getField(arg);
           int keyCode = f.getInt(ke);

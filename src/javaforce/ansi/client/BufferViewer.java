@@ -10,28 +10,27 @@
 package javaforce.ansi.client;
 
 import java.io.*;
-import java.net.*;
-import javax.net.ssl.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.datatransfer.*;
 import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
-import javaforce.jni.lnx.*;
-import javaforce.jni.win.*;
 
-public class BufferViewer extends JComponent implements KeyListener, MouseListener, MouseMotionListener {
+public class BufferViewer extends JComponent implements KeyListener, MouseListener, MouseMotionListener, Buffer.UI {
 
   public Buffer buffer;
-  public Profile settings;
+  public Profile profile;
 
-  public BufferViewer(Buffer buffer, Profile settings) {
-    this.buffer = buffer;
+  public BufferViewer(Profile profile) {
+    buffer = new Buffer(profile, this);
+    this.profile = profile;
     changeFont();
+  }
+
+  public JComponent getComponent() {
+    return this;
   }
 
   private void init() {
@@ -53,16 +52,16 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       }, 500, 500);
       pane = (JScrollPane)getClientProperty("pane");
       pane.getVerticalScrollBar().setUnitIncrement(8);  //faster!
-      if (settings.autoSize) {
+      if (profile.autoSize) {
         Dimension d;
         d = pane.getViewport().getExtentSize();
         if (d.width < fx) d.width = fx;
         if (d.height < fy) d.height = fy;
-        settings.sx = d.width / fx;
-        settings.sy = d.height / fy;
+        profile.sx = d.width / fx;
+        profile.sy = d.height / fy;
       }
       init = true;
-      if (settings.autoSize)
+      if (profile.autoSize)
         changeSize();
       else
         reSize();
@@ -103,7 +102,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   private boolean closed = false;
   private boolean init = false;
   private JScrollPane pane;
-  private LnxPty pty;
 
   private long profile_last = 0;
   private void profile(boolean show, String msg) {
@@ -133,14 +131,14 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
 
   public void changeFont() {
     {
-      int[] metrics = JFAWT.getFontMetrics(settings.fnt);
+      int[] metrics = JFAWT.getFontMetrics(profile.fnt);
       //[0] = width
       //[1] = ascent
       //[2] = descent
 //      JFLog.log("metrics=" + metrics[0] + "," + metrics[1] + "," + metrics[2]);
-      fx = metrics[0] + settings.fontWidth;
-      fy = metrics[1] + metrics[2] + settings.fontHeight;
-      descent = metrics[2] + settings.fontDescent;
+      fx = metrics[0] + profile.fontWidth;
+      fy = metrics[1] + metrics[2] + profile.fontHeight;
+      descent = metrics[2] + profile.fontDescent;
     }
   }
 
@@ -174,9 +172,9 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     if (img.getWidth() != r.width || img.getHeight() != r.height) {
       img.setImageSize(r.width, r.height);
     }
-    img.fill(0,0,r.width,r.height,settings.backColor.getRGB());
+    img.fill(0,0,r.width,r.height,profile.backColor.getRGB());
     Graphics g = img.getGraphics();
-    g.setFont(settings.fnt);
+    g.setFont(profile.fnt);
     int startx, starty;  //char
     int endx, endy;  //char
     int offx, offy;  //offset
@@ -194,11 +192,11 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
         int p = y * buffer.sx + x;
         if ((x == buffer.cx) && (y == buffer.cy + buffer.scrollBack) && (cursorShown)) {
           //draw Cursor
-          g.setColor(settings.cursorColor);
+          g.setColor(profile.cursorColor);
         } else {
           //normal background
           if (((p >= selectStart) && (p <= selectEnd)) || ((p >= selectEnd) && (p <= selectStart) && (selectEnd > 0))) {
-            g.setColor(settings.selectColor);
+            g.setColor(profile.selectColor);
           } else {
             g.setColor(buffer.chars[p].bc);
           }
@@ -220,7 +218,27 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 
   public void setAutoWrap(boolean state) {
-    settings.autowrap = state;
+    profile.autowrap = state;
+  }
+
+  public void close() {
+    buffer.close();
+  }
+
+  public void copy() {
+    buffer.copy();
+  }
+
+  public void paste() {
+    buffer.paste();
+  }
+
+  public void output(char[] buf) {
+    buffer.output(buf);
+  }
+
+  public void changeScrollBack(int newSize) {
+    buffer.changeScrollBack(newSize);
   }
 
   //these methods are overloaded to allow such functionality
@@ -266,11 +284,11 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       chooser.setMultiSelectionEnabled(false);
       if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
         fos = JF.filecreate(chooser.getSelectedFile().getAbsolutePath());
-        if (fos != null) setName(settings.name + "*");
+        if (fos != null) setName(profile.name + "*");
       }
     } else {
       fos = null;
-      setName(settings.name);
+      setName(profile.name);
     }
   }
 

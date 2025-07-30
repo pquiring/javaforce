@@ -17,6 +17,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.ansi.client.*;
 
 public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
 
@@ -24,7 +25,7 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
 
   public boolean dispatchKeyEvent(KeyEvent e) {
     //System.out.println("KeyEvent:" + e);
-    if ((e.getSource() instanceof BufferComponent) && (e.getKeyCode() == e.VK_TAB) && ((e.getModifiersEx() & JFAWT.KEY_MASKS) == 0)) {
+    if ((e.getSource() instanceof BufferViewer) && (e.getKeyCode() == e.VK_TAB) && ((e.getModifiersEx() & JFAWT.KEY_MASKS) == 0)) {
       return true;  //do not pass on to next dispatch handler (prevents FocusManager from using TAB to switch tabs)
     }
     return false;  //pass on as normal
@@ -110,9 +111,9 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
       Settings.settings.WindowYSize = size.height;
     }
     //resize all Buffers
-    BufferComponent buffer;
+    BufferViewer buffer;
     for(int a=0;a<tabs.getTabCount();a++) {
-      buffer = (BufferComponent)((JComponent)tabs.getComponentAt(a)).getClientProperty("buffer");
+      buffer = (BufferViewer)((JComponent)tabs.getComponentAt(a)).getClientProperty("buffer");
       buffer.changeSize();
     }
   }//GEN-LAST:event_formComponentResized
@@ -129,11 +130,6 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
    * @param args the command line arguments (currently ignored)
    */
   public static void main(String args[]) {
-    for(String arg : args) {
-      switch (arg) {
-        case "--debug": BufferComponent.debug = true; break;
-      }
-    }
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         new TermApp().setVisible(true);
@@ -148,7 +144,7 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
   public void exit() {
     Settings.saveSettings();
     while(tabs.getTabCount() > 0) {
-      BufferComponent buffer = (BufferComponent)((JComponent)tabs.getComponentAt(0)).getClientProperty("buffer");
+      BufferViewer buffer = (BufferViewer)((JComponent)tabs.getComponentAt(0)).getClientProperty("buffer");
       buffer.close();
     }
     System.exit(0);

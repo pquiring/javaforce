@@ -31,23 +31,27 @@ import org.apache.sshd.client.session.ClientSession;
 
 public class Buffer implements Screen {
 
-  public Profile settings;
-  public BufferViewer viewer;
-
-  public Buffer(BufferViewer viewer, Profile settings) {
-    this.viewer = viewer;
-    this.settings = settings;
+  public static interface UI {
+    public void signalRepaint(boolean findScreen, boolean revalidate);
+    public JComponent getComponent();
   }
+
+  public Buffer(Profile profile, UI ui) {
+    this.profile = profile;
+  }
+
+  public Profile profile;
+  public UI ui;
 
   public void init() {
     JFLog.log("Buffer.init start");
     try {
       lock = new Object();
-      scrollBack = settings.scrollBack;
-      foreColor = settings.foreColor;
-      backColor = settings.backColor;
+      scrollBack = profile.scrollBack;
+      foreColor = profile.foreColor;
+      backColor = profile.backColor;
       gotoPos(1,1);
-      ansi = new ANSI(this, settings.protocol.equals("telnet"));
+      ansi = new ANSI(this, profile.protocol.equals("telnet"));
       telnet = new TelnetDecoder();
       utf8 = new UTF8();
       timer = new java.util.Timer();
@@ -56,12 +60,12 @@ public class Buffer implements Screen {
           timer();
         }
       }, 500, 500);
-      sx = settings.sx;
-      sy = settings.sy;
+      sx = profile.sx;
+      sy = profile.sy;
       y1 = 0;
       y2 = sy-1;
       chars = new Char[sx*(sy+scrollBack)];
-      for(int a=0;a<sx*(sy+scrollBack);a++) chars[a] = new Char(settings.foreColor, settings.backColor);
+      for(int a=0;a<sx*(sy+scrollBack);a++) chars[a] = new Char(profile.foreColor, profile.backColor);
       init = true;
       ready = true;  //ready to paint
       reader = new Reader();
@@ -151,7 +155,7 @@ public class Buffer implements Screen {
   }
 
   public void output(char[] buf) {
-    if (settings.localEcho) input(buf, buf.length);
+    if (profile.localEcho) input(buf, buf.length);
     byte[] tmp = char2byte(buf, buf.length);
     try {
       out.write(tmp);
@@ -164,7 +168,7 @@ public class Buffer implements Screen {
     }
   }
   public void output(char ch) {
-    if (settings.localEcho) input(ch);
+    if (profile.localEcho) input(ch);
     try {
       out.write(new byte[] {(byte)ch});
       out.flush();
@@ -190,7 +194,7 @@ public class Buffer implements Screen {
     int newbuflen = 0;
     for(int a=0;a<buflen;a++) {
       if (codelen == 0) {
-        if ((buf[a] == IAC) || (buf[a] == ESC) || (settings.utf8 && utf8.isUTF8(buf[a]))) {
+        if ((buf[a] == IAC) || (buf[a] == ESC) || (profile.utf8 && utf8.isUTF8(buf[a]))) {
           if (newbuflen > 0) {print(newbuf, newbuflen); newbuflen = 0;}
           codelen = 1;
           code[0] = buf[a];
@@ -224,7 +228,7 @@ public class Buffer implements Screen {
 
   public synchronized void changeSize(Dimension extent) {
     if (!init) return;
-    if (!settings.autoSize) return;
+    if (!profile.autoSize) return;
 
     if (extent.width < fx) extent.width = fx;
     if (extent.height < fy) extent.height = fy;
@@ -240,19 +244,19 @@ public class Buffer implements Screen {
       for(int y=0;y<sy2;y++) {
         if (newsx > sx) {
           for(int x=0;x<sx;x++) newChars[y * newsx + x] = chars[y * sx + x];
-          for(int x=sx;x<newsx;x++) newChars[y * newsx + x] = new Char(settings.foreColor, settings.backColor);
+          for(int x=sx;x<newsx;x++) newChars[y * newsx + x] = new Char(profile.foreColor, profile.backColor);
         } else {
           for(int x=0;x<newsx;x++) newChars[y * newsx + x] = chars[y * sx + x];
         }
       }
       for(int y=sy2;y<newsy2;y++) {
-        for(int x=0;x<newsx;x++) newChars[y * newsx + x] = new Char(settings.foreColor, settings.backColor);
+        for(int x=0;x<newsx;x++) newChars[y * newsx + x] = new Char(profile.foreColor, profile.backColor);
       }
     } else {
       for(int y=0;y<newsy2;y++) {
         if (newsx > sx) {
           for(int x=0;x<sx;x++) newChars[y * newsx + x] = chars[y * sx + x];
-          for(int x=sx;x<newsx;x++) newChars[y * newsx + x] = new Char(settings.foreColor, settings.backColor);
+          for(int x=sx;x<newsx;x++) newChars[y * newsx + x] = new Char(profile.foreColor, profile.backColor);
         } else {
           for(int x=0;x<newsx;x++) newChars[y * newsx + x] = chars[y * sx + x];
         }
@@ -264,7 +268,7 @@ public class Buffer implements Screen {
       if (channel != null) {
         setPtyType();
       }
-      if (settings.protocol.equals("local")) {
+      if (profile.protocol.equals("local")) {
         pty_setsize();
       }
       if (cx >= sx) cx = sx-1;
@@ -280,7 +284,7 @@ public class Buffer implements Screen {
     int diff, pos;
     if (newSize > scrollBack) {
       diff = newSize - scrollBack;
-      for(int y=0;y<diff;y++) {for(int x=0;x<sx;x++) newChars[y * sx + x] = new Char(settings.foreColor, settings.backColor);}
+      for(int y=0;y<diff;y++) {for(int x=0;x<sx;x++) newChars[y * sx + x] = new Char(profile.foreColor, profile.backColor);}
       pos = 0;
       for(int y=diff;y<(sy + newSize);y++) {
         for(int x=0;x<sx;x++) {
@@ -339,7 +343,7 @@ public class Buffer implements Screen {
     cx = 0;
     cy = 0;
     signalRepaint(true, false);
-    if (settings.protocol.equals("local")) {
+    if (profile.protocol.equals("local")) {
       pty_setsize();  //test
     }
   }
@@ -357,8 +361,8 @@ public class Buffer implements Screen {
           decPosX();
           break;
         case 9:
-          int ts = (getx()-1) % settings.tabStops;
-          for(int t=0;t<settings.tabStops - ts;t++) {
+          int ts = (getx()-1) % profile.tabStops;
+          for(int t=0;t<profile.tabStops - ts;t++) {
             if (eol) incPosX();
 //            setChar(cx+1, cy+1, ' ');  //don't do that
             incPosX();
@@ -513,7 +517,7 @@ public class Buffer implements Screen {
   }
 
   public String getTermType() {
-    return settings.termType;
+    return profile.termType;
   }
 
   //these methods are overloaded to allow such functionality
@@ -568,8 +572,8 @@ public class Buffer implements Screen {
   }
 
   public void signalRepaint(boolean findScreen, boolean revalidate) {
-    if (viewer != null) {
-      viewer.signalRepaint(findScreen, revalidate);
+    if (ui != null) {
+      ui.signalRepaint(findScreen, revalidate);
     }
   }
 
@@ -616,11 +620,11 @@ public class Buffer implements Screen {
   }
 
   private boolean doConnect() {
-    if (settings.protocol.equals("com")) return connectCom();
-    if (settings.protocol.equals("local")) return connectLocal();
-    if (settings.protocol.equals("telnet")) return connectTelnet();
-    if (settings.protocol.equals("ssh")) return connectSSH(parent);
-    if (settings.protocol.equals("ssl")) return connectSSL();
+    if (profile.protocol.equals("com")) return connectCom();
+    if (profile.protocol.equals("local")) return connectLocal();
+    if (profile.protocol.equals("telnet")) return connectTelnet();
+    if (profile.protocol.equals("ssh")) return connectSSH(parent);
+    if (profile.protocol.equals("ssl")) return connectSSL();
     return false;
   }
 
@@ -638,8 +642,8 @@ public class Buffer implements Screen {
   private LnxCom lnxcom;
   private boolean connectCom() {
     try {
-      if (!settings.hasComm) throw new Exception("no com support");
-      String[] f = settings.host.split(",");  //com1,56000
+      if (!profile.hasComm) throw new Exception("no com support");
+      String[] f = profile.host.split(",");  //com1,56000
       if (JF.isWindows()) {
         wincom = WinCom.open(f[0], JF.atoi(f[1]));
         if (wincom == null) return false;
@@ -706,10 +710,10 @@ public class Buffer implements Screen {
 
   private boolean connectLocal() {
     try {
-      settings.termArgs[0] = settings.termApp;
-      pty = LnxPty.exec(settings.termApp
-        , settings.termArgs
-        , LnxPty.makeEnvironment(new String[] {"TERM=" + settings.termType}));
+      profile.termArgs[0] = profile.termApp;
+      pty = LnxPty.exec(profile.termApp
+        , profile.termArgs
+        , LnxPty.makeEnvironment(new String[] {"TERM=" + profile.termType}));
       if (pty == null) throw new Exception("pty failed");
       in = new InputStream() {
         public int read() {return -1;}
@@ -733,7 +737,7 @@ public class Buffer implements Screen {
 
   private boolean connectTelnet() {
     try {
-      s = new Socket(settings.host, settings.port);
+      s = new Socket(profile.host, profile.port);
       in = s.getInputStream();
       out = s.getOutputStream();
       return true;
@@ -764,32 +768,32 @@ public class Buffer implements Screen {
 
   private boolean connectSSH(Frame parent) {
     try{
-      if (settings.sshKey.length() == 0) {
-        if (settings.password.length() == 0) settings.password = GetPassword.getPassword(parent);
-        if (settings.password == null) return false;
+      if (profile.sshKey.length() == 0) {
+        if (profile.password.length() == 0) profile.password = GetPassword.getPassword(parent);
+        if (profile.password == null) return false;
       }
       Object[] pipes;
       client = SshClient.setUpDefaultClient();
       client.start();
       JFLog.log("TODO : set knownhosts");
       //setKnownHosts(JF.getUserPath() + "/.jfterm-knownhosts");
-      ConnectFuture cf = client.connect(settings.username, settings.host, settings.port);
+      ConnectFuture cf = client.connect(profile.username, profile.host, profile.port);
       session = cf.verify().getSession();
-      if (settings.x11) {
+      if (profile.x11) {
         JFLog.log("TODO : set X11 host / port");
         //session.setX11Host("127.0.0.1");
         //session.setX11Port(detectX11port());
       }
-      if (settings.sshKey.length() == 0) {
-        session.addPasswordIdentity(settings.password);
+      if (profile.sshKey.length() == 0) {
+        session.addPasswordIdentity(profile.password);
       } else {
-        JFLog.log("using key:" + settings.sshKey);
+        JFLog.log("using key:" + profile.sshKey);
         JFLog.log("TODO : set ssh key");
         //session.addPublicKeyIdentity(sd.sshKey);
       }
       session.auth().verify(30000);
       channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
-      if (settings.x11) {
+      if (profile.x11) {
         // Enable X11 forwarding
         //channel.setXForwarding(true);
         JFLog.log("TODO : enable x11 forwarding");
@@ -841,7 +845,7 @@ public class Buffer implements Screen {
       sc.init(null, trustAllCerts, new java.security.SecureRandom());
 //      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();  //this method will only work with trusted certs
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-      ssl = (SSLSocket) sslsocketfactory.createSocket(settings.host, settings.port);
+      ssl = (SSLSocket) sslsocketfactory.createSocket(profile.host, profile.port);
       s = (Socket)ssl;
       in = s.getInputStream();
       out = s.getOutputStream();
