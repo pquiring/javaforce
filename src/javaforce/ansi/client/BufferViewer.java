@@ -94,7 +94,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   private boolean cursorShown = false;
   private int selectStart = -1, selectEnd = -1;
   private FileOutputStream fos;  //log file
-  private boolean blinker = false;
   private boolean blinkerShown = false;
   //connection info
   private boolean connected = false, connecting = false;
