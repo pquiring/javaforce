@@ -1,3 +1,5 @@
+package javaforce.ansi.client;
+
 /**
  * TelnetDecoder.java
  *
@@ -8,9 +10,9 @@
  * @author pquiring
  */
 
-package javaforce.ansi.client;
+import static javaforce.Telnet.*;
 
-public class TelnetDecoder extends javaforce.Telnet {
+public class TelnetDecoder {
 
   public boolean decode(char[] code, int codelen, Screen screen) {
     char[] res = new char[3];

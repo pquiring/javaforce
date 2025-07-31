@@ -23,6 +23,7 @@ import javaforce.awt.*;
 import javaforce.jni.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
+import static javaforce.Telnet.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
@@ -630,7 +631,7 @@ public class Buffer implements Screen {
 
   private void sendTT() {
     //trigger a request for TT ???
-    input(new char[] {TelnetDecoder.IAC, TelnetDecoder.SB, TelnetDecoder.TO_TT, TelnetDecoder.IAC, TelnetDecoder.SE}, 5);
+    input(new char[] {Telnet.IAC, Telnet.SB, Telnet.TO_TT, Telnet.IAC, Telnet.SE}, 5);
   }
 
   private void pty_setsize() {

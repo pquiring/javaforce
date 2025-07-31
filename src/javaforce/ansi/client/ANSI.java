@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.Color;
 
 import javaforce.*;
+import static javaforce.Telnet.*;
 
 public class ANSI {
 
@@ -116,7 +117,7 @@ public class ANSI {
       case KeyEvent.VK_F4:   str = "" + ESC + altcode + "S"; break;
       case KeyEvent.VK_F5:
         if (telnet)
-          str = "" + TelnetDecoder.IAC + TelnetDecoder.BRK;  //BREAK
+          str = "" + Telnet.IAC + Telnet.BRK;  //BREAK
         else
           str = "" + ESC + "[15~";
         break;
@@ -132,7 +133,7 @@ public class ANSI {
       case KeyEvent.VK_PAGE_UP:    str = "" + ESC + "[5~"; break;  //PREV
       case KeyEvent.VK_PAGE_DOWN:  str = "" + ESC + "[6~"; break;  //NEXT
 
-      case KeyEvent.VK_PAUSE: str = "" + TelnetDecoder.IAC + TelnetDecoder.BRK; break;  //BREAK
+      case KeyEvent.VK_PAUSE: str = "" + Telnet.IAC + Telnet.BRK; break;  //BREAK
       default: str = "" + (char)keyCode;
     }
     if (str != null) screen.output(str.toCharArray());
