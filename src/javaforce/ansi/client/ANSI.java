@@ -243,11 +243,20 @@ public class ANSI {
                   case 7: screen.setAutoWrap(true); break;
                   case 12: break;  //TODO : stop blinking cursor
                   case 25: break;  //TODO : hide cursor
+                  case 1002: break;  //???
+                  case 1006: break;  //???
+                  case 1049: break;  //???
                   case 2004: break;  //bracketed paste mode
                   default: JFLog.log("ANSI:Unknown [ ? l:" + nums[a]);
                 }
               }
               return true;
+            case 's':
+              //???
+              break;
+            case 'r':
+              //???
+              break;
             default:
               JFLog.log("ANSI:Unknown [ ? code:" + code[codelen-1]);
               //ignore unknown ? code

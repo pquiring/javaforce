@@ -329,6 +329,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
         cursorShown = !cursorShown;
         updateCursor();
         cursorCounter = 500;
+        update();
       }
     }
   }
