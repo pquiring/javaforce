@@ -20,7 +20,7 @@ import javaforce.service.WebResponse;
 
 public class Terminal extends Container implements Screen, Resized, KeyDown, MouseDown {
 
-  private static class Line extends Component {
+  private class Line extends Component {
 
     public boolean dirty;
     public boolean blink;
@@ -29,6 +29,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     private char[] chs;
     private int[] fcs;
     private int[] bcs;
+    public int y;
 
     public Line(int len, int fc, int bc) {
       this.len = len;
@@ -51,11 +52,11 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
       html.append("<div");
       html.append(getAttrs());
       html.append(">");
-      for(int i=0;i<len;i++) {
-        if (fc != fcs[i] || bc != bcs[i]) {
-          fc = fcs[i];
-          bc = bcs[i];
-          if (i > 0) {
+      for(int x=0;x<len;x++) {
+        if (fc != fcs[x] || bc != bcs[x]) {
+          fc = fcs[x];
+          bc = bcs[x];
+          if (x > 0) {
             html.append("</pre>");
           }
           html.append("<pre style='");
@@ -63,7 +64,10 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
           html.append("background-color: #" + String.format("%06x", bc) + ";");
           html.append("'>");
         }
-        ch = chs[i];
+        ch = chs[x];
+        if (cursorShown && y == cy && x == cx) {
+          ch = ASCII8.convert(219);
+        }
         switch (ch) {
           case '<': html.append("&lt;"); break;
           case '>': html.append("&gt;"); break;
@@ -119,6 +123,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   private InputStream in;
   private OutputStream out;
   private Reader reader;
+  private Timer timer;
   private boolean active;
 
   private static final int bufSize = 256;
@@ -156,6 +161,8 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     if (connect()) {
       reader = new Reader();
       reader.start();
+      timer = new Timer();
+      timer.scheduleAtFixedRate(new TimerTask() {public void run() {flashCursor();}}, 100, 100);
     } else {
       print("connect() failed!".toCharArray());
     }
@@ -315,6 +322,25 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     }
   }
 
+  public void flashCursor() {
+    synchronized (cursorLock) {
+      cursorCounter -= 100;
+      if (cursorCounter <= 0) {
+        cursorShown = !cursorShown;
+        updateCursor();
+        cursorCounter = 500;
+      }
+    }
+  }
+
+  public void updateCursor() {
+    synchronized (cursorLock) {
+      Line line = getLine(cy);
+      line.dirty = true;
+      cursorCounter = 500;
+    }
+  }
+
   private int codelen;
   private final char IAC = 255;
   private final char ESC = 27;  //0x1b
@@ -324,6 +350,9 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   private int fc = 0x00000000;  //black
   private int bc = 0x00ffffff;  //white
   private int cx, cy;  //cursor position (0,0 = top left)
+  private Object cursorLock = new Object();
+  private boolean cursorShown;
+  private int cursorCounter = 500;
   //y1-y2 = scroll area
   private int y1 = 0;
   private int y2 = 25 - 1;
@@ -416,6 +445,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     for(int y=0;y<cnt;y++) {
       Line line = (Line)get(y);
       if (line == null) continue;
+      line.y = y;
       if (line.dirty) {
         line.dirty = false;
         line.sendEvent("replace", new String[] {"html=" + line.html()});
@@ -443,7 +473,11 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   }
 
   private void decPosY() {
-    if (cy > 0) cy--;
+    if (cy > 0) {
+      updateCursor();
+      cy--;
+      updateCursor();
+    }
   }
 
   private void incPosX() {
@@ -462,10 +496,13 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   }
 
   private void incPosY() {
-    if (cy < y2)
+    if (cy < y2) {
+      updateCursor();
       cy++;
-    else
+      updateCursor();
+    } else {
       scrollUp(1);
+    }
   }
 
   public void writeArray(byte[] tmp) {
@@ -520,10 +557,12 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   public void sety1(int v) {y1 = v - 1;}
   public void sety2(int v) {y2 = v - 1;}
   public void scrollUp(int cnt) {
+    updateCursor();
     for(int i=0;i<cnt;i++) {
       remove(0);
       add(new Line(sx, fc, bc));
     }
+    updateCursor();
     /*todo*/
 /*
     while (cnt > 0) {
@@ -572,6 +611,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   }
   public void gotoPos(int x,int y) {
     if (debug) JFLog.log("gotoPos:" + x + "," + y);
+    updateCursor();
     cx = x-1;
     if (cx < 0) cx = 0;
     if (cx >= sx) cx = sx-1;
@@ -579,6 +619,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     if (cy < 0) cy = 0;
     if (cy >= sy) cy = sy-1;
     eol = false;
+    updateCursor();
   }
   public void setChar(int x, int y, char ch) {
     if (debug) JFLog.log("setChar:" + x + "," + y + ":" + ch + ":" + (int)ch);
@@ -604,6 +645,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   }
   public void setAutoWrap(boolean state) {autowrap = state;}
   public void clrscr() {
+    updateCursor();
     int cnt = count();
     for(int i=0;i<cnt;i++) {
       Line line = (Line)get(i);
@@ -611,6 +653,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     }
     cx = 0;
     cy = 0;
+    updateCursor();
   }
   public void setBlinker(boolean state) {blinker = state;}
   public void setReverse(boolean state) {reverse = state;}
