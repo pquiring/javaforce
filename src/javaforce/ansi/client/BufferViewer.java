@@ -273,14 +273,14 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     return "BufferViewer";
   }
 
-//interface KeyListener
+  //interface KeyListener
   public void keyPressed(KeyEvent e) {
     int keyCode = e.getKeyCode();
     int keyMods = e.getModifiersEx() & JFAWT.KEY_MASKS;
     if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_A: buffer.selectStart = 0; buffer.selectEnd = buffer.sx * (buffer.sy + buffer.scrollBack) - 1; break;
-        case KeyEvent.VK_W: buffer.close(); break;
+        case KeyEvent.VK_W: close(); break;
         case KeyEvent.VK_C:
         case KeyEvent.VK_INSERT: buffer.copy(); break;
         case KeyEvent.VK_V: buffer.paste(); break;

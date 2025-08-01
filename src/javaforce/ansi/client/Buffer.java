@@ -13,7 +13,6 @@ import java.io.*;
 import java.net.*;
 import javax.net.ssl.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.datatransfer.*;
 import java.util.*;
 import javax.swing.*;
@@ -33,6 +32,7 @@ public class Buffer implements Screen {
   public static interface UI {
     public void signalRepaint(boolean findCursor, boolean revalidate);
     public JComponent getComponent();
+    public void close();
   }
 
   public Buffer(Profile profile, UI ui) {
@@ -159,7 +159,7 @@ public class Buffer implements Screen {
     } catch (Exception e) {
       JFLog.log(e);
       if (!closed) {
-        close();
+        ui.close();
       }
     }
   }
@@ -171,7 +171,7 @@ public class Buffer implements Screen {
     } catch (Exception e) {
       JFLog.log(e);
       if (!closed) {
-        close();
+        ui.close();
       }
     }
   }
@@ -503,7 +503,6 @@ public class Buffer implements Screen {
   }
 
   public void close() {
-    //this method is overloaded in TermApp to also close the tab
     synchronized(reader) {
       closed = true;
       connected = false;
@@ -561,12 +560,12 @@ public class Buffer implements Screen {
         } catch (SocketException e) {
           //no log
           if (!closed) {
-            close();
+            ui.close();
           }
         } catch (Exception e) {
           JFLog.log(e);
           if (!closed) {
-            close();
+            ui.close();
           }
         }
       }
@@ -868,87 +867,6 @@ public class Buffer implements Screen {
     return "Buffer:" + sx + "," + sy + "+" + scrollBack;
   }
 
-//interface KeyListener
-  public void keyPressed(KeyEvent e) {
-    int keyCode = e.getKeyCode();
-    int keyMods = e.getModifiersEx() & JFAWT.KEY_MASKS;
-    if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
-      switch (keyCode) {
-        case KeyEvent.VK_A: selectStart = 0; selectEnd = sx * (sy + scrollBack) - 1; break;
-        case KeyEvent.VK_W: close(); break;
-        case KeyEvent.VK_C:
-        case KeyEvent.VK_INSERT: copy(); break;
-        case KeyEvent.VK_V: paste(); break;
-        case KeyEvent.VK_TAB: nextTab(); break;
-        case KeyEvent.VK_HOME:
-        case KeyEvent.VK_END: e.consume(); break;
-      }
-    }
-    if (keyMods == KeyEvent.SHIFT_DOWN_MASK) {
-      switch (keyCode) {
-        case KeyEvent.VK_INSERT: paste(); break;
-      }
-    }
-    if (keyMods == (KeyEvent.SHIFT_DOWN_MASK & KeyEvent.CTRL_DOWN_MASK)) {
-      switch (keyCode) {
-        case KeyEvent.VK_TAB: prevTab(); break;
-      }
-    }
-    if (keyMods == KeyEvent.ALT_DOWN_MASK) {
-      switch (keyCode) {
-        case KeyEvent.VK_HOME: clrscr(); break;
-        case KeyEvent.VK_1: setTab(0); break;
-        case KeyEvent.VK_2: setTab(1); break;
-        case KeyEvent.VK_3: setTab(2); break;
-        case KeyEvent.VK_4: setTab(3); break;
-        case KeyEvent.VK_5: setTab(4); break;
-        case KeyEvent.VK_6: setTab(5); break;
-        case KeyEvent.VK_7: setTab(6); break;
-        case KeyEvent.VK_8: setTab(7); break;
-        case KeyEvent.VK_9: setTab(8); break;
-        case KeyEvent.VK_0: setTab(9); break;
-      }
-    }
-    if (keyMods == 0) {
-      switch (keyCode) {
-        case KeyEvent.VK_UP:  //arrow keys cause JScrollPane to move
-        case KeyEvent.VK_DOWN:
-        case KeyEvent.VK_LEFT:
-        case KeyEvent.VK_RIGHT:
-        case KeyEvent.VK_PAGE_UP:
-        case KeyEvent.VK_PAGE_DOWN:
-        case KeyEvent.VK_F10:  //F10 would open menu
-          e.consume();
-          break;
-      }
-    }
-    if (!connected) return;
-//    System.out.println("keyPressed=" + keyCode);  //test
-    ansi.keyPressed(keyCode, keyMods, this);
-  }
-  public void keyReleased(KeyEvent e) {
-  }
-  public void keyTyped(KeyEvent e) {
-    if (!connected) {
-      if (failed) {
-        failed = false;
-        signalReconnect();
-      }
-      return;
-    }
-    char key = e.getKeyChar();
-    int mods = e.getModifiersEx() & JFAWT.KEY_MASKS;
-    if (mods == KeyEvent.CTRL_DOWN_MASK) {
-      if ((key == 10) || (key == 13)) {output('\r'); output('\n');}
-      return;
-    }
-    if (mods == KeyEvent.ALT_DOWN_MASK) return;
-    if (mods == (KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) return;
-    if (key == 10) key = 13;
-    if (key == KeyEvent.VK_DELETE) return;  //handled in keyPressed
-//    System.out.println("keyTyped=" + ((int)key));  //test
-    output(key);
-  }
   public void timer() {
     if (cursorShown) {
       if (blinkerShown) blinkerShown = false; else blinkerShown = true;
