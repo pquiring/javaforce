@@ -45,10 +45,10 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       if (profile.autoSize) {
         Dimension d;
         d = pane.getViewport().getExtentSize();
-        if (d.width < fx) d.width = fx;
-        if (d.height < fy) d.height = fy;
-        profile.sx = d.width / fx;
-        profile.sy = d.height / fy;
+        if (d.width < profile.fontWidth) d.width = profile.fontWidth;
+        if (d.height < profile.fontHeight) d.height = profile.fontHeight;
+        profile.sx = d.width / profile.fontWidth;
+        profile.sy = d.height / profile.fontHeight;
       }
       init = true;
       if (profile.autoSize)
@@ -66,10 +66,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     }
     JFLog.log("BufferViewer.init done");
   }
-
-  //private static data
-  private static int fx, fy;  //font size x/y
-  private static int descent;
 
   //private data
   private volatile boolean ready = false;
@@ -107,14 +103,14 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       //[1] = ascent
       //[2] = descent
       JFLog.log("metrics=" + metrics[0] + "," + metrics[1] + "," + metrics[2]);
-      fx = metrics[0] + profile.fontWidth;
-      fy = metrics[1] + metrics[2] + profile.fontHeight;
-      descent = metrics[2] + profile.fontDescent;
+      profile.fontWidth = metrics[0];
+      profile.fontHeight = metrics[1] + metrics[2];
+      profile.fontDescent = metrics[2];
     }
   }
 
   private void setPreferredSize() {
-    setPreferredSize(new Dimension(fx * buffer.sx, fy * (buffer.sy + buffer.scrollBack)));
+    setPreferredSize(new Dimension(profile.fontWidth * buffer.sx, profile.fontHeight * (buffer.sy + buffer.scrollBack)));
   }
 
   public void reSize() {
@@ -122,7 +118,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 
   public void repaint(boolean showCursor) {
-    if (showCursor) scrollRectToVisible(new Rectangle(0,fy * buffer.scrollBack,fx * buffer.sx, fy * (buffer.scrollBack + buffer.sy)));
+    if (showCursor) scrollRectToVisible(new Rectangle(0,profile.fontHeight * buffer.scrollBack,profile.fontWidth * buffer.sx, profile.fontHeight * (buffer.scrollBack + buffer.sy)));
     repaint();
   }
 
@@ -149,13 +145,13 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     int startx, starty;  //char
     int endx, endy;  //char
     int offx, offy;  //offset
-    startx = r.x / fx;
-    offx = r.x % fx;
-    endx = (r.x + r.width) / fx + 1;
+    startx = r.x / profile.fontWidth;
+    offx = r.x % profile.fontWidth;
+    endx = (r.x + r.width) / profile.fontWidth + 1;
     if (endx > buffer.sx) endx = buffer.sx;
-    starty = r.y / fy;
-    offy = r.y % fy;
-    endy = (r.y + r.height) / fy + 1;
+    starty = r.y / profile.fontHeight;
+    offy = r.y % profile.fontHeight;
+    endy = (r.y + r.height) / profile.fontHeight + 1;
     if (endy > buffer.sy + buffer.scrollBack) endy = buffer.sy + buffer.scrollBack;
     char ch;
     for(int y = starty;y < endy;y++) {
@@ -172,19 +168,19 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
             g.setColor(buffer.chars[p].bc);
           }
         }
-        g.fillRect((x - startx) * fx - offx,(y - starty) * fy - offy,fx,fy);
+        g.fillRect((x - startx) * profile.fontWidth - offx,(y - starty) * profile.fontHeight - offy,profile.fontWidth,profile.fontHeight);
         if ((buffer.blinkerShown) && (buffer.chars[p].blink))
           g.setColor(buffer.chars[p].bc);
         else
           g.setColor(buffer.chars[p].fc);
         ch = buffer.chars[p].ch;
         if (ch != 0) {
-          g.drawString(Character.toString(ch), (x - startx) * fx - offx,(y+1-starty) * fy - descent - offy);
+          g.drawString(Character.toString(ch), (x - startx) * profile.fontWidth - offx,(y+1-starty) * profile.fontHeight - profile.fontDescent - offy);
         }
       }
       if ((y == buffer.scrollBack) && (buffer.scrollBack > 0)) {
         g.setColor(Color.RED);
-        g.drawLine(0 - offx, (y - starty) * fy - 2 - offy, (endx - startx) * fx - 1 - offx, (y - starty) * fy - 2 - offy);
+        g.drawLine(0 - offx, (y - starty) * profile.fontHeight - 2 - offy, (endx - startx) * profile.fontWidth - 1 - offx, (y - starty) * profile.fontHeight - 2 - offy);
       }
     }
     gc.drawImage(img.getImage(), r.x, r.y, null);
@@ -367,7 +363,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     if (e.getButton() != e.BUTTON1) return;
     int x = e.getX();
     int y = e.getY();
-    buffer.selectStart = ((y  / fy) * buffer.sx + (x / fx));
+    buffer.selectStart = ((y  / profile.fontHeight) * buffer.sx + (x / profile.fontWidth));
     buffer.selectEnd = -1;
   }
   public void mouseReleased(MouseEvent e) {
@@ -375,7 +371,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     if (buffer.selectStart == -1) return;
     int x = e.getX();
     int y = e.getY();
-    buffer.selectEnd = ((y / fy) * buffer.sx + (x / fx));
+    buffer.selectEnd = ((y / profile.fontHeight) * buffer.sx + (x / profile.fontWidth));
     if (buffer.selectEnd == buffer.selectStart) {buffer.selectStart = buffer.selectEnd = -1;}
     signalRepaint(false, false);
     if (buffer.selectStart != -1) buffer.copy();
@@ -390,10 +386,10 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     int x = e.getX();
     int y = e.getY();
     if (x < 0) x = 0;
-    if (x > buffer.sx * fx) x = (buffer.sx * fx)-1;
+    if (x > buffer.sx * profile.fontWidth) x = (buffer.sx * profile.fontWidth)-1;
     if (y < 0) y = 0;
-    if (y > (buffer.sy + buffer.scrollBack) * fy) y = (buffer.sy + buffer.scrollBack) * fy - 1;
-    buffer.selectEnd = ((y / fy) * buffer.sx + (x / fx));
+    if (y > (buffer.sy + buffer.scrollBack) * profile.fontHeight) y = (buffer.sy + buffer.scrollBack) * profile.fontHeight - 1;
+    buffer.selectEnd = ((y / profile.fontHeight) * buffer.sx + (x / profile.fontWidth));
     signalRepaint(false, false);
     scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
   }

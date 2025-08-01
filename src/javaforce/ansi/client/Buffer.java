@@ -53,8 +53,15 @@ public class Buffer implements Screen {
       ansi = new ANSI(this, profile.protocol.equals("telnet"));
       telnet = new TelnetDecoder();
       utf8 = new UTF8();
+      JFLog.log("Screen Size:" + profile.sx + "," + profile.sy);
       sx = profile.sx;
       sy = profile.sy;
+      if (sx < 80) {
+        sx = 80;
+      }
+      if (sy < 25) {
+        sy = 25;
+      }
       y1 = 0;
       y2 = sy-1;
       chars = new Char[sx*(sy+scrollBack)];
@@ -81,10 +88,6 @@ public class Buffer implements Screen {
   public int sx, sy;  //screen size x/y (80x24)
   private int y1,y2;  //scroll range
   public Script script = null;
-
-  //private static data
-  private static int fx, fy;  //font size x/y
-  private static int descent;
 
   //private data
   private volatile boolean ready = false;
@@ -223,10 +226,10 @@ public class Buffer implements Screen {
     if (!init) return;
     if (!profile.autoSize) return;
 
-    if (extent.width < fx) extent.width = fx;
-    if (extent.height < fy) extent.height = fy;
-    int newsx = extent.width / fx;
-    int newsy = extent.height / fy;
+    if (extent.width < profile.fontWidth) extent.width = profile.fontWidth;
+    if (extent.height < profile.fontHeight) extent.height = profile.fontHeight;
+    int newsx = extent.width / profile.fontWidth;
+    int newsy = extent.height / profile.fontHeight;
     y1 = 0;
     y2 = newsy-1;
 
