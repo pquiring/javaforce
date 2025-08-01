@@ -9,10 +9,8 @@
 
 package javaforce.ansi.client;
 
-import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -29,10 +27,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     changeFont();
   }
 
-  public JComponent getComponent() {
-    return this;
-  }
-
   private void init() {
     //now runs in the EDT
     JFLog.log("BufferViewer.init start");
@@ -44,12 +38,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       addKeyListener(this);
       addMouseListener(this);
       addMouseMotionListener(this);
-      timer = new java.util.Timer();
-      timer.schedule(new TimerTask() {
-        public void run() {
-          timer();
-        }
-      }, 500, 500);
       pane = (JScrollPane)getClientProperty("pane");
       pane.getVerticalScrollBar().setUnitIncrement(8);  //faster!
       if (profile.autoSize) {
@@ -74,11 +62,8 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     } catch (Exception e) {
       JFLog.log(e);
     }
-    JFLog.log("Buffer.init done");
+    JFLog.log("BufferViewer.init done");
   }
-
-  //public data
-  public Script script = null;
 
   //private static data
   private static int fx, fy;  //font size x/y
@@ -89,16 +74,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   private Object lock;
   private Render render;
   private final int RenderPriority = Thread.MAX_PRIORITY-1;
-  /** A timer to blink the cursor, the blinky text. */
-  private java.util.Timer timer;
-  private boolean cursorShown = false;
-  private int selectStart = -1, selectEnd = -1;
-  private FileOutputStream fos;  //log file
-  private boolean blinkerShown = false;
   //connection info
-  private boolean connected = false, connecting = false;
-  private boolean failed = false;
-  private boolean closed = false;
   private boolean init = false;
   private JScrollPane pane;
 
@@ -126,6 +102,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
 
   public void changeSize() {
     buffer.changeSize(pane.getViewport().getExtentSize());
+    signalRepaint(true, true);
   }
 
   public void changeFont() {
@@ -134,7 +111,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       //[0] = width
       //[1] = ascent
       //[2] = descent
-//      JFLog.log("metrics=" + metrics[0] + "," + metrics[1] + "," + metrics[2]);
+      JFLog.log("metrics=" + metrics[0] + "," + metrics[1] + "," + metrics[2]);
       fx = metrics[0] + profile.fontWidth;
       fy = metrics[1] + metrics[2] + profile.fontHeight;
       descent = metrics[2] + profile.fontDescent;
@@ -189,24 +166,26 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     for(int y = starty;y < endy;y++) {
       for(int x = startx;x < endx;x++) {
         int p = y * buffer.sx + x;
-        if ((x == buffer.cx) && (y == buffer.cy + buffer.scrollBack) && (cursorShown)) {
+        if ((x == buffer.cx) && (y == buffer.cy + buffer.scrollBack) && (buffer.cursorShown)) {
           //draw Cursor
           g.setColor(profile.cursorColor);
         } else {
           //normal background
-          if (((p >= selectStart) && (p <= selectEnd)) || ((p >= selectEnd) && (p <= selectStart) && (selectEnd > 0))) {
+          if (((p >= buffer.selectStart) && (p <= buffer.selectEnd)) || ((p >= buffer.selectEnd) && (p <= buffer.selectStart) && (buffer.selectEnd > 0))) {
             g.setColor(profile.selectColor);
           } else {
             g.setColor(buffer.chars[p].bc);
           }
         }
         g.fillRect((x - startx) * fx - offx,(y - starty) * fy - offy,fx,fy);
-        if ((blinkerShown) && (buffer.chars[p].blink))
+        if ((buffer.blinkerShown) && (buffer.chars[p].blink))
           g.setColor(buffer.chars[p].bc);
         else
           g.setColor(buffer.chars[p].fc);
         ch = buffer.chars[p].ch;
-        if (ch != 0) g.drawString("" + ch, (x - startx) * fx - offx,(y+1-starty) * fy - descent - offy);
+        if (ch != 0) {
+          g.drawString(Character.toString(ch), (x - startx) * fx - offx,(y+1-starty) * fy - descent - offy);
+        }
       }
       if ((y == buffer.scrollBack) && (buffer.scrollBack > 0)) {
         g.setColor(Color.RED);
@@ -251,7 +230,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     public volatile boolean findCursor = true;
     public volatile boolean draw = false;
     public void run() {
-      while (!closed) {
+      while (!buffer.closed) {
         draw = false;
         repaint(findCursor);
         synchronized(this) {
@@ -263,30 +242,37 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     }
   }
 
-  public void signalRepaint(boolean findScreen, boolean revalidate) {
-    if (render == null) return;
+  public void signalRepaint(boolean findCursor, boolean revalidate) {
     if (revalidate) {
       setPreferredSize();
       revalidate();  //must call this after resizing
     }
+    if (render == null) {
+      JFLog.log("Warning:render not ready");
+      return;
+    }
     synchronized(render) {
-      render.findCursor = findScreen;
+      render.findCursor = findCursor;
       render.draw = true;
       render.notify();
     }
   }
 
+  public JComponent getComponent() {
+    return this;
+  }
+
   public void logFile() {
-    if (fos == null) {
+    if (buffer.fos == null) {
       JFileChooser chooser = new JFileChooser();
       chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       chooser.setMultiSelectionEnabled(false);
       if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-        fos = JF.filecreate(chooser.getSelectedFile().getAbsolutePath());
-        if (fos != null) setName(profile.name + "*");
+        buffer.fos = JF.filecreate(chooser.getSelectedFile().getAbsolutePath());
+        if (buffer.fos != null) setName(profile.name + "*");
       }
     } else {
-      fos = null;
+      buffer.fos = null;
       setName(profile.name);
     }
   }
@@ -301,7 +287,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     int keyMods = e.getModifiersEx() & JFAWT.KEY_MASKS;
     if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keyCode) {
-        case KeyEvent.VK_A: selectStart = 0; selectEnd = buffer.sx * (buffer.sy + buffer.scrollBack) - 1; break;
+        case KeyEvent.VK_A: buffer.selectStart = 0; buffer.selectEnd = buffer.sx * (buffer.sy + buffer.scrollBack) - 1; break;
         case KeyEvent.VK_W: buffer.close(); break;
         case KeyEvent.VK_C:
         case KeyEvent.VK_INSERT: buffer.copy(); break;
@@ -349,16 +335,16 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
           break;
       }
     }
-    if (!connected) return;
+    if (!buffer.connected) return;
 //    System.out.println("keyPressed=" + keyCode);  //test
     buffer.ansi.keyPressed(keyCode, keyMods, buffer);
   }
   public void keyReleased(KeyEvent e) {
   }
   public void keyTyped(KeyEvent e) {
-    if (!connected) {
-      if (failed) {
-        failed = false;
+    if (!buffer.connected) {
+      if (buffer.failed) {
+        buffer.failed = false;
         buffer.signalReconnect();
       }
       return;
@@ -386,18 +372,18 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     if (e.getButton() != e.BUTTON1) return;
     int x = e.getX();
     int y = e.getY();
-    selectStart = ((y  / fy) * buffer.sx + (x / fx));
-    selectEnd = -1;
+    buffer.selectStart = ((y  / fy) * buffer.sx + (x / fx));
+    buffer.selectEnd = -1;
   }
   public void mouseReleased(MouseEvent e) {
     if (e.getButton() != e.BUTTON1) return;
-    if (selectStart == -1) return;
+    if (buffer.selectStart == -1) return;
     int x = e.getX();
     int y = e.getY();
-    selectEnd = ((y / fy) * buffer.sx + (x / fx));
-    if (selectEnd == selectStart) {selectStart = selectEnd = -1;}
+    buffer.selectEnd = ((y / fy) * buffer.sx + (x / fx));
+    if (buffer.selectEnd == buffer.selectStart) {buffer.selectStart = buffer.selectEnd = -1;}
     signalRepaint(false, false);
-    if (selectStart != -1) buffer.copy();
+    if (buffer.selectStart != -1) buffer.copy();
   }
   public void mouseEntered(MouseEvent e) {
   }
@@ -405,29 +391,17 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 //interface MouseMotionListener
   public void mouseDragged(MouseEvent e) {
-    if (selectStart == -1) return;
+    if (buffer.selectStart == -1) return;
     int x = e.getX();
     int y = e.getY();
     if (x < 0) x = 0;
     if (x > buffer.sx * fx) x = (buffer.sx * fx)-1;
     if (y < 0) y = 0;
     if (y > (buffer.sy + buffer.scrollBack) * fy) y = (buffer.sy + buffer.scrollBack) * fy - 1;
-    selectEnd = ((y / fy) * buffer.sx + (x / fx));
+    buffer.selectEnd = ((y / fy) * buffer.sx + (x / fx));
     signalRepaint(false, false);
     scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
   }
   public void mouseMoved(MouseEvent e) {
-  }
-  public void timer() {
-    if (cursorShown) {
-      if (blinkerShown) blinkerShown = false; else blinkerShown = true;
-      cursorShown = false;
-    } else {
-      cursorShown = true;
-    }
-    if (script != null) {
-      if (script.process(buffer)) script = null;
-    }
-    signalRepaint(false, false);
   }
 }

@@ -8,7 +8,6 @@
 import java.awt.*;
 import javax.swing.*;
 
-import javaforce.*;
 import javaforce.awt.*;
 import javaforce.ansi.client.*;
 
@@ -61,9 +60,9 @@ public class Menu {
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (tabs.getTabCount() == 0) return;
-        BufferViewer buffer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
-        if (buffer == null) return;
-        buffer.close();
+        BufferViewer viewer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
+        if (viewer == null) return;
+        viewer.close();
       }
     });
     menu.add(item);
@@ -73,9 +72,9 @@ public class Menu {
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (tabs.getTabCount() == 0) return;
-        BufferViewer buffer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
-        if (buffer == null) return;
-        buffer.logFile();
+        BufferViewer viewer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
+        if (viewer == null) return;
+        viewer.logFile();
       }
     });
     menu.add(item);
@@ -104,9 +103,9 @@ public class Menu {
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (tabs.getTabCount() == 0) return;
-        BufferViewer buffer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");
-        if (buffer == null) return;
-        buffer.copy();
+        BufferViewer viewer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");
+        if (viewer == null) return;
+        viewer.copy();
       }
     });
     menu.add(item);
@@ -116,9 +115,9 @@ public class Menu {
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (tabs.getTabCount() == 0) return;
-        BufferViewer buffer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
-        if (buffer == null) return;
-        buffer.paste();
+        BufferViewer viewer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
+        if (viewer == null) return;
+        viewer.paste();
       }
     });
     menu.add(item);
@@ -129,7 +128,7 @@ public class Menu {
     item.setMnemonic('T');
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        BufferViewer buffer;
+        BufferViewer viewer;
         int oldFontSize = Settings.settings.fontSize;
         int oldFontX = Settings.settings.fontWidth;
         int oldFontY = Settings.settings.fontHeight;
@@ -142,11 +141,11 @@ public class Menu {
           oldFontY != Settings.settings.fontHeight ||
           oldFontDescent != Settings.settings.fontDescent;
         for(int a=0;a<tabs.getTabCount();a++) {
-          buffer = (BufferViewer)((JComponent)tabs.getComponentAt(a)).getClientProperty("buffer");
-          if (oldScrollBack != Settings.settings.scrollBack) buffer.changeScrollBack(Settings.settings.scrollBack);
+          viewer = (BufferViewer)((JComponent)tabs.getComponentAt(a)).getClientProperty("buffer");
+          if (oldScrollBack != Settings.settings.scrollBack) viewer.changeScrollBack(Settings.settings.scrollBack);
           if (changeFont) {
-            buffer.changeFont();
-            buffer.reSize();
+            viewer.changeFont();
+            viewer.reSize();
           }
         }
       }
@@ -162,13 +161,13 @@ public class Menu {
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (tabs.getTabCount() == 0) return;
-        BufferViewer buffer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
-        if (buffer == null) return;
-        if (buffer.script != null) {
+        BufferViewer viewer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
+        if (viewer == null) return;
+        if (viewer.buffer.script != null) {
           JFAWT.showError("Error", "Another script is already running");
           return;
         }
-        buffer.script = Script.load(buffer);
+        viewer.buffer.script = Script.load(viewer);
       }
     });
     menu.add(item);
@@ -178,9 +177,9 @@ public class Menu {
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         if (tabs.getTabCount() == 0) return;
-        BufferViewer buffer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
-        if (buffer == null) return;
-        buffer.script = null;
+        BufferViewer viewer = (BufferViewer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
+        if (viewer == null) return;
+        viewer.buffer.script = null;
       }
     });
     menu.add(item);
@@ -232,9 +231,9 @@ public class Menu {
     return menuBar;
   }
 
-  public static void connect(Profile sd) {
+  public static void connect(Profile profile) {
 
-    BufferViewer buffer = new BufferViewer(sd) {
+    BufferViewer viewer = new BufferViewer(profile) {
       public void close() {
         super.close();
         tabs.remove((JComponent)getClientProperty("panel"));
@@ -264,14 +263,14 @@ public class Menu {
       }
     };
 
-    JScrollPane pane = new JScrollPane(buffer);
+    JScrollPane pane = new JScrollPane(viewer);
     pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     JPanel panel = new JPanel(new GridLayout());
-    panel.putClientProperty("buffer", buffer);
-    buffer.putClientProperty("panel", panel);
-    buffer.putClientProperty("pane", pane);
+    panel.putClientProperty("buffer", viewer);
+    viewer.putClientProperty("panel", panel);
+    viewer.putClientProperty("pane", pane);
     panel.add(pane);
-    tabs.addTab(sd.name, panel);
+    tabs.addTab(profile.name, panel);
     tabs.setSelectedComponent(panel);
     tabs.revalidate();
   }
@@ -289,5 +288,4 @@ public class Menu {
     sd.utf8 = true;
     connect(sd);
   }
-
 }

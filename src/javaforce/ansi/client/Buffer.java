@@ -20,10 +20,8 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
-import static javaforce.Telnet.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
@@ -33,12 +31,13 @@ import org.apache.sshd.client.session.ClientSession;
 public class Buffer implements Screen {
 
   public static interface UI {
-    public void signalRepaint(boolean findScreen, boolean revalidate);
+    public void signalRepaint(boolean findCursor, boolean revalidate);
     public JComponent getComponent();
   }
 
   public Buffer(Profile profile, UI ui) {
     this.profile = profile;
+    this.ui = ui;
   }
 
   public Profile profile;
@@ -51,24 +50,24 @@ public class Buffer implements Screen {
       scrollBack = profile.scrollBack;
       foreColor = profile.foreColor;
       backColor = profile.backColor;
-      gotoPos(1,1);
       ansi = new ANSI(this, profile.protocol.equals("telnet"));
       telnet = new TelnetDecoder();
       utf8 = new UTF8();
-      timer = new java.util.Timer();
-      timer.schedule(new TimerTask() {
-        public void run() {
-          timer();
-        }
-      }, 500, 500);
       sx = profile.sx;
       sy = profile.sy;
       y1 = 0;
       y2 = sy-1;
       chars = new Char[sx*(sy+scrollBack)];
       for(int a=0;a<sx*(sy+scrollBack);a++) chars[a] = new Char(profile.foreColor, profile.backColor);
+      gotoPos(1,1);
       init = true;
       ready = true;  //ready to paint
+      timer = new java.util.Timer();
+      timer.schedule(new TimerTask() {
+        public void run() {
+          timer();
+        }
+      }, 500, 500);
       reader = new Reader();
       reader.setPriority(ReaderPriority);
       reader.start();
@@ -116,29 +115,22 @@ public class Buffer implements Screen {
   /** A timer to blink the cursor, the blinky text. */
   private java.util.Timer timer;
   private Color foreColor, backColor;  //current foreColor, backColor
-  private boolean cursorShown = false;
-  private int selectStart = -1, selectEnd = -1;
-  private FileOutputStream fos;  //log file
+  public boolean cursorShown = false;
+  public int selectStart = -1, selectEnd = -1;
+  public FileOutputStream fos;  //log file
   private boolean blinker = false;
   private boolean reverse = false;
-  private boolean blinkerShown = false;
+  public boolean blinkerShown = false;
   //connection info
-  private boolean connected = false, connecting = false;
-  private boolean failed = false;
+  public boolean connected = false;
+  public boolean failed = false;
   private Frame parent;
   /** eol means we are 1 char beyond the end of a line but haven't moved down to the next line yet */
   private boolean eol = false;
-  private boolean closed = false;
+  public boolean closed = false;
   private boolean init = false;
   private LnxPty pty;
   private boolean autowrap = true;
-
-  private long profile_last = 0;
-  private void profile(boolean show, String msg) {
-    long current = System.nanoTime();
-    if (show) System.out.println(msg + "Diff=" + (current-profile_last));
-    profile_last = current;
-  }
 
   public byte[] char2byte(char[] buf, int buflen) {
     byte[] tmp = new byte[buflen];
@@ -267,7 +259,7 @@ public class Buffer implements Screen {
       sx = newsx;
       sy = newsy;
       if (channel != null) {
-        setPtyType();
+        ssh_setPtyType();
       }
       if (profile.protocol.equals("local")) {
         pty_setsize();
@@ -355,7 +347,9 @@ public class Buffer implements Screen {
 
   public void print(char[] buf, int buflen) {
     for(int a=0;a<buflen;a++) {
-//      if (script != null) script.input(buf[a], this);
+      if (script != null) {
+        script.input(buf[a], this);
+      }
       switch (buf[a]) {
         case 127:
         case 8:
@@ -365,7 +359,6 @@ public class Buffer implements Screen {
           int ts = (getx()-1) % profile.tabStops;
           for(int t=0;t<profile.tabStops - ts;t++) {
             if (eol) incPosX();
-//            setChar(cx+1, cy+1, ' ');  //don't do that
             incPosX();
           }
           break;
@@ -376,9 +369,9 @@ public class Buffer implements Screen {
           gotoPos(1, gety());
           break;
         default:
-          if ((buf[a] < 32) && (buf[a] >= 0)) break;
+          if (buf[a] < 32) break;
           if (eol) incPosX();
-          setChar(cx+1, cy+1, buf[a]);
+          setChar(cx + 1, cy + 1, buf[a]);
           incPosX();
           break;
       }
@@ -392,11 +385,14 @@ public class Buffer implements Screen {
     print(x, 1);
   }
 
-  /** Sets a char in buffer.  Uses 1,1 based coords. */
-  public void setChar(int cx, int cy, char ch) {
-    cx--;
-    cy--;
-    int pos = (cy+scrollBack) * sx + cx;
+  /** Sets a char in buffer.  (1,1 = top left) */
+  public void setChar(int x, int y, char ch) {
+    if (x < 1 || y < 1) {
+      JFLog.logTrace("ERROR:invalid chords!");
+    }
+    x--;
+    y--;
+    int pos = ((y + scrollBack) * sx) + x;
     chars[pos].ch = ch;
     if (reverse) {
       chars[pos].fc = backColor;
@@ -450,13 +446,18 @@ public class Buffer implements Screen {
   public int getsx() {return sx;}
   public int getsy() {return sy;}
 
+  /** Get cursor x (1,1 = top left) */
   public int getx() {return cx + 1;}
+  /** Get cursor y (1,1 = top left) */
   public int gety() {return cy + 1;}
-  public void gotoPos(int x,int y) {
-    cx = x-1;
+  /** Set cursor pos (1,1 = top left) */
+  public void gotoPos(int x, int y) {
+    x--;
+    y--;
+    cx = x;
     if (cx < 0) cx = 0;
     if (cx >= sx) cx = sx-1;
-    cy = y-1;
+    cy = y;
     if (cy < 0) cy = 0;
     if (cy >= sy) cy = sy-1;
     eol = false;
@@ -503,7 +504,6 @@ public class Buffer implements Screen {
     synchronized(reader) {
       closed = true;
       connected = false;
-      connecting = false;
     }
     signalRepaint(false, false);  //allow render thread to exit
     signalReconnect();  //allow reader thread to exit (if connection failed)
@@ -532,7 +532,6 @@ public class Buffer implements Screen {
     public void run() {
       while (!closed) {
         try {
-          connecting = true;
           input("Connecting...");
           signalRepaint(true, false);  //show cursor
           if (doConnect() == false) {
@@ -547,7 +546,6 @@ public class Buffer implements Screen {
             continue;
           }
           connected = true;
-          connecting = false;
           input("" + ESC + "[2J");  //clrscr
           //keep reading in until it's disconnected
           byte[] buf = new byte[1024];
@@ -556,6 +554,11 @@ public class Buffer implements Screen {
             buflen = in.read(buf);
             if (buflen == -1) throw new Exception("read error");
             if (buflen > 0) input(byte2char(buf, buflen), buflen);
+          }
+        } catch (SocketException e) {
+          //no log
+          if (!closed) {
+            close();
           }
         } catch (Exception e) {
           JFLog.log(e);
@@ -643,7 +646,7 @@ public class Buffer implements Screen {
   private LnxCom lnxcom;
   private boolean connectCom() {
     try {
-      if (!profile.hasComm) throw new Exception("no com support");
+//      if (!profile.hasComm) throw new Exception("no com support");
       String[] f = profile.host.split(",");  //com1,56000
       if (JF.isWindows()) {
         wincom = WinCom.open(f[0], JF.atoi(f[1]));
@@ -762,7 +765,7 @@ public class Buffer implements Screen {
     return port;
   }
 
-  private void setPtyType() {
+  private void ssh_setPtyType() {
     JFLog.log("TODO : set Pty Type");
     //channel.setPtyType(settings.termType, sx, sy, sx * 8, sy * 8);
   }
@@ -788,7 +791,7 @@ public class Buffer implements Screen {
       if (profile.sshKey.length() == 0) {
         session.addPasswordIdentity(profile.password);
       } else {
-        JFLog.log("using key:" + profile.sshKey);
+        JFLog.log("SSH:using key:" + profile.sshKey);
         JFLog.log("TODO : set ssh key");
         //session.addPublicKeyIdentity(sd.sshKey);
       }
@@ -858,7 +861,7 @@ public class Buffer implements Screen {
   }
 
   public String toString() {
-    return "Buffer";
+    return "Buffer:" + sx + "," + sy + "+" + scrollBack;
   }
 
 //interface KeyListener
