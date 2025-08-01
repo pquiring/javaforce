@@ -92,6 +92,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 
   public void changeSize() {
+    if (pane == null) return;
     buffer.changeSize(pane.getViewport().getExtentSize());
     signalRepaint(true, true);
   }

@@ -281,11 +281,13 @@ public class Menu {
   }
 
   public static void localAction() {
-    Profile sd = new Profile();
-    sd.autoSize = true;
-    sd.protocol = "local";
-    sd.name = "localhost";
-    sd.utf8 = true;
-    connect(sd);
+    Profile profile = new Profile();
+    profile.autoSize = true;
+    profile.protocol = "local";
+    profile.name = "localhost";
+    profile.utf8 = true;
+    profile.termApp = "/usr/bin/bash";
+    profile.termArgs = new String[] {profile.termApp, "-i", "-l"};
+    connect(profile);
   }
 }

@@ -716,6 +716,7 @@ public class Buffer implements Screen {
   }
 
   private boolean connectLocal() {
+    JFLog.log("connectLocal:" + profile.termApp);
     try {
       profile.termArgs[0] = profile.termApp;
       pty = LnxPty.exec(profile.termApp
