@@ -134,7 +134,6 @@ public class ANSI {
       case KeyEvent.VK_PAGE_DOWN:  str = "" + ESC + "[6~"; break;  //NEXT
 
       case KeyEvent.VK_PAUSE: str = "" + Telnet.IAC + Telnet.BRK; break;  //BREAK
-      default: str = "" + (char)keyCode;
     }
     if (str != null) screen.output(str.toCharArray());
   }

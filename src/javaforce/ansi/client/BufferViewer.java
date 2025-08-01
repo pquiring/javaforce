@@ -18,6 +18,8 @@ import javaforce.awt.*;
 
 public class BufferViewer extends JComponent implements KeyListener, MouseListener, MouseMotionListener, Buffer.UI {
 
+  public static boolean debug = false;
+
   public Buffer buffer;
   public Profile profile;
 
@@ -77,13 +79,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   //connection info
   private boolean init = false;
   private JScrollPane pane;
-
-  private long profile_last = 0;
-  private void profile(boolean show, String msg) {
-    long current = System.nanoTime();
-    if (show) System.out.println(msg + "Diff=" + (current-profile_last));
-    profile_last = current;
-  }
 
   public byte[] char2byte(char[] buf, int buflen) {
     byte[] tmp = new byte[buflen];
@@ -336,7 +331,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       }
     }
     if (!buffer.connected) return;
-//    System.out.println("keyPressed=" + keyCode);  //test
+    if (debug) JFLog.log("keyPressed=" + keyCode);
     buffer.ansi.keyPressed(keyCode, keyMods, buffer);
   }
   public void keyReleased(KeyEvent e) {
@@ -359,7 +354,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     if (mods == (KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) return;
     if (key == 10) key = 13;
     if (key == KeyEvent.VK_DELETE) return;  //handled in keyPressed
-//    System.out.println("keyTyped=" + ((int)key));  //test
+    if (debug) JFLog.log("keyTyped=" + ((int)key));
     buffer.output(key);
   }
 //interface MouseListener
