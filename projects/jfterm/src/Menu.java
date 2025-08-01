@@ -50,7 +50,7 @@ public class Menu {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         Profile[] sdArray = SiteMgr.showSiteMgr(null);
         if (sdArray == null) return;
-        for(Profile sd : sdArray) connect(sd);
+        for(Profile profile : sdArray) connect(profile);
       }
     });
     menu.add(item);
@@ -284,6 +284,7 @@ public class Menu {
     Profile profile = new Profile();
     profile.autoSize = true;
     profile.protocol = "local";
+    profile.termType = "xterm";
     profile.name = "localhost";
     profile.utf8 = true;
     profile.termApp = "/usr/bin/bash";
