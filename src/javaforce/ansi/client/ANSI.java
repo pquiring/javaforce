@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.Color;
 
 import javaforce.*;
-import static javaforce.Telnet.*;
 
 public class ANSI {
 
@@ -64,6 +63,7 @@ public class ANSI {
   public void keyPressed(int keyCode, int keyMods, Screen screen) {
     //an easy way to find codes is to run "xterm sh" and press keys - "sh" doesn't understand ANSI and echo'es them back
     String str = null;
+    if (debug) JFLog.log("ANSI.keyPressed:keyCode=" + keyCode + ",mods=" + keyMods);
     if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       if ((keyCode >= KeyEvent.VK_A) && (keyCode <= KeyEvent.VK_Z)) {
         str = "" + (char)(keyCode - KeyEvent.VK_A + 1);
@@ -100,7 +100,10 @@ public class ANSI {
         case KeyEvent.VK_F8: str = "" + ESC + "[34~"; break;  //KEY_F20
       }
     }
-    if (str != null) screen.output(str.toCharArray());
+    if (str != null) {
+      if (debug) JFLog.log("ANSI:" + str);
+      screen.output(str.toCharArray());
+    }
     if (keyMods != 0) return;
     switch (keyCode) {
       case KeyEvent.VK_UP:   str = "" + ESC + "" + altcode + "A"; break;
@@ -135,7 +138,10 @@ public class ANSI {
 
       case KeyEvent.VK_PAUSE: str = "" + Telnet.IAC + Telnet.BRK; break;  //BREAK
     }
-    if (str != null) screen.output(str.toCharArray());
+    if (str != null) {
+      if (debug) JFLog.log("ANSI:" + str);
+      screen.output(str.toCharArray());
+    }
   }
 
   public boolean decode(char[] code, int codelen, Screen screen) {

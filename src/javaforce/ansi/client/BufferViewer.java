@@ -280,6 +280,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   public void keyPressed(KeyEvent e) {
     int keyCode = e.getKeyCode();
     int keyMods = e.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (debug) JFLog.log("BufferViewer.keyPressed=" + keyCode + ",mods=" + keyMods);
     if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_A: buffer.selectStart = 0; buffer.selectEnd = buffer.sx * (buffer.sy + buffer.scrollBack) - 1; break;
@@ -331,7 +332,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       }
     }
     if (!buffer.connected) return;
-    if (debug) JFLog.log("keyPressed=" + keyCode);
     buffer.ansi.keyPressed(keyCode, keyMods, buffer);
   }
   public void keyReleased(KeyEvent e) {
@@ -346,15 +346,17 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     }
     char key = e.getKeyChar();
     int mods = e.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (debug) JFLog.log("BufferViewer.keyTyped:key=" + ((int)key) + ",mods=" + mods);
     if (mods == KeyEvent.CTRL_DOWN_MASK) {
-      if ((key == 10) || (key == 13)) {buffer.output('\r'); buffer.output('\n');}
+      if ((key == 10) || (key == 13)) {
+        buffer.output('\r');
+      }
       return;
     }
     if (mods == KeyEvent.ALT_DOWN_MASK) return;
     if (mods == (KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) return;
     if (key == 10) key = 13;
     if (key == KeyEvent.VK_DELETE) return;  //handled in keyPressed
-    if (debug) JFLog.log("keyTyped=" + ((int)key));
     buffer.output(key);
   }
 //interface MouseListener
