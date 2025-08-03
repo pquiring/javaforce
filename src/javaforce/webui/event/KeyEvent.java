@@ -30,6 +30,19 @@ public class KeyEvent {
   public static final int VK_PAGE_DOWN = 34;
   public static final int VK_BACK_SPACE = 8;
 
+  public static final int VK_F1 = 0x70;
+  public static final int VK_F2 = 0x71;
+  public static final int VK_F3 = 0x72;
+  public static final int VK_F4 = 0x73;
+  public static final int VK_F5 = 0x74;
+  public static final int VK_F6 = 0x75;
+  public static final int VK_F7 = 0x76;
+  public static final int VK_F8 = 0x77;
+  public static final int VK_F9 = 0x78;
+  public static final int VK_F10 = 0x79;
+  public static final int VK_F11 = 0x7a;
+  public static final int VK_F12 = 0x7b;
+
   public String toString() {
     return "KeyEvent:keyCode=" + keyCode + ":keyChar=" + (int)keyChar;
   }

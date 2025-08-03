@@ -267,8 +267,20 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
         case KeyEvent.VK_ARROW_RIGHT: ansi.keyPressed(java.awt.event.KeyEvent.VK_RIGHT, mods, this); return;
         case KeyEvent.VK_ARROW_UP: ansi.keyPressed(java.awt.event.KeyEvent.VK_UP, mods, this); return;
         case KeyEvent.VK_ARROW_DOWN: ansi.keyPressed(java.awt.event.KeyEvent.VK_DOWN, mods, this); return;
-        case KeyEvent.VK_ESCAPE: ansi.keyPressed(java.awt.event.KeyEvent.VK_ESCAPE, mods, this); return;
+        case KeyEvent.VK_ESCAPE: break;
         case KeyEvent.VK_TAB: break;
+        case KeyEvent.VK_F1: ansi.keyPressed(java.awt.event.KeyEvent.VK_F1, mods, this); return;
+        case KeyEvent.VK_F2: ansi.keyPressed(java.awt.event.KeyEvent.VK_F2, mods, this); return;
+        case KeyEvent.VK_F3: ansi.keyPressed(java.awt.event.KeyEvent.VK_F3, mods, this); return;
+        case KeyEvent.VK_F4: ansi.keyPressed(java.awt.event.KeyEvent.VK_F4, mods, this); return;
+        case KeyEvent.VK_F5: ansi.keyPressed(java.awt.event.KeyEvent.VK_F5, mods, this); return;
+        case KeyEvent.VK_F6: ansi.keyPressed(java.awt.event.KeyEvent.VK_F6, mods, this); return;
+        case KeyEvent.VK_F7: ansi.keyPressed(java.awt.event.KeyEvent.VK_F7, mods, this); return;
+        case KeyEvent.VK_F8: ansi.keyPressed(java.awt.event.KeyEvent.VK_F8, mods, this); return;
+        case KeyEvent.VK_F9: ansi.keyPressed(java.awt.event.KeyEvent.VK_F9, mods, this); return;
+        case KeyEvent.VK_F10: ansi.keyPressed(java.awt.event.KeyEvent.VK_F10, mods, this); return;
+        case KeyEvent.VK_F11: ansi.keyPressed(java.awt.event.KeyEvent.VK_F11, mods, this); return;
+        case KeyEvent.VK_F12: ansi.keyPressed(java.awt.event.KeyEvent.VK_F12, mods, this); return;
         default: if (debug) JFLog.log("unknown key code:" + code); return;
       }
       char[] buf = new char[1];

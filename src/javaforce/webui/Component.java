@@ -657,6 +657,18 @@ public abstract class Component {
                 case "PageDown": keyCode = VK_PAGE_DOWN; break;
                 case "\\\\": keyChar = '\\'; break;
                 case "Backspace": keyCode = VK_BACK_SPACE; break;
+                case "F1": keyCode = VK_F1; break;
+                case "F2": keyCode = VK_F2; break;
+                case "F3": keyCode = VK_F3; break;
+                case "F4": keyCode = VK_F4; break;
+                case "F5": keyCode = VK_F5; break;
+                case "F6": keyCode = VK_F6; break;
+                case "F7": keyCode = VK_F7; break;
+                case "F8": keyCode = VK_F8; break;
+                case "F9": keyCode = VK_F9; break;
+                case "F10": keyCode = VK_F10; break;
+                case "F11": keyCode = VK_F11; break;
+                case "F12": keyCode = VK_F12; break;
                 default: JFLog.log("webui:unknown key code:" + value + ",length=" + value.length());
               }
             }
