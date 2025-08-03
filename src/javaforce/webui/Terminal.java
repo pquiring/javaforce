@@ -609,9 +609,9 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   public void delete() {
     Line line = getLine(cy);
     for(int p=cx;p<sx-1;p++) {
-      line.chs[sx + p] = line.chs[sx + p + 1];
-      line.fcs[sx + p] = line.fcs[sx + p + 1];
-      line.bcs[sx + p] = line.bcs[sx + p + 1];
+      line.chs[p] = line.chs[p + 1];
+      line.fcs[p] = line.fcs[p + 1];
+      line.bcs[p] = line.bcs[p + 1];
     }
     line.chs[sx-1] = ' ';
     line.fcs[sx-1] = fc;
@@ -620,9 +620,9 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   public void insert() {
     Line line = getLine(cy);
     for(int p=sx-2;p>=cx;p--) {
-      line.chs[p + 1] = line.chs[sx + p];
-      line.fcs[p + 1] = line.fcs[sx + p];
-      line.bcs[p + 1] = line.bcs[sx + p];
+      line.chs[p + 1] = line.chs[p];
+      line.fcs[p + 1] = line.fcs[p];
+      line.bcs[p + 1] = line.bcs[p];
     }
     line.chs[cx] = ' ';
     line.fcs[cx] = fc;
