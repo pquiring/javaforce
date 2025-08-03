@@ -268,7 +268,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
         case KeyEvent.VK_ARROW_UP: ansi.keyPressed(java.awt.event.KeyEvent.VK_UP, mods, this); return;
         case KeyEvent.VK_ARROW_DOWN: ansi.keyPressed(java.awt.event.KeyEvent.VK_DOWN, mods, this); return;
         case KeyEvent.VK_ESCAPE: ansi.keyPressed(java.awt.event.KeyEvent.VK_ESCAPE, mods, this); return;
-        case KeyEvent.VK_TAB: ansi.keyPressed(java.awt.event.KeyEvent.VK_TAB, mods, this); return;
+        case KeyEvent.VK_TAB: break;
         default: if (debug) JFLog.log("unknown key code:" + code); return;
       }
       char[] buf = new char[1];
