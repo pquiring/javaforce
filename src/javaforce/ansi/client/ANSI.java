@@ -183,10 +183,12 @@ public class ANSI {
       case '>':
         keypadMode = false;
         return true;
+      case 'c':
       case '#':
       case '(':
       case '[':
-      case ']': break;
+      case ']':
+        break;
       default:
         JFLog.log("ANSI:Unknown code:" + code[1]);
         return true;  //ignore unknown code
@@ -231,9 +233,12 @@ public class ANSI {
               for(int a=0;a<numc;a++) {
                 switch (nums[a]) {
                   case 1: altcode = 'O'; break;  //cursor key mode : control/app functions
+                  case 3: break;  //???
+                  case 4: break;  //???
                   case 7: screen.setAutoWrap(false); break;
                   case 12: break;  //TODO : start blinking cursor
                   case 25: break;  //TODO : show cursor
+                  case 69: break;  //???
                   case 1002: break;  //???
                   case 1006: break;  //???
                   case 1049: break;  //???
@@ -246,9 +251,12 @@ public class ANSI {
               for(int a=0;a<numc;a++) {
                 switch (nums[a]) {
                   case 1: altcode = '['; break;  //cursor key mode : ANSI control sequences
+                  case 3: break;  //???
+                  case 4: break;  //???
                   case 7: screen.setAutoWrap(true); break;
                   case 12: break;  //TODO : stop blinking cursor
                   case 25: break;  //TODO : hide cursor
+                  case 69: break;  //???
                   case 1002: break;  //???
                   case 1006: break;  //???
                   case 1049: break;  //???
