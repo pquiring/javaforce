@@ -657,6 +657,7 @@ public abstract class Component {
                 case "PageDown": keyCode = VK_PAGE_DOWN; break;
                 case "\\\\": keyChar = '\\'; break;
                 case "Backspace": keyCode = VK_BACK_SPACE; break;
+                case "Pause": keyCode = VK_PAUSE; break;
                 case "F1": keyCode = VK_F1; break;
                 case "F2": keyCode = VK_F2; break;
                 case "F3": keyCode = VK_F3; break;

@@ -29,6 +29,7 @@ public class KeyEvent {
   public static final int VK_PAGE_UP = 33;
   public static final int VK_PAGE_DOWN = 34;
   public static final int VK_BACK_SPACE = 8;
+  public static final int VK_PAUSE = 0x13;
 
   public static final int VK_F1 = 0x70;
   public static final int VK_F2 = 0x71;

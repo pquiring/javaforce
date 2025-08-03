@@ -269,6 +269,12 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
         case KeyEvent.VK_ARROW_DOWN: ansi.keyPressed(java.awt.event.KeyEvent.VK_DOWN, mods, this); return;
         case KeyEvent.VK_ESCAPE: break;
         case KeyEvent.VK_TAB: break;
+        case KeyEvent.VK_HOME: ansi.keyPressed(java.awt.event.KeyEvent.VK_HOME, mods, this); return;
+        case KeyEvent.VK_END: ansi.keyPressed(java.awt.event.KeyEvent.VK_END, mods, this); return;
+        case KeyEvent.VK_PAGE_UP: ansi.keyPressed(java.awt.event.KeyEvent.VK_PAGE_UP, mods, this); return;
+        case KeyEvent.VK_PAGE_DOWN: ansi.keyPressed(java.awt.event.KeyEvent.VK_PAGE_DOWN, mods, this); return;
+        case KeyEvent.VK_DELETE: ansi.keyPressed(java.awt.event.KeyEvent.VK_DELETE, mods, this); return;
+        case KeyEvent.VK_PAUSE: ansi.keyPressed(java.awt.event.KeyEvent.VK_PAUSE, mods, this); return;
         case KeyEvent.VK_F1: ansi.keyPressed(java.awt.event.KeyEvent.VK_F1, mods, this); return;
         case KeyEvent.VK_F2: ansi.keyPressed(java.awt.event.KeyEvent.VK_F2, mods, this); return;
         case KeyEvent.VK_F3: ansi.keyPressed(java.awt.event.KeyEvent.VK_F3, mods, this); return;
