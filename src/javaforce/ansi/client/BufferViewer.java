@@ -11,6 +11,7 @@ package javaforce.ansi.client;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -134,8 +135,9 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 
   private JFImage img = new JFImage();  //double buffering image for paint
+  private HashMap<Integer, Color> clrmap = new HashMap<>();
 
-  public void paintComponentLocked(Graphics gc) {
+  private void paintComponentLocked(Graphics gc) {
     Rectangle r = gc.getClipBounds();
     if (img.getWidth() != r.width || img.getHeight() != r.height) {
       img.setImageSize(r.width, r.height);
@@ -158,6 +160,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     for(int y = starty;y < endy;y++) {
       for(int x = startx;x < endx;x++) {
         int p = y * buffer.sx + x;
+        //background
         if ((x == buffer.cx) && (y == buffer.cy + buffer.scrollBack) && (buffer.cursorShown)) {
           //draw Cursor
           g.setColor(profile.cursorColor);
@@ -170,14 +173,14 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
           }
         }
         g.fillRect((x - startx) * profile.fontWidth - offx,(y - starty) * profile.fontHeight - offy,profile.fontWidth,profile.fontHeight);
+        //foreground
+        ch = buffer.chars[p].ch;
+        if (ch == 0) continue;
         if ((buffer.blinkerShown) && (buffer.chars[p].blink))
           g.setColor(buffer.chars[p].bc);
         else
           g.setColor(buffer.chars[p].fc);
-        ch = buffer.chars[p].ch;
-        if (ch != 0) {
-          g.drawString(Character.toString(ch), (x - startx) * profile.fontWidth - offx,(y+1-starty) * profile.fontHeight - profile.fontDescent - offy);
-        }
+        g.drawString(Character.toString(ch), (x - startx) * profile.fontWidth - offx,(y+1-starty) * profile.fontHeight - profile.fontDescent - offy);
       }
       if ((y == buffer.scrollBack) && (buffer.scrollBack > 0)) {
         g.setColor(Color.RED);
