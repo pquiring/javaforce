@@ -139,10 +139,16 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
 
   private void paintComponentLocked(Graphics gc) {
     Rectangle r = gc.getClipBounds();
+    Color fC = null;
+    int fc = -1;
+    int nfc = 0;
+    Color bC = null;
+    int bc = -1;
+    int nbc = 0;
     if (img.getWidth() != r.width || img.getHeight() != r.height) {
       img.setImageSize(r.width, r.height);
     }
-    img.fill(0,0,r.width,r.height,profile.backColor.getRGB());
+    img.fill(0,0,r.width,r.height,profile.backColor);
     Graphics g = img.getGraphics();
     g.setFont(profile.fnt);
     int startx, starty;  //char
@@ -161,25 +167,44 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       for(int x = startx;x < endx;x++) {
         int p = y * buffer.sx + x;
         //background
-        if ((x == buffer.cx) && (y == buffer.cy + buffer.scrollBack) && (buffer.cursorShown)) {
-          //draw Cursor
-          g.setColor(profile.cursorColor);
+        //normal background
+        if (((p >= buffer.selectStart) && (p <= buffer.selectEnd)) || ((p >= buffer.selectEnd) && (p <= buffer.selectStart) && (buffer.selectEnd > 0))) {
+          nbc = profile.selectColor;
         } else {
-          //normal background
-          if (((p >= buffer.selectStart) && (p <= buffer.selectEnd)) || ((p >= buffer.selectEnd) && (p <= buffer.selectStart) && (buffer.selectEnd > 0))) {
-            g.setColor(profile.selectColor);
-          } else {
-            g.setColor(buffer.chars[p].bc);
+          nbc = buffer.chars[p].bc;
+        }
+        if ((buffer.cursorShown) && (x == buffer.cx) && (y == buffer.cy + buffer.scrollBack)) {
+          //draw Cursor
+          nbc ^= 0xffffff;
+        }
+        nbc &= 0xffffff;
+        if (nbc != bc) {
+          bc = nbc;
+          bC = clrmap.get(bc);
+          if (bC == null) {
+            bC = new Color(bc);
+            clrmap.put(bc, bC);
           }
         }
+        g.setColor(bC);
         g.fillRect((x - startx) * profile.fontWidth - offx,(y - starty) * profile.fontHeight - offy,profile.fontWidth,profile.fontHeight);
         //foreground
         ch = buffer.chars[p].ch;
         if (ch == 0) continue;
         if ((buffer.blinkerShown) && (buffer.chars[p].blink))
-          g.setColor(buffer.chars[p].bc);
+          nfc = buffer.chars[p].bc;
         else
-          g.setColor(buffer.chars[p].fc);
+          nfc = buffer.chars[p].fc;
+        nfc &= 0xffffff;
+        if (nfc != fc) {
+          fc = nfc;
+          fC = clrmap.get(fc);
+          if (fC == null) {
+            fC = new Color(fc);
+            clrmap.put(fc, fC);
+          }
+        }
+        g.setColor(fC);
         g.drawString(Character.toString(ch), (x - startx) * profile.fontWidth - offx,(y+1-starty) * profile.fontHeight - profile.fontDescent - offy);
       }
       if ((y == buffer.scrollBack) && (buffer.scrollBack > 0)) {

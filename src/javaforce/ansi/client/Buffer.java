@@ -117,7 +117,8 @@ public class Buffer implements Screen {
   public int cx, cy;  //cursor position (0,0 = top left)
   /** A timer to blink the cursor, the blinky text. */
   private java.util.Timer timer;
-  private Color foreColor, backColor;  //current foreColor, backColor
+  private int foreColor;
+  private int backColor;
   public boolean cursorShown = false;
   public int selectStart = -1, selectEnd = -1;
   public FileOutputStream fos;  //log file
@@ -316,16 +317,10 @@ public class Buffer implements Screen {
   }
 
   public void setForeColor(int newClr) {
-    foreColor = new Color(newClr);
+    foreColor = newClr & 0xffffff;
   }
   public void setBackColor(int newClr) {
-    backColor = new Color(newClr);
-  }
-  public void setForeColor(Color newClr) {
-    foreColor = newClr;
-  }
-  public void setBackColor(Color newClr) {
-    backColor = newClr;
+    backColor = newClr & 0xffffff;
   }
   public void setBlinker(boolean state) {
     blinker = state;
@@ -333,8 +328,8 @@ public class Buffer implements Screen {
   public void setReverse(boolean state) {
     reverse = state;
   }
-  public int getForeColor() { return foreColor.getRGB(); }
-  public int getBackColor() { return backColor.getRGB(); }
+  public int getForeColor() { return foreColor; }
+  public int getBackColor() { return backColor; }
 
   public void clrscr() {
     for(int pos=0;pos<sx * (sy+scrollBack);pos++) {

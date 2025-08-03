@@ -8,31 +8,21 @@
 
 package javaforce.ansi.client;
 
-import java.awt.Color;
-
 public class Char {
-  public Char(Color fc, Color bc) {
+  public Char(int fc, int bc) {
     ch = 0;
     this.fc = fc;
     this.bc = bc;
     blink = false;
   }
-  public Char(Color fc, Color bc, boolean blink) {
+  public Char(int fc, int bc, boolean blink) {
     ch = 0;
     this.fc = fc;
     this.bc = bc;
     this.blink = blink;
   }
-/*
-  public void set(Char x) {
-    ch = x.ch;
-    fc = new Color(x.fc.getRGB());
-    bc = new Color(x.bc.getRGB());
-    blink = x.blink;
-  }
-*/
   public char ch;
-  public Color fc;  //fore color
-  public Color bc;  //back color
+  public int fc;  //fore color
+  public int bc;  //back color
   public boolean blink;
 }

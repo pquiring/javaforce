@@ -8,10 +8,10 @@ package javaforce.ansi.client;
 import java.awt.*;
 
 public class Profile {
-  public Color foreColor = Color.black;
-  public Color backColor = Color.white;
-  public Color cursorColor = Color.black;
-  public Color selectColor = Color.blue;
+  public int foreColor = 0x000000;
+  public int backColor = 0xffffff;
+  public int cursorColor = 0x000000;
+  public int selectColor = 0x0000ff;
 
   public int scrollBack = 100;
   public int tabStops = 8;
