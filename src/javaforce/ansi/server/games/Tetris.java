@@ -12,7 +12,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.ansi.server.*;
 
-public class Tetris extends TimerTask implements KeyEvents {
+public class Tetris implements KeyEvents {
 
   private boolean debug = false;
 
@@ -435,7 +435,12 @@ public class Tetris extends TimerTask implements KeyEvents {
 
   private void startTimer() {
     timer = new Timer();
-    timer.schedule(this, 500, 500);
+    timer.schedule(new TimerTask() {public void run() {
+      //move piece down
+      if (!pause) {
+        moveDown = true;
+      }
+    }}, 500, 500);
   }
 
   private void stopTimer() {
@@ -543,13 +548,6 @@ public class Tetris extends TimerTask implements KeyEvents {
       case 'q':
         active = false;
         break;
-    }
-  }
-
-  public void run() {
-    //timer event
-    if (!pause) {
-      moveDown = true;
     }
   }
 }
