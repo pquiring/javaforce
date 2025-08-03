@@ -205,6 +205,7 @@ public class JSON {
       }
       if ((ch == '\\') && (!escape)) {
         escape = true;
+        continue;
       }
       if (quote) {
         if (escape) {

@@ -199,6 +199,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     try {
       json = JSON.parse(msg);
     } catch (Exception e) {
+      JFLog.log("msg=" + msg);
       e.printStackTrace();
       return;
     }
