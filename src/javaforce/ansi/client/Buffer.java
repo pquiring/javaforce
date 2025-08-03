@@ -163,6 +163,7 @@ public class Buffer implements Screen {
       }
     }
   }
+
   public void output(char ch) {
     if (profile.localEcho) input(ch);
     try {
@@ -180,12 +181,24 @@ public class Buffer implements Screen {
     input(str.toCharArray(), str.length());
   }
 
+  private void input(char ch) {
+    char[] tmp = new char[1];
+    tmp[0] = ch;
+    input(tmp, 1);
+  }
+
   private void input(char[] buf, int buflen) {
-    //process Telnet/ANSI code
     if (fos != null) {
       byte[] tmp = char2byte(buf, buflen);
       JF.write(fos, tmp, 0, tmp.length);
     }
+    synchronized(lock) {
+      inputLocked(buf, buflen);
+    }
+  }
+
+  private void inputLocked(char[] buf, int buflen) {
+    //process Telnet/ANSI code
     char[] newbuf = new char[buflen];
     int newbuflen = 0;
     for(int a=0;a<buflen;a++) {
@@ -214,12 +227,6 @@ public class Buffer implements Screen {
       }
     }
     if (newbuflen > 0) print(newbuf, newbuflen);
-  }
-
-  private void input(char ch) {
-    char[] tmp = new char[1];
-    tmp[0] = ch;
-    input(tmp, 1);
   }
 
   public synchronized void changeSize(Dimension extent) {
@@ -392,6 +399,7 @@ public class Buffer implements Screen {
   public void setChar(int x, int y, char ch) {
     if (x < 1 || y < 1) {
       JFLog.logTrace("ERROR:invalid chords!");
+      return;
     }
     x--;
     y--;
