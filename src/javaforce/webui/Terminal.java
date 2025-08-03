@@ -53,9 +53,14 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
       html.append(getAttrs());
       html.append(">");
       for(int x=0;x<len;x++) {
-        if (fc != fcs[x] || bc != bcs[x]) {
-          fc = fcs[x];
-          bc = bcs[x];
+        int nfc = fcs[x];
+        int nbc = bcs[x];
+        if (cursorShown && y == cy && x == cx) {
+          nbc ^= 0xffffff;
+        }
+        if (fc != nfc || bc != nbc) {
+          fc = nfc;
+          bc = nbc;
           if (x > 0) {
             html.append("</pre>");
           }
@@ -65,9 +70,6 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
           html.append("'>");
         }
         ch = chs[x];
-        if (cursorShown && y == cy && x == cx) {
-          ch = ASCII8.convert(219);
-        }
         switch (ch) {
           case '<': html.append("&lt;"); break;
           case '>': html.append("&gt;"); break;
