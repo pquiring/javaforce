@@ -198,9 +198,14 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
 
   public void disconnect() {
     active = false;
+    clrscr();
     if (pty != null) {
       pty.close();
       pty = null;
+    }
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
     }
   }
 
@@ -330,12 +335,13 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
         while (active) {
           int buflen = in.read(buf);
           if (buflen > 0) if (debug) JFLog.log("read=" + buflen);
-//          if (buflen == -1) throw new Exception("read error");
+          if (buflen == -1) throw new Exception("read error");
           if (buflen > 0) input(byte2char(buf, buflen), buflen);
           if (buflen == 0) JF.sleep(100);
         }
       } catch (Exception e) {
         JFLog.log(e);
+        disconnect();
       }
     }
   }
@@ -558,6 +564,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   public void output(char[] buf) {
     byte[] tmp = char2byte(buf, buf.length);
     if (debug) writeArray(tmp);
+    if (!active) return;
     try {
       out.write(tmp);
       out.flush();
@@ -578,33 +585,18 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   public void scrollUp(int cnt) {
     updateCursor();
     for(int i=0;i<cnt;i++) {
-      remove(0);
-      add(new Line(sx, fc, bc));
+      remove(y1);
+      add(y2, new Line(sx, fc, bc));
     }
     updateCursor();
-    /*todo*/
-/*
-    while (cnt > 0) {
-      if (y1==0)
-        for(int p=0;p<sx * (y2+1 + scrollBack-1);p++) chars[p] = chars[p + sx];
-      else
-        for(int p=sx * (y1 + scrollBack);p<sx * (y2+1 + scrollBack-1);p++) chars[p] = chars[p + sx];
-      for(int p=0;p<sx;p++) chars[p + (sx * (y2+1 + scrollBack - 1))] = new Char(foreColor, backColor, blinker);
-      selectStart = selectEnd = -1;
-      cnt--;
-    }
-*/
   }
   public void scrollDown(int cnt) {
-    /*todo*/
-/*
-    while (cnt > 0) {
-      for(int p=sx * (y2+1 + scrollBack)-1;p>=sx * (y1 + scrollBack+1);p--) chars[p] = chars[p - sx];
-      for(int p=0;p<sx;p++) chars[p + (sx * (y1 + scrollBack))] = new Char(foreColor, backColor, blinker);
-      selectStart = selectEnd = -1;
-      cnt--;
+    updateCursor();
+    for(int i=0;i<cnt;i++) {
+      remove(y2);
+      add(y1, new Line(sx, fc, bc));
     }
-*/
+    updateCursor();
   }
   public void delete() {
     Line line = getLine(cy);
