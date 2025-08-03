@@ -2024,10 +2024,11 @@ public class ConfigService implements WebUIHandler {
     ToolBar tools2 = new ToolBar();
     panel.add(tools2);
     Button gluster = new Button("Gluster Probe");
-    tools2.add(gluster);
-    Button ceph = null;
+    if (Gluster.exists()) {
+      tools2.add(gluster);
+    }
+    Button ceph = new Button("Ceph Setup");;
     if (!Ceph.exists()) {
-      ceph = new Button("Ceph Setup");
       tools2.add(ceph);
     }
     Button remove = new Button("Remove Host");
@@ -2211,62 +2212,60 @@ public class ConfigService implements WebUIHandler {
       Tasks.tasks.addTask(ui.tasks, task);
     });
 
-    if (ceph != null) {
-      ceph.addClickListener((me, cmp) -> {
-        remote_errmsg.setText("");
-        if (hosts.length < 2) {
-          remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
+    ceph.addClickListener((me, cmp) -> {
+      remote_errmsg.setText("");
+      if (hosts.length < 2) {
+        remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
+        return;
+      }
+      for(Host host : hosts) {
+        if (!host.online || !host.valid) {
+          remote_errmsg.setText("Host is not online:" + host.hostname);
           return;
         }
-        for(Host host : hosts) {
-          if (!host.online || !host.valid) {
-            remote_errmsg.setText("Host is not online:" + host.hostname);
-            return;
-          }
-        }
-        ui.confirm_message.setText("Ceph setup");
-        ui.confirm_action = () -> {
-          Task task = new Task("Ceph setup") {
-            public void doTask() {
-              try {
-                //check if already setup
-                if (Ceph.exists()) {
-                  setStatus("Ceph is already setup!");
-                  return;
-                }
-
-                //check for known broken versions
-                String distro = Linux.getDistro();
-                if (distro == null) distro = "unknown";
-                String verstr = Linux.getVersion();
-                if (verstr == null) verstr = "0";
-                float verfloat = Float.valueOf(verstr);
-                if (distro.equals("Debian") && verfloat < 13) {
-                  //Debian/12 is known to have broken Ceph version
-                  setStatus("Debian/12 or less is not supported, please upgrade!");
-                  return;
-                }
-
-                //start ceph setup progress
-                Config.current.ceph_setup = true;
-                if (Ceph.setup(this)) {
-                  setStatus("Completed");
-                } else {
-                  setStatus("Ceph setup failed, check logs.");
-                }
-                Config.current.ceph_setup = false;
-              } catch (Exception e) {
-                setStatus("Ceph setup failed, check logs.");
-                JFLog.log(e);
+      }
+      ui.confirm_message.setText("Ceph setup");
+      ui.confirm_action = () -> {
+        Task task = new Task("Ceph setup") {
+          public void doTask() {
+            try {
+              //check if already setup
+              if (Ceph.exists()) {
+                setStatus("Ceph is already setup!");
+                return;
               }
+
+              //check for known broken versions
+              String distro = Linux.getDistro();
+              if (distro == null) distro = "unknown";
+              String verstr = Linux.getVersion();
+              if (verstr == null) verstr = "0";
+              float verfloat = Float.valueOf(verstr);
+              if (distro.equals("Debian") && verfloat < 13) {
+                //Debian/12 is known to have broken Ceph version
+                setStatus("Debian/12 or less is not supported, please upgrade!");
+                return;
+              }
+
+              //start ceph setup progress
+              Config.current.ceph_setup = true;
+              if (Ceph.setup(this)) {
+                setStatus("Completed");
+              } else {
+                setStatus("Ceph setup failed, check logs.");
+              }
+              Config.current.ceph_setup = false;
+            } catch (Exception e) {
+              setStatus("Ceph setup failed, check logs.");
+              JFLog.log(e);
             }
-          };
-          Tasks.tasks.addTask(ui.tasks, task);
+          }
         };
-        ui.confirm_button.setText("Start");
-        ui.confirm_popup.setVisible(true);
-      });
-    }
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_button.setText("Start");
+      ui.confirm_popup.setVisible(true);
+    });
 
     remove.addClickListener((me, cmp) -> {
       remote_errmsg.setText("");
@@ -4017,9 +4016,11 @@ public class ConfigService implements WebUIHandler {
     Button format = new Button("Format");
     tools.add(format);
     Button gluster_volume_create = new Button("Gluster Volume Create");
-    tools.add(gluster_volume_create);
     Button gluster_volume_start = new Button("Gluster Volume Start");
-    tools.add(gluster_volume_start);
+    if (Gluster.exists()) {
+      tools.add(gluster_volume_create);
+      tools.add(gluster_volume_start);
+    }
     Button delete = new Button("Delete");
     tools.add(delete);
     Button help = new Button("Help");
