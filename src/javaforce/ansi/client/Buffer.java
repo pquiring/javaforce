@@ -240,7 +240,7 @@ public class Buffer implements Screen {
     if (oldLen > ty) {
       //remove lines
       Line[] newLines = new Line[ty];
-      for(int y=0;y<oldLen;y++) {
+      for(int y=0;y<ty;y++) {
         newLines[y] = lines[y];
       }
       lines = newLines;
@@ -255,8 +255,7 @@ public class Buffer implements Screen {
       }
       lines = newLines;
     }
-    oldLen = lines.length;
-    for(int i=0;i<oldLen;i++) {
+    for(int i=0;i<ty;i++) {
       Line line = lines[i];
       line.setlen(sx, foreColor, backColor);
     }
