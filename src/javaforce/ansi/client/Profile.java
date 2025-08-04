@@ -10,7 +10,6 @@ import java.awt.*;
 public class Profile {
   public int foreColor = 0x000000;
   public int backColor = 0xffffff;
-  public int cursorColor = 0x000000;
   public int selectColor = 0x0000ff;
 
   public int scrollBack = 100;

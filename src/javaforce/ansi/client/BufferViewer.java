@@ -163,15 +163,23 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     endy = (r.y + r.height) / profile.fontHeight + 1;
     if (endy > buffer.sy + buffer.scrollBack) endy = buffer.sy + buffer.scrollBack;
     char ch;
+    boolean have_selection = buffer.have_selection();
     for(int y = starty;y < endy;y++) {
+      if (y >= buffer.lines.length) continue;
+      Line line = buffer.lines[y];
       for(int x = startx;x < endx;x++) {
-        int p = y * buffer.sx + x;
         //background
         //normal background
-        if (((p >= buffer.selectStart) && (p <= buffer.selectEnd)) || ((p >= buffer.selectEnd) && (p <= buffer.selectStart) && (buffer.selectEnd > 0))) {
+        if ( (have_selection) && (
+          ((buffer.selectStartY == buffer.selectEndY) && (y == buffer.selectStartY) && (x >= buffer.selectStartX) && (x <= buffer.selectEndX)) ||  //single line
+          ((buffer.selectStartY != buffer.selectEndY) && (y == buffer.selectStartY) && (x >= buffer.selectStartX)) ||  //start of line
+          ((buffer.selectStartY != buffer.selectEndY) && (y == buffer.selectEndY) && (x <= buffer.selectEndX)) ||  //end of line
+          ((y > buffer.selectStartY) && (y < buffer.selectEndY))  //full line
+        ))
+        {
           nbc = profile.selectColor;
         } else {
-          nbc = buffer.chars[p].bc;
+          nbc = line.bcs[x];
         }
         if ((buffer.cursorShown) && (x == buffer.cx) && (y == buffer.cy + buffer.scrollBack)) {
           //draw Cursor
@@ -189,12 +197,12 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
         g.setColor(bC);
         g.fillRect((x - startx) * profile.fontWidth - offx,(y - starty) * profile.fontHeight - offy,profile.fontWidth,profile.fontHeight);
         //foreground
-        ch = buffer.chars[p].ch;
+        ch = line.chs[x];
         if (ch == 0) continue;
-        if ((buffer.blinkerShown) && (buffer.chars[p].blink))
-          nfc = buffer.chars[p].bc;
+        if ((buffer.blinkerShown) && (line.blinks[x]))
+          nfc = line.bcs[x];
         else
-          nfc = buffer.chars[p].fc;
+          nfc = line.fcs[x];
         nfc &= 0xffffff;
         if (nfc != fc) {
           fc = nfc;
@@ -308,7 +316,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     if (debug) JFLog.log("BufferViewer.keyPressed=" + keyCode + ",mods=" + keyMods);
     if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keyCode) {
-        case KeyEvent.VK_A: buffer.selectStart = 0; buffer.selectEnd = buffer.sx * (buffer.sy + buffer.scrollBack) - 1; break;
+        case KeyEvent.VK_A: buffer.selectStartY = 0; buffer.selectEndY = buffer.sy + buffer.scrollBack; buffer.selectStartX = 0; buffer.selectEndX = buffer.sx; break;
         case KeyEvent.VK_W: close(); break;
         case KeyEvent.VK_C:
         case KeyEvent.VK_INSERT: buffer.copy(); break;
@@ -392,20 +400,22 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   public void mousePressed(MouseEvent e) {
     //start selection process
     if (e.getButton() != e.BUTTON1) return;
-    int x = e.getX();
-    int y = e.getY();
-    buffer.selectStart = ((y  / profile.fontHeight) * buffer.sx + (x / profile.fontWidth));
-    buffer.selectEnd = -1;
+    int x = e.getX() / profile.fontWidth;
+    int y = e.getY() / profile.fontHeight;
+    buffer.selectStartY = y;
+    buffer.selectStartX = x;
+    buffer.selectEndY = -1;
+    buffer.selectEndX = -1;
   }
   public void mouseReleased(MouseEvent e) {
     if (e.getButton() != e.BUTTON1) return;
-    if (buffer.selectStart == -1) return;
-    int x = e.getX();
-    int y = e.getY();
-    buffer.selectEnd = ((y / profile.fontHeight) * buffer.sx + (x / profile.fontWidth));
-    if (buffer.selectEnd == buffer.selectStart) {buffer.selectStart = buffer.selectEnd = -1;}
+    if (buffer.selectStartY == -1) return;
+    int x = e.getX() / profile.fontWidth;
+    int y = e.getY() / profile.fontHeight;
+    buffer.selectEndY = y;
+    buffer.selectEndX = x;
     signalRepaint(false, false);
-    if (buffer.selectStart != -1) buffer.copy();
+    if (buffer.selectStartY != -1 && buffer.selectEndY != -1) buffer.copy();
   }
   public void mouseEntered(MouseEvent e) {
   }
@@ -413,14 +423,27 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 //interface MouseMotionListener
   public void mouseDragged(MouseEvent e) {
-    if (buffer.selectStart == -1) return;
-    int x = e.getX();
-    int y = e.getY();
+    if (buffer.selectStartY == -1) return;
+    int x = e.getX() / profile.fontWidth;
+    int y = e.getY() / profile.fontHeight;
     if (x < 0) x = 0;
-    if (x > buffer.sx * profile.fontWidth) x = (buffer.sx * profile.fontWidth)-1;
+    if (x >= buffer.sx) x = buffer.sx-1;
     if (y < 0) y = 0;
-    if (y > (buffer.sy + buffer.scrollBack) * profile.fontHeight) y = (buffer.sy + buffer.scrollBack) * profile.fontHeight - 1;
-    buffer.selectEnd = ((y / profile.fontHeight) * buffer.sx + (x / profile.fontWidth));
+    if (y >= (buffer.sy + buffer.scrollBack)) y = (buffer.sy + buffer.scrollBack) - 1;
+    if (y < buffer.selectStartY || (y == buffer.selectStartY && x <= buffer.selectStartX)) {
+      if (buffer.selectEndY == -1) {
+        buffer.selectEndY = buffer.selectStartY;
+        buffer.selectEndX = buffer.selectStartX;
+      }
+      buffer.selectStartY = y;
+      buffer.selectStartX = x;
+    } else {
+      buffer.selectEndY = y;
+      buffer.selectEndX = x;
+    }
+    if ((buffer.selectStartY > buffer.selectEndY) || (buffer.selectStartY == buffer.selectEndY && buffer.selectStartX > buffer.selectEndX)) {
+      buffer.swap_selection();
+    }
     signalRepaint(false, false);
     scrollRectToVisible(new Rectangle(e.getX(), e.getY(), 1, 1));
   }

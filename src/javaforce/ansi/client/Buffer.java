@@ -53,7 +53,6 @@ public class Buffer implements Screen {
       ansi = new ANSI(this, profile.protocol.equals("telnet"));
       telnet = new TelnetDecoder();
       utf8 = new UTF8();
-      JFLog.log("Screen Size:" + profile.sx + "," + profile.sy);
       sx = profile.sx;
       sy = profile.sy;
       if (sx < 80) {
@@ -62,10 +61,14 @@ public class Buffer implements Screen {
       if (sy < 25) {
         sy = 25;
       }
+      JFLog.log("Screen Size:" + sx + "," + sy);
       y1 = 0;
       y2 = sy-1;
-      chars = new Char[sx*(sy+scrollBack)];
-      for(int a=0;a<sx*(sy+scrollBack);a++) chars[a] = new Char(profile.foreColor, profile.backColor);
+      int ty = sy+scrollBack;
+      lines = new Line[ty];
+      for(int y=0;y<ty;y++) {
+        lines[y] = new Line(sx, profile.foreColor, profile.backColor);
+      }
       gotoPos(1,1);
       init = true;
       ready = true;  //ready to paint
@@ -113,14 +116,15 @@ public class Buffer implements Screen {
   private final char IAC = 255;
   private final char ESC = 27;  //0x1b
   /** The actual screen buffer.*/
-  public Char[] chars = null;
+  public Line[] lines = null;
   public int cx, cy;  //cursor position (0,0 = top left)
   /** A timer to blink the cursor, the blinky text. */
   private java.util.Timer timer;
   private int foreColor;
   private int backColor;
   public boolean cursorShown = false;
-  public int selectStart = -1, selectEnd = -1;
+  public int selectStartY = -1, selectEndY = -1;
+  public int selectStartX = -1, selectEndX = -1;
   public FileOutputStream fos;  //log file
   private boolean blinker = false;
   private boolean reverse = false;
@@ -230,6 +234,34 @@ public class Buffer implements Screen {
     if (newbuflen > 0) print(newbuf, newbuflen);
   }
 
+  private void setLines() {
+    int oldLen = lines.length;
+    int ty = sy + scrollBack;
+    if (oldLen > ty) {
+      //remove lines
+      Line[] newLines = new Line[ty];
+      for(int y=0;y<oldLen;y++) {
+        newLines[y] = lines[y];
+      }
+      lines = newLines;
+    } else {
+      //add lines
+      Line[] newLines = new Line[ty];
+      for(int y=0;y<oldLen;y++) {
+        newLines[y] = lines[y];
+      }
+      for(int y=oldLen;y<ty;y++) {
+        newLines[y] = new Line(sx, foreColor, backColor);
+      }
+      lines = newLines;
+    }
+    oldLen = lines.length;
+    for(int i=0;i<oldLen;i++) {
+      Line line = lines[i];
+      line.setlen(sx, foreColor, backColor);
+    }
+  }
+
   public synchronized void changeSize(Dimension extent) {
     if (!init) return;
     if (!profile.autoSize) return;
@@ -238,81 +270,33 @@ public class Buffer implements Screen {
     if (extent.height < profile.fontHeight) extent.height = profile.fontHeight;
     int newsx = extent.width / profile.fontWidth;
     int newsy = extent.height / profile.fontHeight;
-    y1 = 0;
-    y2 = newsy-1;
 
-    Char[] newChars = new Char[newsx*(newsy+scrollBack)];
-    int sy2 = sy + scrollBack;
-    int newsy2 = newsy + scrollBack;
-    if (newsy2 > sy2) {
-      for(int y=0;y<sy2;y++) {
-        if (newsx > sx) {
-          for(int x=0;x<sx;x++) newChars[y * newsx + x] = chars[y * sx + x];
-          for(int x=sx;x<newsx;x++) newChars[y * newsx + x] = new Char(profile.foreColor, profile.backColor);
-        } else {
-          for(int x=0;x<newsx;x++) newChars[y * newsx + x] = chars[y * sx + x];
-        }
-      }
-      for(int y=sy2;y<newsy2;y++) {
-        for(int x=0;x<newsx;x++) newChars[y * newsx + x] = new Char(profile.foreColor, profile.backColor);
-      }
-    } else {
-      for(int y=0;y<newsy2;y++) {
-        if (newsx > sx) {
-          for(int x=0;x<sx;x++) newChars[y * newsx + x] = chars[y * sx + x];
-          for(int x=sx;x<newsx;x++) newChars[y * newsx + x] = new Char(profile.foreColor, profile.backColor);
-        } else {
-          for(int x=0;x<newsx;x++) newChars[y * newsx + x] = chars[y * sx + x];
-        }
-      }
-    }
     synchronized(lock) {
+      y1 = 0;
+      y2 = sy-1;
       sx = newsx;
       sy = newsy;
+      if (cx >= sx) cx = sx-1;
+      if (cy >= sy) cy = sy-1;
+      setLines();
       if (channel != null) {
         ssh_setPtyType();
       }
       if (profile.protocol.equals("local")) {
         pty_setsize();
       }
-      if (cx >= sx) cx = sx-1;
-      if (cy >= sy) cy = sy-1;
-      chars = newChars;
       System.gc();
     }
+    clear_selection();
     signalRepaint(true, true);
   }
 
   public void changeScrollBack(int newSize) {
-    Char[] newChars = new Char[sx*(sy+newSize)];
-    int diff, pos;
-    if (newSize > scrollBack) {
-      diff = newSize - scrollBack;
-      for(int y=0;y<diff;y++) {for(int x=0;x<sx;x++) newChars[y * sx + x] = new Char(profile.foreColor, profile.backColor);}
-      pos = 0;
-      for(int y=diff;y<(sy + newSize);y++) {
-        for(int x=0;x<sx;x++) {
-          newChars[y * sx + x] = chars[pos * sx + x];
-        }
-        pos++;
-        if (pos == sy + scrollBack) pos = 0;
-      }
-    } else {
-      diff = scrollBack - newSize;
-      pos = diff;
-      if (pos >= sy + scrollBack) pos -= sy + scrollBack;
-      for(int y=0;y<(sy + newSize);y++) {
-        for(int x=0;x<sx;x++) {
-          newChars[y * sx + x] = chars[pos * sx + x];
-        }
-        pos++;
-        if (pos == sy + scrollBack) pos = 0;
-      }
-    }
     synchronized(lock) {
       scrollBack = newSize;
-      chars = newChars;
+      setLines();
     }
+    clear_selection();
     signalRepaint(true, true);
   }
 
@@ -332,11 +316,9 @@ public class Buffer implements Screen {
   public int getBackColor() { return backColor; }
 
   public void clrscr() {
-    for(int pos=0;pos<sx * (sy+scrollBack);pos++) {
-      chars[pos].ch = 0;
-      chars[pos].fc = foreColor;
-      chars[pos].bc = backColor;
-      chars[pos].blink = false;
+    int ty = sy+scrollBack;
+    for(int y=0;y<ty;y++) {
+      lines[y].clear(foreColor, backColor);
     }
     cx = 0;
     cy = 0;
@@ -398,16 +380,16 @@ public class Buffer implements Screen {
     }
     x--;
     y--;
-    int pos = ((y + scrollBack) * sx) + x;
-    chars[pos].ch = ch;
+    Line line = lines[y + scrollBack];
+    line.chs[x] = ch;
     if (reverse) {
-      chars[pos].fc = backColor;
-      chars[pos].bc = foreColor;
+      line.fcs[x] = backColor;
+      line.bcs[x] = foreColor;
     } else {
-      chars[pos].fc = foreColor;
-      chars[pos].bc = backColor;
+      line.fcs[x] = foreColor;
+      line.bcs[x] = backColor;
     }
-    chars[pos].blink = blinker;
+    line.blinks[x] = blinker;
   }
 
   private void decPosX() {
@@ -476,33 +458,40 @@ public class Buffer implements Screen {
   public void sety2(int v) {y2 = v-1;}
 
   public void scrollUp(int cnt) {
-    while (cnt > 0) {
-      if (y1==0)
-        for(int p=0;p<sx * (y2+1 + scrollBack-1);p++) chars[p] = chars[p + sx];
-      else
-        for(int p=sx * (y1 + scrollBack);p<sx * (y2+1 + scrollBack-1);p++) chars[p] = chars[p + sx];
-      for(int p=0;p<sx;p++) chars[p + (sx * (y2+1 + scrollBack - 1))] = new Char(foreColor, backColor, blinker);
-      selectStart = selectEnd = -1;
-      cnt--;
+    for(int i=0;i<cnt;i++) {
+      for(int y=y1 + scrollBack;y<y2 + scrollBack;y++) {
+        lines[y] = lines[y+1];
+      }
+      lines[y2 + scrollBack] = new Line(sx, foreColor, backColor);
     }
+    selectStartY = selectEndY = -1;
+    selectStartX = selectEndX = -1;
   }
   public void scrollDown(int cnt) {
-    while (cnt > 0) {
-      for(int p=sx * (y2+1 + scrollBack)-1;p>=sx * (y1 + scrollBack+1);p--) chars[p] = chars[p - sx];
-      for(int p=0;p<sx;p++) chars[p + (sx * (y1 + scrollBack))] = new Char(foreColor, backColor, blinker);
-      selectStart = selectEnd = -1;
-      cnt--;
+    for(int i=0;i<cnt;i++) {
+      for(int y=y2 + scrollBack;y>y1 + scrollBack;y--) {
+        lines[y] = lines[y-1];
+      }
+      lines[y1 + scrollBack] = new Line(sx, foreColor, backColor);
     }
+    selectStartY = selectEndY = -1;
+    selectStartX = selectEndX = -1;
   }
 
   public void delete() {
-    for(int p=cx;p<sx-1;p++) chars[(cy+scrollBack) * sx + p] = chars[(cy+scrollBack) * sx + p + 1];
-    chars[(cy+scrollBack) * sx + sx-1] = new Char(foreColor, backColor, blinker);
+    Line line = lines[cy + scrollBack];
+    for(int x=cx;x<sx-1;x++) {
+      line.copy(x, x+1);
+    }
+    line.set(sx-1, foreColor, backColor);
   }
 
   public void insert() {
-    for(int p=sx-2;p>=cx;p--) chars[(cy+scrollBack) * sx + p + 1] = chars[(cy+scrollBack) * sx + p];
-    chars[(cy+scrollBack) * sx + cx] = new Char(foreColor, backColor, blinker);
+    Line line = lines[cy + scrollBack];
+    for(int x=sx-2;x>=cx;x--) {
+      line.copy(x-1, x);
+    }
+    line.set(cx, foreColor, backColor);
   }
 
   public void close() {
@@ -586,27 +575,63 @@ public class Buffer implements Screen {
     }
   }
 
+  public boolean have_selection() {
+    return selectStartY != -1 && selectEndY != -1;
+  }
+
+  public void clear_selection() {
+    selectStartY = -1;
+    selectStartX = -1;
+    selectEndY = -1;
+    selectEndX = -1;
+  }
+
+  public void swap_selection() {
+    //swap start / end
+    int tmpY = selectStartY;
+    selectStartY = selectEndY;
+    selectEndY = tmpY;
+    int tmpX = selectStartX;
+    selectStartX = selectEndX;
+    selectEndX = tmpX;
+  }
+
   public void copy() {
-    if ((selectStart == -1) || (selectEnd == -1)) return;  //nothing to copy
+    if ((!have_selection())) return;
     try {
       StringBuilder str = new StringBuilder();
-      if (selectStart > selectEnd) {
-        int tmp = selectStart;
-        selectStart = selectEnd;
-        selectEnd = tmp;
+      if (selectStartY > selectEndY) {
+        swap_selection();
       }
-      boolean eol = false;
-      for(int a=selectStart;a<=selectEnd;a++) {
-        if (chars[a].ch != 0) {
-          str.append(chars[a].ch);
-          if (eol) eol = false;
-          if (a % sx == sx-1) str.append("\n");
+      for(int y=selectStartY;y<=selectEndY;y++) {
+        Line line = lines[y];
+        if (y == selectStartY) {
+          int x1 = 0;
+          int x2 = sx;
+          if (y == selectEndY) {
+            //partial line
+            x1 = selectEndX;
+          }
+          for(int x=x1;x<x2;x++) {
+            str.append(line.chs[x]);
+          }
+        } else if (y == selectEndY) {
+          int x1 = 0;
+          int x2 = sx;
+          if (y == selectEndY) {
+            //partial line
+            x2 = selectEndX;
+          }
+          for(int x=x1;x<x2;x++) {
+            str.append(line.chs[x]);
+          }
         } else {
-          if (!eol) {
-            eol = true;
-            str.append("\n");
+          //full line
+          for(int x=0;x<sx;x++) {
+            str.append(line.chs[x]);
           }
         }
+        str.append("\n");
       }
       StringSelection ss = new StringSelection(str.toString());
       Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
