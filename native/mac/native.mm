@@ -129,55 +129,36 @@ struct CamContext {
 
 CamContext* createCamContext(JNIEnv *e, jobject c) {
   CamContext *ctx;
-  jclass cls_camera = e->FindClass("javaforce/media/Camera");
-  jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
-  ctx = (CamContext*)e->GetLongField(c, fid_cam_ctx);
-  if (ctx != NULL) {
-    printf("Camera ctx used twice\n");
-    return NULL;
-  }
   ctx = CamContext::New();
-  e->SetLongField(c,fid_cam_ctx,(jlong)ctx);
-  return ctx;
-}
-
-CamContext* getCamContext(JNIEnv *e, jobject c) {
-  CamContext *ctx;
-  jclass cls_camera = e->FindClass("javaforce/media/Camera");
-  jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
-  ctx = (CamContext*)e->GetLongField(c, fid_cam_ctx);
   return ctx;
 }
 
 void deleteCamContext(JNIEnv *e, jobject c, CamContext *ctx) {
   if (ctx == NULL) return;
   ctx->Delete();
-  jclass cls_camera = e->FindClass("javaforce/media/Camera");
-  jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
-  e->SetLongField(c,fid_cam_ctx,0);
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraInit
+JNIEXPORT jlong JNICALL Java_javaforce_media_Camera_cameraInit
   (JNIEnv *e, jobject c)
 {
   CamContext *ctx = createCamContext(e,c);
-  if (ctx == NULL) return JNI_FALSE;
-  return JNI_TRUE;
+  if (ctx == NULL) return 0;
+  return (jlong)ctx;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraUninit
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
   deleteCamContext(e,c,ctx);
   return JNI_TRUE;
 }
 
 JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return NULL;
   ctx->devices = [[AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]
     arrayByAddingObjectsFromArray:[AVCaptureDevice devicesWithMediaType:AVMediaTypeMuxed]];
@@ -193,15 +174,15 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
 }
 
 JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListModes
-  (JNIEnv *e, jobject c, jint deviceIdx)
+  (JNIEnv *e, jobject c, jlong ctxptr, jint deviceIdx)
 {
   return NULL;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
-  (JNIEnv *e, jobject c, jint deviceIdx, jint desiredWidth, jint desiredHeight)
+  (JNIEnv *e, jobject c, jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
   if (deviceIdx >= [ctx->devices count]) return JNI_FALSE;
 
@@ -251,9 +232,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStop
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
 
   if (ctx->session == NULL) return JNI_FALSE;
@@ -286,9 +267,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStop
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return NULL;
 //  if (ctx->frames == NULL) return NULL;
   if (!ctx->haveFrame) return NULL;
@@ -307,17 +288,17 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetWidth
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return 0;
   return ctx->width;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext *ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return 0;
   return ctx->height;
 }
@@ -335,15 +316,15 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
 #include "../common/image.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
-  {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
-  {"cameraListDevices", "()[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
-  {"cameraListModes", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
-  {"cameraStart", "(III)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
-  {"cameraStop", "()Z", (void *)&Java_javaforce_media_Camera_cameraStop},
-  {"cameraGetFrame", "()[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
-  {"cameraGetWidth", "()I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
-  {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
+  {"cameraInit", "()J", (void *)&Java_javaforce_media_Camera_cameraInit},
+  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
+  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
+  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
+  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
+  {"cameraStop", "(J)Z", (void *)&Java_javaforce_media_Camera_cameraStop},
+  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
+  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
+  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
 };
 
 extern "C" void camera_register(JNIEnv *env);

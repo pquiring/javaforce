@@ -1,4 +1,3 @@
-#include <objbase.h>
 #include <dshow.h>
 #include "qedit.h"
 
@@ -14,7 +13,7 @@ struct CamContext {
   int cameraDeviceCount;
   jchar **cameraDeviceNames;  //utf16
   IMoniker **cameraDevices;
-  int listModes;
+  jboolean listModes;
   int cameraModeCount;
   char** cameraModes;
   ICaptureGraphBuilder2 *captureGraphBuilder;
@@ -40,33 +39,14 @@ struct CamContext {
 
 CamContext* createCamContext(JNIEnv *e, jobject c) {
   CamContext *ctx;
-  jclass cls_camera = e->FindClass("javaforce/media/Camera");
-  jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
-  ctx = (CamContext*)e->GetLongField(c, fid_cam_ctx);
-  if (ctx != NULL) {
-    printf("Camera ctx used twice:%p\n", ctx);
-    return NULL;
-  }
   ctx = new CamContext();
   memset(ctx, 0, sizeof(CamContext));
-  e->SetLongField(c,fid_cam_ctx,(jlong)ctx);
-  return ctx;
-}
-
-CamContext* getCamContext(JNIEnv *e, jobject c) {
-  CamContext *ctx;
-  jclass cls_camera = e->FindClass("javaforce/media/Camera");
-  jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
-  ctx = (CamContext*)e->GetLongField(c, fid_cam_ctx);
   return ctx;
 }
 
 void deleteCamContext(JNIEnv *e, jobject c, CamContext *ctx) {
   if (ctx == NULL) return;
   delete ctx;
-  jclass cls_camera = e->FindClass("javaforce/media/Camera");
-  jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
-  e->SetLongField(c,fid_cam_ctx,0);
 }
 
 static int strlen16(jchar *str) {
@@ -138,12 +118,12 @@ static void cameraReleaseAll(JNIEnv *e, CamContext *ctx) {
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraInit
+JNIEXPORT jlong JNICALL Java_javaforce_media_Camera_cameraInit
   (JNIEnv *e, jobject c)
 {
   printf("CameraInit\n");
   CamContext *ctx = createCamContext(e,c);
-  if (ctx == NULL) return JNI_FALSE;
+  if (ctx == NULL) return 0;
 
   ctx->cameraDeviceNames = (jchar**)malloc(sizeof(jchar*) * MAX_NUM_CAMERAS);
   memset(ctx->cameraDeviceNames, 0, sizeof(jchar*) * MAX_NUM_CAMERAS);
@@ -158,14 +138,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraInit
 
   ctx->cameraModeCount = 0;
 
-  return CoInitializeEx(NULL, COINIT_MULTITHREADED) == S_OK;
+  BOOL ok = CoInitializeEx(NULL, COINIT_MULTITHREADED) == S_OK;
+  if (!ok) return 0;
+
+  return (jlong)ctx;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraUninit
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   printf("CameraUninit\n");
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
   if (ctx->cameraDeviceNames != NULL) {
     free(ctx->cameraDeviceNames);
@@ -182,10 +165,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraUninit
 }
 
 JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   printf("CameraListDevices\n");
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return NULL;
   resetCameraList(ctx);
 
@@ -255,18 +238,18 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
 }
 
 JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListModes
-  (JNIEnv *e, jobject c, jint deviceIdx)
+  (JNIEnv *e, jobject c, jlong ctxptr, jint deviceIdx)
 {
   printf("CameraListModes\n");
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
   if (ctx == NULL) return NULL;
   resetCameraModeList(ctx);
 
   if (deviceIdx < 0 || deviceIdx >= ctx->cameraDeviceCount) return NULL;
 
   ctx->listModes = JNI_TRUE;
-  Java_javaforce_media_Camera_cameraStart(e,c,deviceIdx,-1,-1);
-  Java_javaforce_media_Camera_cameraStop(e,c);
+  Java_javaforce_media_Camera_cameraStart(e,c,ctxptr,deviceIdx,-1,-1);
+  Java_javaforce_media_Camera_cameraStop(e,c,ctxptr);
   ctx->listModes = JNI_FALSE;
 
   jclass strcls = e->FindClass("java/lang/String");
@@ -295,10 +278,11 @@ static void FreeMediaType(AM_MEDIA_TYPE *mt)
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
-  (JNIEnv *e, jobject c, jint deviceIdx, jint desiredWidth, jint desiredHeight)
+  (JNIEnv *e, jobject c, jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight)
 {
   printf("CameraStart:deviceIdx=%d\n", deviceIdx);
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
+  if (ctx == NULL) return JNI_FALSE;
   HRESULT res;
 
   if (deviceIdx < 0 || deviceIdx >= ctx->cameraDeviceCount) return JNI_FALSE;
@@ -499,10 +483,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStop
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   printf("CameraStop\n");
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
+  if (ctx == NULL) return JNI_FALSE;
   if (ctx->mediaControl != NULL) {
     ctx->mediaControl->Stop();
   }
@@ -510,10 +495,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStop
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
 //  printf("CameraGetFrame\n");
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
+  if (ctx == NULL) return NULL;
   if (ctx->sampleGrabber == NULL) return JNI_FALSE;
   int size = ctx->bufferSize;
   int status;
@@ -559,15 +545,17 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetWidth
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
+  if (ctx == NULL) return -1;
   return ctx->width;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  CamContext *ctx = getCamContext(e,c);
+  CamContext* ctx = (CamContext*)ctxptr;
+  if (ctx == NULL) return -1;
   return ctx->height;
 }

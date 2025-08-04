@@ -12,47 +12,47 @@ public class Camera {
   private long ctx = 0;
   private int[] mirror;
 
-  //web camera (no context - only one use per app)
-  private native boolean cameraInit();
-  private native boolean cameraUninit();
-  private native String[] cameraListDevices();
-  private native String[] cameraListModes(int deviceIdx);
-  private native boolean cameraStart(int deviceIdx, int width, int height);
-  private native boolean cameraStop();
-  private native int[] cameraGetFrame();
-  private native int cameraGetWidth();
-  private native int cameraGetHeight();
+  private native long cameraInit();
+  private native boolean cameraUninit(long ctx);
+  private native String[] cameraListDevices(long ctx);
+  private native String[] cameraListModes(long ctx, int deviceIdx);
+  private native boolean cameraStart(long ctx, int deviceIdx, int width, int height);
+  private native boolean cameraStop(long ctx);
+  private native int[] cameraGetFrame(long ctx);
+  private native int cameraGetWidth(long ctx);
+  private native int cameraGetHeight(long ctx);
 
   public boolean init() {
-    return cameraInit();
+    ctx = cameraInit();
+    return ctx != 0;
   }
 
   public boolean uninit() {
-    return cameraUninit();
+    return cameraUninit(ctx);
   }
 
   public String[] listDevices() {
-    return cameraListDevices();
+    return cameraListDevices(ctx);
   }
 
   public String[] listModes(int deviceIdx) {
-    return cameraListModes(deviceIdx);
+    return cameraListModes(ctx, deviceIdx);
   }
 
   public boolean start(int deviceIdx, int width, int height) {
-    return cameraStart(deviceIdx, width, height);
+    return cameraStart(ctx, deviceIdx, width, height);
   }
 
   public boolean stop() {
-    return cameraStop();
+    return cameraStop(ctx);
   }
 
   public int[] getFrame() {
-    return cameraGetFrame();
+    return cameraGetFrame(ctx);
   }
 
   public int[] getFrameMirror() {
-    int[] px = cameraGetFrame();
+    int[] px = cameraGetFrame(ctx);
     if (px == null) return null;
     //flip image horizontal (mirror)
     if (mirror == null || mirror.length != px.length) {
@@ -73,10 +73,10 @@ public class Camera {
   }
 
   public int getWidth() {
-    return cameraGetWidth();
+    return cameraGetWidth(ctx);
   }
 
   public int getHeight() {
-    return cameraGetHeight();
+    return cameraGetHeight(ctx);
   }
 }

@@ -1,3 +1,4 @@
+#define COBJMACROS
 #include <windows.h>
 #include <userenv.h>
 #include <sas.h>
@@ -1332,15 +1333,15 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "vss.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
-  {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
-  {"cameraListDevices", "()[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
-  {"cameraListModes", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
-  {"cameraStart", "(III)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
-  {"cameraStop", "()Z", (void *)&Java_javaforce_media_Camera_cameraStop},
-  {"cameraGetFrame", "()[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
-  {"cameraGetWidth", "()I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
-  {"cameraGetHeight", "()I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
+  {"cameraInit", "()J", (void *)&Java_javaforce_media_Camera_cameraInit},
+  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
+  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
+  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
+  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
+  {"cameraStop", "(J)Z", (void *)&Java_javaforce_media_Camera_cameraStop},
+  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
+  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
+  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
 };
 
 extern "C" void camera_register(JNIEnv *env);
