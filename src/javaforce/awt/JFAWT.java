@@ -17,6 +17,8 @@ import javaforce.*;
 
 public class JFAWT {
 
+  public static boolean debug = false;
+
   /** Value of new key down masks (CTRL + ALT + SHIFT).
    * Use with KeyEvent.getModifiersEx()
    * Note : RightAlt is AltGraph that includes Alt + AltGraph masks.
@@ -107,11 +109,15 @@ public class JFAWT {
     g.setFont(fnt);
     g.setColor(Color.white);
     g.drawString("\u2588", 0, 64);
+    if (debug) {
+      g.setColor(Color.blue);
+      g.drawString("g", 0, 64);
+    }
     int ascent = 1;
     for(int y=63;y>=0;y--,ascent++) {
       if (tmp.getPixel(0, y) == 0) break;
     }
-    int descent = 0;
+    int descent = 1;
     for(int y=65;y<128;y++,descent++) {
       if (tmp.getPixel(0, y) == 0) break;
     }
@@ -123,6 +129,11 @@ public class JFAWT {
     ret[0] = width;
     ret[1] = ascent;
     ret[2] = descent;
+    if (debug) {
+      g.setColor(Color.RED);
+      g.drawLine(0,64,128,64);
+      tmp.savePNG("font-metrics.png");
+    }
     return ret;
   }
 
