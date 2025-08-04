@@ -233,6 +233,12 @@ public class Menu {
 
   public static void connect(Profile profile) {
 
+    //apply settings to profile
+    profile.foreColor = Settings.settings.foreColor.getRGB();
+    profile.backColor = Settings.settings.backColor.getRGB();
+    profile.selectColor = Settings.settings.selectColor.getRGB();
+    profile.fnt = Settings.fnt;
+
     BufferViewer viewer = new BufferViewer(profile) {
       public void close() {
         super.close();
