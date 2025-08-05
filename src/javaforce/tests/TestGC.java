@@ -1,4 +1,4 @@
-package javaforce.utils;
+package javaforce.tests;
 
 /** TestGC
  *

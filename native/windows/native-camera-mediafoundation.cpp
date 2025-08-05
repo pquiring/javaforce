@@ -67,16 +67,10 @@ static void resetCameraModeList(CamContext* ctx) {
 }
 
 static void cameraReleaseAll(JNIEnv *e, CamContext* ctx) {
-/*
-  if (ctx->buffer != NULL) {
-    free(ctx->buffer);
-    ctx->buffer = NULL;
-  }
   if (ctx->jpx != NULL) {
     e->DeleteGlobalRef(ctx->jpx);
     ctx->jpx = NULL;
   }
-*/
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_media_Camera_cameraInit

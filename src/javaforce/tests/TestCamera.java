@@ -1,4 +1,4 @@
-package javaforce.utils;
+package javaforce.tests;
 
 /** Tests Camera function
  *
@@ -203,6 +203,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     timer.cancel();
     timer = null;
     camera.stop();
+    camera.uninit();
     camera = null;
     if (transcode) {
       encoder_h264.stop();
