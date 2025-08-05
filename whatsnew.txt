@@ -1,5 +1,13 @@
 What's new...
 
+Aug 5/2025 : JF/85.0
+  - jfKVM/3.1
+    - new : added host control buttons for reboot & shutdown
+  - jfTerm/0.24
+    - fix : supports Midnight Commander
+  - Windows : Camera now uses WinVista era API (Media Foundation)
+  - webui : added Terminal (run Linux console app in web browser)
+
 Jul 23/2025 : JF/84.0
   - jfKVM/3.0
     - added ceph replicated storage support
