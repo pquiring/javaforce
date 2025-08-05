@@ -408,6 +408,8 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
 
   buffer->Release();
 
+  sample->Release();
+
   return ctx->jpx;
 }
 
