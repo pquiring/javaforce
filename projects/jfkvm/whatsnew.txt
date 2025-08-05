@@ -1,3 +1,6 @@
+2025-08-05 : 3.1 released!
+  - new : added host control buttons : reboot & shutdown
+
 2025-07-23 : 3.0 released!
   - new : ceph replicated storage added
     - one click setup
