@@ -1,4 +1,3 @@
-#define COBJMACROS
 #include <windows.h>
 #include <userenv.h>
 #include <sas.h>
@@ -108,11 +107,22 @@ jboolean glGetFunction(void **funcPtr, const char *name)
   }
 }
 
-//Camera API
+//Camera API (only enable one)
 
+#if 0
+//VFW (Win95 era) Camera API
+#include "native-camera-vfw.cpp"  //lost in space and time
+#endif
+
+#if 0
+//DirectShow (WinXP era) Camera API
 #include "native-camera-directshow.cpp"
+#endif
 
-//#include "native-camera-mediafoundation.cpp"
+#if 1
+//MediaFoundation (WinVista era) Camera API
+#include "native-camera-mediafoundation.cpp"
+#endif
 
 //winPE resources
 
