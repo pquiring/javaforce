@@ -2,6 +2,8 @@
 
 #To build: docker build -f debian13.docker -t amd64/debian13 .
 
+#To use: cd repo & docker-amd64.sh debian13 latest
+
 #see https://docs.docker.com/reference/dockerfile/
 
 FROM debian:trixie
