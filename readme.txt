@@ -27,12 +27,12 @@ Folders
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
  /lib       - generated and dependancies jar files
- /native    - native loaders that load the java system and classpath, register native methods and start program main method
+ /native    - native loaders that load the java system, classpath, register native methods and start program main method
  /projects  - source for all sub-projects
  /iso       - scripts to build jfLinux iso (outdated)
  /linux     - scripts to install JavaForce repo for Linux
  /windows   - scripts to install JavaForce repo for Windows
- /utils     - utility apps (jnlp)
+ /utils     - utility apps
 
 Getting Started
 ===============
@@ -61,7 +61,6 @@ Building jfLinux (optional)
 ----------------
 After building Javaforce and the native components you can run package.sh to build and package everything for a Linux repo.
 Supported distros : Debian, Fedora, Arch.
-FreeBSD is currently not supported (open issue if you would like to see FreeBSD packager task and repo created)
 All packages are stored in /repo and can then be processed and uploaded to a repo server.
 Pre-built packages are hosted on sourceforge.net which can be installed through the jfLinux install process (see /linux).
 
@@ -69,7 +68,7 @@ JavaForce Ant tasks:
 --------------------
 get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
 get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader)
-  ffmpeg-win64 versions 5.1.2 , 6.1.2 , 7.0.2 are now available (you must edit versions.xml)
+  ffmpeg-win64 versions 5.1.2 , 6.1.2 , 7.0.2, 7.1.0 are available (you must edit versions.xml)
 jre-all : pre-link JRE with all modules
 jre-base : pre-link JRE with minimal modules for console apps/services
 jre-base-desktop : pre-link JRE with desktop support
