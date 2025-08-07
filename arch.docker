@@ -2,7 +2,7 @@
 
 #To build: docker build -f arch.docker -t amd64/arch .
 
-#To use: cd repo & docker-amd64.sh arch latest
+#To use: cd repo ; docker-amd64.sh arch latest
 
 #see https://docs.docker.com/reference/dockerfile/
 

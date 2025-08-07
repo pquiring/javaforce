@@ -1,8 +1,10 @@
 #Fedora/42 with build tools
 
-#To build: docker build -f fedora42.docker -t amd64/fedora42 .
+#To build on AMD64: docker build -f fedora42.docker -t amd64/fedora42 .
 
-#To use: cd repo & docker-amd64.sh fedora42 latest
+#To build on ARM64: docker build -f fedora42.docker -t arm64/fedora42 .
+
+#To use: cd repo ; docker-amd64.sh fedora42 latest
 
 #see https://docs.docker.com/reference/dockerfile/
 
