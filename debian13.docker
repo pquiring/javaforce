@@ -2,9 +2,11 @@
 
 #To build on AMD64: docker build -f debian13.docker -t amd64/debian13 .
 
-#To build on AMR64: docker build -f debian13.docker -t arm64/debian13 .
+#To build on AMR64: docker build -f debian13.docker -t arm64v8/debian13 .
 
-#To use: cd repo ; docker-amd64.sh debian13 latest
+#To use on AMD64: cd repo ; docker-amd64.sh debian13 latest
+
+#To use on ARM64: cd repo ; docker-arm64.sh debian13 latest
 
 #see https://docs.docker.com/reference/dockerfile/
 

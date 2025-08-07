@@ -2,9 +2,11 @@
 
 #To build on AMD64: docker build -f debian12.docker -t amd64/debian12 .
 
-#To build on ARM64: docker build -f debian12.docker -t arm64/debian12 .
+#To build on ARM64: docker build -f debian12.docker -t arm64v8/debian12 .
 
-#To use: cd repo ; docker-amd64.sh debian12 latest
+#To use on AMD64: cd repo ; docker-amd64.sh debian12 latest
+
+#To use on ARM64: cd repo ; docker-arm64.sh debian12 latest
 
 #see https://docs.docker.com/reference/dockerfile/
 
