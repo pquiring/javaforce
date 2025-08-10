@@ -151,6 +151,23 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     ANSI.debug = debug;
   }
 
+  /** Terminal.
+   * Connect to existing Linux pty.
+   * @param pty = existing pty interface.
+   */
+  public Terminal(LnxPty pty) {
+    for(int i=0;i<sy;i++) {
+      Line line = new Line(sx, fc, bc);
+      add(line);
+    }
+    setMaxWidth();
+    setMaxHeight();
+    setFocusable();
+    if (debug) JFLog.log("Terminal:" + sx + "x" + sy);
+    ANSI.debug = debug;
+    this.pty = pty;
+  }
+
   public void init() {
     super.init();
     addKeyDownListenerPreventDefault(this);
@@ -173,10 +190,14 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
 
   private boolean connect() {
     try {
-      pty = LnxPty.exec(cmd[0]
-        , cmd
-        , LnxPty.makeEnvironment(new String[] {"TERM=xterm"}));
-      if (pty == null) throw new Exception("pty failed");
+      if (pty == null) {
+        pty = LnxPty.exec(
+          cmd[0],
+          cmd,
+          LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
+        );
+        if (pty == null) throw new Exception("pty failed");
+      }
       in = new InputStream() {
         public int read() {return -1;}
         public int read(byte[] buf) {

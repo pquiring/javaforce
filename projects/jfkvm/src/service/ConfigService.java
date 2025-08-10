@@ -13,7 +13,9 @@ import java.util.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.vm.*;
+import javaforce.lxc.*;
 import javaforce.linux.*;
+import javaforce.jni.lnx.*;
 import javaforce.net.*;
 import javaforce.service.*;
 import javaforce.webui.*;
@@ -29,6 +31,7 @@ public class ConfigService implements WebUIHandler {
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
+  private LxcContainerManager lxcmgr;
   private boolean genkey;
 
   private static final String[] filter_disks = new String[] {
@@ -69,6 +72,7 @@ public class ConfigService implements WebUIHandler {
     server = new WebUIServer();
     server.start(this, 443, keys);
     vmm = new VMM();
+    lxcmgr = new Docker();
   }
 
   public void stop() {
@@ -184,6 +188,8 @@ public class ConfigService implements WebUIHandler {
     public ArrayList<NetworkVirtual> nics_virt;
     public NetworkVLAN[] nics_vlans;
 
+    public LnxPty pty;
+
     public void resize() {
       if (right_panel == null || top_bottom_split == null || left_right_split == null || client == null) return;
       int height = top_bottom_split.getDividerPosition();
@@ -194,6 +200,10 @@ public class ConfigService implements WebUIHandler {
 
     public void setRightPanel(Panel panel) {
       if (panel == null) return;
+      if (pty != null) {
+        pty.close();
+        pty = null;
+      }
       right_panel = panel;
       resize();
       left_right_split.setRightComponent(panel);
@@ -203,6 +213,9 @@ public class ConfigService implements WebUIHandler {
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     if (name.equals("console")) {
       return getWebConsole(params, client);
+    }
+    if (name.equals("terminal")) {
+      return getWebTerminal(params, client);
     }
     if (Config.passwd == null) {
       return installPanel(client);
@@ -1613,6 +1626,9 @@ public class ConfigService implements WebUIHandler {
     Button vms = new Button("Virtual Machines");
     vms.setWidth(size);
     list.add(vms);
+    Button lxcs = new Button("Containers");
+    lxcs.setWidth(size);
+    list.add(lxcs);
     Button stores = new Button("Storage");
     stores.setWidth(size);
     list.add(stores);
@@ -1624,6 +1640,9 @@ public class ConfigService implements WebUIHandler {
     });
     vms.addClickListener((me, cmp) -> {
       ui.setRightPanel(vmsPanel(ui));
+    });
+    lxcs.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel(ui, LXC_IMAGES));
     });
     stores.addClickListener((me, cmp) -> {
       ui.setRightPanel(storagePanel(ui));
@@ -3991,6 +4010,453 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private static final int LXC_IMAGES = 0;
+  private static final int LXC_CONTAINERS = 1;
+
+  private Panel lxcPanel(UI ui, int idx) {
+    TabPanel panel = new TabPanel();
+    panel.addTab(lnxPanel_images(ui), "Images");
+    panel.addTab(lnxPanel_containers(ui), "Containers");
+    panel.setTabIndex(idx);
+    return panel;
+  }
+
+  private Panel lnxPanel_images(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button pull = new Button("Pull");
+    tools.add(pull);
+    Button create = new Button("Create");
+    tools.add(create);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+    Button help = new Button("Help");
+    tools.add(help);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {150, 100}, col_height, 2, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    table.addRow(new String[] {"id", "OS"});
+    LxcImage[] images = lxcmgr.listImages();
+    for(LxcImage img : images) {
+      table.addRow(img.getStates());
+    }
+
+    pull.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel_images_pull(ui));
+    });
+
+    create.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel_images_create(ui));
+    });
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel(ui, LXC_IMAGES));
+    });
+
+    delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      LxcImage img = images[idx];
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete Image : " + img.name);
+      ui.confirm_action = () -> {
+        Task task = new Task("Delete Image : " + img.name) {
+          public void doTask() {
+            if (img.delete()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_lxc_images.html");
+    });
+
+    return panel;
+  }
+
+  private Panel lxcPanel_images_pull(UI ui) {
+    Panel panel = new Panel();
+    Row row = new Row();
+    panel.add(row);
+    row.add(new Label("Image:"));
+    TextField a_n_c = new TextField("amd64/debian:trixie");
+    row.add(a_n_c);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button pull = new Button("Pull");
+    tools.add(pull);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    pull.addClickListener((me, cmp) -> {
+      String anc = a_n_c.getText();
+      LnxPty pty = lxcmgr.pullImage(new LxcImage(anc));
+      ui.setRightPanel(createTerminalPanel(pty, "Pull image:" + anc));
+      Task task = new Task("Pull image") {
+        public void doTask() {
+          try {
+            while (!pty.isClosed()) {
+              JF.sleep(500);
+            }
+            pty.close();
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error:Pull image failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+    });
+
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel(ui, LXC_IMAGES));
+    });
+
+    return panel;
+  }
+
+  private Panel lxcPanel_images_create(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Tag:"));
+    TextField tag = new TextField("amd64/name:version");
+    row.add(tag);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Working Folder:"));
+    TextField wd = new TextField("/opt");
+    row.add(wd);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Script:"));
+    TextArea script_box = new TextArea("#docker build script...");
+    row.add(script_box);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button exec = new Button("Execute");
+    tools.add(exec);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    exec.addClickListener((me, cmp) -> {
+      String script = script_box.getText();
+      String folder = wd.getText();
+      String filename = folder + "/jfkvm-" + System.currentTimeMillis() + ".docker";
+      File script_file = new File(filename);
+      try {
+        if (!new File(folder).mkdirs()) throw new Exception("unable to create folder");
+        FileOutputStream fos = new FileOutputStream(filename);
+        fos.write(script.getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+        errmsg.setText("Error:" + e.toString());
+        return;
+      }
+      LnxPty pty = lxcmgr.createImage(filename, new LxcImage(tag.getText()), wd.getText());
+      ui.setRightPanel(createTerminalPanel(pty, "Create image"));
+      Task task = new Task("Create image") {
+        public void doTask() {
+          try {
+            while (!pty.isClosed()) {
+              JF.sleep(500);
+            }
+            pty.close();
+            script_file.delete();
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error:Create image failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+    });
+
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel(ui, LXC_IMAGES));
+    });
+
+    return panel;
+  }
+
+  private Panel lnxPanel_containers(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button create = new Button("Create");
+    tools.add(create);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+    Button terminal = new Button("Terminal");
+    tools.add(terminal);
+    Button stop = new Button("Stop");
+    tools.add(stop);
+    Button restart = new Button("Restart");
+    tools.add(restart);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+    Button help = new Button("Help");
+    tools.add(help);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {150, 100}, col_height, 2, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    table.addRow(new String[] {"id", "image"});
+    LxcContainer[] cs = lxcmgr.listContainers();
+    for(LxcContainer c : cs) {
+      table.addRow(c.getStates());
+    }
+
+    create.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel_containers_add(ui));
+    });
+
+    refresh.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel(ui, LXC_CONTAINERS));
+    });
+
+    terminal.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      LxcContainer c = cs[idx];
+      TerminalSession sess = new TerminalSession();
+      sess.id = JF.generateUUID();
+      sess.c = c;
+      sess.ts = System.currentTimeMillis();
+      sess.put();
+      cmp.getClient().openURL("/terminal?id=" + sess.id);
+    });
+
+    //stop
+    stop.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      LxcContainer c = cs[idx];
+      ui.confirm_button.setText("Stop");
+      ui.confirm_message.setText("Stop Container : " + c.id);
+      ui.confirm_action = () -> {
+        Task task = new Task("Stop Container : " + c.id) {
+          public void doTask() {
+            if (c.delete()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    //restart
+    restart.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      LxcContainer c = cs[idx];
+      ui.confirm_button.setText("Restart");
+      ui.confirm_message.setText("Restart Container : " + c.id);
+      ui.confirm_action = () -> {
+        Task task = new Task("Restart Container : " + c.id) {
+          public void doTask() {
+            if (c.restart()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      LxcContainer c = cs[idx];
+      ui.confirm_button.setText("Delete");
+      ui.confirm_message.setText("Delete Container : " + c.id);
+      ui.confirm_action = () -> {
+        Task task = new Task("Delete Container : " + c.id) {
+          public void doTask() {
+            if (c.delete()) {
+              setResult("Completed");
+            } else {
+              setResult("Error occured, see logs.");
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_lxc_containers.html");
+    });
+
+    return panel;
+  }
+
+  private Panel lxcPanel_containers_add(UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Image:"));
+    ComboBox image = new ComboBox();
+    row.add(image);
+    LxcImage[] images = lxcmgr.listImages();
+    for(LxcImage img : images) {
+      String s = img.toString();
+      image.add(s, s);
+    }
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Container Options:"));
+    //TODO : use LxcOptions
+    TextField options = new TextField("--mount type=bind,src=/opt,dst=/opt --mount type=bind,src=/mnt,dst=/mnt");
+    row.add(options);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Executable:"));
+    TextField exec = new TextField("/usr/bin/bash");
+    row.add(exec);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Arguments:"));
+    TextField args = new TextField("-i -l");
+    row.add(args);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+
+    Button create = new Button("Create");
+    tools.add(create);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    create.addClickListener((me, cmp) -> {
+      String _image = image.getSelectedText();
+      String _opts = options.getText();
+      ArrayList<String> ol = new ArrayList<>();
+      String[] _opt_array = _opts.split("\\s");
+      for(String opt : _opt_array) {
+        ol.add(opt);
+      }
+      String _exec = exec.getText();
+      String _args = args.getText();
+      ArrayList<String> cl = new ArrayList<>();
+      cl.add(_exec);
+      String[] _args_array = _args.split("\\s");
+      for(String arg : _args_array) {
+        ol.add(arg);
+      }
+      Task task = new Task("Create Container") {
+        public void doTask() {
+          try {
+            LxcContainer c = lxcmgr.createContainer(new LxcImage(_image), cl.toArray(JF.StringArrayType), ol.toArray(JF.StringArrayType));
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error:Create Container failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+      ui.setRightPanel(lxcPanel(ui, LXC_CONTAINERS));
+    });
+
+    cancel.addClickListener((me, cmp) -> {
+      ui.setRightPanel(lxcPanel(ui, LXC_CONTAINERS));
+    });
+
+    return panel;
+  }
+
   private Panel storagePanel(UI ui) {
     Panel panel = new Panel();
     Row row;
@@ -5600,6 +6066,48 @@ public class ConfigService implements WebUIHandler {
     return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, VNCWebConsole.OPT_TOOLBAR, client);
   }
 
+  public Panel getWebTerminal(HTTP.Parameters params, WebUIClient client) {
+    String id = params.get("id");
+    if (id == null) {
+      JFLog.log("TERM:id==null");
+      return null;
+    }
+    TerminalSession sess = TerminalSession.get(id);
+    if (sess == null) {
+      JFLog.log("TERM:sess==null");
+      return null;
+    }
+    return createTerminalPanel(sess.c);
+  }
+
+  private Panel createTerminalPanel(LxcContainer c) {
+    Panel panel = new Panel();
+    Row row = new Row();
+    panel.add(row);
+    Button detach = new Button("Detach");
+    row.add(detach);
+    row.add(new Label("Container:" + c.id));
+    Terminal term = new Terminal(c.attach());
+    panel.add(term);
+    detach.addClickListener((me, cmp) -> {
+      c.detach();
+      panel.remove(row);
+      panel.remove(term);
+      panel.add(new Label("Container detached!"));
+    });
+    return panel;
+  }
+
+  private Panel createTerminalPanel(LnxPty pty, String msg) {
+    Panel panel = new Panel();
+    Row row = new Row();
+    panel.add(row);
+    row.add(new Label(msg));
+    Terminal term = new Terminal(pty);
+    panel.add(term);
+    return panel;
+  }
+
   public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
     //url = /api/...
     if (debug) {
@@ -5986,8 +6494,16 @@ public class ConfigService implements WebUIHandler {
   }
 
   public void clientConnected(WebUIClient client) {
+    client.setProperty("pty", null);
   }
 
   public void clientDisconnected(WebUIClient client) {
+    LnxPty pty = (LnxPty)client.getProperty("pty");
+    if (pty == null) return;
+    try {
+      pty.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }

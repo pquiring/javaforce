@@ -10,9 +10,9 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="3.1"/>
 
-  <property name="debian.depends" value="libvirt-dev  ,libvirt-daemon-system,openvswitch-switch,bridge-utils,nfs-common,open-iscsi           ,gfs2-utils,ocfs2-tools,glusterfs-server, cephadm, ceph-common, docker.io"/>
-  <property name="fedora.depends" value="libvirt-devel,libvirt-daemon       ,openvswitch       ,bridge-utils,nfs-utils ,iscsi-initiator-utils,gfs2-utils,ocfs2-tools,glusterfs-server, cephadm, ceph-common, docker"/>
-  <property name="arch.depends"   value="libvirt                            ,openvswitch       ,bridge-utils,nfs-utils ,open-iscsi                                  ,glusterfs"/>
+  <property name="debian.depends" value="jfutils, libvirt-dev  ,libvirt-daemon-system,openvswitch-switch,bridge-utils,nfs-common,open-iscsi           ,gfs2-utils,ocfs2-tools,glusterfs-server, cephadm, ceph-common, docker.io"/>
+  <property name="fedora.depends" value="jfutils, libvirt-devel,libvirt-daemon       ,openvswitch       ,bridge-utils,nfs-utils ,iscsi-initiator-utils,gfs2-utils,ocfs2-tools,glusterfs-server, cephadm, ceph-common, docker"/>
+  <property name="arch.depends"   value="jfutils, libvirt                            ,openvswitch       ,bridge-utils,nfs-utils ,open-iscsi                                  ,glusterfs"/>
     <!-- AUR gfs2-utils & ocfs2-tools support -->
 
   <import file="${home}/base.xml"/>
