@@ -20,11 +20,10 @@ public class Docker implements LxcContainerManager {
 
     public LnxPty attach() {
       ArrayList<String> cmd = new ArrayList<>();
-      cmd.add("/usr/bin/docker");
       cmd.add("attach");
       cmd.add(id);
       cmd.add(null);
-      pty = LnxPty.exec(cmd.get(0), cmd.toArray(JF.StringArrayType), new String[] {null});
+      pty = LnxPty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), new String[] {null});
       return pty;
     }
 
@@ -68,6 +67,8 @@ public class Docker implements LxcContainerManager {
 
   public static class DockerImage extends LxcImage {
 
+    public static String default_repo = "docker.io";
+
     public DockerImage() {}
 
     public DockerImage(String mtag) {super(mtag);}
@@ -107,23 +108,23 @@ server/arch/name version    123456781234   age            size
 
   public LnxPty pullImage(LxcImage image) {
     ArrayList<String> cmd = new ArrayList<>();
-    cmd.add("/usr/bin/docker");
     cmd.add("image");
     cmd.add("pull");
     cmd.add(image.toString());
-    return LnxPty.exec(cmd.get(0), cmd.toArray(JF.StringArrayType), new String[0]);
+    cmd.add(null);
+    return LnxPty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), new String[] {null});
   }
 
   public LnxPty createImage(String script_file, LxcImage image, String src_folder) {
     ArrayList<String> cmd = new ArrayList<>();
-    cmd.add("/usr/bin/docker");
     cmd.add("build");
     cmd.add("-f");
     cmd.add(script_file);
     cmd.add("-t");
     cmd.add(image.toString());
     cmd.add(src_folder);
-    return LnxPty.exec(cmd.get(0), cmd.toArray(JF.StringArrayType), new String[0]);
+    cmd.add(null);
+    return LnxPty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), new String[] {null});
   }
 
   public LxcContainer[] listContainers() {

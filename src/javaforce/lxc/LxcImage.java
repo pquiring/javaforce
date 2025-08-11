@@ -54,7 +54,7 @@ public class LxcImage {
 
   public String id;
 
-  public String repo;  //default = hub.docker.com
+  public String repo;
   public String arch;
   public String name;
   public String version;
