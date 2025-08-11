@@ -98,7 +98,7 @@ server/arch/name version    123456781234   age            size
     String[] lns = out.split("\n");
     ArrayList<LxcImage> images = new ArrayList<>();
     for(int i=1;i<lns.length;i++) {
-      String[] fs = lns[i].split("\\s");  //whitespace char
+      String[] fs = lns[i].split("\\s+");  //whitespace char
       if (fs.length < 3) continue;
       images.add(new DockerImage(fs[0], fs[1]).setID(fs[2]));
     }
@@ -136,7 +136,7 @@ CONTAINER ID   IMAGE                 COMMAND   CREATED         STATUS         PO
     String[] lns = out.split("\n");
     ArrayList<LxcContainer> containers = new ArrayList<>();
     for(int i=1;i<lns.length;i++) {
-      String[] fs = lns[i].split("\\s");  //whitespace char
+      String[] fs = lns[i].split("\\s+");  //whitespace char
       if (fs.length < 3) continue;
       containers.add(new DockerContainer(fs[0]).setImage(new DockerImage(fs[1])));
     }

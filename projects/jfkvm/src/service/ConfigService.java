@@ -4060,7 +4060,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 100}, col_height, 2, 0);
+    Table table = new Table(new int[] {150, 200}, col_height, 2, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -4265,7 +4265,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 100}, col_height, 2, 0);
+    Table table = new Table(new int[] {150, 200}, col_height, 2, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
