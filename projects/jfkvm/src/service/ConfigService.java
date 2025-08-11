@@ -208,6 +208,13 @@ public class ConfigService implements WebUIHandler {
       resize();
       left_right_split.setRightComponent(panel);
     }
+
+    public void close_pty() {
+      if (pty != null) {
+        pty.close();
+        pty = null;
+      }
+    }
   }
 
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
@@ -5939,12 +5946,13 @@ public class ConfigService implements WebUIHandler {
   }
 
   private Panel terminalPanel(UI ui) {
-    LnxPty pty = LnxPty.exec(
+    ui.close_pty();
+    ui.pty = LnxPty.exec(
       "/usr/bin/bash",
       new String[] {"-i", "-l", null},
       new String[] {"TERM=xterm", null}
     );
-    Panel panel = createTerminalPanel(pty, "Host Terminal");
+    Panel panel = createTerminalPanel(ui.pty, "Host Terminal");
     return panel;
   }
 
