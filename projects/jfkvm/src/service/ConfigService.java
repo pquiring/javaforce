@@ -4131,9 +4131,19 @@ public class ConfigService implements WebUIHandler {
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
     pull.addClickListener((me, cmp) -> {
       String anc = a_n_c.getText();
       LnxPty pty = lxcmgr.pullImage(new LxcImage(anc));
+      if (pty == null) {
+        errmsg.setText("Error:pull image request failed, check logs.");
+        return;
+      }
       ui.setRightPanel(createTerminalPanel(pty, "Pull image:" + anc));
       Task task = new Task("Pull image") {
         public void doTask() {
@@ -4212,6 +4222,10 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       LnxPty pty = lxcmgr.createImage(filename, new LxcImage(tag.getText()), wd.getText());
+      if (pty == null) {
+        errmsg.setText("Error:create image request failed, check logs.");
+        return;
+      }
       ui.setRightPanel(createTerminalPanel(pty, "Create image"));
       Task task = new Task("Create image") {
         public void doTask() {
@@ -6114,10 +6128,17 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Row row = new Row();
     panel.add(row);
+    LnxPty pty = c.attach();
+    if (pty == null) {
+      Label errmsg = new Label("Error:Container.attach() failed:" + c.id);
+      errmsg.setColor(Color.red);
+      row.add(errmsg);
+      return panel;
+    }
     Button detach = new Button("Detach");
     row.add(detach);
     row.add(new Label("Container:" + c.id));
-    Terminal term = new Terminal(c.attach());
+    Terminal term = new Terminal(pty);
     panel.add(term);
     detach.addClickListener((me, cmp) -> {
       c.detach();
