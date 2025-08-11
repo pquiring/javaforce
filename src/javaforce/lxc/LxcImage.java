@@ -20,8 +20,8 @@ public class LxcImage {
     if (idx == -1) {
       version = "latest";
     } else {
-      mtag = mtag.substring(0, idx);
       version = mtag.substring(idx + 1);
+      mtag = mtag.substring(0, idx);
     }
     String[] fs = mtag.split("[/]");
     int cnt = fs.length - 1;
