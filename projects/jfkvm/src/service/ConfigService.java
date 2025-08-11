@@ -4439,7 +4439,7 @@ public class ConfigService implements WebUIHandler {
       String _image = image.getSelectedText();
       String _opts = options.getText();
       ArrayList<String> ol = new ArrayList<>();
-      String[] _opt_array = _opts.split("\\s");
+      String[] _opt_array = _opts.split("\\s+");
       for(String opt : _opt_array) {
         ol.add(opt);
       }
@@ -4447,9 +4447,9 @@ public class ConfigService implements WebUIHandler {
       String _args = args.getText();
       ArrayList<String> cl = new ArrayList<>();
       cl.add(_exec);
-      String[] _args_array = _args.split("\\s");
+      String[] _args_array = _args.split("\\s+");
       for(String arg : _args_array) {
-        ol.add(arg);
+        cl.add(arg);
       }
       Task task = new Task("Create Container") {
         public void doTask() {
