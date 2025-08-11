@@ -4179,6 +4179,8 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
     row.add(new Label("Script:"));
     TextArea script_box = new TextArea("#docker build script...");
+    script_box.setMaxWidth();
+    script_box.setRows(16);
     row.add(script_box);
 
     ToolBar tools = new ToolBar();

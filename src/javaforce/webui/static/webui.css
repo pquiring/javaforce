@@ -48,6 +48,10 @@ td {
   padding: 0px;
 }
 
+textarea {
+  resize: none;
+}
+
 .logo1 {
   position: relative;
   width: 100px;

@@ -23,4 +23,16 @@ public class TextArea extends TextComponent {
     text = destringify(args[0].substring(idx+1));
     super.onChanged(args);
   }
+  public void setRows(int rows) {
+    addAttr("rows", Integer.toString(rows));
+  }
+  public void setCols(int cols) {
+    addAttr("cols", Integer.toString(cols));
+  }
+  public void setMaxLength(int len) {
+    addAttr("maxlength", Integer.toString(len));
+  }
+  public void setMinLength(int len) {
+    addAttr("minlength", Integer.toString(len));
+  }
 }
