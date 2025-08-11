@@ -1635,6 +1635,10 @@ public class ConfigService implements WebUIHandler {
     Button networks = new Button("Network");
     networks.setWidth(size);
     list.add(networks);
+    Button terminal = new Button("Terminal");
+    terminal.setWidth(size);
+    list.add(terminal);
+
     host.addClickListener((me, cmp) -> {
       ui.setRightPanel(hostPanel(ui, HOST_WELCOME));
     });
@@ -1649,6 +1653,9 @@ public class ConfigService implements WebUIHandler {
     });
     networks.addClickListener((me, cmp) -> {
       ui.setRightPanel(networkPanel(ui));
+    });
+    terminal.addClickListener((me, cmp) -> {
+      ui.setRightPanel(terminalPanel(ui));
     });
     return panel;
   }
@@ -5929,6 +5936,16 @@ public class ConfigService implements WebUIHandler {
       cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_network.html");
     });
     return tab;
+  }
+
+  private Panel terminalPanel(UI ui) {
+    LnxPty pty = LnxPty.exec(
+      "/usr/bin/bash",
+      new String[] {"-i", "-l", null},
+      new String[] {"TERM=xterm", null}
+    );
+    Panel panel = createTerminalPanel(pty, "Host Terminal");
+    return panel;
   }
 
   private String getPool(String path_file) {
