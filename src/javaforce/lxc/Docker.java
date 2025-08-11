@@ -70,9 +70,9 @@ public class Docker implements LxcContainerManager {
 
     public DockerImage() {}
 
-    public DockerImage(String a_n_v) {super(a_n_v);}
+    public DockerImage(String mtag) {super(mtag);}
 
-    public DockerImage(String a_n, String v) {super(a_n, v);}
+    public DockerImage(String mtag, String ver) {super(mtag, ver);}
 
     public boolean delete() {
       if (id == null) return false;
@@ -93,6 +93,7 @@ public class Docker implements LxcContainerManager {
 /*
 REPOSITORY       TAG        IMAGE ID       CREATED        SIZE
 amd64/debian     trixie     ff19e76646cc   5 weeks ago    120MB
+server/arch/name version    123456781234   age            size
 */
     String[] lns = out.split("\n");
     ArrayList<LxcImage> images = new ArrayList<>();
@@ -104,24 +105,23 @@ amd64/debian     trixie     ff19e76646cc   5 weeks ago    120MB
     return images.toArray(new LxcImage[0]);
   }
 
-  public LnxPty pullImage(LxcImage arch_name_version) {
+  public LnxPty pullImage(LxcImage image) {
     ArrayList<String> cmd = new ArrayList<>();
     cmd.add("/usr/bin/docker");
     cmd.add("image");
     cmd.add("pull");
-    cmd.add(arch_name_version.toString());
+    cmd.add(image.toString());
     return LnxPty.exec(cmd.get(0), cmd.toArray(JF.StringArrayType), new String[0]);
   }
 
-
-  public LnxPty createImage(String script_file, LxcImage arch_name_version, String src_folder) {
+  public LnxPty createImage(String script_file, LxcImage image, String src_folder) {
     ArrayList<String> cmd = new ArrayList<>();
     cmd.add("/usr/bin/docker");
     cmd.add("build");
     cmd.add("-f");
     cmd.add(script_file);
     cmd.add("-t");
-    cmd.add(arch_name_version.toString());
+    cmd.add(image.toString());
     cmd.add(src_folder);
     return LnxPty.exec(cmd.get(0), cmd.toArray(JF.StringArrayType), new String[0]);
   }

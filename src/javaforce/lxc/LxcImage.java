@@ -3,7 +3,7 @@ package javaforce.lxc;
 /** Linux Image
  *
  * example:
- * amd64/debian:trixie
+ * [repo/]amd64/debian:trixie
  *   arch=amd64
  *   name=debian
  *   version=trixie
@@ -15,34 +15,28 @@ public class LxcImage {
 
   public LxcImage() {}
 
-  public LxcImage(String arch_name_version) {
-    int idx = arch_name_version.indexOf('/');
+  public LxcImage(String mtag) {
+    int idx = mtag.lastIndexOf(':');
     if (idx == -1) {
-      arch = "";
-    } else {
-      arch = arch_name_version.substring(0, idx);
-      arch_name_version = arch_name_version.substring(idx + 1);
-    }
-    idx = arch_name_version.indexOf(':');
-    if (idx == -1) {
-      name = arch_name_version;
       version = "latest";
     } else {
-      name = arch_name_version.substring(0, idx);
-      version = arch_name_version.substring(idx + 1);
+      mtag = mtag.substring(0, idx);
+      version = mtag.substring(idx + 1);
     }
+    String[] fs = mtag.split("[/]");
+    int cnt = fs.length - 1;
+    if (cnt >= 0) name = fs[cnt--];
+    if (cnt >= 0) arch = fs[cnt--];
+    if (cnt >= 0) repo = fs[cnt--];
   }
 
-  public LxcImage(String arch_name, String version) {
-    int idx = arch_name.indexOf('/');
-    if (idx == -1) {
-      arch = "";
-    } else {
-      arch = arch_name.substring(0, idx);
-      arch_name = arch_name.substring(idx + 1);
-    }
-    name = arch_name;
+  public LxcImage(String mtag, String version) {
     this.version = version;
+    String[] fs = mtag.split("[/]");
+    int cnt = fs.length - 1;
+    if (cnt >= 0) name = fs[cnt--];
+    if (cnt >= 0) arch = fs[cnt--];
+    if (cnt >= 0) repo = fs[cnt--];
   }
 
   public LxcImage(String arch, String name, String version) {
@@ -51,8 +45,16 @@ public class LxcImage {
     this.version = version;
   }
 
+  public LxcImage(String repo, String arch, String name, String version) {
+    this.repo = repo;
+    this.arch = arch;
+    this.name = name;
+    this.version = version;
+  }
+
   public String id;
 
+  public String repo;  //default = hub.docker.com
   public String arch;
   public String name;
   public String version;
@@ -72,6 +74,10 @@ public class LxcImage {
   }
 
   public String toString() {
-    return arch + "/" + name  + ":" + version;
+    if (repo != null) {
+      return repo + "/" + arch + "/" + name  + ":" + version;
+    } else {
+      return arch + "/" + name  + ":" + version;
+    }
   }
 }
