@@ -215,6 +215,7 @@ CONTAINER ID   IMAGE                 COMMAND   CREATED         STATUS         PO
     }
     String out = sp.run(cl.toArray(JF.StringArrayType), true);
     if (sp.getErrorLevel() != 0) {
+      JFLog.log("Docker:createContainer failed:" + out);
       return null;
     } else {
       String[] lns = out.split("\n");

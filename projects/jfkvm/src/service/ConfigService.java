@@ -4453,6 +4453,9 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             LxcContainer c = lxcmgr.createContainer(new LxcImage(_image), cl.toArray(JF.StringArrayType), ol.toArray(JF.StringArrayType));
+            if (c == null) {
+              throw new Exception("error");
+            }
             setStatus("Completed");
           } catch (Exception e) {
             setStatus("Error:Create Container failed, check logs.");
