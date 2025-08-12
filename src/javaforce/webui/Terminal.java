@@ -357,9 +357,11 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
       try {
         while (active) {
           int buflen = in.read(buf);
-          if (buflen > 0) if (debug) JFLog.log("read=" + buflen);
           if (buflen == -1) throw new Exception("read error");
-          if (buflen > 0) input(byte2char(buf, buflen), buflen);
+          if (buflen > 0) {
+            if (debug) JFLog.log("read=" + buflen);
+            input(byte2char(buf, buflen), buflen);
+          }
           if (buflen == 0) JF.sleep(100);
         }
       } catch (Exception e) {
