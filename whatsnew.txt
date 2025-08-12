@@ -1,5 +1,10 @@
 What's new...
 
+Aug 12/2025 : JF/86.0
+  - jfKVM/4.0
+    - new : Containers (with Docker)
+    - new : Terminal (host bash term)
+
 Aug 5/2025 : JF/85.0
   - jfKVM/3.1
     - new : added host control buttons for reboot & shutdown
