@@ -188,7 +188,8 @@ public class ConfigService implements WebUIHandler {
     public ArrayList<NetworkVirtual> nics_virt;
     public NetworkVLAN[] nics_vlans;
 
-    public LnxPty pty;  //Container or Host Terminal (one per webui connection)
+    private LnxPty pty;  //Container or Host Terminal (one per webui connection)
+    public LnxPty new_pty;
 
     public void resize() {
       if (right_panel == null || top_bottom_split == null || left_right_split == null || client == null) return;
@@ -203,6 +204,8 @@ public class ConfigService implements WebUIHandler {
       if (pty != null) {
         close_pty();
       }
+      pty = new_pty;
+      new_pty = null;
       right_panel = panel;
       resize();
       left_right_split.setRightComponent(panel);
@@ -5963,12 +5966,12 @@ public class ConfigService implements WebUIHandler {
 
   private Panel terminalPanel(UI ui) {
     ui.close_pty();
-    ui.pty = LnxPty.exec(
+    ui.new_pty = LnxPty.exec(
       "/usr/bin/bash",
       new String[] {"/usr/bin/bash", "-i", "-l", null},
       LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
     );
-    Panel panel = createTerminalPanel(ui.pty, "Host Terminal");
+    Panel panel = createTerminalPanel(ui.new_pty, "Host Terminal");
     return panel;
   }
 
@@ -6131,8 +6134,8 @@ public class ConfigService implements WebUIHandler {
     Row row = new Row();
     panel.add(row);
     ui.close_pty();
-    ui.pty = c.attach();
-    if (ui.pty == null) {
+    ui.new_pty = c.attach();
+    if (ui.new_pty == null) {
       Label errmsg = new Label("Error:Container.attach() failed:" + c.id);
       errmsg.setColor(Color.red);
       row.add(errmsg);
@@ -6141,7 +6144,7 @@ public class ConfigService implements WebUIHandler {
     Button detach = new Button("Detach");
     row.add(detach);
     row.add(new Label("Container:" + c.id));
-    Terminal term = new Terminal(ui.pty);
+    Terminal term = new Terminal(ui.new_pty);
     panel.add(term);
     detach.addClickListener((me, cmp) -> {
       c.detach();

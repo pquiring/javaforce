@@ -133,7 +133,7 @@ public class LnxPty {
 
     try {
       LnxNative.ptyChildExec(slaveName, cmd, process_args.toArray(JF.StringArrayType), process_env.toArray(JF.StringArrayType));
-      System.exit(0);  //should not happen
+      throw new Exception("pty child returned");  //should not happen
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(0);
@@ -143,7 +143,9 @@ public class LnxPty {
   /** Frees resources */
   public synchronized void close() {
     if (closed) return;
-    if (debug) JFLog.log("LnxPty:close()");
+    if (debug) {
+      JFLog.logTrace("LnxPty:close()");
+    }
     LnxNative.ptyClose(ctx);
     closed = true;
   }
