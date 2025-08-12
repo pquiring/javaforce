@@ -1,3 +1,7 @@
+2025-08-12 : 4.0 released!
+  - new : Containers (with Docker)
+  - new : Terminal (open host bash term)
+
 2025-08-05 : 3.1 released!
   - new : added host control buttons : reboot & shutdown
 
