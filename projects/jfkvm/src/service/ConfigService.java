@@ -4209,10 +4209,13 @@ public class ConfigService implements WebUIHandler {
     exec.addClickListener((me, cmp) -> {
       String script = script_box.getText();
       String folder = wd.getText();
+      File folder_file = new File(folder);
       String filename = folder + "/jfkvm-" + System.currentTimeMillis() + ".docker";
       File script_file = new File(filename);
       try {
-        if (!new File(folder).mkdirs()) throw new Exception("unable to create folder");
+        if (!folder_file.exists()) {
+          if (!folder_file.mkdirs()) throw new Exception("unable to create folder");
+        }
         FileOutputStream fos = new FileOutputStream(filename);
         fos.write(script.getBytes());
         fos.close();
