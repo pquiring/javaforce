@@ -188,7 +188,7 @@ public class ConfigService implements WebUIHandler {
     public ArrayList<NetworkVirtual> nics_virt;
     public NetworkVLAN[] nics_vlans;
 
-    public LnxPty pty;
+    public LnxPty pty;  //Container or Host Terminal (one per webui connection)
 
     public void resize() {
       if (right_panel == null || top_bottom_split == null || left_right_split == null || client == null) return;
@@ -201,8 +201,7 @@ public class ConfigService implements WebUIHandler {
     public void setRightPanel(Panel panel) {
       if (panel == null) return;
       if (pty != null) {
-        pty.close();
-        pty = null;
+        close_pty();
       }
       right_panel = panel;
       resize();
@@ -232,7 +231,12 @@ public class ConfigService implements WebUIHandler {
       return loginPanel();
     }
     Panel panel = new Panel();
-    UI ui = new UI();
+    UI ui = (UI)client.getProperty("ui");
+    if (ui == null) {
+      ui = new UI();
+      client.setProperty("ui", ui);
+    }
+    UI _ui = ui;
     ui.client = client;
     ui.user = user;
 
@@ -291,18 +295,11 @@ public class ConfigService implements WebUIHandler {
 
     ui.top_bottom_split.setTopComponent(ui.left_right_split);
     ui.top_bottom_split.setBottomComponent(tasks);
-
-/*
-    b_help.addClickListener((MouseEvent e, Component button) -> {
-        client.openURL("http://jfkvm.sourceforge.net/help.html");
-      });
-*/
-
     ui.top_bottom_split.addChangedListener((cmp) -> {
-      ui.resize();
+      _ui.resize();
     });
     ui.left_right_split.addChangedListener((cmp) -> {
-      ui.resize();
+      _ui.resize();
     });
 
     return panel;
@@ -6121,15 +6118,21 @@ public class ConfigService implements WebUIHandler {
       JFLog.log("TERM:sess==null");
       return null;
     }
-    return createTerminalPanel(sess.c);
+    UI ui = (UI)client.getProperty("ui");
+    if (ui == null) {
+      ui = new UI();
+      client.setProperty("ui", ui);
+    }
+    return createTerminalPanel(sess.c, ui);
   }
 
-  private Panel createTerminalPanel(LxcContainer c) {
+  private Panel createTerminalPanel(LxcContainer c, UI ui) {
     Panel panel = new Panel();
     Row row = new Row();
     panel.add(row);
-    LnxPty pty = c.attach();
-    if (pty == null) {
+    ui.close_pty();
+    ui.pty = c.attach();
+    if (ui.pty == null) {
       Label errmsg = new Label("Error:Container.attach() failed:" + c.id);
       errmsg.setColor(Color.red);
       row.add(errmsg);
@@ -6138,7 +6141,7 @@ public class ConfigService implements WebUIHandler {
     Button detach = new Button("Detach");
     row.add(detach);
     row.add(new Label("Container:" + c.id));
-    Terminal term = new Terminal(pty);
+    Terminal term = new Terminal(ui.pty);
     panel.add(term);
     detach.addClickListener((me, cmp) -> {
       c.detach();
@@ -6545,14 +6548,14 @@ public class ConfigService implements WebUIHandler {
   }
 
   public void clientConnected(WebUIClient client) {
-    client.setProperty("pty", null);
+    client.setProperty("ui", new UI());
   }
 
   public void clientDisconnected(WebUIClient client) {
-    LnxPty pty = (LnxPty)client.getProperty("pty");
-    if (pty == null) return;
+    UI ui = (UI)client.getProperty("ui");
+    if (ui == null) return;
     try {
-      pty.close();
+      ui.close_pty();
     } catch (Exception e) {
       JFLog.log(e);
     }
