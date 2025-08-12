@@ -5966,7 +5966,7 @@ public class ConfigService implements WebUIHandler {
     ui.pty = LnxPty.exec(
       "/usr/bin/bash",
       new String[] {"/usr/bin/bash", "-i", "-l", null},
-      new String[] {"TERM=xterm", null}
+      LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
     );
     Panel panel = createTerminalPanel(ui.pty, "Host Terminal");
     return panel;
