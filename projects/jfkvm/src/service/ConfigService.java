@@ -6099,16 +6099,24 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
+  public Panel getPanelResourceNotFound() {
+    Panel panel = new Panel();
+    Label errmsg = new Label("Error:Resource not found");
+    errmsg.setColor(Color.red);
+    panel.add(errmsg);
+    return panel;
+  }
+
   public Panel getWebConsole(HTTP.Parameters params, WebUIClient client) {
     String id = params.get("id");
     if (id == null) {
       JFLog.log("VNC:vmname==null");
-      return null;
+      return getPanelResourceNotFound();
     }
     ConsoleSession sess = ConsoleSession.get(id);
     if (sess == null) {
       JFLog.log("VNC:sess==null");
-      return null;
+      return getPanelResourceNotFound();
     }
     return VNCWebConsole.createPanel(sess.vm.getVNC(), Config.current.vnc_password, VNCWebConsole.OPT_TOOLBAR, client);
   }
@@ -6117,12 +6125,12 @@ public class ConfigService implements WebUIHandler {
     String id = params.get("id");
     if (id == null) {
       JFLog.log("TERM:id==null");
-      return null;
+      return getPanelResourceNotFound();
     }
     TerminalSession sess = TerminalSession.get(id);
     if (sess == null) {
       JFLog.log("TERM:sess==null");
-      return null;
+      return getPanelResourceNotFound();
     }
     UI ui = (UI)client.getProperty("ui");
     if (ui == null) {
