@@ -3139,6 +3139,7 @@ public class ConfigService implements WebUIHandler {
         ui.browse_popup.setVisible(false);
       };
       ui.browse_button.setText("Select");
+      ui.browse_errmsg.setText("");
       ui.browse_popup.setVisible(true);
     });
     b_disk_edit.addClickListener((me, cmp) -> {
@@ -4628,6 +4629,7 @@ public class ConfigService implements WebUIHandler {
         }
       };
       ui.browse_button.setText("Register");
+      ui.browse_errmsg.setText("");
       ui.browse_popup.setVisible(true);
     });
     start.addClickListener((me, cmp) -> {
