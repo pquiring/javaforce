@@ -1,3 +1,6 @@
+2025-08-15 : 4.1 released!
+  - new : Storage : added latency stats and fixed bugs
+
 2025-08-12 : 4.0 released!
   - new : Containers (with Docker)
   - new : Terminal (open host bash term)
