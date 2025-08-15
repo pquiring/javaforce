@@ -197,8 +197,8 @@ public class Storage implements Serializable {
       }
       free = "n/a";
     }
-    String sread = String.format("%.1fms", read_latency * 1000.0);
-    String swrite = String.format("%.1fms", write_latency * 1000.0);
+    String sread = String.format("%.1fms", read_latency);
+    String swrite = String.format("%.1fms", write_latency);
     return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted), size, free, sread, swrite};
   }
 
