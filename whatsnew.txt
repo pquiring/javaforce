@@ -1,5 +1,10 @@
 What's new...
 
+Aug 15/2025 : JF/86.1
+  - jfKVM/4.1
+    - new : Storage shows latency stats
+    - fix : Storage minor bugs
+
 Aug 12/2025 : JF/86.0
   - jfKVM/4.0
     - new : Containers (with Docker)
