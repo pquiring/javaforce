@@ -4540,13 +4540,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {100, 75, 50, 75, 50, 50}, col_height, 6, 0);
+    Table table = new Table(new int[] {100, 75, 50, 75, 50, 50, 100, 100}, col_height, 8, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Name", "Type", "State", "Mounted", "Size", "Free"});
+    table.addRow(new String[] {"Name", "Type", "State", "Mounted", "Size", "Free", "Read Latency", "Write Latency"});
     ArrayList<Storage> pools = Config.current.pools;
     for(Storage pool : pools) {
       //TODO : this can block if pool is remote and offline
@@ -5354,6 +5354,7 @@ public class ConfigService implements WebUIHandler {
       }
       for(File file : files) {
         String name = file.getName();
+        if (name.startsWith(".")) continue;  //hidden file
         if (file.isDirectory()) {
           list.add("/" + name);
         } else {

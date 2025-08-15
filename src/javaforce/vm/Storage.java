@@ -13,6 +13,7 @@ import java.nio.file.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.linux.*;
 
 public class Storage implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -47,6 +48,10 @@ public class Storage implements Serializable {
   public String path;  //nfs, local, gluster (device), cephfs
   public String user;  //iscsi
   //public String pass;  //saved as Secret (stored in /root/secret)
+
+  private transient LatencyMonitor latencyMonitor;
+  public transient double read_latency;
+  public transient double write_latency;
 
   public static final int TYPE_LOCAL_PART = 1;  //local partition
   public static final int TYPE_LOCAL_DISK = 2;  //local disk
@@ -92,12 +97,16 @@ public class Storage implements Serializable {
     if (type == TYPE_GLUSTER && mounted()) {
       new File(getGlusterVolume()).mkdirs();
     }
+    if (!isMountedManually()) {
+      start_latency_monitor();
+    }
     return res;
   }
 
   //virDomainShutdown()
   private native static boolean nstop(String name);
   public boolean stop() {
+    stop_latency_monitor();
     boolean res = nstop(name);
     if (res) {
       new File(getPath()).delete();
@@ -188,7 +197,9 @@ public class Storage implements Serializable {
       }
       free = "n/a";
     }
-    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted), size, free};
+    String sread = String.format("%.1fms", read_latency * 1000.0);
+    String swrite = String.format("%.1fms", write_latency * 1000.0);
+    return new String[] {name, getTypeString(), getStateString(), Boolean.toString(mounted), size, free, sread, swrite};
   }
 
   private String getiSCSIPath() {
@@ -318,12 +329,17 @@ sr0  rom  1024M
     JFLog.log("cmd=" + JF.join(" ", cmd.toArray(JF.StringArrayType)));
     String output = sp.run(cmd.toArray(JF.StringArrayType), true);
     JFLog.log(output);
-    return sp.getErrorLevel() == 0;
+    boolean res = sp.getErrorLevel() == 0;
+    if (res) {
+      start_latency_monitor();
+    }
+    return res;
   }
 
   /** Unmount iSCSI, Gluster pools. stop() will already unmount other types. */
   public boolean unmount() {
-    if (type != TYPE_ISCSI && type != TYPE_GLUSTER) return false;
+    if (!isMountedManually()) return false;
+    stop_latency_monitor();
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"/usr/bin/umount", getDevice()}, true);
     JFLog.log(output);
@@ -648,6 +664,135 @@ sr0  rom  1024M
     sb.append("  </fs:mount_opts>");
     sb.append("</pool>");
     return sb.toString();
+  }
+
+  private void start_latency_monitor() {
+    stop_latency_monitor();
+    latencyMonitor = new LatencyMonitor();
+    latencyMonitor.start();
+  }
+
+  private void stop_latency_monitor() {
+    if (latencyMonitor != null) {
+      latencyMonitor.close();
+      latencyMonitor = null;
+    }
+    read_latency = 0;
+    write_latency = 0;
+  }
+
+  /** Runs in the back ground to collect storage latency stats. */
+  private class LatencyMonitor extends Thread {
+    private boolean active;
+    private boolean exit;
+    private RandomAccessFile file;
+    private String filename;
+    private byte[] write_data;
+    private byte[] read_data;
+    private byte seq;
+    private long[] write_latency_array = new long[10];
+    private int write_idx;
+    private long[] read_latency_array = new long[10];
+    private int read_idx;
+    public void run() {
+      active = true;
+      filename = getPath() + "/.perf-" + Linux.getHostname() + ".io";
+      write_data = new byte[512];
+      read_data = new byte[512];
+      while (active) {
+        try {
+          if (file == null) {
+            file = new RandomAccessFile(filename, "rws");  //s=sync mode
+          }
+          write_test();
+          read_test();
+          seq++;
+        } catch (Exception e) {
+          JFLog.log(e);
+          close_file();
+        }
+        //delay 2 seconds
+        for(int a=0;a<20;a++) {
+          if (!active) break;
+          JF.sleep(100);
+        }
+      }
+      exit = true;
+    }
+    public void close() {
+      active = false;
+      //wait for thread to exit
+      while (!exit) {
+        JF.sleep(100);
+      }
+    }
+    private void close_file() {
+      if (file != null) {
+        try {file.close();} catch (Exception e) {}
+        file = null;
+      }
+    }
+    private void fill_buffer(byte[] buf) {
+      int len = buf.length;
+      for(int i=0;i<len;i++) {
+        buf[i] = seq++;
+      }
+    }
+    private void write_test() {
+      if (file == null) return;
+      try {
+        fill_buffer(write_data);
+        file.seek(0);
+        long begin = System.currentTimeMillis();
+        file.write(write_data);
+        long end = System.currentTimeMillis();
+        long latency = (end - begin);
+        write_latency_array[write_idx] = latency;
+        write_idx++;
+        int len = write_latency_array.length;
+        if (write_idx == len) {
+          write_idx = 0;
+        }
+        //calc avg write latency
+        long total = 0;
+        for(int i=0;i<len;i++) {
+          total += write_latency_array[i];
+        }
+        double dtotal = total;
+        double dlen = len;
+        write_latency = dtotal / dlen;
+      } catch (Exception e) {
+        JFLog.log(e);
+        close_file();
+      }
+    }
+    private void read_test() {
+      if (file == null) return;
+      try {
+        file.seek(0);
+        long begin = System.currentTimeMillis();
+        file.read(read_data);
+        long end = System.currentTimeMillis();
+        long latency = (end - begin);
+        read_latency_array[read_idx] = latency;
+        read_idx++;
+        int len = read_latency_array.length;
+        if (read_idx == len) {
+          read_idx = 0;
+        }
+        //calc avg read latency
+        long total = 0;
+        for(int i=0;i<len;i++) {
+          total += read_latency_array[i];
+        }
+        double dtotal = total;
+        double dlen = len;
+        read_latency = dtotal / dlen;
+      } catch (Exception e) {
+        JFLog.log(e);
+        close_file();
+      }
+    }
   }
 
   private static void usage() {
