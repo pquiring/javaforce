@@ -6263,7 +6263,11 @@ public class ConfigService implements WebUIHandler {
       double value = 0;
       int step_y = data_height / 10;  //25
       for(int step = 0;step <= 10;step++) {
-        String str = String.format("%.1f%s", value / div, eng);
+        String str = null;
+        if (div == 1)
+          str = String.format("%.0f%s", value, eng);
+        else
+          str = String.format("%.1f%s", value / div, eng);
         int len = str.length();
         g.drawChars(str.toCharArray(), 0, len, x - (len * font_width), y);
         value += value_step_y;
