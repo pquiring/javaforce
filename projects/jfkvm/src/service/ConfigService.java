@@ -6208,30 +6208,26 @@ public class ConfigService implements WebUIHandler {
     return file.substring(idx + 1);
   }
 
-  private void draw_frame(JFImage img, long max_y, int font_width, boolean percent) {
+  private void draw_frame(JFImage img, long max_y, int font_width, String base) {
     String eng;
     double div;
     long value_step_y = max_y / 10L;
     if (max_y < 1024L) {
-      //bytes / percent
+      //base
       div = 1;
-      if (percent) {
-        eng = "";
-      } else {
-        eng = "B";
-      }
+      eng = base;
     } else if (max_y < 1024L * 512L) {
-      //KB
+      //Kbase
       div = 1024L;
-      eng = "KB";
+      eng = "K" + base;
     } else if (max_y < 1024L * 1024L * 512L) {
-      //MB
+      //Mbase
       div = 1024L * 1024L;
-      eng = "MB";
+      eng = "M" + base;
     } else {
-      //GB
+      //Gbase
       div = 1024L * 1024L * 1024L;
-      eng = "GB";
+      eng = "G" + base;
     }
     int x;
     int y;
@@ -6559,7 +6555,7 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 1024L * 1024L;  //1MB
-                draw_frame(img, max, font_width, false);
+                draw_frame(img, max, font_width, "B");
                 pos = 0;
                 int x;
                 int y1;
@@ -6589,7 +6585,7 @@ public class ConfigService implements WebUIHandler {
                 //sample, time (ns)
                 int cnt = longs / 4;
                 long max = 100L;  //percent
-                draw_frame(img, max, font_width, true);
+                draw_frame(img, max, font_width, "%");
                 long cpu_last = 0;
                 pos = 0;
                 int x;
@@ -6637,7 +6633,7 @@ public class ConfigService implements WebUIHandler {
                   last_total = total;
                 }
                 max += 1024L;
-                draw_frame(img, max, font_width, false);
+                draw_frame(img, max, font_width, "B");
                 last_read = 0;
                 last_write = 0;
                 last_total = 0;
@@ -6697,7 +6693,7 @@ public class ConfigService implements WebUIHandler {
                   last_total = total;
                 }
                 max += 1024L;
-                draw_frame(img, max, font_width, false);
+                draw_frame(img, max, font_width, "B");
                 last_read = 0;
                 last_write = 0;
                 last_total = 0;
@@ -6752,7 +6748,7 @@ public class ConfigService implements WebUIHandler {
                   }
                 }
                 max += 25L;
-                draw_frame(img, max, font_width, false);
+                draw_frame(img, max, font_width, "ms");
                 pos = 0;
                 int x;
                 int y1;
