@@ -49,6 +49,7 @@ public class Startup extends Thread {
        //start storage systems
        ArrayList<Storage> pools = Config.current.pools;
        for(Storage pool : pools) {
+         pool.create_stats_folder();
          if (pool.getState() == Storage.STATE_OFF) {
           if (pool.type == Storage.TYPE_ISCSI) {
             if (pool.user != null && pool.user.length() > 0) {
@@ -60,7 +61,7 @@ public class Startup extends Thread {
               Secret.create(pool.name, password.password);
             }
           }
-           pool.start();
+            pool.start();
           }
           if (pool.type == Storage.TYPE_GLUSTER) {
             Gluster.volume_start(pool.getName());
