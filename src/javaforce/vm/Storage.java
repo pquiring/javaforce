@@ -802,7 +802,7 @@ sr0  rom  1024M
 
   public static void get_all_stats(Storage[] pools, int year, int month, int day, int hour, int sample) {
     String filename;
-    byte[] record = new byte[4 * 4];
+    byte[] record = new byte[4 * 8];
     for(Storage pool : pools) {
       if (pool.getState() != STATE_ON) continue;
       if (pool.uuid == null || pool.uuid.length() == 0) continue;
