@@ -5382,12 +5382,9 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Label lbl_mem = new Label("Memory");
-    lbl_mem.setWidth(img_width);
-    row.add(lbl_mem);
-    Label lbl_cpu = new Label("CPU");
-    lbl_cpu.setWidth(img_width);
-    row.add(lbl_cpu);
+    Label lbl_sto = new Label("Latency");
+    lbl_sto.setWidth(img_width);
+    row.add(lbl_sto);
 
     row = new Row();
     panel.add(row);
