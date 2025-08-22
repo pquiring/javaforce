@@ -90,6 +90,7 @@ public class Storage implements Serializable {
   public boolean start() {
     //create folder under /volumes
     new File(getPath()).mkdir();
+    create_stats_folder();
     if (type == TYPE_GLUSTER) {
       new File(getGlusterBrick()).mkdirs();
     }
@@ -791,6 +792,31 @@ sr0  rom  1024M
       } catch (Exception e) {
         JFLog.log(e);
         close_file();
+      }
+    }
+  }
+
+  public void create_stats_folder() {
+    new File("/var/jfkvm/stats/" + uuid).mkdir();
+  }
+
+  public static void get_all_stats(Storage[] pools, int year, int month, int day, int hour, int sample) {
+    String filename;
+    byte[] record = new byte[4 * 4];
+    for(Storage pool : pools) {
+      if (pool.getState() != STATE_ON) continue;
+      if (pool.uuid == null || pool.uuid.length() == 0) continue;
+      filename = String.format("/var/jfkvm/stats/%s/%s-%04d-%02d-%02d-%02d.stat", pool.uuid, "sto", year, month, day, hour);
+      try {
+        LE.setuint64(record, 0, sample);
+        LE.setuint64(record, 8, (long)pool.read_latency);
+        LE.setuint64(record, 16, (long)pool.write_latency);
+        //record[3] = reserved
+        FileOutputStream fos = new FileOutputStream(filename, true);
+        fos.write(record);
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
       }
     }
   }

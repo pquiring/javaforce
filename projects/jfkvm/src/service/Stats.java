@@ -43,6 +43,7 @@ public class Stats extends TimerTask {
       int _sec = now.get(Calendar.SECOND);
       int _sample = (_min * 60 + _sec) / 20;  //0-179
       VMHost.get_all_stats(_year, _month, _day, _hour, _sample);
+      Storage.get_all_stats(Config.current.pools.toArray(new Storage[0]), _year, _month, _day, _hour, _sample);
     }
     {
       long now = System.currentTimeMillis();

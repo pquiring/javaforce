@@ -4509,6 +4509,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(edit);
     Button refresh = new Button("Refresh");
     tools.add(refresh);
+    Button monitor = new Button("Monitor");
+    tools.add(monitor);
     Button browse = new Button("Browse");
     tools.add(browse);
     Button start = new Button("Start");
@@ -4568,6 +4570,20 @@ public class ConfigService implements WebUIHandler {
     });
     refresh.addClickListener((me, cmp) -> {
       ui.setRightPanel(storagePanel(ui));
+    });
+    monitor.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      Storage pool = pools.get(idx);
+      if (pool.getState() != Storage.STATE_ON) {
+        errmsg.setText("Storage is not active");
+        return;
+      }
+      ui.setRightPanel(storageMonitorPanel(pool, ui));
     });
     browse.addClickListener((me, cmp) -> {
       errmsg.setText("");
@@ -5300,6 +5316,157 @@ public class ConfigService implements WebUIHandler {
     });
     cancel.addClickListener((me, cmp) -> {
       ui.setRightPanel(storagePanel(ui));
+    });
+
+    return panel;
+  }
+
+  private Panel storageMonitorPanel(Storage pool, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Storage:" + pool.name));
+
+    row = new Row();
+    panel.add(row);
+    ToolBar tools = new ToolBar();
+    row.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+
+    ui.now = Calendar.getInstance();
+    int _year = ui.now.get(Calendar.YEAR);
+    int _month = ui.now.get(Calendar.MONTH) + 1;
+    int _day = ui.now.get(Calendar.DAY_OF_MONTH);
+    int _hour = ui.now.get(Calendar.HOUR_OF_DAY);
+    String _file = String.format("%04d-%02d-%02d-%02d", _year, _month, _day, _hour);
+    String uuid = pool.getUUID();
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Year:"));
+    TextField year = new TextField(Integer.toString(_year));
+    year.setReadonly(true);
+    row.add(year);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Month:"));
+    TextField month = new TextField(Integer.toString(_month));
+    month.setReadonly(true);
+    row.add(month);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Day:"));
+    TextField day = new TextField(Integer.toString(_day));
+    day.setReadonly(true);
+    row.add(day);
+    Button day_prev = new Button("<");
+    row.add(day_prev);
+    Button day_next = new Button(">");
+    row.add(day_next);
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Hour:"));
+    TextField hour = new TextField(Integer.toString(_hour));
+    hour.setReadonly(true);
+    row.add(hour);
+    Button hour_prev = new Button("<");
+    row.add(hour_prev);
+    Button hour_next = new Button(">");
+    row.add(hour_next);
+
+    row = new Row();
+    panel.add(row);
+    Label lbl_mem = new Label("Memory");
+    lbl_mem.setWidth(img_width);
+    row.add(lbl_mem);
+    Label lbl_cpu = new Label("CPU");
+    lbl_cpu.setWidth(img_width);
+    row.add(lbl_cpu);
+
+    row = new Row();
+    panel.add(row);
+    Image img_sto = new Image("stats?uuid=" + uuid + "&type=sto&file=" + _file + ".png");
+    img_sto.setWidth(img_width);
+    img_sto.setHeight(img_height);
+    row.add(img_sto);
+
+    Runnable reload = () -> {
+      int __year = Integer.valueOf(year.getText());
+      int __month = Integer.valueOf(month.getText());
+      int __day = Integer.valueOf(day.getText());
+      int __hour = Integer.valueOf(hour.getText());
+      String __file = String.format("%04d-%02d-%02d-%02d", __year, __month, __day, __hour);
+      img_sto.setImage("stats?uuid=" + uuid + "&type=sto&file=" + __file + ".png");
+    };
+
+    refresh.addClickListener((me, cmp) -> {
+      reload.run();
+    });
+
+    day_prev.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts -= day_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
+
+    day_next.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts += day_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
+
+    hour_prev.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts -= hour_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
+    });
+
+    hour_next.addClickListener((me, cmp) -> {
+      long ts = ui.now.getTimeInMillis();
+      ts += hour_ms;
+      ui.now.setTimeInMillis(ts);
+      int __year = ui.now.get(Calendar.YEAR);
+      int __month = ui.now.get(Calendar.MONTH) + 1;
+      int __day = ui.now.get(Calendar.DAY_OF_MONTH);
+      int __hour = ui.now.get(Calendar.HOUR_OF_DAY);
+      year.setText(Integer.toString(__year));
+      month.setText(Integer.toString(__month));
+      day.setText(Integer.toString(__day));
+      hour.setText(Integer.toString(__hour));
+      reload.run();
     });
 
     return panel;
@@ -6567,6 +6734,49 @@ public class ConfigService implements WebUIHandler {
                   ly1 = y1;
                   ly2 = y2;
                   ly3 = y3;
+                }
+                break;
+              }
+              case "sto": {
+                //sample, read, write (ms)
+                int cnt = longs / 4;
+                long max = 25;  //ms
+                //find max value
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long read_latency = LE.getuint64(data, pos); pos += 8;
+                  long write_latency = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
+                  if (a > 1 && read_latency > max) {
+                    max = read_latency;
+                  }
+                  if (a > 1 && write_latency > max) {
+                    max = write_latency;
+                  }
+                }
+                max += 25L;
+                draw_frame(img, max, font_width, false);
+                pos = 0;
+                int x;
+                int y1;
+                int y2;
+                int lx = 0;
+                int ly1 = 0;
+                int ly2 = 0;
+                int ys = data_margin_top + data_height;
+                for(int a=0;a<cnt;a++) {
+                  long sample = LE.getuint64(data, pos); pos += 8;
+                  long read_latency = LE.getuint64(data, pos); pos += 8;
+                  long write_latency = LE.getuint64(data, pos); pos += 8;
+                  pos += 8;  //reserved
+                  x = data_margin_left + (int)(sample * 3);
+                  y1 = ys - (int)((read_latency) * data_height / max);
+                  if (a > 1) img.line(lx, ly1, x, y1, Color.green);
+                  y2 = ys - (int)((write_latency) * data_height / max);
+                  if (a > 1) img.line(lx, ly2, x, y2, Color.red);
+                  lx = x;
+                  ly1 = y1;
+                  ly2 = y2;
                 }
                 break;
               }
