@@ -76,9 +76,11 @@ public class ConfigService implements WebUIHandler {
   }
 
   public void stop() {
-    if (server == null) return;
-    server.stop();
-    server = null;
+    if (server != null) {
+      server.stop();
+      server = null;
+    }
+    Storage.shutdown(Config.current.pools.toArray(Storage.ArrayType));
   }
 
   private void initSecureWebKeys() {

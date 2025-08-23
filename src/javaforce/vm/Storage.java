@@ -18,6 +18,8 @@ import javaforce.linux.*;
 public class Storage implements Serializable {
   private static final long serialVersionUID = 1L;
 
+  public static final Storage[] ArrayType = new Storage[0];
+
   public Storage(int type, String name, String uuid) {
     this.type = type;
     this.name = name;
@@ -113,6 +115,13 @@ public class Storage implements Serializable {
       new File(getPath()).delete();
     }
     return res;
+  }
+
+  /** Closes any threads without stopping Storage volumes. */
+  public static void shutdown(Storage[] pools) {
+    for(Storage pool : pools) {
+      pool.stop_latency_monitor();
+    }
   }
 
   private native static int ngetState(String name);
