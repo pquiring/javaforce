@@ -337,12 +337,19 @@ sr0  rom  1024M
     return res;
   }
 
+  private String getUnmountPath() {
+    switch (type) {
+      case TYPE_CEPHFS: return getPath();
+      default: return getDevice();
+    }
+  }
+
   /** Unmount iSCSI, Gluster pools. stop() will already unmount other types. */
   public boolean unmount() {
     if (!isMountedManually()) return false;
     stop_latency_monitor();
     ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"/usr/bin/umount", getDevice()}, true);
+    String output = sp.run(new String[] {"/usr/bin/umount", getUnmountPath()}, true);
     JFLog.log(output);
     new File(getPath()).delete();
     return sp.getErrorLevel() == 0;
