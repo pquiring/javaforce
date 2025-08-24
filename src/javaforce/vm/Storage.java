@@ -707,9 +707,9 @@ sr0  rom  1024M
     private byte[] write_data;
     private byte[] read_data;
     private byte seq;
-    private long[] write_latency_array = new long[10];
+    private long[] write_latency_array = new long[4];
     private int write_idx;
-    private long[] read_latency_array = new long[10];
+    private long[] read_latency_array = new long[4];
     private int read_idx;
     public void run() {
       active = true;
@@ -728,10 +728,10 @@ sr0  rom  1024M
           JFLog.log(e);
           close_file();
         }
-        //delay 2 seconds
-        for(int a=0;a<20;a++) {
+        //delay 5 seconds
+        for(int a=0;a<5;a++) {
           if (!active) break;
-          JF.sleep(100);
+          JF.sleep(1000);
         }
       }
       exit = true;
