@@ -83,7 +83,8 @@ public class Test implements WebUIHandler {
     ToggleButton t = new ToggleButton("Toggle Me!");
     row1.add(t);
     //add : button
-    Button b = new Button("Click Me!");
+    Resource img = Resource.readResource("javaforce/icons/32/icon_add.png", Resource.PNG);
+    Button b = new Button(img, "Click Me!");
     row1.add(b);
     //add : label
     Label l = new Label("Ready!");
