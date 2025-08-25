@@ -1,3 +1,8 @@
+2025-08-25 : 4.2 released!
+  - new : Storage latency is now stored and can be monitored
+          similar to VM stats
+  - fix : ceph unmount bugs
+
 2025-08-15 : 4.1 released!
   - new : Storage : added latency stats and fixed bugs
 
