@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public abstract class TextComponent extends Component {
+public abstract class TextComponent extends Container {
   protected String text;
   public abstract void updateText(String text);
   public void setText(String text) {

@@ -9,22 +9,34 @@ package javaforce.webui;
 
 public class Button extends TextComponent {
   private String url;
-  private Resource img;
+  private Image img;
   public Button(String text) {
     this.text = text;
     setClass("button");
   }
-  public Button(Resource res) {
-    img = res;
+  public Button(Resource img) {
+    this.img = new Image(img);
+    add(this.img);
+    setClass("button");
+  }
+  public Button(Resource img, String text) {
+    this.img = new Image(img);
+    add(this.img);
+    this.text = text;
     setClass("button");
   }
   public String html() {
-    if (img != null) {
-      return "<img" + getAttrs() +  " src='/static/" + img.id + "'>";
+    if (img != null && text == null) {
+      return img.html();
     }
     StringBuilder sb = new StringBuilder();
     sb.append("<button" + getAttrs() + ">");
-    sb.append(text);
+    if (img != null) {
+      sb.append(img.html());
+    }
+    if (text != null) {
+      sb.append(text);
+    }
     sb.append("</button>");
     return sb.toString();
   }
@@ -35,8 +47,10 @@ public class Button extends TextComponent {
     addEvent("onclick", "window.open(\"" + url + "\");");
     this.url = url;
   }
+  public String getURL() {
+    return url;
+  }
   public void setImage(Resource img) {
-    this.img = img;
-    sendEvent("setsrc", new String[] {"src=/static/" + img.id});
+    this.img.setImage(img);
   }
 }
