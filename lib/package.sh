@@ -77,3 +77,5 @@ package mina-core jfmina-core $mina_version
 package log4j-api jflog4j-api $log4j_version
 package log4j-core jflog4j-core $log4j_version
 package log4j-1.2-api jflog4j-1.2-api $log4j_version
+package mysql-jdbc jfmysql-jdbc $mysql_jdbc_version
+package mssql-jdbc jfmssql-jdbc $mssql_jdbc_version
