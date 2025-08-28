@@ -92,8 +92,8 @@ echo Packaging javaforce 1>&2
 ant $pkg
 
 #package utils
-echo Packaging utils
-echo Packaging utils 1>&2
+echo Packaging jfutils
+echo Packaging jfutils 1>&2
 cd utils
 ant buildall
 ant $pkg
