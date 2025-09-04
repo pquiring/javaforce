@@ -18,7 +18,7 @@ public class Disk implements Serializable {
   public int type;
   public Size size;
   public int boot_order;  //0=none 1=first etc.
-  public String target_dev = "sd%c";
+  public String target_dev = "sd%c";  //see Hardware.validate()
   public String target_bus = "auto";
 
   public static final int TYPE_VMDK = 0;
@@ -52,6 +52,11 @@ public class Disk implements Serializable {
 
   public String getPath() {
     return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
+  }
+
+  public String getSnapshotPath(String ssname) {
+    //NOTE : libvirt only supports qcow2 for overlay files, but the base file may be vmdk
+    return "/volumes/" + pool + "/" + folder + "/" + name + "-" + ssname + '.' + "qcow2";
   }
 
   /** Get path using a different pool. */

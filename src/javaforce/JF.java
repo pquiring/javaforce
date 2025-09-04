@@ -1176,6 +1176,13 @@ public class JF {
     return newArray;
   }
 
+  public static boolean contains(String[] array, String value) {
+    for(String element : array) {
+      if (element.equals(value)) return true;
+    }
+    return false;
+  }
+
   private static boolean initedHttps = false;
 
   private static TrustManager[] trustMgrs = new TrustManager[] {

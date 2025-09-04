@@ -3,6 +3,7 @@
 #include <libvirt/libvirt.h>
 
 #include <sys/stat.h>
+#include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
 
@@ -50,6 +51,17 @@ void* (*_virStorageVolCreateXML)(void* pool, const char* xml, int flags);
 int (*_virStorageVolFree)(void* vol);
 
 //disk
+void* (*_virDomainSnapshotCreateXML)(void* dom, const char* xml, int flags);
+int (*_virDomainListAllSnapshots)(void* dom, void*** snaps, int flags);
+int (*_virDomainHasCurrentSnapshot)(void* dom, int flags);
+void* (*_virDomainSnapshotCurrent)(void* dom, int flags);
+int (*_virDomainRevertToSnapshot)(void* snap, int flags);
+int (*_virDomainSnapshotDelete)(void* snap, int flags);
+int (*_virDomainSnapshotFree)(void* snap);
+const char* (*_virDomainSnapshotGetName)(void *snap);
+void* (*_virDomainSnapshotGetParent)(void *snap, int flags);
+const char* (*_virDomainSnapshotGetXMLDesc)(void *snap, int flags);
+void* (*_virDomainSnapshotLookupByName)(void* dom, const char* name, int flags);
 
 //network (interface)
 int (*_virConnectListAllInterfaces)(void* conn, void*** ifaces, int flags);
@@ -131,6 +143,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_init(JNIEnv *e, jcla
   getFunction(virt, (void**)&_virStorageVolFree, "virStorageVolFree");
 
   //disk
+  getFunction(virt, (void**)&_virDomainSnapshotCreateXML, "virDomainSnapshotCreateXML");
+  getFunction(virt, (void**)&_virDomainListAllSnapshots, "virDomainListAllSnapshots");
+  getFunction(virt, (void**)&_virDomainHasCurrentSnapshot, "virDomainHasCurrentSnapshot");
+  getFunction(virt, (void**)&_virDomainSnapshotCurrent, "virDomainSnapshotCurrent");
+  getFunction(virt, (void**)&_virDomainRevertToSnapshot, "virDomainRevertToSnapshot");
+  getFunction(virt, (void**)&_virDomainSnapshotDelete, "virDomainSnapshotDelete");
+  getFunction(virt, (void**)&_virDomainSnapshotFree, "virDomainSnapshotFree");
+  getFunction(virt, (void**)&_virDomainSnapshotGetName, "virDomainSnapshotGetName");
+  getFunction(virt, (void**)&_virDomainSnapshotGetParent, "virDomainSnapshotGetParent");
+  getFunction(virt, (void**)&_virDomainSnapshotGetXMLDesc, "virDomainSnapshotGetXMLDesc");
+  getFunction(virt, (void**)&_virDomainSnapshotLookupByName, "virDomainSnapshotLookupByName");
 
   //network (interface)
   getFunction(virt, (void**)&_virConnectListAllInterfaces, "virConnectListAllInterfaces");
@@ -299,6 +322,8 @@ CPUStat:iowait:   231530000000
 
   return (inuse / total) * 100LL;
 }
+
+#include "vm-snapshots.cpp"
 
 #include "vm-stats.cpp"
 
@@ -1087,6 +1112,12 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"nrestore", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestore},
   {"nget", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nget},
   {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/webui/tasks/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
+  {"nsnapshotCreate", "(Ljava/lang/String;Ljava/lang/String;Z)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotCreate},
+  {"nsnapshotList", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotList},
+  {"nsnapshotExists", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotExists},
+  {"nsnapshotGetCurrent", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent},
+  {"nsnapshotRestore", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotRestore},
+  {"nsnapshotDelete", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotDelete},
 };
 
 static JNINativeMethod javaforce_vm_Secret[] = {

@@ -387,6 +387,110 @@ public class VirtualMachine implements Serializable {
     return true;
   }
 
+  //snapshot functions
+
+  public static final int SNAPSHOT_CREATE_DISK_ONLY = 16;
+  public static final int SNAPSHOT_CREATE_QUIESCE = 64;
+  public static final int SNAPSHOT_CREATE_ATOMIC = 128;
+  public static final int SNAPSHOT_CREATE_LIVE = 256;
+
+  private native static boolean nsnapshotCreate(String name, String xml, int flags);
+  /** Snap Shot : Create */
+  public boolean snapshotCreate(String name, String desc, int flags) {
+    if (name == null || name.length() == 0) {
+      JFLog.log("Error:VM:snapshot name invalid");
+      return false;
+    }
+    if (desc == null) desc = "";
+    String xml = snapshotCreateXML(name, desc);
+    if (xml == null) return false;
+    return nsnapshotCreate(this.name, xml, flags);
+  }
+
+  private native static String[] nsnapshotList(String name);
+  /** Snap Shot : List */
+  public Snapshot[] snapshotList() {
+    String[] list = nsnapshotList(name);
+    if (list == null) return new Snapshot[0];
+    ArrayList<Snapshot> sslist = new ArrayList<>();
+    for(String ss_str : list) {
+      String[] fs = ss_str.split("[\t]");  //tab delimited
+      if (fs.length != 3) continue;
+      Snapshot ss = new Snapshot();
+      ss.name = fs[0];
+      ss.desc = fs[1];
+      ss.parent = fs[2];
+      sslist.add(ss);
+    }
+    return sslist.toArray(new Snapshot[sslist.size()]);
+  }
+
+  /** Return number of snapshots. */
+  public int snapshotCount() {
+    return snapshotList().length;
+  }
+
+  /** Returns snapshot by name. */
+  public Snapshot snapshotGetByName(String snapshot) {
+    Snapshot[] sses = snapshotList();
+    for(Snapshot ss : sses) {
+      if (ss.name.equals(snapshot)) return ss;
+    }
+    return null;
+  }
+
+  private native static boolean nsnapshotExists(String name);
+  /** Determines if VM is running on a snapshot. */
+  public boolean snapshotExists() {
+    return nsnapshotExists(name);
+  }
+
+  private native static String nsnapshotGetCurrent(String name);
+  /** Returns current snapshot VM is running on. */
+  public Snapshot snapshotGetCurrent() {
+    String ss = nsnapshotGetCurrent(name);
+    if (ss == null) return null;
+    return snapshotGetByName(ss);
+  }
+
+  private native static boolean nsnapshotRestore(String name, String snapshot);
+  /** Snap Shot : Restore */
+  public boolean snapshotRestore(String name) {
+    Snapshot ss = snapshotGetByName(name);
+    if (ss == null) {
+      JFLog.log("Error:VM:Snapshot not found:" + name);
+      return false;
+    }
+    return nsnapshotRestore(this.name, name);
+  }
+
+  private native static boolean nsnapshotDelete(String name, String snapshot);
+  /** Snap Shot : Delete (merges data back into parent) */
+  public boolean snapshotDelete(String name) {
+    return nsnapshotDelete(this.name, name);
+  }
+
+  private String snapshotCreateXML(String name, String desc) {
+    Hardware hardware = loadHardware();
+    if (hardware == null) {
+      JFLog.log("Error:VM.snapshotCreateXML():unable to load hardware");
+      return null;
+    }
+    StringBuilder xml = new StringBuilder();
+    xml.append("<domainsnapshot>");
+    xml.append("<description>" + desc + "</description>");
+    xml.append("<disks>");
+    for(Disk disk : hardware.disks) {
+      xml.append("<disk name='" + disk.target_dev + "'>");
+      String ssfile = disk.getSnapshotPath(name);
+      xml.append("<source file='" + ssfile + "'/>");
+      xml.append("</disk>");
+    }
+    xml.append("</disks>");
+    xml.append("</domainsnapshot>");
+    return xml.toString();
+  }
+
   /** Generate XML to register a new VM or replace existing one.
    *
    * @param vm = VirtualMachine
