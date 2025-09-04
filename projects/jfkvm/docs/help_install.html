@@ -17,7 +17,7 @@ Installing jfKVM:
 Requirements:
 -------------
   Server with two (or three) NICs and two or more storage disks.
-    Two network cards:
+    Two or three network cards:
       - one for management interface (web based) (1GB)
       - one for virtual machines and server virtual network interfaces (10GB+)
       - one for storage (ceph) (10GB+) (optional)
@@ -26,17 +26,20 @@ Requirements:
       - one or more for local storage pool (optional) (ceph)
   Distros: Debian, Fedora or Arch.
     - only Debian is tested
+    - Arch has limited support (no ceph support)
 
 Installation:
 -------------
 
-Install a server based Linux distro then run these commands as root:
+Install a server based Linux distro (based on Debian or Fedora) then run these commands as root:
   wget http://pquiring.github.io/javaforce/linux/install.sh
   chmod +x install.sh
 The next step will setup the JavaForce repo and install standard set of packages.
   ./install.sh --desktop=no
 Install jfkvm using distro package tool:
   apt install jfkvm
+    or
+  dnf install jfkvm
   systemctl enable jfkvm
   systemctl start jfkvm
 
@@ -50,9 +53,9 @@ Basic Settings:
 
 Virtual Switch:
 ---------------
-  Now you'll need to create a virtual switch (or bridge) under Network : Virtual Switches.
+  Now you'll need to create a virtual switch (aka bridge) under Network : Virtual Switches.
   Note that if an existing 'br' type switch is present you should delete it and create an 'os' type switch (openvswitch).
-  The bridge iface should be your second network card that will be used by the virtual machines.
+  The bridge iface should use the second network card that will be used by the virtual machines.
 
 Networks:
 ---------

@@ -178,6 +178,13 @@ public class ConfigService implements WebUIHandler {
     public Address device_addr_addr;
     public Runnable device_addr_complete;
 
+    public PopupPanel snapshots_popup;
+    public VirtualMachine snapshots_vm;
+    public Runnable snapshots_init;
+    public Snapshot[] snapshots_list;
+
+    public PopupPanel snapshots_add_popup;
+
     public String[] ctrl_models;
     public String ctrl_type;
     public Controller ctrl;
@@ -285,6 +292,12 @@ public class ConfigService implements WebUIHandler {
 
     ui.ctrl_model_popup = ctrl_scsi_PopupPanel(ui);
     panel.add(ui.ctrl_model_popup);
+
+    ui.snapshots_popup = snapshots_PopupPanel(ui);
+    panel.add(ui.snapshots_popup);
+
+    ui.snapshots_add_popup = snapshots_add_PopupPanel(ui);
+    panel.add(ui.snapshots_add_popup);
 
     int topSize = client.getHeight() - 128;
     ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL);
@@ -722,6 +735,167 @@ public class ConfigService implements WebUIHandler {
 
     cancel.addClickListener((me, cmp) -> {
       ui.vm_network_popup.setVisible(false);
+    });
+
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
+    return panel;
+  }
+
+  private PopupPanel snapshots_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Snapshots");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button create = new Button("Create");
+    tools.add(create);
+    Button delete = new Button("Delete");
+    tools.add(delete);
+    Button restore = new Button("Restore");
+    tools.add(restore);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    Table table = new Table(new int[] {50, 150, 50, 50}, col_height, 4, 0);
+    row.add(table);
+    table.setSelectionMode(Table.SELECT_ROW);
+    table.setBorder(true);
+    table.setHeader(true);
+
+    ui.snapshots_init = () -> {
+      if (ui.snapshots_vm == null) return;
+      ui.snapshots_list = ui.snapshots_vm.snapshotList();
+      Snapshot current = ui.snapshots_vm.snapshotGetCurrent();
+      table.removeAll();
+      table.addRow(new String[] {"Name", "Description", "Parent", "Current"});
+      for(Snapshot ss : ui.snapshots_list) {
+        table.addRow(new String[] {ss.name, ss.desc, ss.parent, ss == current ? "yes" : ""});
+      }
+    };
+
+    create.addClickListener((me, cmp) -> {
+      ui.snapshots_add_popup.setVisible(true);
+    });
+    delete.addClickListener((me, cmp) -> {
+      //TODO:confirm action
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      ui.confirm_message.setText("Restore Snapshot?");
+      ui.confirm_button.setText("Restore");
+      ui.confirm_action = () -> {
+        Task task = new Task("Restore Snapshot") {
+          public void doTask() {
+            try {
+              Snapshot ss = ui.snapshots_list[idx];
+              ui.snapshots_vm.snapshotRestore(ss.name);
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:Restore snapshot failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    restore.addClickListener((me, cmp) -> {
+      int idx = table.getSelectedRow();
+      if (idx == -1) return;
+      ui.confirm_message.setText("Restore Snapshot?");
+      ui.confirm_button.setText("Restore");
+      ui.confirm_action = () -> {
+        Task task = new Task("Restore Snapshot") {
+          public void doTask() {
+            try {
+              Snapshot ss = ui.snapshots_list[idx];
+              ui.snapshots_vm.snapshotDelete(ss.name);
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:Restore snapshot failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.snapshots_popup.setVisible(false);
+    });
+
+    panel.setOnClose( () -> {
+      cancel.click();
+    });
+
+    return panel;
+  }
+
+  private PopupPanel snapshots_add_PopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Create Snapshot");
+    panel.setPosition(256, 128);
+    panel.setModal(true);
+    Row row;
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    panel.add(grid);
+
+    TextField name = new TextField("");
+    grid.addRow(new Component[] {new Label("Name"), name});
+
+    TextField desc = new TextField("");
+    grid.addRow(new Component[] {new Label("Desc"), desc});
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button accept = new Button("Create");
+    tools.add(accept);
+    Button cancel = new Button("Cancel");
+    tools.add(cancel);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    accept.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      String _name = vmm.cleanName(name.getText());
+      if (_name.length() == 0) {
+        name.setText(_name);
+        errmsg.setText("Error:invalid name");
+        return;
+      }
+      String _desc = vmm.cleanName(desc.getText());
+      Task task = new Task("Create Snapshot") {
+        public void doTask() {
+          try {
+            ui.snapshots_vm.snapshotCreate(_name, _desc, 0);
+            setStatus("Completed");
+          } catch (Exception e) {
+            setStatus("Error:Create snapshot failed, check logs.");
+            JFLog.log(e);
+          }
+        }
+      };
+      Tasks.tasks.addTask(ui.tasks, task);
+      ui.snapshots_add_popup.setVisible(false);
+    });
+    cancel.addClickListener((me, cmp) -> {
+      ui.snapshots_add_popup.setVisible(false);
     });
 
     panel.setOnClose( () -> {
@@ -2544,6 +2718,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(restart);
     Button poweroff = new Button("PowerOff");
     tools.add(poweroff);
+    Button snapshots = new Button("Snapshots");
+    tools.add(snapshots);
     Button clone = new Button("Clone");
     tools.add(clone);
     Button migrate = new Button("Migrate");
@@ -2751,6 +2927,18 @@ public class ConfigService implements WebUIHandler {
         Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
+    });
+
+    snapshots.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      ui.snapshots_vm = vms[idx];
+      ui.snapshots_init.run();
+      ui.snapshots_popup.setVisible(true);
     });
 
     clone.addClickListener((me, cmp) -> {
