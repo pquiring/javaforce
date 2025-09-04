@@ -481,6 +481,7 @@ public class VirtualMachine implements Serializable {
     xml.append("<description>" + desc + "</description>");
     xml.append("<disks>");
     for(Disk disk : hardware.disks) {
+      if (disk.type == Disk.TYPE_ISO) continue;
       xml.append("<disk name='" + disk.target_dev + "'>");
       String ssfile = disk.getSnapshotPath(name);
       xml.append("<source file='" + ssfile + "'/>");
