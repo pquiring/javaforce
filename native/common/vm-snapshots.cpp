@@ -149,7 +149,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
-  if (conn == NULL) return JNI_FALSE;
+  if (conn == NULL) return NULL;
 
   const char* cname = e->GetStringUTFChars(name, NULL);
 
@@ -159,14 +159,17 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
 
   if (dom == NULL) {
     disconnect(conn);
-    return JNI_FALSE;
+    return NULL;
   }
   
   void* ss = (*_virDomainSnapshotCurrent)(dom, 0);
 
-  const char* curname = (*_virDomainSnapshotGetName)(ss);
+  const char* curname = NULL;
 
-  (*_virDomainSnapshotFree)(ss);
+  if (ss != NULL) {
+    curname = (*_virDomainSnapshotGetName)(ss);
+    (*_virDomainSnapshotFree)(ss);
+  }
 
   (*_virDomainFree)(dom);
   disconnect(conn);

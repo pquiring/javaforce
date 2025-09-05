@@ -784,7 +784,7 @@ public class ConfigService implements WebUIHandler {
       table.addRow(new String[] {"Name", "Description", "Parent", "Current"});
       if (ui.snapshots_list == null) return;
       for(Snapshot ss : ui.snapshots_list) {
-        table.addRow(new String[] {ss.name, ss.desc, ss.parent, ss == current ? "yes" : ""});
+        table.addRow(new String[] {ss.name, ss.desc, ss.parent, current != null && ss.name == current.name ? "yes" : ""});
       }
     };
 
