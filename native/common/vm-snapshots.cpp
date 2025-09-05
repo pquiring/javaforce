@@ -32,10 +32,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotCreate
   return ssptr != NULL;
 }
 
+static const char * ss_empty = "";
+
 const char* snapshot_get_desc(void* ss) {
   const char* xml = (*_virDomainSnapshotGetXMLDesc)(ss, 0);
 
-  if (xml == NULL) xml = "<description></description>";
+  if (xml == NULL) return ss_empty;
 
   const char *p1 = strstr(xml, "<description>");  
 
@@ -60,10 +62,13 @@ const char* snapshot_get_desc(void* ss) {
 
 const char* snapshot_get_parent(void* ss) {
   void* parent = (*_virDomainSnapshotGetParent)(ss, 0);
-  if (parent == NULL) return "";
-  const char* name = (*_virDomainSnapshotGetName)(ss);
+  if (parent == NULL) return ss_empty;
+  const char* name = (*_virDomainSnapshotGetName)(parent);
+  if (name == NULL) name = ss_empty;
+  char* copy = (char*)malloc(strlen(name) + 1);
+  strcpy(copy, name);
   (*_virDomainSnapshotFree)(parent);
-  return name;
+  return (const char*)copy;
 }
 
 JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
@@ -107,7 +112,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
       printf("snapshot=[%s]\n", item);
 #endif
       e->SetObjectArrayElement(list, i, e->NewStringUTF(item));
-      free((void*)desc);
+      if (parent != ss_empty) free((void*)parent);
+      if (desc != ss_empty) free((void*)desc);
       free(item);
       (*_virDomainSnapshotFree)(ss);
     }
@@ -168,22 +174,21 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
   printf("snapshot.current.ptr=[%p]\n", ss);
 #endif
 
-  const char* curname = NULL;
+  jstring ssname = NULL;
 
   if (ss != NULL) {
-    curname = (*_virDomainSnapshotGetName)(ss);
+    const char* cssname = (*_virDomainSnapshotGetName)(ss);
 #ifdef VM_SNAPSHOTS_DEBUG
-    printf("snapshot.current.name=[%s]\n", curname);
+    printf("snapshot.current.name=[%s]\n", cssname);
 #endif
+    ssname = e->NewStringUTF(cssname);
     (*_virDomainSnapshotFree)(ss);
   }
 
   (*_virDomainFree)(dom);
   disconnect(conn);
 
-  if (curname == NULL) return NULL;
-
-  return e->NewStringUTF(curname);
+  return ssname;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotRestore
