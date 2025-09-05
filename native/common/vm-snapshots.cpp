@@ -107,7 +107,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
       printf("snapshot=%s\n", item);
 #endif
       e->SetObjectArrayElement(list, i, e->NewStringUTF(item));
-      free(desc);
+      free((void*)desc);
       free(item);
       (*_virDomainSnapshotFree)(ss);
     }
