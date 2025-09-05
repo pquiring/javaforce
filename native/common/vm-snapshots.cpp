@@ -98,7 +98,6 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
       char* item = (char*)malloc(len + 1);
       sprintf(item, "%s\t%s\t%s", name, desc, parent);
       e->SetObjectArrayElement(list, i, e->NewStringUTF(item));
-      free((void*)parent);
       free(item);
       (*_virDomainSnapshotFree)(ss);
     }
