@@ -751,6 +751,8 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
     Button create = new Button("Create");
     tools.add(create);
     Button delete = new Button("Delete");
@@ -786,6 +788,9 @@ public class ConfigService implements WebUIHandler {
       }
     };
 
+    refresh.addClickListener((me, cmp) -> {
+      ui.snapshots_init.run();
+    });
     create.addClickListener((me, cmp) -> {
       ui.snapshots_add_popup.setVisible(true);
     });
