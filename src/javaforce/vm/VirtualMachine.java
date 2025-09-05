@@ -414,8 +414,11 @@ public class VirtualMachine implements Serializable {
     if (list == null) return new Snapshot[0];
     ArrayList<Snapshot> sslist = new ArrayList<>();
     for(String ss_str : list) {
-      String[] fs = ss_str.split("[\t]");  //tab delimited
-      if (fs.length != 3) continue;
+      String[] fs = ss_str.split("\t");  //tab delimited
+      if (fs.length < 3) {
+        JFLog.log("VM:snapshotList:invalid entry:" + ss_str);
+        continue;
+      }
       Snapshot ss = new Snapshot();
       ss.name = fs[0];
       ss.desc = fs[1];
