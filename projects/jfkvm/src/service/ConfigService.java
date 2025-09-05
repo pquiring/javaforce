@@ -800,17 +800,19 @@ public class ConfigService implements WebUIHandler {
     delete.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) return;
-      ui.confirm_message.setText("Restore Snapshot?");
-      ui.confirm_button.setText("Restore");
+      ui.confirm_message.setText("Delete Snapshot?");
+      ui.confirm_button.setText("Delete");
       ui.confirm_action = () -> {
-        Task task = new Task("Restore Snapshot") {
+        Task task = new Task("Delete Snapshot") {
           public void doTask() {
             try {
               Snapshot ss = ui.snapshots_list[idx];
-              ui.snapshots_vm.snapshotRestore(ss.name);
+              if (!ui.snapshots_vm.snapshotDelete(ss.name)) {
+                throw new Exception("Delete failed");
+              }
               setStatus("Completed");
             } catch (Exception e) {
-              setStatus("Error:Restore snapshot failed, check logs.");
+              setStatus("Error:Delete snapshot failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -829,7 +831,9 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               Snapshot ss = ui.snapshots_list[idx];
-              ui.snapshots_vm.snapshotDelete(ss.name);
+              if (!ui.snapshots_vm.snapshotRestore(ss.name)) {
+                throw new Exception("Restore failed");
+              }
               setStatus("Completed");
             } catch (Exception e) {
               setStatus("Error:Restore snapshot failed, check logs.");
