@@ -95,7 +95,7 @@ ant $pkg
 echo Packaging jfutils
 echo Packaging jfutils 1>&2
 cd utils
-ant buildall
+ant linux
 ant $pkg
 cd ..
 

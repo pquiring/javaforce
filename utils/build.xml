@@ -8,7 +8,7 @@
 
   <property name="version" value="${javaforce-version}"/>
 
-  <target name="buildall" depends="jar" description="build all utils">
+  <target name="linux" depends="jar" description="build utils for Linux">
     <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
@@ -33,7 +33,7 @@
     <ant antfile="build-jbus-client.xml" target="installapp" inheritAll="false"/>
   </target>
 
-  <target name="utils" depends="jar" description="build exe for utils">
+  <target name="windows" depends="jar" description="build utils for Windows">
     <ant antfile="build-copypath.xml" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
     <ant antfile="build-filesplitter.xml" inheritAll="false"/>
@@ -45,6 +45,9 @@
     <ant antfile="build-jfssh.xml" inheritAll="false"/>
     <ant antfile="build-jfsshd.xml" inheritAll="false"/>
     <ant antfile="build-ldap.xml" inheritAll="false"/>
+  </target>
+
+  <target name="windows-zip" depends="windows" description="zip utils for Windows">
     <zip destfile="jfUtilities-${javaforce-version}.zip">
       <fileset dir=".">
         <include name="*.exe"/>
@@ -66,5 +69,7 @@
   </target>
 
   <target name="help" description="display help">
+    <echo>linux : build tools for linux</echo>
+    <echo>windows : build tools for windows</echo>
   </target>
 </project>
