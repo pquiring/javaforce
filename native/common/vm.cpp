@@ -1112,7 +1112,7 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"nrestore", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nrestore},
   {"nget", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nget},
   {"nmigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/webui/tasks/Status;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nmigrate},
-  {"nsnapshotCreate", "(Ljava/lang/String;Ljava/lang/String;Z)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotCreate},
+  {"nsnapshotCreate", "(Ljava/lang/String;Ljava/lang/String;I)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotCreate},
   {"nsnapshotList", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotList},
   {"nsnapshotExists", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotExists},
   {"nsnapshotGetCurrent", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent},
