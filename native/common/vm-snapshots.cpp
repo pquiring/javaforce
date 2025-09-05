@@ -1,3 +1,5 @@
+#define VM_SNAPSHOTS_DEBUG
+
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotCreate
   (JNIEnv *e, jclass o, jstring name, jstring xml, jint flags)
 {
@@ -33,7 +35,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotCreate
 const char* snapshot_get_desc(void* ss) {
   const char* xml = (*_virDomainSnapshotGetXMLDesc)(ss, 0);
 
-  if (xml == NULL) return "";
+  if (xml == NULL) xml = "<description></description>";
 
   const char *p1 = strstr(xml, "<description>");  
 
@@ -87,6 +89,10 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
 
   int cnt = (*_virDomainListAllSnapshots)(dom, &ptrs, 0);
 
+#ifdef VM_SNAPSHOTS_DEBUG
+  printf("snapshot count=%d\n", cnt);
+#endif
+
   if (cnt > 0) {
     list = e->NewObjectArray(cnt,e->FindClass("java/lang/String"),e->NewStringUTF(""));
     for(int i=0;i<cnt;i++) {
@@ -97,7 +103,11 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
       int len = strlen(name) + 1 + strlen(desc) + 1 + strlen(parent);
       char* item = (char*)malloc(len + 1);
       sprintf(item, "%s\t%s\t%s", name, desc, parent);
+#ifdef VM_SNAPSHOTS_DEBUG
+      printf("snapshot=%s\n", item);
+#endif
       e->SetObjectArrayElement(list, i, e->NewStringUTF(item));
+      free(desc);
       free(item);
       (*_virDomainSnapshotFree)(ss);
     }
