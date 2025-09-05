@@ -789,7 +789,6 @@ public class ConfigService implements WebUIHandler {
       ui.snapshots_add_popup.setVisible(true);
     });
     delete.addClickListener((me, cmp) -> {
-      //TODO:confirm action
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       ui.confirm_message.setText("Restore Snapshot?");

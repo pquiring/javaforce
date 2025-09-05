@@ -422,6 +422,47 @@ public class VirtualMachine implements Serializable {
       ss.parent = fs[2];
       sslist.add(ss);
     }
+    //sort into hierarchy
+    int cnt = sslist.size();
+    for(int ic = 0;ic < cnt;) {
+      Snapshot child = sslist.get(ic);
+      if (child.parent.length() == 0) {
+        //no parent
+        ic++;
+        continue;
+      }
+      boolean moved = false;
+      for(int ip = 0;ip < cnt;ip++) {
+        Snapshot parent = sslist.get(ip);
+        if (child.parent.equals(parent.name)) {
+          //is under parent already?
+          boolean under = false;
+          for(int ix = ip + 1;ix < cnt;ix++) {
+            if (ix == ic) {
+              under = true;
+              break;
+            }
+            Snapshot unsub = sslist.get(ix);
+            if (!unsub.parent.equals(child.parent)) {
+              break;
+            }
+          }
+          if (!under) {
+            //move to under parent
+            sslist.remove(ic);
+            if (ic < ip) {
+              ip--;
+            }
+            sslist.add(ip + 1, child);
+            moved = true;
+            break;
+          }
+        }
+      }
+      if (!moved) {
+        ic++;
+      }
+    }
     return sslist.toArray(new Snapshot[sslist.size()]);
   }
 
