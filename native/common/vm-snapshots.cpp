@@ -58,7 +58,7 @@ const char* snapshot_get_desc(void* ss) {
 
 const char* snapshot_get_parent(void* ss) {
   void* parent = (*_virDomainSnapshotGetParent)(ss, 0);
-  if (parent == NULL) return NULL;
+  if (parent == NULL) return "";
   const char* name = (*_virDomainSnapshotGetName)(ss);
   (*_virDomainSnapshotFree)(parent);
   return name;
