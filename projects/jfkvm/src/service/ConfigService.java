@@ -27,7 +27,7 @@ import static javaforce.webui.event.KeyEvent.*;
 public class ConfigService implements WebUIHandler {
   public static String version = "4.2";
   public static String appname = "jfKVM";
-  public static boolean debug = false;
+  public static boolean debug = true;
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
@@ -780,11 +780,14 @@ public class ConfigService implements WebUIHandler {
       if (ui.snapshots_vm == null) return;
       ui.snapshots_list = ui.snapshots_vm.snapshotList();
       Snapshot current = ui.snapshots_vm.snapshotGetCurrent();
+      if (current != null) {
+        if (debug) JFLog.log("VM:snapshotList:current=" + current.name);
+      }
       table.removeAll();
       table.addRow(new String[] {"Name", "Description", "Parent", "Current"});
       if (ui.snapshots_list == null) return;
       for(Snapshot ss : ui.snapshots_list) {
-        table.addRow(new String[] {ss.name, ss.desc, ss.parent, current != null && ss.name == current.name ? "yes" : ""});
+        table.addRow(new String[] {ss.name, ss.desc, ss.parent, current != null && ss.name.equals(current.name) ? "yes" : ""});
       }
     };
 
