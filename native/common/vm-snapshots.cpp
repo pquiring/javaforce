@@ -164,15 +164,24 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
   
   void* ss = (*_virDomainSnapshotCurrent)(dom, 0);
 
+#ifdef VM_SNAPSHOTS_DEBUG
+  printf("snapshot.current.ptr=[%p]\n", ss);
+#endif
+
   const char* curname = NULL;
 
   if (ss != NULL) {
     curname = (*_virDomainSnapshotGetName)(ss);
+#ifdef VM_SNAPSHOTS_DEBUG
+    printf("snapshot.current.name=[%s]\n", curname);
+#endif
     (*_virDomainSnapshotFree)(ss);
   }
 
   (*_virDomainFree)(dom);
   disconnect(conn);
+
+  if (curname == NULL) return NULL;
 
   return e->NewStringUTF(curname);
 }
