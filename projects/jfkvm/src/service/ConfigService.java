@@ -907,7 +907,9 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Create Snapshot") {
         public void doTask() {
           try {
-            ui.snapshots_vm.snapshotCreate(_name, _desc, 0);
+            if (!ui.snapshots_vm.snapshotCreate(_name, _desc, 0)) {
+              throw new Exception("create failed");
+            }
             setStatus("Completed");
           } catch (Exception e) {
             setStatus("Error:Create snapshot failed, check logs.");
