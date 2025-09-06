@@ -24,6 +24,21 @@ Delete : Roll back current snapshot into parent snapshot and remove delta image(
 
 Restore : Roll back VM to selected snapshot. The VM must be off to perform a restore.
 
+Troubleshooting
+===============
+
+If a snapshot is corrupt you can delete the meta data with this command (dangerous):
+
+  virsh snapshot-delete {vm-name} --metadata --current
+
+To list VMs:
+
+  virsh list --all
+
+To list snapshots within VM:
+
+  virsh snapshot-list {vm-name}
+
 </pre>
 <br><br>
 
