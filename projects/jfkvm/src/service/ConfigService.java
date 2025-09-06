@@ -759,6 +759,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(delete);
     Button restore = new Button("Restore");
     tools.add(restore);
+    Button help = new Button("Help");
+    tools.add(help);
     Button cancel = new Button("Cancel");
     tools.add(cancel);
 
@@ -844,6 +846,9 @@ public class ConfigService implements WebUIHandler {
         Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
+    });
+    help.addClickListener((me, cmp) -> {
+      cmp.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfkvm/docs/help_snapshots.html");
     });
     cancel.addClickListener((me, cmp) -> {
       ui.snapshots_popup.setVisible(false);
