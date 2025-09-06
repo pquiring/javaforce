@@ -184,6 +184,7 @@ public class ConfigService implements WebUIHandler {
     public Snapshot[] snapshots_list;
 
     public PopupPanel snapshots_add_popup;
+    public Runnable snapshots_add_init;
 
     public String[] ctrl_models;
     public String ctrl_type;
@@ -797,6 +798,7 @@ public class ConfigService implements WebUIHandler {
       ui.snapshots_init.run();
     });
     create.addClickListener((me, cmp) -> {
+      ui.snapshots_add_init.run();
       ui.snapshots_add_popup.setVisible(true);
     });
     delete.addClickListener((me, cmp) -> {
@@ -887,6 +889,11 @@ public class ConfigService implements WebUIHandler {
     Label errmsg = new Label("");
     errmsg.setColor(Color.red);
     row.add(errmsg);
+
+    ui.snapshots_add_init = () -> {
+      name.setText("");
+      desc.setText("");
+    };
 
     accept.addClickListener((me, cmp) -> {
       errmsg.setText("");
