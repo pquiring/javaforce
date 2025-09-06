@@ -22,11 +22,16 @@ Requirements:
       - one for virtual machines and server virtual network interfaces (10GB+)
       - one for storage (ceph) (10GB+) (optional)
     Two storage disks:
-      - one for linux distro (recommend Debian)
+      - one for linux distro (recommend Ubuntu)
       - one or more for local storage pool (optional) (ceph)
-  Distros: Debian, Fedora or Arch.
-    - only Debian is tested
-    - Arch has limited support (no ceph support)
+  Distros: Debian, Fedora or Arch based distro.
+    - Debian 12 ceph support is broken
+    - Debian 13 snapshot support is broken
+      - see https://gitlab.com/libvirt/libvirt/-/issues/806
+    - Ubuntu works
+    - Fedora not tested
+    - CentOS not tested
+    - Arch not tested (no ceph support)
 
 Installation:
 -------------

@@ -2957,6 +2957,10 @@ public class ConfigService implements WebUIHandler {
 
     snapshots.addClickListener((me, cmp) -> {
       errmsg.setText("");
+      if (Linux.distro == Linux.DistroTypes.Debian && Linux.derived == Linux.DerivedTypes.Unknown) {
+        errmsg.setText("Debian snapshot support is broken, please use Ubuntu!");
+        return;
+      }
       int idx = table.getSelectedRow();
       if (idx == -1) {
         errmsg.setText("Error:no selection");

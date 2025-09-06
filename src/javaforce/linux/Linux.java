@@ -36,7 +36,7 @@ public class Linux {
   public static DerivedTypes derived = DerivedTypes.Unknown;
 
   /**
-   * Detects Linux distribution type. (Support Ubuntu, Fedora currently)
+   * Detects Linux distribution type.
    */
   public static boolean detectDistro() {
     if (distro != DistroTypes.Unknown) {

@@ -9,6 +9,7 @@ package service;
  */
 
 import javaforce.*;
+import javaforce.linux.Linux;
 import javaforce.vm.*;
 import javaforce.service.*;
 import javaforce.webui.tasks.*;
@@ -34,6 +35,8 @@ public class KVMService extends Thread {
   public void run() {
     //init paths
     Paths.init();
+    //detect OS
+    Linux.detectDistro();
     //libvirt init
     if (!VirtualMachine.init()) {
       JFLog.log("Failed to load libvirt");
