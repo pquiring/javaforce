@@ -626,6 +626,17 @@ public class Linux {
     }
   }
 
+  public static boolean addUserToGroup(String user, String group) {
+    try {
+      ShellProcess sp = new ShellProcess();
+      sp.run(new String[]{"adduser", user, group}, false);
+      return sp.getErrorLevel() == 0;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   private static String expandQuotes(String inString) {
     while (true) {
       int i1 = inString.indexOf('\"');
