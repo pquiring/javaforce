@@ -6734,6 +6734,41 @@ public class ConfigService implements WebUIHandler {
         if (vlan == null) return "-1".getBytes();
         return Integer.toString(vlan.vlan).getBytes();
       }
+      case "snapshot_create": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm = params.get("vm");
+        String name = params.get("name");
+        String desc = params.get("desc");
+        VirtualMachine[] vms = VirtualMachine.list();
+        String result = "Error";
+        for(VirtualMachine vmx : vms) {
+          if (vmx.name.equals(vm)) {
+            if (vmx.snapshotCreate(name, desc, 0)) {
+              result = "OK";
+            }
+            break;
+          }
+        }
+        return result.getBytes();
+      }
+      case "snapshot_delete": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm = params.get("vm");
+        String name = params.get("name");
+        VirtualMachine[] vms = VirtualMachine.list();
+        String result = "Error";
+        for(VirtualMachine vmx : vms) {
+          if (vmx.name.equals(vm)) {
+            if (vmx.snapshotDelete(name)) {
+              result = "OK";
+            }
+            break;
+          }
+        }
+        return result.getBytes();
+      }
       case "stats": {
         String uuid = params.get("uuid");
         String type = params.get("type");
