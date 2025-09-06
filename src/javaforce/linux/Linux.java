@@ -29,6 +29,12 @@ public class Linux {
   };
   public static DistroTypes distro = DistroTypes.Unknown;
 
+  public static enum DerivedTypes {
+    Unknown, Ubuntu, CentOS
+  }
+
+  public static DerivedTypes derived = DerivedTypes.Unknown;
+
   /**
    * Detects Linux distribution type. (Support Ubuntu, Fedora currently)
    */
@@ -38,14 +44,26 @@ public class Linux {
     }
     try {
       String id = getOSRelease("ID");
-      if (id.equals("debian") || id.equals("ubuntu")) {
+      if (id.equals("debian")) {
         distro = DistroTypes.Debian;
         JFLog.log("Detected Linux:debian");
+        return true;
+      }
+      if (id.equals("ubuntu")) {
+        distro = DistroTypes.Debian;
+        derived = DerivedTypes.Ubuntu;
+        JFLog.log("Detected Linux:ubuntu");
         return true;
       }
       if (id.equals("fedora")) {
         distro = DistroTypes.Fedora;
         JFLog.log("Detected Linux:fedora");
+        return true;
+      }
+      if (id.equals("centos")) {
+        distro = DistroTypes.Fedora;
+        derived = DerivedTypes.CentOS;
+        JFLog.log("Detected Linux:centos");
         return true;
       }
       if (id.equals("arch")) {
@@ -165,22 +183,7 @@ public class Linux {
    * Restarts a service
    */
   public static boolean restartService(String name) {
-    ShellProcess sp = new ShellProcess();
-    ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
-    cmd.add("systemctl");
-    cmd.add("restart");
-    cmd.add(name);
-    String output = sp.run(cmd, false);
-    if (output == null) {
-      JFLog.log("Failed to exec service");
-      return false;
-    }
-    if (sp.getErrorLevel() != 0) {
-      JFLog.log("Error:" + output);
-      return false;
-    }
-    return true;
+    return ServiceControl.restart(name);
   }
 
   /**
