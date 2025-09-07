@@ -401,6 +401,14 @@ public class VirtualMachine implements Serializable {
       JFLog.log("Error:VM:snapshot name invalid");
       return false;
     }
+    //check snapshot name is unique
+    Snapshot[] list = snapshotList();
+    for(Snapshot ss : list) {
+      if (ss.name.equals(name)) {
+        JFLog.log("Error:VM:snapshot name already exists");
+        return false;
+      }
+    }
     if (desc == null) desc = "";
     String xml = snapshotCreateXML(name, desc);
     if (xml == null) return false;

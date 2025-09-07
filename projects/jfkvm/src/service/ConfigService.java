@@ -865,7 +865,7 @@ public class ConfigService implements WebUIHandler {
 
   private PopupPanel snapshots_add_PopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Create Snapshot");
-    panel.setPosition(256, 128);
+    panel.setPosition(256 + 64, 128 + 64);
     panel.setModal(true);
     Row row;
     GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
