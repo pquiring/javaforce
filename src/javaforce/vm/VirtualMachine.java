@@ -420,6 +420,7 @@ public class VirtualMachine implements Serializable {
   public Snapshot[] snapshotList() {
     String[] list = nsnapshotList(name);
     if (list == null) return new Snapshot[0];
+    Snapshot current = snapshotGetCurrent();
     ArrayList<Snapshot> sslist = new ArrayList<>();
     for(String ss_str : list) {
       String[] fs = ss_str.split("\t", -1);  //tab delimited
@@ -431,6 +432,7 @@ public class VirtualMachine implements Serializable {
       ss.name = fs[0];
       ss.desc = fs[1];
       ss.parent = fs[2];
+      ss.current = current != null && ss.name.equals(current.name);
       sslist.add(ss);
     }
     //sort into hierarchy

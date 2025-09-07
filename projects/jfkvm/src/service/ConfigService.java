@@ -773,7 +773,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 250, 150, 150}, col_height, 4, 0);
+    Table table = new Table(new int[] {150, 250, 150, 50}, col_height, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -790,18 +790,21 @@ public class ConfigService implements WebUIHandler {
       table.addRow(new String[] {"Name", "Description", "Parent", "Current"});
       if (ui.snapshots_list == null) return;
       for(Snapshot ss : ui.snapshots_list) {
-        table.addRow(new String[] {ss.name, ss.desc, ss.parent, current != null && ss.name.equals(current.name) ? "yes" : ""});
+        table.addRow(new String[] {ss.name, ss.desc, ss.parent, ss.current ? "yes" : ""});
       }
     };
 
     refresh.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       ui.snapshots_init.run();
     });
     create.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       ui.snapshots_add_init.run();
       ui.snapshots_add_popup.setVisible(true);
     });
     delete.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) return;
       ui.confirm_message.setText("Delete Snapshot?");
@@ -826,15 +829,20 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     restore.addClickListener((me, cmp) -> {
+      errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) return;
+      Snapshot ss = ui.snapshots_list[idx];
+      if (ss.current) {
+        errmsg.setText("Error:snapshot already current");
+        return;
+      }
       ui.confirm_message.setText("Restore Snapshot?");
       ui.confirm_button.setText("Restore");
       ui.confirm_action = () -> {
         Task task = new Task("Restore Snapshot") {
           public void doTask() {
             try {
-              Snapshot ss = ui.snapshots_list[idx];
               if (!ui.snapshots_vm.snapshotRestore(ss.name)) {
                 throw new Exception("Restore failed");
               }

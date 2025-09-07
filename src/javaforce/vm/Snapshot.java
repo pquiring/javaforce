@@ -9,4 +9,5 @@ public class Snapshot {
   public String parent;
   public String name;
   public String desc;
+  public boolean current;
 }
