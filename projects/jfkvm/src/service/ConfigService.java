@@ -886,6 +886,11 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    CheckBox cb_memory = new CheckBox("Include memory snapshot");
+    row.add(cb_memory);
+
+    row = new Row();
+    panel.add(row);
     Label errmsg = new Label("");
     errmsg.setColor(Color.red);
     row.add(errmsg);
@@ -893,6 +898,15 @@ public class ConfigService implements WebUIHandler {
     ui.snapshots_add_init = () -> {
       name.setText("");
       desc.setText("");
+      cb_memory.setSelected(false);
+      if (ui.snapshots_vm != null) {
+        int state = ui.snapshots_vm.getState();
+        if (state == VirtualMachine.STATE_ON || state == VirtualMachine.STATE_SUSPEND) {
+          cb_memory.setDisabled(false);
+        } else {
+          cb_memory.setDisabled(true);
+        }
+      }
     };
 
     accept.addClickListener((me, cmp) -> {
@@ -907,7 +921,11 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task("Create Snapshot") {
         public void doTask() {
           try {
-            if (!ui.snapshots_vm.snapshotCreate(_name, _desc, 0)) {
+            int flags = 0;
+            if (!cb_memory.isSelected()) {
+              flags |= VirtualMachine.SNAPSHOT_CREATE_DISK_ONLY;
+            }
+            if (!ui.snapshots_vm.snapshotCreate(_name, _desc, flags)) {
               throw new Exception("create failed");
             }
             setStatus("Completed");
