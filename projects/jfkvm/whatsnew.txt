@@ -1,3 +1,7 @@
+2025-09-08 : 5.0 released!
+  - new : Snapshots : Create, Delete, Restore
+  - new : API : added snapshot_create, snapshot_delete
+
 2025-08-25 : 4.2 released!
   - new : Storage latency is now stored and can be monitored
           similar to VM stats
