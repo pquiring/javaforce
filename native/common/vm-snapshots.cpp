@@ -1,4 +1,4 @@
-#define VM_SNAPSHOTS_DEBUG
+//#define VM_SNAPSHOTS_DEBUG
 
 JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotCreate
   (JNIEnv *e, jclass o, jstring name, jstring xml, jint flags)
