@@ -1,5 +1,10 @@
 What's new...
 
+Sept 8/2025 : JF/87.0
+  - jfKVM/5.0
+    - new : Snapshots : Create, Delete, Restore
+    - new : API : added snapshot_create, snapshot_delete
+
 Aug 25/2025 : JF/86.2
   - jfKVM/4.2
     - new : Storage latency stats logged
