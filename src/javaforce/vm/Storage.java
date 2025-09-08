@@ -661,6 +661,7 @@ sr0  rom  1024M
 
   private static String createXML_Ceph(String name, String uuid, String path, String mountPath) {
     //libvirt currently does NOT support ceph, so a fake "dir" is used for now.
+    //see https://gitlab.com/libvirt/libvirt/-/issues/802
     StringBuilder sb = new StringBuilder();
     sb.append("<pool type='dir' xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'>");
     sb.append("  <name>" + name + "</name>");
