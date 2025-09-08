@@ -18,6 +18,10 @@ public class VMM implements VMProvider {
     return JF.filter(name, JF.filter_id);
   }
 
+  public String cleanURL(String name) {
+    return JF.filterOut(name, JF.filter_url);
+  }
+
   public String cleanNumber(String name) {
     return JF.filter(name, JF.filter_numeric);
   }

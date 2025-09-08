@@ -925,7 +925,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid name");
         return;
       }
-      String _desc = vmm.cleanName(desc.getText());
+      String _desc = vmm.cleanURL(desc.getText());
       Task task = new Task("Create Snapshot") {
         public void doTask() {
           try {
