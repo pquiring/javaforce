@@ -75,6 +75,7 @@ public class ImageConvert {
         int new_width = (img.getWidth() * width_percent) / 100;
         int new_height = (img.getHeight() * height_percent) / 100;
         JFImage new_img = new JFImage(new_width, new_height);
+        new_img.fill(0, 0, new_width, new_height, 0, true);
         new_img.putJFImageScale(img, 0, 0, new_width, new_height);
         img = new_img;
       }
