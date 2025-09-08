@@ -46,7 +46,8 @@ virbr0\t8000.xxxxxxxxxxxx\tno\teth0...
     ArrayList<NetworkBridge> list = new ArrayList<>();
     for(int a=1;a<lns.length;a++) {
       if (lns[a].length() == 0) continue;
-      String[] fs = lns[a].split("\t");
+      String[] fs = lns[a].split("\t+", -1);
+      if (fs.length < 4) continue;
       String br = fs[0];
       String nic = fs[3];
       list.add(new NetworkBridge(br, "br", nic));
