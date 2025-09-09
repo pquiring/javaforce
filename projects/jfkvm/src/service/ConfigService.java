@@ -2309,13 +2309,13 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    Table table = new Table(new int[] {150, 150, 75, 75, 75, 150, 150}, col_height, 7, 0);
+    Table table = new Table(new int[] {150, 150, 75, 100, 75, 75, 150, 150}, col_height, 8, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
     table.setHeader(true);
 
-    table.addRow(new String[] {"Host", "Hostname", "Version", "Online", "Valid", "Gluster", "Ceph"});
+    table.addRow(new String[] {"Host", "Hostname", "Version", "Type", "Online", "Valid", "Gluster", "Ceph"});
 
     Host[] hosts = Config.current.getHosts();
 

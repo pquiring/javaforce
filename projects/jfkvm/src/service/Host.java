@@ -35,8 +35,16 @@ public class Host implements Serializable {
   public static final int TYPE_ON_PREMISE = 0;
   public static final int TYPE_REMOTE = 1;
 
+  private String getType() {
+    switch (type) {
+      case TYPE_ON_PREMISE: return "On Premise";
+      case TYPE_REMOTE: return "Remote";
+      default: return "?";
+    }
+  }
+
   public String[] getState() {
-    return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid), gluster_status, ceph_status};
+    return new String[] {host, hostname, String.format("%.1f", version), getType(), Boolean.toString(online), Boolean.toString(valid), gluster_status, ceph_status};
   }
 
   public boolean isValid(float min_ver) {
