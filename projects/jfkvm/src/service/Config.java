@@ -141,7 +141,7 @@ public class Config implements Serializable {
     return token;
   }
 
-  public boolean saveHost(String hostname, byte[] key, String token) {
+  public boolean saveHost(String hostname, byte[] key, String token, int type) {
     if (key == null || key.length == 0) return false;
     String keyfile = Paths.clusterPath + "/" + hostname;
     try {
@@ -164,6 +164,7 @@ public class Config implements Serializable {
       Host host = new Host();
       host.host = hostname;
       host.token = token;
+      host.type = type;
       host.online = true;
       host.valid = true;
       host.getVersion();

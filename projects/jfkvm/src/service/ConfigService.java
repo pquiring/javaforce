@@ -2271,6 +2271,10 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Remote Host IP:"));
     TextField remote_host = new TextField("");
     row.add(remote_host);
+    row.add(new Label("Type:"));
+    ComboBox remote_type = new ComboBox();
+    remote_type.add("onpremise", "On Premise");
+    remote_type.add("remote", "Remote");
     Button connect = new Button("Connect");
     row.add(connect);
 
@@ -2415,6 +2419,7 @@ public class ConfigService implements WebUIHandler {
       //download to clusterPath
       String _remote_host = remote_host.getText();
       String _remote_token = remote_token.getText();
+      int _remote_type = remote_type.getSelectedIndex();
       if (!IP4.isIP(_remote_host)) {
         local_errmsg.setText("Remote Host IP address required!");
         return;
@@ -2429,7 +2434,7 @@ public class ConfigService implements WebUIHandler {
             HTTPS https = new HTTPS();
             if (!https.open(_remote_host)) throw new Exception("connect failed");
             byte[] data = https.get("/api/keyfile?token=" + _remote_token);
-            if (Config.current.saveHost(_remote_host, data, _remote_token)) {
+            if (Config.current.saveHost(_remote_host, data, _remote_token, _remote_type)) {
               setStatus("Connected to host:" + _remote_host);
             } else {
               setStatus("Connection failed, check logs.");

@@ -20,6 +20,7 @@ public class Host implements Serializable {
   public String token;
   public String host;  //ip address
   public String hostname;  //hostname
+  public int type;
   public transient String ip_storage;  //storage ip
 
   //transient data
@@ -29,6 +30,10 @@ public class Host implements Serializable {
   public transient String gluster_status;
   public transient boolean ceph_setup;  //ceph setup in progress
   public transient String ceph_status;
+
+  //types
+  public static final int TYPE_ON_PREMISE = 0;
+  public static final int TYPE_REMOTE = 1;
 
   public String[] getState() {
     return new String[] {host, hostname, String.format("%.1f", version), Boolean.toString(online), Boolean.toString(valid), gluster_status, ceph_status};
