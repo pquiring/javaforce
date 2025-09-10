@@ -1,3 +1,7 @@
+2025-09-09 : 5.1 released!
+  - fix : Snapshots : add name to xml
+  - new : cluster : added type to host (not used yet)
+
 2025-09-08 : 5.0 released!
   - new : Snapshots : Create, Delete, Restore
   - new : API : added snapshot_create, snapshot_delete
