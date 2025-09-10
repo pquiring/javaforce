@@ -1,5 +1,10 @@
 What's new...
 
+Sept 10/2025 : JF/87.1
+  - jfKVM/5.1
+    - fix : snapshots : add name to xml
+    - new : cluster : add type to host (not used yet)
+
 Sept 8/2025 : JF/87.0
   - jfKVM/5.0
     - new : Snapshots : Create, Delete, Restore

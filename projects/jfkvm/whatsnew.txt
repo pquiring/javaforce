@@ -1,4 +1,4 @@
-2025-09-09 : 5.1 released!
+2025-09-10 : 5.1 released!
   - fix : Snapshots : add name to xml
   - new : cluster : added type to host (not used yet)
 
