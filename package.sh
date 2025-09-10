@@ -86,6 +86,9 @@ cd ../../../..
 #force rebuild everything
 find -name "*.class" | xargs rm 2>/dev/null
 
+echo Packaging for : $OS on $ARCH
+echo Packaging for : $OS on $ARCH 1>&2
+
 #package javaforce
 echo Packaging javaforce
 echo Packaging javaforce 1>&2
