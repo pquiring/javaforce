@@ -532,6 +532,7 @@ public class VirtualMachine implements Serializable {
     }
     StringBuilder xml = new StringBuilder();
     xml.append("<domainsnapshot>");
+    xml.append("<name>" + name + "</name>");
     xml.append("<description>" + desc + "</description>");
     xml.append("<disks>");
     for(Disk disk : hardware.disks) {
