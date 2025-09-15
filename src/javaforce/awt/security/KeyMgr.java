@@ -88,6 +88,7 @@ public class KeyMgr extends javax.swing.JDialog {
     bar5 = new javax.swing.JToolBar();
     import_ks = new javax.swing.JButton();
     import_key = new javax.swing.JButton();
+    jButton3 = new javax.swing.JButton();
     bar3 = new javax.swing.JToolBar();
     gen_csr = new javax.swing.JButton();
     signcsr = new javax.swing.JButton();
@@ -237,6 +238,17 @@ public class KeyMgr extends javax.swing.JDialog {
       }
     });
     bar5.add(import_key);
+
+    jButton3.setText("Import Cert");
+    jButton3.setFocusable(false);
+    jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton3ActionPerformed(evt);
+      }
+    });
+    bar5.add(jButton3);
 
     bar3.setBorderPainted(false);
     bar3.setFocusable(false);
@@ -395,7 +407,7 @@ public class KeyMgr extends javax.swing.JDialog {
   }//GEN-LAST:event_export_crtActionPerformed
 
   private void import_keyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_import_keyActionPerformed
-    import_key();
+    import_key_crt();
   }//GEN-LAST:event_import_keyActionPerformed
 
   private void detailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailsActionPerformed
@@ -405,6 +417,10 @@ public class KeyMgr extends javax.swing.JDialog {
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
     export_alias();
   }//GEN-LAST:event_jButton2ActionPerformed
+
+  private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    import_crt();
+  }//GEN-LAST:event_jButton3ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JToolBar bar1;
@@ -423,6 +439,7 @@ public class KeyMgr extends javax.swing.JDialog {
   private javax.swing.JButton import_ks;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
+  private javax.swing.JButton jButton3;
   private javax.swing.JButton jButton4;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JButton reload;
@@ -475,8 +492,10 @@ public class KeyMgr extends javax.swing.JDialog {
       while(aliases.hasMoreElements()) {
         String alias = aliases.nextElement();
         Certificate crt = ks.getCertificate(alias);
+        String crt_str = crt == null ? "null" : crt.toString();
         Key key = ks.getKey(alias, pwd);
-        model.addRow(new String[] {alias, key.toString(), crt.toString()});
+        String key_str = key == null ? "null" : key.toString();
+        model.addRow(new String[] {alias, key_str, crt_str});
         cnt++;
       }
       if (debug) JFLog.log("Aliases found:" + cnt);
@@ -619,7 +638,7 @@ public class KeyMgr extends javax.swing.JDialog {
     keys.exportCRT(alias, file);
   }
 
-  public void import_key() {
+  public void import_key_crt() {
     String file_key = JFAWT.getOpenFile(".", new String[][] {new String[] {".key", "Key"}});
     if (file_key == null) return;
     String file_crt = JFAWT.getOpenFile(".", new String[][] {new String[] {".crt", "Certificate"}});
@@ -633,6 +652,24 @@ public class KeyMgr extends javax.swing.JDialog {
       FileInputStream certStream = new FileInputStream(file_crt);
       keys.loadKEYandCRT(alias, keyStream, certStream, pass);
       keyStream.close();
+      certStream.close();
+      keys.save();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    reload();
+  }
+
+  public void import_crt() {
+    String file_crt = JFAWT.getOpenFile(".", new String[][] {new String[] {".crt", "Certificate"}});
+    if (file_crt == null) return;
+    String alias = JFAWT.getString("Enter Alias", "alias+" + keys.getCount());
+    if (alias == null) return;
+    String pass = JFAWT.getString("Enter Key Pass", keys.getKeyStorePass());
+    if (pass == null) return;
+    try {
+      FileInputStream certStream = new FileInputStream(file_crt);
+      keys.loadCRT(alias, certStream);
       certStream.close();
       keys.save();
     } catch (Exception e) {
