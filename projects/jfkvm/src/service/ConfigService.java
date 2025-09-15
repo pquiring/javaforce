@@ -2787,6 +2787,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(snapshots);
     Button clone = new Button("Clone");
     tools.add(clone);
+    Button backup = new Button("Backup");
+    tools.add(backup);
     Button migrate = new Button("Migrate");
     tools.add(migrate);
     Button unreg = new Button("Unregister");
@@ -3023,6 +3025,10 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       ui.setRightPanel(vmCloneDataPanel(vm, ui));
+    });
+
+    backup.addClickListener((me, cmp) -> {
+      //TODO
     });
 
     migrate.addClickListener((me, cmp) -> {
