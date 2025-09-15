@@ -18,6 +18,7 @@ public class KVMService extends Thread {
   public static KVMService kvmService;
   public static ConfigService configService;
   public static WebServerRedir redirService;
+  public static FileSyncServer syncService;
   public static Stats stats;
 
   public static void serviceStart(String args[]) {
@@ -53,6 +54,9 @@ public class KVMService extends Thread {
     //start stats timer
     stats = new Stats();
     stats.start();
+    //start sync service
+    syncService = new FileSyncServer(Config.current.token, "/volumes");
+    syncService.start();
     //start config service
     configService = new ConfigService();
     configService.start();
@@ -101,6 +105,14 @@ public class KVMService extends Thread {
         JFLog.log(e);
       }
       stats = null;
+    }
+    if (syncService != null) {
+      try {
+        syncService.stop();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      syncService = null;
     }
   }
 }

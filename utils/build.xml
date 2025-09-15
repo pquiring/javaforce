@@ -14,6 +14,7 @@
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-filesync.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" target="installapp" inheritAll="false"/>
@@ -37,6 +38,7 @@
     <ant antfile="build-copypath.xml" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
     <ant antfile="build-filesplitter.xml" inheritAll="false"/>
+    <ant antfile="build-filesync.xml" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-scriptex.xml" inheritAll="false"/>
