@@ -2458,6 +2458,10 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Host host = hosts[idx];
+      if (host.type != Host.TYPE_ON_PREMISE) {
+        remote_errmsg.setText("Error:Host is not on premise");
+        return;
+      }
       String host_host = host.host;
       if (!host.online) {
         remote_errmsg.setText("Host is not online");
@@ -2483,15 +2487,18 @@ public class ConfigService implements WebUIHandler {
 
     ceph.addClickListener((me, cmp) -> {
       remote_errmsg.setText("");
-      if (hosts.length < 2) {
-        remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
-        return;
-      }
+      int count = 0;
       for(Host host : hosts) {
+        if (host.type != Host.TYPE_ON_PREMISE) continue;
         if (!host.online || !host.valid) {
           remote_errmsg.setText("Host is not online:" + host.hostname);
           return;
         }
+        count++;
+      }
+      if (count < 3) {
+        remote_errmsg.setText("Ceph requires a cluster of 3 or more hosts");
+        return;
       }
       ui.confirm_message.setText("Ceph setup");
       ui.confirm_action = () -> {
