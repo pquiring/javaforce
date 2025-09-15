@@ -93,6 +93,7 @@ public class MQTT {
       packet[0] = (byte)(CMD_DISCONNECT << 4);
       packet[1] = 1;  //packet length
       packet[2] = 0;  //disconnect reason code
+      if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       try { os.write(packet); } catch (Exception e) {}
       try { s.close(); } catch (Exception e) {}
       s = null;
@@ -161,11 +162,13 @@ public class MQTT {
     packet[pos++] = 2 + 8;  //client id length (short)
     packet[pos++] = 'J';  //client id
     packet[pos++] = 'F';
+    //random 8 byte client id
     Random r = new Random();
     String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
     System.arraycopy(hex.getBytes(), 0, packet, pos, 8);
     pos += 8;
     try {
+      if (debug) JFLog.log("write(connect)=" + packet.length, packet, 0, packet.length);
       os.write(packet);
     } catch (Exception e) {
       disconnect();
@@ -204,6 +207,7 @@ public class MQTT {
     packet[pos++] = 2 + 8;  //client id length (short)
     packet[pos++] = 'J';  //client id
     packet[pos++] = 'F';
+    //random 8 byte client id
     Random r = new Random();
     String hex = Integer.toString(r.nextInt(0x7fffffff) | 0x10000000, 16);
     System.arraycopy(hex.getBytes(), 0, packet, pos, 8);
@@ -217,6 +221,7 @@ public class MQTT {
     setString(packet, pos, pass_bytes, pass_length);
     pos += pass_length;
     try {
+      if (debug) JFLog.log("write(connect_user_pass)=" + packet.length, packet, 0, packet.length);
       os.write(packet);
     } catch (Exception e) {
       disconnect();
@@ -263,6 +268,7 @@ public class MQTT {
       JFLog.log("publish:" + topic + "=" + msg);
     }
     try {
+      if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
     } catch (Exception e) {
       disconnect();
@@ -302,6 +308,7 @@ public class MQTT {
       JFLog.log("subscribe:" + topic);
     }
     try {
+      if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
     } catch (Exception e) {
       disconnect();
@@ -335,6 +342,7 @@ public class MQTT {
       JFLog.log("unsubscribe:" + topic);
     }
     try {
+      if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
     } catch (Exception e) {
       disconnect();
@@ -347,6 +355,7 @@ public class MQTT {
     packet[0] = (byte)(CMD_PING << 4);
     packet[1] = 0;  //packet length
     try {
+      if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
     } catch (Exception e) {
       disconnect();
@@ -439,13 +448,17 @@ public class MQTT {
           int read;
           Arrays.fill(buf, (byte)0);
           while (active) {
+            int toRead;
             if (packetLength == -1) {
-              read = is.read(buf, totalRead, 1);
+              toRead = 1;
             } else {
-              read = is.read(buf, totalRead, totalLength - totalRead);
+              toRead = totalLength - totalRead;
             }
-            if (debug) JFLog.log("read=" + read);
-            if (read == -1) throw new Exception("bad read");
+            read = is.read(buf, totalRead, toRead);
+            if (read == -1) throw new Exception("bad read (-1)");
+            if (debug) {
+              JFLog.log("read=" + read, buf, totalRead, read);
+            }
             totalRead += read;
             if (totalRead < 2) continue;
             if (packetLength == -1) {
@@ -455,6 +468,7 @@ public class MQTT {
                 if (debug) JFLog.log("totalLength=" + totalLength);
               }
             }
+            if (debug) {JFLog.log("packetLength=" + packetLength + ",totalRead=" + totalRead + ",totalLength=" + totalLength);}
             if (packetLength == -1) continue;
             if (totalRead < totalLength) continue;
             last_packet = System.currentTimeMillis();
@@ -581,6 +595,7 @@ public class MQTT {
       }
     }
     private void send(byte[] reply) throws Exception {
+      if (debug) JFLog.log("write=" + reply.length, reply, 0, reply.length);
       os.write(reply);
     }
     public void cancel() {

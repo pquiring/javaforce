@@ -223,6 +223,28 @@ public class JFLog {
     return true;
   }
 
+  public static boolean log(String msg, byte[] buffer, int offset, int length) {
+    return log(DEFAULT, msg, buffer, offset, length);
+  }
+
+  public static boolean log(int id, String msg, byte[] buffer, int offset, int length) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(msg);
+    sb.append("=[");
+    for(int i=0;i<length;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(String.format("%02x", buffer[offset+i]));
+    }
+    sb.append("]");
+    sb.append(",{");
+    for(int i=0;i<length;i++) {
+      if (i > 0) sb.append(",");
+      sb.append(String.format("%c", (char)buffer[offset+i]));
+    }
+    sb.append("}");
+    return log(id, sb.toString());
+  }
+
   /** Rotates log file. */
   public static boolean rotate(int id) {
     LogInstance log;
