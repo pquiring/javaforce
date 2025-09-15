@@ -499,8 +499,17 @@ public class MQTT {
       switch (cmd) {
         case CMD_CONNECT_ACK:
           if (debug_msg) JFLog.log("connect_ack");
-          if (events != null) {
-            events.onConnect();
+          int flags = packet[pos++] & 0xff;
+          //bit0=Session Present
+          int reason = packet[pos++] & 0xff;
+          //properties...
+          if (reason == 0x00) {
+            if (events != null) {
+              events.onConnect();
+            }
+          } else {
+            JFLog.log("MQTT:Connection refused! Reason=0x" + Integer.toHexString(reason));
+            disconnect();
           }
           break;
         case CMD_PUBLISH: {
