@@ -490,6 +490,9 @@ public class MQTTServer {
   public static final byte FLAG_PASS = 0x40;
   public static final byte FLAG_USER = (byte)0x80;
 
+  public static final byte CONNECT_SUCCESS = 0;
+  public static final byte CONNECT_NOT_AUTHORIZED = (byte)0x87;
+
   public static Client[] ClientArrayType = new Client[0];
 
   private class Client extends Thread {
@@ -614,10 +617,10 @@ public class MQTTServer {
               if (debug_auth) {
                 JFLog.log("auth failed:" + user + ":" + pass);
               }
-              disconnect();
-              break;
+              auth = false;
+            } else {
+              auth = true;
             }
-            auth = true;
           }
           switch (ver) {
             case 4: reply = new byte[4]; break;
@@ -626,6 +629,15 @@ public class MQTTServer {
           //reply = header , size , ack_flags, return_code=0, [props]
           reply[0] = (byte)(CMD_CONNECT_ACK << 4);
           setPacketLength(reply);
+          if (auth) {
+            reply[3] = CONNECT_SUCCESS;
+          } else {
+            reply[3] = CONNECT_NOT_AUTHORIZED;
+            send(reply);
+            os.flush();
+            disconnect();
+            break;
+          }
           if (events != null) {
             events.onConnect();
           }
@@ -869,8 +881,10 @@ public class MQTTServer {
     private void disconnect() {
       unsubscribeAll(this);
       client_active = false;
-      try {s.close();} catch (Exception e) {}
-      s = null;
+      if (s != null) {
+        try {s.close();} catch (Exception e) {}
+        s = null;
+      }
     }
 
     private int calcPacketLength(boolean has_id, int topic_length, boolean has_opts, int msg_length) {
