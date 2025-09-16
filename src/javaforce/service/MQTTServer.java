@@ -634,6 +634,7 @@ public class MQTTServer {
           } else {
             reply[3] = CONNECT_NOT_AUTHORIZED;
             send(reply);
+            reply = null;
             os.flush();
             disconnect();
             break;
