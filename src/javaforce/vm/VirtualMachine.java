@@ -407,7 +407,9 @@ public class VirtualMachine implements Serializable {
     }
     FileSync sync = new FileSync();
     if (!sync.connect(host)) return false;
-    return sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);
+    boolean ret = sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);
+    sync.disconnect();
+    return ret;
   }
 
   //snapshot functions
