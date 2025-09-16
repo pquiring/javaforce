@@ -304,6 +304,7 @@ public class MQTTServer {
   private static int bufsiz = 4096;
 
   public static boolean debug = false;
+  public static boolean debug_auth = false;
   public static boolean debug_msg = false;
 
   private class Server extends Thread {
@@ -609,7 +610,7 @@ public class MQTTServer {
           if (config.user != null && config.pass != null) {
             //compare user/pass
             if (user == null || !user.equals(config.user) || pass == null || !pass.equals(config.pass)) {
-              if (debug) {
+              if (debug_auth) {
                 JFLog.log("auth failed:" + user + ":" + pass);
               }
               disconnect();
