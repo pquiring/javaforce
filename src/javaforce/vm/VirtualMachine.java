@@ -393,6 +393,10 @@ public class VirtualMachine implements Serializable {
     if (hw == null) return null;
     ArrayList<String> list = new ArrayList<>();
     list.add(name + ".jfvm");
+    String vmx = name + ".vmx";
+    if (new File(vmx).exists()) {
+      list.add(vmx);
+    }
     for(Disk disk : hw.disks) {
       list.add(disk.getFile());
     }
