@@ -34,6 +34,7 @@ public class MQTTServer {
     for(String arg : args) {
       switch (arg) {
         case "debug": debug = true; JFLog.log("debug enabled"); break;
+        case "debug_auth": debug_auth = true; JFLog.log("debug auth enabled"); break;
         case "debug_msg": debug_msg = true; JFLog.log("debug messages enabled");break;
       }
     }
