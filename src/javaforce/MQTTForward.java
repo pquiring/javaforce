@@ -21,6 +21,7 @@ public class MQTTForward {
   private int max_queue_size = 1000;
   private int keep_alive = 30;
   private long last_packet = -1;
+  private boolean connected;
 
   private static class Entry {
     public Entry(String topic, String msg) {
@@ -75,6 +76,10 @@ public class MQTTForward {
     active = false;
   }
 
+  public boolean isConnected() {
+    return connected;
+  }
+
   /** Set maximum queue size (default = 1000)
    * Messages are lost when queue reaches this size.
    */
@@ -103,6 +108,7 @@ public class MQTTForward {
 
   public void reconnect() {
     synchronized (client_lock) {
+      connected = false;
       if (client != null) {
         client.disconnect();
         client = null;
@@ -124,7 +130,7 @@ public class MQTTForward {
     return null;
   }
 
-  private class Server extends Thread {
+  private class Server extends Thread implements MQTTEvents {
     public int count;
     public void run() {
       while (active) {
@@ -156,13 +162,16 @@ public class MQTTForward {
             }
             while (client == null) {
               client = new MQTT();
+              client.setListener(this);
               if (keys == null) {
                 if (!client.connect(host, port)) {
                   client = null;
+                  connected = false;
                 }
               } else {
                 if (!client.connect(host, port, keys)) {
                   client = null;
+                  connected = false;
                 }
               }
               if (client != null) {
@@ -175,9 +184,10 @@ public class MQTTForward {
               if (client != null) {
                 if (!client.isConnected()) {
                   client = null;
+                  connected = false;
                   JF.sleep(1000);
                 } else {
-                  //connection okay : TODO : wait for connect() confirmation
+                  //TODO : wait for onConnect() confirmation
                   break;
                 }
               }
@@ -192,6 +202,16 @@ public class MQTTForward {
           JFLog.log(e);
         }
       }
+    }
+
+    public void onConnect() {
+      connected = true;
+    }
+
+    public void onSubscribe(String topic) {
+    }
+
+    public void onMessage(String topic, String msg) {
     }
   }
 }

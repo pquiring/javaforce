@@ -503,7 +503,7 @@ public class MQTT {
           //bit0=Session Present
           int reason = packet[pos++] & 0xff;
           //properties...
-          if (reason == 0x00) {
+          if (reason == CONNECT_SUCCESS) {
             if (events != null) {
               events.onConnect();
             }
