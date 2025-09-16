@@ -7,6 +7,7 @@ import java.util.*;
 import java.nio.file.*;
 
 import javaforce.*;
+import javaforce.utils.*;
 import javaforce.webui.tasks.*;
 
 public class VirtualMachine implements Serializable {
@@ -387,6 +388,28 @@ public class VirtualMachine implements Serializable {
     return true;
   }
 
+  private String[] getFiles() {
+    Hardware hw = loadHardware();
+    if (hw == null) return null;
+    ArrayList<String> list = new ArrayList<>();
+    list.add(name + ".jfvm");
+    for(Disk disk : hw.disks) {
+      list.add(disk.getFile());
+    }
+    return list.toArray(JF.StringArrayType);
+  }
+
+  public boolean backupData(String host, String pool, String folder) {
+    String[] files = getFiles();
+    if (files == null) {
+      JFLog.log("VM:backupData() failed : unable to load hardware config");
+      return false;
+    }
+    FileSync sync = new FileSync();
+    if (!sync.connect(host)) return false;
+    return sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);
+  }
+
   //snapshot functions
 
   public static final int SNAPSHOT_CREATE_DISK_ONLY = 16;
@@ -522,6 +545,10 @@ public class VirtualMachine implements Serializable {
   /** Snap Shot : Delete (merges data back into parent) */
   public boolean snapshotDelete(String name) {
     return nsnapshotDelete(this.name, name);
+  }
+
+  public boolean hasSnapshot() {
+    return snapshotCount() > 0;
   }
 
   private String snapshotCreateXML(String name, String desc) {

@@ -118,7 +118,7 @@ public class Host implements Serializable {
       return ip_storage;
     } catch (Exception e) {
       JFLog.log(e);
-      return host;
+      return ip_storage;
     }
   }
 
@@ -161,7 +161,7 @@ public class Host implements Serializable {
       return new String(data);
     } catch (Exception e) {
       JFLog.log(e);
-      return host;
+      return null;
     }
   }
 
@@ -176,9 +176,25 @@ public class Host implements Serializable {
       return new String(data);
     } catch (Exception e) {
       JFLog.log(e);
-      return host;
+      return null;
     }
   }
+
+  public String[] getStoragePools() {
+    if (!isValid(6.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/getpools");
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data).split("|");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
 
   public boolean setCephStart() {
     try {

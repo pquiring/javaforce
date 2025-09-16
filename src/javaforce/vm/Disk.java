@@ -50,6 +50,10 @@ public class Disk implements Serializable {
     return "/volumes/" + pool + "/" + folder;
   }
 
+  public String getFile() {
+    return name + '.' + getType();
+  }
+
   public String getPath() {
     return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
   }

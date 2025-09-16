@@ -2785,10 +2785,10 @@ public class ConfigService implements WebUIHandler {
     tools.add(poweroff);
     Button snapshots = new Button("Snapshots");
     tools.add(snapshots);
-    Button clone = new Button("Clone");
-    tools.add(clone);
     Button backup = new Button("Backup");
     tools.add(backup);
+    Button clone = new Button("Clone");
+    tools.add(clone);
     Button migrate = new Button("Migrate");
     tools.add(migrate);
     Button unreg = new Button("Unregister");
@@ -3012,6 +3012,32 @@ public class ConfigService implements WebUIHandler {
       ui.snapshots_popup.setVisible(true);
     });
 
+    backup.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      Host[] hosts = Config.current.getHosts();
+      int remotes = 0;
+      for(Host host : hosts) {
+        if (host.type == Host.TYPE_REMOTE) {
+          remotes++;
+        }
+      }
+      if (remotes == 0) {
+        errmsg.setText("Error:no remote hosts configured");
+        return;
+      }
+      VirtualMachine vm = vms[idx];
+      if (!vm.hasSnapshot()) {
+        errmsg.setText("Error:VM has no snapshots");
+        return;
+      }
+      ui.setRightPanel(vmBackupPanel(vm, null, null, ui));
+    });
+
     clone.addClickListener((me, cmp) -> {
       errmsg.setText("");
       int idx = table.getSelectedRow();
@@ -3025,10 +3051,6 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       ui.setRightPanel(vmCloneDataPanel(vm, ui));
-    });
-
-    backup.addClickListener((me, cmp) -> {
-      //TODO
     });
 
     migrate.addClickListener((me, cmp) -> {
@@ -3784,7 +3806,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Select a storage pool"));
+    row.add(new Label("Select storage pool"));
 
     row = new Row();
     panel.add(row);
@@ -3891,7 +3913,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Select a remote host"));
+    row.add(new Label("Select remote host"));
 
     row = new Row();
     panel.add(row);
@@ -4004,6 +4026,106 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private Panel vmBackupPanel(VirtualMachine vm, String vm_name, Host host, UI ui) {
+    Panel panel = new Panel();
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    row.add(new Label("Name"));
+    TextField name = new TextField(vm_name == null ? vm.name : vm_name);
+    row.add(name);
+
+    ListBox list = new ListBox();
+
+    if (host == null) {
+      //select host
+      row = new Row();
+      panel.add(row);
+      row.add(new Label("Select remote host"));
+
+      row = new Row();
+      panel.add(row);
+      row.add(list);
+      Host[] hosts = Config.current.getHosts();
+      for(Host _host : hosts) {
+        if (_host.type != Host.TYPE_REMOTE) continue;
+        list.add(_host.hostname);
+      }
+    } else {
+      //host
+      row = new Row();
+      panel.add(row);
+      row.add(new Label("Host:" + host.hostname));
+      //select storage
+      row = new Row();
+      panel.add(row);
+      row.add(new Label("Select storage pool"));
+
+      row = new Row();
+      panel.add(row);
+      row.add(list);
+      String[] pools = host.getStoragePools();
+      if (pools == null) {
+        pools = new String[] {};
+      }
+      for(String _pool : pools) {
+        list.add(_pool);
+      }
+    }
+
+    row = new Row();
+    panel.add(row);
+    Button next = new Button(host == null ? "Next" : "Start");
+    row.add(next);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    next.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      String _vm_name = vmm.cleanName(name.getText());
+      if (_vm_name.length() == 0) {
+        name.setText(_vm_name);
+        errmsg.setText("Error:invalid vm name");
+        return;
+      }
+      String value = list.getSelectedItem();
+      if (value == null || value.length() == 0) {
+        errmsg.setText("Error:invalid selection");
+        return;
+      }
+      if (host == null) {
+        Host _host = Config.current.getHostByHostname(value);
+        if (_host == null) {
+          errmsg.setText("Error:Host not found:" + value);
+          return;
+        }
+        ui.setRightPanel(vmBackupPanel(vm, _vm_name, _host, ui));
+      } else {
+        String _pool = value;
+        //start backup process to host/pool with name
+        Task task = new Task("Create backup") {
+          public void doTask() {
+            try {
+              vm.backupData(host.host, _pool, _vm_name);
+              setStatus("Completed");
+            } catch (Exception e) {
+              setStatus("Error:Create backup failed, check logs.");
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      }
+    });
+
+    return panel;
+  }
+
   private Panel vmCloneDataPanel(VirtualMachine vm, UI ui) {
     Panel panel = new Panel();
     Row row;
@@ -4020,7 +4142,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    row.add(new Label("Select a storage pool"));
+    row.add(new Label("Select storage pool"));
 
     row = new Row();
     panel.add(row);
@@ -5061,7 +5183,7 @@ public class ConfigService implements WebUIHandler {
     format.addClickListener((me, cmp) -> {
       int idx = table.getSelectedRow();
       if (idx == -1) {
-        errmsg.setText("Select a storage pool");
+        errmsg.setText("Select storage pool");
         return;
       }
       Storage pool = pools.get(idx);
@@ -6817,6 +6939,17 @@ public class ConfigService implements WebUIHandler {
           }
         }
         return result.getBytes();
+      }
+      case "getpools": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        StringBuilder list = new StringBuilder();
+        ArrayList<Storage> pools = Config.current.pools;
+        for(Storage pool : pools) {
+          if (list.length() > 0) list.append("[|]");
+          list.append(pool.name);
+        }
+        return list.toString().getBytes();
       }
       case "stats": {
         String uuid = params.get("uuid");
