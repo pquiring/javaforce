@@ -40,7 +40,9 @@ public class Tasks extends Thread {
 
   private void addUI(Task task) {
     task.taskui = new TaskUI(task);
-    task.tasks.add(0, task.taskui);  //add at top of panel
+    if (task.tasks != null) {
+      task.tasks.add(0, task.taskui);  //add at top of panel
+    }
   }
 
   private boolean busy() {
@@ -107,7 +109,9 @@ public class Tasks extends Thread {
     synchronized (lock) {
       taskList.remove(task);
     }
-    task.tasks.remove(task.taskui);
+    if (task.tasks != null) {
+      task.tasks.remove(task.taskui);
+    }
   }
 
   private static final long ts_cut_time = 5 * 60 * 1000;

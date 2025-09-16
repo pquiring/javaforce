@@ -4104,7 +4104,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task("Create backup") {
           public void doTask() {
             try {
-              vm.backupData(host.host, _pool, _vm_name);
+              if (!vm.backupData(host.host, _pool, _vm_name)) {
+                throw new Exception("backup failed");
+              }
               setStatus("Completed");
             } catch (Exception e) {
               setStatus("Error:Create backup failed, check logs.");
@@ -6930,6 +6932,41 @@ public class ConfigService implements WebUIHandler {
             }
             break;
           }
+        }
+        return result.getBytes();
+      }
+      case "backup": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String result = "Ok:backup started";
+        String vm_name = params.get("vm");
+        String dest = params.get("dest");
+        String destpool = params.get("destpool");
+        String destname = params.get("destname");  //optional (default = vm)
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        if (dest == null) {
+          result = "Error:dest required";
+        } else if (destpool == null) {
+          result = "Error:destpool required";
+        } else if (vm == null) {
+          result = "Error:VM Not Found";
+        } else {
+          //TODO : validate dest, destpool
+          String _destname = destname == null ? vm_name : destname;
+          Task task = new Task("Create backup") {
+            public void doTask() {
+              try {
+                if (!vm.backupData(dest, destpool, _destname)) {
+                  throw new Exception("backup failed");
+                }
+                setStatus("Completed");
+              } catch (Exception e) {
+                setStatus("Error:Create backup failed, check logs.");
+                JFLog.log(e);
+              }
+            }
+          };
+          Tasks.tasks.addTask(null, task);
         }
         return result.getBytes();
       }
