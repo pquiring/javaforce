@@ -3019,15 +3019,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      Host[] hosts = Config.current.getHosts();
-      int remotes = 0;
-      for(Host host : hosts) {
-        if (host.type == Host.TYPE_REMOTE) {
-          remotes++;
-        }
-      }
-      if (remotes == 0) {
-        errmsg.setText("Error:no remote hosts configured");
+      if (!Config.current.hasHost(Host.TYPE_REMOTE, 6.0f)) {
+        errmsg.setText("Error:no valid remote hosts configured");
         return;
       }
       VirtualMachine vm = vms[idx];

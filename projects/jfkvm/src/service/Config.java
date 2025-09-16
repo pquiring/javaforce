@@ -203,6 +203,17 @@ public class Config implements Serializable {
     return hosts.values().toArray(new Host[0]);
   }
 
+  public boolean hasHost(int type, float min_ver) {
+    Host[] hosts = getHosts();
+    for(Host host : hosts) {
+      if (!host.isValid(6.0f)) continue;
+      if (host.type == type) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Returns all hosts FQN including self. */
   public String[] getHostNames() {
     String[] names = new String[hosts.size() + 1];
