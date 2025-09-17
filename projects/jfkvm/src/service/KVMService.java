@@ -48,7 +48,7 @@ public class KVMService extends Thread {
     //startup services
     new Startup().start();
     //starts tasks service
-    Tasks.init();
+    Tasks.init(Paths.tasksPath);
     //start hosts service
     Hosts.init();
     //start stats timer

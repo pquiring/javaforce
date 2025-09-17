@@ -111,7 +111,7 @@ public class Main implements WebUIHandler {
     return Panels.getPanel("usr_Main", client);
   }
 
-  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
     System.out.println("getResource(" + url + ")");
     // url = /user/hash/id/counter
     String f[] = url.split("/");

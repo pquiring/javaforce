@@ -34,7 +34,7 @@ public class Test implements WebUIHandler {
     //System.exit(0);
   }
 
-  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
     //TODO : return static images, etc needed by webpage
     return null;
   }

@@ -231,6 +231,22 @@ public class ConfigService implements WebUIHandler {
     }
   }
 
+  private String getUser(WebUIClient client) {
+    return (String)client.getProperty("user");
+  }
+
+  private String getIP(WebUIClient client) {
+    return client.getHost();
+  }
+
+  private TaskEvent createEvent(String action, UI ui) {
+    return TaskEvent.create(action, getUser(ui.client), getIP(ui.client));
+  }
+
+  private TaskEvent createEvent(String action, String user, String ip) {
+    return TaskEvent.create(action, user, ip);
+  }
+
   public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
     if (name.equals("console")) {
       return getWebConsole(params, client);
@@ -810,7 +826,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Delete Snapshot?");
       ui.confirm_button.setText("Delete");
       ui.confirm_action = () -> {
-        Task task = new Task("Delete Snapshot") {
+        Task task = new Task(createEvent("Delete Snapshot", ui)) {
           public void doTask() {
             try {
               Snapshot ss = ui.snapshots_list[idx];
@@ -840,7 +856,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Restore Snapshot?");
       ui.confirm_button.setText("Restore");
       ui.confirm_action = () -> {
-        Task task = new Task("Restore Snapshot") {
+        Task task = new Task(createEvent("Restore Snapshot", ui)) {
           public void doTask() {
             try {
               if (!ui.snapshots_vm.snapshotRestore(ss.name)) {
@@ -926,7 +942,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       String _desc = vmm.cleanURL(desc.getText());
-      Task task = new Task("Create Snapshot") {
+      Task task = new Task(createEvent("Create Snapshot", ui)) {
         public void doTask() {
           try {
             int flags = 0;
@@ -1875,6 +1891,9 @@ public class ConfigService implements WebUIHandler {
     Button terminal = new Button("Terminal");
     terminal.setWidth(size);
     list.add(terminal);
+    Button tasks_log = new Button("Tasks Log");
+    tasks_log.setWidth(size);
+    list.add(tasks_log);
 
     host.addClickListener((me, cmp) -> {
       ui.setRightPanel(hostPanel(ui, HOST_WELCOME));
@@ -1893,6 +1912,9 @@ public class ConfigService implements WebUIHandler {
     });
     terminal.addClickListener((me, cmp) -> {
       ui.setRightPanel(terminalPanel(ui));
+    });
+    tasks_log.addClickListener((me, cmp) -> {
+      ui.setRightPanel(new TaskLogUI(Tasks.tasks.getTaskLog()));
     });
     return panel;
   }
@@ -2031,7 +2053,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Reboot host?");
       ui.confirm_button.setText("Reboot");
       ui.confirm_action = () -> {
-        Task task = new Task("Reboot") {
+        Task task = new Task(createEvent("Reboot", ui)) {
           public void doTask() {
             try {
               Linux.reboot();
@@ -2056,7 +2078,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Shutdown host?");
       ui.confirm_button.setText("Shutdown");
       ui.confirm_action = () -> {
-        Task task = new Task("Shutdown") {
+        Task task = new Task(createEvent("Shutdown", ui)) {
           public void doTask() {
             try {
               Linux.shutdown();
@@ -2380,7 +2402,7 @@ public class ConfigService implements WebUIHandler {
         local_errmsg.setText("Busy");
         return;
       }
-      Task task = new Task("Generate Key") {
+      Task task = new Task(createEvent("Generate Key", ui)) {
         public void doTask() {
           try {
             try {new File("/root/cluster/localhost").delete();} catch (Exception e) {}
@@ -2429,7 +2451,7 @@ public class ConfigService implements WebUIHandler {
         local_errmsg.setText("Can not connect to localhost");
         return;
       }
-      Task task = new Task("Connect to host:" + _remote_host) {
+      Task task = new Task(createEvent("Connect to host:" + _remote_host, ui)) {
         public void doTask() {
           try {
             HTTPS https = new HTTPS();
@@ -2467,7 +2489,7 @@ public class ConfigService implements WebUIHandler {
         remote_errmsg.setText("Host is not online");
         return;
       }
-      Task task = new Task("Gluster Probe host:" + host_host) {
+      Task task = new Task(createEvent("Gluster Probe host:" + host_host, ui)) {
         public void doTask() {
           try {
             if (Gluster.probe(host_host)) {
@@ -2502,7 +2524,7 @@ public class ConfigService implements WebUIHandler {
       }
       ui.confirm_message.setText("Ceph setup");
       ui.confirm_action = () -> {
-        Task task = new Task("Ceph setup") {
+        Task task = new Task(createEvent("Ceph setup", ui)) {
           public void doTask() {
             try {
               //check if already setup
@@ -2682,7 +2704,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      Task task = new Task("Start Service") {
+      Task task = new Task(createEvent("Start Service", ui)) {
         public void doTask() {
           try {
             ServiceControl.start(services[idx]);
@@ -2702,7 +2724,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      Task task = new Task("Stop Service") {
+      Task task = new Task(createEvent("Stop Service", ui)) {
         public void doTask() {
           try {
             ServiceControl.stop(services[idx]);
@@ -2722,7 +2744,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      Task task = new Task("Enable Service") {
+      Task task = new Task(createEvent("Enable Service", ui)) {
         public void doTask() {
           try {
             ServiceControl.enable(services[idx]);
@@ -2742,7 +2764,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      Task task = new Task("Disable Service") {
+      Task task = new Task(createEvent("Disable Service", ui)) {
         public void doTask() {
           try {
             ServiceControl.disable(services[idx]);
@@ -2892,7 +2914,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Start");
       ui.confirm_message.setText("Start VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Start VM : " + vm.name) {
+        Task task = new Task(createEvent("Start VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.start()) {
               setResult("Completed");
@@ -2922,7 +2944,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Stop VM : " + vm.name) {
+        Task task = new Task(createEvent("Stop VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.stop()) {
               setResult("Completed");
@@ -2952,7 +2974,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Restart");
       ui.confirm_message.setText("Restart VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Restart VM : " + vm.name) {
+        Task task = new Task(createEvent("Restart VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.restart()) {
               setResult("Completed");
@@ -2982,7 +3004,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Power Off");
       ui.confirm_message.setText("Power Off VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Power Off VM : " + vm.name) {
+        Task task = new Task(createEvent("Power Off VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.poweroff()) {
               setResult("Completed");
@@ -3072,7 +3094,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Unregister");
       ui.confirm_message.setText("Unregister VM : " + vm.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Unregister VM : " + vm.name) {
+        Task task = new Task(createEvent("Unregister VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.getState() != VirtualMachine.STATE_OFF) {
               setResult("Error:Can not unregister a live VM.");
@@ -3878,7 +3900,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Insufficent space available in dest storage pool");
         return;
       }
-      Task task = new Task("Data Migrate VM : " + vm.name) {
+      Task task = new Task(createEvent("Data Migrate VM : " + vm.name, ui)) {
         public void doTask() {
           Hardware hw = vm.loadHardware();
           if (hw == null) {
@@ -4001,7 +4023,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:Can not migrate VM with host devices");
         return;
       }
-      Task task = new Task("Compute Migrate VM : " + vm.name) {
+      Task task = new Task(createEvent("Compute Migrate VM : " + vm.name, ui)) {
         public void doTask() {
           if (vmm.migrateCompute(vm, remote.host)) {
             setResult("Completed");
@@ -4101,7 +4123,7 @@ public class ConfigService implements WebUIHandler {
       } else {
         String _pool = value;
         //start backup process to host/pool with name
-        Task task = new Task("Create backup") {
+        Task task = new Task(createEvent("Create backup", ui)) {
           public void doTask() {
             try {
               if (!vm.backupData(host.host, _pool, _vm_name)) {
@@ -4216,7 +4238,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Can not data clone live VM");
         return;
       }
-      Task task = new Task("Data Clone VM : " + vm.name) {
+      Task task = new Task(createEvent("Data Clone VM : " + vm.name, ui)) {
         public void doTask() {
           if (vmm.cloneData(vm, dest, new_name, this)) {
             setResult("Completed");
@@ -4481,7 +4503,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Image : " + img.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Delete Image : " + img.name) {
+        Task task = new Task(createEvent("Delete Image : " + img.name, ui)) {
           public void doTask() {
             if (img.delete()) {
               setResult("Completed");
@@ -4531,7 +4553,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       ui.setRightPanel(createTerminalPanel(pty, "Pull image:" + anc));
-      Task task = new Task("Pull image") {
+      Task task = new Task(createEvent("Pull image", ui)) {
         public void doTask() {
           try {
             while (!pty.isClosed()) {
@@ -4616,7 +4638,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       ui.setRightPanel(createTerminalPanel(pty, "Create image"));
-      Task task = new Task("Create image") {
+      Task task = new Task(createEvent("Create image", ui)) {
         public void doTask() {
           try {
             while (!pty.isClosed()) {
@@ -4718,7 +4740,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop Container : " + c.id);
       ui.confirm_action = () -> {
-        Task task = new Task("Stop Container : " + c.id) {
+        Task task = new Task(createEvent("Stop Container : " + c.id, ui)) {
           public void doTask() {
             if (c.delete()) {
               setResult("Completed");
@@ -4744,7 +4766,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Restart");
       ui.confirm_message.setText("Restart Container : " + c.id);
       ui.confirm_action = () -> {
-        Task task = new Task("Restart Container : " + c.id) {
+        Task task = new Task(createEvent("Restart Container : " + c.id, ui)) {
           public void doTask() {
             if (c.restart()) {
               setResult("Completed");
@@ -4769,7 +4791,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Delete");
       ui.confirm_message.setText("Delete Container : " + c.id);
       ui.confirm_action = () -> {
-        Task task = new Task("Delete Container : " + c.id) {
+        Task task = new Task(createEvent("Delete Container : " + c.id, ui)) {
           public void doTask() {
             if (c.delete()) {
               setResult("Completed");
@@ -4854,7 +4876,7 @@ public class ConfigService implements WebUIHandler {
       for(String arg : _args_array) {
         cl.add(arg);
       }
-      Task task = new Task("Create Container") {
+      Task task = new Task(createEvent("Create Container", ui)) {
         public void doTask() {
           try {
             LxcContainer c = lxcmgr.createContainer(new LxcImage(_image), cl.toArray(JF.StringArrayType), ol.toArray(JF.StringArrayType));
@@ -5055,7 +5077,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       Storage pool = pools.get(idx);
-      Task task = new Task("Start Pool : " + pool.name) {
+      Task task = new Task(createEvent("Start Pool : " + pool.name, ui)) {
         public void doTask() {
           if (pool.type == Storage.TYPE_ISCSI) {
             if (pool.user != null && pool.user.length() > 0) {
@@ -5095,7 +5117,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Stop");
       ui.confirm_message.setText("Stop storage pool:" + pool.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Stop Pool : " + pool.name) {
+        Task task = new Task(createEvent("Stop Pool : " + pool.name, ui)) {
           public void doTask() {
             if (pool.isMountedManually()) {
               if (pool.mounted()) {
@@ -5132,7 +5154,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:Pool not running");
         return;
       }
-      Task task = new Task("Mount Pool : " + pool.name) {
+      Task task = new Task(createEvent("Mount Pool : " + pool.name, ui)) {
         public void doTask() {
           if (pool.mount()) {
             setResult("Completed");
@@ -5162,7 +5184,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Unmount");
       ui.confirm_message.setText("Unmount storage pool:" + pool.name);
       ui.confirm_action = () -> {
-        Task task = new Task("Unmount Pool : " + pool.name) {
+        Task task = new Task(createEvent("Unmount Pool : " + pool.name, ui)) {
           public void doTask() {
             if (pool.unmount()) {
               setResult("Completed");
@@ -5250,7 +5272,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Create Gluster Volume");
       ui.confirm_message.setText("Create Gluster Volume");
       ui.confirm_action = () -> {
-        Task task = new Task("Create Gluster Volume:" + pool.name) {
+        Task task = new Task(createEvent("Create Gluster Volume:" + pool.name, ui)) {
           public void doTask() {
             try {
               if (Gluster.volume_create(Config.current.getHostNames(), pool.getName(), pool.getGlusterVolume())) {
@@ -5284,7 +5306,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Start Gluster Volume");
       ui.confirm_message.setText("Start Gluster Volume");
       ui.confirm_action = () -> {
-        Task task = new Task("Start Gluster Volume:" + pool.name) {
+        Task task = new Task(createEvent("Start Gluster Volume:" + pool.name, ui)) {
           public void doTask() {
             try {
               if (Gluster.volume_start(pool.getName())) {
@@ -6056,7 +6078,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_button.setText("Format");
       ui.confirm_message.setText("Format storage pool:" + pool.name + " with " + Storage.getFormatString(fmt));
       ui.confirm_action = () -> {
-        Task task = new Task("Format Storage Pool:" + pool.name + " with " + Storage.getFormatString(fmt)) {
+        Task task = new Task(createEvent("Format Storage Pool:" + pool.name + " with " + Storage.getFormatString(fmt), ui)) {
           public void doTask() {
             try {
               if (pool.format(fmt)) {
@@ -6749,7 +6771,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
     //url = /api/...
     if (debug) {
       JFLog.log("url=" + url);
@@ -6953,7 +6975,7 @@ public class ConfigService implements WebUIHandler {
         } else {
           //TODO : validate dest, destpool
           String _destname = destname == null ? vm_name : destname;
-          Task task = new Task("Create backup") {
+          Task task = new Task(createEvent("Create backup", "api", request.getRemoteAddr())) {
             public void doTask() {
               try {
                 if (!vm.backupData(dest, destpool, _destname)) {

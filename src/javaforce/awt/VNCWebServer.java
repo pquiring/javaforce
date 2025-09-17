@@ -97,7 +97,7 @@ public class VNCWebServer implements WebUIHandler {
     return VNCWebConsole.createPanel(port, password, opts, client);
   }
 
-  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
     return null;
   }
 

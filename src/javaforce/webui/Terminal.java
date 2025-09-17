@@ -16,7 +16,7 @@ import javaforce.*;
 import javaforce.ansi.client.*;
 import javaforce.webui.event.*;
 import javaforce.jni.lnx.*;
-import javaforce.service.WebResponse;
+import javaforce.service.*;
 
 public class Terminal extends Container implements Screen, Resized, KeyDown, MouseDown {
 
@@ -712,7 +712,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
       return panel;
     }
 
-    public byte[] getResource(String url, HTTP.Parameters params, WebResponse response) {
+    public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse response) {
       return null;
     }
 

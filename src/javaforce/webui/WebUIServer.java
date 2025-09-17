@@ -101,10 +101,10 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         res.setContentType(r.mime);
       }
     } else if (url.startsWith("/user/")) {
-      data = handler.getResource(url, params, res);
+      data = handler.getResource(url, params, req, res);
       res.addHeader("Cache-Control: no-store");
     } else if (url.startsWith("/api/")) {
-      data = handler.getResource(url, params, res);
+      data = handler.getResource(url, params, req, res);
       res.addHeader("Cache-Control: no-store");
     } else if (url.startsWith("/icons/")) {
       try {

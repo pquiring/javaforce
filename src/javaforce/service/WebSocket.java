@@ -43,6 +43,10 @@ public class WebSocket {
     return url;
   }
 
+  public String getHost() {
+    return host;
+  }
+
   /** Writes a WebSocket message to client.
    * Type = TYPE_TEXT
    */

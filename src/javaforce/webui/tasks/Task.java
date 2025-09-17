@@ -14,16 +14,12 @@ import javaforce.webui.*;
 import javaforce.webui.tasks.*;
 
 public class Task extends Thread implements Status {
-  protected long ts_start;
-  protected long ts_stop;
-  protected long ts_delta;
   protected boolean running;
 
   public int percent;
   public boolean successful;
 
-  public String action;
-  public String result;
+  public TaskEvent event;
 
   public Panel tasks;
   public TaskUI taskui;
@@ -31,15 +27,32 @@ public class Task extends Thread implements Status {
   public Task parent;
 
   /** Creates new task with action. */
+  @Deprecated
   public Task(String action) {
-    this.action = action;
+    event = new TaskEvent();
+    event.action = action;
+  }
+
+  /** Creates new task with TaskEvent. */
+  public Task(TaskEvent event) {
+    this.event = event;
   }
 
   /** Creates new task with action and parent task.
    * Execution will wait until parent is completed.
    */
+  @Deprecated
   public Task(String action, Task parent) {
-    this.action = action;
+    event = new TaskEvent();
+    event.action = action;
+    this.parent = parent;
+  }
+
+  /** Creates new task with TaskEvent and parent task.
+   * Execution will wait until parent is completed.
+   */
+  public Task(TaskEvent event, Task parent) {
+    this.event = event;
     this.parent = parent;
   }
 
@@ -59,13 +72,13 @@ public class Task extends Thread implements Status {
   public void doTask() {}
 
   public void setResult(String msg) {
-    result = msg;
+    event.result = msg;
   }
 
   public void setStatus(String msg) {
-    result = msg;
+    event.result = msg;
     if (taskui != null) {
-      taskui.updateMessage(this);
+      taskui.updateMessage(event);
     }
   }
 

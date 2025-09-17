@@ -17,6 +17,7 @@ public class Paths {
   public static String clusterPath;
   public static String secretPath;
   public static String statsPath;
+  public static String tasksPath;
 
   public static int LOG_DEFAULT = 0;
   public static int LOG_SYSTEMD = 1;
@@ -32,12 +33,14 @@ public class Paths {
     clusterPath = "/root/cluster";
     secretPath = "/root/secret";
     statsPath = dataPath + "/stats";
+    tasksPath = dataPath + "/tasks";
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
     new File(volsPath).mkdirs();
     new File(clusterPath).mkdirs();
     new File(secretPath).mkdirs();
     new File(statsPath).mkdirs();
+    new File(tasksPath).mkdirs();
     JFLog.append(LOG_DEFAULT, logsPath + "/jfkvm.log", true);
     JFLog.setRetention(LOG_DEFAULT, 30);
     JFLog.append(LOG_SYSTEMD, logsPath + "/jfkvm-systemd.log", true);

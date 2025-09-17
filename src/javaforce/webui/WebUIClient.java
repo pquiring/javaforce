@@ -296,6 +296,9 @@ public class WebUIClient {
   public boolean isConnected() {
     return socket.isConnected();
   }
+  public String getHost() {
+    return socket.getHost();
+  }
   public void setTitle(String title) {
     sendEvent("body", "settitle", new String[] {"title=" + title});
   }

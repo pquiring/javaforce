@@ -90,7 +90,7 @@ public class Test implements WebUIHandler {
     return panel;
   }
 
-  public byte[] getResource(String url, HTTP.Parameters params, WebResponse res) {
+  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
     return null;
   }
 
