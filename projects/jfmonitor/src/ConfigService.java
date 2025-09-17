@@ -189,6 +189,10 @@ public class ConfigService implements WebUIHandler {
       resize();
       left_right_split.setRightComponent(panel);
     }
+
+    public String getUser() {
+      return "admin";
+    }
   }
 
   private Panel tasksPanel(UI ui) {
@@ -487,7 +491,7 @@ public class ConfigService implements WebUIHandler {
       }
       if (port.getMode() != _mode) {
         //change mode
-        Task task = new Task("Set Port Mode") {
+        Task task = new Task("Set Port Mode", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetSwitchMode(port, _mode)) {
@@ -504,7 +508,7 @@ public class ConfigService implements WebUIHandler {
         Tasks.tasks.addTask(ui.tasks, task);
       }
       if (_shutdown != port.shutdown) {
-        Task task = new Task("Set Shutdown") {
+        Task task = new Task("Set Shutdown", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configPortShutdown(port, _shutdown)) {
@@ -522,7 +526,7 @@ public class ConfigService implements WebUIHandler {
       }
       if (!port.name.equals(_name)) {
         //change name
-        Task task = new Task("Set Port Name") {
+        Task task = new Task("Set Port Name", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetPortName(port, _name)) {
@@ -544,7 +548,7 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid Access VLAN");
           return;
         }
-        Task task = new Task("Set Port Access VLAN") {
+        Task task = new Task("Set Port Access VLAN", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetAccessVLAN(port, _access_vlan)) {
@@ -568,7 +572,7 @@ public class ConfigService implements WebUIHandler {
         }
         String[] _vlan_list = VLAN.splitVLANs(_trunk_vlans, false);
         port.setVLANs(_vlan_list);
-        Task task = new Task("Set Port Trunk VLANs") {
+        Task task = new Task("Set Port Trunk VLANs", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetVLANs(port, _trunk_vlans)) {
@@ -590,7 +594,7 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid Trunk VLAN");
           return;
         }
-        Task task = new Task("Set Port Trunk VLAN") {
+        Task task = new Task("Set Port Trunk VLAN", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetTrunkVLAN(port, _trunk_vlan)) {
@@ -612,7 +616,7 @@ public class ConfigService implements WebUIHandler {
           errmsg.setText("Invalid Group");
           return;
         }
-        Task task = new Task("Set Port Group") {
+        Task task = new Task("Set Port Group", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetGroup(_group, port)) {
@@ -631,7 +635,7 @@ public class ConfigService implements WebUIHandler {
       if (_mode == Cisco.MODE_IP) {
         if (!_ip.equals(port.ip) || !_mask.equals(port.mask)) {
           if (_ip.length() > 0) {
-            Task task = new Task("Set Port IP") {
+            Task task = new Task("Set Port IP", ui.getUser(), ui.client.getHost()) {
               public void doTask() {
                 try {
                   if (ui.device.configAddPort_IP(port, _ip, _mask)) {
@@ -648,7 +652,7 @@ public class ConfigService implements WebUIHandler {
             Tasks.tasks.addTask(ui.tasks, task);
           } else {
             //remove ip
-            Task task = new Task("Remove Port IP") {
+            Task task = new Task("Remove Port IP", ui.getUser(), ui.client.getHost()) {
               public void doTask() {
                 try {
                   if (ui.device.configRemovePort_IP(port)) {
@@ -668,7 +672,7 @@ public class ConfigService implements WebUIHandler {
       }
       if (!_dhcp_relay.equals(port.getDHCPRelay())) {
         if (_dhcp_relay.length() > 0) {
-          Task task = new Task("Set Port DHCP Relay") {
+          Task task = new Task("Set Port DHCP Relay", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (ui.device.configAddPort_DHCP_Relay(port, _dhcp_relay)) {
@@ -685,7 +689,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         } else {
           //remove ip
-          Task task = new Task("Remove Port DHCP Relay") {
+          Task task = new Task("Remove Port DHCP Relay", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (ui.device.configRemovePort_DHCP_Relay(port)) {
@@ -819,7 +823,7 @@ public class ConfigService implements WebUIHandler {
         //create vlan
         Task create = null;
         if (true) {
-          Task task = new Task("Create VLAN") {
+          Task task = new Task("Create VLAN", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (ui.device.configCreateVLAN(_id, _name)) {
@@ -837,7 +841,7 @@ public class ConfigService implements WebUIHandler {
           create = task;
         }
         if (_ip.length() > 0) {
-          Task task = new Task("Create VLAN IP", create) {
+          Task task = new Task("Create VLAN IP", ui.getUser(), ui.client.getHost(), create) {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
@@ -854,7 +858,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (!_stp) {
-          Task task = new Task("Disable VLAN STP", create) {
+          Task task = new Task("Disable VLAN STP", ui.getUser(), ui.client.getHost(), create) {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
@@ -871,7 +875,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (_dhcp_relay.length() > 0) {
-          Task task = new Task("Set VLAN DHCP Relay", create) {
+          Task task = new Task("Set VLAN DHCP Relay", ui.getUser(), ui.client.getHost(), create) {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
@@ -888,7 +892,7 @@ public class ConfigService implements WebUIHandler {
           Tasks.tasks.addTask(ui.tasks, task);
         }
         if (_shutdown) {
-          Task task = new Task("Set VLAN Shutdown", create) {
+          Task task = new Task("Set VLAN Shutdown", ui.getUser(), ui.client.getHost(), create) {
             public void doTask() {
               try {
                 if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {
@@ -907,7 +911,7 @@ public class ConfigService implements WebUIHandler {
       } else {
         //edit vlan
         if (!_name.equals(ui.vlan_vlan.getName())) {
-          Task task = new Task("Set VLAN Name") {
+          Task task = new Task("Set VLAN Name", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (ui.device.configEditVLAN(ui.vlan_vlan, _name)) {
@@ -925,7 +929,7 @@ public class ConfigService implements WebUIHandler {
         }
         if (_ip.length() > 0) {
           if (!_ip.equals(ui.vlan_vlan.getIP())) {
-            Task task = new Task("Set VLAN IP") {
+            Task task = new Task("Set VLAN IP", ui.getUser(), ui.client.getHost()) {
               public void doTask() {
                 try {
                   if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
@@ -943,7 +947,7 @@ public class ConfigService implements WebUIHandler {
           }
         } else {
           if (ui.vlan_vlan.getIP().length() > 0) {
-            Task task = new Task("Remove VLAN IP") {
+            Task task = new Task("Remove VLAN IP", ui.getUser(), ui.client.getHost()) {
               public void doTask() {
                 try {
                   if (ui.device.configRemoveVLAN_IP(ui.vlan_vlan)) {
@@ -961,7 +965,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
         if (_stp != ui.vlan_vlan.stp) {
-          Task task = new Task("Set VLAN STP") {
+          Task task = new Task("Set VLAN STP", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
@@ -979,7 +983,7 @@ public class ConfigService implements WebUIHandler {
         }
         if (_dhcp_relay.length() > 0) {
           if (!_dhcp_relay.equals(ui.vlan_vlan.getDHCPRelay())) {
-            Task task = new Task("Set VLAN DHCP Relay") {
+            Task task = new Task("Set VLAN DHCP Relay", ui.getUser(), ui.client.getHost()) {
               public void doTask() {
                 try {
                   if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
@@ -997,7 +1001,7 @@ public class ConfigService implements WebUIHandler {
           }
         } else {
           if (ui.vlan_vlan.getDHCPRelay().length() > 0) {
-            Task task = new Task("Remove VLAN DHCP Relay") {
+            Task task = new Task("Remove VLAN DHCP Relay", ui.getUser(), ui.client.getHost()) {
               public void doTask() {
                 try {
                   if (ui.device.configRemoveVLAN_DHCP_Relay(ui.vlan_vlan)) {
@@ -1015,7 +1019,7 @@ public class ConfigService implements WebUIHandler {
           }
         }
         if (_shutdown != ui.vlan_vlan.shutdown) {
-          Task task = new Task("Set VLAN Shutdown") {
+          Task task = new Task("Set VLAN Shutdown", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {
@@ -1113,7 +1117,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       VLAN vlan = ui.vlans_vlans[idx];
       ui.confirm_action = () -> {
-        Task task = new Task("Delete VLAN") {
+        Task task = new Task("Delete VLAN", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configRemoveVLAN(vlan)) {
@@ -1191,7 +1195,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Invalid VLANs");
         return;
       }
-      Task task = new Task("Multi VLAN Edit") {
+      Task task = new Task("Multi VLAN Edit", ui.getUser(), ui.client.getHost()) {
         public void doTask() {
           try {
             boolean okay = false;
@@ -1296,7 +1300,7 @@ public class ConfigService implements WebUIHandler {
       ui.route_route.ip = _ip;
       ui.route_route.mask = _mask;
       ui.route_route.gateway = _gateway;
-      Task task = new Task("Add Route") {
+      Task task = new Task("Add Route", ui.getUser(), ui.client.getHost()) {
         public void doTask() {
           try {
             if (ui.device.configAddRoute(ui.route_route)) {
@@ -1389,7 +1393,7 @@ public class ConfigService implements WebUIHandler {
       boolean _routing = routing.isSelected();
       String _gateway = gateway.getText();
       if (_routing != ui.device.hardware.routing) {
-        Task task = new Task("Set Routing Mode") {
+        Task task = new Task("Set Routing Mode", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetRoutingMode(_routing)) {
@@ -1406,7 +1410,7 @@ public class ConfigService implements WebUIHandler {
         Tasks.tasks.addTask(ui.tasks, task);
       }
       if (!_gateway.equals(ui.device.hardware.gateway)) {
-        Task task = new Task("Set Routing Mode") {
+        Task task = new Task("Set Routing Mode", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configSetDefaultGateway(_gateway)) {
@@ -1447,7 +1451,7 @@ public class ConfigService implements WebUIHandler {
       if (idx == -1) return;
       Route route = ui.routing_routes[idx];
       ui.confirm_action = () -> {
-        Task task = new Task("Delete Route") {
+        Task task = new Task("Delete Route", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (ui.device.configRemoveRoute(route)) {
@@ -2477,7 +2481,7 @@ public class ConfigService implements WebUIHandler {
         }
         ui.confirm_action = () -> {
           Port[] ports = ui.selection.get(device).getPorts();
-          Task task = new Task("Create Group") {
+          Task task = new Task("Create Group", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (device.configCreateGroup(device.nextGroupID(), ports)) {
@@ -2511,7 +2515,7 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         ui.confirm_action = () -> {
-          Task task = new Task("Delete Group") {
+          Task task = new Task("Delete Group", ui.getUser(), ui.client.getHost()) {
             public void doTask() {
               try {
                 if (device.configRemoveGroup(group.getGroupID())) {
@@ -2540,7 +2544,7 @@ public class ConfigService implements WebUIHandler {
       });
 
       save.addClickListener((me, cmp) -> {
-        Task task = new Task("Save Config") {
+        Task task = new Task("Save Config", ui.getUser(), ui.client.getHost()) {
           public void doTask() {
             try {
               if (device.saveConfig()) {

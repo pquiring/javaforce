@@ -26,13 +26,6 @@ public class Task extends Thread implements Status {
 
   public Task parent;
 
-  /** Creates new task with action. */
-  @Deprecated
-  public Task(String action) {
-    event = new TaskEvent();
-    event.action = action;
-  }
-
   /** Creates new task with action, user, ip. */
   public Task(String action, String user, String ip) {
     event = new TaskEvent(action, user, ip);
@@ -41,16 +34,6 @@ public class Task extends Thread implements Status {
   /** Creates new task with TaskEvent. */
   public Task(TaskEvent event) {
     this.event = event;
-  }
-
-  /** Creates new task with action and parent task.
-   * Execution will wait until parent is completed.
-   */
-  @Deprecated
-  public Task(String action, Task parent) {
-    event = new TaskEvent();
-    event.action = action;
-    this.parent = parent;
   }
 
   /** Creates new task with action and parent task.
