@@ -496,7 +496,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -513,7 +513,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -531,7 +531,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -553,7 +553,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -577,7 +577,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -599,7 +599,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -621,7 +621,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -640,7 +640,7 @@ public class ConfigService implements WebUIHandler {
                     setStatus("Failed");
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + action + " failed, check logs.");
+                  setStatus("Error:" + getAction() + " failed, check logs.");
                   JFLog.log(e);
                 }
               }
@@ -657,7 +657,7 @@ public class ConfigService implements WebUIHandler {
                     setStatus("Failed");
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + action + " failed, check logs.");
+                  setStatus("Error:" + getAction() + " failed, check logs.");
                   JFLog.log(e);
                 }
               }
@@ -677,7 +677,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -694,7 +694,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -828,7 +828,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -846,7 +846,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -863,7 +863,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -880,7 +880,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -897,7 +897,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -916,7 +916,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -934,7 +934,7 @@ public class ConfigService implements WebUIHandler {
                     setStatus("Failed");
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + action + " failed, check logs.");
+                  setStatus("Error:" + getAction() + " failed, check logs.");
                   JFLog.log(e);
                 }
               }
@@ -952,7 +952,7 @@ public class ConfigService implements WebUIHandler {
                     setStatus("Failed");
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + action + " failed, check logs.");
+                  setStatus("Error:" + getAction() + " failed, check logs.");
                   JFLog.log(e);
                 }
               }
@@ -970,7 +970,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -988,7 +988,7 @@ public class ConfigService implements WebUIHandler {
                     setStatus("Failed");
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + action + " failed, check logs.");
+                  setStatus("Error:" + getAction() + " failed, check logs.");
                   JFLog.log(e);
                 }
               }
@@ -1006,7 +1006,7 @@ public class ConfigService implements WebUIHandler {
                     setStatus("Failed");
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + action + " failed, check logs.");
+                  setStatus("Error:" + getAction() + " failed, check logs.");
                   JFLog.log(e);
                 }
               }
@@ -1024,7 +1024,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -1122,7 +1122,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -1209,7 +1209,7 @@ public class ConfigService implements WebUIHandler {
               setStatus("Failed");
             }
           } catch (Exception e) {
-            setStatus("Error:" + action + " failed, check logs.");
+            setStatus("Error:" + getAction() + " failed, check logs.");
             JFLog.log(e);
           }
         }
@@ -1305,7 +1305,7 @@ public class ConfigService implements WebUIHandler {
               setStatus("Failed");
             }
           } catch (Exception e) {
-            setStatus("Error:" + action + " failed, check logs.");
+            setStatus("Error:" + getAction() + " failed, check logs.");
             JFLog.log(e);
           }
         }
@@ -1398,7 +1398,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -1415,7 +1415,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -1456,7 +1456,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }
@@ -2487,7 +2487,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -2521,7 +2521,7 @@ public class ConfigService implements WebUIHandler {
                   setStatus("Failed");
                 }
               } catch (Exception e) {
-                setStatus("Error:" + action + " failed, check logs.");
+                setStatus("Error:" + getAction() + " failed, check logs.");
                 JFLog.log(e);
               }
             }
@@ -2549,7 +2549,7 @@ public class ConfigService implements WebUIHandler {
                 setStatus("Failed");
               }
             } catch (Exception e) {
-              setStatus("Error:" + action + " failed, check logs.");
+              setStatus("Error:" + getAction() + " failed, check logs.");
               JFLog.log(e);
             }
           }

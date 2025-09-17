@@ -89,4 +89,8 @@ public class Task extends Thread implements Status {
   public void setResult(boolean result) {
     successful = result;
   }
+
+  public String getAction() {
+    return event.action;
+  }
 }
