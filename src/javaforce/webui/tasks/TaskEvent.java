@@ -21,6 +21,14 @@ public class TaskEvent {
   public static final TaskEvent[] ArrayType = new TaskEvent[0];
   public static byte VERSION = 1;
 
+  public TaskEvent() {}
+
+  public TaskEvent(String action, String user, String ip) {
+    this.action = action;
+    this.user = user;
+    this.ip = ip;
+  }
+
   public static TaskEvent create(String action, String user, String ip) {
     TaskEvent event = new TaskEvent();
     event.action = action;
