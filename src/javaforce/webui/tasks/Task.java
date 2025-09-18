@@ -98,4 +98,12 @@ public class Task extends Thread implements Status {
   public String getAction() {
     return event.action;
   }
+
+  public String getResult() {
+    return event.result;
+  }
+
+  public boolean getSuccessful() {
+    return event.successful;
+  }
 }
