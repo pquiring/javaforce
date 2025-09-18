@@ -9,6 +9,9 @@ import java.util.*;
  */
 
 public class JFLog {
+
+  public static boolean debug = false;
+
   private static class LogInstance {
     private Object lock = new Object();
     private FileOutputStream fos;
@@ -148,7 +151,7 @@ public class JFLog {
       if (log == null) {
         return false;
       }
-      JFLog.log(id, "Closing log file");
+      if (debug) JFLog.logTrace(id, "Closing log file");
       list.remove(id);
     }
     try {
