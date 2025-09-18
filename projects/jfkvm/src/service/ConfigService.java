@@ -1946,6 +1946,7 @@ public class ConfigService implements WebUIHandler {
       " - import vmware machines\n" +
       " - live/offline compute migration\n" +
       " - offline data migration/clone\n" +
+      " - snapshots and backups\n" +
       " - autostart machines\n" +
       " - iSCSI requires manual setup (see online help for more info)\n" +
       "\n" +

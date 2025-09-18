@@ -142,7 +142,10 @@ public class Config implements Serializable {
   }
 
   public boolean saveHost(String hostname, byte[] key, String token, int type) {
-    if (key == null || key.length == 0) return false;
+    if (key == null || key.length == 0) {
+      JFLog.log("Error:Config.saveHost() : invalid key");
+      return false;
+    }
     String keyfile = Paths.clusterPath + "/" + hostname;
     try {
       File file = new File(keyfile);
