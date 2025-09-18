@@ -188,7 +188,7 @@ public class Host implements Serializable {
       byte[] data = https.get("/api/getpools");
       https.close();
       if (data == null || data.length == 0) return null;
-      return new String(data).split("|");
+      return new String(data).split("[|]");
     } catch (Exception e) {
       JFLog.log(e);
       return null;

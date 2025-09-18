@@ -3830,10 +3830,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    ListBox list = new ListBox();
+    ComboBox list = new ComboBox();
     row.add(list);
     for(Storage pool : pools) {
-      list.add(pool.name);
+      list.add(pool.name, pool.name);
     }
 
     row = new Row();
@@ -3937,10 +3937,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    ListBox list = new ListBox();
+    ComboBox list = new ComboBox();
     row.add(list);
     for(Host host : hosts) {
-      list.add(host.host);
+      list.add(host.host, host.host);
     }
 
     row = new Row();
@@ -4056,7 +4056,7 @@ public class ConfigService implements WebUIHandler {
     TextField name = new TextField(vm_name == null ? vm.name : vm_name);
     row.add(name);
 
-    ListBox list = new ListBox();
+    ComboBox list = new ComboBox();
 
     if (host == null) {
       //select host
@@ -4070,7 +4070,7 @@ public class ConfigService implements WebUIHandler {
       Host[] hosts = Config.current.getHosts();
       for(Host _host : hosts) {
         if (_host.type != Host.TYPE_REMOTE) continue;
-        list.add(_host.hostname);
+        list.add(_host.hostname, _host.hostname);
       }
     } else {
       //host
@@ -4090,7 +4090,7 @@ public class ConfigService implements WebUIHandler {
         pools = new String[] {};
       }
       for(String _pool : pools) {
-        list.add(_pool);
+        list.add(_pool, _pool);
       }
     }
 
@@ -4113,7 +4113,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid vm name");
         return;
       }
-      String value = list.getSelectedItem();
+      String value = list.getSelectedValue();
       if (value == null || value.length() == 0) {
         errmsg.setText("Error:invalid selection");
         return;
@@ -4168,10 +4168,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
-    ListBox list = new ListBox();
+    ComboBox list = new ComboBox();
     row.add(list);
     for(Storage pool : pools) {
-      list.add(pool.name);
+      list.add(pool.name, pool.name);
     }
 
     row = new Row();
@@ -7050,7 +7050,7 @@ public class ConfigService implements WebUIHandler {
         StringBuilder list = new StringBuilder();
         ArrayList<Storage> pools = Config.current.pools;
         for(Storage pool : pools) {
-          if (list.length() > 0) list.append("[|]");
+          if (list.length() > 0) list.append("|");
           list.append(pool.name);
         }
         return list.toString().getBytes();
