@@ -403,7 +403,7 @@ public class VirtualMachine implements Serializable {
     return list.toArray(JF.StringArrayType);
   }
 
-  public boolean backupData(String host, String pool, String folder) {
+  public boolean backupData(String host, String pool, String folder, String host_token) {
     JFLog.log("VM:backupData(" + host + "," + pool + "," + folder + ")");
     String[] files = getFiles();
     if (files == null) {
@@ -413,6 +413,10 @@ public class VirtualMachine implements Serializable {
     FileSync sync = new FileSync();
     if (!sync.connect(host)) {
       JFLog.log("VM:backupData() failed : unable to connect to host:" + host);
+      return false;
+    }
+    if (!sync.login(host_token)) {
+      JFLog.log("VM:backupData() failed : unable to authenticate with host:" + host);
       return false;
     }
     boolean ret = sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);

@@ -3051,8 +3051,8 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       VirtualMachine vm = vms[idx];
-      if (!vm.hasSnapshot()) {
-        errmsg.setText("Error:VM has no snapshots");
+      if (vm.getState() == VirtualMachine.STATE_ON && !vm.hasSnapshot()) {
+        errmsg.setText("Error:VM is running and has no snapshots");
         return;
       }
       ui.setRightPanel(vmBackupPanel(vm, null, null, ui));
@@ -4132,7 +4132,7 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               JFLog.log("Create Backup(" + host.host + "," + _pool + "," + _vm_name + ")");
-              if (!vm.backupData(host.host, _pool, _vm_name)) {
+              if (!vm.backupData(host.host, _pool, _vm_name, host.token)) {
                 throw new Exception("backup failed");
               }
               setResult("Completed", true);
@@ -7008,21 +7008,40 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(event) {
           public void doTask() {
             try {
-              if (dest == null) {
-                setResult("Error:dest required", false);
-              } else if (destpool == null) {
-                setResult("Error:destpool required", false);
-              } else if (vm == null) {
-                setResult("Error:VM Not Found", false);
-              } else if (!vm.hasSnapshot()) {
-                setResult("Error:VM has no snapshots", false);
-              } else {
-                //TODO : validate dest, destpool
-                if (!vm.backupData(dest, destpool, _destname)) {
-                  throw new Exception("backup failed");
-                }
-                setResult("Completed", true);
+              if (vm == null) {
+                throw new Exception("Error:VM Not Found:" + vm_name);
               }
+              if (vm.getState() == VirtualMachine.STATE_ON && !vm.hasSnapshot()) {
+                throw new Exception("Error:VM is running and has no snapshots");
+              }
+              if (dest == null) {
+                throw new Exception("Error:dest required");
+              }
+              Host host = Config.current.getHostByHostname(dest);
+              if (host == null) {
+                throw new Exception("Error:Host not found:" + dest);
+              }
+              if (host.isValid(6.0f)) {
+                throw new Exception("Error:Host not valid:" + dest);
+              }
+              if (destpool == null) {
+                throw new Exception("Error:destpool required");
+              }
+              String[] pools = host.getStoragePools();
+              boolean pool_exists = false;
+              for(String pool : pools) {
+                if (pool.equals(destpool)) {
+                  pool_exists = true;
+                  break;
+                }
+              }
+              if (!pool_exists) {
+                throw new Exception("Error:destpool does not exist");
+              }
+              if (!vm.backupData(host.host, destpool, _destname, host.token)) {
+                throw new Exception("backup failed");
+              }
+              setResult("Completed", true);
             } catch (Exception e) {
               setResult("Error:Create backup failed, check logs.", false);
               JFLog.log(e);
