@@ -6994,6 +6994,22 @@ public class ConfigService implements WebUIHandler {
         }
         return result.getBytes();
       }
+      case "get_task_status": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String task_id = params.get("task_id");
+        String result = "";
+        result = Integer.toString(Tasks.tasks.getTaskStatus(Long.valueOf(task_id)));
+        return result.getBytes();
+      }
+      case "get_task_result": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String task_id = params.get("task_id");
+        String result = "";
+        result = Tasks.tasks.getTaskResult(Long.valueOf(task_id));
+        return result.getBytes();
+      }
       case "getpools": {
         String token = params.get("token");
         if (!token.equals(Config.current.token)) return null;
