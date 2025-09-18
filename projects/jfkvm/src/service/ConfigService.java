@@ -6928,16 +6928,31 @@ public class ConfigService implements WebUIHandler {
         String vm = params.get("vm");
         String name = params.get("name");
         String desc = params.get("desc");
-        VirtualMachine[] vms = VirtualMachine.list();
-        String result = "Error";
-        for(VirtualMachine vmx : vms) {
-          if (vmx.name.equals(vm)) {
-            if (vmx.snapshotCreate(name, desc, 0)) {
-              result = "OK";
+
+        TaskEvent event = createEvent("Snapshot Create", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              VirtualMachine[] vms = VirtualMachine.list();
+              for(VirtualMachine vmx : vms) {
+                if (vmx.name.equals(vm)) {
+                  if (vmx.snapshotCreate(name, desc, 0)) {
+                    setResult("Completed", true);
+                  } else {
+                    setResult("Error:Snapshot Create failed, check logs.", false);
+                  }
+                  return;
+                }
+              }
+              setResult("Error:Snapshot Create failed, VM not found", false);
+            } catch (Exception e) {
+              setResult("Error:Snapshot Create failed, check logs.", false);
+              JFLog.log(e);
             }
-            break;
           }
-        }
+        };
+        Tasks.tasks.addTask(null, task);
         return result.getBytes();
       }
       case "snapshot_delete": {
@@ -6945,16 +6960,31 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String vm = params.get("vm");
         String name = params.get("name");
-        VirtualMachine[] vms = VirtualMachine.list();
-        String result = "Error";
-        for(VirtualMachine vmx : vms) {
-          if (vmx.name.equals(vm)) {
-            if (vmx.snapshotDelete(name)) {
-              result = "OK";
+
+        TaskEvent event = createEvent("Snapshot Delete", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              VirtualMachine[] vms = VirtualMachine.list();
+              for(VirtualMachine vmx : vms) {
+                if (vmx.name.equals(vm)) {
+                  if (vmx.snapshotDelete(name)) {
+                    setResult("Completed", true);
+                  } else {
+                    setResult("Error:Snapshot Delete failed, check logs.", false);
+                  }
+                  return;
+                }
+              }
+              setResult("Error:Snapshot Delete failed, VM not found", false);
+            } catch (Exception e) {
+              setResult("Error:Snapshot Delete failed, check logs.", false);
+              JFLog.log(e);
             }
-            break;
           }
-        }
+        };
+        Tasks.tasks.addTask(null, task);
         return result.getBytes();
       }
       case "backup": {

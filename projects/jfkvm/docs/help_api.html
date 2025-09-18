@@ -29,7 +29,8 @@ Commands:
       name = snapshot name
       desc = snapshot desc
     result:
-      {OK | Error}
+      {OK | Error} [since 5.0]
+      task_id={long} [since 6.0]
 
   snapshot_delete
     arguments:
@@ -37,7 +38,8 @@ Commands:
       vm = virtual machine name
       name = snapshot name
     result:
-      {OK | Error}
+      {OK | Error} [since 5.0]
+      task_id={long} [since 6.0]
 
   backup [since 6.0]
     arguments:
