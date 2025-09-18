@@ -417,6 +417,7 @@ public class VirtualMachine implements Serializable {
     }
     if (!sync.login(host_token)) {
       JFLog.log("VM:backupData() failed : unable to authenticate with host:" + host);
+      sync.disconnect();
       return false;
     }
     boolean ret = sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);
