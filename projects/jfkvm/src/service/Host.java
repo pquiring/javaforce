@@ -66,7 +66,7 @@ public class Host implements Serializable {
     try {
       HTTPS https = new HTTPS();
       if (!https.open(host)) throw new Exception("connect failed");
-      byte[] data = https.get("/api/getver");
+      byte[] data = https.get("/api/getver?token=" + token);
       https.close();
       if (data == null) throw new Exception("offline");
       String str = new String(data);
@@ -96,7 +96,7 @@ public class Host implements Serializable {
     try {
       HTTPS https = new HTTPS();
       if (!https.open(host)) throw new Exception("connect failed");
-      byte[] data = https.get("/api/gethostname");
+      byte[] data = https.get("/api/gethostname?token=" + token);
       https.close();
       if (data == null || data.length == 0) return null;
       return new String(data);
@@ -111,7 +111,7 @@ public class Host implements Serializable {
     try {
       HTTPS https = new HTTPS();
       if (!https.open(host)) throw new Exception("connect failed");
-      byte[] data = https.get("/api/getstorageip");
+      byte[] data = https.get("/api/getstorageip?token=" + token);
       https.close();
       if (data == null || data.length == 0) return null;
       ip_storage = new String(data);
@@ -155,7 +155,7 @@ public class Host implements Serializable {
     try {
       HTTPS https = new HTTPS();
       if (!https.open(host)) throw new Exception("connect failed");
-      byte[] data = https.get("/api/gluster_status");
+      byte[] data = https.get("/api/gluster_status?token=" + token);
       https.close();
       if (data == null || data.length == 0) return null;
       return new String(data);
@@ -170,7 +170,7 @@ public class Host implements Serializable {
     try {
       HTTPS https = new HTTPS();
       if (!https.open(host)) throw new Exception("connect failed");
-      byte[] data = https.get("/api/ceph_status");
+      byte[] data = https.get("/api/ceph_status?token=" + token);
       https.close();
       if (data == null || data.length == 0) return null;
       return new String(data);
@@ -185,7 +185,7 @@ public class Host implements Serializable {
     try {
       HTTPS https = new HTTPS();
       if (!https.open(host)) throw new Exception("connect failed");
-      byte[] data = https.get("/api/getpools");
+      byte[] data = https.get("/api/getpools?token=" + token);
       https.close();
       if (data == null || data.length == 0) return null;
       return new String(data).split("[|]");
