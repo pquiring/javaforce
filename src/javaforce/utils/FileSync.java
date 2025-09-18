@@ -87,7 +87,10 @@ public class FileSync {
     return sync(src_folder, null, dest_folder, flags);
   }
   public boolean sync(String src_folder, String[] src_files, String dest_folder, int flags) {
-    if ((flags & FLAG_MIRROR) != 0) return false;  //not supported yet
+    if ((flags & FLAG_MIRROR) != 0) {
+      JFLog.log("FileSync : mirror not supported");
+      return false;
+    }
     boolean recursive = (flags & FLAG_RECURSIVE) != 0;
     //using a random seed will ensure a double md5 failure is impossible
     random.setSeed(System.currentTimeMillis());
@@ -98,6 +101,7 @@ public class FileSync {
     }
     if (!folder_open(dest_folder)) {
       if (!folder_create(dest_folder)) {
+        JFLog.log("FileSync : unable to create folder:" + dest_folder);
         return false;
       }
     }
@@ -114,9 +118,13 @@ public class FileSync {
         if (!sync(src_folder + "/" + filename, null, dest_folder + "/" + filename, flags)) {
           return false;
         }
-        if (!folder_open(dest_folder)) return false;
+        if (!folder_open(dest_folder)) {
+          return false;
+        }
       } else {
-        if (!file_sync(src_folder, filename, file)) return false;
+        if (!file_sync(src_folder, filename, file)) {
+          return false;
+        }
       }
     }
     return true;
@@ -249,8 +257,8 @@ public class FileSync {
       }
     } catch (Exception e) {
       JFLog.log(e);
+      return false;
     }
-    return false;
   }
 
   private boolean file_sync_blocks(String folder, String filename) {
@@ -287,7 +295,7 @@ public class FileSync {
             break;
           }
           default: {
-            throw new Exception("unknown return cmd:" + cmd);
+            throw new Exception(String.format("unknown return cmd:%x", cmd));
           }
         }
         file_offset += block_size;
@@ -336,6 +344,9 @@ public class FileSync {
     if (debug) JFLog.log(String.format("c.cmd=%x len=%d (file_block_data)", req[0], req_len-5));
     os.write(req, 0, req_len);
     int cmd = read_reply();
+    if (cmd != RET_OKAY) {
+      JFLog.log(String.format("FileSync : file_block_data() failed : cmd=%x", cmd));
+    }
     return cmd;
   }
 
@@ -364,6 +375,9 @@ public class FileSync {
       if (debug) JFLog.log(String.format("c.cmd=%x len=%d (folder_open:%s)", req[0], req_len-5, folder));
       os.write(req, 0, req_len);
       int cmd = read_reply();
+      if (cmd != RET_OKAY) {
+        JFLog.log("FileSync : unable to open folder:" + folder);
+      }
       return cmd == RET_OKAY;
     } catch (Exception e) {
       JFLog.log(e);

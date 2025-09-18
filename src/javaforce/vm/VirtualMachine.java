@@ -410,9 +410,15 @@ public class VirtualMachine implements Serializable {
       return false;
     }
     FileSync sync = new FileSync();
-    if (!sync.connect(host)) return false;
+    if (!sync.connect(host)) {
+      JFLog.log("VM:backupData() failed : unable to connect to host:" + host);
+      return false;
+    }
     boolean ret = sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);
     sync.disconnect();
+    if (!ret) {
+      JFLog.log("VM:backupData() failed : FileSync.sync() failed!");
+    }
     return ret;
   }
 
