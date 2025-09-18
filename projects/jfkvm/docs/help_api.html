@@ -23,15 +23,31 @@ https://server/api/command?arg1=value1&argN=valueN&...
 Commands:
 
   snapshot_create
-    token = server token
-    vm = virtual machine name
-    name = snapshot name
-    desc = snapshot desc
+    arguments:
+      token = server token
+      vm = virtual machine name
+      name = snapshot name
+      desc = snapshot desc
+    result:
+      {OK | Error}
 
   snapshot_delete
-    token = server token
-    vm = virtual machine name
-    name = snapshot name
+    arguments:
+      token = server token
+      vm = virtual machine name
+      name = snapshot name
+    result:
+      {OK | Error}
+
+  backup [since 6.0]
+    arguments:
+      token = server token
+      vm = virtual machine name
+      dest = destination remote host
+      destpool = destination remote host storage pool
+      destname = new virtual machine name on destination (optional)
+    result:
+      task_id={long}
 
 </pre>
 <br><br>
