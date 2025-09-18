@@ -49,6 +49,20 @@ Commands:
     result:
       task_id={long}
 
+  get_task_status [since 6.0]
+    arguments:
+      token = server token
+      task_id = task_id
+    result:
+      task_status={integer} {where 0=running, 1=successful, 2=failed, 3=task not found}
+
+  get_task_result [since 6.0]
+    arguments:
+      token = server token
+      task_id = task_id
+    result:
+      task_result={string}
+
 </pre>
 <br><br>
 

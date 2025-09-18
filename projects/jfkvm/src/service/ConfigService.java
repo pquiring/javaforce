@@ -6999,7 +6999,7 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String task_id = params.get("task_id");
         String result = "";
-        result = Integer.toString(Tasks.tasks.getTaskStatus(Long.valueOf(task_id)));
+        result = "task_status=" + Tasks.tasks.getTaskStatus(Long.valueOf(task_id));
         return result.getBytes();
       }
       case "get_task_result": {
@@ -7007,7 +7007,7 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String task_id = params.get("task_id");
         String result = "";
-        result = Tasks.tasks.getTaskResult(Long.valueOf(task_id));
+        result = "task_result=" + Tasks.tasks.getTaskResult(Long.valueOf(task_id));
         return result.getBytes();
       }
       case "getpools": {
