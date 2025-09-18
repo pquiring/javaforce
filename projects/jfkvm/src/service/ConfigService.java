@@ -6990,38 +6990,39 @@ public class ConfigService implements WebUIHandler {
       case "backup": {
         String token = params.get("token");
         if (!token.equals(Config.current.token)) return null;
-        String result = "Ok:backup started";
         String vm_name = params.get("vm");
         String dest = params.get("dest");
         String destpool = params.get("destpool");
         String destname = params.get("destname");  //optional (default = vm)
         VirtualMachine vm = VirtualMachine.get(vm_name);
-        if (dest == null) {
-          result = "Error:dest required";
-        } else if (destpool == null) {
-          result = "Error:destpool required";
-        } else if (vm == null) {
-          result = "Error:VM Not Found";
-        } else {
-          //TODO : validate dest, destpool
-          String _destname = destname == null ? vm_name : destname;
-          TaskEvent event = createEvent("Create backup", "api", request.getRemoteAddr());
-          result = "task_id=" + event.task_id;
-          Task task = new Task(event) {
-            public void doTask() {
-              try {
+        String _destname = destname == null ? vm_name : destname;
+        TaskEvent event = createEvent("Create backup", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (dest == null) {
+                setResult("Error:dest required", false);
+              } else if (destpool == null) {
+                setResult("Error:destpool required", false);
+              } else if (vm == null) {
+                setResult("Error:VM Not Found", false);
+              } else if (!vm.hasSnapshot()) {
+                setResult("Error:VM has no snapshots", false);
+              } else {
+                //TODO : validate dest, destpool
                 if (!vm.backupData(dest, destpool, _destname)) {
                   throw new Exception("backup failed");
                 }
                 setResult("Completed", true);
-              } catch (Exception e) {
-                setResult("Error:Create backup failed, check logs.", false);
-                JFLog.log(e);
               }
+            } catch (Exception e) {
+              setResult("Error:Create backup failed, check logs.", false);
+              JFLog.log(e);
             }
-          };
-          Tasks.tasks.addTask(null, task);
-        }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
         return result.getBytes();
       }
       case "get_task_status": {
