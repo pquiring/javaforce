@@ -148,11 +148,13 @@ public class JFLog {
       if (log == null) {
         return false;
       }
+      JFLog.log(id, "Closing log file");
       list.remove(id);
     }
     try {
       if (log.fos != null) {
         log.fos.close();
+        log.fos = null;
       }
     } catch (Exception e) {
     }
@@ -273,8 +275,10 @@ public class JFLog {
       } else {
         tmp = log.filename.substring(0, idx) + tmp + log.filename.substring(idx);
       }
+      //do NOT call close() here - it calls log() which would cause inf loop
       try {
         log.fos.close();
+        log.fos = null;
       } catch (Exception e1) {
       }
       File file = new File(log.filename);
