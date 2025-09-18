@@ -165,16 +165,16 @@ public class Tasks extends Thread {
   }
 
   public static final int TASK_RUNNING = 0;
-  public static final int TASK_COMPLETED_SUCCESSFULL = 1;
-  public static final int TASK_COMPLETED_FAILURE = 2;
+  public static final int TASK_SUCCESSFUL = 1;
+  public static final int TASK_FAILED = 2;
   public static final int TASK_NOT_FOUND = 3;
 
   public int getTaskStatus(long task_id) {
     TaskEvent event = getTaskEvent(task_id);
     if (event == null) return TASK_NOT_FOUND;
     if (event.time_complete == 0) return TASK_RUNNING;
-    if (event.successful) return TASK_COMPLETED_SUCCESSFULL;
-    return TASK_COMPLETED_FAILURE;
+    if (event.successful) return TASK_SUCCESSFUL;
+    return TASK_FAILED;
   }
 
   public String getTaskResult(long task_id) {
