@@ -10,14 +10,17 @@ import javaforce.*;
 public interface Status {
   public void setStatus(String msg);
   public void setPercent(int value);
-  public void setResult(boolean result);
+  public void setResult(String msg, boolean success);
+  public void setResult(boolean success);
   public static Status null_status = new Status() {
     public void setStatus(String msg) {
       JFLog.log(msg);
     }
     public void setPercent(int value) {
     }
-    public void setResult(boolean result) {
+    public void setResult(String msg, boolean result) {
+    }
+    public void setResult(boolean success) {
     }
   };
 }

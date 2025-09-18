@@ -60,16 +60,18 @@ public class Task extends Thread implements Status {
     } catch (Exception e) {
       JFLog.log(e);
     }
+    if (event.result == null) {
+      //setResult() never called : assume failure
+      event.result = "Error";
+      event.successful = false;
+    }
     Tasks.tasks.completed(this);
   }
 
   /** Performs task in a thread. */
   public void doTask() {}
 
-  public void setResult(String msg) {
-    event.result = msg;
-  }
-
+  /** Set progress status update. */
   public void setStatus(String msg) {
     event.result = msg;
     if (taskui != null) {
@@ -81,8 +83,16 @@ public class Task extends Thread implements Status {
     percent = value;
   }
 
-  public void setResult(boolean result) {
-    event.successful = result;
+  /** Set final task status completion. */
+  public void setResult(String msg, boolean success) {
+    percent = 100;
+    event.successful = success;
+    setStatus(msg);
+  }
+
+  public void setResult(boolean success) {
+    percent = 100;
+    event.successful = success;
   }
 
   public String getAction() {

@@ -495,12 +495,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetSwitchMode(port, _mode)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -512,12 +512,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configPortShutdown(port, _shutdown)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -530,12 +530,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetPortName(port, _name)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -552,12 +552,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetAccessVLAN(port, _access_vlan)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -576,12 +576,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetVLANs(port, _trunk_vlans)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -598,12 +598,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetTrunkVLAN(port, _trunk_vlan)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -620,12 +620,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetGroup(_group, port)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -639,12 +639,12 @@ public class ConfigService implements WebUIHandler {
               public void doTask() {
                 try {
                   if (ui.device.configAddPort_IP(port, _ip, _mask)) {
-                    setStatus("Completed");
+                    setResult("Completed", true);
                   } else {
-                    setStatus("Failed");
+                    setResult("Failed", false);
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + getAction() + " failed, check logs.");
+                  setResult("Error:" + getAction() + " failed, check logs.", false);
                   JFLog.log(e);
                 }
               }
@@ -656,12 +656,12 @@ public class ConfigService implements WebUIHandler {
               public void doTask() {
                 try {
                   if (ui.device.configRemovePort_IP(port)) {
-                    setStatus("Completed");
+                    setResult("Completed", true);
                   } else {
-                    setStatus("Failed");
+                    setResult("Failed", false);
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + getAction() + " failed, check logs.");
+                  setResult("Error:" + getAction() + " failed, check logs.", false);
                   JFLog.log(e);
                 }
               }
@@ -676,12 +676,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configAddPort_DHCP_Relay(port, _dhcp_relay)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -693,12 +693,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configRemovePort_DHCP_Relay(port)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -827,12 +827,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configCreateVLAN(_id, _name)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -845,12 +845,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -862,12 +862,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -879,12 +879,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -896,12 +896,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -915,12 +915,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configEditVLAN(ui.vlan_vlan, _name)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -933,12 +933,12 @@ public class ConfigService implements WebUIHandler {
               public void doTask() {
                 try {
                   if (ui.device.configAddVLAN_IP(ui.vlan_vlan, _ip, _mask)) {
-                    setStatus("Completed");
+                    setResult("Completed", true);
                   } else {
-                    setStatus("Failed");
+                    setResult("Failed", false);
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + getAction() + " failed, check logs.");
+                  setResult("Error:" + getAction() + " failed, check logs.", false);
                   JFLog.log(e);
                 }
               }
@@ -951,12 +951,12 @@ public class ConfigService implements WebUIHandler {
               public void doTask() {
                 try {
                   if (ui.device.configRemoveVLAN_IP(ui.vlan_vlan)) {
-                    setStatus("Completed");
+                    setResult("Completed", true);
                   } else {
-                    setStatus("Failed");
+                    setResult("Failed", false);
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + getAction() + " failed, check logs.");
+                  setResult("Error:" + getAction() + " failed, check logs.", false);
                   JFLog.log(e);
                 }
               }
@@ -969,12 +969,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configSetVLAN_STP(ui.vlan_vlan, _stp)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -987,12 +987,12 @@ public class ConfigService implements WebUIHandler {
               public void doTask() {
                 try {
                   if (ui.device.configAddVLAN_DHCP_Relay(ui.vlan_vlan, _dhcp_relay)) {
-                    setStatus("Completed");
+                    setResult("Completed", true);
                   } else {
-                    setStatus("Failed");
+                    setResult("Failed", false);
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + getAction() + " failed, check logs.");
+                  setResult("Error:" + getAction() + " failed, check logs.", false);
                   JFLog.log(e);
                 }
               }
@@ -1005,12 +1005,12 @@ public class ConfigService implements WebUIHandler {
               public void doTask() {
                 try {
                   if (ui.device.configRemoveVLAN_DHCP_Relay(ui.vlan_vlan)) {
-                    setStatus("Completed");
+                    setResult("Completed", true);
                   } else {
-                    setStatus("Failed");
+                    setResult("Failed", false);
                   }
                 } catch (Exception e) {
-                  setStatus("Error:" + getAction() + " failed, check logs.");
+                  setResult("Error:" + getAction() + " failed, check logs.", false);
                   JFLog.log(e);
                 }
               }
@@ -1023,12 +1023,12 @@ public class ConfigService implements WebUIHandler {
             public void doTask() {
               try {
                 if (ui.device.configVLAN_Shutdown(ui.vlan_vlan, _shutdown)) {
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -1121,12 +1121,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configRemoveVLAN(vlan)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -1208,12 +1208,12 @@ public class ConfigService implements WebUIHandler {
                 break;
             }
             if (okay) {
-              setStatus("Completed");
+              setResult("Completed", true);
             } else {
-              setStatus("Failed");
+              setResult("Failed", false);
             }
           } catch (Exception e) {
-            setStatus("Error:" + getAction() + " failed, check logs.");
+            setResult("Error:" + getAction() + " failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -1304,12 +1304,12 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             if (ui.device.configAddRoute(ui.route_route)) {
-              setStatus("Completed");
+              setResult("Completed", true);
             } else {
-              setStatus("Failed");
+              setResult("Failed", false);
             }
           } catch (Exception e) {
-            setStatus("Error:" + getAction() + " failed, check logs.");
+            setResult("Error:" + getAction() + " failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -1397,12 +1397,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetRoutingMode(_routing)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -1414,12 +1414,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configSetDefaultGateway(_gateway)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -1455,12 +1455,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (ui.device.configRemoveRoute(route)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -2486,12 +2486,12 @@ public class ConfigService implements WebUIHandler {
               try {
                 if (device.configCreateGroup(device.nextGroupID(), ports)) {
                   QueryHardware.scan_now = true;
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -2520,12 +2520,12 @@ public class ConfigService implements WebUIHandler {
               try {
                 if (device.configRemoveGroup(group.getGroupID())) {
                   QueryHardware.scan_now = true;
-                  setStatus("Completed");
+                  setResult("Completed", true);
                 } else {
-                  setStatus("Failed");
+                  setResult("Failed", false);
                 }
               } catch (Exception e) {
-                setStatus("Error:" + getAction() + " failed, check logs.");
+                setResult("Error:" + getAction() + " failed, check logs.", false);
                 JFLog.log(e);
               }
             }
@@ -2548,12 +2548,12 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (device.saveConfig()) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Failed");
+                setResult("Failed", false);
               }
             } catch (Exception e) {
-              setStatus("Error:" + getAction() + " failed, check logs.");
+              setResult("Error:" + getAction() + " failed, check logs.", false);
               JFLog.log(e);
             }
           }

@@ -833,9 +833,9 @@ public class ConfigService implements WebUIHandler {
               if (!ui.snapshots_vm.snapshotDelete(ss.name)) {
                 throw new Exception("Delete failed");
               }
-              setStatus("Completed");
+              setResult("Completed", true);
             } catch (Exception e) {
-              setStatus("Error:Delete snapshot failed, check logs.");
+              setResult("Error:Delete snapshot failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -862,9 +862,9 @@ public class ConfigService implements WebUIHandler {
               if (!ui.snapshots_vm.snapshotRestore(ss.name)) {
                 throw new Exception("Restore failed");
               }
-              setStatus("Completed");
+              setResult("Completed", true);
             } catch (Exception e) {
-              setStatus("Error:Restore snapshot failed, check logs.");
+              setResult("Error:Restore snapshot failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -952,9 +952,9 @@ public class ConfigService implements WebUIHandler {
             if (!ui.snapshots_vm.snapshotCreate(_name, _desc, flags)) {
               throw new Exception("create failed");
             }
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error:Create snapshot failed, check logs.");
+            setResult("Error:Create snapshot failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2057,9 +2057,9 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               Linux.reboot();
-              setStatus("Completed");
+              setResult("Completed", true);
             } catch (Exception e) {
-              setStatus("Error:Reboot failed, check logs.");
+              setResult("Error:Reboot failed, check logs.", false);
               JFLog.log(e);
             }
             genkey = false;
@@ -2082,9 +2082,9 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               Linux.shutdown();
-              setStatus("Completed");
+              setResult("Completed", true);
             } catch (Exception e) {
-              setStatus("Error:Shutdown failed, check logs.");
+              setResult("Error:Shutdown failed, check logs.", false);
               JFLog.log(e);
             }
             genkey = false;
@@ -2416,9 +2416,9 @@ public class ConfigService implements WebUIHandler {
             new File("/root/.ssh").mkdir();
             new File("/root/.ssh/authorized_keys").delete();
             sp.run(new String[] {"mv", Paths.clusterPath + "/localhost.pub", "/root/.ssh/authorized_keys"}, true);
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error:Generate keys failed, check logs.");
+            setResult("Error:Generate keys failed, check logs.", false);
             JFLog.log(e);
           }
           genkey = false;
@@ -2458,13 +2458,13 @@ public class ConfigService implements WebUIHandler {
             if (!https.open(_remote_host)) throw new Exception("connect failed");
             byte[] data = https.get("/api/keyfile?token=" + _remote_token);
             if (Config.current.saveHost(_remote_host, data, _remote_token, _remote_type)) {
-              setStatus("Connected to host:" + _remote_host);
+              setResult("Connected to host:" + _remote_host, true);
             } else {
-              setStatus("Connection failed, check logs.");
+              setResult("Connection failed, check logs.", false);
             }
             https.close();
           } catch (Exception e) {
-            setStatus("Connection failed, check logs.");
+            setResult("Connection failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2494,12 +2494,12 @@ public class ConfigService implements WebUIHandler {
           try {
             if (Gluster.probe(host_host)) {
               Hosts.hosts.check_now();
-              setStatus("Completed");
+              setResult("Completed", true);
             } else {
-              setStatus("Probe failed, check logs.");
+              setResult("Probe failed, check logs.", false);
             }
           } catch (Exception e) {
-            setStatus("Probe failed, check logs.");
+            setResult("Probe failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2529,7 +2529,7 @@ public class ConfigService implements WebUIHandler {
             try {
               //check if already setup
               if (Ceph.exists()) {
-                setStatus("Ceph is already setup!");
+                setResult("Ceph is already setup!", false);
                 return;
               }
 
@@ -2541,20 +2541,20 @@ public class ConfigService implements WebUIHandler {
               float verfloat = Float.valueOf(verstr);
               if (distro.equals("Debian") && verfloat < 13) {
                 //Debian/12 is known to have broken Ceph version
-                setStatus("Debian/12 or less is not supported, please upgrade!");
+                setResult("Debian/12 or less is not supported, please upgrade!", false);
                 return;
               }
 
               //start ceph setup progress
               Config.current.ceph_setup = true;
               if (Ceph.setup(this)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Ceph setup failed, check logs.");
+                setResult("Ceph setup failed, check logs.", false);
               }
               Config.current.ceph_setup = false;
             } catch (Exception e) {
-              setStatus("Ceph setup failed, check logs.");
+              setResult("Ceph setup failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -2708,9 +2708,9 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             ServiceControl.start(services[idx]);
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error occured, check logs.");
+            setResult("Error occured, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2728,9 +2728,9 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             ServiceControl.stop(services[idx]);
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error occured, check logs.");
+            setResult("Error occured, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2748,9 +2748,9 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             ServiceControl.enable(services[idx]);
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error occured, check logs.");
+            setResult("Error occured, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2768,9 +2768,9 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           try {
             ServiceControl.disable(services[idx]);
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error occured, check logs.");
+            setResult("Error occured, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -2917,9 +2917,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Start VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.start()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -2947,9 +2947,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Stop VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.stop()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -2977,9 +2977,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Restart VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.restart()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -3007,9 +3007,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Power Off VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.poweroff()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -3097,14 +3097,14 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Unregister VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.getState() != VirtualMachine.STATE_OFF) {
-              setResult("Error:Can not unregister a live VM.");
+              setResult("Error:Can not unregister a live VM.", false);
               return;
             }
             if (vm.unregister()) {
               Config.current.removeVirtualMachine(vm);
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -3904,13 +3904,13 @@ public class ConfigService implements WebUIHandler {
         public void doTask() {
           Hardware hw = vm.loadHardware();
           if (hw == null) {
-            setResult("Error occured, see logs.");
+            setResult("Error occured, see logs.", false);
             return;
           }
           if (vmm.migrateData(vm, hw, dest, this)) {
-            setResult("Completed");
+            setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.");
+            setResult("Error occured, see logs.", false);
           }
         }
       };
@@ -4026,11 +4026,11 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task(createEvent("Compute Migrate VM : " + vm.name, ui)) {
         public void doTask() {
           if (vmm.migrateCompute(vm, remote.host)) {
-            setResult("Completed");
+            setResult("Completed", true);
             //notify other host of transfer
             remote.notify("migratevm", vm.name);
           } else {
-            setResult("Error occured, see logs.");
+            setResult("Error occured, see logs.", false);
           }
         }
       };
@@ -4129,9 +4129,9 @@ public class ConfigService implements WebUIHandler {
               if (!vm.backupData(host.host, _pool, _vm_name)) {
                 throw new Exception("backup failed");
               }
-              setStatus("Completed");
+              setResult("Completed", true);
             } catch (Exception e) {
-              setStatus("Error:Create backup failed, check logs.");
+              setResult("Error:Create backup failed, check logs.", false);
               JFLog.log(e);
             }
           }
@@ -4241,9 +4241,9 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task(createEvent("Data Clone VM : " + vm.name, ui)) {
         public void doTask() {
           if (vmm.cloneData(vm, dest, new_name, this)) {
-            setResult("Completed");
+            setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.");
+            setResult("Error occured, see logs.", false);
           }
         }
       };
@@ -4506,9 +4506,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Delete Image : " + img.name, ui)) {
           public void doTask() {
             if (img.delete()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -4560,9 +4560,9 @@ public class ConfigService implements WebUIHandler {
               JF.sleep(500);
             }
             pty.close();
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error:Pull image failed, check logs.");
+            setResult("Error:Pull image failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -4646,9 +4646,9 @@ public class ConfigService implements WebUIHandler {
             }
             pty.close();
             script_file.delete();
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error:Create image failed, check logs.");
+            setResult("Error:Create image failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -4743,9 +4743,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Stop Container : " + c.id, ui)) {
           public void doTask() {
             if (c.delete()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -4769,9 +4769,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Restart Container : " + c.id, ui)) {
           public void doTask() {
             if (c.restart()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -4794,9 +4794,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Delete Container : " + c.id, ui)) {
           public void doTask() {
             if (c.delete()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -4883,9 +4883,9 @@ public class ConfigService implements WebUIHandler {
             if (c == null) {
               throw new Exception("error");
             }
-            setStatus("Completed");
+            setResult("Completed", true);
           } catch (Exception e) {
-            setStatus("Error:Create Container failed, check logs.");
+            setResult("Error:Create Container failed, check logs.", false);
             JFLog.log(e);
           }
         }
@@ -5083,7 +5083,7 @@ public class ConfigService implements WebUIHandler {
             if (pool.user != null && pool.user.length() > 0) {
               Password password = Password.load(Password.TYPE_STORAGE, pool.name);
               if (password == null) {
-                setResult("Error occured, see logs.");
+                setResult("Error occured, see logs.", false);
                 return;
               }
               Secret.create(pool.name, password.password);
@@ -5098,9 +5098,9 @@ public class ConfigService implements WebUIHandler {
               }
             }
 */
-            setResult("Completed");
+            setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.");
+            setResult("Error occured, see logs.", false);
           }
         }
       };
@@ -5122,15 +5122,15 @@ public class ConfigService implements WebUIHandler {
             if (pool.isMountedManually()) {
               if (pool.mounted()) {
                 if (!pool.unmount()) {
-                  setResult("Error occured, see logs.");
+                  setResult("Error occured, see logs.", false);
                   return;
                 }
               }
             }
             if (pool.stop()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -5157,9 +5157,9 @@ public class ConfigService implements WebUIHandler {
       Task task = new Task(createEvent("Mount Pool : " + pool.name, ui)) {
         public void doTask() {
           if (pool.mount()) {
-            setResult("Completed");
+            setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.");
+            setResult("Error occured, see logs.", false);
           }
         }
       };
@@ -5187,9 +5187,9 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Unmount Pool : " + pool.name, ui)) {
           public void doTask() {
             if (pool.unmount()) {
-              setResult("Completed");
+              setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.");
+              setResult("Error occured, see logs.", false);
             }
           }
         };
@@ -5276,13 +5276,13 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (Gluster.volume_create(Config.current.getHostNames(), pool.getName(), pool.getGlusterVolume())) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Error occured, check logs.");
+                setResult("Error occured, check logs.", false);
               }
             } catch (Exception e) {
               JFLog.log(e);
-              setStatus("Error occured, check logs.");
+              setResult("Error occured, check logs.", false);
             }
           }
         };
@@ -5310,13 +5310,13 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (Gluster.volume_start(pool.getName())) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Error occured, check logs.");
+                setResult("Error occured, check logs.", false);
               }
             } catch (Exception e) {
               JFLog.log(e);
-              setStatus("Error occured, check logs.");
+              setResult("Error occured, check logs.", false);
             }
           }
         };
@@ -6082,13 +6082,13 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               if (pool.format(fmt)) {
-                setStatus("Completed");
+                setResult("Completed", true);
               } else {
-                setStatus("Error occured, check logs.");
+                setResult("Error occured, check logs.", false);
               }
             } catch (Exception e) {
               JFLog.log(e);
-              setStatus("Error occured, check logs.");
+              setResult("Error occured, check logs.", false);
             }
           }
         };
@@ -6983,9 +6983,9 @@ public class ConfigService implements WebUIHandler {
                 if (!vm.backupData(dest, destpool, _destname)) {
                   throw new Exception("backup failed");
                 }
-                setStatus("Completed");
+                setResult("Completed", true);
               } catch (Exception e) {
-                setStatus("Error:Create backup failed, check logs.");
+                setResult("Error:Create backup failed, check logs.", false);
                 JFLog.log(e);
               }
             }
