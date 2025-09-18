@@ -2456,7 +2456,7 @@ public class ConfigService implements WebUIHandler {
         local_errmsg.setText("Can not connect to localhost");
         return;
       }
-      Task task = new Task(createEvent("Connect to host:" + _remote_host, ui)) {
+      Task task = new Task(createEvent("Connect Host:" + _remote_host, ui)) {
         public void doTask() {
           try {
             HTTPS https = new HTTPS();
@@ -2494,7 +2494,7 @@ public class ConfigService implements WebUIHandler {
         remote_errmsg.setText("Host is not online");
         return;
       }
-      Task task = new Task(createEvent("Gluster Probe host:" + host_host, ui)) {
+      Task task = new Task(createEvent("Gluster Probe Host:" + host_host, ui)) {
         public void doTask() {
           try {
             if (Gluster.probe(host_host)) {
@@ -2529,7 +2529,7 @@ public class ConfigService implements WebUIHandler {
       }
       ui.confirm_message.setText("Ceph setup");
       ui.confirm_action = () -> {
-        Task task = new Task(createEvent("Ceph setup", ui)) {
+        Task task = new Task(createEvent("Ceph Setup", ui)) {
           public void doTask() {
             try {
               //check if already setup
@@ -4128,9 +4128,10 @@ public class ConfigService implements WebUIHandler {
       } else {
         String _pool = value;
         //start backup process to host/pool with name
-        Task task = new Task(createEvent("Create backup", ui)) {
+        Task task = new Task(createEvent("Create Backup", ui)) {
           public void doTask() {
             try {
+              JFLog.log("Create Backup(" + host.host + "," + _pool + "," + _vm_name + ")");
               if (!vm.backupData(host.host, _pool, _vm_name)) {
                 throw new Exception("backup failed");
               }
@@ -4559,7 +4560,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       ui.setRightPanel(createTerminalPanel(pty, "Pull image:" + anc));
-      Task task = new Task(createEvent("Pull image", ui)) {
+      Task task = new Task(createEvent("Pull Image", ui)) {
         public void doTask() {
           try {
             while (!pty.isClosed()) {
@@ -4644,7 +4645,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       ui.setRightPanel(createTerminalPanel(pty, "Create image"));
-      Task task = new Task(createEvent("Create image", ui)) {
+      Task task = new Task(createEvent("Create Image", ui)) {
         public void doTask() {
           try {
             while (!pty.isClosed()) {
@@ -7002,7 +7003,7 @@ public class ConfigService implements WebUIHandler {
         String destname = params.get("destname");  //optional (default = vm)
         VirtualMachine vm = VirtualMachine.get(vm_name);
         String _destname = destname == null ? vm_name : destname;
-        TaskEvent event = createEvent("Create backup", "api", request.getRemoteAddr());
+        TaskEvent event = createEvent("Create Backup", "api", request.getRemoteAddr());
         String result = "task_id=" + event.task_id;
         Task task = new Task(event) {
           public void doTask() {
