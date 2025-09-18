@@ -15,11 +15,17 @@ public class TaskEvent {
   public String action = "";
   public String result = "";
 
+  public boolean successful;
+
   public String user = "";
   public String ip = "";
 
   public static final TaskEvent[] ArrayType = new TaskEvent[0];
-  public static byte VERSION = 1;
+
+  private static byte VERSION = 1;
+
+  //flags (32bits)
+  private static int FLAG_SUCCESSFUL = 0x01;
 
   public TaskEvent() {}
 
@@ -46,6 +52,9 @@ public class TaskEvent {
     event.time_complete = BE.getuint64(data, offset); offset += 8;
     event.time_duration = BE.getuint64(data, offset); offset += 8;
 
+    int flags = BE.getuint32(data, offset); offset += 4;
+    event.successful = (flags & FLAG_SUCCESSFUL) != 0;
+
     int action_length = BE.getuint32(data, offset); offset += 4;
     event.action = BE.getString(data, offset, action_length); offset += action_length;
 
@@ -66,7 +75,7 @@ public class TaskEvent {
     int result_length = result.length();
     int user_length = user.length();
     int ip_length = ip.length();
-    int length = 1 + (3 * 8) + (4 + action_length) + (4 + result_length) + (4 + user_length) + (4 + ip_length);
+    int length = 1 + 4 + (3 * 8) + (4 + action_length) + (4 + result_length) + (4 + user_length) + (4 + ip_length);
     byte[] data = new byte[4 + length];
     int offset = 0;
 
@@ -77,6 +86,10 @@ public class TaskEvent {
     BE.setuint64(data, offset, time_start); offset += 8;
     BE.setuint64(data, offset, time_complete); offset += 8;
     BE.setuint64(data, offset, time_duration); offset += 8;
+
+    int flags = 0;
+    if (successful) flags |= FLAG_SUCCESSFUL;
+    BE.setuint32(data, offset, flags); offset += 4;
 
     BE.setuint32(data, offset, action_length); offset += 4;
     BE.setString(data, offset, action_length, action); offset += action_length;

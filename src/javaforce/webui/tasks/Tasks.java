@@ -4,8 +4,6 @@ package javaforce.webui.tasks;
  *
  * Tasks run in the background and their results are displayed to any logged in user.
  *
- * TODO : broadcast to other users
- *
  * @author pquiring
  */
 
@@ -35,8 +33,7 @@ public class Tasks extends Thread {
   public static void init(String tasks_log_folder) {
     if (tasks != null) return;
     tasks = new Tasks();
-    tasks.log = new TaskLog();
-    tasks.log.setFolder(tasks_log_folder);
+    tasks.log = new TaskLog(tasks_log_folder);
     tasks.start();
   }
 
@@ -139,7 +136,54 @@ public class Tasks extends Thread {
     }
   }
 
-  private static final long time_cut_time = 5 * 60 * 1000;
+  public boolean getTaskComplete(long task_id) {
+    //check taskList (5 mins window)
+    synchronized (lock) {
+      for(Task task : taskList) {
+        if (task.event.time_start == task_id) {
+          return task.event.time_complete != 0;
+        }
+      }
+    }
+    if (log == null) return false;
+    //check TaskLog (24 hrs window)
+    return log.getTaskCompleted(task_id);
+  }
+
+  public TaskEvent getTaskEvent(long task_id) {
+    //check taskList (5 mins window)
+    synchronized (lock) {
+      for(Task task : taskList) {
+        if (task.event.time_start == task_id) {
+          return task.event;
+        }
+      }
+    }
+    if (log == null) return null;
+    //check TaskLog (24 hrs window)
+    return log.getTaskEvent(task_id);
+  }
+
+  public static final int TASK_RUNNING = 0;
+  public static final int TASK_COMPLETED_SUCCESSFULL = 1;
+  public static final int TASK_COMPLETED_FAILURE = 2;
+  public static final int TASK_NOT_FOUND = 3;
+
+  public int getTaskStatus(long task_id) {
+    TaskEvent event = getTaskEvent(task_id);
+    if (event == null) return TASK_NOT_FOUND;
+    if (event.time_complete == 0) return TASK_RUNNING;
+    if (event.successful) return TASK_COMPLETED_SUCCESSFULL;
+    return TASK_COMPLETED_FAILURE;
+  }
+
+  public String getTaskResult(long task_id) {
+    TaskEvent event = getTaskEvent(task_id);
+    if (event == null) return null;
+    return event.result;
+  }
+
+  private static final long time_cut_time = 5 * 60 * 1000;  //5 mins
 
   public void run() {
     while (active) {
@@ -157,6 +201,9 @@ public class Tasks extends Thread {
         for(Task task : remove) {
           removeTask(task);
         }
+      }
+      if (log != null) {
+        log.purge();
       }
     }
   }

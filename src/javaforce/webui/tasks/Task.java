@@ -17,7 +17,6 @@ public class Task extends Thread implements Status {
   protected boolean running;
 
   public int percent;
-  public boolean successful;
 
   public TaskEvent event;
 
@@ -83,7 +82,7 @@ public class Task extends Thread implements Status {
   }
 
   public void setResult(boolean result) {
-    successful = result;
+    event.successful = result;
   }
 
   public String getAction() {
