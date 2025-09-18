@@ -4142,6 +4142,7 @@ public class ConfigService implements WebUIHandler {
           }
         };
         Tasks.tasks.addTask(ui.tasks, task);
+        ui.setRightPanel(vmsPanel(ui));
       }
     });
 
