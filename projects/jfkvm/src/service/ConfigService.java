@@ -2270,6 +2270,10 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     panel.add(row);
+    row.add(new Label("Local Hostname:" + Linux.getHostname()));
+
+    row = new Row();
+    panel.add(row);
     row.add(new Label("Local Key:"));
     Button local_key_generate = new Button("Generate");
     row.add(local_key_generate);
