@@ -28,6 +28,8 @@ public class TaskLogUI extends Panel {
     row.add(period);
     Button next = new Button(">");
     row.add(next);
+    Button refresh = new Button("Refresh");
+    row.add(refresh);
     this.add(row);
     //add panel for TaskUI rows
     rows = new Panel();
@@ -50,6 +52,10 @@ public class TaskLogUI extends Panel {
       }
       reload();
     });
+    refresh.addClickListener((e, c) -> {
+      if (year == 0) return;
+      reload();
+    });
     Calendar now = Calendar.getInstance();
     year = now.get(Calendar.YEAR);
     month = now.get(Calendar.MONTH) + 1;
@@ -58,10 +64,16 @@ public class TaskLogUI extends Panel {
   private void reload() {
     period.setText(String.format("%d-%02d", year, month));
     TaskEvent[] events = log.getEvents(year, month);
-    addTasks(events);
+    rows.removeAll();
+    if (events.length == 0) {
+      Row row = new Row();
+      row.add(new Label("No tasks found"));
+      rows.add(row);
+    } else {
+      addTasks(events);
+    }
   }
   private void addTasks(TaskEvent[] events) {
-    rows.removeAll();
     for(TaskEvent event : events) {
       rows.add(new TaskUI(event));
     }
