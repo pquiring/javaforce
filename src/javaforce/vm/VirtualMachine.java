@@ -404,6 +404,7 @@ public class VirtualMachine implements Serializable {
   }
 
   public boolean backupData(String host, String pool, String folder) {
+    JFLog.log("VM:backupData(" + host + "," + pool + "," + folder + ")");
     String[] files = getFiles();
     if (files == null) {
       JFLog.log("VM:backupData() failed : unable to load hardware config");
