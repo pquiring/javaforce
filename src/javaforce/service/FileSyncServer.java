@@ -22,6 +22,8 @@ public class FileSyncServer {
 
   private static boolean debug = false;
 
+  private static boolean embedded = false;
+
   public static final int VERSION = 1;  //protocol version
 
   public static final int port = 33203;
@@ -71,13 +73,15 @@ public class FileSyncServer {
     public IP4Port bind = new IP4Port();
     public void run() {
       active = true;
-      JFLog.append(JF.getLogPath() + "/jffilesync.log", true);
-      JFLog.setRetention(30);
-      JFLog.log("FileSync : Starting service");
-      JFLog.log("CreateServerSocketSSL");
+      if (!embedded) {
+        JFLog.append(JF.getLogPath() + "/jffilesync.log", true);
+        JFLog.setRetention(30);
+        JFLog.log("FileSync : Starting service");
+      }
+      JFLog.log("FileSyncServer:CreateServerSocketSSL on port " + port);
       KeyMgmt keys = new KeyMgmt();
       if (!new File(getKeyFile()).exists()) {
-        JFLog.log("Warning:Generating self-signed SSL keys");
+        JFLog.log("FileSyncServer:Warning:Generating self-signed SSL keys");
         genKeyFile();
       }
       try {
@@ -122,6 +126,10 @@ public class FileSyncServer {
       }
       clients.clear();
     }
+  }
+
+  public static void setEmbedded(boolean state) {
+    embedded = state;
   }
 
   //client requests

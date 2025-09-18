@@ -55,6 +55,7 @@ public class KVMService extends Thread {
     stats = new Stats();
     stats.start();
     //start sync service
+    FileSyncServer.setEmbedded(true);
     syncService = new FileSyncServer(Config.current.token, "/volumes");
     syncService.start();
     //start config service
