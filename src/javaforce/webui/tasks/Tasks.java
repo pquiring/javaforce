@@ -140,7 +140,7 @@ public class Tasks extends Thread {
     //check taskList (5 mins window)
     synchronized (lock) {
       for(Task task : taskList) {
-        if (task.event.time_start == task_id) {
+        if (task.event.task_id == task_id) {
           return task.event.time_complete != 0;
         }
       }
@@ -154,7 +154,7 @@ public class Tasks extends Thread {
     //check taskList (5 mins window)
     synchronized (lock) {
       for(Task task : taskList) {
-        if (task.event.time_start == task_id) {
+        if (task.event.task_id == task_id) {
           return task.event;
         }
       }

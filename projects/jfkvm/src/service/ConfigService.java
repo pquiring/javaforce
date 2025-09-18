@@ -6975,7 +6975,9 @@ public class ConfigService implements WebUIHandler {
         } else {
           //TODO : validate dest, destpool
           String _destname = destname == null ? vm_name : destname;
-          Task task = new Task(createEvent("Create backup", "api", request.getRemoteAddr())) {
+          TaskEvent event = createEvent("Create backup", "api", request.getRemoteAddr());
+          result = "task_id=" + event.task_id;
+          Task task = new Task(event) {
             public void doTask() {
               try {
                 if (!vm.backupData(dest, destpool, _destname)) {

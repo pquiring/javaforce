@@ -8,6 +8,7 @@ package javaforce.webui.tasks;
 import javaforce.*;
 
 public class TaskEvent {
+  public long task_id;
   public long time_start;
   public long time_complete;
   public long time_duration;
@@ -27,9 +28,20 @@ public class TaskEvent {
   //flags (32bits)
   private static int FLAG_SUCCESSFUL = 0x01;
 
+  private static Object lock = new Object();
+
+  private static long gen_task_id() {
+    synchronized (lock) {
+      long task_id = System.currentTimeMillis();
+      JF.sleep(3);
+      return task_id;
+    }
+  }
+
   public TaskEvent() {}
 
   public TaskEvent(String action, String user, String ip) {
+    this.task_id = gen_task_id();
     this.action = action;
     this.user = user;
     this.ip = ip;
@@ -37,6 +49,7 @@ public class TaskEvent {
 
   public static TaskEvent create(String action, String user, String ip) {
     TaskEvent event = new TaskEvent();
+    event.task_id = gen_task_id();
     event.action = action;
     event.user = user;
     event.ip = ip;
@@ -48,6 +61,7 @@ public class TaskEvent {
 
     byte version = data[offset]; offset++;
 
+    event.task_id = BE.getuint64(data, offset); offset += 8;
     event.time_start = BE.getuint64(data, offset); offset += 8;
     event.time_complete = BE.getuint64(data, offset); offset += 8;
     event.time_duration = BE.getuint64(data, offset); offset += 8;
@@ -75,7 +89,7 @@ public class TaskEvent {
     int result_length = result.length();
     int user_length = user.length();
     int ip_length = ip.length();
-    int length = 1 + 4 + (3 * 8) + (4 + action_length) + (4 + result_length) + (4 + user_length) + (4 + ip_length);
+    int length = 1 + (4 * 8) + 4 + (4 + action_length) + (4 + result_length) + (4 + user_length) + (4 + ip_length);
     byte[] data = new byte[4 + length];
     int offset = 0;
 
@@ -83,6 +97,7 @@ public class TaskEvent {
 
     data[offset] = VERSION; offset++;
 
+    BE.setuint64(data, offset, task_id); offset += 8;
     BE.setuint64(data, offset, time_start); offset += 8;
     BE.setuint64(data, offset, time_complete); offset += 8;
     BE.setuint64(data, offset, time_duration); offset += 8;

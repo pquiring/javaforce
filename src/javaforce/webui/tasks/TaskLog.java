@@ -76,12 +76,12 @@ public class TaskLog {
   public TaskEvent getTaskEvent(long task_id) {
     synchronized (lock) {
       for(TaskEvent event : processing) {
-        if (event.time_start == task_id) {
+        if (event.task_id == task_id) {
           return event;
         }
       }
       for(TaskEvent event : completed) {
-        if (event.time_start == task_id) {
+        if (event.task_id == task_id) {
           return event;
         }
       }
