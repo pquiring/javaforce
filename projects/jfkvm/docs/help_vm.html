@@ -47,6 +47,27 @@ libvirt format:domain.slot.bus.func
 lspci format:bus.slot.func  (domain is implied to be zero)
 Note the bus/slot are backwards.
 
+Operations:
+-----------
+
+Create : Create a new VM : Create/add disks, hardware, etc.
+Edit : Edit VM disks and hardware setup.
+Console : View/interact with VM video screen.
+Monitor : View VM performance statistics.
+Start : Power on VM.
+Stop : Request VM to power down.
+Restart : Forcefully restart VM.
+PowerOff : Forcefully power down VM.
+Migrate / Compute : Move a running or powered down VM to another host in the cluster.
+Migrate / Data : Move a powered down VM storage to another storage pool.
+Snapshots : Manage a VMs snapshots.
+Backup : Copy a VM to another remote host in the cluster.
+ - VM must be powered off or running with at least one snapshot to allow a backup.
+ - Performs a delta copy if VM already exists on remote host (similar to rsync).
+Clone : Copy a powered down VM to another storage pool/folder.
+Unregister : Remove a powered down VM from the system.
+ - Use storage explorer to find and register VM on this or another host.
+
 </pre>
 <br><br>
 
