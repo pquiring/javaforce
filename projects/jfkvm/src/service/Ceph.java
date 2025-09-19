@@ -24,19 +24,14 @@ public class Ceph {
   }
 
   public static boolean setup(Task task) {
-    Host[] hosts = Config.current.hosts.values().toArray(new Host[0]);
+    Host[] hosts = Config.current.getHosts(Host.TYPE_ON_PREMISE, 3.0f);
     try {
       for(Host host : hosts) {
-        if (host.type != Host.TYPE_ON_PREMISE) continue;
-        if (!host.isValid(3.0f)) {
-          throw new Exception("ceph:host is not valid:" + host.hostname);
-        }
         if (host.getStorageIP() == null || host.ip_storage == null || host.ip_storage.length() == 0) {
           throw new Exception("ceph:host is missing Storage IP:" + host.hostname);
         }
       }
       for(Host host : hosts) {
-        if (host.type != Host.TYPE_ON_PREMISE) continue;
         if (!host.setCephStart()) {
           throw new Exception("ceph:host rejected ceph setup:" + host.hostname);
         }
@@ -69,7 +64,6 @@ public class Ceph {
       String sshkey = new String(sshkeyin.readAllBytes());
       sshkeyin.close();
       for(Host host : hosts) {
-        if (host.type != Host.TYPE_ON_PREMISE) continue;
         if (!host.addsshkey(sshkey)) {
           throw new Exception("ceph:failed to copy ssh key to host:" + host);
         }
@@ -81,7 +75,6 @@ public class Ceph {
         //add self to hosts list
         hosts_sb.append(Linux.getHostname());
         for(Host host : hosts) {
-          if (host.type != Host.TYPE_ON_PREMISE) continue;
           ShellProcess sp = new ShellProcess();
           //ceph orch host add {hostname} {ip} _admin [labels...]
           String output = sp.run(new String[] {"/usr/bin/ceph", "orch", "host" , "add", host.hostname, host.ip_storage, "_admin"}, true);
@@ -183,7 +176,6 @@ public class Ceph {
         }
       }
       for(Host host : hosts) {
-        if (host.type != Host.TYPE_ON_PREMISE) continue;
         host.setCephComplete();
       }
       return true;
@@ -191,7 +183,6 @@ public class Ceph {
       JFLog.log(e);
       task.setStatus(e.getMessage());
       for(Host host : hosts) {
-        if (host.type != Host.TYPE_ON_PREMISE) continue;
         host.setCephComplete();
       }
       return false;
@@ -228,7 +219,6 @@ public class Ceph {
       String sshkey = new String(sshkeyin.readAllBytes());
       sshkeyin.close();
       for(Host host : hosts) {
-        if (host.type != Host.TYPE_ON_PREMISE) continue;
         if (!host.addsshkey(sshkey)) {
           JFLog.log("ceph:failed to copy ssh key to host:" + host);
         }
