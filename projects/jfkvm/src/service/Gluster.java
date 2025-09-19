@@ -50,12 +50,9 @@ public class Gluster {
   }
 
   public static boolean ready() {
-    Host[] hosts = Config.current.getHosts();
+    Host[] hosts = Config.current.getHosts(Host.TYPE_ON_PREMISE);
     String[] peers = Gluster.getPeers();
     for(Host host : hosts) {
-      if (host.type != Host.TYPE_ON_PREMISE) continue;
-      if (!host.online) return false;
-      if (!host.valid) return false;
       boolean peer_ok = false;
       for(String peer : peers) {
         if (peer.equals(host.host)) {
