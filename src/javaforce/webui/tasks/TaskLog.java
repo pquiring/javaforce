@@ -105,28 +105,33 @@ public class TaskLog {
   /** Get all completed task events from year/month. */
   public TaskEvent[] getEvents(int year, int month) {
     byte[] data = new byte[4096];
+    ArrayList<TaskEvent> events = new ArrayList<>();
+    RandomAccessFile file_io = null;
     try {
-      ArrayList<TaskEvent> events = new ArrayList<>();
       synchronized (lock) {
         String filename = getFilename(year, month);
-        RandomAccessFile file_io = new RandomAccessFile(filename, "rw");
+        file_io = new RandomAccessFile(filename, "rw");
         long pos = 0;
         long length = file_io.length();
         while (pos < length) {
-          int event_length = file_io.read(data, 0, 4);
+          file_io.readFully(data, 0, 4);
+          pos += 4;
+          int event_length = BE.getuint32(data, 0);
           while (event_length > data.length) {
             data = new byte[data.length << 1];
           }
-          file_io.read(data, 4, event_length);
-          events.add(TaskEvent.fromByteArray(data, 4, event_length));
+          file_io.readFully(data, 0, event_length);
+          events.add(TaskEvent.fromByteArray(data, 0, event_length));
           pos += event_length;
         }
         file_io.close();
       }
-      return events.toArray(TaskEvent.ArrayType);
     } catch (Exception e) {
+      if (file_io != null) {
+        try {file_io.close();} catch (Exception e2) {}
+      }
       JFLog.log(e);
     }
-    return null;
+    return events.toArray(TaskEvent.ArrayType);
   }
 }
