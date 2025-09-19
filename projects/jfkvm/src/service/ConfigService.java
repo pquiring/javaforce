@@ -3929,7 +3929,7 @@ public class ConfigService implements WebUIHandler {
   private Panel vmMigrateComputePanel(VirtualMachine vm, Hardware hw, UI ui) {
     Panel panel = new Panel();
     Row row;
-    Host[] hosts = Config.current.getHosts();
+    Host[] hosts = Config.current.getHosts(Host.TYPE_ON_PREMISE);
 
     row = new Row();
     panel.add(row);
@@ -4067,9 +4067,8 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       panel.add(row);
       row.add(list);
-      Host[] hosts = Config.current.getHosts();
+      Host[] hosts = Config.current.getHosts(Host.TYPE_REMOTE);
       for(Host _host : hosts) {
-        if (_host.type != Host.TYPE_REMOTE) continue;
         list.add(_host.hostname, _host.hostname);
       }
     } else {

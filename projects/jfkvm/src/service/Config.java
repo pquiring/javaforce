@@ -206,10 +206,34 @@ public class Config implements Serializable {
     return hosts.values().toArray(new Host[0]);
   }
 
+  public Host[] getHosts(int type) {
+    String[] keys = hosts.keySet().toArray(JF.StringArrayType);
+    ArrayList<Host> list = new ArrayList<>();
+    for(String key : keys) {
+      Host host = hosts.get(key);
+      if (host.type != type) continue;
+      if (!host.isValid()) continue;
+      list.add(host);
+    }
+    return list.toArray(new Host[list.size()]);
+  }
+
+  public Host[] getHosts(int type, float min_ver) {
+    String[] keys = hosts.keySet().toArray(JF.StringArrayType);
+    ArrayList<Host> list = new ArrayList<>();
+    for(String key : keys) {
+      Host host = hosts.get(key);
+      if (host.type != type) continue;
+      if (!host.isValid(min_ver)) continue;
+      list.add(host);
+    }
+    return list.toArray(new Host[list.size()]);
+  }
+
   public boolean hasHost(int type, float min_ver) {
     Host[] hosts = getHosts();
     for(Host host : hosts) {
-      if (!host.isValid(6.0f)) continue;
+      if (!host.isValid(min_ver)) continue;
       if (host.type == type) {
         return true;
       }
