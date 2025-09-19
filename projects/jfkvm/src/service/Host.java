@@ -17,6 +17,8 @@ public class Host implements Serializable {
 
   public static boolean debug = false;
 
+  public static final Host[] HostArrayType = new Host[0];
+
   public String token;
   public String host;  //ip address
   public String hostname;  //hostname

@@ -4067,7 +4067,7 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       panel.add(row);
       row.add(list);
-      Host[] hosts = Config.current.getHosts(Host.TYPE_REMOTE);
+      Host[] hosts = Config.current.getHosts(Host.TYPE_REMOTE, 6.0f);
       for(Host _host : hosts) {
         list.add(_host.hostname, _host.hostname);
       }
