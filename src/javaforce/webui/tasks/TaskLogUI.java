@@ -75,7 +75,9 @@ public class TaskLogUI extends Panel {
   }
   private void addTasks(TaskEvent[] events) {
     for(TaskEvent event : events) {
-      rows.add(new TaskUI(event));
+      TaskUI ui = new TaskUI(event);
+      ui.update(event);
+      rows.add(ui);
     }
   }
 }
