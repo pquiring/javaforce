@@ -110,6 +110,9 @@ public class TaskLog {
     try {
       synchronized (lock) {
         String filename = getFilename(year, month);
+        if (!new File(filename).exists()) {
+          return TaskEvent.ArrayType;
+        }
         file_io = new RandomAccessFile(filename, "rw");
         long pos = 0;
         long length = file_io.length();
