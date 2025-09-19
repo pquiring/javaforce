@@ -2445,25 +2445,25 @@ public class ConfigService implements WebUIHandler {
 
     connect.addClickListener((me, cmp) -> {
       //download to clusterPath
-      String _remote_host = remote_host.getText();
+      String _remote_host_ip = remote_host.getText();
       String _remote_token = remote_token.getText();
       int _remote_type = remote_type.getSelectedIndex();
-      if (!IP4.isIP(_remote_host)) {
+      if (!IP4.isIP(_remote_host_ip)) {
         local_errmsg.setText("Remote Host IP address required!");
         return;
       }
-      if (_remote_host.equals(Config.current.ip_mgmt) || _remote_host.equals("127.0.0.1")) {
+      if (_remote_host_ip.equals(Config.current.ip_mgmt) || _remote_host_ip.equals("127.0.0.1")) {
         local_errmsg.setText("Can not connect to localhost");
         return;
       }
-      Task task = new Task(createEvent("Connect Host:" + _remote_host, ui)) {
+      Task task = new Task(createEvent("Connect Host:" + _remote_host_ip, ui)) {
         public void doTask() {
           try {
             HTTPS https = new HTTPS();
-            if (!https.open(_remote_host)) throw new Exception("connect failed");
+            if (!https.open(_remote_host_ip)) throw new Exception("connect failed");
             byte[] data = https.get("/api/keyfile?token=" + _remote_token);
-            if (Config.current.saveHost(_remote_host, data, _remote_token, _remote_type)) {
-              setResult("Connected to host:" + _remote_host, true);
+            if (Config.current.saveHost(_remote_host_ip, data, _remote_token, _remote_type)) {
+              setResult("Connected to host:" + _remote_host_ip, true);
             } else {
               setResult("Connection failed, check logs.", false);
             }

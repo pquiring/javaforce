@@ -35,7 +35,7 @@ public class Config implements Serializable {
   public ArrayList<NetworkVirtual> nics = new ArrayList<>();  //vm kernel nics
 
   //remote hosts
-  public HashMap<String, Host> hosts = new HashMap<>();
+  public HashMap<String, Host> hosts = new HashMap<>();  //IP, Host
 
   //vnc port range (10000 - 60000)
   public int vnc_start  = 10000;
@@ -141,12 +141,12 @@ public class Config implements Serializable {
     return token;
   }
 
-  public boolean saveHost(String hostname, byte[] key, String token, int type) {
+  public boolean saveHost(String host_ip, byte[] key, String token, int type) {
     if (key == null || key.length == 0) {
       JFLog.log("Error:Config.saveHost() : invalid key");
       return false;
     }
-    String keyfile = Paths.clusterPath + "/" + hostname;
+    String keyfile = Paths.clusterPath + "/" + host_ip;
     try {
       File file = new File(keyfile);
       FileOutputStream fos = new FileOutputStream(file);
@@ -156,23 +156,23 @@ public class Config implements Serializable {
       ShellProcess sp = new ShellProcess();
       sp.run(new String[] {"/usr/bin/chmod", "600", keyfile}, false);
       //remove any previous entries from known_hosts
-      sp.run(new String[] {"/usr/bin/ssh-keygen", "-R", hostname}, false);
+      sp.run(new String[] {"/usr/bin/ssh-keygen", "-R", host_ip}, false);
       //add host to known_hosts
-      String output = sp.run(new String[] {"/usr/bin/ssh-keyscan", "-H", hostname}, false);
+      String output = sp.run(new String[] {"/usr/bin/ssh-keyscan", "-H", host_ip}, false);
       //TODO : only keep lines that start with |
       //append output to known_hosts
       FileOutputStream known_hosts = new FileOutputStream("/root/.ssh/known_hosts", true);
       known_hosts.write(output.getBytes());
       known_hosts.close();
       Host host = new Host();
-      host.host = hostname;
+      host.host = host_ip;
       host.token = token;
       host.type = type;
       host.online = true;
       host.valid = true;
       host.getVersion();
       host.hostname = host.getHostname();
-      hosts.put(hostname, host);
+      hosts.put(host_ip, host);
       save();
       //update ocfs2 cluster
       if (Storage.format_supported(Storage.FORMAT_OCFS2)) {
