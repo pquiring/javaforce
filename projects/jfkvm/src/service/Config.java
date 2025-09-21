@@ -207,14 +207,7 @@ public class Config implements Serializable {
   }
 
   public Host[] getHosts(int type) {
-    ArrayList<Host> list = new ArrayList<>();
-    Host[] hosts = getHosts();
-    for(Host host : hosts) {
-      if (host.type != type) continue;
-      if (!host.isValid()) continue;
-      list.add(host);
-    }
-    return list.toArray(Host.HostArrayType);
+    return getHosts(type, 0.0f);
   }
 
   public Host[] getHosts(int type, float min_ver) {
@@ -231,10 +224,9 @@ public class Config implements Serializable {
   public boolean hasHost(int type, float min_ver) {
     Host[] hosts = getHosts();
     for(Host host : hosts) {
+      if (host.type != type) continue;
       if (!host.isValid(min_ver)) continue;
-      if (host.type == type) {
-        return true;
-      }
+      return true;
     }
     return false;
   }
