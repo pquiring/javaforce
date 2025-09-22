@@ -64,6 +64,7 @@ Snapshots : Manage a VMs snapshots.
 Backup : Copy a VM to another remote host in the cluster.
  - VM must be powered off or running with at least one snapshot to allow a backup.
  - Performs a delta copy if VM already exists on remote host (similar to rsync).
+ - Snapshots are not copied since they are in active use.
 Clone : Copy a powered down VM to another storage pool/folder.
 Unregister : Remove a powered down VM from the system.
  - Use storage explorer to find and register VM on this or another host.
