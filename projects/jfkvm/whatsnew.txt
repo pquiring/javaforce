@@ -1,3 +1,9 @@
+2025-09-22 : 6.0 released!
+  - new : backup VM to remote hosts
+    - backup is similar to rsync
+    - VM must be powered off or have active snapshot
+    - added API to perform backup operation
+
 2025-09-10 : 5.1 released!
   - fix : Snapshots : add name to xml
   - new : cluster : added type to host (not used yet)
