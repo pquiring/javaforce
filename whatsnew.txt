@@ -1,5 +1,12 @@
 What's new...
 
+Sept 22/2025 : JF/88.0
+  - jfKVM/6.0
+    - new : backup VM to remote hosts
+      - backup is similar to rsync
+      - VM must be powered off or have active snapshot
+      - added API to perform backup operation
+
 Sept 10/2025 : JF/87.1
   - jfKVM/5.1
     - fix : snapshots : add name to xml
