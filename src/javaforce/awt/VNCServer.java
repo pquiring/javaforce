@@ -641,13 +641,6 @@ public class VNCServer {
     }
   }
 
-  /** NOTE : THIS SERVICE DOES NOT WORK!!!
-   *
-   * java.awt.Robot does NOT work in a service.
-   *
-   * Looking into using native code soon.
-   */
-
   private static VNCServer service;
   private static Config config;
   private static JBusServer busServer;
