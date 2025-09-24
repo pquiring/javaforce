@@ -29,6 +29,7 @@ public class ShellProcess {
   private File path;
   private int errorLevel;
   private boolean keepOutput = true;
+  private boolean inherit = false;
   public static boolean log = false;
   public static boolean logPrompt = false;
   public String command;
@@ -142,6 +143,10 @@ public class ShellProcess {
     keepOutput = state;
   }
 
+  public void inherit(boolean state) {
+    inherit = state;
+  }
+
   /**
    * See run(String cmd[], boolean redirStderr)
    */
@@ -167,6 +172,9 @@ public class ShellProcess {
     ProcessBuilder pb = new ProcessBuilder(cmd);
     if (redirStderr) {
       pb.redirectErrorStream(true);
+    }
+    if (inherit) {
+      pb.inheritIO();
     }
     if (path != null) {
       pb.directory(path);
@@ -209,14 +217,18 @@ public class ShellProcess {
       os = p.getOutputStream();
       es = p.getErrorStream();
 
-      //start worker thread
-      Worker wstdout = new Worker(is, stdout, true);
-      wstdout.start();
-
+      Worker wstdout = null;
       Worker wstderr = null;
-      if (!redirStderr) {
-        wstderr = new Worker(es, stderr, false);
-        wstderr.start();
+
+      if (!inherit) {
+        //start worker thread
+        wstdout = new Worker(is, stdout, true);
+        wstdout.start();
+
+        if (!redirStderr) {
+          wstderr = new Worker(es, stderr, false);
+          wstderr.start();
+        }
       }
 
       //wait for process to terminate
@@ -225,8 +237,10 @@ public class ShellProcess {
       active = false;
 
       //wait for worker threads to exit
-      wstdout.join();
-      if (!redirStderr) {
+      if (wstdout != null) {
+        wstdout.join();
+      }
+      if (wstderr != null) {
         wstderr.join();
       }
     } catch (Exception e) {

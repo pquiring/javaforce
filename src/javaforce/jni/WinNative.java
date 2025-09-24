@@ -30,7 +30,12 @@ public class WinNative {
 
   //Impersonate User
   public static native boolean impersonateUser(String domain, String user, String passwd);
-  public static native boolean createProcessAsUser(String domain, String user, String passwd, String app, String cmdline);
+  public static native boolean revertToSelf();
+  public static native boolean createProcessAsUser(String domain, String user, String passwd, String app, String cmdline, int flags);
+  public static native boolean shellExecute(String op, String app, String cmdline);
+
+  public static final int FLAG_LIMIT = 1;
+  public static final int FLAG_ELEVATE = 2;
 
   //JDK
   public static native String findJDKHome();

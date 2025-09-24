@@ -5,6 +5,7 @@
 #ifndef _NTDDTAPE_
 #include <ntddtape.h>
 #endif
+#include <winsafer.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -405,7 +406,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
 
   const char *ccmd = e->GetStringUTFChars(cmd, NULL);
 
-  jboolean res = CreateProcessAsUser(hNewToken, 0, (LPSTR)ccmd, 0, 0, FALSE, dwCreationFlags, pEnvBlock, NULL, &si, &pi);
+  jboolean res = CreateProcessAsUser(hNewToken, 0, (LPSTR)ccmd, NULL, NULL, FALSE, dwCreationFlags, pEnvBlock, NULL, &si, &pi);
 
   e->ReleaseStringUTFChars(cmd, ccmd);
 
@@ -488,89 +489,257 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
   return ok ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
-  (JNIEnv *e, jclass c, jstring domain, jstring user, jstring passwd, jstring app, jstring cmdline)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_revertToSelf
+  (JNIEnv *e, jclass c)
 {
-  HANDLE token;
+  return RevertToSelf();
+}
+
+static bool EnablePrivilege(LPCSTR privName)
+{
+  HANDLE hToken;
+  TOKEN_PRIVILEGES tp;
+  LUID luid;
+
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
+  {
+    printf("OpenProcessToken failed. Error: 0x%x\n", GetLastError());
+    return false;
+  }
+
+  if (!LookupPrivilegeValueA(NULL, privName, &luid))
+  {
+    printf("LookupPrivilegeValue failed. Error: 0x%x\n", GetLastError());
+    CloseHandle(hToken);
+    return false;
+  }
+
+  tp.PrivilegeCount = 1;
+  tp.Privileges[0].Luid = luid;
+  tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+  if (!AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
+  {
+    printf("AdjustTokenPrivileges failed. Error: 0x%x\n",GetLastError());
+    CloseHandle(hToken);
+    return false;
+  }
+
+  if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
+  {
+    printf("Privilege %s not assigned to process\n", privName);
+    CloseHandle(hToken);
+    return false;
+  }
+
+  CloseHandle(hToken);
+  return true;
+}
+
+#define FLAG_LIMIT 1
+#define FLAG_ELEVATE 2
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
+  (JNIEnv *e, jclass c, jstring domain, jstring user, jstring passwd, jstring app, jstring cmdline, jint flags)
+{
   int ok;
 
+  //Error 0x57 (87) : ERROR_INVALID_PARAMETER
+  //Error 0x522 (1314) : ERROR_PRIVILEGE_NOT_HELD
+  //Error 0x52E (1326) : ERROR_LOGON_FAILURE
+  //Error 0x542 (1346) : ERROR_BAD_IMPERSONATION_LEVEL
+  //Error 0x569 (1385) : ERROR_LOGON_TYPE_NOT_GRANTED
+
   PROCESS_INFORMATION pi;
+  STARTUPINFOW si;
+  memset(&si, 0, sizeof(STARTUPINFOW));
+  si.cb = sizeof(STARTUPINFOW);
+  //si.lpDesktop = L"winsta0\\default";
+
+  HANDLE hToken;
+  HANDLE hNewToken;
+  HANDLE hRestricted;
+  SAFER_LEVEL_HANDLE hSafer;
+  LPVOID pEnv;
+  DWORD dup = TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE | TOKEN_QUERY | TOKEN_ADJUST_DEFAULT | TOKEN_ADJUST_SESSIONID;
+
+  TOKEN_ELEVATION_TYPE tet;
+  TOKEN_LINKED_TOKEN tlt;
+  DWORD needed = 0;
 
   if (false) {
-    //Results in error : 0x522 (1314) : ERROR_PRIVILEGE_NOT_HELD
+    EnablePrivilege(SE_ASSIGNPRIMARYTOKEN_NAME);
+    EnablePrivilege(SE_INCREASE_QUOTA_NAME);
+    EnablePrivilege(SE_IMPERSONATE_NAME);
+  }
 
-    STARTUPINFO si;
-    memset(&si, 0, sizeof(STARTUPINFO));
-    si.cb = sizeof(STARTUPINFO);
-    si.lpDesktop = "winsta0\\default";
+  const jchar *cdomain = e->GetStringChars(domain,NULL);
+  const jchar *cuser = e->GetStringChars(user,NULL);
+  const jchar *cpasswd = e->GetStringChars(passwd,NULL);
+  const jchar *capp = e->GetStringChars(app,NULL);
+  const jchar *ccmdline = e->GetStringChars(cmdline,NULL);
 
-    const char *cdomain = e->GetStringUTFChars(domain,NULL);
-    const char *cuser = e->GetStringUTFChars(user,NULL);
-    const char *cpasswd = e->GetStringUTFChars(passwd,NULL);
+  ok = LogonUserW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_WINNT50, &hToken);
+  if (!ok) {
+    printf("LogonUserW Failed:0x%x\n", GetLastError());
+  }
 
-    ok = LogonUser(cuser, cdomain, cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);
-
-    e->ReleaseStringUTFChars(domain, cdomain);
-    e->ReleaseStringUTFChars(user, cuser);
-    e->ReleaseStringUTFChars(passwd, cpasswd);
-    if (!ok) {
-      printf("LogonUser Failed:0x%x\n", GetLastError());
-      return JNI_FALSE;
-    }
-    const char *capp = e->GetStringUTFChars(app,NULL);
-    const char *ccmdline = e->GetStringUTFChars(cmdline,NULL);
-
-    ok = CreateProcessAsUser(token, capp, (LPSTR)ccmdline, NULL, NULL, false, 0, NULL, NULL, &si, &pi);
-
-    e->ReleaseStringUTFChars(app, capp);
-    e->ReleaseStringUTFChars(cmdline, ccmdline);
-    if (!ok) {
-      printf("CreateProcessAsUser Failed:0x%x\n", GetLastError());
-      CloseHandle(token);
-    }
+  ok = DuplicateTokenEx(hToken, dup, NULL, SecurityIdentification, TokenPrimary, &hNewToken);
+  if (!ok) {
+    printf("DuplicateTokenEx(1) Failed:0x%x\n", GetLastError());
   } else {
-    STARTUPINFOW si;
-    memset(&si, 0, sizeof(STARTUPINFOW));
-    si.cb = sizeof(STARTUPINFOW);
-    si.lpDesktop = L"winsta0\\default";
+    hToken = hNewToken;
+  }
 
-    HANDLE hToken;
-    HANDLE hNewToken;
-    LPVOID lpvEnv;
-
-    const jchar *cdomain = e->GetStringChars(domain,NULL);
-    const jchar *cuser = e->GetStringChars(user,NULL);
-    const jchar *cpasswd = e->GetStringChars(passwd,NULL);
-    const jchar *capp = e->GetStringChars(app,NULL);
-    const jchar *ccmdline = e->GetStringChars(cmdline,NULL);
-
-    ok = LogonUserW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &hToken);
-    if (!ok) {
-      printf("LogonUserW Failed:0x%x\n", GetLastError());
+  if (false) {
+    int level = SECURITY_MANDATORY_LOW_RID;
+    ok = SetTokenInformation(hNewToken, TokenIntegrityLevel, &level, sizeof(DWORD));
+    if (ok != 0) {
+      printf("SetTokenInformation Failed:0x%x\n", GetLastError());
     }
 
-    ok = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityIdentification, TokenPrimary, &hNewToken);
-    if (!ok) {
-      printf("DuplicateTokenEx Failed:0x%x\n", GetLastError());
+    if (!AdjustTokenPrivileges(hNewToken, TRUE, NULL, 0, NULL, NULL))
+    {
+      printf("AdjustTokenPrivileges Failed:0x%x\n",GetLastError());
+    }
+  }
+
+  if (flags & FLAG_LIMIT) {
+    printf("Limiting access...\n");
+    if (!SaferCreateLevel(SAFER_SCOPEID_USER, SAFER_LEVELID_NORMALUSER, SAFER_LEVEL_OPEN, &hSafer, NULL)) {
+      printf("SaferCreateLevel Failed:0x%x\n",GetLastError());
     }
 
-    ok = CreateEnvironmentBlock(&lpvEnv, hNewToken, false);
-    if (!ok) {
-      printf("CreateEnvironmentBlock Failed:0x%x\n", GetLastError());
+    if (!SaferComputeTokenFromLevel(hSafer, hToken, &hRestricted, 0, NULL)) {
+      printf("SaferComputeTokenFromLevel Failed:0x%x\n",GetLastError());
+    } else {
+      hToken = hRestricted;
     }
 
-    ok = CreateProcessWithLogonW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON_WITH_PROFILE, (LPCWSTR)capp, (LPWSTR)ccmdline, CREATE_UNICODE_ENVIRONMENT, lpvEnv, NULL, &si, &pi);
+    ok = DuplicateTokenEx(hToken, dup, NULL, SecurityIdentification, TokenPrimary, &hNewToken);
+    if (!ok) {
+      printf("DuplicateTokenEx(2) Failed:0x%x\n", GetLastError());
+    } else {
+      hToken = hNewToken;
+    }
+  }
+
+
+  if (flags & FLAG_ELEVATE) {
+    printf("Elevating access...\n");
+    if (!GetTokenInformation(hToken, TokenElevationType, (LPVOID)&tet, sizeof(tet), &needed)) {
+      printf("GetTokenInformation(TokenElevationType) Failed:0x%x\n", GetLastError());
+    }
+
+    if (!GetTokenInformation(hToken, TokenLinkedToken, (LPVOID)&tlt, sizeof(tlt), &needed)) {
+      printf("GetTokenInformation(TokenLinkedToken) Failed:0x%x\n", GetLastError());
+    } else {
+      hToken = tlt.LinkedToken;
+    }
+
+    if (false) {
+      ok = DuplicateTokenEx(hToken, dup, NULL, SecurityIdentification, TokenPrimary, &hNewToken);
+      if (!ok) {
+        printf("DuplicateTokenEx(3) Failed:0x%x\n", GetLastError());
+      } else {
+        hToken = hNewToken;
+      }
+    }
+  }
+
+  if (true) {
+    ok = ImpersonateLoggedOnUser(hToken);
+    if (!ok) {
+      printf("ImpersonateLoggedOnUser Failed:0x%x\n", GetLastError());
+    }
+  }
+
+  if (true) {
+    ok = DuplicateTokenEx(hToken, dup, NULL, SecurityIdentification, TokenPrimary, &hNewToken);
+    if (!ok) {
+      printf("DuplicateTokenEx(1) Failed:0x%x\n", GetLastError());
+    } else {
+      hToken = hNewToken;
+    }
+  }
+
+  ok = CreateEnvironmentBlock(&pEnv, hToken, true);
+  if (!ok) {
+    printf("CreateEnvironmentBlock Failed:0x%x\n", GetLastError());
+  }
+
+  if (false) {
+    ok = CreateRestrictedToken(hToken, LUA_TOKEN, 0, NULL, 0, NULL, 0, NULL, &hRestricted);
+    if (!ok) {
+      printf("CreateRestrictedToken Failed:0x%x\n", GetLastError());
+    } else {
+      hToken = hRestricted;
+    }
+  }
+
+  if (true) {
+    RevertToSelf();
+    ok = CreateProcessWithLogonW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON_WITH_PROFILE, (LPCWSTR)capp, (LPWSTR)ccmdline, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
     if (!ok) {
       printf("CreateProcessWithLogonW Failed:0x%x\n", GetLastError());
     }
-
-    e->ReleaseStringChars(app, capp);
-    e->ReleaseStringChars(cmdline, ccmdline);
-    e->ReleaseStringChars(domain, cdomain);
-    e->ReleaseStringChars(user, cuser);
-    e->ReleaseStringChars(passwd, cpasswd);
   }
+
+  if (false) {
+    //0x522
+    RevertToSelf();
+    ok = CreateProcessWithTokenW(hToken, LOGON_WITH_PROFILE, (LPCWSTR)capp, (LPWSTR)ccmdline, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    if (!ok) {
+      printf("CreateProcessWithTokenW Failed:0x%x\n", GetLastError());
+    }
+  }
+
+  if (false) {
+    //0x522
+    RevertToSelf();
+    ok = CreateProcessAsUserW(hToken, (LPCWSTR)capp, (LPWSTR)ccmdline, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    if (!ok) {
+      printf("CreateProcessAsUserW Failed:0x%x\n", GetLastError());
+    }
+  }
+
+  if (false) {
+    //user profile not fully loaded
+    ok = CreateProcessW((LPCWSTR)capp, (LPWSTR)ccmdline, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    if (ok == 0) {
+      printf("CreateProcessW Failed:0x%x\n", GetLastError());
+    }
+  }
+
+  if (flags & FLAG_LIMIT) {
+    SaferCloseLevel(hSafer);
+  }
+
+  RevertToSelf();
+
+  e->ReleaseStringChars(app, capp);
+  e->ReleaseStringChars(cmdline, ccmdline);
+  e->ReleaseStringChars(domain, cdomain);
+  e->ReleaseStringChars(user, cuser);
+  e->ReleaseStringChars(passwd, cpasswd);
+
   return ok ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_shellExecute
+  (JNIEnv *e, jclass c, jstring op, jstring app, jstring args)
+{
+  const jchar *cop = e->GetStringChars(op, NULL);
+  const jchar *capp = e->GetStringChars(app, NULL);
+  const jchar *cargs = e->GetStringChars(args, NULL);
+
+  bool ok = ShellExecuteW(NULL, (LPCWSTR)cop, (LPCWSTR)capp, (LPCWSTR)cargs, NULL, SW_NORMAL);
+ 
+  e->ReleaseStringChars(op, cop);
+  e->ReleaseStringChars(app, capp);
+  e->ReleaseStringChars(args, cargs);
+
+  return ok;
 }
 
 //find JDK Home
@@ -1384,7 +1553,9 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"peAddString", "(JII[B)V", (void *)&Java_javaforce_jni_WinNative_peAddString},
   {"peEnd", "(J)V", (void *)&Java_javaforce_jni_WinNative_peEnd},
   {"impersonateUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_impersonateUser},
-  {"createProcessAsUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_createProcessAsUser},
+  {"revertToSelf", "()Z", (void *)&Java_javaforce_jni_WinNative_revertToSelf},
+  {"createProcessAsUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)Z", (void *)&Java_javaforce_jni_WinNative_createProcessAsUser},
+  {"shellExecute", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_shellExecute},
   {"findJDKHome", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_findJDKHome},
   {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_enableConsoleMode},
   {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_disableConsoleMode},
