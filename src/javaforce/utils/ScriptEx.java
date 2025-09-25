@@ -47,8 +47,8 @@ public class ScriptEx {
     System.out.println("   : return current epoch (1601) in 100-ns");
     System.out.println("  runas [domain\\]user password cmd args");
     System.out.println("   : run cmd as another user");
-    System.out.println("  runasadmin [domain\\]user password cmd args");
-    System.out.println("   : run cmd as another user with admin rights");
+    System.out.println("  runasadmin cmd args");
+    System.out.println("   : run cmd with admin rights");
     System.exit(1);
   }
 
@@ -118,9 +118,9 @@ public class ScriptEx {
         return;
       }
       case "runasadmin": {
-        String cmd = args[3];
+        String cmd = args[1];
         String cmdargs = "";
-        for(int a=4;a<args.length;a++) {
+        for(int a=2;a<args.length;a++) {
           if (cmdargs.length() > 0) cmdargs += " ";
           cmdargs += args[a];
         }
