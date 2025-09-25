@@ -55,6 +55,7 @@ public class ImageConvert {
       }
     }
     try {
+      JFLog.log("ImageConvert:" + args[0] + " to " + args[1]);
       JFImage img = new JFImage();
       String infmt = args[0].substring(args[0].lastIndexOf(".")+1).toLowerCase();
       JFLog.log("infmt=" + infmt);
@@ -72,8 +73,11 @@ public class ImageConvert {
         throw new Exception("Unsupported input type:" + infmt);
       }
       if (width_percent != 100 || height_percent != 100) {
-        int new_width = (img.getWidth() * width_percent) / 100;
-        int new_height = (img.getHeight() * height_percent) / 100;
+        int org_width = img.getWidth();
+        int org_height = img.getHeight();
+        int new_width = (org_width * width_percent) / 100;
+        int new_height = (org_height * height_percent) / 100;
+        JFLog.log(String.format("Scaling:from=%dx%d,to=%dx%d", org_width, org_height, new_width, new_height));
         JFImage new_img = new JFImage(new_width, new_height);
         new_img.fill(0, 0, new_width, new_height, 0, true);
         new_img.putJFImageScaleSmooth(img, 0, 0, new_width, new_height);
