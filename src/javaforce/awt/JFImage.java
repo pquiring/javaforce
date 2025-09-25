@@ -28,6 +28,7 @@ public class JFImage extends JComponent implements Icon {
   private int[] buffer;
   private ResizeOperation resizeOperation = ResizeOperation.CLEAR;
   private int imageType;  //BufferedImage.TYPE_INT_...
+  private RenderingHints hints;
 
   public static boolean debug = false;
 
@@ -66,6 +67,7 @@ public class JFImage extends JComponent implements Icon {
     this.bi = bi;
     this.imageType = bi.getType();
     g2d = bi.createGraphics();
+    hints = null;
     buffer = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
     if (clear) fill(0,0,getWidth(),getHeight(), 0);  //fill with black opaque (the default varies by platform)
   }
@@ -139,6 +141,27 @@ public class JFImage extends JComponent implements Icon {
    */
   public void setResizeOperation(ResizeOperation ro) {
     resizeOperation = ro;
+  }
+
+  public void setScalingModeHigh() {
+    if (hints == null) {
+      hints = g2d.getRenderingHints();
+    }
+    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+  }
+
+  public void setScalingModeDefault() {
+    if (hints != null) {
+      g2d.setRenderingHints(hints);
+    }
+  }
+
+  public void printRenderingHints() {
+    RenderingHints hints = g2d.getRenderingHints();
+    for(Object hint : hints.keySet()) {
+      JFLog.log("hint=" + hint + ":" + hint.getClass().getName());
+    }
   }
 
   public Image getImage() {
@@ -712,6 +735,12 @@ public class JFImage extends JComponent implements Icon {
   /** Puts pixels scaling image to fit */
   public void putJFImageScale(JFImage img, int x, int y, int width, int height) {
     g2d.drawImage(img.getImage(), x, y, x+width-1, y+height-1, 0, 0, img.getWidth()-1, img.getHeight()-1, null);
+  }
+
+  /** Puts pixels scaling image using smoothing (slow) */
+  public void putJFImageScaleSmooth(JFImage img, int x, int y, int width, int height) {
+    Image scaled = img.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+    g2d.drawImage(scaled, x, y, null);
   }
 
   /** Returns an area of this image as a new JFImage. */
