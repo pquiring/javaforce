@@ -19,12 +19,32 @@ public class Image extends FontComponent {
   private int lineStyle = LineStyle.SOLID;
   private int resizeOperation = ResizeOperation.CLEAR;
 
+  public static final int ALPHA_MASK = 0xff000000;
+  public static final int OPAQUE = 0xff000000;
+  public static final int TRANSPARENT = 0x00000000;
+  public static final int RED_MASK = 0x00ff0000;
+  public static final int GREEN_MASK = 0x0000ff00;
+  public static final int BLUE_MASK = 0x000000ff;
+  public static final int RGB_MASK = 0x00ffffff;
+
+  private static int defColor = Image.OPAQUE | 0x000000;
+
   public Image() {
     setSize(1, 1);
   }
 
   public Image(int width, int height) {
     setSize(width, height);
+  }
+
+  /** Set background color used to fill new images  (includes alpha value). */
+  public static void setDefaultColor(int clr) {
+    defColor = clr;
+  }
+
+  /** Get background color used to fill new images. */
+  public static int getDefaultColor() {
+    return defColor;
   }
 
   private native int[] nloadPNG(byte[] data, int[] dim);
@@ -283,7 +303,7 @@ public class Image extends FontComponent {
 
   public boolean loadSVG(InputStream in) {
     Dimension size = new Dimension(0, 0);
-    buffer = svg.load(in, size);
+    buffer = svg.load(in, size, defColor);
     try {in.close();} catch (Exception e) {}
     if (buffer == null) {
       return false;

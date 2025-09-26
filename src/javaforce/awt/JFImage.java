@@ -32,6 +32,16 @@ public class JFImage extends JComponent implements Icon {
 
   public static boolean debug = false;
 
+  public static final int ALPHA_MASK = 0xff000000;
+  public static final int OPAQUE = 0xff000000;
+  public static final int TRANSPARENT = 0x00000000;
+  public static final int RED_MASK = 0x00ff0000;
+  public static final int GREEN_MASK = 0x0000ff00;
+  public static final int BLUE_MASK = 0x000000ff;
+  public static final int RGB_MASK = 0x00ffffff;
+
+  private static int defColor = JFImage.OPAQUE | 0x000000;
+
   public enum ResizeOperation {
     CLEAR, //reset image
     CHOP,  //copy/chop image
@@ -69,7 +79,7 @@ public class JFImage extends JComponent implements Icon {
     g2d = bi.createGraphics();
     hints = null;
     buffer = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
-    if (clear) fill(0,0,getWidth(),getHeight(), 0);  //fill with black opaque (the default varies by platform)
+    if (clear) fill(0,0,getWidth(),getHeight(), defColor, true);
   }
 
   private void initImage(int x, int y) {
@@ -78,6 +88,16 @@ public class JFImage extends JComponent implements Icon {
     }
     init(new BufferedImage(x, y, imageType), true);
     setPreferredSize(new Dimension(x, y));
+  }
+
+  /** Set background color used to fill new images (includes alpha value). */
+  public static void setDefaultColor(int clr) {
+    defColor = clr;
+  }
+
+  /** Get background color used to fill new images. */
+  public static int getDefaultColor() {
+    return defColor;
   }
 
   public void setImageSize(int x, int y) {
@@ -543,7 +563,7 @@ public class JFImage extends JComponent implements Icon {
   public boolean loadSVG(InputStream in, int width, int height) {
     int[] buf;
     javaforce.ui.Dimension size = new javaforce.ui.Dimension(width, height);
-    buf = svg.load(in, size);
+    buf = svg.load(in, size, defColor);
     try {in.close();} catch (Exception e) {}
     if (buf == null) {
       JFLog.log("error:buf==null");
@@ -750,14 +770,6 @@ public class JFImage extends JComponent implements Icon {
     ret.putPixels(px, 0, 0, w, h, 0);
     return ret;
   }
-
-  public static final int ALPHA_MASK = 0xff000000;  //Alpha
-  public static final int OPAQUE = 0xff000000;
-  public static final int TRANSPARENT = 0x00000000;
-  public static final int RED_MASK = 0x00ff0000;
-  public static final int GREEN_MASK = 0x0000ff00;
-  public static final int BLUE_MASK = 0x000000ff;
-  public static final int RGB_MASK = 0x00ffffff;
 
   /** Draws one pixel using r,g,b values (alpha assumed opaque) */
   public void putPixel(int x, int y, int r, int g, int b) {

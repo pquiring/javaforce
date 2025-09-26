@@ -3,6 +3,7 @@ package javaforce.awt.priv;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
+import java.util.Arrays;
 
 import javaforce.*;
 
@@ -20,11 +21,13 @@ import com.github.weisj.jsvg.parser.*;
 
 public class svg {
 
-  public static int[] load(InputStream in, javaforce.ui.Dimension size) {
+  public static int[] load(InputStream in, javaforce.ui.Dimension size, int bgColor) {
     SVGLoader loader = new SVGLoader();
     SVGDocument svgDocument = loader.load(in, null, LoaderContext.builder().parserProvider(new DefaultParserProvider()).build());
 
     BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+    int[] buffer = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+    Arrays.fill(buffer, bgColor);
     svgDocument.render((Component)null, (Graphics2D)image.getGraphics(), new ViewBox(0, 0, size.width, size.height));
 
     int[] px = new int[size.width * size.height];
