@@ -64,7 +64,7 @@
   <target name="install">
   </target>
 
-  <target name="depjars" depends="jar-javaforce,jar-sshd-common,jar-sshd-core,jar-sshd-sftp,jar-sshd-scp">
+  <target name="depjars" depends="jar-javaforce,jar-sshd-common,jar-sshd-core,jar-sshd-sftp,jar-sshd-scp,jar-jsvg">
   </target>
 
   <target name="jar" depends="depjars">
