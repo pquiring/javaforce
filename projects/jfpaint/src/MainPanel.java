@@ -1240,7 +1240,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       size.setVisible(true);
       if (!size.accepted) return false;
       if (size.w <= 0 || size.h <= 0) return false;
+      JFImage.setDefaultColor(0x00ffffff);
       result = img.loadSVG(filename, size.w, size.h);
+      JFImage.setDefaultColor(JFImage.OPAQUE);
     } else if (format.equals("jpg") || format.equals("jpeg"))
       result = img.loadJPG(filename);
     else if (format.equals("xpm"))
