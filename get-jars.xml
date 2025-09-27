@@ -1,5 +1,5 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
-  <!-- get java dependancies -->
+  <!-- get java dependancies from maven -->
 
   <!-- twelvemonkeys -->
 

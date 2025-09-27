@@ -5,6 +5,10 @@
     <copyjar name="javaforce" version="${javaforce-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-jficons">
+    <copyjar name="jficons" version="${javaforce-version}" path="${jarpath}"/>
+  </target>
+
   <!-- twelvemonkeys -->
 
   <target name="jar-twelvemonkeys-common-lang">

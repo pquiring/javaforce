@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg fill="#000000" height="800px" width="800px" version="1.1" id="XMLID_234_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve">
+<g id="volume">
+	<g>
+		<path d="M13,23.1L5.6,17H0V7h5.6L13,0.9C13,0.9,13,23.1,13,23.1z M2,15h4.4l4.6,3.9V5.1L6.4,9H2V15z M15,21v-2c3.9,0,7-3.1,7-7
+			s-3.1-7-7-7V3c5,0,9,4,9,9S20,21,15,21z M15,17v-2c1.7,0,3-1.3,3-3s-1.3-3-3-3V7c2.8,0,5,2.2,5,5S17.8,17,15,17z"/>
+	</g>
+</g>
+</svg>

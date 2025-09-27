@@ -131,6 +131,8 @@
     <jar destfile="javaforce.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="${src}">
         <include name="**/*.png"/>
+        <exclude name="javaforce/icons/16/*.png"/>
+        <exclude name="javaforce/icons/32/*.png"/>
         <include name="**/*.html"/>
         <include name="**/*.js"/>
         <include name="**/*.css"/>
@@ -141,6 +143,21 @@
       </fileset>
     </jar>
     <copy file="javaforce.jar" tofile="${lib}/javaforce-${version}.jar"/>
+    <antcall target="icons"/>
+  </target>
+
+  <target name="icons" depends="" description="create icons">
+    <sequential>
+      <java classpath="${home}/javaforce.jar;${home}/jsvg.jar" classname="javaforce.utils.GenIcons" fork="true" jvm="${user.home}/bin/jfexec">
+      </java>
+      <jar destfile="jficons.jar" includes="**/*.svg" basedir="${src}">
+        <fileset dir="${src}">
+          <include name="javaforce/icons/16/*.png"/>
+          <include name="javaforce/icons/32/*.png"/>
+        </fileset>
+      </jar>
+      <copy file="jficons.jar" tofile="${lib}/jficons-${version}.jar"/>
+    </sequential>
   </target>
 
   <target name="repo" description="download repo files">
@@ -149,6 +166,7 @@
 
   <target name="install" description="install files">
     <copy file="javaforce.jar" todir="/usr/share/java"/>
+    <copy file="jficons.jar" todir="/usr/share/java"/>
   </target>
 
   <target name="jre-all" description="build JRE with all modules included">
