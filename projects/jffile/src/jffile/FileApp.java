@@ -653,8 +653,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
   public static void main(String args[]) {
     if (System.getenv("JID") == null && !JF.isWindows()) {
       //avoid future headaches
-      JFAWT.showError("Error", "Failed to connect to JBus");
-      return;
+      JFAWT.showError("Warning", "Failed to connect to JBus");
     }
     if (args == null) args = new String[0];
     FileApp.args = args;
