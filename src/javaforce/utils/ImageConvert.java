@@ -10,15 +10,15 @@ public class ImageConvert {
       System.out.println("Suppports : jpg, png, bmp, svg, ico, icns(output only)");
       System.out.println("    index : ico index (input only) (default = 0)");
       System.out.println("    scale : scale image by %");
-      System.out.println("    size : set new image size (sets svg size : default = 256 256)");
-      System.out.println("    fill : background color (default = black)");
+      System.out.println("    size : set new image size (default svg size = 256,256)");
+      System.out.println("    fill : background color (default = ff000000 [opaque black])");
       return;
     }
     int index = 0;
     int width = -1;
     int height = -1;
-    int width_percent = 100;
-    int height_percent = 100;
+    float width_percent = 100.0f;
+    float height_percent = 100.0f;
     for(int a=2;a<args.length;a++) {
       String arg = args[a];
       int idx = arg.indexOf('=');
@@ -41,8 +41,8 @@ public class ImageConvert {
           }
           String width_str = fs[0];
           String height_str = fs[1];
-          width_percent = JF.atoi(width_str);
-          height_percent = JF.atoi(height_str);
+          width_percent = JF.atof(width_str);
+          height_percent = JF.atof(height_str);
           break;
         }
         case "size": {
@@ -86,8 +86,8 @@ public class ImageConvert {
         if (!img.loadSVG(args[0], width, height)) throw new Exception("Load failed");
         width = -1;
         height = -1;
-        width_percent = 100;
-        height_percent = 100;
+        width_percent = 100.0f;
+        height_percent = 100.0f;
       } else {
         throw new Exception("Unsupported input type:" + infmt);
       }
@@ -105,8 +105,8 @@ public class ImageConvert {
       if (width_percent != 100 || height_percent != 100) {
         int org_width = img.getWidth();
         int org_height = img.getHeight();
-        int new_width = (org_width * width_percent) / 100;
-        int new_height = (org_height * height_percent) / 100;
+        int new_width = (int)((org_width * width_percent) / 100.0f);
+        int new_height = (int)((org_height * height_percent) / 100.0f);
         JFLog.log(String.format("Scaling:from=%dx%d,to=%dx%d", org_width, org_height, new_width, new_height));
         JFImage new_img = new JFImage(new_width, new_height);
         new_img.fill(0, 0, new_width, new_height, 0, true);
