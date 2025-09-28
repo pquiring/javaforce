@@ -111,10 +111,14 @@ public class GetXY extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
   private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
-    w = Integer.valueOf(width.getText());
-    h = Integer.valueOf(height.getText());
-    accepted = true;
-    setVisible(false);
+    try {
+      w = Float.valueOf(width.getText());
+      h = Float.valueOf(height.getText());
+      accepted = true;
+      setVisible(false);
+    } catch (Exception e) {
+      JFAWT.showError("Error", "Invalid values");
+    }
   }//GEN-LAST:event_okActionPerformed
 
   private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
@@ -133,7 +137,7 @@ public class GetXY extends javax.swing.JDialog {
     private javax.swing.JTextField width;
     // End of variables declaration//GEN-END:variables
 
-  public int w,h;
+  public float w,h;
   public boolean accepted;
 
   private void setPosition() {

@@ -796,12 +796,12 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     }
     img[imageLayer].putPixels(px2,0,0,w,h,0);
   }
-  public void scaleImage(int ws, int hs) {
+  public void scaleImage(float ws, float hs) {
     int w = getUnscaledWidth();
     int h = getUnscaledHeight();
     if ((ws == 100) && (hs == 100)) return;
-    int neww = w * ws / 100;
-    int newh = h * hs / 100;
+    int neww = (int)((w * ws) / 100.0f);
+    int newh = (int)((h * hs) / 100.0f);
     if (neww < 1) neww = 1;
     if (newh < 1) newh = 1;
     JFImage tmp[] = new JFImage[imageLayers];

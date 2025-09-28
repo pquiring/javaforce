@@ -55,6 +55,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       for(int a=0;a<clips.length;a++) {
         clips[a] = new Clip();
       }
+      selFillAlpha.setSelected(true);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -781,7 +782,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     GetXY dialog = new GetXY(frame, true, "Set Image Size (pixels)", ox, oy);
     dialog.setVisible(true);
     if (!dialog.accepted()) return;
-    changeSize(pc, dialog.w - ox, dialog.h - oy, false);
+    int nw = (int)dialog.w;
+    int nh = (int)dialog.h;
+    changeSize(pc, nw - ox, nh - oy, false);
   }//GEN-LAST:event_changeSizeActionPerformed
 
   private void roundActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundActionPerformed
@@ -792,8 +795,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         round.setSelected(false);
         return;
       }
-      arcX = getarcs.w;
-      arcY = getarcs.h;
+      arcX = (int)getarcs.w;
+      arcY = (int)getarcs.h;
     }
   }//GEN-LAST:event_roundActionPerformed
 
@@ -1241,7 +1244,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       if (!size.accepted) return false;
       if (size.w <= 0 || size.h <= 0) return false;
       JFImage.setDefaultColor(0x00ffffff);
-      result = img.loadSVG(filename, size.w, size.h);
+      result = img.loadSVG(filename, (int)size.w, (int)size.h);
       JFImage.setDefaultColor(JFImage.OPAQUE);
     } else if (format.equals("jpg") || format.equals("jpeg"))
       result = img.loadJPG(filename);
@@ -1308,8 +1311,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       idx = tabs.getTabCount() - 1;
       tab = imageTabs.get(idx);
     }
-    tab.pc.setImageSize(dialog.w, dialog.h);
-    tab.pc.img[tab.pc.getImageLayer()].fill(0,0,dialog.w,dialog.h,backClr);
+    int nx = (int)dialog.w;
+    int ny = (int)dialog.h;
+    tab.pc.setImageSize(nx, ny);
+    tab.pc.img[tab.pc.getImageLayer()].fill(0,0,nx,ny,backClr);
     repaint();
   }
 
