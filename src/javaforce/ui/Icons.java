@@ -26,30 +26,34 @@ public class Icons {
     }
   }
 
+  public static Image loadIcon(String name) {
+    return loadImage("/javaforce/icons/16/" + name + ".png");
+  }
+
   public static Image getArrowUp() {
     if (arrow_up == null) {
-      arrow_up = loadImage("/javaforce/icons/16/icon_up.png");
+      arrow_up = loadIcon("up-arrow");
     }
     return arrow_up;
   }
 
   public static Image getArrowDown() {
     if (arrow_down == null) {
-      arrow_down = loadImage("/javaforce/icons/16/icon_down.png");
+      arrow_down = loadIcon("down-arrow");
     }
     return arrow_down;
   }
 
   public static Image getArrowLeft() {
     if (arrow_left == null) {
-      arrow_left = loadImage("/javaforce/icons/16/icon_left.png");
+      arrow_left = loadIcon("left-arrow");
     }
     return arrow_left;
   }
 
   public static Image getArrowRight() {
     if (arrow_right == null) {
-      arrow_right = loadImage("/javaforce/icons/16/icon_right.png");
+      arrow_right = loadIcon("right-arrow");
     }
     return arrow_right;
   }

@@ -301,6 +301,18 @@ public class JFImage extends JComponent implements Icon {
     }
   }
 
+  public static JFImage loadIcon16(String name) {
+    JFImage img = new JFImage();
+    img.loadPNG(img.getClass().getResourceAsStream("/javaforce/icons/16/" + name + ".png"));
+    return img;
+  }
+
+  public static JFImage loadIcon32(String name) {
+    JFImage img = new JFImage();
+    img.loadPNG(img.getClass().getResourceAsStream("/javaforce/icons/32/" + name + ".png"));
+    return img;
+  }
+
   public static JFImage[] loadmulti(InputStream is) {
     try {
       ImageInputStream stream = ImageIO.createImageInputStream(is);
