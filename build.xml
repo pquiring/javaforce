@@ -148,6 +148,8 @@
 
   <target name="icons" depends="" description="create icons">
     <sequential>
+      <mkdir dir="src/javaforce/icons/16"/>
+      <mkdir dir="src/javaforce/icons/32"/>
       <java classpath="${home}/javaforce.jar;${home}/jsvg.jar" classname="javaforce.utils.GenIcons" fork="true" jvm="${user.home}/bin/jfexec">
       </java>
       <jar destfile="jficons.jar" includes="**/*.svg" basedir="${src}">
