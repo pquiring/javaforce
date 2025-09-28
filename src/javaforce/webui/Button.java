@@ -10,6 +10,8 @@ package javaforce.webui;
 public class Button extends TextComponent {
   private String url;
   private Image img;
+  private Icon icon;
+
   public Button(String text) {
     this.text = text;
     setClass("button");
@@ -19,26 +21,37 @@ public class Button extends TextComponent {
     add(this.img);
     setClass("button");
   }
+  public Button(Icon img) {
+    this.icon = icon;
+    add(this.img);
+    setClass("button");
+  }
   public Button(Resource img, String text) {
     this.img = new Image(img);
     add(this.img);
     this.text = text;
     setClass("button");
   }
+  public Button(Icon img, String text) {
+    this.icon = icon;
+    add(this.img);
+    this.text = text;
+    setClass("button");
+  }
   public String html() {
-    if (img != null && text == null) {
-      return img.html();
-    }
-    StringBuilder sb = new StringBuilder();
-    sb.append("<button" + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<button" + getAttrs() + ">");
     if (img != null) {
-      sb.append(img.html());
+      html.append(img.html());
+    }
+    if (icon != null) {
+      html.append(icon.html());
     }
     if (text != null) {
-      sb.append(text);
+      html.append(text);
     }
-    sb.append("</button>");
-    return sb.toString();
+    html.append("</button>");
+    return html.toString();
   }
   public void updateText(String text) {
     sendEvent("settext", new String[] {"text=" + text});

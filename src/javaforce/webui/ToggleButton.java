@@ -13,6 +13,8 @@ public class ToggleButton extends TextComponent {
   private boolean state;
   private int clrOff, clrOn;
   private Image img;
+  private Icon icon;
+
   public ToggleButton(String text) {
     this.text = text;
     setColors(Color.darkGrey, Color.grey);
@@ -41,6 +43,24 @@ public class ToggleButton extends TextComponent {
     addEvent("onclick", "onClick(event, this);");
     setColor();
   }
+
+  public ToggleButton(Icon icon, String text) {
+    this.icon = icon;
+    add(this.icon);
+    this.text = text;
+    setColors(Color.darkGrey, Color.grey);
+    addEvent("onclick", "onClick(event, this);");
+    setColor();
+  }
+  public ToggleButton(Icon icon, String text, int clrOff, int clrOn) {
+    this.icon = icon;
+    add(this.icon);
+    this.text = text;
+    setColors(clrOff, clrOn);
+    addEvent("onclick", "onClick(event, this);");
+    setColor();
+  }
+
   private void setColor() {
     setBackColor(state ? clrOn : clrOff);
   }
@@ -51,16 +71,19 @@ public class ToggleButton extends TextComponent {
     super.onClick(args, me);
   }
   public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<button" + getAttrs() + ">");
+    StringBuilder html = new StringBuilder();
+    html.append("<button" + getAttrs() + ">");
     if (img != null) {
-      sb.append(img.html());
+      html.append(img.html());
+    }
+    if (icon != null) {
+      html.append(icon.html());
     }
     if (text != null) {
-      sb.append(text);
+      html.append(text);
     }
-    sb.append("</button>");
-    return sb.toString();
+    html.append("</button>");
+    return html.toString();
   }
   public void setText(String text) {
     this.text = text;

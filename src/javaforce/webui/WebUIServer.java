@@ -108,7 +108,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       res.addHeader("Cache-Control: no-store");
     } else if (url.startsWith("/icons/")) {
       try {
-        InputStream is = this.getClass().getResourceAsStream("/javaforce/icons/32/" + url.substring(6));
+        InputStream is = this.getClass().getResourceAsStream("/javaforce" + url);
         data = is.readAllBytes();
         is.close();
       } catch (Exception e) {
