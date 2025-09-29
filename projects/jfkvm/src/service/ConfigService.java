@@ -6319,7 +6319,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     tab.add(row);
-    Table table = new Table(new int[] {100, 50, 50}, col_height, 3, 0);
+    Table table = new Table(new int[] {100, 50, 100, 50}, col_height, 4, 0);
     row.add(table);
     table.setSelectionMode(Table.SELECT_ROW);
     table.setBorder(true);
@@ -6327,9 +6327,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.network_vlan_complete = () -> {
       table.removeAll();
-      table.addRow(new String[] {"Name", "VLAN", "Usage"});
+      table.addRow(new String[] {"Name", "VLAN", "Bridge", "Usage"});
       for(NetworkVLAN nic : Config.current.vlans) {
-        table.addRow(new String[] {nic.name, Integer.toString(nic.vlan), Integer.toString(nic.getUsage())});
+        table.addRow(new String[] {nic.name, Integer.toString(nic.vlan), nic.bridge, Integer.toString(nic.getUsage())});
       }
     };
     ui.network_vlan_complete.run();
