@@ -1924,11 +1924,11 @@ public class ConfigService implements WebUIHandler {
     panel.add(new Label("jfKVM/" + version));
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
-    Button license = new Button("License");
+    Button license = new Button(new Icon("license"), "License");
     tools.add(license);
-    Button support = new Button("Support");
+    Button support = new Button(new Icon("support"), "Support");
     tools.add(support);
     TextArea msg = new TextArea(
       "Welcome to jfKVM!\n" +

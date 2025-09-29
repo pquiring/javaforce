@@ -23,7 +23,7 @@ public class Button extends TextComponent {
   }
   public Button(Icon img) {
     this.icon = icon;
-    add(this.img);
+    add(this.icon);
     setClass("button");
   }
   public Button(Resource img, String text) {
@@ -34,7 +34,7 @@ public class Button extends TextComponent {
   }
   public Button(Icon img, String text) {
     this.icon = icon;
-    add(this.img);
+    add(this.icon);
     this.text = text;
     setClass("button");
   }
