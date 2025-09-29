@@ -1153,55 +1153,60 @@ public class ConfigService implements WebUIHandler {
     };
 
     accept.addClickListener((me, cmp) -> {
-      errmsg.setText("");
-      String _name = vmm.cleanName(name.getText());
-      if (_name.length() == 0) {
-        name.setText(_name);
-        errmsg.setText("Error:invalid name");
-        return;
-      }
-      //ensure name is unique
-      {
-        NetworkInterface[] nics = NetworkInterface.listPhysical();
-        for(NetworkInterface nic : nics) {
-          if (nic.name.equals(_name)) {
-            errmsg.setText("Error:name not unique");
-            return;
+      try {
+        errmsg.setText("");
+        String _name = vmm.cleanName(name.getText());
+        if (_name.length() == 0) {
+          name.setText(_name);
+          errmsg.setText("Error:invalid name");
+          return;
+        }
+        //ensure name is unique
+        {
+          NetworkInterface[] nics = NetworkInterface.listPhysical();
+          for(NetworkInterface nic : nics) {
+            if (nic.name.equals(_name)) {
+              errmsg.setText("Error:name not unique");
+              return;
+            }
           }
         }
-      }
-      {
-        NetworkBridge[] nics = NetworkBridge.list();
-        for(NetworkBridge nic : nics) {
-          if (nic == ui.network_bridge) continue;
-          if (nic.name.equals(_name)) {
-            errmsg.setText("Error:name not unique");
-            return;
+        {
+          NetworkBridge[] nics = NetworkBridge.list();
+          for(NetworkBridge nic : nics) {
+            if (nic == ui.network_bridge) continue;
+            if (nic.name.equals(_name)) {
+              errmsg.setText("Error:name not unique");
+              return;
+            }
           }
         }
-      }
-      {
-        for(NetworkVirtual nic : Config.current.nics) {
-          if (nic.name.equals(_name)) {
-            errmsg.setText("Error:name not unique");
-            return;
+        {
+          for(NetworkVirtual nic : Config.current.nics) {
+            if (nic.name.equals(_name)) {
+              errmsg.setText("Error:name not unique");
+              return;
+            }
           }
         }
+        String _iface = iface.getSelectedValue();
+        if (_iface == null || _iface.length() == 0) {
+          errmsg.setText("Error:invalid interface");
+          return;
+        }
+        int idx = _iface.indexOf(':');
+        if (idx != -1) {
+          _iface = _iface.substring(0, idx);
+        }
+        NetworkBridge.create(_name, _iface);
+        if (ui.network_bridge_complete != null) {
+          ui.network_bridge_complete.run();
+        }
+        ui.network_bridge_popup.setVisible(false);
+      } catch (Exception e) {
+        errmsg.setText("Error:Exception occured, check logs.");
+        JFLog.log(e);
       }
-      String _iface = iface.getSelectedValue();
-      if (_iface == null || _iface.length() == 0) {
-        errmsg.setText("Error:invalid interface");
-        return;
-      }
-      int idx = _iface.indexOf(':');
-      if (idx != -1) {
-        _iface = _iface.substring(0, idx);
-      }
-      NetworkBridge.create(_name, _iface);
-      if (ui.network_bridge_complete != null) {
-        ui.network_bridge_complete.run();
-      }
-      ui.network_bridge_popup.setVisible(false);
     });
     cancel.addClickListener((me, cmp) -> {
       ui.network_bridge_popup.setVisible(false);
@@ -6266,11 +6271,16 @@ public class ConfigService implements WebUIHandler {
       }
       NetworkBridge nic = ui.nics_bridge[idx];
       ui.confirm_action = () -> {
-        if (nic.remove()) {
-          table.removeRow(idx);
-        } else {
-          ui.message_message.setText("Failed to remove bridge, see logs.");
-          ui.message_popup.setVisible(true);
+        try {
+          if (nic.remove()) {
+            table.removeRow(idx);
+          } else {
+            ui.message_message.setText("Failed to remove bridge, see logs.");
+            ui.message_popup.setVisible(true);
+          }
+        } catch (Exception e) {
+          JFLog.log(e);
+          errmsg.setText("Exception occured, check logs.");
         }
       };
       ui.confirm_button.setText("Delete");
