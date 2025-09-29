@@ -33,6 +33,10 @@ public class NetworkBridge extends NetworkConfig implements Serializable {
   public String type;  //br or os
   public String iface;  //physical nic
 
+  public void setInterface(String iface) {
+    this.iface = iface;
+  }
+
   private static NetworkBridge[] list_br() {
     ShellProcess p = new ShellProcess();
     p.keepOutput(true);
@@ -84,6 +88,7 @@ UUID
       if (ln.startsWith("Bridge ")) {
         tag = false;
         br = ln.substring(7);
+        list.add(new NetworkBridge(br, "os", ""));
         continue;
       }
       if (ln.startsWith("Port ")) {
@@ -99,7 +104,12 @@ UUID
         nic = ln.substring(10);
         if (nic.equals(br)) continue;
         if (nic.startsWith("vnet")) continue;
-        list.add(new NetworkBridge(br, "os", nic));
+        for(NetworkBridge nbr : list) {
+          if (nbr.name.equals(br)) {
+            nbr.setInterface(nic);
+            break;
+          }
+        }
         br = null;
         nic = null;
         tag = false;
