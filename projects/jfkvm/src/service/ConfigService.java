@@ -2519,7 +2519,7 @@ public class ConfigService implements WebUIHandler {
 
     ceph.addClickListener((me, cmp) -> {
       remote_errmsg.setText("");
-      int count = 0;
+      int count = 1;  //include self
       for(Host host : hosts) {
         if (host.type != Host.TYPE_ON_PREMISE) continue;
         if (!host.online || !host.valid) {
