@@ -47,7 +47,7 @@ public class Ceph {
           Config.current.ip_storage,
           "--initial-dashboard-user", "admin",
           "--initial-dashboard-password", Config.passwd.password,
-          "--cleanup-on-failure"
+//          "--cleanup-on-failure"  //removed since v19
         }, true);
         int status = sp.getErrorLevel();
         JFLog.log("cephadm:" + output);
