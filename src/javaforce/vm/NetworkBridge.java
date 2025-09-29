@@ -142,13 +142,13 @@ UUID
       //create bridge
       ShellProcess p = new ShellProcess();
       p.keepOutput(true);
-      p.run(new String[] {"/usr/bin/ovs-vsctl", "add-br", name}, true);
+      p.run(new String[] {"/usr/bin/ovs-vsctl", "--no-wait", "add-br", name}, true);
     }
     {
       //add nic to bridge
       ShellProcess p = new ShellProcess();
       p.keepOutput(true);
-      p.run(new String[] {"/usr/bin/ovs-vsctl", "add-port", name, iface}, true);
+      p.run(new String[] {"/usr/bin/ovs-vsctl", "--no-wait", "add-port", name, iface}, true);
     }
     NetworkBridge nic = new NetworkBridge(name, "os", iface);
     nic.link_up();
@@ -164,7 +164,7 @@ UUID
   private void remove_os() {
     ShellProcess p = new ShellProcess();
     p.keepOutput(true);
-    p.run(new String[] {"/usr/bin/ovs-vsctl", "del-br", name}, true);
+    p.run(new String[] {"/usr/bin/ovs-vsctl", "--no-wait", "del-br", name}, true);
   }
 
   public boolean remove() {
