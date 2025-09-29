@@ -21,7 +21,7 @@ public class Button extends TextComponent {
     add(this.img);
     setClass("button");
   }
-  public Button(Icon img) {
+  public Button(Icon icon) {
     this.icon = icon;
     add(this.icon);
     setClass("button");
@@ -32,7 +32,7 @@ public class Button extends TextComponent {
     this.text = text;
     setClass("button");
   }
-  public Button(Icon img, String text) {
+  public Button(Icon icon, String text) {
     this.icon = icon;
     add(this.icon);
     this.text = text;
