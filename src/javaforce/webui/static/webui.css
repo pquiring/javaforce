@@ -33,7 +33,7 @@ button {
 
 img {
   box-sizing: border-box;
-  vertical-align: middle;
+  vertical-align: bottom;
 }
 
 input {
