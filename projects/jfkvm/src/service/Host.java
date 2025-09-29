@@ -46,6 +46,10 @@ public class Host implements Serializable {
   }
 
   public String[] getState() {
+    if (type == TYPE_REMOTE) {
+      gluster_status = "n/a";
+      ceph_status = "n/a";
+    }
     return new String[] {host, hostname, String.format("%.1f", version), getType(), Boolean.toString(online), Boolean.toString(valid), gluster_status, ceph_status};
   }
 

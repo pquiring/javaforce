@@ -57,22 +57,26 @@ public class Hosts extends Thread {
               host.hostname = host.getHostname();
               Config.current.save();
             }
-            if (gluster) {
-              host.gluster_status = host.getGlusterStatus();
-            } else {
-              host.gluster_status = "false";
-            }
-            if (ceph) {
-              host.ceph_status = host.getCephStatus();
-            } else {
-              host.ceph_status = "false";
+            if (host.type == Host.TYPE_ON_PREMISE) {
+              if (gluster) {
+                host.gluster_status = host.getGlusterStatus();
+              } else {
+                host.gluster_status = "false";
+              }
+              if (ceph) {
+                host.ceph_status = host.getCephStatus();
+              } else {
+                host.ceph_status = "false";
+              }
             }
           } catch (Exception e) {
             JFLog.log(e);
             host.online = false;
             host.valid = false;
-            host.gluster_status = "false";
-            host.ceph_status = "false";
+            if (host.type == Host.TYPE_ON_PREMISE) {
+              host.gluster_status = "false";
+              host.ceph_status = "false";
+            }
           }
         }
       } catch (Exception e) {
