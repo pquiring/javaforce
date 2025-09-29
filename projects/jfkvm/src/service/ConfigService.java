@@ -27,7 +27,8 @@ import static javaforce.webui.event.KeyEvent.*;
 public class ConfigService implements WebUIHandler {
   public static String version = "6.0";
   public static String appname = "jfKVM";
-  public static boolean debug = true;
+  public static boolean debug = false;
+  public static boolean debug_api = false;
   public WebUIServer server;
   private KeyMgmt keys;
   private VMM vmm;
@@ -6789,7 +6790,7 @@ public class ConfigService implements WebUIHandler {
 
   public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
     //url = /api/...
-    if (debug) {
+    if (debug_api) {
       JFLog.log("url=" + url);
     }
     if (!url.startsWith("/api/")) {
