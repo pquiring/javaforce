@@ -79,10 +79,12 @@ public class Container extends Component {
   }
   /** Add component to end of components. */
   public void add(Component comp) {
+    if (comp == null) return;
     add(count(), comp);
   }
   /** Add component at index. */
   public void add(int idx, Component comp) {
+    if (comp == null) return;
     comp.parent = this;
     Component before = (idx < 0 || idx >= count()) ? null : components.get(idx);
     components.add(idx, comp);
@@ -99,12 +101,14 @@ public class Container extends Component {
     }
   }
   public void remove(Component comp) {
+    if (comp == null) return;
     components.remove(comp);
     if (id != null) {
       sendEvent("remove", new String[] {"child=" + comp.id});
     }
   }
   public void remove(int idx) {
+    if (idx >= count()) return;
     Component comp = components.remove(idx);
     if (id != null) {
       sendEvent("remove", new String[] {"child=" + comp.id});
