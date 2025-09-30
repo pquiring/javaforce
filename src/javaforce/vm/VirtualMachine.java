@@ -13,9 +13,13 @@ import javaforce.webui.tasks.*;
 public class VirtualMachine implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private VirtualMachine(String pool, String name, String uuid, int vnc) {
+  private VirtualMachine(String pool, String folder, String name, String uuid, int vnc) {
     //existing vm
+    if (folder == null) {
+      folder = name;
+    }
     this.pool = pool;
+    this.folder = folder;
     this.name = name;
     this.uuid = uuid;
     this.vnc = vnc;
@@ -32,6 +36,7 @@ public class VirtualMachine implements Serializable {
   public static native boolean init();
 
   public String pool;
+  public String folder;
   public String name;
   private String uuid;  //only valid while registered
   private int vnc;
@@ -47,7 +52,7 @@ public class VirtualMachine implements Serializable {
   public String getUUID() {return uuid;}
 
   public String getPath() {
-    return "/volumes/" + pool + "/" + name;
+    return "/volumes/" + pool + "/" + folder;
   }
 
   public String getConfigFile() {
@@ -158,6 +163,7 @@ public class VirtualMachine implements Serializable {
   private static VirtualMachine getByDesc(String desc) {
     String[] fs = desc.split(";");
     String pool = null;
+    String folder = null;
     String name = null;
     String uuid = null;
     int vnc = 0;
@@ -169,12 +175,13 @@ public class VirtualMachine implements Serializable {
       String value = f.substring(i + 1).trim();
       switch (key) {
         case "pool": pool = value; break;
+        case "folder": folder = value; break;
         case "name": name = value; break;
         case "uuid": uuid = value; break;
         case "vnc": vnc = Integer.valueOf(value); break;
       }
     }
-    return new VirtualMachine(pool, name, uuid, vnc);
+    return new VirtualMachine(pool, folder, name, uuid, vnc);
   }
 
   //virConnectListAllDomains & virDomainGetUUID & virDomainGetName & virDomainGetDesc
@@ -228,8 +235,8 @@ public class VirtualMachine implements Serializable {
     if (status == null) {
       status = Status.null_status;
     }
-    String _src_folder = "/volumes/" + pool + "/" + name;
-    String _dest_folder = "/volumes/" + dest_pool.name + "/" + name;
+    String _src_folder = "/volumes/" + pool + "/" + folder;
+    String _dest_folder = "/volumes/" + dest_pool.name + "/" + folder;
     File src_folder = new File(_src_folder);
     if (!src_folder.exists()) {
       status.setStatus("Source folder not found");
@@ -260,9 +267,10 @@ public class VirtualMachine implements Serializable {
     status.setStatus("Moving files...");
     for(File file : files) {
       if (file.isDirectory()) continue;
-      String name = file.getName();
+      String src_name = file.getName();
+      String dst_name = src_name;
       Path src_path = file.toPath();
-      Path dest_path = new File(_dest_folder + "/" + name).toPath();
+      Path dest_path = new File(_dest_folder + "/" + dst_name).toPath();
       try {
         Files.move(src_path, dest_path);
       } catch (Exception e) {
@@ -308,7 +316,7 @@ public class VirtualMachine implements Serializable {
     if (status == null) {
       status = Status.null_status;
     }
-    String _src_folder = "/volumes/" + pool + "/" + name;
+    String _src_folder = "/volumes/" + pool + "/" + folder;
     String _dest_folder = "/volumes/" + dest_pool.name + "/" + new_name;
     File src_folder = new File(_src_folder);
     if (!src_folder.exists()) {
@@ -340,9 +348,13 @@ public class VirtualMachine implements Serializable {
     status.setStatus("Copying files...");
     for(File file : files) {
       if (file.isDirectory()) continue;
-      String name = file.getName();
+      String src_name = file.getName();
+      String dst_name = src_name;
+      if (src_name.equals(name + ".jfvm")) {
+        dst_name = new_name + ".jfvm";
+      }
       Path src_path = file.toPath();
-      Path dest_path = new File(_dest_folder + "/" + name).toPath();
+      Path dest_path = new File(_dest_folder + "/" + dst_name).toPath();
       try {
         Files.copy(src_path, dest_path);
       } catch (Exception e) {
@@ -353,7 +365,7 @@ public class VirtualMachine implements Serializable {
       }
       status.setPercent((done * 100) / todo);
     }
-    VirtualMachine clone = new VirtualMachine(dest_pool.name, new_name, null, -1);
+    VirtualMachine clone = new VirtualMachine(dest_pool.name, new_name, new_name, null, -1);
     Hardware hw = clone.loadHardware();
     if (hw == null) {
       status.setStatus("Clone failed, see logs.");
@@ -704,7 +716,7 @@ public class VirtualMachine implements Serializable {
   }
 
   public static void main(String[] args) {
-    VirtualMachine vm = new VirtualMachine("pool", "example", JF.generateUUID(), 5901);
+    VirtualMachine vm = new VirtualMachine("pool", "example", "example", JF.generateUUID(), 5901);
     Disk disk = new Disk();
     disk.pool = "pool";
     disk.folder = "example";

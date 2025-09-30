@@ -24,7 +24,7 @@ public class Hardware implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String pool;
-  public String name;
+  public String name;  //folder
   public String genid;
   public int os;
   public int cores;
