@@ -47,6 +47,8 @@ public class VirtualMachine implements Serializable {
   public static final int STATE_SUSPEND = 2;
   public static final int STATE_ERROR = 3;
 
+  public static final int STATE_NOT_FOUND = -1;
+
   public String getPool() {return pool;}
   public String getName() {return name;}
   public int getVNC() {return vnc;}
@@ -153,8 +155,9 @@ public class VirtualMachine implements Serializable {
       case STATE_ON: return "on";
       case STATE_SUSPEND: return "suspended";
       case STATE_ERROR: return "error";
+      case STATE_NOT_FOUND: return "not found";
     }
-    return "???";
+    return Integer.toString(state);
   }
 
   public String[] getStates() {
