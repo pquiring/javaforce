@@ -769,17 +769,17 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("delete"), "Delete");
     tools.add(delete);
-    Button restore = new Button("Restore");
+    Button restore = new Button(new Icon("restore"), "Restore");
     tools.add(restore);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
-    Button cancel = new Button("Cancel");
+    Button cancel = new Button(new Icon("cancel"), "Cancel");
     tools.add(cancel);
 
     row = new Row();
@@ -2018,11 +2018,11 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button reboot = new Button("Reboot");
+    Button reboot = new Button(new Icon("reboot"), "Reboot");
     tools.add(reboot);
-    Button shutdown = new Button("Shutdown");
+    Button shutdown = new Button(new Icon("power"), "Shutdown");
     tools.add(shutdown);
 
     row = new Row();
@@ -2675,15 +2675,15 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button start = new Button("Start");
+    Button start = new Button(new Icon("start"), "Start");
     tools.add(start);
-    Button stop = new Button("Stop");
+    Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
-    Button enable = new Button("Enable");
+    Button enable = new Button(new Icon("enable"), "Enable");
     tools.add(enable);
-    Button disable = new Button("Disable");
+    Button disable = new Button(new Icon("disable"), "Disable");
     tools.add(disable);
 
     row = new Row();
@@ -2799,35 +2799,35 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button edit = new Button("Edit");
+    Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button console = new Button("Console");
+    Button console = new Button(new Icon("console"), "Console");
     tools.add(console);
-    Button monitor = new Button("Monitor");
+    Button monitor = new Button(new Icon("stats"), "Monitor");
     tools.add(monitor);
-    Button start = new Button("Start");
+    Button start = new Button(new Icon("start"), "Start");
     tools.add(start);
-    Button stop = new Button("Stop");
+    Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
-    Button restart = new Button("Restart");
+    Button restart = new Button(new Icon("reboot"), "Restart");
     tools.add(restart);
-    Button poweroff = new Button("PowerOff");
+    Button poweroff = new Button(new Icon("power"), "PowerOff");
     tools.add(poweroff);
-    Button snapshots = new Button("Snapshots");
+    Button snapshots = new Button(new Icon("clock"), "Snapshots");
     tools.add(snapshots);
-    Button backup = new Button("Backup");
+    Button backup = new Button(new Icon("disk"), "Backup");
     tools.add(backup);
-    Button clone = new Button("Clone");
+    Button clone = new Button(new Icon("copy"), "Clone");
     tools.add(clone);
-    Button migrate = new Button("Migrate");
+    Button migrate = new Button(new Icon("move"), "Migrate");
     tools.add(migrate);
-    Button unreg = new Button("Unregister");
+    Button unreg = new Button(new Icon("remove"), "Unregister");
     tools.add(unreg);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
 
     row = new Row();
@@ -4468,15 +4468,15 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button pull = new Button("Pull");
+    Button pull = new Button(new Icon("download"), "Pull");
     tools.add(pull);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
 
     row = new Row();
@@ -4688,19 +4688,19 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button terminal = new Button("Terminal");
+    Button terminal = new Button(new Icon("terminal"), "Terminal");
     tools.add(terminal);
-    Button stop = new Button("Stop");
+    Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
-    Button restart = new Button("Restart");
+    Button restart = new Button(new Icon("reboot"), "Restart");
     tools.add(restart);
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
 
     row = new Row();
@@ -4926,19 +4926,19 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button add = new Button("Add");
+    Button add = new Button(new Icon("add"), "Add");
     tools.add(add);
-    Button edit = new Button("Edit");
+    Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button monitor = new Button("Monitor");
+    Button monitor = new Button(new Icon("stats"), "Monitor");
     tools.add(monitor);
-    Button browse = new Button("Browse");
+    Button browse = new Button(new Icon("search"), "Browse");
     tools.add(browse);
-    Button start = new Button("Start");
+    Button start = new Button(new Icon("start"), "Start");
     tools.add(start);
-    Button stop = new Button("Stop");
+    Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
     Button mount = new Button("Mount");
     tools.add(mount);
@@ -4952,9 +4952,9 @@ public class ConfigService implements WebUIHandler {
       tools.add(gluster_volume_create);
       tools.add(gluster_volume_start);
     }
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
 
     row = new Row();
