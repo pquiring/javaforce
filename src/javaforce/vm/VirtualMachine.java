@@ -28,8 +28,12 @@ public class VirtualMachine implements Serializable {
   public VirtualMachine(Hardware hardware) {
     //new vm
     pool = hardware.pool;
-    folder = hardware.folder;
-    name = folder;
+    if (hardware.folder == null) {
+      folder = hardware.name;
+    } else {
+      folder = hardware.folder;
+    }
+    name = hardware.name;
     uuid = JF.generateUUID();
     vnc = -1;  //update during register
   }
@@ -632,7 +636,7 @@ public class VirtualMachine implements Serializable {
     xml.append("<description>");  //desc is used for metadata
       xml.append("pool=" + hardware.pool);
       xml.append(";folder=" + hardware.folder);
-      xml.append(";name=" + vm.name);
+      xml.append(";name=" + hardware.name);
       xml.append(";uuid=" + vm.uuid);
     xml.append("</description>");
     if (hardware.os == Hardware.OS_WINDOWS) {
