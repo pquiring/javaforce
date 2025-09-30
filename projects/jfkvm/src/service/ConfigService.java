@@ -4940,11 +4940,11 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
-    Button mount = new Button("Mount");
+    Button mount = new Button(new Icon("mount"), "Mount");
     tools.add(mount);
-    Button unmount = new Button("Unmount");
+    Button unmount = new Button(new Icon("unmount"), "Unmount");
     tools.add(unmount);
-    Button format = new Button("Format");
+    Button format = new Button(new Icon("format"), "Format");
     tools.add(format);
     Button gluster_volume_create = new Button("Gluster Volume Create");
     Button gluster_volume_start = new Button("Gluster Volume Start");
