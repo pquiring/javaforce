@@ -73,6 +73,7 @@ public class Task extends Thread implements Status {
 
   /** Set progress status update. */
   public void setStatus(String msg) {
+    JFLog.log("Task:" + event.action + ":" + msg);
     event.result = msg;
     if (taskui != null) {
       taskui.updateMessage(event);

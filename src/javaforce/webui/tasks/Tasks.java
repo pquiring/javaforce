@@ -116,7 +116,7 @@ public class Tasks extends Thread {
       log.complete(task.event);
     }
     updateUI(task);
-    JFLog.log("Task completed:" + task.event.action + ":result=" + task.event.result);
+    JFLog.log("Task completed:" + task.event.action + ":result=" + (task.event.successful ? "success" : "fail") + ":" + task.event.result);
   }
 
   /** Waits until task is completed. */
