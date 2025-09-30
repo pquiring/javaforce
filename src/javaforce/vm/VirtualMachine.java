@@ -18,6 +18,9 @@ public class VirtualMachine implements Serializable {
     if (folder == null) {
       folder = name;
     }
+    if (uuid == null) {
+      uuid = JF.generateUUID();
+    }
     this.pool = pool;
     this.folder = folder;
     this.name = name;
@@ -375,7 +378,7 @@ public class VirtualMachine implements Serializable {
       }
       status.setPercent((done * 100) / todo);
     }
-    VirtualMachine clone = new VirtualMachine(dest_pool.name, new_name, new_name, null, -1);
+    VirtualMachine clone = new VirtualMachine(dest_pool.name, new_name, new_name, JF.generateUUID(), -1);
     Hardware hw = clone.loadHardware();
     if (hw == null) {
       status.setStatus("Clone failed, see logs.");
