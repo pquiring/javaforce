@@ -3,7 +3,11 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfkeymgr"/>
   <property name="apptype" value="console"/>
-  <property name="home" location="."/>
+  <property name="cfg" value="cfg/jfkeymgr.cfg"/>
+  <property name="ico" value="javaforce.ico"/>
+  <property name="home" location=".."/>
+
+  <property environment="env"/>
 
   <import file="${home}/base.xml"/>
 

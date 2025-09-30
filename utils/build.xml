@@ -13,6 +13,7 @@
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-keymgr.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-filesync.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" target="installapp" inheritAll="false"/>
