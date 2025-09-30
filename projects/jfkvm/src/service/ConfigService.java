@@ -3224,6 +3224,10 @@ public class ConfigService implements WebUIHandler {
     TextField _pool = new TextField(hardware.pool);
     _pool.setReadonly(true);
     grid.addRow(new Component[] {new Label("Storage Pool"), _pool});
+    //folder [   ]
+    TextField _folder = new TextField(hardware.folder);
+    _folder.setReadonly(true);
+    grid.addRow(new Component[] {new Label("Folder"), _folder});
     //operating system type
     ComboBox os_type = new ComboBox();
     os_type.add("Linux", "Linux");
