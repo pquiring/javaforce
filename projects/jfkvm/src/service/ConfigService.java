@@ -3189,11 +3189,12 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:pool not mounted");
         return;
       }
+      hardware.pool = _vm_pool;
       hardware.folder = _vm_name;
       hardware.name = _vm_name;
-      hardware.pool = _vm_pool;
-      vm.name = _vm_name;
       vm.pool = _vm_pool;
+      vm.folder = _vm_name;
+      vm.name = _vm_name;
       File file = new File(hardware.getPath());
       if (file.exists()) {
         errmsg.setText("Error:folder already exists in storage pool with that name");
