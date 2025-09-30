@@ -384,7 +384,7 @@ public class VirtualMachine implements Serializable {
     }
     //update name
     hw.folder = new_name;
-    hw.name = name;
+    hw.name = new_name;
     if (!pool.equals(dest_pool.name)) {
       //also moved to a new storage pool - update pool and disks
       hw.pool = dest_pool.name;
