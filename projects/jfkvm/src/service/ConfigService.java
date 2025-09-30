@@ -4139,7 +4139,7 @@ public class ConfigService implements WebUIHandler {
           public void doTask() {
             try {
               JFLog.log("Create Backup(" + host.host + "," + _pool + "," + _vm_name + ")");
-              if (!vm.backupData(host.host, _pool, _vm_name, host.token)) {
+              if (!vm.backupData(host.host, _pool, _vm_name, host.token, this)) {
                 throw new Exception("backup failed");
               }
               setResult("Completed", true);
@@ -7050,7 +7050,7 @@ public class ConfigService implements WebUIHandler {
               if (!pool_exists) {
                 throw new Exception("Error:destpool does not exist");
               }
-              if (!vm.backupData(host.host, destpool, _destname, host.token)) {
+              if (!vm.backupData(host.host, destpool, _destname, host.token, this)) {
                 throw new Exception("backup failed");
               }
               setResult("Completed", true);

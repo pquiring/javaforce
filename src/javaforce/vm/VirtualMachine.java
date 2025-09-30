@@ -267,6 +267,7 @@ public class VirtualMachine implements Serializable {
     status.setPercent(0);
     status.setStatus("Moving files...");
     for(File file : files) {
+      done++;
       if (file.isDirectory()) continue;
       String src_name = file.getName();
       String dst_name = src_name;
@@ -348,6 +349,7 @@ public class VirtualMachine implements Serializable {
     status.setPercent(0);
     status.setStatus("Copying files...");
     for(File file : files) {
+      done++;
       if (file.isDirectory()) continue;
       String src_name = file.getName();
       String dst_name = src_name;
@@ -417,7 +419,7 @@ public class VirtualMachine implements Serializable {
     return list.toArray(JF.StringArrayType);
   }
 
-  public boolean backupData(String host, String pool, String folder, String host_token) {
+  public boolean backupData(String host, String pool, String folder, String host_token, Status status) {
     JFLog.log("VM:backupData(" + host + "," + pool + "," + folder + ")");
     String[] files = getFiles();
     if (files == null) {
@@ -434,6 +436,7 @@ public class VirtualMachine implements Serializable {
       sync.disconnect();
       return false;
     }
+    sync.setStatus(status);
     boolean ret = sync.sync(getPath(), getFiles(), pool + "/" + folder, 0);
     sync.disconnect();
     if (!ret) {

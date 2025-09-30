@@ -21,6 +21,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.service.*;
+import javaforce.webui.tasks.*;
 import static javaforce.service.FileSyncServer.*;
 
 public class FileSync {
@@ -30,10 +31,12 @@ public class FileSync {
   public static final int FLAG_DEFAULT = 0x00;
   public static final int FLAG_RECURSIVE = 0x01;
   public static final int FLAG_MIRROR = 0x02;
+  private static final int FLAG_SUB_FOLDER = 0x8000;
 
   private Socket s;
   private InputStream is;
   private OutputStream os;
+  private Status status;
 
   public boolean connect(String server) {
     return connect(server, KeyMgmt.getDefaultClient());
@@ -83,15 +86,21 @@ public class FileSync {
     }
   }
 
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
   public boolean sync(String src_folder, String dest_folder, int flags) {
     return sync(src_folder, null, dest_folder, flags);
   }
+
   public boolean sync(String src_folder, String[] src_files, String dest_folder, int flags) {
     if ((flags & FLAG_MIRROR) != 0) {
       JFLog.log("FileSync : mirror not supported");
       return false;
     }
     boolean recursive = (flags & FLAG_RECURSIVE) != 0;
+    boolean sub_folder = (flags & FLAG_SUB_FOLDER) != 0;
     //using a random seed will ensure a double md5 failure is impossible
     random.setSeed(System.currentTimeMillis());
     random.nextBytes(seed);
@@ -105,7 +114,10 @@ public class FileSync {
         return false;
       }
     }
+    int todo = src_files.length;
+    int done = 0;
     for(String filename : src_files) {
+      done++;
       if (debug) JFLog.log("file_sync:" + filename);
       if (filename.startsWith(".")) continue;
       File file = new File(src_folder + "/" + filename);
@@ -115,7 +127,7 @@ public class FileSync {
       }
       if (file.isDirectory()) {
         if (!recursive) continue;
-        if (!sync(src_folder + "/" + filename, null, dest_folder + "/" + filename, flags)) {
+        if (!sync(src_folder + "/" + filename, null, dest_folder + "/" + filename, flags | FLAG_SUB_FOLDER)) {
           return false;
         }
         if (!folder_open(dest_folder)) {
@@ -125,6 +137,9 @@ public class FileSync {
         if (!file_sync(src_folder, filename, file)) {
           return false;
         }
+      }
+      if (status != null && !sub_folder) {
+        status.setPercent((done * 100) / todo);
       }
     }
     return true;
