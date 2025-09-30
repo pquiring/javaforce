@@ -28,7 +28,8 @@ public class VirtualMachine implements Serializable {
   public VirtualMachine(Hardware hardware) {
     //new vm
     pool = hardware.pool;
-    name = hardware.name;
+    folder = hardware.folder;
+    name = folder;
     uuid = JF.generateUUID();
     vnc = -1;  //update during register
   }
@@ -373,7 +374,8 @@ public class VirtualMachine implements Serializable {
       return false;
     }
     //update name
-    hw.name = new_name;
+    hw.folder = new_name;
+    hw.name = name;
     if (!pool.equals(dest_pool.name)) {
       //also moved to a new storage pool - update pool and disks
       hw.pool = dest_pool.name;
@@ -623,9 +625,9 @@ public class VirtualMachine implements Serializable {
     xml.append("<title>" + hardware.name + "</title>");
     xml.append("<description>");  //desc is used for metadata
       xml.append("pool=" + hardware.pool);
-      xml.append(";name=" + hardware.name);
+      xml.append(";folder=" + hardware.folder);
+      xml.append(";name=" + vm.name);
       xml.append(";uuid=" + vm.uuid);
-      xml.append(";vnc=" + vm.vnc);
     xml.append("</description>");
     if (hardware.os == Hardware.OS_WINDOWS) {
       xml.append("<clock offset='localtime'/>");
@@ -643,7 +645,7 @@ public class VirtualMachine implements Serializable {
       }
       if (hardware.bios_efi) {
         xml.append("<nvram type='file'>");
-        xml.append("<source file='/volumes/" + hardware.pool + "/" + hardware.name + "/" + hardware.name + ".nvram'/>");
+        xml.append("<source file='/volumes/" + hardware.pool + "/" + hardware.folder + "/" + hardware.name + ".nvram'/>");
         xml.append("</nvram>");
       }
       xml.append("<bootmenu enable='yes' timeout='3000'/>");
@@ -726,7 +728,7 @@ public class VirtualMachine implements Serializable {
     disk.target_bus = "scsi";
     //disk...
     Network nw = new Network("servers", "vmxnet3", MAC.generate());
-    Hardware hw = new Hardware("pool", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
+    Hardware hw = new Hardware("pool", "example", "example", Hardware.OS_WINDOWS, 4, new Size(4, Size.GB));
     hw.disks.add(disk);
     hw.networks.add(nw);
     System.out.println(createXML(vm, hw, new VMProvider() {

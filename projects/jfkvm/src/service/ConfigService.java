@@ -506,7 +506,7 @@ public class ConfigService implements WebUIHandler {
         }
         pool.setReadonly(false);
         if (disk_pool != null) {
-          path.setText(disk_pool.getPath() + "/" + ui.hardware.name);
+          path.setText(disk_pool.getPath() + "/" + ui.hardware.folder);
         } else {
           path.setText(ui.hardware.getPath());
         }
@@ -566,7 +566,7 @@ public class ConfigService implements WebUIHandler {
       //update path
       Storage disk_pool = vmm.getPoolByName(pool.getSelectedValue());
       if (disk_pool == null) return;
-      path.setText(disk_pool.getPath() + "/" + ui.hardware.name);
+      path.setText(disk_pool.getPath() + "/" + ui.hardware.folder);
     });
 
     accept.addClickListener((me, cmp) -> {
@@ -616,7 +616,7 @@ public class ConfigService implements WebUIHandler {
         //create
         ui.vm_disk = new Disk();
         ui.vm_disk.pool = pool.getSelectedValue();
-        ui.vm_disk.folder = ui.hardware.name;
+        ui.vm_disk.folder = ui.hardware.folder;
         ui.vm_disk.name = _name;
         ui.vm_disk.type = _type;
         ui.vm_disk.size = new Size(_size, _size_unit);
@@ -3189,6 +3189,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:pool not mounted");
         return;
       }
+      hardware.folder = _vm_name;
       hardware.name = _vm_name;
       hardware.pool = _vm_pool;
       vm.name = _vm_name;
@@ -3216,7 +3217,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(grid);
     Row row;
     //name [   ]
-    TextField _name = new TextField(hardware.name);
+    TextField _name = new TextField(vm.name);
     _name.setReadonly(true);
     grid.addRow(new Component[] {new Label("Name"), _name});
     //pool [   ]

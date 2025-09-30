@@ -43,9 +43,11 @@ public class VMM implements VMProvider {
       JFLog.log("Please place VM into one deep folder in storage pool.");
       return null;
     }
-    String name = folder;
+    int vmx_idx = vmx.indexOf(".vmx");
+    String name = vmx.substring(0, vmx_idx);
     Hardware hw = new Hardware();
     hw.pool = pool;
+    hw.folder = folder;
     hw.name = name;
     //find disks
     String full_folder = "/volumes/" + pool + "/" + folder;

@@ -24,7 +24,8 @@ public class Hardware implements Serializable {
   private static final long serialVersionUID = 1L;
 
   public String pool;
-  public String name;  //folder
+  public String folder;
+  public String name;
   public String genid;
   public int os;
   public int cores;
@@ -51,6 +52,7 @@ public class Hardware implements Serializable {
 
   public Hardware() {
     pool = "default";
+    folder = "default";
     name = "default";
     genid = JF.generateUUID();
     os = OS_LINUX;
@@ -62,8 +64,9 @@ public class Hardware implements Serializable {
     controllers = new ArrayList<>();
   }
 
-  public Hardware(String pool, String name, int os, int cores, Size memory) {
+  public Hardware(String pool, String folder, String name, int os, int cores, Size memory) {
     this.pool = pool;
+    this.folder = folder;
     this.name = name;
     this.genid = JF.generateUUID();
     this.os = os;
@@ -80,6 +83,9 @@ public class Hardware implements Serializable {
       FileInputStream fis = new FileInputStream(file);
       Hardware hardware = (Hardware)Compression.deserialize(fis, new File(file).length());
       fis.close();
+      if (hardware.folder == null) {
+        hardware.folder = hardware.name;
+      }
       return hardware;
     } catch (Exception e) {
       JFLog.log(e);
@@ -89,6 +95,9 @@ public class Hardware implements Serializable {
 
   public synchronized boolean save(String file) {
     try {
+      if (folder == null) {
+        folder = name;
+      }
       FileOutputStream fos = new FileOutputStream(file);
       boolean res = Compression.serialize(fos, this);
       fos.close();
@@ -100,7 +109,7 @@ public class Hardware implements Serializable {
   }
 
   public String getPath() {
-    return "/volumes/" + pool + "/" + name;
+    return "/volumes/" + pool + "/" + folder;
   }
 
   public void addNetwork(Network network) {
