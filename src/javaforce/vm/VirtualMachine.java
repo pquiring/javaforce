@@ -399,12 +399,12 @@ public class VirtualMachine implements Serializable {
       }
     }
     if (!clone.saveHardware(hw)) {
-      status.setStatus("Clone failed, see logs.");
+      status.setStatus("Clone failed (unable to save Hardware), see logs.");
       status.setResult(false);
       return false;
     }
     if (!register(clone, hw, provider)) {
-      status.setStatus("Clone failed, see logs.");
+      status.setStatus("Clone failed (unable to register VM), see logs.");
       status.setResult(false);
       return false;
     }
