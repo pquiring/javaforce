@@ -45,7 +45,7 @@
   </target>
 
   <target name="help" description="display help">
-    <echo>linux : build tools for linux</echo>
     <echo>windows : build tools for windows</echo>
+    <echo>windows-zip : zip tools for windows</echo>
   </target>
 </project>
