@@ -8,33 +8,6 @@
 
   <property name="version" value="${javaforce-version}"/>
 
-  <target name="linux" depends="jar" description="build utils for Linux">
-    <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-keymgr.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-filesync.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-imageconvert.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-findreplace.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-pngalpha.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jf-update-desktop-database.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfsmbget.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfservice.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jf-monitor-dir.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-web.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfcp.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfmv.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfrm.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfver.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfresmgr.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfssh.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jfsshd.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jbus-call.xml" target="installapp" inheritAll="false"/>
-    <ant antfile="build-jbus-client.xml" target="installapp" inheritAll="false"/>
-  </target>
-
   <target name="windows" depends="jar" description="build utils for Windows">
     <ant antfile="build-copypath.xml" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
