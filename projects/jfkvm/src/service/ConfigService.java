@@ -6139,11 +6139,11 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     tab.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button link_up = new Button("Link UP");
+    Button link_up = new Button(new Icon("arrow-up"), "Link UP");
     tools.add(link_up);
-    Button link_down = new Button("Link DOWN");
+    Button link_down = new Button(new Icon("arrow-down"), "Link DOWN");
     tools.add(link_down);
 
     row = new Row();
@@ -6215,15 +6215,15 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     tab.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-//      Button edit = new Button("Edit");
+//      Button edit = new Button(new Icon("edit"), "Edit");
 //      tools.add(edit);
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
 
     row = new Row();
@@ -6308,15 +6308,15 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     tab.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button edit = new Button("Edit");
+    Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
-    Button help = new Button("Help");
+    Button help = new Button(new Icon("help"), "Help");
     tools.add(help);
 
     row = new Row();
@@ -6402,24 +6402,24 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     tab.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button link_up = new Button("Link UP");
-    tools.add(link_up);
-    Button link_down = new Button("Link DOWN");
-    tools.add(link_down);
-    Button create = new Button("Create");
+    Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-//      Button edit = new Button("Edit");
+//      Button edit = new Button(new Icon("edit"), "Edit");
 //      tools.add(edit);
 /*
-    Button start = new Button("Start");
+    Button start = new Button(new Icon("start"), "Start");
     tools.add(start);
-    Button stop = new Button("Stop");
+    Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
 */
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
+    Button link_up = new Button(new Icon("arrow-up"), "Link UP");
+    tools.add(link_up);
+    Button link_down = new Button(new Icon("arrow-down"), "Link DOWN");
+    tools.add(link_down);
     Button help = new Button("Help");
     tools.add(help);
 
