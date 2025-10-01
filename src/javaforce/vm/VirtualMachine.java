@@ -641,6 +641,7 @@ public class VirtualMachine implements Serializable {
       xml.append(";folder=" + hardware.folder);
       xml.append(";name=" + hardware.name);
       xml.append(";uuid=" + vm.uuid);
+      xml.append(";vnc=" + vm.vnc);
     xml.append("</description>");
     if (hardware.os == Hardware.OS_WINDOWS) {
       xml.append("<clock offset='localtime'/>");
