@@ -1,3 +1,8 @@
+2025-10-01 : 6.1 released!
+  - fix : support ceph/19 (tested with Ubuntu 25.04)
+  - new : added icons to many buttons
+  - fix : many minor issues
+
 2025-09-22 : 6.0 released!
   - new : backup VM to remote hosts
     - backup is similar to rsync
