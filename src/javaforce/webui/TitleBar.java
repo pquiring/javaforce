@@ -21,7 +21,7 @@ public class TitleBar extends Container {
     add(label);
     pad = new Pad();
     add(pad);
-    button = new Button("X");
+    button = new Button(new Icon("close"));
     button.setClass("right");
     add(button);
     button.addClickListener((e, c) -> {
