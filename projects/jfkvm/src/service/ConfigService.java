@@ -2799,12 +2799,12 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
+    tools.add(refresh);
     Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
     Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
-    Button refresh = new Button(new Icon("refresh"), "Refresh");
-    tools.add(refresh);
     Button console = new Button(new Icon("console"), "Console");
     tools.add(console);
     Button monitor = new Button(new Icon("stats"), "Monitor");
@@ -4468,12 +4468,12 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
+    tools.add(refresh);
     Button pull = new Button(new Icon("download"), "Pull");
     tools.add(pull);
     Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button refresh = new Button(new Icon("refresh"), "Refresh");
-    tools.add(refresh);
     Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
     Button help = new Button(new Icon("help"), "Help");
@@ -4688,10 +4688,10 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button create = new Button(new Icon("add"), "Create");
-    tools.add(create);
     Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
+    Button create = new Button(new Icon("add"), "Create");
+    tools.add(create);
     Button terminal = new Button(new Icon("terminal"), "Terminal");
     tools.add(terminal);
     Button stop = new Button(new Icon("stop"), "Stop");
@@ -4926,12 +4926,12 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
+    tools.add(refresh);
     Button add = new Button(new Icon("add"), "Add");
     tools.add(add);
     Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
-    Button refresh = new Button(new Icon("refresh"), "Refresh");
-    tools.add(refresh);
     Button monitor = new Button(new Icon("stats"), "Monitor");
     tools.add(monitor);
     Button browse = new Button(new Icon("search"), "Browse");
