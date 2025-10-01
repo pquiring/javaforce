@@ -66,6 +66,7 @@ public class GenDEB {
 
     Runtime rt = Runtime.getRuntime();
     int ret;
+    boolean debug = System.getenv("DEBUG") != null;
     try {
       GenPkgInfo.main(new String[] {"debian", arch, files, deps});
       if (new File(control).exists()) {
@@ -88,10 +89,12 @@ public class GenDEB {
       ret = rt.exec(new String[] {"ar", "mc", out, debian_binary, control, data}).waitFor();
       if (ret != 0) throw new Exception("Failed to build " + out + " : ret = " + ret);
 
-      new File(debian_binary).delete();
-      new File(control).delete();
-      new File(data).delete();
-      JF.deletePathEx("deb");
+      if (!debug) {
+        new File(debian_binary).delete();
+        new File(control).delete();
+        new File(data).delete();
+        JF.deletePathEx("deb");
+      }
 
       String release = Linux.getOSRelease("VERSION_CODENAME");
 

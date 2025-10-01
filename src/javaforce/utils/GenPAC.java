@@ -59,6 +59,7 @@ public class GenPAC {
     String data = ".MTREE";
 
     Runtime rt = Runtime.getRuntime();
+    boolean debug = System.getenv("DEBUG") != null;
     try {
       GenPkgInfo.main(new String[] {"arch", arch, files, deps});
       new File(files_tmp).delete();
@@ -75,10 +76,14 @@ public class GenPAC {
         files
       }).waitFor();
       rt.exec(new String[] {"tar", "cf", out, "-T", files_tmp}).waitFor();
-      new File(data).delete();
-      new File(".PKGINFO").delete();
-      new File(data).delete();
-      new File(files_tmp).delete();
+
+      if (!debug) {
+        new File(data).delete();
+        new File(".PKGINFO").delete();
+        new File(data).delete();
+        new File(files_tmp).delete();
+      }
+
       System.out.println(out + " created!");
       if (new File(home + "/repo/arch/readme.txt").exists()) {
         if (!JF.moveFile(out, home + "/repo/arch/latest/" + archext + "/" + out)) throw new Exception("move failed");
