@@ -1,5 +1,11 @@
 What's new...
 
+Oct 1/2025 : JF/89.0
+  - jfKVM/6.1
+    - fix ceph/19 support
+    - add icons to buttons
+  - new : icons are now svg based (converted to png format)
+
 Sept 22/2025 : JF/88.0
   - jfKVM/6.0
     - new : backup VM to remote hosts
