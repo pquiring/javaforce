@@ -20,12 +20,14 @@ public class ToggleButton extends TextComponent {
     setColors(Color.darkGrey, Color.grey);
     addEvent("onclick", "onClick(event, this);");
     setColor();
+    setClass("button");
   }
   public ToggleButton(String text, int clrOff, int clrOn) {
     this.text = text;
     setColors(clrOff, clrOn);
     addEvent("onclick", "onClick(event, this);");
     setColor();
+    setClass("button");
   }
   public ToggleButton(Resource img, String text) {
     this.img = new Image(img);
@@ -34,6 +36,7 @@ public class ToggleButton extends TextComponent {
     setColors(Color.darkGrey, Color.grey);
     addEvent("onclick", "onClick(event, this);");
     setColor();
+    setClass("button");
   }
   public ToggleButton(Resource img, String text, int clrOff, int clrOn) {
     this.img = new Image(img);
@@ -42,6 +45,7 @@ public class ToggleButton extends TextComponent {
     setColors(clrOff, clrOn);
     addEvent("onclick", "onClick(event, this);");
     setColor();
+    setClass("button");
   }
 
   public ToggleButton(Icon icon, String text) {
