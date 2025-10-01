@@ -133,12 +133,18 @@ public class VNCWebConsole extends Thread implements Resized {
       RFB.debug = true;
     }
     client = canvas.getClient();  //waits until panel is loaded
+    int cnt = 16;
     while (isConnected()) {
       //TODO : show connecting msg...
       rfb = new RFB();
       if (!rfb.connect("127.0.0.1", vnc_port)) {
-        JFLog.log("VNCWeb:connection failed");
+        JFLog.log("VNCWeb:connection failed to 127.0.0.1:" + vnc_port);
         JF.sleep(1000);
+        cnt--;
+        if (cnt == 0) {
+          JFLog.log("VNCWeb Connection timeout");
+          return;
+        }
         continue;
       }
       float server_version = rfb.readVersion();
