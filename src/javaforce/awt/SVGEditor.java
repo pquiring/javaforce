@@ -41,13 +41,15 @@ public class SVGEditor extends javax.swing.JFrame {
     jToolBar1 = new javax.swing.JToolBar();
     open = new javax.swing.JButton();
     save = new javax.swing.JButton();
+    update = new javax.swing.JButton();
     jLabel1 = new javax.swing.JLabel();
     sx = new javax.swing.JTextField();
     jLabel2 = new javax.swing.JLabel();
     sy = new javax.swing.JTextField();
+    msg = new javax.swing.JLabel();
     jSplitPane1 = new javax.swing.JSplitPane();
     jScrollPane1 = new javax.swing.JScrollPane();
-    svg = new javax.swing.JTextArea();
+    svg = new JFTextArea();
     img = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -77,6 +79,17 @@ public class SVGEditor extends javax.swing.JFrame {
     });
     jToolBar1.add(save);
 
+    update.setText("Update");
+    update.setFocusable(false);
+    update.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    update.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    update.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        updateActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(update);
+
     jLabel1.setText("Size:");
     jToolBar1.add(jLabel1);
 
@@ -90,6 +103,9 @@ public class SVGEditor extends javax.swing.JFrame {
     sy.setText("512");
     sy.setMaximumSize(new java.awt.Dimension(100, 2147483647));
     jToolBar1.add(sy);
+
+    msg.setText("...");
+    jToolBar1.add(msg);
 
     jSplitPane1.setDividerLocation(512);
 
@@ -128,6 +144,10 @@ public class SVGEditor extends javax.swing.JFrame {
     save();
   }//GEN-LAST:event_saveActionPerformed
 
+  private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
+    update();
+  }//GEN-LAST:event_updateActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -144,11 +164,13 @@ public class SVGEditor extends javax.swing.JFrame {
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JSplitPane jSplitPane1;
   private javax.swing.JToolBar jToolBar1;
+  private javax.swing.JLabel msg;
   private javax.swing.JButton open;
   private javax.swing.JButton save;
   private javax.swing.JTextArea svg;
   private javax.swing.JTextField sx;
   private javax.swing.JTextField sy;
+  private javax.swing.JButton update;
   // End of variables declaration//GEN-END:variables
 
   private static String[] args;
@@ -208,17 +230,19 @@ public class SVGEditor extends javax.swing.JFrame {
 
   public void update() {
     try {
+      msg.setText("");
       int x = Integer.valueOf(sx.getText());
       int y = Integer.valueOf(sy.getText());
-      FileInputStream fis = new FileInputStream(file);
+      byte[] data = svg.getText().getBytes();
+      ByteArrayInputStream bais = new ByteArrayInputStream(data);
       JFImage.setDefaultColor(0x00ffffff);
       JFImage tmp = new JFImage();
-      tmp.loadSVG(fis, x, y);
-      fis.close();
+      tmp.loadSVG(bais, x, y);
       img.setText("");
       img.setIcon(tmp);
     } catch (Exception e) {
       JFLog.log(e);
+      msg.setText("SVG corrupt");
     }
   }
 
@@ -237,10 +261,14 @@ public class SVGEditor extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,
               "SVGEditor/" + JF.getVersion() + "\n\n" +
               "F1 = Help\n" +
+              "F5 = Update\n" +
               "CTRL-O = Open\n" +
               "CTRL-S = Save\n"
               , "Help", JOptionPane.INFORMATION_MESSAGE);
             return;
+          }
+          case KeyEvent.VK_F5: {
+            update();
           }
         }
         break;

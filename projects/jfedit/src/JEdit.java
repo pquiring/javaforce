@@ -1021,7 +1021,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
           case KeyEvent.VK_E: { execute(); return; }
           case KeyEvent.VK_P: { print(); return; }
           case KeyEvent.VK_D: { checktab(); return; }
-          case KeyEvent.VK_1: {switchToProject(); return;}
+          case KeyEvent.VK_1: { switchToProject(); return;}
         }
         break;
       case KeyEvent.ALT_DOWN_MASK:
