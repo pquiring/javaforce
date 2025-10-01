@@ -33,6 +33,13 @@
 
   <property name="version" value="${javaforce-version}"/>
 
+  <condition property="have-jfexec">
+    <or>
+      <available file="${user.home}/bin/jfexec.exe"/>
+      <available file="${user.home}/bin/jfexec"/>
+    </or>
+  </condition>
+
   <import file="base.xml"/>
 
   <!-- get native dependancies -->
@@ -146,7 +153,7 @@
     <antcall target="icons"/>
   </target>
 
-  <target name="icons" depends="" description="create icons">
+  <target name="icons" depends="" if="have-jfexec" description="create icons">
     <sequential>
       <mkdir dir="src/javaforce/icons/16"/>
       <mkdir dir="src/javaforce/icons/32"/>
