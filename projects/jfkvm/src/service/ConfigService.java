@@ -3653,7 +3653,10 @@ public class ConfigService implements WebUIHandler {
           break;
       }
       ui.ctrl_model_init.run();
-      ui.ctrl_model_complete = () -> {};
+      ui.ctrl_model_complete = () -> {
+        ctrl_list.remove(idx);
+        ctrl_list.add(idx, ui.ctrl.toString());
+      };
       ui.ctrl_model_popup.setVisible(true);
     });
     b_ctrl_addr.addClickListener((me, cmp) -> {
