@@ -215,6 +215,8 @@
       <fileset dir="." includes="*.jar"/>
       <fileset dir="." includes="*.asc"/>
       <fileset dir="native/headers" includes="*.h"/>
+      <fileset dir="src/javaforce/icons/16" includes="*.png"/>
+      <fileset dir="src/javaforce/icons/32" includes="*.png"/>
     </delete>
   </target>
 </project>
