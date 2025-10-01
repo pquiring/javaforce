@@ -31,6 +31,7 @@ public class TitleBar extends Container {
         panel.setVisible(false);
       }
     });
+    super.setHeight(20);
   }
   public void init() {
     super.init();
