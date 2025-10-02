@@ -18,6 +18,9 @@ public class Address implements Serializable {
   public String slot;
   public String function;
   public String port;
+  public String controller;
+  public String target;
+  public String unit;
 
   public Address() {
   }
@@ -52,6 +55,14 @@ public class Address implements Serializable {
     addr_type = "usb";
     this.bus = bus;
     this.port = port;
+  }
+
+  public void setDriveAddress(String controller, String bus, String target, String unit) {
+    addr_type = "drive";
+    this.controller = controller;
+    this.bus = bus;
+    this.target = target;
+    this.unit = unit;
   }
 
   public void setAutoAddress() {
@@ -132,6 +143,9 @@ public class Address implements Serializable {
         break;
       case "usb":
         xml.append("<address type='" + addr_type + "' bus='" + bus + "' slot='" + slot + "'/>");
+        break;
+      case "drive":
+        xml.append("<address type='" + addr_type + "' controller='" + controller + "' bus='" + bus + "' target='" + target + "' unit='" + unit + "'/>");
         break;
     }
     return xml.toString();
