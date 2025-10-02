@@ -250,10 +250,6 @@ public class SVGEditor extends javax.swing.JFrame {
     //Key Pressed
     int key = evt.getKeyCode();
     int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
-    Object source = evt.getSource();
-    boolean isText = source instanceof JFTextArea;
-    int idx;
-    JFTextArea txt;
     switch (mod) {
       case 0:
         switch (key) {
@@ -265,10 +261,11 @@ public class SVGEditor extends javax.swing.JFrame {
               "CTRL-O = Open\n" +
               "CTRL-S = Save\n"
               , "Help", JOptionPane.INFORMATION_MESSAGE);
-            return;
+            break;
           }
           case KeyEvent.VK_F5: {
             update();
+            break;
           }
         }
         break;
