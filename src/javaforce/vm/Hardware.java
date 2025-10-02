@@ -23,9 +23,9 @@ import javaforce.*;
 public class Hardware implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  public String pool;
-  public String folder;
-  public String name;
+  public transient String pool;
+  public transient String folder;
+  public transient String name;
   public String genid;
   public int os;
   public int cores;
@@ -78,14 +78,23 @@ public class Hardware implements Serializable {
     controllers = new ArrayList<>();
   }
 
-  public static Hardware load(String file) {
+  public static String getName(String cfg) {
+    //remove .jfvm
+    int idx = cfg.indexOf(".jfvm");
+    return cfg.substring(0, idx);
+  }
+
+  public static Hardware load(String pool, String folder, String cfg) {
+    String path = "/volumes/" + pool + "/" + folder + "/" + cfg;
     try {
+      File file = new File(path);
       FileInputStream fis = new FileInputStream(file);
-      Hardware hardware = (Hardware)Compression.deserialize(fis, new File(file).length());
+      Hardware hardware = (Hardware)Compression.deserialize(fis, file.length());
       fis.close();
-      if (hardware.folder == null) {
-        hardware.folder = hardware.name;
-      }
+      //populate transient fields
+      hardware.pool = pool;
+      hardware.folder = folder;
+      hardware.name = getName(cfg);
       return hardware;
     } catch (Exception e) {
       JFLog.log(e);
@@ -93,11 +102,10 @@ public class Hardware implements Serializable {
     }
   }
 
-  public synchronized boolean save(String file) {
+  public synchronized boolean save() {
+    String path = "/volumes/" + pool + "/" + folder + "/" + name + ".jfvm";
     try {
-      if (folder == null) {
-        folder = name;
-      }
+      File file = new File(path);
       FileOutputStream fos = new FileOutputStream(file);
       boolean res = Compression.serialize(fos, this);
       fos.close();

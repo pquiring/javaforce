@@ -5028,7 +5028,10 @@ public class ConfigService implements WebUIHandler {
           ui.confirm_button.setText("Register");
           ui.confirm_message.setText("Register VM : " + ui.browse_file);
           ui.confirm_action = () -> {
-            Hardware hardware = Hardware.load(ui.browse_file);
+            String _pool = getPool(ui.browse_file);
+            String _folder = getFolder(ui.browse_file);
+            String _file = getFile(ui.browse_file);
+            Hardware hardware = Hardware.load(_pool, _folder, _file);
             if (hardware == null) {
               ui.message_message.setText("Failed to load VM, see logs.");
               ui.message_popup.setVisible(true);
@@ -5076,7 +5079,10 @@ public class ConfigService implements WebUIHandler {
       ui.browse_button_select.setText("Register");
       ui.browse_complete_edit = () -> {
         if (ui.browse_file.endsWith(".jfvm")) {
-          Hardware hardware = Hardware.load(ui.browse_file);
+          String _pool = getPool(ui.browse_file);
+          String _folder = getFolder(ui.browse_file);
+          String _file = getFile(ui.browse_file);
+          Hardware hardware = Hardware.load(_pool, _folder, _file);
           if (hardware == null) {
             ui.message_message.setText("Failed to load VM, see logs.");
             ui.message_popup.setVisible(true);

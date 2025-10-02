@@ -39,10 +39,6 @@ public class VMM implements VMProvider {
   /** Convert vmx to jfvm. */
   public Hardware convertVMX(String full, String pool, String folder, String vmx) {
     JFLog.log("convertVMX:" + pool + "," + folder + "," + vmx);
-    if (folder.indexOf('/') != -1) {
-      JFLog.log("Please place VM into one deep folder in storage pool.");
-      return null;
-    }
     int vmx_idx = vmx.indexOf(".vmx");
     String name = vmx.substring(0, vmx_idx);
     Hardware hw = new Hardware();

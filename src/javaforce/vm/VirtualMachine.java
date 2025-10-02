@@ -31,11 +31,7 @@ public class VirtualMachine implements Serializable {
   public VirtualMachine(Hardware hardware) {
     //new vm
     pool = hardware.pool;
-    if (hardware.folder == null) {
-      folder = hardware.name;
-    } else {
-      folder = hardware.folder;
-    }
+    folder = hardware.folder;
     name = hardware.name;
     uuid = JF.generateUUID();
     vnc = -1;  //update during register
@@ -65,17 +61,20 @@ public class VirtualMachine implements Serializable {
     return "/volumes/" + pool + "/" + folder;
   }
 
-  public String getConfigFile() {
-    return getPath() + "/" + name + ".jfvm";
+  public String getFolder() {
+    return folder;
+  }
+
+  public String getFile() {
+    return name + ".jfvm";
   }
 
   public Hardware loadHardware() {
-    return Hardware.load(getConfigFile());
+    return Hardware.load(getPool(), getFolder(), getFile());
   }
 
   public boolean saveHardware(Hardware hardware) {
-    new File(getPath()).mkdirs();
-    return hardware.save(getConfigFile());
+    return hardware.save();
   }
 
   public void create_stats_folder() {
