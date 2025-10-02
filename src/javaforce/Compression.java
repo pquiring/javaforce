@@ -9,10 +9,30 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class Compression {
+  public static class UnitTest implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public String name;
+    public int iValue;
+    public float fValue;
+    public String sValue;
+  }
   public static void main(String[] args) {
+    if (args.length == 0) {
+      JFLog.log("Usage:compression {compress, decompress, serialize, deserialize}");
+      return;
+    }
+    switch (args[0]) {
+      case "compress": compressionTest(); break;
+      case "decompress": decompressionTest(); break;
+      case "serialize": serializeTest(); break;
+      case "deserialize": deserializeTest(); break;
+    }
+  }
+  private static void compressionTest() {
     //test compress/decompress
     try {
-      File input = new File("tapetool.exe");
+      File input = new File("javaforce.exe");
       File output = new File("compress.dat");
       FileInputStream fis = new FileInputStream(input);
       FileOutputStream fos = new FileOutputStream(output);
@@ -22,10 +42,13 @@ public class Compression {
       System.out.println("  compressed=" + compressed);
       fis.close();
       fos.close();
+      System.out.println("done");
     } catch (Exception e) {
-      e.printStackTrace();
+      JFLog.log(e);
       return;
     }
+  }
+  private static void decompressionTest() {
     try {
       File input = new File("compress.dat");
       File output = new File("uncompress.dat");
@@ -36,12 +59,29 @@ public class Compression {
       System.out.println("uncompressed=" + uncompressed);
       fis.close();
       fos.close();
+      System.out.println("done");
     } catch (Exception e) {
-      e.printStackTrace();
+      JFLog.log(e);
       return;
     }
-    System.out.println("done");
   }
+  private static void serializeTest() {
+    try {
+      serialize("serialized.dat", new UnitTest());
+      System.out.println("done");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+  private static void deserializeTest() {
+    try {
+      UnitTest unit = (UnitTest)deserialize("serialized.dat");
+      System.out.println("done");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   private final static int blocksize = (64 * 1024);
   public static long compress(InputStream is, OutputStream os, long uncompressed) throws Exception {
     long left = uncompressed;
