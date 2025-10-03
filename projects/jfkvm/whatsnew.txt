@@ -1,3 +1,7 @@
+2025-10-03 : 6.2 released!
+  - fix : converting vmx in deep folder
+  - fix : VM config loading if user moved it
+
 2025-10-01 : 6.1 released!
   - fix : support ceph/19 (tested with Ubuntu 25.04)
   - new : added icons to many buttons
