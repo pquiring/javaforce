@@ -773,7 +773,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
     Button create = new Button(new Icon("add"), "Create");
     tools.add(create);
-    Button delete = new Button(new Icon("delete"), "Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
     Button restore = new Button(new Icon("restore"), "Restore");
     tools.add(restore);
