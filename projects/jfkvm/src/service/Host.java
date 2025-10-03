@@ -201,6 +201,26 @@ public class Host implements Serializable {
     }
   }
 
+  public String[][] getVMs() {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_list?token=" + token);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String[] vms = new String(data).split("\n");
+      String[][] list = new String[vms.length][0];
+      int pos = 0;
+      for(String vm : vms) {
+        list[pos++] = vm.split("\t");
+      }
+      return list;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
 
   public boolean setCephStart() {
     try {

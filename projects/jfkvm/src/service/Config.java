@@ -34,8 +34,9 @@ public class Config implements Serializable {
   public ArrayList<NetworkVLAN> vlans = new ArrayList<>();  //network vlan groups (port groups)
   public ArrayList<NetworkVirtual> nics = new ArrayList<>();  //vm kernel nics
 
-  //remote hosts
+  //hosts
   public HashMap<String, Host> hosts = new HashMap<>();  //IP, Host
+  public transient Host self;
 
   //vnc port range (10000 - 60000)
   public int vnc_start  = 10000;
@@ -68,6 +69,8 @@ public class Config implements Serializable {
     if (hosts == null) {
       hosts = new HashMap<>();
     }
+    self = new Host();
+    self.host = "127.0.0.1";
     upgradeHosts();
     validateHosts();
     if (auto_start_delay < 30) {
@@ -249,6 +252,10 @@ public class Config implements Serializable {
       if (host.hostname.equals(hostname)) return host;
     }
     return null;
+  }
+
+  public Host getSelf() {
+    return self;
   }
 
   private void upgradeHosts() {

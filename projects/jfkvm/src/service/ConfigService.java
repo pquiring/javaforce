@@ -2850,6 +2850,39 @@ public class ConfigService implements WebUIHandler {
       table.addRow(vm.getStates());
     }
 
+    Host[] hosts = Config.current.getHosts();
+    for(Host host : hosts) {
+      if (host.type != Host.TYPE_ON_PREMISE) continue;
+      row = new Row();
+      panel.add(row);
+      row.add(new Label("Host:" + host.hostname));
+      if (!host.online) {
+        row = new Row();
+        panel.add(row);
+        row.add(new Label("Offline"));
+        continue;
+      }
+      if (host.version < 7.0f) {
+        row = new Row();
+        panel.add(row);
+        row.add(new Label("Unsupported version, please upgrade!"));
+        continue;
+      }
+      row = new Row();
+      panel.add(row);
+      Table host_table = new Table(new int[] {150, 100, 100}, col_height, 3, 0);
+      row.add(host_table);
+      host_table.setSelectionMode(Table.SELECT_ROW);
+      host_table.setBorder(true);
+      host_table.setHeader(true);
+
+      host_table.addRow(new String[] {"Name", "State", "Storage"});
+      String[][] host_vms = host.getVMs();
+      for(String[] host_vm : host_vms) {
+        host_table.addRow(host_vm);
+      }
+    }
+
     create.addClickListener((me, cmp) -> {
       Hardware hw = new Hardware();
       VirtualMachine vm = new VirtualMachine(hw);
@@ -7374,6 +7407,21 @@ public class ConfigService implements WebUIHandler {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         img.savePNG(out);
         return out.toByteArray();
+      }
+      case "vm_list": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        StringBuilder list = new StringBuilder();
+        VirtualMachine[] vms = VirtualMachine.list();
+        for(VirtualMachine vm : vms) {
+          list.append(vm.name);
+          list.append("\t");
+          list.append(vm.getState());
+          list.append("\t");
+          list.append(vm.pool);
+          list.append("\n");
+        }
+        return list.toString().getBytes();
       }
     }
     return null;
