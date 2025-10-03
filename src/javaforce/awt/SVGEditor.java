@@ -53,7 +53,7 @@ public class SVGEditor extends javax.swing.JFrame {
     img = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    setTitle("SVG Edit");
+    setTitle("SVG Editor");
     setPreferredSize(new java.awt.Dimension(1280, 1024));
 
     open.setText("Open");

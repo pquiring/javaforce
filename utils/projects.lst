@@ -24,5 +24,6 @@ build-keymgr
 build-ldap
 build-pngalpha
 build-scriptex
+build-svgeditor
 build-vss
 build-web
