@@ -1,13 +1,11 @@
 /usr/bin/filesplitter
 /usr/bin/findreplace
-/usr/bin/pngalpha
 /usr/bin/jf-update-desktop-database
 /usr/bin/jfsudo
 /usr/bin/jfsudo-ask
 /usr/bin/jfopen
 /usr/bin/jfsmbget
 /usr/bin/jfservice
-/usr/bin/web
 /usr/bin/jfcp
 /usr/bin/jfmv
 /usr/bin/jfrm
@@ -17,3 +15,6 @@
 /usr/bin/jbus-call
 /usr/bin/jbus-client
 /usr/bin/jfkeymgr
+/usr/bin/pngalpha
+/usr/bin/svgeditor
+/usr/bin/web
