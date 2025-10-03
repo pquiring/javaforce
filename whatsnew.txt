@@ -1,5 +1,11 @@
 What's new...
 
+Oct 3/2025 : JF/89.1
+  - jfKVM/6.2
+    - fix VM config loading issues
+  - new : utils/SVGEditor
+    - SVG Editor : text on left, image preview on the right
+
 Oct 1/2025 : JF/89.0
   - jfKVM/6.1
     - fix ceph/19 support
