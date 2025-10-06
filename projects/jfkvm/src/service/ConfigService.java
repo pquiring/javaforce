@@ -7574,12 +7574,105 @@ public class ConfigService implements WebUIHandler {
         return result.getBytes();
       }
       case "vm_clone": {
-        //TODO
-        break;
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        String dest_pool_name = params.get("destpool");
+        Storage dest_pool = vmm.getPoolByName(dest_pool_name);
+        String vm_new_name = params.get("newname");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Clone", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (vm == null) {
+                throw new Exception("VM not found");
+              }
+              if (vm_new_name == null) {
+                throw new Exception("Clone name required");
+              }
+              if (dest_pool == null) {
+                throw new Exception("Storage pool not found");
+              }
+              if (!vm.cloneData(dest_pool, vm_new_name, Status.null_status, vmm)) {
+                throw new Exception("VirtualMachine.unregister() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
       }
-      case "vm_migrate": {
-        //TODO
-        break;
+      case "vm_migrate_compute": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        String hostname = params.get("desthost");
+        Host host = Config.current.getHostByHostname(hostname);
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Migrate Compute", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (vm == null) {
+                throw new Exception("VM not found");
+              }
+              if (host == null) {
+                throw new Exception("Host not found");
+              }
+              if (!vm.migrateCompute(hostname, true, Status.null_status)) {
+                throw new Exception("VirtualMachine.migrateCompute() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_migrate_storage": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        String dest_pool_name = params.get("destpool");
+        Storage dest_pool = vmm.getPoolByName(dest_pool_name);
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Migrate Compute", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (vm == null) {
+                throw new Exception("VM not found");
+              }
+              if (dest_pool == null) {
+                throw new Exception("Storage not found");
+              }
+              Hardware hw = vm.loadHardware();
+              if (hw == null) {
+                throw new Exception("Unable to load VM");
+              }
+              if (!vm.migrateData(dest_pool, hw, null_status, vmm)) {
+                throw new Exception("VirtualMachine.migrateData() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
       }
       case "vm_power_off": {
         String token = params.get("token");
