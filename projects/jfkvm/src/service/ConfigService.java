@@ -836,7 +836,7 @@ public class ConfigService implements WebUIHandler {
               }
               setResult("Completed", true);
             } catch (Exception e) {
-              setResult("Error:Delete snapshot failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -865,7 +865,7 @@ public class ConfigService implements WebUIHandler {
               }
               setResult("Completed", true);
             } catch (Exception e) {
-              setResult("Error:Restore snapshot failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -955,7 +955,7 @@ public class ConfigService implements WebUIHandler {
             }
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error:Create snapshot failed, check logs.", false);
+              setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2067,7 +2067,7 @@ public class ConfigService implements WebUIHandler {
               Linux.reboot();
               setResult("Completed", true);
             } catch (Exception e) {
-              setResult("Error:Reboot failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
             genkey = false;
@@ -2092,7 +2092,7 @@ public class ConfigService implements WebUIHandler {
               Linux.shutdown();
               setResult("Completed", true);
             } catch (Exception e) {
-              setResult("Error:Shutdown failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
             genkey = false;
@@ -2430,7 +2430,7 @@ public class ConfigService implements WebUIHandler {
             sp.run(new String[] {"mv", Paths.clusterPath + "/localhost.pub", "/root/.ssh/authorized_keys"}, true);
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error:Generate keys failed, check logs.", false);
+              setResult(getError(), false);
             JFLog.log(e);
           }
           genkey = false;
@@ -2472,11 +2472,11 @@ public class ConfigService implements WebUIHandler {
             if (Config.current.saveHost(_remote_host_ip, data, _remote_token, _remote_type)) {
               setResult("Connected to host:" + _remote_host_ip, true);
             } else {
-              setResult("Connection failed, check logs.", false);
+              setResult(getError(), false);
             }
             https.close();
           } catch (Exception e) {
-            setResult("Connection failed, check logs.", false);
+              setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2508,10 +2508,10 @@ public class ConfigService implements WebUIHandler {
               Hosts.hosts.check_now();
               setResult("Completed", true);
             } else {
-              setResult("Probe failed, check logs.", false);
+              setResult(getError(), false);
             }
           } catch (Exception e) {
-            setResult("Probe failed, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2562,11 +2562,11 @@ public class ConfigService implements WebUIHandler {
               if (Ceph.setup(this)) {
                 setResult("Completed", true);
               } else {
-                setResult("Ceph setup failed, check logs.", false);
+                setResult(getError(), false);
               }
               Config.current.ceph_setup = false;
             } catch (Exception e) {
-              setResult("Ceph setup failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -2722,7 +2722,7 @@ public class ConfigService implements WebUIHandler {
             ServiceControl.start(services[idx]);
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error occured, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2742,7 +2742,7 @@ public class ConfigService implements WebUIHandler {
             ServiceControl.stop(services[idx]);
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error occured, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2762,7 +2762,7 @@ public class ConfigService implements WebUIHandler {
             ServiceControl.enable(services[idx]);
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error occured, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2782,7 +2782,7 @@ public class ConfigService implements WebUIHandler {
             ServiceControl.disable(services[idx]);
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error occured, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -2964,7 +2964,7 @@ public class ConfigService implements WebUIHandler {
             if (vm.start()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -2994,7 +2994,7 @@ public class ConfigService implements WebUIHandler {
             if (vm.stop()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -3024,7 +3024,7 @@ public class ConfigService implements WebUIHandler {
             if (vm.restart()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -3054,7 +3054,7 @@ public class ConfigService implements WebUIHandler {
             if (vm.poweroff()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -3149,7 +3149,7 @@ public class ConfigService implements WebUIHandler {
               Config.current.removeVirtualMachine(vm);
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -3964,7 +3964,7 @@ public class ConfigService implements WebUIHandler {
           if (vmm.migrateData(vm, hw, dest, this)) {
             setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.", false);
+            setResult(getError(), false);
           }
         }
       };
@@ -4084,7 +4084,7 @@ public class ConfigService implements WebUIHandler {
             //notify other host of transfer
             remote.notify("migratevm", vm.name);
           } else {
-            setResult("Error occured, see logs.", false);
+            setResult(getError(), false);
           }
         }
       };
@@ -4185,7 +4185,7 @@ public class ConfigService implements WebUIHandler {
               }
               setResult("Completed", true);
             } catch (Exception e) {
-              setResult("Error:Create backup failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -4298,7 +4298,7 @@ public class ConfigService implements WebUIHandler {
           if (vmm.cloneData(vm, dest, new_name, this)) {
             setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.", false);
+            setResult(getError(), false);
           }
         }
       };
@@ -4563,7 +4563,7 @@ public class ConfigService implements WebUIHandler {
             if (img.delete()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -4617,7 +4617,7 @@ public class ConfigService implements WebUIHandler {
             pty.close();
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error:Pull image failed, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -4703,7 +4703,7 @@ public class ConfigService implements WebUIHandler {
             script_file.delete();
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error:Create image failed, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -4800,7 +4800,7 @@ public class ConfigService implements WebUIHandler {
             if (c.delete()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -4826,7 +4826,7 @@ public class ConfigService implements WebUIHandler {
             if (c.restart()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -4851,7 +4851,7 @@ public class ConfigService implements WebUIHandler {
             if (c.delete()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -4940,7 +4940,7 @@ public class ConfigService implements WebUIHandler {
             }
             setResult("Completed", true);
           } catch (Exception e) {
-            setResult("Error:Create Container failed, check logs.", false);
+            setResult(getError(), false);
             JFLog.log(e);
           }
         }
@@ -5144,7 +5144,7 @@ public class ConfigService implements WebUIHandler {
             if (pool.user != null && pool.user.length() > 0) {
               Password password = Password.load(Password.TYPE_STORAGE, pool.name);
               if (password == null) {
-                setResult("Error occured, see logs.", false);
+                setResult(getError(), false);
                 return;
               }
               Secret.create(pool.name, password.password);
@@ -5154,14 +5154,14 @@ public class ConfigService implements WebUIHandler {
 /* // do not auto mount - may need to format first
             if (pool.type == Storage.TYPE_ISCSI) {
               if (!pool.mount()) {
-                setResult("Error occured, see logs.");
+                setResult(getError(), false);
                 return;
               }
             }
 */
             setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.", false);
+            setResult(getError(), false);
           }
         }
       };
@@ -5183,7 +5183,7 @@ public class ConfigService implements WebUIHandler {
             if (pool.isMountedManually()) {
               if (pool.mounted()) {
                 if (!pool.unmount()) {
-                  setResult("Error occured, see logs.", false);
+                  setResult(getError(), false);
                   return;
                 }
               }
@@ -5191,7 +5191,7 @@ public class ConfigService implements WebUIHandler {
             if (pool.stop()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -5220,7 +5220,7 @@ public class ConfigService implements WebUIHandler {
           if (pool.mount()) {
             setResult("Completed", true);
           } else {
-            setResult("Error occured, see logs.", false);
+            setResult(getError(), false);
           }
         }
       };
@@ -5250,7 +5250,7 @@ public class ConfigService implements WebUIHandler {
             if (pool.unmount()) {
               setResult("Completed", true);
             } else {
-              setResult("Error occured, see logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -5339,11 +5339,11 @@ public class ConfigService implements WebUIHandler {
               if (Gluster.volume_create(Config.current.getHostNames(), pool.getName(), pool.getGlusterVolume())) {
                 setResult("Completed", true);
               } else {
-                setResult("Error occured, check logs.", false);
+                setResult(getError(), false);
               }
             } catch (Exception e) {
               JFLog.log(e);
-              setResult("Error occured, check logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -5373,11 +5373,11 @@ public class ConfigService implements WebUIHandler {
               if (Gluster.volume_start(pool.getName())) {
                 setResult("Completed", true);
               } else {
-                setResult("Error occured, check logs.", false);
+                setResult(getError(), false);
               }
             } catch (Exception e) {
               JFLog.log(e);
-              setResult("Error occured, check logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -6145,11 +6145,11 @@ public class ConfigService implements WebUIHandler {
               if (pool.format(fmt)) {
                 setResult("Completed", true);
               } else {
-                setResult("Error occured, check logs.", false);
+                setResult(getError(), false);
               }
             } catch (Exception e) {
               JFLog.log(e);
-              setResult("Error occured, check logs.", false);
+              setResult(getError(), false);
             }
           }
         };
@@ -6991,7 +6991,7 @@ public class ConfigService implements WebUIHandler {
       case "snapshot_create": {
         String token = params.get("token");
         if (!token.equals(Config.current.token)) return null;
-        String vm = params.get("vm");
+        String vm_name = params.get("vm");
         String name = params.get("name");
         String desc = params.get("desc");
 
@@ -7000,20 +7000,19 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(event) {
           public void doTask() {
             try {
-              VirtualMachine[] vms = VirtualMachine.list();
-              for(VirtualMachine vmx : vms) {
-                if (vmx.name.equals(vm)) {
-                  if (vmx.snapshotCreate(name, desc, 0)) {
-                    setResult("Completed", true);
-                  } else {
-                    setResult("Error:Snapshot Create failed, check logs.", false);
-                  }
-                  return;
+              VirtualMachine vm = VirtualMachine.get(vm_name);
+              if (vm == null) {
+                throw new Exception("VM not found");
+              }
+              if (vm.name.equals(vm_name)) {
+                if (vm.snapshotCreate(name, desc, 0)) {
+                  setResult("Completed", true);
+                } else {
+                setResult(getError(), false);
                 }
               }
-              setResult("Error:Snapshot Create failed, VM not found", false);
             } catch (Exception e) {
-              setResult("Error:Snapshot Create failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -7024,28 +7023,71 @@ public class ConfigService implements WebUIHandler {
       case "snapshot_delete": {
         String token = params.get("token");
         if (!token.equals(Config.current.token)) return null;
-        String vm = params.get("vm");
-        String name = params.get("name");
+        String vm_name = params.get("vm");
+        String ss_name = params.get("name");
 
         TaskEvent event = createEvent("Snapshot Delete", "api", request.getRemoteAddr());
         String result = "task_id=" + event.task_id;
         Task task = new Task(event) {
           public void doTask() {
             try {
-              VirtualMachine[] vms = VirtualMachine.list();
-              for(VirtualMachine vmx : vms) {
-                if (vmx.name.equals(vm)) {
-                  if (vmx.snapshotDelete(name)) {
-                    setResult("Completed", true);
-                  } else {
-                    setResult("Error:Snapshot Delete failed, check logs.", false);
-                  }
-                  return;
-                }
+              VirtualMachine vm = VirtualMachine.get(vm_name);
+              if (vm == null) {
+                throw new Exception("VM not found");
               }
-              setResult("Error:Snapshot Delete failed, VM not found", false);
+              if (vm.snapshotDelete(ss_name)) {
+                setResult("Completed", true);
+              } else {
+                setResult(getError(), false);
+              }
             } catch (Exception e) {
-              setResult("Error:Snapshot Delete failed, check logs.", false);
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "snapshot_list": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        StringBuilder list = new StringBuilder();
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        Snapshot[] sss = vm.snapshotList();
+        for(Snapshot ss : sss) {
+          list.append(ss.name);
+          list.append("\t");
+          list.append(ss.desc);
+          list.append("\t");
+          list.append(ss.parent);
+          list.append("\n");
+        }
+        return list.toString().getBytes();
+      }
+      case "snapshot_restore": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        String ss_name = params.get("name");
+
+        TaskEvent event = createEvent("Snapshot Restore", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              VirtualMachine vm = VirtualMachine.get(vm_name);
+              if (vm == null) {
+                throw new Exception("VM not found");
+              }
+              if (vm.snapshotRestore(ss_name)) {
+                setResult("Completed", true);
+              } else {
+                setResult(getError(), false);
+              }
+            } catch (Exception e) {
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -7102,7 +7144,7 @@ public class ConfigService implements WebUIHandler {
               }
               setResult("Completed", true);
             } catch (Exception e) {
-              setResult("Error:Create backup failed, check logs.", false);
+              setResult(getError(), false);
               JFLog.log(e);
             }
           }
@@ -7422,6 +7464,145 @@ public class ConfigService implements WebUIHandler {
           list.append("\n");
         }
         return list.toString().getBytes();
+      }
+      case "vm_load": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        Hardware hw = vm.loadHardware();
+        if (hw == null) {
+          return null;
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Compression.serialize(baos, hw);
+        return javaforce.Base64.encode(baos.toByteArray());
+      }
+      case "vm_save": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String base64 = params.get("hardware");
+        byte[] bin = javaforce.Base64.decode(base64.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(bin);
+        Hardware hw = (Hardware)Compression.deserialize(bais, bin.length);
+        VirtualMachine vm = new VirtualMachine(hw);
+        TaskEvent event = createEvent("VM Create", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!VirtualMachine.register(vm, hw, vmm)) {
+                throw new Exception("VirtualMachine.register() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_start": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Start", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!vm.start()) {
+                throw new Exception("VirtualMachine.start() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_restart": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Start", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!vm.restart()) {
+                throw new Exception("VirtualMachine.restart() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_delete": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Start", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!vm.unregister()) {
+                throw new Exception("VirtualMachine.unregister() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_clone": {
+        //TODO
+        break;
+      }
+      case "vm_migrate": {
+        //TODO
+        break;
+      }
+      case "vm_power_off": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Start", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!vm.poweroff()) {
+                throw new Exception("VirtualMachine.poweroff() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
       }
     }
     return null;

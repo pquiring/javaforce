@@ -107,4 +107,9 @@ public class Task extends Thread implements Status {
   public boolean getSuccessful() {
     return event.successful;
   }
+
+  /** Create standard error message. */
+  public String getError() {
+    return "Error:" + event.action + " failed, check logs.";
+  }
 }
