@@ -13,7 +13,7 @@ import javaforce.net.*;
 import javaforce.linux.*;
 import javaforce.vm.*;
 
-public class Host implements Serializable {
+public class Host implements Serializable, Comparable<Host> {
   private static final long serialVersionUID = 1L;
 
   public static boolean debug = false;
@@ -426,5 +426,9 @@ public class Host implements Serializable {
 
   public String toString() {
     return hostname;
+  }
+
+  public int compareTo(Host o) {
+    return hostname.compareTo(o.hostname);
   }
 }

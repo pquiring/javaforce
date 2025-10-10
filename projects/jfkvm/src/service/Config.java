@@ -213,7 +213,9 @@ public class Config implements Serializable {
   }
 
   public Host[] getHosts() {
-    return hosts.values().toArray(Host.HostArrayType);
+    Host[] list = hosts.values().toArray(Host.HostArrayType);
+    Arrays.sort(list);
+    return list;
   }
 
   public Host[] getHosts(int type) {
