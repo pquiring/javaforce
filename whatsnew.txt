@@ -1,5 +1,9 @@
 What's new...
 
+Oct 10/2025 : JF/90.0
+  - jfKVM/7.0
+    - new : decentrialized control of VMs
+
 Oct 3/2025 : JF/89.1
   - jfKVM/6.2
     - fix VM config loading issues
