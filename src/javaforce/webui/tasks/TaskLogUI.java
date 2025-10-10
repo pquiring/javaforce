@@ -9,7 +9,7 @@ import java.util.*;
 
 import javaforce.webui.*;
 
-public class TaskLogUI extends Panel {
+public class TaskLogUI extends ScrollPanel {
   private TaskLog log;
   private Panel rows;
   private int year;
