@@ -375,6 +375,81 @@ public class Host implements Serializable, Comparable<Host> {
     }
   }
 
+  public String vm_start(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_start?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_stop(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_stop?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_suspend(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_suspend?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_restart(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_restart?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_power_off(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_power_off?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   public String[] browse_list(String path) {
     if (!isValid(7.0f)) return null;
     try {

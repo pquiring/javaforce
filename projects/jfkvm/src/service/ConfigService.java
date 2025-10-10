@@ -3203,6 +3203,16 @@ public class ConfigService implements WebUIHandler {
     tools.add(create);
     Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
+    Button start = new Button(new Icon("start"), "Start");
+    tools.add(start);
+    Button stop = new Button(new Icon("stop"), "Stop");
+    tools.add(stop);
+    Button suspend = new Button(new Icon("pause"), "Suspend");
+    tools.add(suspend);
+    Button restart = new Button(new Icon("restart"), "Restart");
+    tools.add(restart);
+    Button poweroff = new Button(new Icon("power"), "PowerOff");
+    tools.add(poweroff);
 
     row = new Row();
     panel.add(row);
@@ -3247,6 +3257,151 @@ public class ConfigService implements WebUIHandler {
       //NOTE:this is created as a new VM on client side but uses existing VM on server side
       VirtualMachine vm = new VirtualMachine(hardware);
       ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
+    });
+    start.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][0];
+      int state = VirtualMachine.getState(host_vms[idx][1]);
+      if (state != VirtualMachine.STATE_OFF && state != VirtualMachine.STATE_SUSPEND) {
+        errmsg.setText("Error:VM is already running.");
+        return;
+      }
+      ui.confirm_button.setText("Start");
+      ui.confirm_message.setText("Start VM : " + vm_name);
+      ui.confirm_action = () -> {
+        Task task = new Task(createEvent("Start VM : " + vm_name, ui)) {
+          public void doTask() {
+            if (ui.host.vm_start(vm_name) != null) {
+              setResult("Completed", true);
+            } else {
+              setResult(getError(), false);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    stop.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][0];
+      int state = VirtualMachine.getState(host_vms[idx][1]);
+      if (state != VirtualMachine.STATE_ON) {
+        errmsg.setText("Error:VM is not running.");
+        return;
+      }
+      ui.confirm_button.setText("Stop");
+      ui.confirm_message.setText("Stop VM : " + vm_name);
+      ui.confirm_action = () -> {
+        Task task = new Task(createEvent("Stop VM : " + vm_name, ui)) {
+          public void doTask() {
+            if (ui.host.vm_stop(vm_name) != null) {
+              setResult("Completed", true);
+            } else {
+              setResult(getError(), false);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    suspend.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][0];
+      int state = VirtualMachine.getState(host_vms[idx][1]);
+      if (state != VirtualMachine.STATE_ON) {
+        errmsg.setText("Error:VM is not running.");
+        return;
+      }
+      ui.confirm_button.setText("Suspend");
+      ui.confirm_message.setText("Suspend VM : " + vm_name);
+      ui.confirm_action = () -> {
+        Task task = new Task(createEvent("Stop VM : " + vm_name, ui)) {
+          public void doTask() {
+            if (ui.host.vm_suspend(vm_name) != null) {
+              setResult("Completed", true);
+            } else {
+              setResult(getError(), false);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    restart.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][0];
+      int state = VirtualMachine.getState(host_vms[idx][1]);
+      if (state != VirtualMachine.STATE_ON) {
+        errmsg.setText("Error:VM is not running.");
+        return;
+      }
+      ui.confirm_button.setText("Restart");
+      ui.confirm_message.setText("Restart VM : " + vm_name);
+      ui.confirm_action = () -> {
+        Task task = new Task(createEvent("Stop VM : " + vm_name, ui)) {
+          public void doTask() {
+            if (ui.host.vm_restart(vm_name) != null) {
+              setResult("Completed", true);
+            } else {
+              setResult(getError(), false);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+    poweroff.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][0];
+      int state = VirtualMachine.getState(host_vms[idx][1]);
+      if (state != VirtualMachine.STATE_ON && state != VirtualMachine.STATE_SUSPEND) {
+        errmsg.setText("Error:VM is not running.");
+        return;
+      }
+      ui.confirm_button.setText("Power Off");
+      ui.confirm_message.setText("Power Off VM : " + vm_name);
+      ui.confirm_action = () -> {
+        Task task = new Task(createEvent("Stop VM : " + vm_name, ui)) {
+          public void doTask() {
+            if (ui.host.vm_power_off(vm_name) != null) {
+              setResult("Completed", true);
+            } else {
+              setResult(getError(), false);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
     });
   }
 
@@ -7659,7 +7814,63 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(event) {
           public void doTask() {
             try {
-              if (!vm.start()) {
+              int state = vm.getState();
+              boolean res = false;
+              switch (state) {
+                case VirtualMachine.STATE_OFF: res = vm.start(); break;
+                case VirtualMachine.STATE_SUSPEND: res = vm.resume(); break;
+              }
+              if (!res) {
+                throw new Exception("vm start/resume failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_stop": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Stop", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!vm.stop()) {
+                throw new Exception("VirtualMachine.start() failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_suspend": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        VirtualMachine vm = VirtualMachine.get(vm_name);
+        TaskEvent event = createEvent("VM Suspend", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              int state = vm.getState();
+              if (state != VirtualMachine.STATE_ON) {
+                throw new Exception("vm not running");
+              }
+              if (!vm.suspend()) {
                 throw new Exception("VirtualMachine.start() failed");
               }
               setResult("Completed", true);
@@ -7824,7 +8035,7 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String vm_name = params.get("vm");
         VirtualMachine vm = VirtualMachine.get(vm_name);
-        TaskEvent event = createEvent("VM Start", "api", request.getRemoteAddr());
+        TaskEvent event = createEvent("VM Power Off", "api", request.getRemoteAddr());
         String result = "task_id=" + event.task_id;
         Task task = new Task(event) {
           public void doTask() {

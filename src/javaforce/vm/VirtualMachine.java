@@ -166,6 +166,16 @@ public class VirtualMachine implements Serializable {
     return Integer.toString(state);
   }
 
+  public static int getState(String state) {
+    switch (state) {
+      case "on": return STATE_ON;
+      case "off": return STATE_OFF;
+      case "suspended": return STATE_SUSPEND;
+      case "error": return STATE_ERROR;
+    }
+    return STATE_NOT_FOUND;
+  }
+
   public String[] getStates() {
     return new String[] {name, getStateString(), pool};
   }
