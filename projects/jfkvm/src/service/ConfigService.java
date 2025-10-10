@@ -2814,6 +2814,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(start);
     Button stop = new Button(new Icon("stop"), "Stop");
     tools.add(stop);
+    Button suspend = new Button(new Icon("pause"), "Suspend");
+    tools.add(suspend);
     Button restart = new Button(new Icon("reboot"), "Restart");
     tools.add(restart);
     Button poweroff = new Button(new Icon("power"), "PowerOff");
@@ -2943,8 +2945,9 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       VirtualMachine vm = vms[idx];
-      if (vm.getState() != VirtualMachine.STATE_OFF) {
-        errmsg.setText("Error:VM is already powered on.");
+      int state = vm.getState();
+      if (state != VirtualMachine.STATE_OFF && state != VirtualMachine.STATE_SUSPEND) {
+        errmsg.setText("Error:VM is already running.");
         return;
       }
       ui.confirm_button.setText("Start");
@@ -2952,7 +2955,12 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_action = () -> {
         Task task = new Task(createEvent("Start VM : " + vm.name, ui)) {
           public void doTask() {
-            if (vm.start()) {
+            boolean res = false;
+            switch (state) {
+              case VirtualMachine.STATE_OFF: res = vm.start(); break;
+              case VirtualMachine.STATE_SUSPEND: res = vm.resume(); break;
+            }
+            if (res) {
               setResult("Completed", true);
             } else {
               setResult(getError(), false);
@@ -2983,6 +2991,36 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Stop VM : " + vm.name, ui)) {
           public void doTask() {
             if (vm.stop()) {
+              setResult("Completed", true);
+            } else {
+              setResult(getError(), false);
+            }
+          }
+        };
+        Tasks.tasks.addTask(ui.tasks, task);
+      };
+      ui.confirm_popup.setVisible(true);
+    });
+
+    //suspend
+    suspend.addClickListener((me, cmp) -> {
+      errmsg.setText("");
+      int idx = table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      VirtualMachine vm = vms[idx];
+      if (vm.getState() != VirtualMachine.STATE_ON) {
+        errmsg.setText("Error:VM is not running.");
+        return;
+      }
+      ui.confirm_button.setText("Suspend");
+      ui.confirm_message.setText("Suspend VM : " + vm.name);
+      ui.confirm_action = () -> {
+        Task task = new Task(createEvent("Suspend VM : " + vm.name, ui)) {
+          public void doTask() {
+            if (vm.suspend()) {
               setResult("Completed", true);
             } else {
               setResult(getError(), false);
