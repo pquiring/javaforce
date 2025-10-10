@@ -120,7 +120,7 @@ dmg : build Mac dmg file using hdiutil (mac only)
   - jre pre-linked for native packaging (see jre-* tasks above)
   - Info.plist, ${app}.icns and macfiles.lst
   - see projects/jfedit or projects/jfpaint for only examples
-  - jfimageconvert can convert images to .icns file format (mac icons)
+  - utils/imageconvert can convert images to .icns file format (mac icons)
 
 Maven
 -----
