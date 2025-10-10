@@ -43,7 +43,7 @@ public class Paths {
     new File(tasksPath).mkdirs();
     JFLog.append(LOG_DEFAULT, logsPath + "/jfkvm.log", true);
     JFLog.setRetention(LOG_DEFAULT, 30);
-    JFLog.append(LOG_SYSTEMD, logsPath + "/jfkvm-systemd.log", true);
+    JFLog.append(LOG_SYSTEMD, logsPath + "/systemd.log", true);
     JFLog.setRetention(LOG_SYSTEMD, 30);
     JFLog.setShowCause(true);
     ServiceControl.setLog(LOG_SYSTEMD);

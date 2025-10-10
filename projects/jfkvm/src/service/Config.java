@@ -69,8 +69,6 @@ public class Config implements Serializable {
     if (hosts == null) {
       hosts = new HashMap<>();
     }
-    self = new Host();
-    self.host = "127.0.0.1";
     upgradeHosts();
     validateHosts();
     if (auto_start_delay < 30) {
@@ -91,6 +89,15 @@ public class Config implements Serializable {
     if (token == null) {
       token = JF.generateUUID();
     }
+
+    self = new Host();
+    self.host = "127.0.0.1";
+    self.hostname = "localhost";
+    self.token = token;
+    self.valid = true;
+    self.online = true;
+    self.version = Float.valueOf(ConfigService.version);
+
     if (vnc_start < 1024) {
       vnc_start = 10000;
     }
@@ -254,7 +261,17 @@ public class Config implements Serializable {
     return null;
   }
 
-  public Host getSelf() {
+  public Storage getPoolByName(String name) {
+    for(Storage pool : pools) {
+      if (pool.name.equals(name)) {
+        return pool;
+      }
+    }
+    JFLog.log("Error:pool not found:" + name);
+    return null;
+  }
+
+  public Host getHostSelf() {
     return self;
   }
 

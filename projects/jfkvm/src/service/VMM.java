@@ -26,16 +26,6 @@ public class VMM implements VMProvider {
     return JF.filter(name, JF.filter_numeric);
   }
 
-  public Storage getPoolByName(String name) {
-    for(Storage pool : Config.current.pools) {
-      if (pool.name.equals(name)) {
-        return pool;
-      }
-    }
-    JFLog.log("Error:pool not found:" + name);
-    return null;
-  }
-
   /** Convert vmx to jfvm. */
   public Hardware convertVMX(String full, String pool, String folder, String vmx) {
     JFLog.log("convertVMX:" + pool + "," + folder + "," + vmx);

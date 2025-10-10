@@ -11,6 +11,7 @@ import java.net.*;
 import javaforce.*;
 import javaforce.net.*;
 import javaforce.linux.*;
+import javaforce.vm.*;
 
 public class Host implements Serializable {
   private static final long serialVersionUID = 1L;
@@ -201,7 +202,70 @@ public class Host implements Serializable {
     }
   }
 
-  public String[][] getVMs() {
+  public String isStoragePoolMounted(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/is_pool_mounted?token=" + token + "&pool=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String pathExists(String path) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      String enpath = JF.encodeURL(path);
+      byte[] data = https.get("/api/path_exists?token=" + token + "&path=" + enpath);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String mkdirs(String path) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      String enpath = JF.encodeURL(path);
+      byte[] data = https.get("/api/mkdirs?token=" + token + "&path=" + enpath);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String rmdirs(String path) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      String enpath = JF.encodeURL(path);
+      byte[] data = https.get("/api/rmdirs?token=" + token + "&path=" + enpath);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String[][] vm_list() {
     if (!isValid(7.0f)) return null;
     try {
       HTTPS https = new HTTPS();
@@ -216,6 +280,111 @@ public class Host implements Serializable {
         list[pos++] = vm.split("\t");
       }
       return list;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public Hardware vm_load(String name) {
+    if (!isValid(7.0f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_load?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String str = new String(data);
+      HTTP.Parameters params = HTTP.Parameters.decode(str);
+      //deserialize Hardware
+      byte[] hw_bin = Base16.decode(params.get("hardware").getBytes());
+      ByteArrayInputStream hw_bais = new ByteArrayInputStream(hw_bin);
+      Hardware hw = (Hardware) Compression.deserialize(hw_bais, hw_bin.length);
+      //deserialize Location
+      byte[] loc_bin = Base16.decode(params.get("loc").getBytes());
+      ByteArrayInputStream loc_bais = new ByteArrayInputStream(loc_bin);
+      Location loc = (Location) Compression.deserialize(loc_bais, loc_bin.length);
+      hw.setLocation(loc);
+      return hw;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_save(VirtualMachine vm, Hardware hardware) {
+    if (!isValid(7.0f)) return null;
+    try {
+      //serialize Hardware
+      ByteArrayOutputStream hw_baos = new ByteArrayOutputStream();
+      if (!Compression.serialize(hw_baos, hardware)) return null;
+      String hw_hex = new String(Base16.encode(hw_baos.toByteArray()));
+
+      //serialize Location
+      ByteArrayOutputStream loc_baos = new ByteArrayOutputStream();
+      if (!Compression.serialize(loc_baos, hardware.getLocation())) return null;
+      String loc_hex = new String(Base16.encode(loc_baos.toByteArray()));
+
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_save?token=" + token + "&hardware=" + hw_hex + "&loc=" + loc_hex);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_disk_create(Disk disk, int flags) {
+    if (!isValid(7.0f)) return null;
+    try {
+      //serialize Disk
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      if (!Compression.serialize(baos, disk)) return null;
+      String hex = new String(Base16.encode(baos.toByteArray()));
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_disk_create?token=" + token + "&disk=" + hex + "&flags=" + flags);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String vm_disk_resize(Disk disk) {
+    if (!isValid(7.0f)) return null;
+    try {
+      //serialize Disk
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      if (!Compression.serialize(baos, disk)) return null;
+      String hex = new String(Base16.encode(baos.toByteArray()));
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_disk_resize?token=" + token + "&disk=" + hex);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String[] browse_list(String path) {
+    if (!isValid(7.0f)) return null;
+    try {
+      String enpath = JF.encodeURL(path);
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/browse_list?token=" + token + "&path=" + enpath);
+      https.close();
+      if (data == null) return null;
+      return new String(data).split("\n");
     } catch (Exception e) {
       JFLog.log(e);
       return null;

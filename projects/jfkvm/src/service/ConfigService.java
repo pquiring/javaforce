@@ -115,6 +115,8 @@ public class ConfigService implements WebUIHandler {
     public String user;
     public Calendar now;
 
+    public Host host;
+
     public SplitPanel top_bottom_split;
     public SplitPanel left_right_split;
     public Panel tasks;
@@ -564,7 +566,7 @@ public class ConfigService implements WebUIHandler {
 
     pool.addChangedListener((cmp) -> {
       //update path
-      Storage disk_pool = vmm.getPoolByName(pool.getSelectedValue());
+      Storage disk_pool = Config.current.getPoolByName(pool.getSelectedValue());
       if (disk_pool == null) return;
       path.setText(disk_pool.getPath() + "/" + ui.hardware.folder);
     });
@@ -622,14 +624,11 @@ public class ConfigService implements WebUIHandler {
         ui.vm_disk.size = new Size(_size, _size_unit);
         ui.vm_disk.boot_order = _boot_order;
         ui.vm_disk.target_bus = _bus;
-        if (!ui.vm_disk.create(_provision)) {
-          errmsg.setText("Error:Failed to create disk");
-          return;
-        }
+        ui.host.vm_disk_create(ui.vm_disk, _provision);
       } else {
         //update (only size and boot order can be changed)
         ui.vm_disk.size = new Size(_size, _size_unit);
-        ui.vm_disk.resize(vmm.getPoolByName(ui.hardware.pool));
+        ui.host.vm_disk_resize(ui.vm_disk);
         ui.vm_disk.boot_order = _boot_order;
         ui.vm_disk.target_bus = _bus;
       }
@@ -2443,7 +2442,9 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_message.setText("Regenerate token will disconnect other hosts.");
       ui.confirm_button.setText("Generate");
       ui.confirm_action = () -> {
-        Config.current.token = JF.generateUUID();
+        String new_token = JF.generateUUID();
+        Config.current.token = new_token;
+        Config.current.self.token = new_token;
         Config.current.save();
         ui.setRightPanel(hostPanel(ui, HOST_CLUSTER));
       };
@@ -2868,25 +2869,14 @@ public class ConfigService implements WebUIHandler {
         row.add(new Label("Unsupported version, please upgrade!"));
         continue;
       }
-      row = new Row();
-      panel.add(row);
-      Table host_table = new Table(new int[] {150, 100, 100}, col_height, 3, 0);
-      row.add(host_table);
-      host_table.setSelectionMode(Table.SELECT_ROW);
-      host_table.setBorder(true);
-      host_table.setHeader(true);
-
-      host_table.addRow(new String[] {"Name", "State", "Storage"});
-      String[][] host_vms = host.getVMs();
-      for(String[] host_vm : host_vms) {
-        host_table.addRow(host_vm);
-      }
+      vmsPanel_addHost(panel, host, ui);
     }
 
     create.addClickListener((me, cmp) -> {
-      Hardware hw = new Hardware();
-      VirtualMachine vm = new VirtualMachine(hw);
-      ui.setRightPanel(vmAddPanel(vm, hw, ui));
+      Hardware hardware = new Hardware();
+      VirtualMachine vm = new VirtualMachine(hardware);
+      ui.host = Config.current.getHostSelf();
+      ui.setRightPanel(vmAddPanel(vm, hardware, ui));
     });
 
     edit.addClickListener((me, cmp) -> {
@@ -2902,6 +2892,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:Failed to load config for vm:" + vm.name);
         return;
       }
+      ui.host = Config.current.getHostSelf();
       ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
     });
 
@@ -3165,6 +3156,62 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private void vmsPanel_addHost(Panel panel, Host host, UI ui) {
+    Row row;
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+    Button create = new Button(new Icon("add"), "Create");
+    tools.add(create);
+    Button edit = new Button(new Icon("edit"), "Edit");
+    tools.add(edit);
+
+    row = new Row();
+    panel.add(row);
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    row.add(errmsg);
+
+    row = new Row();
+    panel.add(row);
+    Table host_table = new Table(new int[] {150, 100, 100}, col_height, 3, 0);
+    row.add(host_table);
+    host_table.setSelectionMode(Table.SELECT_ROW);
+    host_table.setBorder(true);
+    host_table.setHeader(true);
+
+    host_table.addRow(new String[] {"Name", "State", "Storage"});
+    String[][] host_vms = host.vm_list();
+    for(String[] host_vm : host_vms) {
+      host_table.addRow(host_vm);
+    }
+
+    create.addClickListener((me, cmp) -> {
+      ui.host = host;
+      Hardware hardware = new Hardware();
+      VirtualMachine vm = new VirtualMachine(hardware);
+      ui.setRightPanel(vmAddPanel(vm, hardware, ui));
+    });
+    edit.addClickListener((me, cmp) -> {
+      ui.host = host;
+      errmsg.setText("");
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][0];
+      Hardware hardware = ui.host.vm_load(vm_name);
+      if (hardware == null) {
+        errmsg.setText("Error:Failed to load config for vm:" + vm_name);
+        return;
+      }
+      //NOTE:this is created as a new VM on client side but uses existing VM on server side
+      VirtualMachine vm = new VirtualMachine(hardware);
+      ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
+    });
+  }
+
   private Panel vmAddPanel(VirtualMachine vm, Hardware hardware, UI ui) {
     Panel panel = new Panel();
     Row row;
@@ -3181,10 +3228,9 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Storage Pool"));
     ComboBox vm_pool = new ComboBox();
     row.add(vm_pool);
-    ArrayList<Storage> pools = Config.current.pools;
-    for(Storage p : pools) {
-      String _name = p.name;
-      vm_pool.add(_name, _name);
+    String[] pools = ui.host.getStoragePools();
+    for(String pool : pools) {
+      vm_pool.add(pool, pool);
     }
 
     //next / cancel
@@ -3213,12 +3259,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:invalid storage pool");
         return;
       }
-      Storage pool = vmm.getPoolByName(_vm_pool);
-      if (pool == null) {
-        errmsg.setText("Error:pool does not exist");
-        return;
-      }
-      if (!pool.mounted()) {
+      if (!ui.host.isStoragePoolMounted(_vm_pool).equals("true")) {
         errmsg.setText("Error:pool not mounted");
         return;
       }
@@ -3228,12 +3269,11 @@ public class ConfigService implements WebUIHandler {
       vm.pool = _vm_pool;
       vm.folder = _vm_name;
       vm.name = _vm_name;
-      File file = new File(hardware.getPath());
-      if (file.exists()) {
+      if (ui.host.pathExists(hardware.getPath()).equals("true")) {
         errmsg.setText("Error:folder already exists in storage pool with that name");
         return;
       }
-      file.mkdirs();
+      ui.host.mkdirs(hardware.getPath());
       ui.setRightPanel(vmEditPanel(vm, hardware, true, ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
@@ -3768,17 +3808,12 @@ public class ConfigService implements WebUIHandler {
       hardware.vram = _vram;
       hardware.video_3d_accel = video_3d_accel.isSelected();
       hardware.validate();
-      if (!VirtualMachine.register(vm, hardware, vmm)) {
-        errmsg.setText("Error Occured : View Logs for details");
-        return;
-      }
-      vm.saveHardware(hardware);
-      Config.current.addVirtualMachine(vm);
+      ui.host.vm_save(vm, hardware);
       ui.setRightPanel(vmsPanel(ui));
     });
     b_cancel.addClickListener((me, cmp) -> {
       if (create) {
-        JF.deletePathEx(hardware.getPath());
+        ui.host.rmdirs(hardware.getPath());
       }
       ui.setRightPanel(vmsPanel(ui));
     });
@@ -3827,18 +3862,18 @@ public class ConfigService implements WebUIHandler {
     });
     next.addClickListener((me, cmp) -> {
       errmsg.setText("");
-      Hardware hw = vm.loadHardware();
-      if (hw == null) {
+      Hardware hardware = vm.loadHardware();
+      if (hardware == null) {
         errmsg.setText("Error:Failed to load VM hardware");
         return;
       }
       if (data.isSelected()) {
-        ui.setRightPanel(vmMigrateDataPanel(vm, hw, ui));
+        ui.setRightPanel(vmMigrateDataPanel(vm, hardware, ui));
         return;
       }
       if (compute.isSelected()) {
         //check if vm storage is local
-        Storage pool = vmm.getPoolByName(vm.pool);
+        Storage pool = Config.current.getPoolByName(vm.pool);
         if (pool == null) {
           errmsg.setText("Error:Storage not found for VM");
           return;
@@ -3848,8 +3883,8 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         //check if vm disks are local
-        for(Disk disk : hw.disks) {
-          Storage disk_store = vmm.getPoolByName(disk.pool);
+        for(Disk disk : hardware.disks) {
+          Storage disk_store = Config.current.getPoolByName(disk.pool);
           if (disk_store == null) {
             errmsg.setText("Error:Storage not found for disk:" + disk.name);
             return;
@@ -3859,7 +3894,7 @@ public class ConfigService implements WebUIHandler {
             return;
           }
         }
-        ui.setRightPanel(vmMigrateComputePanel(vm, hw, ui));
+        ui.setRightPanel(vmMigrateComputePanel(vm, hardware, ui));
         return;
       }
       errmsg.setText("You must make a selection");
@@ -3946,7 +3981,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Can not data migrate live VM");
         return;
       }
-      Size src = vmm.getPoolByName(vm.pool).getFolderSize(vm.name);
+      Size src = Config.current.getPoolByName(vm.pool).getFolderSize(vm.name);
       JFLog.log("Data Migration:Src size=" + src);
       Size dest_free = dest.getFreeSize();
       JFLog.log("Data Migration:Dest size=" + dest_free);
@@ -4959,6 +4994,8 @@ public class ConfigService implements WebUIHandler {
   private Panel storagePanel(UI ui) {
     Panel panel = new Panel();
     Row row;
+
+    ui.host = Config.current.getHostSelf();
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
@@ -5976,20 +6013,20 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       path.setText(ui.browse_path);
       list.removeAll();
-      File[] files = new File(ui.browse_path).listFiles();
+      String[] files = ui.host.browse_list(ui.browse_path);
       if (files == null) {
         //TODO : handle error
-        files = new File[0];
+        files = new String[0];
       }
-      for(File file : files) {
-        String name = file.getName();
-        if (name.startsWith(".")) continue;  //hidden file
-        if (file.isDirectory()) {
-          list.add("/" + name);
+      for(String file : files) {
+        if (file.length() == 0) continue;
+        if (file.startsWith(".")) continue;  //hidden file
+        if (file.startsWith("/")) {
+          list.add(file);
         } else {
           for(String filter : ui.browse_filters) {
-            if (name.matches(filter)) {
-              list.add(name);
+            if (file.matches(filter)) {
+              list.add(file);
               break;
             }
           }
@@ -7177,6 +7214,38 @@ public class ConfigService implements WebUIHandler {
         }
         return list.toString().getBytes();
       }
+      case "is_pool_mounted": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String pool_name = params.get("pool");
+        Storage pool = Config.current.getPoolByName(pool_name);
+        String result = Boolean.toString(pool.mounted());
+        return result.getBytes();
+      }
+      case "path_exists": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String path = params.get("path");
+        String result = Boolean.toString(new File(path).exists());
+        return result.getBytes();
+      }
+      case "mkdirs": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String path = params.get("path");
+        String result = Boolean.toString(new File(path).mkdirs());
+        return result.getBytes();
+      }
+      case "rmdirs": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String path = params.get("path");
+        if (!path.startsWith("/volumes") || path.indexOf("..") != -1) {
+          return null;
+        }
+        JF.deletePathEx(path);
+        return "true".getBytes();
+      }
       case "stats": {
         String uuid = params.get("uuid");
         String type = params.get("type");
@@ -7458,7 +7527,7 @@ public class ConfigService implements WebUIHandler {
         for(VirtualMachine vm : vms) {
           list.append(vm.name);
           list.append("\t");
-          list.append(vm.getState());
+          list.append(vm.getStateString());
           list.append("\t");
           list.append(vm.pool);
           list.append("\n");
@@ -7470,30 +7539,68 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String vm_name = params.get("vm");
         VirtualMachine vm = VirtualMachine.get(vm_name);
-        Hardware hw = vm.loadHardware();
-        if (hw == null) {
+        if (vm == null) {
+          JFLog.log("vm_load:vm not found:" + vm_name);
           return null;
         }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Compression.serialize(baos, hw);
-        return javaforce.Base64.encode(baos.toByteArray());
+        Hardware hw = vm.loadHardware();
+        if (hw == null) {
+          JFLog.log("vm_load:hardware config file not found:" + vm.getFile());
+          return null;
+        }
+        //serialize hardware
+        ByteArrayOutputStream hw_baos = new ByteArrayOutputStream();
+        Compression.serialize(hw_baos, hw);
+        String hw_hex = new String(Base16.encode(hw_baos.toByteArray()));
+        //serialize location
+        ByteArrayOutputStream loc_baos = new ByteArrayOutputStream();
+        Compression.serialize(loc_baos, hw.getLocation());
+        String loc_hex = new String(Base16.encode(loc_baos.toByteArray()));
+
+        String ret = "hardware=" + hw_hex + "&loc=" + loc_hex;
+        return ret.getBytes();
       }
       case "vm_save": {
         String token = params.get("token");
         if (!token.equals(Config.current.token)) return null;
-        String base64 = params.get("hardware");
-        byte[] bin = javaforce.Base64.decode(base64.getBytes());
-        ByteArrayInputStream bais = new ByteArrayInputStream(bin);
-        Hardware hw = (Hardware)Compression.deserialize(bais, bin.length);
-        VirtualMachine vm = new VirtualMachine(hw);
+
+        String hw_hex = params.get("hardware");
+        byte[] hw_bin = Base16.decode(hw_hex.getBytes());
+        ByteArrayInputStream hw_bais = new ByteArrayInputStream(hw_bin);
+        Hardware hardware = (Hardware)Compression.deserialize(hw_bais, hw_bin.length);
+
+        String loc_hex = params.get("loc");
+        byte[] loc_bin = Base16.decode(loc_hex.getBytes());
+        ByteArrayInputStream loc_bais = new ByteArrayInputStream(loc_bin);
+        Location loc = (Location)Compression.deserialize(loc_bais, loc_bin.length);
+
+        hardware.setLocation(loc);
+
+        VirtualMachine[] vms = VirtualMachine.list();
+        VirtualMachine vm = null;
+        for(VirtualMachine vmx : vms) {
+          if (vmx.name.equals(loc.name)) {
+            vm = vmx;
+            break;
+          }
+        }
+        if (vm == null) {
+          //create new VM
+          vm = new VirtualMachine(hardware);
+        }
+        VirtualMachine _vm = vm;
         TaskEvent event = createEvent("VM Create", "api", request.getRemoteAddr());
         String result = "task_id=" + event.task_id;
         Task task = new Task(event) {
           public void doTask() {
             try {
-              if (!VirtualMachine.register(vm, hw, vmm)) {
+              if (!_vm.saveHardware(hardware)) {
+                throw new Exception("VirtualMachine.save() failed");
+              }
+              if (!VirtualMachine.register(_vm, hardware, vmm)) {
                 throw new Exception("VirtualMachine.register() failed");
               }
+              Config.current.addVirtualMachine(_vm);
               setResult("Completed", true);
             } catch (Exception e) {
               setResult(getError(), false);
@@ -7578,7 +7685,7 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String vm_name = params.get("vm");
         String dest_pool_name = params.get("destpool");
-        Storage dest_pool = vmm.getPoolByName(dest_pool_name);
+        Storage dest_pool = Config.current.getPoolByName(dest_pool_name);
         String vm_new_name = params.get("newname");
         VirtualMachine vm = VirtualMachine.get(vm_name);
         TaskEvent event = createEvent("VM Clone", "api", request.getRemoteAddr());
@@ -7644,7 +7751,7 @@ public class ConfigService implements WebUIHandler {
         if (!token.equals(Config.current.token)) return null;
         String vm_name = params.get("vm");
         String dest_pool_name = params.get("destpool");
-        Storage dest_pool = vmm.getPoolByName(dest_pool_name);
+        Storage dest_pool = Config.current.getPoolByName(dest_pool_name);
         VirtualMachine vm = VirtualMachine.get(vm_name);
         TaskEvent event = createEvent("VM Migrate Compute", "api", request.getRemoteAddr());
         String result = "task_id=" + event.task_id;
@@ -7657,11 +7764,11 @@ public class ConfigService implements WebUIHandler {
               if (dest_pool == null) {
                 throw new Exception("Storage not found");
               }
-              Hardware hw = vm.loadHardware();
-              if (hw == null) {
+              Hardware hardware = vm.loadHardware();
+              if (hardware == null) {
                 throw new Exception("Unable to load VM");
               }
-              if (!vm.migrateData(dest_pool, hw, null_status, vmm)) {
+              if (!vm.migrateData(dest_pool, hardware, null_status, vmm)) {
                 throw new Exception("VirtualMachine.migrateData() failed");
               }
               setResult("Completed", true);
@@ -7696,6 +7803,74 @@ public class ConfigService implements WebUIHandler {
         };
         Tasks.tasks.addTask(null, task);
         return result.getBytes();
+      }
+      case "vm_disk_create": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String hex = params.get("disk");
+        byte[] bin = Base16.decode(hex.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(bin);
+        Disk disk = (Disk)Compression.deserialize(bais, bin.length);
+        int flags = Integer.valueOf(params.get("flags"));
+        TaskEvent event = createEvent("VM Disk Create", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!disk.create(flags)) {
+                throw new Exception("disk create failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_disk_resize": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String hex = params.get("disk");
+        byte[] bin = Base16.decode(hex.getBytes());
+        ByteArrayInputStream bais = new ByteArrayInputStream(bin);
+        Disk disk = (Disk)Compression.deserialize(bais, bin.length);
+        TaskEvent event = createEvent("VM Disk Resize", "api", request.getRemoteAddr());
+        String result = "task_id=" + event.task_id;
+        Task task = new Task(event) {
+          public void doTask() {
+            try {
+              if (!disk.resize()) {
+                throw new Exception("disk resize failed");
+              }
+              setResult("Completed", true);
+            } catch (Exception e) {
+              setResult(getError(), false);
+              JFLog.log(e);
+            }
+          }
+        };
+        Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "browse_list": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String path = params.get("path");
+        StringBuilder list = new StringBuilder();
+        File[] files = new File(path).listFiles();
+        for(File file : files) {
+          String name = file.getName();
+          if (name.startsWith(".")) continue;
+          if (file.isDirectory()) {
+            list.append("/");
+          }
+          list.append(name);
+          list.append("\n");
+        }
+        return list.toString().getBytes();
       }
     }
     return null;

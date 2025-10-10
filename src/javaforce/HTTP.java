@@ -67,7 +67,9 @@ public class HTTP {
       return params;
     }
 
-    /** Decode HTTP headers starting at offset. */
+    /** Decode HTTP headers starting at offset.
+     * No URL decoding performed.
+     */
     public static Parameters decode(String[] headers, char equals, int offset) {
       Parameters p = new Parameters();
       for(int i=offset;i<headers.length;i++) {
@@ -84,8 +86,10 @@ public class HTTP {
       return p;
     }
 
-    /** Decode HTTP headers.  Searches for headers after first blank line.
+    /** Decode HTTP headers.
+     * Searches for headers after first blank line.
      * equals = ':'
+     * No URL decoding performed.
      */
     public static Parameters decode(String[] headers) {
       for(int i=0;i<headers.length;i++) {
@@ -94,7 +98,10 @@ public class HTTP {
       return null;
     }
 
-    /** Decode HTTP headers.  Searches for headers after first blank line. */
+    /** Decode HTTP headers.
+     * Searches for headers after first blank line.
+     * No URL decoding performed.
+     */
     public static Parameters decode(String[] headers, char equals) {
       for(int i=0;i<headers.length;i++) {
         if (headers[i].length() == 0) return decode(headers, equals, i + 1);
@@ -102,7 +109,9 @@ public class HTTP {
       return null;
     }
 
-    /** Decode URL parameters. */
+    /** Decode URL parameters.
+     * URL decoding is performed.
+     */
     public static Parameters decode(String query) {
       Parameters params = new Parameters();
       String[] items = query.split("&");

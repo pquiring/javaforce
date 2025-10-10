@@ -132,6 +132,10 @@ public class Disk implements Serializable {
     }
   }
 
+  public boolean resize() {
+    return resize(null);
+  }
+
   public boolean resize(Storage pool) {
     if (false) {
       //use libvirt (not working per docs)

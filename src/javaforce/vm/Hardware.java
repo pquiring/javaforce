@@ -78,6 +78,22 @@ public class Hardware implements Serializable {
     controllers = new ArrayList<>();
   }
 
+  /** Gets VM Folder Location.
+   */
+  public Location getLocation() {
+    return new Location(pool, folder, name);
+  }
+
+  /** Sets VM Location.
+   *
+   * These values are transient and need to be set if loaded indirectly.
+   */
+  public void setLocation(Location loc) {
+    pool = loc.pool;
+    folder = loc.folder;
+    name = loc.folder;
+  }
+
   public static String getName(String cfg) {
     //remove .jfvm
     int idx = cfg.indexOf(".jfvm");

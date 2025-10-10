@@ -137,16 +137,16 @@ public class VirtualMachine implements Serializable {
     return nrestart(name);
   }
 
-  //virDomainSave
+  //virDomainSuspend
   private native static boolean nsuspend(String name);
   public boolean suspend() {
     return nsuspend(name);
   }
 
-  //virDomainRestore
-  private native static boolean nrestore(String name);
-  public boolean restore() {
-    return nrestore(name);
+  //virDomainResume
+  private native static boolean nresume(String name);
+  public boolean resume() {
+    return nresume(name);
   }
 
   private native static int ngetState(String name);
