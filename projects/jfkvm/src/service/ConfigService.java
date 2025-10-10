@@ -3259,6 +3259,7 @@ public class ConfigService implements WebUIHandler {
       ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
     });
     start.addClickListener((me, cmp) -> {
+      ui.host = host;
       errmsg.setText("");
       int idx = host_table.getSelectedRow();
       if (idx == -1) {
@@ -3288,6 +3289,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     stop.addClickListener((me, cmp) -> {
+      ui.host = host;
       errmsg.setText("");
       int idx = host_table.getSelectedRow();
       if (idx == -1) {
@@ -3317,6 +3319,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     suspend.addClickListener((me, cmp) -> {
+      ui.host = host;
       errmsg.setText("");
       int idx = host_table.getSelectedRow();
       if (idx == -1) {
@@ -3346,6 +3349,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     restart.addClickListener((me, cmp) -> {
+      ui.host = host;
       errmsg.setText("");
       int idx = host_table.getSelectedRow();
       if (idx == -1) {
@@ -3375,6 +3379,7 @@ public class ConfigService implements WebUIHandler {
       ui.confirm_popup.setVisible(true);
     });
     poweroff.addClickListener((me, cmp) -> {
+      ui.host = host;
       errmsg.setText("");
       int idx = host_table.getSelectedRow();
       if (idx == -1) {
