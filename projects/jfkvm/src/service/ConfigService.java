@@ -2875,13 +2875,14 @@ public class ConfigService implements WebUIHandler {
     }
 
     create.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       Hardware hardware = new Hardware();
       VirtualMachine vm = new VirtualMachine(hardware);
-      ui.host = Config.current.getHostSelf();
       ui.setRightPanel(vmAddPanel(vm, hardware, ui));
     });
 
     edit.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -2894,7 +2895,6 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:Failed to load config for vm:" + vm.name);
         return;
       }
-      ui.host = Config.current.getHostSelf();
       ui.setRightPanel(vmEditPanel(vm, hardware, false, ui));
     });
 
@@ -2903,6 +2903,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     console.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -2923,6 +2924,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     monitor.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -2938,6 +2940,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     start.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -2974,6 +2977,7 @@ public class ConfigService implements WebUIHandler {
 
     //stop
     stop.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3004,6 +3008,7 @@ public class ConfigService implements WebUIHandler {
 
     //suspend
     suspend.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3034,6 +3039,7 @@ public class ConfigService implements WebUIHandler {
 
     //restart
     restart.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3064,6 +3070,7 @@ public class ConfigService implements WebUIHandler {
 
     //poweroff
     poweroff.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3093,6 +3100,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     snapshots.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       if (Linux.distro == Linux.DistroTypes.Debian && Linux.derived == Linux.DerivedTypes.Unknown) {
         errmsg.setText("Debian snapshot support is broken, please use Ubuntu!");
@@ -3109,6 +3117,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     backup.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3128,6 +3137,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     clone.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3143,6 +3153,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     migrate.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
@@ -3154,6 +3165,7 @@ public class ConfigService implements WebUIHandler {
     });
 
     unreg.addClickListener((me, cmp) -> {
+      ui.host = Config.current.getHostSelf();
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) {
