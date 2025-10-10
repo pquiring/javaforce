@@ -1,3 +1,8 @@
+2025-10-10 : 7.0 released!
+  - new : decentrialized control
+    - VMs can now be created, edited, and controlled from any host
+    - more control to follow
+
 2025-10-03 : 6.2 released!
   - fix : converting vmx in deep folder
   - fix : VM config loading if user moved it
