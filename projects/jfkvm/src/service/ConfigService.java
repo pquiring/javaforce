@@ -3221,7 +3221,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(stop);
     Button suspend = new Button(new Icon("pause"), "Suspend");
     tools.add(suspend);
-    Button restart = new Button(new Icon("restart"), "Restart");
+    Button restart = new Button(new Icon("reboot"), "Restart");
     tools.add(restart);
     Button poweroff = new Button(new Icon("power"), "PowerOff");
     tools.add(poweroff);
