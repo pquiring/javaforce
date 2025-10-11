@@ -9,9 +9,9 @@ import java.util.*;
 
 import javaforce.webui.*;
 
-public class TaskLogUI extends ScrollPanel {
+public class TaskLogUI extends Panel {
   private TaskLog log;
-  private Panel rows;
+  private ScrollPanel rows;
   private int year;
   private int month;
   private Label period;
@@ -32,7 +32,7 @@ public class TaskLogUI extends ScrollPanel {
     row.add(refresh);
     this.add(row);
     //add panel for TaskUI rows
-    rows = new Panel();
+    rows = new ScrollPanel();
     this.add(rows);
     prev.addClickListener((e, c) -> {
       if (year == 0) return;
