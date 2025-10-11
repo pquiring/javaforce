@@ -538,6 +538,8 @@ function onresizeTabPanel(event, panelid, rowid, tabsid) {
   tabs.style.width = panel.offsetWidth + "px";
   tabs.style.height = (panel.offsetHeight - row.offsetHeight) + "px";
   onresizeContainer(event, panel);
+  onresizeContainer(event, row);
+  onresizeContainer(event, tabs);
 }
 
 function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
@@ -556,6 +558,9 @@ function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
   element3.parentElement.style.height = height + "px";
   sendDividerPos(element.id, width1);
   onresizeContainer(event, element);
+  onresizeContainer(event, element1);
+  onresizeContainer(event, element2);
+  onresizeContainer(event, element3);
 }
 
 function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
@@ -574,6 +579,9 @@ function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
   element3.parentElement.style.height = height3 + "px";
   sendDividerPos(element.id, height1);
   onresizeContainer(event, element);
+  onresizeContainer(event, element1);
+  onresizeContainer(event, element2);
+  onresizeContainer(event, element3);
 }
 
 function onmousedownSplitPanel(event, element, id1, id2, id3, top, dir) {

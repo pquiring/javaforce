@@ -1,5 +1,6 @@
 body {
   margin: 0px;
+  overflow: hidden;
 }
 
 div {
@@ -132,7 +133,8 @@ textarea {
 }
 
 .row {
-  display: block;
+  display: flex;
+  flex-direction: row;
 }
 
 .rowitem {
@@ -140,11 +142,16 @@ textarea {
 }
 
 .column {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .columnitem {
   display: block;
+}
+
+.flex {
+  flex: 1;
 }
 
 .block {
@@ -162,6 +169,8 @@ textarea {
 .panel {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .centeredpanel {
@@ -257,7 +266,7 @@ textarea {
   height: 100%;
 }
 
-.splitPanelCell {
+.splitPanelColumn {
   overflow: hidden;
   display: table-cell;
 }

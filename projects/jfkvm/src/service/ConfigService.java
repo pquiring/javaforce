@@ -3497,8 +3497,10 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     ui.hardware = hardware;
     hardware.validate();
+    InnerPanel system = new InnerPanel("System");
+    panel.add(system);
     GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
-    panel.add(grid);
+    system.add(grid);
     Row row;
     //name [   ]
     TextField _name = new TextField(vm.name);
@@ -3606,7 +3608,7 @@ public class ConfigService implements WebUIHandler {
     grid.addRow(new Component[] {new Label("Video Memory"), row});
     //video : 3d accel
     row = new Row();
-    panel.add(row);
+    system.add(row);
     CheckBox video_3d_accel = new CheckBox("Video 3D Accel");
     row.add(video_3d_accel);
     if (hardware.video_3d_accel) {

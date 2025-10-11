@@ -26,7 +26,7 @@ public class SplitPanel extends Panel {
         t1 = new Panel();  //left component
         t1.setWidth(pos);
         t1.setMaxHeight();
-        t1.addClass("splitPanelCell");
+        t1.setClass("splitPanelColumn");
         t1.setVerticalAlign(TOP);
         c1 = new Panel();
         c1.setWidth(pos);
@@ -38,7 +38,7 @@ public class SplitPanel extends Panel {
         t2 = new Panel();  //right component
         t2.setMaxWidth();
         t2.setMaxHeight();
-        t2.addClass("splitPanelCell");
+        t2.setClass("splitPanelColumn");
         t2.setVerticalAlign(TOP);
         c2 = new Panel();
         c2.setMaxWidth();
@@ -54,7 +54,7 @@ public class SplitPanel extends Panel {
         t1 = new Panel();  //top component
         t1.setHeight(pos);
         t1.setMaxWidth();
-        t1.addClass("splitPanelRow");
+        t1.setClass("splitPanelRow");
         t1.setVerticalAlign(TOP);
         c1 = new Panel();
         c1.setHeight(pos);
@@ -66,7 +66,7 @@ public class SplitPanel extends Panel {
         t2 = new Panel();  //bottom component
         t2.setMaxWidth();
         t2.setMaxHeight();
-        t2.addClass("splitPanelRow");
+        t2.setClass("splitPanelRow");
         t2.setVerticalAlign(TOP);
         c2 = new Panel();
         c2.setMaxWidth();

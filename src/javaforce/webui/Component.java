@@ -210,6 +210,10 @@ public abstract class Component {
     return styles.get(style);
   }
 
+  public void setFlex() {
+    setStyle("flex", "1");
+  }
+
   public void setFontSize(int size) {
     setStyle("font-size", size + "pt");
   }
