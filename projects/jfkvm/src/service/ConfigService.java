@@ -207,11 +207,6 @@ public class ConfigService implements WebUIHandler {
     public LnxPty new_pty;
 
     public void resize() {
-      if (right_panel == null || top_bottom_split == null || left_right_split == null || client == null) return;
-      int height = top_bottom_split.getDividerPosition();
-      right_panel.setHeight(height);
-      int width = client.getWidth() - left_right_split.getDividerPosition();
-      right_panel.setWidth(width);
     }
 
     public void setRightPanel(Panel panel) {
@@ -319,10 +314,10 @@ public class ConfigService implements WebUIHandler {
     ui.snapshots_add_popup = snapshots_add_PopupPanel(ui);
     panel.add(ui.snapshots_add_popup);
 
-    int topSize = client.getHeight() - 128;
-    ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL);
+    int bottomSize = 128;
+    ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL, SplitPanel.TOP);
     panel.add(ui.top_bottom_split);
-    ui.top_bottom_split.setDividerPosition(topSize);
+    ui.top_bottom_split.setDividerPosition(bottomSize);
 
     int leftSize = 128;
     ui.left_right_split = new SplitPanel(SplitPanel.VERTICAL);

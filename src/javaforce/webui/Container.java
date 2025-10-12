@@ -17,7 +17,6 @@ public class Container extends Component {
   }
   public void init() {
     super.init();
-    addEvent("onresize", "onresizeContainer(event, this);");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       get(a).init();
@@ -122,17 +121,14 @@ public class Container extends Component {
   public int count() {
     return components.size();
   }
-  private int flex = 0;
-  public static final int NONE = 0;
-  public static final int ROW = 1;
-  public static final int COLUMN = 2;
+  private int flexdir = 0;
   public void setFlexDirection(int dir) {
-    switch (flex) {
+    switch (flexdir) {
       case ROW: removeClass("flexrow"); break;
       case COLUMN: removeClass("flexcol"); break;
     }
-    flex = dir;
-    switch (flex) {
+    flexdir = dir;
+    switch (flexdir) {
       case ROW: addClass("flexrow"); break;
       case COLUMN: addClass("flexcol"); break;
     }

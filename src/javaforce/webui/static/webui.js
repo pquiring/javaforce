@@ -542,51 +542,9 @@ function onresizeTabPanel(event, panelid, rowid, tabsid) {
   onresizeContainer(event, tabs);
 }
 
-function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
-  console.log('onresizeSplitPanelWidth: id=' + element.id);
-  var element1 = document.getElementById(id1);
-  var element2 = document.getElementById(id2);
-  var element3 = document.getElementById(id3);
-  var width = getWidth(element);
-  var width1 = element1.offsetWidth;
-  var width2 = element2.offsetWidth;
-  var width3 = width - width1 - width2;
-  var height = getHeight(element);
-  element3.style.width = width3 + "px";
-  element3.style.height = height + "px";
-  element3.parentElement.style.width = width3 + "px";
-  element3.parentElement.style.height = height + "px";
-  sendDividerPos(element.id, width1);
-  onresizeContainer(event, element);
-  onresizeContainer(event, element1);
-  onresizeContainer(event, element2);
-  onresizeContainer(event, element3);
-}
-
-function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
-  console.log('onresizeSplitPanelHeight: id=' + element.id);
-  var element1 = document.getElementById(id1);
-  var element2 = document.getElementById(id2);
-  var element3 = document.getElementById(id3);
-  var height = getHeight(element);
-  var height1 = element1.offsetHeight;
-  var height2 = element2.offsetHeight;
-  var height3 = height - height1 - height2;
-  var width = getWidth(element);
-  element3.style.width = width + "px";
-  element3.style.height = height3 + "px";
-  element3.parentElement.style.width = width + "px";
-  element3.parentElement.style.height = height3 + "px";
-  sendDividerPos(element.id, height1);
-  onresizeContainer(event, element);
-  onresizeContainer(event, element1);
-  onresizeContainer(event, element2);
-  onresizeContainer(event, element3);
-}
-
-function onmousedownSplitPanel(event, element, id1, id2, id3, top, dir) {
+function onmousedownSplitPanel(event, element, id1, id2, id3, parentid, dir, side) {
   event.preventDefault();
-  var top_element = document.getElementById(top);
+  var parent = document.getElementById(parentid);
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
@@ -598,34 +556,51 @@ function onmousedownSplitPanel(event, element, id1, id2, id3, top, dir) {
     startX: element1.offsetWidth,
     startY: element1.offsetHeight,
     //elements
-    top_element: top_element,
-    element: element,
+    parent: parent,
     element1: element1,
     element2: element2,
     element3: element3,
     //ids
-    top : top,
+    parentid : parentid,
     id1 : id1,
     id2 : id2,
     id3 : id3,
     //direction
-    dir: dir
+    dir: dir,
+    //side
+    side: side
   };
 }
 
 function onmousemoveSplitPanel(event, element) {
+  var width, height;
+  var width3, height3;
   switch (splitDragging.dir) {
     case 'h':
-      var height = splitDragging.startY + (event.clientY - splitDragging.mouseY);
-      splitDragging.element1.style.height = height + "px";  //c
-      splitDragging.element1.parentElement.style.height = height + "px";  //t
-      onresizeSplitPanelHeight(new Event('resize'), splitDragging.top_element, splitDragging.id1, splitDragging.id2, splitDragging.id3);
+      switch (splitDragging.side) {
+        case 't':
+          height = splitDragging.startY + (event.clientY - splitDragging.mouseY);
+          height3 = splitDragging.parent.offsetHeight - (height + 5);
+          splitDragging.element3.style.height = height3 + "px";
+          break;
+        case 'b':
+          height = splitDragging.startY + (event.clientY - splitDragging.mouseY);
+          splitDragging.element1.style.height = height + "px";
+          break;
+      }
       break;
     case 'v':
-      var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
-      splitDragging.element1.style.width = width + "px";  //c
-      splitDragging.element1.parentElement.style.width = width + "px";  //t
-      onresizeSplitPanelWidth(new Event('resize'), splitDragging.top_element, splitDragging.id1, splitDragging.id2, splitDragging.id3);
+      switch (splitDragging.side) {
+        case 'l':
+          width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
+          width3 = splitDragging.parent.offsetWidth - (width + 5);
+          splitDragging.element3.style.width = width3 + "px";
+          break;
+        case 'r':
+          width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
+          splitDragging.element1.style.width = width + "px";
+          break;
+      }
       break;
   }
 }

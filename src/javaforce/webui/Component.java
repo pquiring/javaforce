@@ -46,6 +46,11 @@ public abstract class Component {
   public static final int SCROLL = 12;
   public static final int AUTO = 13;
 
+  //flex display
+  public static final int NONE = 0;
+  public static final int ROW = 1;
+  public static final int COLUMN = 2;
+
   public static class Event {
     public String msg;
     public String[] args;

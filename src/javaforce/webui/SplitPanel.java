@@ -7,99 +7,109 @@ package javaforce.webui;
 
 public class SplitPanel extends Panel {
   private int dir;
-  private int pos = 50;  //pixels of left/top component
+  private int pos = 50;
+  private int side;
 
   private Container div;
-  private Container t1, t2;  //NOTE:table-cells ignore specified sizes
-  private Container c1, c2;
+  private Container t1, t2;
 
-  public static final int VERTICAL = 1;
-  public static final int HORIZONTAL = 2;
+  private static final int DIV_SIZE = 5;
 
   public SplitPanel(int direction) {
+    init(direction, direction == VERTICAL ? RIGHT : BOTTOM);
+  }
+
+  public SplitPanel(int direction, int flexSide) {
+    init(direction, flexSide);
+  }
+
+  private void init(int direction, int flexSide) {
     dir = direction;
+    side = flexSide;
     div = new Container();
     div.setClass("splitDivider");
     div.setBackColor(Color.grey);
     switch (dir) {
       case VERTICAL:
+        setClass("splitPanelRow");
         t1 = new Panel();  //left component
-        t1.setWidth(pos);
         t1.setMaxHeight();
-        t1.setClass("splitPanelColumn");
         t1.setVerticalAlign(TOP);
-        c1 = new Panel();
-        c1.setWidth(pos);
-        c1.setMaxHeight();
-        c1.addClass("block");
-        c1.add(new Label("left"));
-        t1.add(c1);
+        t1.add(new Label("left"));
 
         t2 = new Panel();  //right component
-        t2.setMaxWidth();
         t2.setMaxHeight();
-        t2.setClass("splitPanelColumn");
         t2.setVerticalAlign(TOP);
-        c2 = new Panel();
-        c2.setMaxWidth();
-        c2.setMaxHeight();
-        c2.addClass("block");
-        c2.add(new Label("right"));
-        t2.add(c2);
+        t2.add(new Label("right"));
 
-        div.setWidth(5);
+        div.setWidth(DIV_SIZE);
         div.setMaxHeight();
+
+        switch (side) {
+          case LEFT:
+            t1.setFlex(true);
+//            t1.setMaxWidth();
+            t2.setWidth(pos);
+            break;
+          case RIGHT:
+            t1.setWidth(pos);
+            t2.setFlex(true);
+//            t2.setMaxWidth();
+            break;
+        }
         break;
       case HORIZONTAL:
+        setClass("splitPanelColumn");
         t1 = new Panel();  //top component
-        t1.setHeight(pos);
         t1.setMaxWidth();
-        t1.setClass("splitPanelRow");
         t1.setVerticalAlign(TOP);
-        c1 = new Panel();
-        c1.setHeight(pos);
-        c1.setMaxWidth();
-        c1.addClass("block");
-        c1.add(new Label("top"));
-        t1.add(c1);
+        t1.add(new Label("top"));
 
         t2 = new Panel();  //bottom component
-        t2.setMaxWidth();
         t2.setMaxHeight();
-        t2.setClass("splitPanelRow");
         t2.setVerticalAlign(TOP);
-        c2 = new Panel();
-        c2.setMaxWidth();
-        c2.setMaxHeight();
-        c2.addClass("block");
-        c2.add(new Label("bottom"));
-        t2.add(c2);
+        t2.add(new Label("bottom"));
 
+        div.setHeight(DIV_SIZE);
         div.setMaxWidth();
-        div.setHeight(5);
+
+        switch (side) {
+          case TOP:
+            t1.setFlex(true);
+//            t1.setMaxHeight();
+            t2.setHeight(pos);
+            break;
+          case BOTTOM:
+            t1.setHeight(pos);
+            t2.setFlex(true);
+//            t2.setMaxHeight();
+            break;
+        }
         break;
     }
     add(t1);  //left/top component
     add(div);
     add(t2);  //right/bottom component
-    addClass("splitPanelTop");
     setMaxWidth();
     setMaxHeight();
   }
 
   public void init() {
     super.init();
-    switch(dir) {
-      case VERTICAL:
-        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\",\"" + this.id + "\", \"v\");");
-        addEvent("onresize", "onresizeSplitPanelWidth(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
-        break;
-      case HORIZONTAL:
-        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\",\"" + this.id + "\", \"h\");");
-        addEvent("onresize", "onresizeSplitPanelHeight(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
-        break;
-    }
+    div.addEvent("onmousedown", "onmousedownSplitPanel("
+      + "event,"
+      + "this,"
+      + "\"" + t1.id + "\","
+      + "\"" + div.id + "\","
+      + "\"" + t2.id + "\","
+      + "\"" + this.id + "\","
+      + "\"" + (dir == VERTICAL ? 'v' : 'h') + "\","
+      + "\"" + (dir == VERTICAL ? (side == LEFT ? 'l' : 'r') : (side == TOP ? 't' : 'b')) + "\""
+      + ");"
+    );
   }
+
+  //
 
   public int getDirection() {
     return dir;
@@ -109,14 +119,16 @@ public class SplitPanel extends Panel {
     this.pos = pos;
     switch (dir) {
       case VERTICAL:
-        t1.setWidth(pos);
-        c1.setWidth(pos);
-        getLeftComponent().setWidth(pos);
+        switch (side) {
+          case LEFT: t2.setWidth(pos); break;
+          case RIGHT: t1.setWidth(pos); break;
+        }
         break;
       case HORIZONTAL:
-        t1.setHeight(pos);
-        c1.setHeight(pos);
-        getTopComponent().setHeight(pos);
+        switch (side) {
+          case TOP: t2.setHeight(pos); break;
+          case BOTTOM: t1.setHeight(pos); break;
+        }
         break;
     }
   }
@@ -126,38 +138,38 @@ public class SplitPanel extends Panel {
   }
 
   public Component getLeftComponent() {
-    return c1.get(0);
+    return t1.get(0);
   }
 
   public Component getTopComponent() {
-    return c1.get(0);
+    return t1.get(0);
   }
 
   public Component getRightComponent() {
-    return c2.get(0);
+    return t2.get(0);
   }
 
   public Component getBottomComponent() {
-    return c2.get(0);
+    return t2.get(0);
   }
 
   public void setLeftComponent(Component c) {
-    c1.set(0, c);
+    t1.set(0, c);
     this.sendOnResize();
   }
 
   public void setTopComponent(Component c) {
-    c1.set(0, c);
+    t1.set(0, c);
     this.sendOnResize();
   }
 
   public void setRightComponent(Component c) {
-    c2.set(0, c);
+    t2.set(0, c);
     this.sendOnResize();
   }
 
   public void setBottomComponent(Component c) {
-    c2.set(0, c);
+    t2.set(0, c);
     this.sendOnResize();
   }
 
