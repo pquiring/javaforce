@@ -15,10 +15,27 @@ public class SplitPanel extends Panel {
 
   private static final int DIV_SIZE = 5;
 
+  /** Create SplitPanel with vertical or horizontal divider.
+   *
+   * The divider will control the size of the left/top component.
+   * The other component will flex as needed.
+   *
+   * @param direction = VERTICAL or HORIZONTAL
+   */
   public SplitPanel(int direction) {
     init(direction, direction == VERTICAL ? RIGHT : BOTTOM);
   }
 
+  /** Create SplitPanel with vertical or horizontal divider.
+   *
+   * Based on the flexSide param the divider will control the size of the left/top or bottom/right component.
+   * The other component will flex as needed.
+   *
+   * @param direction = VERTICAL or HORIZONTAL
+   * @param flexSide = the side that will flex (the divider controls the other component's size)
+   *   VERTICAL = LEFT or RIGHT (Default = RIGHT)
+   *   HORIZONTAL = TOP or BOTTOM (Default = BOTTOM)
+   */
   public SplitPanel(int direction, int flexSide) {
     init(direction, flexSide);
   }

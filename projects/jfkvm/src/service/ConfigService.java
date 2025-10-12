@@ -1966,6 +1966,7 @@ public class ConfigService implements WebUIHandler {
     msg.setMaxHeight();
     msg.setFontSize(16);
     msg.setReadonly(true);
+    msg.setFlex(true);
     panel.add(msg);
 
     help.addClickListener((me, cmp) -> {
