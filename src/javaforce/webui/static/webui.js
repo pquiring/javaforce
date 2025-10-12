@@ -332,6 +332,7 @@ function sendPosSize(id) {
     w: Math.floor(rect.width),
     h: Math.floor(rect.height)
   };
+  console.log('sendPosSize: msg=' + msg);
   ws.send(JSON.stringify(msg));
 }
 
@@ -344,6 +345,7 @@ function sendSize(id) {
     w: Math.floor(rect.width),
     h: Math.floor(rect.height)
   };
+  console.log('sendSize: msg=' + msg);
   ws.send(JSON.stringify(msg));
 }
 
@@ -356,6 +358,7 @@ function sendPos(id) {
     x: Math.floor(rect.left),
     y: Math.floor(rect.top)
   };
+  console.log('sendPos: msg=' + msg);
   ws.send(JSON.stringify(msg));
 }
 

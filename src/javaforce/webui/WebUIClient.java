@@ -185,19 +185,19 @@ public class WebUIClient {
     return sb.toString();
   }
   private Object lock = new Object();
-  public void sendData(byte data[]) {
+  public void sendData(byte[] data) {
     if (!isReady) return;
     synchronized (lock) {
       socket.write(data, WebSocket.TYPE_BINARY);
     }
   }
-  public void sendData(byte data[], int pos, int length) {
+  public void sendData(byte[] data, int pos, int length) {
     if (!isReady) return;
     synchronized (lock) {
       socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
     }
   }
-  public void sendEvent(String id, String event, String args[]) {
+  public void sendEvent(String id, String event, String[] args) {
     if (!isReady) return;
     if (id == null) {
       JFLog.log("WebUIClient:Error:sendEvent():id==null");
@@ -246,14 +246,14 @@ public class WebUIClient {
       JFLog.log(e);
     }
   }
-  public void sendDataEvent(byte data[], String id, String event, String[] args) {
+  public void sendDataEvent(byte[] data, String id, String event, String[] args) {
     if (!isReady) return;
     synchronized (lock) {
       sendData(data);
       sendEvent(id, event, args);
     }
   }
-  public void sendDataEvent(byte data[], int pos, int length, String id, String event, String[] args) {
+  public void sendDataEvent(byte[] data, int pos, int length, String id, String event, String[] args) {
     if (!isReady) return;
     synchronized (lock) {
       sendData(data, pos, length);

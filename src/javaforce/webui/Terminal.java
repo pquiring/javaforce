@@ -185,7 +185,6 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     } else {
       print("connect() failed!".toCharArray());
     }
-    requestSize();
   }
 
   private boolean connect() {
@@ -371,7 +370,15 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
     }
   }
 
+  private boolean requested_size;
+
   public void flashCursor() {
+    if (!requested_size) {
+      if (isLoaded()) {
+        requestSize();
+        requested_size = true;
+      }
+    }
     synchronized (cursorLock) {
       cursorCounter -= 100;
       if (cursorCounter <= 0) {
