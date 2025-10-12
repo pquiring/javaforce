@@ -154,6 +154,16 @@ textarea {
   flex: 1;
 }
 
+.flexrow {
+  display: flex;
+  flex-direction: row;
+}
+
+.flexcol {
+  display: flex;
+  flex-direction: column;
+}
+
 .block {
   display: block;
 }
@@ -169,8 +179,6 @@ textarea {
 .panel {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .centeredpanel {

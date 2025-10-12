@@ -9,6 +9,7 @@ public class Panel extends Container {
   private int overflow = -1;
   public Panel() {
     addClass("panel");
+    setFlexDirection(COLUMN);
     setOverflow(HIDDEN);
   }
   public int getOverflow() {

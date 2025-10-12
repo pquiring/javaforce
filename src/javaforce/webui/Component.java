@@ -184,7 +184,7 @@ public abstract class Component {
   }
 
   public void setFlex(boolean state) {
-    if (state) addClass("pad"); else removeClass("pad");
+    if (state) addClass("flex"); else removeClass("flex");
   }
 
   public boolean hasAttr(String attr) {
@@ -208,10 +208,6 @@ public abstract class Component {
   }
   public String getStyle(String style) {
     return styles.get(style);
-  }
-
-  public void setFlex() {
-    setStyle("flex", "1");
   }
 
   public void setFontSize(int size) {

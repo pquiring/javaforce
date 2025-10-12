@@ -122,6 +122,21 @@ public class Container extends Component {
   public int count() {
     return components.size();
   }
+  private int flex = 0;
+  public static final int NONE = 0;
+  public static final int ROW = 1;
+  public static final int COLUMN = 2;
+  public void setFlexDirection(int dir) {
+    switch (flex) {
+      case ROW: removeClass("flexrow"); break;
+      case COLUMN: removeClass("flexcol"); break;
+    }
+    flex = dir;
+    switch (flex) {
+      case ROW: addClass("flexrow"); break;
+      case COLUMN: addClass("flexcol"); break;
+    }
+  }
   public String html() {
     StringBuilder sb = new StringBuilder();
     sb.append("<div" + getAttrs() + ">");
