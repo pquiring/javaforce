@@ -135,6 +135,7 @@ textarea {
 .row {
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
 }
 
 .rowitem {
@@ -144,6 +145,7 @@ textarea {
 .column {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .columnitem {
@@ -157,11 +159,13 @@ textarea {
 .flexrow {
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
 }
 
 .flexcol {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .block {
@@ -182,13 +186,16 @@ textarea {
 }
 
 .centeredpanel {
-  display: table-cell;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .innerpanel {
   box-sizing: border-box;
   margin: 0px;
   display: block;
+  width: 100%;
 }
 
 .listbox {
@@ -258,9 +265,13 @@ textarea {
 }
 
 .tabcontentshown {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 0px;
   border-top: none;
+  width: 100%;
+  height: 100%;
 }
 
 .noselect {
@@ -271,6 +282,7 @@ textarea {
   display: flex;
   overflow: hidden;
   flex-direction: column;
+  align-items: flex-start;
   width: 100%;
   height: 100%;
 }
@@ -279,6 +291,7 @@ textarea {
   display: flex;
   overflow: hidden;
   flex-direction: row;
+  align-items: flex-start;
   width: 100%;
   height: 100%;
 }

@@ -17,6 +17,8 @@ public class TabPanel extends Panel {
     row = new Row();
     add(row);
     tabs = new Column();
+    tabs.setMaxWidth();
+    tabs.setMaxHeight();
     add(tabs);
     setAlign(Component.LEFT);
   }
