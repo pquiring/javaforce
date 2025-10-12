@@ -232,18 +232,22 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   }
 
   public void onResized(Component comp, int width, int height) {
-    if (debug) JFLog.log("onresized:" + width + "x" + height);
-    sx = width / fontSizeX;
-    if (sx < 1) sx = 1;
-    sy = height / fontSizeY;
-    if (sy < 1) sy = 1;
-    y1 = 0;
-    y2 = sy - 1;
-    if (pty != null) {
-      pty.setSize(sx, sy);
+    try {
+      if (debug) JFLog.log("onresized:" + width + "x" + height);
+      sx = width / fontSizeX;
+      if (sx < 1) sx = 1;
+      sy = height / fontSizeY;
+      if (sy < 1) sy = 1;
+      y1 = 0;
+      y2 = sy - 1;
+      if (pty != null) {
+        pty.setSize(sx, sy);
+      }
+      clampCursor();
+      setLines();
+    } catch (Exception e) {
+      JFLog.log(e);
     }
-    clampCursor();
-    setLines();
   }
 
   private void clampCursor() {
@@ -356,7 +360,7 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
       try {
         while (active) {
           int buflen = in.read(buf);
-          if (buflen == -1) throw new Exception("read error");
+          if (debug && buflen == -1) throw new Exception("read error");
           if (buflen > 0) {
             if (debug) JFLog.log("read=" + buflen);
             input(byte2char(buf, buflen), buflen);
@@ -418,6 +422,10 @@ public class Terminal extends Container implements Screen, Resized, KeyDown, Mou
   private boolean blinker;
   private boolean reverse;
   private int tabStops = 8;
+
+  public void input(String msg) {
+    input(msg.toCharArray(), msg.length());
+  }
 
   public void input(char[] buf, int buflen) {
     //process Telnet/ANSI code

@@ -432,6 +432,22 @@ function onresizeBody(event, element) {
   if (ws === null) return;
   console.log('onresizeBody');
   sendSize('body');
+  //element = Window {body, document, etc.}
+  onresizeElement(event, element.body);
+}
+
+//NOTE : onresize does NOT trigger if width/height are 100%
+function onresizeElement(event, element) {
+  console.log('onresizeElement: id=' + element.id);
+  var nodes = element.childNodes;
+  var cnt = nodes.length;
+  var node;
+  for(var i = 0;i < cnt;i++) {
+    node = nodes[i];
+    if (typeof node.id === 'undefined') continue;
+    node.dispatchEvent(new Event('resize'));
+    onresizeElement(event, node);
+  }
 }
 
 function onClick(event, element) {
