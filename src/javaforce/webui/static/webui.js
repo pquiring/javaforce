@@ -429,20 +429,6 @@ function onresizeBody(event, element) {
   if (ws === null) return;
   console.log('onresizeBody');
   sendSize('body');
-  //element = Window {body, document, etc.}
-  onresizeContainer(event, element.body);
-}
-
-function onresizeContainer(event, element) {
-  console.log('onresizeContainer: id=' + element.id);
-  var nodes = element.childNodes;
-  var cnt = nodes.length;
-  var node;
-  for(var i = 0;i < cnt;i++) {
-    node = nodes[i];
-    if (typeof node.id === 'undefined') continue;
-    node.dispatchEvent(new Event('resize'));
-  }
 }
 
 function onClick(event, element) {
@@ -513,8 +499,6 @@ function openTab(event, idx, panelid, rowid, tabsid) {
 
   if (rowid === null) return;
 
-  onresizeTabPanel(event, panelid, rowid, tabsid);
-
   var row = document.getElementById(rowid);
   nodes = row.childNodes;
   cnt = nodes.length;
@@ -528,18 +512,6 @@ function openTab(event, idx, panelid, rowid, tabsid) {
       node.classList.remove("tabactive");
     }
   }
-}
-
-function onresizeTabPanel(event, panelid, rowid, tabsid) {
-  console.log('onresizeTabPanel: id=' + panelid);
-  var panel = document.getElementById(panelid);
-  var row = document.getElementById(rowid);
-  var tabs = document.getElementById(tabsid);
-  tabs.style.width = panel.offsetWidth + "px";
-  tabs.style.height = (panel.offsetHeight - row.offsetHeight) + "px";
-  onresizeContainer(event, panel);
-  onresizeContainer(event, row);
-  onresizeContainer(event, tabs);
 }
 
 function onmousedownSplitPanel(event, element, id1, id2, id3, parentid, dir, side) {

@@ -56,7 +56,6 @@ public class TabPanel extends Panel {
       Component c = row.get(a);
       c.addEvent("onclick", "openTab(event," + a + ",\"" + id + "\",\"" + row.id + "\",\"" + tabs.id + "\");");
     }
-    addEvent("onresize", "onresizeTabPanel(event,\"" + id + "\",\"" + row.id + "\",\"" + tabs.id + "\");");
   }
   public void onLoaded(String[] args) {
     super.onLoaded(args);
