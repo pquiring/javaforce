@@ -22,6 +22,7 @@
           <fire:FirewallException Id="FirewallRule" Name="jfControls" Protocol="tcp" Port="80" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jfcontrols.jar" Source="jfcontrols.jar" />
+        <File Id="jficons.jar" Source="jficons.jar" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfControls" DisplayName="jfControls" Description="jfControls" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfControls" Wait="yes" />

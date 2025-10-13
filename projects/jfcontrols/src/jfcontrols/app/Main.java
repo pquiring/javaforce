@@ -170,4 +170,8 @@ public class Main implements WebUIHandler {
   public static void trace() {
     try { throw new Exception(); } catch (Exception e) { JFLog.log(e); }
   }
+
+  public static void main(String[] args) {
+    serviceStart(args);
+  }
 }
