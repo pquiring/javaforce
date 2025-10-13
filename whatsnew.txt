@@ -3,6 +3,9 @@ What's new...
 Oct 13/2025 : JF/90.1
   - jfKVM/7.1
     - new : add snapshots control from any host (decentralized)
+  - webui
+    - fix : lots of fixes for component layouts using flex box
+          : reducing use of javascript to perform layouts
 
 Oct 10/2025 : JF/90.0
   - jfKVM/7.0
