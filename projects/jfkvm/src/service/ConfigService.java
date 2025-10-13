@@ -182,9 +182,9 @@ public class ConfigService implements WebUIHandler {
     public Runnable device_addr_complete;
 
     public PopupPanel snapshots_popup;
-    public VirtualMachine snapshots_vm;
+    public String snapshots_vm;
     public Runnable snapshots_init;
-    public Snapshot[] snapshots_list;
+    public String[][] snapshots_list;
 
     public PopupPanel snapshots_add_popup;
     public Runnable snapshots_add_init;
@@ -755,6 +755,11 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private static final int SS_NAME = 0;
+  private static final int SS_DESC = 1;
+  private static final int SS_PARENT = 2;
+  private static final int SS_CURRENT = 3;
+
   private PopupPanel snapshots_PopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Snapshots");
     panel.setPosition(256, 128);
@@ -792,16 +797,16 @@ public class ConfigService implements WebUIHandler {
 
     ui.snapshots_init = () -> {
       if (ui.snapshots_vm == null) return;
-      ui.snapshots_list = ui.snapshots_vm.snapshotList();
-      Snapshot current = ui.snapshots_vm.snapshotGetCurrent();
+      ui.snapshots_list = ui.host.snapshot_list(ui.snapshots_vm);
+      String current = ui.host.snapshot_get_current(ui.snapshots_vm);
       if (current != null) {
-        if (debug) JFLog.log("VM:snapshotList:current=" + current.name);
+        if (debug) JFLog.log("VM:snapshotList:current=" + current);
       }
       table.removeAll();
       table.addRow(new String[] {"Name", "Description", "Parent", "Current"});
       if (ui.snapshots_list == null) return;
-      for(Snapshot ss : ui.snapshots_list) {
-        table.addRow(new String[] {ss.name, ss.desc, ss.parent, ss.current ? "yes" : ""});
+      for(String[] ss : ui.snapshots_list) {
+        table.addRow(ss);
       }
     };
 
@@ -824,8 +829,8 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Delete Snapshot", ui)) {
           public void doTask() {
             try {
-              Snapshot ss = ui.snapshots_list[idx];
-              if (!ui.snapshots_vm.snapshotDelete(ss.name)) {
+              String[] ss = ui.snapshots_list[idx];
+              if (ui.host.snapshot_delete(ui.snapshots_vm, ss[SS_NAME]) == null) {
                 throw new Exception("Delete failed");
               }
               setResult("Completed", true);
@@ -843,8 +848,8 @@ public class ConfigService implements WebUIHandler {
       errmsg.setText("");
       int idx = table.getSelectedRow();
       if (idx == -1) return;
-      Snapshot ss = ui.snapshots_list[idx];
-      if (ss.current) {
+      String[] ss = ui.snapshots_list[idx];
+      if (ss[SS_CURRENT].equals("yes")) {
         errmsg.setText("Error:snapshot already current");
         return;
       }
@@ -854,7 +859,7 @@ public class ConfigService implements WebUIHandler {
         Task task = new Task(createEvent("Restore Snapshot", ui)) {
           public void doTask() {
             try {
-              if (!ui.snapshots_vm.snapshotRestore(ss.name)) {
+              if (ui.host.snapshot_restore(ui.snapshots_vm, ss[SS_NAME]) == null) {
                 throw new Exception("Restore failed");
               }
               setResult("Completed", true);
@@ -919,7 +924,8 @@ public class ConfigService implements WebUIHandler {
       desc.setText("");
       cb_memory.setSelected(false);
       if (ui.snapshots_vm != null) {
-        int state = ui.snapshots_vm.getState();
+        String str_state = ui.host.vm_get_state(ui.snapshots_vm);
+        int state = VirtualMachine.getState(str_state);
         if (state == VirtualMachine.STATE_ON || state == VirtualMachine.STATE_SUSPEND) {
           cb_memory.setDisabled(false);
         } else {
@@ -944,7 +950,7 @@ public class ConfigService implements WebUIHandler {
             if (!cb_memory.isSelected()) {
               flags |= VirtualMachine.SNAPSHOT_CREATE_DISK_ONLY;
             }
-            if (!ui.snapshots_vm.snapshotCreate(_name, _desc, flags)) {
+            if (ui.host.snapshot_create(ui.snapshots_vm, _name, _desc, flags) == null) {
               throw new Exception("create failed");
             }
             setResult("Completed", true);
@@ -3107,7 +3113,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      ui.snapshots_vm = vms[idx];
+      ui.snapshots_vm = vms[idx].name;
       ui.snapshots_init.run();
       ui.snapshots_popup.setVisible(true);
     });
@@ -3202,6 +3208,10 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private static final int VM_NAME = 0;
+  private static final int VM_STATE = 1;
+  private static final int VM_STORAGE = 2;
+
   private void vmsPanel_addHost(Panel panel, Host host, UI ui) {
     Row row;
 
@@ -3221,6 +3231,8 @@ public class ConfigService implements WebUIHandler {
     tools.add(restart);
     Button poweroff = new Button(new Icon("power"), "PowerOff");
     tools.add(poweroff);
+    Button snapshots = new Button(new Icon("clock"), "Snapshots");
+    tools.add(snapshots);
 
     row = new Row();
     panel.add(row);
@@ -3256,7 +3268,7 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      String vm_name = host_vms[idx][0];
+      String vm_name = host_vms[idx][VM_NAME];
       Hardware hardware = ui.host.vm_load(vm_name);
       if (hardware == null) {
         errmsg.setText("Error:Failed to load config for vm:" + vm_name);
@@ -3274,8 +3286,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      String vm_name = host_vms[idx][0];
-      int state = VirtualMachine.getState(host_vms[idx][1]);
+      String vm_name = host_vms[idx][VM_NAME];
+      int state = VirtualMachine.getState(host_vms[idx][VM_STATE]);
       if (state != VirtualMachine.STATE_OFF && state != VirtualMachine.STATE_SUSPEND) {
         errmsg.setText("Error:VM is already running.");
         return;
@@ -3304,8 +3316,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      String vm_name = host_vms[idx][0];
-      int state = VirtualMachine.getState(host_vms[idx][1]);
+      String vm_name = host_vms[idx][VM_NAME];
+      int state = VirtualMachine.getState(host_vms[idx][VM_STATE]);
       if (state != VirtualMachine.STATE_ON) {
         errmsg.setText("Error:VM is not running.");
         return;
@@ -3334,8 +3346,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      String vm_name = host_vms[idx][0];
-      int state = VirtualMachine.getState(host_vms[idx][1]);
+      String vm_name = host_vms[idx][VM_NAME];
+      int state = VirtualMachine.getState(host_vms[idx][VM_STATE]);
       if (state != VirtualMachine.STATE_ON) {
         errmsg.setText("Error:VM is not running.");
         return;
@@ -3364,8 +3376,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      String vm_name = host_vms[idx][0];
-      int state = VirtualMachine.getState(host_vms[idx][1]);
+      String vm_name = host_vms[idx][VM_NAME];
+      int state = VirtualMachine.getState(host_vms[idx][VM_STATE]);
       if (state != VirtualMachine.STATE_ON) {
         errmsg.setText("Error:VM is not running.");
         return;
@@ -3394,8 +3406,8 @@ public class ConfigService implements WebUIHandler {
         errmsg.setText("Error:no selection");
         return;
       }
-      String vm_name = host_vms[idx][0];
-      int state = VirtualMachine.getState(host_vms[idx][1]);
+      String vm_name = host_vms[idx][VM_NAME];
+      int state = VirtualMachine.getState(host_vms[idx][VM_STATE]);
       if (state != VirtualMachine.STATE_ON && state != VirtualMachine.STATE_SUSPEND) {
         errmsg.setText("Error:VM is not running.");
         return;
@@ -3415,6 +3427,23 @@ public class ConfigService implements WebUIHandler {
         Tasks.tasks.addTask(ui.tasks, task);
       };
       ui.confirm_popup.setVisible(true);
+    });
+    snapshots.addClickListener((me, cmp) -> {
+      ui.host = host;
+      errmsg.setText("");
+      if (Linux.distro == Linux.DistroTypes.Debian && Linux.derived == Linux.DerivedTypes.Unknown) {
+        errmsg.setText("Debian snapshot support is broken, please use Ubuntu!");
+        return;
+      }
+      int idx = host_table.getSelectedRow();
+      if (idx == -1) {
+        errmsg.setText("Error:no selection");
+        return;
+      }
+      String vm_name = host_vms[idx][VM_NAME];
+      ui.snapshots_vm = vm_name;
+      ui.snapshots_init.run();
+      ui.snapshots_popup.setVisible(true);
     });
   }
 
@@ -7307,6 +7336,8 @@ public class ConfigService implements WebUIHandler {
           list.append(ss.desc);
           list.append("\t");
           list.append(ss.parent);
+          list.append("\t");
+          list.append(ss.current ? "yes": "");
           list.append("\n");
         }
         return list.toString().getBytes();
@@ -7338,6 +7369,26 @@ public class ConfigService implements WebUIHandler {
           }
         };
         Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "snapshot_get_current": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        String result = "";
+        try {
+          VirtualMachine vm = VirtualMachine.get(vm_name);
+          if (vm == null) {
+            throw new Exception("VM not found");
+          }
+          Snapshot ss = vm.snapshotGetCurrent();
+          if (ss != null) {
+            result = ss.name;
+          }
+        } catch (Exception e) {
+          JFLog.log(e);
+          result = "error";
+        }
         return result.getBytes();
       }
       case "backup": {
@@ -7817,6 +7868,23 @@ public class ConfigService implements WebUIHandler {
           }
         };
         Tasks.tasks.addTask(null, task);
+        return result.getBytes();
+      }
+      case "vm_get_state": {
+        String token = params.get("token");
+        if (!token.equals(Config.current.token)) return null;
+        String vm_name = params.get("vm");
+        String result = "";
+        try {
+          VirtualMachine vm = VirtualMachine.get(vm_name);
+          if (vm == null) {
+            throw new Exception("VM not found");
+          }
+          result = Integer.toString(vm.getState());
+        } catch (Exception e) {
+          JFLog.log(e);
+          result = "error";
+        }
         return result.getBytes();
       }
       case "vm_start": {

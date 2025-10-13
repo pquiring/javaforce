@@ -438,7 +438,6 @@ function onresizeBody(event, element) {
 
 //NOTE : onresize does NOT trigger if width/height are 100%
 function onresizeElement(event, element) {
-  console.log('onresizeElement: id=' + element.id);
   var nodes = element.childNodes;
   var cnt = nodes.length;
   var node;

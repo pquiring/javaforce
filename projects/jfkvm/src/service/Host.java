@@ -450,6 +450,21 @@ public class Host implements Serializable, Comparable<Host> {
     }
   }
 
+  public String vm_get_state(String name) {
+    if (!isValid(7.1f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/vm_get_state?token=" + token + "&vm=" + name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      return new String(data);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   public String[] browse_list(String path) {
     if (!isValid(7.0f)) return null;
     try {
@@ -460,6 +475,92 @@ public class Host implements Serializable, Comparable<Host> {
       https.close();
       if (data == null) return null;
       return new String(data).split("\n");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String[][] snapshot_list(String vm) {
+    if (!isValid(7.1f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/snapshot_list?token=" + token + "&vm=" + vm);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String[] sss = new String(data).split("\n");
+      String[][] list = new String[sss.length][0];
+      int pos = 0;
+      for(String ss : sss) {
+        list[pos++] = ss.split("\t", -1);
+      }
+      return list;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String snapshot_create(String vm, String name, String desc, int flags) {
+    if (!isValid(7.1f)) return null;
+    try {
+      String udesc = JF.encodeURL(desc);
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/snapshot_create?token=" + token + "&vm=" + vm + "&name=" + name + "&desc=" + udesc + "&flags=" + flags);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String res = new String(data);
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String snapshot_get_current(String vm) {
+    if (!isValid(7.1f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/snapshot_get_current?token=" + token + "&vm=" + vm);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String res = new String(data);
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String snapshot_delete(String vm, String ss_name) {
+    if (!isValid(7.1f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/snapshot_delete?token=" + token + "&vm=" + vm + "&name=" + ss_name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String res = new String(data);
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String snapshot_restore(String vm, String ss_name) {
+    if (!isValid(7.1f)) return null;
+    try {
+      HTTPS https = new HTTPS();
+      if (!https.open(host)) throw new Exception("connect failed");
+      byte[] data = https.get("/api/snapshot_restore?token=" + token + "&vm=" + vm + "&name=" + ss_name);
+      https.close();
+      if (data == null || data.length == 0) return null;
+      String res = new String(data);
+      return res;
     } catch (Exception e) {
       JFLog.log(e);
       return null;
