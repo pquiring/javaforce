@@ -1,3 +1,6 @@
+2025-10-13 : 7.1 released!
+  - new : snapshots are now available for other on premise hosts
+
 2025-10-10 : 7.0 released!
   - new : decentrialized control
     - VMs can now be created, edited, and controlled from any host
