@@ -39,6 +39,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     this.port = port;
     this.pass = pass;
     vnc_windowed = this;
+    setTitle("VNC : " + host);
     new Connect().start();
   }
 
@@ -51,7 +52,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     setContentPane(scroll);
     is_fullscreen = true;
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    setTitle("VNC");
+    setTitle("VNC : " + windowed.host);
   }
 
   /**
