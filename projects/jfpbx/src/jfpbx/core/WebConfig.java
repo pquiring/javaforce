@@ -952,8 +952,9 @@ public class WebConfig implements WebHandler {
     if (verb.equals("upload")) {
       try {
         if (WebUpload.isMultipartContent(req)) {
+          String dirName = Paths.sounds + Paths.lang + "/";
           WebUpload webUpload = new WebUpload();
-          WebUpload.WebFile files[] = webUpload.parseRequest(req);
+          WebUpload.WebFile files[] = webUpload.processRequest(req, dirName);
           JFLog.log("files=" + files.length);
           for(int a=0;a<files.length;a++) {
             String fileName = files[a].name;
@@ -961,14 +962,6 @@ public class WebConfig implements WebHandler {
             if (!fileName.toLowerCase().endsWith(".wav")) {
               msg += "Not a wav:" + fileName + "<br>";
               continue;
-            }
-            String dirName = Paths.sounds + Paths.lang + "/";
-            try {
-              File saveTo = new File(dirName + fileName);
-              files[a].write(saveTo);
-              msg += "Uploaded:" + fileName + "<br>";
-            } catch (Exception e3) {
-              msg += "Upload failed:" + fileName + ":" + e3 + "<br>";
             }
           }
         } else {
