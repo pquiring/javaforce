@@ -32,7 +32,7 @@ button {
   border: 1px solid gray;
   border-radius: 2px;
   font-family: Tahoma;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 img {
@@ -484,7 +484,7 @@ form {
   border-radius: 2px;
   cursor: pointer;
   font-family: Tahoma;
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
   text-decoration: none;
 }
