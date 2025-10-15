@@ -47,6 +47,7 @@ public class ConfigService implements WebUIHandler {
     ".*[.]iso",
     ".*[.]jfvm",
     ".*[.]vmx",
+    ".*[.]zip",
   };
 
   //stats image dimensions
