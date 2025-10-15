@@ -5,6 +5,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import javaforce.webui.tasks.*;
+
 public class UploadButton extends Button {
 
   public UploadButton(String text) {
@@ -37,6 +39,14 @@ public class UploadButton extends Button {
 
   public void setUploadFolder(String folder) {
     client.setUploadFolder(folder);
+  }
+
+  public Status getUploadStatus() {
+    return client.getUploadStatus();
+  }
+
+  public void setUploadStatus(Status status) {
+    client.setUploadStatus(status);
   }
 
   public String html() {

@@ -14,6 +14,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.webui.*;
+import javaforce.webui.tasks.*;
 
 /** A class to handle file uploads (default max 64MBs) */
 public class WebUpload {
@@ -40,7 +41,7 @@ public class WebUpload {
     public String getName() {return name;}
   }
 
-  private static long maxlength = 64 * 1024 * 1024;  //64MBs
+  private static long maxlength = 64 * JF.MB;  //64MBs
   /** Sets max file upload (-1 = unlimited) (default = 64MBs) */
   public static void setMaxLength(long maxlength) {
     WebUpload.maxlength = maxlength;
@@ -58,6 +59,7 @@ public class WebUpload {
   private JFByteBuffer buffer = new JFByteBuffer(max_buffer_size);
   public WebFile[] processRequest(WebRequest req, String out_folder) throws Exception {
     String file_size = null;
+    Status status = null;
     //Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...
     String contentType = req.getHeader("Content-Type");
     if (contentType == null) throw new Exception("WebUpload:No Content-Type");
@@ -231,6 +233,8 @@ public class WebUpload {
       long fileLength = Long.valueOf(file_size);
       long fileCopied = 0;
       long fileLeft = fileLength;
+      long fileCopiedMB = 0;
+      long fileLengthMB = fileLength / JF.MB;
       int length = buffer.getLength();
       if (fileLength > (length + postLeft)) {
         throw new Exception("WebUpload:file exceeds post data size:" + fileLength + "," + (length + postLeft));
@@ -238,6 +242,7 @@ public class WebUpload {
       if (debug) {
         JFLog.log("file@" + pos + ":length=" + fileLength);
       }
+      //receive file
       while (fileLength == -1 || fileCopied < fileLength) {
         int buflen = buffer.getLength();
         if (fileLength == -1) {
@@ -248,6 +253,7 @@ public class WebUpload {
             if (debug) JFLog.log("end of content@" + idx);
             fileLength = fileCopied + idx;
             fileLeft = fileLength - fileCopied;
+            fileLengthMB = fileLength / JF.MB;
             buflen = idx;
           } else {
             buflen -= boundaryLength;
@@ -259,8 +265,17 @@ public class WebUpload {
         }
         if (buflen > 0 ) {
           int writen = buffer.readBytes(fos, buflen);
-          fileCopied += writen;
-          fileLeft -= writen;
+          if (writen > 0) {
+            fileCopied += writen;
+            fileLeft -= writen;
+            if (status != null && fileLength != -1) {
+              long copiedMB = fileCopied / JF.MB;
+              if (copiedMB != fileCopiedMB) {
+                fileCopiedMB = copiedMB;
+                status.setPercent((int)((fileCopiedMB * 100) / fileLengthMB));
+              }
+            }
+          }
         }
         buffer.compact();
         if (fileLength != -1 && fileLeft == 0) break;
@@ -291,11 +306,16 @@ public class WebUpload {
         String hash = new String(baos.toByteArray());
         WebUIClient client = WebUIServer.getClient(hash);
         out_folder = client.getUploadFolder();
+        status = client.getUploadStatus();
       }
       if (fos != null) {
         fos.close();
       }
       pos += fileLength;
+      if (status != null) {
+        status.setPercent(100);
+        status.setResult(true);
+      }
     }
     return files.toArray(new WebFile[0]);
   }

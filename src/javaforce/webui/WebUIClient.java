@@ -13,6 +13,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.service.*;
 import javaforce.webui.event.*;
+import javaforce.webui.tasks.*;
 
 public class WebUIClient {
   public WebSocket socket;
@@ -29,6 +30,7 @@ public class WebUIClient {
   private WebUIHandler handler;
   private OutputStream os;
   private String upload_folder;
+  private Status upload_status;
 
   public WebUIClient(WebSocket socket, WebUIHandler handler) {
     this.socket = socket;
@@ -330,5 +332,13 @@ public class WebUIClient {
 
   public void setUploadFolder(String folder) {
     upload_folder = folder;
+  }
+
+  public Status getUploadStatus() {
+    return upload_status;
+  }
+
+  public void setUploadStatus(Status status) {
+    upload_status = status;
   }
 }

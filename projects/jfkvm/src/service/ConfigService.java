@@ -6228,12 +6228,16 @@ public class ConfigService implements WebUIHandler {
     Button edit = new Button("Edit");
     tools.add(edit);
     ui.browse_button_edit = edit;
+    Button delete = new Button("Delete");
+    tools.add(delete);
     UploadButton upload = new UploadButton("Upload");
     if (ui.host.isLocal()) {
       tools.add(upload);
     }
-    Button delete = new Button("Delete");
-    tools.add(delete);
+    ProgressBar progress = new ProgressBar(Component.VERTICAL, 100.0f, 16);
+    if (ui.host.isLocal()) {
+      tools.add(progress);
+    }
 
     row = new Row();
     panel.add(row);
@@ -6277,6 +6281,21 @@ public class ConfigService implements WebUIHandler {
     };
     ui.browse_path = "/volumes";
     upload.setUploadFolder(ui.browse_path);
+    upload.setUploadStatus(new Status() {
+      public void setStatus(String status) {
+      }
+
+      public void setPercent(int percent) {
+        progress.setValue(percent);
+      }
+
+      public void setResult(String result, boolean success) {
+      }
+
+      public void setResult(boolean success) {
+        progress.setValue(0);
+      }
+    });
 
     refresh.addClickListener((me, cmp) -> {
       ui.browse_init.run();
@@ -6296,6 +6315,7 @@ public class ConfigService implements WebUIHandler {
       if (item.startsWith("/")) {
         ui.confirm_message.setText("Delete folder:" + item);
         ui.confirm_action = () -> {
+          //delete folder is NOT recursive
           new File(ui.browse_path + item).delete();
           ui.browse_init.run();
         };
@@ -6306,6 +6326,7 @@ public class ConfigService implements WebUIHandler {
           ui.browse_init.run();
         };
       }
+      ui.confirm_popup.setVisible(true);
     });
     list.addClickListener((me, cmp) -> {
       String item = list.getSelectedItem();
