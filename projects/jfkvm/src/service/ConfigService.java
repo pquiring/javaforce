@@ -6253,6 +6253,19 @@ public class ConfigService implements WebUIHandler {
     ui.browse_init = () -> {
       errmsg.setText("");
       path.setText(ui.browse_path);
+      upload.setUploadFolder(ui.browse_path);
+      upload.setUploadStatus(new Status() {
+        public void setStatus(String status) {
+        }
+        public void setPercent(int percent) {
+          progress.setValue(percent);
+        }
+        public void setResult(String result, boolean success) {
+        }
+        public void setResult(boolean success) {
+          progress.setValue(0);
+        }
+      });
       if (ui.host.isLocal()) {
         upload.setDisabled(false);
         upload.setUploadFolder(ui.browse_path);
@@ -6281,22 +6294,6 @@ public class ConfigService implements WebUIHandler {
       }
     };
     ui.browse_path = "/volumes";
-    upload.setUploadFolder(ui.browse_path);
-    upload.setUploadStatus(new Status() {
-      public void setStatus(String status) {
-      }
-
-      public void setPercent(int percent) {
-        progress.setValue(percent);
-      }
-
-      public void setResult(String result, boolean success) {
-      }
-
-      public void setResult(boolean success) {
-        progress.setValue(0);
-      }
-    });
 
     refresh.addClickListener((me, cmp) -> {
       ui.browse_init.run();
