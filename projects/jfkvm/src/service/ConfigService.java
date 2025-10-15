@@ -144,6 +144,12 @@ public class ConfigService implements WebUIHandler {
     public Runnable browse_complete_select;
     public Runnable browse_complete_edit;
 
+    public PopupPanel get_name_popup;
+    public Label get_name_message;
+    public Button get_name_button;
+    public Runnable get_name_action;
+    public TextField get_name_name;
+
     public PopupPanel vm_disk_popup;
     public Runnable vm_disk_init;
     public Disk vm_disk;
@@ -277,6 +283,9 @@ public class ConfigService implements WebUIHandler {
 
     ui.confirm_popup = confirmPopupPanel(ui);
     panel.add(ui.confirm_popup);
+
+    ui.get_name_popup = getNamePopupPanel(ui);
+    panel.add(ui.get_name_popup);
 
     ui.browse_popup = browseStoragePopupPanel(ui);
     panel.add(ui.browse_popup);
@@ -415,6 +424,49 @@ public class ConfigService implements WebUIHandler {
     });
     ui.confirm_message = popup_msg;
     ui.confirm_button = popup_b_action;
+    panel.setOnClose( () -> {
+      popup_b_cancel.click();
+    });
+    return panel;
+  }
+
+  private PopupPanel getNamePopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Enter name");
+    panel.setPosition(256 + 64, 128 + 64);
+    panel.setModal(true);
+    Row row;
+
+    row = new Row();
+    panel.add(row);
+    Label popup_msg = new Label("Message");
+    row.add(popup_msg);
+
+    row = new Row();
+    panel.add(row);
+    Label popup_label = new Label("Enter name:");
+    row.add(popup_label);
+    TextField name = new TextField("");
+    row.add(name);
+
+    row = new Row();
+    panel.add(row);
+    Button popup_b_action = new Button("Accept");
+    row.add(popup_b_action);
+    Button popup_b_cancel = new Button("Cancel");
+    row.add(popup_b_cancel);
+
+    popup_b_action.addClickListener((MouseEvent e, Component button) -> {
+      if (ui.get_name_action != null) {
+        ui.get_name_action.run();
+      }
+      ui.get_name_popup.setVisible(false);
+    });
+    popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
+      panel.setVisible(false);
+    });
+    ui.get_name_message = popup_msg;
+    ui.get_name_button = popup_b_action;
+    ui.get_name_name = name;
     panel.setOnClose( () -> {
       popup_b_cancel.click();
     });
@@ -6229,6 +6281,8 @@ public class ConfigService implements WebUIHandler {
     Button edit = new Button("Edit");
     tools.add(edit);
     ui.browse_button_edit = edit;
+    Button mkdir = new Button("Create Folder");
+    tools.add(mkdir);
     Button delete = new Button("Delete");
     tools.add(delete);
     UploadButton upload = new UploadButton("Upload");
@@ -6265,6 +6319,7 @@ public class ConfigService implements WebUIHandler {
         public void setResult(String result, boolean success) {
         }
         public void setResult(boolean success) {
+          ui.browse_init.run();  //refresh
           progress.setValue(0);
         }
       });
@@ -6308,6 +6363,16 @@ public class ConfigService implements WebUIHandler {
     });
     upload.addClickListener((me, cmp) -> {
       //automagic
+    });
+    mkdir.addClickListener((me, cmp) -> {
+      ui.get_name_message.setText("Create Folder");
+      ui.get_name_action = () -> {
+        String name = ui.get_name_name.getText();
+        String full = ui.browse_path + "/" + name;
+        new File(full).mkdir();
+        ui.browse_init.run();
+      };
+      ui.get_name_popup.setVisible(true);
     });
     delete.addClickListener((me, cmp) -> {
       String item = list.getSelectedItem();
