@@ -217,9 +217,6 @@ public class WebUpload {
       if (type == FILE) {
         if (cd_filename == null) throw new Exception("WebUpload:Upload has no filename");
       }
-      if (file_size == null) {
-        file_size = "-1";
-      }
       OutputStream fos = null;
       if (type == FILE) {
         WebFile uploadFile = new WebFile();
@@ -230,7 +227,13 @@ public class WebUpload {
       } else {
         fos = new ByteArrayOutputStream();
       }
-      long fileLength = Long.valueOf(file_size);
+      long fileLength = -1;
+      if (type == FILE) {
+        if (file_size != null) {
+          fileLength = Long.valueOf(file_size);
+          file_size = null;
+        }
+      }
       long fileCopied = 0;
       long fileLeft = fileLength;
       long fileCopiedMB = 0;
@@ -242,7 +245,7 @@ public class WebUpload {
       if (debug) {
         JFLog.log("file@" + pos + ":length=" + fileLength);
       }
-      //receive file
+      //receive form field
       while (fileLength == -1 || fileCopied < fileLength) {
         int buflen = buffer.getLength();
         if (fileLength == -1) {
@@ -295,7 +298,6 @@ public class WebUpload {
           postLeft -= bytes;
         }
       }
-      file_size = null;
       if (type == SIZE) {
         ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
         file_size = new String(baos.toByteArray());
