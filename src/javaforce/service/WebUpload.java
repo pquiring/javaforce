@@ -307,8 +307,10 @@ public class WebUpload {
         ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
         String hash = new String(baos.toByteArray());
         WebUIClient client = WebUIServer.getClient(hash);
-        out_folder = client.getUploadFolder();
-        status = client.getUploadStatus();
+        if (client != null) {
+          out_folder = client.getUploadFolder();
+          status = client.getUploadStatus();
+        }
       }
       if (fos != null) {
         fos.close();
