@@ -1,9 +1,12 @@
-package javaforce.gl;
+package javaforce.tests;
 
 /**
  *
  * @author User
  */
+
+import javaforce.gl.*;
+
 public class TestMath {
   private static void print(Matrix mat) {
     for(int a=0;a<16;a++) {

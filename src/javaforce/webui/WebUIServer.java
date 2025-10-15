@@ -53,6 +53,10 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     }
   }
 
+  public void setUploadFolder(String folder) {
+    web.setUploadFolder(folder);
+  }
+
   public void setClientVerify(boolean state) {
     web.setClientVerify(state);
   }

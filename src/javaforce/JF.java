@@ -1800,9 +1800,29 @@ public class JF {
     }
   }
 
+  public static boolean moveFile(File src, File dest) {
+    try {
+      Path temp = Files.move(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      return temp != null;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   public static boolean copyFile(String src, String dest) {
     try {
       Path temp = Files.copy(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+      return temp != null;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public static boolean copyFile(File src, File dest) {
+    try {
+      Path temp = Files.copy(src.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
       return temp != null;
     } catch (Exception e) {
       JFLog.log(e);

@@ -53,6 +53,11 @@ textarea {
   resize: none;
 }
 
+form {
+  margin: 0px;
+  display: inline;
+}
+
 .logo1 {
   position: relative;
   width: 100px;
@@ -463,4 +468,17 @@ textarea {
 
 .drag_nwse_resize {
   cursor: nwse-resize;
+}
+
+.upload {
+  display: inline-block;
+  background-color: #e7e7e7;
+  color: black;
+  padding: 3.5px;
+  border: 1px solid black;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
 }

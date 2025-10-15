@@ -8,9 +8,9 @@ package javaforce.webui;
  */
 
 public class Button extends TextComponent {
-  private String url;
-  private Image img;
-  private Icon icon;
+  protected String url;
+  protected Image img;
+  protected Icon icon;
 
   public Button(String text) {
     this.text = text;
@@ -38,6 +38,7 @@ public class Button extends TextComponent {
     this.text = text;
     setClass("button");
   }
+
   public String html() {
     StringBuilder html = new StringBuilder();
     html.append("<button" + getAttrs() + ">");

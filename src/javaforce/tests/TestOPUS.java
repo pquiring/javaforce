@@ -1,4 +1,4 @@
-package javaforce.codec.opus;
+package javaforce.tests;
 
 /** Opus test
  *
@@ -7,8 +7,9 @@ package javaforce.codec.opus;
 
 import javaforce.*;
 import javaforce.media.*;
+import javaforce.codec.opus.*;
 
-public class Test {
+public class TestOPUS {
   private static final int frame_size = 960;
   public static void main(String[] args) {
     MediaCoder.init();

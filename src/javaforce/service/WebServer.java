@@ -24,7 +24,9 @@ public class WebServer {
   private Object clientsLock = new Object();
 
   public static boolean config_enable_gzip = true;
-  public static boolean debug = false;
+  public static boolean debug = true;
+
+  private static String upload_folder;
 
   /** Start web server on non-secure port. */
   public boolean start(WebHandler api, int port) {
@@ -53,6 +55,9 @@ public class WebServer {
   }
   public void setWebSocketHandler(WebSocketHandler wsapi) {
     this.wsapi = wsapi;
+  }
+  public void setUploadFolder(String folder) {
+    upload_folder = folder;
   }
   public void stop() {
     active = false;
@@ -120,49 +125,62 @@ public class WebServer {
           int ch = is.read();
           if (ch == -1) break;
           request.append((char)ch);
-          if (request.toString().endsWith("\r\n\r\n")) {
-            WebRequest req = new WebRequest();
-            req.secure = web.secure;
-            req.request = request.toString();
-            req.fields = req.request.split("\r\n");
-            req.is = is;
-            req.serverIP = s.getLocalAddress().getHostAddress();
-            if (req.serverIP.equals("0:0:0:0:0:0:0:1")) req.serverIP = "127.0.0.1";
-            req.serverPort = s.getLocalPort();
-            req.remoteIP = s.getInetAddress().getHostAddress();
-            req.remotePort = s.getPort();
-            WebResponse res = new WebResponse();
-            res.os = s.getOutputStream();
-            req.fields0 = req.fields[0].split(" ");
-            req.init(res);
-            if (isWebSocketRequest(req)) {
-              WebSocket socket = new WebSocket(s.getInetAddress().getHostAddress());
-              socket.is = is;
-              socket.os = res.os;
-              socket.url = req.fields0[1];
-              if (web.wsapi != null && web.wsapi.doWebSocketConnect(socket)) {
-                sendWebSocketAccepted(req, res);
-                processWebSocket(socket);
-              } else {
-                sendWebSocketDenied(req, res);
-              }
-              break;
+          if (!request.toString().endsWith("\r\n\r\n")) continue;
+          if (debug) JFLog.log("WebServer:Request detected!");
+          WebRequest req = new WebRequest();
+          req.secure = web.secure;
+          req.request = request.toString();
+          req.fields = req.request.split("\r\n");
+          req.is = is;
+          req.serverIP = s.getLocalAddress().getHostAddress();
+          if (req.serverIP.equals("0:0:0:0:0:0:0:1")) req.serverIP = "127.0.0.1";
+          req.serverPort = s.getLocalPort();
+          req.remoteIP = s.getInetAddress().getHostAddress();
+          req.remotePort = s.getPort();
+          WebResponse res = new WebResponse();
+          res.os = s.getOutputStream();
+          req.fields0 = req.fields[0].split(" ");
+          req.init(res);
+          if (isWebSocketRequest(req)) {
+            if (debug) JFLog.log("WebServer:WEB_SOCKET");
+            WebSocket socket = new WebSocket(s.getInetAddress().getHostAddress());
+            socket.is = is;
+            socket.os = res.os;
+            socket.url = req.fields0[1];
+            if (web.wsapi != null && web.wsapi.doWebSocketConnect(socket)) {
+              sendWebSocketAccepted(req, res);
+              processWebSocket(socket);
+            } else {
+              sendWebSocketDenied(req, res);
             }
-            else if (req.fields0[0].equals("GET")) {
-              req.method = "GET";
-              web.api.doGet(req, res);
-            }
-            else if (req.fields0[0].equals("POST")) {
-              req.method = "POST";
-              web.api.doPost(req, res);
-            }
-            else {
-              res.setStatus(501, "Error - Unsupported Method");
-            }
-            res.writeAll(req);
-            if (req.fields0[2].equals("HTTP/1.0")) break;
-            request.setLength(0);
+            break;
           }
+          else if (WebUpload.isMultipartContent(req)) {
+            if (debug) JFLog.log("WebServer:Upload detected!");
+            if (upload_folder == null) {
+              res.setStatus(501, "Error - Uploads disabled");
+            } else {
+              WebUpload upload = new WebUpload();
+              upload.processRequest(req, upload_folder);
+            }
+          }
+          else if (req.fields0[0].equals("GET")) {
+            if (debug) JFLog.log("WebServer:GET:" + req.getQueryString());
+            req.method = "GET";
+            web.api.doGet(req, res);
+          }
+          else if (req.fields0[0].equals("POST")) {
+            if (debug) JFLog.log("WebServer:POST:" + req.getQueryString());
+            req.method = "POST";
+            web.api.doPost(req, res);
+          }
+          else {
+            if (debug) JFLog.log("WebServer:Unknown request!");
+            res.setStatus(501, "Error - Unsupported Method");
+          }
+          res.writeAll(req);
+          if (req.fields0[2].equals("HTTP/1.0")) break;
+          request.setLength(0);
         }
         if (s != null) {
           s.close();

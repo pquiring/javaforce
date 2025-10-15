@@ -1,11 +1,13 @@
-package javaforce.db;
+package javaforce.tests;
 
 /** TestRow
  *
  * @author pquiring
  */
 
-public class Test extends Row {
+import javaforce.db.*;
+
+public class TestDB extends Row {
   public String value;
 
   private static final int version = 1;
@@ -21,14 +23,14 @@ public class Test extends Row {
   }
 
   public static void main(String[] args) {
-    Table<Test> test = new Table<Test>(() -> {return new Test();});
+    Table<TestDB> test = new Table<TestDB>(() -> {return new TestDB();});
     test.load("test.dat");
-    Test row = new Test();
+    TestDB row = new TestDB();
     row.value = "123";
     test.add(row);
     test.save();
 
-    TableList<Test> list = new TableList<Test>(() -> {return new Test();});
+    TableList<TestDB> list = new TableList<TestDB>(() -> {return new TestDB();});
     list.load("test");
     list.add(test);
   }

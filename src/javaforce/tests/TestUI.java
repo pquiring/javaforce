@@ -1,4 +1,4 @@
-package javaforce.ui;
+package javaforce.tests;
 
 /** TestUI
  *
@@ -7,6 +7,7 @@ package javaforce.ui;
 
 import javaforce.*;
 import javaforce.gl.*;
+import javaforce.ui.*;
 import javaforce.ui.theme.*;
 
 public class TestUI implements WindowEvents {

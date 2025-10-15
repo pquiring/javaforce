@@ -1,4 +1,4 @@
-package javaforce.awt;
+package javaforce.tests;
 
 /** TestEvents
  *

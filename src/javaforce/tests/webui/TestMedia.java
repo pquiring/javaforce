@@ -1,4 +1,4 @@
-package javaforce.webui;
+package javaforce.tests.webui;
 
 /** Test WebUI.
  *
@@ -8,8 +8,9 @@ package javaforce.webui;
 import java.io.*;
 
 import javaforce.*;
-import javaforce.webui.event.*;
 import javaforce.service.*;
+import javaforce.webui.*;
+import javaforce.webui.event.*;
 
 public class TestMedia implements WebUIHandler {
 

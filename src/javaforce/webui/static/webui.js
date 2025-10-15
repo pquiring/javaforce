@@ -868,4 +868,16 @@ function onMouseMoveCanvasDrawRect(event, element) {
   }
 }
 
+function onchangeUpload(event, element, id) {
+  var form = document.getElementById('f' + id);
+  var size = document.getElementById('s' + id);
+  const selectedFiles = event.target.files;
+  if (selectedFiles.length > 0) {
+    const file = selectedFiles[0];
+    console.log("Selected file:", file.name, file.type, file.size);
+    size.value = file.size;
+    form.submit();
+  }
+}
+
 setTimeout(connect, delay);
