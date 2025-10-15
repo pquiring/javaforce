@@ -24,7 +24,7 @@ public class WebServer {
   private Object clientsLock = new Object();
 
   public static boolean config_enable_gzip = true;
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   private static String upload_folder;
 
@@ -191,7 +191,7 @@ public class WebServer {
       } catch (SocketException e) {
         if (debug) JFLog.log("WebServer.Connection:disconnected");
       } catch (Exception e) {
-        e.printStackTrace();
+        JFLog.log(e);
       }
       synchronized (web.clientsLock) {
         web.clients.remove(this);
