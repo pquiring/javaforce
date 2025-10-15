@@ -72,6 +72,8 @@ public class ConfigService implements WebUIHandler {
     initSecureWebKeys();
     server = new WebUIServer();
     server.start(this, 443, keys);
+    server.setUploadFolder("/volumes");
+    server.setUploadLimit(-1);
     vmm = new VMM();
     lxcmgr = new Docker();
   }
