@@ -7,9 +7,6 @@ package javaforce.webui;
 
 public class UploadButton extends Button {
 
-  private String fid;
-  private String uid;
-
   public UploadButton(String text) {
     super(text);
   }
@@ -30,8 +27,6 @@ public class UploadButton extends Button {
 
   public void init() {
     super.init();
-    fid = "u" + (idx++);
-    uid = "u" + (idx++);
     addEvent("onchange", "onchangeUpload(event, this, '" + id + "');");
     setStyle("display", "none");
   }

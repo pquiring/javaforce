@@ -39,9 +39,9 @@ public class WebUpload {
     public String getName() {return name;}
   }
 
-  private static int maxlength = 64 * 1024 * 1024;  //64MBs
-  /** Sets max file upload (-1 = unlimited) */
-  public static void setMaxLength(int maxlength) {
+  private static long maxlength = 64 * 1024 * 1024;  //64MBs
+  /** Sets max file upload (-1 = unlimited) (default = 64MBs) */
+  public static void setMaxLength(long maxlength) {
     WebUpload.maxlength = maxlength;
   }
 

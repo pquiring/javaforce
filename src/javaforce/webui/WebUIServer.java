@@ -53,8 +53,14 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     }
   }
 
+  /** Sets upload folder. */
   public void setUploadFolder(String folder) {
     web.setUploadFolder(folder);
+  }
+
+  /** Sets max file upload (-1 = unlimited) (default = 64MBs) */
+  public void setUploadLimit(long size) {
+    WebUpload.setMaxLength(size);
   }
 
   public void setClientVerify(boolean state) {
