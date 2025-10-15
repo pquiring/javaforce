@@ -161,6 +161,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         return client;
       }
     }
+    JFLog.log("WebUIServer:client not found by socket {" + sock + "}");
     return null;
   }
 
@@ -172,6 +173,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         return client;
       }
     }
+    JFLog.log("WebUIServer:client not found by hash {" + hash + "}");
     return null;
   }
 
