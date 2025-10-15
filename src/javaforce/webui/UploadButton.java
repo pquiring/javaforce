@@ -25,8 +25,6 @@ public class UploadButton extends Button {
     super(icon, text);
   }
 
-  private static int idx = 1;
-
   public void init() {
     super.init();
     addEvent("onchange", "onchangeUpload(event, this, '" + id + "');");

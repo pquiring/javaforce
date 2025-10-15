@@ -6234,7 +6234,7 @@ public class ConfigService implements WebUIHandler {
     if (ui.host.isLocal()) {
       tools.add(upload);
     }
-    ProgressBar progress = new ProgressBar(Component.VERTICAL, 100.0f, 16);
+    ProgressBar progress = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
     if (ui.host.isLocal()) {
       tools.add(progress);
     }
