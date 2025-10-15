@@ -607,4 +607,8 @@ public class Host implements Serializable, Comparable<Host> {
   public int compareTo(Host o) {
     return hostname.compareTo(o.hostname);
   }
+
+  public boolean isLocal() {
+    return this == Config.current.self;
+  }
 }

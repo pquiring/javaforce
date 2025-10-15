@@ -6228,8 +6228,10 @@ public class ConfigService implements WebUIHandler {
     Button edit = new Button("Edit");
     tools.add(edit);
     ui.browse_button_edit = edit;
-    Button upload = new Button("Upload");
-//    tools.add(upload);
+    UploadButton upload = new UploadButton("Upload");
+    if (ui.host.isLocal()) {
+      tools.add(upload);
+    }
     Button delete = new Button("Delete");
     tools.add(delete);
 
@@ -6251,6 +6253,7 @@ public class ConfigService implements WebUIHandler {
     ui.browse_init = () -> {
       errmsg.setText("");
       path.setText(ui.browse_path);
+      upload.setUploadFolder(ui.browse_path);
       list.removeAll();
       String[] files = ui.host.browse_list(ui.browse_path);
       if (files == null) {
