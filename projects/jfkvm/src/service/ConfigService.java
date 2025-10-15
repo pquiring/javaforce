@@ -6231,13 +6231,9 @@ public class ConfigService implements WebUIHandler {
     Button delete = new Button("Delete");
     tools.add(delete);
     UploadButton upload = new UploadButton("Upload");
-    if (ui.host.isLocal()) {
-      tools.add(upload);
-    }
+    tools.add(upload);
     ProgressBar progress = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
-    if (ui.host.isLocal()) {
-      tools.add(progress);
-    }
+    tools.add(progress);
 
     row = new Row();
     panel.add(row);
@@ -6257,7 +6253,12 @@ public class ConfigService implements WebUIHandler {
     ui.browse_init = () -> {
       errmsg.setText("");
       path.setText(ui.browse_path);
-      upload.setUploadFolder(ui.browse_path);
+      if (ui.host.isLocal()) {
+        upload.setDisabled(false);
+        upload.setUploadFolder(ui.browse_path);
+      } else {
+        upload.setDisabled(true);
+      }
       list.removeAll();
       String[] files = ui.host.browse_list(ui.browse_path);
       if (files == null) {
