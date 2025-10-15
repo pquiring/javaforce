@@ -6276,6 +6276,7 @@ public class ConfigService implements WebUIHandler {
       }
     };
     ui.browse_path = "/volumes";
+    upload.setUploadFolder(ui.browse_path);
 
     refresh.addClickListener((me, cmp) -> {
       ui.browse_init.run();
@@ -6287,7 +6288,7 @@ public class ConfigService implements WebUIHandler {
       ui.browse_init.run();
     });
     upload.addClickListener((me, cmp) -> {
-      //TODO : upload files - use filezilla for now
+      //automagic
     });
     delete.addClickListener((me, cmp) -> {
       String item = list.getSelectedItem();
