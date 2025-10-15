@@ -31,10 +31,19 @@ public class UploadButton extends Button {
     setStyle("display", "none");
   }
 
+  public String getUploadFolder() {
+    return client.getUploadFolder();
+  }
+
+  public void setUploadFolder(String folder) {
+    client.setUploadFolder(folder);
+  }
+
   public String html() {
     StringBuilder html = new StringBuilder();
     html.append("<form method='post' id='f" + id + "' enctype='multipart/form-data' target='upload'>");
     html.append("<input type='hidden' id='s" + id + "' name='size'>");
+    html.append("<input type='hidden' name='client' value='" + client.hash + "'>");
     html.append("<input type='file' name='file' " + getAttrs() + ">");  //'multiple' not supported yet
     html.append("<label for='" + id + "' class='upload'>");
     if (img != null) {

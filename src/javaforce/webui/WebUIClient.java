@@ -28,6 +28,7 @@ public class WebUIClient {
 
   private WebUIHandler handler;
   private OutputStream os;
+  private String upload_folder;
 
   public WebUIClient(WebSocket socket, WebUIHandler handler) {
     this.socket = socket;
@@ -321,5 +322,13 @@ public class WebUIClient {
   /** Set where binary data is written to. */
   public void setOutputStream(OutputStream os) {
     this.os = os;
+  }
+
+  public String getUploadFolder() {
+    return upload_folder;
+  }
+
+  public void setUploadFolder(String folder) {
+    upload_folder = folder;
   }
 }

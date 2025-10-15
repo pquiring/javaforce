@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.webui.*;
 
 /** A class to handle file uploads (default max 64MBs) */
 public class WebUpload {
@@ -51,7 +52,8 @@ public class WebUpload {
   private static byte[] end_of_files = "--\r\n".getBytes();
 
   private static final int SIZE = 1;
-  private static final int FILE = 2;
+  private static final int CLIENT = 2;
+  private static final int FILE = 3;
 
   private JFByteBuffer buffer = new JFByteBuffer(max_buffer_size);
   public WebFile[] processRequest(WebRequest req, String out_folder) throws Exception {
@@ -198,6 +200,10 @@ public class WebUpload {
           type = SIZE;
           break;
         }
+        case "client": {
+          type = CLIENT;
+          break;
+        }
         case "file": {
           type = FILE;
           break;
@@ -279,6 +285,12 @@ public class WebUpload {
         ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
         file_size = new String(baos.toByteArray());
         if (debug) JFLog.log("size=" + file_size);
+      }
+      if (type == CLIENT) {
+        ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
+        String hash = new String(baos.toByteArray());
+        WebUIClient client = WebUIServer.getClient(hash);
+        out_folder = client.getUploadFolder();
       }
       if (fos != null) {
         fos.close();

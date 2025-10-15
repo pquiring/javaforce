@@ -40,6 +40,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   public void start(WebUIHandler handler, int port, KeyMgmt keys) {
     this.handler = handler;
     if (web != null) stop();
+    clients = new ArrayList<WebUIClient>();
     web = new WebServer();
     web.setWebSocketHandler(this);
     web.start(this, port, keys);
@@ -58,7 +59,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     web.setUploadFolder(folder);
   }
 
-  /** Sets max file upload (-1 = unlimited) (default = 64MBs) */
+  /** Sets max file upload size (-1 = unlimited) (default = 64MBs) */
   public void setUploadLimit(long size) {
     WebUpload.setMaxLength(size);
   }
@@ -150,9 +151,9 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     }
   }
 
-  public ArrayList<WebUIClient> clients = new ArrayList<WebUIClient>();
+  public static ArrayList<WebUIClient> clients;
 
-  public WebUIClient getClient(WebSocket sock) {
+  public static WebUIClient getClient(WebSocket sock) {
     int cnt = clients.size();
     for(int a=0;a<cnt;a++) {
       WebUIClient client = clients.get(a);
@@ -163,7 +164,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     return null;
   }
 
-  public WebUIClient getClient(String hash) {
+  public static WebUIClient getClient(String hash) {
     int cnt = clients.size();
     for(int a=0;a<cnt;a++) {
       WebUIClient client = clients.get(a);
