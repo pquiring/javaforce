@@ -6314,6 +6314,41 @@ public class ConfigService implements WebUIHandler {
     ui.browse_init = () -> {
       errmsg.setText("");
       path.setText(ui.browse_path);
+      if (upload.getUploadStatus() == null) {
+        upload.setUploadStatus(new Status() {
+          public void setStatus(String status) {
+          }
+          public void setPercent(int percent) {
+            if (ui.browse_upload_task == null) {
+              ui.browse_upload_task = new Task(createEvent("Upload File", ui)) {
+                public void doTask() {
+                  //wait for upload to complete
+                  synchronized (ui.browse_upload_wait) {
+                    try { ui.browse_upload_wait.wait(); } catch (Exception e) {}
+                  }
+                }
+              };
+              Tasks.tasks.addTask(ui.tasks, ui.browse_upload_task);
+            }
+            progress.setValue(percent);
+            ui.browse_upload_task.setPercent(percent);
+          }
+          public void setResult(String result, boolean success) {
+            setResult(success);
+          }
+          public void setResult(boolean success) {
+            ui.browse_init.run();  //refresh
+            progress.setValue(0);
+            if (ui.browse_upload_task != null) {
+              ui.browse_upload_task.setResult(success ? "Completed" : "Failed", success);
+              synchronized (ui.browse_upload_wait) {
+                try { ui.browse_upload_wait.notify(); } catch (Exception e) {}
+              }
+              ui.browse_upload_task = null;
+            }
+          }
+        });
+      }
       if (ui.host.isLocal()) {
         upload.setVisible(true);
         upload.setUploadFolder(ui.browse_path);
@@ -6354,39 +6389,6 @@ public class ConfigService implements WebUIHandler {
     });
     upload.addClickListener((me, cmp) -> {
       //automagic
-    });
-    upload.setUploadStatus(new Status() {
-      public void setStatus(String status) {
-      }
-      public void setPercent(int percent) {
-        if (ui.browse_upload_task == null) {
-          ui.browse_upload_task = new Task(createEvent("Upload File", ui)) {
-            public void doTask() {
-              //wait for upload to complete
-              synchronized (ui.browse_upload_wait) {
-                try { ui.browse_upload_wait.wait(); } catch (Exception e) {}
-              }
-            }
-          };
-          Tasks.tasks.addTask(ui.tasks, ui.browse_upload_task);
-        }
-        progress.setValue(percent);
-        ui.browse_upload_task.setPercent(percent);
-      }
-      public void setResult(String result, boolean success) {
-        setResult(success);
-      }
-      public void setResult(boolean success) {
-        ui.browse_init.run();  //refresh
-        progress.setValue(0);
-        if (ui.browse_upload_task != null) {
-          ui.browse_upload_task.setResult(success ? "Completed" : "Failed", success);
-          synchronized (ui.browse_upload_wait) {
-            try { ui.browse_upload_wait.notify(); } catch (Exception e) {}
-          }
-          ui.browse_upload_task = null;
-        }
-      }
     });
     mkdir.addClickListener((me, cmp) -> {
       ui.get_name_message.setText("Create Folder");
