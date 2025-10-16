@@ -1,5 +1,12 @@
 What's new...
 
+Oct 16/2025 : JF/91.0
+  - WebUpload now uploads files to a folder
+    - supports webui tasks Status feedback
+  - webui : added UploadButton
+  - jfKVM/8.0
+    - storage browser now supports file uploads
+
 Oct 13/2025 : JF/90.1
   - jfKVM/7.1
     - new : add snapshots control from any host (decentralized)
