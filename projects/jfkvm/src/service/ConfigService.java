@@ -2885,7 +2885,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(backup);
     Button clone = new Button(new Icon("copy"), "Clone");
     tools.add(clone);
-    Button migrate = new Button(new Icon("move"), "Migrate");
+    Button migrate = new Button(new Icon("move-up-down"), "Migrate");
     tools.add(migrate);
     Button unreg = new Button(new Icon("remove"), "Unregister");
     tools.add(unreg);
@@ -6277,7 +6277,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(refresh);
     Button cdup = new Button(new Icon("folder-up"));
     tools.add(cdup);
-    Button select = new Button(new Icon("file"), "Select");  //'Select' disk or 'Register' vm
+    Button select = new Button(new Icon("select"), "Select");  //'Select' disk or 'Register' vm
     tools.add(select);
     ui.browse_button_select = select;
     Button edit = new Button(new Icon("edit"), "Edit");
