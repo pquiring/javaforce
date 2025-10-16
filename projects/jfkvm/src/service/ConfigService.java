@@ -6320,7 +6320,7 @@ public class ConfigService implements WebUIHandler {
           }
           public void setPercent(int percent) {
             if (ui.browse_upload_task == null) {
-              ui.browse_upload_task = new Task(createEvent("Delete Snapshot", ui)) {
+              ui.browse_upload_task = new Task(createEvent("Upload File", ui)) {
                 public void doTask() {
                   //wait for upload to complete
                   synchronized (ui.browse_upload_wait) {
