@@ -293,8 +293,8 @@ public abstract class Component {
   public void setSize(int width, int height) {
     this.width = width;
     this.height = height;
-    if (width > 0) {setStyle("width", width + "px");}
-    if (height > 0) {setStyle("height", height + "px");}
+    setStyle("width", width + "px");
+    setStyle("height", height + "px");
     if (isLoaded()) {
       sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
     }
