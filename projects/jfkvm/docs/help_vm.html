@@ -15,13 +15,7 @@ Virtual Machines:
 =================
 
 Before creating a virtual machine you need to upload iso files.
-Install ssh on your server (depends on distro type).
-Enable root access to ssh:
-  vi /etc/ssh/sshd_config
-    PermitRootLogin yes
-  systemctl restart sshd
-Use filezilla and connect to server over SFTP using root account.
-Navigate to /volumes to find your storage pools and select a pool to store iso files.
+Open the Storage panel and browse a storage pool to store your iso files.
 Create a folder called 'iso' in this storage pool and upload iso files there.
 
 To create a virtual machine click on Virtual Machines : Create
