@@ -6309,25 +6309,24 @@ public class ConfigService implements WebUIHandler {
     ui.browse_init = () -> {
       errmsg.setText("");
       path.setText(ui.browse_path);
-      upload.setUploadFolder(ui.browse_path);
-      upload.setUploadStatus(new Status() {
-        public void setStatus(String status) {
-        }
-        public void setPercent(int percent) {
-          progress.setValue(percent);
-        }
-        public void setResult(String result, boolean success) {
-        }
-        public void setResult(boolean success) {
-          ui.browse_init.run();  //refresh
-          progress.setValue(0);
-        }
-      });
       if (ui.host.isLocal()) {
-        upload.setDisabled(false);
+        upload.setVisible(true);
         upload.setUploadFolder(ui.browse_path);
+        upload.setUploadStatus(new Status() {
+          public void setStatus(String status) {
+          }
+          public void setPercent(int percent) {
+            progress.setValue(percent);
+          }
+          public void setResult(String result, boolean success) {
+          }
+          public void setResult(boolean success) {
+            ui.browse_init.run();  //refresh
+            progress.setValue(0);
+          }
+        });
       } else {
-        upload.setDisabled(true);
+        upload.setVisible(false);
       }
       list.removeAll();
       String[] files = ui.host.browse_list(ui.browse_path);

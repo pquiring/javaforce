@@ -275,7 +275,9 @@ public class WebUpload {
               long copiedMB = fileCopied / JF.MB;
               if (copiedMB != fileCopiedMB) {
                 fileCopiedMB = copiedMB;
-                status.setPercent((int)((fileCopiedMB * 100) / fileLengthMB));
+                int percent = (int)((fileCopiedMB * 100) / fileLengthMB);
+                if (debug) JFLog.log("status:percent=" + percent);
+                status.setPercent(percent);
               }
             }
           }
