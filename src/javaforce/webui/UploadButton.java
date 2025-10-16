@@ -27,8 +27,7 @@ public class UploadButton extends Button {
 
   public void init() {
     super.init();
-    addEvent("onchange", "onchangeUpload(event, this, '" + id + "');");
-    setStyle("display", "none");
+    setClass("upload");
   }
 
   public String getUploadFolder() {
@@ -51,9 +50,9 @@ public class UploadButton extends Button {
     StringBuilder html = new StringBuilder();
     html.append("<form method='post' id='f" + id + "' enctype='multipart/form-data' target='upload'>");
     html.append("<input type='hidden' id='s" + id + "' name='size'>");
-    html.append("<input type='hidden' name='client' value='" + client.hash + "'>");
-    html.append("<input type='file' name='file' " + getAttrs() + ">");  //'multiple' not supported yet
-    html.append("<label for='" + id + "' class='upload'>");
+    html.append("<input type='hidden' name='client' id='c" + id + "' value='" + client.hash + "'>");
+    html.append("<input type='file' name='file' id='i" + id + " style='display: none;' onchange='onchangeUpload(event, this, '" + id + "');'>");  //'multiple' not supported yet
+    html.append("<label for='i" + id + "'" + getAttrs() + ">");
     if (img != null) {
       html.append(img.html());
     }
