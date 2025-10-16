@@ -143,6 +143,8 @@ public class ConfigService implements WebUIHandler {
     public String[] browse_filters;
     public Runnable browse_complete_select;
     public Runnable browse_complete_edit;
+    public Task browse_upload_task;
+    public Object browse_upload_wait;
 
     public PopupPanel get_name_popup;
     public Label get_name_message;
@@ -6317,13 +6319,31 @@ public class ConfigService implements WebUIHandler {
           public void setStatus(String status) {
           }
           public void setPercent(int percent) {
+            if (ui.browse_upload_task == null) {
+              ui.browse_upload_task = new Task(createEvent("Delete Snapshot", ui)) {
+                public void doTask() {
+                  //wait for upload to complete
+                  synchronized (ui.browse_upload_wait) {
+                    try { ui.browse_upload_wait.wait(); } catch (Exception e) {}
+                  }
+                }
+              };
+              Tasks.tasks.addTask(ui.tasks, ui.browse_upload_task);
+            }
             progress.setValue(percent);
           }
           public void setResult(String result, boolean success) {
+            setResult(success);
           }
           public void setResult(boolean success) {
             ui.browse_init.run();  //refresh
             progress.setValue(0);
+            if (ui.browse_upload_task != null) {
+              synchronized (ui.browse_upload_wait) {
+                try { ui.browse_upload_wait.notify(); } catch (Exception e) {}
+              }
+              ui.browse_upload_task = null;
+            }
           }
         });
       } else {

@@ -57,279 +57,288 @@ public class WebUpload {
   private static final int FILE = 3;
 
   private JFByteBuffer buffer = new JFByteBuffer(max_buffer_size);
-  public WebFile[] processRequest(WebRequest req, String out_folder) throws Exception {
+  public WebFile[] processRequest(WebRequest req, String out_folder) {
     String file_size = null;
     Status status = null;
-    //Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...
-    String contentType = req.getHeader("Content-Type");
-    if (contentType == null) throw new Exception("WebUpload:No Content-Type");
-    if (debug) {
-      for(String field : req.fields) {
-        JFLog.log(field);
-      }
-    }
-    int idx = contentType.indexOf("boundary=");
-    if (idx == -1) throw new Exception("WebUpload:No boundary");
-    byte[] boundary = ("--" + contentType.substring(idx+9)).getBytes();
-    int boundaryLength = boundary.length;
-    if (debug) JFLog.log("WebUpload:boundary=" + new String(boundary) + ":length=" + boundaryLength);
-    String contentLength = req.getHeader("Content-Length");
-    if (contentLength == null) throw new Exception("WebUpload:No Content-Length");
-    long postLength = Long.valueOf(contentLength);
-    if (maxlength > 0 && postLength > maxlength) {
-      throw new Exception("WebUpload:Upload > Max allowed");
-    }
-    long postCopied = 0;
-    long postLeft = postLength;
-    long pos = 0;
-    boolean done = false;
-    if (debug) JFLog.log("postLength=" + postLength);
-    ArrayList<WebFile> files = new ArrayList<WebFile>();
-    while (postCopied < postLength) {
-      //read boundary
-      while (buffer.getLength() < boundaryLength + 2) {
-        buffer.compact();
-        int toRead = (boundaryLength + 2) - buffer.getLength();
-        if (toRead > postLeft) {
-          toRead = (int)postLeft;
-        }
-        if (toRead > buffer.available()) {
-          toRead = (int)buffer.available();
-        }
-        if (toRead == 0) throw new Exception("WebUpload:out of data");
-        int bytes = buffer.write(req.is, toRead);
-        if (bytes > 0) {
-          postCopied += bytes;
-          postLeft -= bytes;
-        }
-      }
-      if (buffer.startsWith(end_of_line)) {
-        if (debug) JFLog.log("skip end_of_line");
-        buffer.skip(2);
-        pos += 2;
-      }
-      int offset = buffer.getOffset();
-      if (Arrays.compare(buffer.getBuffer(), offset, offset + boundaryLength, boundary, 0, boundaryLength) != 0) {
-        throw new Exception("WebUpload:Bad boundary @ " + postCopied);
-      }
+    OutputStream fos = null;
+    try {
+      //Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...
+      String contentType = req.getHeader("Content-Type");
+      if (contentType == null) throw new Exception("WebUpload:No Content-Type");
       if (debug) {
-        JFLog.log("Boundary@" + pos);
-      }
-      buffer.skip(boundaryLength);
-      pos += boundaryLength;
-      buffer.compact();
-      //read headers
-      int headers_end = 0;
-      do {
-        if (buffer.indexOf(end_of_files) == 0) {
-          done = true;
-          if (debug) JFLog.log("end_of_files");
-          break;
+        for(String field : req.fields) {
+          JFLog.log(field);
         }
-        int toRead = 1024;
+      }
+      int idx = contentType.indexOf("boundary=");
+      if (idx == -1) throw new Exception("WebUpload:No boundary");
+      byte[] boundary = ("--" + contentType.substring(idx+9)).getBytes();
+      int boundaryLength = boundary.length;
+      if (debug) JFLog.log("WebUpload:boundary=" + new String(boundary) + ":length=" + boundaryLength);
+      String contentLength = req.getHeader("Content-Length");
+      if (contentLength == null) throw new Exception("WebUpload:No Content-Length");
+      long postLength = Long.valueOf(contentLength);
+      if (maxlength > 0 && postLength > maxlength) {
+        throw new Exception("WebUpload:Upload > Max allowed");
+      }
+      long postCopied = 0;
+      long postLeft = postLength;
+      long pos = 0;
+      boolean done = false;
+      if (debug) JFLog.log("postLength=" + postLength);
+      ArrayList<WebFile> files = new ArrayList<WebFile>();
+      while (postCopied < postLength) {
+        //read boundary
+        while (buffer.getLength() < boundaryLength + 2) {
+          buffer.compact();
+          int toRead = (boundaryLength + 2) - buffer.getLength();
+          if (toRead > postLeft) {
+            toRead = (int)postLeft;
+          }
+          if (toRead > buffer.available()) {
+            toRead = (int)buffer.available();
+          }
+          if (toRead == 0) throw new Exception("WebUpload:out of data");
+          int bytes = buffer.write(req.is, toRead);
+          if (bytes > 0) {
+            postCopied += bytes;
+            postLeft -= bytes;
+          }
+        }
+        if (buffer.startsWith(end_of_line)) {
+          if (debug) JFLog.log("skip end_of_line");
+          buffer.skip(2);
+          pos += 2;
+        }
+        int offset = buffer.getOffset();
+        if (Arrays.compare(buffer.getBuffer(), offset, offset + boundaryLength, boundary, 0, boundaryLength) != 0) {
+          throw new Exception("WebUpload:Bad boundary @ " + postCopied);
+        }
         if (debug) {
-          JFLog.log("toRead=" + toRead + "," + postLeft + "," + buffer.available());
+          JFLog.log("Boundary@" + pos);
         }
-        if (toRead > postLeft) {
-          toRead = (int)postLeft;
+        buffer.skip(boundaryLength);
+        pos += boundaryLength;
+        buffer.compact();
+        //read headers
+        int headers_end = 0;
+        do {
+          if (buffer.indexOf(end_of_files) == 0) {
+            done = true;
+            if (debug) JFLog.log("end_of_files");
+            break;
+          }
+          int toRead = 1024;
+          if (debug) {
+            JFLog.log("toRead=" + toRead + "," + postLeft + "," + buffer.available());
+          }
+          if (toRead > postLeft) {
+            toRead = (int)postLeft;
+          }
+          if (toRead > buffer.available()) {
+            toRead = (int)buffer.available();
+          }
+          if (toRead == 0) throw new Exception("WebUpload:out of data");
+          int bytes = buffer.write(req.is, toRead);
+          if (bytes > 0) {
+            postCopied += bytes;
+            postLeft -= bytes;
+            headers_end = buffer.indexOf(end_of_headers);
+          }
+        } while (headers_end == -1);
+        if (done) break;
+        headers_end += 4;
+        //Content-Disposition fields
+        String cd_filename = null;
+        String cd_name = null;
+        if (debug) {
+          JFLog.log("Headers@" + pos + ":length=" + headers_end);
         }
-        if (toRead > buffer.available()) {
-          toRead = (int)buffer.available();
+        String headers = buffer.readString(headers_end);
+        pos += headers_end;
+        if (debug) {
+          JFLog.log("Headers=" + headers);
         }
-        if (toRead == 0) throw new Exception("WebUpload:out of data");
-        int bytes = buffer.write(req.is, toRead);
-        if (bytes > 0) {
-          postCopied += bytes;
-          postLeft -= bytes;
-          headers_end = buffer.indexOf(end_of_headers);
-        }
-      } while (headers_end == -1);
-      if (done) break;
-      headers_end += 4;
-      //Content-Disposition fields
-      String cd_filename = null;
-      String cd_name = null;
-      if (debug) {
-        JFLog.log("Headers@" + pos + ":length=" + headers_end);
-      }
-      String headers = buffer.readString(headers_end);
-      pos += headers_end;
-      if (debug) {
-        JFLog.log("Headers=" + headers);
-      }
-      HTTP.Parameters params = HTTP.Parameters.decode(headers.split("\r\n"));
-      for(String p_key : params.keys()) {
-        String p_value = params.get(p_key);
-        switch (p_key) {
-          case "Content-Disposition": {
-            String[] fields = p_value.split(";");
-            for(String field : fields) {
-              field = field.trim();
-              int eq = field.indexOf('=');
-              if (eq == -1) continue;
-              String f_key = field.substring(0, eq);
-              String f_value = field.substring(eq + 1);
-              switch (f_key) {
-                case "filename":
-                  //form-data; name="file"; filename="..."
-                  cd_filename = f_value;
-                  if (cd_filename.startsWith("\"") && cd_filename.endsWith("\"")) {
-                    cd_filename = cd_filename.substring(1, cd_filename.length() - 1);  //remove quotes
-                  }
+        HTTP.Parameters params = HTTP.Parameters.decode(headers.split("\r\n"));
+        for(String p_key : params.keys()) {
+          String p_value = params.get(p_key);
+          switch (p_key) {
+            case "Content-Disposition": {
+              String[] fields = p_value.split(";");
+              for(String field : fields) {
+                field = field.trim();
+                int eq = field.indexOf('=');
+                if (eq == -1) continue;
+                String f_key = field.substring(0, eq);
+                String f_value = field.substring(eq + 1);
+                switch (f_key) {
+                  case "filename":
+                    //form-data; name="file"; filename="..."
+                    cd_filename = f_value;
+                    if (cd_filename.startsWith("\"") && cd_filename.endsWith("\"")) {
+                      cd_filename = cd_filename.substring(1, cd_filename.length() - 1);  //remove quotes
+                    }
+                    break;
+                  case "name":
+                    //form-data; name="size"
+                    cd_name = f_value;
+                    if (cd_name.startsWith("\"") && cd_name.endsWith("\"")) {
+                      cd_name = cd_name.substring(1, cd_name.length() - 1);  //remove quotes
+                    }
                   break;
-                case "name":
-                  //form-data; name="size"
-                  cd_name = f_value;
-                  if (cd_name.startsWith("\"") && cd_name.endsWith("\"")) {
-                    cd_name = cd_name.substring(1, cd_name.length() - 1);  //remove quotes
-                  }
-                break;
+                }
               }
+              break;
             }
+            case "Content-Length": {
+              //most browsers to not include Content-Length ???
+              file_size = p_value;
+              break;
+            }
+          }
+        }
+        int type = 0;
+        switch (cd_name) {
+          case "size": {
+            file_size = null;
+            type = SIZE;
             break;
           }
-          case "Content-Length": {
-            //most browsers to not include Content-Length ???
-            file_size = p_value;
+          case "client": {
+            type = CLIENT;
             break;
           }
+          case "file": {
+            type = FILE;
+            break;
+          }
+          default: {
+            throw new Exception("WebUpload:Unknown field:" + cd_name);
+          }
         }
-      }
-      int type = 0;
-      switch (cd_name) {
-        case "size": {
-          file_size = null;
-          type = SIZE;
-          break;
-        }
-        case "client": {
-          type = CLIENT;
-          break;
-        }
-        case "file": {
-          type = FILE;
-          break;
-        }
-        default: {
-          throw new Exception("WebUpload:Unknown field:" + cd_name);
-        }
-      }
-      if (type == FILE) {
-        if (cd_filename == null) throw new Exception("WebUpload:Upload has no filename");
-      }
-      OutputStream fos = null;
-      if (type == FILE) {
-        WebFile uploadFile = new WebFile();
-        uploadFile.name = cd_filename;
-        uploadFile.file = new File(out_folder + "/" + cd_filename);
-        files.add(uploadFile);
-        fos = new FileOutputStream(uploadFile.file);
-      } else {
-        fos = new ByteArrayOutputStream();
-      }
-      long fileLength = -1;
-      if (type == FILE) {
-        if (file_size != null) {
-          fileLength = Long.valueOf(file_size);
-          file_size = null;
-        }
-      }
-      long fileCopied = 0;
-      long fileLeft = fileLength;
-      long fileCopiedMB = 0;
-      long fileLengthMB = fileLength / JF.MB;
-      int length = buffer.getLength();
-      if (fileLength > (length + postLeft)) {
-        fos.close();
-        throw new Exception("WebUpload:file exceeds post data size:" + fileLength + "," + (length + postLeft));
-      }
-      if (debug) {
-        JFLog.log("file@" + pos + ":length=" + fileLength);
-      }
-      //receive form field
-      while (fileLength == -1 || fileCopied < fileLength) {
-        int buflen = buffer.getLength();
-        if (fileLength == -1) {
-          idx = buffer.indexOf(boundary);
-          if (idx != -1) {
-            //end of content found
-            idx -= 2;  //\r\n
-            if (debug) JFLog.log("end of content@" + idx);
-            fileLength = fileCopied + idx;
-            fileLeft = fileLength - fileCopied;
-            fileLengthMB = fileLength / JF.MB;
-            buflen = idx;
-          } else {
-            buflen -= boundaryLength;
+        if (type == FILE) {
+          if (cd_filename == null) throw new Exception("WebUpload:Upload has no filename");
+          WebFile uploadFile = new WebFile();
+          uploadFile.name = cd_filename;
+          uploadFile.file = new File(out_folder + "/" + cd_filename);
+          files.add(uploadFile);
+          fos = new FileOutputStream(uploadFile.file);
+          if (status != null) {
+            status.setPercent(0);
           }
         } else {
-          if (buflen > fileLeft) {
-            buflen = (int)fileLeft;
+          fos = new ByteArrayOutputStream();
+        }
+        long fileLength = -1;
+        if (type == FILE) {
+          if (file_size != null) {
+            fileLength = Long.valueOf(file_size);
+            file_size = null;
           }
         }
-        if (buflen > 0 ) {
-          int writen = buffer.readBytes(fos, buflen);
-          if (writen == -1) {
-            fos.close();
-            throw new Exception("WebUpload:output error");
+        long fileCopied = 0;
+        long fileLeft = fileLength;
+        long fileCopiedMB = 0;
+        long fileLengthMB = fileLength / JF.MB;
+        int length = buffer.getLength();
+        if (fileLength > (length + postLeft)) {
+          throw new Exception("WebUpload:file exceeds post data size:" + fileLength + "," + (length + postLeft));
+        }
+        if (debug) {
+          JFLog.log("file@" + pos + ":length=" + fileLength);
+        }
+        //receive form field
+        while (fileLength == -1 || fileCopied < fileLength) {
+          int buflen = buffer.getLength();
+          if (fileLength == -1) {
+            idx = buffer.indexOf(boundary);
+            if (idx != -1) {
+              //end of content found
+              idx -= 2;  //\r\n
+              if (debug) JFLog.log("end of content@" + idx);
+              fileLength = fileCopied + idx;
+              fileLeft = fileLength - fileCopied;
+              fileLengthMB = fileLength / JF.MB;
+              buflen = idx;
+            } else {
+              buflen -= boundaryLength;
+            }
+          } else {
+            if (buflen > fileLeft) {
+              buflen = (int)fileLeft;
+            }
           }
-          if (writen > 0) {
-            fileCopied += writen;
-            fileLeft -= writen;
-            if (status != null && fileLength != -1) {
-              long copiedMB = fileCopied / JF.MB;
-              if (copiedMB != fileCopiedMB) {
-                fileCopiedMB = copiedMB;
-                int percent = (int)((fileCopiedMB * 100) / fileLengthMB);
-                if (debug) JFLog.log("status:percent=" + percent);
-                status.setPercent(percent);
+          if (buflen > 0 ) {
+            int writen = buffer.readBytes(fos, buflen);
+            if (writen == -1) {
+              throw new Exception("WebUpload:output error");
+            }
+            if (writen > 0) {
+              fileCopied += writen;
+              fileLeft -= writen;
+              if (status != null && fileLength != -1) {
+                long copiedMB = fileCopied / JF.MB;
+                if (copiedMB != fileCopiedMB) {
+                  fileCopiedMB = copiedMB;
+                  int percent = (int)((fileCopiedMB * 100) / fileLengthMB);
+                  if (debug) JFLog.log("status:percent=" + percent);
+                  status.setPercent(percent);
+                }
               }
             }
           }
+          buffer.compact();
+          if (fileLength != -1 && fileLeft == 0) break;
+          int available = buffer.available();
+          int toRead = fileLength == -1 ? available : (int)fileLeft;
+          if (debug) JFLog.log("toRead=" + toRead + "," + available + "," + fileLength + "," + fileLeft);
+          if (toRead > available) {
+            toRead = available;
+          }
+          if (toRead == 0) {
+            throw new Exception("WebUpload:out of data");
+          }
+          int bytes = buffer.write(req.is, toRead);
+          if (bytes == -1) {
+            throw new Exception("WebUpload:input error");
+          }
+          if (bytes > 0) {
+            postCopied += bytes;
+            postLeft -= bytes;
+          }
         }
-        buffer.compact();
-        if (fileLength != -1 && fileLeft == 0) break;
-        int available = buffer.available();
-        int toRead = fileLength == -1 ? available : (int)fileLeft;
-        if (debug) JFLog.log("toRead=" + toRead + "," + available + "," + fileLength + "," + fileLeft);
-        if (toRead > available) {
-          toRead = available;
+        if (type == SIZE) {
+          ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
+          file_size = new String(baos.toByteArray());
+          if (debug) JFLog.log("size=" + file_size);
         }
-        if (toRead == 0) {
-          fos.close();
-          throw new Exception("WebUpload:out of data");
+        if (type == CLIENT) {
+          ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
+          String hash = new String(baos.toByteArray());
+          WebUIClient client = WebUIServer.getClient(hash);
+          if (client != null) {
+            out_folder = client.getUploadFolder();
+            status = client.getUploadStatus();
+          }
         }
-        int bytes = buffer.write(req.is, toRead);
-        if (bytes == -1) {
-          fos.close();
-          throw new Exception("WebUpload:input error");
-        }
-        if (bytes > 0) {
-          postCopied += bytes;
-          postLeft -= bytes;
+        pos += fileLength;
+        fos.close();
+        fos = null;
+        if (status != null) {
+          status.setPercent(100);
+          status.setResult(true);
         }
       }
-      if (type == SIZE) {
-        ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
-        file_size = new String(baos.toByteArray());
-        if (debug) JFLog.log("size=" + file_size);
+      return files.toArray(new WebFile[0]);
+    } catch (Exception e) {
+      JFLog.log(e);
+      if (fos != null) {
+        try { fos.close(); } catch (Exception e2) {}
       }
-      if (type == CLIENT) {
-        ByteArrayOutputStream baos = (ByteArrayOutputStream)fos;
-        String hash = new String(baos.toByteArray());
-        WebUIClient client = WebUIServer.getClient(hash);
-        if (client != null) {
-          out_folder = client.getUploadFolder();
-          status = client.getUploadStatus();
-        }
-      }
-      fos.close();
-      pos += fileLength;
       if (status != null) {
-        status.setPercent(100);
-        status.setResult(true);
+        status.setResult(false);
       }
+      return null;
     }
-    return files.toArray(new WebFile[0]);
   }
 }
