@@ -377,12 +377,12 @@ public abstract class Component {
     if (attrs.size() > 0) {
       int size = attrs.size();
       String[] keys = attrs.keySet().toArray(new String[size]);
-      String[] vals = attrs.values().toArray(new String[size]);
-      for(int a=0;a<size;a++) {
-        if (vals[a] == null) {
-          sb.append(" " + keys[a]);
+      for(String key : keys) {
+        String value = attrs.get(key);
+        if (value == null) {
+          sb.append(" " + key);
         } else {
-          sb.append(" " + keys[a] + "='" + vals[a] + "'");
+          sb.append(" " + key + "='" + value + "'");
         }
       }
     }
@@ -399,9 +399,9 @@ public abstract class Component {
       sb.append(" style='");
       int size = styles.size();
       String[] keys = styles.keySet().toArray(new String[size]);
-      String[] vals = styles.values().toArray(new String[size]);
-      for(int a=0;a<size;a++) {
-        sb.append(keys[a] + ":" + vals[a] + ";");
+      for(String key : keys) {
+        String value = styles.get(key);
+        sb.append(key + ":" + value + ";");
       }
       sb.append("'");
     }
