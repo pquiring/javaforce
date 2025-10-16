@@ -6309,6 +6309,8 @@ public class ConfigService implements WebUIHandler {
     row.add(errmsg);
     ui.browse_errmsg = errmsg;
 
+    ui.browse_upload_wait = new Object();
+
     ui.browse_init = () -> {
       errmsg.setText("");
       path.setText(ui.browse_path);
