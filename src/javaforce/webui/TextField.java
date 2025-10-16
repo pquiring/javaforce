@@ -16,7 +16,7 @@ public class TextField extends TextComponent {
   public String html() {
     return "<input" + getAttrs() + " value='" + text + "'>";
   }
-  public void updateText(String txt) {
+  public void update() {
     sendEvent("setvalue", new String[] {"value=" + text});
   }
   public void setPassword(boolean state) {

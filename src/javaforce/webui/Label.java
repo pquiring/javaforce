@@ -27,7 +27,7 @@ public class Label extends TextComponent {
     }
     return "<div" + getAttrs() + ">" + text + "</div>";
   }
-  public void updateText(String txt) {
+  public void update() {
     sendEvent("settext", new String[] {"text=" + text});
   }
   public void setImage(Resource img) {

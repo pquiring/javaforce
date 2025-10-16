@@ -42,6 +42,12 @@ public class Button extends TextComponent {
   public String html() {
     StringBuilder html = new StringBuilder();
     html.append("<button" + getAttrs() + ">");
+    html.append(innerHTML());
+    html.append("</button>");
+    return html.toString();
+  }
+  public String innerHTML() {
+    StringBuilder html = new StringBuilder();
     if (img != null) {
       html.append(img.html());
     }
@@ -51,11 +57,10 @@ public class Button extends TextComponent {
     if (text != null) {
       html.append(text);
     }
-    html.append("</button>");
     return html.toString();
   }
-  public void updateText(String text) {
-    sendEvent("settext", new String[] {"text=" + text});
+  public void update() {
+    sendEvent("sethtml", new String[] {"html=" + innerHTML()});
   }
   public void setURL(String url) {
     addEvent("onclick", "window.open(\"" + url + "\");");
@@ -66,5 +71,9 @@ public class Button extends TextComponent {
   }
   public void setImage(Resource img) {
     this.img.setImage(img);
+  }
+  public void setIcon(Icon icon) {
+    this.icon = icon;
+    update();
   }
 }

@@ -15,7 +15,7 @@ public class TextArea extends TextComponent {
   public String html() {
     return "<textarea" + getAttrs() + ">" + text + "</textarea>";
   }
-  public void updateText(String txt) {
+  public void update() {
     sendEvent("settext", new String[] {"text=" + text});
   }
   public void onChanged(String[] args) {

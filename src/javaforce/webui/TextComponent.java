@@ -7,10 +7,10 @@ package javaforce.webui;
 
 public abstract class TextComponent extends Container {
   protected String text;
-  public abstract void updateText(String text);
+  public abstract void update();
   public void setText(String text) {
     this.text = text;
-    updateText(text);
+    update();
     onChanged(new String[] {"text=" + text});
  }
   public String getText() {

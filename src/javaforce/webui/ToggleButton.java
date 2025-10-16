@@ -93,7 +93,7 @@ public class ToggleButton extends TextComponent {
     this.text = text;
     sendEvent("settext", new String[] {"text=" + text});
   }
-  public void updateText(String text) {
+  public void update() {
     sendEvent("settext", new String[] {"text=" + text});
   }
   public void setColors(int clrOff, int clrOn) {
