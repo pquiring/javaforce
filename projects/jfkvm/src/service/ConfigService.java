@@ -6273,21 +6273,21 @@ public class ConfigService implements WebUIHandler {
 
     ToolBar tools = new ToolBar();
     panel.add(tools);
-    Button refresh = new Button("Refresh");
+    Button refresh = new Button(new Icon("refresh"), "Refresh");
     tools.add(refresh);
-    Button cdup = new Button("&#x21e7;");  //unicode up arrow
+    Button cdup = new Button(new Icon("folder-up"));
     tools.add(cdup);
-    Button select = new Button("Select");
+    Button select = new Button(new Icon("file"), "Select");  //'Select' disk or 'Register' vm
     tools.add(select);
     ui.browse_button_select = select;
-    Button edit = new Button("Edit");
+    Button edit = new Button(new Icon("edit"), "Edit");
     tools.add(edit);
     ui.browse_button_edit = edit;
-    Button mkdir = new Button("Create Folder");
+    Button mkdir = new Button(new Icon("add"), "Create Folder");
     tools.add(mkdir);
-    Button delete = new Button("Delete");
+    Button delete = new Button(new Icon("remove"), "Delete");
     tools.add(delete);
-    UploadButton upload = new UploadButton("Upload");
+    UploadButton upload = new UploadButton(new Icon("upload"), "Upload");
     tools.add(upload);
     ProgressBar progress = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
     tools.add(progress);
