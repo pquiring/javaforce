@@ -240,6 +240,7 @@ public class WebUpload {
       long fileLengthMB = fileLength / JF.MB;
       int length = buffer.getLength();
       if (fileLength > (length + postLeft)) {
+        fos.close();
         throw new Exception("WebUpload:file exceeds post data size:" + fileLength + "," + (length + postLeft));
       }
       if (debug) {
@@ -268,6 +269,10 @@ public class WebUpload {
         }
         if (buflen > 0 ) {
           int writen = buffer.readBytes(fos, buflen);
+          if (writen == -1) {
+            fos.close();
+            throw new Exception("WebUpload:output error");
+          }
           if (writen > 0) {
             fileCopied += writen;
             fileLeft -= writen;
@@ -295,6 +300,10 @@ public class WebUpload {
           throw new Exception("WebUpload:out of data");
         }
         int bytes = buffer.write(req.is, toRead);
+        if (bytes == -1) {
+          fos.close();
+          throw new Exception("WebUpload:input error");
+        }
         if (bytes > 0) {
           postCopied += bytes;
           postLeft -= bytes;
@@ -314,9 +323,7 @@ public class WebUpload {
           status = client.getUploadStatus();
         }
       }
-      if (fos != null) {
-        fos.close();
-      }
+      fos.close();
       pos += fileLength;
       if (status != null) {
         status.setPercent(100);

@@ -154,7 +154,7 @@ public class JFByteBuffer {
       return max_bytes;
     } catch (Exception e) {
       JFLog.log(e);
-      return 0;
+      return -1;
     }
   }
   /** Reads a string of specified length. */
@@ -218,7 +218,7 @@ public class JFByteBuffer {
       return read;
     } catch (Exception e) {
       JFLog.log(e);
-      return 0;
+      return -1;
     }
   }
 }

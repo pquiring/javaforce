@@ -6289,7 +6289,7 @@ public class ConfigService implements WebUIHandler {
     tools.add(upload);
     ProgressBar progress = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
     tools.add(progress);
-    progress.setColors(Color.grey, Color.grey, Color.grey);
+    progress.setColors(Color.blue, Color.blue, Color.blue);
 
     row = new Row();
     panel.add(row);
