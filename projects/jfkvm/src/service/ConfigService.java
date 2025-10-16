@@ -6341,6 +6341,7 @@ public class ConfigService implements WebUIHandler {
             ui.browse_init.run();  //refresh
             progress.setValue(0);
             if (ui.browse_upload_task != null) {
+              ui.browse_upload_task.setResult(success ? "Completed" : "Failed", success);
               synchronized (ui.browse_upload_wait) {
                 try { ui.browse_upload_wait.notify(); } catch (Exception e) {}
               }
