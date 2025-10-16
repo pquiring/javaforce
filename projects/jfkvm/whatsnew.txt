@@ -1,3 +1,6 @@
+2025-10-16 : 8.0 released!
+  - new : storage browser now supports file uploads
+
 2025-10-13 : 7.1 released!
   - new : snapshots are now available for other on premise hosts
 
