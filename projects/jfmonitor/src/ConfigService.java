@@ -2636,7 +2636,7 @@ public class ConfigService implements WebUIHandler {
         panel.add(row);
 
         row = new Row();
-        ProgressBar bar = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
+        ProgressBar bar = new ProgressBar(Component.HORIZONTAL, 100.0f, 100, 16);
         bar.setLevels(80, 90, 100);
         bar.setColors(Color.green, Color.yellow, Color.red);
         bar.setValue(store.percent);

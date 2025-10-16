@@ -1286,7 +1286,7 @@ public class Panels {
       }
     }
     int dir = or.equals("h") ? ProgressBar.HORIZONTAL : ProgressBar.VERTICAL;
-    ProgressBar pb = new ProgressBar(dir, Float.valueOf(v2), 32);
+    ProgressBar pb = new ProgressBar(dir, Float.valueOf(v2), 100, 32);
     pb.setLevels(Float.valueOf(v0), Float.valueOf(v1), Float.valueOf(v2));
     pb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(c2, 16));
     TagBase tag = context.getTag(v.tag);

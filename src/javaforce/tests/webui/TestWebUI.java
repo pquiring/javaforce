@@ -293,7 +293,7 @@ public class TestWebUI implements WebUIHandler {
     hslider.addChangedListener((Slider) -> {System.out.println("hslider=" + hslider.getPos());});
     tab8.add(hslider);
 
-    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 16);
+    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 100, 16);
     bar.setValue(50);
     tab8.add(bar);
     client.setProperty("bar", bar);

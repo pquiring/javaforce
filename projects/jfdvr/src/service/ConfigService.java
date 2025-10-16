@@ -275,7 +275,7 @@ public class ConfigService implements WebUIHandler {
     preview_panel.add(row);
     lbl = new Label("Motion Value:");
     row.add(lbl);
-    ProgressBar motion_bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 10);
+    ProgressBar motion_bar = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f, 100, 10);
     row.add(motion_bar);
     Label motion_value = new Label("");
     row.add(motion_value);

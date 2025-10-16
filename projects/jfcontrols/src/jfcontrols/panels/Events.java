@@ -539,7 +539,7 @@ public class Events {
           case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green, false); break;
           case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey, 0); break;
           case "togglebutton": style = "0=ff0000;1=00ff00"; nc = new ToggleButton(text, Color.red, Color.green); break;
-          case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f, 32); break;
+          case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f, 100, 32); break;
           case "image": text = "image"; nc = new Image(Images.getImage(text)); break;
         }
         if (nc == null) break;

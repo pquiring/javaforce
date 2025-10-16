@@ -13,7 +13,7 @@ public class ProgressBar extends Container {
   private float value;
   private Block bar;
   private int barWidth;
-  public ProgressBar(int dir, float max, int barWidth) {
+  public ProgressBar(int dir, float max, int barLength, int barWidth) {
     this.barWidth = barWidth;
     value = 0;
     this.max = max;
@@ -22,8 +22,8 @@ public class ProgressBar extends Container {
     setBackColor(Color.grey);
     setDir(dir);
     switch (dir) {
-      case HORIZONTAL: setSize(100, barWidth); break;
-      case VERTICAL: setSize(barWidth, 100); break;
+      case HORIZONTAL: setSize(barLength, barWidth); break;
+      case VERTICAL: setSize(barWidth, barLength); break;
     }
     setSize();
     clr0 = Color.red;
