@@ -1,4 +1,3 @@
 FileChooser
 DateChooser
-FileUploader
 FileDownloader

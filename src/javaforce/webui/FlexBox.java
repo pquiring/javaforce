@@ -10,7 +10,7 @@ package javaforce.webui;
 public class FlexBox extends Component {
 
   public FlexBox() {
-    addClass("flexitem");
+    addClass("flex");
   }
 
   public String html() {
