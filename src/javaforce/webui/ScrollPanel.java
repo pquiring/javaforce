@@ -7,6 +7,7 @@ package javaforce.webui;
 
 public class ScrollPanel extends Panel {
   public ScrollPanel() {
+    setFlexDirection(NONE);
     setOverflow(AUTO);
     addClass("flex");
   }
