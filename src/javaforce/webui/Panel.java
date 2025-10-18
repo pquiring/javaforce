@@ -5,6 +5,10 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.util.*;
+
+import javaforce.webui.event.*;
+
 public class Panel extends Container {
   private int overflow = -1;
   public Panel() {
@@ -44,5 +48,21 @@ public class Panel extends Container {
         invokeOnLoaded((Container)c2);
       }
     }
+  }
+
+  public void init() {
+    super.init();
+    onInited(null);
+  }
+
+  protected void onInited(String[] args) {
+    for(int a=0;a<inited.length;a++) {
+      inited[a].inited(this);
+    }
+  }
+  private Inited[] inited = new Inited[0];
+  public void addInitedListener(Inited handler) {
+    inited = Arrays.copyOf(inited, inited.length + 1);
+    inited[inited.length-1] = handler;
   }
 }
