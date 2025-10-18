@@ -2096,7 +2096,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel serverLogs(String file) {
-    Panel panel = new Panel();
+    Panel panel = new ScrollPanel();
     Row row = new Row();
     Label label = new Label("Logs");
     row.add(label);
