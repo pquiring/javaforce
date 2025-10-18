@@ -1,3 +1,6 @@
+Oct 18/2025 : 0.19 released
+  - fix : webui issues
+
 Dec 16/2024 : 0.18 released
   - fix : cisco : create VLAN (again)
     - fixed NPE preventing new VLAN modification
