@@ -12,6 +12,8 @@ import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 import javaforce.webui.tasks.*;
+import static javaforce.webui.Component.*;
+import static javaforce.webui.event.KeyEvent.*;
 
 public class ConfigService implements WebUIHandler {
   public WebUIServer server;
@@ -282,9 +284,12 @@ public class ConfigService implements WebUIHandler {
 
   public Panel loginPanel() {
     Panel panel = new Panel();
-    Container ctr = new Container();
+    panel.removeClass("column");
     InnerPanel inner = new InnerPanel("jfMonitor Login");
-    panel.setAlign(Component.CENTER);
+    inner.setAlign(CENTER);
+    inner.setMaxWidth();
+    inner.setMaxHeight();
+
     Row row;
     Label msg = new Label("");
     inner.add(msg);
@@ -307,8 +312,7 @@ public class ConfigService implements WebUIHandler {
         msg.setColor(Color.red);
       }
     });
-    ctr.add(inner);
-    panel.add(ctr);
+    panel.add(inner);
     return panel;
   }
 
