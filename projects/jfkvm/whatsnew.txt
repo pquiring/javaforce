@@ -1,3 +1,7 @@
+2025-10-18 : 8.1 released!
+  - new : added more icons to buttons
+  - fix : minor ui issues
+
 2025-10-16 : 8.0 released!
   - new : storage browser now supports file uploads
 
