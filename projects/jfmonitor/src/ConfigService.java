@@ -2110,8 +2110,6 @@ public class ConfigService implements WebUIHandler {
     if (file == null) {
       ScrollPanel scroll = new ScrollPanel();
       panel.setMaxWidth();
-      row.setMaxWidth();
-      row.setMaxHeight();
       panel.add(scroll);
       //list log files (limit 1 year)
       File folder = new File(Paths.logsPath);
@@ -2157,7 +2155,6 @@ public class ConfigService implements WebUIHandler {
       text.setMaxWidth();
       text.setMaxHeight();
       panel.setMaxWidth();
-      row.setMaxWidth();
       try {
         FileInputStream fis = new FileInputStream(Paths.logsPath + "\\" + file);
         byte data[] = fis.readAllBytes();
