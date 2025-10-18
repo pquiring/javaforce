@@ -290,17 +290,20 @@ public class ConfigService implements WebUIHandler {
     inner.setMaxWidth();
     inner.setMaxHeight();
 
-    Row row;
     Label msg = new Label("");
     inner.add(msg);
-    row = new Row();
-    row.add(new Label("Password:"));
+
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    grid.setAlign(CENTER);
+    inner.add(grid);
+
     TextField password = new TextField("");
     password.setPassword(true);
-    row.add(password);
+    grid.addRow(new Component[] {new Label("Password:"), password});
+
     Button login = new Button("Login");
-    row.add(login);
-    inner.add(row);
+    inner.add(login);
+
     login.addClickListener( (MouseEvent m, Component c) -> {
       String passTxt = password.getText();
       WebUIClient webclient = c.getClient();
