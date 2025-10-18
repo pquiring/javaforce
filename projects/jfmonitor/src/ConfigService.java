@@ -1599,11 +1599,11 @@ public class ConfigService implements WebUIHandler {
     opt_cfg.addClickListener( (MouseEvent me, Component c) -> {
       ui.setRightPanel(serverConfig());
     });
-    Button opt_logs = new Button("Logs");
+    Button opt_logs = new Button("Tasks Log");
     list.add(opt_logs);
     opt_logs.setWidth(leftSize);
     opt_logs.addClickListener( (MouseEvent me, Component c) -> {
-      ui.setRightPanel(serverLogs(null));
+      ui.setRightPanel(new TaskLogUI(Tasks.tasks.getTaskLog()));
     });
 
     panel.add(list);
@@ -2098,80 +2098,6 @@ public class ConfigService implements WebUIHandler {
     });
     row.add(email_save);
     panel.add(row);
-
-    return panel;
-  }
-
-  public Panel serverLogs(String file) {
-    Panel panel = new ScrollPanel();
-    Row row = new Row();
-    Label label = new Label("Logs");
-    row.add(label);
-    panel.add(row);
-
-    row = new Row();
-    row.setBackColor(Color.blue);
-    row.setHeight(5);
-    panel.add(row);
-
-    if (file == null) {
-      ScrollPanel scroll = new ScrollPanel();
-      panel.setMaxWidth();
-      panel.add(scroll);
-      //list log files (limit 1 year)
-      File folder = new File(Paths.logsPath);
-      File files[] = folder.listFiles(new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-          return name.startsWith("backup") || name.startsWith("restore");
-        }
-      });
-      Arrays.sort(files, new Comparator<File>() {
-        public int compare(File f1, File f2) {
-          long t1 = f1.lastModified();
-          long t2 = f2.lastModified();
-          if (t1 == t2) return 0;
-          if (t1 < t2) return 1;
-          return -1;
-        }
-      });
-      long oneyear = System.currentTimeMillis();
-      oneyear -= 365 * 24 * 60 * 60 * 1000;
-      for(File log : files) {
-        if (!log.isFile()) continue;
-        String name = log.getName();
-        long lastMod = log.lastModified();
-        if (lastMod < oneyear) continue;
-        row = new Row();
-        Button view = new Button(name);
-        view.addClickListener((MouseEvent me, Component c) -> {
-          SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-          split.setRightComponent(serverLogs(name));
-        });
-        row.add(view);
-        row.add(new Label(" at " + toDateTime(lastMod)));
-        scroll.add(row);
-      }
-      if (files.length == 0) {
-        row = new Row();
-        row.add(new Label("No logs found"));
-        scroll.add(row);
-      }
-    } else {
-      TextArea text = new TextArea("Loading...");
-      text.setReadonly(true);
-      text.setMaxWidth();
-      text.setMaxHeight();
-      panel.setMaxWidth();
-      try {
-        FileInputStream fis = new FileInputStream(Paths.logsPath + "\\" + file);
-        byte data[] = fis.readAllBytes();
-        fis.close();
-        text.setText(new String(data));
-      } catch (Exception e) {
-        text.setText("Error:" + e.toString());
-      }
-      panel.add(text);
-    }
 
     return panel;
   }
