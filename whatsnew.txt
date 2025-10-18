@@ -1,5 +1,13 @@
 What's new...
 
+Oct 18/2025 : JF/91.1
+  - webui improvements
+  - jfMonitor/0.19
+    - ui fixes
+  - jfKVM/8.1
+    - added more icons to buttons
+    - ui fixes
+
 Oct 16/2025 : JF/91.0
   - WebUpload now uploads files to a folder
     - supports webui tasks Status feedback
