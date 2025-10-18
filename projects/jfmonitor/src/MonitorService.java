@@ -96,7 +96,7 @@ public class MonitorService extends Thread {
     configService = new ConfigService();
     configService.start();
     //start tasks service
-    Tasks.init();
+    Tasks.init(Paths.tasksPath);
     Tasks.tasks.setSequential(true);
     //start redir service
     redirService = new WebServerRedir();
