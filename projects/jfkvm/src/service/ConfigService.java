@@ -268,7 +268,7 @@ public class ConfigService implements WebUIHandler {
     }
     String user = (String)client.getProperty("user");
     if (user == null) {
-      return loginPanel();
+      return loginPanel(client);
     }
     Panel panel = new Panel();
     UI ui = (UI)client.getProperty("ui");
@@ -1880,56 +1880,16 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel loginPanel() {
-    Panel panel = new Panel();
-    panel.removeClass("column");
-    InnerPanel inner = new InnerPanel(appname + " Login");
-    inner.setAlign(CENTER);
-    inner.setMaxWidth();
-    inner.setMaxHeight();
-    Label msg = new Label("");
-    inner.add(msg);
-
-    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
-    grid.setAlign(CENTER);
-    inner.add(grid);
-
-    TextField username = new TextField("");
-    grid.addRow(new Component[] {new Label("Username"), username});
-
-    TextField password = new TextField("");
-    password.setPassword(true);
-    grid.addRow(new Component[] {new Label("Password"), password});
-
-    Button login = new Button("Login");
-    inner.add(login);
-
-    username.addKeyDownListener((ke, cmp) -> {
-      if (ke.keyCode == VK_ENTER) {
-        password.setFocus();
-      }
-    });
-
-    password.addKeyDownListener((ke, cmp) -> {
-      if (ke.keyCode == VK_ENTER) {
-        login.click();
-      }
-    });
-
-    login.addClickListener( (MouseEvent m, Component c) -> {
-      String userTxt = username.getText();
-      String passTxt = password.getText();
-      WebUIClient webclient = c.getClient();
+  private Panel loginPanel(WebUIClient client) {
+    return new LoginPanel(appname, true, (userTxt, passTxt) -> {
       if (passTxt.equals(Config.passwd.password)) {
-        webclient.setProperty("user", userTxt);
-        webclient.setPanel(getPanel("root", null, webclient));
+        client.setProperty("user", userTxt);
+        client.setPanel(getPanel("root", null, client));
+        return true;
       } else {
-        msg.setText("Wrong password");
-        msg.setColor(Color.red);
+        return false;
       }
     });
-    panel.add(inner);
-    return panel;
   }
 
   private Panel leftPanel(UI ui, int size) {

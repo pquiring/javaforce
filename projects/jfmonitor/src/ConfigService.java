@@ -19,6 +19,7 @@ public class ConfigService implements WebUIHandler {
   public WebUIServer server;
   public KeyMgmt keys;
   public Client client;
+  public static String appname = "jfMonitor";
 
   public void start() {
     initSecureWebKeys();
@@ -215,7 +216,7 @@ public class ConfigService implements WebUIHandler {
     }
     String password = (String)client.getProperty("password");
     if (password == null) {
-      return loginPanel();
+      return loginPanel(client);
     }
     switch (Config.current.mode) {
       case "server": return serverPanel(client);
@@ -282,41 +283,16 @@ public class ConfigService implements WebUIHandler {
     return sb.toString();
   }
 
-  public Panel loginPanel() {
-    Panel panel = new Panel();
-    panel.removeClass("column");
-    InnerPanel inner = new InnerPanel("jfMonitor Login");
-    inner.setAlign(CENTER);
-    inner.setMaxWidth();
-    inner.setMaxHeight();
-
-    Label msg = new Label("");
-    inner.add(msg);
-
-    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
-    grid.setAlign(CENTER);
-    inner.add(grid);
-
-    TextField password = new TextField("");
-    password.setPassword(true);
-    grid.addRow(new Component[] {new Label("Password:"), password});
-
-    Button login = new Button("Login");
-    inner.add(login);
-
-    login.addClickListener( (MouseEvent m, Component c) -> {
-      String passTxt = password.getText();
-      WebUIClient webclient = c.getClient();
+  public Panel loginPanel(WebUIClient client) {
+    return new LoginPanel(appname, false, (userTxt, passTxt) -> {
       if (passTxt.equals(Config.current.password)) {
-        webclient.setProperty("password", passTxt);
-        webclient.setPanel(getPanel("root", null, webclient));
+        client.setProperty("password", passTxt);
+        client.setPanel(getPanel("root", null, client));
+        return true;
       } else {
-        msg.setText("Wrong password");
-        msg.setColor(Color.red);
+        return false;
       }
     });
-    panel.add(inner);
-    return panel;
   }
 
   private PopupPanel messagePopupPanel(UI ui) {

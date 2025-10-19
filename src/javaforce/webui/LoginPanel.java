@@ -6,6 +6,7 @@ package javaforce.webui;
  */
 
 import javaforce.webui.event.*;
+import static javaforce.webui.event.KeyEvent.*;
 
 public class LoginPanel extends Panel {
   public static interface Login {
@@ -17,28 +18,38 @@ public class LoginPanel extends Panel {
     inner.setAutoWidth();
     inner.setAutoHeight();
     setAlign(Component.CENTER);
-    Row row;
     Label msg = new Label("");
     msg.setColor(Color.red);
     inner.add(msg);
 
+    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
+    grid.setAlign(CENTER);
+    inner.add(grid);
+
     TextField username = new TextField("");
-    TextField password = new TextField("");
-    password.setPassword(true);
-
-    row = new Row();
-
     if (show_username) {
-      row.add(new Label("Username:"));
-      row.add(username);
+      grid.addRow(new Component[] {new Label("Username"), username});
     }
 
-    row.add(new Label("Password:"));
-    row.add(password);
+    TextField password = new TextField("");
+    password.setPassword(true);
+    grid.addRow(new Component[] {new Label("Password"), password});
 
     Button button_login = new Button("Login");
-    row.add(button_login);
-    inner.add(row);
+    inner.add(button_login);
+
+    username.addKeyDownListener((ke, cmp) -> {
+      if (ke.keyCode == VK_ENTER) {
+        password.setFocus();
+      }
+    });
+
+    password.addKeyDownListener((ke, cmp) -> {
+      if (ke.keyCode == VK_ENTER) {
+        button_login.click();
+      }
+    });
+
     button_login.addClickListener( (MouseEvent m, Component c) -> {
       msg.setText("");
       if (!login.login(username.getText(), password.getText())) {
