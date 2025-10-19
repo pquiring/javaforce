@@ -15,8 +15,8 @@ public class LoginPanel extends Panel {
   public LoginPanel(String appName, boolean show_username, Login login) {
     this.removeClass("column");
     InnerPanel inner = new InnerPanel(appName + " Login");
-    inner.setAutoWidth();
-    inner.setAutoHeight();
+    inner.setMaxWidth();
+    inner.setMaxHeight();
     setAlign(Component.CENTER);
     Label msg = new Label("");
     msg.setColor(Color.red);
