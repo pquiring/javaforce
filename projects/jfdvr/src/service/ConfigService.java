@@ -307,9 +307,6 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     group_panel.add(row);
 
-    InnerPanel group_cameras = new InnerPanel("Group Cameras");
-    row.add(group_cameras);
-
     InlineBlock blk1 = new InlineBlock();
     InnerPanel ipanel1 = new InnerPanel("Available");
     ListBox group_list_avail = new ListBox();
