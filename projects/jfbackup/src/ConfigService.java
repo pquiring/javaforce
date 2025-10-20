@@ -163,11 +163,13 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private static int split_size = 128;
+
   public Panel serverPanel(WebUIClient webclient) {
     Panel panel = new Panel();
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");
-    split.setDividerPosition(100);
+    split.setDividerPosition(split_size);
     Panel left = serverLeftPanel();
     Panel right = null;
     String screen = (String)webclient.getProperty("screen");
@@ -197,6 +199,7 @@ public class ConfigService implements WebUIHandler {
     list.setName("list");
     //add menu options
     Button opt1 = new Button("Status");
+    opt1.setWidth(split_size);
     list.add(opt1);
     opt1.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
@@ -204,6 +207,7 @@ public class ConfigService implements WebUIHandler {
       webclient.refresh();
     });
     Button opt2 = new Button("Job Monitor");
+    opt2.setWidth(split_size);
     list.add(opt2);
     opt2.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
@@ -211,6 +215,7 @@ public class ConfigService implements WebUIHandler {
       webclient.refresh();
     });
     Button opt3 = new Button("Backup Jobs");
+    opt3.setWidth(split_size);
     list.add(opt3);
     opt3.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
@@ -218,6 +223,7 @@ public class ConfigService implements WebUIHandler {
       webclient.refresh();
     });
     Button opt4 = new Button("Restore Jobs");
+    opt4.setWidth(split_size);
     list.add(opt4);
     opt4.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
@@ -225,6 +231,7 @@ public class ConfigService implements WebUIHandler {
       webclient.refresh();
     });
     Button opt5 = new Button("Configure");
+    opt5.setWidth(split_size);
     list.add(opt5);
     opt5.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
@@ -232,6 +239,7 @@ public class ConfigService implements WebUIHandler {
       webclient.refresh();
     });
     Button opt6 = new Button("Tapes");
+    opt6.setWidth(split_size);
     list.add(opt6);
     opt6.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
@@ -239,6 +247,7 @@ public class ConfigService implements WebUIHandler {
       webclient.refresh();
     });
     Button opt7 = new Button("Logs");
+    opt7.setWidth(split_size);
     list.add(opt7);
     opt7.addClickListener( (MouseEvent me, Component c) -> {
       WebUIClient webclient = c.getClient();
