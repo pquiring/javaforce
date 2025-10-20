@@ -1,5 +1,9 @@
 What's new...
 
+Oct 20/2025 : JF/91.2
+  - jfMonitor/0.20
+    - added Tasks Log panel
+
 Oct 18/2025 : JF/91.1
   - webui improvements
   - jfMonitor/0.19
