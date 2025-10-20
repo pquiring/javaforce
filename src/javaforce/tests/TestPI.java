@@ -1,4 +1,4 @@
-package javaforce.pi;
+package javaforce.tests.pi;
 
 /** Raspberry Pi Test
  *
@@ -6,6 +6,7 @@ package javaforce.pi;
  */
 
 import javaforce.*;
+import javaforce.pi.*;
 import javaforce.controls.*;
 import javaforce.service.*;
 import javaforce.webui.*;
