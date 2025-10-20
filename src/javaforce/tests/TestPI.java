@@ -1,4 +1,4 @@
-package javaforce.tests.pi;
+package javaforce.tests;
 
 /** Raspberry Pi Test
  *
