@@ -11,6 +11,7 @@ import javaforce.net.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 import static javaforce.webui.Component.*;
 import static javaforce.webui.event.KeyEvent.*;

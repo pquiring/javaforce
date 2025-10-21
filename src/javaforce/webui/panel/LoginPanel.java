@@ -1,10 +1,18 @@
-package javaforce.webui;
+package javaforce.webui.panel;
 
 /** Login Panel
  *
  * @author pquiring
  */
 
+import javaforce.webui.Button;
+import javaforce.webui.Color;
+import javaforce.webui.Component;
+import javaforce.webui.GridLayout;
+import javaforce.webui.InnerPanel;
+import javaforce.webui.Label;
+import javaforce.webui.Panel;
+import javaforce.webui.TextField;
 import javaforce.webui.event.*;
 import static javaforce.webui.event.KeyEvent.*;
 

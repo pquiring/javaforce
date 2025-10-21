@@ -7,6 +7,7 @@ package javaforce.awt;
  * @author pquiring
  */
 
+import javaforce.webui.panel.LoginPanel;
 import java.awt.event.KeyEvent;
 
 import javaforce.*;
