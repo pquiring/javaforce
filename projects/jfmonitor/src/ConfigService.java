@@ -181,16 +181,8 @@ public class ConfigService implements WebUIHandler {
     public Runnable route_init;
     public Route route_route;
 
-    public void resize() {
-      int height = top_bottom_split.getDividerPosition();
-      right_panel.setHeight(height);
-      int width = client.getWidth() - left_right_split.getDividerPosition();
-      right_panel.setWidth(width);
-    }
-
     public void setRightPanel(Panel panel) {
       right_panel = panel;
-      resize();
       left_right_split.setRightComponent(panel);
     }
 
@@ -1517,13 +1509,6 @@ public class ConfigService implements WebUIHandler {
 
     ui.top_bottom_split.setTopComponent(ui.left_right_split);
     ui.top_bottom_split.setBottomComponent(tasks);
-
-    ui.top_bottom_split.addChangedListener((cmp) -> {
-      ui.resize();
-    });
-    ui.left_right_split.addChangedListener((cmp) -> {
-      ui.resize();
-    });
 
     return panel;
   }
