@@ -369,6 +369,7 @@ public class Panels {
     if (text.startsWith("!image:")) {
       b = new Button(Images.getImage(text.substring(7)));
       b.setBorder(true);
+      b.setPadding(0);
     } else {
       b = new Button(v.text);
     }

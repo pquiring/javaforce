@@ -248,6 +248,10 @@ public abstract class Component {
     }
   }
 
+  public void setPadding(int px) {
+    setStyle("padding", px + "px");
+  }
+
   private OnEvent getEvent(String onX) {
     int cnt = events.size();
     for(int a=0;a<cnt;a++) {
