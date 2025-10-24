@@ -11,11 +11,14 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.access.*;
 import javaforce.service.*;
 import javaforce.webui.event.*;
+import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 
 public class WebUIClient {
+  public WebUIServer server;
   public WebSocket socket;
   public Panel root;
   public String hash;
@@ -32,10 +35,65 @@ public class WebUIClient {
   private String upload_folder;
   private Status upload_status;
 
-  public WebUIClient(WebSocket socket, WebUIHandler handler) {
+  private AccessControl access;
+
+  public WebUIClient(WebUIServer server, WebSocket socket, WebUIHandler handler) {
+    this.server = server;
     this.socket = socket;
     this.handler = handler;
     hash = Integer.toString(this.hashCode(), 16);
+  }
+
+  public WebUIServer getServer() {
+    return server;
+  }
+
+  //TODO : create getters
+  public NewUserPanel new_user_panel;
+  public EditUserPanel edit_user_panel;
+  public NewGroupPanel new_group_panel;
+  public EditGroupPanel edit_group_panel;
+  public ConfirmPanel confirm_panel;
+  public ResetPasswordPanel reset_password_panel;
+  public ChangePasswordPanel change_password_panel;
+  public SelectFromListPanel select_panel;
+
+  public ConfirmPanel getConfirmPanel() {
+    return confirm_panel;
+  }
+
+  public ResetPasswordPanel getResetPasswordPanel() {
+    return reset_password_panel;
+  }
+
+  public ChangePasswordPanel getChangePasswordPanel() {
+    return change_password_panel;
+  }
+
+  public SelectFromListPanel getSelectFromListPanel() {
+    return select_panel;
+  }
+
+  /** Adds standard set of PopupPanels to provided Panel.
+   * These popup panels are required for AccessControl related Panels.
+   */
+  public void addPopupPanels(Panel panel) {
+    panel.add(new_user_panel = new NewUserPanel("New User", this));
+    panel.add(edit_user_panel = new EditUserPanel("Edit User", this));
+    panel.add(new_group_panel = new NewGroupPanel("New Group", this));
+    panel.add(edit_group_panel = new EditGroupPanel("Edit Group", this));
+    panel.add(confirm_panel = new ConfirmPanel("Confirm Action", this));
+    panel.add(reset_password_panel = new ResetPasswordPanel("Reset Password", this));
+    panel.add(change_password_panel = new ChangePasswordPanel("Change Password", this));
+    panel.add(select_panel = new SelectFromListPanel("Selection"));
+  }
+
+  public AccessControl getAccessControl() {
+    return access;
+  }
+
+  public void setAccessControl(AccessControl access) {
+    this.access = access;
   }
 
   public synchronized int getNextID() {

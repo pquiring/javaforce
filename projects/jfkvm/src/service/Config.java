@@ -44,8 +44,6 @@ public class Config implements Serializable {
 
   public String vnc_password = "password";
 
-  public static Password passwd;
-
   public Config() {
     valid();
   }
@@ -107,8 +105,6 @@ public class Config implements Serializable {
     if (vnc_password == null) {
       vnc_password = generate_password();
     }
-    //load password
-    passwd = Password.load(Password.TYPE_SYSTEM, "jfkvm");
   }
 
   public static boolean load() {

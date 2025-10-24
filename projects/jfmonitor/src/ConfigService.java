@@ -7,17 +7,17 @@ import java.util.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.access.*;
 import javaforce.net.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
-import static javaforce.webui.Component.*;
-import static javaforce.webui.event.KeyEvent.*;
 
 public class ConfigService implements WebUIHandler {
   public WebUIServer server;
+  public AccessControl access;
   public KeyMgmt keys;
   public Client client;
   public static String appname = "jfMonitor";
@@ -26,6 +26,12 @@ public class ConfigService implements WebUIHandler {
     initSecureWebKeys();
     server = new WebUIServer();
     server.start(this, Settings.current.https_port, keys);
+    access = new AccessControl();
+    access.setConfigFolder(Paths.accessPath);
+    if (Config.current.password != null) {
+      //copy password to AccessControl
+      access.setUserPassword("admin", Config.current.password);
+    }
   }
 
   public void stop() {
@@ -207,8 +213,8 @@ public class ConfigService implements WebUIHandler {
     switch (Config.current.mode) {
       case "install": return installPanel();
     }
-    String password = (String)client.getProperty("password");
-    if (password == null) {
+    String user = (String)client.getProperty("user");
+    if (user == null) {
       return loginPanel(client);
     }
     switch (Config.current.mode) {
@@ -277,15 +283,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel loginPanel(WebUIClient client) {
-    return new LoginPanel(appname, false, (userTxt, passTxt) -> {
-      if (passTxt.equals(Config.current.password)) {
-        client.setProperty("password", passTxt);
-        client.setPanel(getPanel("root", null, client));
-        return true;
-      } else {
-        return false;
-      }
-    });
+    return new LoginPanel(appname, client);
   }
 
   private PopupPanel messagePopupPanel(UI ui) {
@@ -2761,6 +2759,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public void clientConnected(WebUIClient client) {
+    client.setAccessControl(access);
   }
 
   public void clientDisconnected(WebUIClient client) {

@@ -159,6 +159,18 @@ public class Compression {
       return false;
     }
   }
+  /** Serialize and compress an object to a file. */
+  public static boolean serialize(File file, Object obj) {
+    try {
+      FileOutputStream fos = new FileOutputStream(file);
+      boolean res = serialize(fos, obj);
+      fos.close();
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
   /** Serialize and compress an object to an OutputStream. */
   public static boolean serialize(OutputStream os, Object obj) {
     try {
@@ -178,6 +190,18 @@ public class Compression {
     try {
       FileInputStream fis = new FileInputStream(file);
       Object obj = deserialize(fis, new File(file).length());
+      fis.close();
+      return obj;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+  /** Decompress and deserialize a file to an Object. */
+  public static Object deserialize(File file) {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      Object obj = deserialize(fis, file.length());
       fis.close();
       return obj;
     } catch (Exception e) {

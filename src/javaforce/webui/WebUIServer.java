@@ -21,12 +21,14 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.ui.*;
+import javaforce.access.*;
 import javaforce.service.*;
+import javaforce.webui.panel.*;
 
 public class WebUIServer implements WebHandler, WebSocketHandler {
   private WebServer web;
   private WebUIHandler handler;
+  private AccessControl access;
 
   /** Enable debug log messages. */
   public static boolean debug = false;
@@ -64,10 +66,20 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     WebUpload.setMaxLength(size);
   }
 
+  public AccessControl getAccessControl() {
+    return access;
+  }
+
+  public void setAccessControl(AccessControl access) {
+    this.access = access;
+  }
+
+  /** Enable client SSL certificate verification. */
   public void setClientVerify(boolean state) {
     web.setClientVerify(state);
   }
 
+  /** Load a resource stored in the classpath. */
   public byte[] getResource(String name) {
     InputStream is = getClass().getClassLoader().getResourceAsStream(name);
     if (is == null) {
@@ -179,7 +191,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public boolean doWebSocketConnect(WebSocket sock) {
     try {
-      WebUIClient client = new WebUIClient(sock, handler);
+      WebUIClient client = new WebUIClient(this, sock, handler);
       clients.add(client);
       handler.clientConnected(client);
       return true;

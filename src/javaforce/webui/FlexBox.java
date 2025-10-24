@@ -11,6 +11,7 @@ public class FlexBox extends Component {
 
   public FlexBox() {
     addClass("flex");
+    addClass("inlineblock");
   }
 
   public String html() {

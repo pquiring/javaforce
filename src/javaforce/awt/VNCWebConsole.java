@@ -43,7 +43,7 @@ public class VNCWebConsole extends Thread implements Resized {
       Panel panel = createPanel(vnc_port, pass, opts, client);
       client.setPanel(panel);
       return true;
-    });
+    }, client);
   }
 
   public static Panel createPanel(int vnc_port, String password, int opts, WebUIClient client) {

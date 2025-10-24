@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.access.*;
 import javaforce.awt.*;
 import javaforce.vm.*;
 import javaforce.lxc.*;
@@ -23,7 +24,6 @@ import javaforce.webui.event.*;
 import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 import static javaforce.webui.Component.*;
-import static javaforce.webui.event.KeyEvent.*;
 
 public class ConfigService implements WebUIHandler {
   public static String version = "8.1";
@@ -31,6 +31,7 @@ public class ConfigService implements WebUIHandler {
   public static boolean debug = false;
   public static boolean debug_api = false;
   public WebUIServer server;
+  public AccessControl access;
   private KeyMgmt keys;
   private VMM vmm;
   private LxcContainerManager lxcmgr;
@@ -76,6 +77,16 @@ public class ConfigService implements WebUIHandler {
     server.start(this, 443, keys);
     server.setUploadFolder("/volumes");
     server.setUploadLimit(-1);
+    access = new AccessControl();
+    access.setConfigFolder(Paths.accessPath);
+    if (Password.exists(Password.TYPE_SYSTEM, "jfkvm")) {
+      //move legacy password to AccessControl system
+      JFLog.log("Converting legacy admin password...");
+      Password passwd = Password.load(Password.TYPE_SYSTEM, "jfkvm");
+      access.setUserPassword("admin", passwd.password);
+      Password.delete(Password.TYPE_SYSTEM, "jfkvm");
+    }
+    server.setAccessControl(access);
     vmm = new VMM();
     lxcmgr = new Docker();
   }
@@ -218,9 +229,6 @@ public class ConfigService implements WebUIHandler {
     private LnxPty pty;  //Container or Host Terminal (one per webui connection)
     public LnxPty new_pty;
 
-    public void resize() {
-    }
-
     public void setRightPanel(Panel panel) {
       if (panel == null) return;
       if (pty != null) {
@@ -229,7 +237,6 @@ public class ConfigService implements WebUIHandler {
       pty = new_pty;
       new_pty = null;
       right_panel = panel;
-      resize();
       left_right_split.setRightComponent(panel);
     }
 
@@ -264,22 +271,17 @@ public class ConfigService implements WebUIHandler {
     if (name.equals("terminal")) {
       return getWebTerminal(params, client);
     }
-    if (Config.passwd == null) {
-      return installPanel(client);
-    }
     String user = (String)client.getProperty("user");
     if (user == null) {
       return loginPanel(client);
     }
     Panel panel = new Panel();
     UI ui = (UI)client.getProperty("ui");
-    if (ui == null) {
-      ui = new UI();
-      client.setProperty("ui", ui);
-    }
-    UI _ui = ui;
     ui.client = client;
     ui.user = user;
+
+    //add AccessControl related popup panels
+    client.addPopupPanels(panel);
 
     ui.message_popup = messagePopupPanel(ui);
     panel.add(ui.message_popup);
@@ -345,12 +347,6 @@ public class ConfigService implements WebUIHandler {
 
     ui.top_bottom_split.setTopComponent(ui.left_right_split);
     ui.top_bottom_split.setBottomComponent(tasks);
-    ui.top_bottom_split.addChangedListener((cmp) -> {
-      _ui.resize();
-    });
-    ui.left_right_split.addChangedListener((cmp) -> {
-      _ui.resize();
-    });
 
     return panel;
   }
@@ -1825,72 +1821,8 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel installPanel(WebUIClient client) {
-    Panel panel = new Panel();
-    panel.removeClass("column");
-    panel.setAlign(CENTER);
-    InnerPanel inner = new InnerPanel("jfKVM Setup");
-    inner.setAlign(CENTER);
-    inner.setMaxWidth();
-    inner.setMaxHeight();
-    Row row;
-    Label header = new Label("jfKVM has not been setup yet, please supply the admin password.");
-    inner.add(header);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    inner.add(errmsg);
-
-    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
-    grid.setAlign(CENTER);
-    inner.add(grid);
-
-    TextField password = new TextField("");
-    password.setPassword(true);
-    grid.addRow(new Component[] {new Label("Password:"), password});
-
-    TextField confirm = new TextField("");
-    confirm.setPassword(true);
-    grid.addRow(new Component[] {new Label("Confirm:"), confirm});
-
-    row = new Row();
-    inner.add(row);
-    Button login = new Button("Save");
-    row.add(login);
-
-    login.addClickListener( (MouseEvent m, Component c) -> {
-      errmsg.setText("");
-      if (Config.passwd != null) {
-        errmsg.setText("Already configured, please refresh");
-        return;
-      }
-      String passTxt1 = password.getText();
-      String passTxt2 = confirm.getText();
-      if (passTxt1.length() < 8 || passTxt2.length() < 8) {
-        errmsg.setText("Password too short (min 8)");
-        return;
-      }
-      if (!passTxt1.equals(passTxt2)) {
-        errmsg.setText("Passwords do not match");
-        return;
-      }
-      Config.passwd = new Password(Password.TYPE_SYSTEM, "jfkvm", passTxt1);
-      Config.passwd.save();
-      client.setPanel(getPanel("root", null, client));
-    });
-    panel.add(inner);
-    return panel;
-  }
-
   private Panel loginPanel(WebUIClient client) {
-    return new LoginPanel(appname, true, (userTxt, passTxt) -> {
-      if (passTxt.equals(Config.passwd.password)) {
-        client.setProperty("user", userTxt);
-        client.setPanel(getPanel("root", null, client));
-        return true;
-      } else {
-        return false;
-      }
-    });
+    return new LoginPanel(appname, client);
   }
 
   private Panel leftPanel(UI ui, int size) {
@@ -2014,8 +1946,9 @@ public class ConfigService implements WebUIHandler {
   private static final int HOST_CONFIG = 2;
   private static final int HOST_AUTOSTART = 3;
   private static final int HOST_CLUSTER = 4;
-  private static final int HOST_ADMIN = 5;
-  private static final int HOST_SERVICES = 6;
+  private static final int HOST_USERS = 5;
+  private static final int HOST_GROUPS = 6;
+  private static final int HOST_SERVICES = 7;
 
   private Panel hostPanel(UI ui, int idx) {
     TabPanel panel = new TabPanel();
@@ -2024,7 +1957,8 @@ public class ConfigService implements WebUIHandler {
     panel.addTab(hostConfigPanel(ui), "Settings");
     panel.addTab(hostAutoStartPanel(ui), "Auto Start");
     panel.addTab(hostClusterPanel(ui), "Cluster");
-    panel.addTab(hostAdminPanel(ui), "Admin");
+    panel.addTab(new UsersPanel(ui.client), "Users");
+    panel.addTab(new GroupsPanel(ui.client), "Groups");
     panel.addTab(hostServicesPanel(ui), "Services");
     panel.setTabIndex(idx);
     return panel;
@@ -2613,70 +2547,6 @@ public class ConfigService implements WebUIHandler {
       };
       ui.confirm_button.setText("Remove");
       ui.confirm_popup.setVisible(true);
-    });
-
-    return panel;
-  }
-
-  private Panel hostAdminPanel(UI ui) {
-    Panel panel = new Panel();
-    Row row;
-
-    GridLayout grid = new GridLayout(2, 0, new int[] {RIGHT, LEFT});
-    panel.add(grid);
-
-    TextField old_pass = new TextField("");
-    old_pass.setPassword(true);
-    grid.addRow(new Component[] {new Label("Current Password"), old_pass});
-
-    TextField new_pass = new TextField("");
-    new_pass.setPassword(true);
-    grid.addRow(new Component[] {new Label("New Password"), new_pass});
-
-    TextField cfm_pass = new TextField("");
-    cfm_pass.setPassword(true);
-    grid.addRow(new Component[] {new Label("Confirm Password"), cfm_pass});
-
-    ToolBar tools = new ToolBar();
-    panel.add(tools);
-    Button save = new Button("Save");
-    tools.add(save);
-
-    row = new Row();
-    panel.add(row);
-    Label msg = new Label("");
-    row.add(msg);
-
-    row = new Row();
-    panel.add(row);
-    Label errmsg = new Label("");
-    errmsg.setColor(Color.red);
-    row.add(errmsg);
-
-    save.addClickListener((me, cmp) -> {
-      msg.setText("");
-      errmsg.setText("");
-      String _old = old_pass.getText();
-      String _new = new_pass.getText();
-      String _cfm = cfm_pass.getText();
-      if (_new.length() < 8) {
-        errmsg.setText("Password too short (min 8)");
-        return;
-      }
-      if (!_new.equals(_cfm)) {
-        errmsg.setText("Passwords do not match");
-        return;
-      }
-      if (!_old.equals(Config.passwd.password)) {
-        errmsg.setText("Wrong current password");
-        return;
-      }
-      old_pass.setText("");
-      new_pass.setText("");
-      cfm_pass.setText("");
-      Config.passwd.password = _new;
-      Config.passwd.save();
-      msg.setText("Password saved");
     });
 
     return panel;
@@ -8290,6 +8160,7 @@ public class ConfigService implements WebUIHandler {
 
   public void clientConnected(WebUIClient client) {
     client.setProperty("ui", new UI());
+    client.setAccessControl(access);
   }
 
   public void clientDisconnected(WebUIClient client) {

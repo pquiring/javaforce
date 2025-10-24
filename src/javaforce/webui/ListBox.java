@@ -115,6 +115,28 @@ public class ListBox extends ScrollPanel implements Click {
     return cmp.toString();
   }
 
+  public String getItem(int idx) {
+    Component cmp = getComponent(idx);
+    if (cmp instanceof Label) {
+      Label l = (Label)cmp;
+      return l.text;
+    }
+    return cmp.toString();
+  }
+
+  public int getCount() {
+    return count();
+  }
+
+  public boolean contains(String item) {
+    int cnt = getCount();
+    for(int i=0;i<cnt;i++) {
+      String li = getItem(i);
+      if (li.equals(item)) return true;
+    }
+    return false;
+  }
+
   public Component getSelectedComponent() {
     int idx = getSelectedIndex();
     if (idx == -1) return null;

@@ -18,6 +18,7 @@ public class Paths {
   public static String secretPath;
   public static String statsPath;
   public static String tasksPath;
+  public static String accessPath;
 
   public static int LOG_DEFAULT = 0;
   public static int LOG_SYSTEMD = 1;
@@ -34,6 +35,7 @@ public class Paths {
     secretPath = "/root/secret";
     statsPath = dataPath + "/stats";
     tasksPath = dataPath + "/tasks";
+    accessPath = dataPath + "/access";
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
     new File(volsPath).mkdirs();
@@ -41,6 +43,8 @@ public class Paths {
     new File(secretPath).mkdirs();
     new File(statsPath).mkdirs();
     new File(tasksPath).mkdirs();
+    new File(accessPath).mkdirs();
+    Linux.chmod(accessPath, 0700);  //must secure folder
     JFLog.append(LOG_DEFAULT, logsPath + "/jfkvm.log", true);
     JFLog.setRetention(LOG_DEFAULT, 30);
     JFLog.append(LOG_SYSTEMD, logsPath + "/systemd.log", true);

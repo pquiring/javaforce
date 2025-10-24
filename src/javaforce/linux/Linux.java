@@ -82,7 +82,7 @@ public class Linux {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-    String output = sp.run(new String[] {"sudo", "-E", "add-apt-repository", ppa}, true);
+    String output = sp.run(new String[] {"add-apt-repository", ppa}, true);
     if (output == null) {
       return false;
     } else {
@@ -91,12 +91,11 @@ public class Linux {
   }
 
   /**
-   * Creates folder as root
+   * Creates folder
    */
   public static boolean mkdir(String folder) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
     cmd.add("mkdir");
     cmd.add("-p");
     cmd.add(folder);
@@ -113,12 +112,11 @@ public class Linux {
   }
 
   /**
-   * Copies src to dst as root
+   * Copies src to dst
    */
   public static boolean copyFile(String src, String dst) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
     cmd.add("cp");
     cmd.add(src);
     cmd.add(dst);
@@ -135,12 +133,11 @@ public class Linux {
   }
 
   /**
-   * Creates Link to Target as root
+   * Creates Link to Target
    */
   public static boolean createLink(String target, String link) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
     cmd.add("ln");
     cmd.add("-s");
     cmd.add(target);
@@ -158,12 +155,11 @@ public class Linux {
   }
 
   /**
-   * Deletes file as root
+   * Deletes file
    */
   public static boolean deleteFile(String file) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
     cmd.add("rm");
     cmd.add("-f");
     cmd.add(file);
@@ -192,7 +188,6 @@ public class Linux {
   public static boolean restartJFService(String name) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
     cmd.add("jfservice");
     cmd.add("restart");
     cmd.add(name);
@@ -212,7 +207,7 @@ public class Linux {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-    String output = sp.run(new String[] {"sudo", "-E", "apt", "--yes", "update"}, true);
+    String output = sp.run(new String[] {"apt", "--yes", "update"}, true);
     if (output == null) {
       return false;
     } else {
@@ -234,7 +229,7 @@ public class Linux {
         ShellProcess sp = new ShellProcess();
         sp.removeEnvironmentVariable("TERM");
         sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-        String output = sp.run(new String[]{"sudo", "-E", "apt", "--yes", action, pkg}, true);
+        String output = sp.run(new String[]{"apt", "--yes", action, pkg}, true);
         if (output == null) {
           setLabel("Failed to exec apt");
           JFLog.log("Failed to exec apt");
@@ -272,7 +267,7 @@ public class Linux {
         setLabel((action.equals("install") ? "Installing " : "Removing ") + desc);
         ShellProcess sp = new ShellProcess();
         sp.removeEnvironmentVariable("TERM");  //prevent config dialogs
-        String output = sp.run(new String[]{"sudo", "-E", "yum", "-y", action, pkg}, false);
+        String output = sp.run(new String[]{"yum", "-y", action, pkg}, false);
         if (output == null) {
           setLabel("Failed to exec yum");
           JFLog.log("Failed to exec yum");
@@ -305,7 +300,7 @@ public class Linux {
         setLabel((action.equals("install") ? "Installing " : "Removing ") + desc);
         ShellProcess sp = new ShellProcess();
         sp.removeEnvironmentVariable("TERM");  //prevent config dialogs
-        String output = sp.run(new String[]{"sudo", "-E", "pacman", action, "--noconfirm", pkg}, false);
+        String output = sp.run(new String[]{"pacman", action, "--noconfirm", pkg}, false);
         if (output == null) {
           setLabel("Failed to exec pacman");
           JFLog.log("Failed to exec pacman");
@@ -352,21 +347,27 @@ public class Linux {
   }
 
   /**
-   * Sets file as executable as root
+   * Sets file as executable
    */
   public static boolean setExec(String file) {
+    return new File(file).setExecutable(true);
+  }
+
+  /**
+   * Sets file mod
+   */
+  public static boolean chmod(String file, int mod) {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("sudo");
     cmd.add("chmod");
-    cmd.add("+x");
+    cmd.add(Integer.toOctalString(mod));
     cmd.add(file);
     String output = sp.run(cmd, false);
     if (output == null) {
       JFLog.log("Failed to exec chmod");
       return false;
     }
-    if (output.length() > 0) {
+    if (sp.getErrorLevel() > 0 || output.length() > 0) {
       JFLog.log("Error:" + output);
       return false;
     }
@@ -763,7 +764,7 @@ public class Linux {
   }
 
   /**
-   * Runs a bash script as root
+   * Runs a bash script
    */
   public static boolean runScript(String lns[]) {
     try {
@@ -776,7 +777,7 @@ public class Linux {
       fos.close();
       tmpFile.setExecutable(true);
       ShellProcess sp = new ShellProcess();
-      String output = sp.run(new String[]{"sudo", tmpFile.getAbsolutePath()}, true);
+      String output = sp.run(new String[]{tmpFile.getAbsolutePath()}, true);
       tmpFile.delete();
       return sp.getErrorLevel() == 0;
     } catch (Exception e) {

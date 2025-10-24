@@ -64,4 +64,8 @@ public class Password implements Serializable {
       JFLog.log(e);
     }
   }
+
+  public static boolean exists(int type, String name) {
+    return new File(Paths.secretPath + "/" + getTypeString(type) + name).exists();
+  }
 }
