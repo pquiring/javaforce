@@ -30,6 +30,7 @@ public class Container extends Component {
     }
   }
   /** Get Component by user assigned name. */
+  @Deprecated
   public Component getComponent(String name) {
     if (this.name != null && this.name.equals(name)) {
       return this;

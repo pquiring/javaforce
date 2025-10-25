@@ -161,7 +161,7 @@ public class Panels {
     }
   }
   //x,y,w,h,comp,name,text,tag,func,arg,style,events
-  public static Table buildTable(Table table, Container container, CellRow cells[], WebUIClient client, int ix, int iy, Node nodes[]) {
+  public static Table buildTable(Table table, Container container, CellRow[] cells, WebUIClient client, int ix, int iy, Node[] nodes) {
     ClientContext context = (ClientContext)client.getProperty("context");
     int mx = table.getColumns();
     if (ix != -1) mx = ix;
@@ -725,12 +725,15 @@ public class Panels {
         ControllerRow[] ctrls = Database.controllers.getRows().toArray(new ControllerRow[0]);
         for(int a=0;a<ctrls.length;a++) {
           String style = ctrls[a].cid == 0 ? "disabled" : null;
-          String cid = Integer.toString(ctrls[a].id);
-          cells.add(createCell(0, a, 1, 1, "textfield", null, cid, "jfc_ctrls_cid_int_" + cid, null, null, style));
-          cells.add(createCell(1, a, 3, 1, "textfield", null, ctrls[a].ip, "jfc_ctrls_ip_str_" + cid, null, null, style));
-          cells.add(createCell(4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + cid, null, "jfc_ctrl_type", style));
-          cells.add(createCell(6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + cid, null, "jfc_ctrl_speed", style));
-          cells.add(createCell(9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", cid, null));
+          String id = Integer.toString(ctrls[a].id);
+          String cid = Integer.toString(ctrls[a].cid);
+          String ip = ctrls[a].ip;
+          JFLog.log("ctrl:cid=" + cid + ":ip=" + ip);
+          cells.add(createCell(0, a, 1, 1, "textfield", null, cid, "jfc_ctrls_cid_int_" + id, null, null, style));
+          cells.add(createCell(1, a, 3, 1, "textfield", null, ip, "jfc_ctrls_ip_str_" + id, null, null, style));
+          cells.add(createCell(4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + id, null, "jfc_ctrl_type", style));
+          cells.add(createCell(6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + id, null, "jfc_ctrl_speed", style));
+          cells.add(createCell(9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", id, null));
           if (style == null) {
             cells.add(createCell(12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", cid, null));
           }
@@ -819,7 +822,7 @@ public class Panels {
         javaforce.db.Table data[] = Database.watches.getTables().toArray(new javaforce.db.Table[0]);
         for(int a=0;a<data.length;a++) {
           String wid = Integer.toString(data[a].id);
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watch_name_str_" + data[a].id, null, null, null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watch_name_str_" + wid, null, null, null));
           cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_watch_edit", wid, null));
           cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_watch_delete", wid, null));
         }

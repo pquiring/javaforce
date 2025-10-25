@@ -987,13 +987,13 @@ public class Database {
     udtmembers.add(member);
     udtmembers.save();
   }
-  public static UDTMember[] getUDTMembersById(int id) {
+  public static UDTMember[] getUDTMembersById(int uid) {
     ArrayList<UDTMember> list = new ArrayList<UDTMember>();
     ArrayList<UDTMember> rows = udtmembers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       UDTMember member = (UDTMember)rows.get(a);
-      if (member.uid == id) {
+      if (member.uid == uid) {
         list.add(member);
       }
     }
