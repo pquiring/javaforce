@@ -168,7 +168,6 @@ public class ConfigService implements WebUIHandler {
   public Panel serverPanel(WebUIClient webclient) {
     Panel panel = new Panel();
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
-    split.setName("split");
     split.setDividerPosition(split_size);
     Panel left = serverLeftPanel();
     Panel right = null;
@@ -178,11 +177,11 @@ public class ConfigService implements WebUIHandler {
       case "": right = serverHome(); break;
       case "status": right = serverStatus(); break;
       case "monitor": right = serverMonitor(); break;
-      case "backups": right = serverBackups(); break;
-      case "restores": right = serverRestores(); break;
+      case "backups": right = serverBackups(split); break;
+      case "restores": right = serverRestores(split); break;
       case "config": right = serverConfig(); break;
       case "tapes": right = serverTapes(); break;
-      case "logs": right = serverLogs(null); break;
+      case "logs": right = serverLogs(null, split); break;
     }
     split.setLeftComponent(left);
     split.setRightComponent(right);
@@ -464,7 +463,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverBackups() {
+  public Panel serverBackups(SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
     Label label = new Label("jfBackup/" + Config.AppVersion);
@@ -493,8 +492,7 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     Button create = new Button("Create Job");
     create.addClickListener((MouseEvent me, Component c) -> {
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverCreateBackupJob());
+      split.setRightComponent(serverCreateBackupJob(split));
     });
     row.add(create);
     scroll.add(row);
@@ -505,8 +503,7 @@ public class ConfigService implements WebUIHandler {
       row.add(new Label("Job:" + job.name));
       Button edit = new Button("Edit");
       edit.addClickListener((MouseEvent me, Component c) -> {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-        split.setRightComponent(serverEditBackupJob(job));
+        split.setRightComponent(serverEditBackupJob(job, split));
       });
       row.add(edit);
       Button run = new Button("Run Now");
@@ -516,14 +513,12 @@ public class ConfigService implements WebUIHandler {
           return;
         }
         TaskScheduler.startJob(job);
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
         split.setRightComponent(serverMonitor());
       });
       row.add(run);
       Button delete = new Button("Delete");
       delete.addClickListener((MouseEvent me, Component c) -> {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-        split.setRightComponent(serverDeleteBackupJob(job));
+        split.setRightComponent(serverDeleteBackupJob(job, split));
       });
       row.add(delete);
       scroll.add(row);
@@ -532,7 +527,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverCreateBackupJob() {
+  public Panel serverCreateBackupJob(SplitPanel split) {
     Panel panel = new Panel();
     panel.add(new Label("Create Backup Job:"));
     Label msg = new Label("");
@@ -562,13 +557,12 @@ public class ConfigService implements WebUIHandler {
       job.minute = 0;
       Config.current.backups.add(job);
       Config.save();
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJobSchedule(job));
+      split.setRightComponent(serverEditBackupJobSchedule(job, split));
     });
     return panel;
   }
 
-  public Panel serverEditBackupJobSchedule(EntryJob job) {
+  public Panel serverEditBackupJobSchedule(EntryJob job, SplitPanel split) {
     Panel panel = new Panel();
     panel.add(new Label("Backup Job Schedule:"));
     Label msg = new Label("");
@@ -688,13 +682,12 @@ public class ConfigService implements WebUIHandler {
       job.minute = minuteInt;
       Config.save();
 
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJob(job));
+      split.setRightComponent(serverEditBackupJob(job, split));
     });
     return panel;
   }
 
-  public Panel serverEditBackupJob(EntryJob job) {
+  public Panel serverEditBackupJob(EntryJob job, SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
     row.add(new Label("Edit Backup Job:"));
@@ -723,8 +716,7 @@ public class ConfigService implements WebUIHandler {
     row.add(editTime);
     panel.add(row);
     editTime.addClickListener((MouseEvent me, Component c) -> {
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJobSchedule(job));
+      split.setRightComponent(serverEditBackupJobSchedule(job, split));
     });
 
     //display backup local/remote volumes to tape drive
@@ -756,8 +748,7 @@ public class ConfigService implements WebUIHandler {
           msg.setText("Loading, please wait...");
           msg.setColor(Color.black);
           backupclient.addRequest(new Request("listvolumes"), (Request req) -> {
-            SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-            split.setRightComponent(serverEditBackupJobVolume(job, backup, req.reply, false));
+            split.setRightComponent(serverEditBackupJobVolume(job, backup, req.reply, false, split));
           });
         });
         Button delete = new Button("Delete");
@@ -769,8 +760,7 @@ public class ConfigService implements WebUIHandler {
             msg.setText("That client is not online");
             return;
           }
-          SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-          split.setRightComponent(serverDeleteBackupJobVolume(job, backup));
+          split.setRightComponent(serverDeleteBackupJobVolume(job, backup, split));
         });
         y++;
       }
@@ -805,8 +795,7 @@ public class ConfigService implements WebUIHandler {
         msg.setText("Loading, please wait...");
         msg.setColor(Color.black);
         backupclient.addRequest(new Request("listvolumes"), (Request req) -> {
-          SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-          split.setRightComponent(serverEditBackupJobVolume(job, jobvolume, req.reply, true));
+          split.setRightComponent(serverEditBackupJobVolume(job, jobvolume, req.reply, true, split));
         });
       });
       row.add(add);
@@ -826,7 +815,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverEditBackupJobVolume(EntryJob job, EntryJobVolume jobvol, String vollist, boolean create) {
+  public Panel serverEditBackupJobVolume(EntryJob job, EntryJobVolume jobvol, String vollist, boolean create, SplitPanel split) {
     //job.host (given)
     //job.volume
     //job.path
@@ -906,20 +895,18 @@ public class ConfigService implements WebUIHandler {
       }
       Config.save();
       //return to backup editor
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJob(job));
+      split.setRightComponent(serverEditBackupJob(job, split));
     });
 
     cancel.addClickListener((MouseEvent me, Component c) -> {
       //return to backup editor
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJob(job));
+      split.setRightComponent(serverEditBackupJob(job, split));
     });
 
     return panel;
   }
 
-  public Panel serverDeleteBackupJobVolume(EntryJob job, EntryJobVolume jobvol) {
+  public Panel serverDeleteBackupJobVolume(EntryJob job, EntryJobVolume jobvol, SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
 
@@ -937,20 +924,18 @@ public class ConfigService implements WebUIHandler {
       job.backup.remove(jobvol);
       Config.save();
       //return to backup editor
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJob(job));
+      split.setRightComponent(serverEditBackupJob(job, split));
     });
 
     cancel.addClickListener((MouseEvent me, Component c) -> {
       //return to backup editor
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJob(job));
+      split.setRightComponent(serverEditBackupJob(job, split));
     });
 
     return panel;
   }
 
-  public Panel serverDeleteBackupJob(EntryJob job) {
+  public Panel serverDeleteBackupJob(EntryJob job, SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
 
@@ -967,14 +952,12 @@ public class ConfigService implements WebUIHandler {
     delete.addClickListener((MouseEvent me, Component c) -> {
       Config.current.backups.remove(job);
       Config.save();
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
       split.setRightComponent(serverHome());
     });
 
     cancel.addClickListener((MouseEvent me, Component c) -> {
       //return to backup editor
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverEditBackupJob(job));
+      split.setRightComponent(serverEditBackupJob(job, split));
     });
 
     return panel;
@@ -992,7 +975,7 @@ public class ConfigService implements WebUIHandler {
       c.get(Calendar.SECOND));
   }
 
-  public Panel serverRestores() {
+  public Panel serverRestores(SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
     row.add(new Label("Restore from Tape"));
@@ -1054,16 +1037,14 @@ public class ConfigService implements WebUIHandler {
       row.add(restore);
 
       restore.addClickListener((MouseEvent me, Component c) -> {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-        split.setRightComponent(serverCreateRestoreJob(info, null, null));
+        split.setRightComponent(serverCreateRestoreJob(info, null, null, split));
       });
 
       Button delete = new Button("Delete Backup");
       row.add(delete);
 
       delete.addClickListener((MouseEvent me, Component c) -> {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-        split.setRightComponent(serverDeleteBackupJob(info));
+        split.setRightComponent(serverDeleteBackupJob(info, split));
       });
       scroll.add(row);
 
@@ -1083,7 +1064,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private Panel serverDeleteBackupJob(CatalogInfo info) {
+  private Panel serverDeleteBackupJob(CatalogInfo info, SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
 
@@ -1104,13 +1085,11 @@ public class ConfigService implements WebUIHandler {
       //delete tapes
       Tapes.deleteTapes(info.tapes);
       Tapes.save();
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverRestores());
+      split.setRightComponent(serverRestores(split));
     });
 
     cancel.addClickListener((MouseEvent me, Component c) -> {
-      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-      split.setRightComponent(serverRestores());
+      split.setRightComponent(serverRestores(split));
     });
     return panel;
   }
@@ -1143,7 +1122,7 @@ public class ConfigService implements WebUIHandler {
     return new Label(sb.toString());
   }
 
-  public Panel serverCreateRestoreJob(CatalogInfo catinfo, EntryVolume volume, EntryFolder folder) {
+  public Panel serverCreateRestoreJob(CatalogInfo catinfo, EntryVolume volume, EntryFolder folder, SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
     row.add(new Label("Restore Selection"));
@@ -1180,9 +1159,8 @@ public class ConfigService implements WebUIHandler {
             row.add(new Label("Error:That catalog is missing or corrupt"));
             panel2.add(row);
           } else {
-            panel2 = serverCreateRestoreJob(catinfo, volume, folder);
+            panel2 = serverCreateRestoreJob(catinfo, volume, folder, split);
           }
-          SplitPanel split = (SplitPanel)webclient.getPanel().getComponent("split");
           if (webclient.getCurrentID() != id) return;  //impatient user
           split.setRightComponent(panel2);
         }
@@ -1200,11 +1178,9 @@ public class ConfigService implements WebUIHandler {
     Button restore = new Button("Restore");
     restore.addClickListener((MouseEvent me, Component c) -> {
       if (Status.running) {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
         split.setRightComponent(serverMonitor());
       } else {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-        split.setRightComponent(serverRestoreJobConfirm(catinfo));
+        split.setRightComponent(serverRestoreJobConfirm(catinfo, split));
       }
     });
     row.add(restore);
@@ -1232,8 +1208,7 @@ public class ConfigService implements WebUIHandler {
           volFolder.name = vol.volume;
           volFolder.isVolume = true;
           stack.push(volFolder);
-          SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-          split.setRightComponent(serverCreateRestoreJob(catinfo, vol, null));
+          split.setRightComponent(serverCreateRestoreJob(catinfo, vol, null, split));
         });
         row.add(enter);
         row.add(new Label(" on Host:" + vol.host));
@@ -1253,8 +1228,7 @@ public class ConfigService implements WebUIHandler {
         } else {
           parent = peekParent();
         }
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-        split.setRightComponent(serverCreateRestoreJob(catinfo, parent == null ? null : volume, parent != null && !parent.isVolume ? parent : null));
+        split.setRightComponent(serverCreateRestoreJob(catinfo, parent == null ? null : volume, parent != null && !parent.isVolume ? parent : null, split));
       });
       row.add(up);
       row.add(getPath());
@@ -1275,8 +1249,7 @@ public class ConfigService implements WebUIHandler {
         Button enter = new Button("Enter");
         enter.addClickListener((MouseEvent me, Component c) -> {
           stack.push(childFolder);
-          SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-          split.setRightComponent(serverCreateRestoreJob(catinfo, volume, childFolder));
+          split.setRightComponent(serverCreateRestoreJob(catinfo, volume, childFolder, split));
         });
         row.add(enter);
         scroll.add(row);
@@ -1302,7 +1275,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverRestoreJobConfirm(CatalogInfo catinfo) {
+  public Panel serverRestoreJobConfirm(CatalogInfo catinfo, SplitPanel split) {
     Panel panel = new Panel();
     Row row;
 
@@ -1328,7 +1301,6 @@ public class ConfigService implements WebUIHandler {
     Button restore = new Button("Restore Now");
     restore.addClickListener((MouseEvent me, Component c) -> {
       if (Status.running) {
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
         split.setRightComponent(serverMonitor());
       } else {
         Status.running = true;
@@ -1340,7 +1312,6 @@ public class ConfigService implements WebUIHandler {
         Status.job = new RestoreJob(cat, catinfo, ri);
         Status.job.start();
         cat = null;
-        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
         split.setRightComponent(serverMonitor());
       }
     });
@@ -1602,7 +1573,7 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel serverLogs(String file) {
+  public Panel serverLogs(String file, SplitPanel split) {
     Panel panel = new Panel();
     Row row = new Row();
     Label label = new Label("Logs");
@@ -1647,8 +1618,7 @@ public class ConfigService implements WebUIHandler {
         row = new Row();
         Button view = new Button(name);
         view.addClickListener((MouseEvent me, Component c) -> {
-          SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
-          split.setRightComponent(serverLogs(name));
+          split.setRightComponent(serverLogs(name, split));
         });
         row.add(view);
         row.add(new Label(" at " + toDateTime(lastMod)));
@@ -1683,7 +1653,6 @@ public class ConfigService implements WebUIHandler {
   public Panel clientPanel(WebUIClient webclient) {
     Panel panel = new Panel();
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
-    split.setName("split");
     split.setDividerPosition(100);
     Panel left = clientLeftPanel();
     Panel right = null;
@@ -1693,7 +1662,7 @@ public class ConfigService implements WebUIHandler {
       case "": right = serverHome(); break;
       case "status": right = clientStatus(); break;
       case "config": right = clientConfig(); break;
-      case "logs": right = serverLogs(null); break;
+      case "logs": right = serverLogs(null, split); break;
     }
     split.setLeftComponent(left);
     split.setRightComponent(right);
