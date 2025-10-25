@@ -10,3 +10,7 @@ Can communicate with other remote PLCs such as Siemens, Allen Bradley, Modbus an
 WebSite : jfcontrols.sourceforge.net
 
 Git : github.com/pquiring/javaforce (under projects/jfcontrols)
+
+Note:
+  - this app was first attempt at webui and needs to be overhauled
+  - too many bugs exist making this app non-functional
