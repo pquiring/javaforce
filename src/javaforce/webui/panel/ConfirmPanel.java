@@ -35,6 +35,7 @@ public class ConfirmPanel extends PopupPanel {
     button_action = new Button("Action");
     button_cancel = new Button("Cancel");
     row = new Row();
+    add(row);
     row.add(button_action);
     row.add(button_cancel);
 
