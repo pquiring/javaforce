@@ -2735,6 +2735,7 @@ public class ConfigService implements WebUIHandler {
     Config.current.this_host = this_host;
     Config.current.server_host = server_host;
     Config.current.password = password;
+    access.setUserPassword("admin", Config.current.password);
     Config.save();
   }
 
@@ -2742,6 +2743,7 @@ public class ConfigService implements WebUIHandler {
     Config.current.this_host = name;
     Config.current.server_host = name;  //to allow local Client to connect
     Config.current.password = password;
+    access.setUserPassword("admin", Config.current.password);
     Config.save();
   }
 
