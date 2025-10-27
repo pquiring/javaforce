@@ -1,5 +1,13 @@
 What's new...
 
+Oct 27/2025 : JF/92.0
+  - new : javaforce.access.*
+    - access control system
+  - jfKVM/9.0
+    - implemented new access control (users/groups)
+  - jfMonitor/0.21
+    - ui fixes
+
 Oct 20/2025 : JF/91.2
   - jfMonitor/0.20
     - added Tasks Log panel
