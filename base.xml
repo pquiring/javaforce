@@ -182,12 +182,6 @@
   <!-- Linux targets -->
 
   <target name="installapp" depends="executable">
-    <sequential>
-      <exec command="/usr/bin/sudo ant -f ${ant.file} installapproot"/>
-    </sequential>
-  </target>
-
-  <target name="installapproot">
     <!-- this will run "install" target in project as root including sub-projects -->
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.InstallProject" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="${ant.file}"/>
@@ -195,12 +189,6 @@
   </target>
 
   <target name="uninstallapp" depends="">
-    <sequential>
-      <exec command="/usr/bin/sudo ant -f ${ant.file} uninstallapproot"/>
-    </sequential>
-  </target>
-
-  <target name="uninstallapproot">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.UninstallProject" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
