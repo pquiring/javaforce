@@ -1,3 +1,7 @@
+Oct 27/2025 : 0.21 released
+  - new : added better access control
+  - fix : webui issues
+
 Oct 20/2025 : 0.20 released
   - new : added Task Logs panel
 
