@@ -1,3 +1,7 @@
+2025-10-27 : 9.0 released!
+  - new : added users/groups access control
+    - no real control over functions yet
+
 2025-10-18 : 8.1 released!
   - new : added more icons to buttons
   - fix : minor ui issues
