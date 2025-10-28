@@ -1,0 +1,37 @@
+#Fedora/43 with build tools
+
+#To build on AMD64: docker build -f fedora43.docker -t amd64/fedora43 .
+
+#To build on ARM64: docker build -f fedora43.docker -t arm64v8/fedora43 .
+
+#To use on AMD64: cd repo ; docker-amd64.sh fedora43 latest
+
+#To use on ARM64: cd repo ; docker-arm64.sh fedora43 latest
+
+#see https://docs.docker.com/reference/dockerfile/
+
+FROM fedora:43
+
+WORKDIR /opt
+
+#install JF deps
+
+COPY deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#install Linux native deps
+
+COPY native/linux/deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#install repo deps
+
+COPY repo/deps.sh /opt
+
+RUN bash /opt/deps.sh
+
+#cleanup
+
+RUN rm /opt/deps.sh
