@@ -108,7 +108,7 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
       client = null;
     }
     public void setSize() {
-      //TODO
+      client.setSize(sx, sy);
     }
   }
 

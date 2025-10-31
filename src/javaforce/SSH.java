@@ -11,9 +11,11 @@ import java.security.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
+import org.apache.sshd.client.channel.PtyCapableChannelSession;
+import org.apache.sshd.client.channel.ChannelShell;
+import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.util.net.SshdSocketAddress;
 
 public class SSH {
 
@@ -37,6 +39,7 @@ public class SSH {
   private SshClient client;
   private ClientSession session;
   private ClientChannel channel;
+  private PtyCapableChannelSession pty;
 
   private InputStream in;
   private OutputStream out;
@@ -62,7 +65,7 @@ public class SSH {
       session.auth().verify(30000);
       switch (options.type) {
         case TYPE_SHELL:
-          channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
+          channel = pty = (ChannelShell)session.createShellChannel();
           //https://github.com/apache/mina-sshd/blob/master/docs/port-forwarding.md
           if (false) {
             // Enable X11 forwarding
@@ -76,7 +79,7 @@ public class SSH {
           }
           break;
         case TYPE_EXEC:
-          channel = session.createExecChannel(options.command);
+          channel = pty = (ChannelExec)session.createExecChannel(options.command);
           break;
         case TYPE_SUBSYSTEM:
           break;
@@ -115,6 +118,14 @@ public class SSH {
 
   public InputStream getInputStream() {
     return in;
+  }
+
+  public void setSize(int cols, int rows) {
+    try {
+      pty.sendWindowChange(cols, rows);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   /** Get output from exec command. */
