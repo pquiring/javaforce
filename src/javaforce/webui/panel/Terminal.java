@@ -2,7 +2,11 @@ package javaforce.webui;
 
 /** Linux Terminal
  *
- * Executes linux console app and displays output in a terminal.
+ * Displays a Linux shell in a Panel.
+ *
+ * Supports:
+ *  - local pty instance
+ *  - ssh connection
  *
  * Default size : 80x25
  *
@@ -19,6 +23,94 @@ import javaforce.jni.lnx.*;
 import javaforce.service.*;
 
 public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDown {
+
+  private static interface Term {
+    public boolean connect();
+    public void disconnect();
+    public void setSize();
+  }
+
+  private class PtyTerm implements Term {
+    private LnxPty pty;
+
+    public PtyTerm() {
+    }
+    public PtyTerm(LnxPty pty) {
+      this.pty = pty;
+    }
+
+    public boolean connect() {
+      try {
+        if (pty == null) {
+          pty = LnxPty.exec(
+            cmd[0],
+            cmd,
+            LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
+          );
+          if (pty == null) throw new Exception("pty failed");
+        }
+        in = new InputStream() {
+          public int read() {return -1;}
+          public int read(byte[] buf) {
+            return pty.read(buf);
+          }
+        };
+        out = new OutputStream() {
+          public void write(int x) {};
+          public void write(byte[] buf) {
+            pty.write(buf);
+          }
+        };
+        setSize();
+        return true;
+      } catch (Exception e) {
+        JFLog.log(e);
+        print(e.toString().toCharArray(), e.toString().length());
+      }
+      return false;
+    }
+
+    public void disconnect() {
+      if (pty != null) {
+        pty.close();
+        pty = null;
+      }
+    }
+
+    public void setSize() {
+      if (pty != null) {
+        pty.setSize(sx, sy);
+      }
+    }
+  }
+
+  private class SSHTerm implements Term {
+    private SSH client;
+    private String host;
+    private int port;
+
+    public SSHTerm(String host, int port) {
+      client = new SSH();
+    }
+    public boolean connect() {
+      if (client == null) {
+        client = new SSH();
+      }
+      if (!client.connect(host, port, null)) return false;
+      in = client.getInputStream();
+      out = client.getOutputStream();
+      setSize();
+      return true;
+    }
+    public void disconnect() {
+      if (client == null) return;
+      client.disconnect();
+      client = null;
+    }
+    public void setSize() {
+      //TODO
+    }
+  }
 
   private class Line extends Component {
 
@@ -117,7 +209,7 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
 
   public static boolean debug = false;
 
-  private LnxPty pty;
+  private Term term;
   private String[] cmd;
   private ANSI ansi;
   private TelnetDecoder telnet;
@@ -140,15 +232,8 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
     //add null terminator required by LnxPty.exec()
     this.cmd = new String[cmdlen + 1];
     System.arraycopy(cmd, 0, this.cmd, 0, cmdlen);
-    for(int i=0;i<sy;i++) {
-      Line line = new Line(sx, fc, bc);
-      add(line);
-    }
-    setMaxWidth();
-    setMaxHeight();
-    setFocusable();
-    if (debug) JFLog.log("Terminal:" + sx + "x" + sy);
-    ANSI.debug = debug;
+    setup();
+    term = new PtyTerm();
   }
 
   /** Terminal.
@@ -156,6 +241,21 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
    * @param pty = existing pty interface.
    */
   public Terminal(LnxPty pty) {
+    setup();
+    term = new PtyTerm(pty);
+  }
+
+  /** Terminal over SSH.
+   *
+   * @param host = SSH server
+   * @param port = SSH port (22)
+   */
+  public Terminal(String host, int port) {
+    setup();
+    term = new SSHTerm(host, port);
+  }
+
+  private void setup() {
     for(int i=0;i<sy;i++) {
       Line line = new Line(sx, fc, bc);
       add(line);
@@ -165,7 +265,6 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
     setFocusable();
     if (debug) JFLog.log("Terminal:" + sx + "x" + sy);
     ANSI.debug = debug;
-    this.pty = pty;
   }
 
   public void init() {
@@ -188,43 +287,13 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
   }
 
   private boolean connect() {
-    try {
-      if (pty == null) {
-        pty = LnxPty.exec(
-          cmd[0],
-          cmd,
-          LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
-        );
-        if (pty == null) throw new Exception("pty failed");
-      }
-      in = new InputStream() {
-        public int read() {return -1;}
-        public int read(byte[] buf) {
-          return pty.read(buf);
-        }
-      };
-      out = new OutputStream() {
-        public void write(int x) {};
-        public void write(byte[] buf) {
-          pty.write(buf);
-        }
-      };
-      pty.setSize(sx, sy);
-      return true;
-    } catch (Exception e) {
-      JFLog.log(e);
-      print(e.toString().toCharArray(), e.toString().length());
-    }
-    return false;
+    return term.connect();
   }
 
   public void disconnect() {
     active = false;
     clrscr();
-    if (pty != null) {
-      pty.close();
-      pty = null;
-    }
+    term.disconnect();
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -240,9 +309,7 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
       if (sy < 1) sy = 1;
       y1 = 0;
       y2 = sy - 1;
-      if (pty != null) {
-        pty.setSize(sx, sy);
-      }
+      term.setSize();
       clampCursor();
       setLines();
     } catch (Exception e) {
