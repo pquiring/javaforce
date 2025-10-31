@@ -18,7 +18,7 @@ import javaforce.webui.event.*;
 import javaforce.jni.lnx.*;
 import javaforce.service.*;
 
-public class Terminal extends Container implements Screen, Resized, KeyDown, MouseDown {
+public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDown {
 
   private class Line extends Component {
 
