@@ -188,7 +188,7 @@ public class ConfigService implements WebUIHandler {
     public Route route_route;
 
     public PopupPanel term_popup;
-    public Terminal term_term;
+    public TerminalPanel term_term;
 
     public void setRightPanel(Panel panel) {
       right_panel = panel;

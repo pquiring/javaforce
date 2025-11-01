@@ -23,7 +23,7 @@ import javaforce.webui.event.*;
 import javaforce.jni.lnx.*;
 import javaforce.service.*;
 
-public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDown {
+public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, MouseDown {
 
   private static interface Term {
     public boolean connect();
@@ -798,7 +798,7 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
 
     public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
       Panel panel = new Panel();
-      Terminal terminal = new Terminal();
+      TerminalPanel terminal = new TerminalPanel();
       terminal.setup(new String[] {"/usr/bin/bash", "-i", "-l"});
       terminal.connect();
       panel.add(terminal);
