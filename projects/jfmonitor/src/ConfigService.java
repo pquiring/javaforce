@@ -1463,6 +1463,12 @@ public class ConfigService implements WebUIHandler {
   public PopupPanel terminalPopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Terminal");
 
+    ui.term_term = new TerminalPanel();
+
+    panel.setOnClose(() -> {
+      ui.term_term.disconnect();
+    });
+
     return panel;
   }
 
@@ -2234,6 +2240,7 @@ public class ConfigService implements WebUIHandler {
       panel.add(row);
 
       Hardware hw = device.hardware;
+      String ip = Config.current.getip(device.mac);
 
       ToolBar tools = new ToolBar();
       panel.add(tools);
@@ -2251,6 +2258,8 @@ public class ConfigService implements WebUIHandler {
       tools.add(removeGroup);
       Button routing = new Button("Routing");
       tools.add(routing);
+      Button cli = new Button("CLI");
+      tools.add(cli);
       Button save = new Button("Save");
       tools.add(save);
       Button delete = new Button("Delete");
@@ -2258,7 +2267,7 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       panel.add(row);
-      Label desc = new Label("Device:" + Config.current.getip(device.mac) + " Serial:");
+      Label desc = new Label("Device:" + ip + " Serial:");
       row.add(desc);
       TextField serial = new TextField(device.hardware.getSerial());
       serial.setReadonly(true);
@@ -2442,6 +2451,12 @@ public class ConfigService implements WebUIHandler {
         ui.device = device;
         ui.routing_init.run();
         ui.routing_popup.setVisible(true);
+      });
+
+      cli.addClickListener((me, cmp) -> {
+        ui.term_term.setup(ip, 22, hw.user, hw.pass);
+        ui.term_term.connect();
+        ui.term_popup.setVisible(true);
       });
 
       save.addClickListener((me, cmp) -> {

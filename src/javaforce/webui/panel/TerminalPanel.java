@@ -89,15 +89,24 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     private SSH client;
     private String host;
     private int port;
+    private String user;
+    private String pass;
 
-    public SSHTerm(String host, int port) {
+    public SSHTerm(String host, int port, String user, String pass) {
       client = new SSH();
+      this.host = host;
+      this.port = port;
+      this.user = user;
+      this.pass = pass;
     }
     public boolean connect() {
       if (client == null) {
         client = new SSH();
       }
-      if (!client.connect(host, port, null)) return false;
+      SSH.Options ops = new SSH.Options();
+      ops.username = user;
+      ops.password = pass;
+      if (!client.connect(host, port, ops)) return false;
       in = client.getInputStream();
       out = client.getOutputStream();
       setSize();
@@ -252,9 +261,9 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
    * @param host = SSH server
    * @param port = SSH port (22)
    */
-  public void setup(String host, int port) {
+  public void setup(String host, int port, String user, String pass) {
     setup();
-    term = new SSHTerm(host, port);
+    term = new SSHTerm(host, port, user, pass);
   }
 
   /** Setup common fields. */
