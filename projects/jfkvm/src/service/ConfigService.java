@@ -7040,7 +7040,9 @@ public class ConfigService implements WebUIHandler {
     Button detach = new Button("Detach");
     row.add(detach);
     row.add(new Label("Container:" + c.id));
-    Terminal term = new Terminal(ui.new_pty);
+    Terminal term = new Terminal();
+    term.setup(ui.new_pty);
+    term.connect();
     panel.add(term);
     detach.addClickListener((me, cmp) -> {
       c.detach();
@@ -7056,7 +7058,9 @@ public class ConfigService implements WebUIHandler {
     Row row = new Row();
     panel.add(row);
     row.add(new Label(msg));
-    Terminal term = new Terminal(pty);
+    Terminal term = new Terminal();
+    term.setup(pty);
+    term.connect();
     panel.add(term);
     return panel;
   }

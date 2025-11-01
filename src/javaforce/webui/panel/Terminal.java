@@ -1,4 +1,4 @@
-package javaforce.webui;
+package javaforce.webui.panel;
 
 /** Linux Terminal
  *
@@ -18,6 +18,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.ansi.client.*;
+import javaforce.webui.*;
 import javaforce.webui.event.*;
 import javaforce.jni.lnx.*;
 import javaforce.service.*;
@@ -224,10 +225,11 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
   private static final int fontSizeX = 9;
   private static final int fontSizeY = 18;
 
-  /** Terminal.
+  /** Setup Terminal to execute local command.
+   *
    * @param cmd = command with arguments to execute
    */
-  public Terminal(String[] cmd) {
+  public void setup(String[] cmd) {
     int cmdlen = cmd.length;
     //add null terminator required by LnxPty.exec()
     this.cmd = new String[cmdlen + 1];
@@ -236,26 +238,28 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
     term = new PtyTerm();
   }
 
-  /** Terminal.
-   * Connect to existing Linux pty.
+  /** Setup Terminal with existing pty.
+   *
    * @param pty = existing pty interface.
    */
-  public Terminal(LnxPty pty) {
+  public void setup(LnxPty pty) {
     setup();
     term = new PtyTerm(pty);
   }
 
-  /** Terminal over SSH.
+  /** Setup Terminal for connection over SSH.
    *
    * @param host = SSH server
    * @param port = SSH port (22)
    */
-  public Terminal(String host, int port) {
+  public void setup(String host, int port) {
     setup();
     term = new SSHTerm(host, port);
   }
 
+  /** Setup common fields. */
   private void setup() {
+    removeAll();
     for(int i=0;i<sy;i++) {
       Line line = new Line(sx, fc, bc);
       add(line);
@@ -267,27 +271,32 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
     ANSI.debug = debug;
   }
 
+  /** Connect to terminal. */
+  public boolean connect() {
+    if (active) {
+      return true;
+    }
+    active = true;
+    ansi = new ANSI(this, true);
+    telnet = new TelnetDecoder();
+    utf8 = new UTF8();
+    if (term.connect()) {
+      reader = new Reader();
+      reader.start();
+      timer = new Timer();
+      timer.scheduleAtFixedRate(new TimerTask() {public void run() {flashCursor();}}, 100, 100);
+      return true;
+    } else {
+      print("connect() failed!".toCharArray());
+      return false;
+    }
+  }
+
   public void init() {
     super.init();
     addKeyDownListenerPreventDefault(this);
     addMouseDownListener(this);
     addResizedListener(this);
-    active = true;
-    ansi = new ANSI(this, true);
-    telnet = new TelnetDecoder();
-    utf8 = new UTF8();
-    if (connect()) {
-      reader = new Reader();
-      reader.start();
-      timer = new Timer();
-      timer.scheduleAtFixedRate(new TimerTask() {public void run() {flashCursor();}}, 100, 100);
-    } else {
-      print("connect() failed!".toCharArray());
-    }
-  }
-
-  private boolean connect() {
-    return term.connect();
   }
 
   public void disconnect() {
@@ -789,7 +798,9 @@ public class Terminal extends Panel implements Screen, Resized, KeyDown, MouseDo
 
     public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
       Panel panel = new Panel();
-      Terminal terminal = new Terminal(new String[] {"/usr/bin/bash", "-i", "-l"});
+      Terminal terminal = new Terminal();
+      terminal.setup(new String[] {"/usr/bin/bash", "-i", "-l"});
+      terminal.connect();
       panel.add(terminal);
       return panel;
     }

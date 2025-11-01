@@ -187,6 +187,9 @@ public class ConfigService implements WebUIHandler {
     public Runnable route_init;
     public Route route_route;
 
+    public PopupPanel term_popup;
+    public Terminal term_term;
+
     public void setRightPanel(Panel panel) {
       right_panel = panel;
       left_right_split.setRightComponent(panel);
@@ -1457,6 +1460,12 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  public PopupPanel terminalPopupPanel(UI ui) {
+    PopupPanel panel = new PopupPanel("Terminal");
+
+    return panel;
+  }
+
   public Panel serverPanel(WebUIClient client) {
     Panel panel = new Panel();
 
@@ -1486,6 +1495,8 @@ public class ConfigService implements WebUIHandler {
 
     ui.route_popup = editRoutePopupPanel(ui);
     panel.add(ui.route_popup);
+
+    ui.term_popup = terminalPopupPanel(ui);
 
     int topSize = client.getHeight() - 128;
     ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL);
