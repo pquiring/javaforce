@@ -318,6 +318,11 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     }
   }
 
+  /** Set Default Size. */
+  public void setDefaultSize() {
+    setSize(sx * fontSizeX, sy * fontSizeY);
+  }
+
   public void onResized(Component comp, int width, int height) {
     try {
       if (debug) JFLog.log("onresized:" + width + "x" + height);
