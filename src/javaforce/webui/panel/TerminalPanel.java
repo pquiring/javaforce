@@ -231,6 +231,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
   private boolean active;
 
   private static final int bufSize = 256;
+  //Default size ~= 720 x 450
   private static final int fontSizeX = 9;
   private static final int fontSizeY = 18;
 

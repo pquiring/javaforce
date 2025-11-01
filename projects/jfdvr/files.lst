@@ -2,3 +2,4 @@
 /usr/bin/jfdvr
 /usr/bin/jfdvr-viewer
 /usr/share/icons/hicolor/48x48/apps/jfdvr.png
+/lib/systemd/system/jfdvr.service
