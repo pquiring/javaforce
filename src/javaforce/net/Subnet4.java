@@ -13,6 +13,11 @@ public class Subnet4 {
   private IP4 ip = new IP4();
   private IP4 mask = new IP4();
   private IP4 inverse = new IP4();
+  public Subnet4() {}
+  public Subnet4(String address, String netmask) {
+    setIP(address);
+    setMask(netmask);
+  }
   public static boolean isSubnet(String str) {
     if (!IP4.isIP(str)) return false;
     try {
@@ -116,6 +121,9 @@ public class Subnet4 {
   }
   public String toString() {
     return ip.toString() + "/" + mask.toString();
+  }
+  public String toStringCIDR() {
+    return ip.toString() + "/" + toCIDR(mask);
   }
 
   public static void test_matches(Subnet4 net, String ip, boolean expect) {
