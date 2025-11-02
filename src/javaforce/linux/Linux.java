@@ -216,7 +216,7 @@ public class Linux {
   }
 
   /**
-   * Work with Ubuntu packages.
+   * Work with Debian packages.
    */
   private static boolean apt(String action, String pkg, String desc) {
     JFTask task = new JFTask() {
@@ -337,7 +337,7 @@ public class Linux {
     detectDistro();
     switch (distro) {
       case Debian:
-        return apt("autoremove", pkg, desc);
+        return apt("remove", pkg, desc);
       case Fedora:
         return yum("remove", pkg, desc);
       case Arch:

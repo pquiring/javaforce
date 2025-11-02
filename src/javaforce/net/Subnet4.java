@@ -47,6 +47,20 @@ public class Subnet4 {
       (mask & 0xff)
     );
   };
+  /** Returns # of bits set in IP4 address.
+   * @param ip = subnet
+   */
+  public static int toCIDR(IP4 ip) {
+    int bits = ip.toInt();
+    int mask = 0x80000000;
+    int cidr = 0;
+    while ((bits & mask) != 0) {
+      cidr++;
+      mask >>>= 1;
+      if (mask == 0) break;
+    }
+    return cidr;
+  }
   public boolean setIP(String str) {
     return ip.setIP(str);
   }
