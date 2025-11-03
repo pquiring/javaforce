@@ -1,3 +1,7 @@
+Nov 3/2025 : 0.22 released
+  - new : added CLI button for switches
+    - popup a terminal directly to switch
+
 Oct 27/2025 : 0.21 released
   - new : added better access control
   - fix : webui issues
