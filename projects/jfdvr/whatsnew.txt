@@ -1,3 +1,6 @@
+Nov 3, 2025 : 0.33 released!
+  - fix : linux packages missing files
+
 Oct 14, 2024 : 0.32 released!
   - fix : greatly reduce viewer memory required
     - do not change decoded video size to screen size
