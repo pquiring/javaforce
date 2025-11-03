@@ -1470,6 +1470,7 @@ public class ConfigService implements WebUIHandler {
 
     panel.setOnClose(() -> {
       ui.term_term.disconnect();
+      ui.term_popup.setVisible(false);
     });
 
     return panel;
