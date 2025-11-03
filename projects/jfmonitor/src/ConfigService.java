@@ -1465,6 +1465,7 @@ public class ConfigService implements WebUIHandler {
 
     ui.term_term = new TerminalPanel();
     ui.term_term.setDefaultSize();
+    panel.add(ui.term_term);
 
     panel.setOnClose(() -> {
       ui.term_term.disconnect();
