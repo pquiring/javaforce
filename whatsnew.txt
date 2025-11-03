@@ -1,5 +1,15 @@
 What's new...
 
+Nov 3/2025 : JF/93.0
+  - webui TerminalPanel
+    - added support for SSH
+  - jfMonitor/0.22
+    - added CLI button for a Terminal interface for switches
+  - jfKVM/9.1
+    - ui fixes
+  - jfDVR/0.33
+    - fix linux packages
+
 Oct 27/2025 : JF/92.0
   - new : javaforce.access.*
     - access control system
