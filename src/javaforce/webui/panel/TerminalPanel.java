@@ -227,7 +227,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     }
   }
 
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   private Term term;
   private String[] cmd;
