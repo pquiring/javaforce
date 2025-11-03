@@ -341,6 +341,9 @@ public abstract class Component {
   public void setAutoHeight() {
     setStyle("height", "auto");
   }
+  public boolean hasSize() {
+    return width != 0 || height != 0;
+  }
   public void setColor(int clr) {
     this.clr = clr;
     String style = String.format("#%06x", clr);

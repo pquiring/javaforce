@@ -284,9 +284,6 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
       Line line = new Line(sx, fc, bc);
       add(line);
     }
-    setMaxWidth();
-    setMaxHeight();
-    setFocusable();
     if (debug) JFLog.log("Terminal:" + sx + "x" + sy);
     ANSI.debug = debug;
   }
@@ -317,12 +314,20 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     addKeyDownListenerPreventDefault(this);
     addMouseDownListener(this);
     addResizedListener(this);
+    if (!hasSize()) {
+      setMaxWidth();
+      setMaxHeight();
+    }
+    setFocusable();
   }
 
   public void disconnect() {
     active = false;
     clrscr();
-    term.disconnect();
+    if (term != null) {
+      term.disconnect();
+      term = null;
+    }
     if (timer != null) {
       timer.cancel();
       timer = null;
@@ -461,7 +466,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
       try {
         while (active) {
           int buflen = in.read(buf);
-          if (debug && buflen == -1) throw new Exception("read error");
+          //if (debug && buflen == -1) throw new Exception("read error");
           if (buflen > 0) {
             if (debug) JFLog.log("read=" + buflen);
             input(byte2char(buf, buflen), buflen);
