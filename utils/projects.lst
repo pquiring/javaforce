@@ -25,5 +25,6 @@ build-ldap
 build-pngalpha
 build-scriptex
 build-svgeditor
+build-systemd-utils
 build-vss
 build-web
