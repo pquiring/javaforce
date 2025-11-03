@@ -1505,6 +1505,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(ui.route_popup);
 
     ui.term_popup = terminalPopupPanel(ui);
+    panel.add(ui.term_popup);
 
     int topSize = client.getHeight() - 128;
     ui.top_bottom_split = new SplitPanel(SplitPanel.HORIZONTAL);
