@@ -1462,6 +1462,7 @@ public class ConfigService implements WebUIHandler {
 
   public PopupPanel terminalPopupPanel(UI ui) {
     PopupPanel panel = new PopupPanel("Terminal");
+    panel.setModal(true);
 
     ui.term_term = new TerminalPanel();
     ui.term_term.setDefaultSize();
