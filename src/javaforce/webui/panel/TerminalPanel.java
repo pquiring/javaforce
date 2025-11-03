@@ -79,6 +79,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     }
 
     public void setSize() {
+      if (debug) JFLog.log("TerminalPanel.SetSize:" + sx + "x" + sy);
       if (pty != null) {
         pty.setSize(sx, sy);
       }
@@ -118,6 +119,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
       client = null;
     }
     public void setSize() {
+      if (debug) JFLog.log("TerminalPanel.SetSize:" + sx + "x" + sy);
       client.setSize(sx, sy);
     }
   }
@@ -217,7 +219,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     }
   }
 
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   private Term term;
   private String[] cmd;
