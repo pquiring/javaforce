@@ -81,7 +81,11 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     public void setSize() {
       if (debug) JFLog.log("TerminalPanel.SetSize:" + sx + "x" + sy);
       if (pty != null) {
-        pty.setSize(sx, sy);
+        try {
+          pty.setSize(sx, sy);
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
       }
     }
   }
@@ -120,7 +124,11 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
     }
     public void setSize() {
       if (debug) JFLog.log("TerminalPanel.SetSize:" + sx + "x" + sy);
-      client.setSize(sx, sy);
+      try {
+        client.setSize(sx, sy);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     }
   }
 
