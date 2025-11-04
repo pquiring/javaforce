@@ -93,6 +93,14 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, ctx->audio_codec_ctx->sample_fmt, 0);
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:avcodec_fill_audio_frame\n");
   ret = (*_avcodec_fill_audio_frame)(ctx->audio_frame, ctx->chs, ctx->audio_codec_ctx->sample_fmt, ctx->audio_dst_data[0], buffer_size, 0);
+  if (ctx->swr_ctx != NULL) {
+    if (ctx->audio_dst_data[0] != NULL) {
+      (*_av_free)(ctx->audio_dst_data[0]);
+      ctx->audio_dst_data[0] = NULL;
+    }
+  } else {
+    ctx->audio_dst_data[0] = NULL;
+  }
   if (ret < 0) {
     printf("MediaAudioEncoder:avcodec_fill_audio_frame() failed : %d\n", ret);
     return NULL;
@@ -127,13 +135,6 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   ctx->last_dts = ctx->pkt->dts;
   ctx->last_pts = ctx->pkt->pts;
   ctx->last_duration = ctx->pkt->duration;
-  if (ctx->swr_ctx != NULL) {
-    //free audio_dst_data (only the first pointer : regardless if format was plannar : it's alloced as one large block)
-    if (ctx->audio_dst_data[0] != NULL) {
-      (*_av_free)(ctx->audio_dst_data[0]);
-      ctx->audio_dst_data[0] = NULL;
-    }
-  }
   ctx->audio_pts += nb_samples;
 
   jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);

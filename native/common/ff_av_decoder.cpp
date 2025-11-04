@@ -183,6 +183,10 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   converted_nb_samples = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, dst_nb_samples
     , ctx->frame->extended_data, ctx->frame->nb_samples);
   if (converted_nb_samples < 0) {
+    if (ctx->audio_dst_data[0] != NULL) {
+      (*_av_free)(ctx->audio_dst_data[0]);
+      ctx->audio_dst_data[0] = NULL;
+    }
     printf("MediaAudioDecoder:swr_convert failed : %d\n", converted_nb_samples);
     return NULL;
   }

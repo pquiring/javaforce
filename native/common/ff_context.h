@@ -61,6 +61,9 @@ struct FFContext {
   int dst_rate;
   int dst_nb_channels;
   int dst_sample_fmt;
+  //alloc/free: MediaAudioDecoder.decode()
+  //alloc/free: av_encoder_addAudioFrame()
+  //alloc/free: encoder_addAudioFrame()
   uint8_t* audio_dst_data[4];
   int audio_dst_linesize[4];
 

@@ -677,6 +677,14 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
   ctx->audio_frame->nb_samples = nb_samples;
   buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, ctx->audio_codec_ctx->sample_fmt, 0);
   ret = (*_avcodec_fill_audio_frame)(ctx->audio_frame, ctx->chs, ctx->audio_codec_ctx->sample_fmt, ctx->audio_dst_data[0], buffer_size, 0);
+  if (ctx->swr_ctx != NULL) {
+    if (ctx->audio_dst_data[0] != NULL) {
+      (*_av_free)(ctx->audio_dst_data[0]);
+      ctx->audio_dst_data[0] = NULL;
+    }
+  } else {
+    ctx->audio_dst_data[0] = NULL;
+  }
   if (ret < 0) {
     printf("MediaEncoder:avcodec_fill_audio_frame() failed : %d\n", ret);
     return JNI_FALSE;
@@ -701,13 +709,6 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
     }
   }
   (*_av_free)(samples_data);
-  if (ctx->swr_ctx != NULL) {
-    //free audio_dst_data (only the first pointer : regardless if format was plannar : it's alloced as one large block)
-    if (ctx->audio_dst_data[0] != NULL) {
-      (*_av_free)(ctx->audio_dst_data[0]);
-      ctx->audio_dst_data[0] = NULL;
-    }
-  }
   ctx->audio_pts += nb_samples;
   return JNI_TRUE;
 }
