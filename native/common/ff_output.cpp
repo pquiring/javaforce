@@ -43,7 +43,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateIO
   if (ctx == NULL) return JNI_FALSE;
 
   ctx->mio = e->NewGlobalRef(mio);
-  ctx->cls_mio = e->GetObjectClass(ctx->mio);
   ctx->GetMediaIO();
 
   const char *cformat = e->GetStringUTFChars(format, NULL);

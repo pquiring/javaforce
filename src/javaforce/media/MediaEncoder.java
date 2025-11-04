@@ -2,12 +2,12 @@ package javaforce.media;
 
 /** Media encoder.
  *
- * TODO : deprecate class
  * New code should use MediaOutput instead.
  *
  * @author pquiring
  */
 
+@Deprecated
 public class MediaEncoder extends MediaFormat {
   //these must be set BEFORE you call start()
   public boolean fps_1000_1001 = false;

@@ -2,12 +2,12 @@ package javaforce.media;
 
 /** Media Decoder.
  *
- * TODO : deprecate class
  * New code should use MediaInput instead.
  *
  * @author pquiring
  */
 
+@Deprecated
 public class MediaDecoder extends MediaFormat {
   /**
    * Starts decoder.

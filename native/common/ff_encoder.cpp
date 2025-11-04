@@ -536,7 +536,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstart
   if (fps <= 0) fps = 24;  //must be valid, even for audio only
 
   ctx->mio = e->NewGlobalRef(mio);
-  ctx->cls_mio = e->GetObjectClass(ctx->mio);
   ctx->GetMediaIO();
 
   jclass cls_encoder = e->FindClass("javaforce/media/MediaEncoder");
