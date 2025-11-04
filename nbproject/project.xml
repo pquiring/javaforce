@@ -43,6 +43,13 @@
                     <excludes>*.bat,*.sh</excludes>
                     <encoding>windows-1252</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>native\mac</label>
+                    <type>java</type>
+                    <location>native/mac</location>
+                    <excludes>*.bat,*.sh</excludes>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -81,6 +88,11 @@
                         <location>native/windows</location>
                         <excludes>*.bat,*.sh</excludes>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>native\mac</label>
+                        <location>native/mac</location>
+                        <excludes>*.bat,*.sh</excludes>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -110,6 +122,10 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>native/windows</package-root>
+                <source-level>17</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>native/mac</package-root>
                 <source-level>17</source-level>
             </compilation-unit>
         </java-data>
