@@ -109,14 +109,14 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     *(pad++) = 0;
   }
 
-  ctx->pkt->size = length;
   ctx->pkt->data = ctx->decode_buffer;
+  ctx->pkt->size = length;
 
-  int ret = (*_avcodec_send_packet)(ctx->audio_codec_ctx, ctx->pkt);
+  int ret = (*_avcodec_send_packet)(ctx->audio_codec_ctx, ctx->pkt);  //caller retains pkt ownership
   ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
   if (ret < 0) {
     printf("MediaAudioDecoder:avcodec_send_packet() failed : %d\n", ret);
-    ctx->pkt->size = 0;
     return NULL;
   }
 
@@ -333,14 +333,14 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
     *(pad++) = 0;
   }
 
-  ctx->pkt->size = length;
   ctx->pkt->data = ctx->decode_buffer;
+  ctx->pkt->size = length;
 
   int ret = (*_avcodec_send_packet)(ctx->video_codec_ctx, ctx->pkt);
   ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
   if (ret < 0) {
     printf("MediaVideoDecoder:avcodec_send_packet() failed : %d\n", ret);
-    ctx->pkt->size = 0;
     return NULL;
   }
 

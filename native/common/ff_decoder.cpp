@@ -308,7 +308,9 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
       printf("MediaDecoder:avcodec_send_packet() failed : %d\n", ret);
       return NULL_FRAME;
     }
-    _av_free_packet(ctx->pkt);
+    (*_av_packet_unref)(ctx->pkt);
+    ctx->pkt->data = NULL;
+    ctx->pkt->size = 0;
     while (1) {
       ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);
       if (ret < 0) break;
@@ -329,7 +331,9 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
       printf("MediaDecoder:avcodec_send_packet() failed : %d\n", ret);
       return NULL_FRAME;
     }
-    _av_free_packet(ctx->pkt);
+    (*_av_packet_unref)(ctx->pkt);
+    ctx->pkt->data = NULL;
+    ctx->pkt->size = 0;
     while (1) {
       ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);
       if (ret < 0) break;
@@ -371,7 +375,9 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   }
 
   //discard unknown packet
-  _av_free_packet(ctx->pkt);
+  (*_av_packet_unref)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
 
   return NULL_FRAME;
 }

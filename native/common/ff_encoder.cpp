@@ -710,6 +710,11 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
   }
   (*_av_free)(samples_data);
   ctx->audio_pts += nb_samples;
+
+  (*_av_packet_unref)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   return JNI_TRUE;
 }
 
@@ -806,6 +811,10 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
     }
   }
   ctx->video_pts++;
+
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   return JNI_TRUE;
 }
 
@@ -862,6 +871,10 @@ static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size, 
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
   ctx->audio_pts++;
+
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   return ret == 0;
 }
 
@@ -921,6 +934,10 @@ static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, 
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
   ctx->video_pts++;
+
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
   return ret == 0;
 }
 

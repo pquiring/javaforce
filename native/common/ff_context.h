@@ -67,6 +67,9 @@ struct FFContext {
   uint8_t* audio_dst_data[4];
   int audio_dst_linesize[4];
 
+  //alloc:decoder_alloc_frame(),MediaAudioDecoder.start(),MediaVideoDecoder.start(),MediaOutput.createFile(),createIO(),MediaAudioEncoder.start(),MediaVideoEncoder.start()
+  //free:*.close(),*.stop()
+  //usage:Media*Decoder=temp MediaOutput:temp Media*Encoder=temp
   AVPacket *pkt;
   jboolean pkt_key_frame;
 

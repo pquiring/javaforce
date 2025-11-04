@@ -35,7 +35,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
 
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
-  decoder_alloc_frame(ctx);
+  decoder_alloc_frame(ctx);  //also ctx->pkt = AVPacket_New()
 
   return (jlong)ctx;
 }
@@ -75,7 +75,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenIO
 
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
-  decoder_alloc_frame(ctx);
+  decoder_alloc_frame(ctx);  //also ctx->pkt = AVPacket_New()
 
   return (jlong)ctx;
 }
@@ -251,11 +251,11 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaInput_nread
   if (ctx == NULL) return 0;
 
   if (ctx->pkt == NULL) {
-    printf("MediaDecoder.read():pkt==NULL\n");
+    printf("MediaInput.read():pkt==NULL\n");
     return 0;
   }
 
-  //read another frame (packet)
+  //read another frame (packet) : caller owns pkt
   if ((*_av_read_frame)(ctx->fmt_ctx, ctx->pkt) >= 0) {
     ctx->pkt_key_frame = ((ctx->pkt->flags & 0x0001) == 0x0001);
   } else {
@@ -283,7 +283,13 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaInput_ngetPacketData
 
   e->SetByteArrayRegion(data, offset, length, (const jbyte*)ctx->pkt->data);
 
-  return ctx->pkt->stream_index;
+  int stream_index = ctx->pkt->stream_index;
+
+  (*_av_packet_unref)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
+  return stream_index;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nseek

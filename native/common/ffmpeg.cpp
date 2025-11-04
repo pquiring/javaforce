@@ -58,6 +58,7 @@ int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
 void (*_avcodec_free_context)(AVCodecContext **ctx);
 void (*_av_init_packet)(AVPacket *pkt);
+void (*_av_packet_unref)(AVPacket *pkt);
 void (*_av_packet_free)(AVPacket **pkt);
 void (*_av_packet_free_side_data)(AVPacket *pkt);
 //encoding
@@ -142,6 +143,7 @@ int (*_av_compare_ts)(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb
 int (*_av_frame_get_buffer)(AVFrame *frame, int align);
 AVFrame* (*_av_frame_alloc)();
 void (*_av_frame_free)(void** frame);
+void (*_av_frame_unref)(void* frame);
 void (*_av_buffer_unref)(AVBufferRef **buf);
 int (*_av_channel_layout_copy) (AVChannelLayout* dst, const AVChannelLayout* src);
 char* (*_av_strerror)(int errnum, char* buf, size_t bufsiz);
@@ -180,16 +182,6 @@ static void AVPacket_dump(AVPacket *pkt, const char* msg) {
 }
 
 static AVOutputFormat *vpx = NULL;
-
-//av_free_packet is deprecated : easy to implement
-static void _av_free_packet(AVPacket *pkt) {
-  if (pkt) {
-    if (pkt->buf) (*_av_buffer_unref)(&pkt->buf);
-    pkt->data = NULL;
-    pkt->size = 0;
-    (*_av_packet_free_side_data)(pkt);
-  }
-}
 
 static void log_packet(const char* type, const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 {
@@ -279,6 +271,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_alloc_context3, "avcodec_alloc_context3");
   getFunction(codec, (void**)&_avcodec_free_context, "avcodec_free_context");
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
+  getFunction(codec, (void**)&_av_packet_unref, "av_packet_unref");
   getFunction(codec, (void**)&_av_packet_free, "av_packet_free");
   getFunction(codec, (void**)&_av_packet_free_side_data, "av_packet_free_side_data");
   getFunction(codec, (void**)&_avcodec_find_encoder, "avcodec_find_encoder");
@@ -351,6 +344,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_get_buffer, "av_frame_get_buffer");
   getFunction(util, (void**)&_av_frame_alloc, "av_frame_alloc");
   getFunction(util, (void**)&_av_frame_free, "av_frame_free");
+  getFunction(util, (void**)&_av_frame_unref, "av_frame_unref");
   getFunction(util, (void**)&_av_buffer_unref, "av_buffer_unref");
   getFunction(util, (void**)&_av_channel_layout_copy, "av_channel_layout_copy");
   getFunction(util, (void**)&_av_strerror, "av_strerror");

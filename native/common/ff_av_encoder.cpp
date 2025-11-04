@@ -124,7 +124,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
 
-  ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);
+  ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);  //set to a reference-counted packet allocated by the encoder
   if (ret < 0) {
     printf("MediaAudioEncoder:avcodec_receive_packet() failed : %d:%s\n", ret, ctx->error_string(ret));
     return NULL;
@@ -142,6 +142,9 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   ctx->e->SetByteArrayRegion(array, 0, ctx->pkt->size, (jbyte*)ctx->pkt->data);
 
   (*_av_free)(samples_data);
+
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
 
   return array;
 }
@@ -313,7 +316,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
 
-  ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, ctx->pkt);
+  ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, ctx->pkt);  //set to a reference-counted packet allocated by the encoder
   if (ret < 0) {
     printf("MediaVideoEncoder:avcodec_receive_packet() failed : %d\n", ret);
     return NULL;
@@ -330,6 +333,10 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
 
   ctx->e->SetByteArrayRegion(array, 0, ctx->pkt->size, (jbyte*)ctx->pkt->data);
+
+  (*_av_packet_unref)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
 
   return array;
 }
