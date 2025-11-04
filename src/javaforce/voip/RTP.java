@@ -400,7 +400,7 @@ public class RTP implements STUN.Listener {
   /**
    * Reads inbound packets for RTP session.
    */
-  private class Worker extends Thread {
+  private static class Worker extends Thread {
 
     private RTP rtp;
     private Transport sock;
@@ -413,7 +413,7 @@ public class RTP implements STUN.Listener {
     }
 
     public void run() {
-      setName("RTP.Worker:" + localrtpport);
+      setName("RTP.Worker:" + rtp.localrtpport);
       byte[] data = new byte[rtp.mtu];
       while (rtp.active) {
         try {
@@ -429,24 +429,24 @@ public class RTP implements STUN.Listener {
           if (rtcp) {
             RTPChannel channel = rtp.findChannel(remoteip, remoteport-1);
             if (channel == null) {
-              JFLog.log(log, "RTP:No channel found:" + remoteip + ":" + remoteport);
+              JFLog.log(rtp.log, "RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
             }
             channel.processRTCP(data, 0, len);
           } else {
             RTPChannel channel = rtp.findChannel(remoteip, remoteport);
             if (channel == null) {
-              JFLog.log(log, "RTP:No channel found:" + remoteip + ":" + remoteport);
+              JFLog.log(rtp.log, "RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
             }
             if (channel.stream.port == -1) {
               channel.stream.port = remoteport;  //NATing
-              JFLog.log(log, "RTP : NAT port = " + channel.stream.getPort());
+              JFLog.log(rtp.log, "RTP : NAT port = " + channel.stream.getPort());
             }
             channel.processRTP(data, 0, len);
           }
         } catch (Exception e) {
-          JFLog.log(log, e);
+          JFLog.log(rtp.log, e);
           rtp.active = false;
         }
       }

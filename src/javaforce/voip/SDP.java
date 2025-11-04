@@ -258,7 +258,7 @@ public class SDP implements Cloneable {
     for(int a=0;a<streams.length;a++) {
       Stream stream = streams[a];
       if (stream.codecs.length == 0) {
-        JFLog.log("Error:SDP:Stream with no codecs!");
+        JFLog.log(log, "Error:SDP:Stream with no codecs!");
         continue;
       }
       Codec rfc2833 = stream.getCodec(RTP.CODEC_RFC2833);
@@ -368,7 +368,7 @@ public class SDP implements Cloneable {
       if (stream.control != null) {
         content.add("a=control:" + stream.control);
       }
-      JFLog.log("keyexchange=" + stream.keyExchange);
+      JFLog.log(log, "keyexchange=" + stream.keyExchange);
       if (stream.keyExchange == KeyExchange.DTLS) {
         content.add("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
       }
@@ -407,7 +407,7 @@ public class SDP implements Cloneable {
     for(int a=start;a<msg.length;a++) {
       String ln = msg[a];
       if (RTP.debug) {
-        JFLog.log("SDP:" + ln);
+        JFLog.log(log, "SDP:" + ln);
       }
       if (ln.startsWith("c=")) {
         //c=IN IP4 1.2.3.4
@@ -434,7 +434,7 @@ public class SDP implements Cloneable {
         } else if (ln.startsWith("m=video")) {
           stream = sdp.addStream(SDP.Type.video);
         } else {
-          JFLog.log("SIP.getSDP() : Unsupported m field:" + ln);
+          JFLog.log(log, "SIP.getSDP() : Unsupported m field:" + ln);
           stream = sdp.addStream(SDP.Type.other);
           continue;
         }
@@ -526,7 +526,7 @@ public class SDP implements Cloneable {
           stream.keyExchange = SDP.KeyExchange.SDP;
           String[] f = ln.split(" ");
           if (!f[2].startsWith("inline:")) {
-            JFLog.log("a=crypto:bad keys(1)");
+            JFLog.log(log, "a=crypto:bad keys(1)");
             continue;
           }
           String base64 = f[2].substring(7);
@@ -536,7 +536,7 @@ public class SDP implements Cloneable {
           }
           byte[] keys = javaforce.Base64.decode(base64.getBytes());
           if (keys == null || keys.length != 30) {
-            JFLog.log("a=crypto:bad keys(2)");
+            JFLog.log(log, "a=crypto:bad keys(2)");
             continue;
           }
           byte[] key = Arrays.copyOfRange(keys, 0, 16);
@@ -597,7 +597,7 @@ public class SDP implements Cloneable {
       }
     }
     if (RTP.debug) {
-      JFLog.log("SDP=" + sdp);
+      JFLog.log(log, "SDP=" + sdp);
     }
     return sdp;
   }
