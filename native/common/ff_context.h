@@ -15,17 +15,25 @@ struct FFContext {
   jobject mio;
   //alloc:MediaInput.openFile(),openIO(),MediaOutput.createFile(),createIO() free:MediaInput.close(),MediaOutput.close()
   AVFormatContext *fmt_ctx;
+  //alloc:MediaInput.openIO(),MediaOutput.createFile(),createIO() free:MediaInput.close(),MediaOutput.close()
   AVIOContext *io_ctx;
   bool io_file;
 
+  //usage:MediaInput.openFile() [no alloc, no free]
   AVInputFormat* input_fmt;
 
-  AVCodecContext *codec_ctx;  //returned by open_codec_context()
+  //alloc:decoder_open_codec_context() transfer_to:video_codec_ctx or audio_codec_ctx
+  AVCodecContext *codec_ctx;
 
   int video_stream_idx;
+  //decoder:copy_from:fmt_ctx free:with fmt_ctx
+  //encoder:alloc:encoder_add_stream() free:with fmt_ctx
   AVStream *video_stream;
+  //transfer_from:decoder_open_codec_context() free:MediaInput.close(),MediaOutput.close()
   AVCodecContext *video_codec_ctx;
+  //alloc:MediaVideoDecoder.decode(),encoder_init_video() free:MediaVideoDecoder.stop(),encoder_stop(),MediaVideoEncoder.stop()
   void* sws_ctx;
+  //alloc:MediaInput.openVideo()openAudio(),MediaAudio/VideoDecoder.start() free:MediaInput.close(),MediaAudio/VideoDecoder.stop()
   uint8_t* decode_buffer;
   int decode_buffer_size;
   //compressed video
@@ -38,7 +46,10 @@ struct FFContext {
   int rgb_video_dst_linesize[4];
 
   int audio_stream_idx;
+  //decoder:copy_from:fmt_ctx free:with fmt_ctx
+  //encoder:alloc:encoder_add_stream() free:with fmt_ctx
   AVStream *audio_stream;
+  //transfer_from:decoder_open_codec_context() free:MediaInput.close(),MediaOutput.close()
   AVCodecContext *audio_codec_ctx;
   void* swr_ctx;
 

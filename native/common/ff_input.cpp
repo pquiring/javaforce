@@ -10,24 +10,22 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
   ctx->fmt_ctx = (*_avformat_alloc_context)();
 
   const char *cformat = e->GetStringUTFChars(format, NULL);
-  if (cformat != NULL) {
-    ctx->input_fmt = (*_av_find_input_format)(cformat);
-    if (ctx->input_fmt == NULL) {
-      printf("MediaInput:av_find_input_format() failed : %s\n", cformat);
-      e->ReleaseStringUTFChars(format, cformat);
-      return JNI_FALSE;
-    }
-  }
+  ctx->input_fmt = (*_av_find_input_format)(cformat);
   e->ReleaseStringUTFChars(format, cformat);
+  if (ctx->input_fmt == NULL) {
+    printf("MediaInput:av_find_input_format() failed : %s\n", cformat);
+    e->ReleaseStringUTFChars(format, cformat);
+    return JNI_FALSE;
+  }
 
   const char *cfile = e->GetStringUTFChars(file, NULL);
   ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL);
+  e->ReleaseStringUTFChars(file, cfile);
+  ctx->input_fmt = NULL;  //do not free
   if (ret != 0) {
-    e->ReleaseStringUTFChars(file, cfile);
     printf("MediaInput:avformat_open_input() failed : %d\n", ret);
     return JNI_FALSE;
   }
-  e->ReleaseStringUTFChars(file, cfile);
 
   ret = (*_avformat_find_stream_info)(ctx->fmt_ctx, NULL);
   if (ret < 0) {
@@ -154,8 +152,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nopenvideo
 
   decoder_open_video_codec(ctx, new_width, new_height);
 
-  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-  ctx->decode_buffer_size = 1024*1024;
+  if (ctx->decode_buffer == NULL) {
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+    ctx->decode_buffer_size = 1024*1024;
+  }
 
   return JNI_TRUE;
 }
@@ -168,8 +168,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaInput_nopenaudio
 
   decoder_open_audio_codec(ctx, new_chs, new_freq);
 
-  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-  ctx->decode_buffer_size = 1024*1024;
+  if (ctx->decode_buffer == NULL) {
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+    ctx->decode_buffer_size = 1024*1024;
+  }
 
   return JNI_TRUE;
 }

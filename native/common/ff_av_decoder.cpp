@@ -45,8 +45,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
     ctx->audio_codec_ctx->sample_rate = ctx->freq;
   }
 
-  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-  ctx->decode_buffer_size = 1024*1024;
+  if (ctx->decode_buffer == NULL) {
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+    ctx->decode_buffer_size = 1024*1024;
+  }
 
   return (jlong)ctx;
 }
@@ -151,7 +153,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
-    if (ff_debug_log) printf("MediaAudioDecoder.swr_alloc_set_opts2:%p,%d,%d,%p,%d,%d\n", 
+    if (ff_debug_log) printf("MediaAudioDecoder.swr_alloc_set_opts2:%p,%d,%d,%p,%d,%d\n",
       &new_layout, ctx->dst_sample_fmt, ctx->freq,
       &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate);
     (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
@@ -257,8 +259,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
   ctx->width = width;
   ctx->height = height;
 
-  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-  ctx->decode_buffer_size = 1024*1024;
+  if (ctx->decode_buffer == NULL) {
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+    ctx->decode_buffer_size = 1024*1024;
+  }
 
   return (jlong)ctx;
 }
