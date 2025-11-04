@@ -273,6 +273,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     }
     packets_decode = null;
     packets_encode = null;
+    h264 = null;
+    h265 = null;
   }
 
   private void listFiles() {
@@ -497,7 +499,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       rtp.stop();
       rtp = null;
     }
-    channel = null;
+    if (channel != null) {
+      //no uninit
+      channel = null;
+    }
     if (decoder != null) {
       decoder.stop();
       decoder = null;

@@ -19,6 +19,28 @@
                     <label>src</label>
                     <type>java</type>
                     <location>src</location>
+                    <excludes>*.bat,*.sh</excludes>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>native\common</label>
+                    <type>java</type>
+                    <location>native/common</location>
+                    <excludes>*.bat,*.sh</excludes>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>native\linux</label>
+                    <type>java</type>
+                    <location>native/linux</location>
+                    <excludes>*.bat,*.sh</excludes>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>native\windows</label>
+                    <type>java</type>
+                    <location>native/windows</location>
+                    <excludes>*.bat,*.sh</excludes>
                     <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>
@@ -42,6 +64,22 @@
                     <source-folder style="packages">
                         <label>src</label>
                         <location>src</location>
+                        <excludes>*.bat,*.sh</excludes>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>native\common</label>
+                        <location>native/common</location>
+                        <excludes>*.bat,*.sh</excludes>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>native\linux</label>
+                        <location>native/linux</location>
+                        <excludes>*.bat,*.sh</excludes>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>native\windows</label>
+                        <location>native/windows</location>
+                        <excludes>*.bat,*.sh</excludes>
                     </source-folder>
                     <source-file>
                         <location>build.xml</location>
@@ -60,6 +98,18 @@
             <compilation-unit>
                 <package-root>src</package-root>
                 <classpath mode="compile">llrp.jar;jdom.jar;sshd-core.jar;sshd-common.jar;sshd-sftp.jar;sshd-scp.jar;mina-core.jar;bcprov.jar;bctls.jar;slf4j-api.jar;plc4j-api.jar;jsvg.jar</classpath>
+                <source-level>17</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>native/common</package-root>
+                <source-level>17</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>native/linux</package-root>
+                <source-level>17</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>native/windows</package-root>
                 <source-level>17</source-level>
             </compilation-unit>
         </java-data>
