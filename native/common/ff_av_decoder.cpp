@@ -292,6 +292,10 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nstop
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
+  if (ctx->video_dst_data[0] != NULL) {
+    (*_av_free)(ctx->video_dst_data[0]);
+    ctx->video_dst_data[0] = NULL;
+  }
   if (ctx->rgb_video_dst_data[0] != NULL) {
     (*_av_free)(ctx->rgb_video_dst_data[0]);
     ctx->rgb_video_dst_data[0] = NULL;

@@ -38,10 +38,12 @@ struct FFContext {
   int decode_buffer_size;
   //compressed video
   int video_dst_bufsize;
+  //decoder:alloc:decoder_open_video_codec() free:MediaInput.close(),MediaVideoDecoder.stop(),MediaDecoder.stop()
   uint8_t* video_dst_data[4];
   int video_dst_linesize[4];
   //rgb video
   int rgb_video_dst_bufsize;
+  //decoder:alloc:decoder_open_video_codec() free:MediaInput.close(),MediaVideoDecoder.stop(),MediaDecoder.stop()
   uint8_t* rgb_video_dst_data[4];
   int rgb_video_dst_linesize[4];
 
