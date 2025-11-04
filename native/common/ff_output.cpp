@@ -262,7 +262,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nwritePacket
   ctx->pkt->pts = ctx->last_pts;
   ctx->pkt->duration = ctx->last_duration;
 
-  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);
+  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);  //packet : this function will take ownership ??? bug ???
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
 

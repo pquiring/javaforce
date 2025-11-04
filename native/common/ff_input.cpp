@@ -257,8 +257,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaInput_nread
     return 0;
   }
 
-  //read another frame (packet) : caller owns pkt
-  if ((*_av_read_frame)(ctx->fmt_ctx, ctx->pkt) >= 0) {
+  //read "packet"
+  if ((*_av_read_frame)(ctx->fmt_ctx, ctx->pkt) >= 0) {  //packet : caller retains ownership
     ctx->pkt_key_frame = ((ctx->pkt->flags & 0x0001) == 0x0001);
   } else {
     return 0;

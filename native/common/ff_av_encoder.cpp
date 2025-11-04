@@ -108,7 +108,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
 
   ctx->audio_frame->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:send_frame:%p,%p\n", ctx->audio_codec_ctx, ctx->audio_frame);
-  ret = (*_avcodec_send_frame)(ctx->audio_codec_ctx, ctx->audio_frame);
+  ret = (*_avcodec_send_frame)(ctx->audio_codec_ctx, ctx->audio_frame);  //ownership remains with the caller
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:send_frame=%d\n", ret);
   if (ret < 0) {
     printf("MediaAudioEncoder:avcodec_send_frame() failed : %d:%s\n", ret, ctx->error_string(ret));
@@ -306,7 +306,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   }
 
   ctx->video_frame->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-  int ret = (*_avcodec_send_frame)(ctx->video_codec_ctx, ctx->video_frame);
+  int ret = (*_avcodec_send_frame)(ctx->video_codec_ctx, ctx->video_frame);  //ownership remains with the caller
   if (ret < 0) {
     printf("MediaVideoEncoder:avcodec_send_frame() failed : %d\n", ret);
     return NULL;

@@ -120,7 +120,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
     return NULL;
   }
 
-  ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);
+  ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);  //frame alloced by codec (existing one unref first)
   if (ret < 0) {
     printf("MediaAudioDecoder:avcodec_receive_frame() failed : %d\n", ret);
     return NULL;
@@ -336,7 +336,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
   ctx->pkt->data = ctx->decode_buffer;
   ctx->pkt->size = length;
 
-  int ret = (*_avcodec_send_packet)(ctx->video_codec_ctx, ctx->pkt);
+  int ret = (*_avcodec_send_packet)(ctx->video_codec_ctx, ctx->pkt);  //caller retains pkt ownership
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
   if (ret < 0) {
@@ -344,7 +344,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
     return NULL;
   }
 
-  ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);
+  ret = (*_avcodec_receive_frame)(ctx->video_codec_ctx, ctx->frame);  //frame alloced by codec (existing one unref first)
   if (ret < 0) {
     printf("MediaVideoDecoder:avcodec_receive_frame failed() : %d\n", ret);
     return NULL;
