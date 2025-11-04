@@ -83,20 +83,26 @@ struct FFContext {
   int jaudio_length;
 
   //additional raw video decoder fields
+  //reference only
   AVCodec *video_codec;
 
   //encoder fields
+  //reference only
   AVCodec *audio_codec;
+  //reference only (from fmt_ctx)
   AVOutputFormat *out_fmt;
   int width, height, fps;
   int chs, freq;
   jboolean scaleVideo;
   int org_width, org_height;
+  //alloc:encoder_init_audio/video free:encoder_stop(),MediaOutput.close(),Media*Encoder.stop()
   AVFrame *audio_frame, *video_frame;
+  //alloc:encoder_init_video() free:encoder_stop(), MediaOutput.close()
   AVFrame *src_pic;
   jboolean audio_frame_size_variable;
   jboolean video_delay;
   int audio_frame_size;
+  //alloc:encoder_init_audio() free:encoder_stop(), MediaOutput.close()
   short *audio_buffer;
   int audio_buffer_size;
 
@@ -107,6 +113,7 @@ struct FFContext {
   int64_t last_pts;
   int64_t last_duration;
 
+  //temp usage
   uint8_t* audio_src_data[4];
 
   jboolean is_dash;
