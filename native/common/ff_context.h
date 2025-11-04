@@ -73,6 +73,7 @@ struct FFContext {
   AVPacket *pkt;
   jboolean pkt_key_frame;
 
+  //deceder:alloc:decoder_alloc_frame(),Media*Decoder.start() free:MediaInput.close(),Media*Decoder.stop()
   AVFrame *frame;
 
   jintArray jvideo;

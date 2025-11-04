@@ -117,6 +117,10 @@ static jboolean decoder_alloc_frame(FFContext *ctx) {
     printf("MediaDecoder:av_frame_alloc() failed\n");
     return JNI_FALSE;
   }
+  return JNI_TRUE;
+}
+
+static jboolean decoder_alloc_packet(FFContext *ctx) {
   ctx->pkt = AVPacket_New();
   return JNI_TRUE;
 }
@@ -169,6 +173,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   decoder_open_video_codec(ctx, new_width, new_height);
   decoder_open_audio_codec(ctx, new_chs, new_freq);
   decoder_alloc_frame(ctx);
+  decoder_alloc_packet(ctx);
 
   return JNI_TRUE;
 }
@@ -221,6 +226,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
   decoder_open_video_codec(ctx, new_width, new_height);
   decoder_open_audio_codec(ctx, new_chs, new_freq);
   decoder_alloc_frame(ctx);
+  decoder_alloc_packet(ctx);
 
   return JNI_TRUE;
 }

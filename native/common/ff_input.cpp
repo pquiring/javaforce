@@ -35,7 +35,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenFile
 
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
-  decoder_alloc_frame(ctx);  //also ctx->pkt = AVPacket_New()
+  decoder_alloc_frame(ctx);
+  decoder_alloc_packet(ctx);
 
   return (jlong)ctx;
 }
@@ -75,7 +76,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaInput_nopenIO
 
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
-  decoder_alloc_frame(ctx);  //also ctx->pkt = AVPacket_New()
+  decoder_alloc_frame(ctx);
+  decoder_alloc_packet(ctx);
 
   return (jlong)ctx;
 }
