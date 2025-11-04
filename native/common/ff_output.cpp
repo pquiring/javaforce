@@ -149,7 +149,81 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nclose
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
-  encoder_stop(ctx);
+  //flush encoders
+  if (ctx->audio_stream != NULL) {
+    encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream, JNI_TRUE);
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->video_stream != NULL) {
+    encoder_flush(ctx, ctx->video_codec_ctx, ctx->video_stream, JNI_TRUE);
+  }
+  if (ff_debug_trace) printf("encoder_stop:%p\n", ctx->fmt_ctx);
+  int ret = (*_av_write_trailer)(ctx->fmt_ctx);
+  if (ret < 0) {
+    printf("MediaEncoder:av_write_trailer() failed : %d\n", ret);
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->io_ctx != NULL) {
+    if (ctx->io_file) {
+      (*_avio_close)(ctx->io_ctx);
+    } else {
+      (*_avio_flush)(ctx->io_ctx);
+      (*_av_free)(ctx->io_ctx->buffer);
+      (*_av_free)(ctx->io_ctx);
+    }
+    ctx->io_ctx = NULL;
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->audio_frame != NULL) {
+    (*_av_frame_free)((void**)&ctx->audio_frame);
+    ctx->audio_frame = NULL;
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->video_frame != NULL) {
+    (*_av_frame_free)((void**)&ctx->video_frame);
+    ctx->video_frame = NULL;
+  }
+  if (ctx->fmt_ctx != NULL) {
+    if (ctx->fmt_ctx->priv_data != NULL) {
+      (*_av_free)(ctx->fmt_ctx->priv_data);
+      ctx->fmt_ctx->priv_data = NULL;
+    }
+    (*_avformat_free_context)(ctx->fmt_ctx);
+    ctx->fmt_ctx = NULL;
+  }
+  if (ctx->video_codec_ctx != NULL) {
+    (*_avcodec_free_context)(&ctx->video_codec_ctx);
+    ctx->video_codec_ctx = NULL;
+  }
+  if (ctx->audio_codec_ctx != NULL) {
+    (*_avcodec_free_context)(&ctx->audio_codec_ctx);
+    ctx->audio_codec_ctx = NULL;
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->src_pic != NULL) {
+    (*_av_frame_free)((void**)&ctx->src_pic);
+    ctx->src_pic = NULL;
+  }
+  if (ctx->sws_ctx != NULL) {
+    (*_sws_freeContext)(ctx->sws_ctx);
+    ctx->sws_ctx = NULL;
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->swr_ctx != NULL) {
+    (*_swr_free)(&ctx->swr_ctx);
+    ctx->swr_ctx = NULL;
+  }
+  if (ff_debug_trace) printf("encoder_stop\n");
+  if (ctx->audio_buffer != NULL) {
+    (*_av_free)(ctx->audio_buffer);
+    ctx->audio_buffer = NULL;
+  }
+  if (ctx->pkt != NULL) {
+    ctx->pkt->data = NULL;
+    ctx->pkt->size = 0;
+    (*_av_packet_free)(&ctx->pkt);
+    ctx->pkt = NULL;
+  }
   freeFFContext(e,c,ctx);
   return JNI_TRUE;
 }

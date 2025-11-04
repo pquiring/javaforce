@@ -11,7 +11,9 @@ struct FFContext {
   jmethodID mid_ff_seek;
 
   //decoder fields
+  //alloc:MediaInput.open() MediaOutput.create() free:freeFFContext()
   jobject mio;
+  //alloc:MediaInput.openFile(),openIO(),MediaOutput.createFile(),createIO() free:MediaInput.close(),MediaOutput.close()
   AVFormatContext *fmt_ctx;
   AVIOContext *io_ctx;
   bool io_file;
