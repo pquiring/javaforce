@@ -94,10 +94,10 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
 
   jboolean isCopy;
 
-  //there should always be 64 bytes after the data to decode
-  if (length + 64 > ctx->decode_buffer_size) {
+  //there should always be AV_INPUT_BUFFER_PADDING_SIZE bytes after the data to decode
+  if (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
     (*_av_free)(ctx->decode_buffer);
-    while (length + 64 > ctx->decode_buffer_size) {
+    while (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
       ctx->decode_buffer_size <<= 1;
     }
     ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
@@ -105,7 +105,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
 
   e->GetByteArrayRegion(data, offset, length, (jbyte*)ctx->decode_buffer);
   uint8_t *pad = ctx->decode_buffer + offset + length;
-  for(int a=0;a<64;a++) {
+  for(int a=0;a<AV_INPUT_BUFFER_PADDING_SIZE;a++) {
     *(pad++) = 0;
   }
 
@@ -319,17 +319,17 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
   if (ctx == NULL) return NULL;
   jboolean isCopy;
 
-  //there should always be 64 bytes after the data to decode
-  if (length + 64 > ctx->decode_buffer_size) {
+  //there should always be AV_INPUT_BUFFER_PADDING_SIZE bytes after the data to decode
+  if (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
     (*_av_free)(ctx->decode_buffer);
-    while (length + 64 > ctx->decode_buffer_size) {
+    while (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
       ctx->decode_buffer_size <<= 1;
     }
     ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
   }
   e->GetByteArrayRegion(data, offset, length, (jbyte*)ctx->decode_buffer);
   uint8_t *pad = ctx->decode_buffer + offset + length;
-  for(int a=0;a<64;a++) {
+  for(int a=0;a<AV_INPUT_BUFFER_PADDING_SIZE;a++) {
     *(pad++) = 0;
   }
 
