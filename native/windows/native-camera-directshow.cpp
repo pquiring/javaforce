@@ -1,5 +1,5 @@
 #include <dshow.h>
-#include "qedit.h"
+#include "include/qedit.h"
 
 #ifdef __GNUC__
   //define missing from Mingw headers
