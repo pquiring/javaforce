@@ -1,8 +1,8 @@
 #Debian/12 (bookworm) with build tools
 
-#To build on AMD64: docker build -f debian12.docker -t amd64/debian12 .
+#To build on AMD64: docker build -f debian12.docker -t amd64/debian12 ..
 
-#To build on ARM64: docker build -f debian12.docker -t arm64v8/debian12 .
+#To build on ARM64: docker build -f debian12.docker -t arm64v8/debian12 ..
 
 #To use on AMD64: cd repo ; docker-amd64.sh debian12 latest
 

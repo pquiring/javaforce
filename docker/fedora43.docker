@@ -1,16 +1,16 @@
-#Arch with build tools
+#Fedora/43 with build tools
 
-#To build: docker build -f arch.docker -t amd64/arch .
+#To build on AMD64: docker build -f fedora43.docker -t amd64/fedora43 ..
 
-#ARM64 n/a
+#To build on ARM64: docker build -f fedora43.docker -t arm64v8/fedora43 ..
 
-#To use: cd repo ; docker-amd64.sh arch latest
+#To use on AMD64: cd repo ; docker-amd64.sh fedora43 latest
 
-#ARM64 n/a
+#To use on ARM64: cd repo ; docker-arm64.sh fedora43 latest
 
 #see https://docs.docker.com/reference/dockerfile/
 
-FROM archlinux:latest
+FROM fedora:43
 
 WORKDIR /opt
 

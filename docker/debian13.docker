@@ -1,8 +1,8 @@
 #Debian/13 (trixie) with build tools
 
-#To build on AMD64: docker build -f debian13.docker -t amd64/debian13 .
+#To build on AMD64: docker build -f debian13.docker -t amd64/debian13 ..
 
-#To build on AMR64: docker build -f debian13.docker -t arm64v8/debian13 .
+#To build on AMR64: docker build -f debian13.docker -t arm64v8/debian13 ..
 
 #To use on AMD64: cd repo ; docker-amd64.sh debian13 latest
 
