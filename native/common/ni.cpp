@@ -1,4 +1,4 @@
-#include "NIDAQmx.h"
+#include "include/NIDAQmx.h"
 
 #include "register.h"
 
