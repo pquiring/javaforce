@@ -1951,9 +1951,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 
 #include "../common/ffmpeg.cpp"
 
-#ifndef __arm__
 #include "../common/videobuffer.cpp"
-#endif
 
 #ifndef __FreeBSD__
 #include "../common/ni.cpp"
