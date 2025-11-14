@@ -21,6 +21,7 @@ Requirements:
 
 Known issues:
  - motion detection still needs work
+ - server has memory leak in Linux (does not affect Windows)
 
 Downloads & Bug Reports : jfdvr.sf.net
 Source : github.com/pquiring/javaforce/tree/master/projects/jfdvr
