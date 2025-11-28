@@ -264,7 +264,7 @@ JavaVMInitArgs *BuildArgs() {
   debug = true;
 #else
   char jf_debug[64];
-  jf_debug[0] = 0; 
+  jf_debug[0] = 0;
   GetEnvironmentVariable("JF_DEBUG", jf_debug, 64);
   if (strcmp(jf_debug, "true") == 0) {
     debug = true;
@@ -293,7 +293,10 @@ JavaVMInitArgs *BuildArgs() {
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
-      opts[nOpts++] = x;
+      if (*x != ' ') {
+        opts[nOpts++] = x;
+      }
+      x++;
       x = strchr(x, ' ');
       if (x != NULL) {
         *x = 0;

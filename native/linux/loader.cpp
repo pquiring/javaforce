@@ -281,7 +281,10 @@ JavaVMInitArgs *BuildArgs() {
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
-      opts[nOpts++] = x;
+      if (*x != ' ') {
+        opts[nOpts++] = x;
+      }
+      x++;
       x = strchr(x, ' ');
       if (x != NULL) {
         *x = 0;
