@@ -137,8 +137,6 @@ public class DVRService implements RTSPServerInterface {
       //start redir service
       redirService = new WebServerRedir();
       redirService.start(80, 443);
-      //enable firewall exception
-      setupFirewall();
       //start keep alive thread
       keepAlive = new WorkerKeepAlive();
       keepAlive.start();
@@ -254,25 +252,6 @@ public class DVRService implements RTSPServerInterface {
       }
     }
     startCamera(camera);
-  }
-
-  private void setupFirewall() {
-    //RTSP-TCP : 554
-    //RTP-UDP : server=30000-40000 client=40000-50000
-    RTP.setPortRange(30000, 40000);
-    if (!JF.isWindows()) return;
-    //setup windows firewall
-    try {
-      File firewall_setup = new File(Paths.dataPath + "/firewall.setup");
-      if (firewall_setup.exists()) return;
-      firewall_setup.createNewFile();
-      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_IN\"", "dir=in", "protocol=udp", "localport=30000-50000", "action=allow"});
-      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_OUT\"", "dir=out", "protocol=udp", "localport=30000-50000", "action=allow"});
-      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTSP_IN\"", "dir=in", "protocol=tcp", "localport=554", "action=allow"});
-      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTSP_OUT\"", "dir=out", "protocol=tcp", "localport=554", "action=allow"});
-    } catch (Exception e) {
-      JFLog.log(log, e);
-    }
   }
 
   //RTSPServerInterface
