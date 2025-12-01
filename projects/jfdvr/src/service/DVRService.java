@@ -296,7 +296,7 @@ public class DVRService implements RTSPServerInterface {
   public void onDescribe(RTSPServer server, RTSPSession sess) {
     try {
       URL url = new URI(sess.uri).toURL();
-      String path = url.getPath().substring(1);  //rename leading /
+      String path = url.getPath().substring(1);  //remove leading /
       if (debug) JFLog.log(log, "onDescribe:" + path);
       String[] args = path.split("/");
       String type = args[0];
