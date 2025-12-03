@@ -44,9 +44,9 @@ public abstract class RTSP implements TransportInterface {
     if (!set_port_range) {
       //to avoid using same ports when running client and server on same host
       if (server) {
-        RTP.setPortRange(32768, 49152);
+        RTP.setServerPortRange();
       } else {
-        RTP.setPortRange(49152, 65536);
+        RTP.setClientPortRange();
       }
       set_port_range = true;
     }

@@ -33,7 +33,7 @@ public class ViewerApp extends javax.swing.JFrame {
     root = getContentPane();
     setPosition();
     setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View)");
-    RTP.setPortRange(40000, 50000);
+    RTP.setClientPortRange();
     Config.randomPort();
     for(String arg : args) {
       if (arg.startsWith("rtsp://")) {

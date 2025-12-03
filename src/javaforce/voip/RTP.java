@@ -400,6 +400,16 @@ public class RTP implements STUN.Listener {
     nextlocalrtpport = min;
   }
 
+  /** Sets preferred range for server. */
+  public static void setServerPortRange() {
+    setPortRange(32768, 49152);
+  }
+
+  /** Sets preferred range for client. */
+  public static void setClientPortRange() {
+    setPortRange(49152, 65536);
+  }
+
   /**
    * Reads inbound packets for RTP session.
    */
