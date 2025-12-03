@@ -31,6 +31,7 @@ public abstract class RTSP implements TransportInterface {
   protected static String useragent = "JavaForce/" + JF.getVersion();
   public int log;
   public static boolean debug = false;
+  private static boolean set_port_range = false;
 
   /**
    * Opens the transport and sets the RTSPInterface callback.
@@ -40,6 +41,15 @@ public abstract class RTSP implements TransportInterface {
     rinstance = null;
     this.iface = iface;
     this.server = server;
+    if (!set_port_range) {
+      //to avoid using same ports when running client and server on same host
+      if (server) {
+        RTP.setPortRange(32768, 49152);
+      } else {
+        RTP.setPortRange(49152, 65536);
+      }
+      set_port_range = true;
+    }
     switch (type) {
       case UDP:
         transport = new TransportUDP();

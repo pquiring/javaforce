@@ -390,6 +390,9 @@ public class RTP implements STUN.Listener {
 
   /**
    * Sets global RTP port range to use (should be set before calling init()).
+   *
+   * @param min = lowest port to use (inclusive)
+   * @param max = highest port to use (exclusive)
    */
   public static void setPortRange(int min, int max) {
     rtpmin = min;
