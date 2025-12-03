@@ -179,4 +179,8 @@ public class TransportTCPClient implements Transport {
 
   public void setReceiveBufferSize(int size) {
   }
+
+  public void setDebug(boolean state) {
+    debug = state;
+  }
 }

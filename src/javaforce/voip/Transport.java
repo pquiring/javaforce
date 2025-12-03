@@ -23,4 +23,5 @@ public interface Transport {
   public boolean error();
   public String[] getClients();
   public void setReceiveBufferSize(int size);
+  public void setDebug(boolean state);
 }

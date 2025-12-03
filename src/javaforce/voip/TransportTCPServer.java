@@ -310,4 +310,8 @@ public class TransportTCPServer implements Transport {
 
   public void setReceiveBufferSize(int size) {
   }
+
+  public void setDebug(boolean state) {
+    debug = state;
+  }
 }

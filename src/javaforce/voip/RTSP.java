@@ -57,6 +57,7 @@ public abstract class RTSP implements TransportInterface {
           transport = new TransportTLSClient();
         break;
     }
+    transport.setDebug(debug);
     if (!transport.open(localhost, localport, this)) return false;
     this.localhost = localhost;
     this.localport = localport;

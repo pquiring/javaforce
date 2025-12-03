@@ -12,6 +12,7 @@ import java.net.*;
 import javaforce.*;
 
 public class TransportUDP implements Transport {
+  public static boolean debug = false;
   private DatagramSocket ds;
   private boolean active = false;
   private boolean error = false;
@@ -85,5 +86,8 @@ public class TransportUDP implements Transport {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+  public void setDebug(boolean state) {
+    debug = state;
   }
 }
