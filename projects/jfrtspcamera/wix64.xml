@@ -1,4 +1,4 @@
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package UpgradeCode="{30DFAB08-2026-45F3-8002-D33AFA62CA5C}" Version="0.15" Language="1033" Name="jfRTSPCamera" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -19,9 +19,12 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{EAC8282D-04A5-4F6D-9118-3C39DA260BF0}" Bitness="always64">
-        <File Id="jfrtspcamera.jar" Source="jfrtspcamera.jar" KeyPath="yes" />
+        <File Id="jfrtspcamera.exe" Source="jfrtspcamera.exe" KeyPath="yes">
+          <fire:FirewallException Id="FirewallRule_RTSP" Name="jfRTSPCamera_RTSP" Protocol="tcp" Port="554" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule_RTP" Name="jfRTSPCamera_RTP" Protocol="udp" Port="30000-50000" Scope="any" IgnoreFailure="yes" Profile="all" />
+        </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
-        <File Id="jfrtspcamera.exe" Source="jfrtspcamera.exe" />
+        <File Id="jfrtspcamera.jar" Source="jfrtspcamera.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfRTSPCamera" DisplayName="jfRTSPCamera" Description="jf RTSP Camera" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfRTSPCamera" Wait="yes" />
       </Component>
