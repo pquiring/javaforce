@@ -588,7 +588,7 @@ public class RTPChannel {
   }
 
   public boolean isActive() {
-    return active;
+    return active && rtp.active;
   }
 
   /**
