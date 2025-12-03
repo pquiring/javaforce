@@ -68,6 +68,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       if (this.remotehost.equals("127.0.0.1")) {
         this.remotehost = localhost;
         remoteip = resolve(this.remotehost);
+        this.remoteaddr = InetAddress.getByName(remoteip);
         JFLog.log(log, "changed 127.0.0.1 to " + this.remotehost + " " + this.remoteip);
       }
       if (nat == NAT.STUN || nat == NAT.ICE) {
@@ -409,7 +410,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   public void onPacket(RTSP rtsp, String[] msg, String remoteip, int remoteport) {
     try {
       if (!remoteip.equals(this.remoteip) || remoteport != this.remoteport) {
-        JFLog.log(log, "Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
+        JFLog.log(log, "Ignoring packet from unknown host:" + remoteip + ":" + remoteport + " expecting " + this.remoteip + ":" + this.remoteport);
         return;
       }
       String cmd = null;

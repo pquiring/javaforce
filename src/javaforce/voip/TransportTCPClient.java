@@ -35,7 +35,7 @@ public class TransportTCPClient implements Transport {
     this.localport = localport;
     this.iface = iface;
     try {
-      if (debug) JFLog.log("TransportTCPClient.open()");
+      if (debug) JFLog.log("TransportTCPClient:bind to " + localhost + ":" + localport);
       socket = new Socket();
       socket.setSoLinger(true, 0);  //allow to reuse socket again without waiting
       socket.bind(new InetSocketAddress(localhost, localport));

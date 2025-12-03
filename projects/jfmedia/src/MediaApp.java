@@ -47,6 +47,11 @@ public class MediaApp extends javax.swing.JFrame {
         }
       }
     }
+    if (args.length > 1) {
+      if (args[1].equals("debug")) {
+        RTSP.debug = true;
+      }
+    }
     setTitle("jfMedia/" + version);
     setExtendedState(Frame.MAXIMIZED_BOTH);
     fullscreen = true;
