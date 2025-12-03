@@ -68,15 +68,19 @@ static jboolean encoder_init_video(FFContext *ctx) {
   if (ctx->config_fps_1000_1001) {
     ctx->video_codec_ctx->time_base.num = 1000;
     ctx->video_codec_ctx->time_base.den = ctx->fps * 1001;
-    ctx->video_stream->time_base.num = 1000;
-    ctx->video_stream->time_base.den = ctx->fps * 1001;
+    if (ctx->video_stream != NULL) {
+      ctx->video_stream->time_base.num = 1000;
+      ctx->video_stream->time_base.den = ctx->fps * 1001;
+    }
     ctx->video_codec_ctx->framerate.num = ctx->fps * 1001;
     ctx->video_codec_ctx->framerate.den = 1000;
   } else {
     ctx->video_codec_ctx->time_base.num = 1;
     ctx->video_codec_ctx->time_base.den = ctx->fps;
-    ctx->video_stream->time_base.num = 1;
-    ctx->video_stream->time_base.den = ctx->fps * 1024;
+    if (ctx->video_stream != NULL) {
+      ctx->video_stream->time_base.num = 1;
+      ctx->video_stream->time_base.den = ctx->fps * 1024;
+    }
     ctx->video_codec_ctx->framerate.num = ctx->fps;
     ctx->video_codec_ctx->framerate.den = 1;
   }
@@ -140,12 +144,14 @@ static jboolean encoder_init_video(FFContext *ctx) {
     return JNI_FALSE;
   }
 
-  if (ff_debug_trace) printf("encoder_init_video:params:%p:%p\n", ctx->video_stream->codecpar, ctx->video_codec_ctx);
-  //copy params (after codec is opened)
-  ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
-  if (ret < 0) {
-    printf("MediaEncoder:avcodec_parameters_from_context() failed : %d\n", ret);
-    return JNI_FALSE;
+  if (ctx->video_stream != NULL) {
+    if (ff_debug_trace) printf("encoder_init_video:params:%p:%p\n", ctx->video_stream->codecpar, ctx->video_codec_ctx);
+    //copy params (after codec is opened)
+    ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
+    if (ret < 0) {
+      printf("MediaEncoder:avcodec_parameters_from_context() failed : %d\n", ret);
+      return JNI_FALSE;
+    }
   }
 
   if (ff_debug_trace) printf("encoder_init_video\n");

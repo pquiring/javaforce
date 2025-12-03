@@ -250,13 +250,9 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
   ctx->fps = fps;
   ctx->config_gop_size = keyFrameInterval;
 
-  ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
-  if (ret < 0) {
-    printf("MediaVideoEncoder:avcodec_open2() failed : %d\n", ret);
+  if (!encoder_init_video(ctx)) {
     return 0;
   }
-
-  if ((ctx->video_frame = (*_av_frame_alloc)()) == NULL) return 0;
 
   ctx->pkt = AVPacket_New();
 
