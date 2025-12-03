@@ -1,2 +1,3 @@
 /usr/share/java/jfrtspcamera.jar
 /usr/bin/jfrtspcamera
+/lib/systemd/system/jfrtspcamera.service
