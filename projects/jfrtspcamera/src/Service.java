@@ -261,7 +261,7 @@ public class Service extends Thread implements RTSPServerInterface {
       try {
         while (active) {
           JF.sleep(delay);
-          int[] px = camera.getFrame();
+          int[] px = camera.getFrameFlip();
           if (px == null) {
             if (debug) JFLog.log("Error:no frame from camera");
             continue;
