@@ -11,7 +11,7 @@
             <properties/>
             <folders>
                 <source-folder>
-                    <label>jfrecordcamera</label>
+                    <label>jfrtspcamera</label>
                     <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
