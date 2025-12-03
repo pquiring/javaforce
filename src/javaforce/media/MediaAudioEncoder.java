@@ -9,7 +9,9 @@ import javaforce.*;
 import javaforce.voip.*;
 
 public class MediaAudioEncoder extends MediaCoder {
+  /** Create an audio encoder for raw audio. */
   public MediaAudioEncoder() {}
+  /** Create an audio encoder for a stream in a container format. */
   public MediaAudioEncoder(MediaOutput output) {
     this.ctx = output.ctx;
     shared = true;

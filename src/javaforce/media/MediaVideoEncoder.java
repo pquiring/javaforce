@@ -8,7 +8,9 @@ package javaforce.media;
 import javaforce.voip.*;
 
 public class MediaVideoEncoder extends MediaCoder {
+  /** Create a video encoder for raw video. */
   public MediaVideoEncoder() {}
+  /** Create a video encoder for a stream in a container format. */
   public MediaVideoEncoder(MediaOutput output) {
     this.ctx = output.ctx;
     shared = true;

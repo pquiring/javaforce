@@ -1,6 +1,6 @@
 package javaforce.media;
 
-/** Media "raw" video decoder.
+/** Media video decoder.
  *
  * @author pquiring
  */
@@ -8,7 +8,9 @@ package javaforce.media;
 import javaforce.voip.*;
 
 public class MediaVideoDecoder extends MediaCoder {
+  /** Create a video decoder for raw video. */
   public MediaVideoDecoder() {}
+  /** Create a video decoder for a stream in a container format. */
   public MediaVideoDecoder(MediaInput input) {
     this.ctx = input.ctx;
     shared = true;

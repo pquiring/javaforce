@@ -2,7 +2,9 @@ package javaforce.media;
 
 /** MediaOutput
  *
- * Create multi-media files using ffmpeg.
+ * Create container media files.
+ *
+ * Container files such as mpeg, avi, mov, ogg.
  *
  * Notes:
  *  - ffmpeg cli can be queried to determine default codecs for format.

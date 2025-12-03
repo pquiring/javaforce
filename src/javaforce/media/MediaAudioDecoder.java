@@ -8,7 +8,9 @@ package javaforce.media;
 import javaforce.voip.*;
 
 public class MediaAudioDecoder extends MediaCoder {
+  /** Create an audio decoder for raw audio. */
   public MediaAudioDecoder() {}
+  /** Create an audio decoder for a stream in a container format. */
   public MediaAudioDecoder(MediaInput input) {
     this.ctx = input.ctx;
     shared = true;

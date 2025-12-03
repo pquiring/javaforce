@@ -2,7 +2,9 @@ package javaforce.media;
 
 /** MediaInput
  *
- * Read multi-media files using ffmpeg.
+ * Read container media files.
+ *
+ * Container files such as mpeg, avi, mov, ogg.
  *
  * @author peter.quiring
  */
