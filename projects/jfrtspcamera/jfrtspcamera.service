@@ -1,0 +1,11 @@
+[Unit]
+Description=JavaForce RTSP Camera Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfrtspcamera
+ExecStop=/usr/bin/jfrtspcamera --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
