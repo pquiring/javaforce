@@ -486,6 +486,10 @@ public class RTPChannel {
         case 9:
         case 18:
           dtmfSent = false;  //just in case end of dtmf was not received
+          if (coder == null) {
+            JFLog.log("RTPChannel.processRTP:coder==null:id=" + id);
+            break;
+          }
           int packetSize = coder.getPacketSize();
           if (packetSize != -1 && len != packetSize + 12) {  //12 = RTP header
             JFLog.log(log, "RTP:Bad RTP packet length:type=" + coder.getClass().getName());
@@ -581,6 +585,10 @@ public class RTPChannel {
     if (active && stream.type == SDP.Type.audio && stream.canRecv() && (now - 45 * 1000) > lastPacket) {
       rtp.iface.rtpInactive(this);
     }
+  }
+
+  public boolean isActive() {
+    return active;
   }
 
   /**
