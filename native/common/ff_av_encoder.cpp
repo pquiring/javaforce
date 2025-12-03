@@ -125,10 +125,6 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   ctx->pkt->size = 0;
 
   ret = (*_avcodec_receive_packet)(ctx->audio_codec_ctx, ctx->pkt);  //set to a reference-counted packet allocated by the encoder
-  if (ret < 0) {
-    printf("MediaAudioEncoder:avcodec_receive_packet() failed : %d:%s\n", ret, ctx->error_string(ret));
-    return NULL;
-  }
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:receive_frame:%d\n", ret);
 
   //(*_av_packet_rescale_ts)(ctx->pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
@@ -136,6 +132,11 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   ctx->last_pts = ctx->pkt->pts;
   ctx->last_duration = ctx->pkt->duration;
   ctx->audio_pts += nb_samples;
+
+  if (ret < 0) {
+    printf("MediaAudioEncoder:avcodec_receive_packet() failed : %d:%s\n", ret, ctx->error_string(ret));
+    return NULL;
+  }
 
   jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
 
@@ -302,6 +303,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   }
 
   ctx->video_frame->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+  if (ff_debug_log) printf("MediaVideoEncoder:avcodec_send_frame(%p,%p)\n", ctx->video_codec_ctx, ctx->video_frame);
   int ret = (*_avcodec_send_frame)(ctx->video_codec_ctx, ctx->video_frame);  //ownership remains with the caller
   if (ret < 0) {
     printf("MediaVideoEncoder:avcodec_send_frame() failed : %d\n", ret);
@@ -313,10 +315,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   ctx->pkt->size = 0;
 
   ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, ctx->pkt);  //set to a reference-counted packet allocated by the encoder
-  if (ret < 0) {
-    printf("MediaVideoEncoder:avcodec_receive_packet() failed : %d\n", ret);
-    return NULL;
-  }
+  if (ff_debug_log) printf("MediaVideoEncoder.av_encoder_addVideoFrame:receive_frame:%d\n", ret);
 
   //(*_av_packet_rescale_ts)(ctx->pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
 //    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
@@ -325,6 +324,11 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   ctx->last_duration = ctx->pkt->duration;
 //    log_packet("video", ctx->fmt_ctx, pkt);
   ctx->video_pts++;
+
+  if (ret < 0) {
+    printf("MediaVideoEncoder:avcodec_receive_packet() failed : %d\n", ret);
+    return NULL;
+  }
 
   jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
 
