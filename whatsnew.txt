@@ -1,5 +1,13 @@
 What's new...
 
+Dec 4/2025 : JF/94.0
+  - fix : rtsp issues with localhost
+  - fix : MediaVideoEncoder
+  - jfRTSPCamera/0.1
+    - new app to turn your computer into a DVR camera (rtsp server)
+  - jfMedia/0.23
+    - fixed rtsp issues
+
 Nov 3/2025 : JF/93.0
   - webui TerminalPanel
     - added support for SSH
@@ -140,7 +148,7 @@ Feb 25/2025 : JF/81.0
  - jfVNC/0.7
  - jfRemote/0.8
  - jfKVM/2.5
-   - check write access to storage before staring VM 
+   - check write access to storage before staring VM
 
 Feb 20/2025 : JF/80.0
  - following NetBeans lead batik has been replaced with jsvg for SVG support
