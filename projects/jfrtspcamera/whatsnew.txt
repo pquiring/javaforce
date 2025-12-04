@@ -1,4 +1,4 @@
 What's new ??
 
-Dec ?/2025 : version 0.1 released
+Dec 4/2025 : version 0.1 released
   - init release
