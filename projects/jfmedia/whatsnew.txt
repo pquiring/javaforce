@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Dec 4, 2025 : v0.23 released!
+  - improve rtsp support
+
 Sept 10, 2024 : v0.22 released!
   - support jfav media files
 

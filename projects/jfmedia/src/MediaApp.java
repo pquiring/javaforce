@@ -16,7 +16,7 @@ import javaforce.voip.*;
 
 public class MediaApp extends javax.swing.JFrame {
 
-  public static String version = "0.22";
+  public static String version = "0.23";
 
   /**
    * Creates new form MediaApp
