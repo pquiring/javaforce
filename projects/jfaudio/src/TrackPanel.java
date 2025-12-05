@@ -1067,7 +1067,6 @@ public class TrackPanel extends javax.swing.JPanel {
       }
       try {
         transcoder = new Transcoder();
-        transcoder.encoder.setAudioBitRate(transcoderBitRate * 1000);
         transcoderInFile = Paths.getTempFile("temp", ".wav");
         transcoderOutFile = fn;
         if (!exportWav(transcoderInFile.getAbsolutePath(), selection)) return;
@@ -1077,7 +1076,7 @@ public class TrackPanel extends javax.swing.JPanel {
             this.setTitle("Progress");
             this.setLabel("Transcoding file...");
             transcoderSuccess = transcoder.transcode(transcoderInFile.getAbsolutePath(), transcoderOutFile
-              , transcoderCodec);
+              , transcoderCodec, transcoderBitRate * 1000);
             return true;
           }
         };

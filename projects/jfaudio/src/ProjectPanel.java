@@ -214,7 +214,7 @@ public class ProjectPanel extends javax.swing.JPanel {
           this.setTitle("Progress");
           this.setLabel("Transcoding file...");
           transcoderSuccess = transcoder.transcode(transcoderInFile, transcoderOutFile.getAbsolutePath()
-            , "wav");
+            , "wav", 256 * 1000);  //BUG ??? Set bit rate
           return true;
         }
       };

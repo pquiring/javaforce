@@ -8,34 +8,49 @@
 import java.io.*;
 
 import javaforce.*;
+import javaforce.voip.*;
 import javaforce.media.*;
 
 public class Transcoder implements MediaIO {
-  MediaEncoder encoder = new MediaEncoder();
-  MediaDecoder decoder = new MediaDecoder();
+  MediaOutput encoder = new MediaOutput();
+  MediaAudioEncoder audio_encoder;
+  MediaInput decoder = new MediaInput();
+  MediaAudioDecoder audio_decoder;
   RandomAccessFile fin, fout;
-  public boolean transcode(String in, String out, String outCodec) {
+  public boolean transcode(String in, String out, String outCodec, int bit_rate) {
     int chs, freq;
     try {
       fin = new RandomAccessFile(in, "r");
       fout = new RandomAccessFile(out, "rw");
       fout.setLength(0);
-      if (!decoder.start(this, -1, -1, -1, -1, true)) throw new Exception("Decoder Failed to start");
-      chs = decoder.getChannels();
-      freq = decoder.getSampleRate();
+      if (!decoder.open(this)) throw new Exception("Decoder Failed to start");
+      audio_decoder = decoder.createAudioDecoder();
+      chs = audio_decoder.getChannels();
+      freq = audio_decoder.getSampleRate();
       JFLog.log("decoder:chs=" + chs + ",freq=" + freq);
-      if (!encoder.start(this, -1, -1, -1, chs, freq, outCodec, false, true)) throw new Exception("Encoder Failed to start");
+      if (!encoder.create(this, outCodec)) throw new Exception("Encoder Failed to start");
+      CodecInfo info = new CodecInfo();
+      info.audio_bit_rate = bit_rate;
+      info.audio_codec = MediaCoder.AV_CODEC_ID_DEFAULT;  //BUG ??? Need value from outCodec
+      info.chs = chs;
+      info.bits = 16;
+      info.freq = freq;
+      audio_encoder = encoder.createAudioEncoder(info);
       short samples[];
       while (true) {
-        int type = decoder.read();
-        if (type == MediaCoder.NULL_FRAME) continue;  //metadata
-        if (type == MediaCoder.END_FRAME) break;  //end of data
-        samples = decoder.getAudio();
+        Packet packet_in = decoder.readPacket();
+        if (packet_in == null) break;
+        samples = audio_decoder.decode(packet_in);
         if (samples == null) break;
-        encoder.addAudio(samples);
+        Packet packet_out = audio_encoder.encode(samples, 0, samples.length);
+        if (packet_out != null) {
+          encoder.writePacket(packet_out);
+        }
       }
-      decoder.stop();
-      encoder.stop();
+      audio_decoder.stop();
+      decoder.close();
+      audio_encoder.stop();
+      encoder.close();
       fin.close();
       fout.close();
     } catch (Exception e) {

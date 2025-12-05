@@ -8,17 +8,18 @@
 import java.io.*;
 
 import javaforce.*;
-import javaforce.awt.*;
+import javaforce.voip.*;
 import javaforce.media.*;
 
 public class Decoder implements MediaIO {
-  MediaDecoder decoder = new MediaDecoder();
+  MediaInput decoder = new MediaInput();
+  MediaAudioDecoder audio_decoder;
   RandomAccessFile fin;
-  Object oout;
   public boolean decode(String in) {
     try {
       fin = new RandomAccessFile(in, "r");
-      if (!decoder.start(this, -1, -1, -1, -1, true)) throw new Exception("Decoder Failed to start");
+      if (!decoder.open(this)) throw new Exception("Decoder Failed to start");
+      audio_decoder = decoder.createAudioDecoder();
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -27,24 +28,24 @@ public class Decoder implements MediaIO {
   }
 
   public short[] getSamples() {
-    int type;
-    do {
-      type = decoder.read();
-      if (type == MediaCoder.END_FRAME) return null;
-    } while (type == MediaCoder.NULL_FRAME);
-    return decoder.getAudio();
+    Packet packet = decoder.readPacket();
+    if (packet == null) return null;
+    return audio_decoder.decode(packet);
   }
 
   public int getSampleRate() {
-    return decoder.getSampleRate();
+    return audio_decoder.getSampleRate();
   }
 
   public int getChannels() {
-    return decoder.getChannels();
+    return audio_decoder.getChannels();
   }
 
   public void stop() {
-    decoder.stop();
+    if (audio_decoder != null) {
+      audio_decoder.stop();
+    }
+    decoder.close();
   }
 
   public int read(MediaCoder coder, byte[] bytes) {
