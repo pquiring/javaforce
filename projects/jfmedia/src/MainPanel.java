@@ -915,7 +915,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             synchronized(sizeLock) {
               width = new_width;
               height = new_height;
-              //decoder.resize(width, height); //BUG : TODO!!!
+              info.width = width;
+              info.height = height;
+              video_decoder.change(info);
               resizeVideo = false;
             }
           }
