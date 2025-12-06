@@ -17,7 +17,7 @@ import javaforce.voip.*;
 
 public class TestMedia implements MediaIO {
   public static void usage() {
-    System.out.println("TestMedia encoder | decoder | output | input");
+    System.out.println("TestMedia output | input");
     System.exit(1);
   }
 
@@ -39,8 +39,6 @@ public class TestMedia implements MediaIO {
       }
       try {
         switch (args[a]) {
-          case "decoder": decoder(); break;
-          case "encoder": encoder(true); break;
           case "input": input(); break;
           case "output": output(true); break;
           default: usage();
@@ -48,42 +46,6 @@ public class TestMedia implements MediaIO {
       } catch (Exception e) {
         JFLog.log(e);
       }
-    }
-  }
-
-  public static void decoder() {
-    if (!new File("test-0.mp4").exists()) {
-      encoder(false);
-    }
-    while (true) {
-      TestMedia media = new TestMedia();
-      MediaDecoder decoder = new MediaDecoder();
-      media.open("test-0.mp4");
-      decoder.start(media, 640, 480, 2, 44100, true);
-      boolean eof = false;
-      int pkts = 0;
-      do {
-        int type = decoder.read();
-        pkts++;
-        switch (type) {
-          case MediaCoder.VIDEO_FRAME:
-            int[] px = decoder.getVideo();
-            if (px == null) break;
-            System.out.println("video=" + px.length);
-            break;
-          case MediaCoder.AUDIO_FRAME:
-            short[] sams = decoder.getAudio();
-            if (sams == null) break;
-            System.out.println("audio=" + sams.length);
-            break;
-          case MediaCoder.END_FRAME:
-            eof = true;
-            break;
-        }
-      } while (!eof);
-      System.out.println("packets=" + pkts);
-      decoder.stop();
-      media.close();
     }
   }
 
@@ -152,57 +114,6 @@ public class TestMedia implements MediaIO {
   public static int encoder_seconds = 4;
   public static String encoder_audio_src = "random";
   public static boolean use_media_io = false;
-
-  public static void encoder(boolean loop) {
-    TestMedia media = new TestMedia();
-    int[] px = new int[640*480];
-    short[] sams = new short[7350];
-    int i = 0;
-    int video = MediaCoder.AV_CODEC_ID_H265;
-    int audio = MediaCoder.AV_CODEC_ID_AAC;
-    do {
-      MediaEncoder encoder = new MediaEncoder();
-      AudioInput input = new AudioInput();
-      if (use_media_io) {
-        media.size = 0;
-        media.create(i++);
-        encoder.start(media, 640, 480, 24, 2, 44100, "mp4", video, audio);
-      } else {
-        String file = "test-" + (i++) + ".mp4";
-        encoder.startFile(file, 640, 480, 24, 2, 44100, "mp4", video, audio);
-        System.out.println("file=" + file);
-      }
-      if (i == 10) i = 0;
-      int frame_size = encoder.getAudioFramesize() * 2;  //*2=stereo
-      JFLog.log("frame_size=" + frame_size);
-      if (encoder_audio_src.equals("mic")) {
-        input.start(2, 44100, 16, frame_size, "<default>");
-      }
-      System.out.println("Audio Frame Size=" + encoder.getAudioFramesize());
-      for(int a=0;a<24 * encoder_seconds;a++) {
-        JFLog.log("loop=" + a);
-        random(px);
-        if (encoder_audio_src.equals("mic")) {
-          while (!input.read(sams)) {
-            JF.sleep(50);
-          }
-        } else {
-          sine(sams);
-        }
-        encoder.addVideo(px);
-        encoder.addAudio(sams);
-      }
-      encoder.stop();
-      if (use_media_io) {
-        media.close();
-        System.out.println("size=" + media.size);
-      }
-      if (encoder_audio_src.equals("mic")) {
-        input.stop();
-      }
-      System.gc();
-    } while (loop);
-  }
 
   public static void output(boolean loop) {
     TestMedia media = new TestMedia();
