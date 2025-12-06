@@ -66,7 +66,8 @@ public class MediaTest implements MediaIO {
       for(int b=0;b<px;b++) {
         test[b] = r.nextInt();
       }
-      video.encode(test, 0, test.length);
+      Packet packet = video.encode(test, 0, test.length);
+      encoder.writePacket(packet);
     }
     encoder.close();
   }

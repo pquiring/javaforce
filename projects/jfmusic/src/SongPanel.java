@@ -17,8 +17,8 @@ import javax.sound.midi.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.voip.*;
 import javaforce.media.*;
-import javaforce.jni.*;
 
 public class SongPanel extends javax.swing.JPanel implements Music.Listener, Receiver, MediaIO {
 
@@ -1382,7 +1382,8 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   private boolean recording;
   private boolean recordingStarted;
   private boolean exporting;
-  private MediaEncoder ffmpeg;
+  private MediaOutput ffmpeg;
+  private MediaAudioEncoder audio;
   private RandomAccessFile exportFile;
 
   private void reset() {
@@ -1839,7 +1840,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     JFLog.log("musicEnded");
     music.stop();
     if (exporting) {
-      ffmpeg.stop();
+      ffmpeg.close();
       try {
         exportFile.close();
       } catch (Exception e) {
@@ -1851,7 +1852,8 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
   public void musicSamples(short samples[]) {
     if (exporting) {
-      ffmpeg.addAudio(samples);
+      Packet packet = audio.encode(samples, 0, samples.length);
+      ffmpeg.writePacket(packet);
     }
   }
 
@@ -2249,16 +2251,23 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
       return;
     }
     exporting = true;
-    ffmpeg = new MediaEncoder();
+    CodecInfo info = new CodecInfo();
+    //BUG ??? validate these values
+    info.chs = 1;
+    info.freq = 44100;
+    info.bits = 16;
+    info.audio_bit_rate = 256 * 1024;
+    ffmpeg = new MediaOutput();
     if (ext.equals("mp3")) {
       String bitRate = JFAWT.getString("Enter bitrate (32-512)", "128");
       if (bitRate == null) bitRate = "128";
       int bits = JF.atoi(bitRate);
       if (bits < 32) bits = 32;
       if (bits > 512) bits = 512;
-      ffmpeg.setAudioBitRate(bits * 1024);
+      info.audio_bit_rate = bits * 1024;
     }
-    ffmpeg.start(this, -1, -1, -1, 2, 44100, ext, false, true);
+    ffmpeg.create(this, ext);
+    audio = ffmpeg.createAudioEncoder(info);
     playSong();
   }
 
