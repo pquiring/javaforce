@@ -27,7 +27,7 @@ public class Viewer {
   private boolean download_pause;
   public boolean download_done;
   private String download_ext;
-  private MediaEncoder encoder;
+  private MediaOutput encoder;
   private MediaDownload downloader;
 
   public static boolean debug = false;
@@ -548,18 +548,16 @@ public class Viewer {
               if (debug_download) JFLog.log(log, "downloading:discard packet:no codec info");
               return;
             }
-            encoder = new MediaEncoder();
-            encoder.videoBitRate = (int)(4 * JF.MB);
-            encoder.framesPerKeyFrame = 20;
+            encoder = new MediaOutput();
             if (debug_download) JFLog.log(log, "download:" + info);
-            if (!encoder.start(downloader, info.width, info.height, (int)info.fps, -1, -1, "mp4", true, false)) {
+            if (!encoder.create(downloader, "mp4")) {
               if (debug_download) JFLog.log(log, "download:encoder.start() failed");
               encoder = null;
               return;
             }
           }
           if (debug_download) JFLog.log(log, "download:add frame:key=" + key_frame + ":" + codec_packet);
-          encoder.addVideoEncoded(codec_packet.data, codec_packet.offset, codec_packet.length, key_frame);
+          encoder.writePacket(codec_packet);
           return;
         }
         decoded_frame = video_decoder.decode(codec_packet.data, codec_packet.offset, codec_packet.length);
@@ -822,7 +820,7 @@ public class Viewer {
     download_pause = false;
     download_done = false;
     if (encoder != null) {
-      encoder.stop();
+      encoder.close();
       encoder = null;
     }
     if (downloader != null) {

@@ -43,9 +43,12 @@ public class Decoder implements MediaIO {
 
   public void stop() {
     if (audio_decoder != null) {
-      audio_decoder.stop();
+      audio_decoder = null;
     }
-    decoder.close();
+    if (decoder != null) {
+      decoder.close();
+      decoder = null;
+    }
   }
 
   public int read(MediaCoder coder, byte[] bytes) {

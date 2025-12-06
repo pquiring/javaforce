@@ -47,9 +47,7 @@ public class Transcoder implements MediaIO {
           encoder.writePacket(packet_out);
         }
       }
-      audio_decoder.stop();
       decoder.close();
-      audio_encoder.stop();
       encoder.close();
       fin.close();
       fout.close();

@@ -5,10 +5,12 @@ package service;
  * @author pquiring
  */
 
-import java.util.Random;
-import javaforce.media.*;
 import java.io.*;
-import javaforce.JFLog;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.voip.*;
+import javaforce.media.*;
 
 public class MediaTest implements MediaIO {
   public RandomAccessFile raf;
@@ -46,13 +48,17 @@ public class MediaTest implements MediaIO {
   }
 
   public static void main(String args[]) {
-    MediaEncoder encoder = new MediaEncoder();
-    encoder.framesPerKeyFrame = 10;
-    encoder.videoBitRate = 16 * 1024 * 1024;
+    MediaOutput encoder = new MediaOutput();
+    CodecInfo info = new CodecInfo();
+    info.keyFrameInterval = 10;
+    info.video_bit_rate = 16 * 1024 * 1024;
     int width = 1366;
     int height = 768;
+    info.width = width;
+    info.height = height;
     int px = width * height;
-    encoder.start(new MediaTest(), width, height, 10, 0, 0, "mp4", true, false);
+    encoder.create(new MediaTest(), "mp4");
+    MediaVideoEncoder video = encoder.createVideoEncoder(info);
     //add random images
     int test[] = new int[px];
     Random r = new Random();
@@ -60,8 +66,8 @@ public class MediaTest implements MediaIO {
       for(int b=0;b<px;b++) {
         test[b] = r.nextInt();
       }
-      encoder.addVideo(test);
+      video.encode(test, 0, test.length);
     }
-    encoder.stop();
+    encoder.close();
   }
 }
