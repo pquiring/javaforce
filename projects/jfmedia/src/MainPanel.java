@@ -347,8 +347,10 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private XMLTree.XMLTag library, playlists, media;
   private XMLTree.XMLTag music, video;  //library sub-tags
   private ArrayList<String> tableFiles = new ArrayList<String>();
-  private MediaDecoder decoder;
+  private MediaInput decoder;
+  private MediaAudioDecoder audio_decoder;
   private MediaVideoDecoder video_decoder;
+  private CodecInfo info;
   private long frameCount;
   private long audioCount;
   private final Object countLock = new Object();
@@ -605,7 +607,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         if (decoder == null) {
           pos = 0;
         } else {
-          pos = (long)(frameCount / decoder.getFrameRate());
+          pos = (long)(frameCount / info.fps);
         }
       } else {
         //audio only
@@ -836,17 +838,18 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       preBuffering = true;
 
       try {
-        decoder = new MediaDecoder();
+        decoder = new MediaInput();
         if (decoder == null) throw new Exception("Unable to allocate decoder");
         raf = new RandomAccessFile(file, "r");
         System.out.println("file=" + file);
-        if (!decoder.start(this, -1, -1, chs, 44100, true)) throw new Exception("Unable to start decoder");
-
+        if (!decoder.open(this)) throw new Exception("Unable to start decoder");
+        info = decoder.getCodecInfo();
+        audio_decoder = decoder.createAudioDecoder();
         fileLength = new File(file).length();
         String err = null;
-        mediaLength = decoder.getDuration();
+        mediaLength = info.duration;
         JFLog.log("Duration=" + mediaLength);
-        fps = decoder.getFrameRate();
+        fps = info.fps;
         JFLog.log("FPS=" + fps);
         if (fps > 0) {
           videoPanel = new VideoPanel();
@@ -858,7 +861,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           videoPanel.start();
           width = getWidth();
           height = getHeight();
-          decoder.resize(width, height);
+          video_decoder = decoder.createVideoDecoder(width, height);
           video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
           playThread = new PlayAudioVideoThread();
           playThread.start();
@@ -900,7 +903,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
               JFLog.log("Seek failed");
             } else {
               synchronized(countLock) {
-                frameCount = (long)(seekTime * decoder.getFrameRate());
+                frameCount = (long)(seekTime * info.fps);
                 audioCount = seekTime * 44100 * chs;
               }
             }
@@ -912,32 +915,33 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             synchronized(sizeLock) {
               width = new_width;
               height = new_height;
-              decoder.resize(width, height);
+              //decoder.resize(width, height); //BUG : TODO!!!
               resizeVideo = false;
             }
           }
           //decode more media
-          switch (decoder.read()) {
-            case MediaCoder.AUDIO_FRAME:  //audio packet read
-              short audio[] = decoder.getAudio();
-              audio_buffer.add(audio, 0, audio.length);
-              break;
-            case MediaCoder.VIDEO_FRAME:  //video packet read
-              int video[] = decoder.getVideo();
-              JFImage img = video_buffer.getNewFrame();
-              if (img != null) {
-                if ((img.getWidth() != width) || (img.getHeight() != height)) {
-                  img.setSize(width, height);
-                }
-                img.putPixels(video, 0, 0, width, height, 0);
-                video_buffer.freeNewFrame();
-              } else {
-                JFLog.log("Warning : VideoBuffer overflow");
+          Packet packet = decoder.readPacket();
+          if (packet == null) {
+            eof = true;
+            break;
+          }
+          if (packet.stream == info.audio_stream) {
+            short audio[] = audio_decoder.decode(packet);
+            audio_buffer.add(audio, 0, audio.length);
+          }
+          if (packet.stream == info.video_stream) {
+            int video[] = video_decoder.decode(packet);
+            JFImage img = video_buffer.getNewFrame();
+            if (img != null) {
+              if ((img.getWidth() != width) || (img.getHeight() != height)) {
+                img.setSize(width, height);
               }
-              break;
-            case MediaCoder.END_FRAME:
-              eof = true;
-              break;
+              img.putPixels(video, 0, 0, width, height, 0);
+              video_buffer.freeNewFrame();
+            } else {
+              JFLog.log("Warning : VideoBuffer overflow");
+            }
+            break;
           }
         }
         if (err != null) JFAWT.showError("Error", err);
@@ -1292,7 +1296,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
       channel = null;
       if (decoder != null) {
-        decoder.stop();
+        decoder.close();
         decoder = null;
       }
     }
