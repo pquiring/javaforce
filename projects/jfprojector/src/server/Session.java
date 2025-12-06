@@ -112,7 +112,9 @@ public class Session {
             synchronized(sizeLock) {
               width = new_width;
               height = new_height;
-              video = decoder.createVideoDecoder(width, height);
+              info.width = width;
+              info.height = height;
+              video.change(info);
               resizeVideo = false;
             }
           }
