@@ -226,10 +226,11 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetSampleRate
   return ctx->audio_codec_ctx->sample_rate;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioDecoder_nchange
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaAudioDecoder_nchange
   (JNIEnv *e, jobject c, jlong ctxptr, jint chs, jint freq)
 {
   //TODO
+  return JNI_FALSE;
 }
 
 //video decoder codebase
@@ -420,10 +421,40 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_ngetFrameRate
   return ctx->video_codec_ctx->framerate.num / ctx->video_codec_ctx->framerate.den;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nchange
-  (JNIEnv *e, jobject c, jlong ctxptr, jint width, jint height)
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_nchange
+  (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
 {
-  //TODO
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return JNI_FALSE;
+
+  if (ctx->video_stream == NULL) return JNI_FALSE;  //no video
+
+  if (ctx->rgb_video_dst_data[0] != NULL) {
+    (*_av_free)(ctx->rgb_video_dst_data[0]);
+    ctx->rgb_video_dst_data[0] = NULL;
+  }
+
+  ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
+    , new_width, new_height, AV_PIX_FMT_BGRA, 1);
+  if (ctx->rgb_video_dst_bufsize < 0) {
+    printf("MediaDecoder:av_image_alloc() failed : %d\n", ctx->rgb_video_dst_bufsize);
+    return JNI_FALSE;
+  }
+
+  if (ctx->jvideo != NULL) {
+    e->DeleteGlobalRef(ctx->jvideo);
+  }
+  ctx->jvideo_length = ctx->rgb_video_dst_bufsize/4;
+  ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
+
+  if (ctx->sws_ctx != NULL) {
+    (*_sws_freeContext)(ctx->sws_ctx);
+    ctx->sws_ctx = NULL;
+  }
+
+  ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
+    , new_width, new_height, AV_PIX_FMT_BGRA
+    , SWS_BILINEAR, NULL, NULL, NULL);
+
+  return JNI_TRUE;
 }
-
-

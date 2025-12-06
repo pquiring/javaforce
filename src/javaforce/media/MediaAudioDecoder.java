@@ -45,9 +45,9 @@ public class MediaAudioDecoder extends MediaCoder {
     if (ctx == 0) return -1;
     return ngetSampleRate(ctx);
   }
-  private native void nchange(long ctx, int chs, int freq);
+  private native boolean nchange(long ctx, int chs, int freq);
   /** Changes output chs/freq only.  All other fields ignored. */
-  public void change(CodecInfo info) {
-    nchange(ctx, info.chs, info.freq);
+  public boolean change(CodecInfo info) {
+    return nchange(ctx, info.chs, info.freq);
   }
 }

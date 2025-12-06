@@ -50,9 +50,9 @@ public class MediaVideoDecoder extends MediaCoder {
     if (ctx == 0) return -1;
     return ngetFrameRate(ctx);
   }
-  private native void nchange(long ctx, int width, int height);
+  private native boolean nchange(long ctx, int width, int height);
   /** Changes output width/height only.  All other fields ignored. */
-  public void change(CodecInfo info) {
-    nchange(ctx, info.width, info.height);
+  public boolean change(CodecInfo info) {
+    return nchange(ctx, info.width, info.height);
   }
 }

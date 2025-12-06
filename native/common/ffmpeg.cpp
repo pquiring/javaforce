@@ -643,7 +643,7 @@ static JNINativeMethod javaforce_media_MediaAudioDecoder[] = {
   {"ndecode", "(J[BII)[S", (void *)&Java_javaforce_media_MediaAudioDecoder_ndecode},
   {"ngetChannels", "(J)I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetChannels},
   {"ngetSampleRate", "(J)I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetSampleRate},
-  {"nchange", "(JII)V", (void *)&Java_javaforce_media_MediaAudioDecoder_nchange},
+  {"nchange", "(JII)Z", (void *)&Java_javaforce_media_MediaAudioDecoder_nchange},
 };
 
 static JNINativeMethod javaforce_media_MediaVideoDecoder[] = {
@@ -653,7 +653,7 @@ static JNINativeMethod javaforce_media_MediaVideoDecoder[] = {
   {"ngetWidth", "(J)I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetWidth},
   {"ngetHeight", "(J)I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetHeight},
   {"ngetFrameRate", "(J)F", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetFrameRate},
-  {"nchange", "(JII)V", (void *)&Java_javaforce_media_MediaVideoDecoder_nchange},
+  {"nchange", "(JII)Z", (void *)&Java_javaforce_media_MediaVideoDecoder_nchange},
 };
 
 static JNINativeMethod javaforce_media_MediaAudioEncoder[] = {
