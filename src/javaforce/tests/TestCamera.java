@@ -27,10 +27,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     pack();
     listCameras();
     new WebUIServer().start(this, 8080);
-    encoder_dash = new MediaEncoder();
-    encoder_dash.setProfileLevel(MediaCoder.PROFILE_MAIN);
-    encoder_h264 = new MediaEncoder();
-    encoder_h264.setProfileLevel(MediaCoder.PROFILE_MAIN);
   }
 
   /**
@@ -45,9 +41,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     start = new javax.swing.JButton();
     stop = new javax.swing.JButton();
     preview = new javax.swing.JLabel();
-    webView = new javax.swing.JButton();
     cameraList = new javax.swing.JComboBox<>();
-    transcodeBox = new javax.swing.JCheckBox();
     mirror = new javax.swing.JToggleButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -69,18 +63,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       }
     });
 
-    webView.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-    webView.setText("Web Stream");
-    webView.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        webViewActionPerformed(evt);
-      }
-    });
-
     cameraList.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-
-    transcodeBox.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-    transcodeBox.setText("transcode h264 -> dash");
 
     mirror.setText("Mirror Image");
 
@@ -98,13 +81,10 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             .addComponent(stop, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(cameraList, 0, 370, Short.MAX_VALUE)
-              .addComponent(transcodeBox, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(mirror)
-                .addGap(0, 0, Short.MAX_VALUE)))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(webView, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 449, Short.MAX_VALUE))
+              .addComponent(cameraList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -113,13 +93,10 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(start, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(webView, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(stop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(cameraList, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(transcodeBox)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
             .addComponent(mirror)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
@@ -131,7 +108,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
     setState(false);
-    transcode = transcodeBox.isSelected();
     camera = new Camera();
     if (!camera.init()) {
       JFAWT.showError("Error", "Camera init failed");
@@ -147,25 +123,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       camIdx = 0;
     }
     JFLog.log("camera=" + devices[camIdx]);
-    for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
-    encoder_dash.start(this, 640, 480, 10, -1, -1, "dash", true, false);
-    if (transcode) {
-      for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
-      encoder_h264.start(new MediaIO() {
-        public int read(MediaCoder coder, byte[] data) {
-          return 0;
-        }
-        public int write(MediaCoder coder, byte[] data) {
-          JFLog.log("h264.write:" + data.length);
-          encoder_dash.addVideoEncodedTS(data, 0, data.length, false, encoder_h264.getLastDTS(), encoder_h264.getLastPTS());
-          encoder_dash.flush();
-          return data.length;
-        }
-        public long seek(MediaCoder coder, long pos, int how) {
-          return 0;
-        }
-      }, 640, 480, 10, -1, -1, "h264", true, false);
-    }
     for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
     camera.start(camIdx, 640, 480);
     width = camera.getWidth();
@@ -183,13 +140,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           preview.setIcon(img);
           preview.repaint();
           JFLog.log("addFrame:" + frameCount++);
-          if (transcode) {
-            encoder_h264.addVideo(px);
-            encoder_h264.flush();
-          } else {
-            encoder_dash.addVideo(px);
-            encoder_dash.flush();
-          }
           JFLog.log("============================");
         }});
       }
@@ -205,16 +155,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     camera.stop();
     camera.uninit();
     camera = null;
-    if (transcode) {
-      encoder_h264.stop();
-    }
-    encoder_dash.stop();
     setState(true);
   }//GEN-LAST:event_stopActionPerformed
-
-  private void webViewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webViewActionPerformed
-    JFAWT.openURL("http://localhost:8080");
-  }//GEN-LAST:event_webViewActionPerformed
 
   /**
    * @param args the command line arguments
@@ -235,8 +177,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private javax.swing.JLabel preview;
   private javax.swing.JButton start;
   private javax.swing.JButton stop;
-  private javax.swing.JCheckBox transcodeBox;
-  private javax.swing.JButton webView;
   // End of variables declaration//GEN-END:variables
 
   private Camera camera;
@@ -246,13 +186,10 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private int fps = 10;
   private JFImage img;
   private int width, height;
-  private MediaEncoder encoder_dash;
-  private MediaEncoder encoder_h264;
   private WebUIClient client;
   private Video video;
   private Video video_capture;
   private byte[] init_segment;
-  private boolean transcode;
 
   public void listCameras() {
     camera = new Camera();
@@ -280,9 +217,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   }
 
   public void setState(boolean state) {
-    transcodeBox.setEnabled(state);
     cameraList.setEnabled(state);
-    webView.setEnabled(state);
   }
 
   //WebUIHandler
@@ -315,7 +250,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
     video.addActionListener(new Action() {
       public void action(Component cmp) {
-        video.setLiveSource(encoder_dash.getCodecMimeType("dash", true, false));
       }
     });
 
