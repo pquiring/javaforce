@@ -7,7 +7,6 @@ import java.io.*;
 import java.util.*;
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
 import javaforce.media.*;
 import javaforce.voip.*;
 
@@ -98,6 +97,9 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
       localCameraSender = new LocalCameraSender();
       localCameraSender.start();
       JFLog.log("LocalCamera starting");
+      CodecInfo info = new CodecInfo();
+      Packet packet;
+      info.keyFrameInterval = 5;
       while (active) {
         while (active && list.size() > 0) {
           JF.sleep(10);
@@ -131,76 +133,46 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
           //H263,H263-1998,H263-2000
           px = localImage.getPixels();
           if (encoder == null) {
-            encoder = new MediaEncoder();
-            encoder.setFramesPerKeyFrame(5);
-            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "h263", true, false)) {
-              JFLog.log("H263 encoder failed to start");
-              encoder.stop();
-              encoder = null;
-              continue;
-            }
+            startEncoder("H263", info);
           }
-          encoder.addVideo(px);
+          packet = video.encode(px, 0, px.length);
+          encoder.writePacket(packet);
           continue;
         }
         if (codec.name.equals("H264")) {
           px = localImage.getPixels();
           if (encoder == null) {
-            encoder = new MediaEncoder();
-            encoder.setFramesPerKeyFrame(5);
-            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "h264", true, false)) {
-              JFLog.log("H264 encoder failed to start");
-              encoder.stop();
-              encoder = null;
-              continue;
-            }
+            startEncoder("H264", info);
           }
-          encoder.addVideo(px);
+          packet = video.encode(px, 0, px.length);
+          encoder.writePacket(packet);
           continue;
         }
         if (codec.name.equals("H265")) {
           px = localImage.getPixels();
           if (encoder == null) {
-            encoder = new MediaEncoder();
-            encoder.setFramesPerKeyFrame(5);
-            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "h265", true, false)) {
-              JFLog.log("H265 encoder failed to start");
-              encoder.stop();
-              encoder = null;
-              continue;
-            }
+            startEncoder("H265", info);
           }
-          encoder.addVideo(px);
+          packet = video.encode(px, 0, px.length);
+          encoder.writePacket(packet);
           continue;
         }
         if (codec.name.equals("VP8")) {
           px = localImage.getPixels();
           if (encoder == null) {
-            encoder = new MediaEncoder();
-            encoder.setFramesPerKeyFrame(5);
-            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "vpx", true, false)) {
-              JFLog.log("VP8 encoder failed to start");
-              encoder.stop();
-              encoder = null;
-              continue;
-            }
+            startEncoder("VP8", info);
           }
-          encoder.addVideo(px);
+          packet = video.encode(px, 0, px.length);
+          encoder.writePacket(packet);
           continue;
         }
         if (codec.name.equals("VP9")) {
           px = localImage.getPixels();
           if (encoder == null) {
-            encoder = new MediaEncoder();
-            encoder.setFramesPerKeyFrame(5);
-            if (!encoder.start(this, PhonePanel.vx, PhonePanel.vy, 24, -1, -1, "vpx", true, false)) {
-              JFLog.log("VP9 encoder failed to start");
-              encoder.stop();
-              encoder = null;
-              continue;
-            }
+            startEncoder("VP9", info);
           }
-          encoder.addVideo(px);
+          packet = video.encode(px, 0, px.length);
+          encoder.writePacket(packet);
           continue;
         }
         JFLog.log("err:local camera running without a valid codec");
@@ -208,7 +180,7 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
       camera.stop();
       camera.uninit();
       if (encoder != null) {
-        encoder.stop();
+        encoder.close();
         encoder = null;
       }
       while (!localCameraSender.sender_done) {
@@ -224,6 +196,20 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
     }
     JFLog.log("LocalCamera done");
     main_done = true;
+  }
+
+  private void startEncoder(String format, CodecInfo info) {
+    String container = null;
+    switch (format) {
+      case "H263": info.video_codec = MediaCoder.AV_CODEC_ID_H263; container = "mpg"; break;
+      case "H264": info.video_codec = MediaCoder.AV_CODEC_ID_H264; container = "mpg"; break;
+      case "H265": info.video_codec = MediaCoder.AV_CODEC_ID_H265; container = "mpg"; break;
+      case "VP8": info.video_codec = MediaCoder.AV_CODEC_ID_VP8; container = "ogg"; break;
+      case "VP9": info.video_codec = MediaCoder.AV_CODEC_ID_VP9; container = "ogg"; break;
+    }
+    encoder = new MediaOutput();
+    encoder.create(this, container);
+    video = encoder.createVideoEncoder(info);
   }
 
   public void cancel() {
@@ -290,7 +276,8 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
   private RTPVP9 rtpVP9 = new RTPVP9();
   private Object lock = new Object();
   private Vector<byte[]> list = new Vector<byte[]>();
-  private MediaEncoder encoder;
+  private MediaOutput encoder;
+  private MediaVideoEncoder video;
 
   public int read(MediaCoder coder, byte[] bytes) {
     return 0;
