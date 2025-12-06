@@ -13,6 +13,7 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.service.*;
 import javaforce.media.*;
+import javaforce.voip.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler {
 
@@ -512,7 +513,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private Camera camera;
   private AudioInput mic;
   private RandomAccessFile raf;
-  private MediaEncoder encoder;
+  private MediaOutput encoder;
+  private MediaAudioEncoder audio_encoder;
+  private MediaVideoEncoder video_encoder;
   private WebServer broadcaster;
   private ArrayList<String> tempFiles = new ArrayList<>();
   private boolean active = false;
@@ -654,10 +657,22 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private byte[] image;
   private byte[] mpd;
   private boolean encoder_start() {
-    return encoder.start(this, width, height, frameRate, chs, audioRate, selected_codec.codec, true, doAudio);
+    encoder = new MediaOutput();
+    boolean res = encoder.create(this, selected_codec.codec);
+    if (res) {
+      CodecInfo info = new CodecInfo();
+      info.chs = chs;
+      info.freq = audioRate;
+      audio_encoder = encoder.createAudioEncoder(info);
+      info.width = width;
+      info.height = height;
+      info.fps = frameRate;
+      video_encoder = encoder.createVideoEncoder(info);
+    }
+    return res;
   }
   private void encoder_stop() {
-    encoder.stop();
+    encoder.close();
   }
   private boolean create_file() {
     try {
@@ -778,10 +793,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
       JFLog.log("audioRate=" + audioRate + ",chs=" + chs);
 
       if (!doImage) {
-        encoder = new MediaEncoder();
-        encoder.setAudioBitRate(getAudioBitRate());
-        encoder.setVideoBitRate(getVideoBitRate());
-        encoder.setFramesPerKeyFrame(frameRate);
         if (!encoder_start())
         {
           failed("Unable to start encoder");
@@ -844,6 +855,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         broadcaster_start();
       }
 
+      Packet packet;
+
       while (active) {
         if (!skip_frame) {
           px = camera.getFrame();
@@ -870,7 +883,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         }
         if (!doImage) {
           long start = System.currentTimeMillis();
-          encoder.addVideo(px);
+          packet = video_encoder.encode(px, 0, px.length);
+          encoder.writePacket(packet);
           long stop = System.currentTimeMillis();
           long delta = stop - start;
           if (!doRecord) {
@@ -883,7 +897,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         if (doAudio) {
           while (mic.read(sams8)) {
             swapEndian(sams8, sams16);
-            encoder.addAudio(sams16);
+            packet = audio_encoder.encode(sams16, 0, sams16.length);
+            encoder.writePacket(packet);
             if (doPreview) {
               previewAudio.setValue(amplitude(sams16));
             }
