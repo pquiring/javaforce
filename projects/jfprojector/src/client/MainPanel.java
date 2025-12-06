@@ -16,6 +16,7 @@ import javax.swing.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.media.*;
+import javaforce.voip.*;
 
 import common.Config;
 
@@ -348,21 +349,31 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
       JFImage img = JFImage.createScreenCapture();
 
-      MediaEncoder encoder = new MediaEncoder();
-      encoder.setAudioBitRate(getAudioBitRate());
-      encoder.setVideoBitRate(getVideoBitRate());
+      CodecInfo info = new CodecInfo();
+      info.video_bit_rate = getVideoBitRate();
       int width = img.getWidth();
       int height = img.getHeight();
+      info.width = width;
+      info.height = height;
+      info.fps = frameRate;
+
+      info.audio_bit_rate = getAudioBitRate();
+      info.chs = chs;
+      info.freq = audioRate;
+      info.bits = 16;
+
+      Packet packet;
+      MediaOutput encoder = new MediaOutput();
+      encoder.create(MainPanel.this, "mpg");
+      MediaAudioEncoder audio = null;
+      MediaVideoEncoder video = encoder.createVideoEncoder(info);
+
       JFLog.log("size=" + width + "," + height);
       JFLog.log("frameRate=" + frameRate);
       JFLog.log("audioRate=" + audioRate + ",chs=" + chs);
-      if (!encoder.start(MainPanel.this, width, height, frameRate, chs
-        , audioRate, "h264", true, doAudio))
-      {
-        failed("Unable to create output file");
-        return;
-      }
+
       if (doAudio) {
+        audio = encoder.createAudioEncoder(info);
         mic = new AudioInput();
         if (!mic.start(chs, audioRate, 16, samples * 2, (String)audioDevices.getSelectedItem())) {
           failed("Unable to start recording audio");
@@ -402,11 +413,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
           skip_frame = false;
         }
         int px[] = img.getPixels();
-        encoder.addVideo(px);
+        packet = video.encode(px, 0, px.length);
+        encoder.writePacket(packet);
         if (doAudio) {
           while (mic.read(sams8)) {
             swapEndian(sams8, sams16);
-            encoder.addAudio(sams16);
+            packet = audio.encode(sams16, 0, sams16.length);
+            encoder.writePacket(packet);
           }
         }
         double now = System.currentTimeMillis();
@@ -420,7 +433,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       }
       delTray();
       if (frame != null) frame.setVisible(true);
-      encoder.stop();
+      encoder.close();
       if (doAudio) mic.stop();
       try {
         socket.close();

@@ -12,6 +12,7 @@ import java.net.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.media.*;
+import javaforce.voip.*;
 
 public class Session {
 
@@ -27,7 +28,9 @@ public class Session {
   }
 
   private Socket socket;
-  private MediaDecoder decoder;  //ffmpeg decoder
+  private MediaInput decoder;
+  private MediaAudioDecoder audio;
+  private MediaVideoDecoder video;
   private long frameCount;
   private long audioCount;
   private final Object countLock = new Object();
@@ -79,20 +82,23 @@ public class Session {
       resizeVideo = false;
       eof = false;
 
+      width = window.getWidth();
+      height = window.getHeight();
+
       try {
         is = socket.getInputStream();
-        decoder = new MediaDecoder();
+        decoder = new MediaInput();
         if (decoder == null) throw new Exception("Unable to allocate decoder");
-        if (!decoder.start(this, -1, -1, chs, 44100, false)) throw new Exception("Unable to start decoder");
+        if (!decoder.open(this)) throw new Exception("Unable to start decoder");
+        audio = decoder.createAudioDecoder();
+        video = decoder.createVideoDecoder(width, height);
+        CodecInfo info = decoder.getCodecInfo();
 
-        long mediaLength = decoder.getDuration();
+        long mediaLength = info.duration;
         JFLog.log("Duration=" + mediaLength);
-        fps = decoder.getFrameRate();
+        fps = info.fps;
         JFLog.log("FPS=" + fps);
-        width = window.getWidth();
-        height = window.getHeight();
         JFLog.log("size=" + width + "x" + height);
-        decoder.resize(width, height);
         video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
         playThread = new PlayAudioVideoThread();
         playThread.start();
@@ -106,38 +112,38 @@ public class Session {
             synchronized(sizeLock) {
               width = new_width;
               height = new_height;
-              decoder.resize(width, height);
+              video = decoder.createVideoDecoder(width, height);
               resizeVideo = false;
             }
           }
-          switch (decoder.read()) {
-            case MediaCoder.AUDIO_FRAME:  //audio packet read
-              short audio[] = decoder.getAudio();
-              audio_buffer.add(audio, 0, audio.length);
-              synchronized(lock) {
-                lock.notify();
+          Packet packet = decoder.readPacket();
+          if (packet == null) {
+            eof = true;
+            playing = false;
+            break;
+          }
+          if (packet.stream == info.audio_stream) {
+            short sams[] = audio.decode(packet);
+            audio_buffer.add(sams, 0, sams.length);
+            synchronized(lock) {
+              lock.notify();
+            }
+          }
+          else if (packet.stream == info.video_stream) {
+            int px[] = video.decode(packet);
+            JFImage img = video_buffer.getNewFrame();
+            if (img != null) {
+              if ((img.getWidth() != width) || (img.getHeight() != height)) {
+                img.setSize(width, height);
               }
-              break;
-            case MediaCoder.VIDEO_FRAME:  //video packet read
-              int video[] = decoder.getVideo();
-              JFImage img = video_buffer.getNewFrame();
-              if (img != null) {
-                if ((img.getWidth() != width) || (img.getHeight() != height)) {
-                  img.setSize(width, height);
-                }
-                img.putPixels(video, 0, 0, width, height, 0);
-                video_buffer.freeNewFrame();
-              } else {
-                JFLog.log("Warning : VideoBuffer overflow");
-              }
-              synchronized(lock) {
-                lock.notify();
-              }
-              break;
-            case MediaCoder.END_FRAME:
-              eof = true;
-              playing = false;
-              break;
+              img.putPixels(px, 0, 0, width, height, 0);
+              video_buffer.freeNewFrame();
+            } else {
+              JFLog.log("Warning : VideoBuffer overflow");
+            }
+            synchronized(lock) {
+              lock.notify();
+            }
           }
         }
       } catch (Exception e) {
