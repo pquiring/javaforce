@@ -226,6 +226,12 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetSampleRate
   return ctx->audio_codec_ctx->sample_rate;
 }
 
+JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioDecoder_nchange
+  (JNIEnv *e, jobject c, jlong ctxptr, jint chs, jint freq)
+{
+  //TODO
+}
+
 //video decoder codebase
 
 JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
@@ -413,3 +419,11 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_ngetFrameRate
   if (ctx->video_codec_ctx->framerate.den == 0) return 0;
   return ctx->video_codec_ctx->framerate.num / ctx->video_codec_ctx->framerate.den;
 }
+
+JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nchange
+  (JNIEnv *e, jobject c, jlong ctxptr, jint width, jint height)
+{
+  //TODO
+}
+
+
