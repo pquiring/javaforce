@@ -661,9 +661,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     boolean res = encoder.create(this, selected_codec.codec);
     if (res) {
       CodecInfo info = new CodecInfo();
+
+      info.audio_bit_rate = getAudioBitRate();
       info.chs = chs;
       info.freq = audioRate;
       audio_encoder = encoder.createAudioEncoder(info);
+
+      info.video_bit_rate = getVideoBitRate();
       info.width = width;
       info.height = height;
       info.fps = frameRate;

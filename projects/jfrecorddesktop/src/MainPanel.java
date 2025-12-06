@@ -15,6 +15,7 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.media.*;
 import javaforce.service.*;
+import javaforce.voip.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionListener, WebHandler {
 
@@ -570,7 +571,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private WebServer broadcaster;
   private ArrayList<String> tempFiles = new ArrayList<>();
   private String mediaFile;
-  private MediaEncoder encoder;
+  private MediaOutput encoder;
+  private MediaAudioEncoder audio_encoder;
+  private MediaVideoEncoder video_encoder;
   private int chs;
   private int width, height;
   private int frameRate;
@@ -579,11 +582,27 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private int timeLapseSecondsDelay;
 
   private boolean encoder_start() {
-    return encoder.start(this, width, height, frameRate, chs, audioRate, selected_codec.codec, true, doAudio);
+    encoder = new MediaOutput();
+    boolean res = encoder.create(this, selected_codec.codec);
+    if (res) {
+      CodecInfo info = new CodecInfo();
+
+      info.audio_bit_rate = getAudioBitRate();
+      info.chs = chs;
+      info.freq = audioRate;
+      audio_encoder = encoder.createAudioEncoder(info);
+
+      info.video_bit_rate = getVideoBitRate();
+      info.width = width;
+      info.height = height;
+      info.fps = frameRate;
+      video_encoder = encoder.createVideoEncoder(info);
+    }
+    return res;
   }
 
   private void encoder_stop() {
-    encoder.stop();
+    encoder.close();
   }
 
   private boolean create_file() {
@@ -690,9 +709,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       height = img.getHeight();
 
       if (!doImage) {
-        encoder = new MediaEncoder();
-        encoder.setAudioBitRate(getAudioBitRate());
-        encoder.setVideoBitRate(getVideoBitRate());
         if (!encoder_start())
         {
           failed("Unable to start encoder");
@@ -746,6 +762,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         broadcaster_start();
       }
 
+      Packet packet;
+
       while (active) {
         if (paused) {
           while (mic.read(sams8)) {}  //discard audio
@@ -766,13 +784,16 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
           if (trim) {
             //System.out.println("vsize=" + vbuffer.size() + " == " + vbufsiz);
             if (vbuffer.size() >= vbufsiz) {
-              encoder.addVideo(vbuffer.getNextFrame().getBuffer());
+              int[] _px = vbuffer.getNextFrame().getBuffer();
+              packet = video_encoder.encode(_px, 0, _px.length);
+              encoder.writePacket(packet);
               vbuffer.freeNextFrame();
             }
             System.arraycopy(px, 0, vbuffer.getNewFrame().getBuffer(), 0, imgsiz);
             vbuffer.freeNewFrame();
           } else {
-            encoder.addVideo(px);
+            packet = video_encoder.encode(px, 0, px.length);
+            encoder.writePacket(packet);
           }
         }
         if (doImage) {
@@ -788,11 +809,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
               //System.out.println("asize=" + abuffer.size() + " == " + abufsiz);
               if (abuffer.size() >= abufsiz) {
                 abuffer.get(sams16trim, 0, sams16.length);
-                encoder.addAudio(sams16trim);
+                packet = audio_encoder.encode(sams16trim, 0, sams16trim.length);
+                encoder.writePacket(packet);
               }
               abuffer.add(sams16, 0, sams16.length);
             } else {
-              encoder.addAudio(sams16);
+              packet = audio_encoder.encode(sams16, 0, sams16.length);
+              encoder.writePacket(packet);
             }
           }
         }
