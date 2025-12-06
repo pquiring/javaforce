@@ -11,6 +11,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.voip.*;
 import javaforce.media.*;
 
 import com.jhlabs.image.*;
@@ -93,7 +94,10 @@ public class Element implements MediaIO {
   private boolean ready;
   private JFImage srcImage;
   private int width, height;
-  private MediaDecoder ff;
+  private MediaInput decoder;
+  private MediaAudioDecoder audio_decoder;
+  private MediaVideoDecoder video_decoder;
+  private CodecInfo info;
   private short audio[];
   private int audioPos, audioSize;
   private ArrayList<int[]> frames = new ArrayList<int[]>();
@@ -156,20 +160,24 @@ public class Element implements MediaIO {
           JFLog.log(e);
           return false;
         }
-        ff = new MediaDecoder();
-        if (!ff.start(this, config.width, config.height, config.audioChannels, config.audioRate, true)) {
+        decoder = new MediaInput();
+        if (!decoder.open(this)) {
           JFAWT.showError("Error", "Failed to decode file:" + path[0]);
           return false;
         }
+        info = decoder.getCodecInfo();
+        audio_decoder = decoder.createAudioDecoder();
+        video_decoder = decoder.createVideoDecoder();
+
         if (type == TYPE_VIDEO) {
           //calc frameRate
-          JFLog.log("input frameRate=" + ff.getFrameRate());
+          JFLog.log("input frameRate=" + info.fps);
           JFLog.log("output frameRate=" + videoRate);
-          frameRateRatio = ff.getFrameRate() / videoRate;
+          frameRateRatio = info.fps / videoRate;
           JFLog.log("frameRateRatio=" + frameRateRatio);
           currentFrame = 0.0;
         }
-        JFLog.log("audioRate=" + ff.getAudioBitRate());
+        JFLog.log("audioRate=" + decoder.getAudioBitRate());
         audio = null;
         audioSize = 0;
         audioPos = 0;
@@ -220,44 +228,38 @@ public class Element implements MediaIO {
     audioSize = 0;
     audioPos = 0;
     frames.clear();
-    if (ff != null) {
-      ff.stop();
-      ff = null;
+    if (decoder != null) {
+      decoder.close();
+      decoder = null;
     }
     ready = false;
   }
   private void readMore() {
     if (eof) return;
-    switch (ff.read()) {
-      case MediaCoder.AUDIO_FRAME:
-//JFLog.log("AUDIO_FRAME");
-        short buf[] = ff.getAudio();
-        if (audioSize == 0) {
-          audio = buf;
-          audioSize = buf.length;
-          audioPos = 0;
-        } else {
-          //add to audio
-          short newAudio[] = new short[audioSize + buf.length];
-          System.arraycopy(audio, audioPos, newAudio, 0, audioSize);
-          System.arraycopy(buf, 0, newAudio, audioSize, buf.length);
-          audio = newAudio;
-          audioPos = 0;
-          audioSize += buf.length;
-        }
-        break;
-      case MediaCoder.VIDEO_FRAME:
-//JFLog.log("VIDEO_FRAME");
-        int px[] = ff.getVideo();
-        frames.add(px);
-        break;
-      case MediaCoder.NULL_FRAME:
-//JFLog.log("NULL_FRAME");
-        break;
-      case MediaCoder.END_FRAME:
-//JFLog.log("END_FRAME");
-        eof = true;
-        break;
+    Packet packet = decoder.readPacket();
+    if (packet == null) {
+      eof = true;
+      return;
+    }
+    if (packet.stream == info.audio_stream) {
+      short buf[] = audio_decoder.decode(packet);
+      if (audioSize == 0) {
+        audio = buf;
+        audioSize = buf.length;
+        audioPos = 0;
+      } else {
+        //add to audio
+        short newAudio[] = new short[audioSize + buf.length];
+        System.arraycopy(audio, audioPos, newAudio, 0, audioSize);
+        System.arraycopy(buf, 0, newAudio, audioSize, buf.length);
+        audio = newAudio;
+        audioPos = 0;
+        audioSize += buf.length;
+      }
+    }
+    if (packet.stream == info.video_stream) {
+      int px[] = video_decoder.decode(packet);
+      frames.add(px);
     }
   }
 
@@ -404,7 +406,7 @@ public class Element implements MediaIO {
     if (type == TYPE_SPECIAL_TEXT) return;
     int renderSize = render.length;
     int renderPos = 0;
-    if (ff.getAudioBitRate() == 0) return;
+    if (decoder.getAudioBitRate() == 0) return;
     while (renderSize > 0) {
       while (!eof && audioSize < renderSize) readMore();
       int toCopy = renderSize;
@@ -442,12 +444,12 @@ public class Element implements MediaIO {
     }
   }
   public long getDuration() {
-    if (ff == null) return 0;
-    return ff.getDuration();
+    if (decoder == null) return 0;
+    return info.duration;
   }
   public void seek(int pos) {
-    if (ff == null) return;
-    ff.seek(pos);
+    if (decoder == null) return;
+    decoder.seek(pos);
   }
   public void createPreview(JFTask task) {
     if (!start(previewConfig)) return;
@@ -481,7 +483,7 @@ public class Element implements MediaIO {
           audio = null;
           audioSize = 0;
           previewImage = new JFImage(64, 60);
-          ff.seek(frame);
+          decoder.seek(frame);
           preRenderVideo();
           renderVideo(previewImage, 0, 0);
           if (audioSize > 0) {

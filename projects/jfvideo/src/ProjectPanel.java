@@ -14,6 +14,7 @@ import javax.swing.tree.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.voip.*;
 import javaforce.media.*;
 import javaforce.gl.*;
 
@@ -1107,17 +1108,30 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         this.setProgress(0);
         int audioLengthPerFrame = config.audioRate / config.videoRate;
         int audioFraction = config.audioRate % config.videoRate;
-        MediaEncoder ff = new MediaEncoder();
-        ff.set1000over1001(config.v1001);
+        MediaOutput encoder = new MediaOutput();
+
+        CodecInfo info = new CodecInfo();
+        Packet packet;
+
+        info.audio_bit_rate = config.audioBitRate;
+        info.freq = config.audioRate;
+        info.chs = config.audioChannels;
+        info.bits = 16;
+
+        info.video_bit_rate = config.videoBitRate;
+        info.fps = config.videoRate;
+        info.width = config.width;
+        info.height = config.height;
+
         System.out.println("bitRates:" + config.videoBitRate + "," + config.audioBitRate);
-        ff.setVideoBitRate(config.videoBitRate);
-        ff.setAudioBitRate(config.audioBitRate);
-        if (!ff.start(ProjectPanel.this, config.width, config.height, config.videoRate, config.audioChannels
-          , config.audioRate, "avi", true, true))
+        if (!encoder.create(ProjectPanel.this, "avi"))
         {
           this.setLabel("Error:Encoder failed");
           return false;
         }
+        MediaAudioEncoder audio_encoder = encoder.createAudioEncoder(info);
+        MediaVideoEncoder video_encoder = encoder.createVideoEncoder(info);
+
         int audioFractionCounter = 0;
         short audio0[] = new short[audioLengthPerFrame * config.audioChannels];
         short audio1[] = new short[(audioLengthPerFrame+1) * config.audioChannels];
@@ -1196,12 +1210,15 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
               if (track.isCut()) cut = true;
             }  //track
             if (cut) continue;
-            ff.addVideo(image.getBuffer());
-            ff.addAudio(audio);
+            packet = audio_encoder.encode(audio, 0, audio.length);
+            encoder.writePacket(packet);
+            int[] px = image.getBuffer();
+            packet = video_encoder.encode(px, 0, px.length);
+            encoder.writePacket(packet);
           }  //frame
         }  //second
         uninit3d();
-        ff.stop();
+        encoder.close();
         for(int trackNo=1;trackNo<tracks.getComponentCount();trackNo++) {
           TrackPanel track = (TrackPanel)tracks.getComponent(trackNo);
           track.stop();
