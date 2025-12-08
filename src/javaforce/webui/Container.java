@@ -32,7 +32,8 @@ public class Container extends Component {
   /** Get Component by user assigned name. */
   @Deprecated
   public Component getComponent(String name) {
-    if (this.name != null && this.name.equals(name)) {
+    String this_name = getName();
+    if (this_name != null && this_name.equals(name)) {
       return this;
     }
     int cnt = count();
@@ -43,7 +44,8 @@ public class Container extends Component {
         child = container.getComponent(name);
         if (child != null) return child;
       } else {
-        if (child.name != null && child.name.equals(name)) {
+        String child_name = child.getName();
+        if (child_name != null && child_name.equals(name)) {
           return child;
         }
       }

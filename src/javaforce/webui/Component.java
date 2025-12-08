@@ -19,7 +19,6 @@ public abstract class Component {
   public String id;
   public Container parent;
   public WebUIClient client;
-  public String name;
   public ArrayList<String> classes = new ArrayList<String>();
   public HashMap<String, String> attrs = new HashMap<String, String>();
   public HashMap<String, String> styles = new HashMap<String, String>();
@@ -74,12 +73,12 @@ public abstract class Component {
 
   /** Sets Component's name. */
   public void setName(String name) {
-    this.name = name;
+    setProperty("name", name);
   }
 
   /** Gets Component's name. */
   public String getName() {
-    return name;
+    return (String)getProperty("name");
   }
 
   /** Returns Component's parent Container. */
