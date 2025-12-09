@@ -9,7 +9,16 @@ public class PopupPanel extends Panel {
   private TitleBar titleBar;
   private Block block;
   private boolean modal;
+  /** Creates a new PopupPanel. */
   public PopupPanel(String title) {
+    init(title);
+  }
+  /** Creates a new Popup panel with another Panel enclosed. */
+  public PopupPanel(String title, Panel panel) {
+    init(title);
+    add(panel);
+  }
+  private void init(String title) {
     initInvisible();
     titleBar = new TitleBar(title, this);
     add(titleBar);
