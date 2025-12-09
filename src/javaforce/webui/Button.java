@@ -21,6 +21,11 @@ public class Button extends TextComponent {
     add(this.img);
     setClass("button");
   }
+  public Button(Image img) {
+    this.img = img;
+    add(this.img);
+    setClass("button");
+  }
   public Button(Icon icon) {
     this.icon = icon;
     add(this.icon);
@@ -28,6 +33,12 @@ public class Button extends TextComponent {
   }
   public Button(Resource img, String text) {
     this.img = new Image(img);
+    add(this.img);
+    this.text = text;
+    setClass("button");
+  }
+  public Button(Image img, String text) {
+    this.img = img;
     add(this.img);
     this.text = text;
     setClass("button");
