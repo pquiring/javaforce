@@ -1,4 +1,11 @@
-package javaforce.webui;
+package javaforce.webui.panel;
+
+import javaforce.webui.Button;
+import javaforce.webui.Column;
+import javaforce.webui.Label;
+import javaforce.webui.PopupPanel;
+import javaforce.webui.Row;
+import javaforce.webui.Slider;
 
 /** Color Chooser Popup
  *
@@ -7,8 +14,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class ColorChooserPopup extends PopupPanel {
-  public ColorChooserPopup() {
+public class ColorChooserPanel extends PopupPanel {
+  public ColorChooserPanel() {
     super("Select Color");
     setModal(true);
 

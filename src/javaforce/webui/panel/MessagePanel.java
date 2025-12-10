@@ -14,23 +14,23 @@ public class MessagePanel extends PopupPanel {
   public Label msg;
   public Button button_okay;
 
-  public MessagePanel(String title) {
+  public MessagePanel(String title, String msg) {
     super(title);
-    init(null);
+    init(msg, null);
   }
 
-  public MessagePanel(String title, Component cmp) {
+  public MessagePanel(String title, String msg, Component cmp) {
     super(title);
-    init(cmp);
+    init(msg, cmp);
   }
 
-  private void init(Component cmpt) {
+  private void init(String text, Component cmpt) {
     setModal(true);
     Row row;
 
     row = new Row();
     add(row);
-    msg = new Label("");
+    msg = new Label(text);
     row.add(msg);
 
     if (cmpt != null) {
