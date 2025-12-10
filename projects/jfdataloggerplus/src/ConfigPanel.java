@@ -4,6 +4,7 @@
  */
 
 import javaforce.webui.*;
+import javaforce.webui.panel.*;
 import javaforce.controls.*;
 
 public class ConfigPanel extends CenteredPanel {
@@ -34,10 +35,16 @@ public class ConfigPanel extends CenteredPanel {
     back.setFontSize(24);
     add(back);
 
-    confirmDelete = new MessagePopup("Delete Tag?", "Are you sure?", true);
+    confirmDelete = new ConfirmPanel("Delete Tag?", client);
     add(confirmDelete);
+    confirmDelete.set("Are you sure?", "Delete", () -> {
+      int idx = tags.getSelectedIndex();
+      if (idx == -1) return;
+      Service.removeTag(list[idx]);
+      loadTags();
+    });
 
-    ccp = new ColorChooserPopup();
+    ccp = new ColorChooserPanel();
     add(ccp);
 
     editTag = new EditTagPopup(ccp);
@@ -65,12 +72,6 @@ public class ConfigPanel extends CenteredPanel {
     back.addClickListener((me, c) -> {
       c.getClient().setPanel(new MainPanel());
     });
-    confirmDelete.addActionListener((c) -> {
-      int idx = tags.getSelectedIndex();
-      if (idx == -1) return;
-      Service.removeTag(list[idx]);
-      loadTags();
-    });
     editTag.addActionListener((c) -> {
       if (newTag) {
         Tag new_Tag = new Tag();
@@ -86,8 +87,8 @@ public class ConfigPanel extends CenteredPanel {
   public Label ltags;
   public ComboBox tags;
   public Button add, edit, delete;
-  public MessagePopup confirmDelete;
-  public ColorChooserPopup ccp;
+  public ConfirmPanel confirmDelete;
+  public ColorChooserPanel ccp;
   public EditTagPopup editTag;
 
   private boolean newTag;

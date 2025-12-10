@@ -5,6 +5,7 @@
 
 import javaforce.controls.*;
 import javaforce.webui.*;
+import javaforce.webui.panel.*;
 
 public class EditTagPopup extends PopupPanel {
   public static int delays[] = new int[] {
@@ -13,7 +14,7 @@ public class EditTagPopup extends PopupPanel {
   public static String delays_txt[] = new String[] {
     "25ms", "50ms", "100ms", "500ms", "1s", "3s", "5s", "10s", "30s", "60s", "300s"
   };
-  public EditTagPopup(ColorChooserPopup ccp) {
+  public EditTagPopup(ColorChooserPanel ccp) {
     super("Edit Tag");
     this.ccp = ccp;
     setModal(true);
@@ -127,7 +128,7 @@ public class EditTagPopup extends PopupPanel {
   public Button ok, cancel;
   public int rgb;
 
-  public ColorChooserPopup ccp;
+  public ColorChooserPanel ccp;
 
   public void editTag(Tag intag) {
     switch (intag.type) {
