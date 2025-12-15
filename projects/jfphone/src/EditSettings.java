@@ -569,7 +569,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(210, Short.MAX_VALUE))
+        .addContainerGap(278, Short.MAX_VALUE))
     );
     generalLayout.setVerticalGroup(
       generalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -833,7 +833,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(165, Short.MAX_VALUE))
+        .addContainerGap(221, Short.MAX_VALUE))
     );
     audioLayout.setVerticalGroup(
       audioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -846,7 +846,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(jPanel17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(19, Short.MAX_VALUE))
+        .addContainerGap(126, Short.MAX_VALUE))
     );
 
     tabs.addTab("Audio", audio);
@@ -1029,7 +1029,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(videoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(167, Short.MAX_VALUE))
+        .addContainerGap(239, Short.MAX_VALUE))
     );
     videoLayout.setVerticalGroup(
       videoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1038,7 +1038,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(2, 2, 2)
         .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(188, Short.MAX_VALUE))
+        .addContainerGap(292, Short.MAX_VALUE))
     );
 
     tabs.addTab("Video", video);
@@ -1089,7 +1089,7 @@ public class EditSettings extends javax.swing.JDialog {
               .addComponent(jLabel31))
             .addGap(32, 32, 32)
             .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l1name, javax.swing.GroupLayout.DEFAULT_SIZE, 468, Short.MAX_VALUE)
+              .addComponent(l1name, javax.swing.GroupLayout.DEFAULT_SIZE, 525, Short.MAX_VALUE)
               .addComponent(l1pass, javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(l1auth, javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(l1user)
@@ -1147,7 +1147,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(l1secure))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(l1siplog)
-        .addContainerGap(176, Short.MAX_VALUE))
+        .addContainerGap(275, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line1", l1);
@@ -1202,7 +1202,7 @@ public class EditSettings extends javax.swing.JDialog {
               .addComponent(jLabel44))
             .addGap(18, 18, 18)
             .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l2name, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+              .addComponent(l2name, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
               .addComponent(l2pass, javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(l2auth, javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(l2user)
@@ -1268,7 +1268,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(l2secure))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(l2siplog)
-        .addContainerGap(142, Short.MAX_VALUE))
+        .addContainerGap(241, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line2", l2);
@@ -1323,7 +1323,7 @@ public class EditSettings extends javax.swing.JDialog {
               .addComponent(jLabel45))
             .addGap(18, 18, 18)
             .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l3name, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
+              .addComponent(l3name, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
               .addComponent(l3pass, javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(l3auth, javax.swing.GroupLayout.Alignment.TRAILING)
               .addComponent(l3user)
@@ -1389,7 +1389,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(l3secure))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(l3siplog)
-        .addContainerGap(142, Short.MAX_VALUE))
+        .addContainerGap(241, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line3", l3);
@@ -1467,7 +1467,7 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel59)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l4key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 200, Short.MAX_VALUE)))
+            .addGap(0, 258, Short.MAX_VALUE)))
         .addContainerGap())
     );
     l4Layout.setVerticalGroup(
@@ -1510,7 +1510,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(l4secure))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(l4siplog)
-        .addContainerGap(142, Short.MAX_VALUE))
+        .addContainerGap(241, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line4", l4);
@@ -1588,7 +1588,7 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel60)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l5key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 200, Short.MAX_VALUE)))
+            .addGap(0, 258, Short.MAX_VALUE)))
         .addContainerGap())
     );
     l5Layout.setVerticalGroup(
@@ -1631,7 +1631,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(l5key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(l5siplog)
-        .addContainerGap(142, Short.MAX_VALUE))
+        .addContainerGap(241, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line5", l5);
@@ -1709,7 +1709,7 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel61)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l6key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 200, Short.MAX_VALUE)))
+            .addGap(0, 258, Short.MAX_VALUE)))
         .addContainerGap())
     );
     l6Layout.setVerticalGroup(
@@ -1752,7 +1752,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(l6key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(l6siplog)
-        .addContainerGap(142, Short.MAX_VALUE))
+        .addContainerGap(241, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line6", l6);
@@ -1980,7 +1980,7 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel70)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dns_server))
-              .addComponent(jLabel40, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE))))
+              .addComponent(jLabel40, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE))))
         .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
@@ -2027,7 +2027,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(61, Short.MAX_VALUE))
+        .addContainerGap(168, Short.MAX_VALUE))
     );
 
     tabs.addTab("Topology", topology);
@@ -2068,7 +2068,7 @@ public class EditSettings extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(keyStatus))
               .addComponent(genCertKey))
-            .addGap(0, 181, Short.MAX_VALUE)))
+            .addGap(0, 238, Short.MAX_VALUE)))
         .addContainerGap())
     );
     eKeyLayout.setVerticalGroup(
@@ -2086,7 +2086,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(eKeyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel64)
           .addComponent(dname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(370, Short.MAX_VALUE))
+        .addContainerGap(469, Short.MAX_VALUE))
     );
 
     tabs.addTab("Keys", eKey);
@@ -2101,20 +2101,20 @@ public class EditSettings extends javax.swing.JDialog {
     aboutTab.setLayout(aboutTabLayout);
     aboutTabLayout.setHorizontalGroup(
       aboutTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 576, Short.MAX_VALUE)
+      .addGap(0, 652, Short.MAX_VALUE)
       .addGroup(aboutTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(aboutTabLayout.createSequentialGroup()
           .addContainerGap()
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 556, Short.MAX_VALUE)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
           .addContainerGap()))
     );
     aboutTabLayout.setVerticalGroup(
       aboutTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 470, Short.MAX_VALUE)
+      .addGap(0, 570, Short.MAX_VALUE)
       .addGroup(aboutTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(aboutTabLayout.createSequentialGroup()
           .addContainerGap()
-          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
           .addContainerGap()))
     );
 
@@ -2156,8 +2156,8 @@ public class EditSettings extends javax.swing.JDialog {
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addComponent(tabs, javax.swing.GroupLayout.PREFERRED_SIZE, 605, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(bSave)
           .addComponent(bCancel)

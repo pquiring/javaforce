@@ -57,8 +57,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="tabs" min="-2" pref="498" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <Component id="tabs" pref="605" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="bSave" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="bCancel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -111,7 +111,7 @@
                           <Component id="jPanel11" alignment="0" max="32767" attributes="1"/>
                           <Component id="jPanel1" alignment="1" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="210" max="32767" attributes="0"/>
+                      <EmptySpace pref="278" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -529,7 +529,7 @@
                           <Component id="jPanel17" alignment="0" max="32767" attributes="0"/>
                           <Component id="jPanel4" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="165" max="32767" attributes="0"/>
+                      <EmptySpace pref="221" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -544,7 +544,7 @@
                       <Component id="jPanel17" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel4" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="19" max="32767" attributes="0"/>
+                      <EmptySpace pref="126" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -983,7 +983,7 @@
                           <Component id="jPanel14" max="32767" attributes="0"/>
                           <Component id="jPanel18" alignment="0" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="167" max="32767" attributes="0"/>
+                      <EmptySpace pref="239" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -994,7 +994,7 @@
                       <Component id="jPanel14" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                       <Component id="jPanel18" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="188" max="32767" attributes="0"/>
+                      <EmptySpace pref="292" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1335,7 +1335,7 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l1name" pref="468" max="32767" attributes="0"/>
+                                          <Component id="l1name" pref="525" max="32767" attributes="0"/>
                                           <Component id="l1pass" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l1auth" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l1user" max="32767" attributes="0"/>
@@ -1409,7 +1409,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l1siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="176" max="32767" attributes="0"/>
+                              <EmptySpace pref="275" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1535,7 +1535,7 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l2name" pref="482" max="32767" attributes="0"/>
+                                          <Component id="l2name" pref="539" max="32767" attributes="0"/>
                                           <Component id="l2pass" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l2auth" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l2user" max="32767" attributes="0"/>
@@ -1619,7 +1619,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l2siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="142" max="32767" attributes="0"/>
+                              <EmptySpace pref="241" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1764,7 +1764,7 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l3name" pref="482" max="32767" attributes="0"/>
+                                          <Component id="l3name" pref="539" max="32767" attributes="0"/>
                                           <Component id="l3pass" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l3auth" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l3user" max="32767" attributes="0"/>
@@ -1848,7 +1848,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l3siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="142" max="32767" attributes="0"/>
+                              <EmptySpace pref="241" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2022,7 +2022,7 @@
                                               <Component id="l4key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="200" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="258" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -2077,7 +2077,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l4siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="142" max="32767" attributes="0"/>
+                              <EmptySpace pref="241" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2251,7 +2251,7 @@
                                               <Component id="l5key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="200" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="258" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -2306,7 +2306,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l5siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="142" max="32767" attributes="0"/>
+                              <EmptySpace pref="241" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2480,7 +2480,7 @@
                                               <Component id="l6key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="200" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="258" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -2535,7 +2535,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l6siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="142" max="32767" attributes="0"/>
+                              <EmptySpace pref="241" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2694,7 +2694,7 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel22" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="61" max="32767" attributes="0"/>
+                      <EmptySpace pref="168" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -2999,7 +2999,7 @@
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="dns_server" max="32767" attributes="0"/>
                                       </Group>
-                                      <Component id="jLabel40" pref="211" max="32767" attributes="0"/>
+                                      <Component id="jLabel40" pref="267" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -3122,7 +3122,7 @@
                                   </Group>
                                   <Component id="genCertKey" alignment="0" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="0" pref="181" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="238" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -3146,7 +3146,7 @@
                           <Component id="jLabel64" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="dname" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="370" max="32767" attributes="0"/>
+                      <EmptySpace pref="469" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -3199,11 +3199,11 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="576" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="652" max="32767" attributes="0"/>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" pref="556" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="640" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -3211,11 +3211,11 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="470" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="570" max="32767" attributes="0"/>
                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane1" pref="448" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" pref="558" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
