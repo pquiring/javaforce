@@ -11,6 +11,7 @@ import javaforce.io.*;
  * @author pquiring
  */
 
+@Deprecated
 public class Table<ROW extends Row> extends SerialObject {
   private Row.Creator ctr;
   @SuppressWarnings("unchecked")

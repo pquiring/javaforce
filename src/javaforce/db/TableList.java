@@ -11,6 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.io.*;
 
+@Deprecated
 public class TableList<ROW extends Row> extends SerialObject {
   private Row.Creator ctr;
 

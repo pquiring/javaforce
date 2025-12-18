@@ -14,6 +14,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.io.*;
 
+@Deprecated
 public class TableLog<ROW extends Row> {
   private String folder;
   private RandomAccessFile raf;

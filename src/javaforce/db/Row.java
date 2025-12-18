@@ -3,6 +3,7 @@ package javaforce.db;
 import java.io.*;
 import javaforce.io.*;
 
+@Deprecated
 public class Row extends SerialObject {
   /** auto-increment id */
   public int id;
