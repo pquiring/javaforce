@@ -11,6 +11,7 @@ import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.webui.*;
+import javaforce.webui.panel.*;
 import javaforce.controls.*;
 
 import jfcontrols.tags.*;
@@ -116,12 +117,12 @@ public class Panels {
     panel.add(getPopupPanel(client, "Error", "jfc_error_textarea"));
     panel.add(getPopupPanel(client, "NewTag", "jfc_new_tag"));
     panel.add(getPopupPanel(client, "NewTag", "jfc_new_tag_udt"));
-    ColorChooserPopup color = new ColorChooserPopup();
+    ColorChooserPanel color = new ColorChooserPanel();
     color.setName("colorpanel");
     color.setTitleBarSize(cellHeight);
     color.setComponentsSize(cellWidth, cellHeight);
     color.addActionListener((cmpnt) -> {
-      ColorChooserPopup cp = (ColorChooserPopup)cmpnt;
+      ColorChooserPanel cp = (ColorChooserPanel)cmpnt;
       Light light = (Light)cmpnt.getClient().getProperty("light");
       int clr = cp.getValue();
       light.setBackColor(cp.getValue());

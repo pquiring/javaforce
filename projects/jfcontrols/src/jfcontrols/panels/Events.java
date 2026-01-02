@@ -11,6 +11,7 @@ import java.lang.reflect.*;
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+import javaforce.webui.panel.*;
 import javaforce.controls.*;
 
 import jfcontrols.app.*;
@@ -821,7 +822,7 @@ public class Events {
       case "jfc_panel_props_c0": {
         Light light = (Light)client.getPanel().getComponent("c0");
         client.setProperty("light", light);
-        ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
+        ColorChooserPanel color = (ColorChooserPanel)client.getPanel().getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
         break;
@@ -829,7 +830,7 @@ public class Events {
       case "jfc_panel_props_c1": {
         Light light = (Light)client.getPanel().getComponent("c1");
         client.setProperty("light", light);
-        ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
+        ColorChooserPanel color = (ColorChooserPanel)client.getPanel().getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
         break;
@@ -837,7 +838,7 @@ public class Events {
       case "jfc_panel_props_cn": {
         Light light = (Light)client.getPanel().getComponent("cn");
         client.setProperty("light", light);
-        ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
+        ColorChooserPanel color = (ColorChooserPanel)client.getPanel().getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
         break;
