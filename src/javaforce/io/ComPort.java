@@ -22,6 +22,8 @@ public interface ComPort {
       return LnxCom.open(name, baud);
     }
   }
+  /** Returns Com Port name. */
+  public String getPort();
   /** Read data from Com Port (blocking) */
   public int read(byte[] data);
   /** Writes data to Com Port */

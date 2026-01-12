@@ -17,12 +17,18 @@ public class LnxCom implements ComPort {
   }
 
   private int fd;
+  private String name;
 
   //assumes 8 data bits, 1 stop bit, no parity, etc.
   public static LnxCom open(String name, int baud) {
     LnxCom com = new LnxCom();
     com.fd = LnxNative.comOpen(name, baud);
+    com.name = name;
     return com;
+  }
+
+  public String getPort() {
+    return name;
   }
 
   public int read(byte[] data) {
