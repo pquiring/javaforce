@@ -7,6 +7,7 @@ package javaforce.io;
 
 import java.io.*;
 
+@Deprecated
 public class ObjectWriter {
   private DataOutputStream dos;
   public ObjectWriter(OutputStream os) {

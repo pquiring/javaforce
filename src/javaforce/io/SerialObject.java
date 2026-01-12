@@ -9,6 +9,7 @@ package javaforce.io;
 
 import java.io.*;
 
+@Deprecated
 public abstract class SerialObject {
   public static final short javaforce_magic = 0x4a46;  //JavaForce serial object
   public static final short java_magic = (short)0xaced;  //java serializable stream

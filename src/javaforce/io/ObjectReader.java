@@ -7,6 +7,7 @@ package javaforce.io;
 
 import java.io.*;
 
+@Deprecated
 public class ObjectReader {
   private DataInputStream dis;
   private boolean header;
