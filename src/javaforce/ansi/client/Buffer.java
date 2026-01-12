@@ -18,6 +18,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.io.*;
 import javaforce.awt.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
@@ -501,8 +502,7 @@ public class Buffer implements Screen {
     signalRepaint(false, false);  //allow render thread to exit
     signalReconnect();  //allow reader thread to exit (if connection failed)
     try {if (pty != null) {pty.close(); pty = null;}} catch(Exception e) {}
-    try {if (wincom != null) {wincom.close(); wincom = null;}} catch(Exception e) {}
-    try {if (lnxcom != null) {lnxcom.close(); lnxcom = null;}} catch(Exception e) {}
+    try {if (com != null) {com.close(); com = null;}} catch(Exception e) {}
     try {if (client != null) {client.close(); client = null;}} catch(Exception e) {}
     try {if (out != null) {out.close(); out = null;}} catch(Exception e) {}
     try {if (in != null) {in.close(); in = null;}} catch(Exception e) {}
@@ -671,69 +671,37 @@ public class Buffer implements Screen {
     pty.setSize(sx, sy);
   }
 
-  private WinCom wincom;
-  private LnxCom lnxcom;
+  private ComPort com;
   private boolean connectCom() {
     try {
 //      if (!profile.hasComm) throw new Exception("no com support");
       String[] f = profile.host.split(",");  //com1,56000
-      if (JF.isWindows()) {
-        wincom = WinCom.open(f[0], JF.atoi(f[1]));
-        if (wincom == null) return false;
-        in = new InputStream() {
-          public int read() throws IOException {
-            byte[] data = new byte[1];
-            int read = 0;
-            do {
-              read = wincom.read(data);
-            } while (read != 1);
-            return data[0];
-          }
-          public int read(byte[] buf) throws IOException {
-            int read;
-            do {
-              read = wincom.read(buf);
-            } while (read <= 0);
-            return read;
-          }
-        };
-        out = new OutputStream() {
-          public void write(int b) throws IOException {
-            wincom.write(new byte[] {(byte)b});
-          }
-          public void write(byte[] buf) throws IOException {
-            wincom.write(buf);
-          }
-        };
-      } else {
-        lnxcom = LnxCom.open(f[0], JF.atoi(f[1]));
-        if (lnxcom == null) return false;
-        in = new InputStream() {
-          public int read() throws IOException {
-            byte[] data = new byte[1];
-            int read;
-            do {
-              read = lnxcom.read(data);
-            } while (read <= 0);
-            return data[0];
-          }
-          public int read(byte[] buf) throws IOException {
-            int read;
-            do {
-              read = lnxcom.read(buf);
-            } while (read <= 0);
-            return read;
-          }
-        };
-        out = new OutputStream() {
-          public void write(int b) throws IOException {
-            lnxcom.write(new byte[] {(byte)b});
-          }
-          public void write(byte[] buf) throws IOException {
-            lnxcom.write(buf);
-          }
-        };
-      }
+      com = ComPort.open(f[0], JF.atoi(f[1]));
+      in = new InputStream() {
+        public int read() throws IOException {
+          byte[] data = new byte[1];
+          int read = 0;
+          do {
+            read = com.read(data);
+          } while (read != 1);
+          return data[0];
+        }
+        public int read(byte[] buf) throws IOException {
+          int read;
+          do {
+            read = com.read(buf);
+          } while (read <= 0);
+          return read;
+        }
+      };
+      out = new OutputStream() {
+        public void write(int b) throws IOException {
+          com.write(new byte[] {(byte)b});
+        }
+        public void write(byte[] buf) throws IOException {
+          com.write(buf);
+        }
+      };
       return true;
     } catch (Throwable t) {
       if (!closed) input(t.toString());
