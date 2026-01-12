@@ -45,7 +45,7 @@ public class LnxCom implements ComPort {
   public static LnxCom open(String name, int baud) {
     LnxCom com = new LnxCom();
     com.fd = LnxNative.comOpen(name, baud);
-    if (com.fd == -1) return null;
+    if (com.fd == 0) return null;
     com.name = name;
     return com;
   }
