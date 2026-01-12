@@ -13,7 +13,9 @@ import java.util.*;
 import javaforce.*;
 import javaforce.io.*;
 
-public class Group extends SerialObject {
+public class Group extends SerialObject implements Serializable {
+  public static final long serialVersionUID = 1;
+
   public String name;
   public String[] cameras = new String[0];
 

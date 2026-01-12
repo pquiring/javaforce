@@ -1,6 +1,6 @@
 package service;
 
-/**
+/** Config
  *
  * @author pquiring
  */
@@ -20,8 +20,8 @@ public class Config extends SerialObject implements Serializable {
   public String user = "dvr";
   public String pass = "password";
 
-  public Object camerasLock = new Object();
-  public Object groupsLock = new Object();
+  public transient Object camerasLock = new Object();
+  public transient Object groupsLock = new Object();
 
   public static void load() {
     String file = Paths.dataPath + "/config.dat";
@@ -29,15 +29,15 @@ public class Config extends SerialObject implements Serializable {
       boolean isJavaSerial = isJavaSerialObject(file);
       FileInputStream fis = new FileInputStream(file);
       if (isJavaSerial) {
-        JFLog.log("Upgrading config...");
         ObjectInputStream ois = new ObjectInputStream(fis);
         current = (Config)ois.readObject();
         fis.close();
-        save();
       } else {
+        JFLog.log("Upgrading config...");
         ObjectReader or = new ObjectReader(fis);
         current = (Config)or.readObject(new Config());
         fis.close();
+        save();
       }
     } catch (FileNotFoundException e) {
       current = new Config();
@@ -51,8 +51,8 @@ public class Config extends SerialObject implements Serializable {
   public static void save() {
     try {
       FileOutputStream fos = new FileOutputStream(Paths.dataPath + "/config.dat");
-      ObjectWriter ow = new ObjectWriter(fos);
-      ow.writeObject(current);
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      oos.writeObject(current);
       fos.close();
     } catch (Exception e) {
       JFLog.log(e);

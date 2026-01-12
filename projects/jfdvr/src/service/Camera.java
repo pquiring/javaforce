@@ -14,6 +14,7 @@ import javaforce.voip.*;
 
 public class Camera extends SerialObject implements Serializable, RTPInterface {
   public static final long serialVersionUID = 1;
+
   public String name;
   public String url;  //high res stream (viewing)
   public String url_low;  //low res stream (decoding, motion)
