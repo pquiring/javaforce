@@ -10,6 +10,14 @@ import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
 
 public interface ComPort {
+  /** Lists available Com ports. */
+  public static String[] list() {
+    if (JF.isWindows()) {
+      return WinCom.list();
+    } else {
+      return LnxCom.list();
+    }
+  }
   /** Opens a com port.
    *
    * @param name = com port name (com1, com2, etc)
