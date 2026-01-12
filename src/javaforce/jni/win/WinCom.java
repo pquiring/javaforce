@@ -8,12 +8,10 @@ package javaforce.jni.win;
  * Created : Jan 16, 2014
  */
 
-import java.util.*;
+import javaforce.jni.*;
+import javaforce.io.*;
 
-import javaforce.*;
-import javaforce.jni.WinNative;
-
-public class WinCom {
+public class WinCom implements ComPort {
   private WinCom() {}
   public static boolean init() {
     return true;

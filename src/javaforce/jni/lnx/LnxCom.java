@@ -8,9 +8,10 @@ package javaforce.jni.lnx;
  * Created : Jan 17, 2014
  */
 
-import javaforce.jni.LnxNative;
+import javaforce.jni.*;
+import javaforce.io.*;
 
-public class LnxCom {
+public class LnxCom implements ComPort {
   public static boolean init() {
     return true;
   }
