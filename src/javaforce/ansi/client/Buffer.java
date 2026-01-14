@@ -1,3 +1,5 @@
+package javaforce.ansi.client;
+
 /*
  * Buffer.java
  *
@@ -6,8 +8,6 @@
  * @author pquiring
  *
  */
-
-package javaforce.ansi.client;
 
 import java.io.*;
 import java.net.*;
@@ -674,9 +674,7 @@ public class Buffer implements Screen {
   private ComPort com;
   private boolean connectCom() {
     try {
-//      if (!profile.hasComm) throw new Exception("no com support");
-      String[] f = profile.host.split(",");  //com1,56000
-      com = ComPort.open(f[0], JF.atoi(f[1]));
+      com = ComPort.open(profile.com, profile.baud);
       in = new InputStream() {
         public int read() throws IOException {
           byte[] data = new byte[1];

@@ -128,11 +128,6 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="tName" alignment="0" max="32767" attributes="0"/>
                       <Component id="tHost" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="cbProtocol" min="-2" max="-2" attributes="1"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="tPort" max="32767" attributes="1"/>
-                      </Group>
                       <Component id="tUsername" alignment="0" max="32767" attributes="0"/>
                       <Component id="tPassword" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
@@ -150,18 +145,25 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="tY" max="32767" attributes="0"/>
                       </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="cbProtocol" alignment="0" min="-2" max="-2" attributes="1"/>
+                              <Component id="lProtocol" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="lPort" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="tPort" max="32767" attributes="1"/>
+                          </Group>
+                      </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="utf8" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                               <Component id="lName" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="lHost" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="lProtocol" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
-                                  <Component id="lPort" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="lUsername" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="lPassword" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="cbLocalEcho" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -169,8 +171,21 @@
                               <Component id="cbX11" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="cbAutoSize" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="ascii" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="lHost" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="lUsername" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                                  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="com_port" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="com_baud" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
-                          <EmptySpace min="0" pref="75" max="32767" attributes="0"/>
+                          <EmptySpace min="0" pref="20" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -196,6 +211,15 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="cbProtocol" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="tPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="com_port" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="com_baud" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="lUsername" min="-2" max="-2" attributes="0"/>
@@ -236,7 +260,7 @@
                   <Component id="utf8" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="ascii" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="83" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -270,6 +294,7 @@
           </Properties>
           <Events>
             <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbProtocolItemStateChanged"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbProtocolActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -441,6 +466,47 @@
               <Border info="null"/>
             </Property>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel4">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="COM Settings"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel5">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Port"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="com_port">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel6">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Baud"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="com_baud">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="5">
+                <StringItem index="0" value="9600"/>
+                <StringItem index="1" value="19200"/>
+                <StringItem index="2" value="38400"/>
+                <StringItem index="3" value="57600"/>
+                <StringItem index="4" value="115200"/>
+              </StringArray>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

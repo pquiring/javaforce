@@ -28,6 +28,10 @@ public class Profile {
   public String host;
   public int port;
 
+  //com settings
+  public String com;
+  public int baud;
+
   public int sx, sy;  //screen size
   public String name;
   public String protocol = "telnet";

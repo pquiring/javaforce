@@ -19,6 +19,8 @@ public class Settings {
   public static Settings settings = new Settings();
   public static class Site {
     public String name, host, protocol, port, username, password, sshkey;
+    public String com;
+    public int baud;
     public int sx, sy;
     public boolean x11, autoSize, localEcho, utf8;
   }

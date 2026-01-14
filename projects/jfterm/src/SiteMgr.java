@@ -14,6 +14,7 @@ import javax.swing.tree.*;
 import javax.swing.filechooser.*;
 
 import javaforce.*;
+import javaforce.io.*;
 import javaforce.awt.*;
 import javaforce.ansi.client.*;
 
@@ -28,6 +29,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     clearFields();
     setPosition();
     xml.setEventListener(this);
+    listComPorts();
   }
 
   /** This method is called from within the constructor to
@@ -70,6 +72,11 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     selectSSHKey = new javax.swing.JButton();
     utf8 = new javax.swing.JRadioButton();
     ascii = new javax.swing.JRadioButton();
+    jLabel4 = new javax.swing.JLabel();
+    jLabel5 = new javax.swing.JLabel();
+    com_port = new javax.swing.JComboBox<>();
+    jLabel6 = new javax.swing.JLabel();
+    com_baud = new javax.swing.JComboBox<>();
     listScroll = new javax.swing.JScrollPane();
     tree = new javax.swing.JTree();
     bNewFolder = new javax.swing.JButton();
@@ -129,6 +136,11 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     cbProtocol.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         cbProtocolItemStateChanged(evt);
+      }
+    });
+    cbProtocol.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cbProtocolActionPerformed(evt);
       }
     });
 
@@ -226,6 +238,14 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     ascii.setText("ASCII 8bit");
     ascii.setBorder(null);
 
+    jLabel4.setText("COM Settings");
+
+    jLabel5.setText("Port");
+
+    jLabel6.setText("Baud");
+
+    com_baud.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "9600", "19200", "38400", "57600", "115200" }));
+
     javax.swing.GroupLayout settingsLayout = new javax.swing.GroupLayout(settings);
     settings.setLayout(settingsLayout);
     settingsLayout.setHorizontalGroup(
@@ -235,10 +255,6 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(tName)
           .addComponent(tHost)
-          .addGroup(settingsLayout.createSequentialGroup()
-            .addComponent(cbProtocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(tPort))
           .addComponent(tUsername)
           .addComponent(tPassword)
           .addGroup(settingsLayout.createSequentialGroup()
@@ -255,23 +271,39 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
             .addComponent(tY))
           .addGroup(settingsLayout.createSequentialGroup()
             .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(cbProtocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(lProtocol))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(settingsLayout.createSequentialGroup()
+                .addComponent(lPort)
+                .addGap(0, 0, Short.MAX_VALUE))
+              .addComponent(tPort)))
+          .addGroup(settingsLayout.createSequentialGroup()
+            .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(utf8)
               .addComponent(jLabel3)
               .addComponent(lName)
-              .addComponent(lHost)
-              .addGroup(settingsLayout.createSequentialGroup()
-                .addComponent(lProtocol)
-                .addGap(46, 46, 46)
-                .addComponent(lPort))
-              .addComponent(lUsername)
               .addComponent(lPassword)
               .addComponent(cbLocalEcho)
               .addComponent(jLabel1)
               .addComponent(jLabel2)
               .addComponent(cbX11)
               .addComponent(cbAutoSize)
-              .addComponent(ascii))
-            .addGap(0, 75, Short.MAX_VALUE)))
+              .addComponent(ascii)
+              .addComponent(lHost)
+              .addComponent(jLabel4)
+              .addComponent(lUsername)
+              .addGroup(settingsLayout.createSequentialGroup()
+                .addGap(6, 6, 6)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(com_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(com_baud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(0, 20, Short.MAX_VALUE)))
         .addContainerGap())
     );
     settingsLayout.setVerticalGroup(
@@ -292,6 +324,14 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(cbProtocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(tPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel4)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel5)
+          .addComponent(com_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel6)
+          .addComponent(com_baud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(lUsername)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -328,7 +368,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         .addComponent(utf8)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(ascii)
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(83, Short.MAX_VALUE))
     );
 
     tree.setModel(xml.getTreeModel());
@@ -483,12 +523,6 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         tUsername.setEditable(false);
         tPassword.setEditable(false);
         tSSHKey.setEditable(false);
-        if (tHost.getText().length() == 0) {
-          if (JF.isWindows())
-            tHost.setText("com1,9600");
-          else
-            tHost.setText("/dev/ttyS0,9600");
-        }
         cbX11.setEnabled(false);
         cbX11.setSelected(false);
         break;
@@ -523,9 +557,13 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
       //save existing connection to selectedTag
       xml.setTag(selectedTag, tName.getText(), "", "");
     }
+    String com = (String)com_port.getSelectedItem();
+    if (com == null) com = "";
     xml.addSetTag(selectedTag, "host", "", tHost.getText());
     xml.addSetTag(selectedTag, "protocol", "", protocols[cbProtocol.getSelectedIndex()]);
     xml.addSetTag(selectedTag, "port", "", tPort.getText());
+    xml.addSetTag(selectedTag, "com", "", com);
+    xml.addSetTag(selectedTag, "baud", "", (String)com_baud.getSelectedItem());
     xml.addSetTag(selectedTag, "username", "", tUsername.getText());
     xml.addSetTag(selectedTag, "password", "", encodePassword(new String(tPassword.getPassword())));
     xml.addSetTag(selectedTag, "sshkey", "", tSSHKey.getText());
@@ -564,6 +602,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
             if (child2.name.equals("host")) retValue[cnt].host = child2.content;
             if (child2.name.equals("protocol")) retValue[cnt].protocol = child2.content;
             if (child2.name.equals("port")) retValue[cnt].port = JF.atoi(child2.content);
+            if (child2.name.equals("com")) retValue[cnt].com = child2.content;
+            if (child2.name.equals("baud")) retValue[cnt].baud = JF.atoi(child2.content);
             if (child2.name.equals("username")) retValue[cnt].username = child2.content;
             if (child2.name.equals("password")) retValue[cnt].password = decodePassword(child2.content);
             if (child2.name.equals("sshkey")) retValue[cnt].sshKey = child2.content;
@@ -590,6 +630,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     retValue[0].host = tHost.getText();
     retValue[0].protocol = protocols[cbProtocol.getSelectedIndex()];
     retValue[0].port = JF.atoi(tPort.getText());
+    retValue[0].com = (String)com_port.getSelectedItem();
+    retValue[0].baud = JF.atoi((String)com_baud.getSelectedItem());
     retValue[0].username = tUsername.getText();
     retValue[0].password = new String(tPassword.getPassword());
     retValue[0].sshKey = tSSHKey.getText();
@@ -617,6 +659,10 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     JFAWT.openURL("https://pquiring.github.io/javaforce/projects/jfterm/docs/help.html");
   }//GEN-LAST:event_helpActionPerformed
 
+  private void cbProtocolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbProtocolActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbProtocolActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JRadioButton ascii;
   private javax.swing.JButton bConnect;
@@ -631,10 +677,15 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   private javax.swing.JCheckBox cbX;
   private javax.swing.JCheckBox cbX11;
   private javax.swing.JCheckBox cbY;
+  private javax.swing.JComboBox<String> com_baud;
+  private javax.swing.JComboBox<String> com_port;
   private javax.swing.JButton help;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel lHost;
   private javax.swing.JLabel lName;
   private javax.swing.JLabel lPassword;
@@ -682,6 +733,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     xml.addTag(child, "host", "", site.host);
     xml.addTag(child, "protocol", "", site.protocol);
     xml.addTag(child, "port", "", site.port);
+    xml.addTag(child, "com", "", site.com);
+    xml.addTag(child, "baud", "", Integer.toString(site.baud));
     xml.addTag(child, "username", "", site.username);
     xml.addTag(child, "password", "", decodePassword(site.password));
     xml.addTag(child, "sshkey", "", site.sshkey);
@@ -714,6 +767,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
       if (child.name.equals("host")) site.host = child.content;
       if (child.name.equals("protocol")) site.protocol = child.content;
       if (child.name.equals("port")) site.port = child.content;
+      if (child.name.equals("com")) site.com = child.content;
+      if (child.name.equals("baud")) site.baud = JF.atoi(child.content);
       if (child.name.equals("username")) site.username = child.content;
       if (child.name.equals("password")) site.password = encodePassword(child.content);
       if (child.name.equals("sshkey")) site.sshkey = child.content;
@@ -897,6 +952,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         if (child.content.equalsIgnoreCase("com")) cbProtocol.setSelectedIndex(3);
       }
       if (child.name.equalsIgnoreCase("port")) tPort.setText(child.content);
+      if (child.name.equalsIgnoreCase("com")) com_port.setSelectedItem(child.content);
+      if (child.name.equalsIgnoreCase("baud")) com_baud.setSelectedItem(child.content);
       if (child.name.equalsIgnoreCase("username")) tUsername.setText(child.content);
       if (child.name.equalsIgnoreCase("password")) tPassword.setText(decodePassword(child.content));
       if (child.name.equalsIgnoreCase("sshkey")) tSSHKey.setText(child.content);
@@ -923,5 +980,15 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   public void XMLTagAdded(XMLTree.XMLTag tag) {}
   public void XMLTagRenamed(XMLTree.XMLTag tag) {
     loadSite();
+  }
+  private void listComPorts() {
+    String[] ports = ComPort.list();
+    if (ports == null || ports.length == 0) {
+      com_port.addItem("n/a");
+      return;
+    }
+    for(String port : ports) {
+      com_port.addItem(port);
+    }
   }
 }
