@@ -24,6 +24,7 @@ public interface ComPort {
    * @param baud = baud rate (9600, 19200, 38400, 57600, 115200)
    */
   public static ComPort open(String name, int baud) {
+    JFLog.log("ComPort.open(" + name + "," + baud + ")");
     if (JF.isWindows()) {
       return WinCom.open(name, baud);
     } else {

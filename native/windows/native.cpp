@@ -259,8 +259,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_comOpen
   GetCommState(handle, &dcb);
   dcb.BaudRate = baud;
   dcb.fBinary = 1;
+  dcb.fParity = 0;
   dcb.ByteSize = 8;  //8 data bits
   dcb.StopBits = ONESTOPBIT;  //1 stop bit
+  dcb.Parity = 0;  //no parity
   SetCommState(handle, &dcb);
   COMMTIMEOUTS cto;
   memset(&cto, 0, sizeof(COMMTIMEOUTS));
@@ -734,7 +736,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_shellExecute
   const jchar *cargs = e->GetStringChars(args, NULL);
 
   bool ok = ShellExecuteW(NULL, (LPCWSTR)cop, (LPCWSTR)capp, (LPCWSTR)cargs, NULL, SW_NORMAL);
- 
+
   e->ReleaseStringChars(op, cop);
   e->ReleaseStringChars(app, capp);
   e->ReleaseStringChars(args, cargs);
