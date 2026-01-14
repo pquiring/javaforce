@@ -50,14 +50,14 @@ public class WebSocket {
   /** Writes a WebSocket message to client.
    * Type = TYPE_TEXT
    */
-  public void write(byte[] msg) {
-    write(msg, TYPE_TEXT);
+  public boolean write(byte[] msg) {
+    return write(msg, TYPE_TEXT);
   }
 
   /** Writes a WebSocket message to client.
    * @param type = TYPE_...
    */
-  public void write(byte[] msg, int type) {
+  public boolean write(byte[] msg, int type) {
     try {
       //encode a packet and write it
       int len = msg.length;
@@ -92,11 +92,14 @@ public class WebSocket {
       os.write(msg);
     } catch (SocketException e) {
       connected = false;
-      JFLog.log("WebSocket closed:" + host);
+      JFLog.logTrace("WebSocket closed:" + host);
+      return false;
     } catch (Exception e) {
       connected = false;
       JFLog.log(e);
+      return false;
     }
+    return true;
   }
 
   public boolean isConnected() {

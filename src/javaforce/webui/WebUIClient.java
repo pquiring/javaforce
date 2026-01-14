@@ -259,11 +259,11 @@ public class WebUIClient {
       socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
     }
   }
-  public void sendEvent(String id, String event, String[] args) {
-    if (!isReady) return;
+  public boolean sendEvent(String id, String event, String[] args) {
+    if (!isReady) return false;
     if (id == null) {
       JFLog.log("WebUIClient:Error:sendEvent():id==null");
-      return;
+      return false;
     }
     StringBuilder sb = new StringBuilder();
     StringBuilder log = new StringBuilder();
@@ -302,10 +302,11 @@ public class WebUIClient {
     if (WebUIServer.debug) JFLog.log("SEND=" + log.toString());
     try {
       synchronized (lock) {
-        socket.write(sb.toString().getBytes("utf-8"));
+        return socket.write(sb.toString().getBytes("utf-8"));
       }
     } catch (Exception e) {
       JFLog.log(e);
+      return false;
     }
   }
   public void sendDataEvent(byte[] data, String id, String event, String[] args) {

@@ -142,15 +142,16 @@ public abstract class Component {
     return map.get(key);
   }
   /** Invokes getClient().sendEvent() */
-  public void sendEvent(String msg, String[] args) {
+  public boolean sendEvent(String msg, String[] args) {
     if (isLoaded()) {
-      client . sendEvent(id, msg, args);
+      return client . sendEvent(id, msg, args);
     } else {
       if (pendingEvents == null) pendingEvents = new ArrayList<>();
       Event event = new Event();
       event.msg = msg;
       event.args = args;
       pendingEvents.add(event);
+      return true;
     }
   }
   /** Invokes getClient().sendData() */

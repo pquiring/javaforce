@@ -312,7 +312,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
   }
 
   /** Setup Terminal over local COM port.
-   * 
+   *
    * @param com = opened ComPort
    */
   public void setup(ComPort com) {
@@ -526,6 +526,10 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
   private boolean requested_size;
 
   public void flashCursor() {
+    if (!client.isConnected()) {
+      disconnect();
+      return;
+    }
     if (!requested_size) {
       if (isLoaded()) {
         requestSize();
@@ -662,7 +666,10 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
       line.y = y;
       if (line.dirty) {
         line.dirty = false;
-        line.sendEvent("replace", new String[] {"html=" + line.html()});
+        if (!line.sendEvent("replace", new String[] {"html=" + line.html()})) {
+          disconnect();
+          return;
+        }
       }
     }
   }

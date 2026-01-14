@@ -135,6 +135,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         data = is.readAllBytes();
         is.close();
       } catch (Exception e) {
+        JFLog.log("WebUIServer:Resource not found:" + url);
         JFLog.log(e);
       }
     } else {
