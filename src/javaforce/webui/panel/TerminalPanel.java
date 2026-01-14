@@ -22,6 +22,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 import javaforce.jni.lnx.*;
 import javaforce.service.*;
+import javaforce.io.*;
 
 public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, MouseDown {
 
@@ -129,6 +130,39 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
       } catch (Exception e) {
         JFLog.log(e);
       }
+    }
+  }
+
+  private class ComTerm implements Term {
+    private ComPort com;
+
+    public ComTerm(ComPort com) {
+      this.com = com;
+    }
+
+    public boolean connect() {
+      in = new InputStream() {
+        public int read() {return -1;}
+        public int read(byte[] buf) {
+          return com.read(buf);
+        }
+      };
+      out = new OutputStream() {
+        public void write(int x) {};
+        public void write(byte[] buf) {
+          com.write(buf);
+        }
+      };
+      return true;
+    }
+
+    public void disconnect() {
+      if (com == null) return;
+      com.close();
+      com = null;
+    }
+
+    public void setSize() {
     }
   }
 
@@ -275,6 +309,15 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
   public void setup(String host, int port, String user, String pass) {
     setup();
     term = new SSHTerm(host, port, user, pass);
+  }
+
+  /** Setup Terminal over local COM port.
+   * 
+   * @param com = opened ComPort
+   */
+  public void setup(ComPort com) {
+    setup();
+    term = new ComTerm(com);
   }
 
   /** Setup common fields. */
