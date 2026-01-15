@@ -26,10 +26,10 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     setComponentOrientation(((parent == null) ? javax.swing.JOptionPane.getRootFrame() : parent).getComponentOrientation());
     if (parent != null) setLocationRelativeTo(parent);
+    listComPorts();
     clearFields();
     setPosition();
     xml.setEventListener(this);
-    listComPorts();
   }
 
   /** This method is called from within the constructor to
@@ -510,6 +510,11 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         tSSHKey.setEditable(false);
         cbX11.setEnabled(false);
         cbX11.setSelected(false);
+        tHost.setEditable(true);
+        com_port.setEnabled(false);
+        com_baud.setEnabled(false);
+        com_port.setSelectedIndex(0);
+        com_baud.setSelectedIndex(0);
         break;
       case 1:  //ssh
         tPort.setEditable(true);
@@ -517,6 +522,11 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         tPassword.setEditable(true);
         tSSHKey.setEditable(true);
         cbX11.setEnabled(true);
+        tHost.setEditable(true);
+        com_port.setEnabled(false);
+        com_baud.setEnabled(false);
+        com_port.setSelectedIndex(0);
+        com_baud.setSelectedIndex(0);
         break;
       case 3:  //com
         tPort.setEditable(false);
@@ -525,6 +535,9 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         tSSHKey.setEditable(false);
         cbX11.setEnabled(false);
         cbX11.setSelected(false);
+        tHost.setEditable(false);
+        com_port.setEnabled(true);
+        com_baud.setEnabled(true);
         break;
     }
   }//GEN-LAST:event_cbProtocolItemStateChanged
@@ -559,8 +572,20 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     }
     String com = (String)com_port.getSelectedItem();
     if (com == null) com = "";
+    int protocol = cbProtocol.getSelectedIndex();
+    switch (protocol) {
+      case 0: //telnet
+        break;
+      case 1: //ssl
+        break;
+      case 2: //ssh
+        break;
+      case 3: //com
+        tHost.setText("");
+        break;
+    }
     xml.addSetTag(selectedTag, "host", "", tHost.getText());
-    xml.addSetTag(selectedTag, "protocol", "", protocols[cbProtocol.getSelectedIndex()]);
+    xml.addSetTag(selectedTag, "protocol", "", protocols[protocol]);
     xml.addSetTag(selectedTag, "port", "", tPort.getText());
     xml.addSetTag(selectedTag, "com", "", com);
     xml.addSetTag(selectedTag, "baud", "", (String)com_baud.getSelectedItem());
@@ -859,6 +884,8 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     tHost.setText("");
     cbProtocol.setSelectedIndex(0);
     tPort.setText("23");
+    com_port.setSelectedIndex(0);
+    com_baud.setSelectedIndex(0);
     tUsername.setText("");
     tUsername.setEditable(false);
     tPassword.setText("");
@@ -983,10 +1010,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   }
   private void listComPorts() {
     String[] ports = ComPort.list();
-    if (ports == null || ports.length == 0) {
-      com_port.addItem("n/a");
-      return;
-    }
+    com_port.addItem("None");
     for(String port : ports) {
       com_port.addItem(port);
     }
