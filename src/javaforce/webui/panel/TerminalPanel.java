@@ -442,7 +442,8 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
       if (debug) JFLog.log("key code=" + code + ",mods=" + mods);
       switch (code) {
         case 8: break;  //backspace
-        case 10: break;  //enter
+        case 10: code = 13; break;  //LF -> CR
+        case 13: break;  //CR
         case KeyEvent.VK_ARROW_LEFT: ansi.keyPressed(java.awt.event.KeyEvent.VK_LEFT, mods, this); return;
         case KeyEvent.VK_ARROW_RIGHT: ansi.keyPressed(java.awt.event.KeyEvent.VK_RIGHT, mods, this); return;
         case KeyEvent.VK_ARROW_UP: ansi.keyPressed(java.awt.event.KeyEvent.VK_UP, mods, this); return;
