@@ -1,5 +1,8 @@
 What's new...
 
+Jan 15/2026 - 0.25 released!
+  - new : add com port/baud selection to site manager
+
 Aug 5/2025 - 0.24 released!
   - fix : support for Midnight Commander
 

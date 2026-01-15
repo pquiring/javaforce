@@ -21,7 +21,7 @@ import javaforce.ansi.client.*;
 
 public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
 
-  public static String version = "0.24";
+  public static String version = "0.25";
 
   public boolean dispatchKeyEvent(KeyEvent e) {
     //System.out.println("KeyEvent:" + e);
