@@ -1,0 +1,49 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{40716B14-4F6B-4AE7-BDDA-DA074B44606B}" Version="0.9" Language="1033" Name="jfTermServer" Manufacturer="Peter Quiring" InstallerVersion="300">
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+    <SetProperty Id="URL" Value="http://localhost" Sequence="execute" Before="CreateShortcuts" />
+    <Icon Id="icon.ico" SourceFile="jftermserver.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+    <!-- Step 1: Define the directory structure -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfTermServer" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+    </StandardDirectory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{CC788494-43AC-4BDD-AF96-5F7EB433A2EF}" Bitness="always64">
+        <File Id="jftermserver.exe" Source="jftermserver.exe" KeyPath="yes">
+          <fire:FirewallException Id="FirewallRule80" Name="jfTermServer80" Protocol="tcp" Port="80" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule443" Name="jfTermServer443" Protocol="tcp" Port="443" Scope="any" IgnoreFailure="yes" Profile="all" />
+        </File>
+        <File Id="jftermserver.jar" Source="jftermserver.jar" />
+        <File Id="jficons.jar" Source="jficons.jar" />
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfTermServer" DisplayName="jfTermServer" Description="jfTermServer" Start="auto" ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfTermServer" Wait="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{69CA0EB6-06AE-4525-BF89-F8685F763BD9}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jf Terminal Server" Description="jf Terminal Server" Target="[URL]" WorkingDirectory="APPLICATIONROOTDIRECTORY" Icon="icon.ico" />
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfTermServer" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentGroupRef Id="JRE" />
+    </Feature>
+
+    </Package>
+</Wix>
