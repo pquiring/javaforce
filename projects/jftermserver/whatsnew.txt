@@ -1,0 +1,4 @@
+2026-01-15 : jfTermServer/0.1
+  - init release
+  - Terminal Server is a webui interface to server COM ports
+  - easily connect to Cisco devices on remote sites
