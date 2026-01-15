@@ -1,0 +1,10 @@
+[Unit]
+Description=jfTermServer
+
+[Service]
+ExecStart=/usr/bin/jftermserver
+ExecStop=/usr/bin/jftermserver --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
