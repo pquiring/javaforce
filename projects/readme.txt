@@ -60,6 +60,7 @@ jfssh - SSH Service
 jfstun - STUN Service
 jftaskmgr - Task Manager for jfLinux
 jfterm - Telnet/SSH Client
+jftermserver - Terminal Server
 jftest3d - OpenGL Test Suite
 jftorrent - Torrent Server/Client
 jfupgrade - Package Upgrade Manager for jfLinux
