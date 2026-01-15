@@ -29,7 +29,7 @@
       <fileset dir="." includes="*.png"/>
       <fileset dir="src" includes="*.png"/>
       <manifest>
-        <attribute name="Main-Class" value="TerminalService"/>
+        <attribute name="Main-Class" value="service.TerminalService"/>
       </manifest>
     </jar>
   </target>
@@ -42,7 +42,8 @@
 
   <target name="clean" description="deletes compiled files">
     <delete>
-      <fileset dir="classes" includes="**/*.class"/>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
     </delete>
   </target>
 </project>
