@@ -1,5 +1,17 @@
 What's new...
 
+Jan 15/2026 : JF/95.0
+  - jfTermServer/0.1
+    - Terminal Server : webui interface to server COM ports
+    - essential for connecting to remote Cisco devices
+  - jfTerm/0.25
+    - added com port/baud selection to site manager
+  - jfPhone/1.36
+    - UI fixes
+  - jfDVR/0.34
+    - config file change
+    - users must upgrade to 0.34 before upgrading to next release
+
 Dec 4/2025 : JF/94.0
   - fix : rtsp issues with localhost
   - fix : MediaVideoEncoder
