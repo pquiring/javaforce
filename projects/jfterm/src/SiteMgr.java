@@ -254,7 +254,23 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         .addContainerGap()
         .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(tName)
-          .addComponent(tHost)
+          .addGroup(settingsLayout.createSequentialGroup()
+            .addComponent(lProtocol)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(cbProtocol, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(settingsLayout.createSequentialGroup()
+            .addComponent(tHost)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(tPort, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(settingsLayout.createSequentialGroup()
+            .addGap(6, 6, 6)
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(com_port, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel6)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(com_baud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
           .addComponent(tUsername)
           .addComponent(tPassword)
           .addGroup(settingsLayout.createSequentialGroup()
@@ -271,39 +287,23 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
             .addComponent(tY))
           .addGroup(settingsLayout.createSequentialGroup()
             .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(cbProtocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(lProtocol))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(settingsLayout.createSequentialGroup()
-                .addComponent(lPort)
-                .addGap(0, 0, Short.MAX_VALUE))
-              .addComponent(tPort)))
-          .addGroup(settingsLayout.createSequentialGroup()
-            .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(utf8)
-              .addComponent(jLabel3)
               .addComponent(lName)
-              .addComponent(lPassword)
               .addComponent(cbLocalEcho)
-              .addComponent(jLabel1)
-              .addComponent(jLabel2)
               .addComponent(cbX11)
               .addComponent(cbAutoSize)
               .addComponent(ascii)
-              .addComponent(lHost)
               .addComponent(jLabel4)
-              .addComponent(lUsername)
               .addGroup(settingsLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(com_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(com_baud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 20, Short.MAX_VALUE)))
+                .addComponent(lHost)
+                .addGap(214, 214, 214)
+                .addComponent(lPort))
+              .addComponent(lUsername)
+              .addComponent(lPassword)
+              .addComponent(jLabel3)
+              .addComponent(jLabel1)
+              .addComponent(jLabel2))
+            .addGap(0, 60, Short.MAX_VALUE)))
         .addContainerGap())
     );
     settingsLayout.setVerticalGroup(
@@ -313,16 +313,16 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(tName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(lHost)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(lProtocol)
+          .addComponent(cbProtocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(lHost)
           .addComponent(lPort))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(settingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(cbProtocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(tHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(tPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel4)
@@ -368,7 +368,7 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
         .addComponent(utf8)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(ascii)
-        .addContainerGap(83, Short.MAX_VALUE))
+        .addContainerGap(22, Short.MAX_VALUE))
     );
 
     tree.setModel(xml.getTreeModel());
@@ -441,49 +441,6 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  private void cbAutoSizeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbAutoSizeItemStateChanged
-    if (cbAutoSize.isSelected()) {
-      cbY.setEnabled(false);
-      cbX.setEnabled(false);
-      tY.setEditable(false);
-      tX.setEditable(false);
-    } else {
-      cbY.setEnabled(true);
-      cbX.setEnabled(true);
-      tY.setEditable(!cbY.isSelected());
-      tX.setEditable(!cbX.isSelected());
-    }
-  }//GEN-LAST:event_cbAutoSizeItemStateChanged
-
-  private void cbX11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbX11ActionPerformed
-    if (cbProtocol.getSelectedIndex() != 1) cbX11.setSelected(false);
-  }//GEN-LAST:event_cbX11ActionPerformed
-
-  private void cbYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbYActionPerformed
-    if (cbY.isSelected()) {
-      tY.setEditable(false);
-      tY.setText("");
-    } else {
-      tY.setEditable(true);
-      tY.setText(Integer.toString(Settings.settings.rows));
-    }
-  }//GEN-LAST:event_cbYActionPerformed
-
-  private void cbXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbXActionPerformed
-    if (cbX.isSelected()) {
-      tX.setEditable(false);
-      tX.setText("");
-    } else {
-      tX.setEditable(true);
-      tX.setText(Integer.toString(Settings.settings.cols));
-    }
-  }//GEN-LAST:event_cbXActionPerformed
-
-  private void anykey(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_anykey
-    if (evt.getKeyChar() == '\"') evt.consume();
-    if (evt.getKeyChar() == '\'') evt.consume();
-  }//GEN-LAST:event_anykey
-
   private void bNewFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bNewFolderActionPerformed
     String name = JOptionPane.showInputDialog(this, null, "Enter Folder Name",
       JOptionPane.QUESTION_MESSAGE);
@@ -498,49 +455,6 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   private void treeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeValueChanged
     loadSite();
   }//GEN-LAST:event_treeValueChanged
-
-  private void cbProtocolItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbProtocolItemStateChanged
-    tPort.setText(ports[cbProtocol.getSelectedIndex()]);
-    switch (cbProtocol.getSelectedIndex()) {
-      case 0:  //telnet
-      case 2:  //ssl
-        tPort.setEditable(true);
-        tUsername.setEditable(false);
-        tPassword.setEditable(false);
-        tSSHKey.setEditable(false);
-        cbX11.setEnabled(false);
-        cbX11.setSelected(false);
-        tHost.setEditable(true);
-        com_port.setEnabled(false);
-        com_baud.setEnabled(false);
-        com_port.setSelectedIndex(0);
-        com_baud.setSelectedIndex(0);
-        break;
-      case 1:  //ssh
-        tPort.setEditable(true);
-        tUsername.setEditable(true);
-        tPassword.setEditable(true);
-        tSSHKey.setEditable(true);
-        cbX11.setEnabled(true);
-        tHost.setEditable(true);
-        com_port.setEnabled(false);
-        com_baud.setEnabled(false);
-        com_port.setSelectedIndex(0);
-        com_baud.setSelectedIndex(0);
-        break;
-      case 3:  //com
-        tPort.setEditable(false);
-        tUsername.setEditable(false);
-        tPassword.setEditable(false);
-        tSSHKey.setEditable(false);
-        cbX11.setEnabled(false);
-        cbX11.setSelected(false);
-        tHost.setEditable(false);
-        com_port.setEnabled(true);
-        com_baud.setEnabled(true);
-        break;
-    }
-  }//GEN-LAST:event_cbProtocolItemStateChanged
 
   private void bDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bDeleteActionPerformed
     if (selectedTag == null) return;
@@ -576,9 +490,9 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     switch (protocol) {
       case 0: //telnet
         break;
-      case 1: //ssl
+      case 1: //ssh
         break;
-      case 2: //ssh
+      case 2: //ssl
         break;
       case 3: //com
         tHost.setText("");
@@ -669,6 +583,10 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     setVisible(false);
   }//GEN-LAST:event_bConnectActionPerformed
 
+  private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
+    JFAWT.openURL("https://pquiring.github.io/javaforce/projects/jfterm/docs/help.html");
+  }//GEN-LAST:event_helpActionPerformed
+
   private void selectSSHKeyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectSSHKeyActionPerformed
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -680,13 +598,96 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
     }
   }//GEN-LAST:event_selectSSHKeyActionPerformed
 
-  private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-    JFAWT.openURL("https://pquiring.github.io/javaforce/projects/jfterm/docs/help.html");
-  }//GEN-LAST:event_helpActionPerformed
+  private void cbAutoSizeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbAutoSizeItemStateChanged
+    if (cbAutoSize.isSelected()) {
+      cbY.setEnabled(false);
+      cbX.setEnabled(false);
+      tY.setEditable(false);
+      tX.setEditable(false);
+    } else {
+      cbY.setEnabled(true);
+      cbX.setEnabled(true);
+      tY.setEditable(!cbY.isSelected());
+      tX.setEditable(!cbX.isSelected());
+    }
+  }//GEN-LAST:event_cbAutoSizeItemStateChanged
+
+  private void cbX11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbX11ActionPerformed
+    if (cbProtocol.getSelectedIndex() != 1) cbX11.setSelected(false);
+  }//GEN-LAST:event_cbX11ActionPerformed
+
+  private void cbYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbYActionPerformed
+    if (cbY.isSelected()) {
+      tY.setEditable(false);
+      tY.setText("");
+    } else {
+      tY.setEditable(true);
+      tY.setText(Integer.toString(Settings.settings.rows));
+    }
+  }//GEN-LAST:event_cbYActionPerformed
+
+  private void cbXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbXActionPerformed
+    if (cbX.isSelected()) {
+      tX.setEditable(false);
+      tX.setText("");
+    } else {
+      tX.setEditable(true);
+      tX.setText(Integer.toString(Settings.settings.cols));
+    }
+  }//GEN-LAST:event_cbXActionPerformed
+
+  private void anykey(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_anykey
+    if (evt.getKeyChar() == '\"') evt.consume();
+      if (evt.getKeyChar() == '\'') evt.consume();
+  }//GEN-LAST:event_anykey
 
   private void cbProtocolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbProtocolActionPerformed
     // TODO add your handling code here:
   }//GEN-LAST:event_cbProtocolActionPerformed
+
+  private void cbProtocolItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbProtocolItemStateChanged
+    tPort.setText(ports[cbProtocol.getSelectedIndex()]);
+    switch (cbProtocol.getSelectedIndex()) {
+      case 0:  //telnet
+        //no break
+      case 2:  //ssl
+      tPort.setEditable(true);
+      tUsername.setEditable(false);
+      tPassword.setEditable(false);
+      tSSHKey.setEditable(false);
+      cbX11.setEnabled(false);
+      cbX11.setSelected(false);
+      tHost.setEditable(true);
+      com_port.setEnabled(false);
+      com_baud.setEnabled(false);
+      com_port.setSelectedIndex(0);
+      com_baud.setSelectedIndex(0);
+      break;
+      case 1:  //ssh
+      tPort.setEditable(true);
+      tUsername.setEditable(true);
+      tPassword.setEditable(true);
+      tSSHKey.setEditable(true);
+      cbX11.setEnabled(true);
+      tHost.setEditable(true);
+      com_port.setEnabled(false);
+      com_baud.setEnabled(false);
+      com_port.setSelectedIndex(0);
+      com_baud.setSelectedIndex(0);
+      break;
+      case 3:  //com
+      tPort.setEditable(false);
+      tUsername.setEditable(false);
+      tPassword.setEditable(false);
+      tSSHKey.setEditable(false);
+      cbX11.setEnabled(false);
+      cbX11.setSelected(false);
+      tHost.setEditable(false);
+      com_port.setEnabled(true);
+      com_baud.setEnabled(true);
+      break;
+    }
+  }//GEN-LAST:event_cbProtocolItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JRadioButton ascii;
@@ -838,10 +839,13 @@ public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
   private boolean validFields() {
     if (!validField(tName.getText())) return false;
     if (tName.getText().length() == 0) return false;
-    if (!validField(tHost.getText())) return false;
-    if (tHost.getText().length() == 0) return false;
-    if (!validFieldNumber(tPort.getText())) return false;
-    if (tPort.getText().length() == 0) return false;
+    int protocol = cbProtocol.getSelectedIndex();
+    if (protocol != 3) {  //excluding com port
+      if (!validField(tHost.getText())) return false;
+      if (tHost.getText().length() == 0) return false;
+      if (!validFieldNumber(tPort.getText())) return false;
+      if (tPort.getText().length() == 0) return false;
+    }
     if (!validField(tUsername.getText())) return false;
     if (!validField(new String(tPassword.getPassword()))) return false;
     return true;
