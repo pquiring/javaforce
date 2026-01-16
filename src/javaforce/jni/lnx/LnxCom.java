@@ -59,7 +59,7 @@ public class LnxCom implements ComPort {
   }
 
   public int write(byte[] data) {
-    return LnxNative.comRead(fd, data);
+    return LnxNative.comWrite(fd, data);
   }
 
   public void close() {
