@@ -1,5 +1,8 @@
 What's new...
 
+Jan 19/2026 - 0.26 released!
+  - fix : UI issues
+
 Jan 15/2026 - 0.25 released!
   - new : add com port/baud selection to site manager
 
