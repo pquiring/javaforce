@@ -1,5 +1,11 @@
 What's new...
 
+Jan 19/2026 : JF/95.1
+  - jfTermServer/0.2
+    - fix : linux com port issues
+  - jfTerm/0.26
+    - fix : UI issues
+
 Jan 15/2026 : JF/95.0
   - jfTermServer/0.1
     - Terminal Server : webui interface to server COM ports
