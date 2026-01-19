@@ -18,7 +18,7 @@ import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.1";
+  public static String version = "0.2";
   public static String appname = "jfTerminalServer";
   public static boolean debug = false;
   public static boolean debug_api = false;
@@ -327,7 +327,7 @@ public class ConfigService implements WebUIHandler {
   private Panel terminalPanel(UI ui) {
     Panel panel = new Panel();
 
-    panel.add(new Label("jfTerminalServer"));
+    panel.add(new Label(appname + "/" + version));
 
     InnerPanel inner = new InnerPanel("Terminal");
 
