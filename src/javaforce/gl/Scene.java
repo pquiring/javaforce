@@ -42,50 +42,51 @@ public class Scene {
   public int mpu, mmu, mvu;  //uniform matrix'es (perspective, model, view)
 
   public void init(String vertex, String fragment) {  //must give size of render window
-    glFrontFace(GL_CCW);  //3DS uses GL_CCW
-    glEnable(GL_CULL_FACE);  //don't draw back sides
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glEnable(GL_TEXTURE_2D);
-    glActiveTexture(GL_TEXTURE0);
+    GL gl = GL.getInstance();
+    gl.glFrontFace(GL_CCW);  //3DS uses GL_CCW
+    gl.glEnable(GL_CULL_FACE);  //don't draw back sides
+    gl.glEnable(GL_DEPTH_TEST);
+    gl.glDepthFunc(GL_LEQUAL);
+    gl.glEnable(GL_BLEND);
+    gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gl.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    gl.glEnable(GL_TEXTURE_2D);
+    gl.glActiveTexture(GL_TEXTURE0);
 
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, new String[] {vertex}, null);
-    glCompileShader(vertexShader);
-    if (debug) JFLog.log("vertex log=" + glGetShaderInfoLog(vertexShader));
+    vertexShader = gl.glCreateShader(GL_VERTEX_SHADER);
+    gl.glShaderSource(vertexShader, 1, new String[] {vertex}, null);
+    gl.glCompileShader(vertexShader);
+    if (debug) JFLog.log("vertex log=" + gl.glGetShaderInfoLog(vertexShader));
 
-    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragShader, 1, new String[] {fragment}, null);
-    glCompileShader(fragShader);
-    if (debug) JFLog.log("fragment log=" + glGetShaderInfoLog(fragShader));
+    fragShader = gl.glCreateShader(GL_FRAGMENT_SHADER);
+    gl.glShaderSource(fragShader, 1, new String[] {fragment}, null);
+    gl.glCompileShader(fragShader);
+    if (debug) JFLog.log("fragment log=" + gl.glGetShaderInfoLog(fragShader));
 
-    program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragShader);
-    glLinkProgram(program);
-    if (debug) JFLog.log("program log=" + glGetProgramInfoLog(program));
-    glUseProgram(program);
+    program = gl.glCreateProgram();
+    gl.glAttachShader(program, vertexShader);
+    gl.glAttachShader(program, fragShader);
+    gl.glLinkProgram(program);
+    if (debug) JFLog.log("program log=" + gl.glGetProgramInfoLog(program));
+    gl.glUseProgram(program);
 
-    vpa = glGetAttribLocation(program, "aVertexPosition");
-    glEnableVertexAttribArray(vpa);
+    vpa = gl.glGetAttribLocation(program, "aVertexPosition");
+    gl.glEnableVertexAttribArray(vpa);
 
-    tca[0] = glGetAttribLocation(program, "aTextureCoord1");
-    glEnableVertexAttribArray(tca[0]);
-    int uSampler1 = glGetUniformLocation(program, "uSampler1");
-    glUniform1i(uSampler1, 0);
+    tca[0] = gl.glGetAttribLocation(program, "aTextureCoord1");
+    gl.glEnableVertexAttribArray(tca[0]);
+    int uSampler1 = gl.glGetUniformLocation(program, "uSampler1");
+    gl.glUniform1i(uSampler1, 0);
 
-    tca[1] = glGetAttribLocation(program, "aTextureCoord2");
-    glEnableVertexAttribArray(tca[1]);
-    int uSampler2 = glGetUniformLocation(program, "uSampler2");
-    glUniform1i(uSampler2, 1);
+    tca[1] = gl.glGetAttribLocation(program, "aTextureCoord2");
+    gl.glEnableVertexAttribArray(tca[1]);
+    int uSampler2 = gl.glGetUniformLocation(program, "uSampler2");
+    gl.glUniform1i(uSampler2, 1);
 
-    mpu = glGetUniformLocation(program, "uPMatrix");
-    mmu = glGetUniformLocation(program, "uMMatrix");
-    mvu = glGetUniformLocation(program, "uVMatrix");
-    uUVMaps = glGetUniformLocation(program, "uUVMaps");
+    mpu = gl.glGetUniformLocation(program, "uPMatrix");
+    mmu = gl.glGetUniformLocation(program, "uMMatrix");
+    mvu = gl.glGetUniformLocation(program, "uVMatrix");
+    uUVMaps = gl.glGetUniformLocation(program, "uUVMaps");
 
     if (debug) {
       JFLog.log("attribs=" + vpa + "," + tca[0] + "," + tca[1]);
@@ -231,9 +232,10 @@ public class Scene {
     return true;
   }
   private boolean uninitTexture(int glid) {
+    GL gl = GL.getInstance();
     int[] id = new int[1];
     id[0] = glid;
-    glDeleteTextures(1, id);
+    gl.glDeleteTextures(1, id);
     return true;
   }
   public void releaseUnusedTextures() {

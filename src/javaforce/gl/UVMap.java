@@ -30,9 +30,10 @@ public class UVMap {
   }
 
   public void copyBuffers() {
+    GL gl = GL.getInstance();
     int[] ids = new int[1];
     if (uvb == -1) {
-      glGenBuffers(1, ids);
+      gl.glGenBuffers(1, ids);
       uvb = ids[0];
       if (debug) {
         JFLog.log("GLUVMap:uvb=" + uvb);
@@ -41,23 +42,25 @@ public class UVMap {
     if (debug) {
       JFLog.log("GLUVMap.copyBuffer:" + uvb + "," + idx);
     }
-    glBindBuffer(GL_ARRAY_BUFFER, uvb);
-    glBufferData(GL_ARRAY_BUFFER, uvl.size() * 4, uvl.toArray(), GL_STATIC_DRAW);
+    gl.glBindBuffer(GL_ARRAY_BUFFER, uvb);
+    gl.glBufferData(GL_ARRAY_BUFFER, uvl.size() * 4, uvl.toArray(), GL_STATIC_DRAW);
   }
 
   public void bindBuffers(Scene scene) {
+    GL gl = GL.getInstance();
     if (debug) {
       JFLog.log("GLUVMap.bindBuffer:" + uvb + "," + idx);
     }
-    glBindBuffer(GL_ARRAY_BUFFER, uvb);
-    glVertexAttribPointer(scene.tca[idx], 2, GL_FLOAT, GL_FALSE, 0, 0);
+    gl.glBindBuffer(GL_ARRAY_BUFFER, uvb);
+    gl.glVertexAttribPointer(scene.tca[idx], 2, GL_FLOAT, GL_FALSE, 0, 0);
   }
 
   public void freeBuffers() {
+    GL gl = GL.getInstance();
     int[] ids = new int[1];
     if (uvb != -1) {
       ids[0] = uvb;
-      glDeleteBuffers(1, ids);
+      gl.glDeleteBuffers(1, ids);
       uvb = -1;
     }
   }

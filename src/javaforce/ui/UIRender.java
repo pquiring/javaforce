@@ -18,10 +18,11 @@ public class UIRender {
   public float s = 1.0f;
 
   public void setContext() {
-    glUseProgram(scene.program);
-    glUniformMatrix4fv(scene.mpu, 1, GL.GL_FALSE, m_ortho.m);  //perspective matrix
-    glUniformMatrix4fv(scene.mvu, 1, GL.GL_FALSE, m_view.m);  //view matrix
-    glUniformMatrix4fv(scene.mmu, 1, GL.GL_FALSE, m_model.m);  //model matrix
+    GL gl = GL.getInstance();
+    gl.glUseProgram(scene.program);
+    gl.glUniformMatrix4fv(scene.mpu, 1, GL.GL_FALSE, m_ortho.m);  //perspective matrix
+    gl.glUniformMatrix4fv(scene.mvu, 1, GL.GL_FALSE, m_view.m);  //view matrix
+    gl.glUniformMatrix4fv(scene.mmu, 1, GL.GL_FALSE, m_model.m);  //model matrix
   }
 
   public void run() {
@@ -29,6 +30,7 @@ public class UIRender {
   }
 
   public void run(int wait) {
+    GL gl = GL.getInstance();
     scene = new Scene();
     m_ortho = new Matrix();
     //+x right : +y up : +z toward user
@@ -50,7 +52,7 @@ public class UIRender {
         }
         Canvas[] canvasList = window.getCanvasList();
         for(Canvas c : canvasList) {
-          glViewport(c.pos.x, c.pos.y, c.size.width, c.size.height);
+          gl.glViewport(c.pos.x, c.pos.y, c.size.width, c.size.height);
           try {
             c.render();
           } catch (Exception e) {

@@ -49,27 +49,28 @@ public class Render {
   }
 
   public void render() {
+    GL gl = GL.getInstance();
     scene.initTextures();
     Model mod;
     Object3 obj;
     Matrix mat = new Matrix();
     //setup camera view
-    glViewport(0, 0, iwx, iwy);
+    gl.glViewport(0, 0, iwx, iwy);
     //setup model view
     //setup background clr
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     //render models
     int size_ml = scene.ml.size();
     mat.setIdentity();
     mat.perspective(fovy, ratio, zNear, zFar);
-    glUniformMatrix4fv(scene.mpu, 1, GL_FALSE, mat.m);  //perspective matrix
+    gl.glUniformMatrix4fv(scene.mpu, 1, GL_FALSE, mat.m);  //perspective matrix
     for(int a=0;a<size_ml;a++) {
       mod = scene.ml.get(a);
       if (!mod.visible) continue;
       mat.setIdentity();
       mat.mult4x4(m_camera);
-      glUniformMatrix4fv(scene.mvu, 1, GL_FALSE, mat.m);  //view matrix
+      gl.glUniformMatrix4fv(scene.mvu, 1, GL_FALSE, mat.m);  //view matrix
       int size_ol = mod.ol.size();
       for(int b=0;b<size_ol;b++) {
         obj = mod.ol.get(b);
@@ -82,7 +83,7 @@ public class Render {
         mat.mult4x4(m_model);
         mat.mult4x4(mod.m);
         mat.mult4x4(obj.m);
-        glUniformMatrix4fv(scene.mmu, 1, GL_FALSE, mat.m);  //model matrix
+        gl.glUniformMatrix4fv(scene.mmu, 1, GL_FALSE, mat.m);  //model matrix
 
         for(int m=0;m<obj.maps.size();m++) {
           UVMap map = obj.maps.get(m);
@@ -105,7 +106,7 @@ public class Render {
         obj.render(scene);
       }
     }
-    glFlush();
+    gl.glFlush();
   }
   public void cameraReset() {
     m_camera.setIdentity();

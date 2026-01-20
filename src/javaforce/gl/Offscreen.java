@@ -21,8 +21,9 @@ public class Offscreen {
 
   /** Get offscreen buffer in a java.awt.Image */
   public Image getOffscreen() {
+    GL gl = GL.getInstance();
     //TODO : the image is trippled here - need to optimize!!!
-    glReadPixels(0, 0, os_width, os_height, GL_BGRA, GL_UNSIGNED_BYTE, os_px);
+    gl.glReadPixels(0, 0, os_width, os_height, GL_BGRA, GL_UNSIGNED_BYTE, os_px);
     //invert and fix alpha (pixel by pixel - slow - OUCH!)
     //OpenGL makes black pixels transparent which causes unwanted trailing effects
     int src = (os_height - 1) * os_width;
@@ -41,7 +42,8 @@ public class Offscreen {
    * Pixels that are not rendered to are usually transparent.
    */
   public int[] getOffscreenPixels() {
-    glReadPixels(0, 0, os_width, os_height, GL_BGRA, GL_UNSIGNED_BYTE, os_px);
+    GL gl = GL.getInstance();
+    gl.glReadPixels(0, 0, os_width, os_height, GL_BGRA, GL_UNSIGNED_BYTE, os_px);
     //invert and fix alpha (pixel by pixel - slow - OUCH!)
     //OpenGL makes black pixels transparent which causes unwanted trailing effects
     int src = (os_height - 1) * os_width;
@@ -55,53 +57,56 @@ public class Offscreen {
   }
 
   private void createBuffers(int width, int height) {
+    GL gl = GL.getInstance();
     int[] ids = new int[1];
-    glGenRenderbuffers(1, ids);
+    gl.glGenRenderbuffers(1, ids);
     os_clr_rb = ids[0];
     if (debug) {
       JFLog.log("GLOffscreen:os_clr_rb=" + os_clr_rb);
     }
-    glBindRenderbuffer(GL_RENDERBUFFER, os_clr_rb);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, os_clr_rb);
+    gl.glBindRenderbuffer(GL_RENDERBUFFER, os_clr_rb);
+    gl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
+    gl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, os_clr_rb);
 
-    glGenRenderbuffers(1, ids);
+    gl.glGenRenderbuffers(1, ids);
     os_depth_rb = ids[0];
     if (debug) {
       JFLog.log("GLOffscreen:os_depth_rb=" + os_depth_rb);
     }
-    glBindRenderbuffer(GL_RENDERBUFFER, os_depth_rb);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, os_depth_rb);
+    gl.glBindRenderbuffer(GL_RENDERBUFFER, os_depth_rb);
+    gl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+    gl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, os_depth_rb);
   }
 
   /** Resize offscreen buffer dimensions. */
   public void resizeOffscreen(int width, int height) {
+    GL gl = GL.getInstance();
     os_width = width;
     os_height = height;
     os_px = new int[os_width * os_height];
     os_fpx = new int[os_width * os_height];
     os_img = new JFImage(os_width, os_height);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
+    gl.glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
 
     int[] ids = {os_clr_rb, os_depth_rb};
-    glDeleteRenderbuffers(2, ids);
+    gl.glDeleteRenderbuffers(2, ids);
     createBuffers(width, height);
   }
 
   /** Creates an offscreen buffer to where rendering is directly to. */
   public void createOffscreen(int width, int height) {
+    GL gl = GL.getInstance();
     if (os_fb != 0) return;  //already done
     int[] ids = new int[1];
 
-    glGenFramebuffers(1, ids);
+    gl.glGenFramebuffers(1, ids);
     os_fb = ids[0];
-    glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
+    gl.glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
 
     createBuffers(width, height);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
+    gl.glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
 
     os_width = width;
     os_height = height;
@@ -111,6 +116,7 @@ public class Offscreen {
   }
 
   public void setRenderToOffscreen(boolean state) {
-    glBindFramebuffer(GL_FRAMEBUFFER, state ? os_fb : 0);
+    GL gl = GL.getInstance();
+    gl.glBindFramebuffer(GL_FRAMEBUFFER, state ? os_fb : 0);
   }
 }

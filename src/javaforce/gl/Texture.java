@@ -99,12 +99,13 @@ public class Texture {
   }
 
   public boolean load() {
+    GL gl = GL.getInstance();
     if (tid == -1) {
       int[] id = new int[1];
       id[0] = -1;
-      glGenTextures(1, id);
+      gl.glGenTextures(1, id);
       if (id[0] == -1) {
-        JFLog.log("glGenTextures failed:Error=0x" + Integer.toString(glGetError(), 16));
+        JFLog.log("glGenTextures failed:Error=0x" + Integer.toString(gl.glGetError(), 16));
         return false;
       }
       tid = id[0];
@@ -115,39 +116,41 @@ public class Texture {
     if (loaded) {
       return true;
     }
-    glActiveTexture(GL_TEXTURE0 + idx);
-    glBindTexture(GL_TEXTURE_2D, tid);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    gl.glActiveTexture(GL_TEXTURE0 + idx);
+    gl.glBindTexture(GL_TEXTURE_2D, tid);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     if (mipmaps) {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+      gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+      gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
     } else {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
     if (debug) {
       JFLog.log("GLTexture.load:" + image.getWidth() + "x" + image.getHeight());
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_BGRA
+    gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_BGRA
       , GL_UNSIGNED_BYTE, image.getBuffer());
     loaded = true;
     return true;
   }
 
   public void unload() {
+    GL gl = GL.getInstance();
     if (tid == -1) return;
     int[] id = new int[1];
     id[0] = tid;
-    glDeleteTextures(1, id);
+    gl.glDeleteTextures(1, id);
     tid = -1;
   }
 
   public void bind() {
+    GL gl = GL.getInstance();
     if (debug) {
       JFLog.log("GLTexture.bind:" + tid + "," + idx);
     }
-    glActiveTexture(GL_TEXTURE0 + idx);
-    glBindTexture(GL_TEXTURE_2D, tid);
+    gl.glActiveTexture(GL_TEXTURE0 + idx);
+    gl.glBindTexture(GL_TEXTURE_2D, tid);
   }
 }

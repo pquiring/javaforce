@@ -296,7 +296,7 @@ public class Window {
     object.bindBuffers(scene);
     texture.bind();
     object.render(scene);
-    glFlush();
+    GL.getInstance().glFlush();
     swap();
   }
 

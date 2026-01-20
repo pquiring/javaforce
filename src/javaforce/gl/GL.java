@@ -18,32 +18,22 @@ package javaforce.gl;
  */
 
 import javaforce.*;
+import javaforce.jni.*;
 
-public class GL {
-  static {
-    if (JF.isWindows()) {
-      os = OS.WINDOWS;
-    } else if (JF.isMac()) {
-      os = OS.MAC;
-    } else {
-      os = OS.LINUX;
-    }
-  }
+public interface GL {
 
-  /** Loads OpenGL functions.
+  /** Returns OpenGL functions.
    *
    * Windows : must call only when a valid OpenGL Context is set
    * Linux : not sure?
    * Mac : Call anytime.
    *
    */
-  public static native boolean init();
+  public static GL getInstance() {
+    return GLJNI.getInstance();
+  }
 
   public static final boolean debug = false;  //enable to see lots of debug info
-
-  //common data
-  private enum OS {WINDOWS, LINUX, MAC};
-  private static OS os;
 
   //GL constants
   public static final int GL_VERSION = 0x1F02;
@@ -148,7 +138,8 @@ public class GL {
 
   /** Returns OpenGL version. ie: {3,3,0} */
   public static int[] getVersion() {
-    String str = glGetString(GL_VERSION);
+    GL gl = getInstance();
+    String str = gl.glGetString(GL_VERSION);
     if (str == null) {
       JFLog.log("Error:glGetString returned NULL");
       return new int[] {0,0};
@@ -164,9 +155,10 @@ public class GL {
   }
 
   public static void printError(String msg) {
+    GL gl = getInstance();
     int err;
     do {
-      err = glGetError();
+      err = gl.glGetError();
       System.out.println(msg + "=" + String.format("%x", err));
     } while (err != 0);
   }
@@ -177,6 +169,7 @@ public class GL {
 
   /** Clears viewport */
   public static void clear(int clr, int width, int height) {
+    GL gl = getInstance();
     float r = (clr & 0xff0000) >> 16;
     r /= 256.0f;
     float g = (clr & 0xff00) >> 8;
@@ -186,78 +179,78 @@ public class GL {
     if (debug) {
       JFLog.log("clear:" + r + "," + g + "," + b + ":" + width + "x" + height);
     }
-    glViewport(0, 0, width, height);
-    glClearColor(r, g, b, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    gl.glViewport(0, 0, width, height);
+    gl.glClearColor(r, g, b, 0.0f);
+    gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   }
 
-  public static native void glActiveTexture(int i1);
-  public static native void glAlphaFunc(int i1, int i2);
-  public static native void glAttachShader(int i1, int i2);
-  public static native void glBindBuffer(int i1, int i2);
-  public static native void glBindFramebuffer(int i1, int i2);
-  public static native void glBindRenderbuffer(int i1, int i2);
-  public static native void glBindTexture(int i1, int i2);
-  public static native void glBlendFunc(int i1, int i2);
-  public static native void glBufferData(int i1, int i2, float[] i3, int i4);
-  public static native void glBufferData(int i1, int i2, short[] i3, int i4);
-  public static native void glBufferData(int i1, int i2, int[] i3, int i4);
-  public static native void glBufferData(int i1, int i2, byte[] i3, int i4);
-  public static native void glClear(int flags);
-  public static native void glClearColor(float r, float g, float b, float a);
-  public static native void glColorMask(boolean r, boolean g, boolean b, boolean a);
-  public static native void glClearStencil(int s);
-  public static native void glCompileShader(int id);
-  public static native int glCreateProgram();
-  public static native int glCreateShader(int type);
-  public static native void glCullFace(int id);
-  public static native void glDeleteBuffers(int i1, int[] i2);
-  public static native void glDeleteFramebuffers(int i1, int[] i2);
-  public static native void glDeleteRenderbuffers(int i1, int[] i2);
-  public static native void glDeleteTextures(int i1, int[] i2);
-  public static native void glDrawElements(int i1, int i2, int i3, int i4);
-  public static native void glDepthFunc(int i1);
-  public static native void glDisable(int id);
-  public static native void glDisableVertexAttribArray(int id);
-  public static native void glDepthMask(boolean state);
-  public static native void glEnable(int id);
-  public static native void glEnableVertexAttribArray(int id);
-  public static native void glFlush();
-  public static native void glFramebufferTexture2D(int i1, int i2, int i3, int i4, int i5);
-  public static native void glFramebufferRenderbuffer(int i1, int i2, int i3, int i4);
-  public static native void glFrontFace(int id);
-  public static native int glGetAttribLocation(int i1, String str);
-  public static native int glGetError();
-  public static native String glGetProgramInfoLog(int id);
-  public static native String glGetShaderInfoLog(int id);
-  public static native String glGetString(int type);
-  public static native void glGetIntegerv(int type, int[] i);
-  public static native void glGenBuffers(int i1, int[] i2);
-  public static native void glGenFramebuffers(int i1, int[] i2);
-  public static native void glGenRenderbuffers(int i1, int[] i2);
-  public static native void glGenTextures(int i1, int[] i2);
-  public static native int glGetUniformLocation(int i1, String str);
-  public static native void glLinkProgram(int id);
-  public static native void glPixelStorei(int i1, int i2);
-  public static native void glReadPixels(int i1, int i2, int i3, int i4, int i5, int i6, int[] px);
-  public static native void glRenderbufferStorage(int i1, int i2, int i3, int i4);
-  public static native int glShaderSource(int type, int count, String[] src, int[] src_lengths);
-  public static native int glStencilFunc(int func, int ref, int mask);
-  public static native int glStencilMask(int mask);
-  public static native int glStencilOp(int sfail, int dpfail, int dppass);
-  public static native void glTexImage2D(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int[] px);
-  public static native void glTexSubImage2D(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int[] px);
-  public static native void glTexParameteri(int i1, int i2, int i3);
-  public static native void glUseProgram(int id);
-  public static native void glUniformMatrix4fv(int i1, int i2, int i3, float[] m);
-  public static native void glUniform4fv(int i1, int i2, float[] f);
-  public static native void glUniform3fv(int i1, int i2, float[] f);
-  public static native void glUniform2fv(int i1, int i2, float[] f);
-  public static native void glUniform1f(int i1, float f);
-  public static native void glUniform4iv(int i1, int i2, int[] v);
-  public static native void glUniform3iv(int i1, int i2, int[] v);
-  public static native void glUniform2iv(int i1, int i2, int[] v);
-  public static native void glUniform1i(int i1, int i2);
-  public static native void glVertexAttribPointer(int i1, int i2, int i3, int i4, int i5, int i6);
-  public static native void glViewport(int x,int y,int w,int h);
+  public void glActiveTexture(int i1);
+  public void glAlphaFunc(int i1, int i2);
+  public void glAttachShader(int i1, int i2);
+  public void glBindBuffer(int i1, int i2);
+  public void glBindFramebuffer(int i1, int i2);
+  public void glBindRenderbuffer(int i1, int i2);
+  public void glBindTexture(int i1, int i2);
+  public void glBlendFunc(int i1, int i2);
+  public void glBufferData(int i1, int i2, float[] i3, int i4);
+  public void glBufferData(int i1, int i2, short[] i3, int i4);
+  public void glBufferData(int i1, int i2, int[] i3, int i4);
+  public void glBufferData(int i1, int i2, byte[] i3, int i4);
+  public void glClear(int flags);
+  public void glClearColor(float r, float g, float b, float a);
+  public void glColorMask(boolean r, boolean g, boolean b, boolean a);
+  public void glClearStencil(int s);
+  public void glCompileShader(int id);
+  public int glCreateProgram();
+  public int glCreateShader(int type);
+  public void glCullFace(int id);
+  public void glDeleteBuffers(int i1, int[] i2);
+  public void glDeleteFramebuffers(int i1, int[] i2);
+  public void glDeleteRenderbuffers(int i1, int[] i2);
+  public void glDeleteTextures(int i1, int[] i2);
+  public void glDrawElements(int i1, int i2, int i3, int i4);
+  public void glDepthFunc(int i1);
+  public void glDisable(int id);
+  public void glDisableVertexAttribArray(int id);
+  public void glDepthMask(boolean state);
+  public void glEnable(int id);
+  public void glEnableVertexAttribArray(int id);
+  public void glFlush();
+  public void glFramebufferTexture2D(int i1, int i2, int i3, int i4, int i5);
+  public void glFramebufferRenderbuffer(int i1, int i2, int i3, int i4);
+  public void glFrontFace(int id);
+  public int glGetAttribLocation(int i1, String str);
+  public int glGetError();
+  public String glGetProgramInfoLog(int id);
+  public String glGetShaderInfoLog(int id);
+  public String glGetString(int type);
+  public void glGetIntegerv(int type, int[] i);
+  public void glGenBuffers(int i1, int[] i2);
+  public void glGenFramebuffers(int i1, int[] i2);
+  public void glGenRenderbuffers(int i1, int[] i2);
+  public void glGenTextures(int i1, int[] i2);
+  public int glGetUniformLocation(int i1, String str);
+  public void glLinkProgram(int id);
+  public void glPixelStorei(int i1, int i2);
+  public void glReadPixels(int i1, int i2, int i3, int i4, int i5, int i6, int[] px);
+  public void glRenderbufferStorage(int i1, int i2, int i3, int i4);
+  public int glShaderSource(int type, int count, String[] src, int[] src_lengths);
+  public int glStencilFunc(int func, int ref, int mask);
+  public int glStencilMask(int mask);
+  public int glStencilOp(int sfail, int dpfail, int dppass);
+  public void glTexImage2D(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int[] px);
+  public void glTexSubImage2D(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int[] px);
+  public void glTexParameteri(int i1, int i2, int i3);
+  public void glUseProgram(int id);
+  public void glUniformMatrix4fv(int i1, int i2, int i3, float[] m);
+  public void glUniform4fv(int i1, int i2, float[] f);
+  public void glUniform3fv(int i1, int i2, float[] f);
+  public void glUniform2fv(int i1, int i2, float[] f);
+  public void glUniform1f(int i1, float f);
+  public void glUniform4iv(int i1, int i2, int[] v);
+  public void glUniform3iv(int i1, int i2, int[] v);
+  public void glUniform2iv(int i1, int i2, int[] v);
+  public void glUniform1i(int i1, int i2);
+  public void glVertexAttribPointer(int i1, int i2, int i3, int i4, int i5, int i6);
+  public void glViewport(int x,int y,int w,int h);
 }

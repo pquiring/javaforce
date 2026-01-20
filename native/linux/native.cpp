@@ -29,7 +29,7 @@
 #include <jawt_md.h>
 
 #include "javaforce_jni_LnxNative.h"
-#include "javaforce_gl_GL.h"
+#include "javaforce_jni_GLJNI.h"
 #include "javaforce_media_Camera.h"
 #include "javaforce_media_MediaCoder.h"
 #include "javaforce_media_MediaDecoder.h"

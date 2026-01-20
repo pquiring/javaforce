@@ -42,7 +42,7 @@ public class GLCode {
   public void init() {
     scene.texturePath = "./";
 
-    System.out.println("GL Version=" + glGetString(GL.GL_VERSION));
+    System.out.println("GL Version=" + GL.getInstance().glGetString(GL.GL_VERSION));
     int glver[] = getVersion();
     if (glver[0] < 2) {
       JFAWT.showError("Error", "OpenGL Version < 2.0 : Detected : " + glver[0] + "." + glver[1]);
