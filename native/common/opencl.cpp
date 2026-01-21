@@ -298,8 +298,8 @@ static const char* KernelSource = "\n" \
 "}\n" \
 "\n";
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
-  (JNIEnv* e, jclass c, jstring jopencl)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_ninit
+  (JNIEnv* e, jobject o, jstring jopencl)
 {
   if (opencl_loaded) return opencl_loaded;
 
@@ -489,8 +489,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_ninit
   return JNI_TRUE;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
-  (JNIEnv *e, jclass o, jstring src, jint type)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_create
+  (JNIEnv *e, jobject o, jstring src, jint type)
 {
   int res, err;
   CLContext *ctx = (CLContext*)malloc(sizeof(CLContext));
@@ -587,8 +587,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreate
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_nkernel
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jstring kernel)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_kernel
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jstring kernel)
 {
   if (ctx_ptr == 0) return 0;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -610,7 +610,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_nkernel
   return kernel_ptr;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreateBuffer
+JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_createBuffer
   (JNIEnv *e, jobject o, jlong ctx_ptr, jint size, jint type)
 {
   if (ctx_ptr == 0) return 0;
@@ -621,8 +621,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_cl_CL_ncreateBuffer
   return (jlong)buffer;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nsetArg
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint idx, jbyteArray data)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_setArg
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint idx, jbyteArray data)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -642,8 +642,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nsetArg
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferi8
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jbyteArray data)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_writeBufferi8
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jbyteArray data)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -663,8 +663,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferi8
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferf32
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jfloatArray data)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_writeBufferf32
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jfloatArray data)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -684,8 +684,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nwriteBufferf32
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_execute
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -720,8 +720,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute2
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count1, jint count2)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_execute2
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count1, jint count2)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -760,8 +760,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute2
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute3
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_execute3
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -802,8 +802,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute3
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute4
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3, jint count4)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_execute4
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3, jint count4)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -846,8 +846,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nexecute4
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferi8
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jbyteArray data)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_readBufferi8
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jbyteArray data)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -867,8 +867,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferi8
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferf32
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer, jfloatArray data)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_readBufferf32
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jfloatArray data)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -888,8 +888,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nreadBufferf32
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeKernel
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong kernel)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_freeKernel
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -899,8 +899,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeKernel
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeBuffer
-  (JNIEnv *e, jclass o, jlong ctx_ptr, jlong buffer)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_freeBuffer
+  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -910,8 +910,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nfreeBuffer
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nclose
-  (JNIEnv *e, jclass o, jlong ctx_ptr)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_close
+  (JNIEnv *e, jobject o, jlong ctx_ptr)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -925,22 +925,22 @@ JNIEXPORT jboolean JNICALL Java_javaforce_cl_CL_nclose
 }
 
 static JNINativeMethod javaforce_cl_CL[] = {
-  {"ninit", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_cl_CL_ninit},
-  {"ncreate", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_cl_CL_ncreate},
-  {"nkernel", "(JLjava/lang/String;)J", (void *)&Java_javaforce_cl_CL_nkernel},
-  {"ncreateBuffer", "(JII)J", (void *)&Java_javaforce_cl_CL_ncreateBuffer},
-  {"nsetArg", "(JJI[B)Z", (void *)&Java_javaforce_cl_CL_nsetArg},
-  {"nwriteBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferi8},
-  {"nwriteBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nwriteBufferf32},
-  {"nexecute", "(JJI)Z", (void *)&Java_javaforce_cl_CL_nexecute},
-  {"nexecute2", "(JJII)Z", (void *)&Java_javaforce_cl_CL_nexecute2},
-  {"nexecute3", "(JJIII)Z", (void *)&Java_javaforce_cl_CL_nexecute3},
-  {"nexecute4", "(JJIIII)Z", (void *)&Java_javaforce_cl_CL_nexecute4},
-  {"nreadBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_cl_CL_nreadBufferi8},
-  {"nreadBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_cl_CL_nreadBufferf32},
-  {"nfreeKernel", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeKernel},
-  {"nfreeBuffer", "(JJ)Z", (void *)&Java_javaforce_cl_CL_nfreeBuffer},
-  {"nclose", "(J)Z", (void *)&Java_javaforce_cl_CL_nclose},
+  {"ninit", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_CLJNI_ninit},
+  {"create", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_CLJNI_create},
+  {"kernel", "(JLjava/lang/String;)J", (void *)&Java_javaforce_jni_CLJNI_kernel},
+  {"createBuffer", "(JII)J", (void *)&Java_javaforce_jni_CLJNI_createBuffer},
+  {"setArg", "(JJI[B)Z", (void *)&Java_javaforce_jni_CLJNI_setArg},
+  {"writeBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_jni_CLJNI_writeBufferi8},
+  {"writeBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_jni_CLJNI_writeBufferf32},
+  {"execute", "(JJI)Z", (void *)&Java_javaforce_jni_CLJNI_execute},
+  {"execute2", "(JJII)Z", (void *)&Java_javaforce_jni_CLJNI_execute2},
+  {"execute3", "(JJIII)Z", (void *)&Java_javaforce_jni_CLJNI_execute3},
+  {"execute4", "(JJIIII)Z", (void *)&Java_javaforce_jni_CLJNI_execute4},
+  {"readBufferi8", "(JJ[B)Z", (void *)&Java_javaforce_jni_CLJNI_readBufferi8},
+  {"readBufferf32", "(JJ[F)Z", (void *)&Java_javaforce_jni_CLJNI_readBufferf32},
+  {"freeKernel", "(JJ)Z", (void *)&Java_javaforce_jni_CLJNI_freeKernel},
+  {"freeBuffer", "(JJ)Z", (void *)&Java_javaforce_jni_CLJNI_freeBuffer},
+  {"close", "(J)Z", (void *)&Java_javaforce_jni_CLJNI_close},
 };
 
 extern "C" void cl_register(JNIEnv *env);
@@ -948,6 +948,6 @@ extern "C" void cl_register(JNIEnv *env);
 void cl_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/cl/CL");
+  cls = findClass(env, "javaforce/jni/CLJNI");
   registerNatives(env, cls, javaforce_cl_CL, sizeof(javaforce_cl_CL)/sizeof(JNINativeMethod));
 }

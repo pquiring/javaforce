@@ -38,7 +38,7 @@
 #include "javaforce_ui_Image.h"
 #include "javaforce_ui_Window.h"
 #include "javaforce_net_PacketCapture.h"
-#include "javaforce_cl_CL.h"
+#include "javaforce_jni_CLJNI.h"
 
 /* Global variables */
 HKEY key, subkey;

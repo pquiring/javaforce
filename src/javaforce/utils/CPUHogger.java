@@ -205,10 +205,6 @@ public class CPUHogger extends javax.swing.JFrame {
     }
   }
 
-  private static Object cl_lock = new Object();
-  private static boolean cl_init;
-  private static boolean cl_fail;
-
   private class GPU extends Thread {
     public int id;
     public GPU(int id, int matrix_size) {
@@ -217,20 +213,6 @@ public class CPUHogger extends javax.swing.JFrame {
       SIZE_SIZE = SIZE * SIZE;
     }
     public void run() {
-      synchronized (cl_lock) {
-        if (cl_fail) return;
-        if (!cl_init) {
-          if (!CL.init()) {
-            cl_fail = true;
-            if (running) {
-              startTest();
-            }
-            JFAWT.showError("Error", "OpenCL init failed");
-            return;
-          }
-          cl_init = true;
-        }
-      }
       load();
       while (running) {
         test();

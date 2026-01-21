@@ -11,12 +11,15 @@ import javaforce.*;
 
 public class Compute {
   private CL cl;
+  private long ctx;
   private long k_array_square;
   private long k_array_mult;
   private long k_matrix_mult;
   public boolean init(int type) {
     uninit();
-    cl = CL.create(
+    cl = CL.getInstance();
+    if (cl == null) return false;
+    ctx = cl.create(
       "kernel void array_square(global float* input, global float* output)" +
       "  {" +
       "    int i = get_global_id(0);" +
@@ -38,17 +41,17 @@ public class Compute {
       "    C[globalCol*M + globalRow] = acc;" +  //store result
       "  }\n"
       , type);
-    k_array_square = cl.kernel("array_square");
-    k_array_mult = cl.kernel("array_mult");
-    k_matrix_mult = cl.kernel("matrix_mult");
+    k_array_square = cl.kernel(ctx, "array_square");
+    k_array_mult = cl.kernel(ctx, "array_mult");
+    k_matrix_mult = cl.kernel(ctx, "matrix_mult");
     return true;
   }
   public void uninit() {
     if (cl != null) {
-      cl.freeKernel(k_array_square);
-      cl.freeKernel(k_array_mult);
-      cl.freeKernel(k_matrix_mult);
-      cl.close();
+      cl.freeKernel(ctx, k_array_square);
+      cl.freeKernel(ctx, k_array_mult);
+      cl.freeKernel(ctx, k_matrix_mult);
+      cl.close(ctx);
       cl = null;
     }
   }
@@ -73,16 +76,16 @@ public class Compute {
       JFLog.log("Compute:array_square:b invalid");
       return false;
     }
-    long input0 = cl.createWriteBuffer(Float.BYTES * size);
-    long output = cl.createReadBuffer(Float.BYTES * size);
+    long input0 = cl.createWriteBuffer(ctx, Float.BYTES * size);
+    long output = cl.createReadBuffer(ctx, Float.BYTES * size);
     boolean ret;
-    cl.writeBuffer(input0, a);
-    cl.setArg(k_array_square, 0, input0);
-    cl.setArg(k_array_square, 1, output);
-    ret = cl.execute(k_array_square, size);
-    cl.readBuffer(output, b);
-    cl.freeBuffer(input0);
-    cl.freeBuffer(output);
+    cl.writeBuffer(ctx, input0, a);
+    cl.setArg(ctx, k_array_square, 0, input0);
+    cl.setArg(ctx, k_array_square, 1, output);
+    ret = cl.execute(ctx, k_array_square, size);
+    cl.readBuffer(ctx, output, b);
+    cl.freeBuffer(ctx, input0);
+    cl.freeBuffer(ctx, output);
     return ret;
   }
 
@@ -111,20 +114,20 @@ public class Compute {
       JFLog.log("Compute:array_mult:c invalid");
       return false;
     }
-    long input0 = cl.createWriteBuffer(Float.BYTES * size);
-    long input1 = cl.createWriteBuffer(Float.BYTES * size);
-    long output = cl.createReadBuffer(Float.BYTES * size);
+    long input0 = cl.createWriteBuffer(ctx, Float.BYTES * size);
+    long input1 = cl.createWriteBuffer(ctx, Float.BYTES * size);
+    long output = cl.createReadBuffer(ctx, Float.BYTES * size);
     boolean ret;
-    cl.writeBuffer(input0, a);
-    cl.writeBuffer(input1, b);
-    cl.setArg(k_array_mult, 0, input0);
-    cl.setArg(k_array_mult, 1, input1);
-    cl.setArg(k_array_mult, 2, output);
-    ret = cl.execute(k_array_mult, size);
-    cl.readBuffer(output, c);
-    cl.freeBuffer(input0);
-    cl.freeBuffer(input1);
-    cl.freeBuffer(output);
+    cl.writeBuffer(ctx, input0, a);
+    cl.writeBuffer(ctx, input1, b);
+    cl.setArg(ctx, k_array_mult, 0, input0);
+    cl.setArg(ctx, k_array_mult, 1, input1);
+    cl.setArg(ctx, k_array_mult, 2, output);
+    ret = cl.execute(ctx, k_array_mult, size);
+    cl.readBuffer(ctx, output, c);
+    cl.freeBuffer(ctx, input0);
+    cl.freeBuffer(ctx, input1);
+    cl.freeBuffer(ctx, output);
     return ret;
   }
 
@@ -166,23 +169,23 @@ public class Compute {
       JFLog.log("Compute:matrix_mult:c invalid");
       return false;
     }
-    long input0 = cl.createWriteBuffer(Float.BYTES * a_size);
-    long input1 = cl.createWriteBuffer(Float.BYTES * b_size);
-    long output = cl.createReadBuffer(Float.BYTES * c_size);
+    long input0 = cl.createWriteBuffer(ctx, Float.BYTES * a_size);
+    long input1 = cl.createWriteBuffer(ctx, Float.BYTES * b_size);
+    long output = cl.createReadBuffer(ctx, Float.BYTES * c_size);
     boolean ret;
-    cl.writeBuffer(input0, a);
-    cl.writeBuffer(input1, b);
-    cl.setArg(k_matrix_mult, 0, as);  //M
-    cl.setArg(k_matrix_mult, 1, bs);  //N
-    cl.setArg(k_matrix_mult, 2, ks);  //K
-    cl.setArg(k_matrix_mult, 3, input0);  //A
-    cl.setArg(k_matrix_mult, 4, input1);  //B
-    cl.setArg(k_matrix_mult, 5, output);  //C
-    ret = cl.execute2(k_matrix_mult, as, bs);
-    cl.readBuffer(output, c);
-    cl.freeBuffer(input0);
-    cl.freeBuffer(input1);
-    cl.freeBuffer(output);
+    cl.writeBuffer(ctx, input0, a);
+    cl.writeBuffer(ctx, input1, b);
+    cl.setArg(ctx, k_matrix_mult, 0, as);  //M
+    cl.setArg(ctx, k_matrix_mult, 1, bs);  //N
+    cl.setArg(ctx, k_matrix_mult, 2, ks);  //K
+    cl.setArg(ctx, k_matrix_mult, 3, input0);  //A
+    cl.setArg(ctx, k_matrix_mult, 4, input1);  //B
+    cl.setArg(ctx, k_matrix_mult, 5, output);  //C
+    ret = cl.execute2(ctx, k_matrix_mult, as, bs);
+    cl.readBuffer(ctx, output, c);
+    cl.freeBuffer(ctx, input0);
+    cl.freeBuffer(ctx, input1);
+    cl.freeBuffer(ctx, output);
     return ret;
   }
 }
