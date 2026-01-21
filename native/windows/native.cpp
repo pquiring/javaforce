@@ -26,7 +26,7 @@
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"
 #include "javaforce_ui_Window.h"
-#include "javaforce_net_PacketCapture.h"
+#include "javaforce_jni_PCapJNI.h"
 #include "javaforce_jni_CLJNI.h"
 
 #include "../common/library.h"

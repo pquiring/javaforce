@@ -39,7 +39,7 @@
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_media_VideoBuffer.h"
-#include "javaforce_net_PacketCapture.h"
+#include "javaforce_jni_PCapJNI.h"
 #include "javaforce_jni_CLJNI.h"
 
 /* Global variables */

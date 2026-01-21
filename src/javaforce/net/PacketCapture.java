@@ -12,7 +12,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jni.*;
 
-public class PacketCapture {
+public interface PacketCapture {
 
   public static boolean debug = false;
 
@@ -20,47 +20,19 @@ public class PacketCapture {
   public static int TYPE_ARP = 0x0806;
   public static int TYPE_IP6 = 0x86dd;
 
-  public static native boolean ninit(String lib1, String lib2);
-
-  /** Load native libraries. */
-  public static boolean init() {
-    if (JF.isWindows()) {
-      String windir = System.getenv("windir").replaceAll("\\\\", "/");
-      {
-        //npcap
-        String dll1 = windir + "/system32/npcap/packet.dll";
-        String dll2 = windir + "/system32/npcap/wpcap.dll";
-        if (new File(dll1).exists() && new File(dll2).exists()) {
-          return ninit(dll1, dll2);
-        }
-      }
-      {
-        //pcap
-        String dll1 = windir + "/system32/packet.dll";
-        String dll2 = windir + "/system32/wpcap.dll";
-        if (new File(dll1).exists() && new File(dll2).exists()) {
-          return ninit(dll1, dll2);
-        }
-      }
-      return false;
-    }
-    if (JF.isUnix()) {
-      Library so = new Library("pcap");
-      JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
-      return ninit(null, so.path);
-    }
-    return false;
+  public static PacketCapture getInstance() {
+    return PCapJNI.getInstance();
   }
 
   /** List local interfaces.
    * Return is array of strings, each is comma delimited list.
    * DeviceName,IP/MAC,IP/MAC,...
    */
-  public static native String[] listLocalInterfaces();
+  public String[] listLocalInterfaces();
 
   /** Find interface that contains IP address. */
-  public String findInterface(String ip) {
-    String[] ifs = listLocalInterfaces();
+  public static String findInterface(String ip) {
+    String[] ifs = getInstance().listLocalInterfaces();
     if (debug) {
       JFLog.log("local interfaces:" + ifs.length + " found");
     }
@@ -78,34 +50,27 @@ public class PacketCapture {
     return null;
   }
 
-  private static native long nstart(String local_interface, boolean nonblocking);
-
-  private byte[] local_mac;
-  private byte[] local_ip;
-
   /** Start process on local interface. */
-  public long start(String local_interface, String local_ip, boolean nonblocking) {
-    this.local_ip = decode_ip(local_ip);
-    this.local_mac = get_mac(local_ip);
-    return nstart(local_interface, nonblocking);
-  }
+  public long start(String local_interface, String local_ip, boolean nonblocking);
 
   /** Start process on local interface with blocking mode enabled. */
-  public long start(String local_interface, String local_ip) {
-    return start(local_interface, local_ip, true);
-  }
+  public long start(String local_interface, String local_ip);
 
   /** Stop processing. */
-  public static native void stop(long id);
+  public void stop(long id);
 
   /** Compile program. */
-  public static native boolean compile(long handle, String program);
+  public boolean compile(long handle, String program);
 
   /** Read packet. */
-  public static native byte[] read(long handle);
+  public byte[] read(long handle);
 
   /** Write packet. */
-  public static native boolean write(long handle, byte[] packet, int offset, int length);
+  public boolean write(long handle, byte[] packet, int offset, int length);
+
+  public byte[] get_local_ip();
+
+  public byte[] get_local_mac();
 
   public static void print_mac(byte[] mac) {
     if (mac == null) {
@@ -119,7 +84,7 @@ public class PacketCapture {
     JFLog.log("");
   }
 
-  public byte[] get_mac(String ip) {
+  public static byte[] get_mac(String ip) {
     try {
       Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
       while (nics.hasMoreElements()) {
@@ -203,7 +168,7 @@ public class PacketCapture {
   }
 
   /** Build ethernet header. (14 bytes) */
-  public void build_ethernet(byte[] pkt, byte[] dest, byte[] src, int type) {
+  public static void build_ethernet(byte[] pkt, byte[] dest, byte[] src, int type) {
     //dest MAC (6)
     //src  MAC (6)
     //type (2)
@@ -215,7 +180,7 @@ public class PacketCapture {
 
   public static int ethernet_size = 14;
 
-  public int get_ethernet_type(byte[] pkt) {
+  public static int get_ethernet_type(byte[] pkt) {
     return BE.getuint16(pkt, 12);
   }
 
@@ -229,7 +194,7 @@ public class PacketCapture {
   public static int ARP_REPLY = 0x0002;
 
   /** Build ARP header. (28 bytes) */
-  public void build_arp(byte[] pkt, byte[] src_mac, byte[] src_ip, byte[] request_ip) {
+  public static void build_arp(byte[] pkt, byte[] src_mac, byte[] src_ip, byte[] request_ip) {
     //hw_type (2) = 0x0001
     //proto   (2) = 0x0800 (IP4)
     //hw_size (1) = 6
@@ -253,11 +218,11 @@ public class PacketCapture {
 
   public static int arp_size = 28;
 
-  public int get_arp_opcode(byte[] pkt) {
+  public static int get_arp_opcode(byte[] pkt) {
     return BE.getuint16(pkt, ethernet_size + 6);
   }
 
-  public boolean arp_ip_equals(byte[] pkt, byte[] ip) {
+  public static boolean arp_ip_equals(byte[] pkt, byte[] ip) {
     int pkt_offset = ethernet_size + arp_size - 14;
     for(int a=0;a<ip.length;a++) {
       if (pkt[pkt_offset++] != ip[a]) return false;
@@ -265,7 +230,7 @@ public class PacketCapture {
     return true;
   }
 
-  public byte[] get_arp_mac(byte[] pkt) {
+  public static byte[] get_arp_mac(byte[] pkt) {
     int pkt_offset = ethernet_size + arp_size - 20;  //src_mac
     byte[] ret = new byte[6];
     System.arraycopy(pkt, pkt_offset, ret, 0, 6);
@@ -273,19 +238,20 @@ public class PacketCapture {
   }
 
   /** Returns MAC address for IP address. */
-  public byte[] arp(long handle, String target_ip, int ms) {
+  public static byte[] arp(long handle, String target_ip, int ms) {
+    PacketCapture pcap = getInstance();
     //padding (packet must not be < 52 bytes)
     if (debug) {
       JFLog.log("arp.timeout=" + ms);
     }
     byte[] ip = decode_ip(target_ip);
     byte[] pkt = new byte[ethernet_size + arp_size + 18];  //18 = padding
-    build_ethernet(pkt, mac_broadcast, local_mac, TYPE_ARP);
-    build_arp(pkt, local_mac, local_ip, ip);
+    build_ethernet(pkt, mac_broadcast, pcap.get_local_mac(), TYPE_ARP);
+    build_arp(pkt, pcap.get_local_mac(), pcap.get_local_ip(), ip);
     if (debug) {
       JFLog.log("arp.write()");
     }
-    write(handle, pkt, 0, pkt.length);
+    pcap.write(handle, pkt, 0, pkt.length);
     int time = 0;
     int pkt_length = ethernet_size + arp_size;  //min size
     while (time < ms) {
@@ -293,7 +259,7 @@ public class PacketCapture {
         if (debug) {
           JFLog.log("arp.read()");
         }
-        pkt = read(handle);
+        pkt = pcap.read(handle);
         if (debug) {
           JFLog.log("arp.pkt=" + pkt);
         }
@@ -313,93 +279,5 @@ public class PacketCapture {
       time += 100;
     }
     return null;
-  }
-
-  private static String nic_ip = null;
-  private static String timeout = "2000";
-
-  private static void parse_opts(String[] args) {
-    for(int a=0;a<args.length;a++) {
-      if (args[a].startsWith("-")) {
-        switch (args[a]) {
-          case "-i":
-            nic_ip = args[a+1];
-            break;
-          case "-t":
-            timeout = args[a+1];
-            break;
-        }
-      }
-    }
-  }
-
-  public static void main(String[] args) {
-    if (args.length == 0) {
-      JFLog.log("Usage : PacketCapture cmd [...] [opts]");
-      JFLog.log("  cmd : list");
-      JFLog.log("      : arp {ip}");
-      JFLog.log(" opts : -i interface_ip");
-      JFLog.log("      : -t timeout");
-      return;
-    }
-    if (!init()) {
-      JFLog.log("init failed");
-      return;
-    }
-    try {
-      switch (args[0]) {
-        case "list":
-          cmd_list();
-          break;
-        case "arp":
-          parse_opts(args);
-          cmd_arp(args[1]);
-          break;
-        default:
-          JFLog.log("Unknown cmd:" + args[0]);
-          break;
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static void cmd_list() {
-    PacketCapture cap = new PacketCapture();
-    String[] ifs = cap.listLocalInterfaces();
-    for(int a=0;a<ifs.length;a++) {
-      JFLog.log(ifs[a]);
-    }
-  }
-
-  public static void cmd_arp(String ip) {
-    PacketCapture cap = new PacketCapture();
-    String[] nics = cap.listLocalInterfaces();
-    int nicidx = 0;
-    if (nic_ip != null) {
-      nicidx = -1;
-      for(int a=0;a<nics.length;a++) {
-        String sif = nics[a];
-        String[] pif = sif.split(",");
-        for(int b=1;b<pif.length;b++) {
-          if (pif[b].equals(nic_ip)) {
-            nicidx = a;
-            break;
-          }
-        }
-      }
-    }
-    if (nicidx == -1) {
-      JFLog.log("Interface not found for IP:" + nic_ip);
-      return;
-    }
-    String sif = nics[nicidx];
-    String[] pif = sif.split(",");
-    long id = cap.start(pif[0], pif[1]);
-    cap.compile(id, "arp");
-    byte[] mac = cap.arp(id, ip, Integer.valueOf(timeout));
-    cap.stop(id);
-    System.out.print("MAC=");
-    print_mac(mac);
   }
 }

@@ -76,8 +76,8 @@ int (*pcap_setnonblock)(pcap_t *p, int nonblock, char *errbuf);
 
 #define PCAP_ERRBUF_SIZE 256
 
-JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
-  (JNIEnv *e, jclass cls, jstring lib1, jstring lib2)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_ninit
+  (JNIEnv *e, jobject obj, jstring lib1, jstring lib2)
 {
   char err[PCAP_ERRBUF_SIZE];
 
@@ -137,8 +137,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
 
 #define UP_RUNNING (PCAP_IF_UP | PCAP_IF_RUNNING | PCAP_IF_CONNECTION_STATUS_CONNECTED)
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfaces
-  (JNIEnv *e, jclass obj)
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_listLocalInterfaces
+  (JNIEnv *e, jobject obj)
 {
   char err[PCAP_ERRBUF_SIZE];
   int list_count = 0;
@@ -195,8 +195,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfa
   return array;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
-  (JNIEnv *e, jclass obj, jstring dev, jboolean nonblocking)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_PCapJNI_nstart
+  (JNIEnv *e, jobject obj, jstring dev, jboolean nonblocking)
 {
   if (library == NULL) return 0;
   char err[PCAP_ERRBUF_SIZE];
@@ -221,8 +221,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
   return handle;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_net_PacketCapture_stop
-  (JNIEnv *e, jclass obj, jlong handle)
+JNIEXPORT void JNICALL Java_javaforce_jni_PCapJNI_stop
+  (JNIEnv *e, jobject obj, jlong handle)
 {
   if (library == NULL) return;
   (*pcap_close)((pcap_t*)handle);
@@ -230,8 +230,8 @@ JNIEXPORT void JNICALL Java_javaforce_net_PacketCapture_stop
 
 struct bpf_program cap_program;
 
-JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_compile
-  (JNIEnv *e, jclass obj, jlong handle, jstring program)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_compile
+  (JNIEnv *e, jobject obj, jlong handle, jstring program)
 {
   const char *cprogram = e->GetStringUTFChars(program, NULL);
 
@@ -258,8 +258,8 @@ static void cap_callback(struct user_pkt_t *user_pkt, const struct pcap_pkthdr *
   user_pkt->bytes = (jbyte*)bytes;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_net_PacketCapture_read
-  (JNIEnv *e, jclass obj, jlong handle)
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_read
+  (JNIEnv *e, jobject obj, jlong handle)
 {
   struct user_pkt_t user_pkt;
   user_pkt.size = 0;
@@ -277,8 +277,8 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_net_PacketCapture_read
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_write
-  (JNIEnv *e, jclass obj, jlong handle, jbyteArray ba, jint offset, jint length)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_write
+  (JNIEnv *e, jobject obj, jlong handle, jbyteArray ba, jint offset, jint length)
 {
   if (ba == NULL) return JNI_FALSE;
   jboolean isCopy;
@@ -296,13 +296,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_write
 }
 
 static JNINativeMethod javaforce_net_PacketCapture[] = {
-  {"ninit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_ninit},
-  {"listLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_net_PacketCapture_listLocalInterfaces},
-  {"nstart", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_net_PacketCapture_nstart},
-  {"stop", "(J)V", (void *)&Java_javaforce_net_PacketCapture_stop},
-  {"compile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_compile},
-  {"read", "(J)[B", (void *)&Java_javaforce_net_PacketCapture_read},
-  {"write", "(J[BII)Z", (void *)&Java_javaforce_net_PacketCapture_write},
+  {"ninit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_ninit},
+  {"listLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_PCapJNI_listLocalInterfaces},
+  {"nstart", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_PCapJNI_nstart},
+  {"stop", "(J)V", (void *)&Java_javaforce_jni_PCapJNI_stop},
+  {"compile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_compile},
+  {"read", "(J)[B", (void *)&Java_javaforce_jni_PCapJNI_read},
+  {"write", "(J[BII)Z", (void *)&Java_javaforce_jni_PCapJNI_write},
 };
 
 extern "C" void pcap_register(JNIEnv *env);
@@ -310,6 +310,6 @@ extern "C" void pcap_register(JNIEnv *env);
 void pcap_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/net/PacketCapture");
+  cls = findClass(env, "javaforce/jni/PCapJNI");
   registerNatives(env, cls, javaforce_net_PacketCapture, sizeof(javaforce_net_PacketCapture)/sizeof(JNINativeMethod));
 }
