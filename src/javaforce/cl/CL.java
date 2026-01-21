@@ -18,18 +18,26 @@ public interface CL {
     return CLJNI.getInstance();
   }
 
-  /** Create OpenGL Context.
+  /** Create OpenGL Context with source code.
    * close() context to release it.
+   *
+   * @param src = OpenCL source code
+   * @param type = TYPE_...
    */
   public long create(String src, int type);
 
   /** Create OpenGL Context (type = TYPE_DEFAULT).
    * close() context to release it.
+   *
+   * @param src = OpenCL source code
    */
   public long create(String src);
 
-  /** Create OpenGL Kernel from source code.
+  /** Create OpenGL Kernel.
    * freeKernel() to release it.
+   *
+   * @param ctx = OpenCL Context
+   * @param func = function name
    */
   public long kernel(long ctx, String func);
 
