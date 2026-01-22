@@ -318,17 +318,17 @@ public class RTPChannel {
             JFLog.log(log, "codec = g729a");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX)) {
-            coder = new speex(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+            coder = speex.getInstance().setup(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX16)) {
-            coder = new speex(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+            coder = speex.getInstance().setup(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex16");
             break;
           } else if (codec.equals(RTP.CODEC_SPEEX32)) {
-            coder = new speex(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+            coder = speex.getInstance().setup(rtp, codec.rate).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
             coder.setid(codec.id);
             JFLog.log(log, "codec = speex32");
             break;
@@ -440,17 +440,17 @@ public class RTPChannel {
         JFLog.log(log, "codec = g729a");
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX)) {
         Codec codec = new_stream.getCodec(RTP.CODEC_SPEEX);
-        coder = new speex(rtp, 8000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+        coder = speex.getInstance().setup(rtp, 8000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
         coder.setid(codec.id);
         JFLog.log(log, "codec = speex");
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX16)) {
         Codec codec = new_stream.getCodec(RTP.CODEC_SPEEX16);
-        coder = new speex(rtp, 16000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+        coder = speex.getInstance().setup(rtp, 16000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
         coder.setid(codec.id);
         JFLog.log(log, "codec = speex16");
       } else if (new_stream.hasCodec(RTP.CODEC_SPEEX32)) {
         Codec codec = new_stream.getCodec(RTP.CODEC_SPEEX32);
-        coder = new speex(rtp, 32000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
+        coder = speex.getInstance().setup(rtp, 32000).setQuality(speex_quality).setEnhancedMode(speex_enhanced_decoder);
         coder.setid(codec.id);
         JFLog.log(log, "codec = speex32");
       } else if (new_stream.hasCodec(RTP.CODEC_OPUS)) {

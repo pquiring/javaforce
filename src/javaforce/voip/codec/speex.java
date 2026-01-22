@@ -5,6 +5,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.codec.speex.*;
 import javaforce.voip.*;
+import javaforce.jni.*;
 
 /**
  * Encodes/decodes speex packets.
@@ -13,7 +14,16 @@ import javaforce.voip.*;
  *
  */
 
-public class speex implements RTPAudioCoder {
+public abstract class speex implements RTPAudioCoder {
+
+  public abstract long init(int sample_rate, int echo_buffers);
+  public abstract void uninit(long ctx);
+  public abstract void denoise(long ctx, short[] audio);
+  public abstract void echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
+
+  public static speex getInstance() {
+    return new SpeexJNI();
+  }
 
   private static boolean debug = false;
 
@@ -28,7 +38,7 @@ public class speex implements RTPAudioCoder {
   private int rate;
   private int nsamples;
 
-  public speex(RTP rtp, int rate) {
+  public speex setup(RTP rtp, int rate) {
     this.rtp = rtp;
     this.rate = rate;
     switch (rate) {
@@ -49,6 +59,7 @@ public class speex implements RTPAudioCoder {
     decoder.init(mode, rate, 1, enhanced);
     encoded = new byte[12];
     decoded = new short[nsamples];
+    return this;
   }
 
   public void setid(int id) {
@@ -133,7 +144,8 @@ public class speex implements RTPAudioCoder {
       sdp.setIP("1.2.3.4");
       SDP.Stream stream = sdp.addStream(SDP.Type.audio);
       rtp.createChannel(stream);
-      speex sx = new speex(rtp, rate);
+      speex sx = speex.getInstance();
+      sx.setup(rtp, rate);
       short[] samples = new short[sx.nsamples];
       Random r = new Random();
       for(int a=0;a<sx.nsamples;a++) {
@@ -150,8 +162,6 @@ public class speex implements RTPAudioCoder {
 
   //these are some Speex optional digital signal processing (DSP) functions
 
-  private native static long speexdspinit(int sample_rate, int echo_buffers);
-
   /** Allocate speex DSP context.
    * Audio buffers should be 160 samples.
    * NOTE : speex SDP functions do NOT require the use of speex codec.
@@ -159,8 +169,8 @@ public class speex implements RTPAudioCoder {
    *  @param sample_rate = sample rate
    *  @return ctx
    */
-  public static long speex_dsp_init(int sample_rate) {
-    return speexdspinit(sample_rate, -1);
+  public long speex_dsp_init(int sample_rate) {
+    return init(sample_rate, -1);
   }
 
   /** Allocate speex DSP context.
@@ -171,38 +181,35 @@ public class speex implements RTPAudioCoder {
    *  @param echo_buffers = # of buffers to allocate for echo cancellation (-1=default of 10)
    *  @return ctx
    */
-  public static long speex_dsp_init(int sample_rate, int echo_buffers) {
-    return speexdspinit(sample_rate, echo_buffers);
+  public long speex_dsp_init(int sample_rate, int echo_buffers) {
+    return init(sample_rate, echo_buffers);
   }
 
-  public native static void speexdspuninit(long ctx);
   /** Free speex DSP context
    *
    * @param ctx = speex context
    */
-  public static void speex_dsp_uninit(long ctx) {
-    speexdspuninit(ctx);
+  public void speex_dsp_uninit(long ctx) {
+    uninit(ctx);
   }
 
-  public native static void speexdspdenoise(long ctx, short[] audio);
   /** Performs denoise function.
    *
    * @param ctx = speex context
    * @param audio = audio samples
    */
-  public static void speex_dsp_denoise(long ctx, short[] audio) {
-    speexdspdenoise(ctx, audio);
+  public void speex_dsp_denoise(long ctx, short[] audio) {
+    denoise(ctx, audio);
   }
 
-  public native static void speexdspecho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
   /** Performs echo cancellation.
    *
    * @param ctx = speex context
    * @param audio_out = outbound audio (not modified)
    * @param audio_mic = mic audio (modified)
    */
-  public static void speex_dsp_echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out) {
-    speexdspecho(ctx, audio_mic, audio_spk, audio_out);
+  public void speex_dsp_echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out) {
+    echo(ctx, audio_mic, audio_spk, audio_out);
   }
 
   private static void noise(short[] audio) {
@@ -230,18 +237,20 @@ public class speex implements RTPAudioCoder {
     noise(mic);
     noise(spk);
 
-    long ctx = speex_dsp_init(8000, -1);
+    speex sx = speex.getInstance();
+
+    long ctx = sx.speex_dsp_init(8000, -1);
 
     JFLog.log("spk.avg=" + avg(spk));
 
     JFLog.log("mic.avg=" + avg(mic));
-    speex_dsp_denoise(ctx, mic);
+    sx.speex_dsp_denoise(ctx, mic);
     JFLog.log("mic.avg=" + avg(mic));
 
-    speex_dsp_echo(ctx, mic, spk, out);
+    sx.speex_dsp_echo(ctx, mic, spk, out);
     JFLog.log("out.avg=" + avg(out));
 
-    speex_dsp_uninit(ctx);
+    sx.speex_dsp_uninit(ctx);
   }
 
   public static void main(String[] args) {
