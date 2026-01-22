@@ -12,45 +12,40 @@ public class Camera {
   private long ctx = 0;
   private int[] mirror;
   private int[] flip;
+  private CameraAPI api;
 
-  private native long cameraInit();
-  private native boolean cameraUninit(long ctx);
-  private native String[] cameraListDevices(long ctx);
-  private native String[] cameraListModes(long ctx, int deviceIdx);
-  private native boolean cameraStart(long ctx, int deviceIdx, int width, int height);
-  private native boolean cameraStop(long ctx);
-  private native int[] cameraGetFrame(long ctx);
-  private native int cameraGetWidth(long ctx);
-  private native int cameraGetHeight(long ctx);
+  public Camera() {
+    api = CameraAPI.getInstance();
+  }
 
   public boolean init() {
-    ctx = cameraInit();
+    ctx = api.cameraInit();
     return ctx != 0;
   }
 
   public boolean uninit() {
-    return cameraUninit(ctx);
+    return api.cameraUninit(ctx);
   }
 
   public String[] listDevices() {
-    return cameraListDevices(ctx);
+    return api.cameraListDevices(ctx);
   }
 
   public String[] listModes(int deviceIdx) {
-    return cameraListModes(ctx, deviceIdx);
+    return api.cameraListModes(ctx, deviceIdx);
   }
 
   public boolean start(int deviceIdx, int width, int height) {
-    return cameraStart(ctx, deviceIdx, width, height);
+    return api.cameraStart(ctx, deviceIdx, width, height);
   }
 
   public boolean stop() {
-    return cameraStop(ctx);
+    return api.cameraStop(ctx);
   }
 
   /** Get next image. */
   public int[] getFrame() {
-    return cameraGetFrame(ctx);
+    return api.cameraGetFrame(ctx);
   }
 
   /** Mirror horizontally. */
@@ -74,7 +69,7 @@ public class Camera {
 
   /** Get next image and mirror horizontally. */
   public int[] getFrameMirror() {
-    int[] px = cameraGetFrame(ctx);
+    int[] px = api.cameraGetFrame(ctx);
     if (px == null) return null;
     return mirror(px);
   }
@@ -99,14 +94,14 @@ public class Camera {
 
   /** Get next image and flip vertically. */
   public int[] getFrameFlip() {
-    int[] px = cameraGetFrame(ctx);
+    int[] px = api.cameraGetFrame(ctx);
     if (px == null) return null;
     return flip(px);
   }
 
   /** Get next image and mirror horizontally and flip vertically. */
   public int[] getFrameMirrorAndFlip() {
-    int[] px = cameraGetFrame(ctx);
+    int[] px = api.cameraGetFrame(ctx);
     if (px == null) return null;
     px = mirror(px);
     px = flip(px);
@@ -114,10 +109,10 @@ public class Camera {
   }
 
   public int getWidth() {
-    return cameraGetWidth(ctx);
+    return api.cameraGetWidth(ctx);
   }
 
   public int getHeight() {
-    return cameraGetHeight(ctx);
+    return api.cameraGetHeight(ctx);
   }
 }

@@ -118,7 +118,7 @@ static void cameraReleaseAll(JNIEnv *e, CamContext *ctx) {
   }
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_Camera_cameraInit
+JNIEXPORT jlong JNICALL Java_javaforce_jni_CameraJNI_cameraInit
   (JNIEnv *e, jobject c)
 {
   printf("CameraInit\n");
@@ -144,7 +144,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_Camera_cameraInit
   return (jlong)ctx;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraUninit
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CameraJNI_cameraUninit
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   printf("CameraUninit\n");
@@ -164,7 +164,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraUninit
   return JNI_TRUE;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_CameraJNI_cameraListDevices
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   printf("CameraListDevices\n");
@@ -237,7 +237,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
   return strs;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListModes
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_CameraJNI_cameraListModes
   (JNIEnv *e, jobject c, jlong ctxptr, jint deviceIdx)
 {
   printf("CameraListModes\n");
@@ -248,8 +248,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListModes
   if (deviceIdx < 0 || deviceIdx >= ctx->cameraDeviceCount) return NULL;
 
   ctx->listModes = JNI_TRUE;
-  Java_javaforce_media_Camera_cameraStart(e,c,ctxptr,deviceIdx,-1,-1);
-  Java_javaforce_media_Camera_cameraStop(e,c,ctxptr);
+  Java_javaforce_jni_CameraJNI_cameraStart(e,c,ctxptr,deviceIdx,-1,-1);
+  Java_javaforce_jni_CameraJNI_cameraStop(e,c,ctxptr);
   ctx->listModes = JNI_FALSE;
 
   jclass strcls = e->FindClass("java/lang/String");
@@ -277,7 +277,7 @@ static void FreeMediaType(AM_MEDIA_TYPE *mt)
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CameraJNI_cameraStart
   (JNIEnv *e, jobject c, jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight)
 {
   printf("CameraStart:deviceIdx=%d\n", deviceIdx);
@@ -482,7 +482,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStop
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_CameraJNI_cameraStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   printf("CameraStop\n");
@@ -494,7 +494,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStop
   return JNI_TRUE;
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_CameraJNI_cameraGetFrame
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
 //  printf("CameraGetFrame\n");
@@ -544,7 +544,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
   return ctx->jpx;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetWidth
+JNIEXPORT jint JNICALL Java_javaforce_jni_CameraJNI_cameraGetWidth
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   CamContext* ctx = (CamContext*)ctxptr;
@@ -552,7 +552,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetWidth
   return ctx->width;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
+JNIEXPORT jint JNICALL Java_javaforce_jni_CameraJNI_cameraGetHeight
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   CamContext* ctx = (CamContext*)ctxptr;

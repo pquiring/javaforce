@@ -31,7 +31,7 @@
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_LnxNative.h"
-#include "javaforce_media_Camera.h"
+#include "javaforce_jni_CameraJNI.h"
 #include "javaforce_media_MediaCoder.h"
 #include "javaforce_media_MediaDecoder.h"
 #include "javaforce_media_MediaEncoder.h"

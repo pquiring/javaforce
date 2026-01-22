@@ -17,7 +17,7 @@
 #include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_jni_GLJNI.h"
-#include "javaforce_media_Camera.h"
+#include "javaforce_jni_CameraJNI.h"
 #include "javaforce_media_MediaCoder.h"
 #include "javaforce_media_MediaDecoder.h"
 #include "javaforce_media_MediaEncoder.h"
@@ -1512,15 +1512,15 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "vss.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()J", (void *)&Java_javaforce_media_Camera_cameraInit},
-  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
-  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
-  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
-  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
-  {"cameraStop", "(J)Z", (void *)&Java_javaforce_media_Camera_cameraStop},
-  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},
-  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_media_Camera_cameraGetWidth},
-  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_media_Camera_cameraGetHeight},
+  {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
+  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
+  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListDevices},
+  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListModes},
+  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStart},
+  {"cameraStop", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStop},
+  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetFrame},
+  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetWidth},
+  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetHeight},
 };
 
 extern "C" void camera_register(JNIEnv *env);
@@ -1528,7 +1528,7 @@ extern "C" void camera_register(JNIEnv *env);
 void camera_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/media/Camera");
+  cls = findClass(env, "javaforce/jni/CameraJNI");
   registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
 }
 
