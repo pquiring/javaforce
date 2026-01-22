@@ -7,9 +7,13 @@ package javaforce.pi;
  * @author pquiring
  */
 
-public class I2C {
-  public native static boolean init();
-  public native static boolean setSlave(int addr);
-  public native static boolean write(byte[] data);
-  public native static int read(byte[] data);
+import javaforce.jni.*;
+
+public interface I2C {
+  public static I2C getInstance() {
+    return I2CJNI.getInstance();
+  }
+  public boolean setSlave(int addr);
+  public boolean write(byte[] data);
+  public int read(byte[] data);
 }

@@ -43,6 +43,8 @@ public class ModbusServer extends Thread {
   public static ArrayList<I2C_I> i2cins = new ArrayList<>();
   public static ArrayList<I2C_O> i2couts = new ArrayList<>();
   public static Object i2cslaveaddrlock = new Object();
+  public static GPIO gpio = null;
+  public static I2C i2c = null;
   public void run() {
     JFLog.log("jfModbusServer/" + version);
     //read config
@@ -243,23 +245,29 @@ public class ModbusServer extends Thread {
       }
     }
     //init GPIO
-    if (has_gpio && !GPIO.init()) {
-      JFLog.log("Failed to init GPIO library");
-      return;
+    if (has_gpio) {
+      gpio = GPIO.getInstance();
+      if (gpio == null) {
+        JFLog.log("Failed to init GPIO library");
+        return;
+      }
     }
     //init I2C
-    if (has_i2c && !I2C.init()) {
-      JFLog.log("Failed to init I2C library");
-      return;
+    if (has_i2c) {
+      i2c = I2C.getInstance();
+      if (i2c == null) {
+        JFLog.log("Failed to init I2C library");
+        return;
+      }
     }
     if (has_gpio) {
       //init input/output bits
       for(int pos=0;pos<40;pos++) {
         if (ins[pos] != 0) {
-          GPIO.configInput(ins[pos]);
+          gpio.configInput(ins[pos]);
         }
         if (outs[pos] != 0) {
-          GPIO.configOutput(outs[pos]);
+          gpio.configOutput(outs[pos]);
         }
       }
     }
@@ -369,7 +377,7 @@ public class ModbusServer extends Thread {
       Value value;
       //read next value
       synchronized(i2cslaveaddrlock) {
-        I2C.setSlave(slaveaddr);
+        i2c.setSlave(slaveaddr);
         if (writeBytes != null) write();
         value = read();
       }
@@ -393,11 +401,11 @@ public class ModbusServer extends Thread {
         }
       }
 //      printArray("write:", data);
-      I2C.write(data);
+      i2c.write(data);
     }
     private Value read() {
       byte[] data = new byte[readBytes.length];
-      I2C.read(data);
+      i2c.read(data);
 //      printArray("read:", data);
       Value value = type.newInstance();
       byte[] vs = new byte[value.getSize()];
@@ -421,7 +429,7 @@ public class ModbusServer extends Thread {
         }
       } else {
         synchronized(i2cslaveaddrlock) {
-          I2C.setSlave(slaveaddr);
+          i2c.setSlave(slaveaddr);
           if (writeBytes != null) write();
           value = read();
         }
@@ -455,8 +463,8 @@ public class ModbusServer extends Thread {
         }
       }
       synchronized(i2cslaveaddrlock) {
-        I2C.setSlave(slaveaddr);
-        I2C.write(data);
+        i2c.setSlave(slaveaddr);
+        i2c.write(data);
       }
     }
   }
@@ -731,7 +739,7 @@ public class ModbusServer extends Thread {
           bytePos++;
           data[bytePos] = 0;
         }
-        if (GPIO.read(ins[coil_idx++])) {
+        if (gpio.read(ins[coil_idx++])) {
           data[bytePos] |= bitPos;
         }
         bitPos <<= 1;
@@ -744,7 +752,7 @@ public class ModbusServer extends Thread {
       int coil = BE.getuint16(data, 8);
       boolean state = BE.getuint16(data, 10) == 0xff00;
       if (invert) state = !state;
-      GPIO.write(outs[coil], state);
+      gpio.write(outs[coil], state);
       coils[coil] = state;
     }
     public void writeCoilMulti() {
@@ -763,7 +771,7 @@ public class ModbusServer extends Thread {
         }
         boolean state = (data[bytePos] & bitPos) != 0;
         if (invert) state = !state;
-        GPIO.write(outs[coil_idx], state);
+        gpio.write(outs[coil_idx], state);
         coils[coil_idx] = state;
         coil_idx++;
         bitPos <<= 1;

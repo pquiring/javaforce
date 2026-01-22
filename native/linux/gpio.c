@@ -6,7 +6,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "javaforce_pi_GPIO.h"
+#include "javaforce_jni_GPIOJNI.h"
 
 #include "../common/register.h"
 
@@ -32,8 +32,8 @@ volatile unsigned int *gpio;  //32bits (each bit is a port)
 //
 // Set up a memory regions to access GPIO
 //
-JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_ninit
-  (JNIEnv *env, jclass obj, jint addr)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_ninit
+  (JNIEnv *env, jobject obj, jint addr)
 {
   int  mem_fd;
   void *gpio_map;
@@ -66,23 +66,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_ninit
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_configOutput
-  (JNIEnv *env, jclass obj, jint bit)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_configOutput
+  (JNIEnv *env, jobject obj, jint bit)
 {
   INP_GPIO(bit);  //Always use INP_GPIO before OUT_GPIO -- why???
   OUT_GPIO(bit);
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_configInput
-  (JNIEnv *env, jclass obj, jint bit)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_configInput
+  (JNIEnv *env, jobject obj, jint bit)
 {
   INP_GPIO(bit);
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_write
-  (JNIEnv *env, jclass obj, jint bit, jboolean value)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_write
+  (JNIEnv *env, jobject obj, jint bit, jboolean value)
 {
   if (value == JNI_TRUE) {
     GPIO_SET = 1 << bit;
@@ -92,18 +92,18 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_write
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_read
-  (JNIEnv *env, jclass obj, jint bit)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_read
+  (JNIEnv *env, jobject obj, jint bit)
 {
   return GET_GPIO(bit);
 }
 
 static JNINativeMethod javaforce_pi_GPIO[] = {
-  {"ninit", "(I)Z", (void *)&Java_javaforce_pi_GPIO_ninit},
-  {"configOutput", "(I)Z", (void *)&Java_javaforce_pi_GPIO_configOutput},
-  {"configInput", "(I)Z", (void *)&Java_javaforce_pi_GPIO_configInput},
-  {"write", "(IZ)Z", (void *)&Java_javaforce_pi_GPIO_write},
-  {"read", "(I)Z", (void *)&Java_javaforce_pi_GPIO_read},
+  {"ninit", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_ninit},
+  {"configOutput", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_configOutput},
+  {"configInput", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_configInput},
+  {"write", "(IZ)Z", (void *)&Java_javaforce_jni_GPIOJNI_write},
+  {"read", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_read},
 };
 
 extern void gpio_register(JNIEnv *env);
@@ -111,6 +111,6 @@ extern void gpio_register(JNIEnv *env);
 void gpio_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/pi/GPIO");
+  cls = findClass(env, "javaforce/jni/GPIOJNI");
   registerNatives(env, cls, javaforce_pi_GPIO, sizeof(javaforce_pi_GPIO)/sizeof(JNINativeMethod));
 }

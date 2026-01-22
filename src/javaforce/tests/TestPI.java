@@ -24,14 +24,16 @@ public class TestPI implements WebUIHandler {
       new TestPI().start();
     }
   }
+  private static GPIO gpio;
   public void start() {
-    if (!GPIO.init()) {
+    gpio = GPIO.getInstance();
+    if (gpio == null) {
       JFLog.log("GPIO.init() failed");
       return;
     }
     for(int a=0;a<8;a++) {
-      GPIO.configInput(a);
-      GPIO.configOutput(a+8);
+      gpio.configInput(a);
+      gpio.configOutput(a+8);
     }
     initResources();
     WebUIServer server = new WebUIServer();
@@ -80,7 +82,7 @@ public class TestPI implements WebUIHandler {
       panel.o[a].addClickListener((MouseEvent event, Component button) -> {
         boolean state = !outputs[idx];
         outputs[idx] = state;
-        GPIO.write(idx + 8, state);
+        gpio.write(idx + 8, state);
         panel.oi[idx].setImage(state ? on : off);
       });
       row.add(panel.o[a]);
@@ -107,7 +109,7 @@ public class TestPI implements WebUIHandler {
       while (active) {
         //get inputs
         for(int a=0;a<8;a++) {
-          inputs[a] = GPIO.read(a);
+          inputs[a] = gpio.read(a);
           if (panel != null) {
             if (inputs[a] != display[a]) {
               display[a] = inputs[a];
