@@ -47,8 +47,6 @@ public class Image extends FontComponent {
     return defColor;
   }
 
-  private native int[] nloadPNG(byte[] data, int[] dim);
-
   public boolean loadPNG(InputStream is) {
     byte[] data;
     try {
@@ -58,7 +56,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = nloadPNG(data, dim);
+    buffer = UIAPI.getInstance().loadPNG(data, dim);
     if (buffer != null) {
       super.setSize(dim[0], dim[1]);
     }
@@ -77,10 +75,8 @@ public class Image extends FontComponent {
     }
   }
 
-  private native byte[] nsavePNG(int[] pixels, int width, int height);
-
   public boolean savePNG(OutputStream os) {
-    byte[] data = nsavePNG(buffer, size.width, size.height);
+    byte[] data = UIAPI.getInstance().savePNG(buffer, size.width, size.height);
     if (data == null) return false;
     try {
       os.write(data);
@@ -103,8 +99,6 @@ public class Image extends FontComponent {
     }
   }
 
-  private native int[] nloadJPG(byte[] data, int[] dim);
-
   public boolean loadJPG(InputStream is) {
     byte[] data;
     try {
@@ -114,7 +108,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = nloadJPG(data, dim);
+    buffer = UIAPI.getInstance().loadJPG(data, dim);
     return buffer != null;
   }
 
@@ -130,13 +124,11 @@ public class Image extends FontComponent {
     }
   }
 
-  private native byte[] nsaveJPG(int[] pixels, int width, int height, int quality);
-
   /** JPEG Image Quality when saving. (0-100) Default = 90 */
   public int jpeg_quality = 90;
 
   public boolean saveJPG(OutputStream os) {
-    byte[] data = nsaveJPG(buffer, size.width, size.height, jpeg_quality);
+    byte[] data = UIAPI.getInstance().saveJPG(buffer, size.width, size.height, jpeg_quality);
     if (data == null) return false;
     try {
       os.write(data);

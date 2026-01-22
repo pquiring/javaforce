@@ -34,9 +34,7 @@
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_media_VideoBuffer.h"
-#include "javaforce_ui_Font.h"
-#include "javaforce_ui_Image.h"
-#include "javaforce_ui_Window.h"
+#include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_PCapJNI.h"
 #include "javaforce_jni_CLJNI.h"
 

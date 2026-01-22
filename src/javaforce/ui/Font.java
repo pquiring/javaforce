@@ -9,9 +9,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.awt.*;
 import javaforce.gl.*;
-import javaforce.jni.*;
 
 public class Font {
 
@@ -36,7 +34,6 @@ public class Font {
   private Timer blinkTimer;
   private boolean blink;
 
-  private native static int loadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
   public boolean load(byte[] font, int ptSize) {
     fontinfo = new int[5];  //avg ascent(baseline), avg descent, linegap, max-ascent, max-descent
     coords = new int[256 * 4];  //x1,y1,x2,y2
@@ -48,7 +45,7 @@ public class Font {
     width = size;
     height = size;
     px = new byte[width*height];  //pixel data
-    boolean loaded = loadFont(font, ptSize, fontinfo, coords, glyphinfo, codes, px, width, height) == 256;
+    boolean loaded = UIAPI.getInstance().loadFont(font, ptSize, fontinfo, coords, glyphinfo, codes, px, width, height) == 256;
     if (loaded) {
       avg_ascent = fontinfo[0];
       avg_descent = fontinfo[1];

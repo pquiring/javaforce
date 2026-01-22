@@ -15,22 +15,22 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
   int type;
   if (action > 0)
-    type = javaforce_ui_Window_KEY_PRESS;
+    type = javaforce_jni_UIJNI_KEY_PRESS;
   else
-    type = javaforce_ui_Window_KEY_RELEASE;
+    type = javaforce_jni_UIJNI_KEY_RELEASE;
   ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, type, key, 0);
 }
 
 static void character_callback(GLFWwindow* window, unsigned int codepoint)
 {
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_ui_Window_KEY_TYPED, codepoint, 0);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_jni_UIJNI_KEY_TYPED, codepoint, 0);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_ui_Window_MOUSE_MOVE, (int)xpos, (int)ypos);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_jni_UIJNI_MOUSE_MOVE, (int)xpos, (int)ypos);
 }
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -38,49 +38,49 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
   int type;
   if (action > 0)
-    type = javaforce_ui_Window_MOUSE_DOWN;
+    type = javaforce_jni_UIJNI_MOUSE_DOWN;
   else
-    type = javaforce_ui_Window_MOUSE_UP;
+    type = javaforce_jni_UIJNI_MOUSE_UP;
   ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, type, ++button, 0);
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_ui_Window_MOUSE_SCROLL, (int)-xoffset, (int)-yoffset);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_jni_UIJNI_MOUSE_SCROLL, (int)-xoffset, (int)-yoffset);
 }
 
 static void window_close_callback(GLFWwindow* window)
 {
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_ui_Window_WIN_CLOSING, 0, 0);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_jni_UIJNI_WIN_CLOSING, 0, 0);
 }
 
 static void window_size_callback(GLFWwindow* window, int width, int height)
 {
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_ui_Window_WIN_RESIZE, width, height);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_jni_UIJNI_WIN_RESIZE, width, height);
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_ui_Window_ninit
-  (JNIEnv *e, jclass c)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_UIJNI_init
+  (JNIEnv *e, jobject c)
 {
   return glfwInit() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_ui_Window_ncreate
-  (JNIEnv *e, jclass c, jint style, jstring title, jint x, jint y, jobject events, jlong shared)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_UIJNI_create
+  (JNIEnv *e, jobject c, jint style, jstring title, jint x, jint y, jobject events, jlong shared)
 {
   GLFWContext *ctx = (GLFWContext*)malloc(sizeof(GLFWContext));
   ge = e;
   memset(ctx, 0, sizeof(GLFWContext));
   GLFWmonitor *monitor = NULL;
-  if (style & javaforce_ui_Window_STYLE_FULLSCREEN) monitor = glfwGetPrimaryMonitor();
+  if (style & javaforce_jni_UIJNI_STYLE_FULLSCREEN) monitor = glfwGetPrimaryMonitor();
 
   glfwDefaultWindowHints();
-  glfwWindowHint(GLFW_VISIBLE, (style & javaforce_ui_Window_STYLE_VISIBLE ? GL_TRUE : GL_FALSE));
-  glfwWindowHint(GLFW_RESIZABLE, (style & javaforce_ui_Window_STYLE_RESIZABLE ? GL_TRUE : GL_FALSE));
-  glfwWindowHint(GLFW_DECORATED, (style & javaforce_ui_Window_STYLE_TITLEBAR ? GL_TRUE : GL_FALSE));
+  glfwWindowHint(GLFW_VISIBLE, (style & javaforce_jni_UIJNI_STYLE_VISIBLE ? GL_TRUE : GL_FALSE));
+  glfwWindowHint(GLFW_RESIZABLE, (style & javaforce_jni_UIJNI_STYLE_RESIZABLE ? GL_TRUE : GL_FALSE));
+  glfwWindowHint(GLFW_DECORATED, (style & javaforce_jni_UIJNI_STYLE_TITLEBAR ? GL_TRUE : GL_FALSE));
 
   GLFWwindow *sharedWin = NULL;
   if (shared != 0) {
@@ -91,7 +91,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_ui_Window_ncreate
   int px, py;
   const GLFWvidmode *vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-  if (!(style & javaforce_ui_Window_STYLE_FULLSCREEN)) {
+  if (!(style & javaforce_jni_UIJNI_STYLE_FULLSCREEN)) {
     px = (vidmode->width - x) / 2;
     py = (vidmode->height - y) / 2;
   }
@@ -100,7 +100,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_ui_Window_ncreate
   ctx->window = glfwCreateWindow(x,y,ctitle, monitor, sharedWin);
   e->ReleaseStringUTFChars(title, ctitle);
 
-  if (!(style & javaforce_ui_Window_STYLE_FULLSCREEN)) {
+  if (!(style & javaforce_jni_UIJNI_STYLE_FULLSCREEN)) {
     glfwSetWindowPos(ctx->window, px, py);
   }
 
@@ -123,8 +123,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_ui_Window_ncreate
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_ndestroy
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_destroy
+  (JNIEnv *e, jobject c, jlong id)
 {
   if (id == 0L) return;
   GLFWContext *ctx = (GLFWContext*)id;
@@ -134,15 +134,15 @@ JNIEXPORT void JNICALL Java_javaforce_ui_Window_ndestroy
   free(ctx);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nsetcurrent
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_setcurrent
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwMakeContextCurrent(ctx->window);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_pollEvents
-  (JNIEnv *e, jclass c, jint wait)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_pollEvents
+  (JNIEnv *e, jobject c, jint wait)
 {
   ge = e;
   switch (wait) {
@@ -162,57 +162,57 @@ JNIEXPORT void JNICALL Java_javaforce_ui_Window_pollEvents
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_postEvent
-  (JNIEnv *e, jclass c)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_postEvent
+  (JNIEnv *e, jobject c)
 {
   glfwPostEmptyEvent();
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nshow
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_show
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwShowWindow(ctx->window);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nhide
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_hide
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwHideWindow(ctx->window);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nswap
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_swap
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   ge = e;
   glfwSwapBuffers(ctx->window);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nhidecursor
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_hidecursor
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwSetInputMode(ctx->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nshowcursor
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_showcursor
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwSetInputMode(ctx->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nlockcursor
-  (JNIEnv *e, jclass c, jlong id)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_lockcursor
+  (JNIEnv *e, jobject c, jlong id)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwSetInputMode(ctx->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_ngetpos
-  (JNIEnv *e, jclass c, jlong id, jintArray ia)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_getpos
+  (JNIEnv *e, jobject c, jlong id, jintArray ia)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   int pos[2];
@@ -220,29 +220,29 @@ JNIEXPORT void JNICALL Java_javaforce_ui_Window_ngetpos
   e->SetIntArrayRegion(ia, 0, 2, (const jint*)&pos);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nsetpos
-  (JNIEnv *e, jclass c, jlong id, jint x, jint y)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_setpos
+  (JNIEnv *e, jobject c, jlong id, jint x, jint y)
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwSetWindowPos(ctx->window, x, y);
 }
 
 static JNINativeMethod javaforce_ui_Window[] = {
-  {"ninit", "()Z", (void *)&Java_javaforce_ui_Window_ninit},
-  {"ncreate", "(ILjava/lang/String;IILjavaforce/ui/Window;J)J", (void *)&Java_javaforce_ui_Window_ncreate},
-  {"ndestroy", "(J)V", (void *)&Java_javaforce_ui_Window_ndestroy},
-  {"nsetcurrent", "(J)V", (void *)&Java_javaforce_ui_Window_nsetcurrent},
-  {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_ui_Window_nseticon},
-  {"pollEvents", "(I)V", (void *)&Java_javaforce_ui_Window_pollEvents},
-  {"postEvent", "()V", (void *)&Java_javaforce_ui_Window_postEvent},
-  {"nshow", "(J)V", (void *)&Java_javaforce_ui_Window_nshow},
-  {"nhide", "(J)V", (void *)&Java_javaforce_ui_Window_nhide},
-  {"nswap", "(J)V", (void *)&Java_javaforce_ui_Window_nswap},
-  {"nhidecursor", "(J)V", (void *)&Java_javaforce_ui_Window_nhidecursor},
-  {"nshowcursor", "(J)V", (void *)&Java_javaforce_ui_Window_nshowcursor},
-  {"nlockcursor", "(J)V", (void *)&Java_javaforce_ui_Window_nlockcursor},
-  {"ngetpos", "(J[I)V", (void *)&Java_javaforce_ui_Window_ngetpos},
-  {"nsetpos", "(JII)V", (void *)&Java_javaforce_ui_Window_nsetpos},
+  {"init", "()Z", (void *)&Java_javaforce_jni_UIJNI_init},
+  {"create", "(ILjava/lang/String;IILjavaforce/ui/Window;J)J", (void *)&Java_javaforce_jni_UIJNI_create},
+  {"destroy", "(J)V", (void *)&Java_javaforce_jni_UIJNI_destroy},
+  {"setcurrent", "(J)V", (void *)&Java_javaforce_jni_UIJNI_setcurrent},
+  {"seticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_jni_UIJNI_seticon},
+  {"pollEvents", "(I)V", (void *)&Java_javaforce_jni_UIJNI_pollEvents},
+  {"postEvent", "()V", (void *)&Java_javaforce_jni_UIJNI_postEvent},
+  {"show", "(J)V", (void *)&Java_javaforce_jni_UIJNI_show},
+  {"hide", "(J)V", (void *)&Java_javaforce_jni_UIJNI_hide},
+  {"swap", "(J)V", (void *)&Java_javaforce_jni_UIJNI_swap},
+  {"hidecursor", "(J)V", (void *)&Java_javaforce_jni_UIJNI_hidecursor},
+  {"showcursor", "(J)V", (void *)&Java_javaforce_jni_UIJNI_showcursor},
+  {"lockcursor", "(J)V", (void *)&Java_javaforce_jni_UIJNI_lockcursor},
+  {"getpos", "(J[I)V", (void *)&Java_javaforce_jni_UIJNI_getpos},
+  {"setpos", "(JII)V", (void *)&Java_javaforce_jni_UIJNI_setpos},
 };
 
 extern "C" void glfw_register(JNIEnv *env);
@@ -250,6 +250,6 @@ extern "C" void glfw_register(JNIEnv *env);
 void glfw_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/ui/Window");
+  cls = findClass(env, "javaforce/jni/UIJNI");
   registerNatives(env, cls, javaforce_ui_Window, sizeof(javaforce_ui_Window)/sizeof(JNINativeMethod));
 }

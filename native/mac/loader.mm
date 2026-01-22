@@ -36,10 +36,8 @@
 #include <jni.h>
 
 #include "javaforce_controls_ni_DAQmx.h"
-#include "javaforce_gl_GL.h"
-#include "javaforce_ui_Font.h"
-#include "javaforce_ui_Image.h"
-#include "javaforce_ui_Window.h"
+#include "javaforce_jni_GLJNI.h"
+#include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_JFNative.h"
 #include "javaforce_jni_MacNative.h"
 #include "javaforce_media_Camera.h"

@@ -13,7 +13,7 @@
 
 #include "register.h"
 
-JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadPNG
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_loadPNG
   (JNIEnv *e, jobject o, jbyteArray data, jintArray size)
 {
   int x, y, chs;
@@ -76,7 +76,7 @@ static void write_func(void *context, void *data, int size) {
   }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsavePNG
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_savePNG
   (JNIEnv *e, jobject o, jintArray px, jint x, jint y)
 {
   write_ctx ctx;
@@ -120,7 +120,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsavePNG
   return out;
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadJPG
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_loadJPG
   (JNIEnv *e, jobject o, jbyteArray data, jintArray size)
 {
   int x, y, chs;
@@ -153,7 +153,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadJPG
   return out;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsaveJPG
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_saveJPG
   (JNIEnv *e, jobject o, jintArray px, jint x, jint y, jint quality)
 {
   write_ctx ctx;
@@ -184,10 +184,10 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsaveJPG
 }
 
 static JNINativeMethod javaforce_ui_Image[] = {
-  {"nloadPNG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadPNG},
-  {"nsavePNG", "([III)[B", (void *)&Java_javaforce_ui_Image_nsavePNG},
-  {"nloadJPG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadJPG},
-  {"nsaveJPG", "([IIII)[B", (void *)&Java_javaforce_ui_Image_nloadJPG}
+  {"loadPNG", "([B[I)[I", (void *)&Java_javaforce_jni_UIJNI_loadPNG},
+  {"savePNG", "([III)[B", (void *)&Java_javaforce_jni_UIJNI_savePNG},
+  {"loadJPG", "([B[I)[I", (void *)&Java_javaforce_jni_UIJNI_loadJPG},
+  {"saveJPG", "([IIII)[B", (void *)&Java_javaforce_jni_UIJNI_loadJPG}
 };
 
 extern "C" void image_register(JNIEnv *env);
@@ -195,6 +195,6 @@ extern "C" void image_register(JNIEnv *env);
 void image_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/ui/Image");
+  cls = findClass(env, "javaforce/jni/UIJNI");
   registerNatives(env, cls, javaforce_ui_Image, sizeof(javaforce_ui_Image)/sizeof(JNINativeMethod));
 }

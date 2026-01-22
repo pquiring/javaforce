@@ -29,9 +29,7 @@
 
 #include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_GLJNI.h"
-#include "javaforce_ui_Font.h"
-#include "javaforce_ui_Image.h"
-#include "javaforce_ui_Window.h"
+#include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_media_Camera.h"
 #include "javaforce_media_MediaCoder.h"

@@ -8,16 +8,13 @@ package javaforce.ui;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.gl.*;
 import javaforce.ui.theme.*;
 import static javaforce.gl.GL.*;
 
 public class Window {
-  private static native boolean ninit();
   public static boolean init() {
-    JFNative.load();
-    return ninit();
+    return UIAPI.getInstance().init();
   }
 
   private long id;
@@ -70,11 +67,10 @@ public class Window {
   public static final int STYLE_TITLEBAR = 4;
   public static final int STYLE_FULLSCREEN = 8;
 
-  private static native long ncreate(int style, String title, int width, int height, Window eventMgr, long shared);
   public boolean create(int style, String title, int width, int height, Window shared) {
     this.width = width;
     this.height = height;
-    id = ncreate(style, title, width, height, this, shared == null ? 0 : shared.id);
+    id = UIAPI.getInstance().create(style, title, width, height, this, shared == null ? 0 : shared.id);
     if (id != 0) {
       synchronized(windows) {
         windows.add(this);
@@ -83,32 +79,29 @@ public class Window {
     return id != 0;
   }
 
-  private static native void ndestroy(long id);
   /** Show the window. */
   public void destroy() {
     if (id == 0) return;
     active = false;
-    ndestroy(id);
+    UIAPI.getInstance().destroy(id);
     id = 0;
     synchronized(windows) {
       windows.remove(this);
     }
   }
 
-  private static native void nsetcurrent(long id);
   /** Set the OpenGL Context current for this window. */
   public void setCurrent() {
-    nsetcurrent(id);
+    UIAPI.getInstance().setcurrent(id);
   }
 
-  private static native void nseticon(long id, String icon, int x, int y);
   /** Set an icon to the window.
    * This function is somewhat platform dependant.
    * Only windows is supported currently.
    * @param filename = file (.ico for windows)
    */
   public void setIcon(String filename, int x, int y) {
-    nseticon(id, filename, x, y);
+    UIAPI.getInstance().seticon(id, filename, x, y);
   }
 
   public void setKeyListener(KeyEvents keys) {
@@ -129,72 +122,68 @@ public class Window {
    *    0 = do not wait
    *    x = wait x milliseconds
    */
-  public static native void pollEvents(int wait);
+  public static void pollEvents(int wait) {
+    UIAPI.getInstance().pollEvents(wait);
+  }
 
   /** Posts an empty event to wake main thread. */
-  public static native void postEvent();
+  public void postEvent() {
+    UIAPI.getInstance().postEvent();
+  }
 
   /** Polls for events. Does not wait for an event.  Same as pollEvents(0); */
-  public static void pollEvents() {
+  public void pollEvents() {
     pollEvents(0);
   }
 
-  private static native void nshow(long id);
   /** Show the window. */
   public void show() {
-    nshow(id);
+    UIAPI.getInstance().show(id);
     visible = true;
   }
 
-  private static native void nhide(long id);
   /** Hide the window. */
   public void hide() {
-    nhide(id);
+    UIAPI.getInstance().hide(id);
     visible = false;
   }
 
-  private static native void nswap(long id);
   /** Swaps the OpenGL Buffers. */
   public void swap() {
-    nswap(id);
+    UIAPI.getInstance().swap(id);
   }
 
-  private static native void nhidecursor(long id);
   /** Hide the cursor. */
   public void hideCursor() {
-    nhidecursor(id);
+    UIAPI.getInstance().hidecursor(id);
   }
 
-  private static native void nshowcursor(long id);
   /** Show the cursor (default). */
   public void showCursor() {
-    nshowcursor(id);
+    UIAPI.getInstance().showcursor(id);
   }
 
-  private static native void nlockcursor(long id);
   /** Hide the cursor and lock to this window.
    * Use showCursor() to unlock.
    */
   public void lockCursor() {
-    nlockcursor(id);
+    UIAPI.getInstance().lockcursor(id);
   }
 
-  private static native void ngetpos(long id, int[] pos);
   /** Get window position.
    * @return int[0] = x, int[1] = y
    */
   public int[] getPosition() {
     int[] ret = new int[2];
-    ngetpos(id, ret);
+    UIAPI.getInstance().getpos(id, ret);
     return ret;
   }
 
-  private static native void nsetpos(long id, int x, int y);
   /** set window position.
    * return: int[0] = x, int[1] = y
    */
   public void setPosition(int x,int y) {
-    nsetpos(id, x, y);
+    UIAPI.getInstance().setpos(id, x, y);
   }
 
   public int getWidth() {
@@ -306,6 +295,6 @@ public class Window {
 
   public static void redrawAll() {
     if (windows.size() == 0) return;
-    postEvent();
+    UIAPI.getInstance().postEvent();
   }
 }
