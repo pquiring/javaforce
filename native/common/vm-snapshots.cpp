@@ -1,6 +1,6 @@
 //#define VM_SNAPSHOTS_DEBUG
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotCreate
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotCreate
   (JNIEnv *e, jclass o, jstring name, jstring xml, jint flags)
 {
   void* conn = connect();
@@ -39,12 +39,12 @@ const char* snapshot_get_desc(void* ss) {
 
   if (xml == NULL) return ss_empty;
 
-  const char *p1 = strstr(xml, "<description>");  
+  const char *p1 = strstr(xml, "<description>");
 
-  const char *p2 = strstr(xml, "</description>");  
+  const char *p2 = strstr(xml, "</description>");
 
   if (p1 == NULL || p2 == NULL) {
-    p1 = xml; 
+    p1 = xml;
     p2 = xml;
   } else {
     p1 += 13;
@@ -53,7 +53,7 @@ const char* snapshot_get_desc(void* ss) {
   int len = p2 - p1;
   char * name = (char*)malloc(len + 1);
   memcpy(name, p1, len);
-  name[len] = 0;  
+  name[len] = 0;
 
   free((void*)xml);
 
@@ -71,7 +71,7 @@ const char* snapshot_get_parent(void* ss) {
   return (const char*)copy;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_snapshotList
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -126,7 +126,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotList
   return list;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotExists
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotExists
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -142,7 +142,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotExists
     disconnect(conn);
     return JNI_FALSE;
   }
-  
+
   jboolean cond = (*_virDomainHasCurrentSnapshot)(dom, 0);
 
   (*_virDomainFree)(dom);
@@ -151,7 +151,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotExists
   return cond;
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
+JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_snapshotGetCurrent
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -167,7 +167,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
     disconnect(conn);
     return NULL;
   }
-  
+
   void* ss = (*_virDomainSnapshotCurrent)(dom, 0);
 
 #ifdef VM_SNAPSHOTS_DEBUG
@@ -191,7 +191,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotGetCurrent
   return ssname;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotRestore
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotRestore
   (JNIEnv *e, jclass o, jstring name, jstring snapshot)
 {
   void* conn = connect();
@@ -220,7 +220,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotRestore
   return result == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_vm_VirtualMachine_nsnapshotDelete
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotDelete
   (JNIEnv *e, jclass o, jstring name, jstring snapshot)
 {
   void* conn = connect();

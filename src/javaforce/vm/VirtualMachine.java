@@ -37,7 +37,9 @@ public class VirtualMachine implements Serializable {
     vnc = -1;  //update during register
   }
 
-  public static native boolean init();
+  public static boolean init() {
+    return VMAPI.getInstance().init();
+  }
 
   public String pool;
   public String folder;
@@ -112,46 +114,39 @@ public class VirtualMachine implements Serializable {
   }
 
   //virDomainCreate
-  private native static boolean nstart(String name);
   public boolean start() {
     if (!check_write_access()) return false;
     create_stats_folder();
-    return nstart(name);
+    return VMAPI.getInstance().start(name);
   }
 
   //virDomainShutdown()
-  private native static boolean nstop(String name);
   public boolean stop() {
-    return nstop(name);
+    return VMAPI.getInstance().stop(name);
   }
 
   //virDomainShutdown()
-  private native static boolean npoweroff(String name);
   public boolean poweroff() {
-    return npoweroff(name);
+    return VMAPI.getInstance().poweroff(name);
   }
 
   //virDomainRestart
-  private native static boolean nrestart(String name);
   public boolean restart() {
-    return nrestart(name);
+    return VMAPI.getInstance().restart(name);
   }
 
   //virDomainSuspend
-  private native static boolean nsuspend(String name);
   public boolean suspend() {
-    return nsuspend(name);
+    return VMAPI.getInstance().suspend(name);
   }
 
   //virDomainResume
-  private native static boolean nresume(String name);
   public boolean resume() {
-    return nresume(name);
+    return VMAPI.getInstance().resume(name);
   }
 
-  private native static int ngetState(String name);
   public int getState() {
-    return ngetState(name);
+    return VMAPI.getInstance().getState(name);
   }
 
   public String getStateString() {
@@ -205,9 +200,8 @@ public class VirtualMachine implements Serializable {
   }
 
   //virConnectListAllDomains & virDomainGetUUID & virDomainGetName & virDomainGetDesc
-  private native static String[] nlist();
   public static VirtualMachine[] list() {
-    String[] list = nlist();
+    String[] list = VMAPI.getInstance().list();
     if (list == null) list = new String[0];
     VirtualMachine[] vms = new VirtualMachine[list.length];
     for(int idx = 0;idx<list.length;idx++) {
@@ -217,37 +211,33 @@ public class VirtualMachine implements Serializable {
   }
 
   //returns vm desc
-  private native static String nget(String name);
   public static VirtualMachine get(String name) {
-    String vm = nget(name);
+    String vm = VMAPI.getInstance().get(name);
     if (vm == null) return null;
     return getByDesc(vm);
   }
 
   //virDomainDefineXML
-  private native static boolean nregister(String xml);
   public static boolean register(VirtualMachine vm, Hardware hardware, VMProvider provider) {
     String xml = createXML(vm, hardware, provider);
     JFLog.log("VirtualMachine.xml=" + xml);
-    return nregister(xml);
+    return VMAPI.getInstance().register(xml);
   }
 
   public boolean reregister(Hardware hardware, VMProvider provider) {
     String xml = createXML(this, hardware, provider);
     JFLog.log("VirtualMachine.xml=" + xml);
-    return nregister(xml);
+    return VMAPI.getInstance().register(xml);
   }
 
   //virDomainUndefine
-  private native static boolean nunregister(String name);
   public boolean unregister() {
-    return nunregister(name);
+    return VMAPI.getInstance().unregister(name);
   }
 
-  private native static boolean nmigrate(String name, String desthost, boolean live, Status status);
   /** Live/offline VM migration. */
   public boolean migrateCompute(String desthost, boolean live, Status status) {
-    return nmigrate(name, desthost, live, status);
+    return VMAPI.getInstance().migrate(name, desthost, live, status);
   }
 
   /** Offline only VM storage migration. */
@@ -471,7 +461,6 @@ public class VirtualMachine implements Serializable {
   public static final int SNAPSHOT_CREATE_ATOMIC = 128;
   public static final int SNAPSHOT_CREATE_LIVE = 256;
 
-  private native static boolean nsnapshotCreate(String name, String xml, int flags);
   /** Snap Shot : Create */
   public boolean snapshotCreate(String name, String desc, int flags) {
     if (name == null || name.length() == 0) {
@@ -489,15 +478,14 @@ public class VirtualMachine implements Serializable {
     if (desc == null) desc = "";
     String xml = snapshotCreateXML(name, desc);
     if (xml == null) return false;
-    return nsnapshotCreate(this.name, xml, flags);
+    return VMAPI.getInstance().snapshotCreate(this.name, xml, flags);
   }
 
-  private native static String[] nsnapshotList(String name);
   /** Snap Shot : List */
   public Snapshot[] snapshotList() {
-    String[] list = nsnapshotList(name);
+    String[] list = VMAPI.getInstance().snapshotList(name);
     if (list == null) return new Snapshot[0];
-    String current = nsnapshotGetCurrent(name);
+    String current = VMAPI.getInstance().snapshotGetCurrent(name);
     ArrayList<Snapshot> sslist = new ArrayList<>();
     for(String ss_str : list) {
       String[] fs = ss_str.split("\t", -1);  //tab delimited
@@ -570,21 +558,18 @@ public class VirtualMachine implements Serializable {
     return null;
   }
 
-  private native static boolean nsnapshotExists(String name);
   /** Determines if VM is running on a snapshot. */
   public boolean snapshotExists() {
-    return nsnapshotExists(name);
+    return VMAPI.getInstance().snapshotExists(name);
   }
 
-  private native static String nsnapshotGetCurrent(String name);
   /** Returns current snapshot VM is running on. */
   public Snapshot snapshotGetCurrent() {
-    String ss = nsnapshotGetCurrent(name);
+    String ss = VMAPI.getInstance().snapshotGetCurrent(name);
     if (ss == null) return null;
     return snapshotGetByName(ss);
   }
 
-  private native static boolean nsnapshotRestore(String name, String snapshot);
   /** Snap Shot : Restore */
   public boolean snapshotRestore(String name) {
     Snapshot ss = snapshotGetByName(name);
@@ -592,13 +577,12 @@ public class VirtualMachine implements Serializable {
       JFLog.log("Error:VM:Snapshot not found:" + name);
       return false;
     }
-    return nsnapshotRestore(this.name, name);
+    return VMAPI.getInstance().snapshotRestore(this.name, name);
   }
 
-  private native static boolean nsnapshotDelete(String name, String snapshot);
   /** Snap Shot : Delete (merges data back into parent) */
   public boolean snapshotDelete(String name) {
-    return nsnapshotDelete(this.name, name);
+    return VMAPI.getInstance().snapshotDelete(this.name, name);
   }
 
   public boolean hasSnapshot() {

@@ -86,7 +86,6 @@ public class Disk implements Serializable {
     return "/volumes/" + pool + "/" + folder + "/" + name + '.' + getType();
   }
 
-  private native static boolean ncreate(String pool_name, String xml);
   /** Provision virtual disk for a VirtualMachine. */
   public boolean create(int provision) {
     new File(getFolder()).mkdirs();
@@ -94,7 +93,7 @@ public class Disk implements Serializable {
       //use libvirt (not working per docs)
       String xml = getCreateXML(provision);
       JFLog.log("Disk.xml=" + xml);
-      return ncreate(pool, xml);
+      return VMAPI.getInstance().diskCreate(pool, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();
@@ -141,7 +140,7 @@ public class Disk implements Serializable {
       //use libvirt (not working per docs)
       String xml = getCreateXML(0);
       JFLog.log("Disk.xml=" + xml);
-      return ncreate(pool.name, xml);
+      return VMAPI.getInstance().diskCreate(pool.name, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();

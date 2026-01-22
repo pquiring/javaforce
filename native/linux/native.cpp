@@ -295,8 +295,8 @@ jboolean glGetFunction(void **funcPtr, const char *name)
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_ui_Window_nseticon
-  (JNIEnv *e, jclass c, jlong id, jstring filename, jint x, jint y)
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_seticon
+  (JNIEnv *e, jobject c, jlong id, jstring filename, jint x, jint y)
 {
   //TODO
 }

@@ -10,9 +10,17 @@ import java.io.*;
 import javaforce.linux.*;
 
 public class VMHost {
-  public static native long total_memory();
-  public static native long free_memory();
-  public static native long cpu_load();
+  public long total_emory() {
+    return VMAPI.getInstance().totalMemory();
+  }
+
+  public long free_memory() {
+    return VMAPI.getInstance().freeMemory();
+  }
+
+  public long cpu_load() {
+    return VMAPI.getInstance().cpuLoad();
+  }
 
   /** This function will collect stats for all running VMs and save to local file system.
    * Interval should be every 20 seconds (4320 per day) (180 per hour)
@@ -24,7 +32,9 @@ public class VMHost {
    * @param hour = hour (24)
    * @param sample = (0-180)
    */
-  public static native boolean get_all_stats(int year, int month, int day, int hour, int sample);
+  public boolean get_all_stats(int year, int month, int day, int hour, int sample) {
+    return VMAPI.getInstance().getAllStats(year, month, day, hour, sample);
+  }
 
   private static final long ms_day = 1000L * 60L * 60L * 24L;
 
@@ -56,7 +66,9 @@ public class VMHost {
    * @param remote = remote host
    *
    */
-  public static native boolean connect(String remote);
+  public boolean connect(String remote) {
+    return VMAPI.getInstance().connect(remote);
+  }
 
   public static String getHostname() {
     return Linux.getHostname();

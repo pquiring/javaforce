@@ -67,28 +67,24 @@ public class Storage implements Serializable {
   public static final int STATE_BUILD = 2;
   public static final int STATE_ERROR = 3;
 
-  private native static String[] nlist();
   /** Returns list of UUID for Storage units registered. */
   public static String[] list() {
-    String[] list = nlist();
+    String[] list = VMAPI.getInstance().storageList();
     if (list == null) list = new String[0];
     return list;
   }
 
-  private native static boolean nregister(String xml);
   public boolean register() {
     String xml = createXML();
     JFLog.log("Storage.xml=" + xml);
-    return nregister(xml);
+    return VMAPI.getInstance().storageRegister(xml);
   }
 
-  private native static boolean nunregister(String name);
   public boolean unregister() {
-    return nunregister(name);
+    return VMAPI.getInstance().storageUnregister(name);
   }
 
   //virDomainCreate
-  private native static boolean nstart(String name);
   public boolean start() {
     //create folder under /volumes
     new File(getPath()).mkdir();
@@ -96,7 +92,7 @@ public class Storage implements Serializable {
     if (type == TYPE_GLUSTER) {
       new File(getGlusterBrick()).mkdirs();
     }
-    boolean res = nstart(name);
+    boolean res = VMAPI.getInstance().storageStart(name);
     if (type == TYPE_GLUSTER && mounted()) {
       new File(getGlusterVolume()).mkdirs();
     }
@@ -107,10 +103,9 @@ public class Storage implements Serializable {
   }
 
   //virDomainShutdown()
-  private native static boolean nstop(String name);
   public boolean stop() {
     stop_latency_monitor();
-    boolean res = nstop(name);
+    boolean res = VMAPI.getInstance().storageStop(name);
     if (res) {
       new File(getPath()).delete();
     }
@@ -124,15 +119,13 @@ public class Storage implements Serializable {
     }
   }
 
-  private native static int ngetState(String name);
   public int getState() {
-    return ngetState(name);
+    return VMAPI.getInstance().storageGetState(name);
   }
 
-  private native static String ngetUUID(String name);
   /** Get libvirt UUID (does NOT match Linux device UUID) */
   public String getUUID() {
-    return ngetUUID(name);
+    return VMAPI.getInstance().storageGetUUID(name);
   }
 
   public static String getSystemIQN() {

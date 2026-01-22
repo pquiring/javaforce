@@ -1,11 +1,11 @@
 package javaforce.vm;
 
 /** Host Device (USB or PCI).
- * 
+ *
  * this.Address = host device address.
- * 
+ *
  * Address guest_addr = address within guest.
- * 
+ *
  * @author pquiring
  */
 
@@ -28,10 +28,9 @@ public class Device extends Address implements Serializable {
   public static final int TYPE_PCI = 2;
 
   //virConnectListAllNodeDevices
-  private native static String[] nlist(int type);
   public static Device[] list(int type) {
     if (type < 1 || type > 2) return null;
-    String[] list = nlist(type);
+    String[] list = VMAPI.getInstance().deviceList(type);
     if (list == null) list = new String[0];
     Device[] dlist = new Device[list.length];
     for(int idx=0;idx<list.length;idx++) {

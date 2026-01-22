@@ -13,10 +13,9 @@ public class NetworkInterface extends NetworkConfig implements Serializable {
     super(name);
   }
 
-  private native static String[] nlistPhys();
   /** List server physical network interfaces. */
   public static NetworkInterface[] listPhysical() {
-    String[] list = nlistPhys();
+    String[] list = VMAPI.getInstance().networkListPhys();
     if (list == null) list = new String[0];
     NetworkInterface[] nics = new NetworkInterface[list.length];
     for(int idx = 0;idx<list.length;idx++) {

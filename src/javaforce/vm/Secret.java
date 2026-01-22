@@ -8,7 +8,6 @@ package javaforce.vm;
  */
 
 public class Secret {
-  private static native boolean ncreate(String xml, String passwd);
   public static boolean create(String name, String passwd) {
     StringBuilder xml = new StringBuilder();
     xml.append("<secret ephemeral='yes' private='yes'>");
@@ -16,6 +15,6 @@ public class Secret {
     xml.append("<target>" + name + "</target>");
     xml.append("</usage>");
     xml.append("</secret>");
-    return ncreate(xml.toString(), passwd);
+    return VMAPI.getInstance().secretCreate(xml.toString(), passwd);
   }
 }
