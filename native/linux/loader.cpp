@@ -27,7 +27,7 @@
 
 #include <jni.h>
 
-#include "javaforce_controls_ni_DAQmx.h"
+#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"

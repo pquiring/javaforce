@@ -206,7 +206,7 @@ public class Controller {
     }
     if (url.startsWith("NI:")) {
       plcType = ControllerType.NI;
-      daq = new DAQmx();
+      daq = DAQmx.getInstance();
       connected = daq.connect(url.substring(3));
       if (!connected) {
         daq.close();

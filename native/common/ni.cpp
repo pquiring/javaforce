@@ -33,8 +33,8 @@ int32 (*_DAQmxSetCIFreqTerm)(TaskHandle taskHandle, const char channel[], const 
 int32 (*_DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char channel[], float64 data);
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
-  (JNIEnv *e, jclass cls)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_init
+  (JNIEnv *e, jobject cls)
 {
   nidll = loadLibrary(JF_LIB_NAME);
   if (nidll == NULL) {
@@ -63,16 +63,16 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
   return JNI_TRUE;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_controls_ni_DAQmx_createTask
-  (JNIEnv *e, jclass cls)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_DAQmxJNI_createTask
+  (JNIEnv *e, jobject cls)
 {
   TaskHandle taskHandle=0;
   (*_DAQmxCreateTask)("", &taskHandle);
   return (jlong)taskHandle;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelAnalog
-  (JNIEnv *e, jclass cls, jlong task, jstring dev, jdouble rate, jlong samples, jdouble min, jdouble max)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_createChannelAnalog
+  (JNIEnv *e, jobject cls, jlong task, jstring dev, jdouble rate, jlong samples, jdouble min, jdouble max)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 status = 0;
@@ -85,8 +85,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelAnalog
   return status == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelDigital
-  (JNIEnv *e, jclass cls, jlong task, jstring dev, jdouble rate, jlong samples)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_createChannelDigital
+  (JNIEnv *e, jobject cls, jlong task, jstring dev, jdouble rate, jlong samples)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 status = 0;
@@ -99,8 +99,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelDigital
   return status == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelCounter
-  (JNIEnv *e, jclass cls, jlong task, jstring dev, jdouble rate, jlong samples, jdouble min, jdouble max, jstring term, jdouble measureTime, jint divisor)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_createChannelCounter
+  (JNIEnv *e, jobject cls, jlong task, jstring dev, jdouble rate, jlong samples, jdouble min, jdouble max, jstring term, jdouble measureTime, jint divisor)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 status = 0;
@@ -121,15 +121,15 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelCounter
   return status == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_startTask
-  (JNIEnv *e, jclass cls, jlong task)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_startTask
+  (JNIEnv *e, jobject cls, jlong task)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   return (*_DAQmxStartTask)(taskHandle) == 0;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskAnalog
-  (JNIEnv *e, jclass cls, jlong task, jint numchs, jdoubleArray data)
+JNIEXPORT jint JNICALL Java_javaforce_jni_DAQmxJNI_readTaskAnalog
+  (JNIEnv *e, jobject cls, jlong task, jint numchs, jdoubleArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
@@ -140,8 +140,8 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskAnalog
   return read;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskBinary
-  (JNIEnv *e, jclass cls, jlong task, jint numchs, jintArray data)
+JNIEXPORT jint JNICALL Java_javaforce_jni_DAQmxJNI_readTaskBinary
+  (JNIEnv *e, jobject cls, jlong task, jint numchs, jintArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
@@ -152,8 +152,8 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskBinary
   return read;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskDigital
-  (JNIEnv *e, jclass cls, jlong task, jint numchs, jintArray data)
+JNIEXPORT jint JNICALL Java_javaforce_jni_DAQmxJNI_readTaskDigital
+  (JNIEnv *e, jobject cls, jlong task, jint numchs, jintArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
@@ -164,8 +164,8 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskDigital
   return read;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskCounter
-  (JNIEnv *e, jclass cls, jlong task, jint numchs, jdoubleArray data)
+JNIEXPORT jint JNICALL Java_javaforce_jni_DAQmxJNI_readTaskCounter
+  (JNIEnv *e, jobject cls, jlong task, jint numchs, jdoubleArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
@@ -176,42 +176,42 @@ JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskCounter
   return read;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_stopTask
-  (JNIEnv *e, jclass cls, jlong task)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_stopTask
+  (JNIEnv *e, jobject cls, jlong task)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   return (*_DAQmxStopTask)(taskHandle) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_clearTask
-  (JNIEnv *e, jclass cls, jlong task)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_clearTask
+  (JNIEnv *e, jobject cls, jlong task)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   return (*_DAQmxClearTask)(taskHandle) == 0;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_controls_ni_DAQmx_printError
-  (JNIEnv *e, jclass cls)
+JNIEXPORT void JNICALL Java_javaforce_jni_DAQmxJNI_printError
+  (JNIEnv *e, jobject cls)
 {
   char errmsg[2048];
   (*_DAQmxGetExtendedErrorInfo)(errmsg, 2048);
   printf("NI.Error=%s\n", errmsg);
 }
 
-static JNINativeMethod javaforce_controls_ni_DAQmx[] = {
-  {"daqInit", "()Z", (void *)&Java_javaforce_controls_ni_DAQmx_daqInit},
-  {"createTask", "()J", (void *)&Java_javaforce_controls_ni_DAQmx_createTask},
-  {"createChannelAnalog", "(JLjava/lang/String;DJDD)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelAnalog},
-  {"createChannelDigital", "(JLjava/lang/String;DJ)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelDigital},
-  {"createChannelCounter", "(JLjava/lang/String;DJDDLjava/lang/String;DI)Z", (void *)&Java_javaforce_controls_ni_DAQmx_createChannelCounter},
-  {"startTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_startTask},
-  {"readTaskAnalog", "(JI[D)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskAnalog},
-  {"readTaskBinary", "(JI[I)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskBinary},
-  {"readTaskDigital", "(JI[I)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskDigital},
-  {"readTaskCounter", "(JI[D)I", (void *)&Java_javaforce_controls_ni_DAQmx_readTaskCounter},
-  {"stopTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_stopTask},
-  {"clearTask", "(J)Z", (void *)&Java_javaforce_controls_ni_DAQmx_clearTask},
-  {"printError", "()V", (void *)&Java_javaforce_controls_ni_DAQmx_printError},
+static JNINativeMethod javaforce_jni_DAQmxJNI[] = {
+  {"init", "()Z", (void *)&Java_javaforce_jni_DAQmxJNI_init},
+  {"createTask", "()J", (void *)&Java_javaforce_jni_DAQmxJNI_createTask},
+  {"createChannelAnalog", "(JLjava/lang/String;DJDD)Z", (void *)&Java_javaforce_jni_DAQmxJNI_createChannelAnalog},
+  {"createChannelDigital", "(JLjava/lang/String;DJ)Z", (void *)&Java_javaforce_jni_DAQmxJNI_createChannelDigital},
+  {"createChannelCounter", "(JLjava/lang/String;DJDDLjava/lang/String;DI)Z", (void *)&Java_javaforce_jni_DAQmxJNI_createChannelCounter},
+  {"startTask", "(J)Z", (void *)&Java_javaforce_jni_DAQmxJNI_startTask},
+  {"readTaskAnalog", "(JI[D)I", (void *)&Java_javaforce_jni_DAQmxJNI_readTaskAnalog},
+  {"readTaskBinary", "(JI[I)I", (void *)&Java_javaforce_jni_DAQmxJNI_readTaskBinary},
+  {"readTaskDigital", "(JI[I)I", (void *)&Java_javaforce_jni_DAQmxJNI_readTaskDigital},
+  {"readTaskCounter", "(JI[D)I", (void *)&Java_javaforce_jni_DAQmxJNI_readTaskCounter},
+  {"stopTask", "(J)Z", (void *)&Java_javaforce_jni_DAQmxJNI_stopTask},
+  {"clearTask", "(J)Z", (void *)&Java_javaforce_jni_DAQmxJNI_clearTask},
+  {"printError", "()V", (void *)&Java_javaforce_jni_DAQmxJNI_printError},
 };
 
 extern "C" void ni_register(JNIEnv *env);
@@ -219,6 +219,6 @@ extern "C" void ni_register(JNIEnv *env);
 void ni_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/controls/ni/DAQmx");
-  registerNatives(env, cls, javaforce_controls_ni_DAQmx, sizeof(javaforce_controls_ni_DAQmx)/sizeof(JNINativeMethod));
+  cls = findClass(env, "javaforce/jni/DAQmxJNI");
+  registerNatives(env, cls, javaforce_jni_DAQmxJNI, sizeof(javaforce_jni_DAQmxJNI)/sizeof(JNINativeMethod));
 }

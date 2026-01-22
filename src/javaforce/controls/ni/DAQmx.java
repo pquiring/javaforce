@@ -19,29 +19,34 @@ import javaforce.*;
 import javaforce.jni.*;
 import javaforce.controls.*;
 
-public class DAQmx {
-  public static void load() {
-    if (!loaded) {
-      loaded = daqInit();
+public abstract class DAQmx {
+
+  private static DAQmx instance;
+
+  public static DAQmx getInstance() {
+    if (instance == null) {
+      instance = new DAQmxJNI();
+      if (!instance.init()) {
+        instance = null;
+      }
     }
+    return instance;
   }
 
-  public static boolean loaded;
+  public abstract boolean init();
 
-  private static native boolean daqInit();
-
-  public static native long createTask();
-  public static native boolean createChannelAnalog(long task, String dev, double rate, long samples, double min, double max);
-  public static native boolean createChannelDigital(long task, String dev, double rate, long samples);
-  public static native boolean createChannelCounter(long task, String dev, double rate, long samples, double min, double max, String term, double measureTime, int divisor);
-  public static native boolean startTask(long task);
-  public static native int readTaskAnalog(long task, int numchs, double[] data);
-  public static native int readTaskBinary(long task, int numchs, int[] data);
-  public static native int readTaskDigital(long task, int numchs, int[] data);
-  public static native int readTaskCounter(long task, int numchs, double[] freq);
-  public static native boolean stopTask(long task);
-  public static native boolean clearTask(long task);
-  public static native void printError();  //prints any errors to stdout
+  public abstract long createTask();
+  public abstract boolean createChannelAnalog(long task, String dev, double rate, long samples, double min, double max);
+  public abstract boolean createChannelDigital(long task, String dev, double rate, long samples);
+  public abstract boolean createChannelCounter(long task, String dev, double rate, long samples, double min, double max, String term, double measureTime, int divisor);
+  public abstract boolean startTask(long task);
+  public abstract int readTaskAnalog(long task, int numchs, double[] data);
+  public abstract int readTaskBinary(long task, int numchs, int[] data);
+  public abstract int readTaskDigital(long task, int numchs, int[] data);
+  public abstract int readTaskCounter(long task, int numchs, double[] freq);
+  public abstract boolean stopTask(long task);
+  public abstract boolean clearTask(long task);
+  public abstract void printError();  //prints any errors to stdout
 
   //DAQ instance
 

@@ -28,6 +28,7 @@
 #include <jawt.h>
 #include <jawt_md.h>
 
+#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_media_Camera.h"
@@ -35,7 +36,6 @@
 #include "javaforce_media_MediaDecoder.h"
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
-#include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"
