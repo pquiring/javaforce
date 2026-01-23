@@ -1,3 +1,6 @@
+Jan 23, 2026 : 0.35 released!
+  - fix : version bump for native changes
+
 Jan 15, 2026 : 0.34 released!
   - new : switch config format to Java Serialization
         : users must upgrade to 0.34 before upgrading to future versions!
