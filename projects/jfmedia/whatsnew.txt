@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Jan 23, 2026 : v0.24 released!
+  - fix : version bump for native changes
+
 Dec 4, 2025 : v0.23 released!
   - improve rtsp support
 
