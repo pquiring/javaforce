@@ -1,3 +1,6 @@
+2026-01-23 : 0.3
+  - fix : version bump for native changes
+
 2026-01-19 : 0.2
   - fix Linux com port issues
 

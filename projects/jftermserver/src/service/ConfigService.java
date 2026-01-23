@@ -18,7 +18,7 @@ import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.2";
+  public static String version = "0.3";
   public static String appname = "jfTerminalServer";
   public static boolean debug = false;
   public static boolean debug_api = false;
