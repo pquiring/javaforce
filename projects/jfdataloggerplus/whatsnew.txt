@@ -1,3 +1,6 @@
+Jan 23/2026 : v0.13 released
+  - fix : version bump for native changes
+
 Nov 4/2021 : v0.12 released
   - new : improved support for more Allen Bradley tags
     - such as struct elements, arrays, program tags, etc.
