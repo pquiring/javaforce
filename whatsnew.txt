@@ -1,5 +1,16 @@
 What's new...
 
+Jan 23/2026 : JF/96.0
+  - all native methods have been moved to javaforce.jni
+  - next release will test out Java FFM native interop
+    this requires Java 22 which is a problem for Debian.
+    JF deps on 'default-jre' which still targets Java 21
+    therefore the dep will have to target Java 25 directly
+    which will break 'apt upgrade'
+    Find alternative method to install Java 25 on your Linux systems:
+      apt install openjdk-25-jre
+    before the next release.
+
 Jan 19/2026 : JF/95.1
   - jfTermServer/0.2
     - fix : linux com port issues
