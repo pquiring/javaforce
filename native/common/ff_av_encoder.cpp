@@ -1,6 +1,6 @@
 //audio encoder codebase
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
   (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint chs, jint freq)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -32,7 +32,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioEncoder_nstart
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioEncoder_nstop
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -185,7 +185,7 @@ static jbyteArray av_encoder_addAudio(FFContext *ctx, short *sams, int offset, i
   return NULL;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_media_MediaAudioEncoder_nencode
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
   (JNIEnv *e, jobject c, jlong ctxptr, jshortArray sams, jint offset, jint length)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -204,7 +204,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_media_MediaAudioEncoder_nencode
   return ba;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioEncoder_ngetAudioFramesize
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -216,7 +216,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioEncoder_ngetAudioFramesize
 
 //video encoder codebase
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
   (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -263,7 +263,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoEncoder_nstart
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoEncoder_nstop
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -341,7 +341,7 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
   return array;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_media_MediaVideoEncoder_nencode
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
   (JNIEnv *e, jobject c, jlong ctxptr, jintArray px, jint offset, jint length)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);

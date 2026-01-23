@@ -5,11 +5,6 @@ package javaforce.media;
  * @author pquiring
  */
 
-import java.io.*;
-
-import javaforce.*;
-import javaforce.jni.*;
-
 public class MediaCoder {
   protected long ctx = 0;
   protected boolean shared;
@@ -28,55 +23,12 @@ public class MediaCoder {
     return ctx != 0;
   }
 
-  /** Loads the media framework native libraries. */
   public static void init() {
-    File[] sysFolders = Library.getSysFolders();
-    String ext = Library.getExt();
-    Library[] libs = {
-      new Library("avcodec")
-      , new Library("avdevice")
-      , new Library("avfilter")
-      , new Library("avformat")
-      , new Library("avutil")
-      , new Library("swscale")
-      , new Library("postproc")
-      , new Library("swresample")
-    };
-    JFNative.findLibraries(sysFolders, libs, ext);
-    if (!haveLibs(libs)) {
-      for(int a=0;a<libs.length;a++) {
-        if (libs[a].path == null) {
-          System.out.println("Error:Unable to find library:" + libs[a].name + ext);
-        }
-      }
-      JFLog.log("MediaCoder.load() failed");
-      System.exit(1);
-    }
-    if (!ninit(
-      libs[0].path,
-      libs[1].path,
-      libs[2].path,
-      libs[3].path,
-      libs[4].path,
-      libs[5].path,
-      libs[6].path,
-      libs[7].path
-    ))
-    {
-      System.exit(1);
-    }
+    MediaAPI.getInstance().init();
   }
-  private static native boolean ninit(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample);
-  public static native void setLogging(boolean state);
 
-  private static boolean haveLibs(Library[] libs) {
-    int cnt = 0;
-    for(int a=0;a<7;a++) {
-      if (libs[a].path != null) cnt++;
-    }
-    if (libs[7].path != null) cnt++;
-    else if (libs[8].path != null) cnt++;
-    return cnt == 8;
+  public static void setLogging(boolean state) {
+    MediaAPI.getInstance().setLogging(state);
   }
 
   //seek types

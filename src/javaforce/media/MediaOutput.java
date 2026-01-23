@@ -18,22 +18,18 @@ import javaforce.*;
 import javaforce.voip.*;
 
 public class MediaOutput extends MediaFormat {
-  private static native long ncreateFile(String file, String format);
-
   /** Create output file.
    * @param file = filename
    * @param format = media container (see MediaCoder.AV_FORMAT_ID...)
    */
   public boolean create(String file, String format) {
     if (ctx != 0) return false;
-    ctx = ncreateFile(file, format);
+    ctx = MediaAPI.getInstance().createFile(file, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateFile() == 0");
     }
     return ctx != 0;
   }
-
-  private static native long ncreateIO(MediaIO io, String format);
 
   /** Create output media via MediaIO.
    * @param io = Media IO interface
@@ -41,14 +37,12 @@ public class MediaOutput extends MediaFormat {
    */
   public boolean create(MediaIO io, String format) {
     if (ctx != 0) return false;
-    ctx = ncreateIO(io, format);
+    ctx = MediaAPI.getInstance().createIO(io, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateIO() == 0");
     }
     return ctx != 0;
   }
-
-  private static native int naddVideoStream(long ctx, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
 
   /** Adds a video stream to output.
    * All media streams must be added before calling write()
@@ -63,7 +57,7 @@ public class MediaOutput extends MediaFormat {
    *         info.video_codec = selected codec
    */
   public boolean addVideoStream(CodecInfo info) {
-    info.video_stream = naddVideoStream(ctx, info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
+    info.video_stream = MediaAPI.getInstance().addVideoStream(ctx, info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
     if (info.video_stream == -1) {
       JFLog.log("addVideoStream == -1");
       return false;
@@ -73,8 +67,6 @@ public class MediaOutput extends MediaFormat {
     }
     return true;
   }
-
-  private static native int naddAudioStream(long ctx, int codec_id, int bit_rate, int chs, int freq);
 
   /** Adds an audio stream to output.
    * All media streams must be added before calling write()
@@ -88,7 +80,7 @@ public class MediaOutput extends MediaFormat {
    *         info.audio_codec = selected codec
    */
   public boolean addAudioStream(CodecInfo info) {
-    info.audio_stream = naddAudioStream(ctx, info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
+    info.audio_stream = MediaAPI.getInstance().addAudioStream(ctx, info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
     if (info.audio_stream == -1) {
       JFLog.log("addAudioStream == -1");
       return false;
@@ -117,27 +109,22 @@ public class MediaOutput extends MediaFormat {
     return encoder;
   }
 
-  private static native boolean nclose(long ctx);
-
   /** Closes media file and frees resources. */
   public boolean close() {
     if (ctx == 0) return false;
-    boolean res = nclose(ctx);
+    boolean res = MediaAPI.getInstance().outputClose(ctx);
     ctx = 0;
     return res;
   }
 
   private boolean header;
 
-  private static native boolean nwriteHeader(long ctx);
-  private static native boolean nwritePacket(long ctx, int stream, byte[] data, int offset, int length, boolean keyFrame);
-
   public boolean writePacket(Packet packet) {
     if (!header) {
       //write header must be called after streams are added
-      nwriteHeader(ctx);
+      MediaAPI.getInstance().writeHeader(ctx);
       header = true;
     }
-    return nwritePacket(ctx, packet.stream, packet.data, packet.offset, packet.length, packet.keyFrame);
+    return MediaAPI.getInstance().writePacket(ctx, packet.stream, packet.data, packet.offset, packet.length, packet.keyFrame);
   }
 }

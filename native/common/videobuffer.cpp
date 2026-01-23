@@ -20,8 +20,8 @@
 
 #include "register.h"
 
-JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
-  (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height)
+JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_compareFrames
+  (JNIEnv *e, jobject c, jintArray img1, jintArray img2, jint width, jint height)
 {
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
@@ -65,7 +65,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
 }
 
 static JNINativeMethod javaforce_media_VideoBuffer[] = {
-  {"compareFrames", "([I[III)F", (void *)&Java_javaforce_media_VideoBuffer_compareFrames},
+  {"compareFrames", "([I[III)F", (void *)&Java_javaforce_jni_MediaJNI_compareFrames},
 };
 
 extern "C" void videobuffer_register(JNIEnv *env);
@@ -73,6 +73,6 @@ extern "C" void videobuffer_register(JNIEnv *env);
 void videobuffer_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/media/VideoBuffer");
+  cls = findClass(env, "javaforce/jni/MediaJNI");
   registerNatives(env, cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
 }

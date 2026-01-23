@@ -1,7 +1,7 @@
 //MediaOutput
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateFile
-  (JNIEnv *e, jclass c, jstring file, jstring format)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_createFile
+  (JNIEnv *e, jobject c, jstring file, jstring format)
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
@@ -36,8 +36,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateFile
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateIO
-  (JNIEnv *e, jclass c, jobject mio, jstring format)
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_createIO
+  (JNIEnv *e, jobject c, jobject mio, jstring format)
 {
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
@@ -78,8 +78,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaOutput_ncreateIO
   return (jlong)ctx;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddVideoStream
-  (JNIEnv *e, jclass c, jlong ctxptr, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addVideoStream
+  (JNIEnv *e, jobject c, jlong ctxptr, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
@@ -117,8 +117,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddVideoStream
   return ctx->video_stream->index;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddAudioStream
-  (JNIEnv *e, jclass c, jlong ctxptr, jint codec_id, jint bit_rate, jint chs, jint freq)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addAudioStream
+  (JNIEnv *e, jobject c, jlong ctxptr, jint codec_id, jint bit_rate, jint chs, jint freq)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
@@ -143,8 +143,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaOutput_naddAudioStream
   return ctx->audio_stream->index;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nclose
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_outputClose
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
@@ -228,8 +228,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nclose
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nwriteHeader
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writeHeader
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
@@ -243,8 +243,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nwriteHeader
   return ret >= 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaOutput_nwritePacket
-  (JNIEnv *e, jclass c, jlong ctxptr, jint stream, jbyteArray data, jint offset, jint length)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writePacket
+  (JNIEnv *e, jobject c, jlong ctxptr, jint stream, jbyteArray data, jint offset, jint length, jboolean keyFrame)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;

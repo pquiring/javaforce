@@ -404,8 +404,8 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ninit
-  (JNIEnv *e, jclass c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_initlib
+  (JNIEnv *e, jobject c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale)
 {
   if (ffmpeg_loaded) return ffmpeg_loaded;
 
@@ -446,8 +446,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ninit
   return JNI_TRUE;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaCoder_setLogging
-  (JNIEnv *e, jclass c, jboolean state)
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_setLogging
+  (JNIEnv *e, jobject c, jboolean state)
 {
   (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
 }
@@ -562,19 +562,20 @@ static jlong seek_packet(FFContext *ctx, jlong offset, int how) {
 //JNI registration
 
 static JNINativeMethod javaforce_media_MediaCoder[] = {
-  {"ninit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_media_MediaCoder_ninit},
-  {"setLogging", "(Z)V", (void *)&Java_javaforce_media_MediaCoder_setLogging},
+  {"initlib", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_MediaJNI_initlib},
+  {"setLogging", "(Z)V", (void *)&Java_javaforce_jni_MediaJNI_setLogging},
 };
 
 static JNINativeMethod javaforce_media_MediaFormat[] = {
-  {"ngetVideoStream", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetVideoStream},
-  {"ngetAudioStream", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetAudioStream},
-  {"ngetVideoCodecID", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetVideoCodecID},
-  {"ngetAudioCodecID", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetAudioCodecID},
-  {"ngetVideoBitRate", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetVideoBitRate},
-  {"ngetAudioBitRate", "(J)I", (void *)&Java_javaforce_media_MediaFormat_ngetAudioBitRate},
+  {"getVideoStream", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoStream},
+  {"getAudioStream", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioStream},
+  {"getVideoCodecID", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoCodecID},
+  {"getAudioCodecID", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioCodecID},
+  {"getVideoBitRate", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoBitRate},
+  {"getAudioBitRate", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioBitRate},
 };
 
+/*
 static JNINativeMethod javaforce_media_MediaDecoder[] = {
   {"start", "(Ljavaforce/media/MediaIO;IIIIZ)Z", (void *)&Java_javaforce_media_MediaDecoder_start},
   {"startFile", "(Ljava/lang/String;Ljava/lang/String;IIII)Z", (void *)&Java_javaforce_media_MediaDecoder_startFile},
@@ -607,66 +608,67 @@ static JNINativeMethod javaforce_media_MediaEncoder[] = {
   {"stop", "()V", (void *)&Java_javaforce_media_MediaEncoder_stop},
   {"flush", "()V", (void *)&Java_javaforce_media_MediaEncoder_flush},
 };
+*/
 
 static JNINativeMethod javaforce_media_MediaInput[] = {
-  {"nopenFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_media_MediaInput_nopenFile},
-  {"nopenIO", "(Ljavaforce/media/MediaIO;)J", (void *)&Java_javaforce_media_MediaInput_nopenIO},
-  {"ngetDuration", "(J)J", (void *)&Java_javaforce_media_MediaInput_ngetDuration},
-  {"ngetVideoWidth", "(J)I", (void *)&Java_javaforce_media_MediaInput_ngetVideoWidth},
-  {"ngetVideoHeight", "(J)I", (void *)&Java_javaforce_media_MediaInput_ngetVideoHeight},
-  {"ngetVideoFrameRate", "(J)F", (void *)&Java_javaforce_media_MediaInput_ngetVideoFrameRate},
-  {"ngetVideoKeyFrameInterval", "(J)I", (void *)&Java_javaforce_media_MediaInput_ngetVideoKeyFrameInterval},
-  {"ngetAudioChannels", "(J)I", (void *)&Java_javaforce_media_MediaInput_ngetAudioChannels},
-  {"ngetAudioSampleRate", "(J)I", (void *)&Java_javaforce_media_MediaInput_ngetAudioSampleRate},
-  {"nclose", "(J)Z", (void *)&Java_javaforce_media_MediaInput_nclose},
-  {"nopenvideo", "(JII)Z", (void *)&Java_javaforce_media_MediaInput_nopenvideo},
-  {"nopenaudio", "(JII)Z", (void *)&Java_javaforce_media_MediaInput_nopenaudio},
-  {"nread", "(J)I", (void *)&Java_javaforce_media_MediaInput_nread},
-  {"ngetPacketKeyFrame", "(J)Z", (void *)&Java_javaforce_media_MediaInput_ngetPacketKeyFrame},
-  {"ngetPacketData", "(J[BII)I", (void *)&Java_javaforce_media_MediaInput_ngetPacketData},
-  {"nseek", "(JJ)Z", (void *)&Java_javaforce_media_MediaInput_nseek},
+  {"openFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_openFile},
+  {"openIO", "(Ljavaforce/media/MediaIO;)J", (void *)&Java_javaforce_jni_MediaJNI_openIO},
+  {"getDuration", "(J)J", (void *)&Java_javaforce_jni_MediaJNI_getDuration},
+  {"getVideoWidth", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoWidth},
+  {"getVideoHeight", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoHeight},
+  {"getVideoFrameRate", "(J)F", (void *)&Java_javaforce_jni_MediaJNI_getVideoFrameRate},
+  {"getVideoKeyFrameInterval", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoKeyFrameInterval},
+  {"getAudioChannels", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioChannels},
+  {"getAudioSampleRate", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioSampleRate},
+  {"inputClose", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_inputClose},
+  {"openvideo", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_openvideo},
+  {"openaudio", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_openaudio},
+  {"inputRead", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_inputRead},
+  {"getPacketKeyFrame", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_getPacketKeyFrame},
+  {"getPacketData", "(J[BII)I", (void *)&Java_javaforce_jni_MediaJNI_getPacketData},
+  {"inputSeek", "(JJ)Z", (void *)&Java_javaforce_jni_MediaJNI_inputSeek},
 };
 
 static JNINativeMethod javaforce_media_MediaOutput[] = {
-  {"ncreateFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_media_MediaOutput_ncreateFile},
-  {"ncreateIO", "(Ljavaforce/media/MediaIO;Ljava/lang/String;)J", (void *)&Java_javaforce_media_MediaOutput_ncreateIO},
-  {"naddVideoStream", "(JIIIIFI)I", (void *)&Java_javaforce_media_MediaOutput_naddVideoStream},
-  {"naddAudioStream", "(JIIII)I", (void *)&Java_javaforce_media_MediaOutput_naddAudioStream},
-  {"nclose", "(J)Z", (void *)&Java_javaforce_media_MediaOutput_nclose},
-  {"nwriteHeader", "(J)Z", (void *)&Java_javaforce_media_MediaOutput_nwriteHeader},
-  {"nwritePacket", "(JI[BIIZ)Z", (void *)&Java_javaforce_media_MediaOutput_nwritePacket},
+  {"createFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_createFile},
+  {"createIO", "(Ljavaforce/media/MediaIO;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_createIO},
+  {"addVideoStream", "(JIIIIFI)I", (void *)&Java_javaforce_jni_MediaJNI_addVideoStream},
+  {"addAudioStream", "(JIIII)I", (void *)&Java_javaforce_jni_MediaJNI_addAudioStream},
+  {"outputClose", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_outputClose},
+  {"writeHeader", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_writeHeader},
+  {"writePacket", "(JI[BIIZ)Z", (void *)&Java_javaforce_jni_MediaJNI_writePacket},
 };
 
 static JNINativeMethod javaforce_media_MediaAudioDecoder[] = {
-  {"nstart", "(III)J", (void *)&Java_javaforce_media_MediaAudioDecoder_nstart},
-  {"nstop", "(J)V", (void *)&Java_javaforce_media_MediaAudioDecoder_nstop},
-  {"ndecode", "(J[BII)[S", (void *)&Java_javaforce_media_MediaAudioDecoder_ndecode},
-  {"ngetChannels", "(J)I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetChannels},
-  {"ngetSampleRate", "(J)I", (void *)&Java_javaforce_media_MediaAudioDecoder_ngetSampleRate},
-  {"nchange", "(JII)Z", (void *)&Java_javaforce_media_MediaAudioDecoder_nchange},
+  {"audioDecoderStart", "(III)J", (void *)&Java_javaforce_jni_MediaJNI_audioDecoderStart},
+  {"audioDecoderStop", "(J)V", (void *)&Java_javaforce_jni_MediaJNI_audioDecoderStop},
+  {"audioDecoderDecode", "(J[BII)[S", (void *)&Java_javaforce_jni_MediaJNI_audioDecoderDecode},
+  {"audioDecoderGetChannels", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_audioDecoderGetChannels},
+  {"audioDecoderGetSampleRate", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_audioDecoderGetSampleRate},
+  {"audioDecoderChange", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_audioDecoderChange},
 };
 
 static JNINativeMethod javaforce_media_MediaVideoDecoder[] = {
-  {"nstart", "(III)J", (void *)&Java_javaforce_media_MediaVideoDecoder_nstart},
-  {"nstop", "(J)V", (void *)&Java_javaforce_media_MediaVideoDecoder_nstop},
-  {"ndecode", "(J[BII)[I", (void *)&Java_javaforce_media_MediaVideoDecoder_ndecode},
-  {"ngetWidth", "(J)I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetWidth},
-  {"ngetHeight", "(J)I", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetHeight},
-  {"ngetFrameRate", "(J)F", (void *)&Java_javaforce_media_MediaVideoDecoder_ngetFrameRate},
-  {"nchange", "(JII)Z", (void *)&Java_javaforce_media_MediaVideoDecoder_nchange},
+  {"videoDecoderStart", "(III)J", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderStart},
+  {"videoDecoderStop", "(J)V", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderStop},
+  {"videoDecoderDecode", "(J[BII)[I", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderDecode},
+  {"videoDecoderGetWidth", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderGetWidth},
+  {"videoDecoderGetHeight", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderGetHeight},
+  {"videoDecoderGetFrameRate", "(J)F", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderGetFrameRate},
+  {"videoDecoderChange", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_videoDecoderChange},
 };
 
 static JNINativeMethod javaforce_media_MediaAudioEncoder[] = {
-  {"nstart", "(IIII)J", (void *)&Java_javaforce_media_MediaAudioEncoder_nstart},
-  {"nstop", "(J)V", (void *)&Java_javaforce_media_MediaAudioEncoder_nstop},
-  {"nencode", "(J[SII)[B", (void *)&Java_javaforce_media_MediaAudioEncoder_nencode},
-  {"ngetAudioFramesize", "(J)I", (void *)&Java_javaforce_media_MediaAudioEncoder_ngetAudioFramesize},
+  {"audioEncoderStart", "(IIII)J", (void *)&Java_javaforce_jni_MediaJNI_audioEncoderStart},
+  {"audioEncoderStop", "(J)V", (void *)&Java_javaforce_jni_MediaJNI_audioEncoderStop},
+  {"audioEncoderEncode", "(J[SII)[B", (void *)&Java_javaforce_jni_MediaJNI_audioEncoderEncode},
+  {"audioEncoderGetAudioFramesize", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize},
 };
 
 static JNINativeMethod javaforce_media_MediaVideoEncoder[] = {
-  {"nstart", "(IIIIFI)J", (void *)&Java_javaforce_media_MediaVideoEncoder_nstart},
-  {"nstop", "(J)V", (void *)&Java_javaforce_media_MediaVideoEncoder_nstop},
-  {"nencode", "(J[III)[B", (void *)&Java_javaforce_media_MediaVideoEncoder_nencode},
+  {"videoEncoderStart", "(IIIIFI)J", (void *)&Java_javaforce_jni_MediaJNI_videoEncoderStart},
+  {"videoEncoderStop", "(J)V", (void *)&Java_javaforce_jni_MediaJNI_videoEncoderStop},
+  {"videoEncoderEncode", "(J[III)[B", (void *)&Java_javaforce_jni_MediaJNI_videoEncoderEncode},
 };
 
 extern "C" void ffmpeg_register(JNIEnv *env);
@@ -674,33 +676,25 @@ extern "C" void ffmpeg_register(JNIEnv *env);
 void ffmpeg_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/media/MediaCoder");
+  cls = findClass(env, "javaforce/jni/MediaJNI");
+
   registerNatives(env, cls, javaforce_media_MediaCoder, sizeof(javaforce_media_MediaCoder)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaFormat");
   registerNatives(env, cls, javaforce_media_MediaFormat, sizeof(javaforce_media_MediaFormat)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaDecoder");
-  registerNatives(env, cls, javaforce_media_MediaDecoder, sizeof(javaforce_media_MediaDecoder)/sizeof(JNINativeMethod));
+//  registerNatives(env, cls, javaforce_media_MediaDecoder, sizeof(javaforce_media_MediaDecoder)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaEncoder");
-  registerNatives(env, cls, javaforce_media_MediaEncoder, sizeof(javaforce_media_MediaEncoder)/sizeof(JNINativeMethod));
+//  registerNatives(env, cls, javaforce_media_MediaEncoder, sizeof(javaforce_media_MediaEncoder)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaInput");
   registerNatives(env, cls, javaforce_media_MediaInput, sizeof(javaforce_media_MediaInput)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaOutput");
   registerNatives(env, cls, javaforce_media_MediaOutput, sizeof(javaforce_media_MediaOutput)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaAudioDecoder");
   registerNatives(env, cls, javaforce_media_MediaAudioDecoder, sizeof(javaforce_media_MediaAudioDecoder)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaVideoDecoder");
   registerNatives(env, cls, javaforce_media_MediaVideoDecoder, sizeof(javaforce_media_MediaVideoDecoder)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaAudioEncoder");
   registerNatives(env, cls, javaforce_media_MediaAudioEncoder, sizeof(javaforce_media_MediaAudioEncoder)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/media/MediaVideoEncoder");
   registerNatives(env, cls, javaforce_media_MediaVideoEncoder, sizeof(javaforce_media_MediaVideoEncoder)/sizeof(JNINativeMethod));
 }

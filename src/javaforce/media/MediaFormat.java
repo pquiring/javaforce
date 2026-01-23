@@ -7,39 +7,27 @@ package javaforce.media;
  */
 
 public class MediaFormat extends MediaCoder {
-  private static native int ngetVideoStream(long ctx);
-
   public int getVideoStream() {
-    return ngetVideoStream(ctx);
+    return MediaAPI.getInstance().getVideoStream(ctx);
   }
-
-  private static native int ngetAudioStream(long ctx);
 
   public int getAudioStream() {
-    return ngetAudioStream(ctx);
+    return MediaAPI.getInstance().getAudioStream(ctx);
   }
-
-  private static native int ngetVideoCodecID(long ctx);
 
   public int getVideoCodecID() {
-    return ngetVideoCodecID(ctx);
+    return MediaAPI.getInstance().getVideoCodecID(ctx);
   }
-
-  private static native int ngetAudioCodecID(long ctx);
 
   public int getAudioCodecID() {
-    return ngetAudioCodecID(ctx);
+    return MediaAPI.getInstance().getAudioCodecID(ctx);
   }
-
-  private static native int ngetVideoBitRate(long ctx);
 
   public int getVideoBitRate() {
-    return ngetVideoBitRate(ctx);
+    return MediaAPI.getInstance().getVideoBitRate(ctx);
   }
 
-  private static native int ngetAudioBitRate(long ctx);
-
   public int getAudioBitRate() {
-    return ngetAudioBitRate(ctx);
+    return MediaAPI.getInstance().getAudioBitRate(ctx);
   }
 }

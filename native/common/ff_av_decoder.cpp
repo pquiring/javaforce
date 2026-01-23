@@ -1,6 +1,6 @@
 //audio decoder codebase
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioDecoderStart
   (JNIEnv *e, jobject c, jint codec_id, jint chs, jint freq)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -53,7 +53,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaAudioDecoder_nstart
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioDecoder_nstop
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioDecoderStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -86,7 +86,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaAudioDecoder_nstop
   freeFFContext(e,c,ctx);
 }
 
-JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
+JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
   (JNIEnv *e, jobject c, jlong ctxptr, jbyteArray data, jint offset, jint length)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -209,7 +209,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaAudioDecoder_ndecode
   return ctx->jaudio;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetChannels
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioDecoderGetChannels
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -217,7 +217,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetChannels
   return ctx->dst_nb_channels;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetSampleRate
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioDecoderGetSampleRate
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -226,7 +226,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaAudioDecoder_ngetSampleRate
   return ctx->audio_codec_ctx->sample_rate;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaAudioDecoder_nchange
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_audioDecoderChange
   (JNIEnv *e, jobject c, jlong ctxptr, jint chs, jint freq)
 {
   //TODO
@@ -235,7 +235,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaAudioDecoder_nchange
 
 //video decoder codebase
 
-JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoDecoderStart
   (JNIEnv *e, jobject c, jint codec_id, jint width, jint height)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -278,7 +278,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaVideoDecoder_nstart
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nstop
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoDecoderStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -319,7 +319,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_nstop
   freeFFContext(e,c,ctx);
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_MediaJNI_videoDecoderDecode
   (JNIEnv *e, jobject c, jlong ctxptr, jbyteArray data, jint offset, jint length)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -393,7 +393,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_ndecode
   return ctx->jvideo;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_ngetWidth
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_videoDecoderGetWidth
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -402,7 +402,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_ngetWidth
   return ctx->video_codec_ctx->width;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_ngetHeight
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_videoDecoderGetHeight
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -411,7 +411,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_ngetHeight
   return ctx->video_codec_ctx->height;
 }
 
-JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_ngetFrameRate
+JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_videoDecoderGetFrameRate
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -421,7 +421,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_ngetFrameRate
   return ctx->video_codec_ctx->framerate.num / ctx->video_codec_ctx->framerate.den;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_nchange
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_videoDecoderChange
   (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);

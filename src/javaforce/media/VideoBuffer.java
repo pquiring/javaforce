@@ -89,5 +89,7 @@ public class VideoBuffer {
   }
 
   /** Compares two frames returning percentage of pixels that are different. */
-  public static native float compareFrames(int[] frame1, int[] frame2, int width, int height);
+  public static float compareFrames(int[] frame1, int[] frame2, int width, int height) {
+    return MediaAPI.getInstance().compareFrames(frame1, frame2, width, height);
+  }
 }

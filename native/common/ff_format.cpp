@@ -1,7 +1,7 @@
 //MediaFormat native methods
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoStream
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getVideoStream
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
@@ -9,8 +9,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoStream
   return ctx->video_stream->index;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioStream
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getAudioStream
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
@@ -18,8 +18,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioStream
   return ctx->audio_stream->index;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoCodecID
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getVideoCodecID
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
@@ -27,8 +27,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoCodecID
   return ctx->video_stream->codecpar->codec_id;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioCodecID
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getAudioCodecID
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
@@ -36,8 +36,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioCodecID
   return ctx->audio_stream->codecpar->codec_id;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoBitRate
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getVideoBitRate
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
@@ -46,8 +46,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetVideoBitRate
   return ctx->video_codec_ctx->bit_rate;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_media_MediaFormat_ngetAudioBitRate
-  (JNIEnv *e, jclass c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getAudioBitRate
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
