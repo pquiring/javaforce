@@ -33,6 +33,10 @@ public abstract class DAQmx {
     return instance;
   }
 
+  public static boolean loaded() {
+    return instance != null;
+  }
+
   public abstract boolean init();
 
   public abstract long createTask();

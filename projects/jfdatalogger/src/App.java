@@ -1078,7 +1078,7 @@ public class App extends javax.swing.JFrame {
         JFAWT.showError("Error", "No tags defined");
         return;
       }
-      if (hasNITag() && !javaforce.controls.ni.DAQmx.loaded) {
+      if (hasNITag() && !javaforce.controls.ni.DAQmx.loaded() ){
         JFAWT.showError("Error", "Project contains NI Tags but NI DLL not found.");
         return;
       }
