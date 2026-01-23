@@ -24,9 +24,9 @@ public class ScanNetwork {
   }
 
   private byte[] run() {
-    PacketCapture cap = new PacketCapture();
-    cap.debug = debug;
-    String nif = cap.findInterface(nifip);
+    PacketCapture cap = PacketCapture.getInstance();
+//    PacketCapture.debug = debug;
+    String nif = PacketCapture.findInterface(nifip);
     if (nif == null) {
       JFLog.log("Error:Network Interface not found for IP:" + nifip);
       return null;
@@ -57,7 +57,7 @@ public class ScanNetwork {
         if (debug) {
           JFLog.log("ARP:" + PacketCapture.build_ip(ip_first));
         }
-        mac = cap.arp(id, PacketCapture.build_ip(ip_first), 2000);
+        mac = PacketCapture.arp(id, PacketCapture.build_ip(ip_first), 2000);
         ok = mac != null;
         JF.sleep(250);  //avoid hammering the network
         if (ok) {

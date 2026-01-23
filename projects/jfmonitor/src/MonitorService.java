@@ -81,8 +81,8 @@ public class MonitorService extends Thread {
     Paths.init();
 
     //load pcap library
-    capture = new PacketCapture();
-    if (!capture.init()) {
+    capture = PacketCapture.getInstance();
+    if (capture == null) {
       JFLog.log("pcap init failed");
     } else {
       JFLog.log("pcap init successful");
