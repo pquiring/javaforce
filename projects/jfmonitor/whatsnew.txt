@@ -1,3 +1,6 @@
+Jan 23/2026 : 0.23 released
+  - fix : version bump for native changes
+
 Nov 3/2025 : 0.22 released
   - new : added CLI button for switches
     - popup a terminal directly to switch
@@ -17,7 +20,7 @@ Dec 16/2024 : 0.18 released
     - fixed NPE preventing new VLAN modification
 
 Dec 9/2024 : 0.17 released
-  - fix : cisco : create VLAN 
+  - fix : cisco : create VLAN
     - wait until new VLAN is created before modifying VLAN
 
 Aug 19/2024 : 0.16 released
