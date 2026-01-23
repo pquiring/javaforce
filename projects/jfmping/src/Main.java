@@ -22,7 +22,8 @@ public class Main extends javax.swing.JFrame {
   public Main() {
     initComponents();
     resized();
-    if (!PacketCapture.init()) {
+    PacketCapture cap = PacketCapture.getInstance();
+    if (cap == null) {
       JFAWT.showError("error", "unable to init packet capture");
       System.exit(1);
     }
@@ -218,9 +219,9 @@ public class Main extends javax.swing.JFrame {
           System.out.println("no IPs to monitor");
           return;
         }
-        pcap = new PacketCapture();
+        pcap = PacketCapture.getInstance();
 //        PacketCapture.debug = true;
-        iface_nic = pcap.findInterface(iface_ip.toString());
+        iface_nic = PacketCapture.findInterface(iface_ip.toString());
         if (iface_nic == null) {
           System.out.println("unable to find proper interface");
           return;
@@ -230,14 +231,14 @@ public class Main extends javax.swing.JFrame {
           System.out.println("unable to start pcap");
           return;
         }
-        PacketCapture.compile(id, "arp");
+        pcap.compile(id, "arp");
         pos = 0;
         while (active) {
           img.line(pos, 0, pos, ips.size()-1, 0x000000);  //black line
           updateImage();
           for(int a=0;a<ips.size();a++) {
             IP4 ip = ips.get(a);
-            byte[] mac = pcap.arp(id, ip.toString(), timeout);
+            byte[] mac = PacketCapture.arp(id, ip.toString(), timeout);
             if (mac == null) {
               img.putPixel(pos, a, 0xff0000);  //red
             } else {
@@ -252,7 +253,7 @@ public class Main extends javax.swing.JFrame {
           updateImage();
           JF.sleep(delay);
         }
-        PacketCapture.stop(id);
+        pcap.stop(id);
       } catch (Exception e) {
         JFLog.log(e);
       }
