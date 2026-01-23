@@ -53,6 +53,7 @@ public class Audio {
   private int underBufferCount;
   private Wav8k inWav, outWav;
   private int speakerDelay = 0;
+//  private Speex speex;
   private long dsp_ctx = 0;
   private int sample_rate;
   private float f_sample_rate;
@@ -83,7 +84,7 @@ public class Audio {
     //setup inbound ring tone
     loadRingTones();
 
-    dsp_ctx = speex.speex_dsp_init(sample_rate);
+    dsp_ctx = speex.getInstance().speex_dsp_init(sample_rate);
 
     if (!start()) return false;
 
@@ -204,7 +205,7 @@ public class Audio {
     }
     stop();
     if (dsp_ctx != 0) {
-      speex.speex_dsp_uninit(dsp_ctx);
+      speex.getInstance().speex_dsp_uninit(dsp_ctx);
       dsp_ctx = 0;
     }
     inWav = null;
@@ -477,7 +478,7 @@ public class Audio {
       if (read(outdata)) {
         underBufferCount = 0;
         if (Settings.current.speakerMode && Settings.current.dsp_echo_cancel && dsp_ctx != 0) {
-          speex.speex_dsp_echo(dsp_ctx, outdata, mixed, dspdata);
+          speex.getInstance().speex_dsp_echo(dsp_ctx, outdata, mixed, dspdata);
           System.arraycopy(dspdata, 0, outdata, 0, bufsiz);
         }
       } else {
