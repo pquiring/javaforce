@@ -1,5 +1,8 @@
 Whats' new....
 
+Jan 23, 2026 - v0.23 released
+  - fix : version bump for native changes
+
 Feb 20, 2024 - v0.22 released
   - fix : memory leaks
 
