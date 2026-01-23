@@ -1,3 +1,6 @@
+2026-01-23 : 9.2 released!
+  - fix : version bump for native changes
+
 2025-11-03 : 9.1 released!
   - fix : ui changes
 
