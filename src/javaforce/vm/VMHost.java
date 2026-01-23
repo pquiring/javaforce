@@ -10,15 +10,15 @@ import java.io.*;
 import javaforce.linux.*;
 
 public class VMHost {
-  public long total_emory() {
+  public static long total_memory() {
     return VMAPI.getInstance().totalMemory();
   }
 
-  public long free_memory() {
+  public static long free_memory() {
     return VMAPI.getInstance().freeMemory();
   }
 
-  public long cpu_load() {
+  public static long cpu_load() {
     return VMAPI.getInstance().cpuLoad();
   }
 
@@ -32,7 +32,7 @@ public class VMHost {
    * @param hour = hour (24)
    * @param sample = (0-180)
    */
-  public boolean get_all_stats(int year, int month, int day, int hour, int sample) {
+  public static boolean get_all_stats(int year, int month, int day, int hour, int sample) {
     return VMAPI.getInstance().getAllStats(year, month, day, hour, sample);
   }
 
