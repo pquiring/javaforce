@@ -80,6 +80,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
     ctx->audio_src_data[0] = (uint8_t*)samples_data;
     if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:swr_convert:%p,%p,%d,%p,%d\n", ctx->swr_ctx, ctx->audio_dst_data, nb_samples, ctx->audio_src_data, nb_samples);
     ret = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples, ctx->audio_src_data, nb_samples);
+    ctx->audio_src_data[0] = NULL;
     if (ret < 0) {
       printf("MediaAudioEncoder:swr_convert() failed : %d\n", ret);
       return NULL;

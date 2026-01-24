@@ -676,6 +676,7 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
     int ret;
     ret = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples
       , ctx->audio_src_data, nb_samples);
+    ctx->audio_src_data[0] = NULL;
   } else {
     ctx->audio_dst_data[0] = (uint8_t*)samples_data;
   }

@@ -158,6 +158,32 @@ struct FFContext {
   }
 };
 
+//check for unfreed resources
+void ff_check(FFContext *ctx) {
+  if (ctx->fmt_ctx != NULL) printf("Warning:FF:fmt_ctx not freed!\n");
+  if (ctx->io_ctx != NULL) printf("Warning:FF:io_ctx not freed!\n");
+//  if (ctx->video_stream != NULL) printf("Warning:FF:video_stream not freed!\n");
+  if (ctx->video_codec_ctx != NULL) printf("Warning:FF:video_codec_ctx not freed!\n");
+  if (ctx->sws_ctx != NULL) printf("Warning:FF:sws_ctx not freed!\n");
+  if (ctx->decode_buffer != NULL) printf("Warning:FF:decode_buffer not freed!\n");
+  if (ctx->video_dst_data[0] != NULL) printf("Warning:FF:video_dst_data[0] not freed!\n");
+  if (ctx->rgb_video_dst_data[0] != NULL) printf("Warning:FF:rgb_video_dst_data[0] not freed!\n");
+//  if (ctx->audio_stream != NULL) printf("Warning:FF:audio_stream not freed!\n");
+  if (ctx->audio_codec_ctx != NULL) printf("Warning:FF:audio_codec_ctx not freed!\n");
+  if (ctx->audio_dst_data[0] != NULL) printf("Warning:FF:audio_dst_data[0] not freed!\n");
+  if (ctx->frame != NULL) printf("Warning:FF:frame not freed!\n");
+  if (ctx->audio_frame != NULL) printf("Warning:FF:audio_frame not freed!\n");
+  if (ctx->video_frame != NULL) printf("Warning:FF:video_frame not freed!\n");
+  if (ctx->src_pic != NULL) printf("Warning:FF:src_pic not freed!\n");
+  if (ctx->audio_buffer != NULL) printf("Warning:FF:audio_buffer not freed!\n");
+  if (ctx->audio_src_data[0] != NULL) printf("Warning:FF:audio_src_data[0] not freed!\n");
+  if (ctx->sws_ctx != NULL) printf("Warning:FF:sws_ctx not freed!\n");
+  if (ctx->sws_ctx != NULL) printf("Warning:FF:sws_ctx not freed!\n");
+  if (ctx->sws_ctx != NULL) printf("Warning:FF:sws_ctx not freed!\n");
+  if (ctx->sws_ctx != NULL) printf("Warning:FF:sws_ctx not freed!\n");
+  if (ctx->sws_ctx != NULL) printf("Warning:FF:sws_ctx not freed!\n");
+}
+
 #define ffiobufsiz (64 * 1024)
 
 //reflection ctx
@@ -199,6 +225,7 @@ void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
     e->DeleteGlobalRef(ctx->mio);
     ctx->mio = NULL;
   }
+  ff_check(ctx);
   (*_av_free)(ctx);
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
@@ -233,5 +260,6 @@ void freeFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
     e->DeleteGlobalRef(ctx->mio);
     ctx->mio = NULL;
   }
+  ff_check(ctx);
   (*_av_free)(ctx);
 }
