@@ -19,6 +19,7 @@ package javaforce.gl;
 
 import javaforce.*;
 import javaforce.jni.*;
+import javaforce.ffm.*;
 
 public interface GL {
 
@@ -30,7 +31,11 @@ public interface GL {
    *
    */
   public static GL getInstance() {
-    return GLJNI.getInstance();
+    if (FFM.enabled) {
+      return GLFFM.getInstance();
+    } else {
+      return GLJNI.getInstance();
+    }
   }
 
   public static final boolean debug = false;  //enable to see lots of debug info

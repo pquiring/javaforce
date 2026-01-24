@@ -262,6 +262,8 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
   }
 
+  opts[nOpts++] = (char*)"--enable-native-access=ALL-UNNAMED";
+  opts[nOpts++] = MakeString("-Djava.app.exec=%s", g_argv[0]);
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
   opts[nOpts++] = MakeString("-Djava.app.name=%s", mainclass);
   opts[nOpts++] = MakeString("-Dvisualvm.display.name=%s", mainclass);

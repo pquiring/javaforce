@@ -155,7 +155,7 @@ This should be removed for any public release.
 
 Requirements
 ------------
-  - JDK 17+
+  - JDK 25+
   - Apache Ant 1.10+
   - Linux : gcc
   - Windows : VC++, wixtoolset 4+

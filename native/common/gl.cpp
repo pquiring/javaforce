@@ -5,77 +5,84 @@
 jboolean glPlatformInit();
 jboolean glGetFunction(void **funcPtr, const char *name);  //platform impl
 
-void (*_glActiveTexture)(int);
-void (*_glAlphaFunc)(int,int);
-void (*_glAttachShader)(int,int);
-void (*_glBindBuffer)(int,int);
-void (*_glBindFramebuffer)(int,int);
-void (*_glBindRenderbuffer)(int,int);
-void (*_glBindTexture)(int,int);
-void (*_glBlendFunc)(int,int);
-void (*_glBufferData)(int,void*,void *,int);
-void (*_glClear)(int);
-void (*_glClearColor)(float,float,float,float);
-void (*_glClearStencil)(int);
-void (*_glColorMask)(jboolean,jboolean,jboolean,jboolean);
-void (*_glCompileShader)(int);
-int (*_glCreateProgram)();
-int (*_glCreateShader)(int);
-void (*_glCullFace)(int);
-void (*_glDeleteBuffers)(int,int *);
-void (*_glDeleteFramebuffers)(int,int *);
-void (*_glDeleteRenderbuffers)(int,int *);
-void (*_glDeleteTextures)(int,int *);
-void (*_glDrawElements)(int,int,int,void*);
-void (*_glDepthFunc)(int);
-void (*_glDisable)(int);
-void (*_glDisableVertexAttribArray)(int);
-void (*_glDepthMask)();
-void (*_glEnable)();
-void (*_glEnableVertexAttribArray)();
-void (*_glFlush)();
-void (*_glFramebufferTexture2D)(int,int,int,int,int);
-void (*_glFramebufferRenderbuffer)(int,int,int,int);
-void (*_glFrontFace)(int);
-int (*_glGetAttribLocation)(int,const char *);
-int (*_glGetError)();
-const char* (*_glGetProgramInfoLog)(int,int,int*,char*);
-const char* (*_glGetShaderInfoLog)(int,int,int*,char*);
-const char* (*_glGetString)(int);
-void (*_glGetIntegerv)(int,int *);
-void (*_glGenBuffers)(int,int *);
-void (*_glGenFramebuffers)(int,int *);
-void (*_glGenRenderbuffers)(int,int *);
-void (*_glGenTextures)(int,int *);
-int (*_glGetUniformLocation)(int,const char *);
-void (*_glLinkProgram)(int);
-void (*_glPixelStorei)(int,int);
-void (*_glReadPixels)(int,int,int,int,int,int,int *);
-void (*_glRenderbufferStorage)(int,int,int,int);
-int (*_glShaderSource)(int,int,const char**,int *);
-int (*_glStencilFunc)(int,int,int);
-int (*_glStencilMask)(int);
-int (*_glStencilOp)(int,int,int);
-void (*_glTexImage2D)(int,int,int,int,int,int,int,int,int *);
-void (*_glTexSubImage2D)(int,int,int,int,int,int,int,int,int *);
-void (*_glTexParameteri)(int,int,int);
-void (*_glUseProgram)(int);
-void (*_glUniformMatrix4fv)(int,int,int,float *);
-void (*_glUniform4fv)(int,int,float *);
-void (*_glUniform3fv)(int,int,float *);
-void (*_glUniform2fv)(int,int,float *);
-void (*_glUniform1f)(int, float);
-void (*_glUniform4iv)(int,int,int *);
-void (*_glUniform3iv)(int,int,int *);
-void (*_glUniform2iv)(int,int,int *);
-void (*_glUniform1i)(int,int);
-void (*_glVertexAttribPointer)(int, int, int, int, int, void*);
-void (*_glViewport)(int, int, int, int);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// _jni_GLJNI_ -> _jni_GLJNI_
+JNIEXPORT jboolean JNICALL GLinit();
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_GLJNI_init
-  (JNIEnv *e, jobject c)
+JNIEXPORT void (*_glActiveTexture)(int);
+JNIEXPORT void (*_glAlphaFunc)(int,int);
+JNIEXPORT void (*_glAttachShader)(int,int);
+JNIEXPORT void (*_glBindBuffer)(int,int);
+JNIEXPORT void (*_glBindFramebuffer)(int,int);
+JNIEXPORT void (*_glBindRenderbuffer)(int,int);
+JNIEXPORT void (*_glBindTexture)(int,int);
+JNIEXPORT void (*_glBlendFunc)(int,int);
+JNIEXPORT void (*_glBufferData)(int,void*,void*,int);
+JNIEXPORT void (*_glClear)(int);
+JNIEXPORT void (*_glClearColor)(float,float,float,float);
+JNIEXPORT void (*_glClearStencil)(int);
+JNIEXPORT void (*_glColorMask)(jboolean,jboolean,jboolean,jboolean);
+JNIEXPORT void (*_glCompileShader)(int);
+JNIEXPORT int (*_glCreateProgram)();
+JNIEXPORT int (*_glCreateShader)(int);
+JNIEXPORT void (*_glCullFace)(int);
+JNIEXPORT void (*_glDeleteBuffers)(int,int *);
+JNIEXPORT void (*_glDeleteFramebuffers)(int,int *);
+JNIEXPORT void (*_glDeleteRenderbuffers)(int,int *);
+JNIEXPORT void (*_glDeleteTextures)(int,int *);
+JNIEXPORT void (*_glDrawElements)(int,int,int,void*);
+JNIEXPORT void (*_glDepthFunc)(int);
+JNIEXPORT void (*_glDisable)(int);
+JNIEXPORT void (*_glDisableVertexAttribArray)(int);
+JNIEXPORT void (*_glDepthMask)();
+JNIEXPORT void (*_glEnable)();
+JNIEXPORT void (*_glEnableVertexAttribArray)();
+JNIEXPORT void (*_glFlush)();
+JNIEXPORT void (*_glFramebufferTexture2D)(int,int,int,int,int);
+JNIEXPORT void (*_glFramebufferRenderbuffer)(int,int,int,int);
+JNIEXPORT void (*_glFrontFace)(int);
+JNIEXPORT int (*_glGetAttribLocation)(int,const char *);
+JNIEXPORT int (*_glGetError)();
+JNIEXPORT const char* (*_glGetProgramInfoLog)(int,int,int*,char*);
+JNIEXPORT const char* (*_glGetShaderInfoLog)(int,int,int*,char*);
+JNIEXPORT const char* (*_glGetString)(int);
+JNIEXPORT void (*_glGetIntegerv)(int,int *);
+JNIEXPORT void (*_glGenBuffers)(int,int *);
+JNIEXPORT void (*_glGenFramebuffers)(int,int *);
+JNIEXPORT void (*_glGenRenderbuffers)(int,int *);
+JNIEXPORT void (*_glGenTextures)(int,int *);
+JNIEXPORT int (*_glGetUniformLocation)(int,const char *);
+JNIEXPORT void (*_glLinkProgram)(int);
+JNIEXPORT void (*_glPixelStorei)(int,int);
+JNIEXPORT void (*_glReadPixels)(int,int,int,int,int,int,int *);
+JNIEXPORT void (*_glRenderbufferStorage)(int,int,int,int);
+JNIEXPORT int (*_glShaderSource)(int,int,const char**,int *);
+JNIEXPORT int (*_glStencilFunc)(int,int,int);
+JNIEXPORT int (*_glStencilMask)(int);
+JNIEXPORT int (*_glStencilOp)(int,int,int);
+JNIEXPORT void (*_glTexImage2D)(int,int,int,int,int,int,int,int,int *);
+JNIEXPORT void (*_glTexSubImage2D)(int,int,int,int,int,int,int,int,int *);
+JNIEXPORT void (*_glTexParameteri)(int,int,int);
+JNIEXPORT void (*_glUseProgram)(int);
+JNIEXPORT void (*_glUniformMatrix4fv)(int,int,int,float *);
+JNIEXPORT void (*_glUniform4fv)(int,int,float *);
+JNIEXPORT void (*_glUniform3fv)(int,int,float *);
+JNIEXPORT void (*_glUniform2fv)(int,int,float *);
+JNIEXPORT void (*_glUniform1f)(int, float);
+JNIEXPORT void (*_glUniform4iv)(int,int,int *);
+JNIEXPORT void (*_glUniform3iv)(int,int,int *);
+JNIEXPORT void (*_glUniform2iv)(int,int,int *);
+JNIEXPORT void (*_glUniform1i)(int,int);
+JNIEXPORT void (*_glVertexAttribPointer)(int, int, int, int, int, void*);
+JNIEXPORT void (*_glViewport)(int, int, int, int);
+
+#ifdef __cplusplus
+}
+#endif
+
+JNIEXPORT jboolean JNICALL GLinit()
 {
   if (!glPlatformInit()) return JNI_FALSE;
   glGetFunction((void**)&_glActiveTexture,"glActiveTexture");
@@ -145,6 +152,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_GLJNI_init
   glGetFunction((void**)&_glVertexAttribPointer,"glVertexAttribPointer");
   glGetFunction((void**)&_glViewport,"glViewport");
   return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GLJNI_init
+  (JNIEnv *e, jobject c)
+{
+  return GLinit();
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_GLJNI_glActiveTexture

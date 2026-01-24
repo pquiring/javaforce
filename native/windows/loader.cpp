@@ -274,6 +274,8 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
   }
+  opts[nOpts++] = "--enable-native-access=ALL-UNNAMED";
+  opts[nOpts++] = MakeString("-Djava.app.exec=%s", module);
   opts[nOpts++] = MakeString("-Djava.app.home=%s", exepath);
   opts[nOpts++] = MakeString("-Djava.app.name=%s", mainclass);
   opts[nOpts++] = MakeString("-Dvisualvm.display.name=%s", mainclass);
@@ -734,7 +736,6 @@ int main(int argc, char **argv)
   g_argc = argc;
 
   GetModuleFileName(NULL, module, MAX_PATH);
-  trim(module, '.');
   strcpy(exepath, module);
   trim(exepath, '\\');
 

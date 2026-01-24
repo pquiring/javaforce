@@ -1,7 +1,7 @@
 <project name="native" default="linux" basedir=".">
   <description>native</description>
 
-  <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
+  <property name="opt" value="-O3 -Wl,--export-dynamic"/>  <!-- change to -g to debug -->
 
   <macrodef name="build" description="create linux natives">
     <attribute name="libs"/>
