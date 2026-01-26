@@ -28,7 +28,7 @@ public class ExecSymbolLookup implements SymbolLookup {
   private static boolean debug = false;
 
   public boolean init(FFM ffm) {
-    JFLog.log("ExecSymbolLookup init");
+    if (debug) JFLog.log("ExecSymbolLookup init");
     try {
       arena = Arena.global();
       if (JF.isWindows()) {
