@@ -5,11 +5,16 @@ package javaforce.media;
  * @author pquiring
  */
 
+import javaforce.ffm.*;
 import javaforce.jni.*;
 
 public interface CameraAPI {
   public static CameraAPI getInstance() {
-    return new CameraJNI();
+    if (FFM.enabled()) {
+      return CameraFFM.getInstance();
+    } else {
+      return CameraJNI.getInstance();
+    }
   }
 
   public long cameraInit();

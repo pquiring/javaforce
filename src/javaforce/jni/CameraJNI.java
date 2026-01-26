@@ -8,6 +8,15 @@ package javaforce.jni;
 import javaforce.media.*;
 
 public class CameraJNI implements CameraAPI {
+  private static CameraJNI instance;
+
+  public static synchronized CameraJNI getInstance() {
+    if (instance == null) {
+      instance = new CameraJNI();
+    }
+    return instance;
+  }
+
   public native long cameraInit();
   public native boolean cameraUninit(long ctx);
   public native String[] cameraListDevices(long ctx);

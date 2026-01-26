@@ -113,7 +113,11 @@ public class JNI2FFM {
         } else {
           ValueLayout_ret_type = "JAVA_" + java_ret_type.toUpperCase();
         }
-        boolean isVoid = java_ret_type.equals("void");
+        boolean isRetVoid = java_ret_type.equals("void");
+        boolean isRetArray = java_ret_type.endsWith("[]");
+        if (isRetArray) {
+          java_ret_type = java_ret_type.substring(0, java_ret_type.length() - 2);
+        }
         ln = ln.substring(idx + 1);
         idx = ln.indexOf('(');
         String func_name = ln.substring(0, idx);
@@ -128,18 +132,26 @@ public class JNI2FFM {
         if (!isDup) {
           src.append("  private MethodHandle " + func_name + ";\n");
         }
-        src.append("  public " + java_ret_type + " " + func_name + "(");  //add args
+        src.append("  public " + java_ret_type);
+        if (isRetArray) {
+          src.append("[]");
+        }
+        src.append(" " + func_name + "(");  //add args
 
         StringBuilder ctor2 = new StringBuilder();
 
         StringBuilder method = new StringBuilder();
         StringBuilder arrays = new StringBuilder();
         method.append("{ try { ");
-        if (!isVoid) {
-          if (java_ret_type.equals("String")) {
-            method.append("String _ret_value_ = ((MemorySegment)");
+        if (!isRetVoid) {
+          if (isRetArray) {
+            method.append(java_ret_type + "[] _ret_value_ = FFM.toArray" + capitalize(java_ret_type) + "((MemorySegment)");
           } else {
-            method.append(java_ret_type + " _ret_value_ = (" + java_ret_type + ")");
+            if (java_ret_type.equals("String")) {
+              method.append("String _ret_value_ = ((MemorySegment)");
+            } else {
+              method.append(java_ret_type + " _ret_value_ = (" + java_ret_type + ")");
+            }
           }
         }
         method.append(func_name);
@@ -148,11 +160,15 @@ public class JNI2FFM {
         ctor2.append("    " + func_name + " = ffm.getFunctionPtr(\"_" + func_name + "\", ffm.getFunctionDesciptor");
         boolean first = true;
         boolean first_ctor = true;
-        if (isVoid) {
+        if (isRetVoid) {
           ctor2.append("Void(");
         } else {
           ctor2.append("(");
-          ctor2.append(ValueLayout_ret_type);
+          if (isRetArray) {
+            ctor2.append("ADDRESS");
+          } else {
+            ctor2.append(ValueLayout_ret_type);
+          }
           first_ctor = false;
         }
         ArrayList<String> array_names = new ArrayList<>();
@@ -203,27 +219,35 @@ public class JNI2FFM {
           }
           ctor2.append(ValueLayout_type);
         }
-        if (java_ret_type.equals("String")) {
-          method.append(")).reinterpret(Long.MAX_VALUE).getString(0L);");
+        if (isRetArray) {
+          method.append("));");
         } else {
-          method.append(");");
+          if (java_ret_type.equals("String")) {
+            method.append(")).reinterpret(Long.MAX_VALUE).getString(0L);");
+          } else {
+            method.append(");");
+          }
         }
         method.insert(1, arrays);
         for(String arg_name : array_names) {
           String segment_name = "_array_" + arg_name;
           method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
         }
-        if (!isVoid) {
+        if (!isRetVoid) {
           method.append("return _ret_value_;");
         }
         method.append(" } catch (Throwable t) { JFLog.log(t); ");
-        if (!isVoid) {
+        if (!isRetVoid) {
           //must return a value
           method.append(" return ");
-          if (java_ret_type.equals("String")) {
+          if (isRetArray) {
             method.append("null");
           } else {
-            method.append("-1");
+            switch (java_ret_type) {
+              case "String": method.append("null"); break;
+              case "boolean": method.append("false"); break;
+              default: method.append("-1"); break;
+            }
           }
           method.append(";");
         }
@@ -255,5 +279,9 @@ public class JNI2FFM {
       JFLog.log(e);
       return;
     }
+  }
+  private static String capitalize(String in) {
+    char first_cap = Character.toUpperCase(in.charAt(0));
+    return first_cap + in.substring(1);
   }
 }

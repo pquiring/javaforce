@@ -23,6 +23,8 @@
 #include "javaforce_jni_PCapJNI.h"
 #include "javaforce_jni_CLJNI.h"
 
+#include "../common/string.h"
+#include "../common/array.h"
 #include "../common/library.h"
 #include "../common/register.h"
 
@@ -116,7 +118,8 @@ jboolean glGetFunction(void **funcPtr, const char *name)
 
 #if 1
 //MediaFoundation (WinVista era) Camera API
-#include "native-camera-mediafoundation.cpp"
+#include "native-camera-mediafoundation-jni.cpp"
+#include "native-camera-mediafoundation-ffm.cpp"
 #endif
 
 //winPE resources

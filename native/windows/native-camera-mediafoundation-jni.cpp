@@ -39,15 +39,6 @@ void deleteCamContext(JNIEnv *e, jobject c, CamContext* ctx) {
   delete ctx;
 }
 
-static int strlen16(jchar *str) {
-  int len = 0;
-  while (*str != 0) {
-    len++;
-    str++;
-  }
-  return len;
-}
-
 static void resetCameraList(CamContext* ctx) {
   printf("MF:resetCameraList\n");
   for(int a=0;a<ctx->cameraDeviceCount;a++) {

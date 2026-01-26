@@ -8,6 +8,7 @@ package javaforce.ffm;
 import java.lang.foreign.*;
 import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
+import java.nio.charset.*;
 
 import javaforce.*;
 
@@ -15,6 +16,7 @@ public class FFM {
   private static FFM instance;
 
   public static FFM getInstance() {
+    if (!enabled) return null;
     if (instance == null) {
       instance = new FFM();
     }
@@ -22,13 +24,26 @@ public class FFM {
   }
 
   /** Enabled FFM usage. */
-  public static boolean enabled = true;
+  private static boolean enabled = true;
+
+  public static boolean enabled() {
+    if (!enabled) return false;
+    getInstance();
+    return enabled;
+  }
+
+  /** Disable FFM and use JNI instead. */
+  public static void disable() {
+    enabled = false;
+  }
 
   private static boolean debug = false;
 
   private Linker linker;
   private SymbolLookup lookup;
   private ExecSymbolLookup execlookup;
+  private static MethodHandle jfArrayFree;
+  public static void jfArrayFree(MemorySegment arr) { try { jfArrayFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
 
   private FFM() {
     try {
@@ -36,8 +51,11 @@ public class FFM {
       lookup = linker.defaultLookup();
       execlookup = new ExecSymbolLookup();
       execlookup.init(this);
+      jfArrayFree = getFunctionPtr("_jfArrayFree", getFunctionDesciptorVoid(ADDRESS));
+      if (jfArrayFree == null) throw new Exception("");
     } catch (Throwable t) {
       JFLog.log(t);
+      enabled = false;
     }
   }
 
@@ -80,7 +98,7 @@ public class FFM {
         return null;
       }
       //symbols have zero length, need to reinterpret as a pointer
-      addr = addr.reinterpret(8);
+      addr = addr.reinterpret(ADDRESS_SIZE);
       if (addr == null) {
         JFLog.log("FFM:FunctionPtr not found(2):" + name + "=" + addr);
         return null;
@@ -139,6 +157,89 @@ public class FFM {
       ptrs.setAtIndex(ADDRESS, idx++, ba);
     }
     return ptrs;
+  }
+
+  private static final long JAVA_LONG_SIZE = JAVA_LONG.byteSize();
+  private static final long JAVA_INT_SIZE = JAVA_INT.byteSize();
+  private static final long JAVA_SHORT_SIZE = JAVA_SHORT.byteSize();
+  private static final long JAVA_BYTE_SIZE = JAVA_BYTE.byteSize();
+  private static final long ADDRESS_SIZE = ADDRESS.byteSize();
+  private static final long JFARRAY_HEADER_SIZE = JAVA_INT_SIZE * 2;
+
+  /*
+   Functions that return arrays use this struct:
+   template<typename T, int N>
+   struct JFArray {
+     int count;
+     short size;  //not used in Java
+     short type;  //not used in Java
+     T elements[N];
+   };
+   */
+
+  public static String[] toArrayString(MemorySegment m) {
+    m = m.reinterpret(JFARRAY_HEADER_SIZE);
+    int count = m.getAtIndex(JAVA_INT, 0);
+    long size = JFARRAY_HEADER_SIZE + count * ADDRESS_SIZE;
+    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * ADDRESS_SIZE);
+    String[] ret = new String[count];
+    for(int i=0;i<count;i++) {
+      ret[i] = arr.getAtIndex(ADDRESS, i).reinterpret(Integer.MAX_VALUE).getString(0);
+    }
+    jfArrayFree(m);
+    return ret;
+  }
+
+  public static long[] toArrayLong(MemorySegment m) {
+    m = m.reinterpret(JFARRAY_HEADER_SIZE);
+    int count = m.getAtIndex(JAVA_INT, 0);
+    long size = JFARRAY_HEADER_SIZE + count * JAVA_LONG_SIZE;
+    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_LONG_SIZE);
+    long[] ret = new long[count];
+    for(int i=0;i<count;i++) {
+      ret[i] = arr.getAtIndex(JAVA_LONG, i);
+    }
+    jfArrayFree(m);
+    return ret;
+  }
+
+  public static int[] toArrayInt(MemorySegment m) {
+    m = m.reinterpret(JFARRAY_HEADER_SIZE);
+    int count = m.getAtIndex(JAVA_INT, 0);
+    long size = JFARRAY_HEADER_SIZE + count * JAVA_INT_SIZE;
+    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_INT_SIZE);
+    int[] ret = new int[count];
+    for(int i=0;i<count;i++) {
+      ret[i] = arr.getAtIndex(JAVA_INT, i);
+    }
+    jfArrayFree(m);
+    return ret;
+  }
+
+  public static short[] toArrayShort(MemorySegment m) {
+    m = m.reinterpret(JFARRAY_HEADER_SIZE);
+    int count = m.getAtIndex(JAVA_INT, 0);
+    long size = JFARRAY_HEADER_SIZE + count * JAVA_SHORT_SIZE;
+    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_SHORT_SIZE);
+    short[] ret = new short[count];
+    for(int i=0;i<count;i++) {
+      ret[i] = arr.getAtIndex(JAVA_SHORT, i);
+    }
+    jfArrayFree(m);
+    return ret;
+  }
+
+  public static byte[] toArrayByte(MemorySegment m) {
+    m = m.reinterpret(JFARRAY_HEADER_SIZE);
+    int count = m.getAtIndex(JAVA_INT, 0);
+    long size = JFARRAY_HEADER_SIZE + count * JAVA_BYTE_SIZE;
+    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_BYTE_SIZE);
+    byte[] ret = new byte[count];
+    for(int i=0;i<count;i++) {
+      ret[i] = arr.getAtIndex(JAVA_BYTE, i);
+    }
+    jfArrayFree(m);
+    return ret;
   }
 
   public static void copyBack(MemorySegment seg, float[] m) {

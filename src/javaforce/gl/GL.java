@@ -31,7 +31,7 @@ public interface GL {
    *
    */
   public static GL getInstance() {
-    if (FFM.enabled) {
+    if (FFM.enabled()) {
       return GLFFM.getInstance();
     } else {
       return GLJNI.getInstance();
