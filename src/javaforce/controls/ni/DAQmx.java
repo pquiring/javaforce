@@ -26,7 +26,7 @@ public abstract class DAQmx {
   public static DAQmx getInstance() {
     if (instance == null) {
       instance = new DAQmxJNI();
-      if (!instance.init()) {
+      if (!instance.niInit()) {
         instance = null;
       }
     }
@@ -37,7 +37,7 @@ public abstract class DAQmx {
     return instance != null;
   }
 
-  public abstract boolean init();
+  public abstract boolean niInit();
 
   public abstract long createTask();
   public abstract boolean createChannelAnalog(long task, String dev, double rate, long samples, double min, double max);
@@ -50,7 +50,7 @@ public abstract class DAQmx {
   public abstract int readTaskCounter(long task, int numchs, double[] freq);
   public abstract boolean stopTask(long task);
   public abstract boolean clearTask(long task);
-  public abstract void printError();  //prints any errors to stdout
+  public abstract void niPrintError();  //prints any errors to stdout
 
   //DAQ instance
 
@@ -75,7 +75,7 @@ public abstract class DAQmx {
       handle = createTask();
       if (!createChannelAnalog(handle, url, Controller.rate, samples, -10, 10)) return false;
       if (startTask(handle)) return true;
-      printError();
+      niPrintError();
       return false;
     }
     else if (port.startsWith("port")) {
@@ -95,7 +95,7 @@ public abstract class DAQmx {
         }
       }
       if (startTask(handle)) return true;
-      printError();
+      niPrintError();
       return false;
     }
     else if (port.startsWith("ctr")) {
@@ -108,7 +108,7 @@ public abstract class DAQmx {
       port = "/" + p[0] + "/" + p[2];
       if (!createChannelCounter(handle, device, 20000000.0, samples, 2.0, 1000.0, port, 1.0 / Controller.rate, 4)) return false;
       if (startTask(handle)) return true;
-      printError();
+      niPrintError();
       return false;
     }
     System.out.println("Unsupported DAQmx host:" + url);
@@ -164,7 +164,7 @@ public abstract class DAQmx {
       }
     }
     if (read != chs) {
-      printError();
+      niPrintError();
     }
     return out;
   }

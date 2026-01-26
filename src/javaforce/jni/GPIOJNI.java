@@ -50,8 +50,8 @@ public class GPIOJNI implements GPIO {
     }
   }
   private native boolean ninit(int addr);
-  public native boolean configOutput(int idx);
-  public native boolean configInput(int idx);
-  public native boolean write(int idx, boolean state);
-  public native boolean read(int idx);
+  public native boolean gpioConfigOutput(int idx);
+  public native boolean gpioConfigInput(int idx);
+  public native boolean gpioWrite(int idx, boolean state);
+  public native boolean gpioRead(int idx);
 }

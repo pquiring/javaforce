@@ -32,8 +32,8 @@ public class TestPI implements WebUIHandler {
       return;
     }
     for(int a=0;a<8;a++) {
-      gpio.configInput(a);
-      gpio.configOutput(a+8);
+      gpio.gpioConfigInput(a);
+      gpio.gpioConfigOutput(a+8);
     }
     initResources();
     WebUIServer server = new WebUIServer();
@@ -82,7 +82,7 @@ public class TestPI implements WebUIHandler {
       panel.o[a].addClickListener((MouseEvent event, Component button) -> {
         boolean state = !outputs[idx];
         outputs[idx] = state;
-        gpio.write(idx + 8, state);
+        gpio.gpioWrite(idx + 8, state);
         panel.oi[idx].setImage(state ? on : off);
       });
       row.add(panel.o[a]);
@@ -109,7 +109,7 @@ public class TestPI implements WebUIHandler {
       while (active) {
         //get inputs
         for(int a=0;a<8;a++) {
-          inputs[a] = gpio.read(a);
+          inputs[a] = gpio.gpioRead(a);
           if (panel != null) {
             if (inputs[a] != display[a]) {
               display[a] = inputs[a];

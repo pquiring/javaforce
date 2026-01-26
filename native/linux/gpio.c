@@ -66,7 +66,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_ninit
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_configOutput
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_gpioConfigOutput
   (JNIEnv *env, jobject obj, jint bit)
 {
   INP_GPIO(bit);  //Always use INP_GPIO before OUT_GPIO -- why???
@@ -74,14 +74,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_configOutput
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_configInput
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_gpioConfigInput
   (JNIEnv *env, jobject obj, jint bit)
 {
   INP_GPIO(bit);
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_write
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_gpioWrite
   (JNIEnv *env, jobject obj, jint bit, jboolean value)
 {
   if (value == JNI_TRUE) {
@@ -92,7 +92,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_write
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_read
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_gpioRead
   (JNIEnv *env, jobject obj, jint bit)
 {
   return GET_GPIO(bit);
@@ -100,10 +100,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_read
 
 static JNINativeMethod javaforce_pi_GPIO[] = {
   {"ninit", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_ninit},
-  {"configOutput", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_configOutput},
-  {"configInput", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_configInput},
-  {"write", "(IZ)Z", (void *)&Java_javaforce_jni_GPIOJNI_write},
-  {"read", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_read},
+  {"gpioConfigOutput", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_gpioConfigOutput},
+  {"gpioConfigInput", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_gpioConfigInput},
+  {"gpioWrite", "(IZ)Z", (void *)&Java_javaforce_jni_GPIOJNI_gpioWrite},
+  {"gpioRead", "(I)Z", (void *)&Java_javaforce_jni_GPIOJNI_gpioRead},
 };
 
 extern void gpio_register(JNIEnv *env);

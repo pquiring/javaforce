@@ -264,10 +264,10 @@ public class ModbusServer extends Thread {
       //init input/output bits
       for(int pos=0;pos<40;pos++) {
         if (ins[pos] != 0) {
-          gpio.configInput(ins[pos]);
+          gpio.gpioConfigInput(ins[pos]);
         }
         if (outs[pos] != 0) {
-          gpio.configOutput(outs[pos]);
+          gpio.gpioConfigOutput(outs[pos]);
         }
       }
     }
@@ -377,7 +377,7 @@ public class ModbusServer extends Thread {
       Value value;
       //read next value
       synchronized(i2cslaveaddrlock) {
-        i2c.setSlave(slaveaddr);
+        i2c.i2cSetSlave(slaveaddr);
         if (writeBytes != null) write();
         value = read();
       }
@@ -401,11 +401,11 @@ public class ModbusServer extends Thread {
         }
       }
 //      printArray("write:", data);
-      i2c.write(data);
+      i2c.i2cWrite(data);
     }
     private Value read() {
       byte[] data = new byte[readBytes.length];
-      i2c.read(data);
+      i2c.i2cRead(data);
 //      printArray("read:", data);
       Value value = type.newInstance();
       byte[] vs = new byte[value.getSize()];
@@ -429,7 +429,7 @@ public class ModbusServer extends Thread {
         }
       } else {
         synchronized(i2cslaveaddrlock) {
-          i2c.setSlave(slaveaddr);
+          i2c.i2cSetSlave(slaveaddr);
           if (writeBytes != null) write();
           value = read();
         }
@@ -463,8 +463,8 @@ public class ModbusServer extends Thread {
         }
       }
       synchronized(i2cslaveaddrlock) {
-        i2c.setSlave(slaveaddr);
-        i2c.write(data);
+        i2c.i2cSetSlave(slaveaddr);
+        i2c.i2cWrite(data);
       }
     }
   }
@@ -739,7 +739,7 @@ public class ModbusServer extends Thread {
           bytePos++;
           data[bytePos] = 0;
         }
-        if (gpio.read(ins[coil_idx++])) {
+        if (gpio.gpioRead(ins[coil_idx++])) {
           data[bytePos] |= bitPos;
         }
         bitPos <<= 1;
@@ -752,7 +752,7 @@ public class ModbusServer extends Thread {
       int coil = BE.getuint16(data, 8);
       boolean state = BE.getuint16(data, 10) == 0xff00;
       if (invert) state = !state;
-      gpio.write(outs[coil], state);
+      gpio.gpioWrite(outs[coil], state);
       coils[coil] = state;
     }
     public void writeCoilMulti() {
@@ -771,7 +771,7 @@ public class ModbusServer extends Thread {
         }
         boolean state = (data[bytePos] & bitPos) != 0;
         if (invert) state = !state;
-        gpio.write(outs[coil_idx], state);
+        gpio.gpioWrite(outs[coil_idx], state);
         coils[coil_idx] = state;
         coil_idx++;
         bitPos <<= 1;

@@ -33,7 +33,7 @@ public class TestNI {
       if (!ni.clearTask(task)) throw new Exception("clearTask failed");
     } catch (Exception e) {
       e.printStackTrace();
-      ni.printError();
+      ni.niPrintError();
       System.exit(0);
     }
 
@@ -53,7 +53,7 @@ public class TestNI {
       if (!ni.clearTask(task)) throw new Exception("clearTask failed");
     } catch (Exception e) {
       e.printStackTrace();
-      ni.printError();
+      ni.niPrintError();
       System.exit(0);
     }
 
@@ -72,7 +72,7 @@ public class TestNI {
       if (!ni.clearTask(task)) throw new Exception("clearTask failed");
     } catch (Exception e) {
       e.printStackTrace();
-      ni.printError();
+      ni.niPrintError();
       System.exit(0);
     }
   }

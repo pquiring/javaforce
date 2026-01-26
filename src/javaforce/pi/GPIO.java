@@ -13,8 +13,8 @@ public interface GPIO {
   public static GPIO getInstance() {
     return GPIOJNI.getInstance();
   }
-  public boolean configOutput(int idx);
-  public boolean configInput(int idx);
-  public boolean write(int idx, boolean state);
-  public boolean read(int idx);
+  public boolean gpioConfigOutput(int idx);
+  public boolean gpioConfigInput(int idx);
+  public boolean gpioWrite(int idx, boolean state);
+  public boolean gpioRead(int idx);
 }

@@ -13,7 +13,7 @@ public interface I2C {
   public static I2C getInstance() {
     return I2CJNI.getInstance();
   }
-  public boolean setSlave(int addr);
-  public boolean write(byte[] data);
-  public int read(byte[] data);
+  public boolean i2cSetSlave(int addr);
+  public boolean i2cWrite(byte[] data);
+  public int i2cRead(byte[] data);
 }

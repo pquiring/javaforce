@@ -33,7 +33,7 @@ int32 (*_DAQmxSetCIFreqTerm)(TaskHandle taskHandle, const char channel[], const 
 int32 (*_DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char channel[], float64 data);
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_init
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_niInit
   (JNIEnv *e, jobject cls)
 {
   nidll = loadLibrary(JF_LIB_NAME);
@@ -190,7 +190,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_DAQmxJNI_clearTask
   return (*_DAQmxClearTask)(taskHandle) == 0;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_DAQmxJNI_printError
+JNIEXPORT void JNICALL Java_javaforce_jni_DAQmxJNI_niPrintError
   (JNIEnv *e, jobject cls)
 {
   char errmsg[2048];
@@ -199,7 +199,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_DAQmxJNI_printError
 }
 
 static JNINativeMethod javaforce_jni_DAQmxJNI[] = {
-  {"init", "()Z", (void *)&Java_javaforce_jni_DAQmxJNI_init},
+  {"niInit", "()Z", (void *)&Java_javaforce_jni_DAQmxJNI_niInit},
   {"createTask", "()J", (void *)&Java_javaforce_jni_DAQmxJNI_createTask},
   {"createChannelAnalog", "(JLjava/lang/String;DJDD)Z", (void *)&Java_javaforce_jni_DAQmxJNI_createChannelAnalog},
   {"createChannelDigital", "(JLjava/lang/String;DJ)Z", (void *)&Java_javaforce_jni_DAQmxJNI_createChannelDigital},
@@ -211,7 +211,7 @@ static JNINativeMethod javaforce_jni_DAQmxJNI[] = {
   {"readTaskCounter", "(JI[D)I", (void *)&Java_javaforce_jni_DAQmxJNI_readTaskCounter},
   {"stopTask", "(J)Z", (void *)&Java_javaforce_jni_DAQmxJNI_stopTask},
   {"clearTask", "(J)Z", (void *)&Java_javaforce_jni_DAQmxJNI_clearTask},
-  {"printError", "()V", (void *)&Java_javaforce_jni_DAQmxJNI_printError},
+  {"niPrintError", "()V", (void *)&Java_javaforce_jni_DAQmxJNI_niPrintError},
 };
 
 extern "C" void ni_register(JNIEnv *env);

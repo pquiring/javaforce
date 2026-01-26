@@ -21,7 +21,7 @@ public class I2CJNI implements I2C {
   }
 
   private native boolean init();
-  public native boolean setSlave(int addr);
-  public native boolean write(byte[] data);
-  public native int read(byte[] data);
+  public native boolean i2cSetSlave(int addr);
+  public native boolean i2cWrite(byte[] data);
+  public native int i2cRead(byte[] data);
 }

@@ -8,7 +8,7 @@ package javaforce.jni;
 import javaforce.controls.ni.*;
 
 public class DAQmxJNI extends DAQmx {
-  public native boolean init();
+  public native boolean niInit();
   public native long createTask();
   public native boolean createChannelAnalog(long task, String dev, double rate, long samples, double min, double max);
   public native boolean createChannelDigital(long task, String dev, double rate, long samples);
@@ -20,5 +20,5 @@ public class DAQmxJNI extends DAQmx {
   public native int readTaskCounter(long task, int numchs, double[] freq);
   public native boolean stopTask(long task);
   public native boolean clearTask(long task);
-  public native void printError();  //prints any errors to stdout
+  public native void niPrintError();  //prints any errors to stdout
 }
