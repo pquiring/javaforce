@@ -8,14 +8,11 @@ package javaforce.jni;
 import java.io.*;
 
 import javaforce.*;
-import javaforce.net.*;
+import javaforce.api.*;
 
-public class PCapJNI implements PacketCapture {
+public class PCapJNI implements PCapAPI {
 
   private static PCapJNI instance;
-
-  private byte[] local_mac;
-  private byte[] local_ip;
 
   public static synchronized PCapJNI getInstance() {
     if (instance == null) {
@@ -27,7 +24,7 @@ public class PCapJNI implements PacketCapture {
     return instance;
   }
 
-  public native boolean ninit(String lib1, String lib2);
+  private native boolean pcapInit(String lib1, String lib2);
 
   /** Load native libraries. */
   private boolean init() {
@@ -38,7 +35,7 @@ public class PCapJNI implements PacketCapture {
         String dll1 = windir + "/system32/npcap/packet.dll";
         String dll2 = windir + "/system32/npcap/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
-          return ninit(dll1, dll2);
+          return pcapInit(dll1, dll2);
         }
       }
       {
@@ -46,7 +43,7 @@ public class PCapJNI implements PacketCapture {
         String dll1 = windir + "/system32/packet.dll";
         String dll2 = windir + "/system32/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
-          return ninit(dll1, dll2);
+          return pcapInit(dll1, dll2);
         }
       }
       return false;
@@ -54,38 +51,20 @@ public class PCapJNI implements PacketCapture {
     if (JF.isUnix()) {
       Library so = new Library("pcap");
       JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
-      return ninit(null, so.path);
+      return pcapInit(null, so.path);
     }
     return false;
   }
 
-  public native String[] listLocalInterfaces();
+  public native String[] pcapListLocalInterfaces();
 
-  private native long nstart(String local_interface, boolean nonblocking);
+  public native long pcapStart(String local_interface, boolean nonblocking);
 
-  /** Start process on local interface. */
-  public long start(String local_interface, String local_ip, boolean nonblocking) {
-    this.local_ip = PacketCapture.decode_ip(local_ip);
-    this.local_mac = PacketCapture.get_mac(local_ip);
-    return nstart(local_interface, nonblocking);
-  }
+  public native void pcapStop(long id);
 
-  /** Start process on local interface with blocking mode enabled. */
-  public long start(String local_interface, String local_ip) {
-    return start(local_interface, local_ip, true);
-  }
+  public native boolean pcapCompile(long handle, String program);
 
-  /** Stop processing. */
-  public native void stop(long id);
+  public native byte[] pcapRead(long handle);
 
-  public native boolean compile(long handle, String program);
-
-  public native byte[] read(long handle);
-
-  public native boolean write(long handle, byte[] packet, int offset, int length);
-
-  public byte[] get_local_ip() {return local_ip;}
-
-  public byte[] get_local_mac() {return local_mac;}
-
+  public native boolean pcapWrite(long handle, byte[] packet, int offset, int length);
 }

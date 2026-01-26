@@ -5,30 +5,39 @@
 
 package javaforce.net;
 
-import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.jni.*;
 
-public interface PacketCapture {
+public class PacketCapture {
 
   public static boolean debug = false;
+
+  private PCapAPI api;
+
+  private static byte[] local_mac;
+  private static byte[] local_ip;
 
   public static int TYPE_IP4 = 0x0800;
   public static int TYPE_ARP = 0x0806;
   public static int TYPE_IP6 = 0x86dd;
 
   public static PacketCapture getInstance() {
-    return PCapJNI.getInstance();
+    PacketCapture pcap = new PacketCapture();
+    pcap.api = PCapJNI.getInstance();
+    return pcap;
   }
 
   /** List local interfaces.
    * Return is array of strings, each is comma delimited list.
    * DeviceName,IP/MAC,IP/MAC,...
    */
-  public String[] listLocalInterfaces();
+  public String[] listLocalInterfaces() {
+    return api.pcapListLocalInterfaces();
+  }
 
   /** Find interface that contains IP address. */
   public static String findInterface(String ip) {
@@ -51,26 +60,36 @@ public interface PacketCapture {
   }
 
   /** Start process on local interface. */
-  public long start(String local_interface, String local_ip, boolean nonblocking);
+  public long start(String local_interface, String local_ip, boolean nonblocking) {
+    this.local_ip = PacketCapture.decode_ip(local_ip);
+    this.local_mac = PacketCapture.get_mac(local_ip);
+    return api.pcapStart(local_interface, nonblocking);
+  }
 
   /** Start process on local interface with blocking mode enabled. */
-  public long start(String local_interface, String local_ip);
+  public long start(String local_interface, String local_ip) {
+    return start(local_interface, local_ip, true);
+  }
 
   /** Stop processing. */
-  public void stop(long id);
+  public void stop(long id) {
+    api.pcapStop(id);
+  }
 
   /** Compile program. */
-  public boolean compile(long handle, String program);
+  public boolean compile(long handle, String program) {
+    return api.pcapCompile(handle, program);
+  }
 
   /** Read packet. */
-  public byte[] read(long handle);
+  public byte[] read(long handle) {
+    return api.pcapRead(handle);
+  }
 
   /** Write packet. */
-  public boolean write(long handle, byte[] packet, int offset, int length);
-
-  public byte[] get_local_ip();
-
-  public byte[] get_local_mac();
+  public boolean write(long handle, byte[] packet, int offset, int length) {
+    return api.pcapWrite(handle, packet, offset, length);
+  }
 
   public static void print_mac(byte[] mac) {
     if (mac == null) {
@@ -246,8 +265,8 @@ public interface PacketCapture {
     }
     byte[] ip = decode_ip(target_ip);
     byte[] pkt = new byte[ethernet_size + arp_size + 18];  //18 = padding
-    build_ethernet(pkt, mac_broadcast, pcap.get_local_mac(), TYPE_ARP);
-    build_arp(pkt, pcap.get_local_mac(), pcap.get_local_ip(), ip);
+    build_ethernet(pkt, mac_broadcast, local_mac, TYPE_ARP);
+    build_arp(pkt, local_mac, local_ip, ip);
     if (debug) {
       JFLog.log("arp.write()");
     }

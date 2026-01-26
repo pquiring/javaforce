@@ -76,7 +76,7 @@ int (*pcap_setnonblock)(pcap_t *p, int nonblock, char *errbuf);
 
 #define PCAP_ERRBUF_SIZE 256
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_ninit
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapInit
   (JNIEnv *e, jobject obj, jstring lib1, jstring lib2)
 {
   char err[PCAP_ERRBUF_SIZE];
@@ -137,7 +137,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_ninit
 
 #define UP_RUNNING (PCAP_IF_UP | PCAP_IF_RUNNING | PCAP_IF_CONNECTION_STATUS_CONNECTED)
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_listLocalInterfaces
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_pcapListLocalInterfaces
   (JNIEnv *e, jobject obj)
 {
   char err[PCAP_ERRBUF_SIZE];
@@ -195,7 +195,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_listLocalInterfaces
   return array;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_PCapJNI_nstart
+JNIEXPORT jlong JNICALL Java_javaforce_jni_PCapJNI_pcapStart
   (JNIEnv *e, jobject obj, jstring dev, jboolean nonblocking)
 {
   if (library == NULL) return 0;
@@ -221,7 +221,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_PCapJNI_nstart
   return handle;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_PCapJNI_stop
+JNIEXPORT void JNICALL Java_javaforce_jni_PCapJNI_pcapStop
   (JNIEnv *e, jobject obj, jlong handle)
 {
   if (library == NULL) return;
@@ -230,7 +230,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_PCapJNI_stop
 
 struct bpf_program cap_program;
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_compile
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapCompile
   (JNIEnv *e, jobject obj, jlong handle, jstring program)
 {
   const char *cprogram = e->GetStringUTFChars(program, NULL);
@@ -258,7 +258,7 @@ static void cap_callback(struct user_pkt_t *user_pkt, const struct pcap_pkthdr *
   user_pkt->bytes = (jbyte*)bytes;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_read
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_pcapRead
   (JNIEnv *e, jobject obj, jlong handle)
 {
   struct user_pkt_t user_pkt;
@@ -277,7 +277,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_read
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_write
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapWrite
   (JNIEnv *e, jobject obj, jlong handle, jbyteArray ba, jint offset, jint length)
 {
   if (ba == NULL) return JNI_FALSE;
@@ -296,13 +296,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_write
 }
 
 static JNINativeMethod javaforce_net_PacketCapture[] = {
-  {"ninit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_ninit},
-  {"listLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_PCapJNI_listLocalInterfaces},
-  {"nstart", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_PCapJNI_nstart},
-  {"stop", "(J)V", (void *)&Java_javaforce_jni_PCapJNI_stop},
-  {"compile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_compile},
-  {"read", "(J)[B", (void *)&Java_javaforce_jni_PCapJNI_read},
-  {"write", "(J[BII)Z", (void *)&Java_javaforce_jni_PCapJNI_write},
+  {"pcapInit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_pcapInit},
+  {"pcapListLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_PCapJNI_pcapListLocalInterfaces},
+  {"pcapStart", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_PCapJNI_pcapStart},
+  {"pcapStop", "(J)V", (void *)&Java_javaforce_jni_PCapJNI_pcapStop},
+  {"pcapCompile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_pcapCompile},
+  {"pcapRead", "(J)[B", (void *)&Java_javaforce_jni_PCapJNI_pcapRead},
+  {"pcapWrite", "(J[BII)Z", (void *)&Java_javaforce_jni_PCapJNI_pcapWrite},
 };
 
 extern "C" void pcap_register(JNIEnv *env);
