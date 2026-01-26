@@ -6,6 +6,7 @@ package javaforce.jni;
  */
 
 import javaforce.webui.tasks.*;
+import javaforce.api.*;
 import javaforce.vm.*;
 
 public class VMJNI implements VMAPI {

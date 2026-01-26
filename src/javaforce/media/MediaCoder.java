@@ -5,6 +5,8 @@ package javaforce.media;
  * @author pquiring
  */
 
+import javaforce.api.*;
+
 public class MediaCoder {
   protected long ctx = 0;
   protected boolean shared;

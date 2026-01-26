@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.gl.*;
 
 public class Font {

@@ -7,6 +7,7 @@ package javaforce.vm;
 
 import java.io.*;
 
+import javaforce.api.*;
 import javaforce.linux.*;
 
 public class VMHost {

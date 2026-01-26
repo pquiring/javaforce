@@ -5,6 +5,7 @@ package javaforce.vm;
  */
 
 import java.io.*;
+import javaforce.api.*;
 
 public class NetworkInterface extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;

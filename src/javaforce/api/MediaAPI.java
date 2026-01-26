@@ -1,10 +1,11 @@
-package javaforce.media;
+package javaforce.api;
 
 /** Media API
  *
  * @author pquiring
  */
 
+import javaforce.media.*;
 import javaforce.jni.*;
 
 public interface MediaAPI {

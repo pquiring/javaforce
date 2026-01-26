@@ -6,6 +6,8 @@ package javaforce.media;
  * @author pquiring
  */
 
+import javaforce.api.*;
+
 public class MediaFormat extends MediaCoder {
   public int getVideoStream() {
     return MediaAPI.getInstance().getVideoStream(ctx);

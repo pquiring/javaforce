@@ -7,6 +7,7 @@ import java.util.*;
 import java.nio.file.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.utils.*;
 import javaforce.webui.tasks.*;
 

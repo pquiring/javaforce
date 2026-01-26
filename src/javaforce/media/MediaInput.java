@@ -10,6 +10,7 @@ package javaforce.media;
  */
 
 import javaforce.voip.*;
+import javaforce.api.*;
 
 public class MediaInput extends MediaFormat {
   public boolean open(String file, String format) {

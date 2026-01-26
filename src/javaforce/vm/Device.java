@@ -12,6 +12,7 @@ package javaforce.vm;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.api.*;
 
 public class Device extends Address implements Serializable {
   private static final long serialVersionUID = 1L;

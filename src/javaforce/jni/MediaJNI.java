@@ -8,6 +8,7 @@ package javaforce.jni;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.media.*;
 
 public class MediaJNI implements MediaAPI {

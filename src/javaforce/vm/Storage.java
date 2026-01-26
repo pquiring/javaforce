@@ -13,6 +13,7 @@ import java.nio.file.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.linux.*;
 
 public class Storage implements Serializable {

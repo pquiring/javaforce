@@ -5,6 +5,7 @@ package javaforce.jni;
  * @author pquiring
  */
 
+import javaforce.api.*;
 import javaforce.ui.*;
 
 public class UIJNI implements UIAPI {

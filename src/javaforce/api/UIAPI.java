@@ -1,4 +1,4 @@
-package javaforce.ui;
+package javaforce.api;
 
 /** UI Native API
  *
@@ -6,6 +6,7 @@ package javaforce.ui;
  */
 
 import javaforce.jni.*;
+import javaforce.ui.*;
 
 public interface UIAPI {
   public static UIAPI getInstance() {

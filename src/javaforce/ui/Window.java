@@ -8,6 +8,7 @@ package javaforce.ui;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.gl.*;
 import javaforce.ui.theme.*;
 import static javaforce.gl.GL.*;

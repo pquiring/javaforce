@@ -16,6 +16,7 @@ package javaforce.media;
 
 import javaforce.*;
 import javaforce.voip.*;
+import javaforce.api.*;
 
 public class MediaOutput extends MediaFormat {
   /** Create output file.

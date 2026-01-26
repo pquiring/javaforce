@@ -1,4 +1,4 @@
-package javaforce.vm;
+package javaforce.api;
 
 /** VM Native API
  *

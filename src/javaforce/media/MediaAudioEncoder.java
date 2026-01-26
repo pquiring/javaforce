@@ -7,6 +7,7 @@ package javaforce.media;
 
 import javaforce.*;
 import javaforce.voip.*;
+import javaforce.api.*;
 
 public class MediaAudioEncoder extends MediaCoder {
   /** Create an audio encoder for raw audio. */

@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.awt.priv.*;
 
 public class Image extends FontComponent {

@@ -7,6 +7,8 @@ package javaforce.vm;
  * @author pquiring
  */
 
+import javaforce.api.*;
+
 public class Secret {
   public static boolean create(String name, String passwd) {
     StringBuilder xml = new StringBuilder();
