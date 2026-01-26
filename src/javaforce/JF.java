@@ -1459,7 +1459,7 @@ public class JF {
     return file.getParent();
   }
 
-  /** Deletes a folder and all sub-files and folders. */
+  /** Deletes a folder and all sub-folders. */
   public static void deletePathEx(String path) {
     try {
       File folder = new File(path);
@@ -1472,6 +1472,30 @@ public class JF {
           deletePathEx(file.getAbsolutePath());
         } else {
           file.delete();
+        }
+      }
+      folder.delete();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  /** Deletes files matching regex in a folder and all sub-folders. */
+  public static void deletePathEx(String path, String regex) {
+    try {
+      File folder = new File(path);
+      if (!folder.isDirectory()) return;
+      File[] files = new File(path).listFiles();
+      if (files == null) return;
+      for(int a=0;a<files.length;a++) {
+        File file = files[a];
+        if (file.isDirectory()) {
+          deletePathEx(file.getAbsolutePath(), regex);
+        } else {
+          String name = file.getName();
+          if (name.matches(regex)) {
+            file.delete();
+          }
         }
       }
       folder.delete();

@@ -24,6 +24,11 @@ public class Linux {
     return getOSRelease("VERSION_ID");
   }
 
+  /** Returns Linux version codename. */
+  public static String getVersionCodeName() {
+    return getOSRelease("VERSION_CODENAME");
+  }
+
   public static enum DistroTypes {
     Unknown, Debian, Fedora, Arch
   };
