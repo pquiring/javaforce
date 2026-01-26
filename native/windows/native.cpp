@@ -1494,7 +1494,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "../common/videobuffer.cpp"
 
-#include "../common/opencl.cpp"
+#include "../common/opencl-jni.cpp"
+#include "../common/opencl-ffm.cpp"
 
 #include "../common/ni.cpp"
 

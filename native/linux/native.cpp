@@ -1566,7 +1566,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #include "../common/ni.cpp"
 #endif
 
-#include "../common/opencl.cpp"
+#include "../common/opencl-jni.cpp"
+#include "../common/opencl-ffm.cpp"
 
 #include "../common/types.h"
 

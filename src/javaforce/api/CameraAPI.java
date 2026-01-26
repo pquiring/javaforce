@@ -1,4 +1,4 @@
-package javaforce.media;
+package javaforce.api;
 
 /** Camera native API
  *

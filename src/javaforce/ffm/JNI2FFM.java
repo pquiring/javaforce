@@ -83,7 +83,7 @@ public class JNI2FFM {
       src.append("  public static " + cls_out + " getInstance() {\n");
       src.append("    if (instance == null) {\n");
       src.append("      instance = new " + cls_out + "();\n");
-      src.append("      if (!instance.init()) {\n");
+      src.append("      if (!instance.ffm_init()) {\n");
       src.append("        JFLog.log(\"" + cls_out + " init failed!\");\n");
       src.append("        instance = null;\n");
       src.append("      }\n");
@@ -91,7 +91,7 @@ public class JNI2FFM {
       src.append("    return instance;\n");
       src.append("  }\n");
       src.append("\n");
-      ctor.append("  private boolean init() {\n");
+      ctor.append("  private boolean ffm_init() {\n");
 //      ctor.append("    JFLog.log(\"" + cls_out + " init\");\n");
       ctor.append("    MethodHandle init;\n");
       ctor.append("    FFM ffm = FFM.getInstance();\n");

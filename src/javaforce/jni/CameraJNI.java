@@ -5,7 +5,7 @@ package javaforce.jni;
  * @author pquiring
  */
 
-import javaforce.media.*;
+import javaforce.api.*;
 
 public class CameraJNI implements CameraAPI {
   private static CameraJNI instance;

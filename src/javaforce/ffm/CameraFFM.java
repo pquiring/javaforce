@@ -10,7 +10,7 @@ import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
-import javaforce.media.*;
+import javaforce.api.*;
 
 public class CameraFFM implements CameraAPI {
 
@@ -20,7 +20,7 @@ public class CameraFFM implements CameraAPI {
   public static CameraFFM getInstance() {
     if (instance == null) {
       instance = new CameraFFM();
-      if (!instance.init()) {
+      if (!instance.ffm_init()) {
         JFLog.log("CameraFFM init failed!");
         instance = null;
       }
@@ -56,7 +56,7 @@ public class CameraFFM implements CameraAPI {
   public int cameraGetHeight(long ctx) { try { int _ret_value_ = (int)cameraGetHeight.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
 
-  private boolean init() {
+  private boolean ffm_init() {
     MethodHandle init;
     FFM ffm = FFM.getInstance();
     arena = Arena.ofAuto();

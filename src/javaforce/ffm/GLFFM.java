@@ -20,7 +20,7 @@ public class GLFFM implements GL {
   public static GLFFM getInstance() {
     if (instance == null) {
       instance = new GLFFM();
-      if (!instance.init()) {
+      if (!instance.ffm_init()) {
         JFLog.log("GLFFM init failed!");
         instance = null;
       }
@@ -233,7 +233,7 @@ public class GLFFM implements GL {
   public void glViewport(int x,int y,int w,int h) { try { glViewport.invokeExact(x,y,w,h); } catch (Throwable t) { JFLog.log(t); } }
 
 
-  private boolean init() {
+  private boolean ffm_init() {
     MethodHandle init;
     FFM ffm = FFM.getInstance();
     arena = Arena.ofAuto();

@@ -13,15 +13,21 @@ import static javaforce.cl.CL.*;
 
 public class TestCL {
   public static void main(String[] args) {
-    Compute compute = new Compute();
-    if (!compute.init(TYPE_GPU)) {
-      JFLog.log("Compute init failed");
-      System.exit(1);
-    }
+    System.out.println("TestCL");
     int SIZE;
     int SIZE_SIZE;
     Random rand = new Random();
-    System.out.println("Starting tests...");
+    Compute compute = null;
+    try {
+      compute = new Compute();
+      if (!compute.init(TYPE_GPU)) {
+        JFLog.log("Compute init failed");
+        System.exit(1);
+      }
+      System.out.println("Starting tests...");
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
     //array_square
     try {
       SIZE = 16;

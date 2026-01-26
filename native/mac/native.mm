@@ -56,7 +56,8 @@ jboolean glGetFunction(void **funcPtr, const char *name)
 
 #include "../common/ffmpeg.cpp"
 
-#include "../common/opencl.cpp"
+#include "../common/opencl-jni.cpp"
+#include "../common/opencl-ffm.cpp"
 
 #include "../common/ni.cpp"
 

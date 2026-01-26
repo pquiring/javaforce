@@ -8,7 +8,6 @@ package javaforce.ffm;
 import java.lang.foreign.*;
 import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
-import java.nio.charset.*;
 
 import javaforce.*;
 
@@ -24,7 +23,7 @@ public class FFM {
   }
 
   /** Enabled FFM usage. */
-  private static boolean enabled = true;
+  private static boolean enabled = false;
 
   public static boolean enabled() {
     if (!enabled) return false;
@@ -52,7 +51,7 @@ public class FFM {
       execlookup = new ExecSymbolLookup();
       execlookup.init(this);
       jfArrayFree = getFunctionPtr("_jfArrayFree", getFunctionDesciptorVoid(ADDRESS));
-      if (jfArrayFree == null) throw new Exception("");
+      if (jfArrayFree == null) throw new Exception("FFM:Unable to find jfArrayFree function");
     } catch (Throwable t) {
       JFLog.log(t);
       enabled = false;

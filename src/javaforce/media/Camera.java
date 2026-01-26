@@ -8,6 +8,8 @@ package javaforce.media;
  * Created : Aug 20, 2013
  */
 
+import javaforce.api.*;
+
 public class Camera {
   private long ctx = 0;
   private int[] mirror;
