@@ -108,18 +108,18 @@ jboolean glGetFunction(void **funcPtr, const char *name)
 
 #if 0
 //VFW (Win95 era) Camera API
-#include "native-camera-vfw.cpp"  //lost in space and time
+#include "camera-vfw.cpp"  //lost in space and time
 #endif
 
 #if 0
 //DirectShow (WinXP era) Camera API
-#include "native-camera-directshow.cpp"
+#include "camera-directshow.cpp"
 #endif
 
 #if 1
 //MediaFoundation (WinVista era) Camera API
-#include "native-camera-mediafoundation-jni.cpp"
-#include "native-camera-mediafoundation-ffm.cpp"
+#include "camera-mediafoundation-jni.cpp"
+#include "camera-mediafoundation-ffm.cpp"
 #endif
 
 //winPE resources
