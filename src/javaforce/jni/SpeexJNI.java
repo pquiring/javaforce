@@ -8,8 +8,8 @@ package javaforce.jni;
 import javaforce.voip.codec.*;
 
 public class SpeexJNI extends speex {
-  public native long init(int sample_rate, int echo_buffers);
-  public native void uninit(long ctx);
-  public native void denoise(long ctx, short[] audio);
-  public native void echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
+  public native long speexCreate(int sample_rate, int echo_buffers);
+  public native void speexFree(long ctx);
+  public native void speexDenoise(long ctx, short[] audio);
+  public native void speexEcho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
 }

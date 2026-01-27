@@ -16,7 +16,7 @@ struct DSP {
   SpeexEchoState *es;
 };
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_SpeexJNI_init
+JNIEXPORT jlong JNICALL Java_javaforce_jni_SpeexJNI_speexCreate
   (JNIEnv *e, jobject o, jint sample_rate, jint echo_buffers)
 {
   int i;
@@ -52,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_SpeexJNI_init
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_uninit
+JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexFree
   (JNIEnv *e, jobject o, jlong ctx)
 {
   if (ctx == 0) return;
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_uninit
   speex_echo_state_destroy(c_ctx->es);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_denoise
+JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexDenoise
   (JNIEnv *e, jobject o, jlong ctx, jshortArray audio)
 {
   if (ctx == 0) {
@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_denoise
   e->ReleasePrimitiveArrayCritical(audio, c_audio, 0);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_echo
+JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexEcho
   (JNIEnv *e, jobject o, jlong ctx, jshortArray audio_mic, jshortArray audio_spk, jshortArray audio_out)
 {
   if (ctx == 0) {
@@ -93,10 +93,10 @@ JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_echo
 }
 
 static JNINativeMethod javaforce_voip_codec_speex[] = {
-  {"init", "(II)J", (void *)&Java_javaforce_jni_SpeexJNI_init},
-  {"uninit", "(J)V", (void *)&Java_javaforce_jni_SpeexJNI_uninit},
-  {"denoise", "(J[S)V", (void *)&Java_javaforce_jni_SpeexJNI_denoise},
-  {"echo", "(J[S[S[S)V", (void *)&Java_javaforce_jni_SpeexJNI_echo},
+  {"speexCreate", "(II)J", (void *)&Java_javaforce_jni_SpeexJNI_speexCreate},
+  {"speexFree", "(J)V", (void *)&Java_javaforce_jni_SpeexJNI_speexFree},
+  {"speexDenoise", "(J[S)V", (void *)&Java_javaforce_jni_SpeexJNI_speexDenoise},
+  {"speexEcho", "(J[S[S[S)V", (void *)&Java_javaforce_jni_SpeexJNI_speexEcho},
 };
 
 extern "C" void speex_dsp_register(JNIEnv *env);

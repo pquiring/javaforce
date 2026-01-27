@@ -16,10 +16,10 @@ import javaforce.jni.*;
 
 public abstract class speex implements RTPAudioCoder {
 
-  public abstract long init(int sample_rate, int echo_buffers);
-  public abstract void uninit(long ctx);
-  public abstract void denoise(long ctx, short[] audio);
-  public abstract void echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
+  public abstract long speexCreate(int sample_rate, int echo_buffers);
+  public abstract void speexFree(long ctx);
+  public abstract void speexDenoise(long ctx, short[] audio);
+  public abstract void speexEcho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
 
   public static speex getInstance() {
     return new SpeexJNI();
@@ -170,7 +170,7 @@ public abstract class speex implements RTPAudioCoder {
    *  @return ctx
    */
   public long speex_dsp_init(int sample_rate) {
-    return init(sample_rate, -1);
+    return speexCreate(sample_rate, -1);
   }
 
   /** Allocate speex DSP context.
@@ -182,7 +182,7 @@ public abstract class speex implements RTPAudioCoder {
    *  @return ctx
    */
   public long speex_dsp_init(int sample_rate, int echo_buffers) {
-    return init(sample_rate, echo_buffers);
+    return speexCreate(sample_rate, echo_buffers);
   }
 
   /** Free speex DSP context
@@ -190,7 +190,7 @@ public abstract class speex implements RTPAudioCoder {
    * @param ctx = speex context
    */
   public void speex_dsp_uninit(long ctx) {
-    uninit(ctx);
+    speexFree(ctx);
   }
 
   /** Performs denoise function.
@@ -199,7 +199,7 @@ public abstract class speex implements RTPAudioCoder {
    * @param audio = audio samples
    */
   public void speex_dsp_denoise(long ctx, short[] audio) {
-    denoise(ctx, audio);
+    speexDenoise(ctx, audio);
   }
 
   /** Performs echo cancellation.
@@ -209,7 +209,7 @@ public abstract class speex implements RTPAudioCoder {
    * @param audio_mic = mic audio (modified)
    */
   public void speex_dsp_echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out) {
-    echo(ctx, audio_mic, audio_spk, audio_out);
+    speexEcho(ctx, audio_mic, audio_spk, audio_out);
   }
 
   private static void noise(short[] audio) {
