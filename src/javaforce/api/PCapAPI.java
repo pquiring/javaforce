@@ -6,6 +6,7 @@ package javaforce.api;
  */
 
 public interface PCapAPI {
+  public boolean pcapInit(String lib1, String lib2);
   public String[] pcapListLocalInterfaces();
   public long pcapStart(String local_interface, boolean nonblocking);
   public void pcapStop(long id);

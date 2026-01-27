@@ -1575,7 +1575,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 
 #include "../common/image.cpp"
 
-#include "../common/pcap.cpp"
+#include "../common/pcap-jni.cpp"
+#include "../common/pcap-ffm.cpp"
 
 #include "../common/vm.cpp"
 

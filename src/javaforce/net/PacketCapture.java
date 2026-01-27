@@ -5,6 +5,7 @@
 
 package javaforce.net;
 
+import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -28,7 +29,40 @@ public class PacketCapture {
   public static PacketCapture getInstance() {
     PacketCapture pcap = new PacketCapture();
     pcap.api = PCapJNI.getInstance();
+    if (!pcap.init()) {
+      return null;
+    }
     return pcap;
+  }
+
+  /** Load native libraries. */
+  private boolean init() {
+    if (JF.isWindows()) {
+      String windir = System.getenv("windir").replaceAll("\\\\", "/");
+      {
+        //npcap
+        String dll1 = windir + "/system32/npcap/packet.dll";
+        String dll2 = windir + "/system32/npcap/wpcap.dll";
+        if (new File(dll1).exists() && new File(dll2).exists()) {
+          return api.pcapInit(dll1, dll2);
+        }
+      }
+      {
+        //pcap
+        String dll1 = windir + "/system32/packet.dll";
+        String dll2 = windir + "/system32/wpcap.dll";
+        if (new File(dll1).exists() && new File(dll2).exists()) {
+          return api.pcapInit(dll1, dll2);
+        }
+      }
+      return false;
+    }
+    if (JF.isUnix()) {
+      Library so = new Library("pcap");
+      JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
+      return api.pcapInit(null, so.path);
+    }
+    return false;
   }
 
   /** List local interfaces.

@@ -17,44 +17,11 @@ public class PCapJNI implements PCapAPI {
   public static synchronized PCapJNI getInstance() {
     if (instance == null) {
       instance = new PCapJNI();
-      if (!instance.init()) {
-        instance = null;
-      }
     }
     return instance;
   }
 
-  private native boolean pcapInit(String lib1, String lib2);
-
-  /** Load native libraries. */
-  private boolean init() {
-    if (JF.isWindows()) {
-      String windir = System.getenv("windir").replaceAll("\\\\", "/");
-      {
-        //npcap
-        String dll1 = windir + "/system32/npcap/packet.dll";
-        String dll2 = windir + "/system32/npcap/wpcap.dll";
-        if (new File(dll1).exists() && new File(dll2).exists()) {
-          return pcapInit(dll1, dll2);
-        }
-      }
-      {
-        //pcap
-        String dll1 = windir + "/system32/packet.dll";
-        String dll2 = windir + "/system32/wpcap.dll";
-        if (new File(dll1).exists() && new File(dll2).exists()) {
-          return pcapInit(dll1, dll2);
-        }
-      }
-      return false;
-    }
-    if (JF.isUnix()) {
-      Library so = new Library("pcap");
-      JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
-      return pcapInit(null, so.path);
-    }
-    return false;
-  }
+  public native boolean pcapInit(String lib1, String lib2);
 
   public native String[] pcapListLocalInterfaces();
 

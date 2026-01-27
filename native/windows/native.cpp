@@ -1505,7 +1505,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "../common/image.cpp"
 
-#include "../common/pcap.cpp"
+#include "../common/pcap-jni.cpp"
+#include "../common/pcap-ffm.cpp"
 
 #include "../speexdsp/speex_dsp.c"
 
