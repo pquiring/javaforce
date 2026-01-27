@@ -129,6 +129,26 @@ Ant tasks are used to download dependancies and upload projects to Maven Central
 The mvn tool is not required (way too complex).
 A minimal pom.xml is required to upload projects to Maven Central (sonatype).
 
+FFM Support
+-----------
+JNI methods are being converted to FFM (Foreign Function & Memory API).
+You can call FFM.disable() to revert to JNI.
+Current progress:
+  Completed:
+   - OpenGL
+   - OpenCL
+   - Camera
+   - PCap
+
+  TODO:
+   - Media
+   - Speex
+   - VM
+   - UI
+   - NI DAQmx
+   - GPIO + I2C
+   - misc functions
+
 Graal Support
 -------------
 JavaForce includes some support for building AOT executables using GraalVM (http://www.graalvm.org)
