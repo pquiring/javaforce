@@ -27,7 +27,7 @@ public class MediaJNI implements MediaAPI {
   }
 
   /** Loads the media framework native libraries. */
-  public boolean init() {
+  public boolean mediaInit() {
     File[] sysFolders = Library.getSysFolders();
     String ext = Library.getExt();
     Library[] libs = {
@@ -50,7 +50,7 @@ public class MediaJNI implements MediaAPI {
       JFLog.log("MediaCoder.load() failed");
       System.exit(1);
     }
-    if (!initlib(
+    if (!mediaLoadLibs(
       libs[0].path,
       libs[1].path,
       libs[2].path,
@@ -67,8 +67,8 @@ public class MediaJNI implements MediaAPI {
   }
 
   //MediaCoder
-  public native boolean initlib(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample);
-  public native void setLogging(boolean state);
+  public native boolean mediaLoadLibs(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample);
+  public native void mediaSetLogging(boolean state);
 
   //MediaFormat
   public native int getVideoStream(long ctx);
@@ -79,8 +79,8 @@ public class MediaJNI implements MediaAPI {
   public native int getAudioBitRate(long ctx);
 
   //MediaInput
-  public native long openFile(String file, String format);
-  public native long openIO(MediaIO io);
+  public native long inputOpenFile(String file, String format);
+  public native long inputOpenIO(MediaIO io);
   public native long getDuration(long ctx);
   public native int getVideoWidth(long ctx);
   public native int getVideoHeight(long ctx);
@@ -89,16 +89,16 @@ public class MediaJNI implements MediaAPI {
   public native int getAudioChannels(long ctx);
   public native int getAudioSampleRate(long ctx);
   public native boolean inputClose(long ctx);
-  public native boolean openvideo(long ctx, int width, int height);
-  public native boolean openaudio(long ctx, int chs, int freq);
+  public native boolean inputOpenVideo(long ctx, int width, int height);
+  public native boolean inputOpenAudio(long ctx, int chs, int freq);
   public native int inputRead(long ctx);
   public native boolean getPacketKeyFrame(long ctx);
   public native int getPacketData(long ctx, byte[] data, int offset, int length);
   public native boolean inputSeek(long ctx, long seconds);
 
   //MediaOutput
-  public native long createFile(String file, String format);
-  public native long createIO(MediaIO io, String format);
+  public native long outputCreateFile(String file, String format);
+  public native long outputCreateIO(MediaIO io, String format);
   public native int addVideoStream(long ctx, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
   public native int addAudioStream(long ctx, int codec_id, int bit_rate, int chs, int freq);
   public native boolean outputClose(long ctx);

@@ -1,6 +1,6 @@
 //MediaInput
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_openFile
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenFile
   (JNIEnv *e, jobject c, jstring file, jstring format)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -41,7 +41,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_openFile
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_openIO
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenIO
   (JNIEnv *e, jobject c, jobject mio)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -146,7 +146,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputClose
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_openvideo
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenVideo
   (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
@@ -162,7 +162,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_openvideo
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_openaudio
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenAudio
   (JNIEnv *e, jobject c, jlong ctxptr, jint new_chs, jint new_freq)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);

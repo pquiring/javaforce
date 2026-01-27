@@ -25,7 +25,7 @@ public class MediaOutput extends MediaFormat {
    */
   public boolean create(String file, String format) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().createFile(file, format);
+    ctx = MediaAPI.getInstance().outputCreateFile(file, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateFile() == 0");
     }
@@ -38,7 +38,7 @@ public class MediaOutput extends MediaFormat {
    */
   public boolean create(MediaIO io, String format) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().createIO(io, format);
+    ctx = MediaAPI.getInstance().outputCreateIO(io, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateIO() == 0");
     }

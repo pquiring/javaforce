@@ -15,13 +15,13 @@ import javaforce.api.*;
 public class MediaInput extends MediaFormat {
   public boolean open(String file, String format) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().openFile(file, format);
+    ctx = MediaAPI.getInstance().inputOpenFile(file, format);
     return ctx != 0;
   }
 
   public boolean open(MediaIO io) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().openIO(io);
+    ctx = MediaAPI.getInstance().inputOpenIO(io);
     return ctx != 0;
   }
 
@@ -89,7 +89,7 @@ public class MediaInput extends MediaFormat {
    * @param height = desired height (-1 = no conversion)
    */
   public MediaVideoDecoder createVideoDecoder(int width, int height) {
-    if (!MediaAPI.getInstance().openvideo(ctx, width, height)) return null;
+    if (!MediaAPI.getInstance().inputOpenVideo(ctx, width, height)) return null;
     MediaVideoDecoder decoder = new MediaVideoDecoder(this);
     decoder.setStream(getVideoStream());
     return decoder;
@@ -106,7 +106,7 @@ public class MediaInput extends MediaFormat {
    * @param freq = desired sample rate (-1 = no conversion)
    */
   public MediaAudioDecoder createAudioDecoder(int chs, int freq) {
-    if (!MediaAPI.getInstance().openaudio(ctx, chs, freq)) return null;
+    if (!MediaAPI.getInstance().inputOpenAudio(ctx, chs, freq)) return null;
     MediaAudioDecoder decoder = new MediaAudioDecoder(this);
     decoder.setStream(getAudioStream());
     return decoder;

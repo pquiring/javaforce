@@ -26,11 +26,11 @@ public class MediaCoder {
   }
 
   public static void init() {
-    MediaAPI.getInstance().init();
+    MediaAPI.getInstance().mediaInit();
   }
 
   public static void setLogging(boolean state) {
-    MediaAPI.getInstance().setLogging(state);
+    MediaAPI.getInstance().mediaSetLogging(state);
   }
 
   //seek types

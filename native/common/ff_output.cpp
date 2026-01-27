@@ -1,6 +1,6 @@
 //MediaOutput
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_createFile
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateFile
   (JNIEnv *e, jobject c, jstring file, jstring format)
 {
   FFContext *ctx = newFFContext(e,c);
@@ -36,7 +36,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_createFile
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_createIO
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateIO
   (JNIEnv *e, jobject c, jobject mio, jstring format)
 {
   FFContext *ctx = newFFContext(e,c);

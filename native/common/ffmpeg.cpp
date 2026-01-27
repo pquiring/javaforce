@@ -404,7 +404,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_initlib
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
   (JNIEnv *e, jobject c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale)
 {
   if (ffmpeg_loaded) return ffmpeg_loaded;
@@ -446,7 +446,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_initlib
   return JNI_TRUE;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_setLogging
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_mediaSetLogging
   (JNIEnv *e, jobject c, jboolean state)
 {
   (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
@@ -562,8 +562,8 @@ static jlong seek_packet(FFContext *ctx, jlong offset, int how) {
 //JNI registration
 
 static JNINativeMethod javaforce_media_MediaCoder[] = {
-  {"initlib", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_MediaJNI_initlib},
-  {"setLogging", "(Z)V", (void *)&Java_javaforce_jni_MediaJNI_setLogging},
+  {"mediaLoadLibs", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_MediaJNI_mediaLoadLibs},
+  {"mediaSetLogging", "(Z)V", (void *)&Java_javaforce_jni_MediaJNI_mediaSetLogging},
 };
 
 static JNINativeMethod javaforce_media_MediaFormat[] = {
@@ -611,8 +611,8 @@ static JNINativeMethod javaforce_media_MediaEncoder[] = {
 */
 
 static JNINativeMethod javaforce_media_MediaInput[] = {
-  {"openFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_openFile},
-  {"openIO", "(Ljavaforce/media/MediaIO;)J", (void *)&Java_javaforce_jni_MediaJNI_openIO},
+  {"inputOpenFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_inputOpenFile},
+  {"inputOpenIO", "(Ljavaforce/media/MediaIO;)J", (void *)&Java_javaforce_jni_MediaJNI_inputOpenIO},
   {"getDuration", "(J)J", (void *)&Java_javaforce_jni_MediaJNI_getDuration},
   {"getVideoWidth", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoWidth},
   {"getVideoHeight", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoHeight},
@@ -621,8 +621,8 @@ static JNINativeMethod javaforce_media_MediaInput[] = {
   {"getAudioChannels", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioChannels},
   {"getAudioSampleRate", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioSampleRate},
   {"inputClose", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_inputClose},
-  {"openvideo", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_openvideo},
-  {"openaudio", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_openaudio},
+  {"inputOpenVideo", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_inputOpenVideo},
+  {"inputOpenAudio", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_inputOpenAudio},
   {"inputRead", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_inputRead},
   {"getPacketKeyFrame", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_getPacketKeyFrame},
   {"getPacketData", "(J[BII)I", (void *)&Java_javaforce_jni_MediaJNI_getPacketData},
@@ -630,8 +630,8 @@ static JNINativeMethod javaforce_media_MediaInput[] = {
 };
 
 static JNINativeMethod javaforce_media_MediaOutput[] = {
-  {"createFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_createFile},
-  {"createIO", "(Ljavaforce/media/MediaIO;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_createIO},
+  {"outputCreateFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_outputCreateFile},
+  {"outputCreateIO", "(Ljavaforce/media/MediaIO;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_outputCreateIO},
   {"addVideoStream", "(JIIIIFI)I", (void *)&Java_javaforce_jni_MediaJNI_addVideoStream},
   {"addAudioStream", "(JIIII)I", (void *)&Java_javaforce_jni_MediaJNI_addAudioStream},
   {"outputClose", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_outputClose},
