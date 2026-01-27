@@ -15,7 +15,7 @@ import static javaforce.gl.GL.*;
 
 public class Window {
   public static boolean init() {
-    return UIAPI.getInstance().init();
+    return UIAPI.getInstance().uiInit();
   }
 
   private long id;
@@ -71,7 +71,7 @@ public class Window {
   public boolean create(int style, String title, int width, int height, Window shared) {
     this.width = width;
     this.height = height;
-    id = UIAPI.getInstance().create(style, title, width, height, this, shared == null ? 0 : shared.id);
+    id = UIAPI.getInstance().uiWindowCreate(style, title, width, height, this, shared == null ? 0 : shared.id);
     if (id != 0) {
       synchronized(windows) {
         windows.add(this);
@@ -84,7 +84,7 @@ public class Window {
   public void destroy() {
     if (id == 0) return;
     active = false;
-    UIAPI.getInstance().destroy(id);
+    UIAPI.getInstance().uiWindowDestroy(id);
     id = 0;
     synchronized(windows) {
       windows.remove(this);
@@ -93,7 +93,7 @@ public class Window {
 
   /** Set the OpenGL Context current for this window. */
   public void setCurrent() {
-    UIAPI.getInstance().setcurrent(id);
+    UIAPI.getInstance().uiWindowSetCurrent(id);
   }
 
   /** Set an icon to the window.
@@ -102,7 +102,7 @@ public class Window {
    * @param filename = file (.ico for windows)
    */
   public void setIcon(String filename, int x, int y) {
-    UIAPI.getInstance().seticon(id, filename, x, y);
+    UIAPI.getInstance().uiWindowSetIcon(id, filename, x, y);
   }
 
   public void setKeyListener(KeyEvents keys) {
@@ -124,12 +124,12 @@ public class Window {
    *    x = wait x milliseconds
    */
   public static void pollEvents(int wait) {
-    UIAPI.getInstance().pollEvents(wait);
+    UIAPI.getInstance().uiPollEvents(wait);
   }
 
   /** Posts an empty event to wake main thread. */
   public void postEvent() {
-    UIAPI.getInstance().postEvent();
+    UIAPI.getInstance().uiPostEvent();
   }
 
   /** Polls for events. Does not wait for an event.  Same as pollEvents(0); */
@@ -139,36 +139,36 @@ public class Window {
 
   /** Show the window. */
   public void show() {
-    UIAPI.getInstance().show(id);
+    UIAPI.getInstance().uiWindowShow(id);
     visible = true;
   }
 
   /** Hide the window. */
   public void hide() {
-    UIAPI.getInstance().hide(id);
+    UIAPI.getInstance().uiWindowHide(id);
     visible = false;
   }
 
   /** Swaps the OpenGL Buffers. */
   public void swap() {
-    UIAPI.getInstance().swap(id);
+    UIAPI.getInstance().uiWindowSwap(id);
   }
 
   /** Hide the cursor. */
   public void hideCursor() {
-    UIAPI.getInstance().hidecursor(id);
+    UIAPI.getInstance().uiWindowHideCursor(id);
   }
 
   /** Show the cursor (default). */
   public void showCursor() {
-    UIAPI.getInstance().showcursor(id);
+    UIAPI.getInstance().uiWindowShowCursor(id);
   }
 
   /** Hide the cursor and lock to this window.
    * Use showCursor() to unlock.
    */
   public void lockCursor() {
-    UIAPI.getInstance().lockcursor(id);
+    UIAPI.getInstance().uiWindowLockCursor(id);
   }
 
   /** Get window position.
@@ -176,7 +176,7 @@ public class Window {
    */
   public int[] getPosition() {
     int[] ret = new int[2];
-    UIAPI.getInstance().getpos(id, ret);
+    UIAPI.getInstance().uiWindowGetPos(id, ret);
     return ret;
   }
 
@@ -184,7 +184,7 @@ public class Window {
    * return: int[0] = x, int[1] = y
    */
   public void setPosition(int x,int y) {
-    UIAPI.getInstance().setpos(id, x, y);
+    UIAPI.getInstance().uiWindowSetPos(id, x, y);
   }
 
   public int getWidth() {
@@ -296,6 +296,6 @@ public class Window {
 
   public static void redrawAll() {
     if (windows.size() == 0) return;
-    UIAPI.getInstance().postEvent();
+    UIAPI.getInstance().uiPostEvent();
   }
 }

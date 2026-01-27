@@ -10,6 +10,14 @@ import javaforce.ui.*;
 
 public class UIJNI implements UIAPI {
 
+  private static UIAPI api;
+  public static UIAPI getInstance() {
+    if (api == null) {
+      api = new UIJNI();
+    }
+    return api;
+  }
+
   public static final int KEY_TYPED = 1;
   public static final int KEY_PRESS = 2;
   public static final int KEY_RELEASE = 3;
@@ -26,28 +34,28 @@ public class UIJNI implements UIAPI {
   public static final int STYLE_FULLSCREEN = 8;
 
   //Font
-  public native int loadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
+  public native int uiLoadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
 
   //Image
-  public native int[] loadPNG(byte[] data, int[] dim);
-  public native byte[] savePNG(int[] pixels, int width, int height);
-  public native int[] loadJPG(byte[] data, int[] dim);
-  public native byte[] saveJPG(int[] pixels, int width, int height, int quality);
+  public native int[] uiLoadPNG(byte[] data, int[] dim);
+  public native byte[] uiSavePNG(int[] pixels, int width, int height);
+  public native int[] uiLoadJPG(byte[] data, int[] dim);
+  public native byte[] uiSaveJPG(int[] pixels, int width, int height, int quality);
 
   //Window
-  public native boolean init();
-  public native long create(int style, String title, int width, int height, Window eventMgr, long shared);
-  public native void destroy(long id);
-  public native void setcurrent(long id);
-  public native void seticon(long id, String icon, int x, int y);
-  public native void pollEvents(int wait);
-  public native void postEvent();
-  public native void show(long id);
-  public native void hide(long id);
-  public native void swap(long id);
-  public native void hidecursor(long id);
-  public native void showcursor(long id);
-  public native void lockcursor(long id);
-  public native void getpos(long id, int[] pos);
-  public native void setpos(long id, int x, int y);
+  public native boolean uiInit();
+  public native long uiWindowCreate(int style, String title, int width, int height, Window eventMgr, long shared);
+  public native void uiWindowDestroy(long id);
+  public native void uiWindowSetCurrent(long id);
+  public native void uiWindowSetIcon(long id, String icon, int x, int y);
+  public native void uiPollEvents(int wait);
+  public native void uiPostEvent();
+  public native void uiWindowShow(long id);
+  public native void uiWindowHide(long id);
+  public native void uiWindowSwap(long id);
+  public native void uiWindowHideCursor(long id);
+  public native void uiWindowShowCursor(long id);
+  public native void uiWindowLockCursor(long id);
+  public native void uiWindowGetPos(long id, int[] pos);
+  public native void uiWindowSetPos(long id, int x, int y);
 }

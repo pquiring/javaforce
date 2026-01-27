@@ -62,7 +62,7 @@ HMODULE wgl = NULL;
 
 #include "../glfw/include/GLFW/glfw3native.h"
 
-JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_seticon
+JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
   (JNIEnv *e, jobject c, jlong id, jstring filename, jint x, jint y)
 {
   GLFWContext *ctx = (GLFWContext*)id;

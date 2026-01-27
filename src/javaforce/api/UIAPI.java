@@ -10,7 +10,7 @@ import javaforce.ui.*;
 
 public interface UIAPI {
   public static UIAPI getInstance() {
-    return new UIJNI();
+    return UIJNI.getInstance();
   }
 
   public static final int KEY_TYPED = 1;
@@ -29,28 +29,28 @@ public interface UIAPI {
   public static final int STYLE_FULLSCREEN = 8;
 
   //Font
-  public int loadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
+  public int uiLoadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
 
   //Image
-  public int[] loadPNG(byte[] data, int[] dim);
-  public byte[] savePNG(int[] pixels, int width, int height);
-  public int[] loadJPG(byte[] data, int[] dim);
-  public byte[] saveJPG(int[] pixels, int width, int height, int quality);
+  public int[] uiLoadPNG(byte[] data, int[] dim);
+  public byte[] uiSavePNG(int[] pixels, int width, int height);
+  public int[] uiLoadJPG(byte[] data, int[] dim);
+  public byte[] uiSaveJPG(int[] pixels, int width, int height, int quality);
 
   //Window
-  public boolean init();
-  public long create(int style, String title, int width, int height, Window eventMgr, long shared);
-  public void destroy(long id);
-  public void setcurrent(long id);
-  public void seticon(long id, String icon, int x, int y);
-  public void pollEvents(int wait);
-  public void postEvent();
-  public void show(long id);
-  public void hide(long id);
-  public void swap(long id);
-  public void hidecursor(long id);
-  public void showcursor(long id);
-  public void lockcursor(long id);
-  public void getpos(long id, int[] pos);
-  public void setpos(long id, int x, int y);
+  public boolean uiInit();
+  public long uiWindowCreate(int style, String title, int width, int height, Window eventMgr, long shared);
+  public void uiWindowDestroy(long id);
+  public void uiWindowSetCurrent(long id);
+  public void uiWindowSetIcon(long id, String icon, int x, int y);
+  public void uiPollEvents(int wait);
+  public void uiPostEvent();
+  public void uiWindowShow(long id);
+  public void uiWindowHide(long id);
+  public void uiWindowSwap(long id);
+  public void uiWindowHideCursor(long id);
+  public void uiWindowShowCursor(long id);
+  public void uiWindowLockCursor(long id);
+  public void uiWindowGetPos(long id, int[] pos);
+  public void uiWindowSetPos(long id, int x, int y);
 }

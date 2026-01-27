@@ -57,7 +57,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = UIAPI.getInstance().loadPNG(data, dim);
+    buffer = UIAPI.getInstance().uiLoadPNG(data, dim);
     if (buffer != null) {
       super.setSize(dim[0], dim[1]);
     }
@@ -77,7 +77,7 @@ public class Image extends FontComponent {
   }
 
   public boolean savePNG(OutputStream os) {
-    byte[] data = UIAPI.getInstance().savePNG(buffer, size.width, size.height);
+    byte[] data = UIAPI.getInstance().uiSavePNG(buffer, size.width, size.height);
     if (data == null) return false;
     try {
       os.write(data);
@@ -109,7 +109,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = UIAPI.getInstance().loadJPG(data, dim);
+    buffer = UIAPI.getInstance().uiLoadJPG(data, dim);
     return buffer != null;
   }
 
@@ -129,7 +129,7 @@ public class Image extends FontComponent {
   public int jpeg_quality = 90;
 
   public boolean saveJPG(OutputStream os) {
-    byte[] data = UIAPI.getInstance().saveJPG(buffer, size.width, size.height, jpeg_quality);
+    byte[] data = UIAPI.getInstance().uiSaveJPG(buffer, size.width, size.height, jpeg_quality);
     if (data == null) return false;
     try {
       os.write(data);

@@ -13,7 +13,7 @@
 
 #include "register.h"
 
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_loadPNG
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_uiLoadPNG
   (JNIEnv *e, jobject o, jbyteArray data, jintArray size)
 {
   int x, y, chs;
@@ -76,7 +76,7 @@ static void write_func(void *context, void *data, int size) {
   }
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_savePNG
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_uiSavePNG
   (JNIEnv *e, jobject o, jintArray px, jint x, jint y)
 {
   write_ctx ctx;
@@ -120,7 +120,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_savePNG
   return out;
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_loadJPG
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_uiLoadJPG
   (JNIEnv *e, jobject o, jbyteArray data, jintArray size)
 {
   int x, y, chs;
@@ -153,7 +153,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_UIJNI_loadJPG
   return out;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_saveJPG
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_uiSaveJPG
   (JNIEnv *e, jobject o, jintArray px, jint x, jint y, jint quality)
 {
   write_ctx ctx;
@@ -184,10 +184,10 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_UIJNI_saveJPG
 }
 
 static JNINativeMethod javaforce_ui_Image[] = {
-  {"loadPNG", "([B[I)[I", (void *)&Java_javaforce_jni_UIJNI_loadPNG},
-  {"savePNG", "([III)[B", (void *)&Java_javaforce_jni_UIJNI_savePNG},
-  {"loadJPG", "([B[I)[I", (void *)&Java_javaforce_jni_UIJNI_loadJPG},
-  {"saveJPG", "([IIII)[B", (void *)&Java_javaforce_jni_UIJNI_loadJPG}
+  {"uiLoadPNG", "([B[I)[I", (void *)&Java_javaforce_jni_UIJNI_uiLoadPNG},
+  {"uiSavePNG", "([III)[B", (void *)&Java_javaforce_jni_UIJNI_uiSavePNG},
+  {"uiLoadJPG", "([B[I)[I", (void *)&Java_javaforce_jni_UIJNI_uiLoadJPG},
+  {"uiSaveJPG", "([IIII)[B", (void *)&Java_javaforce_jni_UIJNI_uiLoadJPG}
 };
 
 extern "C" void image_register(JNIEnv *env);

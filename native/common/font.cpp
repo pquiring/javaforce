@@ -5,7 +5,7 @@
 
 //#define FONT_DEBUG
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_UIJNI_loadFont
+JNIEXPORT jint JNICALL Java_javaforce_jni_UIJNI_uiLoadFont
   (JNIEnv *e, jobject c, jbyteArray fontdata, jint ptSize, jintArray fontinfo, jintArray coords, jintArray glyph, jintArray cps, jbyteArray pixels, jint px, jint py)
 {
   stbtt_fontinfo font;
@@ -134,7 +134,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_UIJNI_loadFont
 }
 
 static JNINativeMethod javaforce_ui_Font[] = {
-  {"loadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_jni_UIJNI_loadFont}
+  {"uiLoadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_jni_UIJNI_uiLoadFont}
 };
 
 extern "C" void font_register(JNIEnv *env);
