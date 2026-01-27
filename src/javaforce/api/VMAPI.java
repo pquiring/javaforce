@@ -10,56 +10,56 @@ import javaforce.jni.*;
 
 public interface VMAPI {
   public static VMAPI getInstance() {
-    return new VMJNI();
+    return VMJNI.getInstance();
   }
 
   //Device
-  public String[] deviceList(int type);
+  public String[] vmDeviceList(int type);
 
   //Disk
-  public boolean diskCreate(String pool_name, String xml);
+  public boolean vmDiskCreate(String pool_name, String xml);
 
   //NetworkInterface
-  public String[] networkListPhys();
+  public String[] vmNetworkListPhys();
 
   //Secret
-  public boolean secretCreate(String xml, String passwd);
+  public boolean vmSecretCreate(String xml, String passwd);
 
   //Storage
-  public String[] storageList();
-  public boolean storageRegister(String xml);
-  public boolean storageUnregister(String name);
-  public boolean storageStart(String name);
-  public boolean storageStop(String name);
-  public int storageGetState(String name);
-  public String storageGetUUID(String name);
+  public String[] vmStorageList();
+  public boolean vmStorageRegister(String xml);
+  public boolean vmStorageUnregister(String name);
+  public boolean vmStorageStart(String name);
+  public boolean vmStorageStop(String name);
+  public int vmStorageGetState(String name);
+  public String vmStorageGetUUID(String name);
 
   //VirtualMachine
-  public boolean init();
-  public boolean start(String name);
-  public boolean stop(String name);
-  public boolean poweroff(String name);
-  public boolean restart(String name);
-  public boolean suspend(String name);
-  public boolean resume(String name);
-  public int getState(String name);
-  public String[] list();
-  public String get(String name);
-  public boolean register(String xml);
-  public boolean unregister(String name);
-  public boolean migrate(String name, String desthost, boolean live, Status status);
-  public boolean snapshotCreate(String name, String xml, int flags);
-  public String[] snapshotList(String name);
-  public boolean snapshotExists(String name);
-  public String snapshotGetCurrent(String name);
-  public boolean snapshotRestore(String name, String snapshot);
-  public boolean snapshotDelete(String name, String snapshot);
+  public boolean vmInit();
+  public boolean vmStart(String name);
+  public boolean vmStop(String name);
+  public boolean vmPowerOff(String name);
+  public boolean vmRestart(String name);
+  public boolean vmSuspend(String name);
+  public boolean vmResume(String name);
+  public int vmGetState(String name);
+  public String[] vmList();
+  public String vmGet(String name);
+  public boolean vmRegister(String xml);
+  public boolean vmUnregister(String name);
+  public boolean vmMigrate(String name, String desthost, boolean live, Status status);
+  public boolean vmSnapshotCreate(String name, String xml, int flags);
+  public String[] vmSnapshotList(String name);
+  public boolean vmSnapshotExists(String name);
+  public String vmSnapshotGetCurrent(String name);
+  public boolean vmSnapshotRestore(String name, String snapshot);
+  public boolean vmSnapshotDelete(String name, String snapshot);
 
   //VMHost
-  public long totalMemory();
-  public long freeMemory();
-  public long cpuLoad();
-  public boolean getAllStats(int year, int month, int day, int hour, int sample);
-  public boolean connect(String remote);
+  public long vmTotalMemory();
+  public long vmFreeMemory();
+  public long vmCpuLoad();
+  public boolean vmGetAllStats(int year, int month, int day, int hour, int sample);
+  public boolean vmConnect(String remote);
 
 }

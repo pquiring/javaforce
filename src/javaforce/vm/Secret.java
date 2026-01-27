@@ -17,6 +17,6 @@ public class Secret {
     xml.append("<target>" + name + "</target>");
     xml.append("</usage>");
     xml.append("</secret>");
-    return VMAPI.getInstance().secretCreate(xml.toString(), passwd);
+    return VMAPI.getInstance().vmSecretCreate(xml.toString(), passwd);
   }
 }

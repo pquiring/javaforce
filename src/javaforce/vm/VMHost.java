@@ -12,15 +12,15 @@ import javaforce.linux.*;
 
 public class VMHost {
   public static long total_memory() {
-    return VMAPI.getInstance().totalMemory();
+    return VMAPI.getInstance().vmTotalMemory();
   }
 
   public static long free_memory() {
-    return VMAPI.getInstance().freeMemory();
+    return VMAPI.getInstance().vmFreeMemory();
   }
 
   public static long cpu_load() {
-    return VMAPI.getInstance().cpuLoad();
+    return VMAPI.getInstance().vmCpuLoad();
   }
 
   /** This function will collect stats for all running VMs and save to local file system.
@@ -34,7 +34,7 @@ public class VMHost {
    * @param sample = (0-180)
    */
   public static boolean get_all_stats(int year, int month, int day, int hour, int sample) {
-    return VMAPI.getInstance().getAllStats(year, month, day, hour, sample);
+    return VMAPI.getInstance().vmGetAllStats(year, month, day, hour, sample);
   }
 
   private static final long ms_day = 1000L * 60L * 60L * 24L;
@@ -68,7 +68,7 @@ public class VMHost {
    *
    */
   public boolean connect(String remote) {
-    return VMAPI.getInstance().connect(remote);
+    return VMAPI.getInstance().vmConnect(remote);
   }
 
   public static String getHostname() {

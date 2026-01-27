@@ -1,6 +1,6 @@
 //#define VM_SNAPSHOTS_DEBUG
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotCreate
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSnapshotCreate
   (JNIEnv *e, jclass o, jstring name, jstring xml, jint flags)
 {
   void* conn = connect();
@@ -71,7 +71,7 @@ const char* snapshot_get_parent(void* ss) {
   return (const char*)copy;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_snapshotList
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_vmSnapshotList
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -126,7 +126,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_snapshotList
   return list;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotExists
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSnapshotExists
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -151,7 +151,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotExists
   return cond;
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_snapshotGetCurrent
+JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_vmSnapshotGetCurrent
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -191,7 +191,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_snapshotGetCurrent
   return ssname;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotRestore
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSnapshotRestore
   (JNIEnv *e, jclass o, jstring name, jstring snapshot)
 {
   void* conn = connect();
@@ -220,7 +220,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotRestore
   return result == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_snapshotDelete
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSnapshotDelete
   (JNIEnv *e, jclass o, jstring name, jstring snapshot)
 {
   void* conn = connect();

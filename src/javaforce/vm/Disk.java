@@ -94,7 +94,7 @@ public class Disk implements Serializable {
       //use libvirt (not working per docs)
       String xml = getCreateXML(provision);
       JFLog.log("Disk.xml=" + xml);
-      return VMAPI.getInstance().diskCreate(pool, xml);
+      return VMAPI.getInstance().vmDiskCreate(pool, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();
@@ -141,7 +141,7 @@ public class Disk implements Serializable {
       //use libvirt (not working per docs)
       String xml = getCreateXML(0);
       JFLog.log("Disk.xml=" + xml);
-      return VMAPI.getInstance().diskCreate(pool.name, xml);
+      return VMAPI.getInstance().vmDiskCreate(pool.name, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();

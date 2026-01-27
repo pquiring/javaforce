@@ -11,52 +11,60 @@ import javaforce.vm.*;
 
 public class VMJNI implements VMAPI {
 
+  private static VMAPI api;
+  public static VMAPI getInstance() {
+    if (api == null) {
+      api = new VMJNI();
+    }
+    return api;
+  }
+
   //Device
-  public native String[] deviceList(int type);
+  public native String[] vmDeviceList(int type);
 
   //Disk
-  public native boolean diskCreate(String pool_name, String xml);
+  public native boolean vmDiskCreate(String pool_name, String xml);
 
   //NetworkInterface
-  public native String[] networkListPhys();
+  public native String[] vmNetworkListPhys();
 
   //Secret
-  public native boolean secretCreate(String xml, String passwd);
+  public native boolean vmSecretCreate(String xml, String passwd);
 
   //Storage
-  public native String[] storageList();
-  public native boolean storageRegister(String xml);
-  public native boolean storageUnregister(String name);
-  public native boolean storageStart(String name);
-  public native boolean storageStop(String name);
-  public native int storageGetState(String name);
-  public native String storageGetUUID(String name);
+  public native String[] vmStorageList();
+  public native boolean vmStorageRegister(String xml);
+  public native boolean vmStorageUnregister(String name);
+  public native boolean vmStorageStart(String name);
+  public native boolean vmStorageStop(String name);
+  public native int vmStorageGetState(String name);
+  public native String vmStorageGetUUID(String name);
 
   //VirtualMachine
-  public native boolean init();
-  public native boolean start(String name);
-  public native boolean stop(String name);
-  public native boolean poweroff(String name);
-  public native boolean restart(String name);
-  public native boolean suspend(String name);
-  public native boolean resume(String name);
-  public native int getState(String name);
-  public native String[] list();
-  public native String get(String name);
-  public native boolean register(String xml);
-  public native boolean unregister(String name);
-  public native boolean migrate(String name, String desthost, boolean live, Status status);
-  public native boolean snapshotCreate(String name, String xml, int flags);
-  public native String[] snapshotList(String name);
-  public native boolean snapshotExists(String name);
-  public native String snapshotGetCurrent(String name);
-  public native boolean snapshotRestore(String name, String snapshot);
-  public native boolean snapshotDelete(String name, String snapshot);
+  public native boolean vmInit();
+  public native boolean vmStart(String name);
+  public native boolean vmStop(String name);
+  public native boolean vmPowerOff(String name);
+  public native boolean vmRestart(String name);
+  public native boolean vmSuspend(String name);
+  public native boolean vmResume(String name);
+  public native int vmGetState(String name);
+  public native String[] vmList();
+  public native String vmGet(String name);
+  public native boolean vmRegister(String xml);
+  public native boolean vmUnregister(String name);
+  public native boolean vmMigrate(String name, String desthost, boolean live, Status status);
+  public native boolean vmSnapshotCreate(String name, String xml, int flags);
+  public native String[] vmSnapshotList(String name);
+  public native boolean vmSnapshotExists(String name);
+  public native String vmSnapshotGetCurrent(String name);
+  public native boolean vmSnapshotRestore(String name, String snapshot);
+  public native boolean vmSnapshotDelete(String name, String snapshot);
 
   //VMHost
-  public native long totalMemory();
-  public native long freeMemory();
-  public native long cpuLoad();
-  public native boolean getAllStats(int year, int month, int day, int hour, int sample);
-  public native boolean connect(String remote);
+  public native long vmTotalMemory();
+  public native long vmFreeMemory();
+  public native long vmCpuLoad();
+  public native boolean vmGetAllStats(int year, int month, int day, int hour, int sample);
+  public native boolean vmConnect(String remote);
 }

@@ -39,7 +39,7 @@ public class VirtualMachine implements Serializable {
   }
 
   public static boolean init() {
-    return VMAPI.getInstance().init();
+    return VMAPI.getInstance().vmInit();
   }
 
   public String pool;
@@ -118,36 +118,36 @@ public class VirtualMachine implements Serializable {
   public boolean start() {
     if (!check_write_access()) return false;
     create_stats_folder();
-    return VMAPI.getInstance().start(name);
+    return VMAPI.getInstance().vmStart(name);
   }
 
   //virDomainShutdown()
   public boolean stop() {
-    return VMAPI.getInstance().stop(name);
+    return VMAPI.getInstance().vmStop(name);
   }
 
   //virDomainShutdown()
   public boolean poweroff() {
-    return VMAPI.getInstance().poweroff(name);
+    return VMAPI.getInstance().vmPowerOff(name);
   }
 
   //virDomainRestart
   public boolean restart() {
-    return VMAPI.getInstance().restart(name);
+    return VMAPI.getInstance().vmRestart(name);
   }
 
   //virDomainSuspend
   public boolean suspend() {
-    return VMAPI.getInstance().suspend(name);
+    return VMAPI.getInstance().vmSuspend(name);
   }
 
   //virDomainResume
   public boolean resume() {
-    return VMAPI.getInstance().resume(name);
+    return VMAPI.getInstance().vmResume(name);
   }
 
   public int getState() {
-    return VMAPI.getInstance().getState(name);
+    return VMAPI.getInstance().vmGetState(name);
   }
 
   public String getStateString() {
@@ -202,7 +202,7 @@ public class VirtualMachine implements Serializable {
 
   //virConnectListAllDomains & virDomainGetUUID & virDomainGetName & virDomainGetDesc
   public static VirtualMachine[] list() {
-    String[] list = VMAPI.getInstance().list();
+    String[] list = VMAPI.getInstance().vmList();
     if (list == null) list = new String[0];
     VirtualMachine[] vms = new VirtualMachine[list.length];
     for(int idx = 0;idx<list.length;idx++) {
@@ -213,7 +213,7 @@ public class VirtualMachine implements Serializable {
 
   //returns vm desc
   public static VirtualMachine get(String name) {
-    String vm = VMAPI.getInstance().get(name);
+    String vm = VMAPI.getInstance().vmGet(name);
     if (vm == null) return null;
     return getByDesc(vm);
   }
@@ -222,23 +222,23 @@ public class VirtualMachine implements Serializable {
   public static boolean register(VirtualMachine vm, Hardware hardware, VMProvider provider) {
     String xml = createXML(vm, hardware, provider);
     JFLog.log("VirtualMachine.xml=" + xml);
-    return VMAPI.getInstance().register(xml);
+    return VMAPI.getInstance().vmRegister(xml);
   }
 
   public boolean reregister(Hardware hardware, VMProvider provider) {
     String xml = createXML(this, hardware, provider);
     JFLog.log("VirtualMachine.xml=" + xml);
-    return VMAPI.getInstance().register(xml);
+    return VMAPI.getInstance().vmRegister(xml);
   }
 
   //virDomainUndefine
   public boolean unregister() {
-    return VMAPI.getInstance().unregister(name);
+    return VMAPI.getInstance().vmUnregister(name);
   }
 
   /** Live/offline VM migration. */
   public boolean migrateCompute(String desthost, boolean live, Status status) {
-    return VMAPI.getInstance().migrate(name, desthost, live, status);
+    return VMAPI.getInstance().vmMigrate(name, desthost, live, status);
   }
 
   /** Offline only VM storage migration. */
@@ -479,14 +479,14 @@ public class VirtualMachine implements Serializable {
     if (desc == null) desc = "";
     String xml = snapshotCreateXML(name, desc);
     if (xml == null) return false;
-    return VMAPI.getInstance().snapshotCreate(this.name, xml, flags);
+    return VMAPI.getInstance().vmSnapshotCreate(this.name, xml, flags);
   }
 
   /** Snap Shot : List */
   public Snapshot[] snapshotList() {
-    String[] list = VMAPI.getInstance().snapshotList(name);
+    String[] list = VMAPI.getInstance().vmSnapshotList(name);
     if (list == null) return new Snapshot[0];
-    String current = VMAPI.getInstance().snapshotGetCurrent(name);
+    String current = VMAPI.getInstance().vmSnapshotGetCurrent(name);
     ArrayList<Snapshot> sslist = new ArrayList<>();
     for(String ss_str : list) {
       String[] fs = ss_str.split("\t", -1);  //tab delimited
@@ -561,12 +561,12 @@ public class VirtualMachine implements Serializable {
 
   /** Determines if VM is running on a snapshot. */
   public boolean snapshotExists() {
-    return VMAPI.getInstance().snapshotExists(name);
+    return VMAPI.getInstance().vmSnapshotExists(name);
   }
 
   /** Returns current snapshot VM is running on. */
   public Snapshot snapshotGetCurrent() {
-    String ss = VMAPI.getInstance().snapshotGetCurrent(name);
+    String ss = VMAPI.getInstance().vmSnapshotGetCurrent(name);
     if (ss == null) return null;
     return snapshotGetByName(ss);
   }
@@ -578,12 +578,12 @@ public class VirtualMachine implements Serializable {
       JFLog.log("Error:VM:Snapshot not found:" + name);
       return false;
     }
-    return VMAPI.getInstance().snapshotRestore(this.name, name);
+    return VMAPI.getInstance().vmSnapshotRestore(this.name, name);
   }
 
   /** Snap Shot : Delete (merges data back into parent) */
   public boolean snapshotDelete(String name) {
-    return VMAPI.getInstance().snapshotDelete(this.name, name);
+    return VMAPI.getInstance().vmSnapshotDelete(this.name, name);
   }
 
   public boolean hasSnapshot() {

@@ -31,7 +31,7 @@ public class Device extends Address implements Serializable {
   //virConnectListAllNodeDevices
   public static Device[] list(int type) {
     if (type < 1 || type > 2) return null;
-    String[] list = VMAPI.getInstance().deviceList(type);
+    String[] list = VMAPI.getInstance().vmDeviceList(type);
     if (list == null) list = new String[0];
     Device[] dlist = new Device[list.length];
     for(int idx=0;idx<list.length;idx++) {

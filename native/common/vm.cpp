@@ -229,7 +229,7 @@ static void disconnect(void* ptr) {
 
 //VMHost
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_totalMemory
+JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_vmTotalMemory
   (JNIEnv *e, jclass o)
 {
   void* conn = connect();
@@ -268,7 +268,7 @@ RAMStat:cached:531576
   return 0;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_freeMemory
+JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_vmFreeMemory
   (JNIEnv *e, jclass o)
 {
   void* conn = connect();
@@ -281,7 +281,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_freeMemory
   return value;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_cpuLoad
+JNIEXPORT jlong JNICALL Java_javaforce_jni_VMJNI_vmCpuLoad
   (JNIEnv *e, jclass o)
 {
   void* conn = connect();
@@ -327,7 +327,7 @@ CPUStat:iowait:   231530000000
 
 #include "vm-stats.cpp"
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_connect
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmConnect
   (JNIEnv *e, jclass o, jstring remote)
 {
   const char* cremote = e->GetStringUTFChars(remote, NULL);
@@ -347,7 +347,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_connect
 
 //VirtualMachine
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_register
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmRegister
   (JNIEnv *e, jobject o, jstring xml)
 {
   void* conn = connect();
@@ -370,7 +370,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_register
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_unregister
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmUnregister
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -399,7 +399,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_unregister
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_start
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmStart
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -428,7 +428,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_start
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_stop
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmStop
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -457,7 +457,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_stop
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_poweroff
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmPowerOff
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -486,7 +486,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_poweroff
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_restart
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmRestart
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -515,7 +515,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_restart
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_suspend
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSuspend
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -544,7 +544,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_suspend
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_resume
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmResume
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -573,7 +573,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_resume
   return res == 0;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_VMJNI_getState
+JNIEXPORT jint JNICALL Java_javaforce_jni_VMJNI_vmGetState
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -612,7 +612,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_VMJNI_getState
   return 3;  //error
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_list
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_vmList
   (JNIEnv *e, jclass o)
 {
   void* conn = connect();
@@ -646,7 +646,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_list
   return array;
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_get
+JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_vmGet
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -674,7 +674,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_get
   return ret;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_migrate
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmMigrate
   (JNIEnv *e, jobject o, jstring name, jstring desthost, jboolean live, jobject status)
 {
   char durl[1024];
@@ -715,7 +715,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_migrate
 
 //Storage
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_storageList
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_vmStorageList
   (JNIEnv *e, jclass o)
 {
   void* conn = connect();
@@ -750,7 +750,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_storageList
   return array;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageRegister
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmStorageRegister
   (JNIEnv *e, jobject o, jstring xml)
 {
   void* conn = connect();
@@ -773,7 +773,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageRegister
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageUnregister
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmStorageUnregister
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -802,7 +802,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageUnregister
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageStart
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmStorageStart
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -831,7 +831,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageStart
   return res == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageStop
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmStorageStop
   (JNIEnv *e, jobject o, jstring name)
 {
   void* conn = connect();
@@ -860,7 +860,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_storageStop
   return res == 0;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_VMJNI_storageGetState
+JNIEXPORT jint JNICALL Java_javaforce_jni_VMJNI_vmStorageGetState
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -897,7 +897,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_VMJNI_storageGetState
   return 3;
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_storageGetUUID
+JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_vmStorageGetUUID
   (JNIEnv *e, jclass o, jstring name)
 {
   void* conn = connect();
@@ -927,7 +927,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_storageGetUUID
 
 //Disk
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_diskCreate
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmDiskCreate
   (JNIEnv *e, jclass o, jstring name, jstring xml)
 {
   void* conn = connect();
@@ -961,7 +961,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_diskCreate
 
 //Network
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_networkListPhys
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_vmNetworkListPhys
   (JNIEnv *e, jclass o)
 {
   void* conn = connect();
@@ -996,7 +996,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_networkListPhys
 
 //Device
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_deviceList
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_vmDeviceList
   (JNIEnv *e, jclass o, jint type)
 {
   char devstr[4*1024];
@@ -1038,7 +1038,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_VMJNI_deviceList
   return array;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_secretCreate
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSecretCreate
   (JNIEnv *e, jclass o, jstring xml, jstring passwd)
 {
   void* conn = connect();
@@ -1069,59 +1069,59 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_secretCreate
 }
 
 static JNINativeMethod javaforce_vm_VMHost[] = {
-  {"totalMemory", "()J", (void *)&Java_javaforce_jni_VMJNI_totalMemory},
-  {"freeMemory", "()J", (void *)&Java_javaforce_jni_VMJNI_freeMemory},
-  {"cpuLoad", "()J", (void *)&Java_javaforce_jni_VMJNI_cpuLoad},
-  {"connect", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_connect},
-  {"getAllStats", "(IIIII)Z", (void *)&Java_javaforce_jni_VMJNI_getAllStats},
+  {"vmTotalMemory", "()J", (void *)&Java_javaforce_jni_VMJNI_vmTotalMemory},
+  {"vmFreeMemory", "()J", (void *)&Java_javaforce_jni_VMJNI_vmFreeMemory},
+  {"vmCpuLoad", "()J", (void *)&Java_javaforce_jni_VMJNI_vmCpuLoad},
+  {"vmConnect", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmConnect},
+  {"vmGetAllStats", "(IIIII)Z", (void *)&Java_javaforce_jni_VMJNI_vmGetAllStats},
 };
 
 static JNINativeMethod javaforce_vm_Device[] = {
-  {"deviceList", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_deviceList},
+  {"vmDeviceList", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmDeviceList},
 };
 
 static JNINativeMethod javaforce_vm_Disk[] = {
-  {"diskCreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_diskCreate},
+  {"vmDiskCreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmDiskCreate},
 };
 
 static JNINativeMethod javaforce_vm_NetworkInterface[] = {
-  {"networkListPhys", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_networkListPhys},
+  {"vmNetworkListPhys", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmNetworkListPhys},
 };
 
 static JNINativeMethod javaforce_vm_Storage[] = {
-  {"storageList", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_storageList},
-  {"storageRegister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_storageRegister},
-  {"storageUnregister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_storageUnregister},
-  {"storageStart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_storageStart},
-  {"storageStop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_storageStop},
-  {"storageGetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_VMJNI_storageGetState},
-  {"storageGetUUID", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_storageGetUUID},
+  {"vmStorageList", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmStorageList},
+  {"vmStorageRegister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmStorageRegister},
+  {"vmStorageUnregister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmStorageUnregister},
+  {"vmStorageStart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmStorageStart},
+  {"vmStorageStop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmStorageStop},
+  {"vmStorageGetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_VMJNI_vmStorageGetState},
+  {"vmStorageGetUUID", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmStorageGetUUID},
 };
 
 static JNINativeMethod javaforce_vm_VirtualMachine[] = {
-  {"init", "()Z", (void *)&Java_javaforce_jni_VMJNI_init},
-  {"list", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_list},
-  {"register", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_register},
-  {"unregister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_unregister},
-  {"start", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_start},
-  {"stop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_stop},
-  {"getState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_VMJNI_getState},
-  {"poweroff", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_poweroff},
-  {"restart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_restart},
-  {"suspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_suspend},
-  {"resume", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_resume},
-  {"get", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_get},
-  {"migrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/webui/tasks/Status;)Z", (void *)&Java_javaforce_jni_VMJNI_migrate},
-  {"snapshotCreate", "(Ljava/lang/String;Ljava/lang/String;I)Z", (void *)&Java_javaforce_jni_VMJNI_snapshotCreate},
-  {"snapshotList", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_snapshotList},
-  {"snapshotExists", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_snapshotExists},
-  {"snapshotGetCurrent", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_snapshotGetCurrent},
-  {"snapshotRestore", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_snapshotRestore},
-  {"snapshotDelete", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_snapshotDelete},
+  {"vmInit", "()Z", (void *)&Java_javaforce_jni_VMJNI_init},
+  {"vmList", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmList},
+  {"vmRegister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmRegister},
+  {"vmUnregister", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmUnregister},
+  {"vmStart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmStart},
+  {"vmStop", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmStop},
+  {"vmGetState", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_VMJNI_vmGetState},
+  {"vmPowerOff", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmPowerOff},
+  {"vmRestart", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmRestart},
+  {"vmSuspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSuspend},
+  {"vmResume", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmResume},
+  {"vmGet", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmGet},
+  {"vmMigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/webui/tasks/Status;)Z", (void *)&Java_javaforce_jni_VMJNI_vmMigrate},
+  {"vmSnapshotCreate", "(Ljava/lang/String;Ljava/lang/String;I)Z", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotCreate},
+  {"vmSnapshotList", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotList},
+  {"vmSnapshotExists", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotExists},
+  {"vmSnapshotGetCurrent", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotGetCurrent},
+  {"vmSnapshotRestore", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotRestore},
+  {"vmSnapshotDelete", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotDelete},
 };
 
 static JNINativeMethod javaforce_vm_Secret[] = {
-  {"secretCreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_secretCreate},
+  {"vmSecretCreate", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSecretCreate},
 };
 
 #include "register.h"

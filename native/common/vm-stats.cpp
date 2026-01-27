@@ -66,7 +66,7 @@ static void append_domain_stat(char* uuid, int year, int month, int day, int hou
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_getAllStats
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmGetAllStats
   (JNIEnv *e, jclass o, jint year, jint month, jint day, jint hour, jint sample)
 {
   void* conn = connect();
