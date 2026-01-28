@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{56317B62-FDB6-4314-A3EB-E7AD1F623217}" Version="0.16" Language="1033" Name="jfRecordDesktop" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{56317B62-FDB6-4314-A3EB-E7AD1F623217}" Version="0.17" Language="1033" Name="jfRecordDesktop" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
