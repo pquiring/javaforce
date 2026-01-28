@@ -17,7 +17,7 @@ import javaforce.voip.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler {
 
-  public static String version = "0.16";
+  public static String version = "0.17";
 
   public static class Codec {
     public String codec, ext, desc, mime;

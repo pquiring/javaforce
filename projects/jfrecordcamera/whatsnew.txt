@@ -1,6 +1,9 @@
 What's new ??
 
-Jan 23/206 : version 0.16 released
+Jan 28/2026 : version 0.17 released
+  - fix : version bump for native changes
+
+Jan 23/2026 : version 0.16 released
   - fix : version bump for native changes
 
 Feb 20/2024 : version 0.15 released
