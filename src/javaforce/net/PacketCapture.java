@@ -11,6 +11,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.api.*;
+import javaforce.ffm.*;
 import javaforce.jni.*;
 
 public class PacketCapture {
@@ -26,13 +27,21 @@ public class PacketCapture {
   public static int TYPE_ARP = 0x0806;
   public static int TYPE_IP6 = 0x86dd;
 
+  private static PacketCapture instance;
+
   public static PacketCapture getInstance() {
-    PacketCapture pcap = new PacketCapture();
-    pcap.api = PCapJNI.getInstance();
-    if (!pcap.init()) {
-      return null;
+    if (instance == null) {
+      instance = new PacketCapture();
+      if (FFM.enabled()) {
+        instance.api = PCapFFM.getInstance();
+      } else {
+        instance.api = PCapJNI.getInstance();
+      }
+      if (!instance.init()) {
+        return null;
+      }
     }
-    return pcap;
+    return instance;
   }
 
   /** Load native libraries. */

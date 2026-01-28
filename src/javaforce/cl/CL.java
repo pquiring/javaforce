@@ -21,17 +21,21 @@ public class CL {
 
   private CLAPI api;
 
+  private static CL instance;
+
   public static CL getInstance() {
-    CL cl = new CL();
-    if (FFM.enabled()) {
-      cl.api = CLFFM.getInstance();
-    } else {
-      cl.api = CLJNI.getInstance();
+    if (instance == null) {
+      instance = new CL();
+      if (FFM.enabled()) {
+        instance.api = CLFFM.getInstance();
+      } else {
+        instance.api = CLJNI.getInstance();
+      }
+      if (!instance.init()) {
+        return null;
+      }
     }
-    if (!cl.init()) {
-      return null;
-    }
-    return cl;
+    return instance;
   }
 
   private boolean init() {
