@@ -26,7 +26,7 @@ import javaforce.webui.tasks.*;
 import static javaforce.webui.Component.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "9.2";
+  public static String version = "9.3";
   public static String appname = "jfKVM";
   public static boolean debug = false;
   public static boolean debug_api = false;

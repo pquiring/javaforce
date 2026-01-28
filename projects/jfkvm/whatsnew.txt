@@ -1,3 +1,6 @@
+2026-01-28 : 9.3 released!
+  - fix : version bump for native changes
+
 2026-01-23 : 9.2 released!
   - fix : version bump for native changes
 
