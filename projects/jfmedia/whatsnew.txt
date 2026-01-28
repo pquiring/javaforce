@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Jan 28, 2026 : v0.25 released!
+  - fix : version bump for native changes
+
 Jan 23, 2026 : v0.24 released!
   - fix : version bump for native changes
 
