@@ -1,5 +1,22 @@
 What's new...
 
+Jan 28/2026 : JF/97.0
+  - some JNI interfaces have been upgraded to FFM (see javaforce.ffm.*)
+    FFM.disable() can be used to revert back to JNI
+    Completed so far : OpenGL, OpenCL, Camera and PCap
+    FFM overall is more complex than JNI.
+    see javaforce.ffm.JNI2FFM that converts a JNI interface to FFM.
+    The FFM implementations call nearly identical JNI methods,
+    which in turn call the related native methods.
+    Directly invoking Windows API or FFMpeg (todo) would be too complex.
+    javaforce.ffm.FFM is a helper class to get function pointers and deal with arrays.
+    Performance seems on par with JNI.
+  - increased minimum required JDK to 25 (technically only 22 is required for FFM but 25 is the next LTS)
+  - on Debian the JDK dependancy changed from default-jre to openjdk-25-jre
+    which may cause issues requiring manual upgrades.
+    Ensure JDK 25 is installed before upgrading:
+      apt install openjdk-25-jre
+
 Jan 23/2026 : JF/96.0
   - all native methods have been moved to javaforce.jni
   - next release will test out Java FFM native interop
