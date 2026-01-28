@@ -1,5 +1,7 @@
 CHANGELOG:
-1-23-2026 : v1.36 released
+1-28-2026 : v1.38 released
+  - fix : version bump for native changes
+1-23-2026 : v1.37 released
   - fix : version bump for native changes
 1-15-2026 : v1.36 released
   - new : UI fixes

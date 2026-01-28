@@ -24,7 +24,7 @@ import javaforce.media.*;
 
 public abstract class BasePhone extends javax.swing.JPanel implements SIPClientInterface, RTPInterface, ActionListener, KeyEventDispatcher {
 
-  public static String version = "1.37";
+  public static String version = "1.38";
 
   public static boolean debug = false;
 
