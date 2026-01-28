@@ -1,5 +1,8 @@
 Whatsnew...
 
+Jan 28, 2026 : v0.27 released!
+  - fix : version bump for native changes
+
 Jan 23, 2026 : v0.26 released!
   - fix : version bump for native changes
 
