@@ -1,3 +1,6 @@
+Jan 28, 2026 : 0.36 released!
+  - fix : version bump for native changes
+
 Jan 23, 2026 : 0.35 released!
   - fix : version bump for native changes
 
