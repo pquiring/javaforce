@@ -5,15 +5,16 @@ package javaforce.jni;
  * @author pquiring
  */
 
-import java.io.*;
-
-import javaforce.*;
 import javaforce.api.*;
 import javaforce.media.*;
 
 public class MediaJNI implements MediaAPI {
+  private static MediaAPI instance;
   public static MediaAPI getInstance() {
-    return new MediaJNI();
+    if (instance == null) {
+      instance = new MediaJNI();
+    }
+    return instance;
   }
 
   //MediaCoder
