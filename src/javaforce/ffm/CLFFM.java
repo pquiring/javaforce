@@ -15,6 +15,7 @@ import javaforce.api.*;
 public class CLFFM implements CLAPI {
 
   private Arena arena;
+  private FFM ffm;
 
   private static CLFFM instance;
   public static CLFFM getInstance() {
@@ -79,7 +80,7 @@ public class CLFFM implements CLAPI {
 
   private boolean ffm_init() {
     MethodHandle init;
-    FFM ffm = FFM.getInstance();
+    ffm = FFM.getInstance();
     arena = Arena.ofAuto();
     init = ffm.getFunction("CLAPIinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
     if (init == null) return false;

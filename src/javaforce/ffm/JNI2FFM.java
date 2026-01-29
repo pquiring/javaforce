@@ -16,7 +16,7 @@ public class JNI2FFM {
   public static void main(String[] args) {
     int idx;
     if (args.length != 5) {
-      System.out.println("Usage: JNI2FFM filein.java fileout.java package implements_extends baseclass");
+      System.out.println("Usage: JNI2FFM filein.java fileout.java package(s) implements_extends baseclass");
       return;
     }
 
@@ -73,11 +73,15 @@ public class JNI2FFM {
       src.append("\n");
       src.append("import javaforce.*;\n");
       src.append("import javaforce.ffm.*;\n");
-      src.append("import javaforce." + pack + ".*;\n");
+      String[] packs = pack.split(",");
+      for(String p : packs) {
+        src.append("import javaforce." + p + ".*;\n");
+      }
       src.append("\n");
       src.append("public class " + cls_out + " " + i_e + " " + basecls + " {\n");
       src.append("\n");
       src.append("  private Arena arena;\n");
+      src.append("  private FFM ffm;\n");
       src.append("\n");
       src.append("  private static " + cls_out + " instance;\n");
       src.append("  public static " + cls_out + " getInstance() {\n");
@@ -94,7 +98,7 @@ public class JNI2FFM {
       ctor.append("  private boolean ffm_init() {\n");
 //      ctor.append("    JFLog.log(\"" + cls_out + " init\");\n");
       ctor.append("    MethodHandle init;\n");
-      ctor.append("    FFM ffm = FFM.getInstance();\n");
+      ctor.append("    ffm = FFM.getInstance();\n");
       ctor.append("    arena = Arena.ofAuto();\n");
       ctor.append("    init = ffm.getFunction(\"" + basecls + "init\", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));\n");
       ctor.append("    if (init == null) return false;\n");
@@ -187,7 +191,9 @@ public class JNI2FFM {
             ValueLayout_type = "ADDRESS";
             array_type = "JAVA_" + base_type.toUpperCase();
           } else {
-            if (java_type.equals("String")) {
+            if (java_type.equals("MediaIO")) {
+              ValueLayout_type = "ADDRESS,ADDRESS,ADDRESS";
+            } else if (java_type.equals("String")) {
               ValueLayout_type = "ADDRESS";
             } else {
               ValueLayout_type = "JAVA_" + java_type.toUpperCase();
@@ -204,14 +210,22 @@ public class JNI2FFM {
           } else {
             ctor2.append(",");
           }
-          src.append(java_type + " " + arg_name);
+          if (java_type.equals("MediaIO")) {
+            src.append(java_type + " " + arg_name);
+          } else {
+            src.append(java_type + " " + arg_name);
+          }
           if (isArray) {
             array_names.add(arg_name);
             String segment_name = "_array_" + arg_name;
             arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(arena, " + arg_name + ");");
             method.append(segment_name);
           } else {
-            if (java_type.equals("String")) {
+            if (java_type.equals("MediaIO")) {
+              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"readFFM\", int.class, new Class[] {byte[].class, int.class}, arena)");
+              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"writeFFM\", int.class, new Class[] {byte[].class, int.class}, arena)");
+              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seekFFM\", long.class, new Class[] {long.class, int.class}, arena)");
+            } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");
             } else {
               method.append(arg_name);

@@ -16,56 +16,6 @@ public class MediaJNI implements MediaAPI {
     return new MediaJNI();
   }
 
-  private static boolean haveLibs(Library[] libs) {
-    int cnt = 0;
-    for(int a=0;a<7;a++) {
-      if (libs[a].path != null) cnt++;
-    }
-    if (libs[7].path != null) cnt++;
-    else if (libs[8].path != null) cnt++;
-    return cnt == 8;
-  }
-
-  /** Loads the media framework native libraries. */
-  public boolean mediaInit() {
-    File[] sysFolders = Library.getSysFolders();
-    String ext = Library.getExt();
-    Library[] libs = {
-      new Library("avcodec")
-      , new Library("avdevice")
-      , new Library("avfilter")
-      , new Library("avformat")
-      , new Library("avutil")
-      , new Library("swscale")
-      , new Library("postproc")
-      , new Library("swresample")
-    };
-    JFNative.findLibraries(sysFolders, libs, ext);
-    if (!haveLibs(libs)) {
-      for(int a=0;a<libs.length;a++) {
-        if (libs[a].path == null) {
-          System.out.println("Error:Unable to find library:" + libs[a].name + ext);
-        }
-      }
-      JFLog.log("MediaCoder.load() failed");
-      System.exit(1);
-    }
-    if (!mediaLoadLibs(
-      libs[0].path,
-      libs[1].path,
-      libs[2].path,
-      libs[3].path,
-      libs[4].path,
-      libs[5].path,
-      libs[6].path,
-      libs[7].path
-    ))
-    {
-      System.exit(1);
-    }
-    return true;
-  }
-
   //MediaCoder
   public native boolean mediaLoadLibs(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample);
   public native void mediaSetLogging(boolean state);

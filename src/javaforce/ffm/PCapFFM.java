@@ -15,6 +15,7 @@ import javaforce.api.*;
 public class PCapFFM implements PCapAPI {
 
   private Arena arena;
+  private FFM ffm;
 
   private static PCapFFM instance;
   public static PCapFFM getInstance() {
@@ -52,7 +53,7 @@ public class PCapFFM implements PCapAPI {
 
   private boolean ffm_init() {
     MethodHandle init;
-    FFM ffm = FFM.getInstance();
+    ffm = FFM.getInstance();
     arena = Arena.ofAuto();
     init = ffm.getFunction("PCapAPIinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
     if (init == null) return false;

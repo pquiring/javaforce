@@ -15,6 +15,7 @@ import javaforce.gl.*;
 public class GLFFM implements GL {
 
   private Arena arena;
+  private FFM ffm;
 
   private static GLFFM instance;
   public static GLFFM getInstance() {
@@ -235,7 +236,7 @@ public class GLFFM implements GL {
 
   private boolean ffm_init() {
     MethodHandle init;
-    FFM ffm = FFM.getInstance();
+    ffm = FFM.getInstance();
     arena = Arena.ofAuto();
     init = ffm.getFunction("GLinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
     if (init == null) return false;

@@ -115,6 +115,72 @@ public class FFM {
     }
   }
 
+  //upcall helpers
+
+  public static ValueLayout classToValueLayout(Class<?> cls) {
+    if (cls == boolean.class) return ValueLayout.JAVA_BOOLEAN;
+    if (cls == byte.class) return ValueLayout.JAVA_BYTE;
+    if (cls == short.class) return ValueLayout.JAVA_SHORT;
+    if (cls == char.class) return ValueLayout.JAVA_CHAR;
+    if (cls == int.class) return ValueLayout.JAVA_INT;
+    if (cls == long.class) return ValueLayout.JAVA_LONG;
+    if (cls == float.class) return ValueLayout.JAVA_FLOAT;
+    if (cls == double.class) return ValueLayout.JAVA_DOUBLE;
+
+    if (cls == byte[].class) return ValueLayout.ADDRESS;
+
+    throw new IllegalArgumentException("Unsupported class for ValueLayout: " + cls.getName());
+  }
+
+  private static Class[] ClassArrayType = new Class[0];
+
+  private static FunctionDescriptor convert(MethodType mt) {
+    // Map MethodType return type to MemoryLayout
+    ValueLayout returnLayout = classToValueLayout(mt.returnType());
+
+    // Map MethodType parameters to MemoryLayouts
+    Class[] paramClasses = mt.parameterList().toArray(ClassArrayType);
+    int count = paramClasses.length;
+    ValueLayout[] paramLayouts = new ValueLayout[paramClasses.length];
+    for(int i=0;i<count;i++) {
+      Class cls = paramClasses[i];
+      paramLayouts[i] = classToValueLayout(cls);
+    }
+
+    return FunctionDescriptor.of(returnLayout, paramLayouts);
+  }
+
+  /** Create up call stub to virtual function. */
+  public MemorySegment getFunctionUpCall(Object obj, String method, Class ret, Class[] args, Arena arena) {
+    MethodType mt;
+    MethodHandle mh, bmh;
+    MethodHandles.Lookup lookup = MethodHandles.lookup();
+    mt = MethodType.methodType(ret, args);
+    try {
+      mh = lookup.findVirtual(obj.getClass(), method, mt);
+      bmh = mh.bindTo(obj);
+      return linker.upcallStub(bmh, convert(mt), arena);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  /** Create up call stub to static function. */
+  public MemorySegment getFunctionUpCallStatic(Class cls, String method, Class ret, Class[] args, Arena arena) {
+    MethodType mt;
+    MethodHandle mh;
+    MethodHandles.Lookup lookup = MethodHandles.lookup();
+    mt = MethodType.methodType(ret, args);
+    try {
+      mh = lookup.findStatic(cls, method, mt);
+      return linker.upcallStub(mh, convert(mt), arena);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   //array helpers
 
   public static MemorySegment toMemory(Arena arena, float[] m) {
