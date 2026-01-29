@@ -10,6 +10,11 @@ struct FFContext {
   jmethodID mid_ff_write;
   jmethodID mid_ff_seek;
 
+  //FFM upcalls
+  jint (*readFFM)(jbyte* ptr, jint size);
+  jint (*writeFFM)(jbyte* ptr, jint size);
+  jlong (*seekFFM)(jlong where, jint how);
+
   //decoder fields
   //alloc:MediaInput.open() MediaOutput.create() free:freeFFContext()
   jobject mio;

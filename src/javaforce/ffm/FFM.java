@@ -224,6 +224,16 @@ public class FFM {
     return ptrs;
   }
 
+  public static MemorySegment toMemory(Arena arena, MemorySegment[] ptrs) {
+    if (ptrs == null) return MemorySegment.NULL;
+    MemorySegment array = arena.allocate(ADDRESS, ptrs.length);
+    int idx = 0;
+    for(MemorySegment ptr : ptrs) {
+      array.setAtIndex(ADDRESS, idx++, ptr);
+    }
+    return array;
+  }
+
   private static final long JAVA_LONG_SIZE = JAVA_LONG.byteSize();
   private static final long JAVA_INT_SIZE = JAVA_INT.byteSize();
   private static final long JAVA_SHORT_SIZE = JAVA_SHORT.byteSize();
