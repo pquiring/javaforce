@@ -96,7 +96,7 @@ public class GenDEB {
         JF.deletePathEx("deb");
       }
 
-      String release = Linux.getOSRelease("VERSION_CODENAME");
+      String release = Linux.getOSRelease("VERSION_ID");
 
       System.out.println(out + " created!");
       if (new File(home + "/repo/debian/readme.txt").exists()) {
