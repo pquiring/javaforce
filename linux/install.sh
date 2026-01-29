@@ -38,7 +38,8 @@ function detectos {
   case $ID in
     debian | ubuntu)
       OS=debian
-
+      #need to remove quotes from VERSION_ID
+      VERSION_ID=${VERSION_ID//\"/}
       ;;
     fedora)
       OS=fedora
@@ -83,7 +84,7 @@ function debian {
   #configure JavaForce repository
   if [ ! -f /etc/apt/sources.list.d/javaforce.list ]; then
     echo Download javaforce.list
-    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.list
+    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_ID/$ARCH/javaforce.list
     chmod 644 /etc/apt/sources.list.d/javaforce.list
   fi
   if [ $UPDATE = "yes" ]; then
@@ -91,7 +92,7 @@ function debian {
   fi
   if [ ! -f /etc/apt/trusted.gpg.d/javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$VERSION_CODENAME/$ARCH/javaforce.gpg
+    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$VERSION_ID/$ARCH/javaforce.gpg
     chmod 644 /etc/apt/trusted.gpg.d/javaforce.gpg
   fi
 
