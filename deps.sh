@@ -46,7 +46,7 @@ function debian {
 }
 
 function fedora {
-  dnf -y install java-latest-openjdk-devel ant git unzip sudo gnupg
+  dnf -y install java-25-openjdk-devel ant git unzip sudo gnupg
 }
 
 function arch {
