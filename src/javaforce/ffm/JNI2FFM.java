@@ -223,9 +223,9 @@ public class JNI2FFM {
           } else {
             if (java_type.equals("MediaIO")) {
               method.append("FFM.toMemory(arena, new MemorySegment[] {");
-              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"readFFM\", int.class, new Class[] {byte[].class, int.class}, arena)");
-              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"writeFFM\", int.class, new Class[] {byte[].class, int.class}, arena)");
-              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seekFFM\", long.class, new Class[] {long.class, int.class}, arena)");
+              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"read\", int.class, new Class[] {byte[].class, int.class}, arena)");
+              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"write\", int.class, new Class[] {byte[].class, int.class}, arena)");
+              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seek\", long.class, new Class[] {long.class, int.class}, arena)");
               method.append("})");
             } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");
