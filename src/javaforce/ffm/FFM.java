@@ -126,7 +126,7 @@ public class FFM {
     if (cls == long.class) return JAVA_LONG;
     if (cls == float.class) return JAVA_FLOAT;
     if (cls == double.class) return JAVA_DOUBLE;
-    return ValueLayout.ADDRESS;
+    return ADDRESS;
   }
 
   private static Class[] ClassArrayType = new Class[0];
