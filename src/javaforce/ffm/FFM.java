@@ -117,19 +117,16 @@ public class FFM {
 
   //upcall helpers
 
-  public static ValueLayout classToValueLayout(Class<?> cls) {
-    if (cls == boolean.class) return ValueLayout.JAVA_BOOLEAN;
-    if (cls == byte.class) return ValueLayout.JAVA_BYTE;
-    if (cls == short.class) return ValueLayout.JAVA_SHORT;
-    if (cls == char.class) return ValueLayout.JAVA_CHAR;
-    if (cls == int.class) return ValueLayout.JAVA_INT;
-    if (cls == long.class) return ValueLayout.JAVA_LONG;
-    if (cls == float.class) return ValueLayout.JAVA_FLOAT;
-    if (cls == double.class) return ValueLayout.JAVA_DOUBLE;
-
-    if (cls == byte[].class) return ValueLayout.ADDRESS;
-
-    throw new IllegalArgumentException("Unsupported class for ValueLayout: " + cls.getName());
+  private static ValueLayout classToValueLayout(Class<?> cls) {
+    if (cls == boolean.class) return JAVA_BOOLEAN;
+    if (cls == byte.class) return JAVA_BYTE;
+    if (cls == short.class) return JAVA_SHORT;
+    if (cls == char.class) return JAVA_CHAR;
+    if (cls == int.class) return JAVA_INT;
+    if (cls == long.class) return JAVA_LONG;
+    if (cls == float.class) return JAVA_FLOAT;
+    if (cls == double.class) return JAVA_DOUBLE;
+    return ValueLayout.ADDRESS;
   }
 
   private static Class[] ClassArrayType = new Class[0];
