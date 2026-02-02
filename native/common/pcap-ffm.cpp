@@ -163,7 +163,7 @@ JFArray* pcapRead(jlong handle)
   int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, &user_pkt);
 
   if (cnt > 0 && user_pkt.size > 0) {
-    JFArray* ba = JFArray::create(user_pkt.size, 1, ARRAY_TYPE_INT);
+    JFArray* ba = JFArray::create(user_pkt.size, 1, ARRAY_TYPE_BYTE);
 
     memcpy(ba->getBufferByte(), user_pkt.bytes, user_pkt.size);
 
