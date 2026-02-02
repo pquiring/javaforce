@@ -215,6 +215,51 @@
     <delete dir="jre_base_javac/legal"/>
   </target>
 
+  <target name="jni2ffm" description="generate FFM sources">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/GLJNI.java"/>
+      <arg value="src/javaforce/ffm/GLFFM.java"/>
+      <arg value="gl"/>
+      <arg value="implements"/>
+      <arg value="GL"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/CLJNI.java"/>
+      <arg value="src/javaforce/ffm/CLFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="CLAPI"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/CameraJNI.java"/>
+      <arg value="src/javaforce/ffm/CameraFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="CameraAPI"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/PCapJNI.java"/>
+      <arg value="src/javaforce/ffm/PCapFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="PCapAPI"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/MediaJNI.java"/>
+      <arg value="src/javaforce/ffm/MediaFFM.java"/>
+      <arg value="api,media"/>
+      <arg value="implements"/>
+      <arg value="MediaAPI"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/ComPortJNI.java"/>
+      <arg value="src/javaforce/ffm/ComPortFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="ComPortAPI"/>
+    </java>
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="classes" includes="**/*.class"/>

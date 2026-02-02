@@ -303,6 +303,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
 #include "camera-ffm.cpp"
 
 #include "comport-jni.cpp"
+#include "comport-ffm.cpp"
 
 //pty API
 
@@ -1601,8 +1602,8 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
 static JNINativeMethod javaforce_jni_ComPortJNI[] = {
   {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
   {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
-  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
-  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
+  {"comRead", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
+  {"comWrite", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
 };
 
 extern "C" void lnxnative_register(JNIEnv *env);

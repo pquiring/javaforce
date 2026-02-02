@@ -13,9 +13,9 @@ public interface ComPortAPI {
    */
   public long comOpen(String name, int baud);
   /** Read data from Com Port (blocking) */
-  public int comRead(long handle, byte[] data);
+  public int comRead(long handle, byte[] data, int size);
   /** Writes data to Com Port */
-  public int comWrite(long handle, byte[] data);
+  public int comWrite(long handle, byte[] data, int size);
   /** Closes Com Port */
   public void comClose(long handle);
 }

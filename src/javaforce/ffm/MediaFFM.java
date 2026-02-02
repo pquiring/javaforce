@@ -247,7 +247,6 @@ public class MediaFFM implements MediaAPI {
     videoEncoderStop = ffm.getFunctionPtr("_videoEncoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     videoEncoderEncode = ffm.getFunctionPtr("_videoEncoderEncode", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
     compareFrames = ffm.getFunctionPtr("_compareFrames", ffm.getFunctionDesciptor(JAVA_FLOAT,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
-    JFLog.log("z");
     return true;
   }
 }

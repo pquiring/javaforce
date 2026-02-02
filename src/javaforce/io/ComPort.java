@@ -17,7 +17,11 @@ public class ComPort {
   private long handle;
   private String name;
   private ComPort() {
-    api = new ComPortJNI();
+    if (FFM.enabled()) {
+      api = new ComPortFFM();
+    } else {
+      api = new ComPortJNI();
+    }
   }
   /** Lists available Com ports. */
   public static String[] list() {
@@ -69,11 +73,11 @@ public class ComPort {
   }
   /** Read data from Com Port (blocking) */
   public int read(byte[] data) {
-    return api.comRead(handle, data);
+    return api.comRead(handle, data, data.length);
   }
   /** Writes data to Com Port */
   public int write(byte[] data) {
-    return api.comWrite(handle, data);
+    return api.comWrite(handle, data, data.length);
   }
   /** Closes Com Port */
   public void close() {

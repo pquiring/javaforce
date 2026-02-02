@@ -1456,7 +1456,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "vss.cpp"
 
 #include "comport-jni.cpp"
-//#include "comport-ffm.cpp"
+#include "comport-ffm.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
@@ -1544,8 +1544,8 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
 static JNINativeMethod javaforce_jni_ComPortJNI[] = {
   {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
   {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
-  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
-  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
+  {"comRead", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
+  {"comWrite", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
 };
 
 extern "C" void winnative_register(JNIEnv *env);
