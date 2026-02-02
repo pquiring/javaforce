@@ -13,7 +13,7 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
   if (cls == NULL) return;
   int res = env->RegisterNatives(cls, methods, count);
   if (res != 0) {
-    printf("Registering natives for %s count %d error %d\n", nclass, count, res);
+    printf("Registering natives for %s failed : count=%d error=%d\n", nclass, count, res);
   }
 }
 

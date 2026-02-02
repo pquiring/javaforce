@@ -22,6 +22,7 @@
 #include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_PCapJNI.h"
 #include "javaforce_jni_CLJNI.h"
+#include "javaforce_jni_ComPortJNI.h"
 
 #include "../common/string.h"
 #include "../common/array.h"
@@ -239,64 +240,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peEnd
   (JNIEnv *e, jclass c, jlong handle)
 {
   EndUpdateResource((HANDLE)handle, FALSE);
-}
-
-//com port API
-
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_comOpen
-  (JNIEnv *e, jclass c, jstring str, jint baud)
-{
-  const char *cstr = e->GetStringUTFChars(str,NULL);
-  HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-  e->ReleaseStringUTFChars(str, cstr);
-  if (handle == INVALID_HANDLE_VALUE) return 0;
-  DCB dcb;
-  memset(&dcb, 0, sizeof(DCB));
-  dcb.DCBlength = sizeof(DCB);
-  GetCommState(handle, &dcb);
-  dcb.BaudRate = baud;
-  dcb.fBinary = 1;
-  dcb.fParity = 0;
-  dcb.ByteSize = 8;  //8 data bits
-  dcb.StopBits = ONESTOPBIT;  //1 stop bit
-  dcb.Parity = 0;  //no parity
-  SetCommState(handle, &dcb);
-  COMMTIMEOUTS cto;
-  memset(&cto, 0, sizeof(COMMTIMEOUTS));
-  GetCommTimeouts(handle, &cto);
-  cto.ReadIntervalTimeout = MAXDWORD;
-  cto.ReadTotalTimeoutMultiplier = 0;
-  cto.ReadTotalTimeoutConstant = 0;
-  cto.WriteTotalTimeoutMultiplier = 0;
-  cto.WriteTotalTimeoutConstant = 0;
-  SetCommTimeouts(handle, &cto);
-  return (jlong)handle;
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_comClose
-  (JNIEnv *e, jclass c, jlong handle)
-{
-  CloseHandle((HANDLE)handle);
-}
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_comRead
-  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba)
-{
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int read;
-  ReadFile((HANDLE)handle, baptr, e->GetArrayLength(ba), (LPDWORD)&read, NULL);
-  e->ReleaseByteArrayElements(ba, baptr, 0);
-  return read;
-}
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_comWrite
-  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba)
-{
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int write;
-  WriteFile((HANDLE)handle, baptr, e->GetArrayLength(ba), (LPDWORD)&write, NULL);
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
-  return write;
 }
 
 //Windows
@@ -1512,6 +1455,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "vss.cpp"
 
+#include "comport-jni.cpp"
+//#include "comport-ffm.cpp"
+
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
   {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
@@ -1535,11 +1481,6 @@ void camera_register(JNIEnv *env) {
 
 //Windows native methods
 static JNINativeMethod javaforce_jni_WinNative[] = {
-  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_WinNative_comOpen},
-  {"comClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_comClose},
-  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comRead},
-  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comWrite},
-
   {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
   {"getLog", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_getLog},
   {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_executeSession},
@@ -1600,6 +1541,13 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
 };
 
+static JNINativeMethod javaforce_jni_ComPortJNI[] = {
+  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
+  {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
+  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
+  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
+};
+
 extern "C" void winnative_register(JNIEnv *env);
 
 void winnative_register(JNIEnv *env) {
@@ -1607,6 +1555,9 @@ void winnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/WinNative");
   registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/jni/ComPortJNI");
+  registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
 
   lib_sas = loadLibrary("sas.dll");
   if (lib_sas == NULL) {

@@ -1,11 +1,7 @@
 //audio encoder codebase
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
-  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint chs, jint freq)
+jboolean audioEncoderStart_ctx(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, jint freq)
 {
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return 0;
-
   ctx->config_audio_bit_rate = bit_rate;
   ctx->chs = chs;
   ctx->freq = freq;
@@ -14,7 +10,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
   ctx->audio_codec = (*_avcodec_find_encoder)(codec_id);
   if (ctx->audio_codec == NULL) {
     printf("MediaAudioEncoder : codec == null\n");
-    return 0;
+    return JNI_FALSE;
   }
   ctx->audio_codec_ctx = (*_avcodec_alloc_context3)(ctx->audio_codec);
 
@@ -23,19 +19,43 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
 
   if (!encoder_init_audio(ctx)) {
     printf("MediaAudioEncoder.encoder_init_audio() failed\n");
-    return 0;
+    return JNI_FALSE;
   }
 
   //create audio packet
   ctx->pkt = AVPacket_New();
 
+  return JNI_TRUE;
+}
+
+FFContext* audioEncoderStart(jint codec_id, jint bit_rate, jint chs, jint freq)
+{
+  FFContext *ctx = newFFContext(NULL,NULL);
+  if (ctx == NULL) return NULL;
+
+  if (!audioEncoderStart_ctx(ctx, codec_id, bit_rate, chs, freq)) {
+    freeFFContext(NULL,NULL,ctx);
+    ctx = NULL;
+  }
+
+  return ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
+  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint chs, jint freq)
+{
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return 0;
+
+  if (!audioEncoderStart_ctx(ctx, codec_id, bit_rate, chs, freq)) {
+    freeFFContext(e,c,ctx);
+    ctx = NULL;
+  }
+
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
+void audioEncoderStop_ctx(FFContext* ctx) {
   if (ctx == NULL) return;
   if (ctx->audio_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->audio_frame);
@@ -53,10 +73,29 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
+}
+
+void audioEncoderStop(FFContext* ctx)
+{
+  if (ctx == NULL) return;
+
+  audioEncoderStop_ctx(ctx);
+
+  freeFFContext(NULL,NULL,ctx);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
+  (JNIEnv *e, jobject c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return;
+
+  audioEncoderStop_ctx(ctx);
+
   freeFFContext(e,c,ctx);
 }
 
-static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
+static JFArray* av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:%p,%p,%d,%d\n", ctx, sams, offset, length);
   int ret;
@@ -139,9 +178,9 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
     return NULL;
   }
 
-  jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
+  JFArray* array = JFArray::create(ctx->pkt->size, 1, ARRAY_TYPE_BYTE);
 
-  ctx->e->SetByteArrayRegion(array, 0, ctx->pkt->size, (jbyte*)ctx->pkt->data);
+  memcpy(array->getBufferByte(), (jbyte*)ctx->pkt->data, ctx->pkt->size);
 
   (*_av_free)(samples_data);
 
@@ -151,7 +190,7 @@ static jbyteArray av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offs
   return array;
 }
 
-static jbyteArray av_encoder_addAudio(FFContext *ctx, short *sams, int offset, int length) {
+static JFArray* av_encoder_addAudio(FFContext *ctx, short *sams, int offset, int length) {
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudio:%p,%d,%d\n", sams, offset, length);
   int frame_size = length;
   if (!ctx->audio_frame_size_variable) {
@@ -179,11 +218,22 @@ static jbyteArray av_encoder_addAudio(FFContext *ctx, short *sams, int offset, i
       ctx->audio_buffer_size = size;
       return NULL;
     }
-    jbyteArray array = av_encoder_addAudioFrame(ctx, sams, offset, size);
+    JFArray* array = av_encoder_addAudioFrame(ctx, sams, offset, size);
     return array;
   }
 
   return NULL;
+}
+
+JFArray* audioEncoderEncode(FFContext* ctx, jshort* sams, jint offset, jint length)
+{
+  if (ctx == NULL) return NULL;
+
+  if (ctx->audio_codec_ctx == NULL) return NULL;
+
+  JFArray* jfarray = av_encoder_addAudio(ctx, sams, offset, length);
+
+  return jfarray;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
@@ -198,11 +248,27 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
   jshort* sams_ptr = (jshort*)e->GetPrimitiveArrayCritical(sams, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jbyteArray ba = av_encoder_addAudio(ctx, sams_ptr, offset, length);
+  JFArray* jfarray = av_encoder_addAudio(ctx, sams_ptr, offset, length);
 
   e->ReleasePrimitiveArrayCritical(sams, sams_ptr, JNI_ABORT);
 
-  return ba;
+  if (jfarray == NULL) return NULL;
+
+  jbyteArray jarray = ctx->e->NewByteArray(jfarray->count);
+
+  ctx->e->SetByteArrayRegion(jarray, 0, jfarray->count, (jbyte*)jfarray->getBufferByte());
+
+  jfArrayFree(jfarray);
+
+  return jarray;
+}
+
+jint audioEncoderGetAudioFramesize(FFContext* ctx)
+{
+  if (ctx == NULL) return 0;
+
+  if (ctx->audio_codec_ctx == NULL) return 0;
+  return ctx->audio_codec_ctx->frame_size;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize
@@ -211,23 +277,19 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
 
-  if (ctx->audio_codec_ctx == NULL) return 0;
-  return ctx->audio_codec_ctx->frame_size;
+  return audioEncoderGetAudioFramesize(ctx);
 }
 
 //video encoder codebase
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
-  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+jboolean videoEncoderStart_ctx(FFContext *ctx, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return 0;
   int ret;
 //  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_encoder)(codec_id);
   if (ctx->video_codec == NULL) {
     printf("MediaVideoEncoder : codec == null\n");
-    return 0;
+    return JNI_FALSE;
   }
   ctx->video_codec_ctx = (*_avcodec_alloc_context3)(ctx->video_codec);
 
@@ -253,7 +315,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
   ctx->config_gop_size = keyFrameInterval;
 
   if (!encoder_init_video(ctx)) {
-    return 0;
+    return JNI_FALSE;
   }
 
   ctx->pkt = AVPacket_New();
@@ -261,13 +323,38 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
   ctx->width = width;
   ctx->height = height;
 
+  return JNI_TRUE;
+}
+
+FFContext* videoEncoderStart(jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+{
+  FFContext *ctx = newFFContext(NULL,NULL);
+  if (ctx == NULL) return 0;
+
+  if (!videoEncoderStart_ctx(ctx, codec_id, bit_rate, width, height, fps, keyFrameInterval)) {
+    freeFFContext(NULL, NULL, ctx);
+    ctx = NULL;
+  }
+
+  return ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
+  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+{
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return 0;
+
+  if (!videoEncoderStart_ctx(ctx, codec_id, bit_rate, width, height, fps, keyFrameInterval)) {
+    freeFFContext(e, c, ctx);
+    ctx = NULL;
+  }
+
   return (jlong)ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
-  (JNIEnv *e, jobject c, jlong ctxptr)
+void videoEncoderStop_ctx(FFContext *ctx)
 {
-  FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return;
   if (ctx->video_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->video_frame);
@@ -285,10 +372,29 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
     (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
+}
+
+void videoEncoderStop(FFContext *ctx)
+{
+  if (ctx == NULL) return;
+
+  videoEncoderStop_ctx(ctx);
+
+  freeFFContext(NULL, NULL, ctx);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
+  (JNIEnv *e, jobject c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return;
+
+  videoEncoderStop_ctx(ctx);
+
   freeFFContext(e,c,ctx);
 }
 
-static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
+static JFArray* av_encoder_addVideo(FFContext *ctx, int *px)
 {
   int length = ctx->org_width * ctx->org_height * 4;
   (*_av_frame_make_writable)(ctx->video_frame);  //ensure we can write to it now
@@ -331,15 +437,24 @@ static jbyteArray av_encoder_addVideo(FFContext *ctx, int *px)
     return NULL;
   }
 
-  jbyteArray array = ctx->e->NewByteArray(ctx->pkt->size);
+  JFArray* array = JFArray::create(ctx->pkt->size, 1, ARRAY_TYPE_BYTE);
 
-  ctx->e->SetByteArrayRegion(array, 0, ctx->pkt->size, (jbyte*)ctx->pkt->data);
+  memcpy(array->getBufferByte(), (jbyte*)ctx->pkt->data, ctx->pkt->size);
 
   (*_av_packet_unref)(ctx->pkt);
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
 
   return array;
+}
+
+JFArray* videoEncoderEncode(FFContext* ctx, jint* px, jint offset, jint length)
+{
+  if (ctx == NULL) return NULL;
+
+  if (ctx->video_codec_ctx == NULL) return NULL;
+
+  return av_encoder_addVideo(ctx, px);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
@@ -354,9 +469,15 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
   jint *px_ptr = (jint*)e->GetPrimitiveArrayCritical(px, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jbyteArray ba = av_encoder_addVideo(ctx, (int*)px_ptr);
+  JFArray *jfarray = av_encoder_addVideo(ctx, (int*)px_ptr);
 
   e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 
-  return ba;
+  //convert jfarray to jarray
+  jbyteArray jarray = ctx->e->NewByteArray(jfarray->count);
+
+  ctx->e->SetByteArrayRegion(jarray, 0, jfarray->count * 4, (jbyte*)jfarray->getBufferByte());
+  jfArrayFree(jfarray);
+
+  return jarray;
 }

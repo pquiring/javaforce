@@ -211,7 +211,7 @@ static int64_t currentTimeMillis() {
   return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
+jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
   , const char* utilFile, const char* scaleFile, const char* postFile, const char* resampleFile)
 {
   //load libraries (order is important)
@@ -425,7 +425,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
 
   const char *scaleFile = e->GetStringUTFChars(jscale, NULL);
 
-  jboolean ret = ffmpeg_init(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, postFile, scaleFile);
+  jboolean ret = mediaLoadLibs(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, postFile, scaleFile);
 
   e->ReleaseStringUTFChars(jcodec, codecFile);
   e->ReleaseStringUTFChars(jdevice, deviceFile);
@@ -446,10 +446,15 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
   return JNI_TRUE;
 }
 
+void mediaSetLogging(jboolean state)
+{
+  (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
+}
+
 JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_mediaSetLogging
   (JNIEnv *e, jobject c, jboolean state)
 {
-  (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
+  mediaSetLogging(state);
 }
 
 static int ff_min(int a, int b) {
@@ -458,7 +463,7 @@ static int ff_min(int a, int b) {
 
 #include "ff_context.h"
 
-static int read_packet(FFContext *ctx, void*buf, int size) {
+static int read_packet(FFContext* ctx, void*buf, int size) {
   jbyteArray ba = ctx->e->NewByteArray(size);
   jint read = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_read, ctx->c, ba);
   if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
@@ -487,7 +492,7 @@ static int swap_order(int val) {
   return le.i32;
 }
 
-static int write_packet(FFContext *ctx, void*buf, int size) {
+static int write_packet(FFContext* ctx, void*buf, int size) {
   jbyteArray ba = ctx->e->NewByteArray(size);
   ctx->e->SetByteArrayRegion(ba, 0, size, (jbyte*)buf);
   int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
@@ -528,7 +533,7 @@ static int write_packet(FFContext *ctx, void*buf, int size) {
 
 static jlong zero = 0;
 
-static jlong seek_packet(FFContext *ctx, jlong offset, int how) {
+static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
   if (how == AVSEEK_SIZE) { //return size of file
     jlong curpos = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, zero, SEEK_CUR);
     if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
@@ -697,4 +702,70 @@ void ffmpeg_register(JNIEnv *env) {
   registerNatives(env, cls, javaforce_media_MediaAudioEncoder, sizeof(javaforce_media_MediaAudioEncoder)/sizeof(JNINativeMethod));
 
   registerNatives(env, cls, javaforce_media_MediaVideoEncoder, sizeof(javaforce_media_MediaVideoEncoder)/sizeof(JNINativeMethod));
+}
+
+//FFM API
+
+extern "C" {
+  JNIEXPORT jboolean MediaAPIinit() {
+    return JNI_TRUE;
+  }
+  //MediaCoder
+  JNIEXPORT jboolean (*_mediaLoadLibs)(const char* codec, const char* device, const char* filter, const char* format, const char* util, const char* scale, const char* postproc, const char* resample) = &mediaLoadLibs;
+  JNIEXPORT void (*_mediaSetLogging)(jboolean state) = &mediaSetLogging;
+  //MediaFormat
+  JNIEXPORT jint (*_getVideoStream)(FFContext* ctx) = &getVideoStream;
+  JNIEXPORT jint (*_getAudioStream)(FFContext* ctx) = &getAudioStream;
+  JNIEXPORT jint (*_getVideoCodecID)(FFContext* ctx) = &getVideoCodecID;
+  JNIEXPORT jint (*_getAudioCodecID)(FFContext* ctx) = &getAudioCodecID;
+  JNIEXPORT jint (*_getVideoBitRate)(FFContext* ctx) = &getVideoBitRate;
+  JNIEXPORT jint (*_getAudioBitRate)(FFContext* ctx) = &getAudioBitRate;
+  //MediaInput
+  JNIEXPORT FFContext* (*_inputOpenFile)(const char* file, const char* format) = &inputOpenFile;
+  JNIEXPORT FFContext* (*_inputOpenIO)(MediaIO* mio) = &inputOpenIO;
+  JNIEXPORT jlong (*_getDuration)(FFContext* ctx) = &getDuration;
+  JNIEXPORT jint (*_getVideoWidth)(FFContext* ctx) = &getVideoWidth;
+  JNIEXPORT jint (*_getVideoHeight)(FFContext* ctx) = &getVideoHeight;
+  JNIEXPORT jfloat (*_getVideoFrameRate)(FFContext* ctx) = &getVideoFrameRate;
+  JNIEXPORT jint (*_getVideoKeyFrameInterval)(FFContext* ctx) = &getVideoKeyFrameInterval;
+  JNIEXPORT jint (*_getAudioChannels)(FFContext* ctx) = &getAudioChannels;
+  JNIEXPORT jint (*_getAudioSampleRate)(FFContext* ctx) = &getAudioSampleRate;
+  JNIEXPORT jboolean (*_inputClose)(FFContext* ctx) = &inputClose;
+  JNIEXPORT jboolean (*_inputOpenVideo)(FFContext* ctx, jint width, jint height) = &inputOpenVideo;
+  JNIEXPORT jboolean (*_inputOpenAudio)(FFContext* ctx, jint chs, jint freq) = &inputOpenAudio;
+  JNIEXPORT jint (*_inputRead)(FFContext* ctx) = &inputRead;
+  JNIEXPORT jboolean (*_getPacketKeyFrame)(FFContext* ctx) = getPacketKeyFrame;
+  JNIEXPORT jint (*_getPacketData)(FFContext* ctx, jbyte* data, jint offset, jint length) = &getPacketData;
+  JNIEXPORT jboolean (*_inputSeek)(FFContext* ctx, jlong seconds) = &inputSeek;
+  //MediaOutput
+  JNIEXPORT FFContext* (*_outputCreateFile)(const char* file, const char* format) = &outputCreateFile;
+  JNIEXPORT FFContext* (*_outputCreateIO)(MediaIO* io, const char* format) = &outputCreateIO;
+  JNIEXPORT jint (*_addVideoStream)(FFContext* ctx, jint codec_id, jint bit_rate, jint width, jint height, float fps, jint keyFrameInterval) = &addVideoStream;
+  JNIEXPORT jint (*_addAudioStream)(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, jint freq) = &addAudioStream;
+  JNIEXPORT jboolean (*_outputClose)(FFContext* ctx) = &outputClose;
+  JNIEXPORT jboolean (*_writeHeader)(FFContext* ctx) = &writeHeader;
+  JNIEXPORT jboolean (*_writePacket)(FFContext* ctx, jint stream, jbyte* data, jint offset, jint length, jboolean keyFrame) = &writePacket;
+  //MediaAudioDecoder
+  JNIEXPORT FFContext* (*_audioDecoderStart)(int codec_id, jint new_chs, jint new_freq) = &audioDecoderStart;
+  JNIEXPORT void (*_audioDecoderStop)(FFContext* ctx) = &audioDecoderStop;
+  JNIEXPORT JFArray* (*_audioDecoderDecode)(FFContext* ctx, jbyte* data, jint offset, jint length) = &audioDecoderDecode;
+  JNIEXPORT jint (*_audioDecoderGetChannels)(FFContext* ctx) = &audioDecoderGetChannels;
+  JNIEXPORT jint (*_audioDecoderGetSampleRate)(FFContext* ctx) = &audioDecoderGetSampleRate;
+  JNIEXPORT jboolean (*_audioDecoderChange)(FFContext* ctx, int chs, int freq) = &audioDecoderChange;
+  //MediaAudioEncoder
+  JNIEXPORT FFContext* (*_audioEncoderStart)(jint codec_id, jint bit_rate, jint chs, jint freq) = &audioEncoderStart;
+  JNIEXPORT void (*_audioEncoderStop)(FFContext* ctx) = &audioEncoderStop;
+  JNIEXPORT JFArray* (*_audioEncoderEncode)(FFContext* ctx, jshort* samples, jint offset, jint length) = &audioEncoderEncode;
+  JNIEXPORT jint (*_audioEncoderGetAudioFramesize)(FFContext* ctx) = &audioEncoderGetAudioFramesize;
+  //MediaVideoDecoder
+  JNIEXPORT FFContext* (*_videoDecoderStart)(jint codec_id, jint new_width, jint new_height) = &videoDecoderStart;
+  JNIEXPORT void (*_videoDecoderStop)(FFContext* ctx) = &videoDecoderStop;
+  JNIEXPORT JFArray* (*_videoDecoderDecode)(FFContext* ctx, jbyte* data, jint offset, jint length) = &videoDecoderDecode;
+  JNIEXPORT jint (*_videoDecoderGetWidth)(FFContext* ctx) = &videoDecoderGetWidth;
+  JNIEXPORT jint (*_videoDecoderGetHeight)(FFContext* ctx) = &videoDecoderGetHeight;
+  JNIEXPORT jfloat (*_videoDecoderGetFrameRate)(FFContext* ctx) = &videoDecoderGetFrameRate;
+  JNIEXPORT jboolean (*_videoDecoderChange)(FFContext* ctx, jint width, jint height) = &videoDecoderChange;
+  JNIEXPORT FFContext* (*_videoEncoderStart)(int codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval) = &videoEncoderStart;
+  JNIEXPORT void (*_videoEncoderStop)(FFContext* ctx) = &videoEncoderStop;
+  JNIEXPORT JFArray* (*_videoEncoderEncode)(FFContext* ctx, jint* px, jint offset, jint length) = &videoEncoderEncode;
 }

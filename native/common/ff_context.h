@@ -1,5 +1,11 @@
 //ffmpeg struct context
 
+struct MediaIO {
+  jint (*read)(jbyte* ptr, jint size);
+  jint (*write)(jbyte* ptr, jint size);
+  jlong (*seek)(jlong where, jint how);
+};
+
 struct FFContext {
   JNIEnv *e;  //only valid during native function
   jobject c;  //only valid during native function
@@ -11,9 +17,7 @@ struct FFContext {
   jmethodID mid_ff_seek;
 
   //FFM upcalls
-  jint (*readFFM)(jbyte* ptr, jint size);
-  jint (*writeFFM)(jbyte* ptr, jint size);
-  jlong (*seekFFM)(jlong where, jint how);
+  MediaIO ffm_mio;
 
   //decoder fields
   //alloc:MediaInput.open() MediaOutput.create() free:freeFFContext()
@@ -256,6 +260,12 @@ FFContext* castFFContext(JNIEnv *e, jobject c, jlong ctxptr) {
   FFContext* ctx = (FFContext*)ctxptr;
   ctx->e = e;
   ctx->c = c;
+  return ctx;
+}
+
+FFContext* castFFContext(jlong ctxptr) {
+  if (ctxptr == 0) return NULL;
+  FFContext* ctx = (FFContext*)ctxptr;
   return ctx;
 }
 

@@ -6,8 +6,11 @@ Returned from FFM functions that return arrays.
 
 */
 
-#define ARRAY_TYPE_INT 0
-#define ARRAY_TYPE_STRING 1
+#define ARRAY_TYPE_BYTE 1
+#define ARRAY_TYPE_INT 2
+#define ARRAY_TYPE_SHORT 3
+#define ARRAY_TYPE_LONG 4
+#define ARRAY_TYPE_STRING 100
 
 //template<typename T, int N>
 struct JFArray {
@@ -44,6 +47,9 @@ struct JFArray {
   }
   jint* getBufferInt() {
     return (jint*)&bytes;
+  }
+  jshort* getBufferShort() {
+    return (jshort*)&bytes;
   }
 
   //setters

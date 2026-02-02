@@ -1,26 +1,18 @@
 //MediaInput
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenFile
-  (JNIEnv *e, jobject c, jstring file, jstring format)
-{
-  FFContext *ctx = newFFContext(e,c);
+jboolean inputOpenFile_ctx(FFContext *ctx, const char* file, const char* format) {
   if (ctx == NULL) return JNI_FALSE;
-  int ret;
 
   ctx->fmt_ctx = (*_avformat_alloc_context)();
 
-  const char *cformat = e->GetStringUTFChars(format, NULL);
-  ctx->input_fmt = (*_av_find_input_format)(cformat);
-  e->ReleaseStringUTFChars(format, cformat);
+  ctx->input_fmt = (*_av_find_input_format)(format);
   if (ctx->input_fmt == NULL) {
-    printf("MediaInput:av_find_input_format() failed : %s\n", cformat);
-    e->ReleaseStringUTFChars(format, cformat);
+    printf("MediaInput:av_find_input_format() failed : %s\n", format);
     return JNI_FALSE;
   }
 
-  const char *cfile = e->GetStringUTFChars(file, NULL);
-  ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, cfile, ctx->input_fmt, NULL);
-  e->ReleaseStringUTFChars(file, cfile);
+  int ret;
+  ret = (*_avformat_open_input)((void**)&ctx->fmt_ctx, file, ctx->input_fmt, NULL);
   ctx->input_fmt = NULL;  //do not free
   if (ret != 0) {
     printf("MediaInput:avformat_open_input() failed : %d\n", ret);
@@ -37,19 +29,43 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenFile
 
   decoder_alloc_frame(ctx);
   decoder_alloc_packet(ctx);
+  return JNI_TRUE;
+}
+
+FFContext* inputOpenFile(const char* file, const char* format)
+{
+  FFContext *ctx = newFFContext(NULL, NULL);
+  if (ctx == NULL) return 0;
+
+  if (!inputOpenFile_ctx(ctx, file, format)) {
+    freeFFContext(NULL, NULL, ctx);
+    ctx = NULL;
+  }
+
+  return ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenFile
+  (JNIEnv *e, jobject c, jstring file, jstring format)
+{
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return 0;
+
+  const char *cfile = e->GetStringUTFChars(file, NULL);
+  const char *cformat = e->GetStringUTFChars(format, NULL);
+  if (!inputOpenFile_ctx(ctx, cfile, cformat)) {
+    freeFFContext(e, c, ctx);
+    ctx = NULL;
+  }
+  e->ReleaseStringUTFChars(file, cfile);
+  e->ReleaseStringUTFChars(format, cformat);
 
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenIO
-  (JNIEnv *e, jobject c, jobject mio)
+jboolean inputOpenIO_ctx(FFContext *ctx)
 {
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return JNI_FALSE;
   int ret;
-
-  ctx->mio = e->NewGlobalRef(mio);
-  ctx->GetMediaIO();
 
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
@@ -79,13 +95,43 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenIO
   decoder_alloc_frame(ctx);
   decoder_alloc_packet(ctx);
 
+  return JNI_TRUE;
+}
+
+FFContext* inputOpenIO(MediaIO* mio)
+{
+  FFContext *ctx = newFFContext(NULL,NULL);
+  if (ctx == NULL) return JNI_FALSE;
+
+  memcpy(&ctx->ffm_mio, mio, sizeof(MediaIO));
+
+  if (!inputOpenIO_ctx(ctx)) {
+    freeFFContext(NULL,NULL,ctx);
+    ctx = NULL;
+  }
+
+  return ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenIO
+  (JNIEnv *e, jobject c, jobject mio)
+{
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
+
+  ctx->mio = e->NewGlobalRef(mio);
+  ctx->GetMediaIO();
+
+  if (!inputOpenIO_ctx(ctx)) {
+    freeFFContext(e,c,ctx);
+    ctx = NULL;
+  }
+
   return (jlong)ctx;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputClose
-  (JNIEnv *e, jobject c, jlong ctxptr)
+jboolean inputClose_ctx(JNIEnv *e, jobject c, FFContext *ctx)
 {
-  FFContext *ctx = castFFContext(e,c,ctxptr);
   if (ctx == NULL) return JNI_FALSE;
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
@@ -146,13 +192,46 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputClose
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenVideo
-  (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
+jboolean inputClose(FFContext *ctx) {
+  return inputClose_ctx(NULL, NULL, ctx);
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputClose
+  (JNIEnv *e, jobject c, jlong ctxptr)
 {
-  FFContext *ctx = castFFContext(e, c, ctxptr);
+  FFContext *ctx = castFFContext(e,c,ctxptr);
+  if (ctx == NULL) return JNI_FALSE;
+  return inputClose_ctx(e,c,ctx);
+}
+
+jboolean inputOpenVideo(FFContext* ctx, jint new_width, jint new_height)
+{
   if (ctx == NULL) return JNI_FALSE;
 
   decoder_open_video_codec(ctx, new_width, new_height);
+
+  if (ctx->decode_buffer == NULL) {
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+    ctx->decode_buffer_size = 1024*1024;
+  }
+
+  return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenVideo
+  (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
+{
+  FFContext *ctx = castFFContext(e,c,ctxptr);
+  if (ctx == NULL) return JNI_FALSE;
+
+  return inputOpenVideo(ctx, new_width, new_height);
+}
+
+jboolean inputOpenAudio(FFContext* ctx, jint new_chs, jint new_freq)
+{
+  if (ctx == NULL) return JNI_FALSE;
+
+  decoder_open_audio_codec(ctx, new_chs, new_freq);
 
   if (ctx->decode_buffer == NULL) {
     ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
@@ -168,49 +247,53 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenAudio
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
-  decoder_open_audio_codec(ctx, new_chs, new_freq);
+  return inputOpenAudio(ctx, new_chs, new_freq);
+}
 
-  if (ctx->decode_buffer == NULL) {
-    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
-    ctx->decode_buffer_size = 1024*1024;
-  }
-
-  return JNI_TRUE;
+jlong getDuration(FFContext *ctx)
+{
+  if (ctx == NULL) return 0;
+  if (ctx->fmt_ctx == NULL) return 0;
+  if (ctx->fmt_ctx->duration << 1 == 0) return 0;  //0x8000000000000000
+  return ctx->fmt_ctx->duration / AV_TIME_BASE;  //return in seconds
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_getDuration
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
+  return getDuration(ctx);
+}
 
-  if (ctx->fmt_ctx == NULL) return 0;
-  if (ctx->fmt_ctx->duration << 1 == 0) return 0;  //0x8000000000000000
-  return ctx->fmt_ctx->duration / AV_TIME_BASE;  //return in seconds
+jint getVideoWidth(FFContext *ctx)
+{
+  if (ctx == NULL) return 0;
+  return ctx->video_codec_ctx->width;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getVideoWidth
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
-  return ctx->video_codec_ctx->width;
+  return getVideoWidth(ctx);
+}
+
+jint getVideoHeight(FFContext *ctx)
+{
+  if (ctx == NULL) return 0;
+  return ctx->video_codec_ctx->height;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getVideoHeight
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
-  return ctx->video_codec_ctx->height;
+  return getVideoHeight(ctx);
 }
 
-JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_getVideoFrameRate
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
+jfloat getVideoFrameRate(FFContext *ctx) {
   if (ctx == NULL) return 0.0f;
   if (ctx->video_codec_ctx == NULL) return 0;
   AVRational value = ctx->video_stream->avg_frame_rate;
@@ -220,36 +303,56 @@ JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_getVideoFrameRate
   return num / den;
 }
 
+JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_getVideoFrameRate
+  (JNIEnv *e, jobject c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  return getVideoFrameRate(ctx);
+}
+
+jint getVideoKeyFrameInterval(FFContext *ctx)
+{
+  if (ctx == NULL) return -1;
+  if (ctx->video_codec_ctx == NULL) return -1;
+  return ctx->video_codec_ctx->gop_size;
+}
+
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getVideoKeyFrameInterval
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return -1;
-  if (ctx->video_codec_ctx == NULL) return -1;
-  return ctx->video_codec_ctx->gop_size;
+  return getVideoKeyFrameInterval(ctx);
+}
+
+jint getAudioChannels(FFContext *ctx)
+{
+  if (ctx == NULL) return 0;
+  return ctx->dst_nb_channels;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getAudioChannels
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
+  return getAudioChannels(ctx);
+}
+
+jint getAudioSampleRate(FFContext *ctx)
+{
   if (ctx == NULL) return 0;
-  return ctx->dst_nb_channels;
+  if (ctx->audio_codec_ctx == NULL) return 0;
+  return ctx->audio_codec_ctx->sample_rate;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getAudioSampleRate
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
-  if (ctx->audio_codec_ctx == NULL) return 0;
-  return ctx->audio_codec_ctx->sample_rate;
+  return getAudioSampleRate(ctx);
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_inputRead
-  (JNIEnv *e, jobject c, jlong ctxptr)
+jint inputRead(FFContext* ctx)
 {
-  FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
 
   if (ctx->pkt == NULL) {
@@ -267,21 +370,53 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_inputRead
   return ctx->pkt->size;
 }
 
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_inputRead
+  (JNIEnv *e, jobject c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return 0;
+
+  return inputRead(ctx);
+}
+
+jboolean getPacketKeyFrame(FFContext* ctx)
+{
+  if (ctx == NULL) return JNI_FALSE;
+
+  return ctx->pkt_key_frame;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_getPacketKeyFrame
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
-  return ctx->pkt_key_frame;
+  return getPacketKeyFrame(ctx);
+}
+
+jint getPacketData(FFContext* ctx, jbyte* data, jint offset, jint length)
+{
+  if (ctx == NULL) return -1;
+
+  if (length > ctx->pkt->size) return -1;
+
+  memcpy(data + offset, (const jbyte*)ctx->pkt->data, length);
+
+  int stream_index = ctx->pkt->stream_index;
+
+  (*_av_packet_unref)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
+  return stream_index;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getPacketData
   (JNIEnv *e, jobject c, jlong ctxptr, jbyteArray data, jint offset, jint length)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
-
-  if (length > ctx->pkt->size) return -1;
+  if (ctx == NULL) return 0;
 
   e->SetByteArrayRegion(data, offset, length, (const jbyte*)ctx->pkt->data);
 
@@ -294,10 +429,8 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getPacketData
   return stream_index;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputSeek
-  (JNIEnv *e, jobject c, jlong ctxptr, jlong seconds)
+jboolean inputSeek(FFContext* ctx, jlong seconds)
 {
-  FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
   //AV_TIME_BASE is 1000000fps
@@ -307,4 +440,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputSeek
     printf("MediaInput:av_seek_frame() failed : %d\n", ret);
   }
   return ret >= 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputSeek
+  (JNIEnv *e, jobject c, jlong ctxptr, jlong seconds)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return JNI_FALSE;
+
+  return inputSeek(ctx, seconds);
 }

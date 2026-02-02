@@ -1,26 +1,19 @@
 //MediaOutput
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateFile
-  (JNIEnv *e, jobject c, jstring file, jstring format)
+jboolean outputCreateFile_ctx(FFContext *ctx, const char* file, const char* format)
 {
-  FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
 
-  const char *cformat = e->GetStringUTFChars(format, NULL);
-  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, cformat, NULL);
-  e->ReleaseStringUTFChars(format, cformat);
+  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, format, NULL);
 
   if (ctx->fmt_ctx == NULL) {
     printf("MediaOutput.ncreateFile:format not found!");
-    freeFFContext(e, c, ctx);
-    return 0;
+    return JNI_FALSE;
   }
 
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
 
-  const char *cfile = e->GetStringUTFChars(file, NULL);
-  (*_avio_open)(&ctx->io_ctx, cfile, AVIO_FLAG_READ_WRITE);
-  e->ReleaseStringUTFChars(file, cfile);
+  (*_avio_open)(&ctx->io_ctx, file, AVIO_FLAG_READ_WRITE);
 
   ctx->fmt_ctx->pb = ctx->io_ctx;
 
@@ -33,25 +26,46 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateFile
 
   ctx->pkt = AVPacket_New();
 
+  return JNI_TRUE;
+}
+
+FFContext* outputCreateFile(const char* file, const char* format)
+{
+  FFContext *ctx = newFFContext(NULL, NULL);
+  if (ctx == NULL) return 0;
+
+  if (!outputCreateFile_ctx(ctx, file, format)) {
+    freeFFContext(NULL, NULL, ctx);
+    ctx = NULL;
+  }
+
+  return ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateFile
+  (JNIEnv *e, jobject c, jstring file, jstring format)
+{
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return 0;
+
+  const char *cfile = e->GetStringUTFChars(file, NULL);
+  const char *cformat = e->GetStringUTFChars(format, NULL);
+  if (!outputCreateFile_ctx(ctx, cfile, cformat)) {
+    freeFFContext(e, c, ctx);
+    ctx = NULL;
+  }
+  e->ReleaseStringUTFChars(file, cfile);
+  e->ReleaseStringUTFChars(format, cformat);
+
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateIO
-  (JNIEnv *e, jobject c, jobject mio, jstring format)
+jboolean outputCreateIO_ctx(FFContext *ctx, const char* format)
 {
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return JNI_FALSE;
-
-  ctx->mio = e->NewGlobalRef(mio);
-  ctx->GetMediaIO();
-
-  const char *cformat = e->GetStringUTFChars(format, NULL);
-  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, cformat, NULL);
-  e->ReleaseStringUTFChars(format, cformat);
+  (*_avformat_alloc_output_context2)(&ctx->fmt_ctx, NULL, format, NULL);
 
   if (ctx->fmt_ctx == NULL) {
-    freeFFContext(e, c, ctx);
-    return 0;
+    return JNI_FALSE;
   }
 
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
@@ -72,16 +86,49 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateIO
   ctx->last_dts = -1;
 
   ctx->pkt = AVPacket_New();
-
   printf("MediaOutput.ncreateIO() = %p\n", ctx);
+
+  return JNI_TRUE;
+}
+
+FFContext* outputCreateIO(MediaIO* mio, const char* format)
+{
+  FFContext *ctx = newFFContext(NULL,NULL);
+  if (ctx == NULL) return NULL;
+
+  memcpy(&ctx->ffm_mio, mio, sizeof(MediaIO));
+
+  if (!outputCreateIO_ctx(ctx, format)) {
+    freeFFContext(NULL,NULL,ctx);
+    ctx = NULL;
+  }
+
+  return ctx;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_outputCreateIO
+  (JNIEnv *e, jobject c, jobject mio, jstring format)
+{
+  FFContext *ctx = newFFContext(e,c);
+  if (ctx == NULL) return 0;
+
+  ctx->mio = e->NewGlobalRef(mio);
+  ctx->GetMediaIO();
+
+  const char *cformat = e->GetStringUTFChars(format, NULL);
+
+  if (!outputCreateIO_ctx(ctx, cformat)) {
+    freeFFContext(e,c,ctx);
+    ctx = NULL;
+  }
+
+  e->ReleaseStringUTFChars(format, cformat);
 
   return (jlong)ctx;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addVideoStream
-  (JNIEnv *e, jobject c, jlong ctxptr, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
+jint addVideoStream(FFContext *ctx, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
-  FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return -1;
 
   if (codec_id <= 0) {
@@ -117,10 +164,17 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addVideoStream
   return ctx->video_stream->index;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addAudioStream
-  (JNIEnv *e, jobject c, jlong ctxptr, jint codec_id, jint bit_rate, jint chs, jint freq)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addVideoStream
+  (JNIEnv *e, jobject c, jlong ctxptr, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return -1;
+
+  return addVideoStream(ctx, codec_id, bit_rate, width, height, fps, keyFrameInterval);
+}
+
+jint addAudioStream(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, jint freq)
+{
   if (ctx == NULL) return -1;
 
   if (codec_id <= 0) {
@@ -143,10 +197,17 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addAudioStream
   return ctx->audio_stream->index;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_outputClose
-  (JNIEnv *e, jobject c, jlong ctxptr)
+JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_addAudioStream
+  (JNIEnv *e, jobject c, jlong ctxptr, jint codec_id, jint bit_rate, jint chs, jint freq)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return -1;
+
+  return addAudioStream(ctx, codec_id, bit_rate, chs, freq);
+}
+
+jboolean outputClose_ctx(JNIEnv *e, jobject c, FFContext* ctx)
+{
   if (ctx == NULL) return JNI_FALSE;
 
   //flush encoders
@@ -228,10 +289,22 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_outputClose
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writeHeader
+jboolean outputClose(FFContext* ctx)
+{
+  return outputClose_ctx(NULL,NULL,ctx);
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_outputClose
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return JNI_FALSE;
+
+  return outputClose_ctx(e,c,ctx);
+}
+
+jboolean writeHeader(FFContext* ctx)
+{
   if (ctx == NULL) return JNI_FALSE;
 
   printf("write header:fmt_ctx=%p\n", ctx->fmt_ctx);
@@ -241,6 +314,35 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writeHeader
     printf("MediaOutput:avformat_write_header failed : %d\n", ret);
   }
   return ret >= 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writeHeader
+  (JNIEnv *e, jobject c, jlong ctxptr)
+{
+  FFContext *ctx = castFFContext(e, c, ctxptr);
+  if (ctx == NULL) return JNI_FALSE;
+
+  return writeHeader(ctx);
+}
+
+jboolean writePacket(FFContext* ctx, jint stream, jbyte* data, jint offset, jint length, jboolean keyFrame)
+{
+  if (ctx == NULL) return JNI_FALSE;
+
+  (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = (uint8_t*)(data + offset);
+  ctx->pkt->size = length;
+  ctx->pkt->stream_index = stream;
+
+  ctx->pkt->dts = ctx->last_dts;
+  ctx->pkt->pts = ctx->last_pts;
+  ctx->pkt->duration = ctx->last_duration;
+
+  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);  //packet : this function will take ownership ??? bug ???
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+
+  return ret == 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writePacket
@@ -253,20 +355,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_writePacket
   jbyte *cdata = (jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  (*_av_init_packet)(ctx->pkt);
-  ctx->pkt->data = (uint8_t*)cdata;
-  ctx->pkt->size = length;
-  ctx->pkt->stream_index = stream;
-
-  ctx->pkt->dts = ctx->last_dts;
-  ctx->pkt->pts = ctx->last_pts;
-  ctx->pkt->duration = ctx->last_duration;
-
-  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, ctx->pkt);  //packet : this function will take ownership ??? bug ???
-  ctx->pkt->data = NULL;
-  ctx->pkt->size = 0;
+  jboolean result = writePacket(ctx, stream, cdata, offset, length, keyFrame);
 
   e->ReleasePrimitiveArrayCritical(data, cdata, JNI_ABORT);
 
-  return ret == 0;
+  return result;
 }

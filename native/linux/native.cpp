@@ -302,70 +302,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
 #include "camera-jni.cpp"
 #include "camera-ffm.cpp"
 
-//com port API
-
-static termios orgattrs;
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_comOpen
-  (JNIEnv *e, jclass c, jstring str, jint baud)
-{
-  int baudcode = -1;
-  switch (baud) {
-    case 9600: baudcode = 015; break;
-    case 19200: baudcode = 016; break;
-    case 38400: baudcode = 017; break;
-    case 57600: baudcode = 010001; break;
-    case 115200: baudcode = 010002; break;
-  }
-  if (baudcode == -1) {
-    printf("LnxCom:Unknown baud rate\n");
-    return 0;
-  }
-  const char *cstr = e->GetStringUTFChars(str,NULL);
-  int fd = open(cstr, O_RDWR | O_NOCTTY);
-  e->ReleaseStringUTFChars(str, cstr);
-  if (fd == -1) {
-    printf("LnxCom:invalid handle\n");
-    return 0;
-  }
-
-  tcgetattr(fd, &orgattrs);
-  termios attrs;
-  memset(&attrs, 0, sizeof(termios));
-  attrs.c_cflag = baudcode | CS8 | CLOCAL | CREAD;
-
-  attrs.c_cc[VMIN]  =  1;          // block until at least 1 char
-  attrs.c_cc[VTIME] =  5;          // 0.5 seconds read timeout
-
-  tcflush(fd, TCIFLUSH);
-  tcsetattr(fd, TCSANOW, &attrs);
-  return fd;
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_comClose
-  (JNIEnv *e, jclass c, jint fd)
-{
-  tcsetattr(fd, TCSANOW, &orgattrs);
-  close(fd);
-}
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_comRead
-  (JNIEnv *e, jclass c, jint fd, jbyteArray ba)
-{
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int readAmt = read(fd, baptr, e->GetArrayLength(ba));
-  e->ReleaseByteArrayElements(ba, baptr, 0);
-  return readAmt;
-}
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_comWrite
-  (JNIEnv *e, jclass c, jint fd, jbyteArray ba)
-{
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int writeAmt = write(fd, baptr, e->GetArrayLength(ba));
-  e->ReleaseByteArrayElements(ba, baptr, 0);
-  return writeAmt;
-}
+#include "comport-jni.cpp"
 
 //pty API
 
@@ -1611,10 +1548,6 @@ void camera_register(JNIEnv *env) {
 static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
   {"lnxServiceStop", "()Z", (void *)&Java_javaforce_jni_LnxNative_lnxServiceStop},
-  {"comOpen", "(Ljava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_comOpen},
-  {"comClose", "(I)V", (void *)&Java_javaforce_jni_LnxNative_comClose},
-  {"comRead", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comRead},
-  {"comWrite", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comWrite},
   {"ptyAlloc", "()J", (void *)&Java_javaforce_jni_LnxNative_ptyAlloc},
   {"ptyFree", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyFree},
   {"ptyOpen", "(J)Ljava/lang/String;", (void *)&Java_javaforce_jni_LnxNative_ptyOpen},
@@ -1665,6 +1598,13 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
 };
 
+static JNINativeMethod javaforce_jni_ComPortJNI[] = {
+  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
+  {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
+  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
+  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
+};
+
 extern "C" void lnxnative_register(JNIEnv *env);
 
 void lnxnative_register(JNIEnv *env) {
@@ -1672,6 +1612,9 @@ void lnxnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/LnxNative");
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/jni/ComPortJNI");
+  registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
 }
 
 #include "../common/register.cpp"

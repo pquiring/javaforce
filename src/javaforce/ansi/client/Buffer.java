@@ -21,7 +21,6 @@ import javaforce.*;
 import javaforce.io.*;
 import javaforce.awt.*;
 import javaforce.jni.lnx.*;
-import javaforce.jni.win.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;

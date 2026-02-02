@@ -40,7 +40,7 @@ public class MediaCoder {
   }
 
   /** Loads the media framework native libraries. */
-  public static boolean mediaInit() {
+  private static boolean mediaInit() {
     File[] sysFolders = Library.getSysFolders();
     String ext = Library.getExt();
     Library[] libs = {

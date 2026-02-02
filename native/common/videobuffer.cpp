@@ -20,6 +20,27 @@
 
 #include "register.h"
 
+jfloat compareFrames(jint* img1, jint* img2, jint width, jint height)
+{
+  int size = width * height;
+  if (size & 0x3 != 0) {
+    printf("Error: VideoBuffer.compareFrames() frame size must be / by 4\n");
+    return 100.0f;
+  }
+  int size_4 = size >> 2;
+
+  jint *pc1 = img1;
+  jint *pc2 = img2;
+
+  int diff = simd_diff(pc1, pc2, size_4);
+
+  float fdiff = diff;
+  float fsize = size;
+  float changed = (fdiff * 100.0f) / fsize;
+
+  return changed;
+}
+
 JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_compareFrames
   (JNIEnv *e, jobject c, jintArray img1, jintArray img2, jint width, jint height)
 {
@@ -43,20 +64,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_compareFrames
     printf("Error: VideoBuffer.compareFrames() img2 is wrong size\n");
     return 100.0f;
   }
-  if (size & 0x3 != 0) {
-    printf("Error: VideoBuffer.compareFrames() frame size must be / by 4\n");
-    return 100.0f;
-  }
-  int size_4 = size >> 2;
 
-  jint *pc1 = px1;
-  jint *pc2 = px2;
-
-  int diff = simd_diff(pc1, pc2, size_4);
-
-  float fdiff = diff;
-  float fsize = size;
-  float changed = (fdiff * 100.0f) / fsize;
+  float changed = compareFrames(px1, px2, width, height);
 
   e->ReleasePrimitiveArrayCritical(img1, px1, JNI_ABORT);
   e->ReleasePrimitiveArrayCritical(img2, px2, JNI_ABORT);
@@ -75,4 +84,9 @@ void videobuffer_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/MediaJNI");
   registerNatives(env, cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
+}
+
+extern "C" {
+  //VideoBuffer
+  JNIEXPORT float (*_compareFrames)(jint* frame1, jint* frame2, jint width, jint height) = &compareFrames;
 }

@@ -23,10 +23,12 @@ public class FFM {
   }
 
   /** Enabled FFM usage. */
-  private static boolean enabled = false;
+  private static boolean enabled = true;
 
   public static boolean enabled() {
-    if (!enabled) return false;
+    if (!enabled) {
+      return false;
+    }
     getInstance();
     return enabled;
   }
@@ -78,7 +80,7 @@ public class FFM {
   public MethodHandle getFunction(String name, FunctionDescriptor fd) {
     try {
       MemorySegment addr = lookup.findOrThrow(name);
-      if (addr == null) {
+      if (addr == null || addr.address() == 0) {
         JFLog.log("FFM:Function not found(1):" + name + "=" + addr);
         return null;
       }
@@ -92,19 +94,19 @@ public class FFM {
   public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
     try {
       MemorySegment addr = lookup.findOrThrow(name);
-      if (addr == null) {
+      if (addr == null || addr.address() == 0) {
         JFLog.log("FFM:FunctionPtr not found(1):" + name + "=" + addr);
         return null;
       }
       //symbols have zero length, need to reinterpret as a pointer
       addr = addr.reinterpret(ADDRESS_SIZE);
-      if (addr == null) {
+      if (addr == null || addr.address() == 0) {
         JFLog.log("FFM:FunctionPtr not found(2):" + name + "=" + addr);
         return null;
       }
       //now get the contents of the pointer
       addr = addr.get(ADDRESS, 0);
-      if (addr == null) {
+      if (addr == null || addr.address() == 0) {
         JFLog.log("FFM:FunctionPtr not found(3):" + name + "=" + addr);
         return null;
       }
