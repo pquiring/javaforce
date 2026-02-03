@@ -824,7 +824,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     config = new Config();
     config.showClock = true;
     config.showKeyboard = true;
-    config.autoHide = true;
+    config.autoHide = false;
     config.welcome = true;
     config.showIcons = true;
     config.mountAudio = true;
