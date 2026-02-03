@@ -58,7 +58,7 @@ public class MediaFFM implements MediaAPI {
   public long inputOpenFile(String file,String format) { try { long _ret_value_ = (long)inputOpenFile.invokeExact(arena.allocateFrom(file),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputOpenIO;
-  public long inputOpenIO(MediaIO io) { try { long _ret_value_ = (long)inputOpenIO.invokeExact(FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {byte[].class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {byte[].class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long inputOpenIO(MediaIO io) { try { long _ret_value_ = (long)inputOpenIO.invokeExact(FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle getDuration;
   public long getDuration(long ctx) { try { long _ret_value_ = (long)getDuration.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -106,7 +106,7 @@ public class MediaFFM implements MediaAPI {
   public long outputCreateFile(String file,String format) { try { long _ret_value_ = (long)outputCreateFile.invokeExact(arena.allocateFrom(file),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle outputCreateIO;
-  public long outputCreateIO(MediaIO io,String format) { try { long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {byte[].class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {byte[].class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long outputCreateIO(MediaIO io,String format) { try { long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle addVideoStream;
   public int addVideoStream(long ctx,int codec_id,int bit_rate,int width,int height,float fps,int keyFrameInterval) { try { int _ret_value_ = (int)addVideoStream.invokeExact(ctx,codec_id,bit_rate,width,height,fps,keyFrameInterval);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }

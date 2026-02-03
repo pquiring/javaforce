@@ -113,7 +113,7 @@ public class TestMedia implements MediaIO {
 
   public static int encoder_seconds = 4;
   public static String encoder_audio_src = "random";
-  public static boolean use_media_io = false;
+  public static boolean use_media_io = true;
 
   public static void output(boolean loop) {
     TestMedia media = new TestMedia();

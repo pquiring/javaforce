@@ -9,12 +9,14 @@ import java.lang.foreign.*;
 import static java.lang.foreign.ValueLayout.*;
 
 public interface MediaIO {
+  public static boolean debug = true;
   /** Request to read data.
    * @param data = buffer to receive data
    */
   public int read(MediaCoder coder, byte[] data);
   /** Default FFM implementation of read(). Do not implement. */
   default public int read(MemorySegment data, int size) {
+    if (debug) System.out.println("read");
     byte[] byteArray = data.asSlice(0, size).toArray(JAVA_BYTE);
     return read(null, byteArray);
   }
@@ -24,6 +26,7 @@ public interface MediaIO {
   public int write(MediaCoder coder, byte[] data);
   /** Default FFM implementation of write(). Do not implement. */
   default public int write(MemorySegment data, int size) {
+    if (debug) System.out.println("write");
     byte[] byteArray = data.asSlice(0, size).toArray(JAVA_BYTE);
     return write(null, byteArray);
   }
@@ -34,6 +37,7 @@ public interface MediaIO {
   public long seek(MediaCoder coder, long pos, int how);
   /** Default FFM implementation of seek(). Do not implement. */
   default public long seek(long pos, int how) {
+    if (debug) System.out.println("seek");
     return seek(null, pos, how);
   }
 }

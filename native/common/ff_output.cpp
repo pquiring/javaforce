@@ -313,6 +313,7 @@ jboolean writeHeader(FFContext* ctx)
   if (ret < 0) {
     printf("MediaOutput:avformat_write_header failed : %d\n", ret);
   }
+  if (ff_debug_trace) printf("MediaOutput:writeHeader=%d\n", ret);
   return ret >= 0;
 }
 
