@@ -252,6 +252,7 @@ public class FFM {
    */
 
   public static String[] toArrayString(MemorySegment m) {
+    if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
     int count = m.getAtIndex(JAVA_INT, 0);
     long size = JFARRAY_HEADER_SIZE + count * ADDRESS_SIZE;
@@ -265,6 +266,7 @@ public class FFM {
   }
 
   public static long[] toArrayLong(MemorySegment m) {
+    if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
     int count = m.getAtIndex(JAVA_INT, 0);
     long size = JFARRAY_HEADER_SIZE + count * JAVA_LONG_SIZE;
@@ -278,6 +280,7 @@ public class FFM {
   }
 
   public static int[] toArrayInt(MemorySegment m) {
+    if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
     int count = m.getAtIndex(JAVA_INT, 0);
     long size = JFARRAY_HEADER_SIZE + count * JAVA_INT_SIZE;
@@ -291,6 +294,7 @@ public class FFM {
   }
 
   public static short[] toArrayShort(MemorySegment m) {
+    if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
     int count = m.getAtIndex(JAVA_INT, 0);
     long size = JFARRAY_HEADER_SIZE + count * JAVA_SHORT_SIZE;
@@ -304,6 +308,7 @@ public class FFM {
   }
 
   public static byte[] toArrayByte(MemorySegment m) {
+    if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
     int count = m.getAtIndex(JAVA_INT, 0);
     long size = JFARRAY_HEADER_SIZE + count * JAVA_BYTE_SIZE;

@@ -59,6 +59,10 @@ struct JFArray {
 };
 
 void jfArrayFree(JFArray* arr) {
+  if (arr == NULL) {
+    printf("Error:JFArrayFree:arr == NULL\n");
+    return;
+  }
   if (arr->type == ARRAY_TYPE_STRING) {
     //free all strings
     for(int i=0;i<arr->count;i++) {
