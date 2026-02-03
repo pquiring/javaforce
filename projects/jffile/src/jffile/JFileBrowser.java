@@ -363,7 +363,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     File file = new File(entry.file);
     Calendar c = Calendar.getInstance();
     c.setTimeInMillis(file.lastModified());
-    String date = String.format("%d-%d-%d", c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1, c.get(Calendar.DAY_OF_MONTH));
+    String date = String.format("%d-%02d-%02d", c.get(Calendar.YEAR), c.get(Calendar.MONTH)+1, c.get(Calendar.DAY_OF_MONTH));
     String time = String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     String size = "" + file.length();
 
