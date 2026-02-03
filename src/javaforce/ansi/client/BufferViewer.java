@@ -394,18 +394,36 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
   }
 //interface MouseListener
   public void mouseClicked(MouseEvent e) {
-    if (e.getButton() == e.BUTTON2) buffer.paste();
-    if (e.getButton() == e.BUTTON1) requestFocus();
+    switch (e.getButton()) {
+      case MouseEvent.BUTTON1: requestFocus(); break;  //left
+      case MouseEvent.BUTTON2: buffer.paste(); break;  //middle
+      case MouseEvent.BUTTON3: break;  //right
+    }
   }
   public void mousePressed(MouseEvent e) {
-    //start selection process
-    if (e.getButton() != e.BUTTON1) return;
-    int x = e.getX() / profile.fontWidth;
-    int y = e.getY() / profile.fontHeight;
-    buffer.selectStartY = y;
-    buffer.selectStartX = x;
-    buffer.selectEndY = -1;
-    buffer.selectEndX = -1;
+    switch (e.getButton()) {
+      case MouseEvent.BUTTON1:
+        //left
+        //start selection process
+        int x = e.getX() / profile.fontWidth;
+        int y = e.getY() / profile.fontHeight;
+        buffer.selectStartY = y;
+        buffer.selectStartX = x;
+        buffer.selectEndY = -1;
+        buffer.selectEndX = -1;
+        break;
+      case MouseEvent.BUTTON2:
+        //middle
+        break;
+      case MouseEvent.BUTTON3:
+        //right
+        //remove selection
+        buffer.selectStartY = -1;
+        buffer.selectStartX = -1;
+        buffer.selectEndY = -1;
+        buffer.selectEndX = -1;
+        break;
+    }
   }
   public void mouseReleased(MouseEvent e) {
     if (e.getButton() != e.BUTTON1) return;
