@@ -268,6 +268,8 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
 
   JFArray* array = audioDecoderDecode_data(ctx, length);
 
+  if (array == NULL) return NULL;
+
   int count = array->count;
   if (ctx->jaudio == NULL || ctx->jaudio_length != count) {
     if (ctx->jaudio != NULL) {
@@ -555,6 +557,8 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_MediaJNI_videoDecoderDecode
   }
 
   JFArray* jfarray = videoDecoderDecode_data(ctx, length);
+
+  if (jfarray == NULL) return NULL;
 
   if (ctx->jvideo == NULL) {
     int px_count = ctx->width * ctx->height;

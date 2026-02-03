@@ -473,6 +473,8 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
 
   e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 
+  if (jfarray == NULL) return NULL;
+
   //convert jfarray to jarray
   jbyteArray jarray = ctx->e->NewByteArray(jfarray->count);
 
