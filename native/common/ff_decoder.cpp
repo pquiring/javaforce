@@ -60,7 +60,7 @@ static jboolean decoder_open_video_codec(FFContext *ctx, int new_width, int new_
     printf("MediaDecoder:av_image_alloc() failed : %d\n", ctx->rgb_video_dst_bufsize);
     return JNI_FALSE;
   }
-  if (!ctx->use_ffm) {
+  if (ctx->e != NULL) {
     ctx->jvideo_length = ctx->rgb_video_dst_bufsize/4;
     ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
   }

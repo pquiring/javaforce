@@ -56,8 +56,12 @@ public class TestMedia implements MediaIO {
     while (true) {
       TestMedia media = new TestMedia();
       MediaInput decoder = new MediaInput();
-      media.open("test-0.mp4");
-      decoder.open(media);
+      if (use_media_io) {
+        media.open("test-0.mp4");
+        decoder.open(media);
+      } else {
+        decoder.open("test-0.mp4", "mp4");
+      }
       int pkts = 0;
       MediaVideoDecoder videoDecoder = decoder.createVideoDecoder();
       MediaAudioDecoder audioDecoder = decoder.createAudioDecoder();
