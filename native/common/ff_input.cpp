@@ -104,6 +104,7 @@ FFContext* inputOpenIO(MediaIO* mio)
   if (ctx == NULL) return JNI_FALSE;
 
   memcpy(&ctx->ffm_mio, mio, sizeof(MediaIO));
+  ctx->use_ffm = JNI_TRUE;
 
   if (!inputOpenIO_ctx(ctx)) {
     freeFFContext(NULL,NULL,ctx);

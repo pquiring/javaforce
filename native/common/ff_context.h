@@ -18,6 +18,7 @@ struct FFContext {
 
   //FFM upcalls
   MediaIO ffm_mio;
+  jboolean use_ffm;
 
   //decoder fields
   //alloc:MediaInput.open() MediaOutput.create() free:freeFFContext()

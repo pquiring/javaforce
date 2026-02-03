@@ -97,6 +97,7 @@ FFContext* outputCreateIO(MediaIO* mio, const char* format)
   if (ctx == NULL) return NULL;
 
   memcpy(&ctx->ffm_mio, mio, sizeof(MediaIO));
+  ctx->use_ffm = JNI_TRUE;
 
   if (!outputCreateIO_ctx(ctx, format)) {
     freeFFContext(NULL,NULL,ctx);

@@ -464,14 +464,18 @@ static int ff_min(int a, int b) {
 #include "ff_context.h"
 
 static int read_packet(FFContext* ctx, void*buf, int size) {
-  jbyteArray ba = ctx->e->NewByteArray(size);
-  jint read = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_read, ctx->c, ba);
-  if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
-  if (read > 0) {
-    ctx->e->GetByteArrayRegion(ba, 0, read, (jbyte*)buf);
+  if (ctx->use_ffm) {
+    return ctx->ffm_mio.read((jbyte*)buf, size);
+  } else {
+    jbyteArray ba = ctx->e->NewByteArray(size);
+    jint read = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_read, ctx->c, ba);
+    if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
+    if (read > 0) {
+      ctx->e->GetByteArrayRegion(ba, 0, read, (jbyte*)buf);
+    }
+    ctx->e->DeleteLocalRef(ba);
+    return read;
   }
-  ctx->e->DeleteLocalRef(ba);
-  return read;
 }
 
 typedef struct mp4_box {
@@ -493,59 +497,73 @@ static int swap_order(int val) {
 }
 
 static int write_packet(FFContext* ctx, void*buf, int size) {
-  jbyteArray ba = ctx->e->NewByteArray(size);
-  ctx->e->SetByteArrayRegion(ba, 0, size, (jbyte*)buf);
-  int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
-  if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
-  ctx->e->DeleteLocalRef(ba);
-  if (ctx->is_mp4 && ff_debug_box) {
-    int pkt_len = size;
-    char* buf8 = (char*)buf;
-    while (pkt_len > 0) {
-      mp4_box* box = (mp4_box*)buf8;
-      int box_size = swap_order(box->size);
-      if (box_size <= 0) break;  //mid packet?
-      printf("box:%c%c%c%c:%d\n", box->type[0], box->type[1], box->type[2], box->type[3], box_size);
-      buf8 += box_size;
-      pkt_len -= box_size;
-    }
-  }
-  if (ctx->is_mp4 && ff_debug_buffer) {
-    char* chbuf = (char*)buf;
-    int len = size;
-    if (len > 1024) len = 1024;
-    printf("buf = [");
-    for(int a=0;a<len;a++) {
-      char ch = chbuf[a];
-      if (ch < 32 || ch > 127) {
-        printf("{%02x}", ch & 0xff);
-      } else {
-        printf("%c", ch);
+  if (ctx->use_ffm) {
+    return ctx->ffm_mio.write((jbyte*)buf, size);
+  } else {
+    jbyteArray ba = ctx->e->NewByteArray(size);
+    ctx->e->SetByteArrayRegion(ba, 0, size, (jbyte*)buf);
+    int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
+    if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
+    ctx->e->DeleteLocalRef(ba);
+    if (ctx->is_mp4 && ff_debug_box) {
+      int pkt_len = size;
+      char* buf8 = (char*)buf;
+      while (pkt_len > 0) {
+        mp4_box* box = (mp4_box*)buf8;
+        int box_size = swap_order(box->size);
+        if (box_size <= 0) break;  //mid packet?
+        printf("box:%c%c%c%c:%d\n", box->type[0], box->type[1], box->type[2], box->type[3], box_size);
+        buf8 += box_size;
+        pkt_len -= box_size;
       }
     }
-    if (size > 1024) {
-      printf("{...}");
+    if (ctx->is_mp4 && ff_debug_buffer) {
+      char* chbuf = (char*)buf;
+      int len = size;
+      if (len > 1024) len = 1024;
+      printf("buf = [");
+      for(int a=0;a<len;a++) {
+        char ch = chbuf[a];
+        if (ch < 32 || ch > 127) {
+          printf("{%02x}", ch & 0xff);
+        } else {
+          printf("%c", ch);
+        }
+      }
+      if (size > 1024) {
+        printf("{...}");
+      }
+      printf("]\n");
     }
-    printf("]\n");
+    return write;
   }
-  return write;
 }
 
 static jlong zero = 0;
 
 static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
-  if (how == AVSEEK_SIZE) { //return size of file
-    jlong curpos = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, zero, SEEK_CUR);
+  if (ctx->use_ffm) {
+    if (how == AVSEEK_SIZE) { //return size of file
+      jlong curpos = ctx->ffm_mio.seek(zero, SEEK_CUR);
+      jlong filesize = ctx->ffm_mio.seek(zero, SEEK_END);
+      ctx->ffm_mio.seek(curpos, SEEK_SET);
+      return filesize;
+    }
+    return ctx->ffm_mio.seek(offset, how);
+  } else {
+    if (how == AVSEEK_SIZE) { //return size of file
+      jlong curpos = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, zero, SEEK_CUR);
+      if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
+      jlong filesize = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, zero, SEEK_END);
+      if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
+      ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, curpos, SEEK_SET);
+      if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
+      return filesize;
+    }
+    jlong ret = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, offset, how);
     if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
-    jlong filesize = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, zero, SEEK_END);
-    if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
-    ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, curpos, SEEK_SET);
-    if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
-    return filesize;
+    return ret;
   }
-  jlong ret = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, offset, how);
-  if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
-  return ret;
 }
 
 //include code bases
