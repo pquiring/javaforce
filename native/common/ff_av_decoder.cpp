@@ -211,15 +211,15 @@ JFArray* audioDecoderDecode_data(FFContext* ctx, jint length)
   }
   int count = converted_nb_samples * ctx->dst_nb_channels;
   //copy to JFArray
-  JFArray* array = JFArray::create(count, 2, ARRAY_TYPE_SHORT);
-  memcpy(array->getBufferShort(), (const jshort*)ctx->audio_dst_data[0], count*2);
+  JFArray* jfarray = JFArray::create(count, 2, ARRAY_TYPE_SHORT);
+  memcpy(jfarray->getBufferShort(), (const jshort*)ctx->audio_dst_data[0], count*2);
   //free audio_dst_data
   if (ctx->audio_dst_data[0] != NULL) {
     (*_av_free)(ctx->audio_dst_data[0]);
     ctx->audio_dst_data[0] = NULL;
   }
 
-  return array;
+  return jfarray;
 }
 
 JFArray* audioDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint length)
@@ -266,11 +266,11 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
     *(pad++) = 0;
   }
 
-  JFArray* array = audioDecoderDecode_data(ctx, length);
+  JFArray* jfarray = audioDecoderDecode_data(ctx, length);
 
-  if (array == NULL) return NULL;
+  if (jfarray == NULL) return NULL;
 
-  int count = array->count;
+  int count = jfarray->count;
   if (ctx->jaudio == NULL || ctx->jaudio_length != count) {
     if (ctx->jaudio != NULL) {
       //free old audio array
@@ -279,8 +279,8 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
     ctx->jaudio_length = count;
     ctx->jaudio = (jshortArray)e->NewGlobalRef(e->NewShortArray(count));
   }
-  e->SetShortArrayRegion(ctx->jaudio, 0, ctx->jaudio_length, (const jshort*)ctx->audio_dst_data[0]);
-  jfArrayFree(array);
+  e->SetShortArrayRegion(ctx->jaudio, 0, ctx->jaudio_length, (const jshort*)jfarray->getBufferShort());
+  jfArrayFree(jfarray);
 
   return ctx->jaudio;
 }

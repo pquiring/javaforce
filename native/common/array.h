@@ -16,7 +16,7 @@ Returned from FFM functions that return arrays.
 struct JFArray {
   int count;  //# of elements (N)
   short size;  //element size
-  short type;  //0=primitive 1=strings (pointers)
+  short type;  //ARRAY_TYPE_...
   union {
     //T elements[N];
     jint ints[0];

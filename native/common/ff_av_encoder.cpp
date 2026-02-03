@@ -469,7 +469,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
   jint *px_ptr = (jint*)e->GetPrimitiveArrayCritical(px, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  JFArray *jfarray = av_encoder_addVideo(ctx, (int*)px_ptr);
+  JFArray* jfarray = av_encoder_addVideo(ctx, (int*)px_ptr);
 
   e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 
@@ -478,7 +478,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
   //convert jfarray to jarray
   jbyteArray jarray = ctx->e->NewByteArray(jfarray->count);
 
-  ctx->e->SetByteArrayRegion(jarray, 0, jfarray->count * 4, (jbyte*)jfarray->getBufferByte());
+  ctx->e->SetByteArrayRegion(jarray, 0, jfarray->count, (jbyte*)jfarray->getBufferByte());
   jfArrayFree(jfarray);
 
   return jarray;
