@@ -401,6 +401,8 @@ jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char
   printf("avformat_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
 #endif
 
+  ffmpeg_loaded = JNI_TRUE;
+
   return JNI_TRUE;
 }
 
@@ -440,8 +442,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
     printf("ffmpeg_init failed : %d\n", ret);
     return JNI_FALSE;
   }
-
-  ffmpeg_loaded = JNI_TRUE;
 
   return JNI_TRUE;
 }
