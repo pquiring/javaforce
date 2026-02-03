@@ -158,6 +158,7 @@ public class TestMedia implements MediaIO {
         input.start(2, 44100, 16, frame_size, "<default>");
       }
       System.out.println("Audio Frame Size=" + audioEncoder.getAudioFramesize());
+      System.gc();
       for(int a=0;a<24 * encoder_seconds;a++) {
         JFLog.log("loop=" + a);
         random(px);
