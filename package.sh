@@ -17,7 +17,8 @@ function detectos {
       pkg=deb
       PKG=DEB
       OS=debian
-      RELEASE=$VERSION_CODENAME
+      #need to remove quotes from VERSION_ID
+      RELEASE=${VERSION_ID//\"/}
       case $HOSTTYPE in
       x86_64)
         ARCH=amd64
