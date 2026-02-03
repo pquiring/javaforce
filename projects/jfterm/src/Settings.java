@@ -12,7 +12,6 @@ import java.awt.Color;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jni.*;
-import javaforce.jni.win.*;
 import javaforce.jni.lnx.*;
 
 public class Settings {
@@ -87,10 +86,7 @@ public class Settings {
   }
 
   static {
-    if (JF.isWindows()) {
-      hasComm = WinCom.init();
-    } else {
-      hasComm = LnxCom.init();
+    if (!JF.isWindows()) {
       LnxPty.init();
     }
   }
