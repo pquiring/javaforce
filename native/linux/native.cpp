@@ -583,7 +583,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1strut
 #define MAX_TRAY_ICONS 64
 static XID tray_icons[MAX_TRAY_ICONS];
 static int screen_width;
-static Display *tray_display;
 static Atom tray_opcode;//, tray_data;
 static XID tray_window;
 static jboolean tray_active;
@@ -614,6 +613,7 @@ static JNIEnv* x11_GetEnv() {
 }
 
 static void tray_move_icons() {
+  Display* display = (*_XOpenDisplay)(NULL);
   int a, x = tray_pad, y;
   int y1 = 0;
   int y2 = 0;
@@ -627,7 +627,7 @@ static void tray_move_icons() {
   y = y1;
   for(a=0;a<MAX_TRAY_ICONS;a++) {
     if (tray_icons[a] == 0) continue;
-    (*_XMoveResizeWindow)(tray_display, tray_icons[a], x, y, tray_icon_size, tray_icon_size);
+    (*_XMoveResizeWindow)(display, tray_icons[a], x, y, tray_icon_size, tray_icon_size);
     if (y == y1 && tray_rows > 1) {
       y = y2;
     } else {
@@ -644,11 +644,13 @@ static void tray_move_icons() {
   tray_width = sx;
   int sy = tray_height;  //tray_rows * (tray_icon_size + tray_pad) + tray_pad;
 //    JFLog.log("Tray Position:" + px + "," + py + ",size=" + sx + "," + sy);
-  (*_XMoveResizeWindow)(tray_display, tray_window, px, py, sx, sy);
+  (*_XMoveResizeWindow)(display, tray_window, px, py, sx, sy);
+  (*_XCloseDisplay)(display);
 }
 
 static void tray_add_icon(XID w) {
   if (tray_count == MAX_TRAY_ICONS) return;  //ohoh
+  Display* display = (*_XOpenDisplay)(NULL);
   tray_count++;
   int a;
   for(a=0;a<MAX_TRAY_ICONS;a++) {
@@ -657,11 +659,12 @@ static void tray_add_icon(XID w) {
       break;
     }
   }
-  (*_XReparentWindow)(tray_display, w, tray_window, 0, 0);
+  (*_XReparentWindow)(display, w, tray_window, 0, 0);
   tray_move_icons();
-  (*_XMapWindow)(tray_display, w);
+  (*_XMapWindow)(display, w);
   x11_tray_e->CallVoidMethod(x11_listener, mid_x11_listener_trayIconAdded);
   if (x11_tray_e->ExceptionCheck()) x11_tray_e->ExceptionClear();
+  (*_XCloseDisplay)(display);
 }
 
 /* Tray opcode messages from System Tray Protocol Specification
@@ -728,12 +731,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1main
     tray_rows = 1;
   }
   Display* display = (*_XOpenDisplay)(NULL);
-  Atom tray_atom = (*_XInternAtom)(tray_display, "_NET_SYSTEM_TRAY_S0", False);
-  tray_opcode = (*_XInternAtom)(tray_display, "_NET_SYSTEM_TRAY_OPCODE", False);
-//  tray_data = (*_XInternAtom)(tray_display, "_NET_SYSTEM_TRAY_MESSAGE_DATA", False);
+  Atom tray_atom = (*_XInternAtom)(display, "_NET_SYSTEM_TRAY_S0", False);
+  tray_opcode = (*_XInternAtom)(display, "_NET_SYSTEM_TRAY_OPCODE", False);
+//  tray_data = (*_XInternAtom)(display, "_NET_SYSTEM_TRAY_MESSAGE_DATA", False);
 
   tray_window = (*_XCreateSimpleWindow)(
-    tray_display,
+    display,
     (XID)pid,  //parent id
     trayPos - tray_icon_size - 4 - borderSize, borderSize,  //pos
     tray_icon_size + 4, 52,  //size
@@ -741,16 +744,16 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1main
     (0xcccccc),  //border clr
     (0xdddddd));  //backgnd clr
 
-  (*_XSetSelectionOwner)(tray_display, tray_atom, tray_window, CurrentTime);
+  (*_XSetSelectionOwner)(display, tray_atom, tray_window, CurrentTime);
 
   //get DestroyNotify events
-  (*_XSelectInput)(tray_display, tray_window, SubstructureNotifyMask);
+  (*_XSelectInput)(display, tray_window, SubstructureNotifyMask);
 
-  (*_XMapWindow)(tray_display, tray_window);
+  (*_XMapWindow)(display, tray_window);
 
   tray_active = JNI_TRUE;
   while (tray_active) {
-    (*_XNextEvent)(tray_display, &ev);
+    (*_XNextEvent)(display, &ev);
     switch (ev.type) {
       case ClientMessage:
         tray_client_message((XClientMessageEvent*)&ev);
