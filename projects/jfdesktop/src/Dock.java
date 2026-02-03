@@ -674,8 +674,10 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         if (ok) continue;
         //add new button
         JButton button = addButton(x11window.file, false, -1);
-        Group group = (Group)button.getClientProperty("group");
-        group.addWindow(x11window.xid, x11window.title);
+        if (button != null) {
+          Group group = (Group)button.getClientProperty("group");
+          group.addWindow(x11window.xid, x11window.title);
+        }
         buts = buttons.getComponents();
       }
       //remove buttons
