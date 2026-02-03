@@ -1365,7 +1365,19 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     remote_chdir(fullPath);
   }
   public boolean showRemoteSide, showRemoteTree, showLocalTree;
-  public boolean showHidden = false;
+  private boolean showHidden = false;
+
+  public void setShowHidden(boolean state) {
+    showHidden = state;
+    localBrowser.setShowHidden(state);
+    if (remoteBrowser != null) {
+      remoteBrowser.setShowHidden(state);
+    }
+  }
+
+  public boolean isShowHidden() {
+    return showHidden;
+  }
 
   private void initGUI(boolean localOnly) {
     showRemoteSide = !localOnly;

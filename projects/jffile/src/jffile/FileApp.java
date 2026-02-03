@@ -502,7 +502,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     showLocalTree.setSelected(site.showLocalTree);
     showRemoteSide.setSelected(site.showRemoteSide);
     showRemoteTree.setSelected(site.showRemoteTree);
-    showHidden.setSelected(site.showHidden);
+    showHidden.setSelected(site.isShowHidden());
     Icons.setSelected(site.view == JFileBrowser.VIEW_ICONS);
     List.setSelected(site.view == JFileBrowser.VIEW_LIST);
     Details.setSelected(site.view == JFileBrowser.VIEW_DETAILS);
@@ -520,7 +520,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
   private void showHiddenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHiddenActionPerformed
     Site site = (Site)tabs.getSelectedComponent();
     if (site == null) return;
-    site.showHidden = showHidden.isSelected();
+    site.setShowHidden(showHidden.isSelected());
     site.local_ls();
     site.remote_ls();
   }//GEN-LAST:event_showHiddenActionPerformed
