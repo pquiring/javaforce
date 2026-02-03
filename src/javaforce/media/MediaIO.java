@@ -16,9 +16,13 @@ public interface MediaIO {
   public int read(MediaCoder coder, byte[] data);
   /** Default FFM implementation of read(). Do not implement. */
   default public int read(MemorySegment data, int size) {
-    if (debug) System.out.println("read");
-    byte[] byteArray = data.reinterpret(size).asSlice(0, size).toArray(JAVA_BYTE);
-    return read(null, byteArray);
+    if (debug) System.out.println("read:" + size);
+    byte[] byteArray = new byte[size];
+    int read = read(null, byteArray);
+    if (read > 0) {
+      MemorySegment.copy(byteArray, 0, data.reinterpret(read), JAVA_BYTE, 0, read);
+    }
+    return read;
   }
   /** Request to write data.
    * @param data = buffer of data to be written.
@@ -26,7 +30,7 @@ public interface MediaIO {
   public int write(MediaCoder coder, byte[] data);
   /** Default FFM implementation of write(). Do not implement. */
   default public int write(MemorySegment data, int size) {
-    if (debug) System.out.println("write");
+    if (debug) System.out.println("write:" + size);
     byte[] byteArray = data.reinterpret(size).asSlice(0, size).toArray(JAVA_BYTE);
     return write(null, byteArray);
   }
@@ -37,7 +41,7 @@ public interface MediaIO {
   public long seek(MediaCoder coder, long pos, int how);
   /** Default FFM implementation of seek(). Do not implement. */
   default public long seek(long pos, int how) {
-    if (debug) System.out.println("seek");
+    if (debug) System.out.println("seek:" + pos + "," + how);
     return seek(null, pos, how);
   }
 }
