@@ -18,9 +18,9 @@ public class ComPort {
   private String name;
   private ComPort() {
     if (FFM.enabled()) {
-      api = new ComPortFFM();
+      api = ComPortFFM.getInstance();
     } else {
-      api = new ComPortJNI();
+      api = ComPortJNI.getInstance();
     }
   }
   /** Lists available Com ports. */

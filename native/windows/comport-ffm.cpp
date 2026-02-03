@@ -51,4 +51,6 @@ extern "C" {
   JNIEXPORT void (*_comClose)(jlong handle) = &comClose;
   JNIEXPORT jint (*_comRead)(jlong handle, jbyte* ba, jint size) = &comRead;
   JNIEXPORT jint (*_comWrite)(jlong handle, jbyte* ba, jint size) = &comWrite;
+
+  JNIEXPORT jboolean JNICALL ComPortAPIinit() {return JNI_TRUE;}
 }
