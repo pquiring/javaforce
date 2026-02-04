@@ -139,9 +139,10 @@ Current progress:
    - OpenCL
    - Camera
    - PCap
+   - Media
+   - ComPort
 
   TODO:
-   - Media
    - Speex
    - VM
    - UI
