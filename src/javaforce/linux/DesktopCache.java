@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.io.*;
 import javaforce.utils.*;
 
 /**
@@ -14,7 +15,7 @@ import javaforce.utils.*;
  * Created : Jan 9, 2014
  */
 
-public class DesktopCache implements monitordir.Listener {
+public class DesktopCache implements FolderListener {
   public static class Desktop {
     public String icon, file, name, exec, all;
   }
@@ -81,19 +82,21 @@ public class DesktopCache implements monitordir.Listener {
     }
   }
 
-  private static ArrayList<String> monitors = new ArrayList<String>();
+  private static ArrayList<MonitorFolder> monitors = new ArrayList<>();
 
   private static synchronized void monitorDir(File folder) {
     String fullpath = folder.getAbsolutePath();
     for(int a=0;a<monitors.size();a++) {
-      if (monitors.get(a).equals(fullpath)) return;
+      if (monitors.get(a).getFolder().equals(fullpath)) return;
     }
-    if (!monitordir.init()) {
-      JFLog.log("DesktopCache:Error:Could not init monitordir");
-    }
-    int wd = monitordir.add(fullpath);
-    monitordir.setListener(wd, new DesktopCache());
-    monitors.add(fullpath);
+    MonitorFolder monitor = MonitorFolder.getInstance();
+    monitor.create(fullpath);
+    new Thread() {
+      public void run() {
+        monitor.poll(new DesktopCache());
+      }
+    }.start();
+    monitors.add(monitor);
   }
 
   private static String readFile(String file) {

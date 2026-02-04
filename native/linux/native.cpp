@@ -1222,43 +1222,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
 
 #ifndef __FreeBSD__
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1init
-  (JNIEnv *e, jclass c)
-{
-  return inotify_init();
-}
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1add_1watch
-  (JNIEnv *e, jclass c, jint fd, jstring path, jint mask)
-{
-  const char *cpath = e->GetStringUTFChars(path,NULL);
-  int wd = inotify_add_watch(fd, cpath, mask);
-  e->ReleaseStringUTFChars(path, cpath);
-  return wd;
-}
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1rm_1watch
-  (JNIEnv *e, jclass c, jint fd, jint wd)
-{
-  return inotify_rm_watch(fd, wd);
-}
-
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_LnxNative_inotify_1read
-  (JNIEnv *e, jclass c, jint fd)
-{
-  char inotify_buffer[512];
-  int size = read(fd, inotify_buffer, 512);
-  if (size == -1) return NULL;
-  jbyteArray ba = e->NewByteArray(size);
-  e->SetByteArrayRegion(ba, 0, size, (jbyte*)inotify_buffer);
-  return ba;
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_inotify_1close
-  (JNIEnv *e, jclass c, jint fd)
-{
-  close(fd);
-}
+#include "monitor-folder-jni.cpp"
 
 #endif  //__FreeBSD__
 
@@ -1560,13 +1524,6 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"ptyWrite", "(J[B)V", (void *)&Java_javaforce_jni_LnxNative_ptyWrite},
   {"ptySetSize", "(JII)V", (void *)&Java_javaforce_jni_LnxNative_ptySetSize},
   {"ptyChildExec", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_ptyChildExec},
-#ifndef __FreeBSD__
-  {"inotify_init", "()I", (void *)&Java_javaforce_jni_LnxNative_inotify_1init},
-  {"inotify_add_watch", "(ILjava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1add_1watch},
-  {"inotify_rm_watch", "(II)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1rm_1watch},
-  {"inotify_read", "(I)[B", (void *)&Java_javaforce_jni_LnxNative_inotify_1read},
-  {"inotify_close", "(I)V", (void *)&Java_javaforce_jni_LnxNative_inotify_1close},
-#endif
   {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_LnxNative_x11_1get_1id},
   {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1desktop},
   {"x11_set_dock", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1dock},
@@ -1609,6 +1566,14 @@ static JNINativeMethod javaforce_jni_ComPortJNI[] = {
   {"comWrite", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
 };
 
+#ifndef __FreeBSD__
+static JNINativeMethod javaforce_jni_MonitorFolderJNI[] = {
+  {"monitorFolderCreate", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate},
+  {"monitorFolderPoll", "(JLjavaforce/io/FolderListener;)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll},
+  {"monitorFolderClose", "(J)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose},
+};
+#endif
+
 extern "C" void lnxnative_register(JNIEnv *env);
 
 void lnxnative_register(JNIEnv *env) {
@@ -1619,6 +1584,11 @@ void lnxnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/ComPortJNI");
   registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
+
+#ifndef __FreeBSD__
+  cls = findClass(env, "javaforce/jni/MonitorFolderJNI");
+  registerNatives(env, cls, javaforce_jni_MonitorFolderJNI, sizeof(javaforce_jni_MonitorFolderJNI)/sizeof(JNINativeMethod));
+#endif
 }
 
 #include "../common/register.cpp"
