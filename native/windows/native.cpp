@@ -1458,6 +1458,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "comport-jni.cpp"
 #include "comport-ffm.cpp"
 
+#include "monitor-folder-jni.cpp"
+
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
   {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
@@ -1548,6 +1550,12 @@ static JNINativeMethod javaforce_jni_ComPortJNI[] = {
   {"comWrite", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
 };
 
+static JNINativeMethod javaforce_jni_MonitorFolderJNI[] = {
+  {"monitorFolderCreate", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate},
+  {"monitorFolderPoll", "(JLjavaforce/io/FolderListener;)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll},
+  {"monitorFolderClose", "(J)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose},
+};
+
 extern "C" void winnative_register(JNIEnv *env);
 
 void winnative_register(JNIEnv *env) {
@@ -1558,6 +1566,9 @@ void winnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/ComPortJNI");
   registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/jni/MonitorFolderJNI");
+  registerNatives(env, cls, javaforce_jni_MonitorFolderJNI, sizeof(javaforce_jni_MonitorFolderJNI)/sizeof(JNINativeMethod));
 
   lib_sas = loadLibrary("sas.dll");
   if (lib_sas == NULL) {
