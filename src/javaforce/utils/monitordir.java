@@ -23,9 +23,11 @@ public class monitordir {
   /** Loads native library.  Only need to call once per process. */
   private static int fd;
   public static boolean init() {
+    if (JF.isWindows()) return true;
     try {
       fd = LnxNative.inotify_init();
       if (fd == -1) throw new Exception("inotify_init failed");
+      active = true;
       new Worker().start();
       return true;
     } catch (Exception e) {
@@ -36,16 +38,19 @@ public class monitordir {
   /** Stops all watches. */
   public static void uninit() {
     active = false;
+    if (JF.isWindows()) return;
     LnxNative.inotify_close(fd);
   }
   /** Start watching a folder. */
   public static int add(String path) {
+    if (JF.isWindows()) return -1;
     int wd = LnxNative.inotify_add_watch(fd, path, IN_ALL);
 //    JFLog.log("wd=" + wd);
     return wd;
   }
   /** Stops watching a folder. */
   public static void remove(int wd) {
+    if (JF.isWindows()) return;
     LnxNative.inotify_rm_watch(fd, wd);
     map.remove(wd);
   }
