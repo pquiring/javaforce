@@ -199,4 +199,9 @@ public class AddAppWindow extends javax.swing.JFrame {
   public void doSearch() {
     browser.setFilter(".*" + clean(search.getText()) + ".*[.]desktop");
   }
+
+  public static void main(String[] args) {
+    AddAppWindow win = new AddAppWindow();
+    win.setVisible(true);
+  }
 }
