@@ -44,4 +44,8 @@ public interface MediaIO {
     if (debug) System.out.println("seek:" + pos + "," + how);
     return seek(null, pos, how);
   }
+  /** internal to FFM : implementing class must store upcall references until no longer needed.
+   * See MediaInput and MediaOutput
+   */
+  default public MemorySegment[] store(MemorySegment[] array) {return array;}
 }

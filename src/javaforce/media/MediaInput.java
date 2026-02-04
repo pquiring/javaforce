@@ -11,17 +11,29 @@ package javaforce.media;
 
 import javaforce.voip.*;
 import javaforce.api.*;
+import java.lang.foreign.*;
 
-public class MediaInput extends MediaFormat {
+public class MediaInput extends MediaFormat implements MediaIO {
   public boolean open(String file, String format) {
     if (ctx != 0) return false;
     ctx = MediaAPI.getInstance().inputOpenFile(file, format);
     return ctx != 0;
   }
 
+  private Object[] refs;
+  private MediaIO io;
+  public int read(MediaCoder coder, byte[] data) {return io.read(coder, data);}
+  public int write(MediaCoder coder, byte[] data) {return io.write(coder, data);}
+  public long seek(MediaCoder coder, long pos, int how) {return io.seek(coder, pos, how);}
+  public MemorySegment[] store(MemorySegment[] array) {
+    refs = array;
+    return array;
+  }
+
   public boolean open(MediaIO io) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().inputOpenIO(io);
+    this.io = io;
+    ctx = MediaAPI.getInstance().inputOpenIO(this);
     return ctx != 0;
   }
 

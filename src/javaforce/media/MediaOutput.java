@@ -17,8 +17,9 @@ package javaforce.media;
 import javaforce.*;
 import javaforce.voip.*;
 import javaforce.api.*;
+import java.lang.foreign.*;
 
-public class MediaOutput extends MediaFormat {
+public class MediaOutput extends MediaFormat implements MediaIO {
   /** Create output file.
    * @param file = filename
    * @param format = media container (see MediaCoder.AV_FORMAT_ID...)
@@ -32,13 +33,24 @@ public class MediaOutput extends MediaFormat {
     return ctx != 0;
   }
 
+  private Object[] refs;
+  private MediaIO io;
+  public int read(MediaCoder coder, byte[] data) {return io.read(coder, data);}
+  public int write(MediaCoder coder, byte[] data) {return io.write(coder, data);}
+  public long seek(MediaCoder coder, long pos, int how) {return io.seek(coder, pos, how);}
+  public MemorySegment[] store(MemorySegment[] array) {
+    refs = array;
+    return array;
+  }
+
   /** Create output media via MediaIO.
    * @param io = Media IO interface
    * @param format = media container (see MediaCoder.AV_FORMAT_ID...)
    */
   public boolean create(MediaIO io, String format) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().outputCreateIO(io, format);
+    this.io = io;
+    ctx = MediaAPI.getInstance().outputCreateIO(this, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateIO() == 0");
     }
@@ -115,6 +127,7 @@ public class MediaOutput extends MediaFormat {
     if (ctx == 0) return false;
     boolean res = MediaAPI.getInstance().outputClose(ctx);
     ctx = 0;
+    refs = null;
     return res;
   }
 
