@@ -80,7 +80,7 @@ public class JNI2FFM {
       src.append("\n");
       src.append("public class " + cls_out + " " + i_e + " " + basecls + " {\n");
       src.append("\n");
-      src.append("  private Arena arena;\n");
+//      src.append("  private Arena arena;\n");
       src.append("  private FFM ffm;\n");
       src.append("\n");
       src.append("  private static " + cls_out + " instance;\n");
@@ -99,7 +99,7 @@ public class JNI2FFM {
 //      ctor.append("    JFLog.log(\"" + cls_out + " init\");\n");
       ctor.append("    MethodHandle init;\n");
       ctor.append("    ffm = FFM.getInstance();\n");
-      ctor.append("    arena = Arena.ofAuto();\n");
+//      ctor.append("    arena = Arena.ofAuto();\n");
       ctor.append("    init = ffm.getFunction(\"" + basecls + "init\", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));\n");
       ctor.append("    if (init == null) return false;\n");
       ctor.append("    try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}\n");
@@ -147,6 +147,8 @@ public class JNI2FFM {
         StringBuilder method = new StringBuilder();
         StringBuilder arrays = new StringBuilder();
         method.append("{ try { ");
+        boolean arena_needed = false;
+        boolean arena_global = false;
         if (!isRetVoid) {
           if (isRetArray) {
             method.append(java_ret_type + "[] _ret_value_ = FFM.toArray" + capitalize(java_ret_type) + "((MemorySegment)");
@@ -220,6 +222,7 @@ public class JNI2FFM {
             String segment_name = "_array_" + arg_name;
             arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(arena, " + arg_name + ");");
             method.append(segment_name);
+            arena_needed = true;
           } else {
             if (java_type.equals("MediaIO")) {
               method.append("FFM.toMemory(arena, new MemorySegment[] {");
@@ -227,8 +230,11 @@ public class JNI2FFM {
               method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"write\", int.class, new Class[] {MemorySegment.class, int.class}, arena)");
               method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seek\", long.class, new Class[] {long.class, int.class}, arena)");
               method.append("})");
+              arena_needed = true;
+              arena_global = true;
             } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");
+              arena_needed = true;
             } else {
               method.append(arg_name);
             }
@@ -244,7 +250,18 @@ public class JNI2FFM {
             method.append(");");
           }
         }
-        method.insert(1, arrays);
+        if (arrays.length() > 0) {
+          //insert arrays after "{ try { "
+          method.insert(8, arrays);
+        }
+        if (arena_needed) {
+          //insert areana after "{ try { "
+          if (arena_global) {
+            method.insert(8, "Arena arena = Arena.global(); ");  //never freed!  memory leak!
+          } else {
+            method.insert(8, "Arena arena = Arena.ofAuto(); ");
+          }
+        }
         for(String arg_name : array_names) {
           String segment_name = "_array_" + arg_name;
           method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");

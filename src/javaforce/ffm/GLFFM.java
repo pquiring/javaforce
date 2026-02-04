@@ -14,7 +14,6 @@ import javaforce.gl.*;
 
 public class GLFFM implements GL {
 
-  private Arena arena;
   private FFM ffm;
 
   private static GLFFM instance;
@@ -54,13 +53,13 @@ public class GLFFM implements GL {
   public void glBlendFunc(int i1,int i2) { try { glBlendFunc.invokeExact(i1,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glBufferData;
-  public void glBufferData(int i1,int i2,float[] i3,int i4) {MemorySegment _array_i3 = FFM.toMemory(arena, i3); try { glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
+  public void glBufferData(int i1,int i2,float[] i3,int i4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i3 = FFM.toMemory(arena, i3);glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
 
-  public void glBufferData(int i1,int i2,short[] i3,int i4) {MemorySegment _array_i3 = FFM.toMemory(arena, i3); try { glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
+  public void glBufferData(int i1,int i2,short[] i3,int i4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i3 = FFM.toMemory(arena, i3);glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
 
-  public void glBufferData(int i1,int i2,int[] i3,int i4) {MemorySegment _array_i3 = FFM.toMemory(arena, i3); try { glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
+  public void glBufferData(int i1,int i2,int[] i3,int i4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i3 = FFM.toMemory(arena, i3);glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
 
-  public void glBufferData(int i1,int i2,byte[] i3,int i4) {MemorySegment _array_i3 = FFM.toMemory(arena, i3); try { glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
+  public void glBufferData(int i1,int i2,byte[] i3,int i4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i3 = FFM.toMemory(arena, i3);glBufferData.invokeExact(i1,i2,_array_i3,i4);FFM.copyBack(_array_i3,i3); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glClear;
   public void glClear(int flags) { try { glClear.invokeExact(flags); } catch (Throwable t) { JFLog.log(t); } }
@@ -87,16 +86,16 @@ public class GLFFM implements GL {
   public void glCullFace(int id) { try { glCullFace.invokeExact(id); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glDeleteBuffers;
-  public void glDeleteBuffers(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glDeleteBuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glDeleteBuffers(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glDeleteBuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glDeleteFramebuffers;
-  public void glDeleteFramebuffers(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glDeleteFramebuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glDeleteFramebuffers(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glDeleteFramebuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glDeleteRenderbuffers;
-  public void glDeleteRenderbuffers(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glDeleteRenderbuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glDeleteRenderbuffers(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glDeleteRenderbuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glDeleteTextures;
-  public void glDeleteTextures(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glDeleteTextures.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glDeleteTextures(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glDeleteTextures.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glDrawElements;
   public void glDrawElements(int i1,int i2,int i3,int i4) { try { glDrawElements.invokeExact(i1,i2,i3,i4); } catch (Throwable t) { JFLog.log(t); } }
@@ -132,7 +131,7 @@ public class GLFFM implements GL {
   public void glFrontFace(int id) { try { glFrontFace.invokeExact(id); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glGetAttribLocation;
-  public int glGetAttribLocation(int i1,String str) { try { int _ret_value_ = (int)glGetAttribLocation.invokeExact(i1,arena.allocateFrom(str));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int glGetAttribLocation(int i1,String str) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)glGetAttribLocation.invokeExact(i1,arena.allocateFrom(str));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glGetError;
   public int glGetError() { try { int _ret_value_ = (int)glGetError.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -147,22 +146,22 @@ public class GLFFM implements GL {
   public String glGetString(int type) { try { String _ret_value_ = ((MemorySegment)glGetString.invokeExact(type)).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle glGetIntegerv;
-  public void glGetIntegerv(int type,int[] i) {MemorySegment _array_i = FFM.toMemory(arena, i); try { glGetIntegerv.invokeExact(type,_array_i);FFM.copyBack(_array_i,i); } catch (Throwable t) { JFLog.log(t); } }
+  public void glGetIntegerv(int type,int[] i) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i = FFM.toMemory(arena, i);glGetIntegerv.invokeExact(type,_array_i);FFM.copyBack(_array_i,i); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glGenBuffers;
-  public void glGenBuffers(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glGenBuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glGenBuffers(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glGenBuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glGenFramebuffers;
-  public void glGenFramebuffers(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glGenFramebuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glGenFramebuffers(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glGenFramebuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glGenRenderbuffers;
-  public void glGenRenderbuffers(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glGenRenderbuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glGenRenderbuffers(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glGenRenderbuffers.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glGenTextures;
-  public void glGenTextures(int i1,int[] i2) {MemorySegment _array_i2 = FFM.toMemory(arena, i2); try { glGenTextures.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
+  public void glGenTextures(int i1,int[] i2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i2 = FFM.toMemory(arena, i2);glGenTextures.invokeExact(i1,_array_i2);FFM.copyBack(_array_i2,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glGetUniformLocation;
-  public int glGetUniformLocation(int i1,String str) { try { int _ret_value_ = (int)glGetUniformLocation.invokeExact(i1,arena.allocateFrom(str));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int glGetUniformLocation(int i1,String str) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)glGetUniformLocation.invokeExact(i1,arena.allocateFrom(str));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glLinkProgram;
   public void glLinkProgram(int id) { try { glLinkProgram.invokeExact(id); } catch (Throwable t) { JFLog.log(t); } }
@@ -171,13 +170,13 @@ public class GLFFM implements GL {
   public void glPixelStorei(int i1,int i2) { try { glPixelStorei.invokeExact(i1,i2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glReadPixels;
-  public void glReadPixels(int i1,int i2,int i3,int i4,int i5,int i6,int[] px) {MemorySegment _array_px = FFM.toMemory(arena, px); try { glReadPixels.invokeExact(i1,i2,i3,i4,i5,i6,_array_px);FFM.copyBack(_array_px,px); } catch (Throwable t) { JFLog.log(t); } }
+  public void glReadPixels(int i1,int i2,int i3,int i4,int i5,int i6,int[] px) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_px = FFM.toMemory(arena, px);glReadPixels.invokeExact(i1,i2,i3,i4,i5,i6,_array_px);FFM.copyBack(_array_px,px); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glRenderbufferStorage;
   public void glRenderbufferStorage(int i1,int i2,int i3,int i4) { try { glRenderbufferStorage.invokeExact(i1,i2,i3,i4); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glShaderSource;
-  public int glShaderSource(int type,int count,String[] src,int[] src_lengths) {MemorySegment _array_src = FFM.toMemory(arena, src);MemorySegment _array_src_lengths = FFM.toMemory(arena, src_lengths); try { int _ret_value_ = (int)glShaderSource.invokeExact(type,count,_array_src,_array_src_lengths);FFM.copyBack(_array_src,src);FFM.copyBack(_array_src_lengths,src_lengths);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int glShaderSource(int type,int count,String[] src,int[] src_lengths) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_src = FFM.toMemory(arena, src);MemorySegment _array_src_lengths = FFM.toMemory(arena, src_lengths);int _ret_value_ = (int)glShaderSource.invokeExact(type,count,_array_src,_array_src_lengths);FFM.copyBack(_array_src,src);FFM.copyBack(_array_src_lengths,src_lengths);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glStencilFunc;
   public int glStencilFunc(int func,int ref,int mask) { try { int _ret_value_ = (int)glStencilFunc.invokeExact(func,ref,mask);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -189,10 +188,10 @@ public class GLFFM implements GL {
   public int glStencilOp(int sfail,int dpfail,int dppass) { try { int _ret_value_ = (int)glStencilOp.invokeExact(sfail,dpfail,dppass);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glTexImage2D;
-  public void glTexImage2D(int i1,int i2,int i3,int i4,int i5,int i6,int i7,int i8,int[] px) {MemorySegment _array_px = FFM.toMemory(arena, px); try { glTexImage2D.invokeExact(i1,i2,i3,i4,i5,i6,i7,i8,_array_px);FFM.copyBack(_array_px,px); } catch (Throwable t) { JFLog.log(t); } }
+  public void glTexImage2D(int i1,int i2,int i3,int i4,int i5,int i6,int i7,int i8,int[] px) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_px = FFM.toMemory(arena, px);glTexImage2D.invokeExact(i1,i2,i3,i4,i5,i6,i7,i8,_array_px);FFM.copyBack(_array_px,px); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glTexSubImage2D;
-  public void glTexSubImage2D(int i1,int i2,int i3,int i4,int i5,int i6,int i7,int i8,int[] px) {MemorySegment _array_px = FFM.toMemory(arena, px); try { glTexSubImage2D.invokeExact(i1,i2,i3,i4,i5,i6,i7,i8,_array_px);FFM.copyBack(_array_px,px); } catch (Throwable t) { JFLog.log(t); } }
+  public void glTexSubImage2D(int i1,int i2,int i3,int i4,int i5,int i6,int i7,int i8,int[] px) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_px = FFM.toMemory(arena, px);glTexSubImage2D.invokeExact(i1,i2,i3,i4,i5,i6,i7,i8,_array_px);FFM.copyBack(_array_px,px); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glTexParameteri;
   public void glTexParameteri(int i1,int i2,int i3) { try { glTexParameteri.invokeExact(i1,i2,i3); } catch (Throwable t) { JFLog.log(t); } }
@@ -201,28 +200,28 @@ public class GLFFM implements GL {
   public void glUseProgram(int id) { try { glUseProgram.invokeExact(id); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniformMatrix4fv;
-  public void glUniformMatrix4fv(int i1,int i2,int i3,float[] m) {MemorySegment _array_m = FFM.toMemory(arena, m); try { glUniformMatrix4fv.invokeExact(i1,i2,i3,_array_m);FFM.copyBack(_array_m,m); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniformMatrix4fv(int i1,int i2,int i3,float[] m) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_m = FFM.toMemory(arena, m);glUniformMatrix4fv.invokeExact(i1,i2,i3,_array_m);FFM.copyBack(_array_m,m); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform4fv;
-  public void glUniform4fv(int i1,int i2,float[] f) {MemorySegment _array_f = FFM.toMemory(arena, f); try { glUniform4fv.invokeExact(i1,i2,_array_f);FFM.copyBack(_array_f,f); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniform4fv(int i1,int i2,float[] f) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_f = FFM.toMemory(arena, f);glUniform4fv.invokeExact(i1,i2,_array_f);FFM.copyBack(_array_f,f); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform3fv;
-  public void glUniform3fv(int i1,int i2,float[] f) {MemorySegment _array_f = FFM.toMemory(arena, f); try { glUniform3fv.invokeExact(i1,i2,_array_f);FFM.copyBack(_array_f,f); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniform3fv(int i1,int i2,float[] f) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_f = FFM.toMemory(arena, f);glUniform3fv.invokeExact(i1,i2,_array_f);FFM.copyBack(_array_f,f); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform2fv;
-  public void glUniform2fv(int i1,int i2,float[] f) {MemorySegment _array_f = FFM.toMemory(arena, f); try { glUniform2fv.invokeExact(i1,i2,_array_f);FFM.copyBack(_array_f,f); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniform2fv(int i1,int i2,float[] f) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_f = FFM.toMemory(arena, f);glUniform2fv.invokeExact(i1,i2,_array_f);FFM.copyBack(_array_f,f); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform1f;
   public void glUniform1f(int i1,float f) { try { glUniform1f.invokeExact(i1,f); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform4iv;
-  public void glUniform4iv(int i1,int i2,int[] v) {MemorySegment _array_v = FFM.toMemory(arena, v); try { glUniform4iv.invokeExact(i1,i2,_array_v);FFM.copyBack(_array_v,v); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniform4iv(int i1,int i2,int[] v) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_v = FFM.toMemory(arena, v);glUniform4iv.invokeExact(i1,i2,_array_v);FFM.copyBack(_array_v,v); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform3iv;
-  public void glUniform3iv(int i1,int i2,int[] v) {MemorySegment _array_v = FFM.toMemory(arena, v); try { glUniform3iv.invokeExact(i1,i2,_array_v);FFM.copyBack(_array_v,v); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniform3iv(int i1,int i2,int[] v) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_v = FFM.toMemory(arena, v);glUniform3iv.invokeExact(i1,i2,_array_v);FFM.copyBack(_array_v,v); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform2iv;
-  public void glUniform2iv(int i1,int i2,int[] v) {MemorySegment _array_v = FFM.toMemory(arena, v); try { glUniform2iv.invokeExact(i1,i2,_array_v);FFM.copyBack(_array_v,v); } catch (Throwable t) { JFLog.log(t); } }
+  public void glUniform2iv(int i1,int i2,int[] v) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_v = FFM.toMemory(arena, v);glUniform2iv.invokeExact(i1,i2,_array_v);FFM.copyBack(_array_v,v); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle glUniform1i;
   public void glUniform1i(int i1,int i2) { try { glUniform1i.invokeExact(i1,i2); } catch (Throwable t) { JFLog.log(t); } }
@@ -237,7 +236,6 @@ public class GLFFM implements GL {
   private boolean ffm_init() {
     MethodHandle init;
     ffm = FFM.getInstance();
-    arena = Arena.ofAuto();
     init = ffm.getFunction("GLinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}

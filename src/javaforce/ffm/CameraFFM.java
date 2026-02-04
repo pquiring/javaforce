@@ -14,7 +14,6 @@ import javaforce.api.*;
 
 public class CameraFFM implements CameraAPI {
 
-  private Arena arena;
   private FFM ffm;
 
   private static CameraFFM instance;
@@ -60,7 +59,6 @@ public class CameraFFM implements CameraAPI {
   private boolean ffm_init() {
     MethodHandle init;
     ffm = FFM.getInstance();
-    arena = Arena.ofAuto();
     init = ffm.getFunction("CameraAPIinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
