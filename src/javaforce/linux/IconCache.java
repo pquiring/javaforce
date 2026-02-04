@@ -74,6 +74,10 @@ public class IconCache {
       icons.put(iconName, icon);
       return icon;
     }
+    if (icon.loadSVG("/usr/share/icons/hicolor/scalable/devices/" + iconName + ".svg",64,64)) {
+      icons.put(iconName, icon);
+      return icon;
+    }
     //not found - 404
     JFLog.log("icon not found:" + iconName);
     icon.loadPNG(icon.getClass().getClassLoader().getResourceAsStream("jffile-404-icon.png"));
