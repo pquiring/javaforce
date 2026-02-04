@@ -1459,6 +1459,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "comport-ffm.cpp"
 
 #include "monitor-folder-jni.cpp"
+#include "monitor-folder-ffm.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},

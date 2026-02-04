@@ -34,9 +34,23 @@ static void strcpy16_8(jchar* dest, char* src) {
   }
 }
 
+static void strcpy16_8_len(jchar* dest, char* src, int len) {
+  while (len > 0) {
+    *(dest++) = *(src++);
+    len--;
+  }
+}
+
 static void strcpy8_16(char* dest, jchar* src) {
   while (*src != 0) {
     *(dest++) = *(src++);
+  }
+}
+
+static void strcpy8_16_len(char* dest, jchar* src, int len) {
+  while (len > 0) {
+    *(dest++) = *(src++);
+    len--;
   }
 }
 

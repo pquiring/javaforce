@@ -1223,6 +1223,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
 #ifndef __FreeBSD__
 
 #include "monitor-folder-jni.cpp"
+#include "monitor-folder-ffm.cpp"
 
 #endif  //__FreeBSD__
 

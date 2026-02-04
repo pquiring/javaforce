@@ -15,7 +15,11 @@ public class MonitorFolder {
   private String folder;
   public static MonitorFolder getInstance() {
     MonitorFolder mf = new MonitorFolder();
-    mf.api = new MonitorFolderJNI();
+    if (FFM.enabled()) {
+      mf.api = new MonitorFolderFFM();
+    } else {
+      mf.api = new MonitorFolderJNI();
+    }
     return mf;
   }
   /** Starts monitoring a folder.

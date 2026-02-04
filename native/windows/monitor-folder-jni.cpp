@@ -73,5 +73,5 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
 {
   HANDLE handle = (HANDLE)handle_ptr;
   if (handle == NULL) return;
-  FindCloseChangeNotification(handle);
+  CloseHandle(handle);
 }

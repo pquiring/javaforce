@@ -192,12 +192,10 @@ public class JNI2FFM {
             ValueLayout_type = "ADDRESS";
             array_type = "JAVA_" + base_type.toUpperCase();
           } else {
-            if (java_type.equals("MediaIO")) {
-              ValueLayout_type = "ADDRESS";
-            } else if (java_type.equals("String")) {
-              ValueLayout_type = "ADDRESS";
-            } else {
+            if (isPrimitiveType(java_type)) {
               ValueLayout_type = "JAVA_" + java_type.toUpperCase();
+            } else {
+              ValueLayout_type = "ADDRESS";
             }
           }
           if (first) {
@@ -211,11 +209,7 @@ public class JNI2FFM {
           } else {
             ctor2.append(",");
           }
-          if (java_type.equals("MediaIO")) {
-            src.append(java_type + " " + arg_name);
-          } else {
-            src.append(java_type + " " + arg_name);
-          }
+          src.append(java_type + " " + arg_name);
           if (isArray) {
             array_names.add(arg_name);
             String segment_name = "_array_" + arg_name;
@@ -231,6 +225,11 @@ public class JNI2FFM {
               method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"write\", int.class, new Class[] {MemorySegment.class, int.class}, arena)");
               method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seek\", long.class, new Class[] {long.class, int.class}, arena)");
               method.append("}))");
+              arena_needed = true;
+            } else if (java_type.equals("FolderListener")) {
+//              method.append("FFM.toMemory(arena, ");
+              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"folderChangeEvent\", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, arena)");
+//              method.append(")");
               arena_needed = true;
             } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");
@@ -312,5 +311,18 @@ public class JNI2FFM {
   private static String capitalize(String in) {
     char first_cap = Character.toUpperCase(in.charAt(0));
     return first_cap + in.substring(1);
+  }
+  private static boolean isPrimitiveType(String type) {
+    switch (type) {
+      case "boolean": return true;
+      case "char": return true;
+      case "byte": return true;
+      case "short": return true;
+      case "int": return true;
+      case "long": return true;
+      case "float": return true;
+      case "double": return true;
+      default: return false;
+    }
   }
 }
