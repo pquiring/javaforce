@@ -558,7 +558,6 @@ public class JFImage extends JComponent implements Icon {
     try {
       return loadSVG(new FileInputStream(filename), width, height);
     } catch (Exception e) {
-      JFLog.log(e);
       return false;
     }
   }
