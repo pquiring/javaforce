@@ -59,8 +59,9 @@ void monitorFolderPoll(MonitorContext* ctx, void* listener)
 void monitorFolderClose(MonitorContext* ctx)
 {
   if (ctx == NULL) return;
-  ctx->close;
+  ctx->close = JNI_TRUE;
   close(ctx->fd);
+  ctx->fd = 0;
   while (!ctx->closed) {
     sleep_ms(100);
   }

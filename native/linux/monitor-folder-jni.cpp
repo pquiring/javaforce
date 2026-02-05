@@ -101,8 +101,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
 {
   MonitorContext* ctx = (MonitorContext*)ctx_ptr;
   if (ctx == NULL) return;
-  ctx->close;
+  ctx->close = JNI_TRUE;
   close(ctx->fd);
+  ctx->fd = 0;
   while (!ctx->closed) {
     sleep_ms(100);
   }
