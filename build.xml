@@ -55,6 +55,10 @@
     <exec command="git clone https://github.com/nothings/stb.git native/stb"/>
   </target>
 
+  <target name="update-stb" description="update stb">
+    <exec command="git pull" dir="native/stb"/>
+  </target>
+
   <available property="have-opencl" file="native/opencl/CL/cl.h"/>
   <target name="get-opencl" unless="have-opencl" description="download opencl headers">
     <exec command="git clone https://github.com/KhronosGroup/OpenCL-Headers.git native/opencl"/>
