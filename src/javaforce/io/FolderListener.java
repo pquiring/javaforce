@@ -20,5 +20,6 @@ public interface FolderListener {
     String path_str = path.reinterpret(1024).getString(0);
     if (debug) JFLog.log("path=" + path_str);
     folderChangeEvent(event_str, path_str);
+    if (debug) JFLog.log("folderChangeEvent done");
   }
 }

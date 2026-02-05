@@ -8,8 +8,8 @@ package javaforce.utils;
  * Created : Nov 3, 2013
  */
 
+import javaforce.*;
 import javaforce.io.*;
-
 
 public class monitordir implements FolderListener {
   public static void main(String[] args) {
@@ -40,6 +40,7 @@ public class monitordir implements FolderListener {
       count--;
       if (count == 0) {
         //do not call close() in callback or it deadlocks
+        JFLog.log("closing");
         new Thread() {
           public void run() {
             mf.close();
