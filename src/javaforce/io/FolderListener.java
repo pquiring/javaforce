@@ -10,7 +10,7 @@ import java.lang.foreign.*;
 import javaforce.*;
 
 public interface FolderListener {
-  public static boolean debug = true;
+  public static boolean debug = false;
   /** Folder Change Event. */
   public void folderChangeEvent(String event, String path);
   /** Default FFM implementation of folderChangeEvent(). Do not implement. */
@@ -20,6 +20,5 @@ public interface FolderListener {
     String path_str = path.reinterpret(1024).getString(0);
     if (debug) JFLog.log("path=" + path_str);
     folderChangeEvent(event_str, path_str);
-    if (debug) JFLog.log("folderChangeEvent done");
   }
 }
