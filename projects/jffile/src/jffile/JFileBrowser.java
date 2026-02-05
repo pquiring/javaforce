@@ -847,7 +847,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
   private final Object lock = new Object();
 
   public void folderChangeEvent(String event, String file) {
-//    JFLog.log("folderChangeEvent:" + event + ":" + file);
+    JFLog.log("folderChangeEvent:" + event + ":" + file);
     try {
       if (event.equals("CREATED") || event.equals("MOVED_TO")) {
         if ((file.startsWith(".")) && (!showHidden)) return;
@@ -855,7 +855,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         java.awt.EventQueue.invokeLater(new Runnable() {
           public void run() {
             while (newFiles.size() > 0) {
-              String fn = path + "/" + newFiles.remove(0);
+              String fn = path + File.separator + newFiles.remove(0);
               File file = new File(fn);
               if (file.isDirectory()) {
                 addFolder(fn);
@@ -1482,7 +1482,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     //file = .iso or .zip
     if (mount != null) return;  //can not open a file in a file (!recursive)
     String name;
-    int idx = file.lastIndexOf("/");
+    int idx = file.lastIndexOf(File.separatorChar);
     if (idx == -1) {
       name = file;
     } else {
