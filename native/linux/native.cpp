@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <string.h>  //memcpy
 #include <utime.h>
+#include <time.h>  //nanosleep
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <security/pam_appl.h>

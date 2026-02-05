@@ -18,7 +18,6 @@ import javaforce.io.*;
 import javaforce.awt.*;
 import javaforce.jbus.*;
 import javaforce.linux.*;
-import javaforce.utils.*;
 
 public class JFileBrowser extends javax.swing.JComponent implements MouseListener, MouseMotionListener, KeyListener, FolderListener {
 
@@ -930,22 +929,30 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     }
   }
 
+  private Object monitor_lock = new Object();
   private MonitorFolder monitor;
 
   private void startFolderListener() {
-    monitor = MonitorFolder.getInstance();
-    monitor.create(path);
-    new Thread() {
-      public void run() {
-        monitor.poll(JFileBrowser.this);
+    synchronized (monitor_lock) {
+      if (monitor != null) {
+        stopFolderListener();
       }
-    }.start();
+      monitor = MonitorFolder.getInstance();
+      monitor.create(path);
+      new Thread() {
+        public void run() {
+          monitor.poll(JFileBrowser.this);
+        }
+      }.start();
+    }
   }
 
   private void stopFolderListener() {
-    if (monitor == null) return;
-    monitor.close();
-    monitor = null;
+    synchronized (monitor_lock) {
+      if (monitor == null) return;
+      monitor.close();
+      monitor = null;
+    }
   }
 
   public void setIconsVisible(boolean state) {

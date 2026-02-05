@@ -1,13 +1,14 @@
-jlong monitorFolderCreate(const char* path)
+MonitorContext* monitorFolderCreate(const char* path)
 {
-  HANDLE handle = CreateFile(path, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
-  return (jlong)handle;
+  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
+  memset(ctx, 0, sizeof(MonitorContext));
+  ctx->handle = CreateFile(path, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+  return ctx;
 }
 
-void monitorFolderPoll(jlong handle_ptr, void* listener)
+void monitorFolderPoll(MonitorContext* ctx, void* listener)
 {
-  HANDLE handle = (HANDLE)handle_ptr;
-  if (handle == NULL) return;
+  if (ctx == NULL) return;
 
   alignas(DWORD) char buffer[1024];
   int size;
@@ -16,7 +17,14 @@ void monitorFolderPoll(jlong handle_ptr, void* listener)
   void (*folderChangeEvent)(const char*, const char*) = (void (*)(const char*, const char*))listener;
 
   while (1) {
-    ReadDirectoryChangesW(handle, &buffer, sizeof(buffer), FALSE, 0x0f, (LPDWORD)&size, NULL, NULL);
+    if (ctx->close) {
+      ctx->closed = JNI_TRUE;
+      return;
+    }
+    ctx->polling = JNI_TRUE;
+    size = 0;
+    ReadDirectoryChangesW(ctx->handle, &buffer, sizeof(buffer), FALSE, 0x0f, (LPDWORD)&size, NULL, NULL);
+    ctx->polling = JNI_FALSE;
 
     int pos = 0;
     while (size > sizeof(FILE_NOTIFY_STRUCT)) {
@@ -31,21 +39,26 @@ void monitorFolderPoll(jlong handle_ptr, void* listener)
         case FILE_ACTION_MODIFIED: event = "MODIFIED"; break;
         case FILE_ACTION_RENAMED_OLD_NAME: event = "RENAMED"; break;
         case FILE_ACTION_RENAMED_NEW_NAME: event = "RENAMED"; break;
+        default: event = "UNKNOWN"; break;
       }
 
-      int strlen = info->FileNameLength;
+      int strlen = info->FileNameLength;  //in bytes
 
       pos += sizeof(FILE_NOTIFY_STRUCT);
       size -= sizeof(FILE_NOTIFY_STRUCT);
 
-      if (strlen == 0 || strlen*2 > size) continue;
+      if (strlen == 0) {
+        continue;
+      }
+      if (strlen > size) {
+        printf("MonitorFolder:buffer too small:size=%d expected=%d\n", size, strlen);
+        break;
+      }
       path16 = (jchar*)(buffer + pos);
 
-      strcpy8_16_len(path8, path16, strlen);
+      strcpy8_16_len(path8, path16, strlen / 2);
 
-      if (event != NULL) {
-        (*folderChangeEvent)(event, path8);
-      }
+      (*folderChangeEvent)(event, path8);
 
       pos += strlen;
       size -= strlen;
@@ -53,17 +66,24 @@ void monitorFolderPoll(jlong handle_ptr, void* listener)
   }
 }
 
-void monitorFolderClose(jlong handle_ptr)
+void monitorFolderClose(MonitorContext* ctx)
 {
-  HANDLE handle = (HANDLE)handle_ptr;
-  if (handle == NULL) return;
-  CloseHandle(handle);
+  if (ctx == NULL) return;
+  ctx->close = JNI_TRUE;
+  while (!ctx->closed) {
+    if (ctx->polling) {
+      CancelIoEx(ctx->handle, NULL);
+    }
+    Sleep(100);
+  }
+  CloseHandle(ctx->handle);
+  free(ctx);
 }
 
 extern "C" {
-  JNIEXPORT jlong (*_monitorFolderOpen)(const char*) = &monitorFolderCreate;
-  JNIEXPORT void (*_monitorFolderPool)(jlong, void*) = &monitorFolderPoll;
-  JNIEXPORT void (*_monitorFolderClose)(jlong) = &monitorFolderClose;
+  JNIEXPORT MonitorContext* (*_monitorFolderCreate)(const char*) = &monitorFolderCreate;
+  JNIEXPORT void (*_monitorFolderPoll)(MonitorContext* ctx, void*) = &monitorFolderPoll;
+  JNIEXPORT void (*_monitorFolderClose)(MonitorContext* ctx) = &monitorFolderClose;
 
   JNIEXPORT jboolean JNICALL MonitorFolderAPIinit() {return JNI_TRUE;}
 }

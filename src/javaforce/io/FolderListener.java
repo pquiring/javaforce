@@ -12,6 +12,6 @@ public interface FolderListener {
   public void folderChangeEvent(String event, String path);
   /** Default FFM implementation of folderChangeEvent(). Do not implement. */
   default public void folderChangeEvent(MemorySegment event, MemorySegment path) {
-    folderChangeEvent(event.reinterpret(1024).toString(), path.reinterpret(1024).toString());
+    folderChangeEvent(event.reinterpret(1024).getString(0), path.reinterpret(1024).getString(0));
   }
 }

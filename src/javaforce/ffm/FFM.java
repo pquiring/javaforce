@@ -135,7 +135,7 @@ public class FFM {
 
   private static FunctionDescriptor convert(MethodType mt) {
     // Map MethodType return type to MemoryLayout
-    ValueLayout returnLayout = classToValueLayout(mt.returnType());
+    Class returnClass = mt.returnType();
 
     // Map MethodType parameters to MemoryLayouts
     Class[] paramClasses = mt.parameterList().toArray(ClassArrayType);
@@ -146,7 +146,11 @@ public class FFM {
       paramLayouts[i] = classToValueLayout(cls);
     }
 
-    return FunctionDescriptor.of(returnLayout, paramLayouts);
+    if (returnClass == void.class) {
+      return FunctionDescriptor.ofVoid(paramLayouts);
+    } else {
+      return FunctionDescriptor.of(classToValueLayout(returnClass), paramLayouts);
+    }
   }
 
   /** Create up call stub to virtual function. */

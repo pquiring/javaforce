@@ -1,22 +1,29 @@
-jlong monitorFolderCreate(const char* path)
+MonitorContext* monitorFolderCreate(const char* path)
 {
-  monitor_handle* handle = (monitor_handle*)malloc(sizeof(monitor_handle));
-  handle->fd = inotify_init();
-  handle->wd = inotify_add_watch(handle->fd, path, IN_ALL_EVENTS);
-  return (jlong)handle;
+  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
+  memset(ctx, 0, sizeof(MonitorContext));
+  ctx->fd = inotify_init();
+  ctx->wd = inotify_add_watch(ctx->fd, path, IN_ALL_EVENTS);
+  return ctx;
 }
 
-void monitorFolderPoll(jlong handle_ptr, void* listener)
+void monitorFolderPoll(MonitorContext* ctx, void* listener)
 {
-  monitor_handle* handle = (monitor_handle*)handle_ptr;
-  if (handle == NULL) return;
+  if (ctx == NULL) return;
 
   void (*folderChangeEvent)(const char*, const char*) = (void (*)(const char*, const char*))listener;
 
   char inotify_buffer[512];
   while (1) {
-    int size = read(handle->fd, inotify_buffer, 512);
-    if (size == -1) return;
+    if (ctx->close) {
+      ctx->closed = true;
+      return;
+    }
+    int size = read(ctx->fd, inotify_buffer, 512);
+    if (size == -1) {
+      ctx->closed = true;
+      return;
+    }
     int pos = 0;
     while (size > sizeof(_inotify_event)) {
       _inotify_event *ievent = (_inotify_event*)(inotify_buffer + pos);
@@ -49,18 +56,21 @@ void monitorFolderPoll(jlong handle_ptr, void* listener)
   }
 }
 
-void monitorFolderClose(jlong handle_ptr)
+void monitorFolderClose(MonitorContext* ctx)
 {
-  monitor_handle* handle = (monitor_handle*)handle_ptr;
-  if (handle == NULL) return;
-  close(handle->fd);
-  free(handle);
+  if (ctx == NULL) return;
+  ctx->close;
+  close(ctx->fd);
+  while (!ctx->closed) {
+    sleep_ms(100);
+  }
+  free(ctx);
 }
 
 extern "C" {
-  JNIEXPORT jlong (*_monitorFolderOpen)(const char*) = &monitorFolderCreate;
-  JNIEXPORT void (*_monitorFolderPool)(jlong, void*) = &monitorFolderPoll;
-  JNIEXPORT void (*_monitorFolderClose)(jlong) = &monitorFolderClose;
+  JNIEXPORT MonitorContext* (*_monitorFolderCreate)(const char*) = &monitorFolderCreate;
+  JNIEXPORT void (*_monitorFolderPoll)(MonitorContext*, void*) = &monitorFolderPoll;
+  JNIEXPORT void (*_monitorFolderClose)(MonitorContext*) = &monitorFolderClose;
 
   JNIEXPORT jboolean JNICALL MonitorFolderAPIinit() {return JNI_TRUE;}
 }

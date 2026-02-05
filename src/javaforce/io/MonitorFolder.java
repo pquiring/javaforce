@@ -16,9 +16,9 @@ public class MonitorFolder {
   public static MonitorFolder getInstance() {
     MonitorFolder mf = new MonitorFolder();
     if (FFM.enabled()) {
-      mf.api = new MonitorFolderFFM();
+      mf.api = MonitorFolderFFM.getInstance();
     } else {
-      mf.api = new MonitorFolderJNI();
+      mf.api = MonitorFolderJNI.getInstance();
     }
     return mf;
   }
@@ -33,9 +33,12 @@ public class MonitorFolder {
   /** Polls folder changes until closed.
    */
   public void poll(FolderListener listener) {
+    if (handle == 0) return;
     api.monitorFolderPoll(handle, listener);
   }
   /** Closes a monitor folder instance.
+   *
+   * poll() must be called or this method deadlocks.
    */
   public void close() {
     if (handle == 0) return;

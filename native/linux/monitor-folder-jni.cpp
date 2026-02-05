@@ -1,17 +1,20 @@
-struct monitor_handle {
+struct MonitorContext {
   int fd;
   int wd;
+  jboolean close;
+  jboolean closed;
 };
 
 JNIEXPORT jlong JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate
   (JNIEnv *e, jclass c, jstring path)
 {
-  monitor_handle* handle = (monitor_handle*)malloc(sizeof(monitor_handle));
-  handle->fd = inotify_init();
+  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
+  memset(ctx, 0, sizeof(MonitorContext));
+  ctx->fd = inotify_init();
   const char *cpath = e->GetStringUTFChars(path,NULL);
-  handle->wd = inotify_add_watch(handle->fd, cpath, IN_ALL_EVENTS);
+  ctx->wd = inotify_add_watch(ctx->fd, cpath, IN_ALL_EVENTS);
   e->ReleaseStringUTFChars(path, cpath);
-  return (jlong)handle;
+  return (jlong)ctx;
 }
 
 struct _inotify_event {
@@ -23,10 +26,10 @@ struct _inotify_event {
 };
 
 JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
-  (JNIEnv *e, jclass c, jlong handle_ptr, jobject listener)
+  (JNIEnv *e, jclass c, jlong ctx_ptr, jobject listener)
 {
-  monitor_handle* handle = (monitor_handle*)handle_ptr;
-  if (handle == NULL) return;
+  MonitorContext* ctx = (MonitorContext*)ctx_ptr;
+  if (ctx == NULL) return;
 
   jclass cls;
   jmethodID mid;
@@ -36,8 +39,15 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
 
   char inotify_buffer[512];
   while (1) {
-    int size = read(handle->fd, inotify_buffer, 512);
-    if (size == -1) return;
+    if (ctx->close) {
+      ctx->closed = true;
+      return;
+    }
+    int size = read(ctx->fd, inotify_buffer, 512);
+    if (size == -1) {
+      ctx->closed = true;
+      return;
+    }
     int pos = 0;
     while (size > sizeof(_inotify_event)) {
       _inotify_event *ievent = (_inotify_event*)(inotify_buffer + pos);
@@ -73,11 +83,28 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
   }
 }
 
+void sleep_ms(int milliseconds) {
+  struct timespec req, rem;
+
+  req.tv_sec = milliseconds / 1000;
+  req.tv_nsec = (milliseconds % 1000) * 1000000;
+
+  // nanosleep will return -1 if interrupted by a signal
+  // in which case the remaining time will be in 'rem'
+  while (nanosleep(&req, &rem) == -1) {
+    req = rem; // Continue sleeping for the remaining time
+  }
+}
+
 JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
-  (JNIEnv *e, jclass c, jlong handle_ptr)
+  (JNIEnv *e, jclass c, jlong ctx_ptr)
 {
-  monitor_handle* handle = (monitor_handle*)handle_ptr;
-  if (handle == NULL) return;
-  close(handle->fd);
-  free(handle);
+  MonitorContext* ctx = (MonitorContext*)ctx_ptr;
+  if (ctx == NULL) return;
+  ctx->close;
+  close(ctx->fd);
+  while (!ctx->closed) {
+    sleep_ms(100);
+  }
+  free(ctx);
 }

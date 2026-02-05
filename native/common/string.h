@@ -39,6 +39,7 @@ static void strcpy16_8_len(jchar* dest, char* src, int len) {
     *(dest++) = *(src++);
     len--;
   }
+  *dest = 0;
 }
 
 static void strcpy8_16(char* dest, jchar* src) {
@@ -52,6 +53,7 @@ static void strcpy8_16_len(char* dest, jchar* src, int len) {
     *(dest++) = *(src++);
     len--;
   }
+  *dest = 0;
 }
 
 //swap endianness of UTF-16 strings
