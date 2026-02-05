@@ -17,10 +17,11 @@ import javaforce.awt.*;
 import javaforce.jbus.*;
 import javaforce.linux.*;
 import javaforce.utils.*;
+import javaforce.io.*;
 
 import jffile.*;
 
-public class Dock extends javax.swing.JWindow implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, monitordir.Listener, FileClipboard {
+public class Dock extends javax.swing.JWindow implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, FileClipboard {
 
   /**
    * Creates new form Dock
@@ -1201,14 +1202,20 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     }
   }
 
-  private int monitor;
+  private MonitorFolder trash_monitor;
 
   private void startTrashListener() {
     File file = new File(System.getenv("HOME") + "/.local/share/Trash");
     file.mkdirs();
     JFLog.log("Starting Trash monitor");
-    monitor = monitordir.add(file.getAbsolutePath());
-    monitordir.setListener(monitor, this);
+    String path = file.getAbsolutePath();
+    trash_monitor = MonitorFolder.getInstance();
+    trash_monitor.create(path);
+    new Thread() {
+      public void run() {
+        trash_monitor.poll(Dock.this);
+      }
+    }.start();
   }
 
   private boolean isTrashFull() {

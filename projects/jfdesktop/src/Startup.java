@@ -17,7 +17,6 @@ public class Startup {
   public static void main(String args[]) {
     JFLog.init(JF.getUserPath() + "/.jfdesktop.log", true);
     Linux.init();
-    monitordir.init();
     /* Setup display */
     Monitor cfg[] = Linux.x11_rr_load_user();
     cfg = Linux.x11_rr_get_setup(cfg);

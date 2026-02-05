@@ -13,7 +13,6 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 import javaforce.linux.Linux;
-import javaforce.utils.monitordir;
 
 public class Startup implements ShellProcessListener{
   private static ShellProcess display_mgr;
@@ -30,7 +29,6 @@ public class Startup implements ShellProcessListener{
     try {
       fixSudoers();
       Linux.init();
-      monitordir.init();
       //start jfsystemmgr
       jbusClient = new JBusClient("org.jflinux.jfsystemmgr", new JBusMethods());
       jbusClient.start();

@@ -8,14 +8,15 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.io.*;
 import javaforce.utils.*;
 
 /** Monitors /dev for new devices and mounts them (such as USB drives). */
 
-public class AutoMounter extends Thread implements monitordir.Listener {
+public class AutoMounter extends Thread implements FolderListener {
   public boolean active = true;
   public static int paused = 0;
-  private int monitor;
+  private MonitorFolder dev_monitor;
 
   public static class Mount {
     public String dev, media, fs;
@@ -27,8 +28,13 @@ public class AutoMounter extends Thread implements monitordir.Listener {
   public void run() {
     cleanMedia();
     bootMount();
-    monitor = monitordir.add("/dev");
-    monitordir.setListener(monitor, this);
+    dev_monitor = MonitorFolder.getInstance();
+    dev_monitor.create("/dev");
+    new Thread() {
+      public void run() {
+        dev_monitor.poll(AutoMounter.this);
+      }
+    }.start();
   }
 
   //mounts any partitions that are not already mounted

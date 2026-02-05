@@ -14,12 +14,13 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.io.*;
 import javaforce.awt.*;
 import javaforce.jbus.*;
 import javaforce.linux.*;
 import javaforce.utils.*;
 
-public class JFileBrowser extends javax.swing.JComponent implements MouseListener, MouseMotionListener, KeyListener, monitordir.Listener {
+public class JFileBrowser extends javax.swing.JComponent implements MouseListener, MouseMotionListener, KeyListener, FolderListener {
 
   /**
    * Creates new form JFileBrowser
@@ -929,17 +930,22 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     }
   }
 
-  private int monitor = -1;
+  private MonitorFolder monitor;
 
   private void startFolderListener() {
-    monitor = monitordir.add(path);
-    monitordir.setListener(monitor, this);
+    monitor = MonitorFolder.getInstance();
+    monitor.create(path);
+    new Thread() {
+      public void run() {
+        monitor.poll(JFileBrowser.this);
+      }
+    }.start();
   }
 
   private void stopFolderListener() {
-    if (monitor == -1) return;
-    monitordir.remove(monitor);
-    monitor = -1;
+    if (monitor == null) return;
+    monitor.close();
+    monitor = null;
   }
 
   public void setIconsVisible(boolean state) {

@@ -33,7 +33,6 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     initComponents();
     setPosition();
     This = this;
-    monitordir.init();
     initDND();
     int rid = Math.abs(new Random().nextInt());
     JFLog.init(JF.getUserPath() + "/.jffile.log", true);
