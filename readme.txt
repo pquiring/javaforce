@@ -141,6 +141,7 @@ Current progress:
    - PCap
    - Media
    - ComPort
+   - MonitorFolder
 
   TODO:
    - Speex
