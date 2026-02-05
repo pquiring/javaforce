@@ -38,6 +38,7 @@ void monitorFolderPoll(MonitorContext* ctx, void* listener)
         case IN_MOVED_TO: event = "MOVED_TO"; break;
         case IN_DELETE_SELF: event = "DELETE_SELF"; break;
         case IN_MOVE_SELF: event = "MOVED_SELF"; break;
+        default: event = "UNKNOWN"; break;
       }
 
       int strlen = ievent->len;
