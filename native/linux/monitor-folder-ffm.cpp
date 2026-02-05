@@ -3,7 +3,7 @@ MonitorContext* monitorFolderCreate(const char* path)
   MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
   memset(ctx, 0, sizeof(MonitorContext));
   ctx->fd = inotify_init();
-  ctx->wd = inotify_add_watch(ctx->fd, path, IN_ALL_EVENTS);
+  ctx->wd = inotify_add_watch(ctx->fd, path, 0xfc0);
   return ctx;
 }
 

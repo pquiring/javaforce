@@ -12,7 +12,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate
   memset(ctx, 0, sizeof(MonitorContext));
   ctx->fd = inotify_init();
   const char *cpath = e->GetStringUTFChars(path,NULL);
-  ctx->wd = inotify_add_watch(ctx->fd, cpath, IN_ALL_EVENTS);
+  ctx->wd = inotify_add_watch(ctx->fd, cpath, 0xfc0);
   e->ReleaseStringUTFChars(path, cpath);
   return (jlong)ctx;
 }
