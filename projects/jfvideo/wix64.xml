@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{6AF99921-3E43-4042-A825-61EBF9145366}" Version="0.27" Language="1033" Name="jfVideo" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{6AF99921-3E43-4042-A825-61EBF9145366}" Version="0.28" Language="1033" Name="jfVideo" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
