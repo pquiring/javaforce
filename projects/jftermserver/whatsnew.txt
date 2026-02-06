@@ -1,3 +1,6 @@
+2026-02-06 : 0.5
+  - fix : ComPort issues fixed
+
 2026-01-28 : 0.4
   - fix : version bump for native changes
 
