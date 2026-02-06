@@ -1,3 +1,6 @@
+Feb 6, 2026 : 0.37 released!
+  - fix : Media Framework fixes
+
 Jan 28, 2026 : 0.36 released!
   - fix : version bump for native changes
 
