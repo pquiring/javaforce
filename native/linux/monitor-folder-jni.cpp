@@ -10,7 +10,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate
 {
   MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
   memset(ctx, 0, sizeof(MonitorContext));
-  ctx->fd = inotify_init();
+  ctx->fd = inotify_init1(IN_NONBLOCK);
   const char *cpath = e->GetStringUTFChars(path,NULL);
   ctx->wd = inotify_add_watch(ctx->fd, cpath, 0xfc0);
   e->ReleaseStringUTFChars(path, cpath);
@@ -45,8 +45,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
     }
     int size = read(ctx->fd, inotify_buffer, 512);
     if (size == -1) {
-      ctx->closed = true;
-      return;
+      sleep_ms(100);
+      continue;
     }
     int pos = 0;
     while (size > sizeof(_inotify_event)) {
@@ -81,19 +81,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
       pos += strlen;
       size -= strlen;
     }
-  }
-}
-
-void sleep_ms(int milliseconds) {
-  struct timespec req, rem;
-
-  req.tv_sec = milliseconds / 1000;
-  req.tv_nsec = (milliseconds % 1000) * 1000000;
-
-  // nanosleep will return -1 if interrupted by a signal
-  // in which case the remaining time will be in 'rem'
-  while (nanosleep(&req, &rem) == -1) {
-    req = rem; // Continue sleeping for the remaining time
   }
 }
 

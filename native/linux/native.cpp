@@ -121,6 +121,19 @@ int (*_ungetch)(int ch);
 int (*_endwin)();
 WINDOW **_stdscr;
 
+void sleep_ms(int milliseconds) {
+  struct timespec req, rem;
+
+  req.tv_sec = milliseconds / 1000;
+  req.tv_nsec = (milliseconds % 1000) * 1000000;
+
+  // nanosleep will return -1 if interrupted by a signal
+  // in which case the remaining time will be in 'rem'
+  while (nanosleep(&req, &rem) == -1) {
+    req = rem; // Continue sleeping for the remaining time
+  }
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so, jstring libncurses_so)
 {

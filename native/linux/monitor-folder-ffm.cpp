@@ -2,7 +2,7 @@ MonitorContext* monitorFolderCreate(const char* path)
 {
   MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
   memset(ctx, 0, sizeof(MonitorContext));
-  ctx->fd = inotify_init();
+  ctx->fd = inotify_init1(IN_NONBLOCK);
   ctx->wd = inotify_add_watch(ctx->fd, path, 0xfc0);
   return ctx;
 }
@@ -21,8 +21,8 @@ void monitorFolderPoll(MonitorContext* ctx, void* listener)
     }
     int size = read(ctx->fd, inotify_buffer, 512);
     if (size == -1) {
-      ctx->closed = true;
-      return;
+      sleep_ms(100);
+      continue;
     }
     int pos = 0;
     while (size > sizeof(_inotify_event)) {
