@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{AC151149-6CA1-42D5-A883-C1825E18BA26}" Version="0.10" Language="1033" Name="jfMusic" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{AC151149-6CA1-42D5-A883-C1825E18BA26}" Version="0.11" Language="1033" Name="jfMusic" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
