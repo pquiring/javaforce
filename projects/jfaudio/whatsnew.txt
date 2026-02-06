@@ -1,5 +1,8 @@
 Whats' new....
 
+Feb 6, 2026 - v0.25 released
+  - fix : Media Framework fixes
+
 Jan 28, 2026 - v0.24 released
   - fix : version bump for native changes
 
