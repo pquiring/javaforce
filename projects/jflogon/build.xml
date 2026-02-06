@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.19"/>
+  <property name="version" value="0.20"/>
 
   <property name="debian.depends" value="jfdesktop, jfbusserver, jfutils, xserver-xorg        , x11-xserver-utils, null     , plymouth, gvfs, bluez, winbind              , smbclient, wpasupplicant , numlockx, dosfstools, ntfs-3g, sudo, psmisc, libx11-dev"/>
   <property name="fedora.depends" value="jfdesktop, jfbusserver, jfutils, xorg-x11-server-Xorg, xrandr           , xset     , plymouth, gvfs, bluez, samba-winbind-clients, smbclient, wpa_supplicant, numlockx, dosfstools, ntfs-3g"/>
