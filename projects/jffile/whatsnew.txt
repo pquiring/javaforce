@@ -1,6 +1,9 @@
 jffile
 =====
 
+Feb 6, 2026 - version 0.14
+  - fix : many issues fixed
+
 Mar 22, 2012 - version 0.3
   - new : project renamed to jffile
   - new : aimed to replace system file explorer
