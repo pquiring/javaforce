@@ -7,7 +7,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
-  <property name="version" value="0.17"/>
+  <property name="version" value="0.18"/>
 
   <property name="debian.depends" value="ffmpeg"/>
   <property name="fedora.depends" value="ffmpeg"/>
