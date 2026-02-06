@@ -1,5 +1,18 @@
 What's new...
 
+Feb 6/2026 : JF/98.0
+  - More JNI to FFM implemented : Media, ComPort and MonitorFolder
+  - Fixed major memory leaks in FFM implementations
+    Garbage collects works on Arenas not MemorySegments so the JNI2FFM
+    conversion had to be modified.
+  - Many bugs fixed related to jfLinux and the desktop environment is working again.
+    - jfLinux is the ONLY desktop environment with working system tray support!
+    - KDE is currently broken - bug has been open for over a year (KDE Bug#498824)
+    - Gnome removed system tray support and will never add it back
+      - that's similar to another company that removed the Start Menu
+      - at least they put it back!
+    - other desktop environments has functional issues and don't work.
+
 Jan 28/2026 : JF/97.0
   - some JNI interfaces have been upgraded to FFM (see javaforce.ffm.*)
     FFM.disable() can be used to revert back to JNI
