@@ -1,4 +1,6 @@
 CHANGELOG:
+2-6-2026 : v1.39 released!
+  - fix : Media Framework fixes
 1-28-2026 : v1.38 released
   - fix : version bump for native changes
 1-23-2026 : v1.37 released
