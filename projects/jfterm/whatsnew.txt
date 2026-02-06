@@ -1,5 +1,9 @@
 What's new...
 
+Feb 6/2026 - 0.29 released!
+  - fix : ComPort issues fixed
+  - fix : Linux PTY issues fixed
+
 Jan 28/2026 - 0.28 released!
   - fix : version bump for native changes
 
