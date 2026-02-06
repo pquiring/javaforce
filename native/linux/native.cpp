@@ -383,8 +383,8 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
   Pty *pty = (Pty*)ctx;
 
   timeval timeout;
-  timeout.tv_sec = 1;  //1 full second
-  timeout.tv_usec = 0;
+  timeout.tv_sec = 0;
+  timeout.tv_usec = 100 * 1000;  //100ms
   fd_set read_set;
   FD_SET(pty->master, &read_set);
 
@@ -398,6 +398,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
   }
   if (res == 0) {
     //timeout
+    sleep_ms(100);  //sometimes select() will timeout instantly
     return 0;
   }
 
