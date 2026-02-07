@@ -113,6 +113,7 @@ function debian {
     apt --yes install jflogon jfdesktop jfconfig jfapps
     systemctl enable jflogon.service
     systemctl enable jfbusserver.service
+    systemctl enable jfnetworkmgr.service
   fi
 }
 
@@ -143,6 +144,7 @@ function fedora {
     dnf -y install jflogon jfdesktop jfconfig jfapps
     systemctl enable jflogon.service
     systemctl enable jfbusserver.service
+    systemctl enable jfnetworkmgr.service
   fi
 }
 
@@ -193,6 +195,7 @@ function arch {
     pacman -S --noconfirm jflogon jfdesktop jfconfig jfapps
     systemctl enable jflogon.service
     systemctl enable jfbusserver.service
+    systemctl enable jfnetworkmgr.service
   fi
 }
 
