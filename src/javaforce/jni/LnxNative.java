@@ -121,17 +121,6 @@ public class LnxNative {
     }
   }
 
-  public static boolean have_x11 = true;
-  public static boolean have_gl = true;
-  public static boolean have_fuse = true;
-  public static boolean have_v4l2 = true;
-
-  //com port
-  public static native int comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.
-  public static native void comClose(int handle);
-  public static native int comRead(int handle, byte[] buf);
-  public static native int comWrite(int handle, byte[] buf);
-
   //pty
   public static native long ptyAlloc();
   public static native void ptyFree(long ctx);  //free resources on parent side
