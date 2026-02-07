@@ -1,4 +1,4 @@
-/** jNetwork Manager
+/** jfNetworkManager
  *
  * Created : May 3, 2012
  *
@@ -30,11 +30,21 @@ public class Server {
   public ArrayList<DHCPClient> dhcpClients = new ArrayList<DHCPClient>();  //for active interfaces
 
   private static final boolean bluez3 = false;  //no longer available
-  
+
   public static void main(String args[]) {
     //this is currently not used : unless jfnetworkmgr becomes a seperate package
     JFLog.init("/var/log/jfnetworkmgr.log", true);
     new Server().start();
+  }
+
+  public static void serviceStart(String[] args) {
+    main(args);
+  }
+
+  public static void serviceStop() {
+    if (This != null) {
+      This.stop();
+    }
   }
 
   public void start() {
@@ -58,6 +68,14 @@ public class Server {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public void stop() {
+    if (jbusClient != null) {
+      jbusClient.close();
+      jbusClient = null;
+    }
+    cancelWAPTimer();
   }
 
   private void updateLink(Interface iface) {
@@ -585,6 +603,12 @@ public class Server {
         if ((wapConnections.isEmpty()) && checkWireless()) getWAPList();
       }
     }, 0, 60 * 1000);
+  }
+  private void cancelWAPTimer() {
+    if (wapTimer != null) {
+      wapTimer.cancel();
+      wapTimer = null;
+    }
   }
 
   public static class VPN {
