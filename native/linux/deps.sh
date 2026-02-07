@@ -42,7 +42,7 @@ fi
 
 function debian {
   apt update
-  apt --yes install g++ openjdk-25-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev libvirt-dev zlib1g-dev sudo libv4l-0
+  apt --yes install g++ openjdk-25-jdk ant libx11-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev libvirt-dev zlib1g-dev sudo libv4l-0
 }
 
 function fedora {
