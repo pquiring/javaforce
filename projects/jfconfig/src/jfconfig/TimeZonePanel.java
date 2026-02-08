@@ -90,7 +90,7 @@ public class TimeZonePanel extends javax.swing.JPanel implements MouseListener, 
 
   private void initMap() {
     imgorg = new JFImage();
-    imgorg.load(getClass().getResourceAsStream("/worldmap.png"));
+    imgorg.load(getClass().getResourceAsStream("/jfconfig/worldmap.png"));
     img = new JFImage();
     img.setImageSize(imgorg.getWidth(), imgorg.getHeight());
     img.putJFImage(imgorg, 0, 0);
