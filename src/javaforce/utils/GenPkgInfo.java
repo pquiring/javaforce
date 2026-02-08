@@ -25,6 +25,7 @@ public class GenPkgInfo {
   private BuildTools tools;
   private String app, apptype, desc, arch, ver, deps;
   private long size;  //in bytes
+  private boolean service;
 
   public static void main(String[] args) {
     if (args == null || args.length < 4) {
@@ -50,6 +51,7 @@ public class GenPkgInfo {
     //load build.xml and extract app , desc , etc.
     app = tools.getProperty("app");
     apptype = tools.getProperty("apptype");
+    service = apptype.equals("service");
     switch (apptype) {
       case "client":
       case "server":
@@ -174,6 +176,9 @@ public class GenPkgInfo {
       if (!new File("deb/postinst").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postinst");
         fos.write("#!/bin/sh\n".getBytes());
+        if (service) {
+          fos.write(("systemctl enable " + app + "\n").getBytes());
+        }
         fos.close();
       }
 
@@ -181,6 +186,9 @@ public class GenPkgInfo {
       if (!new File("deb/prerm").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postinst");
         fos.write("#!/bin/sh\n".getBytes());
+        if (service) {
+          fos.write(("systemctl disable " + app + "\n").getBytes());
+        }
         fos.close();
       }
 //remove package here
@@ -228,12 +236,29 @@ public class GenPkgInfo {
         sb.append("\n");
       }
       sb.append("%description\n " + desc + "\n");
-      sb.append("%post\n");
-      sb.append("#!/bin/sh\n");
-      sb.append("set -e\n");
+      //pre install
       sb.append("%pre\n");
       sb.append("#!/bin/sh\n");
       sb.append("set -e\n");
+      //post install
+      sb.append("%post\n");
+      sb.append("#!/bin/sh\n");
+      sb.append("set -e\n");
+      if (service) {
+        sb.append("%systemd_post " + app + ".service\n");
+      }
+      //pre remove
+      sb.append("%preun\n");
+      sb.append("#!/bin/sh\n");
+      if (service) {
+        sb.append("%systemd_preun " + app + ".service\n");
+      }
+      //post remove
+      sb.append("%postun\n");
+      sb.append("#!/bin/sh\n");
+      if (service) {
+        sb.append("%systemd_postun_with_restart " + app + ".service\n");
+      }
       sb.append("%files\n");
       //files.lst is added by jfrpm
       FileOutputStream fos = new FileOutputStream("rpm.spec");
