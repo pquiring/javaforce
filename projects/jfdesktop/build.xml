@@ -8,9 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.29"/>
 
-  <property name="debian.depends" value="jffile, jfhelp, openbox, obconf, acpi, pulseaudio, pulseaudio-utils, gnome-backgrounds, gnome-disk-utility"/>
-  <property name="fedora.depends" value="jffile, jfhelp, openbox, obconf, acpi, pipewire  , pulseaudio-utils, gnome-backgrounds, gnome-disk-utility"/>
-  <property name="arch.depends"   value="jffile, jfhelp, openbox, obconf, acpi, pulseaudio, null            , gnome-backgrounds, gnome-disk-utility"/>
+  <property file="jfdesktop.properties"/>
 
   <import file="${home}/base.xml"/>
 
