@@ -12,6 +12,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.net.*;
 import javaforce.awt.*;
 
 public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListener {
@@ -19,7 +20,7 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
   /**
    * Creates new form RoutingRouteDialog
    */
-  public RoutingRouteDialog(java.awt.Frame parent, boolean modal, RoutingPanel.Route route) {
+  public RoutingRouteDialog(java.awt.Frame parent, boolean modal, Route route) {
     super(parent, modal);
     initComponents();
     setPosition();
@@ -28,17 +29,14 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
     mask.addKeyListener(this);
     gw.addKeyListener(this);
     if (route == null) return;
-    dest.setText(route.dest);
-    mask.setText(route.mask);
+    dest.setText(route.dest_mask.getIP().toString());
+    mask.setText(route.dest_mask.getMask().toString());
     metric.setValue(route.metric);
-    String via = route.via;
-    if (via.startsWith("gw ")) {
-      use_gw.setSelected(true);
-      gw.setText(via.substring(3));
+    if (route.gateway != null) {
+      gw.setText(route.gateway.toString());
     }
-    if (via.startsWith("dev ")) {
-      use_dev.setSelected(true);
-      String devName = via.substring(4);
+    if (route.dev != null) {
+      String devName = route.dev;
       for(int a=0;a<ifNames.size();a++) {
         if (ifNames.get(a).equals(devName)) {
           dev.setSelectedIndex(a);
@@ -62,39 +60,20 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
     jLabel2 = new javax.swing.JLabel();
     dest = new javax.swing.JTextField();
     mask = new javax.swing.JTextField();
-    use_dev = new javax.swing.JRadioButton();
     dev = new javax.swing.JComboBox<>();
-    use_gw = new javax.swing.JRadioButton();
     gw = new javax.swing.JTextField();
     accept = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     jLabel3 = new javax.swing.JLabel();
     metric = new javax.swing.JSpinner();
+    jLabel4 = new javax.swing.JLabel();
+    jLabel5 = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
     jLabel1.setText("Destination");
 
     jLabel2.setText("NetMask");
-
-    buttonGroup1.add(use_dev);
-    use_dev.setSelected(true);
-    use_dev.setText("Interface");
-    use_dev.addItemListener(new java.awt.event.ItemListener() {
-      public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        use_devItemStateChanged(evt);
-      }
-    });
-
-    buttonGroup1.add(use_gw);
-    use_gw.setText("Gateway");
-    use_gw.addItemListener(new java.awt.event.ItemListener() {
-      public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        use_gwItemStateChanged(evt);
-      }
-    });
-
-    gw.setEnabled(false);
 
     accept.setText("Accept");
     accept.addActionListener(new java.awt.event.ActionListener() {
@@ -112,6 +91,10 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
 
     jLabel3.setText("Metric");
 
+    jLabel4.setText("Interface");
+
+    jLabel5.setText("Gateway");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -119,32 +102,29 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel1)
-              .addComponent(jLabel2))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(dest)
-              .addComponent(mask)))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(use_gw)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(gw))
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 179, Short.MAX_VALUE)
             .addComponent(cancel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(accept))
           .addGroup(layout.createSequentialGroup()
-            .addComponent(use_dev)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel1)
+              .addComponent(jLabel2)
+              .addComponent(jLabel4)
+              .addComponent(jLabel3)
+              .addComponent(jLabel5))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(dev, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 182, Short.MAX_VALUE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel3)
-            .addGap(48, 48, 48)
-            .addComponent(metric)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(metric)
+                .addGap(16, 16, 16))
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(dev, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+              .addComponent(dest)
+              .addComponent(mask)
+              .addComponent(gw))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -160,12 +140,12 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
           .addComponent(mask, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(use_dev)
-          .addComponent(dev, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(dev, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel4))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(use_gw)
-          .addComponent(gw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(gw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
@@ -180,13 +160,6 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  private void use_devItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_use_devItemStateChanged
-    if (use_dev.isSelected()) {
-      dev.setEnabled(true);
-      gw.setEnabled(false);
-    }
-  }//GEN-LAST:event_use_devItemStateChanged
-
   private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
     dispose();
   }//GEN-LAST:event_cancelActionPerformed
@@ -196,13 +169,6 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
     accepted = true;
     dispose();
   }//GEN-LAST:event_acceptActionPerformed
-
-  private void use_gwItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_use_gwItemStateChanged
-    if (use_gw.isSelected()) {
-      dev.setEnabled(false);
-      gw.setEnabled(true);
-    }
-  }//GEN-LAST:event_use_gwItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton accept;
@@ -214,10 +180,10 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
   private javax.swing.JTextField mask;
   private javax.swing.JSpinner metric;
-  private javax.swing.JRadioButton use_dev;
-  private javax.swing.JRadioButton use_gw;
   // End of variables declaration//GEN-END:variables
 
   public boolean accepted = false;
@@ -225,10 +191,8 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
 
   public String getDest() { return dest.getText(); }
   public String getMask() { return mask.getText(); }
-  public boolean getUseDev() { return use_dev.isSelected(); }
-  public boolean getUseGw() { return use_gw.isSelected(); }
   public String getDev() { return (String)dev.getSelectedItem(); }
-  public String getGw() { return gw.getText(); }
+  public String getGateway() { return gw.getText(); }
   public int getMetric() { return (Integer)metric.getValue(); }
 
   private void listInterfaces() {
@@ -283,7 +247,7 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
   private boolean valid() {
     if (!isIP4Valid(dest, false)) return false;
     if (!isIP4Valid(mask, false)) return false;
-    if (use_gw.isSelected()) {
+    if (gw.getText().length() > 0) {
       if (!isIP4Valid(gw, false)) return false;
     }
     if (!isNumberValid(metric)) return false;

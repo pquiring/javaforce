@@ -18,6 +18,17 @@ public class Subnet4 {
     setIP(address);
     setMask(netmask);
   }
+  public Subnet4(String address_cidr) {
+    int idx = address_cidr.indexOf('/');
+    if (idx == -1) {
+      setIP(address_cidr);
+    } else {
+      String address = address_cidr.substring(0, idx);
+      String cidr = address_cidr.substring(idx + 1);
+      setIP(address);
+      setCIDR(cidr);
+    }
+  }
   public static boolean isSubnet(String str) {
     if (!IP4.isIP(str)) return false;
     try {
@@ -90,10 +101,25 @@ public class Subnet4 {
   public boolean setMask(InetAddress addr) {
     return setMask(addr.getHostAddress());
   }
+  public boolean setCIDR(String cidr) {
+    return setMask(fromCIDR(Integer.valueOf(cidr)));
+  }
   private void setInverseMask() {
     for(int a=0;a<4;a++) {
       inverse.ip[a] = (byte)~mask.ip[a];
     }
+  }
+  /** Get IP Address. */
+  public IP4 getIP() {
+    return ip;
+  }
+  /** Get subnet mask. */
+  public IP4 getMask() {
+    return mask;
+  }
+  /** Return subnet mask in CIDR notation. */
+  public int getCIDR() {
+    return toCIDR(mask);
   }
   /** Checks if IP address is within defined Subnet.
    @param in = IP address to check
