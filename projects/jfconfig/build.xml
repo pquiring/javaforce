@@ -8,9 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.13"/>
 
-  <property name="debian.depends" value="jfparted, jfapps, jfrepo, cups, libnss3-tools, net-tools"/>
-  <property name="fedora.depends" value="jfparted, jfapps, jfrepo, cups, pciutils, net-tools"/>
-  <property name="arch.depends" value="jfparted, jfapps, jfrepo, cups, nss, net-tools"/>
+  <property file="jfconfig.properties"/>
 
   <import file="${home}/base.xml"/>
 
