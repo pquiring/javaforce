@@ -24,8 +24,4 @@ public class Interface {
   public String domain_name_servers;
   public String routers;
   public String static_routes;
-  Interface higherRoute;
-  Interface lowerRoute;
-  Interface higherDNS;
-  Interface lowerDNS;
 }

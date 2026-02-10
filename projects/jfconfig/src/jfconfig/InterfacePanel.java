@@ -267,15 +267,8 @@ public class InterfacePanel extends javax.swing.JPanel {
   private void toggleIF() {
     String eth = (String)list.getSelectedValue();
     if (eth == null) return;
-    if (false) {
-      //exec : sudo ifconfig [eth?] up/down
-      ShellProcess sp = new ShellProcess();
-      String output = sp.run(new String[] {"sudo", "ifconfig", eth, (active ? "down" : "up")}, false);
-    } else {
-      //use jfnetworkmgr instead
-      ConfigApp.jbusClient.call("org.jflinux.jfnetworkmgr", (active ? "ifDown" : "ifUp"), '\"' + eth + '\"');
-      JF.sleep(250);
-    }
+    ConfigApp.jbusClient.call("org.jflinux.jfnetworkmgr", (active ? "ifDown" : "ifUp"), '\"' + eth + '\"');
+    JF.sleep(250);
     isInterfaceActive();
   }
 }

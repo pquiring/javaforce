@@ -147,10 +147,6 @@ public class VPNConnection extends Thread implements ShellProcessListener {
       delRouting();
     }
     JF.sleep(500);  //this fixes a bug where DNS fails to failback to lower interface
-    //something else is writting to /etc/resolv.conf
-    if (DNSApplied) {
-      delDNS();
-    }
   }
 
 /*
@@ -284,10 +280,5 @@ primary   DNS address 192.168.0.3
     }
     iface.domain_name = domainsearch;
     iface.domain_name_servers = dns;
-    Server.This.doDNS(iface);
-  }
-
-  private void delDNS() {
-    Server.This.undoDNS(iface, true);
   }
 }

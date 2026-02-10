@@ -1,17 +1,13 @@
-
-
-import java.io.File;
-import java.io.FileOutputStream;
-import javaforce.JF;
-import javaforce.JFLog;
-import javaforce.ShellProcess;
-import javaforce.ShellProcessListener;
-
 /** Wireless Access Point (WAP)
  *
  * @author pquiring
  *
  */
+
+import java.io.*;
+
+import javaforce.*;
+import javaforce.linux.*;
 
 class WAPConnection extends Thread implements ShellProcessListener {
   public String pack;
@@ -27,7 +23,6 @@ class WAPConnection extends Thread implements ShellProcessListener {
   private ShellProcess wpa_log;
 
   public void run() {
-    ShellProcess sp = new ShellProcess();
     JFLog.log("connectWAP:dev=" + dev + ",ssid=" + ssid);
     Interface iface = Server.This.getInterface(dev);
     if (!iface.wireless) {
@@ -39,8 +34,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
     iface.pack = pack;
     if (iface.link) {
       //already has a link???
-      sp.run(new String[]{"iwconfig", dev, "essid", "any"}, false);
-      if (sp.getErrorLevel() != 0) {
+      if (!NetworkControl.wifi_set_ssid(dev, "any")) {
         Server.This.jbusClient.call(pack, "wapFailed", "");
         Server.This.pendingWAP = null;
         return;
@@ -57,25 +51,10 @@ class WAPConnection extends Thread implements ShellProcessListener {
         }
       }
     }
-    sp.run(new String[]{"iwconfig", dev, "essid", ssid}, false);
-    if (sp.getErrorLevel() != 0) {
-      Server.This.jbusClient.call(pack, "wapFailed", "");
-      Server.This.pendingWAP = null;
-      return;
-    }
-/*
-    sp.run(new String[]{"iwconfig", dev, "ap", "any"}, true);
-    if (sp.getErrorLevel() != 0) {
-      Server.This.jbusClient.call(pack, "wapFailed", "");
-      Server.This.pendingWAP = null;
-      return;
-    }
-*/
     if (!encType.equals("OPEN")) {
       if (encType.equals("WEP")) {
         if (key.length() > 0) {
-          sp.run(new String[]{"iwconfig", dev, "enc", key}, true);
-          if (sp.getErrorLevel() != 0) {
+          if (!NetworkControl.wifi_set_ssid(dev, ssid, key)) {
             Server.This.jbusClient.call(pack, "wapFailed", "");
             Server.This.pendingWAP = null;
             return;
@@ -83,7 +62,6 @@ class WAPConnection extends Thread implements ShellProcessListener {
         }
       } else {
         //WPA 1/2
-        sp.run(new String[]{"iwconfig", dev, "enc", "off"}, true); //disable WEP first
         try {
           FileOutputStream fos = new FileOutputStream("/root/" + dev + ".conf");
           StringBuilder str = new StringBuilder();
@@ -130,7 +108,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
                 wpa_supplicant.destroy();
                 wpa_supplicant = null;
                 JF.sleep(250);
-                sp.run(new String[]{"ifconfig", dev, "up"}, true); //wpa_supplicant forces wlan down when terminated
+                NetworkControl.up(dev);
               }
             }
           } while (wpa_retry);
@@ -143,7 +121,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
               wpa_supplicant.destroy();
               wpa_supplicant = null;
               JF.sleep(250);
-              sp.run(new String[]{"ifconfig", dev, "up"}, true); //wpa_supplicant forces iface down when terminated
+              NetworkControl.up(dev);
             }
             Server.This.jbusClient.call(pack, "wapFailed", "");
             Server.This.pendingWAP = null;
@@ -153,10 +131,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
           JFLog.log(e);
         }
       }
-    } else {
-      sp.run(new String[]{"iwconfig", dev, "enc", "off"}, true);
     }
-    //NetLinkMonitor will setup the card if/when the link is active
   }
 
   public void init(String pack, String dev, String ssid, String encType, String key) {
@@ -168,7 +143,6 @@ class WAPConnection extends Thread implements ShellProcessListener {
   }
 
   public void close() {
-    ShellProcess sp = new ShellProcess();
     if (wpa_log != null) {
       wpa_log.destroy();
       wpa_log = null;
@@ -177,13 +151,12 @@ class WAPConnection extends Thread implements ShellProcessListener {
       wpa_supplicant.destroy();
       wpa_supplicant = null;
       JF.sleep(250);
-      sp.run(new String[]{"ifconfig", dev, "up"}, true); //wpa_supplicant forces wlan down when terminated
+      NetworkControl.up(dev);
       wpa_failed = true;
       synchronized (wpa_lock) {
         wpa_lock.notify();
       }
     }
-    sp.run(new String[]{"ifconfig", dev, "0.0.0.0"}, true); //remove IP
   }
 
   public void shellProcessOutput(String string) {
@@ -213,8 +186,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
         continue;
       }
       if (lns[a].endsWith("Network is down")) {
-        ShellProcess sp = new ShellProcess();
-        sp.run(new String[]{"ifconfig", dev, "up"}, true); //wpa_supplicant forces wlan down when terminated
+        NetworkControl.up(dev);
       }
     }
   }

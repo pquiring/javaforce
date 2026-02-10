@@ -2,8 +2,8 @@
  *
  * Created : May 3, 2012
  *
- * I've decided to replace NetworkManager with my own implementation.
- * NetworkManager is a well developed system but interfacing with it from Java is difficult.
+ * Depends on systemd-networkd.
+ * wpa_supplicant for WIFI
  *
  */
 
@@ -13,6 +13,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.jbus.*;
+import javaforce.linux.*;
 
 public class Server {
   private boolean startup;
@@ -27,7 +28,6 @@ public class Server {
   public ArrayList<VPNConnection> vpnConnections = new ArrayList<VPNConnection>();
   public ArrayList<WAPConnection> wapConnections = new ArrayList<WAPConnection>();
   public ArrayList<Interface> interfaceList = new ArrayList<Interface>();  //active interfaces
-  public ArrayList<DHCPClient> dhcpClients = new ArrayList<DHCPClient>();  //for active interfaces
 
   private static final boolean bluez3 = false;  //no longer available
 
@@ -57,13 +57,11 @@ public class Server {
       Interface iface = getInterface("static");  //psuedo-interface for static values
       iface.domain_name = config.domain;
       iface.domain_name_servers = config.dns1 + " " + config.dns2 + " " + config.dns3;
-      doDNS(iface);
       listIFs();
       for(int a=0;a<interfaceList.size();a++) {
         startIF(interfaceList.get(a).dev);
       }
       createWAPTimer();
-      new NetLinkMonitor().start();
       startup = false;
     } catch (Exception e) {
       JFLog.log(e);
@@ -222,99 +220,22 @@ public class Server {
 
   private void startIF(String dev) {
     JFLog.log("jfnetworkmgr:Starting:" + dev);
-    ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"ifconfig", dev, "up"}, true);
-    if (sp.getErrorLevel() != 0) {
-      JFLog.log("jfnetworkmgr:Failed to start interface:" + dev + ":Output=" + output);
+    if (!NetworkControl.up(dev)) {
+      JFLog.log("jfnetworkmgr:Failed to start interface:" + dev);
       return;
     }
     Interface iface = getInterface(dev);
     iface.active = true;
     updateLink(iface);
-    if (!iface.wireless) {  //do not setup wireless interfaces now
-      setupInterface(iface);
-    }
-  }
-
-  public void setupInterface(Interface iface) {
-    //ensure interface link is active
-    if (!iface.link) {
-      JFLog.log("Warning:jfnetworkmgr:setting up interface but link is down:" + iface.dev);
-    }
-    ShellProcess sp = new ShellProcess();
-    if (iface.dhcp4) {
-      DHCPClient client = new DHCPClient(iface, true);
-      client.start();
-      dhcpClients.add(client);
-    } else {
-      //set static IP4
-      sp.run(new String[] {"ifconfig", iface.dev, iface.ip4, "netmask", iface.mask4}, true);
-      iface.routers = iface.gateway4;
-      iface.domain_name = config.domain;
-      iface.domain_name_servers = config.dns1 + " " + config.dns2 + " " + config.dns3;
-      doRouting(iface);
-      doDNS(iface);
-      if (pendingWAP != null && iface.pack != null) {
-        This.jbusClient.call(iface.pack, "wapSuccess", "");
-        pendingWAP = null;
-        iface.pack = null;
-      }
-    }
-    if (iface.dhcp6) {
-      DHCPClient client = new DHCPClient(iface, false);
-      client.start();
-      dhcpClients.add(client);
-    } else {
-      if (!iface.disableIP6) {
-        //set static IP6
-        sp.run(new String[] {"ifconfig", iface.dev, "add", iface.ip6 + "/64"}, true);
-        //TODO : IP6???
-//        doRouting6(iface);
-//        doDNS6(iface);
-      }
-    }
-    iface.setup = true;
   }
 
   private void stopIF(String dev) {
     JFLog.log("jfnetworkmgr:Stoping:" + dev);
     Interface iface = getInterface(dev);
-    ShellProcess sp = new ShellProcess();
-    sp.run(new String[] {"ifconfig", dev, "0.0.0.0"}, true);  //remove IP first
-    String output = sp.run(new String[] {"ifconfig", dev, "down"}, true);
-    if (sp.getErrorLevel() != 0) {
-      JFLog.log("jfnetworkmgr:Failed to stop interface:" + dev + ":Output=" + output);
+    if (!NetworkControl.down(dev)) {
+      JFLog.log("jfnetworkmgr:Failed to stop interface:" + dev);
     }
-    tearDownInterface(dev);
     iface.active = false;
-  }
-
-  public void tearDownInterface(String dev) {
-    Interface iface = getInterface(dev);
-    for(int a=0;a<dhcpClients.size();) {
-      if (dhcpClients.get(a).getDevice().equals(dev)) {
-        dhcpClients.get(a).close();
-        dhcpClients.remove(a);
-      } else {
-        a++;
-      }
-    }
-    undoRouting(iface, true);
-    undoDNS(iface, true);
-    //remove from priority chain
-    if (iface.higherRoute != null) {
-      iface.higherRoute.lowerRoute = iface.lowerRoute;
-    }
-    if (iface.lowerRoute != null) {
-      iface.lowerRoute.higherRoute = iface.higherRoute;
-    }
-    if (iface.higherDNS != null) {
-      iface.higherDNS.lowerDNS = iface.lowerDNS;
-    }
-    if (iface.lowerDNS != null) {
-      iface.lowerDNS.higherDNS = iface.higherDNS;
-    }
-    iface.setup = false;
   }
 
   private boolean isIFactive(String dev) {
@@ -337,108 +258,6 @@ public class Server {
 
   private void exec(String args[]) {
     try { Runtime.getRuntime().exec(args); } catch (Exception e) {JFLog.log(e);}
-  }
-
-  /** Configures routing table */
-  public void doRouting(Interface iface) {
-    if (highestRoute == null) {
-      highestRoute = iface;
-    } else {
-      if (iface.higherRoute != null) {
-        //is not the highest route
-        return;
-      }
-      if ((iface.lowerRoute == null) && (highestRoute != iface)) {
-        highestRoute.higherRoute = iface;
-        iface.lowerRoute = highestRoute;
-        highestRoute = iface;
-      }
-    }
-    String routers[] = iface.routers.split(" ");
-    exec(new String[] {"route", "add", "-net", "0.0.0.0", "gw", routers[0]});
-    if (iface.static_routes != null) {
-      String staticRoutes[] = iface.static_routes.split(" ");
-      //TODO : do static routes???
-    }
-  }
-
-  /** Configures /etc/resolv.conf */
-  public void doDNS(Interface iface) {
-//    JFLog.log("doDNS:" + iface.dev + ":highest=" + (highestDNS == null ? "null" : highestDNS.dev) + ":lowerDNS=" + (iface.lowerDNS == null ? "null" : iface.lowerDNS.dev));
-    if (highestDNS == null) {
-      highestDNS = iface;
-    } else {
-      if (iface.higherDNS != null) {
-        JFLog.log("doDNS:Not highest DNS");
-        return;
-      }
-      if ((iface.lowerDNS == null) && (highestDNS != iface)) {
-        highestDNS.higherDNS = iface;
-        iface.lowerDNS = highestDNS;
-        highestDNS = iface;
-      }
-    }
-//    JFLog.log("Applying DNS:" + iface.dev + ":" + iface.domain_name_servers);
-    try {
-      String dns[] = iface.domain_name_servers.split(" ");
-      FileOutputStream fos = new FileOutputStream("/etc/resolv.conf");
-      fos.write(("domain " + iface.domain_name + "\n").getBytes());
-      fos.write(("search " + iface.domain_name + "\n").getBytes());
-      for(int a=0;a<dns.length;a++) {
-        if (dns[a].length() == 0) continue;
-        fos.write(("nameserver " + dns[a] + "\n").getBytes());
-      }
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  /** Unconfigure routing table */
-  private void undoRouting(Interface iface, boolean useLower) {
-    if (highestRoute != iface) return;
-    String routers[] = iface.routers.split(" ");
-    exec(new String[] {"route", "del", "-net", "0.0.0.0"});
-//    String staticRoutes[] = iface.static_routes.split(" ");
-    //TODO : undo static routes???
-    //find next interface with lower priority and switch to it's routing
-    if (useLower) {
-      if (iface.lowerRoute != null) {
-        //remove this from chain - never go back up after lowering
-        iface.lowerRoute.higherRoute = null;
-        highestRoute = iface.lowerRoute;
-        doRouting(iface.lowerRoute);
-      }
-    }
-  }
-
-  private void removeDNS() {
-    //no interface available
-    try {
-      FileOutputStream fos = new FileOutputStream("/etc/resolv.conf");
-      fos.write("#no interface currently available".getBytes());
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  /** Unconfigure /etc/resolv.conf */
-  public void undoDNS(Interface iface, boolean useLower) {
-//    JFLog.log("undoDNS:" + iface.dev + ":highest=" + (highestDNS == null ? "null" : highestDNS.dev) + ":lowerDNS=" + (iface.lowerDNS == null ? "null" : iface.lowerDNS.dev));
-    if (highestDNS != iface) return;
-    if (useLower) {
-      if (iface.lowerDNS != null) {
-        //remove this from chain - never go back up after lowering
-        iface.lowerDNS.higherDNS = null;
-        highestDNS = iface.lowerDNS;
-        doDNS(iface.lowerDNS);
-      } else {
-        removeDNS();
-      }
-    } else {
-//      removeDNS();  //not needed since this change is temporary
-    }
   }
 
   private void processScript(String argString) {
@@ -473,8 +292,6 @@ public class Server {
       return;
     }
     if (reason.equals("EXPIRE") || reason.equals("FAIL")) {
-      undoRouting(iface, true);
-      undoDNS(iface, true);
       reason = "PREINIT";
     }
     if (reason.equals("PREINIT")) {
@@ -492,14 +309,6 @@ public class Server {
       reason = "RENEW";
     }
     if (reason.equals("RENEW")) {
-      //delete anything that has changed new_ -> old_
-      if ((!old_routers.equals(new_routers) && (old_routers.length() > 0))
-        || ((!old_static_routes.equals(new_static_routes)) && (old_static_routes.length() > 0))) {
-          undoRouting(iface, false);
-      }
-      if (!old_domain_name_servers.equals(new_domain_name_servers)) {
-        undoDNS(iface, false);
-      }
       reason = "BOUND";
     }
     if (reason.equals("BOUND") || reason.equals("REBOOT")) {
@@ -513,8 +322,6 @@ public class Server {
       iface.domain_name_servers = new_domain_name_servers;
       iface.routers = new_routers;
       iface.static_routes = new_static_routes;
-      doRouting(iface);
-      doDNS(iface);
       return;
     }
     //ignored : STOP, RELEASE, NBI, TIMEOUT
@@ -522,28 +329,22 @@ public class Server {
 
   private void getWAPList() {
     String newWapList = "";
-    ShellProcess sp = new ShellProcess();
     for(int a=0;a<interfaceList.size();a++) {
       Interface iface = interfaceList.get(a);
       if (!iface.wireless) continue;
-      String output = sp.run(new String[] {"iwlist", iface.dev, "scan"}, false);
-      if (output == null) output = "";
-      output = output.replaceAll("\n", "|");
-      output = output.replaceAll("\"", "\'");
-      String wapScan = output;
-      newWapList += genWAPList(iface.dev, wapScan);
+      String[] output = NetworkControl.wifi_scan(iface.dev);
+      newWapList += genWAPList(iface.dev, output);
     }
     wapList = newWapList;
     jbusClient.call("org.jflinux.jfsystemmgr", "broadcastWAPList", quote(wapList));
   }
 
-  private String genWAPList(String dev, String wapScan) {
+  private String genWAPList(String dev, String[] scan) {
     int cnt = 0;
     String list = "";
-    String lns[] = wapScan.split("[|]");
     String wap = null, encType = "?";
-    for(int a=0;a<lns.length;a++) {
-      String ln = lns[a].trim();
+    for(int a=0;a<scan.length;a++) {
+      String ln = scan[a].replaceAll("\"", "\'").trim();
       if (ln.startsWith("Cell ")) {
         if (wap != null) {
           list += wap;
@@ -649,13 +450,6 @@ public class Server {
     vpnConfig.vpn = new VPN[0];
   }
 
-  private boolean isVPNactive(String name) {
-    for(int a=0;a<vpnConnections.size();a++) {
-      if (vpnConnections.get(a).name.equals(name)) return true;
-    }
-    return false;
-  }
-
   private boolean isWAPactive(String ssid) {
     for(int a=0;a<wapConnections.size();a++) {
       if (wapConnections.get(a).ssid.equals(ssid)) return true;
@@ -691,33 +485,6 @@ public class Server {
       if (!isIFactive(dev)) {JFLog.log("already down"); return;}
       stopIF(dev);
     }
-    public void connectVPN(String pack, String id, String host, String user, String pass, String domain,
-      String caps, String capsOpts, String routes, String routeOpts, String domainsearch) {
-
-      VPNConnection conn = new VPNConnection();
-      conn.id = id;
-      conn.pack = pack;
-      conn.host = host;
-      conn.user = user;
-      conn.pass = pass;
-      conn.domain = domain;
-      conn.caps = caps;
-      conn.capsOpts = capsOpts;
-      conn.routes = routes;
-      conn.routeOpts = routeOpts;
-      conn.domainsearch = domainsearch;
-      vpnConnections.add(conn);
-      conn.start();
-    }
-    public void disconnectVPN(String id) {
-      for(int a=0;a<vpnConnections.size();a++) {
-        if (vpnConnections.get(a).id.equals(id)) {
-          vpnConnections.get(a).close();
-          vpnConnections.remove(a);
-          return;
-        }
-      }
-    }
     public void getWAPList(String pack) {
       jbusClient.call(pack, "setWAPList", quote(wapList));
     }
@@ -732,7 +499,6 @@ public class Server {
     public void disconnectWAP(String pack, String dev) {
       ShellProcess sp = new ShellProcess();
       sp.run(new String[] {"iwconfig", dev, "essid", "any"}, false);
-      tearDownInterface(dev);  //stop dhcp clients (if any)
       //stop wpa_supplicant if used
       for(int a=0;a<wapConnections.size();) {
         if (wapConnections.get(a).dev.equals(dev)) {
@@ -952,53 +718,6 @@ public class Server {
         } else {
           jbusClient.call(pack, "btFailed", "");
         }
-      }
-    }
-    public void getVPNList(String pack) {
-      String vpnList = "";
-      loadVPNConfig();
-      for(int a=0;a<vpnConfig.vpn.length;a++) {
-        String name = vpnConfig.vpn[a].name;
-        if (isVPNactive(name)) name += " *";
-        vpnList += name + "|";
-      }
-      jbusClient.call(pack, "setVPNList", quote(vpnList));
-    }
-    public void connectVPN(String pack, String name) {
-      for(int a=0;a<vpnConfig.vpn.length;a++) {
-        if (vpnConfig.vpn[a].name.equals(name)) {
-          if (isVPNactive(name)) {
-            disconnectVPN(name);
-          } else {
-            VPN vpn = vpnConfig.vpn[a];
-            VPNConnection conn = new VPNConnection();
-            conn.name = name;
-            conn.id = "" + Math.abs(new Random().nextInt());
-            conn.pack = pack;
-            conn.host = vpn.host;
-            conn.user = vpn.user;
-            conn.pass = vpn.pass;
-            conn.domain = vpn.domain;
-            conn.caps = vpn.caps;
-            conn.capsOpts = vpn.capsOpts;
-            conn.routes = vpn.routes;
-            conn.routeOpts = vpn.routeOpts;
-            conn.domainsearch = vpn.domainsearch;
-            vpnConnections.add(conn);
-            conn.start();
-          }
-          break;
-        }
-      }
-    }
-    public void cancelVPN() {
-      if (pendingVPN == null) return;
-      pendingVPN.close();
-      pendingVPN = null;
-    }
-    public void closeAllVPN() {
-      while (vpnConnections.size() > 0) {
-        disconnectVPN(vpnConnections.get(0).name);
       }
     }
   }
