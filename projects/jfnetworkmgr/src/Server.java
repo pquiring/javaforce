@@ -27,7 +27,6 @@ public class Server {
   public JBusClient jbusClient;
   public ArrayList<VPNConnection> vpnConnections = new ArrayList<VPNConnection>();
   public ArrayList<WAPConnection> wapConnections = new ArrayList<WAPConnection>();
-  public ArrayList<Interface> interfaceList = new ArrayList<Interface>();  //active interfaces
 
   private static final boolean bluez3 = false;  //no longer available
 
@@ -53,14 +52,6 @@ public class Server {
       startup = true;
       jbusClient = new JBusClient("org.jflinux.jfnetworkmgr", new JBusMethods());
       jbusClient.start();
-      loadConfig();
-      Interface iface = getInterface("static");  //psuedo-interface for static values
-      iface.domain_name = config.domain;
-      iface.domain_name_servers = config.dns1 + " " + config.dns2 + " " + config.dns3;
-      listIFs();
-      for(int a=0;a<interfaceList.size();a++) {
-        startIF(interfaceList.get(a).dev);
-      }
       createWAPTimer();
       startup = false;
     } catch (Exception e) {
@@ -87,118 +78,8 @@ public class Server {
     }
   }
 
-  private void listIFs() {
-    ShellProcess sp = new ShellProcess();
-    String ifconfig = sp.run(new String[] {"ifconfig", "-a"}, false);
-    String lns[] = ifconfig.split("\n");
-    String iwconfig = sp.run(new String[] {"iwconfig"}, false);
-    String wlns[] = iwconfig.split("\n");
-    for(int a=0;a<lns.length;a++) {
-      if (!lns[a].startsWith(" ")) {
-        int idx = lns[a].indexOf(" ");
-        if (idx == -1) continue;
-        String dev = lns[a].substring(0, idx);
-        idx = dev.indexOf(":");  //fedora has a ':' after name
-        if (idx != -1) {
-          dev = dev.substring(0, idx);
-        }
-        if (dev.equals("lo")) continue;
-        Interface iface = getInterface(dev);
-        for(int w=0;w<wlns.length;w++) {
-          if (wlns[w].startsWith(dev)) {
-            if (wlns[w].indexOf("ESSID") != -1) {
-              iface.wireless = true;
-            }
-            break;
-          }
-        }
-        interfaceList.add(iface);
-        JFLog.log("interface:" + iface.dev + ":wireless=" + iface.wireless);
-      }
-    }
-  }
-
-  public static class Config {
-    public Interface iface[];
-    public String dns1, dns2, dns3;
-    public String hostname, domain;
-  }
-
-  private Config config;
-  private String configFolder = "/etc/jfconfig.d/";
-  private String configFile = "network.xml";
-  private Interface highestRoute = null;  //interface with highest priority
-  private Interface highestDNS = null;  //interface with highest priority
-
-  private void loadConfig() {
-    defaultConfig();
-    try {
-      XML xml = new XML();
-      FileInputStream fis = new FileInputStream(configFolder + configFile);
-      xml.read(fis);
-      xml.writeClass(config);
-      fis.close();
-    } catch (FileNotFoundException e1) {
-      defaultConfig();
-    } catch (Exception e2) {
-      JFLog.log(e2);
-      defaultConfig();
-    }
-  }
-
-  private void defaultConfig() {
-    config = new Config();
-    config.iface = new Interface[0];
-    config.hostname = "localhost";
-    config.domain = "localdomain";
-    config.dns1 = "";
-    config.dns2 = "";
-    config.dns3 = "";
-  }
-
-  public void updateInterface(Interface iface) {
-    //update config options
-    Interface update = null;
-    for(int a=0;a<config.iface.length;a++) {
-      Interface i = config.iface[a];
-      if (i.dev.equals(iface.dev)) {
-        update = i;
-        break;
-      }
-    }
-    if (update == null) return;
-    iface.dhcp4 = update.dhcp4;
-    iface.dhcp6 = update.dhcp6;
-    iface.disableIP6 = update.disableIP6;
-    iface.ip4 = update.ip4;
-    iface.mask4 = update.mask4;
-    iface.gateway4 = update.gateway4;
-    iface.ip6 = update.ip6;
-    iface.gateway6 = update.gateway6;
-  }
-
-  public Interface getInterface(String dev) {
-    Interface iface;
-    loadConfig();  //redo in case of changes
-    //try interfaceList first
-    for(int a=0;a<interfaceList.size();a++) {
-      iface = interfaceList.get(a);
-      if (iface.dev.equals(dev)) {
-        updateInterface(iface);
-        return iface;
-      }
-    }
-    //try config next
-    for(int a=0;a<config.iface.length;a++) {
-      iface = config.iface[a];
-      if (iface.dev.equals(dev)) {
-        return iface;
-      }
-    }
-    //return a new empty instance of Interface
-    iface = new Interface();
-    iface.dev = dev;
-    return iface;
+  private String[] listIFs() {
+    return NetworkControl.list();
   }
 
   public static String mask(String ipstr, String maskstr) {
@@ -224,28 +105,17 @@ public class Server {
       JFLog.log("jfnetworkmgr:Failed to start interface:" + dev);
       return;
     }
-    Interface iface = getInterface(dev);
-    iface.active = true;
-    updateLink(iface);
   }
 
   private void stopIF(String dev) {
     JFLog.log("jfnetworkmgr:Stoping:" + dev);
-    Interface iface = getInterface(dev);
     if (!NetworkControl.down(dev)) {
       JFLog.log("jfnetworkmgr:Failed to stop interface:" + dev);
     }
-    iface.active = false;
   }
 
   private boolean isIFactive(String dev) {
-    for(int a=0;a<interfaceList.size();a++) {
-      Interface iface = interfaceList.get(a);
-      if (iface.dev.equals(dev)) {
-        return iface.active;
-      }
-    }
-    return false;
+    return NetworkControl.isUp(dev);
   }
 
   public static void dhcpSuccess(Interface iface) {
@@ -260,80 +130,13 @@ public class Server {
     try { Runtime.getRuntime().exec(args); } catch (Exception e) {JFLog.log(e);}
   }
 
-  private void processScript(String argString) {
-    String args[] = argString.split(",");
-    String reason = null, ifaceName = null, medium = null;
-    String new_ip_address = null, new_subnet_mask = null, new_domain_name = null, new_domain_name_servers = null, new_routers = null, new_static_routes = null;
-    String old_ip_address = null, old_subnet_mask = null, old_domain_name = null, old_domain_name_servers = null, old_routers = null, old_static_routes = null;
-    for(int a=0;a<args.length;a++) {
-      if (args[a].startsWith("reason=")) {reason = args[a].substring(7); continue;}
-      if (args[a].startsWith("interface=")) {ifaceName = args[a].substring(10); continue;}
-      if (args[a].startsWith("medium=")) {medium = args[a].substring(7); continue;}
-
-      if (args[a].startsWith("new_ip_address=")) {new_ip_address = args[a].substring(15); continue;}
-      if (args[a].startsWith("new_subnet_mask=")) {new_subnet_mask = args[a].substring(16); continue;}
-      if (args[a].startsWith("new_domain_name=")) {new_domain_name = args[a].substring(16); continue;}
-      if (args[a].startsWith("new_domain_name_servers=")) {new_domain_name_servers = args[a].substring(24); continue;}
-      if (args[a].startsWith("new_routers=")) {new_routers = args[a].substring(12); continue;}
-      if (args[a].startsWith("new_static_routes=")) {new_static_routes = args[a].substring(18); continue;}
-
-      if (args[a].startsWith("old_ip_address=")) {old_ip_address = args[a].substring(15); continue;}
-      if (args[a].startsWith("old_subnet_mask=")) {old_subnet_mask = args[a].substring(16); continue;}
-      if (args[a].startsWith("old_domain_name=")) {old_domain_name = args[a].substring(16); continue;}
-      if (args[a].startsWith("old_domain_name_servers=")) {old_domain_name_servers = args[a].substring(24); continue;}
-      if (args[a].startsWith("old_routers=")) {old_routers = args[a].substring(12); continue;}
-      if (args[a].startsWith("old_static_routes=")) {old_static_routes = args[a].substring(18); continue;}
-    }
-    JFLog.log("jfnetworkmgr.script:" + reason + " on " + ifaceName);
-    Interface iface = getInterface(ifaceName);
-    if (reason.equals("MEDIUM")) {
-      //ifconfig $interface medium $medium
-      exec(new String[] {"ifconfig", ifaceName, "medium", medium});
-      return;
-    }
-    if (reason.equals("EXPIRE") || reason.equals("FAIL")) {
-      reason = "PREINIT";
-    }
-    if (reason.equals("PREINIT")) {
-      //ifconfig $interface 0.0.0.0
-      exec(new String[] {"ifconfig", ifaceName, "0.0.0.0"});
-      //ifconfig $interface broadcast
-      exec(new String[] {"ifconfig", ifaceName, "broadcast"});
-      return;
-    }
-    if (reason.equals("REBIND")) {
-      //if IP has changed clear ARP table
-      if (!old_ip_address.equals(new_ip_address)) {
-        exec(new String[] {"ip", "neigh", "flush", "dev", ifaceName});
-      }
-      reason = "RENEW";
-    }
-    if (reason.equals("RENEW")) {
-      reason = "BOUND";
-    }
-    if (reason.equals("BOUND") || reason.equals("REBOOT")) {
-      //ifconfig $interface $new_ip_address
-      exec(new String[] {"ifconfig", ifaceName, new_ip_address});
-      iface.ip4 = new_ip_address;
-      //ifconfig $interface netmask $new_subnet_mask
-      exec(new String[] {"ifconfig", ifaceName, new_subnet_mask});
-      iface.mask4 = new_subnet_mask;
-      iface.domain_name = new_domain_name;
-      iface.domain_name_servers = new_domain_name_servers;
-      iface.routers = new_routers;
-      iface.static_routes = new_static_routes;
-      return;
-    }
-    //ignored : STOP, RELEASE, NBI, TIMEOUT
-  }
-
   private void getWAPList() {
     String newWapList = "";
-    for(int a=0;a<interfaceList.size();a++) {
-      Interface iface = interfaceList.get(a);
-      if (!iface.wireless) continue;
-      String[] output = NetworkControl.wifi_scan(iface.dev);
-      newWapList += genWAPList(iface.dev, output);
+    String[] ifaces = listIFs();
+    for(String iface : ifaces) {
+      if (!iface.startsWith("w")) continue;
+      String[] output = NetworkControl.wifi_scan(iface);
+      newWapList += genWAPList(iface, output);
     }
     wapList = newWapList;
     jbusClient.call("org.jflinux.jfsystemmgr", "broadcastWAPList", quote(wapList));
@@ -391,8 +194,9 @@ public class Server {
     return dev + "|" + cnt + "|" + list;
   }
   private boolean checkWireless() {
-    for(int a=0;a<interfaceList.size();a++) {
-      if (interfaceList.get(a).wireless) return true;
+    String[] ifaces = listIFs();
+    for(String iface : ifaces) {
+      if (iface.startsWith("w")) return true;
     }
     return false;
   }
@@ -471,9 +275,6 @@ public class Server {
     public void notifyDown(String dev) {
       if (startup) return;
       //TODO : stop dhcp client ???
-    }
-    public void script(String args) {
-      processScript(args);
     }
     public void ifUp(String dev) {
       JFLog.log("ifUp:" + dev);

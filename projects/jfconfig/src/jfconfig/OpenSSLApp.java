@@ -8,6 +8,8 @@ package jfconfig;
 
 import java.awt.*;
 
+import javaforce.awt.*;
+
 public class OpenSSLApp extends javax.swing.JDialog {
 
   /**
@@ -70,8 +72,6 @@ public class OpenSSLApp extends javax.swing.JDialog {
   public static String args[];
 
   private void setPosition() {
-    Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    Dimension d = getPreferredSize();
-    setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
+    JFAWT.centerWindow(this);
   }
 }

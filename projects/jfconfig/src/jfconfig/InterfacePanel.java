@@ -21,7 +21,6 @@ public class InterfacePanel extends javax.swing.JPanel {
   public InterfacePanel() {
     initComponents();
     listIFs();
-    loadConfig();
   }
 
   /**
@@ -125,12 +124,10 @@ public class InterfacePanel extends javax.swing.JPanel {
   }//GEN-LAST:event_enableActionPerformed
 
   private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
-    String eth = (String)list.getSelectedValue();
-    if (eth == null) return;
-    Interface iface = getInterface(eth);
-    InterfaceEditDialog dialog = new InterfaceEditDialog(ConfigApp.This, true, iface);
+    String dev = (String)list.getSelectedValue();
+    if (dev == null) return;
+    InterfaceEditDialog dialog = new InterfaceEditDialog(ConfigApp.This, true, dev);
     dialog.setVisible(true);
-    if (dialog.accepted) saveConfig();
   }//GEN-LAST:event_editActionPerformed
 
   private void listValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listValueChanged
@@ -151,113 +148,24 @@ public class InterfacePanel extends javax.swing.JPanel {
   private DefaultListModel<String> model = new DefaultListModel<>();
   private boolean active;
 
-  public static class Interface {
-    public String dev;
-    public boolean dhcp4 = true, dhcp6 = false;
-    public boolean disableIP6 = true;
-    public String ip4, mask4, gateway4;
-    public String ip6, gateway6;
-  }
-
-  public static class Config {
-    public Interface iface[];
-    public String dns1, dns2, dns3;
-    public String hostname, domain;
-  }
-
-  private Config config;
-  private String configFolder = "/etc/jfconfig.d/";
-  private String configFile = "network.xml";
-
-  private void loadConfig() {
-    defaultConfig();
-    try {
-      XML xml = new XML();
-      FileInputStream fis = new FileInputStream(configFolder + configFile);
-      xml.read(fis);
-      xml.writeClass(config);
-    } catch (FileNotFoundException e1) {
-      defaultConfig();
-    } catch (Exception e2) {
-      JFLog.log(e2);
-      defaultConfig();
-    }
-  }
-
-  private void defaultConfig() {
-    config = new Config();
-    config.iface = new Interface[0];
-    config.hostname = "localhost";
-    config.domain = "localdomain";
-    config.dns1 = "";
-    config.dns2 = "";
-    config.dns3 = "";
-  }
-
-  private void saveConfig() {
-    try {
-      XML xml = new XML();
-      File tmpFile = File.createTempFile("network", ".xml");
-      FileOutputStream fos = new FileOutputStream(tmpFile);
-      xml.readClass("network", config);
-      xml.write(fos);
-      fos.close();
-      Linux.mkdir(configFolder);
-      if (!Linux.copyFile(tmpFile.getAbsolutePath(), configFolder + configFile)) {
-        tmpFile.delete();
-        throw new Exception("file io error");
-      }
-      tmpFile.delete();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  private Interface getInterface(String dev) {
-    for(int a=0;a<config.iface.length;a++) {
-      if (config.iface[a].dev.equals(dev)) return config.iface[a];
-    }
-    Interface iface = new Interface();
-    iface.dev = dev;
-    config.iface = Arrays.copyOf(config.iface, config.iface.length + 1);
-    config.iface[config.iface.length-1] = iface;
-    return iface;
-  }
-
   private void listIFs() {
     model.clear();
-    ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"ifconfig", "-a"}, false);
-    String lns[] = output.split("\n");
-    for(int a=0;a<lns.length;a++) {
-      if (!lns[a].startsWith(" ")) {
-        int idx = lns[a].indexOf(" ");
-        if (idx == -1) continue;
-        String ifName = lns[a].substring(0,idx);
-        if (ifName.endsWith(":")) ifName = ifName.substring(0, ifName.length()-1);
-        model.addElement(ifName);
-      }
+    String[] ifaces = NetworkControl.list();
+    for(String iface : ifaces) {
+      model.addElement(iface);
     }
   }
 
   private void isInterfaceActive() {
-    String eth = (String)list.getSelectedValue();
-    if (eth == null) {
+    String dev = (String)list.getSelectedValue();
+    if (dev == null) {
       enable.setText("Enable");
       enable.setEnabled(false);
       edit.setEnabled(false);
       status.setText("Status : n/a");
       return;
     }
-    ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"ifconfig"}, false);
-    String lns[] = output.split("\n");
-    active = false;
-    for(int a=0;a<lns.length;a++) {
-      if (lns[a].startsWith(eth)) {
-        active = true;
-      }
-    }
+    active = NetworkControl.isUp(dev);
     enable.setText( (active ? "Disable" : "Enable"));
     enable.setEnabled(true);
     edit.setEnabled(true);

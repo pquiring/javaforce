@@ -24,33 +24,6 @@ class WAPConnection extends Thread implements ShellProcessListener {
 
   public void run() {
     JFLog.log("connectWAP:dev=" + dev + ",ssid=" + ssid);
-    Interface iface = Server.This.getInterface(dev);
-    if (!iface.wireless) {
-      JFLog.log("WAP:dev is not wireless:" + dev);
-      Server.This.jbusClient.call(pack, "wapFailed", "");
-      Server.This.pendingWAP = null;
-      return;
-    }
-    iface.pack = pack;
-    if (iface.link) {
-      //already has a link???
-      if (!NetworkControl.wifi_set_ssid(dev, "any")) {
-        Server.This.jbusClient.call(pack, "wapFailed", "");
-        Server.This.pendingWAP = null;
-        return;
-      }
-      int cnt = 0;
-      while (iface.link) {
-        JF.sleep(500);
-        cnt++;
-        if (cnt == 10) {
-          JFLog.log("WAP:Unable to drop current link");
-          Server.This.jbusClient.call(pack, "wapFailed", "");
-          Server.This.pendingWAP = null;
-          return;
-        }
-      }
-    }
     if (!encType.equals("OPEN")) {
       if (encType.equals("WEP")) {
         if (key.length() > 0) {

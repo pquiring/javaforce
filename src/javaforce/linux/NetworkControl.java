@@ -15,6 +15,46 @@ public class NetworkControl {
   public static void setLog(int id) {
     logid = id;
   }
+  /** List interfaces. */
+  public static String[] list() {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/bin/ip", "-a", "addr"}, true);
+    JFLog.log(logid, output);
+    if (sp.getErrorLevel() != 0) return null;
+    ArrayList<String> devs = new ArrayList<>();
+    String[] lns = output.split("\n");
+    for(String ln : lns) {
+      if (ln.trim().length() == 0) continue;
+      if (ln.startsWith(" ")) continue;
+      String[] fs = ln.split(" ");
+      devs.add(fs[1]);
+    }
+    return devs.toArray(JF.StringArrayType);
+  }
+  public static boolean isUp(String dev) {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/bin/ip", "-a", "addr"}, true);
+    JFLog.log(logid, output);
+    if (sp.getErrorLevel() != 0) return false;
+    String[] lns = output.split("\n");
+    for(String ln : lns) {
+      if (ln.startsWith(" ")) continue;
+      String[] fs = ln.split(" ");
+      String iface = fs[1];
+      if (!iface.equals(dev)) continue;
+      int len = fs.length;
+      for(int i=0;i<len;i++) {
+        String f = fs[i];
+        switch (f) {
+          case "state":
+            i++;
+            String state = fs[i];
+            return state.equals("UP");
+        }
+      }
+    }
+    return false;
+  }
   /** Set interface up. */
   public static boolean up(String dev) {
     ShellProcess sp = new ShellProcess();

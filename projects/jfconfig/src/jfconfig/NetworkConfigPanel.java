@@ -19,7 +19,6 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
    */
   public NetworkConfigPanel() {
     initComponents();
-    loadConfig();
   }
 
   /**
@@ -156,7 +155,7 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_jButton1ActionPerformed
 
   private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-    apply();
+    save();
   }//GEN-LAST:event_jButton2ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -177,81 +176,12 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
   private javax.swing.JToolBar jToolBar1;
   // End of variables declaration//GEN-END:variables
 
-  public static class Interface {
-    public String dev;
-    public boolean dhcp4 = true, dhcp6 = false;
-    public boolean disableIP6 = true;
-    public String ip4, mask4, gateway4;
-    public String ip6, gateway6;
+  private void load() {
+    //TODO
   }
 
-  public static class Config {
-    public Interface iface[];
-    public String dns1, dns2, dns3;
-    public String hostname, domain;
-  }
-
-  private Config config;
-  private String configFolder = "/etc/jfconfig.d/";
-  private String configFile = "network.xml";
-
-  private void loadConfig() {
-    defaultConfig();
-    try {
-      XML xml = new XML();
-      FileInputStream fis = new FileInputStream(configFolder + configFile);
-      xml.read(fis);
-      xml.writeClass(config);
-    } catch (FileNotFoundException e1) {
-      defaultConfig();
-    } catch (Exception e2) {
-      JFLog.log(e2);
-      defaultConfig();
-    }
-    hostname.setText(config.hostname);
-    domain.setText(config.domain);
-    dns1.setText(config.dns1);
-    dns2.setText(config.dns2);
-    dns3.setText(config.dns3);
-  }
-
-  private void defaultConfig() {
-    config = new Config();
-    config.iface = new Interface[0];
-    config.hostname = "localhost";
-    config.domain = "localdomain";
-    config.dns1 = "";
-    config.dns2 = "";
-    config.dns3 = "";
-  }
-
-  private void saveConfig() {
-    config.hostname = hostname.getText();
-    config.domain = domain.getText();
-    config.dns1 = dns1.getText();
-    config.dns2 = dns1.getText();
-    config.dns3 = dns1.getText();
-    try {
-      XML xml = new XML();
-      File tmpFile = File.createTempFile("network", ".xml");
-      FileOutputStream fos = new FileOutputStream(tmpFile);
-      xml.readClass("network", config);
-      xml.write(fos);
-      fos.close();
-      Linux.mkdir(configFolder);
-      if (!Linux.copyFile(tmpFile.getAbsolutePath(), configFolder + configFile)) {
-        tmpFile.delete();
-        throw new Exception("file io error");
-      }
-      tmpFile.delete();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  private void apply() {
-    saveConfig();
-    applyHostname(config.hostname);
+  private void save() {
+    //TODO
   }
 
   public static void applyHostname(String hostname) {

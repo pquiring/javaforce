@@ -11,6 +11,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class DHCPPoolDialog extends javax.swing.JDialog implements KeyListener {
 
@@ -380,9 +381,7 @@ public class DHCPPoolDialog extends javax.swing.JDialog implements KeyListener {
   public void keyTyped(KeyEvent e) {}
 
   private void setPosition() {
-    Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    Dimension d = getSize();
-    setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
+    JFAWT.centerWindow(this);
   }
 
 }

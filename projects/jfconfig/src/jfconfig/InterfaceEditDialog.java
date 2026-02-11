@@ -12,6 +12,7 @@ import java.awt.Rectangle;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.JFAWT;
 import javaforce.linux.*;
 
 public class InterfaceEditDialog extends javax.swing.JDialog {
@@ -19,20 +20,13 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
   /**
    * Creates new form InterfaceEditDialog
    */
-  public InterfaceEditDialog(java.awt.Frame parent, boolean modal, InterfacePanel.Interface iface) {
+  public InterfaceEditDialog(java.awt.Frame parent, boolean modal, String dev) {
     super(parent, modal);
     initComponents();
     setPosition();
-    this.iface = iface;
-    if (!iface.dhcp4) static4.setSelected(true);
-    ip4.setText(iface.ip4);
-    mask4.setText(iface.mask4);
-    gw4.setText(iface.gateway4);
-    if (iface.disableIP6) disableIP6.setSelected(true);
-    else if (!iface.dhcp6) static6.setSelected(true);
-    ip6.setText(iface.ip6);
-    gw6.setText(iface.gateway6);
-    setTitle("Interface " + iface.dev);
+    this.dev = dev;
+    loadConfig();
+    setTitle("Interface " + dev);
   }
 
   /**
@@ -251,14 +245,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
 
   private void acceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptActionPerformed
     if (!valid()) return;
-    iface.dhcp4 = dhcp4.isSelected();
-    iface.ip4 = ip4.getText();
-    iface.mask4 = mask4.getText();
-    iface.gateway4 = gw4.getText();
-    iface.disableIP6 = disableIP6.isSelected();
-    iface.dhcp6 = dhcp6.isSelected();
-    iface.ip6 = ip6.getText();
-    iface.gateway6 = gw6.getText();
+    saveConfig();
     accepted = true;
     dispose();
   }//GEN-LAST:event_acceptActionPerformed
@@ -299,7 +286,15 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
   private javax.swing.JRadioButton static6;
   // End of variables declaration//GEN-END:variables
 
-  private InterfacePanel.Interface iface;
+  private String dev;
+
+  private void loadConfig() {
+    //TODO
+  }
+
+  private void saveConfig() {
+    //TODO
+  }
 
   private boolean valid() {
     //TODO
@@ -312,9 +307,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
   }
 
   private void setPosition() {
-    Dimension d = getSize();
-    Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    setLocation(s.width/2 - d.width/2, s.height/2 - d.height/2);
+    JFAWT.centerWindow(this);
   }
 
   public boolean accepted;

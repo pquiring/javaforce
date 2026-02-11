@@ -10,6 +10,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class DNSZoneDialog extends javax.swing.JDialog {
 
@@ -205,8 +206,6 @@ public class DNSZoneDialog extends javax.swing.JDialog {
   }
 
   private void setPosition() {
-    Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    Dimension d = getSize();
-    setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
+    JFAWT.centerWindow(this);
   }
 }

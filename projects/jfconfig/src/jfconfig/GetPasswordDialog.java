@@ -137,9 +137,7 @@ public class GetPasswordDialog extends javax.swing.JDialog {
   public String getPassWord2() {return new String(passwd2.getPassword());}
 
   private void setPosition() {
-    Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    Dimension d = getSize();
-    setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
+    JFAWT.centerWindow(this);
   }
 
 }

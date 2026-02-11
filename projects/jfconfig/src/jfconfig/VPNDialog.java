@@ -11,6 +11,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import javax.swing.table.*;
 
+import javaforce.awt.*;
+
 public class VPNDialog extends javax.swing.JDialog {
 
   /**
@@ -572,8 +574,6 @@ public class VPNDialog extends javax.swing.JDialog {
     vpn.routeOpts = routesOpts;
   }
   private void setPosition() {
-    Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    Dimension d = getSize();
-    setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
+    JFAWT.centerWindow(this);
   }
 }
