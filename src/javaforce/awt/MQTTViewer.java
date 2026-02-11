@@ -291,6 +291,10 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     addText("connection accepted!\r\n");
   }
 
+  public void onDisconnect() {
+    addText("connection lost!\r\n");
+  }
+
   public void onSubscribe(String topic) {
     addText("subscribe accepted!\r\n");
   }
@@ -388,10 +392,19 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   }
 
   private void send() {
-    if (client == null) return;
+    if (client == null) {
+      addText("Not connected (1)");
+      return;
+    }
+    if (!client.isConnected()) {
+      addText("Not connected (2)");
+      return;
+    }
     String topic = send_topic.getText();
     String msg = send_msg.getText();
-    client.publish(topic, msg);
+    if (!client.publish(topic, msg)) {
+      addText("Failed to send msg");
+    }
   }
 
   private void initSecureWebKeys() {

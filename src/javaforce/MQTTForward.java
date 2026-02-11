@@ -208,6 +208,10 @@ public class MQTTForward {
       connected = true;
     }
 
+    public void onDisconnect() {
+      connected = false;
+    }
+
     public void onSubscribe(String topic) {
     }
 

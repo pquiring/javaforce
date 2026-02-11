@@ -237,7 +237,7 @@ public class MQTT {
   private short id = 0x0001;
 
   /** Send MQTT PUBLISH command. */
-  public void publish(String topic, String msg, byte qos) {
+  public boolean publish(String topic, String msg, byte qos) {
     byte[] topic_bytes = topic.getBytes();
     int topic_length = topic_bytes.length;
     byte[] msg_bytes = msg.getBytes();
@@ -270,15 +270,17 @@ public class MQTT {
     try {
       if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
+      return true;
     } catch (Exception e) {
       disconnect();
       JFLog.log(e);
+      return false;
     }
   }
 
   /** Send MQTT PUBLISH command. (QOS = 0) */
-  public void publish(String topic, String msg) {
-    publish(topic, msg, QOS_0);
+  public boolean publish(String topic, String msg) {
+    return publish(topic, msg, QOS_0);
   }
 
   /** Send MQTT SUBSCRIBE command. */
@@ -484,6 +486,9 @@ public class MQTT {
         JFLog.log(e);
         active = false;
       }
+      if (events != null) {
+        events.onDisconnect();
+      }
       if (debug) JFLog.log("disconnect:" + ip);
     }
     private void process(byte[] packet, int totalLength, int packetLength) throws Exception {
@@ -626,6 +631,9 @@ public class MQTT {
   private static class TestEvents implements MQTTEvents {
     public void onConnect() {
       JFLog.log("connected");
+    }
+    public void onDisconnect() {
+      JFLog.log("disconnected");
     }
     public void onSubscribe(String topic) {}
     public void onMessage(String topic, String msg) {
