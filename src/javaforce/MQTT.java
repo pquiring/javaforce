@@ -420,10 +420,10 @@ public class MQTT {
 
   private int getLengthBytes(int length) {
     //does not include the header or length bytes itself
-    if (length <= 0x7f) return 1;
-    if (length <= 0x3ff) return 2;
-    if (length <= 0x1fffff) return 3;
-    if (length <= 0xfffffff) return 4;
+    if (length <= 0x7f) return 1;  //7 bits
+    if (length <= 0x3fff) return 2;  //14 bits
+    if (length <= 0x1fffff) return 3;  //21 bits
+    if (length <= 0xfffffff) return 4;  //28 bits (max length)
     return -1;
   }
 
@@ -522,7 +522,7 @@ public class MQTT {
           byte qos = (byte)((packet[0] & 0x06) >> 1);
           boolean retain = (packet[0] & 0x01) != 0;
           topicLength = getStringLength(packet, pos);
-          if (debug) JFLog.log("topic=" + pos + "/" + topicLength);
+          if (debug) JFLog.log("topic:pos/len=" + pos + "/" + topicLength);
           pos += 2;
           topic_name = getString(packet, pos, topicLength);
           pos += topicLength;
