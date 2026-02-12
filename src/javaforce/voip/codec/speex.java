@@ -24,9 +24,9 @@ public abstract class speex implements RTPAudioCoder {
 
   public static speex getInstance() {
     if (FFM.enabled()) {
-      return new SpeexFFM();
+      return SpeexFFM.getInstance();
     } else {
-      return new SpeexJNI();
+      return SpeexJNI.getInstance();
     }
   }
 
