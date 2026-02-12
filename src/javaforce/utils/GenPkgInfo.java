@@ -48,10 +48,10 @@ public class GenPkgInfo {
     String distro = args[0];
     arch = getArch();
     size = calcSize(args[2]);
-    deps = getDepends(distro);
     //load build.xml and extract app , desc , etc.
     app = tools.getProperty("app");
     apptype = tools.getProperty("apptype");
+    deps = getDepends(distro);
     service = apptype.equals("service");
     switch (apptype) {
       case "client":
