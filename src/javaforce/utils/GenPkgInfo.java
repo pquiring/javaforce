@@ -29,9 +29,9 @@ public class GenPkgInfo {
   private String[] deps;
 
   public static void main(String[] args) {
-    if (args == null || args.length < 4) {
+    if (args == null || args.length < 3) {
       System.out.println("GenPkgInfo : build linux package info files");
-      System.out.println("  Usage : GenPkgInfo distro archtype files.list depends");
+      System.out.println("  Usage : GenPkgInfo distro archtype files.list");
       System.out.println("    distro = debian fedora arch");
       System.exit(1);
     }
