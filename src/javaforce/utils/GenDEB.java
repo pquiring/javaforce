@@ -15,7 +15,7 @@ import javaforce.linux.*;
 public class GenDEB {
   private BuildTools tools;
   public static void main(String[] args) {
-    if (args.length != 2) {
+    if (args.length != 1) {
       System.out.println("Usage:GenDEB build.xml");
       System.exit(1);
     }
