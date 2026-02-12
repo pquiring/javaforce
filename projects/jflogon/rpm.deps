@@ -1,0 +1,17 @@
+jfdesktop
+jfbusserver
+jfnetworkmgr
+jfutils
+xorg-x11-server-Xorg
+xrandr
+xset
+plymouth
+gvfs
+bluez
+samba-winbind-clients
+smbclient
+wpa_supplicant
+wireless-tools
+numlockx
+dosfstools
+ntfs-3g

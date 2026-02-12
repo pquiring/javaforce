@@ -8,10 +8,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.2"/>
 
-  <property name="debian.depends" value="qemu, jfvnc"/>
-  <property name="fedora.depends" value="qemu, jfvnc"/>
-  <property name="arch.depends" value="qemu, jfvnc"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce">

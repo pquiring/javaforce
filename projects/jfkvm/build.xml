@@ -10,8 +10,6 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="9.3"/>
 
-  <property file="javaforce.properties"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce" description="jar">

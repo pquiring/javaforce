@@ -16,17 +16,17 @@ public class GenDEB {
   private BuildTools tools;
   public static void main(String[] args) {
     if (args.length != 2) {
-      System.out.println("Usage:GenDEB build.xml depends");
+      System.out.println("Usage:GenDEB build.xml");
       System.exit(1);
     }
     try {
-      new GenDEB().run(args[0], args[1]);
+      new GenDEB().run(args[0]);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  public void run(String buildfile, String deps) throws Exception {
+  public void run(String buildfile) throws Exception {
     String files = "files.lst";
     if (new File("files-debian.lst").exists()) {
       files = "files-debian.lst";
@@ -68,7 +68,7 @@ public class GenDEB {
     int ret;
     boolean debug = System.getenv("DEBUG") != null;
     try {
-      GenPkgInfo.main(new String[] {"debian", arch, files, deps});
+      GenPkgInfo.main(new String[] {"debian", arch, files});
       if (new File(control).exists()) {
         new File(control).delete();
       }

@@ -8,10 +8,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.4"/>
 
-  <property name="debian.depends" value="scrot"/>
-  <property name="fedora.depends" value="scrot"/>
-  <property name="arch.depends" value="scrot"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-javaforce">

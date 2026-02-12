@@ -23,9 +23,10 @@ public class GenPkgInfo {
   }
 
   private BuildTools tools;
-  private String app, apptype, desc, arch, ver, deps;
+  private String app, apptype, desc, arch, ver;
   private long size;  //in bytes
   private boolean service;
+  private String[] deps;
 
   public static void main(String[] args) {
     if (args == null || args.length < 4) {
@@ -47,7 +48,7 @@ public class GenPkgInfo {
     String distro = args[0];
     arch = getArch();
     size = calcSize(args[2]);
-    deps = args[3];
+    deps = getDepends(distro);
     //load build.xml and extract app , desc , etc.
     app = tools.getProperty("app");
     apptype = tools.getProperty("apptype");
@@ -110,14 +111,31 @@ public class GenPkgInfo {
     }
   }
 
-  private String[] getDepends() {
+  private String[] getDepends(String distro) {
     ArrayList<String> depends = new ArrayList<String>();
-    String[] list = deps.split(",");
-    for(int a=0;a<list.length;a++) {
-      String depend = list[a].trim();
-      if (depend.length() == 0) continue;
-      if (depend.equals("null")) continue;
-      depends.add(depend);
+    String filename = null;
+    switch (distro) {
+      case "debian": filename = "deb.deps"; break;
+      case "fedora": filename = "rpm.deps"; break;
+      case "arch": filename = "pac.deps"; break;
+      default: return new String[0];
+    }
+    try {
+      FileInputStream fis = new FileInputStream(filename);
+      String deps = new String(fis.readAllBytes());
+      fis.close();
+      String[] list = deps.replaceAll("\r", "").split("\n");
+      for(int a=0;a<list.length;a++) {
+        String depend = list[a].trim();
+        if (depend.length() == 0) continue;
+        if (depend.equals("null")) continue;
+        if (depend.startsWith("#")) continue;
+        depends.add(depend);
+      }
+    } catch (FileNotFoundException e) {
+      //ignore error
+    } catch (Exception e) {
+      JFLog.log(e);
     }
     if (!app.equals("javaforce") && !depends.contains("javaforce")) {
       depends.add("javaforce");
@@ -139,15 +157,12 @@ public class GenPkgInfo {
       sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>\n");
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
-      if (!deps.equals("null")) {
-        sb.append("Depends: ");
-        String[] depends = getDepends();
-        for(int a=0;a<depends.length;a++) {
-          if (a > 0) sb.append(",");
-          sb.append(depends[a]);
-        }
-        sb.append("\n");
+      sb.append("Depends: ");
+      for(int a=0;a<deps.length;a++) {
+        if (a > 0) sb.append(",");
+        sb.append(deps[a]);
       }
+      sb.append("\n");
       new File("deb").mkdir();
       {
         FileOutputStream fos = new FileOutputStream("deb/control");
@@ -226,15 +241,12 @@ public class GenPkgInfo {
       sb.append("\n");
 */
       sb.append("Summary: " + desc + "\n");
-      if (!deps.equals("null")) {
-        sb.append("Requires: ");
-        String[] depends = getDepends();
-        for(int a=0;a<depends.length;a++) {
-          if (a > 0) sb.append(",");
-          sb.append(depends[a]);
-        }
-        sb.append("\n");
+      sb.append("Requires: ");
+      for(int a=0;a<deps.length;a++) {
+        if (a > 0) sb.append(",");
+        sb.append(deps[a]);
       }
+      sb.append("\n");
       sb.append("%description\n " + desc + "\n");
       //pre install
       sb.append("%pre\n");
@@ -284,13 +296,10 @@ public class GenPkgInfo {
       sb.append("arch = ");
       sb.append(arch);
       sb.append("\n");
-      if (!deps.equals("null")) {
-        String[] depends = getDepends();
-        for(int a=0;a<depends.length;a++) {
-          sb.append("depend = ");
-          sb.append(depends[a]);
-          sb.append("\n");
-        }
+      for(int a=0;a<deps.length;a++) {
+        sb.append("depend = ");
+        sb.append(deps[a]);
+        sb.append("\n");
       }
       FileOutputStream fos = new FileOutputStream(".PKGINFO");
       fos.write(sb.toString().getBytes());

@@ -10,8 +10,6 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.3"/>
 
-  <property name="debian.depends" value="nfs-kernel-server"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce">

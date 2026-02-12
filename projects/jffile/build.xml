@@ -8,10 +8,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.14"/>
 
-  <property name="debian.depends" value="samba"/>
-  <property name="fedora.depends" value="samba"/>
-  <property name="arch.depends" value="samba"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-jcifs,jar-javaforce,jar-jsvg">

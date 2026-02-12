@@ -1,0 +1,13 @@
+jfutils
+libvirt-devel
+libvirt-daemon
+openvswitch
+bridge-utils
+nfs-utils
+iscsi-initiator-utils
+gfs2-utils
+ocfs2-tools
+glusterfs-server
+cephadm
+ceph-common
+docker

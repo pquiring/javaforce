@@ -1,0 +1,17 @@
+jfdesktop
+jfbusserver
+jfnetworkmgr
+jfutils
+xorg-server
+xorg-xrandr
+xorg-xset
+null
+gvfs
+bluez
+libwbclient
+smbclient
+wpa_supplicant
+wireless_tools
+numlockx
+dosfstools
+ntfs-3g

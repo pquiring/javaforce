@@ -9,10 +9,6 @@
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.8"/>
 
-  <property name="debian.depends" value="jfvnc, freerdp3-sdl, freerdp3-wayland"/>
-  <property name="fedora.depends" value="jfvnc, freerdp"/>
-  <property name="arch.depends" value="jfvnc, freerdp"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-javaforce">

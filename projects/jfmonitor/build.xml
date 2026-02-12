@@ -10,10 +10,6 @@
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.24"/>
 
-  <property name="debian.depends" value="libpcap0.8"/>
-  <property name="fedora.depends" value="libpcap"/>
-  <property name="arch.depends"   value="libpcap"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-sshd-core,jar-sshd-common,jar-slf4j-api,jar-javaforce,jar-jficons" description="jar">

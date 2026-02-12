@@ -8,8 +8,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.13"/>
 
-  <property file="jfconfig.properties"/>
-
   <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce">
