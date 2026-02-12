@@ -28,7 +28,11 @@ public class NetworkControl {
       if (ln.trim().length() == 0) continue;
       if (ln.startsWith(" ")) continue;
       String[] fs = ln.split(" ");
-      devs.add(fs[1]);
+      String dev = fs[1];
+      if (dev.endsWith(":")) {
+        dev = dev.substring(0, dev.length() - 1);  //remove ':' on end of name
+      }
+      devs.add(dev);
     }
     return devs.toArray(JF.StringArrayType);
   }
@@ -42,6 +46,9 @@ public class NetworkControl {
       if (ln.startsWith(" ")) continue;
       String[] fs = ln.split(" ");
       String iface = fs[1];
+      if (iface.endsWith(":")) {
+        iface = iface.substring(0, iface.length() - 1);  //remove ':' on end of name
+      }
       if (!iface.equals(dev)) continue;
       int len = fs.length;
       for(int i=0;i<len;i++) {
