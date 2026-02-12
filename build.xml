@@ -267,6 +267,13 @@
       <arg value="implements"/>
       <arg value="MonitorFolderAPI"/>
     </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/SpeexJNI.java"/>
+      <arg value="src/javaforce/ffm/SpeexFFM.java"/>
+      <arg value="voip.codec"/>
+      <arg value="extends"/>
+      <arg value="speex"/>
+    </java>
   </target>
 
   <target name="clean" description="deletes compiled files">

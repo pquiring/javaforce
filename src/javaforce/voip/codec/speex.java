@@ -6,6 +6,7 @@ import javaforce.*;
 import javaforce.codec.speex.*;
 import javaforce.voip.*;
 import javaforce.jni.*;
+import javaforce.ffm.*;
 
 /**
  * Encodes/decodes speex packets.
@@ -22,7 +23,11 @@ public abstract class speex implements RTPAudioCoder {
   public abstract void speexEcho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out, int length);
 
   public static speex getInstance() {
-    return new SpeexJNI();
+    if (FFM.enabled()) {
+      return new SpeexFFM();
+    } else {
+      return new SpeexJNI();
+    }
   }
 
   private static boolean debug = false;
