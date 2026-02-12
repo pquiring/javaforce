@@ -261,6 +261,11 @@ public class Server {
   private String bluetoothctlPrompt = ".*\\p{Punct}bluetooth\\p{Punct}.*\\p{Punct}";  //ESC[0;49m[bluetooth]ESC[0m#
 
   public class JBusMethods {
+//System API
+    public void setHostname(String hostname) {
+      Linux.setHostname(hostname);
+    }
+//Network API
     public void notifyUp(String dev) {}
     public void notifyDown(String dev) {}
     public void ifUp(String dev) {
@@ -273,6 +278,11 @@ public class Server {
       if (!isIFactive(dev)) {JFLog.log("already down"); return;}
       stopIF(dev);
     }
+    public void setConfig(String dev, String cfg) {
+      NetworkConfig nc = NetworkConfig.fromNetworkd(cfg.split("\n"));
+      NetworkControl.setConfig(dev, nc);
+    }
+//WIFI API
     public void getWAPList(String pack) {
       jbusClient.call(pack, "setWAPList", quote(wapList));
     }
@@ -302,6 +312,7 @@ public class Server {
       pendingWAP.close();
       pendingWAP = null;
     }
+//BlueTooth API
     public void getBTdevices(String pack) {
       ShellProcess sp = new ShellProcess();
 //      ShellProcess.log = true;

@@ -134,4 +134,8 @@ public class ConfigApp extends javax.swing.JFrame {
     }
     setLocation(s.width/2 - d.width/2, s.height/2 - d.height/2);
   }
+
+  public static String quote(String str) {
+    return "\"" + str + "\"";
+  }
 }

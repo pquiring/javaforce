@@ -37,6 +37,11 @@ public class NetworkConfig {
     this.dev = dev;
   }
 
+  public String toString() {
+    String[] cfg = toNetworkd();
+    return JF.join("\n", cfg, 0, true);
+  }
+
   /** Create NetworkConfig from networkd .network file. */
   public static NetworkConfig fromNetworkd(String[] cfg) {
     NetworkConfig nc = new NetworkConfig();

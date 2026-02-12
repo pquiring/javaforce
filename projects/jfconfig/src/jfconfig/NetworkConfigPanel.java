@@ -138,7 +138,13 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
   }
 
   private void save() {
-    NetworkControl.sethostname(hostname.getText());
+    if (false) {
+      //requires root access
+      NetworkControl.sethostname(hostname.getText());
+    } else {
+      //send to jfnetworkmgr
+      ConfigApp.jbusClient.call("org.jflinux.jfnetworkmgr", "setHostname", ConfigApp.quote(hostname.getText()));
+    }
     //TODO : domain
   }
 }

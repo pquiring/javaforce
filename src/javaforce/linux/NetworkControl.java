@@ -170,14 +170,10 @@ public class NetworkControl {
   public static void setConfig(String dev, NetworkConfig cfg) {
     try {
       String[] lns = cfg.toNetworkd();
-      StringBuilder sb = new StringBuilder();
-      for(String ln : lns) {
-        sb.append(ln);
-        sb.append("\n");
-      }
+      String out = JF.join("\n", lns, 0, true);
       String file = networkd + "/20-" + dev + ".network";
       FileOutputStream fos = new FileOutputStream(file);
-      fos.write(sb.toString().getBytes());
+      fos.write(out.getBytes());
       fos.close();
     } catch (Exception e2) {
       JFLog.log(e2);

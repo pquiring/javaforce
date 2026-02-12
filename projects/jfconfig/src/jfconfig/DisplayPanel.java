@@ -450,10 +450,6 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
     return true;
   }
 
-  private static String quote(String str) {
-    return "\"" + str + "\"";
-  }
-
   private void apply() {
     saveMonitor();
     saveConfig();
@@ -461,7 +457,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
       JFAWT.showError("Error", "Failed to apply configuration");
       return;
     }
-    ConfigApp.jbusClient.call("org.jflinux.jfsystemmgr", "broadcastVideoChanged", quote("jfconfig"));
+    ConfigApp.jbusClient.call("org.jflinux.jfsystemmgr", "broadcastVideoChanged", ConfigApp.quote("jfconfig"));
   }
 
   private void saveMonitor() {

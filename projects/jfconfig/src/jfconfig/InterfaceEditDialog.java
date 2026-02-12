@@ -385,8 +385,14 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
     if (d2.length() > 0) {
       cfg.addDNS(d2);
     }
-    NetworkControl.setConfig(dev, cfg);
-    NetworkControl.reload();
+    if (false) {
+      //requires root access
+      NetworkControl.setConfig(dev, cfg);
+      NetworkControl.reload();
+    } else {
+      //send to jfnetworkmgr
+      ConfigApp.jbusClient.call("org.jflinux.jfnetworkmgr", "setConfig", ConfigApp.quote(cfg.toString()));
+    }
   }
 
   private boolean valid() {
