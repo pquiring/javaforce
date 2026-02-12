@@ -1350,25 +1350,32 @@ public class JF {
   }
 
   /** Joins array of strings placing a delimit in between each string.
+   * @param delimit = token to replace between each String
+   * @param strings = array of strings to join
+   * @param add_last_token = place delimit token at end of each string (else just in between strings)
    */
-  public static String join(String delimit, String[] strings) {
+  public static String join(String delimit, String[] strings, int startIdx, boolean add_last_token) {
     StringBuilder sb = new StringBuilder();
-    for(int a=0;a<strings.length;a++) {
-      if (a > 0) sb.append(delimit);
+    for(int a=startIdx;a<strings.length;a++) {
+      if (a > startIdx) sb.append(delimit);
       sb.append(strings[a]);
+    }
+    if (add_last_token && sb.length() > 0) {
+      sb.append(delimit);
     }
     return sb.toString();
   }
 
   /** Joins array of strings placing a delimit in between each string.
    */
+  public static String join(String delimit, String[] strings) {
+    return join(delimit, strings, 0, false);
+  }
+
+  /** Joins array of strings placing a delimit in between each string.
+   */
   public static String join(String delimit, String[] strings, int startIdx) {
-    StringBuilder sb = new StringBuilder();
-    for(int a=startIdx;a<strings.length;a++) {
-      if (a > startIdx) sb.append(delimit);
-      sb.append(strings[a]);
-    }
-    return sb.toString();
+    return join(delimit, strings, startIdx, false);
   }
 
   /** Return n'th index of char ch in str. Returns -1 if not found. */
