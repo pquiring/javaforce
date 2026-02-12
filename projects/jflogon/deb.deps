@@ -6,6 +6,8 @@ xserver-xorg
 x11-xserver-utils
 null
 plymouth
+systemd-networkd
+systemd-resolved
 gvfs
 bluez
 winbind

@@ -6,6 +6,8 @@ xorg-x11-server-Xorg
 xrandr
 xset
 plymouth
+systemd-networkd
+systemd-resolved
 gvfs
 bluez
 samba-winbind-clients

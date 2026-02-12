@@ -6,6 +6,8 @@ xorg-server
 xorg-xrandr
 xorg-xset
 null
+systemd-networkd
+systemd-resolved
 gvfs
 bluez
 libwbclient
