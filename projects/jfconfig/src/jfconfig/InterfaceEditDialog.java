@@ -1,18 +1,14 @@
 package jfconfig;
 
-/**
+/**Interface Edit Dialog
+ *
  * Created : Apr 3, 2012
  *
  * @author pquiring
  */
 
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.io.*;
-
-import javaforce.*;
-import javaforce.awt.JFAWT;
+import javaforce.awt.*;
+import javaforce.net.*;
 import javaforce.linux.*;
 
 public class InterfaceEditDialog extends javax.swing.JDialog {
@@ -46,19 +42,24 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
-    gw4 = new javax.swing.JTextField();
+    gateway4 = new javax.swing.JTextField();
     mask4 = new javax.swing.JTextField();
     ip4 = new javax.swing.JTextField();
     jPanel2 = new javax.swing.JPanel();
     jLabel5 = new javax.swing.JLabel();
     jLabel7 = new javax.swing.JLabel();
-    gw6 = new javax.swing.JTextField();
+    gateway6 = new javax.swing.JTextField();
     ip6 = new javax.swing.JTextField();
     accept = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     dhcp6 = new javax.swing.JRadioButton();
     static6 = new javax.swing.JRadioButton();
     disableIP6 = new javax.swing.JRadioButton();
+    jPanel3 = new javax.swing.JPanel();
+    jLabel4 = new javax.swing.JLabel();
+    dns1 = new javax.swing.JTextField();
+    jLabel6 = new javax.swing.JLabel();
+    dns2 = new javax.swing.JTextField();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Interface eth?");
@@ -90,7 +91,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
           .addComponent(jLabel2))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(gw4)
+          .addComponent(gateway4)
           .addComponent(mask4)
           .addComponent(ip4, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE))
         .addContainerGap())
@@ -108,7 +109,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
-          .addComponent(gw4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+          .addComponent(gateway4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
     );
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("IP6"));
@@ -117,7 +118,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
 
     jLabel7.setText("Gateway");
 
-    gw6.setEnabled(false);
+    gateway6.setEnabled(false);
 
     ip6.setEnabled(false);
 
@@ -132,7 +133,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
           .addComponent(jLabel5))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(gw6, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+          .addComponent(gateway6, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
           .addComponent(ip6))
         .addContainerGap())
     );
@@ -145,7 +146,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel7)
-          .addComponent(gw6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(gateway6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -188,6 +189,39 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
       }
     });
 
+    jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("DNS"));
+
+    jLabel4.setText("DNS1");
+
+    jLabel6.setText("DNS2");
+
+    javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+    jPanel3.setLayout(jPanel3Layout);
+    jPanel3Layout.setHorizontalGroup(
+      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel3Layout.createSequentialGroup()
+        .addComponent(jLabel4)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(dns1))
+      .addGroup(jPanel3Layout.createSequentialGroup()
+        .addComponent(jLabel6)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(dns2))
+    );
+    jPanel3Layout.setVerticalGroup(
+      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel3Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel4)
+          .addComponent(dns1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel6)
+          .addComponent(dns2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -196,19 +230,20 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 84, Short.MAX_VALUE)
             .addComponent(cancel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(accept))
           .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
               .addComponent(disableIP6)
               .addComponent(static4)
               .addComponent(dhcp4)
-              .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(static6)
               .addComponent(dhcp6)
-              .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
@@ -229,6 +264,8 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
         .addComponent(static6)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(accept)
@@ -270,17 +307,22 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
   private javax.swing.JRadioButton dhcp4;
   private javax.swing.JRadioButton dhcp6;
   private javax.swing.JRadioButton disableIP6;
-  private javax.swing.JTextField gw4;
-  private javax.swing.JTextField gw6;
+  private javax.swing.JTextField dns1;
+  private javax.swing.JTextField dns2;
+  private javax.swing.JTextField gateway4;
+  private javax.swing.JTextField gateway6;
   private javax.swing.JTextField ip4;
   private javax.swing.JTextField ip6;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
+  private javax.swing.JPanel jPanel3;
   private javax.swing.JTextField mask4;
   private javax.swing.JRadioButton static4;
   private javax.swing.JRadioButton static6;
@@ -289,11 +331,62 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
   private String dev;
 
   private void loadConfig() {
-    //TODO
+    NetworkConfig cfg = NetworkControl.getConfig(dev);
+    if (cfg == null) return;
+    if (cfg.dhcp4) {
+      dhcp4.setSelected(true);
+    } else {
+      dhcp4.setSelected(false);
+      Subnet4 ipmask4 = new Subnet4(cfg.ip4);
+      ip4.setText(ipmask4.getIP().toString());
+      mask4.setText(ipmask4.getMask().toString());
+      gateway4.setText(cfg.gateway4);
+    }
+    if (cfg.enable_ip6) {
+      if (cfg.dhcp6) {
+        dhcp6.setSelected(true);
+      } else {
+        dhcp6.setSelected(false);
+        ip6.setText(cfg.ip6);
+        gateway6.setText(cfg.gateway6);
+      }
+    }
+    if (cfg.dns != null) {
+      if (cfg.dns.length > 0) {
+        dns1.setText(cfg.dns[0]);
+      }
+      if (cfg.dns.length > 1) {
+        dns2.setText(cfg.dns[1]);
+      }
+    }
   }
 
   private void saveConfig() {
-    //TODO
+    NetworkConfig cfg = new NetworkConfig();
+    cfg.dev = dev;
+    cfg.dhcp4 = dhcp4.isSelected();
+    if (!cfg.dhcp4) {
+      Subnet4 ipmask4 = new Subnet4(ip4.getText(), mask4.getText());
+      cfg.ip4 = ipmask4.toStringCIDR();
+      cfg.gateway4 = gateway4.getText();
+    }
+    if (!disableIP6.isSelected()) {
+      cfg.dhcp6 = dhcp6.isSelected();
+      if (!cfg.dhcp6) {
+        cfg.ip6 = ip6.getText();
+        cfg.gateway6 = gateway6.getText();
+      }
+    }
+    String d1 = dns1.getText();
+    if (d1.length() > 0) {
+      cfg.addDNS(d1);
+    }
+    String d2 = dns2.getText();
+    if (d2.length() > 0) {
+      cfg.addDNS(d2);
+    }
+    NetworkControl.setConfig(dev, cfg);
+    NetworkControl.reload();
   }
 
   private boolean valid() {
@@ -303,7 +396,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
 
   private void setIP6(boolean state) {
     ip6.setEnabled(state);
-    gw6.setEnabled(state);
+    gateway6.setEnabled(state);
   }
 
   private void setPosition() {

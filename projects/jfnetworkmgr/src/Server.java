@@ -13,10 +13,10 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.jbus.*;
+import javaforce.net.*;
 import javaforce.linux.*;
 
 public class Server {
-  private boolean startup;
   private String wapList = "";
   private Timer wapTimer;
 
@@ -49,11 +49,10 @@ public class Server {
   public void start() {
     try {
       This = this;
-      startup = true;
       jbusClient = new JBusClient("org.jflinux.jfnetworkmgr", new JBusMethods());
       jbusClient.start();
       createWAPTimer();
-      startup = false;
+      checkInterfaces();
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -65,17 +64,6 @@ public class Server {
       jbusClient = null;
     }
     cancelWAPTimer();
-  }
-
-  private void updateLink(Interface iface) {
-    try {
-      FileInputStream fis = new FileInputStream("/sys/class/net/" + iface.dev + "/carrier");
-      char carrier = (char)fis.read();
-      fis.close();
-      iface.link = (carrier == '1');
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
   }
 
   private String[] listIFs() {
@@ -118,16 +106,21 @@ public class Server {
     return NetworkControl.isUp(dev);
   }
 
-  public static void dhcpSuccess(Interface iface) {
-    if (Server.This.pendingWAP != null && iface.pack != null) {
-      This.jbusClient.call(iface.pack, "wapSuccess", "");
-      Server.This.pendingWAP = null;
-      iface.pack = null;
+  private void checkInterfaces() {
+    String[] devs = listIFs();
+    if (devs == null) return;
+    boolean reload = false;
+    for(String dev : devs) {
+      NetworkConfig cfg = NetworkControl.getConfig(dev);
+      if (cfg == null) {
+        cfg = new NetworkConfig(dev);
+        NetworkControl.setConfig(dev, cfg);
+        reload = true;
+      }
     }
-  }
-
-  private void exec(String args[]) {
-    try { Runtime.getRuntime().exec(args); } catch (Exception e) {JFLog.log(e);}
+    if (reload) {
+      NetworkControl.reload();
+    }
   }
 
   private void getWAPList() {
@@ -268,14 +261,8 @@ public class Server {
   private String bluetoothctlPrompt = ".*\\p{Punct}bluetooth\\p{Punct}.*\\p{Punct}";  //ESC[0;49m[bluetooth]ESC[0m#
 
   public class JBusMethods {
-    public void notifyUp(String dev) {
-      if (startup) return;
-      //TODO : start dhcp client ???
-    }
-    public void notifyDown(String dev) {
-      if (startup) return;
-      //TODO : stop dhcp client ???
-    }
+    public void notifyUp(String dev) {}
+    public void notifyDown(String dev) {}
     public void ifUp(String dev) {
       JFLog.log("ifUp:" + dev);
       if (isIFactive(dev)) {JFLog.log("already up"); return;}

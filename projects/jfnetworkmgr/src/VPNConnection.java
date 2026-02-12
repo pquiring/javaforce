@@ -269,16 +269,7 @@ primary   DNS address 192.168.0.3
     }
   }
 
-  Interface iface = new Interface();
-
   private void applyDNS() {
-    iface.dev = "vpn" + Server.This.vpnConnections.size();
-    if (domainsearch.length() > 0) {
-      if (!domainsearch.endsWith(".")) domainsearch += ".";
-    } else {
-      domainsearch = "localdomain.";
-    }
-    iface.domain_name = domainsearch;
-    iface.domain_name_servers = dns;
+    //TODO
   }
 }

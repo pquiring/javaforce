@@ -1370,6 +1370,16 @@ public class Linux {
     }
   }
 
+  public static void setHostname(String name) {
+    try {
+      FileOutputStream fos = new FileOutputStream("/etc/hostname");
+      fos.write(name.getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   public static String getDistro() {
     detectDistro();
     switch (distro) {

@@ -19,6 +19,7 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
    */
   public NetworkConfigPanel() {
     initComponents();
+    load();
   }
 
   /**
@@ -37,16 +38,8 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
     hostname = new javax.swing.JTextField();
     jLabel2 = new javax.swing.JLabel();
     domain = new javax.swing.JTextField();
-    jLabel3 = new javax.swing.JLabel();
-    dns1 = new javax.swing.JTextField();
-    jLabel4 = new javax.swing.JLabel();
-    dns2 = new javax.swing.JTextField();
-    jLabel5 = new javax.swing.JLabel();
-    dns3 = new javax.swing.JTextField();
-    jLabel6 = new javax.swing.JLabel();
     jLabel7 = new javax.swing.JLabel();
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     jButton1.setText("< Back");
@@ -79,14 +72,6 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
 
     domain.setText("localdomain");
 
-    jLabel3.setText("DNS1");
-
-    jLabel4.setText("DNS2");
-
-    jLabel5.setText("DNS3");
-
-    jLabel6.setText("NOTE : Domain and DNS values are overridden by DHCP");
-
     jLabel7.setText("You must REBOOT for changes to take effect.");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -100,22 +85,14 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel1)
-              .addComponent(jLabel2)
-              .addComponent(jLabel3)
-              .addComponent(jLabel4)
-              .addComponent(jLabel5))
+              .addComponent(jLabel2))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(hostname)
-              .addComponent(domain)
-              .addComponent(dns1)
-              .addComponent(dns2)
-              .addComponent(dns3)))
+              .addComponent(domain)))
           .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel6)
-              .addComponent(jLabel7))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addComponent(jLabel7)
+            .addGap(0, 58, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -130,23 +107,9 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
           .addComponent(domain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel3)
-          .addComponent(dns1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel4)
-          .addComponent(dns2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel5)
-          .addComponent(dns3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
-        .addComponent(jLabel6)
-        .addGap(18, 18, 18)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(jLabel7)
-        .addGap(0, 283, Short.MAX_VALUE))
+        .addGap(0, 79, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -159,64 +122,23 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_jButton2ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JTextField dns1;
-  private javax.swing.JTextField dns2;
-  private javax.swing.JTextField dns3;
   private javax.swing.JTextField domain;
   private javax.swing.JTextField hostname;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
-  private javax.swing.JLabel jLabel3;
-  private javax.swing.JLabel jLabel4;
-  private javax.swing.JLabel jLabel5;
-  private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JToolBar jToolBar1;
   // End of variables declaration//GEN-END:variables
 
   private void load() {
-    //TODO
+    hostname.setText(NetworkControl.gethostname());
+    //TODO : domain
   }
 
   private void save() {
-    //TODO
-  }
-
-  public static void applyHostname(String hostname) {
-    try {
-      File tmpFile1 = File.createTempFile("hostname", ".tmp");
-      FileOutputStream fos1 = new FileOutputStream(tmpFile1);
-      fos1.write(hostname.getBytes());
-      fos1.close();
-
-      File tmpFile2 = File.createTempFile("hosts", ".tmp");
-      FileOutputStream fos2 = new FileOutputStream(tmpFile2);
-      FileInputStream fis2 = new FileInputStream("/etc/hosts");
-      BufferedReader br = new BufferedReader(new InputStreamReader(fis2));
-      String ln;
-      while ((ln = br.readLine()) != null) {
-        if (ln.startsWith("127.0.0.1")) {
-          ln = "127.0.0.1\tlocalhost " + hostname;
-        }
-        fos2.write((ln + "\n").getBytes());
-      }
-      fos2.close();
-      fis2.close();
-
-      if (!Linux.runScript(new String[] {
-        "cp " + tmpFile1.getAbsolutePath() + " /etc/hostname",
-        "cp " + tmpFile2.getAbsolutePath() + " /etc/hosts",
-        })) {
-
-        tmpFile1.delete();
-        throw new Exception("file io error");
-      }
-      tmpFile1.delete();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-    JFAWT.showMessage("Notice", "Please reboot for changes to take effect");
+    NetworkControl.sethostname(hostname.getText());
+    //TODO : domain
   }
 }

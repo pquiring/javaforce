@@ -5,6 +5,7 @@ package javaforce.linux;
  * @author pquiring
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -141,5 +142,53 @@ public class NetworkControl {
   public static boolean route_edit(Route route) {
     route_remove(route);
     return route_add(route);
+  }
+  private static String networkd = "/usr/lib/systemd/network";
+  /** Retrieves interface config from networkd. */
+  public static NetworkConfig getConfig(String dev) {
+    try {
+      String file = networkd + "/20-" + dev + ".network";
+      FileInputStream fis = new FileInputStream(file);
+      String[] cfg = new String(fis.readAllBytes()).split("\n");
+      fis.close();
+      return NetworkConfig.fromNetworkd(cfg);
+    } catch (FileNotFoundException e1) {
+      return null;
+    } catch (Exception e2) {
+      JFLog.log(e2);
+    }
+    return null;
+  }
+  /** Saves networkd config file for interface. */
+  public static void setConfig(String dev, NetworkConfig cfg) {
+    try {
+      String[] lns = cfg.toNetworkd();
+      StringBuilder sb = new StringBuilder();
+      for(String ln : lns) {
+        sb.append(ln);
+        sb.append("\n");
+      }
+      String file = networkd + "/20-" + dev + ".network";
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(sb.toString().getBytes());
+      fos.close();
+    } catch (Exception e2) {
+      JFLog.log(e2);
+    }
+  }
+  /** Forces networkd to reload config files. */
+  public static boolean reload() {
+    ShellProcess sp = new ShellProcess();
+    String output = sp.run(new String[] {"/usr/bin/networkctl", "reload"}, true);
+    JFLog.log(logid, output);
+    return sp.getErrorLevel() == 0;
+  }
+
+  public static String gethostname() {
+    return Linux.getHostname();
+  }
+
+  public static void sethostname(String hostname) {
+    Linux.setHostname(hostname);
   }
 }
