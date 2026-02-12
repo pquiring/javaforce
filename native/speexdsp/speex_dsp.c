@@ -62,7 +62,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexFree
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexDenoise
-  (JNIEnv *e, jobject o, jlong ctx, jshortArray audio)
+  (JNIEnv *e, jobject o, jlong ctx, jshortArray audio, jint length)
 {
   if (ctx == 0) {
     printf("speex_dsp_denoise() called with null ctx");
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexDenoise
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexEcho
-  (JNIEnv *e, jobject o, jlong ctx, jshortArray audio_mic, jshortArray audio_spk, jshortArray audio_out)
+  (JNIEnv *e, jobject o, jlong ctx, jshortArray audio_mic, jshortArray audio_spk, jshortArray audio_out, jint length)
 {
   if (ctx == 0) {
     printf("speex_dsp_echo() called with null ctx");
@@ -95,8 +95,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_SpeexJNI_speexEcho
 static JNINativeMethod javaforce_voip_codec_speex[] = {
   {"speexCreate", "(II)J", (void *)&Java_javaforce_jni_SpeexJNI_speexCreate},
   {"speexFree", "(J)V", (void *)&Java_javaforce_jni_SpeexJNI_speexFree},
-  {"speexDenoise", "(J[S)V", (void *)&Java_javaforce_jni_SpeexJNI_speexDenoise},
-  {"speexEcho", "(J[S[S[S)V", (void *)&Java_javaforce_jni_SpeexJNI_speexEcho},
+  {"speexDenoise", "(J[SI)V", (void *)&Java_javaforce_jni_SpeexJNI_speexDenoise},
+  {"speexEcho", "(J[S[S[SI)V", (void *)&Java_javaforce_jni_SpeexJNI_speexEcho},
 };
 
 extern "C" void speex_dsp_register(JNIEnv *env);

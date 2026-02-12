@@ -18,8 +18,8 @@ public abstract class speex implements RTPAudioCoder {
 
   public abstract long speexCreate(int sample_rate, int echo_buffers);
   public abstract void speexFree(long ctx);
-  public abstract void speexDenoise(long ctx, short[] audio);
-  public abstract void speexEcho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out);
+  public abstract void speexDenoise(long ctx, short[] audio, int length);
+  public abstract void speexEcho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out, int length);
 
   public static speex getInstance() {
     return new SpeexJNI();
@@ -199,17 +199,29 @@ public abstract class speex implements RTPAudioCoder {
    * @param audio = audio samples
    */
   public void speex_dsp_denoise(long ctx, short[] audio) {
-    speexDenoise(ctx, audio);
+    speexDenoise(ctx, audio, audio.length);
   }
 
   /** Performs echo cancellation.
    *
+   * All 3 arrays must be same length.
+   *
    * @param ctx = speex context
-   * @param audio_out = outbound audio (not modified)
-   * @param audio_mic = mic audio (modified)
+   * @param audio_mic = mic audio (not modified)
+   * @param audio_spk = speaker audio (not modified)
+   * @param audio_out = outbound audio (modified)
    */
   public void speex_dsp_echo(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out) {
-    speexEcho(ctx, audio_mic, audio_spk, audio_out);
+    int length = audio_mic.length;
+    if (audio_spk.length != length) {
+      JFLog.log("speex_dsp_echo:Error:audio_spk.length != audio_mic.length");
+      return;
+    }
+    if (audio_out.length != length) {
+      JFLog.log("speex_dsp_echo:Error:audio_out.length != audio_mic.length");
+      return;
+    }
+    speexEcho(ctx, audio_mic, audio_spk, audio_out, length);
   }
 
   private static void noise(short[] audio) {
