@@ -142,9 +142,9 @@ Current progress:
    - Media
    - ComPort
    - MonitorFolder
+   - Speex
 
   TODO:
-   - Speex
    - VM
    - UI
    - NI DAQmx
