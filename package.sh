@@ -121,6 +121,11 @@ if [[ "$ABORT" == "true" ]]; then
   $EXIT
 fi
 
+if [[ "$RELEASE" == "" ]]; then
+  echo OS version not detected!
+  $EXIT
+fi
+
 if [ ! -f javaforce.jar ]; then
   echo Please build javaforce first!
   $EXIT
