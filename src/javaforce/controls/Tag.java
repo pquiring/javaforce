@@ -137,7 +137,6 @@ public class Tag {
       case ControllerType.S7: return "S7:" + host;
       case ControllerType.AB: return "AB:" + host;
       case ControllerType.MB: return "MB:" + host;
-      case ControllerType.NI: return "NI:" + host;
       case ControllerType.MIC: return "MIC:" + host;
     }
     JFLog.log("Tag:Error:type unknown:" + type);
@@ -158,9 +157,6 @@ public class Tag {
 
   public String toString() {
     if (!isValid()) return "not set";
-    if (type == ControllerType.NI) {
-      return host;
-    }
     if (type == ControllerType.MIC) {
       return "MIC:" + host;
     }

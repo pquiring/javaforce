@@ -68,7 +68,6 @@ public class Controller {
    * url = "S7:host"
    * url = "MODBUS:host"
    * url = "AB:host"
-   * url = "NI:device/options"
    * url = "MIC:name"  (int16 data type , %lt;default%gt; will use default mic)
    *
    */
@@ -401,10 +400,6 @@ public class Controller {
             return false;
           }
           return true;
-        }
-        case ControllerType.NI: {
-          JFLog.log("Controller:write():NI not implemented");
-          return false;
         }
         case ControllerType.MIC: {
           JFLog.log("Controller:write():MIC not supported");
@@ -741,7 +736,6 @@ public class Controller {
         case ControllerType.MB:
         case ControllerType.JF:
           return socket.isConnected();
-        case ControllerType.NI:
         case ControllerType.MIC:
         default:
           return connected;
@@ -759,7 +753,6 @@ public class Controller {
       case ControllerType.S7: return true;
       case ControllerType.AB: return false;
       case ControllerType.MB: return true;
-      case ControllerType.NI: return true;
       case ControllerType.MIC: return false;
       default: return true;
     }
