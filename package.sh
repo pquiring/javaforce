@@ -5,11 +5,21 @@
 # recommend running as : package.sh > build.log
 # then search build.log for "error" or "fail"
 
+ABORT=false
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  #script executed directly
+  EXIT=exit
+else
+  #script sourced
+  EXIT=return
+fi
+
 function detectos {
   if [ ! -f /etc/os-release ]; then
     echo Unable to detect os
     echo /etc/os-release not found!
-    exit
+    $EXIT
   fi
   . /etc/os-release
   case $ID in
@@ -28,7 +38,8 @@ function detectos {
         ;;
       *)
         echo Invalid HOSTTYPE!
-        exit
+        ABORT=true
+        return
         ;;
       esac
       ;;
@@ -50,26 +61,32 @@ function detectos {
       #VERSION_CODENAME varies
       echo Ubuntu not supported for packaging, please use Debian!
       echo Debian repo can be used in Ubuntu.
-      exit
+      ABORT=true
+      return
       ;;
     *)
       echo Unknown os detected!
       echo ID=%ID
-      exit
+      ABORT=true
+      return
       ;;
   esac
 }
 
 detectos
 
+if [[ "$ABORT" == "true" ]]; then
+  $EXIT
+fi
+
 if [ ! -f javaforce.jar ]; then
   echo Please build javaforce first!
-  exit
+  $EXIT
 fi
 
 if [ ! -f ~/bin/linux64.bin ]; then
   echo Please build native first!
-  exit
+  $EXIT
 fi
 
 #install repo
