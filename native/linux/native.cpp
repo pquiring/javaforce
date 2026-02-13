@@ -29,7 +29,6 @@
 #include <jawt.h>
 #include <jawt_md.h>
 
-#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_jni_CameraJNI.h"
@@ -1483,10 +1482,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #include "../common/ffmpeg.cpp"
 
 #include "../common/videobuffer.cpp"
-
-#ifndef __FreeBSD__
-#include "../common/ni.cpp"
-#endif
 
 #include "../common/opencl-jni.cpp"
 #include "../common/opencl-ffm.cpp"

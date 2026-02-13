@@ -25,7 +25,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_jni_CameraJNI.h"

@@ -17,7 +17,6 @@ import javaforce.*;
 import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
 import javaforce.controls.ab.*;
-import javaforce.controls.ni.*;
 import javaforce.controls.jfc.*;
 import javaforce.media.*;
 
@@ -36,7 +35,6 @@ public class Controller {
   private PlcDriver plcDrv;
   private int plcType;
   private int plcSubType;
-  private DAQmx daq;
   private Object lock = new Object();  //read/write lock
   private static Object s7_connect_lock = new Object();
   private AudioInput mic;
@@ -204,16 +202,6 @@ public class Controller {
       connected = true;
       return true;
     }
-    if (url.startsWith("NI:")) {
-      plcType = ControllerType.NI;
-      daq = DAQmx.getInstance();
-      connected = daq.connect(url.substring(3));
-      if (!connected) {
-        daq.close();
-        daq = null;
-      }
-      return connected;
-    }
     if (url.startsWith("MIC:")) {
       plcType = ControllerType.MIC;
       mic = new AudioInput();
@@ -265,12 +253,6 @@ public class Controller {
         } catch (Exception e) {
           e.printStackTrace();
           return false;
-        }
-        break;
-      case ControllerType.NI:
-        if (daq != null) {
-          daq.close();
-          daq = null;
         }
         break;
       case ControllerType.MIC:
@@ -579,9 +561,6 @@ public class Controller {
           }
           tag = JFPacket.decodePacket(Arrays.copyOf(reply, replySize));
           return tag.data;
-        }
-        case ControllerType.NI: {
-          return daq.read();
         }
         case ControllerType.MIC: {
           byte[] ret = new byte[2];

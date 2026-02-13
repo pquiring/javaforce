@@ -14,7 +14,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_jni_CameraJNI.h"
@@ -1439,8 +1438,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 
 #include "../common/opencl-jni.cpp"
 #include "../common/opencl-ffm.cpp"
-
-#include "../common/ni.cpp"
 
 #include "../common/types.h"
 

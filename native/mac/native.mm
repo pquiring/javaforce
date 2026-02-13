@@ -14,7 +14,6 @@
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_jni_CameraJNI.h"
 #include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_CLJNI.h"
 
@@ -58,8 +57,6 @@ jboolean glGetFunction(void **funcPtr, const char *name)
 
 #include "../common/opencl-jni.cpp"
 #include "../common/opencl-ffm.cpp"
-
-#include "../common/ni.cpp"
 
 #include "../common/types.h"
 

@@ -35,7 +35,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_DAQmxJNI.h"
 #include "javaforce_jni_GLJNI.h"
 #include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_JFNative.h"

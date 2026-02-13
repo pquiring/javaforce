@@ -41,10 +41,6 @@ void registerCommonNatives(JNIEnv *env) {
   cls = findClass(env, "javaforce/jni/JFNative");
   registerNatives(env, cls, javaforce_jni_JFNative, sizeof(javaforce_jni_JFNative)/sizeof(JNINativeMethod));
 
-#ifndef __FreeBSD__
-  ni_register(env);
-#endif
-
   gl_register(env);
 
   glfw_register(env);
