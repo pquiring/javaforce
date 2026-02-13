@@ -145,10 +145,10 @@ Current progress:
    - Speex
 
   TODO:
-   - VM
-   - UI
-   - NI DAQmx
-   - GPIO + I2C
+   - VM (35 funcs)
+   - UI (20 funcs)
+   - NI DAQmx (13 funcs)
+   - GPIO (5) + I2C (4)
    - misc functions
 
 Graal Support
