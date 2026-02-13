@@ -19,7 +19,8 @@ function detectos {
   if [ ! -f /etc/os-release ]; then
     echo Unable to detect os
     echo /etc/os-release not found!
-    $EXIT
+    ABORT=true
+    return
   fi
   . /etc/os-release
   case $ID in
@@ -73,6 +74,47 @@ function detectos {
   esac
 }
 
+function package {
+  #clean repo
+  echo cleaning repo/$OS/$RELEASE/$ARCH/
+  cd repo/$OS/$RELEASE/$ARCH
+  chmod +x clean.sh
+  ./clean.sh
+  cd ../../../..
+
+  #force rebuild everything
+  find -name "*.class" | xargs rm 2>/dev/null
+
+  echo Packaging for : $OS/$RELEASE on $ARCH
+  echo Packaging for : $OS/$RELEASE on $ARCH 1>&2
+
+  #package javaforce
+  echo Packaging javaforce
+  echo Packaging javaforce 1>&2
+  ant $pkg
+
+  #package utils
+  echo Packaging jfutils
+  echo Packaging jfutils 1>&2
+  cd utils
+  ant $pkg
+  cd ..
+
+  #package projects
+  cd projects
+  chmod +x package.sh
+  ./package.sh
+  cd ..
+
+  #package libs
+  cd lib
+  chmod +x package.sh
+  ./package.sh
+  cd ..
+
+  echo Build Complete!
+}
+
 detectos
 
 if [[ "$ABORT" == "true" ]]; then
@@ -94,41 +136,4 @@ if [ ! -f repo/readme.txt ]; then
   ant repo
 fi
 
-#clean repo
-echo cleaning repo/$OS/$RELEASE/$ARCH/
-cd repo/$OS/$RELEASE/$ARCH
-chmod +x clean.sh
-./clean.sh
-cd ../../../..
-
-#force rebuild everything
-find -name "*.class" | xargs rm 2>/dev/null
-
-echo Packaging for : $OS/$RELEASE on $ARCH
-echo Packaging for : $OS/$RELEASE on $ARCH 1>&2
-
-#package javaforce
-echo Packaging javaforce
-echo Packaging javaforce 1>&2
-ant $pkg
-
-#package utils
-echo Packaging jfutils
-echo Packaging jfutils 1>&2
-cd utils
-ant $pkg
-cd ..
-
-#package projects
-cd projects
-chmod +x package.sh
-./package.sh
-cd ..
-
-#package libs
-cd lib
-chmod +x package.sh
-./package.sh
-cd ..
-
-echo Build Complete!
+package
