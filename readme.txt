@@ -168,7 +168,7 @@ GraalVM support for AWT is still a work in progress.
 
 Debugging
 ---------
-The native loaders in /bin enable JMX debugging support on port 9010.
+The CLI native loaders ~/bin/jfexec* enable JMX debugging support on port 9010.
 These loaders are used when you run an app with "ant run".
 From VisualVM you can connect to the JMX as localhost:9010
 You can also enable debug support by adding DEBUG=true to the project .cfg file to have it enabled in the generated executable.
