@@ -1,5 +1,12 @@
 What's new...
 
+Feb 13/2026 : JF/99.0
+  - More JNI to FFM implemented : Speex audio codec
+  - jfMQTT/0.11
+    - fix : processing messages of a certain size
+  - jfLinux improvements
+    - add support for systemd-networkd
+
 Feb 6/2026 : JF/98.0
   - More JNI to FFM implemented : Media, ComPort and MonitorFolder
   - Fixed major memory leaks in FFM implementations
