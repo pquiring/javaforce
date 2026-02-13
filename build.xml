@@ -28,6 +28,7 @@
   </fileset>
 
   <property file="versions.properties"/>
+  <property file="javaforce.properties"/>
 
   <property name="version" value="${javaforce-version}"/>
 
