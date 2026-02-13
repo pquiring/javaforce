@@ -147,7 +147,6 @@ Current progress:
   TODO:
    - VM (35 funcs)
    - UI (20 funcs)
-   - NI DAQmx (13 funcs)
    - GPIO (5) + I2C (4)
    - misc functions
 
