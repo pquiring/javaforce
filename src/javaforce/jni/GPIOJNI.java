@@ -9,13 +9,13 @@ import java.io.*;
 
 import javaforce.*;
 import javaforce.jni.*;
-import javaforce.pi.*;
+import javaforce.api.*;
 
-public class GPIOJNI implements GPIO {
+public class GPIOJNI implements GPIOAPI {
 
   private static GPIOJNI instance;
 
-  public static GPIO getInstance() {
+  public static GPIOAPI getInstance() {
     if (instance == null) {
       instance = new GPIOJNI();
       if (!instance.init()) {
@@ -43,13 +43,13 @@ public class GPIOJNI implements GPIO {
         }
       }
       if (addr == -1) throw new Exception("GPIO not found in /proc/iomem");
-      return ninit(addr);
+      return gpioSetup(addr);
     } catch (Exception e) {
       JFLog.log(e);
       return false;
     }
   }
-  private native boolean ninit(int addr);
+  public native boolean gpioSetup(int addr);
   public native boolean gpioConfigOutput(int idx);
   public native boolean gpioConfigInput(int idx);
   public native boolean gpioWrite(int idx, boolean state);

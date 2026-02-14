@@ -275,6 +275,13 @@
       <arg value="implements"/>
       <arg value="SpeexAPI"/>
     </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/GPIOJNI.java"/>
+      <arg value="src/javaforce/ffm/GPIOFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="GPIOAPI"/>
+    </java>
   </target>
 
   <target name="clean" description="deletes compiled files">
