@@ -5,9 +5,9 @@ package javaforce.jni;
  * @author pquiring
  */
 
-import javaforce.voip.codec.*;
+import javaforce.api.*;
 
-public class SpeexJNI extends speex {
+public class SpeexJNI implements SpeexAPI {
   public native long speexCreate(int sample_rate, int echo_buffers);
   public native void speexFree(long ctx);
   public native void speexDenoise(long ctx, short[] audio, int length);

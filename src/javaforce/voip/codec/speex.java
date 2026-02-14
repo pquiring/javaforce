@@ -3,6 +3,7 @@ package javaforce.voip.codec;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.codec.speex.*;
 import javaforce.voip.*;
 import javaforce.jni.*;
@@ -15,18 +16,18 @@ import javaforce.ffm.*;
  *
  */
 
-public abstract class speex implements RTPAudioCoder {
-
-  public abstract long speexCreate(int sample_rate, int echo_buffers);
-  public abstract void speexFree(long ctx);
-  public abstract void speexDenoise(long ctx, short[] audio, int length);
-  public abstract void speexEcho(long ctx, short[] audio_mic, short[] audio_spk, short[] audio_out, int length);
+public class speex implements RTPAudioCoder {
 
   public static speex getInstance() {
+    return new speex();
+  }
+
+  private SpeexAPI api;
+  public speex() {
     if (FFM.enabled()) {
-      return SpeexFFM.getInstance();
+      api = new SpeexFFM();
     } else {
-      return SpeexJNI.getInstance();
+      api = new SpeexJNI();
     }
   }
 
@@ -175,7 +176,7 @@ public abstract class speex implements RTPAudioCoder {
    *  @return ctx
    */
   public long speex_dsp_init(int sample_rate) {
-    return speexCreate(sample_rate, -1);
+    return api.speexCreate(sample_rate, -1);
   }
 
   /** Allocate speex DSP context.
@@ -187,7 +188,7 @@ public abstract class speex implements RTPAudioCoder {
    *  @return ctx
    */
   public long speex_dsp_init(int sample_rate, int echo_buffers) {
-    return speexCreate(sample_rate, echo_buffers);
+    return api.speexCreate(sample_rate, echo_buffers);
   }
 
   /** Free speex DSP context
@@ -195,7 +196,7 @@ public abstract class speex implements RTPAudioCoder {
    * @param ctx = speex context
    */
   public void speex_dsp_uninit(long ctx) {
-    speexFree(ctx);
+    api.speexFree(ctx);
   }
 
   /** Performs denoise function.
@@ -204,7 +205,7 @@ public abstract class speex implements RTPAudioCoder {
    * @param audio = audio samples
    */
   public void speex_dsp_denoise(long ctx, short[] audio) {
-    speexDenoise(ctx, audio, audio.length);
+    api.speexDenoise(ctx, audio, audio.length);
   }
 
   /** Performs echo cancellation.
@@ -226,7 +227,7 @@ public abstract class speex implements RTPAudioCoder {
       JFLog.log("speex_dsp_echo:Error:audio_out.length != audio_mic.length");
       return;
     }
-    speexEcho(ctx, audio_mic, audio_spk, audio_out, length);
+    api.speexEcho(ctx, audio_mic, audio_spk, audio_out, length);
   }
 
   private static void noise(short[] audio) {

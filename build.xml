@@ -271,9 +271,9 @@
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="src/javaforce/jni/SpeexJNI.java"/>
       <arg value="src/javaforce/ffm/SpeexFFM.java"/>
-      <arg value="voip.codec"/>
-      <arg value="extends"/>
-      <arg value="speex"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="SpeexAPI"/>
     </java>
   </target>
 

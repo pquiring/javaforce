@@ -1,6 +1,6 @@
 package javaforce.ffm;
 
-/** speex FFM implementation.
+/** SpeexAPI FFM implementation.
  * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
  */
 
@@ -10,9 +10,9 @@ import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
-import javaforce.voip.codec.*;
+import javaforce.api.*;
 
-public class SpeexFFM extends speex {
+public class SpeexFFM implements SpeexAPI {
 
   private FFM ffm;
 
@@ -44,7 +44,7 @@ public class SpeexFFM extends speex {
   private boolean ffm_init() {
     MethodHandle init;
     ffm = FFM.getInstance();
-    init = ffm.getFunction("speexinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
+    init = ffm.getFunction("SpeexAPIinit", ffm.getFunctionDesciptor(ValueLayout.JAVA_BOOLEAN));
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
