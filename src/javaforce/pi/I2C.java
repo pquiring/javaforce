@@ -7,13 +7,32 @@ package javaforce.pi;
  * @author pquiring
  */
 
+import javaforce.api.*;
+import javaforce.ffm.*;
 import javaforce.jni.*;
 
-public interface I2C {
+public class I2C {
+  private I2CAPI api;
   public static I2C getInstance() {
-    return I2CJNI.getInstance();
+    if (FFM.enabled()) {
+      return new I2C(I2CFFM.getInstance());
+    } else {
+      return new I2C(I2CJNI.getInstance());
+    }
   }
-  public boolean i2cSetSlave(int addr);
-  public boolean i2cWrite(byte[] data);
-  public int i2cRead(byte[] data);
+  public I2C(I2CAPI api) {
+    this.api = api;
+  }
+  public boolean i2cSetup() {
+    return api.i2cSetup();
+  }
+  public boolean i2cSetSlave(int addr) {
+    return api.i2cSetSlave(addr);
+  }
+  public boolean i2cWrite(byte[] data) {
+    return api.i2cWrite(data, data.length);
+  }
+  public int i2cRead(byte[] data) {
+    return api.i2cRead(data, data.length);
+  }
 }

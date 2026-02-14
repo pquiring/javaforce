@@ -5,23 +5,23 @@ package javaforce.jni;
  * @author pquiring
  */
 
-import javaforce.pi.*;
+import javaforce.api.*;
 
-public class I2CJNI implements I2C {
+public class I2CJNI implements I2CAPI {
   private static I2CJNI instance;
 
-  public static I2C getInstance() {
+  public static I2CAPI getInstance() {
     if (instance == null) {
       instance = new I2CJNI();
-      if (!instance.init()) {
+      if (!instance.i2cSetup()) {
         instance = null;
       }
     }
     return instance;
   }
 
-  private native boolean init();
+  public native boolean i2cSetup();
   public native boolean i2cSetSlave(int addr);
-  public native boolean i2cWrite(byte[] data);
-  public native int i2cRead(byte[] data);
+  public native boolean i2cWrite(byte[] data, int length);
+  public native int i2cRead(byte[] data, int length);
 }

@@ -12,15 +12,14 @@ import javaforce.ffm.*;
 import javaforce.jni.*;
 
 public class GPIO {
-  private static GPIOAPI api;
+  private GPIOAPI api;
 
   public static GPIO getInstance() {
     if (FFM.enabled()) {
-      api = GPIOFFM.getInstance();
+      return new GPIO(GPIOFFM.getInstance());
     } else {
-      api = GPIOJNI.getInstance();
+      return new GPIO(GPIOJNI.getInstance());
     }
-    return new GPIO(api);
   }
 
   public GPIO(GPIOAPI api) {

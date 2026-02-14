@@ -11,8 +11,7 @@
 
 static int file_i2c;
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_init
-  (JNIEnv *env, jobject obj)
+jboolean i2cSetup()
 {
   if ((file_i2c = open("/dev/i2c-1", O_RDWR)) < 0)
   {
@@ -22,8 +21,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_init
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cSetSlave
-  (JNIEnv *env, jobject obj, jint addr)
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cSetup
+  (JNIEnv *env, jobject obj)
+{
+  return i2cSetup();
+}
+
+jboolean i2cSetSlave(jint addr)
 {
   if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
   {
@@ -31,6 +35,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cSetSlave
     return JNI_FALSE;
   }
   return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cSetSlave
+  (JNIEnv *env, jobject obj, jint addr)
+{
+  return i2cSetSlave(addr);
+}
+
+jint i2cRead(jbyte* buf, jint bufsiz)
+{
+  return read(file_i2c, buf, bufsiz);
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_I2CJNI_i2cRead
@@ -41,6 +56,12 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_I2CJNI_i2cRead
   int readsiz = read(file_i2c, buf, bufsiz);
   e->ReleaseByteArrayElements(ba, buf, 0);
   return readsiz;
+}
+
+jboolean i2cWrite(jbyte* buf, jint bufsiz)
+{
+  int written = write(file_i2c, buf, bufsiz);
+  return written == bufsiz;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cWrite
@@ -54,10 +75,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cWrite
 }
 
 static JNINativeMethod javaforce_pi_I2C[] = {
-  {"init", "()Z", (void *)&Java_javaforce_jni_I2CJNI_init},
+  {"i2cSetup", "()Z", (void *)&Java_javaforce_jni_I2CJNI_i2cSetup},
   {"i2cSetSlave", "(I)Z", (void *)&Java_javaforce_jni_I2CJNI_i2cSetSlave},
-  {"i2cWrite", "([B)Z", (void *)&Java_javaforce_jni_I2CJNI_i2cWrite},
-  {"i2cRead", "([B)I", (void *)&Java_javaforce_jni_I2CJNI_i2cRead},
+  {"i2cWrite", "([BI)Z", (void *)&Java_javaforce_jni_I2CJNI_i2cWrite},
+  {"i2cRead", "([BI)I", (void *)&Java_javaforce_jni_I2CJNI_i2cRead},
 };
 
 extern void i2c_register(JNIEnv *env);
@@ -67,4 +88,13 @@ void i2c_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/I2CJNI");
   registerNatives(env, cls, javaforce_pi_I2C, sizeof(javaforce_pi_I2C)/sizeof(JNINativeMethod));
+}
+
+extern "C" {
+  JNIEXPORT jboolean (*_i2cSetup)() = &i2cSetup;
+  JNIEXPORT jboolean (*_i2cSetSlave)(jint) = &i2cSetSlave;
+  JNIEXPORT jboolean (*_i2cWrite)(jbyte*, jint) = &i2cWrite;
+  JNIEXPORT jint (*_i2cRead)(jbyte*, jint) = &i2cRead;
+
+  JNIEXPORT jboolean i2cinit() {return JNI_TRUE;}
 }
