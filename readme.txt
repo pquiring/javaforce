@@ -131,24 +131,8 @@ A minimal pom.xml is required to upload projects to Maven Central (sonatype).
 
 FFM Support
 -----------
-JNI methods are being converted to FFM (Foreign Function & Memory API).
+Javaforce now support using FFM (Foreign Function & Memory API) to access native functions instead of JNI.
 You can call FFM.disable() to revert to JNI.
-Current progress:
-  Completed:
-   - OpenGL
-   - OpenCL
-   - Camera
-   - PCap
-   - Media
-   - ComPort
-   - MonitorFolder
-   - Speex
-   - UI
-   - GPIO + I2C
-
-  TODO:
-   - VM (35 funcs)
-   - misc functions
 
 Graal Support
 -------------
