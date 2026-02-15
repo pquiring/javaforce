@@ -6,11 +6,16 @@ package javaforce.api;
  */
 
 import javaforce.jni.*;
+import javaforce.ffm.*;
 import javaforce.ui.*;
 
 public interface UIAPI {
   public static UIAPI getInstance() {
-    return UIJNI.getInstance();
+    if (FFM.enabled()) {
+      return UIFFM.getInstance();
+    } else {
+      return UIJNI.getInstance();
+    }
   }
 
   public static final int KEY_TYPED = 1;
@@ -39,11 +44,11 @@ public interface UIAPI {
 
   //Window
   public boolean uiInit();
-  public long uiWindowCreate(int style, String title, int width, int height, Window eventMgr, long shared);
+  public long uiWindowCreate(int style, String title, int width, int height, UIEvents events, long shared);
   public void uiWindowDestroy(long id);
   public void uiWindowSetCurrent(long id);
   public void uiWindowSetIcon(long id, String icon, int x, int y);
-  public void uiPollEvents(int wait);
+  public void uiPollEvents(long id, int wait);  //TODO : move UIEvents here - then the upcall doesn't need to be stored
   public void uiPostEvent();
   public void uiWindowShow(long id);
   public void uiWindowHide(long id);

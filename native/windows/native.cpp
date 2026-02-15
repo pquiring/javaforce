@@ -55,23 +55,37 @@ HMODULE wgl = NULL;
 
 //OpenGL API
 
-#include "../common/glfw.cpp"
+#include "../common/ui-jni.cpp"
+#include "../common/ui-ffm.cpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WGL
 
 #include "../glfw/include/GLFW/glfw3native.h"
 
+void uiWindowSetIcon(GLFWContextFFM* ctx, const char* filename, jint x, jint y)
+{
+  if (ctx == NULL) return;
+  HANDLE icon = LoadImage(NULL, filename, IMAGE_ICON, x, y, LR_LOADFROMFILE);
+  HWND hwnd = glfwGetWin32Window(ctx->window);
+  SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
+  SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon);
+}
+
 JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
   (JNIEnv *e, jobject c, jlong id, jstring filename, jint x, jint y)
 {
-  GLFWContext *ctx = (GLFWContext*)id;
+  GLFWContextJNI *ctx = (GLFWContextJNI*)id;
   const char *cstr = e->GetStringUTFChars(filename,NULL);
   HANDLE icon = LoadImage(NULL, cstr, IMAGE_ICON, x, y, LR_LOADFROMFILE);
   e->ReleaseStringUTFChars(filename, cstr);
   HWND hwnd = glfwGetWin32Window(ctx->window);
   SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
   SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon);
+}
+
+extern "C" {
+  JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*,const char*,jint,jint) = &uiWindowSetIcon;
 }
 
 #include "../common/gl.cpp"

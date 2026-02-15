@@ -44,11 +44,11 @@ public class UIJNI implements UIAPI {
 
   //Window
   public native boolean uiInit();
-  public native long uiWindowCreate(int style, String title, int width, int height, Window eventMgr, long shared);
+  public native long uiWindowCreate(int style, String title, int width, int height, UIEvents events, long shared);
   public native void uiWindowDestroy(long id);
   public native void uiWindowSetCurrent(long id);
   public native void uiWindowSetIcon(long id, String icon, int x, int y);
-  public native void uiPollEvents(int wait);
+  public native void uiPollEvents(long id, int wait);
   public native void uiPostEvent();
   public native void uiWindowShow(long id);
   public native void uiWindowHide(long id);

@@ -40,11 +40,15 @@ public class UIRender {
     m_model = new Matrix();
 //    m_model.setIdentity();
     scene.init(VertexShader.source, FragmentShader.source);
+    Window first = null;
     while (true) {
       setContext();
       Window[] windowList = Window.getWindows();
       if (windowList.length == 0) break;
       for(Window window : windowList) {
+        if (first == null) {
+          first = window;
+        }
         try {
           window.render(scene);
         } catch (Exception e) {
@@ -61,7 +65,9 @@ public class UIRender {
           setContext();
         }
       }
-      Window.pollEvents(wait);
+      if (first != null) {
+        first.pollEvents(wait);
+      }
     }
   }
 }

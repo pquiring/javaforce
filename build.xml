@@ -289,6 +289,13 @@
       <arg value="implements"/>
       <arg value="I2CAPI"/>
     </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/jni/UIJNI.java"/>
+      <arg value="src/javaforce/ffm/UIFFM.java"/>
+      <arg value="api,ui"/>
+      <arg value="implements"/>
+      <arg value="UIAPI"/>
+    </java>
   </target>
 
   <target name="clean" description="deletes compiled files">

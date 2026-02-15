@@ -227,9 +227,12 @@ public class JNI2FFM {
               method.append("}))");
               arena_needed = true;
             } else if (java_type.equals("FolderListener")) {
-//              method.append("FFM.toMemory(arena, ");
               method.append("ffm.getFunctionUpCall(" + arg_name + ", \"folderChangeEvent\", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, arena)");
-//              method.append(")");
+              arena_needed = true;
+            } else if (java_type.equals("UIEvents")) {
+              method.append(arg_name + ".store(");
+              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"dispatchEvent\", void.class, new Class[] {int.class, int.class, int.class}, arena)");
+              method.append(")");
               arena_needed = true;
             } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");

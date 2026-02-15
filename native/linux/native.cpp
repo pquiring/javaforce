@@ -282,7 +282,8 @@ static long getX11ID(JNIEnv *e, jobject c) {
   return handle;
 }
 
-#include "../common/glfw.cpp"
+#include "../common/ui-jni.cpp"
+#include "../common/ui-ffm.cpp"
 
 #include "../common/gl.cpp"
 
@@ -306,10 +307,19 @@ jboolean glGetFunction(void **funcPtr, const char *name)
   }
 }
 
+void uiWindowSetIcon(GLFWContextFFM* ctx, const char* filename, jint x, jint y)
+{
+  //TODO
+}
+
 JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
   (JNIEnv *e, jobject c, jlong id, jstring filename, jint x, jint y)
 {
   //TODO
+}
+
+extern "C" {
+  JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*,const char*,jint,jint) = &uiWindowSetIcon;
 }
 
 #include "camera-jni.cpp"
