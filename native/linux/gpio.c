@@ -145,5 +145,5 @@ extern "C" {
   JNIEXPORT jboolean (*_gpioWrite)(jint,jboolean) = gpioWrite;
   JNIEXPORT jboolean (*_gpioRead)(jint) = gpioRead;
 
-  JNIEXPORT jboolean gpioinit() {return JNI_TRUE;}
+  JNIEXPORT jboolean GPIOAPIinit() {return JNI_TRUE;}
 }

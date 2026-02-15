@@ -96,5 +96,5 @@ extern "C" {
   JNIEXPORT jboolean (*_i2cWrite)(jbyte*, jint) = &i2cWrite;
   JNIEXPORT jint (*_i2cRead)(jbyte*, jint) = &i2cRead;
 
-  JNIEXPORT jboolean i2cinit() {return JNI_TRUE;}
+  JNIEXPORT jboolean I2CAPIinit() {return JNI_TRUE;}
 }

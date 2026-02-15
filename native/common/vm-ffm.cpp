@@ -764,6 +764,6 @@ extern "C" {
 
   JNIEXPORT jboolean (*_vmSecretCreate)(const char*,const char*) = &vmSecretCreate;
 
-  JNIEXPORT jboolean vminit() {return JNI_TRUE;}
+  JNIEXPORT jboolean VMAPIinit() {return JNI_TRUE;}
 
 }

@@ -211,5 +211,5 @@ extern "C" {
   JNIEXPORT void (*_uiWindowGetPos)(GLFWContextFFM*,jint*) = &uiWindowGetPos;
   JNIEXPORT void (*_uiWindowSetPos)(GLFWContextFFM*,jint,jint) = &uiWindowSetPos;
 
-  JNIEXPORT jboolean uiinit() {return JNI_TRUE;}
+  JNIEXPORT jboolean UIAPIinit() {return JNI_TRUE;}
 }
