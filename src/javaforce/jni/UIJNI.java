@@ -37,9 +37,9 @@ public class UIJNI implements UIAPI {
   public native int uiLoadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
 
   //Image
-  public native int[] uiLoadPNG(byte[] data, int[] dim);
+  public native int[] uiLoadPNG(byte[] data, int length, int[] dim);
   public native byte[] uiSavePNG(int[] pixels, int width, int height);
-  public native int[] uiLoadJPG(byte[] data, int[] dim);
+  public native int[] uiLoadJPG(byte[] data, int length, int[] dim);
   public native byte[] uiSaveJPG(int[] pixels, int width, int height, int quality);
 
   //Window

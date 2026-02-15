@@ -27,7 +27,8 @@ h"
 
 //OpenGL
 
-#include "../common/glfw.cpp"
+#include "../common/ui-jni.cpp"
+#include "../common/ui-ffm.cpp"
 
 #include "../common/gl.cpp"
 
@@ -60,9 +61,11 @@ jboolean glGetFunction(void **funcPtr, const char *name)
 
 #include "../common/types.h"
 
-#include "../common/font.cpp"
+#include "../common/font-jni.cpp"
+#include "../common/font-ffm.cpp"
 
-#include "../common/image.cpp"
+#include "../common/image-jni.cpp"
+#include "../common/image-ffm.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},

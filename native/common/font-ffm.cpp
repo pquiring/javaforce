@@ -1,12 +1,4 @@
-#define STB_TRUETYPE_IMPLEMENTATION
-#include "../stb/stb_truetype.h"
-
-#include "register.h"
-
-//#define FONT_DEBUG
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_UIJNI_uiLoadFont
-  (JNIEnv *e, jobject c, jbyteArray fontdata, jint ptSize, jintArray fontinfo, jintArray coords, jintArray glyph, jintArray cps, jbyteArray pixels, jint px, jint py)
+jint uiLoadFont(jbyte* fontdata, jint ptSize, jint* fontinfo, jint* coords, jint* glyph, jint* cps, jbyte* pixels, jint px, jint py)
 {
   stbtt_fontinfo font;
   float scale;
@@ -14,20 +6,14 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_UIJNI_uiLoadFont
   int baseline, scale_descent, scale_linegap;
   jboolean isCopy;
 
-  uint8 *fontdata_ptr = (uint8*)e->GetPrimitiveArrayCritical(fontdata, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-  int *fontinfo_ptr = (int*)e->GetPrimitiveArrayCritical(fontinfo, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-  int *coords_ptr = (int*)e->GetPrimitiveArrayCritical(coords, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-  int *glyph_ptr = (int*)e->GetPrimitiveArrayCritical(glyph, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-  int *cps_ptr = (int*)e->GetPrimitiveArrayCritical(cps, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-  uint8 *pixels_ptr = (uint8*)e->GetPrimitiveArrayCritical(pixels, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+  uint8 *fontdata_ptr = (uint8*)fontdata;
+  int *fontinfo_ptr = (int*)fontinfo;
+  int *coords_ptr = (int*)coords;
+  int *glyph_ptr = (int*)glyph;
+  int *cps_ptr = (int*)cps;
+  uint8 *pixels_ptr = (uint8*)pixels;
 
-  int cps_len = e->GetArrayLength(cps);
+  int cps_len = 256;
 
   if (!stbtt_InitFont(&font, fontdata_ptr, 0)) {
     printf("InitFont failed!");
@@ -123,55 +109,9 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_UIJNI_uiLoadFont
   printf("Font:max_ascent=%d max_descent=%d\n", max_ascent, max_descent);
 #endif
 
-  e->ReleasePrimitiveArrayCritical(fontdata, fontdata_ptr, 0);
-  e->ReleasePrimitiveArrayCritical(fontinfo, fontinfo_ptr, 0);
-  e->ReleasePrimitiveArrayCritical(coords, coords_ptr, 0);
-  e->ReleasePrimitiveArrayCritical(glyph, glyph_ptr, 0);
-  e->ReleasePrimitiveArrayCritical(cps, cps_ptr, 0);
-  e->ReleasePrimitiveArrayCritical(pixels, pixels_ptr, 0);
-
   return drawn;
 }
 
-static JNINativeMethod javaforce_ui_Font[] = {
-  {"uiLoadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_jni_UIJNI_uiLoadFont}
-};
-
-extern "C" void font_register(JNIEnv *env);
-
-void font_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/UIJNI");
-  registerNatives(env, cls, javaforce_ui_Font, sizeof(javaforce_ui_Font)/sizeof(JNINativeMethod));
+extern "C" {
+  JNIEXPORT jint (*_uiLoadFont)(jbyte*,jint,jint*,jint*,jint*,jint*,jbyte*,jint,jint) = &uiLoadFont;
 }
-
-/*/
-
-Font Metrics:
-
-         ?...............
-         .              .
-         . x---------|  .
-         . |x1,y1    |  .
-         . |         |  .
-         . |         | ascent
-         . |         |  .
-         . |         |  .
-baseline o-----------|--o
-         . |         |  .
-         . |         |  .
-         . |         | descent
-         . |         |  .
-         . |    x2,y2|  .
-         . |---------x  .
-         .              .
-         ....advance.....
-
-  o = 0,0 (origin)
-  ? = xpos, ypos
-
-Notes:
-  y1 is usually negative (which makes ascent negative)
-
-/*/

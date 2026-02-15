@@ -37,9 +37,9 @@ public interface UIAPI {
   public int uiLoadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
 
   //Image
-  public int[] uiLoadPNG(byte[] data, int[] dim);
+  public int[] uiLoadPNG(byte[] data, int length, int[] dim);
   public byte[] uiSavePNG(int[] pixels, int width, int height);
-  public int[] uiLoadJPG(byte[] data, int[] dim);
+  public int[] uiLoadJPG(byte[] data, int length, int[] dim);
   public byte[] uiSaveJPG(int[] pixels, int width, int height, int quality);
 
   //Window

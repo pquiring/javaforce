@@ -57,7 +57,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = UIAPI.getInstance().uiLoadPNG(data, dim);
+    buffer = UIAPI.getInstance().uiLoadPNG(data, data.length, dim);
     if (buffer != null) {
       super.setSize(dim[0], dim[1]);
     }
@@ -109,7 +109,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = UIAPI.getInstance().uiLoadJPG(data, dim);
+    buffer = UIAPI.getInstance().uiLoadJPG(data, data.length, dim);
     return buffer != null;
   }
 
