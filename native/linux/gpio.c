@@ -74,6 +74,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_gpioSetup
 jboolean gpioConfigOutput(jint bit) {
   INP_GPIO(bit);  //Always use INP_GPIO before OUT_GPIO -- why???
   OUT_GPIO(bit);
+  return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_GPIOJNI_gpioConfigOutput
@@ -137,7 +138,7 @@ void gpio_register(JNIEnv *env) {
   registerNatives(env, cls, javaforce_pi_GPIO, sizeof(javaforce_pi_GPIO)/sizeof(JNINativeMethod));
 }
 
-export "C" {
+extern "C" {
   JNIEXPORT jboolean (*_gpioSetup)(jint) = gpioSetup;
   JNIEXPORT jboolean (*_gpioConfigOutput)(jint) = gpioConfigOutput;
   JNIEXPORT jboolean (*_gpioConfigInput)(jint) = gpioConfigInput;

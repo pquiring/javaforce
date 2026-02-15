@@ -49,7 +49,7 @@ jint i2cRead(jbyte* buf, jint bufsiz)
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_I2CJNI_i2cRead
-  (JNIEnv *e, jobject c, jbyteArray ba)
+  (JNIEnv *e, jobject c, jbyteArray ba, jint balen)
 {
   jbyte *buf = e->GetByteArrayElements(ba, NULL);
   int bufsiz = e->GetArrayLength(ba);
@@ -65,7 +65,7 @@ jboolean i2cWrite(jbyte* buf, jint bufsiz)
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_I2CJNI_i2cWrite
-  (JNIEnv *e, jobject c, jbyteArray ba)
+  (JNIEnv *e, jobject c, jbyteArray ba, jint balen)
 {
   jbyte *buf = e->GetByteArrayElements(ba, NULL);
   int bufsiz = e->GetArrayLength(ba);
