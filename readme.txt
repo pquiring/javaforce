@@ -143,11 +143,11 @@ Current progress:
    - ComPort
    - MonitorFolder
    - Speex
+   - UI
    - GPIO + I2C
 
   TODO:
    - VM (35 funcs)
-   - UI (20 funcs)
    - misc functions
 
 Graal Support
