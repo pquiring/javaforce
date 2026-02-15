@@ -78,6 +78,7 @@ public class FFM {
   }
 
   public MethodHandle getFunction(String name, FunctionDescriptor fd) {
+    if (debug) JFLog.log("FFM:getFunction:" + name);
     try {
       MemorySegment addr = lookup.findOrThrow(name);
       if (addr == null || addr.address() == 0) {
@@ -92,6 +93,7 @@ public class FFM {
   }
 
   public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
+    if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
     try {
       MemorySegment addr = lookup.findOrThrow(name);
       if (addr == null || addr.address() == 0) {
