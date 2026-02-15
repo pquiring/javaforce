@@ -21,6 +21,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSnapshotCreate
 
   void *ssptr = (*_virDomainSnapshotCreateXML)(dom, cxml, flags);
 
+  e->ReleaseStringUTFChars(xml, cxml);
+
   if (ssptr != NULL) {
     (*_virDomainSnapshotFree)(ssptr);
   }
@@ -28,7 +30,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmSnapshotCreate
   (*_virDomainFree)(dom);
   disconnect(conn);
 
-  e->ReleaseStringUTFChars(xml, cxml);
   return ssptr != NULL;
 }
 

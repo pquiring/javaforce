@@ -53,7 +53,7 @@ public class VMJNI implements VMAPI {
   public native String vmGet(String name);
   public native boolean vmRegister(String xml);
   public native boolean vmUnregister(String name);
-  public native boolean vmMigrate(String name, String desthost, boolean live, Status status);
+  public native boolean vmMigrate(String name, String desthost, boolean live);
   public native boolean vmSnapshotCreate(String name, String xml, int flags);
   public native String[] vmSnapshotList(String name);
   public native boolean vmSnapshotExists(String name);

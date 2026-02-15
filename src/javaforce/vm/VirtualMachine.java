@@ -237,8 +237,8 @@ public class VirtualMachine implements Serializable {
   }
 
   /** Live/offline VM migration. */
-  public boolean migrateCompute(String desthost, boolean live, Status status) {
-    return VMAPI.getInstance().vmMigrate(name, desthost, live, status);
+  public boolean migrateCompute(String desthost, boolean live) {
+    return VMAPI.getInstance().vmMigrate(name, desthost, live);
   }
 
   /** Offline only VM storage migration. */

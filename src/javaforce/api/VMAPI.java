@@ -5,12 +5,16 @@ package javaforce.api;
  * @author pquiring
  */
 
-import javaforce.webui.tasks.*;
 import javaforce.jni.*;
+import javaforce.ffm.*;
 
 public interface VMAPI {
   public static VMAPI getInstance() {
-    return VMJNI.getInstance();
+    if (FFM.enabled()) {
+      return VMFFM.getInstance();
+    } else {
+      return VMJNI.getInstance();
+    }
   }
 
   //Device
@@ -47,7 +51,7 @@ public interface VMAPI {
   public String vmGet(String name);
   public boolean vmRegister(String xml);
   public boolean vmUnregister(String name);
-  public boolean vmMigrate(String name, String desthost, boolean live, Status status);
+  public boolean vmMigrate(String name, String desthost, boolean live);
   public boolean vmSnapshotCreate(String name, String xml, int flags);
   public String[] vmSnapshotList(String name);
   public boolean vmSnapshotExists(String name);
