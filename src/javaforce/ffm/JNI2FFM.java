@@ -59,6 +59,9 @@ public class JNI2FFM {
       return;
     }
 
+    boolean flag_nofreestring = false;
+    boolean flag_nocopyback = false;
+
     try {
 
       src.append("package javaforce.ffm;\n");
@@ -106,6 +109,14 @@ public class JNI2FFM {
       ctor.append("\n");
       for(String ln : lns) {
         ln = ln.trim();
+        if (ln.equals("@NoFreeString")) {
+          flag_nofreestring = true;
+          continue;
+        }
+        if (ln.equals("@NoCopyBack")) {
+          flag_nocopyback = true;
+          continue;
+        }
         if (!ln.startsWith("public native")) continue;
         //public native void glActiveTexture(int i1);
         ln = ln.substring(14, ln.length() - 1);
@@ -153,7 +164,11 @@ public class JNI2FFM {
             method.append(java_ret_type + "[] _ret_value_ = FFM.toArray" + capitalize(java_ret_type) + "((MemorySegment)");
           } else {
             if (java_ret_type.equals("String")) {
-              method.append("String _ret_value_ = FFM.getString((MemorySegment)");
+              if (flag_nofreestring) {
+                method.append("String _ret_value_ = FFM.getStringNoFree((MemorySegment)");
+              } else {
+                method.append("String _ret_value_ = FFM.getString((MemorySegment)");
+              }
             } else {
               method.append(java_ret_type + " _ret_value_ = (" + java_ret_type + ")");
             }
@@ -260,9 +275,11 @@ public class JNI2FFM {
           //insert areana after "{ try { "
           method.insert(8, "Arena arena = Arena.ofAuto(); ");
         }
-        for(String arg_name : array_names) {
-          String segment_name = "_array_" + arg_name;
-          method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
+        if (!flag_nocopyback) {
+          for(String arg_name : array_names) {
+            String segment_name = "_array_" + arg_name;
+            method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
+          }
         }
         if (!isRetVoid) {
           method.append("return _ret_value_;");
@@ -290,6 +307,8 @@ public class JNI2FFM {
         if (!isDup) {
           ctor.append(ctor2);
         }
+        flag_nofreestring = false;
+        flag_nocopyback = false;
       }
       ctor.append("    return true;\n");
       ctor.append("  }\n");

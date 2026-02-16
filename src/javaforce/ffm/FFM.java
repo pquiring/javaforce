@@ -45,6 +45,8 @@ public class FFM {
   private ExecSymbolLookup execlookup;
   private static MethodHandle jfArrayFree;
   public static void jfArrayFree(MemorySegment arr) { try { jfArrayFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
+  private static MethodHandle jfStringFree;
+  public static void jfStringFree(MemorySegment arr) { try { jfStringFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
 
   private FFM() {
     try {
@@ -54,6 +56,8 @@ public class FFM {
       execlookup.init(this);
       jfArrayFree = getFunctionPtr("_jfArrayFree", getFunctionDesciptorVoid(ADDRESS));
       if (jfArrayFree == null) throw new Exception("FFM:Unable to find jfArrayFree function");
+      jfStringFree = getFunctionPtr("_jfStringFree", getFunctionDesciptorVoid(ADDRESS));
+      if (jfStringFree == null) throw new Exception("FFM:Unable to find jfStringFree function");
     } catch (Throwable t) {
       JFLog.log(t);
       enabled = false;
@@ -188,7 +192,15 @@ public class FFM {
 
   public static String getString(MemorySegment ms) {
     if (ms == null || ms.address() == 0) return null;
-    return ms.reinterpret(Long.MAX_VALUE).getString(0L);
+    String str =  ms.reinterpret(Long.MAX_VALUE).getString(0L);
+    jfStringFree(ms);
+    return str;
+  }
+
+  public static String getStringNoFree(MemorySegment ms) {
+    if (ms == null || ms.address() == 0) return null;
+    String str =  ms.reinterpret(Long.MAX_VALUE).getString(0L);
+    return str;
   }
 
   //array helpers

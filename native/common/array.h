@@ -72,6 +72,11 @@ void jfArrayFree(JFArray* arr) {
   free(arr);
 }
 
+void jfStringFree(const char* str) {
+  if (str != NULL) free(str);
+}
+
 extern "C" {
   JNIEXPORT void (*_jfArrayFree)(JFArray*) = &jfArrayFree;
+  JNIEXPORT void (*_jfStringFree)(const char*) = &jfStringFree;
 }
