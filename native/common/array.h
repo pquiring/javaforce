@@ -73,7 +73,7 @@ void jfArrayFree(JFArray* arr) {
 }
 
 void jfStringFree(const char* str) {
-  if (str != NULL) free(str);
+  if (str != NULL) free((void*)str);
 }
 
 extern "C" {
