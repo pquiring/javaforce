@@ -135,5 +135,5 @@ extern "C" {
   JNIEXPORT void (*_speexDenoise)(DSP*,jshort*,jint) = &speexDenoise;
   JNIEXPORT void (*_speexEcho)(DSP*,jshort*,jshort*,jshort*,jint) = &speexEcho;
 
-  JNIEXPORT jboolean speexinit() {return JNI_TRUE;}
+  JNIEXPORT jboolean SpeexAPIinit() {return JNI_TRUE;}
 }
