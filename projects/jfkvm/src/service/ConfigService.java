@@ -6878,6 +6878,7 @@ public class ConfigService implements WebUIHandler {
     if (i1 == -1) return null;
     int i2 = path_file.lastIndexOf('/');
     if (i2 == -1) return null;
+    if (i1 == i2) return "";  //no path
     return path_file.substring(i1 + 1, i2);
   }
 
