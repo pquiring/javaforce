@@ -8019,7 +8019,7 @@ public class ConfigService implements WebUIHandler {
               if (host == null) {
                 throw new Exception("Host not found");
               }
-              if (!vm.migrateCompute(hostname, true, Status.null_status)) {
+              if (!vm.migrateCompute(hostname, true)) {
                 throw new Exception("VirtualMachine.migrateCompute() failed");
               }
               setResult("Completed", true);

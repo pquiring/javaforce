@@ -74,7 +74,7 @@ public class VMM implements VMProvider {
   }
 
   public boolean migrateCompute(VirtualMachine vm, String remote) {
-    return vm.migrateCompute(remote, vm.getState() != VirtualMachine.STATE_OFF, null);
+    return vm.migrateCompute(remote, vm.getState() != VirtualMachine.STATE_OFF);
   }
 
   /** Check if VNC port is in use by local VMs. */
