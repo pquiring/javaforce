@@ -136,7 +136,7 @@ public class EditTagPopup extends PopupPanel {
       case ControllerType.S7: type.setSelectedIndex(1); break;
       case ControllerType.AB: type.setSelectedIndex(2); break;
       case ControllerType.MB: type.setSelectedIndex(3); break;
-      case ControllerType.NI: type.setSelectedIndex(4); break;
+//      case ControllerType.NI: type.setSelectedIndex(4); break;
     }
     host.setText(intag.host);
     tag.setText(intag.tag);
@@ -183,7 +183,7 @@ public class EditTagPopup extends PopupPanel {
       case 1: outtag.type = ControllerType.S7; break;
       case 2: outtag.type = ControllerType.AB; break;
       case 3: outtag.type = ControllerType.MB; break;
-      case 4: outtag.type = ControllerType.NI; break;
+//      case 4: outtag.type = ControllerType.NI; break;
     }
     outtag.host = host.getText();
     outtag.tag = tag.getText();

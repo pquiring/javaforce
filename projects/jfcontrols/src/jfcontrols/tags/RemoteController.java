@@ -73,7 +73,7 @@ public class RemoteController {
       case 1: tag.type = ControllerType.S7; break;
       case 2: tag.type = ControllerType.AB; break;
       case 3: tag.type = ControllerType.MB; break;
-      case 4: tag.type = ControllerType.NI; break;
+//      case 4: tag.type = ControllerType.NI; break;
       default: JFLog.log("Error:Controller type unknown:" + controllerType);
     }
     map.put(tagBase.name, tagBase);

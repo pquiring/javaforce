@@ -282,7 +282,7 @@ public class TagDialog extends javax.swing.JDialog {
       case ControllerType.S7: type.setSelectedIndex(0); break;
       case ControllerType.AB: type.setSelectedIndex(1); break;
       case ControllerType.MB: type.setSelectedIndex(2); break;
-      case ControllerType.NI: type.setSelectedIndex(3); break;
+//      case ControllerType.NI: type.setSelectedIndex(3); break;
       case ControllerType.MIC: type.setSelectedIndex(4); break;
     }
     host.setText(in.host);
@@ -326,7 +326,7 @@ public class TagDialog extends javax.swing.JDialog {
         case 0: out.type = ControllerType.S7; break;
         case 1: out.type = ControllerType.AB; break;
         case 2: out.type = ControllerType.MB; break;
-        case 3: out.type = ControllerType.NI; break;
+//        case 3: out.type = ControllerType.NI; break;
         case 4: out.type = ControllerType.MIC; break;
       }
       out.host = host.getText();

@@ -185,7 +185,7 @@ public class Service {
         case "S7": tag.type = ControllerType.S7; break;
         case "AB": tag.type = ControllerType.AB; break;
         case "MB": tag.type = ControllerType.MB; break;
-        case "NI": tag.type = ControllerType.NI; break;
+//        case "NI": tag.type = ControllerType.NI; break;
       }
       tag.tag = query[a][3];
       switch (query[a][4]) {

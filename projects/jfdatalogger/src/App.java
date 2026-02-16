@@ -631,7 +631,7 @@ public class App extends javax.swing.JFrame {
       case "S7": tag.type = ControllerType.S7; break;
       case "AB": tag.type = ControllerType.AB; break;
       case "MB": tag.type = ControllerType.MB; break;
-      case "NI": tag.type = ControllerType.NI; break;
+//      case "NI": tag.type = ControllerType.NI; break;
       case "JF": tag.type = ControllerType.JF; break;
       case "MIC": tag.type = ControllerType.MIC; break;
       default: JFLog.log("Unknown Tag Type:" + f[1]);
@@ -673,7 +673,7 @@ public class App extends javax.swing.JFrame {
       case ControllerType.S7: ctrl = "S7"; break;
       case ControllerType.AB: ctrl = "AB"; break;
       case ControllerType.MB: ctrl = "MB"; break;
-      case ControllerType.NI: ctrl = "NI"; break;
+//      case ControllerType.NI: ctrl = "NI"; break;
       case ControllerType.JF: ctrl = "JF"; break;
       case ControllerType.MIC: ctrl = "MIC"; break;
     }
@@ -696,7 +696,7 @@ public class App extends javax.swing.JFrame {
       case ControllerType.S7: ctrl = "S7"; break;
       case ControllerType.AB: ctrl = "AB"; break;
       case ControllerType.MB: ctrl = "MB"; break;
-      case ControllerType.NI: ctrl = "NI"; break;
+//      case ControllerType.NI: ctrl = "NI"; break;
       case ControllerType.JF: ctrl = "JF"; break;
       case ControllerType.MIC: ctrl = "MIC"; break;
     }
@@ -1064,6 +1064,7 @@ public class App extends javax.swing.JFrame {
     clear();
   }
 
+/*
   private boolean hasNITag() {
     int cnt = tags.size();
     for(int a=0;a<cnt;a++) {
@@ -1071,6 +1072,7 @@ public class App extends javax.swing.JFrame {
     }
     return false;
   }
+*/
 
   public void run() {
     if (worker == null) {
@@ -1078,10 +1080,12 @@ public class App extends javax.swing.JFrame {
         JFAWT.showError("Error", "No tags defined");
         return;
       }
+/*
       if (hasNITag() && !javaforce.controls.ni.DAQmx.loaded() ){
         JFAWT.showError("Error", "Project contains NI Tags but NI DLL not found.");
         return;
       }
+*/
       setState(true);
       delay = delays[speed];
       tickCounter = ticks[speed];
