@@ -446,7 +446,7 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_VMJNI_vmGet
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_VMJNI_vmMigrate
-  (JNIEnv *e, jobject o, jstring name, jstring desthost, jboolean live, jobject status)
+  (JNIEnv *e, jobject o, jstring name, jstring desthost, jboolean live)
 {
   char durl[1024];
   void* conn = connect();
@@ -882,7 +882,7 @@ static JNINativeMethod javaforce_vm_VirtualMachine[] = {
   {"vmSuspend", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSuspend},
   {"vmResume", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmResume},
   {"vmGet", "(Ljava/lang/String;)Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmGet},
-  {"vmMigrate", "(Ljava/lang/String;Ljava/lang/String;ZLjavaforce/webui/tasks/Status;)Z", (void *)&Java_javaforce_jni_VMJNI_vmMigrate},
+  {"vmMigrate", "(Ljava/lang/String;Ljava/lang/String;Z)Z", (void *)&Java_javaforce_jni_VMJNI_vmMigrate},
   {"vmSnapshotCreate", "(Ljava/lang/String;Ljava/lang/String;I)Z", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotCreate},
   {"vmSnapshotList", "(Ljava/lang/String;)[Ljava/lang/String;", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotList},
   {"vmSnapshotExists", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_VMJNI_vmSnapshotExists},
