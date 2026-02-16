@@ -2,7 +2,7 @@ package javaforce.ffm;
 
 /** JNI2FFM annotation.
  *
- * Indicates arguments do not need to be copied back.
+ * Indicates array arguments do not need to be copied back.
  *
  * @author pquiring
  */
