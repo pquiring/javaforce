@@ -137,13 +137,13 @@ public class GLFFM implements GL {
   public int glGetError() { try { int _ret_value_ = (int)glGetError.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glGetProgramInfoLog;
-  public String glGetProgramInfoLog(int id) { try { String _ret_value_ = ((MemorySegment)glGetProgramInfoLog.invokeExact(id)).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String glGetProgramInfoLog(int id) { try { String _ret_value_ = FFM.getString((MemorySegment)glGetProgramInfoLog.invokeExact(id));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle glGetShaderInfoLog;
-  public String glGetShaderInfoLog(int id) { try { String _ret_value_ = ((MemorySegment)glGetShaderInfoLog.invokeExact(id)).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String glGetShaderInfoLog(int id) { try { String _ret_value_ = FFM.getString((MemorySegment)glGetShaderInfoLog.invokeExact(id));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle glGetString;
-  public String glGetString(int type) { try { String _ret_value_ = ((MemorySegment)glGetString.invokeExact(type)).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String glGetString(int type) { try { String _ret_value_ = FFM.getString((MemorySegment)glGetString.invokeExact(type));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle glGetIntegerv;
   public void glGetIntegerv(int type,int[] i) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_i = FFM.toMemory(arena, i);glGetIntegerv.invokeExact(type,_array_i);FFM.copyBack(_array_i,i); } catch (Throwable t) { JFLog.log(t); } }

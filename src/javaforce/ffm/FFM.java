@@ -186,6 +186,11 @@ public class FFM {
     }
   }
 
+  public static String getString(MemorySegment ms) {
+    if (ms == null || ms.address() == 0) return null;
+    return ms.reinterpret(Long.MAX_VALUE).getString(0L);
+  }
+
   //array helpers
 
   public static MemorySegment toMemory(Arena arena, float[] m) {

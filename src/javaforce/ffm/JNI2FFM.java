@@ -153,7 +153,7 @@ public class JNI2FFM {
             method.append(java_ret_type + "[] _ret_value_ = FFM.toArray" + capitalize(java_ret_type) + "((MemorySegment)");
           } else {
             if (java_ret_type.equals("String")) {
-              method.append("String _ret_value_ = ((MemorySegment)");
+              method.append("String _ret_value_ = FFM.getString((MemorySegment)");
             } else {
               method.append(java_ret_type + " _ret_value_ = (" + java_ret_type + ")");
             }
@@ -247,7 +247,7 @@ public class JNI2FFM {
           method.append("));");
         } else {
           if (java_ret_type.equals("String")) {
-            method.append(")).reinterpret(Long.MAX_VALUE).getString(0L);");
+            method.append("));");
           } else {
             method.append(");");
           }

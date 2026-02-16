@@ -60,7 +60,7 @@ public class VMFFM implements VMAPI {
   public int vmStorageGetState(String name) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmStorageGetState.invokeExact(arena.allocateFrom(name));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vmStorageGetUUID;
-  public String vmStorageGetUUID(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = ((MemorySegment)vmStorageGetUUID.invokeExact(arena.allocateFrom(name))).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String vmStorageGetUUID(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmStorageGetUUID.invokeExact(arena.allocateFrom(name)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmInit;
   public boolean vmInit() { try { boolean _ret_value_ = (boolean)vmInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -90,7 +90,7 @@ public class VMFFM implements VMAPI {
   public String[] vmList() { try { String[] _ret_value_ = FFM.toArrayString((MemorySegment)vmList.invokeExact());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmGet;
-  public String vmGet(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = ((MemorySegment)vmGet.invokeExact(arena.allocateFrom(name))).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String vmGet(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmGet.invokeExact(arena.allocateFrom(name)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmRegister;
   public boolean vmRegister(String xml) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRegister.invokeExact(arena.allocateFrom(xml));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -111,7 +111,7 @@ public class VMFFM implements VMAPI {
   public boolean vmSnapshotExists(String name) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotExists.invokeExact(arena.allocateFrom(name));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSnapshotGetCurrent;
-  public String vmSnapshotGetCurrent(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = ((MemorySegment)vmSnapshotGetCurrent.invokeExact(arena.allocateFrom(name))).reinterpret(Long.MAX_VALUE).getString(0L);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String vmSnapshotGetCurrent(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmSnapshotGetCurrent.invokeExact(arena.allocateFrom(name)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmSnapshotRestore;
   public boolean vmSnapshotRestore(String name,String snapshot) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotRestore.invokeExact(arena.allocateFrom(name),arena.allocateFrom(snapshot));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
