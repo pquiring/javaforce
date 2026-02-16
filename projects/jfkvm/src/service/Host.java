@@ -194,7 +194,7 @@ public class Host implements Serializable, Comparable<Host> {
       if (!https.open(host)) throw new Exception("connect failed");
       byte[] data = https.get("/api/getpools?token=" + token);
       https.close();
-      if (data == null || data.length == 0) return null;
+      if (data == null || data.length == 0) return new String[0];
       return new String(data).split("[|]");
     } catch (Exception e) {
       JFLog.log(e);
