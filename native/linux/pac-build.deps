@@ -1,0 +1,14 @@
+gcc
+jdk-openjdk
+apache-ant
+fuse
+pam
+ffmpeg
+mesa
+libxcursor
+libxrandr
+libxinerama
+libxi
+libxt
+libvirt
+v4l-utils

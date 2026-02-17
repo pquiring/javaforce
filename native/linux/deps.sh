@@ -42,16 +42,16 @@ fi
 
 function debian {
   apt update
-  apt --yes install g++ openjdk-25-jdk ant libx11-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev libvirt-dev zlib1g-dev sudo libv4l-0
+  xargs -d '\n' apt --yes install < deb-build.deps
 }
 
 function fedora {
-  dnf -y install gcc-c++ java-25-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel libvirt-devel ncurses-devel rpm-build libv4l
+  xargs -d '\n' dnf -y install gcc-c++ < rpm-build.deps
 }
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm gcc jdk-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt libvirt v4l-utils
+  xargs -d '\n' pacman -S --noconfirm < pac-build.deps
 }
 
 function freebsd {

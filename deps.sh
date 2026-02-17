@@ -42,16 +42,16 @@ fi
 
 function debian {
   apt update
-  apt --yes install openjdk-25-jdk ant git unzip sudo gnupg bzip2
+  xargs -d '\n' apt --yes install < deb-build.deps
 }
 
 function fedora {
-  dnf -y install java-25-openjdk-devel ant git unzip sudo gnupg
+  xargs -d '\n' dnf -y install < rpm-build.deps
 }
 
 function arch {
   pacman -Sy
-  pacman -S --noconfirm jdk-openjdk apache-ant git unzip sudo gnupg
+  xargs -d '\n' pacman -S --noconfirm < pac-build.deps
 }
 
 function freebsd {

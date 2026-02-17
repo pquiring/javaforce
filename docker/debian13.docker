@@ -17,12 +17,14 @@ WORKDIR /opt
 #install JF deps
 
 COPY deps.sh /opt
+COPY *-build.deps /opt
 
 RUN bash /opt/deps.sh
 
 #install Linux native deps
 
 COPY native/linux/deps.sh /opt
+COPY native/linux/*-build.deps /opt
 
 RUN bash /opt/deps.sh
 
