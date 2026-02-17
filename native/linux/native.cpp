@@ -470,6 +470,24 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"ptyWrite", "(J[B)V", (void *)&Java_javaforce_jni_LnxNative_ptyWrite},
   {"ptySetSize", "(JII)V", (void *)&Java_javaforce_jni_LnxNative_ptySetSize},
   {"ptyChildExec", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_ptyChildExec},
+  {"authUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
+  {"setenv", "(Ljava/lang/String;Ljava/lang/String;)V", (void *)&Java_javaforce_jni_LnxNative_setenv},
+  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_enableConsoleMode},
+  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_disableConsoleMode},
+  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsoleSize},
+  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsolePos},
+  {"readConsole", "()C", (void *)&Java_javaforce_jni_LnxNative_readConsole},
+  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_LnxNative_peekConsole},
+  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_LnxNative_writeConsole},
+  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_LnxNative_writeConsoleArray},
+  {"fileGetMode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_fileGetMode},
+  {"fileSetMode", "(Ljava/lang/String;I)V", (void *)&Java_javaforce_jni_LnxNative_fileSetMode},
+  {"fileSetAccessTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetAccessTime},
+  {"fileSetModifiedTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetModifiedTime},
+  {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
+};
+
+static JNINativeMethod javaforce_jni_X11[] = {
   {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_X11_x11_1get_1id},
   {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1set_1desktop},
   {"x11_set_dock", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1set_1dock},
@@ -488,21 +506,6 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"x11_keysym_to_keycode", "(C)I", (void *)&Java_javaforce_jni_X11_x11_1keysym_1to_1keycode},
   {"x11_send_event", "(IZ)Z", (void *)&Java_javaforce_jni_X11_x11_1send_1event__IZ},
   {"x11_send_event", "(JIZ)Z", (void *)&Java_javaforce_jni_X11_x11_1send_1event__JIZ},
-  {"authUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
-  {"setenv", "(Ljava/lang/String;Ljava/lang/String;)V", (void *)&Java_javaforce_jni_LnxNative_setenv},
-  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_enableConsoleMode},
-  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_disableConsoleMode},
-  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsoleSize},
-  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsolePos},
-  {"readConsole", "()C", (void *)&Java_javaforce_jni_LnxNative_readConsole},
-  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_LnxNative_peekConsole},
-  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_LnxNative_writeConsole},
-  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_LnxNative_writeConsoleArray},
-  {"fileGetMode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_fileGetMode},
-  {"fileSetMode", "(Ljava/lang/String;I)V", (void *)&Java_javaforce_jni_LnxNative_fileSetMode},
-  {"fileSetAccessTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetAccessTime},
-  {"fileSetModifiedTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetModifiedTime},
-  {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
 };
 
 static JNINativeMethod javaforce_jni_ComPortJNI[] = {
@@ -527,6 +530,9 @@ void lnxnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/LnxNative");
   registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/jni/X11");
+  registerNatives(env, cls, javaforce_jni_X11, sizeof(javaforce_jni_X11)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/jni/ComPortJNI");
   registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));

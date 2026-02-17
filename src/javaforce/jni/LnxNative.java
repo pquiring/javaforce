@@ -6,14 +6,12 @@ package javaforce.jni;
  */
 
 import java.io.*;
-import java.awt.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.nio.file.*;
 
 import javaforce.*;
-import javaforce.linux.*;
 
 public class LnxNative {
   private static void load() {
