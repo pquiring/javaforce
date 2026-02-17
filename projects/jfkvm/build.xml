@@ -8,7 +8,7 @@
   <property name="home" location="../.."/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base"/>
-  <property name="version" value="9.3"/>
+  <property name="version" value="10.0"/>
 
   <import file="${home}/base.xml"/>
 
