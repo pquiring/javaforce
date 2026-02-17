@@ -129,13 +129,6 @@ public class LnxNative {
   public static native void ptySetSize(long ctx, int x, int y);  //set child term size
   public static native long ptyChildExec(String slaveName, String cmd, String[] args, String[] env);  //spawn child process
 
-  //inotify (monitordir)
-  public static native int inotify_init();  //return fd
-  public static native int inotify_add_watch(int fd, String path, int mask);  //return wd
-  public static native int inotify_rm_watch(int fd, int wd);
-  public static native byte[] inotify_read(int fd);
-  public static native void inotify_close(int fd);
-
   //PAM (Pluggable Authentication Modules)
   public static native boolean authUser(String user, String pass, String backend);
 
