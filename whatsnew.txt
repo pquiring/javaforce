@@ -1,5 +1,15 @@
 What's new...
 
+Feb 16/2026 : JF/100.0
+  - JNI to FFM conversion is comlpete (except for misc funcs)
+  - FFM : fix another minor memory leak
+    - functions returning String need to be freed (except for glGetString)
+  - jfKVM/10.0
+    - minor bug fixes and now uses FFM
+  - JF has been active for over 20 years!
+    Thanks to the few that have helped with beta testing and reporting bugs.
+    Much more to come...
+
 Feb 13/2026 : JF/99.0
   - More JNI to FFM implemented : Speex audio codec
   - jfMQTT/0.11
