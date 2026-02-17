@@ -820,30 +820,30 @@ public class Linux {
   }
 
   public static long x11_get_id(java.awt.Window w) {
-    return LnxNative.x11_get_id(w);
+    return X11.x11_get_id(w);
   }
 
   public static void x11_set_desktop(long xid) {
-    LnxNative.x11_set_desktop(xid);
+    X11.x11_set_desktop(xid);
   }
 
   public static void x11_set_dock(long xid) {
-    LnxNative.x11_set_dock(xid);
+    X11.x11_set_dock(xid);
   }
 
   public static void x11_set_strut(long xid, int panelHeight, int x, int y, int width, int height) {
-    LnxNative.x11_set_strut(xid, panelHeight,x,y,width,height);
+    X11.x11_set_strut(xid, panelHeight,x,y,width,height);
   }
 
 //tray functions
 
   public static void x11_set_listener(X11Listener cb) {
-    LnxNative.x11_set_listener(cb);
+    X11.x11_set_listener(cb);
   }
 
   /** Polls and dispatches tray events.  Does not return until x11_tray_stop() is called. */
   public static void x11_tray_main(long pid, int screenWidth, int trayPos, int trayHeight) {
-    LnxNative.x11_tray_main(pid, screenWidth, trayPos, trayHeight);
+    X11.x11_tray_main(pid, screenWidth, trayPos, trayHeight);
   }
 
   /** Repositions tray icons and the tray window itself.
@@ -851,27 +851,27 @@ public class Linux {
    * @param screenWidth = new screen width (-1 = has not changed)
    */
   public static void x11_tray_reposition(int screenWidth, int trayPos, int trayHeight) {
-    LnxNative.x11_tray_reposition(screenWidth, trayPos, trayHeight);
+    X11.x11_tray_reposition(screenWidth, trayPos, trayHeight);
   }
 
   /** Stops x11_tray_main() */
   public static void x11_tray_stop() {
-    LnxNative.x11_tray_stop();
+    X11.x11_tray_stop();
   }
 
   public static int x11_tray_width() {
-    return LnxNative.x11_tray_width();
+    return X11.x11_tray_width();
   }
 
 //top-level x11 windows monitor
 
   /** Polls and dispatches top-level windows events.  Does not return until x11_window_list_stop() is called. */
   public static void x11_window_list_main() {
-    LnxNative.x11_window_list_main();
+    X11.x11_window_list_main();
   }
 
   public static void x11_window_list_stop() {
-    LnxNative.x11_window_list_stop();
+    X11.x11_window_list_stop();
     //TODO : send a message to ??? to cause main() loop to abort
   }
 
@@ -935,35 +935,35 @@ public class Linux {
   }
 
   public static void x11_minimize_all() {
-    LnxNative.x11_minimize_all();
+    X11.x11_minimize_all();
   }
 
   public static void x11_raise_window(long xid) {
-    LnxNative.x11_raise_window(xid);
+    X11.x11_raise_window(xid);
   }
 
   public static void x11_map_window(long xid) {
-    LnxNative.x11_map_window(xid);
+    X11.x11_map_window(xid);
   }
 
   public static void x11_unmap_window(long xid) {
-    LnxNative.x11_unmap_window(xid);
+    X11.x11_unmap_window(xid);
   }
 
 //x11 send event functions
 
   public static int x11_keysym_to_keycode(char keysym) {
-    return LnxNative.x11_keysym_to_keycode(keysym);
+    return X11.x11_keysym_to_keycode(keysym);
   }
 
   /** Send keyboard event to window with focus. */
   public static boolean x11_send_event(int keycode, boolean down) {
-    return LnxNative.x11_send_event(keycode, down);
+    return X11.x11_send_event(keycode, down);
   }
 
   /** Send keyboard event to specific window. */
   public static boolean x11_send_event(long id, int keycode, boolean down) {
-    return LnxNative.x11_send_event(id, keycode, down);
+    return X11.x11_send_event(id, keycode, down);
   }
 
   //X11 : RandR support
