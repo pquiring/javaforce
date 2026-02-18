@@ -5,11 +5,16 @@
 #endif
 
 static JF_LIB_HANDLE loadLibrary(const char* name) {
+  JF_LIB_HANDLE handle;
 #ifdef _WIN32
-  return LoadLibrary(name);
+  handle = LoadLibrary(name);
 #else
-  return dlopen(name,RTLD_LAZY|RTLD_GLOBAL);
+  handle = dlopen(name,RTLD_LAZY|RTLD_GLOBAL);
 #endif
+  if (handle == NULL) {
+    printf("Error:Unable to open library:%s\n", name);
+  }
+  return handle;
 }
 
 static void getFunction(JF_LIB_HANDLE handle, void **funcPtr, const char *name) {
