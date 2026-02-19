@@ -5,6 +5,8 @@ package javaforce.controls.s7;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 
 public class S7Params {
@@ -12,9 +14,19 @@ public class S7Params {
   public byte[] funcData;  //varies based on func
 
   //funcs
+  public static final byte CPU = 0x00;
   public static final byte READ = 0x04;
   public static final byte WRITE = 0x05;
   public static final byte CONNECT = (byte)0xf0;
+
+  //cpu sub-funcs
+  public static final byte REQUEST_TIME = 0x47;
+  public static final byte RESPONSE_TIME = (byte)0x87;
+
+  //time sub-funcs
+  public static final byte READ_CLOCK = 0x1;
+  public static final byte WRITE_CLOCK = 0x2;
+
 
   /** Create a packet to setup communications (connect) . */
   public void makeConnect() {
@@ -126,6 +138,56 @@ public class S7Params {
     System.arraycopy(data, 0, funcData, 17, data.length);
   }
 
+  /** Create a packet to read PLC time. */
+  public void makeReadTime() {
+    func = CPU;
+    funcData = new byte[7 + 4];
+    funcData[0] = 1;  //count
+    funcData[1] = 0x12;  //var def
+    funcData[2] = 4;  //length of def
+    funcData[3] = 0x11;  //syntax-id
+    funcData[4] = REQUEST_TIME;
+    funcData[5] = READ_CLOCK;
+    funcData[6] = 0;  //seq
+    //data
+    funcData[7] = 0x0a;  //obj does not exist
+    funcData[8] = 0x00;  //NULL
+    BE.setuint16(funcData, 9, 0);  //length
+  }
+
+  /** Create a packet to write PLC time. */
+  public void makeWriteTime(Calendar dt) {
+    int year = dt.get(Calendar.YEAR);
+    int month = dt.get(Calendar.MONTH) + 1;
+    int day = dt.get(Calendar.DAY_OF_MONTH);
+    int hour = dt.get(Calendar.HOUR_OF_DAY);
+    int min = dt.get(Calendar.MINUTE);
+    int sec = dt.get(Calendar.SECOND);
+    int ms = dt.get(Calendar.MILLISECOND);
+    func = CPU;
+    funcData = new byte[7 + 14];
+    funcData[0] = 1;  //count
+    funcData[1] = 0x12;  //var def
+    funcData[2] = 4;  //length of def
+    funcData[3] = 0x11;  //syntax-id
+    funcData[4] = REQUEST_TIME;
+    funcData[5] = WRITE_CLOCK;
+    funcData[6] = 0;  //seq
+    //data
+    funcData[7] = (byte)0xff;  //success
+    funcData[8] = 0x09;  //octet string
+    BE.setuint16(funcData, 9, 0x0a);  //length
+    funcData[11] = 0;  //reserved
+    year -= 100;  //???
+    EBCDIC.encode((short)year, funcData, 12);
+    EBCDIC.encode((byte)month, funcData, 14);
+    EBCDIC.encode((byte)day, funcData, 15);
+    EBCDIC.encode((byte)hour, funcData, 16);
+    EBCDIC.encode((byte)min, funcData, 17);
+    EBCDIC.encode((byte)sec, funcData, 18);
+    EBCDIC.encode((short)ms, funcData, 19);
+  }
+
   /** Returns size of params. */
   public int size() {
     return 1 + funcData.length;
@@ -201,6 +263,58 @@ public class S7Params {
         offset += len;
         if (len % 2 == 1) {
           offset++;  //fill byte
+        }
+      }
+    }
+    return true;
+  }
+
+  /** Reads params from packet and fills in Calendar. */
+  public boolean read(byte[] data, int offset, Calendar out) throws Exception {
+    func = data[offset++];
+    byte count = data[offset++];
+    for(int a=0;a<count;a++) {
+      if (func == CPU) {
+        byte var_spec = data[offset++];  //0x12
+        byte var_spec_len = data[offset++];  //0x08
+        byte syntax = data[offset++];  //0x12
+        byte func_group = data[offset++];  //0x87
+        byte sub_func = data[offset++];  //READ_CLOCK
+        if (sub_func == READ_CLOCK) {
+          byte seq = data[offset++];
+          byte data_ref = data[offset++];
+          byte last_data = data[offset++];
+          short error = (short)BE.getuint16(data, offset); offset += 2;
+          //read data
+          byte result = data[offset++];
+          if (result == (byte)0xff) {
+            byte trans_size = data[offset++];  //0x09 (OCTET)
+            if (trans_size != 0x09) {
+              JFLog.log("Warning:OCTET = " + trans_size);
+            }
+            short len = (short)BE.getuint16(data, offset); offset += 2;  //0x000a
+            if (len != 0x0a) {
+              JFLog.log("Warning:length = " + trans_size);
+            }
+            byte res = data[offset++];
+            int year = EBCDIC.decode(data, offset, 2); offset += 2;
+            year += 100;  //???
+            int month = EBCDIC.decode(data, offset++, 1);
+            int day = EBCDIC.decode(data, offset++, 1);
+            int hour = EBCDIC.decode(data, offset++, 1);
+            int min = EBCDIC.decode(data, offset++, 1);
+            int sec = EBCDIC.decode(data, offset++, 1);
+            int ms = EBCDIC.decode(data, offset, 2); offset += 2;
+            out.set(Calendar.YEAR, year);
+            out.set(Calendar.MONTH, month - 1);
+            out.set(Calendar.DAY_OF_MONTH, day);
+            out.set(Calendar.HOUR_OF_DAY, hour);
+            out.set(Calendar.MINUTE, min);
+            out.set(Calendar.SECOND, sec);
+            out.set(Calendar.MILLISECOND, ms);
+          } else {
+            JFLog.log("Read time failed! result=" + result);
+          }
         }
       }
     }

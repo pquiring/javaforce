@@ -26,6 +26,8 @@ package javaforce.controls.s7;
  * @author pquiring
  */
 
+import java.util.*;
+
 public class S7Packet {
 
   /** Creates a packet to connect at COTP level (connect step1). */
@@ -109,6 +111,29 @@ public class S7Packet {
     return data;
   }
 
+  public static byte[] makeReadTimePacket() {
+    TPKT tpkt = new TPKT();
+    COTP cotp = new COTP(COTP.type_data);
+    S7Header header = new S7Header();
+    S7Params params = new S7Params();
+    byte[] data;
+
+    header.rosctr = S7Header.ROSCTR_USERDATA;
+
+    params.makeReadTime();
+    int size = tpkt.size() + cotp.size() + header.size() + params.size();
+    data = new byte[size];
+    int dataoff = 0;
+    tpkt.write(data, dataoff, (short)size);
+    dataoff += tpkt.size();
+    cotp.write(data, dataoff);
+    dataoff += cotp.size();
+    header.write(data, dataoff, (short)(params.size() - 4), (short)4);
+    dataoff += header.size();
+    params.write(data, dataoff);
+    return data;
+  }
+
   /** Creates a packet to write data to S7. */
   public static byte[] makeWritePacket(S7Data type) {
     TPKT tpkt = new TPKT();
@@ -126,6 +151,29 @@ public class S7Packet {
     cotp.write(data, dataoff);
     dataoff += cotp.size();
     header.write(data, dataoff, (short)(params.size() - 4 - type.data.length), (short)(4 + type.data.length));
+    dataoff += header.size();
+    params.write(data, dataoff);
+    return data;
+  }
+
+  public static byte[] makeWriteTimePacket(Calendar dt) {
+    TPKT tpkt = new TPKT();
+    COTP cotp = new COTP(COTP.type_data);
+    S7Header header = new S7Header();
+    S7Params params = new S7Params();
+    byte[] data;
+
+    header.rosctr = S7Header.ROSCTR_USERDATA;
+
+    params.makeWriteTime(dt);
+    int size = tpkt.size() + cotp.size() + header.size() + params.size();
+    data = new byte[size];
+    int dataoff = 0;
+    tpkt.write(data, dataoff, (short)size);
+    dataoff += tpkt.size();
+    cotp.write(data, dataoff);
+    dataoff += cotp.size();
+    header.write(data, dataoff, (short)(params.size() - 14), (short)14);
     dataoff += header.size();
     params.write(data, dataoff);
     return data;
@@ -274,7 +322,36 @@ public class S7Packet {
     return null;
   }
 
+  /** Decodes a packet and returns any data returned. */
+  public static Calendar decodeTimePacket(byte[] packet) {
+    try {
+      Calendar data = Calendar.getInstance();
+      int offset = 0;
+      TPKT tpkt = new TPKT();
+      tpkt.read(packet, offset);
+      offset += tpkt.size();
+      COTP cotp = new COTP();
+      cotp.read(packet, offset);
+      offset += cotp.size();
+      S7Header header = new S7Header();
+      header.read(packet, offset);
+      offset += header.size();
+      S7Params params = new S7Params();
+      if (!params.read(packet, offset, data)) {
+        return null;
+      }
+      return data;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
   public static boolean isPacketComplete(byte[] packet) {
     return decodePacket(packet) != null;
+  }
+
+  public static boolean isPacketTimeComplete(byte[] packet) {
+    return decodeTimePacket(packet) != null;
   }
 }

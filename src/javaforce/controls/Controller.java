@@ -727,6 +727,66 @@ public class Controller {
     return null;
   }
 
+  public Calendar readTime() {
+    if (!connected) return null;
+    switch (plcType) {
+      case ControllerType.S7: {
+        byte[] packet = S7Packet.makeReadTimePacket();
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte[] reply = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!S7Packet.isPacketTimeComplete(Arrays.copyOf(reply, replySize)));
+          Calendar dt = S7Packet.decodeTimePacket(Arrays.copyOf(reply, replySize));
+          return dt;
+        } catch (Exception e) {
+          JFLog.log(e);
+          lastException = e;
+          return null;
+        }
+      }
+    }
+    return null;
+  }
+
+  public boolean writeTime(Calendar dt) {
+    if (!connected) return false;
+    switch (plcType) {
+      case ControllerType.S7: {
+        byte[] packet = S7Packet.makeWriteTimePacket(dt);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return false;
+        }
+        byte[] reply = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!S7Packet.isPacketTimeComplete(Arrays.copyOf(reply, replySize)));
+          return true;
+        } catch (Exception e) {
+          lastException = e;
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
   public boolean isConnected() {
     if (plcType == 0) return false;
     try {
