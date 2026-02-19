@@ -455,10 +455,11 @@ public class MQTTServer {
   }
 
   private int getLengthBytes(int length) {
-    if (length <= 0x7f) return 1;
-    if (length <= 0x3ff) return 2;
-    if (length <= 0x1fffff) return 3;
-    if (length <= 0xfffffff) return 4;
+    //does not include the header or length bytes itself
+    if (length <= 0x7f) return 1;  //7 bits
+    if (length <= 0x3fff) return 2;  //14 bits
+    if (length <= 0x1fffff) return 3;  //21 bits
+    if (length <= 0xfffffff) return 4;  //28 bits (max length)
     return -1;
   }
 
