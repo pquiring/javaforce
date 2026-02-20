@@ -30,7 +30,7 @@ public class TestPLC {
   public static void readtag(String[] args) {
     if (args.length != 3) {
       System.out.println("Usage: ReadTag HOST TAG");
-      System.out.println(" Host: S7:IP AB:IP MODBUS:IP NI:device/opts etc.");
+      System.out.println(" Host: S7:IP AB:IP MODBUS:IP etc.");
       return;
     }
     try {
@@ -58,7 +58,7 @@ public class TestPLC {
   public static void writetag(String[] args) {
     if (args.length != 5) {
       System.out.println("Usage: WriteTag HOST TAG TagType HexBytes,...");
-      System.out.println(" Host: S7:IP AB:IP MODBUS:IP NI:device/opts etc.");
+      System.out.println(" Host: S7:IP AB:IP MODBUS:IP etc.");
       System.out.println(" Type: ANY INT8 INT16 INT32 INT64 FLOAT DOUBLE (required for AllenBradley only, all others use ANY)");
       return;
     }
