@@ -14,6 +14,10 @@ FROM debian:forky
 
 WORKDIR /opt
 
+#fix version (currently missing)
+
+RUN echo VERSION_ID=14 >> /etc/os-release
+
 #install JF deps
 
 COPY deps.sh /opt
