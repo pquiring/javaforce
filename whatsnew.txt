@@ -1,5 +1,12 @@
 What's new...
 
+Feb 20/2026 : JF/101.0
+  - jfMQTT/0.12
+    - fix : processing messages of certain size range on server side this time
+  - Controller
+    - add : readTime() writeTime()
+    - only Siemens PLC supported currently
+
 Feb 16/2026 : JF/100.0
   - JNI to FFM conversion is comlpete (except for misc funcs)
   - FFM : fix another minor memory leak
