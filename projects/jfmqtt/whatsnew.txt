@@ -1,3 +1,6 @@
+2026-02-20 - v0.12
+  - fix : processing messages of certain size (server side)
+
 2026-02-13 - v0.11
   - fix : processing messages of certain size
 
