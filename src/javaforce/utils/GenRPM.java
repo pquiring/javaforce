@@ -37,6 +37,7 @@ public class GenRPM {
     }
     String arch = getArch();
     String archext = getArchExt();
+    String release = Linux.getOSRelease("VERSION_ID");
 
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
@@ -62,7 +63,7 @@ public class GenRPM {
     Process p;
     boolean debug = System.getenv("DEBUG") != null;
     try {
-      GenPkgInfo.main(new String[] {"fedora", arch, files});
+      GenPkgInfo.main(new String[] {"fedora", arch, release, files});
       JF.copyAllAppend(files, "rpm.spec");
       if (new File(data).exists()) {
         new File(data).delete();

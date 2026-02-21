@@ -10,6 +10,7 @@ package javaforce.utils;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.linux.*;
 
 public class GenPAC {
   private BuildTools tools;
@@ -37,6 +38,7 @@ public class GenPAC {
     }
     String arch = getArch();
     String archext = getArchExt();
+    String release = Linux.getOSRelease("VERSION_ID");
 
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
@@ -61,7 +63,7 @@ public class GenPAC {
     Runtime rt = Runtime.getRuntime();
     boolean debug = System.getenv("DEBUG") != null;
     try {
-      GenPkgInfo.main(new String[] {"arch", arch, files});
+      GenPkgInfo.main(new String[] {"arch", arch, release, files});
       new File(files_tmp).delete();
       JF.echoAppend(".PKGINFO\n", files_tmp);
       JF.echoAppend(".MTREE\n", files_tmp);

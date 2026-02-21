@@ -24,6 +24,7 @@ public class GenPkgInfo {
 
   private BuildTools tools;
   private String app, apptype, desc, arch, ver;
+  private String distro, release;
   private long size;  //in bytes
   private boolean service;
   private String[] deps;
@@ -31,7 +32,7 @@ public class GenPkgInfo {
   public static void main(String[] args) {
     if (args == null || args.length < 3) {
       System.out.println("GenPkgInfo : build linux package info files");
-      System.out.println("  Usage : GenPkgInfo distro archtype files.list");
+      System.out.println("  Usage : GenPkgInfo distro archtype release files.list");
       System.out.println("    distro = debian fedora arch");
       System.exit(1);
     }
@@ -45,13 +46,14 @@ public class GenPkgInfo {
   public void run(String[] args) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML("build.xml")) throw new Exception("error loading build.xml");
-    String distro = args[0];
-    arch = getArch();
-    size = calcSize(args[2]);
+    distro = args[0];
+    arch = args[1];
+    release = args[2];
+    size = calcSize(args[3]);
     //load build.xml and extract app , desc , etc.
     app = tools.getProperty("app");
     apptype = tools.getProperty("apptype");
-    deps = getDepends(distro);
+    deps = getDepends(distro, release);
     service = apptype.equals("service");
     switch (apptype) {
       case "client":
@@ -72,30 +74,6 @@ public class GenPkgInfo {
     }
   }
 
-  public static String convertArch(String arch) {
-    switch (arch) {
-      case "x86_64": return "amd64";
-      case "aarch64": return "arm64";
-    }
-    return arch;
-  }
-
-  public static String getArch() {
-    String arch = System.getenv("HOSTTYPE");
-    if (arch == null) {
-      arch = System.getProperty("os.arch");
-      if (arch == null) {
-        JFLog.log("Error:Unable to detect CPU from env:HOSTTYPE or property:os.arch");
-      }
-    }
-    //use GNU names
-    switch (arch) {
-      case "amd64": return "x86_64";
-      case "arm64": return "aarch64";
-    }
-    return arch;
-  }
-
   private long calcSize(String files_list) {
     try {
       String[] files = new String(JF.readAll(new FileInputStream(files_list))).replaceAll("\r", "").split("\n");
@@ -111,7 +89,7 @@ public class GenPkgInfo {
     }
   }
 
-  private String[] getDepends(String distro) {
+  private String[] getDepends(String distro, String release) {
     ArrayList<String> depends = new ArrayList<String>();
     String filename = null;
     switch (distro) {
@@ -130,6 +108,13 @@ public class GenPkgInfo {
         if (depend.length() == 0) continue;
         if (depend.equals("null")) continue;
         if (depend.startsWith("#")) continue;
+        if (depend.contains(":")) {
+          //version specific
+          int idx = depend.indexOf(':');
+          String pkg_release = depend.substring(0, idx);
+          depend = depend.substring(idx + 1);
+          if (!pkg_release.equals(release)) continue;
+        }
         depends.add(depend);
       }
     } catch (FileNotFoundException e) {
@@ -144,15 +129,12 @@ public class GenPkgInfo {
   }
 
   private void debian() {
-    arch = convertArch(arch);
     try {
       StringBuffer sb = new StringBuffer();
       //mandatory
       sb.append("Package: " + app + apptype + "\n");
       sb.append("Version: " + ver + "\n");
-      sb.append("Architecture: ");
-      sb.append(arch);
-      sb.append("\n");
+      sb.append("Architecture: " + arch + "\n");
       sb.append("Description: " + desc + "\n");
       sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>\n");
       //optional
@@ -293,9 +275,7 @@ public class GenPkgInfo {
       sb.append("packager = Peter Quiring <pquiring@gmail.com>\n");
       sb.append("size = " + size + "\n");
       sb.append("license = LGPL\n");
-      sb.append("arch = ");
-      sb.append(arch);
-      sb.append("\n");
+      sb.append("arch = " + arch + "\n");
       for(int a=0;a<deps.length;a++) {
         sb.append("depend = ");
         sb.append(deps[a]);

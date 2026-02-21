@@ -40,6 +40,7 @@ public class GenDEB {
     }
     String arch = getArch();
     String archext = getArchExt();
+    String release = Linux.getOSRelease("VERSION_ID");
 
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
@@ -68,7 +69,7 @@ public class GenDEB {
     int ret;
     boolean debug = System.getenv("DEBUG") != null;
     try {
-      GenPkgInfo.main(new String[] {"debian", arch, files});
+      GenPkgInfo.main(new String[] {"debian", arch, release, files});
       if (new File(control).exists()) {
         new File(control).delete();
       }
@@ -95,8 +96,6 @@ public class GenDEB {
         new File(data).delete();
         JF.deletePathEx("deb");
       }
-
-      String release = Linux.getOSRelease("VERSION_ID");
 
       System.out.println(out + " created!");
       if (new File(home + "/repo/debian/readme.txt").exists()) {
