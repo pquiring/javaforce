@@ -18,6 +18,8 @@ package javaforce.controls.ab;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.controls.*;
 
 public class ABPacket {
@@ -25,11 +27,11 @@ public class ABPacket {
     byte[] packet;
     ENIP ip = new ENIP(ENIP.CMD_GET_SESSION);
     ip.setSizes(0);
-    int size = ip.size();
+    int size = ip.getSize();
     packet = new byte[size];
     int offset = 0;
     try {
-      ip.write(packet, offset, context); offset += ip.size();
+      ip.write(packet, offset, context); offset += ip.getSize();
       return packet;
     } catch (Exception e) {
       e.printStackTrace();
@@ -40,14 +42,33 @@ public class ABPacket {
   public static byte[] makeReadPacket(String tag, ABContext context) {
     byte[] packet;
     ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
-    CIP_Request cip = new CIP_Request();
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_READTAG);
     cip.setRead(tag);
-    ip.setSizes(cip.size());
-    int size = ip.size() + cip.size();
+    ip.setSizes(cip.getSize());
+    int size = ip.getSize() + cip.getSize();
     packet = new byte[size];
     int offset = 0;
     try {
-      ip.write(packet, offset, context); offset += ip.size();
+      ip.write(packet, offset, context); offset += ip.getSize();
+      cip.write(packet, offset);
+      return packet;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public static byte[] makeReadClockPacket(ABContext context) {
+    byte[] packet;
+    ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_GET_ATTR);
+    cip.setReadClock();
+    ip.setSizes(cip.getSize());
+    int size = ip.getSize() + cip.getSize();
+    packet = new byte[size];
+    int offset = 0;
+    try {
+      ip.write(packet, offset, context); offset += ip.getSize();
       cip.write(packet, offset);
       return packet;
     } catch (Exception e) {
@@ -59,14 +80,34 @@ public class ABPacket {
   public static byte[] makeWritePacket(String tag, byte type, byte[] data, ABContext context) {
     byte[] packet;
     ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
-    CIP_Request cip = new CIP_Request();
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_WRITETAG);
     cip.setWrite(tag, type, data);
-    ip.setSizes(cip.size());
-    int size = ip.size() + cip.size();
+    ip.setSizes(cip.getSize());
+    int size = ip.getSize() + cip.getSize();
     packet = new byte[size];
     int offset = 0;
     try {
-      ip.write(packet, offset, context); offset += ip.size();
+      ip.write(packet, offset, context); offset += ip.getSize();
+      cip.write(packet, offset);
+      return packet;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public static byte[] makeWriteClockPacket(Calendar dt, ABContext context) {
+    byte[] packet;
+    ENIP ip = new ENIP(ENIP.CMD_SEND_UNIT_DATA);
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_SET_ATTR);
+    cip.clock = dt.getTimeInMillis() * 1000L;
+    cip.setWriteClock();
+    ip.setSizes(cip.getSize());
+    int size = ip.getSize() + cip.getSize();
+    packet = new byte[size];
+    int offset = 0;
+    try {
+      ip.write(packet, offset, context); offset += ip.getSize();
       cip.write(packet, offset);
       return packet;
     } catch (Exception e) {
@@ -79,17 +120,29 @@ public class ABPacket {
     ENIP ip = new ENIP();
     int offset = 0;
     try {
-      ip.read(data, offset); offset += ip.size();
+      ip.read(data, offset); offset += ip.getSize();
       if (ip.cmd == ENIP.CMD_GET_SESSION) return new byte[0];
-      switch (data[offset]) {
-        case (byte)0xcc:
-          CIP_Reply_Read cip_read = new CIP_Reply_Read();
-          cip_read.read(data, offset);
-          return cip_read.tagdata;
-        case (byte)0xcd:
-          CIP_Reply_Write cip_write = new CIP_Reply_Write();
-          cip_write.read(data, offset);
+      switch (data[offset] & 0x7f) {
+        case CIP.SUB_CMD_READTAG: {
+          CIP cip = new CIP((byte)0, data[offset]);
+          cip.readReplyReadTag(data, offset);
+          return cip.data;
+        }
+        case CIP.SUB_CMD_WRITETAG: {
+          CIP cip = new CIP((byte)0, data[offset]);
+          cip.readReplyWriteTag(data, offset);
           return new byte[0];
+        }
+        case CIP.SUB_CMD_GET_ATTR: {
+          CIP cip = new CIP((byte)0, data[offset]);
+          cip.readReplyGetAttrs(data, offset);
+          return cip.attrs[0];
+        }
+        case CIP.SUB_CMD_SET_ATTR: {
+          CIP cip = new CIP((byte)0, data[offset]);
+          cip.readReplySetAttrs(data, offset);
+          return new byte[0];
+        }
       }
       return null;
     } catch (Exception e) {

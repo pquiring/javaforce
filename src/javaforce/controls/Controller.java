@@ -728,7 +728,10 @@ public class Controller {
   }
 
   public Calendar readTime() {
-    if (!connected) return null;
+    if (!connected) {
+      JFLog.log("not connected");
+      return null;
+    }
     switch (plcType) {
       case ControllerType.S7: {
         byte[] packet = S7Packet.makeReadTimePacket();
@@ -747,6 +750,32 @@ public class Controller {
             replySize += read;
           } while (!S7Packet.isPacketTimeComplete(Arrays.copyOf(reply, replySize)));
           Calendar dt = S7Packet.decodeTimePacket(Arrays.copyOf(reply, replySize));
+          return dt;
+        } catch (Exception e) {
+          JFLog.log(e);
+          lastException = e;
+          return null;
+        }
+      }
+      case ControllerType.AB: {
+        byte[] packet = ABPacket.makeReadClockPacket(ab_context);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte[] reply = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          byte[] clock = ABPacket.decodePacket(reply);
+          Calendar dt = Calendar.getInstance();
+          dt.setTimeInMillis(LE.getuint64(clock, 0));
           return dt;
         } catch (Exception e) {
           JFLog.log(e);
@@ -782,6 +811,28 @@ public class Controller {
           lastException = e;
           return false;
         }
+      }
+      case ControllerType.AB: {
+        byte[] packet = ABPacket.makeWriteClockPacket(dt, ab_context);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return false;
+        }
+        byte[] reply = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return false;
+        }
+        return true;
       }
     }
     return false;

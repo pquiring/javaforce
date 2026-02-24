@@ -27,19 +27,25 @@ public class ENIP {
   public short protocol = 0x0001;
   public short flags = 0x0000;
 
+
   public static final short CMD_RR_DATA = 0x6f;
   public static final short CMD_GET_SESSION = 0x65;
+  public static final short CMD_SEND_UNIT_DATA = 0x70;
 
   public ENIP() {}
 
   public ENIP(short _cmd) {
     cmd = _cmd;
+    if (cmd == CMD_SEND_UNIT_DATA) {
+      timeout = 1;
+    }
   }
 
-  public int size() {
+  public int getSize() {
     switch (cmd) {
       case CMD_RR_DATA: return 24 + 16;  //40
       case CMD_GET_SESSION: return 24 + 4;  //28
+      case CMD_SEND_UNIT_DATA: return 24 + 22 - 4;  //46
     }
     return -1;
   }
@@ -66,6 +72,9 @@ public class ENIP {
         protocol = (short)LE.getuint16(data, offset); offset += 2;
         flags = (short)LE.getuint16(data, offset); offset += 2;
         break;
+      case CMD_SEND_UNIT_DATA:
+        //TODO
+        break;
     }
   }
 
@@ -78,13 +87,17 @@ public class ENIP {
       case CMD_GET_SESSION:
         len = 4;
         break;
+      case CMD_SEND_UNIT_DATA:
+        len = (short)(22 + size - 4);
+        len_2 = (short)(2 + size);
+        break;
     }
   }
 
   public void write(byte[] data, int offset, ABContext abcontext) {
     session = abcontext.session;
     context = abcontext.context;
-    abcontext.increment();
+    //24 bytes
     LE.setuint16(data, offset, cmd); offset += 2;
     LE.setuint16(data, offset, len); offset += 2;
     LE.setuint32(data, offset, session); offset += 4;
@@ -93,6 +106,7 @@ public class ENIP {
     LE.setuint32(data, offset, options); offset += 4;
     switch (cmd) {
       case CMD_RR_DATA:
+        //16 bytes
         LE.setuint32(data, offset, ihandle); offset += 4;
         LE.setuint16(data, offset, timeout); offset += 2;
         LE.setuint16(data, offset, count); offset += 2;
@@ -100,10 +114,22 @@ public class ENIP {
         LE.setuint16(data, offset, len_1); offset += 2;
         LE.setuint16(data, offset, type_2); offset += 2;
         LE.setuint16(data, offset, len_2); offset += 2;
+        abcontext.increment();
         break;
       case CMD_GET_SESSION:
+        //4
         LE.setuint16(data, offset, protocol); offset += 2;
         LE.setuint16(data, offset, flags); offset += 2;
+        break;
+      case CMD_SEND_UNIT_DATA:
+        //22 bytes
+        LE.setuint32(data, offset, ihandle); offset += 4;
+        LE.setuint16(data, offset, timeout); offset += 2;
+        LE.setuint16(data, offset, count); offset += 2;
+        LE.setuint16(data, offset, type_1); offset += 2;
+        LE.setuint16(data, offset, len_1); offset += 2;
+        LE.setuint16(data, offset, type_2); offset += 2;
+        LE.setuint16(data, offset, len_2); offset += 2;
         break;
     }
   }

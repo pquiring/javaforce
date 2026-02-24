@@ -99,7 +99,7 @@ public class TestPLC {
   }
   public static void readtime(String[] args) {
     if (args.length != 2) {
-      System.out.println("Usage: ReadTag HOST");
+      System.out.println("Usage: ReadTime HOST");
       System.out.println(" Host: S7:IP AB:IP MODBUS:IP etc.");
       return;
     }
