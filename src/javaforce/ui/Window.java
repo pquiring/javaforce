@@ -77,7 +77,7 @@ public class Window implements UIEvents {
   public boolean create(int style, String title, int width, int height, Window shared) {
     this.width = width;
     this.height = height;
-    ctx = UIAPI.getInstance().uiWindowCreate(style, title, width, height, this, shared == null ? 0 : shared.ctx);
+    ctx = UIAPI.getInstance().uiWindowCreate(style, title, width, height, shared == null ? 0 : shared.ctx);
     if (ctx != 0) {
       synchronized(windows) {
         windows.add(this);
@@ -130,7 +130,7 @@ public class Window implements UIEvents {
    *    x = wait x milliseconds
    */
   public void pollEvents(int wait) {
-    UIAPI.getInstance().uiPollEvents(ctx, wait);
+    UIAPI.getInstance().uiPollEvents(ctx, wait, this);
   }
 
   /** Posts an empty event to wake main thread. */

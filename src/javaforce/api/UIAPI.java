@@ -44,11 +44,11 @@ public interface UIAPI {
 
   //Window
   public boolean uiInit();
-  public long uiWindowCreate(int style, String title, int width, int height, UIEvents events, long shared);
+  public long uiWindowCreate(int style, String title, int width, int height, long shared);
   public void uiWindowDestroy(long id);
   public void uiWindowSetCurrent(long id);
   public void uiWindowSetIcon(long id, String icon, int x, int y);
-  public void uiPollEvents(long id, int wait);  //TODO : move UIEvents here - then the upcall doesn't need to be stored
+  public void uiPollEvents(long id, int wait, UIEvents events);
   public void uiPostEvent();
   public void uiWindowShow(long id);
   public void uiWindowHide(long id);

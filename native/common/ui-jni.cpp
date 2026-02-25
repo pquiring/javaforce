@@ -68,7 +68,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_UIJNI_uiInit
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_jni_UIJNI_uiWindowCreate
-  (JNIEnv *e, jobject c, jint style, jstring title, jint x, jint y, jobject events, jlong shared)
+  (JNIEnv *e, jobject c, jint style, jstring title, jint x, jint y, jlong shared)
 {
   GLFWContextJNI *ctx = (GLFWContextJNI*)malloc(sizeof(GLFWContextJNI));
   ctx->ge = e;
@@ -105,10 +105,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_UIJNI_uiWindowCreate
 
   glfwSetWindowUserPointer(ctx->window, (void*)ctx);
 
-  ctx->obj = e->NewGlobalRef(events);
-  jclass cls = e->GetObjectClass(events);
-  ctx->mid_dispatch = e->GetMethodID(cls, "dispatchEvent", "(III)V");
-
   glfwSetKeyCallback(ctx->window, key_callback_jni);
   glfwSetCharCallback(ctx->window, character_callback_jni);
   glfwSetCursorPosCallback(ctx->window, cursor_position_callback_jni);
@@ -142,10 +138,13 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetCurrent
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiPollEvents
-  (JNIEnv *e, jobject c, jlong id, jint wait)
+  (JNIEnv *e, jobject c, jlong id, jint wait, jobject events)
 {
   GLFWContextJNI *ctx = (GLFWContextJNI*)id;
   ctx->ge = e;
+  ctx->obj = e->NewGlobalRef(events);
+  jclass cls = e->GetObjectClass(events);
+  ctx->mid_dispatch = e->GetMethodID(cls, "dispatchEvent", "(III)V");
   switch (wait) {
     case -1: {
       glfwWaitEvents();
@@ -238,11 +237,11 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetPos
 
 static JNINativeMethod javaforce_ui_Window[] = {
   {"uiInit", "()Z", (void *)&Java_javaforce_jni_UIJNI_uiInit},
-  {"uiWindowCreate", "(ILjava/lang/String;IILjavaforce/ui/UIEvents;J)J", (void *)&Java_javaforce_jni_UIJNI_uiWindowCreate},
+  {"uiWindowCreate", "(ILjava/lang/String;IIJ)J", (void *)&Java_javaforce_jni_UIJNI_uiWindowCreate},
   {"uiWindowDestroy", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowDestroy},
   {"uiWindowSetCurrent", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowSetCurrent},
   {"uiWindowSetIcon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowSetIcon},
-  {"uiPollEvents", "(JI)V", (void *)&Java_javaforce_jni_UIJNI_uiPollEvents},
+  {"uiPollEvents", "(JILjavaforce/ui/UIEvents;)V", (void *)&Java_javaforce_jni_UIJNI_uiPollEvents},
   {"uiPostEvent", "()V", (void *)&Java_javaforce_jni_UIJNI_uiPostEvent},
   {"uiWindowShow", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowShow},
   {"uiWindowHide", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowHide},

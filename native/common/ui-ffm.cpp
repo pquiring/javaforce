@@ -60,11 +60,10 @@ jboolean uiInit()
   return glfwInit() ? JNI_TRUE : JNI_FALSE;
 }
 
-GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, void* events, GLFWContextFFM* shared)
+GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GLFWContextFFM* shared)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)malloc(sizeof(GLFWContextFFM));
   memset(ctx, 0, sizeof(GLFWContextFFM));
-  ctx->dispatchEvent = (void (*)(int,int,int))events;
 
   GLFWmonitor *monitor = NULL;
   if (style & javaforce_jni_UIJNI_STYLE_FULLSCREEN) monitor = glfwGetPrimaryMonitor();
@@ -122,8 +121,9 @@ void uiWindowSetCurrent(GLFWContextFFM* ctx)
   glfwMakeContextCurrent(ctx->window);
 }
 
-void uiPollEvents(GLFWContextFFM* ctx, jint wait)
+void uiPollEvents(GLFWContextFFM* ctx, jint wait, void* events)
 {
+  ctx->dispatchEvent = (void (*)(int,int,int))events;
   switch (wait) {
     case -1: {
       glfwWaitEvents();
@@ -196,11 +196,11 @@ void uiWindowSetPos(GLFWContextFFM* ctx, jint x, jint y)
 
 extern "C" {
   JNIEXPORT jboolean (*_uiInit)() = &uiInit;
-  JNIEXPORT GLFWContextFFM* (*_uiWindowCreate)(jint,const char*,jint,jint,void*,GLFWContextFFM*) = &uiWindowCreate;
+  JNIEXPORT GLFWContextFFM* (*_uiWindowCreate)(jint,const char*,jint,jint,GLFWContextFFM*) = &uiWindowCreate;
   JNIEXPORT void (*_uiWindowDestroy)(GLFWContextFFM*) = &uiWindowDestroy;
   JNIEXPORT void (*_uiWindowSetCurrent)(GLFWContextFFM*) = &uiWindowSetCurrent;
 //  JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*, const char*,jint,jint) = &uiWindowSetIcon;
-  JNIEXPORT void (*_uiPollEvents)(GLFWContextFFM*,jint) = &uiPollEvents;
+  JNIEXPORT void (*_uiPollEvents)(GLFWContextFFM*,jint,void*) = &uiPollEvents;
   JNIEXPORT void (*_uiPostEvent)() = &uiPostEvent;
   JNIEXPORT void (*_uiWindowShow)(GLFWContextFFM*) = &uiWindowShow;
   JNIEXPORT void (*_uiWindowHide)(GLFWContextFFM*) = &uiWindowHide;
