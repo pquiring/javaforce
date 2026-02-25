@@ -6,7 +6,6 @@ package javaforce.ui;
  */
 
 import java.util.*;
-import java.lang.foreign.*;
 
 import javaforce.*;
 import javaforce.api.*;
@@ -62,11 +61,6 @@ public class Window implements UIEvents {
     } catch (Exception e) {
       JFLog.log(e);
     }
-  }
-  MemorySegment upcall;
-  public MemorySegment store(MemorySegment upcall) {
-    this.upcall = upcall;
-    return upcall;
   }
 
   public static final int STYLE_VISIBLE = 1;
