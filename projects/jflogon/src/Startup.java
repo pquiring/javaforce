@@ -23,10 +23,14 @@ public class Startup implements ShellProcessListener{
   public static AutoMounter autoMounter;
   public static JBusClient jbusClient;
 
+  private static int LOG_DEFAULT = 0;
+  private static int LOG_DISPLAY = 1;
+
   /** Main entry point for jfLinux system.*/
   public static void main(String args[]) {
-    JFLog.init("/var/log/jflogon.log", true);
-    JFLog.log("jLogon:Startup");
+    JFLog.init(LOG_DEFAULT, "/var/log/jflogon.log", true);
+    JFLog.init(LOG_DISPLAY, "/var/log/jflogon-display.log", true);
+    JFLog.log("jfLogon:Startup");
     try {
       fixSudoers();
       Linux.init();
@@ -334,7 +338,8 @@ public class Startup implements ShellProcessListener{
     }
   }
 
-  public void shellProcessOutput(String string) {
+  public void shellProcessOutput(String out) {
+    JFLog.log(LOG_DISPLAY, out);
   }
 
   /** sudoers can NOT require tty or jflogon (and other apps that use sudo) fail. */
