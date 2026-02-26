@@ -3,6 +3,6 @@
 /usr/sbin/jflogon-runsession
 /usr/sbin/jflogon-rundomain
 /usr/share/java/jflogon.jar
-/usr/lib/systemd/system/jflogon.service
+/usr/lib/systemd/system/jfsystem.service
 /etc/jflogon/labwc-rc.xml
 /etc/jflogon/labwc-menu.xml
