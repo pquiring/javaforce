@@ -345,7 +345,7 @@ public class Startup implements ShellProcessListener{
       Linux.x11_rr_reset("800x600");
     }
     try {
-      startUI(new String[] {"/usr/bin/jflogon"}, new String[] {"XAUTHORITY=/root/.Xauthority", "DISPLAY=:0", "XDG_RUNTIME_DIR=/run"});
+      startUI(new String[] {"/usr/bin/jflogon"}, new String[] {"XAUTHORITY=/root/.Xauthority", "DISPLAY=:0", "XDG_RUNTIME_DIR=/run", "WAYLAND_DISPLAY=wayland-0"});
     } catch (Exception e) {
       JFLog.log(e);
     }
