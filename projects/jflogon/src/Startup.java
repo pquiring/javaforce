@@ -28,7 +28,7 @@ public class Startup implements ShellProcessListener{
 
   /** Main entry point for jfLinux system.*/
   public static void main(String args[]) {
-    JFLog.init(LOG_DEFAULT, "/var/log/jflogon.log", true);
+    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-system.log", true);
     JFLog.init(LOG_DISPLAY, "/var/log/jflogon-display.log", true);
     JFLog.log("jfLogon:Startup");
     try {
@@ -96,18 +96,27 @@ public class Startup implements ShellProcessListener{
 
   private static void start() throws Exception {
     if (wayland) {
-      start(new String[] {"/usr/bin/labwc"});
+      start(new String[] {"/usr/bin/labwc"}, null);
     } else {
-      start(new String[] {"/usr/bin/X"});
+      start(new String[] {"/usr/bin/X"}, null);
     }
   }
 
-  private static void start(final String[] cmds) throws Exception {
+  private static void start(String[] cmds, String[] env) throws Exception {
     new Thread() {
       public void run() {
         display_mgr = new ShellProcess();
         display_mgr.keepOutput(false);
         display_mgr.addListener(new Startup());
+        if (env != null) {
+          for(String e : env) {
+            int idx = e.indexOf('=');
+            if (idx == -1) continue;
+            String name = e.substring(0, idx);
+            String value = e.substring(idx + 1);
+            display_mgr.addEnvironmentVariable(name, value);
+          }
+        }
         JFLog.log("Starting Display Server...");
         display_mgr.run(cmds, true);
       }
@@ -130,6 +139,23 @@ public class Startup implements ShellProcessListener{
       display_mgr = null;
       JFLog.log("Display Manager stopped...");
     }
+  }
+
+  private static void startUI(String[] cmds, String[] env) throws Exception {
+    ShellProcess process = new ShellProcess();
+    process.keepOutput(false);
+    process.addListener(new Startup());
+    if (env != null) {
+      for(String e : env) {
+        int idx = e.indexOf('=');
+        if (idx == -1) continue;
+        String name = e.substring(0, idx);
+        String value = e.substring(idx + 1);
+        process.addEnvironmentVariable(name, value);
+      }
+    }
+    JFLog.log("Starting Display Server...");
+    process.run(cmds, true);
   }
 
   public static byte mcookie[] = new byte[16];
@@ -311,13 +337,13 @@ public class Startup implements ShellProcessListener{
   }
 
   public static void createLogon() {
-    Linux.x11_rr_reset("800x600");
-    //execute greeter
+    if (!wayland) {
+      Linux.x11_rr_reset("800x600");
+    }
     try {
-      Logon logon = new Logon();
-      logon.setVisible(true);
+      startUI(new String[] {"/usr/bin/jflogon"}, new String[] {"XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
     } catch (Exception e) {
-      e.printStackTrace();
+      JFLog.log(e);
     }
   }
 

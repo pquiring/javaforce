@@ -4,7 +4,6 @@
  * @author pquiring
  */
 
-import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -725,6 +724,19 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
     public void wapSuccess() {
       stopNetworkTimer();
+    }
+  }
+
+  private static int LOG_DEFAULT = 0;
+
+  public static void main(String[] args) {
+    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-ui.log", true);
+    //execute greeter
+    try {
+      Logon logon = new Logon();
+      logon.setVisible(true);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }

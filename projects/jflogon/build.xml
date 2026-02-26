@@ -1,7 +1,7 @@
 <project name="jflogon" default="jar" basedir=".">
   <description>jflogon</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jflogon"/>
+  <property name="app" value="jfsystem"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
@@ -34,8 +34,6 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.jar" todir="/usr/share/java"/>
-    <copy file="${app}.sh" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/${app}.sh" perm="+x"/>
     <copy file="jflogon-runsession" todir="/usr/sbin"/>
     <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
     <copy file="jflogon-rundomain" todir="/usr/sbin"/>
@@ -50,7 +48,6 @@
   <!-- sudo ant uninstall -->
   <target name="uninstall">
     <delete file="/usr/share/java/${app}.jar"/>
-    <delete file="/usr/sbin/${app}.sh"/>
     <delete file="/usr/sbin/jflogon-runsession"/>
     <delete file="/usr/sbin/jflogon-rundomain"/>
     <delete file="/usr/sbin/${app}"/>
