@@ -5,29 +5,42 @@
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.linux.*;
 import static javaforce.linux.Linux.*;
-import javaforce.utils.*;
 
 public class Startup {
-  public static boolean openboxFailed = false;
+  private static boolean openboxFailed = false;
+  private static boolean wayland = false;
+  private static Properties props;
+
   public static void main(String args[]) {
     JFLog.init(JF.getUserPath() + "/.jfdesktop.log", true);
     Linux.init();
-    /* Setup display */
-    Monitor cfg[] = Linux.x11_rr_load_user();
-    cfg = Linux.x11_rr_get_setup(cfg);
-    Linux.x11_rr_set(cfg);
-    /* Start openbox */
-    if (!new File(JF.getUserPath() + "/.openbox.xml").exists()) {
-      JF.copyAll("/etc/jfdesktop/openbox.xml", JF.getUserPath() + "/.openbox.xml");
-    }
-    JFLog.log("Starting openbox");
+    props = Linux.getJFLinuxProperties();
+    wayland = getProperty("wayland").equals("true");
     try {
-      Runtime.getRuntime().exec(new String[] {"/usr/bin/openbox", "--config-file", JF.getUserPath() + "/.openbox.xml"});
+      if (wayland) {
+        /* Start labwc */
+        if (!new File(JF.getUserPath() + "/labwc/rc.xml").exists()) {
+          config_labwc();
+        }
+        JFLog.log("Starting labwc");
+        Runtime.getRuntime().exec(new String[] {"/usr/bin/labwc"});
+      } else {
+        /* Setup display */
+        Monitor cfg[] = Linux.x11_rr_load_user();
+        cfg = Linux.x11_rr_get_setup(cfg);
+        /* Start openbox */
+        Linux.x11_rr_set(cfg);
+        if (!new File(JF.getUserPath() + "/openbox/rc.xml").exists()) {
+          config_openbox();
+        }
+        JFLog.log("Starting openbox");
+        Runtime.getRuntime().exec(new String[] {"/usr/bin/openbox"});
+      }
     } catch (Exception e) {
       JFLog.log(e);
       System.exit(0);
@@ -54,5 +67,22 @@ public class Startup {
       }
     });
     JF.sleep(1000);
+  }
+  private static String getProperty(String name) {
+    String prop = props.getProperty(name);
+    if (prop == null) prop = "";
+    return prop.trim();
+  }
+  private static void config_labwc() {
+    String labwc =  JF.getUserPath() + "/labwc";
+    new File(labwc).mkdir();
+    JF.copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml");
+    JF.copyAll("/etc/jfdesktop/labwc-menu.xml", labwc + "/menu.xml");
+  }
+  private static void config_openbox() {
+    String openbox =  JF.getUserPath() + "/openbox";
+    new File(openbox).mkdir();
+    JF.copyAll("/etc/jfdesktop/openbox-rc.xml", openbox + "/rc.xml");
+    JF.copyAll("/etc/jfdesktop/openbox-menu.xml", openbox + "/menu.xml");
   }
 }

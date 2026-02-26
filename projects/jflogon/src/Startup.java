@@ -18,6 +18,7 @@ public class Startup implements ShellProcessListener{
   private static ShellProcess display_mgr;
   private static boolean rebootFlag, shutdownFlag;
   private static boolean wayland = false;
+  private static Properties props;
 
   public static AutoMounter autoMounter;
   public static JBusClient jbusClient;
@@ -29,6 +30,8 @@ public class Startup implements ShellProcessListener{
     try {
       fixSudoers();
       Linux.init();
+      props = Linux.getJFLinuxProperties();
+      wayland = getProperty("wayland").equals("true");
       //start jfsystemmgr
       jbusClient = new JBusClient("org.jflinux.jfsystemmgr", new JBusMethods());
       jbusClient.start();
@@ -43,14 +46,13 @@ public class Startup implements ShellProcessListener{
         create_server_xauth();
       }
       boolean retry;
+      if (wayland) {
+        config_labwc();
+      }
       do {
         retry = false;
         try {
-          if (wayland) {
-            start(new String[] {"/usr/bin/weston" , "--config=/etc/weston-logon.ini", "--xwayland"});
-          } else {
-            start(new String[] {"/usr/bin/X"});
-          }
+          start();
         } catch (Exception e) {
           JFLog.log(e);
         }
@@ -84,14 +86,20 @@ public class Startup implements ShellProcessListener{
     }
   }
 
+  private static void start() throws Exception {
+    if (wayland) {
+      start(new String[] {"/usr/bin/labwc"});
+    } else {
+      start(new String[] {"/usr/bin/X"});
+    }
+  }
+
   private static void start(final String[] cmds) throws Exception {
     new Thread() {
       public void run() {
         display_mgr = new ShellProcess();
         display_mgr.keepOutput(false);
         display_mgr.addListener(new Startup());
-        display_mgr.addEnvironmentVariable("XDG_RUNNING_DIR", "/run/weston");
-        new File("/run/weston").mkdir();
         JFLog.log("Starting Display Server...");
         display_mgr.run(cmds, true);
       }
@@ -148,7 +156,6 @@ public class Startup implements ShellProcessListener{
   }
 
   private static void doLiveLogon() {
-    boolean casper = true;
     try {
       FileInputStream fis = new FileInputStream("/etc/.live");
       Properties props = new Properties();
@@ -156,11 +163,11 @@ public class Startup implements ShellProcessListener{
       fis.close();
       String user = props.getProperty("user");
       if (user == null) user = "jflive";
-      String casperFlag = props.getProperty("casper");
-      if (casperFlag != null) casper = casperFlag.trim().equals("true");
       //run session as live user
       runSession(user, "/usr/bin/jfdesktop", null, null, false);
-      stop();
+      if (!wayland) {
+        stop();
+      }
       JF.sleep(1000);
       System.out.println("" + (char)0x1b + "[2J");  //clear screen
       System.out.println("\n\n\n\n\n\t\tPlease remove installation media and reboot\n\n\n\n\n");
@@ -172,6 +179,9 @@ public class Startup implements ShellProcessListener{
 
   public static void runSession(String user, String session, String env_names[], String env_values[], boolean domainLogon) {
     try {
+      if (wayland) {
+        stop();
+      }
       getUserDetails(user);
       if (!wayland) {
         String xauthFile = homePath + "/.Xauthority";
@@ -231,6 +241,9 @@ public class Startup implements ShellProcessListener{
           shutdownFlag = false;
           Startup.shutdown("-P");
           return;
+        }
+        if (wayland) {
+          start();
         }
       } else {
         JFLog.log("Power functions disabled by security policy.");
@@ -475,5 +488,16 @@ public class Startup implements ShellProcessListener{
       jbusClient.broadcast("org.jflinux.jfdesktop.", "videoChanged", quote(reason));
       jbusClient.broadcast("org.jflinux.jfconfig.", "videoChanged", quote(reason));
     }
+  }
+  private static String getProperty(String name) {
+    String prop = props.getProperty(name);
+    if (prop == null) prop = "";
+    return prop.trim();
+  }
+  private static void config_labwc() {
+    String labwc =  JF.getUserPath() + "/labwc";
+    new File(labwc).mkdir();
+    JF.copyAll("/etc/jflogon/labwc-rc.xml", labwc + "/rc.xml");
+    JF.copyAll("/etc/jflogon/labwc-menu.xml", labwc + "/menu.xml");
   }
 }

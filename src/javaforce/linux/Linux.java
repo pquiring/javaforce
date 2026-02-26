@@ -1463,6 +1463,22 @@ public class Linux {
     JFLog.log(output);
   }
 
+  /** Returns /etc/jflinux.props */
+  public static Properties getJFLinuxProperties() {
+    try {
+      String file = "/etc/jflinux.props";
+      if (!new File(file).exists()) return new Properties();
+      Properties props = new Properties();
+      FileInputStream fis = new FileInputStream(file);
+      props.load(fis);
+      fis.close();
+      return props;
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return new Properties();
+  }
+
   /* Test */
   public static void main(String args[]) {
     x11_set_listener(new X11Listener() {

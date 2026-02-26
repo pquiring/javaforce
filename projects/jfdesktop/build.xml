@@ -44,8 +44,10 @@
     <copy file="jfdesktop-vol" todir="/usr/bin"/>
     <chmod file="/usr/bin/jfdesktop-vol" perm="+x"/>
     <mkdir dir="/etc/jfdesktop"/>
-    <copy file="openbox.xml" todir="/etc/jfdesktop"/>
+    <copy file="openbox-rc.xml" todir="/etc/jfdesktop"/>
     <copy file="openbox-menu.xml" todir="/etc/jfdesktop"/>
+    <copy file="labwc-rc.xml" todir="/etc/jfdesktop"/>
+    <copy file="labwc-menu.xml" todir="/etc/jfdesktop"/>
     <copy file="${app}.desktop" todir="/usr/share/xsessions"/>
     <copy todir="/usr/share/icons/hicolor/48x48/apps">
       <fileset dir="." includes="*.png"/>
