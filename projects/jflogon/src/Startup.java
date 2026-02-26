@@ -27,7 +27,7 @@ public class Startup implements ShellProcessListener{
   private static int LOG_DISPLAY = 1;
 
   /** Main entry point for jfLinux system.*/
-  public static void main(String args[]) {
+  public static void serviceStart(String args[]) {
     JFLog.init(LOG_DEFAULT, "/var/log/jflogon-system.log", true);
     JFLog.init(LOG_DISPLAY, "/var/log/jflogon-display.log", true);
     JFLog.log("jfLogon:Startup");
@@ -92,6 +92,10 @@ public class Startup implements ShellProcessListener{
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public static void serviceStop() {
+    //nop
   }
 
   private static void start() throws Exception {
