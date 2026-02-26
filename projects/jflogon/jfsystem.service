@@ -5,6 +5,7 @@ After=systemd-user-sessions.service getty@tty1.service plymouth-quit.service jfb
 
 [Service]
 ExecStart=/usr/bin/jfsystem
+ExecStop=/usr/bin/jfsystem --stop
 Restart=always
 PAMName=login
 TTYPath=/dev/tty1
