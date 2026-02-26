@@ -100,7 +100,7 @@ public class Startup implements ShellProcessListener{
 
   private static void start() throws Exception {
     if (wayland) {
-      start(new String[] {"/usr/bin/labwc"}, null);
+      start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/var/run"});
     } else {
       start(new String[] {"/usr/bin/X"}, null);
     }
@@ -345,7 +345,7 @@ public class Startup implements ShellProcessListener{
       Linux.x11_rr_reset("800x600");
     }
     try {
-      startUI(new String[] {"/usr/bin/jflogon"}, new String[] {"XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
+      startUI(new String[] {"/usr/bin/jflogon"}, new String[] {"XAUTHORITY=/root/.Xauthority", "DISPLAY=:0", "XDG_RUNTIME_DIR=/var/run"});
     } catch (Exception e) {
       JFLog.log(e);
     }
