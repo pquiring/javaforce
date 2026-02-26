@@ -52,6 +52,10 @@ public class Startup implements ShellProcessListener{
       boolean retry;
       if (wayland) {
         config_labwc();
+        String[] env = JF.getEnvironment();
+        for(String e : env) {
+          JFLog.log(LOG_DISPLAY, e);
+        }
       }
       do {
         retry = false;

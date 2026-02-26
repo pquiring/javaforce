@@ -326,25 +326,36 @@ public class JF {
     return now + offset;
   }
 
-  public static void printEnvironment() {
+  public static String[] getEnvironment() {
+    ArrayList<String> strs = new ArrayList<>();
     Map<String, String> env = System.getenv();
+    env.forEach((k, v) -> strs.add(k + "=" + v));
+    return strs.toArray(StringArrayType);
+  }
 
-    if (true) {
-      env.forEach((k, v) -> System.out.println(k + ":" + v));
-    } else {
-      for (Map.Entry<String, String> entry : env.entrySet()) {
-        System.out.println(entry.getKey() + " : " + entry.getValue());
-      }
+  public static void printEnvironment() {
+    String[] env = getEnvironment();
+    for(String e : env) {
+      System.out.println(e);
     }
   }
 
-  public static void printProperties() {
+  public static String[] getSystemProperties() {
+    ArrayList<String> strs = new ArrayList<>();
     Properties p = System.getProperties();
     Enumeration keys = p.keys();
     while (keys.hasMoreElements()) {
       String key = (String)keys.nextElement();
       String value = (String)p.get(key);
-      System.out.println(key + ": " + value);
+      strs.add(key + "=" + value);
+    }
+    return strs.toArray(StringArrayType);
+  }
+
+  public static void printSystemProperties() {
+    String[] env = getSystemProperties();
+    for(String e : env) {
+      System.out.println(e);
     }
   }
 
