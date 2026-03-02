@@ -19,6 +19,9 @@ import javaforce.jbus.*;
 
 public class Logon extends javax.swing.JFrame implements ActionListener {
 
+  private static Properties props;
+  private static boolean wayland = false;
+
   /**
    * Creates new form LogonApp
    */
@@ -27,6 +30,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     try {
       initComponents();
       loadNetworkIcons();
+      props = Linux.getJFLinuxProperties();
+      wayland = getProperty("wayland").equals("true");
       if (new File("/etc/.lastLogon").exists()) {
         Properties props = new Properties();
         props.load(new FileInputStream("/etc/.lastLogon"));
@@ -462,7 +467,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
-        Linux.x11_rr_reset("800x600");
+        if (!wayland) {
+          Linux.x11_rr_reset("800x600");
+        }
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
           new Logon().setVisible(true);
         }});
@@ -725,6 +732,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     public void wapSuccess() {
       stopNetworkTimer();
     }
+  }
+
+  private static String getProperty(String name) {
+    String prop = props.getProperty(name);
+    if (prop == null) prop = "";
+    return prop.trim();
   }
 
   private static int LOG_DEFAULT = 0;
