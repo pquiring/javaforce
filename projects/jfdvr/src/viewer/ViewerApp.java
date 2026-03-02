@@ -47,6 +47,8 @@ public class ViewerApp extends javax.swing.JFrame {
             e.printStackTrace();
           }
         }
+      } else if (arg.equals("jni")) {
+        //nop
       } else if (arg.equals("debug")) {
         debug = true;
         Viewer.debug = true;
