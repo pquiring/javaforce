@@ -25,12 +25,18 @@ public class FFM {
   /** Enabled FFM usage. */
   private static boolean enabled = true;
 
+  /** Returns FFM enabled state.  */
   public static boolean enabled() {
     if (!enabled) {
       return false;
     }
     getInstance();
     return enabled;
+  }
+
+  /** Enable FFM.  */
+  public static void enable() {
+    enabled = true;
   }
 
   /** Disable FFM and use JNI instead. */
