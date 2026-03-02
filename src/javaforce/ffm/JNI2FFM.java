@@ -234,12 +234,11 @@ public class JNI2FFM {
           } else {
             if (java_type.equals("MediaIO")) {
               method.append("FFM.toMemory(arena, ");
-              method.append(arg_name + ".store(");
               method.append("new MemorySegment[] {");
               method.append("ffm.getFunctionUpCall(" + arg_name + ", \"read\", int.class, new Class[] {MemorySegment.class, int.class}, arena)");
               method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"write\", int.class, new Class[] {MemorySegment.class, int.class}, arena)");
               method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seek\", long.class, new Class[] {long.class, int.class}, arena)");
-              method.append("}))");
+              method.append("})");
               arena_needed = true;
             } else if (java_type.equals("FolderListener")) {
               method.append("ffm.getFunctionUpCall(" + arg_name + ", \"folderChangeEvent\", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, arena)");

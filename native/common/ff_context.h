@@ -4,6 +4,11 @@ struct MediaIO {
   jint (*read)(jbyte* ptr, jint size);
   jint (*write)(jbyte* ptr, jint size);
   jlong (*seek)(jlong where, jint how);
+  void clear() {
+    read = NULL;
+    write = NULL;
+    seek = NULL;
+  }
 };
 
 struct FFContext {
@@ -17,11 +22,11 @@ struct FFContext {
   jmethodID mid_ff_seek;
 
   //FFM upcalls
-  MediaIO ffm_mio;
   jboolean use_ffm;
+  MediaIO ffm_mio;
 
   //decoder fields
-  //alloc:MediaInput.open() MediaOutput.create() free:freeFFContext()
+  jboolean use_jni;
   jobject mio;
   //alloc:MediaInput.openFile(),openIO(),MediaOutput.createFile(),createIO() free:MediaInput.close(),MediaOutput.close()
   AVFormatContext *fmt_ctx;
@@ -153,11 +158,36 @@ struct FFContext {
   /** ProfileLevel (1=baseline 2=main 3=high) */
   int config_profileLevel;
 
-  void GetMediaIO() {
+//JNI callbacks
+  void JNIGetMediaIO(jobject mio) {
+    if (mio == NULL) return;
+    this->mio = mio;
     cls_mio = e->GetObjectClass(mio);
     mid_ff_read = e->GetMethodID(cls_mio, "read", "(Ljavaforce/media/MediaCoder;[B)I");
     mid_ff_write = e->GetMethodID(cls_mio, "write", "(Ljavaforce/media/MediaCoder;[B)I");
     mid_ff_seek = e->GetMethodID(cls_mio, "seek", "(Ljavaforce/media/MediaCoder;JI)J");
+    use_jni = JNI_TRUE;
+  }
+
+  void JNIClearMediaIO() {
+    mio = NULL;
+    cls_mio = NULL;
+    mid_ff_read = NULL;
+    mid_ff_write = NULL;
+    mid_ff_seek = NULL;
+    use_jni = JNI_FALSE;
+  }
+
+//FFM callbacks
+  void FFMCopyMediaIO(MediaIO *mio) {
+    if (mio == NULL) return;
+    memcpy(&ffm_mio, mio, sizeof(MediaIO));
+    use_ffm = JNI_TRUE;
+  }
+
+  void FFMClearMediaIO() {
+    ffm_mio.clear();
+    use_ffm = JNI_FALSE;
   }
 
   char errmsg[256];
@@ -231,10 +261,6 @@ FFContext* getFFContext(JNIEnv *e, jobject c) {
 
 void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
   if (ctx == NULL) return;
-  if (ctx->mio != NULL) {
-    e->DeleteGlobalRef(ctx->mio);
-    ctx->mio = NULL;
-  }
   ff_check(ctx);
   (*_av_free)(ctx);
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
@@ -272,10 +298,6 @@ FFContext* castFFContext(jlong ctxptr) {
 
 void freeFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
   if (ctx == NULL) return;
-  if (ctx->mio != NULL) {
-    e->DeleteGlobalRef(ctx->mio);
-    ctx->mio = NULL;
-  }
   ff_check(ctx);
   (*_av_free)(ctx);
 }

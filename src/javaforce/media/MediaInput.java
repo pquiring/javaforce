@@ -9,25 +9,39 @@ package javaforce.media;
  * @author peter.quiring
  */
 
+import javaforce.*;
 import javaforce.voip.*;
 import javaforce.api.*;
-import java.lang.foreign.*;
+import javaforce.ffm.*;
 
-public class MediaInput extends MediaFormat implements MediaIO {
+public class MediaInput extends MediaFormat implements MediaIOFFM {
   public boolean open(String file, String format) {
     if (ctx != 0) return false;
     ctx = MediaAPI.getInstance().inputOpenFile(file, format);
     return ctx != 0;
   }
 
-  private Object[] refs;
   private MediaIO io;
-  public int read(MediaCoder coder, byte[] data) {return io.read(coder, data);}
-  public int write(MediaCoder coder, byte[] data) {return io.write(coder, data);}
-  public long seek(MediaCoder coder, long pos, int how) {return io.seek(coder, pos, how);}
-  public MemorySegment[] store(MemorySegment[] array) {
-    refs = array;
-    return array;
+  public int read(MediaCoder coder, byte[] data) {
+    int size = io.read(coder, data);
+    if (debug) {
+      JFLog.log("read:" + size + "{" + String.format("%02x%02x%02x%02x", data[0], data[1], data[2], data[3]) + "}");
+    }
+    return size;
+  }
+  public int write(MediaCoder coder, byte[] data) {
+    int size = io.write(coder, data);
+    if (debug) {
+      JFLog.log("write:" + size);
+    }
+    return size;
+  }
+  public long seek(MediaCoder coder, long pos, int how) {
+    long newpos = io.seek(coder, pos, how);
+    if (debug) {
+      JFLog.log("seek:" + newpos);
+    }
+    return newpos;
   }
 
   public boolean open(MediaIO io) {
@@ -90,7 +104,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
   /** Closes media file and frees resources. */
   public boolean close() {
     if (ctx == 0) return false;
-    boolean res = MediaAPI.getInstance().inputClose(ctx);
+    boolean res = MediaAPI.getInstance().inputClose(ctx, this);
     ctx = 0;
     return res;
   }
@@ -101,7 +115,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
    * @param height = desired height (-1 = no conversion)
    */
   public MediaVideoDecoder createVideoDecoder(int width, int height) {
-    if (!MediaAPI.getInstance().inputOpenVideo(ctx, width, height)) return null;
+    if (!MediaAPI.getInstance().inputOpenVideo(ctx, this, width, height)) return null;
     MediaVideoDecoder decoder = new MediaVideoDecoder(this);
     decoder.setStream(getVideoStream());
     return decoder;
@@ -118,7 +132,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
    * @param freq = desired sample rate (-1 = no conversion)
    */
   public MediaAudioDecoder createAudioDecoder(int chs, int freq) {
-    if (!MediaAPI.getInstance().inputOpenAudio(ctx, chs, freq)) return null;
+    if (!MediaAPI.getInstance().inputOpenAudio(ctx, this, chs, freq)) return null;
     MediaAudioDecoder decoder = new MediaAudioDecoder(this);
     decoder.setStream(getAudioStream());
     return decoder;
@@ -131,7 +145,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
 
   /** Reads next packet and returns size. */
   public int read(long ctx) {
-    return MediaAPI.getInstance().inputRead(ctx);
+    return MediaAPI.getInstance().inputRead(ctx, this);
   }
 
   /** Returns next packet key frame flag. */
@@ -167,6 +181,6 @@ public class MediaInput extends MediaFormat implements MediaIO {
   }
 
   public boolean seek(long seconds) {
-    return MediaAPI.getInstance().inputSeek(ctx, seconds);
+    return MediaAPI.getInstance().inputSeek(ctx, this, seconds);
   }
 }

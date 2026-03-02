@@ -103,10 +103,13 @@ FFContext* inputOpenIO(MediaIO* mio)
   FFContext *ctx = newFFContext(NULL,NULL);
   if (ctx == NULL) return JNI_FALSE;
 
-  memcpy(&ctx->ffm_mio, mio, sizeof(MediaIO));
-  ctx->use_ffm = JNI_TRUE;
+  ctx->FFMCopyMediaIO(mio);
 
-  if (!inputOpenIO_ctx(ctx)) {
+  jboolean res = inputOpenIO_ctx(ctx);
+
+  ctx->FFMClearMediaIO();
+
+  if (!res) {
     freeFFContext(NULL,NULL,ctx);
     ctx = NULL;
   }
@@ -120,10 +123,13 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_inputOpenIO
   FFContext *ctx = newFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
 
-  ctx->mio = e->NewGlobalRef(mio);
-  ctx->GetMediaIO();
+  ctx->JNIGetMediaIO(mio);
 
-  if (!inputOpenIO_ctx(ctx)) {
+  jboolean res = inputOpenIO_ctx(ctx);
+
+  ctx->JNIClearMediaIO();
+
+  if (!res) {
     freeFFContext(e,c,ctx);
     ctx = NULL;
   }
@@ -193,19 +199,33 @@ jboolean inputClose_ctx(JNIEnv *e, jobject c, FFContext *ctx)
   return JNI_TRUE;
 }
 
-jboolean inputClose(FFContext *ctx) {
-  return inputClose_ctx(NULL, NULL, ctx);
+jboolean inputClose(FFContext *ctx, MediaIO *mio) {
+  if (ctx == NULL) return JNI_FALSE;
+  ctx->FFMCopyMediaIO(mio);
+
+  jboolean res = inputClose_ctx(NULL, NULL, ctx);
+
+  ctx->FFMClearMediaIO();
+
+  return res;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputClose
-  (JNIEnv *e, jobject c, jlong ctxptr)
+  (JNIEnv *e, jobject c, jlong ctxptr, jobject mio)
 {
   FFContext *ctx = castFFContext(e,c,ctxptr);
   if (ctx == NULL) return JNI_FALSE;
-  return inputClose_ctx(e,c,ctx);
+
+  ctx->JNIGetMediaIO(mio);
+
+  jboolean res = inputClose_ctx(e,c,ctx);
+
+  ctx->JNIClearMediaIO();
+
+  return res;
 }
 
-jboolean inputOpenVideo(FFContext* ctx, jint new_width, jint new_height)
+jboolean inputOpenVideo_ctx(FFContext* ctx, jint new_width, jint new_height)
 {
   if (ctx == NULL) return JNI_FALSE;
 
@@ -219,16 +239,35 @@ jboolean inputOpenVideo(FFContext* ctx, jint new_width, jint new_height)
   return JNI_TRUE;
 }
 
+jboolean inputOpenVideo(FFContext* ctx, MediaIO *mio, jint new_width, jint new_height)
+{
+  if (ctx == NULL) return JNI_FALSE;
+
+  ctx->FFMCopyMediaIO(mio);
+
+  jboolean res = inputOpenVideo_ctx(ctx, new_width, new_height);
+
+  ctx->FFMClearMediaIO();
+
+  return res;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenVideo
-  (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
+  (JNIEnv *e, jobject c, jlong ctxptr, jobject mio, jint new_width, jint new_height)
 {
   FFContext *ctx = castFFContext(e,c,ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
-  return inputOpenVideo(ctx, new_width, new_height);
+  ctx->JNIGetMediaIO(mio);
+
+  jboolean res = inputOpenVideo_ctx(ctx, new_width, new_height);
+
+  ctx->JNIClearMediaIO();
+
+  return res;
 }
 
-jboolean inputOpenAudio(FFContext* ctx, jint new_chs, jint new_freq)
+jboolean inputOpenAudio_ctx(FFContext* ctx, jint new_chs, jint new_freq)
 {
   if (ctx == NULL) return JNI_FALSE;
 
@@ -242,13 +281,32 @@ jboolean inputOpenAudio(FFContext* ctx, jint new_chs, jint new_freq)
   return JNI_TRUE;
 }
 
+jboolean inputOpenAudio(FFContext* ctx, MediaIO *mio, jint new_chs, jint new_freq)
+{
+  if (ctx == NULL) return JNI_FALSE;
+
+  ctx->FFMCopyMediaIO(mio);
+
+  jboolean res = inputOpenAudio_ctx(ctx, new_chs, new_freq);
+
+  ctx->FFMClearMediaIO();
+
+  return res;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputOpenAudio
-  (JNIEnv *e, jobject c, jlong ctxptr, jint new_chs, jint new_freq)
+  (JNIEnv *e, jobject c, jlong ctxptr, jobject mio, jint new_chs, jint new_freq)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
-  return inputOpenAudio(ctx, new_chs, new_freq);
+  ctx->JNIGetMediaIO(mio);
+
+  jboolean res = inputOpenAudio_ctx(ctx, new_chs, new_freq);
+
+  ctx->JNIClearMediaIO();
+
+  return res;
 }
 
 jlong getDuration(FFContext *ctx)
@@ -352,7 +410,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getAudioSampleRate
   return getAudioSampleRate(ctx);
 }
 
-jint inputRead(FFContext* ctx)
+jint inputRead_ctx(FFContext* ctx)
 {
   if (ctx == NULL) return 0;
 
@@ -371,13 +429,32 @@ jint inputRead(FFContext* ctx)
   return ctx->pkt->size;
 }
 
+jint inputRead(FFContext* ctx, MediaIO* mio)
+{
+  if (ctx == NULL) return 0;
+
+  ctx->FFMCopyMediaIO(mio);
+
+  jint res = inputRead_ctx(ctx);
+
+  ctx->FFMClearMediaIO();
+
+  return res;
+}
+
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_inputRead
-  (JNIEnv *e, jobject c, jlong ctxptr)
+  (JNIEnv *e, jobject c, jlong ctxptr, jobject mio)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return 0;
 
-  return inputRead(ctx);
+  ctx->JNIGetMediaIO(mio);
+
+  jint res = inputRead_ctx(ctx);
+
+  ctx->JNIClearMediaIO();
+
+  return res;
 }
 
 jboolean getPacketKeyFrame(FFContext* ctx)
@@ -430,7 +507,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_getPacketData
   return stream_index;
 }
 
-jboolean inputSeek(FFContext* ctx, jlong seconds)
+jboolean inputSeek_ctx(FFContext* ctx, jlong seconds)
 {
   if (ctx == NULL) return JNI_FALSE;
 
@@ -443,11 +520,30 @@ jboolean inputSeek(FFContext* ctx, jlong seconds)
   return ret >= 0;
 }
 
+jboolean inputSeek(FFContext* ctx, MediaIO* mio, jlong seconds)
+{
+  if (ctx == NULL) return JNI_FALSE;
+
+  ctx->FFMCopyMediaIO(mio);
+
+  jboolean res = inputSeek_ctx(ctx, seconds);
+
+  ctx->FFMClearMediaIO();
+
+  return res;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_inputSeek
-  (JNIEnv *e, jobject c, jlong ctxptr, jlong seconds)
+  (JNIEnv *e, jobject c, jlong ctxptr, jobject mio, jlong seconds)
 {
   FFContext *ctx = castFFContext(e, c, ctxptr);
   if (ctx == NULL) return JNI_FALSE;
 
-  return inputSeek(ctx, seconds);
+  ctx->JNIGetMediaIO(mio);
+
+  jboolean res = inputSeek_ctx(ctx, seconds);
+
+  ctx->JNIClearMediaIO();
+
+  return res;
 }

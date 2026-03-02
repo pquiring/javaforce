@@ -16,6 +16,8 @@ public class MediaCoder {
   protected boolean shared;
   private int stream;
 
+  public static boolean debug = false;
+
   public int getStream() {
     return stream;
   }

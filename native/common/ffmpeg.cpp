@@ -28,6 +28,7 @@ static jboolean ff_debug_trace = JNI_FALSE;
 static jboolean ff_debug_buffer = JNI_FALSE;
 static jboolean ff_debug_box = JNI_FALSE;
 static jboolean ff_debug_time_base = JNI_FALSE;
+static jboolean ff_debug_io = JNI_FALSE;
 
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;
@@ -464,9 +465,10 @@ static int ff_min(int a, int b) {
 #include "ff_context.h"
 
 static int read_packet(FFContext* ctx, void*buf, int size) {
+  if (ff_debug_io) printf(" read_packet:%d\n", size);
   if (ctx->use_ffm) {
     return ctx->ffm_mio.read((jbyte*)buf, size);
-  } else {
+  } else if (ctx->use_jni) {
     jbyteArray ba = ctx->e->NewByteArray(size);
     jint read = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_read, ctx->c, ba);
     if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
@@ -475,6 +477,9 @@ static int read_packet(FFContext* ctx, void*buf, int size) {
     }
     ctx->e->DeleteLocalRef(ba);
     return read;
+  } else {
+    printf("Error:read_packet called, no callback setup!\n");
+    return 0;
   }
 }
 
@@ -497,9 +502,10 @@ static int swap_order(int val) {
 }
 
 static int write_packet(FFContext* ctx, void*buf, int size) {
+  if (ff_debug_io) printf("write_packet:%d\n", size);
   if (ctx->use_ffm) {
     return ctx->ffm_mio.write((jbyte*)buf, size);
-  } else {
+  } else if (ctx->use_jni) {
     jbyteArray ba = ctx->e->NewByteArray(size);
     ctx->e->SetByteArrayRegion(ba, 0, size, (jbyte*)buf);
     int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
@@ -536,12 +542,16 @@ static int write_packet(FFContext* ctx, void*buf, int size) {
       printf("]\n");
     }
     return write;
+  } else {
+    printf("Error:write_packet called, no callback setup!\n");
+    return 0;
   }
 }
 
 static jlong zero = 0;
 
 static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
+  if (ff_debug_io) printf(" seek_packet:%lld,%d\n", offset, how);
   if (ctx->use_ffm) {
     if (how == AVSEEK_SIZE) { //return size of file
       jlong curpos = ctx->ffm_mio.seek(zero, SEEK_CUR);
@@ -550,7 +560,7 @@ static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
       return filesize;
     }
     return ctx->ffm_mio.seek(offset, how);
-  } else {
+  } else if (ctx->use_jni) {
     if (how == AVSEEK_SIZE) { //return size of file
       jlong curpos = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, zero, SEEK_CUR);
       if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
@@ -563,6 +573,9 @@ static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
     jlong ret = ctx->e->CallLongMethod(ctx->mio, ctx->mid_ff_seek, ctx->c, offset, how);
     if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
     return ret;
+  } else {
+    printf("Error:seek_packet called, no callback setup!\n");
+    return -1;
   }
 }
 
@@ -643,23 +656,23 @@ static JNINativeMethod javaforce_media_MediaInput[] = {
   {"getVideoKeyFrameInterval", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getVideoKeyFrameInterval},
   {"getAudioChannels", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioChannels},
   {"getAudioSampleRate", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_getAudioSampleRate},
-  {"inputClose", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_inputClose},
-  {"inputOpenVideo", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_inputOpenVideo},
-  {"inputOpenAudio", "(JII)Z", (void *)&Java_javaforce_jni_MediaJNI_inputOpenAudio},
-  {"inputRead", "(J)I", (void *)&Java_javaforce_jni_MediaJNI_inputRead},
+  {"inputClose", "(JLjavaforce/media/MediaIO;)Z", (void *)&Java_javaforce_jni_MediaJNI_inputClose},
+  {"inputOpenVideo", "(JLjavaforce/media/MediaIO;II)Z", (void *)&Java_javaforce_jni_MediaJNI_inputOpenVideo},
+  {"inputOpenAudio", "(JLjavaforce/media/MediaIO;II)Z", (void *)&Java_javaforce_jni_MediaJNI_inputOpenAudio},
+  {"inputRead", "(JLjavaforce/media/MediaIO;)I", (void *)&Java_javaforce_jni_MediaJNI_inputRead},
   {"getPacketKeyFrame", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_getPacketKeyFrame},
   {"getPacketData", "(J[BII)I", (void *)&Java_javaforce_jni_MediaJNI_getPacketData},
-  {"inputSeek", "(JJ)Z", (void *)&Java_javaforce_jni_MediaJNI_inputSeek},
+  {"inputSeek", "(JLjavaforce/media/MediaIO;J)Z", (void *)&Java_javaforce_jni_MediaJNI_inputSeek},
 };
 
 static JNINativeMethod javaforce_media_MediaOutput[] = {
   {"outputCreateFile", "(Ljava/lang/String;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_outputCreateFile},
   {"outputCreateIO", "(Ljavaforce/media/MediaIO;Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MediaJNI_outputCreateIO},
-  {"addVideoStream", "(JIIIIFI)I", (void *)&Java_javaforce_jni_MediaJNI_addVideoStream},
-  {"addAudioStream", "(JIIII)I", (void *)&Java_javaforce_jni_MediaJNI_addAudioStream},
-  {"outputClose", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_outputClose},
-  {"writeHeader", "(J)Z", (void *)&Java_javaforce_jni_MediaJNI_writeHeader},
-  {"writePacket", "(JI[BIIZ)Z", (void *)&Java_javaforce_jni_MediaJNI_writePacket},
+  {"addVideoStream", "(JLjavaforce/media/MediaIO;IIIIFI)I", (void *)&Java_javaforce_jni_MediaJNI_addVideoStream},
+  {"addAudioStream", "(JLjavaforce/media/MediaIO;IIII)I", (void *)&Java_javaforce_jni_MediaJNI_addAudioStream},
+  {"outputClose", "(JLjavaforce/media/MediaIO;)Z", (void *)&Java_javaforce_jni_MediaJNI_outputClose},
+  {"writeHeader", "(JLjavaforce/media/MediaIO;)Z", (void *)&Java_javaforce_jni_MediaJNI_writeHeader},
+  {"writePacket", "(JLjavaforce/media/MediaIO;I[BIIZ)Z", (void *)&Java_javaforce_jni_MediaJNI_writePacket},
 };
 
 static JNINativeMethod javaforce_media_MediaAudioDecoder[] = {
@@ -748,21 +761,21 @@ extern "C" {
   JNIEXPORT jint (*_getVideoKeyFrameInterval)(FFContext* ctx) = &getVideoKeyFrameInterval;
   JNIEXPORT jint (*_getAudioChannels)(FFContext* ctx) = &getAudioChannels;
   JNIEXPORT jint (*_getAudioSampleRate)(FFContext* ctx) = &getAudioSampleRate;
-  JNIEXPORT jboolean (*_inputClose)(FFContext* ctx) = &inputClose;
-  JNIEXPORT jboolean (*_inputOpenVideo)(FFContext* ctx, jint width, jint height) = &inputOpenVideo;
-  JNIEXPORT jboolean (*_inputOpenAudio)(FFContext* ctx, jint chs, jint freq) = &inputOpenAudio;
-  JNIEXPORT jint (*_inputRead)(FFContext* ctx) = &inputRead;
+  JNIEXPORT jboolean (*_inputClose)(FFContext* ctx, MediaIO* mio) = &inputClose;
+  JNIEXPORT jboolean (*_inputOpenVideo)(FFContext* ctx, MediaIO* mio, jint width, jint height) = &inputOpenVideo;
+  JNIEXPORT jboolean (*_inputOpenAudio)(FFContext* ctx, MediaIO* mio, jint chs, jint freq) = &inputOpenAudio;
+  JNIEXPORT jint (*_inputRead)(FFContext* ctx, MediaIO* mio) = &inputRead;
   JNIEXPORT jboolean (*_getPacketKeyFrame)(FFContext* ctx) = getPacketKeyFrame;
   JNIEXPORT jint (*_getPacketData)(FFContext* ctx, jbyte* data, jint offset, jint length) = &getPacketData;
-  JNIEXPORT jboolean (*_inputSeek)(FFContext* ctx, jlong seconds) = &inputSeek;
+  JNIEXPORT jboolean (*_inputSeek)(FFContext* ctx, MediaIO* mio, jlong seconds) = &inputSeek;
   //MediaOutput
   JNIEXPORT FFContext* (*_outputCreateFile)(const char* file, const char* format) = &outputCreateFile;
   JNIEXPORT FFContext* (*_outputCreateIO)(MediaIO* io, const char* format) = &outputCreateIO;
-  JNIEXPORT jint (*_addVideoStream)(FFContext* ctx, jint codec_id, jint bit_rate, jint width, jint height, float fps, jint keyFrameInterval) = &addVideoStream;
-  JNIEXPORT jint (*_addAudioStream)(FFContext* ctx, jint codec_id, jint bit_rate, jint chs, jint freq) = &addAudioStream;
-  JNIEXPORT jboolean (*_outputClose)(FFContext* ctx) = &outputClose;
-  JNIEXPORT jboolean (*_writeHeader)(FFContext* ctx) = &writeHeader;
-  JNIEXPORT jboolean (*_writePacket)(FFContext* ctx, jint stream, jbyte* data, jint offset, jint length, jboolean keyFrame) = &writePacket;
+  JNIEXPORT jint (*_addVideoStream)(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint width, jint height, float fps, jint keyFrameInterval) = &addVideoStream;
+  JNIEXPORT jint (*_addAudioStream)(FFContext* ctx, MediaIO* mio, jint codec_id, jint bit_rate, jint chs, jint freq) = &addAudioStream;
+  JNIEXPORT jboolean (*_outputClose)(FFContext* ctx, MediaIO* mio) = &outputClose;
+  JNIEXPORT jboolean (*_writeHeader)(FFContext* ctx, MediaIO* mio) = &writeHeader;
+  JNIEXPORT jboolean (*_writePacket)(FFContext* ctx, MediaIO* mio, jint stream, jbyte* data, jint offset, jint length, jboolean keyFrame) = &writePacket;
   //MediaAudioDecoder
   JNIEXPORT FFContext* (*_audioDecoderStart)(int codec_id, jint new_chs, jint new_freq) = &audioDecoderStart;
   JNIEXPORT void (*_audioDecoderStop)(FFContext* ctx) = &audioDecoderStop;

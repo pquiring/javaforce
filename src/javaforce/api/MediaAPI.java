@@ -41,22 +41,22 @@ public interface MediaAPI {
   public int getVideoKeyFrameInterval(long ctx);
   public int getAudioChannels(long ctx);
   public int getAudioSampleRate(long ctx);
-  public boolean inputClose(long ctx);
-  public boolean inputOpenVideo(long ctx, int width, int height);
-  public boolean inputOpenAudio(long ctx, int chs, int freq);
-  public int inputRead(long ctx);
+  public boolean inputClose(long ctx, MediaIO io);
+  public boolean inputOpenVideo(long ctx, MediaIO io, int width, int height);
+  public boolean inputOpenAudio(long ctx, MediaIO io, int chs, int freq);
+  public int inputRead(long ctx, MediaIO io);
   public boolean getPacketKeyFrame(long ctx);
   public int getPacketData(long ctx, byte[] data, int offset, int length);
-  public boolean inputSeek(long ctx, long seconds);
+  public boolean inputSeek(long ctx, MediaIO io, long seconds);
 
   //MediaOutput
   public long outputCreateFile(String file, String format);
   public long outputCreateIO(MediaIO io, String format);
-  public int addVideoStream(long ctx, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
-  public int addAudioStream(long ctx, int codec_id, int bit_rate, int chs, int freq);
-  public boolean outputClose(long ctx);
-  public boolean writeHeader(long ctx);
-  public boolean writePacket(long ctx, int stream, byte[] data, int offset, int length, boolean keyFrame);
+  public int addVideoStream(long ctx, MediaIO io, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
+  public int addAudioStream(long ctx, MediaIO io, int codec_id, int bit_rate, int chs, int freq);
+  public boolean outputClose(long ctx, MediaIO io);
+  public boolean writeHeader(long ctx, MediaIO io);
+  public boolean writePacket(long ctx, MediaIO io, int stream, byte[] data, int offset, int length, boolean keyFrame);
 
   //MediaAudioDecoder
   public long audioDecoderStart(int codec_id, int new_chs, int new_freq);

@@ -39,22 +39,22 @@ public class MediaJNI implements MediaAPI {
   public native int getVideoKeyFrameInterval(long ctx);
   public native int getAudioChannels(long ctx);
   public native int getAudioSampleRate(long ctx);
-  public native boolean inputClose(long ctx);
-  public native boolean inputOpenVideo(long ctx, int width, int height);
-  public native boolean inputOpenAudio(long ctx, int chs, int freq);
-  public native int inputRead(long ctx);
+  public native boolean inputClose(long ctx, MediaIO io);
+  public native boolean inputOpenVideo(long ctx, MediaIO io, int width, int height);
+  public native boolean inputOpenAudio(long ctx, MediaIO io, int chs, int freq);
+  public native int inputRead(long ctx, MediaIO io);
   public native boolean getPacketKeyFrame(long ctx);
   public native int getPacketData(long ctx, byte[] data, int offset, int length);
-  public native boolean inputSeek(long ctx, long seconds);
+  public native boolean inputSeek(long ctx, MediaIO io, long seconds);
 
   //MediaOutput
   public native long outputCreateFile(String file, String format);
   public native long outputCreateIO(MediaIO io, String format);
-  public native int addVideoStream(long ctx, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
-  public native int addAudioStream(long ctx, int codec_id, int bit_rate, int chs, int freq);
-  public native boolean outputClose(long ctx);
-  public native boolean writeHeader(long ctx);
-  public native boolean writePacket(long ctx, int stream, byte[] data, int offset, int length, boolean keyFrame);
+  public native int addVideoStream(long ctx, MediaIO io, int codec_id, int bit_rate, int width, int height, float fps, int keyFrameInterval);
+  public native int addAudioStream(long ctx, MediaIO io, int codec_id, int bit_rate, int chs, int freq);
+  public native boolean outputClose(long ctx, MediaIO io);
+  public native boolean writeHeader(long ctx, MediaIO io);
+  public native boolean writePacket(long ctx, MediaIO io, int stream, byte[] data, int offset, int length, boolean keyFrame);
 
   //MediaAudioDecoder
   public native long audioDecoderStart(int codec_id, int new_chs, int new_freq);

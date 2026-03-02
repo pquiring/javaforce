@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.ffm.*;
 import javaforce.media.*;
 import javaforce.voip.*;
 
@@ -25,6 +26,7 @@ public class TestMedia implements MediaIO {
     if (args.length == 0) {
       usage();
     }
+//    FFM.disable();
     MediaCoder.init();
     for(int a=0;a<args.length;a++) {
       int idx = args[a].indexOf('=');
@@ -75,7 +77,7 @@ public class TestMedia implements MediaIO {
           if (px != null) {
             JFLog.log("video=" + px.length);
           } else {
-            JFLog.log("no video");
+            JFLog.log("video decode failed");
           }
         }
         else if (pkt.stream == audioDecoder.getStream()) {
@@ -83,7 +85,7 @@ public class TestMedia implements MediaIO {
           if (sams != null) {
             JFLog.log("audio=" + sams.length);
           } else {
-            JFLog.log("no audio");
+            JFLog.log("audio decode failed");
           }
         }
       } while (true);

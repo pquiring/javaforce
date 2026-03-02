@@ -144,8 +144,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   if (ctx == NULL) return JNI_FALSE;
   int ret;
 
-  ctx->mio = e->NewGlobalRef(mio);
-  ctx->GetMediaIO();
+  ctx->JNIGetMediaIO(mio);
 
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
@@ -176,6 +175,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   decoder_open_audio_codec(ctx, new_chs, new_freq);
   decoder_alloc_frame(ctx);
   decoder_alloc_packet(ctx);
+
+  ctx->JNIClearMediaIO();
 
   return JNI_TRUE;
 }
