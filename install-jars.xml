@@ -207,10 +207,6 @@
     <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-bacnet">
-    <copyjar name="bacnet" version="${bacnet-version}" path="${jarpath}"/>
-  </target>
-
   <target name="jar-xerces">
     <copyjar name="xerces" version="${xerces-version}" path="${jarpath}"/>
   </target>

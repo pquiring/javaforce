@@ -249,11 +249,6 @@
     <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
   </target>
 
-  <available property="have-bacnet" file="${lib}/bacnet-${bacnet-version}.jar"/>
-  <target name="get-bacnet" unless="have-bacnet">
-    <maven name="bacnet4j" dest="bacnet" path="repository/ias-release/com/infiniteautomation" version="${bacnet-version}" repo="https://maven.mangoautomation.net"/>
-  </target>
-
   <available property="have-xerces" file="${lib}/xerces-${xerces-version}.jar"/>
   <target name="get-xerces" unless="have-xerces">
     <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
@@ -331,7 +326,6 @@
     <antcall target="get-jakarta-jsp-api"/>
     <antcall target="get-jakarta-websocket-api"/>
     <antcall target="get-filters"/>
-    <antcall target="get-bacnet"/>
     <antcall target="get-xerces"/>
     <antcall target="get-jdom"/>
     <antcall target="get-log4j-core"/>
