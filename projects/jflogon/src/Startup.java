@@ -46,9 +46,7 @@ public class Startup implements ShellProcessListener{
       new DeviceMonitor().start();
       //stop plymouth
       hidePlymouth();
-      if (!wayland) {
-        create_server_xauth();
-      }
+      create_server_xauth();
       boolean retry;
       if (wayland) {
         config_labwc();
@@ -158,7 +156,7 @@ public class Startup implements ShellProcessListener{
         process.addEnvironmentVariable(name, value);
       }
     }
-    JFLog.log("Starting Display Server...");
+    JFLog.log("Starting Logon Greeter...");
     process.run(cmds, true);
   }
 
@@ -221,11 +219,9 @@ public class Startup implements ShellProcessListener{
         stop();
       }
       getUserDetails(user);
-      if (!wayland) {
-        String xauthFile = homePath + "/.Xauthority";
-        write_xauth(xauthFile);
-        chown_xauth(xauthFile, user);
-      }
+      String xauthFile = homePath + "/.Xauthority";
+      write_xauth(xauthFile);
+      chown_xauth(xauthFile, user);
       if (!Linux.isMemberOf(user, "audio")) {
         //pulseaudio requires user to be member of 'audio' group
         JF.exec(new String[] {"usermod", "-aG", "audio", user});
@@ -250,9 +246,7 @@ public class Startup implements ShellProcessListener{
       env.put("LOGNAME", user);
       env.put("SHELL", shellPath);
       env.put("HOME", homePath);
-      if (!wayland) {
-        env.put("XAUTHORITY", homePath + "/.Xauthority");
-      }
+      env.put("XAUTHORITY", homePath + "/.Xauthority");
       env.put("JID", jid);
       JFLog.log("JID=" + jid);
       if (env_names != null) {
