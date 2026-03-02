@@ -15,6 +15,7 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.media.*;
 import javaforce.voip.*;
+import javaforce.ffm.*;
 
 public class ViewerApp extends javax.swing.JFrame {
 
@@ -112,8 +113,13 @@ public class ViewerApp extends javax.swing.JFrame {
    * @param args the command line arguments
    */
   public static void main(String args[]) {
-    MediaCoder.init();
     ViewerApp.args = args;
+    for(String arg : args) {
+      if (arg.equals("jni")) {
+        FFM.disable();
+      }
+    }
+    MediaCoder.init();
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         new ViewerApp().setVisible(true);
