@@ -23,7 +23,7 @@ public class FFM {
   }
 
   /** Enabled FFM usage. */
-  private static boolean enabled = true;
+  private static boolean enabled = false;
 
   /** Returns FFM enabled state.  */
   public static boolean enabled() {
