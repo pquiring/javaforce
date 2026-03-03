@@ -14,6 +14,7 @@ import javaforce.*;
 public class FFM {
   private static FFM instance;
 
+  /** Returns singleton instance of this class. */
   public static FFM getInstance() {
     if (!enabled) return null;
     if (instance == null) {
@@ -22,7 +23,10 @@ public class FFM {
     return instance;
   }
 
-  /** Enabled FFM usage. */
+  /** Enabled FFM usage.
+   *
+   * Due to poor performance in some native APIs this is disabled by default.
+   */
   private static boolean enabled = false;
 
   /** Returns FFM enabled state.  */
@@ -50,8 +54,10 @@ public class FFM {
   private SymbolLookup lookup;
   private ExecSymbolLookup execlookup;
   private static MethodHandle jfArrayFree;
+  /** Frees native JFArray struct. */
   public static void jfArrayFree(MemorySegment arr) { try { jfArrayFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
   private static MethodHandle jfStringFree;
+  /** Frees native string (char*). */
   public static void jfStringFree(MemorySegment arr) { try { jfStringFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
 
   private FFM() {
@@ -70,23 +76,28 @@ public class FFM {
     }
   }
 
+  /** Assign a new symbol lookup provider. */
   public void setSymbolLookup(SymbolLookup lookup) {
     if (debug) JFLog.log("lookup=" + lookup);
     this.lookup = lookup;
   }
 
+  /** Get native FunctionDescriptor for function with no args and specified return value. */
   public FunctionDescriptor getFunctionDesciptor(MemoryLayout ret) {
     return FunctionDescriptor.of(ret);
   }
 
+  /** Get native FunctionDescriptor for function with specified return value and arguments. */
   public FunctionDescriptor getFunctionDesciptor(MemoryLayout ret, MemoryLayout... args) {
     return FunctionDescriptor.of(ret, args);
   }
 
+  /** Get native FunctionDescriptor for function with void return value and arguments. */
   public FunctionDescriptor getFunctionDesciptorVoid(MemoryLayout... args) {
     return FunctionDescriptor.ofVoid(args);
   }
 
+  /** Get native MethodHandle for specified function name with FunctionDescriptor. */
   public MethodHandle getFunction(String name, FunctionDescriptor fd) {
     if (debug) JFLog.log("FFM:getFunction:" + name);
     try {
@@ -102,6 +113,7 @@ public class FFM {
     }
   }
 
+  /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
   public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
     if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
     try {
@@ -196,6 +208,7 @@ public class FFM {
     }
   }
 
+  /** Create java String from native String (char*) and then free() the native string. */
   public static String getString(MemorySegment ms) {
     if (ms == null || ms.address() == 0) return null;
     String str =  ms.reinterpret(Long.MAX_VALUE).getString(0L);
@@ -203,6 +216,7 @@ public class FFM {
     return str;
   }
 
+  /** Create java String from native String (char*) but do not free native string.*/
   public static String getStringNoFree(MemorySegment ms) {
     if (ms == null || ms.address() == 0) return null;
     String str =  ms.reinterpret(Long.MAX_VALUE).getString(0L);
@@ -211,36 +225,43 @@ public class FFM {
 
   //array helpers
 
+  /** Create native array from float[] */
   public static MemorySegment toMemory(Arena arena, float[] m) {
     if (m == null) return MemorySegment.NULL;
     return arena.allocateFrom(JAVA_FLOAT, m);
   }
 
+  /** Create native array from double[] */
   public static MemorySegment toMemory(Arena arena, double[] m) {
     if (m == null) return MemorySegment.NULL;
     return arena.allocateFrom(JAVA_DOUBLE, m);
   }
 
+  /** Create native array from long[] */
   public static MemorySegment toMemory(Arena arena, long[] m) {
     if (m == null) return MemorySegment.NULL;
     return arena.allocateFrom(JAVA_LONG, m);
   }
 
+  /** Create native array from int[] */
   public static MemorySegment toMemory(Arena arena, int[] m) {
     if (m == null) return MemorySegment.NULL;
     return arena.allocateFrom(JAVA_INT, m);
   }
 
+  /** Create native array from short[] */
   public static MemorySegment toMemory(Arena arena, short[] m) {
     if (m == null) return MemorySegment.NULL;
     return arena.allocateFrom(JAVA_SHORT, m);
   }
 
+  /** Create native array from byte[] */
   public static MemorySegment toMemory(Arena arena, byte[] m) {
     if (m == null) return MemorySegment.NULL;
     return arena.allocateFrom(JAVA_BYTE, m);
   }
 
+  /** Create native array from String[] */
   public static MemorySegment toMemory(Arena arena, String[] strs) {
     if (strs == null) return MemorySegment.NULL;
     MemorySegment ptrs = arena.allocate(ADDRESS, strs.length);
@@ -252,6 +273,7 @@ public class FFM {
     return ptrs;
   }
 
+  /** Create native array from native void* array */
   public static MemorySegment toMemory(Arena arena, MemorySegment[] ptrs) {
     if (ptrs == null) return MemorySegment.NULL;
     MemorySegment array = arena.allocate(ADDRESS, ptrs.length);
@@ -280,6 +302,7 @@ public class FFM {
    };
    */
 
+  /** Convert native JFArray to String[] and then free native JFArray */
   public static String[] toArrayString(MemorySegment m) {
     if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
@@ -294,6 +317,7 @@ public class FFM {
     return ret;
   }
 
+  /** Convert native JFArray to long[] and then free native JFArray */
   public static long[] toArrayLong(MemorySegment m) {
     if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
@@ -308,6 +332,7 @@ public class FFM {
     return ret;
   }
 
+  /** Convert native JFArray to int[] and then free native JFArray */
   public static int[] toArrayInt(MemorySegment m) {
     if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
@@ -322,6 +347,7 @@ public class FFM {
     return ret;
   }
 
+  /** Convert native JFArray to short[] and then free native JFArray */
   public static short[] toArrayShort(MemorySegment m) {
     if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
@@ -336,6 +362,7 @@ public class FFM {
     return ret;
   }
 
+  /** Convert native JFArray to byte[] and then free native JFArray */
   public static byte[] toArrayByte(MemorySegment m) {
     if (m == null || m.address() == 0) return null;
     m = m.reinterpret(JFARRAY_HEADER_SIZE);
@@ -350,42 +377,49 @@ public class FFM {
     return ret;
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, float[] m) {
     if (seg == null || m == null) return;
     float[] r = seg.toArray(JAVA_FLOAT);
     System.arraycopy(r, 0, m, 0, m.length);
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, double[] m) {
     if (seg == null || m == null) return;
     double[] r = seg.toArray(JAVA_DOUBLE);
     System.arraycopy(r, 0, m, 0, m.length);
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, long[] m) {
     if (seg == null || m == null) return;
     long[] r = seg.toArray(JAVA_LONG);
     System.arraycopy(r, 0, m, 0, m.length);
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, int[] m) {
     if (seg == null || m == null) return;
     int[] r = seg.toArray(JAVA_INT);
     System.arraycopy(r, 0, m, 0, m.length);
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, short[] m) {
     if (seg == null || m == null) return;
     short[] r = seg.toArray(JAVA_SHORT);
     System.arraycopy(r, 0, m, 0, m.length);
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, byte[] m) {
     if (seg == null || m == null) return;
     byte[] r = seg.toArray(JAVA_BYTE);
     System.arraycopy(r, 0, m, 0, m.length);
   }
 
+  /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, String[] m) {
     //nop
   }
