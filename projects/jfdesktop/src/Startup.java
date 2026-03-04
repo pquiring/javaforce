@@ -12,12 +12,12 @@ import javaforce.linux.*;
 import static javaforce.linux.Linux.*;
 
 public class Startup {
-  private static boolean openboxFailed = false;
   private static boolean wayland = false;
   private static Properties props;
+  private static int LOG_DEFAULT = 0;
 
   public static void main(String args[]) {
-    JFLog.init(JF.getUserPath() + "/.jfdesktop.log", true);
+    JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop.log", true);
     Linux.init();
     props = Linux.getJFLinuxProperties();
     wayland = getProperty("wayland").equals("true");
@@ -27,6 +27,10 @@ public class Startup {
         config_sway();
         JFLog.log("Starting wayland...");
         Runtime.getRuntime().exec(new String[] {"/usr/bin/sway"});
+        String[] env = JF.getEnvironment();
+        for(String e : env) {
+          JFLog.log(LOG_DEFAULT, e);
+        }
       } else {
         /* Setup display */
         Monitor cfg[] = Linux.x11_rr_load_user();

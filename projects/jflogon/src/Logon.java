@@ -32,6 +32,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       loadNetworkIcons();
       props = Linux.getJFLinuxProperties();
       wayland = getProperty("wayland").equals("true");
+      if (wayland) {
+        String[] env = JF.getEnvironment();
+        for(String e : env) {
+          JFLog.log(LOG_DEFAULT, e);
+        }
+      }
       if (new File("/etc/.lastLogon").exists()) {
         Properties props = new Properties();
         props.load(new FileInputStream("/etc/.lastLogon"));
