@@ -755,7 +755,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       Logon logon = new Logon();
       logon.setVisible(true);
     } catch (Exception e) {
-      e.printStackTrace();
+      JFLog.log(e);
     }
   }
 }
