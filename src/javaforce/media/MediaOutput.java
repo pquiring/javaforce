@@ -145,6 +145,7 @@ public class MediaOutput extends MediaFormat implements MediaIOFFM {
 
   private boolean header;
 
+  /** Writes next packet to media output.  This would come from Media AV Encoders encode() methods. */
   public boolean writePacket(Packet packet) {
     if (!header) {
       //write header must be called after streams are added

@@ -9,24 +9,27 @@ import javaforce.voip.*;
 import javaforce.api.*;
 
 public class MediaVideoEncoder extends MediaCoder {
-  /** Create a video encoder for raw video. */
+  /** Create a stand-alone video encoder for raw video. */
   public MediaVideoEncoder() {}
   /** Create a video encoder for a stream in a container format. */
   public MediaVideoEncoder(MediaOutput output) {
     this.ctx = output.ctx;
     shared = true;
   }
+  /** Starts a stand-alone video encoder. */
   public boolean start(CodecInfo info) {
     if (ctx != 0 || shared) return false;
     ctx = MediaAPI.getInstance().videoEncoderStart(info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
     return ctx != 0;
   }
+  /** Stops a stand-alone video encoder. */
   public void stop() {
     if (ctx == 0 || shared) return;
     MediaAPI.getInstance().videoEncoderStop(ctx);
     ctx = 0;
   }
   private Packet packet;
+  /** Encodes raw video frame and returns packet in codec format. */
   public Packet encode(int[] px, int offset, int length) {
     if (ctx == 0) return null;
     if (packet == null) {

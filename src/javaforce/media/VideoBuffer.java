@@ -8,7 +8,6 @@ package javaforce.media;
  * Created : Oct 24, 2013
  */
 
-import javaforce.*;
 import javaforce.awt.*;
 import javaforce.api.*;
 

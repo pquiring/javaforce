@@ -18,10 +18,12 @@ public class MediaCoder {
 
   public static boolean debug = false;
 
+  /** Gets the stream index. This is only valid in Media AV Coders. */
   public int getStream() {
     return stream;
   }
 
+  /** Sets the stream index. This is used when creating new streams in MediaInput/Output. */
   public void setStream(int stream) {
     this.stream = stream;
   }
@@ -41,7 +43,6 @@ public class MediaCoder {
     return cnt == 8;
   }
 
-  /** Loads the media framework native libraries. */
   private static boolean mediaInit() {
     File[] sysFolders = Library.getSysFolders();
     String ext = Library.getExt();
@@ -81,10 +82,12 @@ public class MediaCoder {
     return true;
   }
 
+  /** Loads the media framework native libraries. */
   public static void init() {
     mediaInit();
   }
 
+  /** Sets debug logging in media framework. */
   public static void setLogging(boolean state) {
     MediaAPI.getInstance().mediaSetLogging(state);
   }

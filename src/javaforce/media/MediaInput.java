@@ -2,7 +2,7 @@ package javaforce.media;
 
 /** MediaInput
  *
- * Read container media files.
+ * Decodes media files.
  *
  * Container files such as mpeg, avi, mov, ogg.
  *
@@ -15,6 +15,7 @@ import javaforce.api.*;
 import javaforce.ffm.*;
 
 public class MediaInput extends MediaFormat implements MediaIOFFM {
+  /** Opens media file for decoding. */
   public boolean open(String file, String format) {
     if (ctx != 0) return false;
     ctx = MediaAPI.getInstance().inputOpenFile(file, format);
@@ -44,6 +45,7 @@ public class MediaInput extends MediaFormat implements MediaIOFFM {
     return newpos;
   }
 
+  /** Opens media using user supplied MediaIO for decoding. */
   public boolean open(MediaIO io) {
     if (ctx != 0) return false;
     this.io = io;
@@ -143,17 +145,17 @@ public class MediaInput extends MediaFormat implements MediaIOFFM {
     return createAudioDecoder(-1, -1);
   }
 
-  /** Reads next packet and returns size. */
+  /** Reads next packet and returns size. Used internally by readPacket(). */
   public int read(long ctx) {
     return MediaAPI.getInstance().inputRead(ctx, this);
   }
 
-  /** Returns next packet key frame flag. */
+  /** Returns next packet key frame flag. Used internally by readPacket(). */
   public boolean getPacketKeyFrame(long ctx) {
     return MediaAPI.getInstance().getPacketKeyFrame(ctx);
   }
 
-  /** Copies next packet into data and returns stream. */
+  /** Copies next packet into data and returns stream. Used internally by readPacket(). */
   public int getPacketData(long ctx, byte[] data, int offset, int length) {
     return MediaAPI.getInstance().getPacketData(ctx, data, offset, length);
   }
@@ -180,6 +182,7 @@ public class MediaInput extends MediaFormat implements MediaIOFFM {
     return packet;
   }
 
+  /** Seek media to time in seconds. */
   public boolean seek(long seconds) {
     return MediaAPI.getInstance().inputSeek(ctx, this, seconds);
   }

@@ -5,8 +5,6 @@ package javaforce.media;
  * Uses a cyclical buffer to avoid using locks or reallocation.
  */
 
-import javaforce.*;
-
 public class AudioBuffer {
 
   private int bufsiz;
