@@ -23,12 +23,10 @@ public class Startup {
     wayland = getProperty("wayland").equals("true");
     try {
       if (wayland) {
-        /* Start labwc */
-        if (!new File(JF.getUserPath() + "/labwc/rc.xml").exists()) {
-          config_labwc();
-        }
-        JFLog.log("Starting labwc");
-        Runtime.getRuntime().exec(new String[] {"/usr/bin/labwc"});
+        /* Start wayland compositor */
+        config_sway();
+        JFLog.log("Starting wayland...");
+        Runtime.getRuntime().exec(new String[] {"/usr/bin/sway"});
       } else {
         /* Setup display */
         Monitor cfg[] = Linux.x11_rr_load_user();
@@ -73,9 +71,13 @@ public class Startup {
     if (prop == null) prop = "";
     return prop.trim();
   }
+  private static void config_sway() {
+    String sway =  JF.getUserPath() + "/.config/sway";
+    new File(sway).mkdirs();
+  }
   private static void config_labwc() {
-    String labwc =  JF.getUserPath() + "/labwc";
-    new File(labwc).mkdir();
+    String labwc =  JF.getUserPath() + "/.config/labwc";
+    new File(labwc).mkdirs();
     JF.copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml");
     JF.copyAll("/etc/jfdesktop/labwc-menu.xml", labwc + "/menu.xml");
   }

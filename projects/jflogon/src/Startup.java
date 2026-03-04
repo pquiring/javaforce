@@ -49,7 +49,7 @@ public class Startup implements ShellProcessListener{
       create_server_xauth();
       boolean retry;
       if (wayland) {
-        config_labwc();
+        config_sway();
         String[] env = JF.getEnvironment();
         for(String e : env) {
           JFLog.log(LOG_DISPLAY, e);
@@ -98,7 +98,7 @@ public class Startup implements ShellProcessListener{
 
   private static void start() throws Exception {
     if (wayland) {
-      start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run"});
+      start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run"});
     } else {
       start(new String[] {"/usr/bin/X"}, null);
     }
@@ -528,9 +528,15 @@ public class Startup implements ShellProcessListener{
     return prop.trim();
   }
   private static void config_labwc() {
-    String labwc =  JF.getUserPath() + "/labwc";
-    new File(labwc).mkdir();
+    String labwc =  JF.getUserPath() + "/.config/labwc";
+    new File(labwc).mkdirs();
     JF.copyAll("/etc/jflogon/labwc-rc.xml", labwc + "/rc.xml");
     JF.copyAll("/etc/jflogon/labwc-menu.xml", labwc + "/menu.xml");
+  }
+  private static void config_sway() {
+    String sway =  JF.getUserPath() + "/.config/sway";
+    new File(sway).mkdirs();
+    JF.copyAll("/etc/jflogon/labwc-rc.xml", sway + "/rc.xml");
+    JF.copyAll("/etc/jflogon/labwc-menu.xml", sway + "/menu.xml");
   }
 }
