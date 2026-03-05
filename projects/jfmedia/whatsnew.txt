@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Mar 5, 2026 : v0.27 released!
+  - fix : Media Framework fixes
+
 Feb 6, 2026 : v0.26 released!
   - fix : Media Framework fixes
 
