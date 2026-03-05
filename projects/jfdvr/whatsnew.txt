@@ -1,3 +1,6 @@
+Mar 5, 2026 : 0.38 released!
+  - fix : Media Framework fixes
+
 Feb 6, 2026 : 0.37 released!
   - fix : Media Framework fixes
 
