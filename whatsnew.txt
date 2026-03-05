@@ -1,5 +1,10 @@
 What's new...
 
+Mar 5/2026 : JF/102.0
+  - FFM
+    - cleanup API to avoid needing to store() upcall references
+    - disabled by default due to performance issues with Media framework
+
 Feb 20/2026 : JF/101.0
   - jfMQTT/0.12
     - fix : processing messages of certain size range on server side this time
