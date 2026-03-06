@@ -43,6 +43,7 @@ char dll[MAX_PATH];
 int size = MAX_PATH;
 HMODULE jvm_dll;
 HMODULE awt_dll;
+extern HMODULE jawt_dll;
 int (*CreateJavaVM)(JavaVM**,void**,void*);
 HANDLE thread_handle;
 int thread_id;
@@ -705,6 +706,16 @@ bool try_jvm() {
     //this may fail for console/service apps anyways
     if (debug) {
       printf("Warning:failed to load awt.dll\r\n");
+    }
+  }
+
+  //load jawt.dll if present
+  strcpy(dll, javahome);
+  strcat(dll, "\\bin\\jawt.dll");
+  if ((jawt_dll = LoadLibrary(dll)) == NULL) {
+    //this may fail for console/service apps anyways
+    if (debug) {
+      printf("Warning:failed to load jawt.dll\r\n");
     }
   }
 

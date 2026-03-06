@@ -138,7 +138,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so, jstring libncurses_so)
 {
   if (jawt == NULL) {
-    jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
+    jawt = loadLibrary("libjawt.so");
     if (jawt == NULL) {
       printf("Warning:dlopen(libjawt.so) unsuccessful\n");
       return JNI_FALSE;

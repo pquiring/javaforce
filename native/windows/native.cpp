@@ -55,7 +55,7 @@ static void log_reset() {
 
 HMODULE wgl = NULL;
 
-void* jawt = NULL;
+JF_LIB_HANDLE jawt_dll;
 jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 
 //OpenGL API
@@ -1508,7 +1508,7 @@ static jlong getHWND(JNIEnv *e, jobject c) {
   jint lock;
   JAWT awt;
 
-  if (jawt == NULL) return 0;
+  if (jawt_dll == NULL) return 0;
   if (_JAWT_GetAWT == NULL) return 0;
 
   awt.version = JAWT_VERSION_1_4;
@@ -1646,6 +1646,10 @@ void winnative_register(JNIEnv *env) {
     printf("Warning:Unable to open sas.dll");
   } else {
     getFunction(lib_sas, (void**)&_SendSAS, "SendSAS");
+  }
+
+  if (jawt_dll != NULL) {
+    getFunction(jawt_dll, (void**)&_JAWT_GetAWT, "JAWT_GetAWT");
   }
 
   speex_dsp_register(env);
