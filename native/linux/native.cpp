@@ -63,6 +63,7 @@ static bool debug = false;
 
 void* jawt = NULL;
 jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
+jboolean isWayland = JNI_FALSE;
 
 void* x11 = NULL;
 Display* (*_XOpenDisplay)(void*);
@@ -144,6 +145,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     }
     getFunction(jawt, (void**)&_JAWT_GetAWT, "JAWT_GetAWT");
   }
+  isWayland = getenv("WAYLAND_DISPLAY") != NULL;
   if (x11 == NULL && libX11_so != NULL) {
     const char *clibX11_so = e->GetStringUTFChars(libX11_so,NULL);
     x11 = dlopen(clibX11_so, RTLD_LAZY | RTLD_GLOBAL);
@@ -238,7 +240,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   return JNI_TRUE;
 }
 
-static long getX11ID(JNIEnv *e, jobject c) {
+static jlong getX11ID(JNIEnv *e, jobject c) {
   JAWT_DrawingSurface* ds;
   JAWT_DrawingSurfaceInfo* dsi;
   jint lock;
@@ -274,12 +276,71 @@ static long getX11ID(JNIEnv *e, jobject c) {
     printf("JAWT.platformInfo == NULL\n");
     return 0;
   }
-  long handle = xdsi->drawable;
+  jlong handle = xdsi->drawable;
   ds->FreeDrawingSurfaceInfo(dsi);
   ds->Unlock(ds);
   awt.FreeDrawingSurface(ds);
 
   return handle;
+}
+
+struct WLToolkit {
+  void* wl_surface;
+  void* wl_view;
+};
+
+static jlong getWaylandID(JNIEnv *e, jobject c) {
+  JAWT_DrawingSurface* ds;
+  JAWT_DrawingSurfaceInfo* dsi;
+  jint lock;
+  JAWT awt;
+
+  if (jawt == NULL) return 0;
+  if (_JAWT_GetAWT == NULL) return 0;
+
+  awt.version = JAWT_VERSION_1_4;
+  if (!(*_JAWT_GetAWT)(e, &awt)) {
+    printf("JAWT_GetAWT() failed\n");
+    return 0;
+  }
+
+  ds = awt.GetDrawingSurface(e, c);
+  if (ds == NULL) {
+    printf("JAWT.GetDrawingSurface() failed\n");
+    return 0;
+  }
+  lock = ds->Lock(ds);
+  if ((lock & JAWT_LOCK_ERROR) != 0) {
+    awt.FreeDrawingSurface(ds);
+    printf("JAWT.Lock() failed\n");
+    return 0;
+  }
+  dsi = ds->GetDrawingSurfaceInfo(ds);
+  if (dsi == NULL) {
+    printf("JAWT.GetDrawingSurfaceInfo() failed\n");
+    return 0;
+  }
+  WLToolkit* xdsi = (WLToolkit*)dsi->platformInfo;
+  printf("xdsi=%p\n", xdsi);
+  if (xdsi == NULL) {
+    printf("JAWT.platformInfo == NULL\n");
+    return 0;
+  }
+  jlong handle = (jlong)xdsi->wl_surface;
+  ds->FreeDrawingSurfaceInfo(dsi);
+  ds->Unlock(ds);
+  awt.FreeDrawingSurface(ds);
+
+  return handle;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_JFNative_getWindowHandle
+  (JNIEnv *e, jclass c, jobject window)
+{
+  if (isWayland)
+    return getWaylandID(e, window);
+  else
+    return getX11ID(e, window);
 }
 
 #include "../common/ui-jni.cpp"

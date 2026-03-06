@@ -13,6 +13,8 @@
 #include <cstring>
 
 #include <jni.h>
+#include <jawt.h>
+#include <jawt_md.h>
 
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_jni_GLJNI.h"
@@ -52,6 +54,9 @@ static void log_reset() {
 }
 
 HMODULE wgl = NULL;
+
+void* jawt = NULL;
+jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 
 //OpenGL API
 
@@ -1493,6 +1498,58 @@ void camera_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/CameraJNI");
   registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
+}
+
+//JFNative
+
+static jlong getHWND(JNIEnv *e, jobject c) {
+  JAWT_DrawingSurface* ds;
+  JAWT_DrawingSurfaceInfo* dsi;
+  jint lock;
+  JAWT awt;
+
+  if (jawt == NULL) return 0;
+  if (_JAWT_GetAWT == NULL) return 0;
+
+  awt.version = JAWT_VERSION_1_4;
+  if (!(*_JAWT_GetAWT)(e, &awt)) {
+    printf("JAWT_GetAWT() failed\n");
+    return 0;
+  }
+
+  ds = awt.GetDrawingSurface(e, c);
+  if (ds == NULL) {
+    printf("JAWT.GetDrawingSurface() failed\n");
+    return 0;
+  }
+  lock = ds->Lock(ds);
+  if ((lock & JAWT_LOCK_ERROR) != 0) {
+    awt.FreeDrawingSurface(ds);
+    printf("JAWT.Lock() failed\n");
+    return 0;
+  }
+  dsi = ds->GetDrawingSurfaceInfo(ds);
+  if (dsi == NULL) {
+    printf("JAWT.GetDrawingSurfaceInfo() failed\n");
+    return 0;
+  }
+  JAWT_Win32DrawingSurfaceInfo* xdsi = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
+  if (xdsi == NULL) {
+    printf("JAWT.platformInfo == NULL\n");
+    return 0;
+  }
+  jlong handle = (jlong)xdsi->hwnd;
+  ds->FreeDrawingSurfaceInfo(dsi);
+  ds->Unlock(ds);
+  awt.FreeDrawingSurface(ds);
+
+  return handle;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_JFNative_getWindowHandle
+  (JNIEnv *e, jclass c, jobject window)
+{
+  return getHWND(e, window);
 }
 
 //Windows native methods
