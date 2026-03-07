@@ -53,7 +53,7 @@ Next build the native loaders.
 Building native loaders
 -----------------------
 Native loaders are in /native which includes native API for FFmpeg, OpenGL, OpenCL and Camera.
-JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI.
+JavaForce does not use java.exe, instead a custom loader is built, which includes additional native API using JNI/FFM.
 The native methods are also placed in a shared library in case you prefer not to use the custom loaders.
 See readme.txt in each platform folder for more info.
 
@@ -68,7 +68,7 @@ JavaForce Ant tasks:
 --------------------
 get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
 get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native loader)
-  ffmpeg-win64 versions 5.1.2 , 6.1.2 , 7.0.2, 7.1.0 are available (you must edit versions.xml)
+  ffmpeg-win64 versions 5.1.2 , 6.1.2 , 7.0.2, 7.1.0 are available (you must edit versions.properties)
 jre-all : pre-link JRE with all modules
 jre-base : pre-link JRE with minimal modules for console apps/services
 jre-base-desktop : pre-link JRE with desktop support
