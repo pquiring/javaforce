@@ -31,6 +31,7 @@ RUN bash /opt/deps.sh
 #install repo deps
 
 COPY repo/deps.sh /opt
+COPY repo/*-build.deps /opt
 
 RUN bash /opt/deps.sh
 
