@@ -179,13 +179,13 @@ public class S7Params {
     BE.setuint16(funcData, 9, 0x0a);  //length
     funcData[11] = 0;  //reserved
     year -= 100;  //???
-    EBCDIC.encode((short)year, funcData, 12);
-    EBCDIC.encode((byte)month, funcData, 14);
-    EBCDIC.encode((byte)day, funcData, 15);
-    EBCDIC.encode((byte)hour, funcData, 16);
-    EBCDIC.encode((byte)min, funcData, 17);
-    EBCDIC.encode((byte)sec, funcData, 18);
-    EBCDIC.encode((short)ms, funcData, 19);
+    BCD.encode((short)year, funcData, 12);
+    BCD.encode((byte)month, funcData, 14);
+    BCD.encode((byte)day, funcData, 15);
+    BCD.encode((byte)hour, funcData, 16);
+    BCD.encode((byte)min, funcData, 17);
+    BCD.encode((byte)sec, funcData, 18);
+    BCD.encode((short)ms, funcData, 19);
   }
 
   /** Returns size of params. */
@@ -297,14 +297,14 @@ public class S7Params {
               JFLog.log("Warning:length = " + trans_size);
             }
             byte res = data[offset++];
-            int year = EBCDIC.decode(data, offset, 2); offset += 2;
+            int year = BCD.decode(data, offset, 2); offset += 2;
             year += 100;  //???
-            int month = EBCDIC.decode(data, offset++, 1);
-            int day = EBCDIC.decode(data, offset++, 1);
-            int hour = EBCDIC.decode(data, offset++, 1);
-            int min = EBCDIC.decode(data, offset++, 1);
-            int sec = EBCDIC.decode(data, offset++, 1);
-            int ms = EBCDIC.decode(data, offset, 2); offset += 2;
+            int month = BCD.decode(data, offset++, 1);
+            int day = BCD.decode(data, offset++, 1);
+            int hour = BCD.decode(data, offset++, 1);
+            int min = BCD.decode(data, offset++, 1);
+            int sec = BCD.decode(data, offset++, 1);
+            int ms = BCD.decode(data, offset, 2); offset += 2;
             out.set(Calendar.YEAR, year);
             out.set(Calendar.MONTH, month - 1);
             out.set(Calendar.DAY_OF_MONTH, day);

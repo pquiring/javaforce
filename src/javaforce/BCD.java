@@ -1,15 +1,15 @@
 package javaforce;
 
-/** Encoding 4 bits per digit (0-9).
+/** BCD Encoding 4 bits per digit (0-9).
  *
  * Hex values A-F are not used.
  *
- * Old IBM encoding used by Siemens PLCs.
+ * Used by Siemens PLCs.
  *
  * @author pquiring
  */
 
-public class EBCDIC {
+public class BCD {
 
   /** Encodes byte -> byte[1]
    *
