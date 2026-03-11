@@ -1,5 +1,8 @@
 What's new...
 
+Mar 11/2026 : JF/102.1
+  - fix packaging error
+
 Mar 5/2026 : JF/102.0
   - FFM
     - cleanup API to avoid needing to store() upcall references
