@@ -49,7 +49,7 @@ function package {
   echo "<property name=\"version\" value=\"$3\"/>" >> build.xml
   echo "<property name=\"home\" value=\"..\"/>" >> build.xml
   echo "</project>" >> build.xml
-  java -cp ../javaforce.jar javaforce.utils.Gen$PKG build.xml null
+  java -cp ../javaforce.jar javaforce.utils.Gen$PKG build.xml
   rm files.lst
   rm build.xml
 }
