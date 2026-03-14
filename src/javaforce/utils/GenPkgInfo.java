@@ -181,7 +181,7 @@ public class GenPkgInfo {
 
       //generate deb/prerm if not present
       if (!new File("deb/prerm").exists()) {
-        FileOutputStream fos = new FileOutputStream("deb/postinst");
+        FileOutputStream fos = new FileOutputStream("deb/prerm");
         fos.write("#!/bin/sh\n".getBytes());
         if (service) {
           fos.write(("systemctl disable " + app + "\n").getBytes());
