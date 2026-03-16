@@ -1,5 +1,8 @@
 What's new...
 
+Mar 16/2026 : JF/102.2
+  - fix enable debian service
+
 Mar 11/2026 : JF/102.1
   - fix packaging error
 
