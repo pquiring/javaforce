@@ -14,7 +14,7 @@ import javaforce.*;
 import javaforce.jbus.*;
 import javaforce.linux.Linux;
 
-public class Startup implements ShellProcessListener{
+public class Startup implements ShellProcessListener {
   private static ShellProcess display_mgr;
   private static boolean rebootFlag, shutdownFlag;
   private static boolean wayland = false;
@@ -49,7 +49,7 @@ public class Startup implements ShellProcessListener{
       create_server_xauth();
       boolean retry;
       if (wayland) {
-        config_sway();
+        config_wayland();
         String[] env = JF.getEnvironment();
         for(String e : env) {
           JFLog.log(LOG_DISPLAY, e);
@@ -98,7 +98,7 @@ public class Startup implements ShellProcessListener{
 
   private static void start() throws Exception {
     if (wayland) {
-      start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run"});
+      start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"});
     } else {
       start(new String[] {"/usr/bin/X"}, null);
     }
@@ -538,5 +538,8 @@ public class Startup implements ShellProcessListener{
     new File(sway).mkdirs();
     JF.copyAll("/etc/jflogon/labwc-rc.xml", sway + "/rc.xml");
     JF.copyAll("/etc/jflogon/labwc-menu.xml", sway + "/menu.xml");
+  }
+  private static void config_wayland() {
+
   }
 }
