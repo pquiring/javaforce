@@ -32,28 +32,28 @@ public class Icons {
 
   public static Image getArrowUp() {
     if (arrow_up == null) {
-      arrow_up = loadIcon("up-arrow");
+      arrow_up = loadIcon("arrow-up");
     }
     return arrow_up;
   }
 
   public static Image getArrowDown() {
     if (arrow_down == null) {
-      arrow_down = loadIcon("down-arrow");
+      arrow_down = loadIcon("arrow-down");
     }
     return arrow_down;
   }
 
   public static Image getArrowLeft() {
     if (arrow_left == null) {
-      arrow_left = loadIcon("left-arrow");
+      arrow_left = loadIcon("arrow-left");
     }
     return arrow_left;
   }
 
   public static Image getArrowRight() {
     if (arrow_right == null) {
-      arrow_right = loadIcon("right-arrow");
+      arrow_right = loadIcon("arrow-right");
     }
     return arrow_right;
   }
