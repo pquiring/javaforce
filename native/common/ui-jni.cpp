@@ -71,8 +71,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_UIJNI_uiWindowCreate
   (JNIEnv *e, jobject c, jint style, jstring title, jint x, jint y, jlong shared)
 {
   GLFWContextJNI *ctx = (GLFWContextJNI*)malloc(sizeof(GLFWContextJNI));
-  ctx->ge = e;
   memset(ctx, 0, sizeof(GLFWContextJNI));
+  ctx->ge = e;
   GLFWmonitor *monitor = NULL;
   if (style & javaforce_jni_UIJNI_STYLE_FULLSCREEN) monitor = glfwGetPrimaryMonitor();
 
@@ -115,6 +115,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_UIJNI_uiWindowCreate
 
   glfwMakeContextCurrent(ctx->window);
 
+  ctx->ge = NULL;
+
   return (jlong)ctx;
 }
 
@@ -125,7 +127,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowDestroy
   if (ctx == NULL) return;
   glfwDestroyWindow(ctx->window);
   ctx->window = NULL;
-  e->DeleteGlobalRef(ctx->obj);
   free(ctx);
 }
 
@@ -142,7 +143,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiPollEvents
 {
   GLFWContextJNI *ctx = (GLFWContextJNI*)id;
   ctx->ge = e;
-  ctx->obj = e->NewGlobalRef(events);
+  ctx->obj = events;
   jclass cls = e->GetObjectClass(events);
   ctx->mid_dispatch = e->GetMethodID(cls, "dispatchEvent", "(III)V");
   switch (wait) {
@@ -160,6 +161,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiPollEvents
       break;
     }
   }
+  ctx->ge = NULL;
+  ctx->obj = NULL;
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiPostEvent
