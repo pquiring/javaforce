@@ -273,6 +273,8 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+  } else {
+    opts[nOpts++] = "-XX:-UsePerfData";
   }
   opts[nOpts++] = "--enable-native-access=ALL-UNNAMED";
   opts[nOpts++] = MakeString("-Djava.app.exec=%s", module);

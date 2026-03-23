@@ -259,6 +259,8 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+  } else {
+    opts[nOpts++] = "-XX:-UsePerfData";
   }
 
   opts[nOpts++] = (char*)"--enable-native-access=ALL-UNNAMED";
