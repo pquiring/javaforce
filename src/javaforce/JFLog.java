@@ -244,7 +244,12 @@ public class JFLog {
     sb.append(",{");
     for(int i=0;i<length;i++) {
       if (i > 0) sb.append(",");
-      sb.append(String.format("%c", (char)buffer[offset+i]));
+      int ch = buffer[offset+i] & 0xff;
+      if (ch < 32 || ch > 127) {
+        sb.append(String.format("%02x", ch));
+      } else {
+        sb.append(String.format("%c", (char)ch));
+      }
     }
     sb.append("}");
     return log(id, sb.toString());
