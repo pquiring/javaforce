@@ -40,6 +40,10 @@ public class BE {
     return ret;
   }
 
+  public static float getfloat(byte[] data, int offset) {
+    return Float.intBitsToFloat(getuint32(data, offset));
+  }
+
   public static long getuint64(byte[] data, int offset) {
     long ret;
     ret = ((long) data[offset] & 0xff) << 56;
@@ -51,6 +55,10 @@ public class BE {
     ret += ((long) data[offset + 6] & 0xff) << 8;
     ret += ((long) data[offset + 7] & 0xff);
     return ret;
+  }
+
+  public static double getdouble(byte[] data, int offset) {
+    return Double.longBitsToDouble(getuint64(data, offset));
   }
 
   public static void setuint8(byte[] data, int offset, int value) {
@@ -81,6 +89,10 @@ public class BE {
     data[offset+0] = (byte)(value & 0xff);
   }
 
+  public static void setfloat(byte[] data, int offset, float num) {
+    setuint32(data, offset, Float.floatToIntBits(num));
+  }
+
   public static void setuint64(byte[] data, int offset, long value) {
     data[offset+7] = (byte)(value & 0xff);
     value >>= 8;
@@ -97,6 +109,10 @@ public class BE {
     data[offset+1] = (byte)(value & 0xff);
     value >>= 8;
     data[offset+0] = (byte)(value & 0xff);
+  }
+
+  public static void setdouble(byte[] data, int offset, double num) {
+    setuint64(data, offset, Double.doubleToLongBits(num));
   }
 
   //these funcs are no different (just conv functions)
