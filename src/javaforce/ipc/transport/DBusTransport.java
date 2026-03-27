@@ -13,6 +13,7 @@ public abstract class DBusTransport {
   public abstract int read(byte[] data);
   public abstract boolean write(String name, byte[] data, int offset, int length);
   public abstract boolean isAlive();
+  public abstract String getBusName();
 
   private byte[] rString = new byte[1024];
   public String read_String() {

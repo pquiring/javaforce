@@ -5,6 +5,7 @@ package javaforce.ipc.transport;
  * @author pquiring
  */
 
+import javaforce.*;
 import javaforce.ipc.*;
 import javaforce.jni.*;
 
@@ -19,6 +20,11 @@ public class WinPipeTransport extends DBusTransport {
 
   public boolean connect(String name, DBus bus, Runnable start_reader) {
     if (ctx != 0) return false;
+    if (name == null) {
+      //create client name
+      name = "javaforce.dbus.client.id" + System.currentTimeMillis();
+      JF.sleep(10);
+    }
     ctx = WinNative.pipeCreate(makePipeName(name), true);
     if (ctx != 0) {
       this.name = name;
@@ -34,6 +40,10 @@ public class WinPipeTransport extends DBusTransport {
     WinNative.pipeClose(ctx);
     ctx = 0;
     return true;
+  }
+
+  public String getBusName() {
+    return name;
   }
 
   public int read(byte[] data) {

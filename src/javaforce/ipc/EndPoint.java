@@ -7,6 +7,7 @@ package javaforce.ipc;
 
 public interface EndPoint {
   /** Returns end point name in reverse DNS notation.
+   * Return null for client end points to have a generic name provided.
    * Example : com.example.MyService
    */
   public String getEndPointName();

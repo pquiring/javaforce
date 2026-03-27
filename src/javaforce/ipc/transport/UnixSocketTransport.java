@@ -21,7 +21,7 @@ public class UnixSocketTransport extends DBusTransport {
   private static final String DBusMessageBus = "org.freedesktop.DBus";
 
   private SocketChannel client;
-  private String generic_id;
+  private String busName;
 
   /** Enable the use of the session bus. Default = false (use system bus) */
   public static void useSessionBus(boolean state) {
@@ -80,12 +80,15 @@ public class UnixSocketTransport extends DBusTransport {
       if (!reply.startsWith("OK") || !reply.endsWith("\r\n")) throw new Exception("auth failed");
       write_String("BEGIN\r\n");
       start_reader.run();
-      generic_id = DBus_Hello(bus);
+      busName = DBus_Hello(bus);
       if (debug) {
-        JFLog.log("DBus:generic_id=" + generic_id);
+        JFLog.log("DBus:busName=" + busName);
       }
-      if (!DBus_RequestName(name, bus)) {
-        throw new Exception("DBus.RequestName() failed");
+      if (name != null) {
+        if (!DBus_RequestName(name, bus)) {
+          throw new Exception("DBus.RequestName() failed");
+        }
+        busName = name;
       }
       return true;
     } catch (Exception e) {
@@ -106,6 +109,10 @@ public class UnixSocketTransport extends DBusTransport {
       JFLog.log(e);
       return false;
     }
+  }
+
+  public String getBusName() {
+    return busName;
   }
 
   public int read(byte[] data) {

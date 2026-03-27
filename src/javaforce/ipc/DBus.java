@@ -133,14 +133,14 @@ public class DBus implements IPC {
     this.transport = transport;
   }
 
-  /** Create a generic EndPoint.
+  /** Create a client end point with system provided name.
    * @param obj = where RPC methods reside
    */
   public static EndPoint createEndPoint(Object obj) {
     Dispatcher dispatcher = new Dispatcher(obj);
     EndPoint ep = new EndPoint() {
       public String getEndPointName() {
-        return System.getProperty("java.app.name") + ".jf" + System.currentTimeMillis();
+        return null;
       }
       public Object dispatch(String method, Object[] args) throws Exception {
         return dispatcher.dispatch(method, args);
@@ -149,7 +149,7 @@ public class DBus implements IPC {
     return ep;
   }
 
-  /** Create a EndPoint with specified name.
+  /** Create a EndPoint with specified name (servers).
    * @param name = name of end point
    * @param obj = where RPC methods reside
    */
@@ -483,10 +483,10 @@ public class DBus implements IPC {
         if (!write_to_dbus) {
           //field:sender
           walign(8);
-          if (debug) JFLog.log("write.field:SENDER:" + ep.getEndPointName());
+          if (debug) JFLog.log("write.field:SENDER:" + transport.getBusName());
           write_byte(FIELD_SENDER);
           write_sign(TYPE_STRING);
-          write_String(ep.getEndPointName());
+          write_String(transport.getBusName());
         }
         //field:dest
         walign(8);
