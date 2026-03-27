@@ -179,6 +179,7 @@
   <target name="install" description="install files">
     <copy file="javaforce.jar" todir="/usr/share/java"/>
     <copy file="jficons.jar" todir="/usr/share/java"/>
+    <copy file="javaforce.conf" todir="/etc/dbus-1/system.d"/>
   </target>
 
   <target name="jre-all" description="build JRE with all modules included">

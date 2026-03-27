@@ -62,7 +62,7 @@ public class DBus implements IPC {
 
   // Field Types                                         CALL RETURN ERROR SIGNAL Example (R=required O=optional)
   private static final byte FIELD_PATH         = 0x01;  // R                 R     /path/to/object
-  private static final byte FIELD_INTERFACE        = 0x02;  // O                 R     com.example.InterfaceName
+  private static final byte FIELD_INTERFACE    = 0x02;  // O                 R     com.example.InterfaceName
   private static final byte FIELD_MEMBER       = 0x03;  // R                 R     MethodName
   private static final byte FIELD_ERROR_MSG    = 0x04;  //             R           Error msg
   private static final byte FIELD_REPLY_SERIAL = 0x05;  //      R      R           Serial # from method_call

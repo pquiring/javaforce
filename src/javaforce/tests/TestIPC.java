@@ -24,7 +24,7 @@ public class TestIPC {
   }
   private static void server() {
     try {
-      IPC ipc = new DBus(new TestEndPoint("TestIPC.Server"));
+      IPC ipc = new DBus(new TestEndPoint("javaforce.TestIPC.Server"));
       if (!ipc.connect()) {
         JFLog.log("IPC.connect() failed");
         return;
@@ -39,7 +39,7 @@ public class TestIPC {
   private static void client() {
     try {
       Random r = new Random();
-      IPC ipc = new DBus(new TestEndPoint(String.format("TestIPC.Client%04x", (r.nextInt() & 0xffff))));
+      IPC ipc = new DBus(new TestEndPoint(String.format("javaforce.TestIPC.Client%04x", (r.nextInt() & 0xffff))));
       if (!ipc.connect()) {
         JFLog.log("IPC.connect() failed");
         return;
@@ -48,7 +48,7 @@ public class TestIPC {
         try {
           int value = r.nextInt();
           JFLog.log(String.format("ping(0x%x)", value));
-          Object result = ipc.invoke("TestIPC.Server", "ping", new Object[] {value});
+          Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", new Object[] {value});
           if (result == null) {
             JFLog.log("result == null");
           } else {

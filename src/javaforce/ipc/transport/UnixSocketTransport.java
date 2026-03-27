@@ -14,6 +14,8 @@ import javaforce.ipc.DBus;
 
 public class UnixSocketTransport extends DBusTransport {
 
+  private static boolean session_bus = false;
+
   private static final boolean debug = true;
 
   private static final String DBusMessageBus = "org.freedesktop.DBus";
@@ -21,19 +23,30 @@ public class UnixSocketTransport extends DBusTransport {
   private SocketChannel client;
   private String generic_id;
 
+  /** Enable the use of the session bus. Default = false (use system bus) */
+  public static void useSessionBus(boolean state) {
+    session_bus = state;
+  }
+
   public boolean connect(String name, DBus bus, Runnable start_reader) {
-    String path = System.getenv("DBUS_SESSION_BUS_ADDRESS");  //unix:path=/run/user/?/bus
-    if (path == null) {
-      JFLog.log("DBus:Warning:DBUS_SESSION_BUS_ADDRESS not found, using SystemBus socket");
+    String path = null;
+    if (session_bus) {
+      //unix:path=/run/user/$UID/bus
+      path = System.getenv("DBUS_SESSION_BUS_ADDRESS");
+    } else {
       path = "unix:path=/var/run/dbus/system_bus_socket";
       /*
       NOTE : This requires a conf file in /etc/dbus-1/system.d to own a message bus.
              Otherwise RequestName() will be denied.
       */
     }
+    if (path == null) {
+      JFLog.log("UnixSocketTransport:DBus socket not found");
+      return false;
+    }
     int idx = path.indexOf("=");
     if (idx == -1) {
-      JFLog.log("DBUS_SESSION_BUS_ADDRESS invalid");
+      JFLog.log("DBus socket invalid");
       return false;
     }
     path = path.substring(idx + 1);
