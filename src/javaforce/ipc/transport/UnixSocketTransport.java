@@ -2,6 +2,8 @@ package javaforce.ipc.transport;
 
 /** DBus over Unix Socket Transport
  *
+ * Requires Java 16+
+ *
  * @author pquiring
  */
 
@@ -58,7 +60,6 @@ public class UnixSocketTransport extends DBusTransport {
     if (debug) JFLog.log("DBus.path=" + path);
     String uid = path.split("/")[3];
     if (uid.equals("dbus")) {
-      //using system dbus - must be root
       uid = Integer.toString(LnxNative.getuid());
     }
     if (debug) JFLog.log("UID=" + uid);

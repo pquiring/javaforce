@@ -20,11 +20,13 @@ public class Dispatcher {
   private Class<?> cls;
   private Object obj;
 
+  /** Create Dispatcher that will dispatch methods in obj. */
   public Dispatcher(Object obj) {
     this.obj = obj;
     cls = obj.getClass();
   }
 
+  /** Dispatches a method request and returns the return value from the method. */
   public Object dispatch(String method_name, Object[] args) throws Exception {
     int argsLength = args.length;
     Class[] types = new Class[argsLength];

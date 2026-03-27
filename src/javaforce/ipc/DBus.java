@@ -119,6 +119,7 @@ public class DBus implements IPC {
   private int serial = 1;
   private Object serial_lock = new Object();
 
+  /** Create DBus with specified EndPoint. */
   public DBus(EndPoint ep) {
     this.ep = ep;
     if (JF.isUnix()) {
@@ -128,6 +129,7 @@ public class DBus implements IPC {
     }
   }
 
+  /** Create DBus with specified EndPoint and transport. */
   public DBus(EndPoint ep, DBusTransport transport) {
     this.ep = ep;
     this.transport = transport;
@@ -173,6 +175,7 @@ public class DBus implements IPC {
     return "/" + name.replaceAll("[.]", "/");
   }
 
+  /** Connects to message bus. */
   public boolean connect() {
     return transport.connect(ep.getEndPointName(), this, new Runnable() {
       public void run() {
@@ -182,6 +185,7 @@ public class DBus implements IPC {
     });
   }
 
+  /** Disconnects from message bus. */
   public boolean disconnect() {
     boolean result = false;
     try {
