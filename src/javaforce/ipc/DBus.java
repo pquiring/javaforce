@@ -24,6 +24,8 @@ package javaforce.ipc;
  *  - methods must return a value (void is not supported)
  *    - return boolean at the least and always return true
  *      so caller knows call was successful
+ *  - on Linux a dbus conf is installed to allow end points to
+ *      use names that begin with "javaforce." (root only)
  *
  * @author pquiring
  */

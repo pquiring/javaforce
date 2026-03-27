@@ -176,6 +176,9 @@ public class GenPkgInfo {
         if (service) {
           fos.write(("systemctl enable " + app + "\n").getBytes());
         }
+        if (app.equals("javaforce")) {
+          fos.write(("systemctl reload dbus\n").getBytes());
+        }
         fos.close();
       }
 
@@ -240,6 +243,9 @@ public class GenPkgInfo {
       sb.append("set -e\n");
       if (service) {
         sb.append("%systemd_post " + app + ".service\n");
+      }
+      if (app.equals("javaforce")) {
+        sb.append("systemctl reload dbus\n");
       }
       //pre remove
       sb.append("%preun\n");
