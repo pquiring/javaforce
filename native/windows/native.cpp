@@ -1479,6 +1479,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "monitor-folder-jni.cpp"
 #include "monitor-folder-ffm.cpp"
 
+#include "pipes.cpp"
+
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
   {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
@@ -1609,6 +1611,11 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"vssDeleteShadowAll", "()Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadowAll},
   {"vssMountShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssMountShadow},
   {"vssUnmountShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssUnmountShadow},
+//pipes
+  {"pipeCreate", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_WinNative_pipeCreate},
+  {"pipeClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_pipeClose},
+  {"pipeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_pipeRead},
+  {"pipeWrite", "(Ljava/lang/String;[BII)I", (void *)&Java_javaforce_jni_WinNative_pipeWrite},
 //test
   {"add", "(II)I", (void *)&Java_javaforce_jni_WinNative_add},
   {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
