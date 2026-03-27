@@ -10,7 +10,8 @@ import java.nio.*;
 import java.nio.channels.*;
 
 import javaforce.*;
-import javaforce.ipc.DBus;
+import javaforce.jni.*;
+import javaforce.ipc.*;
 
 public class UnixSocketTransport extends DBusTransport {
 
@@ -58,7 +59,7 @@ public class UnixSocketTransport extends DBusTransport {
     String uid = path.split("/")[3];
     if (uid.equals("dbus")) {
       //using system dbus - must be root
-      uid = "0";
+      uid = Integer.toString(LnxNative.getuid());
     }
     if (debug) JFLog.log("UID=" + uid);
     StringBuilder sasl = new StringBuilder();

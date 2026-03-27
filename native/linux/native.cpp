@@ -470,6 +470,12 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_fileGetID
   return s.st_ino;
 }
 
+JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_getuid
+  (JNIEnv *e, jclass c)
+{
+  return getuid();
+}
+
 #include "console.cpp"
 
 #include "../common/ffmpeg.cpp"
@@ -546,6 +552,7 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"fileSetAccessTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetAccessTime},
   {"fileSetModifiedTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetModifiedTime},
   {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
+  {"getuid", "()I", (void *)&Java_javaforce_jni_LnxNative_getuid},
 };
 
 static JNINativeMethod javaforce_jni_X11[] = {

@@ -151,4 +151,7 @@ public class LnxNative {
   public static native void fileSetAccessTime(String path, long ts);
   public static native void fileSetModifiedTime(String path, long ts);
   public static native long fileGetID(String path);
+
+  //user
+  public static native int getuid();
 }

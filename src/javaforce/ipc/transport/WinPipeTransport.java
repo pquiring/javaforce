@@ -5,7 +5,8 @@ package javaforce.ipc.transport;
  * @author pquiring
  */
 
-import javaforce.*;
+import java.util.*;
+
 import javaforce.ipc.*;
 import javaforce.jni.*;
 
@@ -22,8 +23,8 @@ public class WinPipeTransport extends DBusTransport {
     if (ctx != 0) return false;
     if (name == null) {
       //create client name
-      name = "javaforce.dbus.client.id" + System.currentTimeMillis();
-      JF.sleep(10);
+      Random r = new Random();
+      name = String.format("javaforce.client.r%x.t%x", r.nextInt(0xfffffff), System.currentTimeMillis());
     }
     ctx = WinNative.pipeCreate(makePipeName(name), true);
     if (ctx != 0) {

@@ -39,7 +39,7 @@ public class TestIPC {
   private static void client() {
     try {
       Random r = new Random();
-      IPC ipc = new DBus(new TestEndPoint(String.format("javaforce.TestIPC.Client%04x", (r.nextInt() & 0xffff))));
+      IPC ipc = new DBus(new TestEndPoint(null));
       if (!ipc.connect()) {
         JFLog.log("IPC.connect() failed");
         return;
