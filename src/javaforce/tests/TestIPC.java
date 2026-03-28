@@ -11,14 +11,18 @@ import javaforce.*;
 import javaforce.ipc.*;
 
 public class TestIPC {
+
+  private static boolean debug = false;
+
   public static void main(String[] args) {
     if (args.length == 0) {
-      System.out.println("usage:TestIPC {server | client}");
+      System.out.println("usage:TestIPC {server | client} [options]");
+      System.out.println(" client options : [--threads=#] [--delay=#]");
       return;
     }
     switch (args[0]) {
       case "server": server(); break;
-      case "client": client(); break;
+      case "client": client(args); break;
       default: System.out.println("Unknown option:" + args[0]);
     }
   }
@@ -36,31 +40,63 @@ public class TestIPC {
       JFLog.log(e);
     }
   }
-  private static void client() {
-    try {
-      Random r = new Random();
-      IPC ipc = new DBus(new TestEndPoint(null));
-      if (!ipc.connect()) {
-        JFLog.log("IPC.connect() failed");
-        return;
+
+  private static long success = 0;
+  private static long error = 0;
+
+  private static void client(String[] args) {
+    int threads = 1;
+    int delay = 1000;
+    for(String arg : args) {
+      if (arg.startsWith("--threads=")) {
+        threads = Integer.valueOf(arg.substring(10));
+      } else if (arg.startsWith("--delay=")) {
+        delay = Integer.valueOf(arg.substring(8));
       }
-      while (true) {
-        try {
-          int value = r.nextInt();
-          JFLog.log(String.format("ping(0x%x)", value));
-          Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", new Object[] {value});
-          if (result == null) {
-            JFLog.log("result == null");
-          } else {
-            JFLog.log("result = " + result);
-          }
-        } catch (Exception e) {
-          JFLog.log(e);
+    }
+    for(int a=0;a<threads;a++) {
+      Client client = new Client(delay);
+      client.start();
+    }
+    while (true) {
+      JF.sleep(1000);
+      System.out.print(String.format("\rsuccess = %d : error = %d", success, error));
+    }
+  }
+
+  private static class Client extends Thread {
+    private int delay;
+    public Client(int delay) {
+      this.delay = delay;
+    }
+    public void run() {
+      try {
+        Random r = new Random();
+        IPC ipc = new DBus(new TestEndPoint(null));
+        if (!ipc.connect()) {
+          JFLog.log("IPC.connect() failed");
+          return;
         }
-        JF.sleep(1000);
+        while (true) {
+          try {
+            int value = r.nextInt();
+            if (debug) JFLog.log(String.format("ping(0x%x)", value));
+            Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", new Object[] {value});
+            if (result == null) {
+              if (debug) JFLog.log("result == null");
+              error++;
+            } else {
+              if (debug) JFLog.log("result = " + result);
+              success++;
+            }
+          } catch (Exception e) {
+            JFLog.log(e);
+          }
+          JF.sleep(delay);
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-    } catch (Exception e) {
-      JFLog.log(e);
     }
   }
 
@@ -83,7 +119,7 @@ public class TestIPC {
 
     public static class Methods {
       public boolean ping(int value) {
-        JFLog.log(String.format("ping:0x%x", value));
+        if (debug) JFLog.log(String.format("ping:0x%x", value));
         return true;
       }
     }
