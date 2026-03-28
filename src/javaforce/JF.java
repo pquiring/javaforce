@@ -12,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.*;
 import java.lang.management.*;
 import java.security.cert.Certificate;
+import java.lang.management.ManagementFactory;
+
+import com.sun.management.OperatingSystemMXBean;
 
 /**
  * A collection of useful static methods.
@@ -1991,5 +1994,17 @@ public class JF {
         return f1.getName().compareTo(f2.getName());
       }
     });
+  }
+
+  /** Returns total system memory in bytes. */
+  public long getTotalMemorySize() {
+    OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+    return osBean.getTotalMemorySize();
+  }
+
+  /** Returns free system memory in bytes. */
+  public long getFreeMemorySize() {
+    OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+    return osBean.getFreeMemorySize();
   }
 }
