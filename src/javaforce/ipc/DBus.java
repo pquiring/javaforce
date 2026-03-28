@@ -11,11 +11,16 @@ package javaforce.ipc;
  *  - signal message (broadcasting methods)
  *
  * Supported Data Types:
+ *  - java.lang.Byte
+ *  - java.lang.Short
  *  - java.lang.Integer
+ *  - java.lang.Long
  *  - java.lang.Double
  *  - java.lang.Boolean
  *  - java.lang.String
+ *  - javaforce.UShort (not recommended) (primitive type is 'short')
  *  - javaforce.UInteger (not recommended) (primitive type is 'int')
+ *  - javaforce.ULong (not recommended) (primitive type is 'long')
  *
  * Notes:
  *  - sender field required to send back RPC reply
@@ -88,27 +93,52 @@ public class DBus implements IPC {
   };
 
   //Data Types (only small subset supported)
-  private static final char TYPE_UINT8 = 'y';
-  private static final char TYPE_INT16 = 'n';
-  private static final char TYPE_UINT16 = 'q';
-  private static final char TYPE_INT32 = 'i';
-  private static final char TYPE_UINT32 = 'u';
-  private static final char TYPE_INT64 = 'x';
-  private static final char TYPE_UINT64 = 't';
-  private static final char TYPE_DOUBLE = 'd';
-  private static final char TYPE_BOOLEAN = 'b';
-  private static final char TYPE_STRING = 's';
-  private static final char TYPE_ARRAY = 'a';
-  private static final char TYPE_STRUCT = 'r';
-  private static final char TYPE_STRUCT_OPEN = '(';
-  private static final char TYPE_STRUCT_CLOSE = ')';
-  private static final char TYPE_DICT = 'e';
-  private static final char TYPE_DICT_OPEN = '{';
-  private static final char TYPE_DICT_CLOSE = '}';
-  private static final char TYPE_VARIANT = 'v';
-  private static final char TYPE_OBJECT_PATH = 'o';
-  private static final char TYPE_SIGNATURE = 'g';
-  private static final char TYPE_FD = 'h';
+  public static final char TYPE_UINT8 = 'y';
+  public static final char TYPE_INT16 = 'n';
+  public static final char TYPE_UINT16 = 'q';
+  public static final char TYPE_INT32 = 'i';
+  public static final char TYPE_UINT32 = 'u';
+  public static final char TYPE_INT64 = 'x';
+  public static final char TYPE_UINT64 = 't';
+  public static final char TYPE_DOUBLE = 'd';
+  public static final char TYPE_BOOLEAN = 'b';
+  public static final char TYPE_STRING = 's';
+  public static final char TYPE_ARRAY = 'a';
+  public static final char TYPE_STRUCT = 'r';
+  public static final char TYPE_STRUCT_OPEN = '(';
+  public static final char TYPE_STRUCT_CLOSE = ')';
+  public static final char TYPE_DICT = 'e';
+  public static final char TYPE_DICT_OPEN = '{';
+  public static final char TYPE_DICT_CLOSE = '}';
+  public static final char TYPE_VARIANT = 'v';
+  public static final char TYPE_OBJECT_PATH = 'o';
+  public static final char TYPE_SIGNATURE = 'g';
+  public static final char TYPE_FD = 'h';
+
+  /** Returns DBus data type of obj. */
+  public static char getDataType(Object obj) {
+    //float32 is not supported ???
+    if (obj instanceof Byte) {
+      return TYPE_UINT8;
+    } else if (obj instanceof Short) {
+      return TYPE_INT16;
+    } else if (obj instanceof UShort) {
+      return TYPE_UINT16;
+    } else if (obj instanceof Integer) {
+      return TYPE_INT32;
+    } else if (obj instanceof UInteger) {
+      return TYPE_UINT32;
+    } else if (obj instanceof Double) {
+      return TYPE_DOUBLE;
+    } else if (obj instanceof Boolean) {
+      return TYPE_BOOLEAN;
+    } else if (obj instanceof String) {
+      return TYPE_STRING;
+    } else {
+      JFLog.log("DBus:Error:Unknown type:" + obj.getClass());
+      return '-';
+    }
+  }
 
   private static final String DBusMessageBus = "org.freedesktop.DBus";
 
@@ -305,27 +335,38 @@ public class DBus implements IPC {
     int argsLength = args.length;
     bodyLength = 0;
     for (int a = 0; a < argsLength; a++) {
-      if (args[a] instanceof Integer) {
-        balign(4);
-        bodyLength += 4;
-      } else if (args[a] instanceof UInteger) {
-        balign(4);
-        bodyLength += 4;
-      } else if (args[a] instanceof Double) {
-        balign(8);
-        bodyLength += 8;
-      } else if (args[a] instanceof Boolean) {
-        balign(4);
-        bodyLength += 4;  //only LSB is used
-      } else if (args[a] instanceof String) {
-        String value = (String)args[a];
-        balign(4);
-        bodyLength += 4;  //length
-        bodyLength += value.length();  //UTF-8 bytes
-        bodyLength++;  //null
-      } else {
-        JFLog.log("DBus:Error:Unknown type:" + args[a].getClass());
-        return 0;
+      char dt = getDataType(args[a]);
+      switch (dt) {
+        case TYPE_UINT8:
+          bodyLength++;
+          break;
+        case TYPE_INT16:
+        case TYPE_UINT16:
+          balign(2);
+          bodyLength += 2;
+          break;
+        case TYPE_INT32:
+        case TYPE_UINT32:
+        case TYPE_BOOLEAN:  //only lsb used
+          balign(4);
+          bodyLength += 4;
+          break;
+        case TYPE_DOUBLE:
+        case TYPE_INT64:
+        case TYPE_UINT64:
+          balign(8);
+          bodyLength += 8;
+          break;
+        case TYPE_STRING:
+          String value = (String)args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          bodyLength += value.length();  //UTF-8 bytes
+          bodyLength++;  //null
+          break;
+        default:
+          JFLog.log("DBus:Error:Unknown type:" + args[a].getClass());
+          return 0;
       }
     }
     return bodyLength;
@@ -336,20 +377,8 @@ public class DBus implements IPC {
     int argsLength = args.length;
     StringBuilder sign = new StringBuilder();
     for (int a = 0; a < argsLength; a++) {
-      if (args[a] instanceof Integer) {
-        sign.append(TYPE_INT32);
-      } else if (args[a] instanceof UInteger) {
-        sign.append(TYPE_UINT32);
-      } else if (args[a] instanceof Double) {
-        sign.append(TYPE_DOUBLE);
-      } else if (args[a] instanceof Boolean) {
-        sign.append(TYPE_BOOLEAN);
-      } else if (args[a] instanceof String) {
-        sign.append(TYPE_STRING);
-      } else {
-        JFLog.log("DBus:Error:Unknown type:" + args[a].getClass());
-        return null;
-      }
+      char dt = getDataType(args[a]);
+      sign.append(dt);
     }
     return sign.toString();
   }
@@ -384,11 +413,23 @@ public class DBus implements IPC {
   private void write_byte(char value) throws Exception {
     write_byte((byte)value);
   }
+  private void write_short(short value) throws Exception {
+    walign(2);
+    wcheck(2);
+    LE.setuint16(wpkt, wpos, value);
+    wpos += 2;
+  }
   private void write_int(int value) throws Exception {
     walign(4);
     wcheck(4);
     LE.setuint32(wpkt, wpos, value);
     wpos += 4;
+  }
+  private void write_long(long value) throws Exception {
+    walign(8);
+    wcheck(8);
+    LE.setuint64(wpkt, wpos, value);
+    wpos += 8;
   }
   private void write_double(double value) throws Exception {
     walign(8);
@@ -516,19 +557,44 @@ public class DBus implements IPC {
 
         //write args (body)
         for(Object obj : args) {
-          if (obj instanceof Integer) {
-            write_int((int)obj);
-          } else if (obj instanceof UInteger) {
-            UInteger uint = (UInteger)obj;
-            write_int(uint.getValue());
-          } else if (obj instanceof Double) {
-            write_double((double)obj);
-          } else if (obj instanceof Boolean) {
-            write_boolean((boolean)obj);
-          } else if (obj instanceof String) {
-            write_String((String)obj);
-          } else {
-            throw new Exception("DBus:Error:Unknown type:" + obj.getClass());
+          char dt = getDataType(obj);
+          switch (dt) {
+            case TYPE_UINT8:
+              write_byte((byte)obj);
+              break;
+            case TYPE_INT16:
+              write_short((short)obj);
+              break;
+            case TYPE_UINT16:
+              UShort ushort = (UShort)obj;
+              write_short(ushort.getValue());
+              break;
+            case TYPE_INT32:
+              write_int((int)obj);
+              break;
+            case TYPE_UINT32:
+              UInteger uint = (UInteger)obj;
+              write_int(uint.getValue());
+              break;
+            case TYPE_INT64:
+              write_long((long)obj);
+              break;
+            case TYPE_UINT64:
+              ULong ulong = (ULong)obj;
+              write_long(ulong.getValue());
+              break;
+            case TYPE_DOUBLE:
+              write_double((double)obj);
+              break;
+            case TYPE_BOOLEAN:
+              write_boolean((boolean)obj);
+              break;
+            case TYPE_STRING:
+              write_String((String)obj);
+              break;
+            default: {
+              throw new Exception("DBus:Error:Unknown type:" + obj.getClass());
+            }
           }
         }
         //write packet
@@ -801,6 +867,11 @@ public class DBus implements IPC {
           case TYPE_UINT32:
           case TYPE_INT32: {
             args[idx] = read_int();
+            break;
+          }
+          case TYPE_UINT64:
+          case TYPE_INT64: {
+            args[idx] = read_long();
             break;
           }
           case TYPE_DOUBLE: {
