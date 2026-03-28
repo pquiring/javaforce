@@ -42,7 +42,7 @@ import javaforce.ipc.transport.*;
 
 public class DBus implements IPC {
 
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   private static class Field {
     public byte type;
