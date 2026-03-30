@@ -207,7 +207,7 @@ public class Drives extends javax.swing.JDialog {
     mounted.setText("???");
     mount.setEnabled(false);
     umount.setEnabled(false);
-    String info = (String)bus.invoke("javaforce.jflinux.system", "getStorageInfo", new Object[]{dev});
+    String info = (String)bus.invoke(SystemBusNames.system, "getStorageInfo", new Object[]{dev});
   }
 
   public void storageInfo(String dev, String volName, String fsType, String mountPt) {
@@ -223,14 +223,14 @@ public class Drives extends javax.swing.JDialog {
     int idx = list.getSelectedIndex();
     if (idx == -1) return;
     String dev = devList.get(idx);
-    bus.invoke("javaforce.jflinux.system", "mount", new Object[]{dev});
+    bus.invoke(SystemBusNames.system, "mount", new Object[]{dev});
   }
 
   private void umount() {
     int idx = list.getSelectedIndex();
     if (idx == -1) return;
     String dev = devList.get(idx);
-    bus.invoke("javaforce.jflinux.system", "umount", new Object[]{dev});
+    bus.invoke(SystemBusNames.system, "umount", new Object[]{dev});
   }
 
   public void rescan() {

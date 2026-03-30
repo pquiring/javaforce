@@ -9,6 +9,7 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.bus.*;
 
 public class BlueToothDialog extends javax.swing.JFrame {
 
@@ -24,7 +25,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
     setAlwaysOnTop(true);
     toFront();
     setStatus("Status : Finding controllers...");
-    String dev = (String)Dock.jbusServer.invoke("javaforce.jflinux.network", "getBTdevices");
+    String dev = (String)Dock.jbusServer.invoke(SystemBusNames.network, "getBTdevices");
   }
 
   /**
@@ -230,7 +231,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
     connecting = true;
     mac = (String)table.getValueAt(row, 1);
     desc = (String)table.getValueAt(row, 0);
-    Dock.jbusServer.invoke("javaforce.jflinux.network", "connectBT", deviceList[deviceIdx*2], mac);
+    Dock.jbusServer.invoke(SystemBusNames.network, "connectBT", deviceList[deviceIdx*2], mac);
     setStatus("Connecting to " + desc);
   }
 

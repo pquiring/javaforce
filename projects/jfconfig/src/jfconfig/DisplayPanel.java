@@ -15,6 +15,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.bus.*;
 import javaforce.linux.Linux;
 import static javaforce.linux.Linux.*;
 
@@ -457,7 +458,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
       JFAWT.showError("Error", "Failed to apply configuration");
       return;
     }
-    ConfigApp.jbusClient.invoke("javaforce.jflinux.system", "broadcastVideoChanged", "jfconfig");
+    ConfigApp.jbusClient.invoke(SystemBusNames.system, "broadcastVideoChanged", "jfconfig");
   }
 
   private void saveMonitor() {

@@ -10,8 +10,6 @@ import javaforce.bus.*;
 
 public class service {
 
-  private static final String systemBus = "javaforce.jflinux.system";
-
   public static void usage() {
     System.out.println("jfservice <command> <service>\n --status-all = show all services\n command = start | stop | status | restart\n");
     System.exit(1);
@@ -20,7 +18,7 @@ public class service {
   public static void statusAll() {
     JBusClient client = new JBusClient(null);
     client.connect();
-    String status = (String)client.invoke(systemBus, "serviceStatusAll", null);
+    String status = (String)client.invoke(SystemBusNames.system, "serviceStatusAll");
     System.out.println(status.replaceAll("[|]", "\n"));
   }
 
@@ -29,19 +27,19 @@ public class service {
     client.connect();
     if (cmd.equals("start")) {
       System.out.println("Requested Service:" + svc + ":start");
-      boolean res = (boolean)client.invoke(systemBus, "startService", new Object[] {svc});
+      boolean res = (boolean)client.invoke(SystemBusNames.system, "startService", svc);
       if (!res ) {
         JFLog.log("Error:Failed to start service");
       }
     } else if (cmd.equals("stop")) {
       System.out.println("Requested Service:" + svc + ":stop");
-      boolean res = (boolean)client.invoke(systemBus, "stopService", new Object[] {svc});
+      boolean res = (boolean)client.invoke(SystemBusNames.system, "stopService", svc);
       if (!res ) {
         JFLog.log("Error:Failed to start service");
       }
     } else if (cmd.equals("status")) {
       System.out.println("Requested Service:" + svc + ":status");
-      String status = (String)client.invoke("javaforce.jflinux.service." + svc, "status", null);
+      String status = (String)client.invoke("javaforce.jflinux.service." + svc, "status");
       System.out.println(status.replaceAll("[|]", "\n"));
     } else if (cmd.equals("restart")) {
       runCommand(svc, "stop");

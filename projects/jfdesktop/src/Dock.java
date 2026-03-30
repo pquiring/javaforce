@@ -349,14 +349,14 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
-    jbusServer.invoke("javaforce.jflinux.system", "reboot");
+    jbusServer.invoke(SystemBusNames.system, "reboot");
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
-    jbusServer.invoke("javaforce.jflinux.system", "shutdown");
+    jbusServer.invoke(SystemBusNames.system, "shutdown");
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_ShutdownActionPerformed
@@ -375,9 +375,9 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void SleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SleepActionPerformed
     //disconnect all VPN
-    jbusServer.invoke("javaforce.jflinux.network", "closeAllVPN");
+    jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
     JF.sleep(500);
-    jbusServer.invoke("javaforce.jflinux.system", "sleep");
+    jbusServer.invoke(SystemBusNames.system, "sleep");
     //reset clock after 10 seconds (hopefully after we resume from sleep)
     new java.util.Timer().schedule(new TimerTask() {
       public void run() {
@@ -1435,7 +1435,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         return;
       }
       if (action.equals("#wap-disconnect")) {
-        jbusServer.invoke("javaforce.jflinux.network", "disconnectWAP");
+        jbusServer.invoke(SystemBusNames.network, "disconnectWAP");
         return;
       }
       Object obj = ae.getSource();
@@ -1524,11 +1524,11 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   private String getWAPList() {
-    return (String)jbusServer.invoke("javaforce.jflinux.network", "getWAPList");
+    return (String)jbusServer.invoke(SystemBusNames.network, "getWAPList");
   }
 
   private String getVPNList() {
-    return (String)jbusServer.invoke("javaforce.jflinux.network", "getVPNList");
+    return (String)jbusServer.invoke(SystemBusNames.network, "getVPNList");
   }
 
   private static class WAP {
@@ -2006,7 +2006,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   private void closeAllApps() {
     saveConfig();
     //close open VPN connections
-    jbusServer.invoke("javaforce.jflinux.network", "closeAllVPN");
+    jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
     //close all apps belonging to this user
     //BUG : killall may kill other sessions of same user???
     try {
@@ -2224,7 +2224,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   private void disconnectVPN(String name) {
-    jbusServer.invoke("javaforce.jflinux.network", "disconnectVPN", name);
+    jbusServer.invoke(SystemBusNames.network, "disconnectVPN", name);
   }
 
   private void connectVPN(String name) {
@@ -2232,12 +2232,12 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusServer.invoke("javaforce.jflinux.network", "connectVPN", name);
+      jbusServer.invoke(SystemBusNames.network, "connectVPN", name);
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusServer.invoke("javaforce.jflinux.network", "disconnectWAP", ssid);
+    jbusServer.invoke(SystemBusNames.network, "disconnectWAP", ssid);
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -2251,7 +2251,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusServer.invoke("javaforce.jflinux.network", "connectWAP", dev, ssid, encType, key);
+      jbusServer.invoke(SystemBusNames.network, "connectWAP", dev, ssid, encType, key);
     }
   }
 
@@ -2358,7 +2358,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
     stopNetworkTimer();
-    jbusServer.invoke("javaforce.jflinux.network", cancelNetworkMethod);
+    jbusServer.invoke(SystemBusNames.network, cancelNetworkMethod);
     cancelNetworkMethod = null;
     showNetworkFailed();
   }

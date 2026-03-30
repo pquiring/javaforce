@@ -49,7 +49,7 @@ public class Server {
   public void start() {
     try {
       This = this;
-      jbusServer = new JBusServer("javaforce.jflinux.network", new JBusMethods());
+      jbusServer = new JBusServer(SystemBusNames.network, new JBusMethods());
       jbusServer.connect();
       createWAPTimer();
       checkInterfaces();
@@ -132,7 +132,7 @@ public class Server {
       newWapList += genWAPList(iface, output);
     }
     wapList = newWapList;
-    jbusServer.invoke("javaforce.jflinux.system", "broadcastWAPList", wapList);
+    jbusServer.invoke(SystemBusNames.system, "broadcastWAPList", wapList);
   }
 
   private String genWAPList(String dev, String[] scan) {

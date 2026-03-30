@@ -420,7 +420,7 @@ public class MainPanel extends javax.swing.JPanel {
   private static void sendCounts(int upgrade) {
     JBusClient client = new JBusClient(null);
     client.connect();
-    client.invoke("javaforce.jflinux.system", "upgradesAvailable", new Object[]{upgrade});
+    client.invoke(SystemBusNames.system, "upgradesAvailable", new Object[]{upgrade});
     client.disconnect();
   }
 }

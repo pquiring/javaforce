@@ -11,6 +11,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class InterfacePanel extends javax.swing.JPanel {
@@ -175,7 +176,7 @@ public class InterfacePanel extends javax.swing.JPanel {
   private void toggleIF() {
     String eth = (String)list.getSelectedValue();
     if (eth == null) return;
-    ConfigApp.jbusClient.invoke("javaforce.jflinux.network", (active ? "ifDown" : "ifUp"), new Object[] {eth});
+    ConfigApp.jbusClient.invoke(SystemBusNames.network, (active ? "ifDown" : "ifUp"), new Object[] {eth});
     JF.sleep(250);
     isInterfaceActive();
   }

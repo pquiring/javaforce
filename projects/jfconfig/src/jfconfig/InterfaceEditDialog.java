@@ -9,6 +9,7 @@ package jfconfig;
 
 import javaforce.awt.*;
 import javaforce.net.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class InterfaceEditDialog extends javax.swing.JDialog {
@@ -391,7 +392,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
       NetworkControl.reload();
     } else {
       //send to jfnetworkmgr
-      ConfigApp.jbusClient.invoke("javaforce.jflinux.network", "setConfig", cfg.toString());
+      ConfigApp.jbusClient.invoke(SystemBusNames.network, "setConfig", cfg.toString());
     }
   }
 

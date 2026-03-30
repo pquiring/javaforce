@@ -6,10 +6,7 @@ package jfconfig;
  * @author pquiring
  */
 
-import java.io.*;
-
-import javaforce.*;
-import javaforce.awt.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class NetworkConfigPanel extends javax.swing.JPanel {
@@ -143,7 +140,7 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
       NetworkControl.sethostname(hostname.getText());
     } else {
       //send to jfnetworkmgr
-      ConfigApp.jbusClient.invoke("javaforce.jflinux.network", "setHostname", hostname.getText());
+      ConfigApp.jbusClient.invoke(SystemBusNames.network, "setHostname", hostname.getText());
     }
     //TODO : domain
   }

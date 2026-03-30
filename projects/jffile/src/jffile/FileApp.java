@@ -1001,7 +1001,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     String newName = JFAWT.getString("Enter a new name", name);
     inDialog = false;
     if (newName == null) return;
-    jbusClient.invoke("javaforce.jflinux.system", "renameDevice", name, newName);
+    jbusClient.invoke(SystemBusNames.system, "renameDevice", name, newName);
   }
 
   private void closeTabs() {

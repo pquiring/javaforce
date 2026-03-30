@@ -37,7 +37,7 @@ public class Startup implements ShellProcessListener {
       props = Linux.getJFLinuxProperties();
       wayland = getProperty("wayland").equals("true");
       //start jfsystemmgr
-      jbusServer = new JBusServer("javaforce.jflinux.system", new JBusMethods());
+      jbusServer = new JBusServer(SystemBusNames.system, new JBusMethods());
       jbusServer.connect();
       //start automounter
       autoMounter = new AutoMounter();
