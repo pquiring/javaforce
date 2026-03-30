@@ -12,7 +12,7 @@ public interface IPC {
   public boolean disconnect();
 
   /** Invoke RPC on specified end point. */
-  public Object invoke(String dest, String method, Object[] args) throws Exception;
+  public Object invoke(String dest, String method, Object... args) throws Exception;
 
   /** Subscribe to a signal from another client. */
   public boolean subscribe(String sender, String method);
@@ -21,5 +21,5 @@ public interface IPC {
   public boolean unsubscribe(String sender, String method);
 
   /** Invoke RPC to all end points that have subscribed to the method. */
-  public boolean signal(String method, Object[] args);
+  public boolean signal(String method, Object... args);
 }

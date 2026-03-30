@@ -320,7 +320,7 @@ public class DBus implements IPC {
    * @exception thrown if method returned at error message or no reply within timeout duration
    *   Errors could be method not found, mismatch arguments, etc.
    */
-  public Object invoke(String dest, String method, Object[] args) throws Exception {
+  public Object invoke(String dest, String method, Object... args) throws Exception {
     if (debug) JFLog.log("DBus.invoke:" + dest + "." + method);
     Invoke invoke = new Invoke();
     invoke.serial = nextSerial();
@@ -383,7 +383,7 @@ public class DBus implements IPC {
    * @see subscribe()
    * @see unsubscribe()
    */
-  public boolean signal(String method, Object[] args) {
+  public boolean signal(String method, Object... args) {
     ArrayList<Signal> remove = new ArrayList<>();
     synchronized (lock) {
       for(Signal client : clients) {
