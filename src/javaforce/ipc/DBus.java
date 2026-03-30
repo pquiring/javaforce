@@ -6,9 +6,7 @@ package javaforce.ipc;
  *  - Linux:Unix Sockets
  *  - Windows:Pipes
  *  - invoking remote method and returning value
- *
- * Not Supported:
- *  - signal message (broadcasting methods)
+ *  - signals
  *
  * Supported Data Types:
  *  - java.lang.Byte
@@ -32,6 +30,8 @@ package javaforce.ipc;
  *      so caller knows call was successful
  *  - on Linux a dbus conf is installed to allow end points to
  *      use names that begin with "javaforce." (root only)
+ *  - signal support is implemented internally
+ *      DBus does have signal support but is not cross-platform
  *
  * @author pquiring
  */
