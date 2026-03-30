@@ -79,6 +79,11 @@ public class JBus implements EndPoint {
     }
   }
 
+  /** Returns bus name requested or assigned. */
+  public String getBusName() {
+    return dbus.getBusName();
+  }
+
   /** Connect to message bus. */
   public boolean connect() {
     try {

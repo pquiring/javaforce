@@ -3,10 +3,10 @@
  *
  * JBus is an inter-process communications protocol.
  *
- * The server binds to TCP/777 and only allows connections from localhost.
+ * JBusServer connects to a message bus with a specified name.
+ * JBusClient connects to a message bus using a client supplied name.
  *
- * On Windows the port may be app specific.
+ * This is implemented using javaforce.ipc.DBus.
  *
- * TODO : Implement this using Linux:DBus, Windows:Pipes
  */
 package javaforce.bus;
