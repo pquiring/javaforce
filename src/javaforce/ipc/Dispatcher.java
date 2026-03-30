@@ -61,11 +61,29 @@ public class Dispatcher {
         case TYPE_BOOLEAN:
           types[a] = boolean.class;  //not the same as Boolean.class
           break;
+        case TYPE_STRING:
+          types[a] = args[a].getClass();  //String.class
+          break;
         case TYPE_ARRAY_UINT8:
           types[a] = byte[].class;  //byte[].class
           break;
-        case TYPE_STRING:
-          types[a] = args[a].getClass();  //String.class
+        case TYPE_ARRAY_INT16:
+          types[a] = short[].class;  //short[].class
+          break;
+        case TYPE_ARRAY_INT32:
+          types[a] = int[].class;  //int[].class
+          break;
+        case TYPE_ARRAY_INT64:
+          types[a] = long[].class;  //long[].class
+          break;
+        case TYPE_ARRAY_DOUBLE:
+          types[a] = double[].class;  //double[].class
+          break;
+        case TYPE_ARRAY_BOOLEAN:
+          types[a] = boolean[].class;  //boolean[].class
+          break;
+        case TYPE_ARRAY_STRING:
+          types[a] = String[].class;  //String[].class
           break;
         default: {
           JFLog.log("Dispatcher:Error:Unknown type:" + args[a]);

@@ -95,12 +95,16 @@ public class DBus implements IPC {
 
   //Data Types (only small subset supported)
   public static final String TYPE_UINT8 = "y";
+
   public static final String TYPE_INT16 = "n";
   public static final String TYPE_UINT16 = "q";
+
   public static final String TYPE_INT32 = "i";
   public static final String TYPE_UINT32 = "u";
+
   public static final String TYPE_INT64 = "x";
   public static final String TYPE_UINT64 = "t";
+
   public static final String TYPE_DOUBLE = "d";
   public static final String TYPE_BOOLEAN = "b";
   public static final String TYPE_STRING = "s";
@@ -117,6 +121,19 @@ public class DBus implements IPC {
   public static final String TYPE_FD = "h";
 
   public static final String TYPE_ARRAY_UINT8 = "ay";
+
+  public static final String TYPE_ARRAY_INT16 = "an";
+//  public static final String TYPE_ARRAY_UINT16 = "aq";
+
+  public static final String TYPE_ARRAY_INT32 = "ai";
+//  public static final String TYPE_ARRAY_UINT32 = "au";
+
+  public static final String TYPE_ARRAY_INT64 = "ax";
+//  public static final String TYPE_ARRAY_UINT64 = "at";
+
+  public static final String TYPE_ARRAY_DOUBLE = "ad";
+  public static final String TYPE_ARRAY_BOOLEAN = "ab";
+  public static final String TYPE_ARRAY_STRING = "as";
 
   /** Returns DBus data type of obj. */
   public static String getDataType(Object obj) {
@@ -135,10 +152,22 @@ public class DBus implements IPC {
       return TYPE_DOUBLE;
     } else if (obj instanceof Boolean) {
       return TYPE_BOOLEAN;
-    } else if (obj instanceof byte[]) {
-      return TYPE_ARRAY_UINT8;
     } else if (obj instanceof String) {
       return TYPE_STRING;
+    } else if (obj instanceof byte[]) {
+      return TYPE_ARRAY_UINT8;
+    } else if (obj instanceof short[]) {
+      return TYPE_ARRAY_INT16;
+    } else if (obj instanceof int[]) {
+      return TYPE_ARRAY_INT32;
+    } else if (obj instanceof long[]) {
+      return TYPE_ARRAY_INT64;
+    } else if (obj instanceof double[]) {
+      return TYPE_ARRAY_DOUBLE;
+    } else if (obj instanceof boolean[]) {
+      return TYPE_ARRAY_BOOLEAN;
+    } else if (obj instanceof String[]) {
+      return TYPE_ARRAY_STRING;
     } else {
       JFLog.log("DBus:Error:Unknown type:" + obj.getClass());
       return "-";
@@ -441,18 +470,61 @@ public class DBus implements IPC {
           balign(8);
           bodyLength += 8;
           break;
-        case TYPE_ARRAY_UINT8:
-          byte[] data = (byte[])args[a];
-          balign(4);
-          bodyLength += 4;  //length
-          bodyLength += data.length;
-          break;
         case TYPE_STRING:
           String value = (String)args[a];
           balign(4);
           bodyLength += 4;  //length
           bodyLength += value.length();  //UTF-8 bytes
           bodyLength++;  //null
+          break;
+        case TYPE_ARRAY_UINT8:
+          byte[] d8 = (byte[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          bodyLength += d8.length;
+          break;
+        case TYPE_ARRAY_INT16:
+          short[] d16 = (short[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          bodyLength += (d16.length * 2);
+          break;
+        case TYPE_ARRAY_INT32:
+          int[] d32 = (int[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          bodyLength += (d32.length * 4);
+          break;
+        case TYPE_ARRAY_INT64:
+          long[] d64 = (long[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          balign(8);
+          bodyLength += (d64.length * 8);
+          break;
+        case TYPE_ARRAY_DOUBLE:
+          double[] f64 = (double[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          balign(8);
+          bodyLength += (f64.length * 8);
+          break;
+        case TYPE_ARRAY_BOOLEAN:
+          boolean[] b32 = (boolean[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          bodyLength += (b32.length * 4);
+          break;
+        case TYPE_ARRAY_STRING:
+          String[] s32 = (String[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          for(int b=0;b<s32.length;b++) {
+            balign(4);
+            bodyLength += 4;  //length
+            bodyLength += s32[b].length();
+            bodyLength++;  //null
+          }
           break;
         default:
           JFLog.log("DBus:Error:Unknown type:" + args[a].getClass());
@@ -533,12 +605,6 @@ public class DBus implements IPC {
     LE.setuint32(wpkt, wpos, value ? 1 : 0);
     wpos += 4;
   }
-  private void write_array_byte(byte[] value) throws Exception {
-    write_int(value.length);
-    for(byte b : value) {
-      write_byte(b);
-    }
-  }
   private void write_String(String value) throws Exception {
     int strlen = value.length();
     write_int(strlen);
@@ -546,6 +612,62 @@ public class DBus implements IPC {
     System.arraycopy(value.getBytes(), 0, wpkt, wpos, strlen);
     wpos += strlen;
     wpkt[wpos++] = 0;  //null
+  }
+  private void write_array_byte(byte[] value) throws Exception {
+    write_int(value.length);
+    for(byte b : value) {
+      write_byte(b);
+    }
+  }
+  private void write_array_short(short[] value) throws Exception {
+    write_int(value.length * 2);
+    for(short b : value) {
+      write_short(b);
+    }
+  }
+  private void write_array_int(int[] value) throws Exception {
+    write_int(value.length * 4);
+    for(int b : value) {
+      write_int(b);
+    }
+  }
+  private void write_array_long(long[] value) throws Exception {
+    write_int(value.length * 8);
+    for(long b : value) {
+      write_long(b);
+    }
+  }
+  private void write_array_double(double[] value) throws Exception {
+    write_int(value.length * 8);
+    for(double b : value) {
+      write_double(b);
+    }
+  }
+  private void write_array_boolean(boolean[] value) throws Exception {
+    write_int(value.length * 4);
+    for(boolean b : value) {
+      write_boolean(b);
+    }
+  }
+  private void write_array_String(String[] value) throws Exception {
+    int len = 0;
+    for(String b : value) {
+      {
+        //align int
+        int align = len & 3;
+        if (align > 0) {
+          int pad = 4 - align;
+          len += pad;
+        }
+      }
+      len += 4;  //String length
+      len += b.length();  //String
+      len++;  //null
+    }
+    write_int(len);
+    for(String b : value) {
+      write_String(b);
+    }
   }
   private void write_sign(char value) throws Exception {
     write_byte((byte)1);
@@ -688,12 +810,36 @@ public class DBus implements IPC {
             case TYPE_BOOLEAN:
               write_boolean((boolean)obj);
               break;
+            case TYPE_STRING:
+              write_String((String)obj);
+              break;
             case TYPE_ARRAY_UINT8:
               byte[] ay = (byte[])obj;
               write_array_byte(ay);
               break;
-            case TYPE_STRING:
-              write_String((String)obj);
+            case TYPE_ARRAY_INT16:
+              short[] an = (short[])obj;
+              write_array_short(an);
+              break;
+            case TYPE_ARRAY_INT32:
+              int[] ai = (int[])obj;
+              write_array_int(ai);
+              break;
+            case TYPE_ARRAY_INT64:
+              long[] ax = (long[])obj;
+              write_array_long(ax);
+              break;
+            case TYPE_ARRAY_DOUBLE:
+              double[] ad = (double[])obj;
+              write_array_double(ad);
+              break;
+            case TYPE_ARRAY_BOOLEAN:
+              boolean[] ab = (boolean[])obj;
+              write_array_boolean(ab);
+              break;
+            case TYPE_ARRAY_STRING:
+              String[] as = (String[])obj;
+              write_array_String(as);
               break;
             default: {
               throw new Exception("DBus:Error:Unknown type:" + obj.getClass());
@@ -1021,12 +1167,36 @@ public class DBus implements IPC {
             arg = (read_int() == 1);
             break;
           }
+          case TYPE_STRING: {
+            arg = read_String();
+            break;
+          }
           case TYPE_ARRAY_UINT8: {
             arg = read_array_byte();
             break;
           }
-          case TYPE_STRING: {
-            arg = read_String();
+          case TYPE_ARRAY_INT16: {
+            arg = read_array_short();
+            break;
+          }
+          case TYPE_ARRAY_INT32: {
+            arg = read_array_int();
+            break;
+          }
+          case TYPE_ARRAY_INT64: {
+            arg = read_array_long();
+            break;
+          }
+          case TYPE_ARRAY_DOUBLE: {
+            arg = read_array_double();
+            break;
+          }
+          case TYPE_ARRAY_BOOLEAN: {
+            arg = read_array_boolean();
+            break;
+          }
+          case TYPE_ARRAY_STRING: {
+            arg = read_array_String();
             break;
           }
           default: {
@@ -1054,14 +1224,14 @@ public class DBus implements IPC {
       rcheck(1);
       return rpkt[rpos++];
     }
-    private int read_short() throws Exception {
+    private short read_short() throws Exception {
       ralign(2);
       rcheck(2);
-      int value;
+      short value;
       if (le) {
-        value = LE.getuint16(rpkt, rpos);
+        value = (short)LE.getuint16(rpkt, rpos);
       } else {
-        value = BE.getuint16(rpkt, rpos);
+        value = (short)BE.getuint16(rpkt, rpos);
       }
       rpos += 2;
       return value;
@@ -1102,6 +1272,14 @@ public class DBus implements IPC {
       rpos += 8;
       return value;
     }
+    private String read_String() throws Exception {
+      int strlen = read_int();
+      rcheck(strlen + 1);  //+1 for null
+      String str = new String(rpkt, rpos, strlen);
+      rpos += strlen;
+      rpos++;  //null
+      return str;
+    }
     private byte[] read_array_byte() throws Exception {
       int len = read_int();
       rcheck(len);
@@ -1110,13 +1288,68 @@ public class DBus implements IPC {
       rpos += len;
       return data;
     }
-    private String read_String() throws Exception {
-      int strlen = read_int();
-      rcheck(strlen + 1);  //+1 for null
-      String str = new String(rpkt, rpos, strlen);
-      rpos += strlen;
-      rpos++;  //null
-      return str;
+    private short[] read_array_short() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      int cnt = len / 2;
+      short[] data = new short[cnt];
+      for(int i=0;i<cnt;i++) {
+        data[i] = read_short();
+      }
+      return data;
+    }
+    private int[] read_array_int() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      int cnt = len / 4;
+      int[] data = new int[cnt];
+      for(int i=0;i<cnt;i++) {
+        data[i] = read_int();
+      }
+      return data;
+    }
+    private long[] read_array_long() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      int cnt = len / 8;
+      long[] data = new long[cnt];
+      for(int i=0;i<cnt;i++) {
+        data[i] = read_long();
+      }
+      return data;
+    }
+    private double[] read_array_double() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      int cnt = len / 8;
+      double[] data = new double[cnt];
+      for(int i=0;i<cnt;i++) {
+        data[i] = read_double();
+      }
+      return data;
+    }
+    private boolean[] read_array_boolean() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      int cnt = len / 4;
+      boolean[] data = new boolean[cnt];
+      for(int i=0;i<cnt;i++) {
+        data[i] = read_int() == 1;
+      }
+      return data;
+    }
+    private String[] read_array_String() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      ArrayList<String> array = new ArrayList<>();
+      while (len > 0) {
+        int start = rpos;
+        array.add(read_String());
+        int end = rpos;
+        int strlen = end - start;  //element length
+        len -= strlen;
+      }
+      return array.toArray(JF.StringArrayType);
     }
     private String read_sign() throws Exception {
       int strlen = read_byte();
