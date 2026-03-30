@@ -33,9 +33,9 @@ public class GenIcons {
     long i32_date = f32.lastModified();
     if (svg_date < i16_date || svg_date < i32_date) return;
     String temp = "GenIcons-64.png";
-    ImageConvert.main(new String[] {svg.getPath(), temp, "size=64,64", "fill=00ffffff"});
-    ImageConvert.main(new String[] {temp, i32, "scale=50,50"});
-    ImageConvert.main(new String[] {temp, i16, "scale=25,25"});
+    ImageConvert.main(new String[] {svg.getPath(), temp, "size=64,64", "fill=00ffffff", "quiet=true"});
+    ImageConvert.main(new String[] {temp, i32, "scale=50,50", "quiet=true"});
+    ImageConvert.main(new String[] {temp, i16, "scale=25,25", "quiet=true"});
     new File(temp).delete();
   }
 }

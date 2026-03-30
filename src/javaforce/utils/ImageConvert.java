@@ -5,9 +5,10 @@ import javaforce.awt.*;
 
 public class ImageConvert {
   public static boolean debug = false;
+  public static boolean quiet = false;
   public static void main(String[] args) {
     if (args.length < 2) {
-      System.out.println("Usage : ImageConvert filein fileout [index=#] [scale=width,height] [size=width,height] [fill=aarrggbb]");
+      System.out.println("Usage : ImageConvert filein fileout [index=#] [scale=width,height] [size=width,height] [fill=aarrggbb] [quiet=true]");
       System.out.println("Suppports : jpg, png, bmp, svg, ico, icns(output only)");
       System.out.println("    index : ico index (input only) (default = 0)");
       System.out.println("    scale : scale image by %");
@@ -63,11 +64,15 @@ public class ImageConvert {
           JFImage.setDefaultColor(fill);
           break;
         }
+        case "quiet": {
+          quiet = value.equals("true");
+          break;
+        }
         default: System.out.println("Unknown option:" + key);
       }
     }
     try {
-      JFLog.log("ImageConvert:" + args[0] + " to " + args[1]);
+      if (!quiet) JFLog.log("ImageConvert:" + args[0] + " to " + args[1]);
       JFImage img = new JFImage();
       String infmt = args[0].substring(args[0].lastIndexOf(".")+1).toLowerCase();
       if (debug) JFLog.log("infmt=" + infmt);
