@@ -38,6 +38,10 @@ package javaforce.ipc;
  *      use names that begin with "javaforce." (root only)
  *  - signal support is implemented internally
  *      DBus does have signal support but is not cross-platform
+ *  - there is no way to implement a member with unsigned types
+ *      since Java does not have primitive unsigned data types
+ *      they are provided only to call native methods that use them
+ *      such as org.freedesktop.DBus.RequestName(String, uint32)
  *
  * @author pquiring
  */
