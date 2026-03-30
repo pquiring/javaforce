@@ -18,6 +18,7 @@ package javaforce.ipc;
  *  - java.lang.Double
  *  - java.lang.Boolean
  *  - java.lang.String
+ *  - byte[]
  *  - javaforce.UShort (not recommended) (primitive type is 'short')
  *  - javaforce.UInteger (not recommended) (primitive type is 'int')
  *  - javaforce.ULong (not recommended) (primitive type is 'long')
@@ -42,7 +43,7 @@ import javaforce.ipc.transport.*;
 
 public class DBus implements IPC {
 
-  private static final boolean debug = false;
+  private static final boolean debug = true;
 
   private static class Field {
     public byte type;
@@ -93,30 +94,32 @@ public class DBus implements IPC {
   };
 
   //Data Types (only small subset supported)
-  public static final char TYPE_UINT8 = 'y';
-  public static final char TYPE_INT16 = 'n';
-  public static final char TYPE_UINT16 = 'q';
-  public static final char TYPE_INT32 = 'i';
-  public static final char TYPE_UINT32 = 'u';
-  public static final char TYPE_INT64 = 'x';
-  public static final char TYPE_UINT64 = 't';
-  public static final char TYPE_DOUBLE = 'd';
-  public static final char TYPE_BOOLEAN = 'b';
-  public static final char TYPE_STRING = 's';
-  public static final char TYPE_ARRAY = 'a';
-  public static final char TYPE_STRUCT = 'r';
-  public static final char TYPE_STRUCT_OPEN = '(';
-  public static final char TYPE_STRUCT_CLOSE = ')';
-  public static final char TYPE_DICT = 'e';
-  public static final char TYPE_DICT_OPEN = '{';
-  public static final char TYPE_DICT_CLOSE = '}';
-  public static final char TYPE_VARIANT = 'v';
-  public static final char TYPE_OBJECT_PATH = 'o';
-  public static final char TYPE_SIGNATURE = 'g';
-  public static final char TYPE_FD = 'h';
+  public static final String TYPE_UINT8 = "y";
+  public static final String TYPE_INT16 = "n";
+  public static final String TYPE_UINT16 = "q";
+  public static final String TYPE_INT32 = "i";
+  public static final String TYPE_UINT32 = "u";
+  public static final String TYPE_INT64 = "x";
+  public static final String TYPE_UINT64 = "t";
+  public static final String TYPE_DOUBLE = "d";
+  public static final String TYPE_BOOLEAN = "b";
+  public static final String TYPE_STRING = "s";
+  public static final String TYPE_ARRAY = "a";
+  public static final String TYPE_STRUCT = "r";
+  public static final String TYPE_STRUCT_OPEN = "(";
+  public static final String TYPE_STRUCT_CLOSE = ")";
+  public static final String TYPE_DICT = "e";
+  public static final String TYPE_DICT_OPEN = "{";
+  public static final String TYPE_DICT_CLOSE = "}";
+  public static final String TYPE_VARIANT = "v";
+  public static final String TYPE_OBJECT_PATH = "o";
+  public static final String TYPE_SIGNATURE = "g";
+  public static final String TYPE_FD = "h";
+
+  public static final String TYPE_ARRAY_UINT8 = "ay";
 
   /** Returns DBus data type of obj. */
-  public static char getDataType(Object obj) {
+  public static String getDataType(Object obj) {
     //float32 is not supported ???
     if (obj instanceof Byte) {
       return TYPE_UINT8;
@@ -132,11 +135,13 @@ public class DBus implements IPC {
       return TYPE_DOUBLE;
     } else if (obj instanceof Boolean) {
       return TYPE_BOOLEAN;
+    } else if (obj instanceof byte[]) {
+      return TYPE_ARRAY_UINT8;
     } else if (obj instanceof String) {
       return TYPE_STRING;
     } else {
       JFLog.log("DBus:Error:Unknown type:" + obj.getClass());
-      return '-';
+      return "-";
     }
   }
 
@@ -335,7 +340,7 @@ public class DBus implements IPC {
     int argsLength = args.length;
     bodyLength = 0;
     for (int a = 0; a < argsLength; a++) {
-      char dt = getDataType(args[a]);
+      String dt = getDataType(args[a]);
       switch (dt) {
         case TYPE_UINT8:
           bodyLength++;
@@ -357,6 +362,12 @@ public class DBus implements IPC {
           balign(8);
           bodyLength += 8;
           break;
+        case TYPE_ARRAY_UINT8:
+          byte[] data = (byte[])args[a];
+          balign(4);
+          bodyLength += 4;  //length
+          bodyLength += data.length;
+          break;
         case TYPE_STRING:
           String value = (String)args[a];
           balign(4);
@@ -377,7 +388,7 @@ public class DBus implements IPC {
     int argsLength = args.length;
     StringBuilder sign = new StringBuilder();
     for (int a = 0; a < argsLength; a++) {
-      char dt = getDataType(args[a]);
+      String dt = getDataType(args[a]);
       sign.append(dt);
     }
     return sign.toString();
@@ -443,6 +454,12 @@ public class DBus implements IPC {
     LE.setuint32(wpkt, wpos, value ? 1 : 0);
     wpos += 4;
   }
+  private void write_array_byte(byte[] value) throws Exception {
+    write_int(value.length);
+    for(byte b : value) {
+      write_byte(b);
+    }
+  }
   private void write_String(String value) throws Exception {
     int strlen = value.length();
     write_int(strlen);
@@ -471,7 +488,10 @@ public class DBus implements IPC {
 
   private Object write_msg_lock = new Object();
 
+  private static final Object[] empty = new Object[0];
+
   private void write_msg(byte type, String dest, int serial, int serial_reply, String member, Object[] args) {
+    if (args == null) args = empty;
     synchronized (write_msg_lock) {
       boolean write_to_dbus = dest.equals(DBusMessageBus);
       boolean dest_generic = dest.startsWith(":");
@@ -557,7 +577,7 @@ public class DBus implements IPC {
 
         //write args (body)
         for(Object obj : args) {
-          char dt = getDataType(obj);
+          String dt = getDataType(obj);
           switch (dt) {
             case TYPE_UINT8:
               write_byte((byte)obj);
@@ -588,6 +608,10 @@ public class DBus implements IPC {
               break;
             case TYPE_BOOLEAN:
               write_boolean((boolean)obj);
+              break;
+            case TYPE_ARRAY_UINT8:
+              byte[] ay = (byte[])obj;
+              write_array_byte(ay);
               break;
             case TYPE_STRING:
               write_String((String)obj);
@@ -758,8 +782,10 @@ public class DBus implements IPC {
       Object[] args = read_args(sign);
       try {
         Object ret = ep.dispatch(member, args);
+        if (debug) JFLog.log("ret=" + ret);
         write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {ret});
       } catch (Exception e) {
+        if (debug) JFLog.log(e);
         write_msg(MSG_ERROR, sender, nextSerial(), serial, member, new Object[] {e.toString()});
       }
     }
@@ -851,52 +877,66 @@ public class DBus implements IPC {
     private Object[] read_args(String sign) throws Exception {
       //get args using signature and body
       char[] types = sign.toCharArray();
-      Object[] args = new Object[types.length];
-      int idx = 0;
+      ArrayList<Object> args = new ArrayList<>();
+      String str;
+      boolean isArray = false;
       for(char type : types) {
-        switch (type) {
+        if (isArray) {
+          isArray = false;
+          str = String.format("%s%c", TYPE_ARRAY, type);
+        } else {
+          str = Character.toString(type);
+          if (str.equals(TYPE_ARRAY)) {
+            isArray = true;
+            continue;
+          }
+        }
+        Object arg;
+        switch (str) {
           case TYPE_UINT8: {
-            args[idx] = read_byte();
+            arg = read_byte();
             break;
           }
           case TYPE_UINT16:
           case TYPE_INT16: {
-            args[idx] = read_short();
+            arg = read_short();
             break;
           }
           case TYPE_UINT32:
           case TYPE_INT32: {
-            args[idx] = read_int();
+            arg = read_int();
             break;
           }
           case TYPE_UINT64:
           case TYPE_INT64: {
-            args[idx] = read_long();
+            arg = read_long();
             break;
           }
           case TYPE_DOUBLE: {
-            args[idx] = read_double();
+            arg = read_double();
             break;
           }
           case TYPE_BOOLEAN: {
-            args[idx] = (read_int() == 1);
+            arg = (read_int() == 1);
+            break;
+          }
+          case TYPE_ARRAY_UINT8: {
+            arg = read_array_byte();
             break;
           }
           case TYPE_STRING: {
-            args[idx] = read_String();
-            if (debug) {
-              JFLog.log("read.string=" + args[idx]);
-            }
+            arg = read_String();
             break;
           }
           default: {
+            arg = null;
             JFLog.log("DBus:Error:Unsupported type:" + type);
             break;
           }
         }
-        idx++;
+        args.add(arg);
       }
-      return args;
+      return args.toArray();
     }
     /** Align read buffer position to data type size. */
     private void ralign(int size) {
@@ -961,6 +1001,14 @@ public class DBus implements IPC {
       rpos += 8;
       return value;
     }
+    private byte[] read_array_byte() throws Exception {
+      int len = read_int();
+      rcheck(len);
+      byte[] data = new byte[len];
+      System.arraycopy(rpkt, rpos, data, 0, len);
+      rpos += len;
+      return data;
+    }
     private String read_String() throws Exception {
       int strlen = read_int();
       rcheck(strlen + 1);  //+1 for null
@@ -977,6 +1025,7 @@ public class DBus implements IPC {
       rpos++;  //null
       return str;
     }
+/*
     private void read_struct_open() throws Exception {
       if (rpkt[rpos++] != TYPE_STRUCT_OPEN) {
         throw new Exception("DBus:Error:expecting struct open '('");
@@ -987,5 +1036,6 @@ public class DBus implements IPC {
         throw new Exception("DBus:Error:expecting struct close ')'");
       }
     }
+*/
   }
 }

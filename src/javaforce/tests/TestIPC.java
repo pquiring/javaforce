@@ -12,7 +12,7 @@ import javaforce.ipc.*;
 
 public class TestIPC {
 
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   public static void main(String[] args) {
     if (args.length == 0) {
@@ -66,29 +66,22 @@ public class TestIPC {
 
   private static class Client extends Thread {
     private int delay;
+    private Random r = new Random();
+    private IPC ipc;
     public Client(int delay) {
       this.delay = delay;
     }
     public void run() {
       try {
-        Random r = new Random();
-        IPC ipc = new DBus(new TestEndPoint(null));
+        ipc = new DBus(new TestEndPoint(null));
         if (!ipc.connect()) {
           JFLog.log("IPC.connect() failed");
           return;
         }
         while (true) {
           try {
-            int value = r.nextInt();
-            if (debug) JFLog.log(String.format("ping(0x%x)", value));
-            Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", new Object[] {value});
-            if (result == null) {
-              if (debug) JFLog.log("result == null");
-              error++;
-            } else {
-              if (debug) JFLog.log("result = " + result);
-              success++;
-            }
+            ping();
+            modify();
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -96,6 +89,32 @@ public class TestIPC {
         }
       } catch (Exception e) {
         JFLog.log(e);
+      }
+    }
+    public void ping() throws Exception {
+      int value = r.nextInt();
+      if (debug) JFLog.log(String.format("ping(0x%x)", value));
+      Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", new Object[] {value});
+      if (result == null) {
+        if (debug) JFLog.log("result == null");
+        error++;
+      } else {
+        if (debug) JFLog.log("result = " + result);
+        success++;
+      }
+    }
+    public void modify() throws Exception {
+      byte[] data = new byte[3];
+      data[0] = 0x11;
+      data[1] = 0x22;
+      data[2] = 0x33;
+      byte[] result = (byte[])ipc.invoke("javaforce.TestIPC.Server", "modify", new Object[] {data});
+      if (result == null) {
+        if (debug) JFLog.log("result == null");
+        error++;
+      } else {
+        if (debug) JFLog.log(String.format("result = %x %x %x", result[0], result[1], result[2]));
+        success++;
       }
     }
   }
@@ -121,6 +140,13 @@ public class TestIPC {
       public boolean ping(int value) {
         if (debug) JFLog.log(String.format("ping:0x%x", value));
         return true;
+      }
+      public byte[] modify(byte[] data) {
+        if (debug) JFLog.log(String.format("modify:%d", data.length));
+        data[0] = 0x44;
+        data[1] = 0x55;
+        data[2] = 0x66;
+        return data;
       }
     }
   }

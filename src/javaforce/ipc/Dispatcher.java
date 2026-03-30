@@ -16,7 +16,7 @@ import javaforce.*;
 import static javaforce.ipc.DBus.*;
 
 public class Dispatcher {
-  private static boolean debug = false;
+  private static boolean debug = true;
 
   private Class<?> cls;
   private Object obj;
@@ -32,7 +32,7 @@ public class Dispatcher {
     int argsLength = args.length;
     Class[] types = new Class[argsLength];
     for (int a = 0; a < argsLength; a++) {
-      char dt = DBus.getDataType(args[a]);
+      String dt = DBus.getDataType(args[a]);
       switch (dt) {
         case TYPE_UINT8:
           types[a] = byte.class;  //not the same as Byte.class
@@ -60,6 +60,9 @@ public class Dispatcher {
           break;
         case TYPE_BOOLEAN:
           types[a] = boolean.class;  //not the same as Boolean.class
+          break;
+        case TYPE_ARRAY_UINT8:
+          types[a] = byte[].class;  //byte[].class
           break;
         case TYPE_STRING:
           types[a] = args[a].getClass();  //String.class
