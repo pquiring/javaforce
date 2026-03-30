@@ -29,7 +29,7 @@ public class JFPrintApp extends javax.swing.JFrame {
         Random r = new Random();
         busClient = new JBusClient(null);
         busClient.connect();
-        String config = (String)busClient.invoke(JFPrintServer.serviceBus, "getConfig", null);
+        String config = (String)busClient.invoke(JFPrintServer.serviceBus, "getConfig");
       }
     }.start();
     JFAWT.centerWindow(this);
@@ -40,7 +40,7 @@ public class JFPrintApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    busClient.invoke(JFPrintServer.serviceBus, "restart", null);
+    busClient.invoke(JFPrintServer.serviceBus, "restart");
   }
 
   /**

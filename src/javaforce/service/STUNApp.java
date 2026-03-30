@@ -30,7 +30,7 @@ public class STUNApp extends javax.swing.JFrame {
       public void run() {
         busClient = new JBusClient(null);
         busClient.connect();
-        String cfg = (String)busClient.invoke(STUNServer.serviceBus, "getConfig", null);
+        String cfg = (String)busClient.invoke(STUNServer.serviceBus, "getConfig");
         config.setText(cfg);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -44,7 +44,7 @@ public class STUNApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    boolean res = (boolean)busClient.invoke(STUNServer.serviceBus, "restart", null);
+    boolean res = (boolean)busClient.invoke(STUNServer.serviceBus, "restart");
   }
 
   /**

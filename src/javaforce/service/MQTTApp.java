@@ -27,7 +27,7 @@ public class MQTTApp extends javax.swing.JFrame {
       public void run() {
         busClient = new JBusClient(null);
         busClient.connect();
-        String cfg = (String)busClient.invoke(MQTTServer.serviceBus, "getConfig", null);
+        String cfg = (String)busClient.invoke(MQTTServer.serviceBus, "getConfig");
         config.setText(cfg);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -41,7 +41,7 @@ public class MQTTApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "restart", null);
+    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "restart");
   }
 
   /**
@@ -184,7 +184,7 @@ public class MQTTApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "genKeys", null);
+    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "genKeys");
     if (res) {
       JFAWT.showMessage("GenKeys", "OK");
     } else {

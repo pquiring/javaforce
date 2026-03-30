@@ -27,7 +27,7 @@ public class POP3App extends javax.swing.JFrame {
       public void run() {
         busClient = new JBusClient(null);
         busClient.connect();
-        String cfg = (String)busClient.invoke(POP3Server.serviceBus, "getConfig", null);
+        String cfg = (String)busClient.invoke(POP3Server.serviceBus, "getConfig");
         config.setText(cfg);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -41,7 +41,7 @@ public class POP3App extends javax.swing.JFrame {
   }
 
   public void restart() {
-    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "restart", null);
+    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "restart");
   }
 
   /**
@@ -202,7 +202,7 @@ public class POP3App extends javax.swing.JFrame {
   public JBusClient busClient;
 
   private void genKeys() {
-    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "genKeys", null);
+    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "genKeys");
     if (res) {
       JFAWT.showMessage("GenKeys", "OK");
     } else {

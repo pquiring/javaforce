@@ -28,7 +28,7 @@ public class SOCKSApp extends javax.swing.JFrame {
       public void run() {
         busClient = new JBusClient(null);
         busClient.connect();
-        String cfg = (String)busClient.invoke(SOCKSServer.serviceBus, "getConfig", null);
+        String cfg = (String)busClient.invoke(SOCKSServer.serviceBus, "getConfig");
         config.setText(cfg);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -42,7 +42,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "restart", null);
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "restart");
   }
 
   /**
@@ -219,7 +219,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "genKeys", null);
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "genKeys");
     if (res) {
       JFAWT.showMessage("GenKeys", "OK");
     } else {
@@ -238,7 +238,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   /** This will read keys from server, edit them in KeyMgr and then send them back to server. */
   private boolean keymgr() {
     if (keymgr != null) return false;
-    byte[] data = (byte[])busClient.invoke(SOCKSServer.serviceBus, "getKeys", null);
+    byte[] data = (byte[])busClient.invoke(SOCKSServer.serviceBus, "getKeys");
     String tmpfile = JF.getUserPath() + "/.jfsocks-edit.key";
     JF.writeFile(tmpfile, data);
     keymgr = new KeyMgr(tmpfile, "password");
@@ -246,7 +246,7 @@ public class SOCKSApp extends javax.swing.JFrame {
     keymgr.setVisible(true);
     keymgr = null;
     data = JF.readFile(tmpfile);
-    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "setKeys", new Object[] {data});
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "setKeys", data);
     if (res) {
       JFAWT.showMessage("SetKeys", "OK");
     } else {

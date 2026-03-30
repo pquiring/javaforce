@@ -31,7 +31,7 @@ public class VNCApp extends javax.swing.JFrame {
         Random r = new Random();
         busClient = new JBusClient(null);
         busClient.connect();
-        String vncconfig = (String)busClient.invoke(VNCServer.busPack, "getConfig", null);
+        String vncconfig = (String)busClient.invoke(VNCServer.busPack, "getConfig");
         config.setText(vncconfig);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -45,7 +45,7 @@ public class VNCApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    busClient.invoke(VNCServer.busPack, "restart", null);
+    busClient.invoke(VNCServer.busPack, "restart");
   }
 
   /**
@@ -195,7 +195,7 @@ public class VNCApp extends javax.swing.JFrame {
   }
 
   public void requestStatus() {
-    String status = (String)busClient.invoke(VNCServer.busPack, "getStatus", null);
+    String status = (String)busClient.invoke(VNCServer.busPack, "getStatus");
     if (viewStatus != null) {
       viewStatus.setText(status);
     }

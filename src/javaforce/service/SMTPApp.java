@@ -30,7 +30,7 @@ public class SMTPApp extends javax.swing.JFrame {
         Random r = new Random();
         busClient = new JBusClient(null);
         busClient.connect();
-        String cfg = (String)busClient.invoke(SMTPServer.serviceBus, "getConfig", null);
+        String cfg = (String)busClient.invoke(SMTPServer.serviceBus, "getConfig");
         config.setText(cfg);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -44,7 +44,7 @@ public class SMTPApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "restart", null);
+    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "restart");
   }
 
   /**
@@ -205,7 +205,7 @@ public class SMTPApp extends javax.swing.JFrame {
   public JBusClient busClient;
 
   private void genKeys() {
-    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "genKeys", null);
+    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "genKeys");
     if (res) {
       JFAWT.showMessage("GenKeys", "OK");
     } else {

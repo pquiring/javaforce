@@ -30,7 +30,7 @@ public class SMTPRelayApp extends javax.swing.JFrame {
         Random r = new Random();
         busClient = new JBusClient(null);
         busClient.connect();
-        String cfg = (String)busClient.invoke(SMTPRelayServer.serviceBus, "getConfig", null);
+        String cfg = (String)busClient.invoke(SMTPRelayServer.serviceBus, "getConfig");
         config.setText(cfg);
         config.setEnabled(true);
         save.setEnabled(true);
@@ -44,7 +44,7 @@ public class SMTPRelayApp extends javax.swing.JFrame {
   }
 
   public void restart() {
-    boolean res = (boolean)busClient.invoke(SMTPRelayServer.serviceBus, "restart", null);
+    boolean res = (boolean)busClient.invoke(SMTPRelayServer.serviceBus, "restart");
   }
 
   /**
