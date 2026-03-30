@@ -405,7 +405,7 @@ public class DBus implements IPC {
   /** Subscribe to a signal from another client. */
   public boolean subscribe(String sender, String method) {
     try {
-      return (boolean)invoke(sender, "subscribe", new Object[] {method});
+      return (boolean)invoke(sender, "subscribe", method);
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -415,7 +415,7 @@ public class DBus implements IPC {
   /** Unsubscribe to a signal from another client. */
   public boolean unsubscribe(String sender, String method) {
     try {
-      return (boolean)invoke(sender, "unsubscribe", new Object[] {method});
+      return (boolean)invoke(sender, "unsubscribe", method);
     } catch (Exception e) {
       JFLog.log(e);
       return false;

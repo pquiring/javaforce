@@ -142,7 +142,7 @@ public class UnixSocketTransport extends DBusTransport {
   }
 
   private String DBus_Hello(DBus bus) throws Exception {
-    Object ret = bus.invoke(DBusMessageBus, "Hello", new Object[] {});
+    Object ret = bus.invoke(DBusMessageBus, "Hello");
     if (ret == null) return null;
     if (ret.getClass() != String.class) return null;
     return (String)ret;
@@ -151,7 +151,7 @@ public class UnixSocketTransport extends DBusTransport {
   private boolean DBus_RequestName(String name, DBus bus) throws Exception {
     //invoke org.freedesktop.DBus.RequestName(String name, int flags);
     //flags = 0x04 (do not queue)
-    Object ret = bus.invoke(DBusMessageBus, "RequestName", new Object[] {name, new UInteger(0x04)});
+    Object ret = bus.invoke(DBusMessageBus, "RequestName", name, new UInteger(0x04));
     if (ret == null) return false;
     if (debug) {
       JFLog.log("RequestName=" + ret);

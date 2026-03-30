@@ -94,7 +94,7 @@ public class TestIPC {
     public void ping() throws Exception {
       int value = r.nextInt();
       if (debug) JFLog.log(String.format("ping(0x%x)", value));
-      Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", new Object[] {value});
+      Object result = ipc.invoke("javaforce.TestIPC.Server", "ping", value);
       if (result == null) {
         if (debug) JFLog.log("result == null");
         error++;
@@ -108,7 +108,7 @@ public class TestIPC {
       data[0] = 0x11;
       data[1] = 0x22;
       data[2] = 0x33;
-      byte[] result = (byte[])ipc.invoke("javaforce.TestIPC.Server", "modify", new Object[] {data});
+      byte[] result = (byte[])ipc.invoke("javaforce.TestIPC.Server", "modify", data);
       if (result == null) {
         if (debug) JFLog.log("result == null");
         error++;
