@@ -4,6 +4,7 @@ import javaforce.*;
 import javaforce.awt.*;
 
 public class ImageConvert {
+  public static boolean debug = false;
   public static void main(String[] args) {
     if (args.length < 2) {
       System.out.println("Usage : ImageConvert filein fileout [index=#] [scale=width,height] [size=width,height] [fill=aarrggbb]");
@@ -69,7 +70,7 @@ public class ImageConvert {
       JFLog.log("ImageConvert:" + args[0] + " to " + args[1]);
       JFImage img = new JFImage();
       String infmt = args[0].substring(args[0].lastIndexOf(".")+1).toLowerCase();
-      JFLog.log("infmt=" + infmt);
+      if (debug) JFLog.log("infmt=" + infmt);
       if (infmt.equals("jpg")) {
         if (!img.loadJPG(args[0])) throw new Exception("Load failed");
       } else if (infmt.equals("png")) {
@@ -96,7 +97,7 @@ public class ImageConvert {
         int org_height = img.getHeight();
         int new_width = width;
         int new_height = height;
-        JFLog.log(String.format("Scaling:from=%dx%d,to=%dx%d", org_width, org_height, new_width, new_height));
+        if (debug) JFLog.log(String.format("Scaling:from=%dx%d,to=%dx%d", org_width, org_height, new_width, new_height));
         JFImage new_img = new JFImage(new_width, new_height);
         new_img.fill(0, 0, new_width, new_height, 0, true);
         new_img.putJFImageScaleSmooth(img, 0, 0, new_width, new_height);
@@ -107,14 +108,14 @@ public class ImageConvert {
         int org_height = img.getHeight();
         int new_width = (int)((org_width * width_percent) / 100.0f);
         int new_height = (int)((org_height * height_percent) / 100.0f);
-        JFLog.log(String.format("Scaling:from=%dx%d,to=%dx%d", org_width, org_height, new_width, new_height));
+        if (debug) JFLog.log(String.format("Scaling:from=%dx%d,to=%dx%d", org_width, org_height, new_width, new_height));
         JFImage new_img = new JFImage(new_width, new_height);
         new_img.fill(0, 0, new_width, new_height, 0, true);
         new_img.putJFImageScaleSmooth(img, 0, 0, new_width, new_height);
         img = new_img;
       }
       String outfmt = args[1].substring(args[1].lastIndexOf(".")+1).toLowerCase();
-      JFLog.log("outfmt=" + outfmt);
+      if (debug) JFLog.log("outfmt=" + outfmt);
       if (outfmt.equals("jpg")) {
         if (!img.saveJPG(args[1])) throw new Exception("Save failed");
       } else if (outfmt.equals("png")) {
@@ -130,7 +131,7 @@ public class ImageConvert {
       } else {
         throw new Exception("Unsupported output type:" + outfmt);
       }
-      JFLog.log("Image Converted");
+      if (debug) JFLog.log("Image Converted");
     } catch (Exception e) {
       JFLog.log(e);
     }
