@@ -245,6 +245,11 @@ public class DBus implements IPC {
     timeout = ms;
   }
 
+  /** Returns bus name requested or assigned. */
+  public String getBusName() {
+    return transport.getBusName();
+  }
+
   /** Return next serial # for unique msg. */
   private int nextSerial() {
     int value;
@@ -305,6 +310,55 @@ public class DBus implements IPC {
       }
       return invoke.value;
     }
+  }
+
+  private static class Signal {
+    public String method;
+    public String bus;
+  }
+  private Object lock = new Object();
+  private ArrayList<Signal> clients = new ArrayList<>();
+  private boolean subscribe(String bus, String method) {
+    synchronized (lock) {
+      Signal signal = new Signal();
+      signal.method = method;
+      signal.bus = bus;
+      clients.add(signal);
+    }
+    return true;
+  }
+  private boolean unsubscribe(String bus, String signal) {
+    synchronized (lock) {
+      clients.remove(bus);
+    }
+    return true;
+  }
+
+  /** Invokes a method in all bus members that have subscribed to the method.
+   *
+   * To subscribe to a method:
+   *   invoke("sender", "subscribe", "signalName");
+   *
+   * To unsubscribe to a method:
+   *   invoke("sender", "unsubscribe", "signalName");
+   */
+  public boolean signal(String method, Object[] args) {
+    ArrayList<Signal> remove = new ArrayList<>();
+    synchronized (lock) {
+      for(Signal client : clients) {
+        if (!client.method.equals(method)) continue;
+        try {
+          Object res = invoke(client.bus, method, args);
+          if (res == null) throw new Exception("DBus:signal dispatch failed:" + client.bus);
+        } catch (Exception e) {
+          remove.add(client);
+        }
+      }
+      for(Signal client : remove) {
+        clients.remove(client);
+      }
+    }
+    return true;
   }
 
   private Object write_lock = new Object();
@@ -781,13 +835,35 @@ public class DBus implements IPC {
       //get args using signature and body
       Object[] args = read_args(sign);
       try {
-        Object ret = ep.dispatch(member, args);
-        if (debug) JFLog.log("ret=" + ret);
-        write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {ret});
+        if (isSignalRequest(member, args)) {
+          String signal = (String)args[0];
+          switch (member) {
+            case "subscribe":
+              subscribe(sender, signal);
+              write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {true});
+              break;
+            case "unsubscribe":
+              unsubscribe(sender, signal);
+              write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {true});
+              break;
+          }
+        } else {
+          Object ret = ep.dispatch(member, args);
+          if (debug) JFLog.log("ret=" + ret);
+          write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {ret});
+        }
       } catch (Exception e) {
         if (debug) JFLog.log(e);
         write_msg(MSG_ERROR, sender, nextSerial(), serial, member, new Object[] {e.toString()});
       }
+    }
+    private boolean isSignalRequest(String member, Object[] args) {
+      if (!member.equals("subscribe") && !member.equals("unsubscribe")) {
+        return false;
+      }
+      if (args.length != 1) return false;
+      if (!(args[0] instanceof String)) return false;
+      return true;
     }
     private void method_return() throws Exception {
       String path = null;
