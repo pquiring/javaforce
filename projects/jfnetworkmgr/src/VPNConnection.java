@@ -12,7 +12,7 @@ import javaforce.*;
 
 public class VPNConnection extends Thread implements ShellProcessListener {
   public String name;  //friendly name (not username)
-  public String pack, id;
+  public String bus, id;
   public String host, user, domain, pass;
   public String caps, capsOpts, routes, routeOpts;
   public String domainsearch;
@@ -134,7 +134,7 @@ public class VPNConnection extends Thread implements ShellProcessListener {
 //test
       sp.run(cmd.toArray(new String[0]), true);
     } catch (Exception e) {
-      Server.This.jbusClient.call(pack, "vpnFailed", quote(id));
+      Server.This.jbusServer.invoke(bus, "vpnFailed", new Object[] {id});
       Server.This.pendingVPN = null;
       JFLog.log(e);
     }
@@ -172,13 +172,13 @@ primary   DNS address 192.168.0.3
       if (lns[a].indexOf("failed") != -1) {
         passwdFile.delete();
         failed = true;
-        Server.This.jbusClient.call(pack, "vpnFailed", quote(id));
+        Server.This.jbusServer.invoke(bus, "vpnFailed", new Object[] {id});
         Server.This.pendingVPN = null;
       }
       if (lns[a].indexOf("succeeded") != -1) {
         passwdFile.delete();
         connected = true;
-        Server.This.jbusClient.call(pack, "vpnSuccess", quote(id));
+        Server.This.jbusServer.invoke(bus, "vpnSuccess", new Object[] {id});
         Server.This.pendingVPN = null;
       }
       if (lns[a].startsWith("local  IP address ")) {

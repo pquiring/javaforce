@@ -12,19 +12,19 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class Drives extends javax.swing.JDialog {
 
   /**
    * Creates new form Drives
    */
-  public Drives(java.awt.Frame parent, boolean modal, JBusClient jbusClient) {
+  public Drives(java.awt.Frame parent, boolean modal, JBus bus) {
     super(parent, modal);
     initComponents();
     setPosition();
     listDrives();
-    this.jbusClient = jbusClient;
+    this.bus = bus;
   }
 
   /**
@@ -173,7 +173,7 @@ public class Drives extends javax.swing.JDialog {
 
   private DefaultListModel<String> model = new DefaultListModel<>();
   private ArrayList<String> devList = new ArrayList<String>();
-  private JBusClient jbusClient;
+  private JBus bus;
 
   private void addDrive(String name) {
     char lastChar = name.charAt(name.length() - 1);
@@ -207,7 +207,7 @@ public class Drives extends javax.swing.JDialog {
     mounted.setText("???");
     mount.setEnabled(false);
     umount.setEnabled(false);
-    jbusClient.call("org.jflinux.jfsystemmgr", "getStorageInfo", "\"" + jbusClient.pack + "\",\"" + dev + "\"");
+    String info = (String)bus.invoke("javaforce.jflinux.system", "getStorageInfo", new Object[]{dev});
   }
 
   public void storageInfo(String dev, String volName, String fsType, String mountPt) {
@@ -223,14 +223,14 @@ public class Drives extends javax.swing.JDialog {
     int idx = list.getSelectedIndex();
     if (idx == -1) return;
     String dev = devList.get(idx);
-    jbusClient.call("org.jflinux.jfsystemmgr", "mount", "\"" + dev + "\"");
+    bus.invoke("javaforce.jflinux.system", "mount", new Object[]{dev});
   }
 
   private void umount() {
     int idx = list.getSelectedIndex();
     if (idx == -1) return;
     String dev = devList.get(idx);
-    jbusClient.call("org.jflinux.jfsystemmgr", "umount", "\"" + dev + "\"");
+    bus.invoke("javaforce.jflinux.system", "umount", new Object[]{dev});
   }
 
   public void rescan() {

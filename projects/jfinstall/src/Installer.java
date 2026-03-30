@@ -12,7 +12,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 import jfparted.*;
@@ -26,9 +26,9 @@ public class Installer extends javax.swing.JFrame {
    */
   public Installer() {
     initComponents();
-    jbusClient = new JBusClient(null, null);
-    jbusClient.start();
-    jbusClient.call("org.jflinux.jfsystemmgr", "stopAutoMounter", "");  //annoying
+    jbusClient = new JBusClient(null);
+    jbusClient.connect();
+    jbusClient.invoke("javaforce.jflinux.system", "stopAutoMounter", null);  //annoying
     loadPanel(new Welcome());
     setPosition();
     JFLog.init("/tmp/install.log", true);
@@ -137,7 +137,7 @@ public class Installer extends javax.swing.JFrame {
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
     if (disabled) return;
-    jbusClient.call("org.jflinux.jfsystemmgr", "startAutoMounter", "");
+    jbusClient.invoke("javaforce.jflinux.system", "startAutoMounter", null);
     System.exit(0);
   }//GEN-LAST:event_formWindowClosing
 

@@ -14,7 +14,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 import javaforce.utils.*;
 import javaforce.io.*;
@@ -81,8 +81,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       addMouseListener(TaskbarPopup);
       //connect to JBus
       JFLog.log("jbusClient:package=org.jflinux.jfdesktop." + System.getenv("JID"));
-      jbusClient = new JBusClient("org.jflinux.jfdesktop." + System.getenv("JID"), new JBusMethods());
-      jbusClient.start();
+      jbusServer = new JBusServer("javaforce.jflinux.jfdesktop." + System.getenv("JID"), new JBusMethods());
+      jbusServer.connect();
       if (new File("/usr/sbin/hciconfig").exists()) {
         checkBluetooth();
       }
@@ -349,14 +349,14 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
-    jbusClient.call("org.jflinux.jfsystemmgr", "reboot", "");
+    jbusServer.invoke("javaforce.jflinux.system", "reboot", null);
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
-    jbusClient.call("org.jflinux.jfsystemmgr", "shutdown", "");
+    jbusServer.invoke("javaforce.jflinux.system", "shutdown", null);
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_ShutdownActionPerformed
@@ -375,9 +375,9 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void SleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SleepActionPerformed
     //disconnect all VPN
-    jbusClient.call("org.jflinux", "closeAllVPN", "");
+    jbusServer.invoke("javaforce.jflinux.network", "closeAllVPN", null);
     JF.sleep(500);
-    jbusClient.call("org.jflinux.jfsystemmgr", "sleep" , "");
+    jbusServer.invoke("javaforce.jflinux.system", "sleep" , null);
     //reset clock after 10 seconds (hopefully after we resume from sleep)
     new java.util.Timer().schedule(new TimerTask() {
       public void run() {
@@ -548,7 +548,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   private SoundWindow soundWindow;
   public KeyboardWindow keyboardWindow;
   private boolean keyboardShown = false;
-  public static JBusClient jbusClient;
+  public static JBusServer jbusServer;
   private boolean isTrashFull;
   public static BlueToothDialog btDialog;
   private java.util.Timer clockTimer;
@@ -1435,7 +1435,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         return;
       }
       if (action.equals("#wap-disconnect")) {
-        jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectWAP" ,"");
+        jbusServer.invoke("javaforce.jflinux.network", "disconnectWAP", null);
         return;
       }
       Object obj = ae.getSource();
@@ -1523,12 +1523,12 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     ConfigPopup.show(config.compact ? settingsQuad : settingsHalf, 0, -calcMenuHeight(ConfigPopup));
   }
 
-  private void getWAPList() {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "getWAPList", JBusClient.quote(jbusClient.pack));
+  private String getWAPList() {
+    return (String)jbusServer.invoke("javaforce.jflinux.network", "getWAPList", null);
   }
 
-  private void getVPNList() {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "getVPNList", JBusClient.quote(jbusClient.pack));
+  private String getVPNList() {
+    return (String)jbusServer.invoke("javaforce.jflinux.network", "getVPNList", null);
   }
 
   private static class WAP {
@@ -2006,7 +2006,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   private void closeAllApps() {
     saveConfig();
     //close open VPN connections
-    jbusClient.call("org.jflinux", "closeAllVPN", "");
+    jbusServer.invoke("javaforce.jflinux.network", "closeAllVPN", null);
     //close all apps belonging to this user
     //BUG : killall may kill other sessions of same user???
     try {
@@ -2224,7 +2224,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   private void disconnectVPN(String name) {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectVPN", JBusClient.quote(name));
+    jbusServer.invoke("javaforce.jflinux.network", "disconnectVPN", new Object[] {name});
   }
 
   private void connectVPN(String name) {
@@ -2232,12 +2232,12 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusClient.call("org.jflinux.jfnetworkmgr", "connectVPN", JBusClient.quote(jbusClient.pack) + "," + JBusClient.quote(name));
+      jbusServer.invoke("javaforce.jflinux.network", "connectVPN", new Object[] {name});
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectWAP" , JBusClient.quote(ssid));
+    jbusServer.invoke("javaforce.jflinux.network", "disconnectWAP" , new Object[] {ssid});
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -2251,8 +2251,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusClient.call("org.jflinux.jfnetworkmgr", "connectWAP",
-        JBusClient.quote(jbusClient.pack) + "," + JBusClient.quote(dev) + "," + JBusClient.quote(ssid) + "," + JBusClient.quote(encType) + "," + JBusClient.quote(key));
+      jbusServer.invoke("javaforce.jflinux.network", "connectWAP", new Object[] {dev, ssid, encType, key});
     }
   }
 
@@ -2359,7 +2358,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
     stopNetworkTimer();
-    jbusClient.call("org.jflinux.jfnetworkmgr", cancelNetworkMethod, "");
+    jbusServer.invoke("javaforce.jflinux.network", cancelNetworkMethod, null);
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -2716,8 +2715,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     public void show() {
       showDock();
     }
-    public void getWelcome(String pack) {
-      jbusClient.call(pack, "setWelcome", JBusClient.quote("" + config.welcome));
+    public void getWelcome(String bus) {
+      jbusServer.invoke(bus, "setWelcome", new Object[] {config.welcome});
     }
     public void setWelcome(String state) {
       config.welcome = state.equals("true");
@@ -2840,7 +2839,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
             Process p = Runtime.getRuntime().exec(new String[] {"gnome-disk-image-mounter", _uri});
             p.waitFor();
             int result = p.exitValue();
-            if (_callback != null) jbusClient.call(_callback, result == 0 ? "mountSuccess" : "mountFail", JBusClient.quote(_uri));
+            if (_callback != null) jbusServer.invoke(_callback, result == 0 ? "mountSuccess" : "mountFail", new Object[] {_uri});
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -2859,10 +2858,10 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       JFLog.log("setSelection:" + selection);
       fileSelection = selection;
     }
-    public void getFileSelection(String pack) {
+    public void getFileSelection(String bus) {
       if (fileSelection == null) return;
-      JFLog.log("getSelection:" + pack);
-      jbusClient.call(pack, "getFileSelection", JBusClient.quote(fileSelection));
+      JFLog.log("getSelection:" + bus);
+      jbusServer.invoke(bus, "getFileSelection", new Object[] {fileSelection});
     }
     public void clearFileSelection() {
       JFLog.log("clearSelection");
@@ -2872,7 +2871,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   public void get() {
     if (fileSelection == null) return;
-    Desktop.desktop.browser.paste(JBusClient.decodeString(fileSelection));
+    Desktop.desktop.browser.paste(fileSelection);
   }
   public void set(String fileset) {
     fileSelection = fileset;

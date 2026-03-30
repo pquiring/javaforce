@@ -12,7 +12,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class ConfigApp extends javax.swing.JFrame {
@@ -25,8 +25,8 @@ public class ConfigApp extends javax.swing.JFrame {
     JFLog.init(JF.getUserPath() + "/.jfconfig.log", true);
     This = this;
     if (!JF.isWindows()) {
-      jbusClient = new JBusClient("org.jflinux.jfconfig." + new Random().nextInt(0x7fffff), new JBusMethods());
-      jbusClient.start();
+      jbusClient = new JBusClient(new JBusMethods());
+      jbusClient.connect();
     }
     JF.initHttps(KeyMgmt.getDefaultClient());
     for(int a=0;a<args.length;a++) {
@@ -116,11 +116,13 @@ public class ConfigApp extends javax.swing.JFrame {
   }
 
   public static class JBusMethods {
-    public void videoChanged(String reason) {
-      if (!reason.equals("udev")) return;
-      if (panel instanceof DisplayPanel) {
-        ((DisplayPanel)panel).rescan();
+    public boolean videoChanged(String reason) {
+      if (reason.equals("udev")) {
+        if (panel instanceof DisplayPanel) {
+          ((DisplayPanel)panel).rescan();
+        }
       }
+      return true;
     }
   }
 

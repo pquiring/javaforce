@@ -24,7 +24,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
     setAlwaysOnTop(true);
     toFront();
     setStatus("Status : Finding controllers...");
-    Dock.jbusClient.call("org.jflinux.jfnetworkmgr", "getBTdevices", quote(Dock.jbusClient.pack));
+    String dev = (String)Dock.jbusServer.invoke("javaforce.jflinux.network", "getBTdevices", null);
   }
 
   /**
@@ -184,8 +184,8 @@ public class BlueToothDialog extends javax.swing.JFrame {
     scanning = true;
     if (!isBTEnabled()) {
       enabling = true;
-      Dock.jbusClient.call("org.jflinux.jfnetworkmgr", "enableBTdevice",
-        quote(Dock.jbusClient.pack) + "," + quote(deviceList[deviceIdx*2]));
+      Dock.jbusServer.invoke("org.jflinux.jfnetworkmgr", "enableBTdevice",
+        new Object[] {deviceList[deviceIdx*2]});
       setStatus("Status : Enabling controller...");
       return;
     }
@@ -231,8 +231,8 @@ public class BlueToothDialog extends javax.swing.JFrame {
     connecting = true;
     mac = (String)table.getValueAt(row, 1);
     desc = (String)table.getValueAt(row, 0);
-    Dock.jbusClient.call("org.jflinux.jfnetworkmgr", "connectBT",
-      quote(Dock.jbusClient.pack) + "," + quote(deviceList[deviceIdx*2]) + "," + quote(mac));
+    Dock.jbusServer.invoke("javaforce.jflinux.network", "connectBT",
+      new Object[] {deviceList[deviceIdx*2], mac});
     setStatus("Connecting to " + desc);
   }
 
@@ -298,8 +298,8 @@ public class BlueToothDialog extends javax.swing.JFrame {
       if (!isBTEnabled()) {
         enabling = true;
         setStatus("Enabling controller");
-        Dock.jbusClient.call("org.jflinux.jfnetworkmgr", "enableBTdevice",
-          quote(Dock.jbusClient.pack) + "," + quote(deviceList[0]));
+        Dock.jbusServer.invoke("javaforce.jflinux.jfnetworkmgr", "enableBTdevice",
+          new Object[] {deviceList[0]});
       } else {
         setStatus("Status : Ready");
       }

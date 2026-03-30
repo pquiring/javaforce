@@ -8,7 +8,7 @@ import java.awt.*;
 import java.io.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class UpgradeApp extends javax.swing.JFrame {
@@ -182,10 +182,10 @@ public class UpgradeApp extends javax.swing.JFrame {
   }
 
   private static void sendCounts(int upgrade) {
-    JBusClient client = new JBusClient(null, null);
-    client.start();
-    client.call("org.jflinux.jfsystemmgr", "upgradesAvailable", "" + upgrade);
-    client.close();
+    JBusClient client = new JBusClient(null);
+    client.connect();
+    client.invoke("javaforce.jflinux.system", "upgradesAvailable", new Object[]{upgrade});
+    client.disconnect();
   }
 
   private void setPosition() {

@@ -12,7 +12,7 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.net.*;
 import javaforce.linux.*;
 
@@ -24,7 +24,7 @@ public class Server {
   public WAPConnection pendingWAP;
 
   public static Server This;
-  public JBusClient jbusClient;
+  public JBusServer jbusServer;
   public ArrayList<VPNConnection> vpnConnections = new ArrayList<VPNConnection>();
   public ArrayList<WAPConnection> wapConnections = new ArrayList<WAPConnection>();
 
@@ -49,8 +49,8 @@ public class Server {
   public void start() {
     try {
       This = this;
-      jbusClient = new JBusClient("org.jflinux.jfnetworkmgr", new JBusMethods());
-      jbusClient.start();
+      jbusServer = new JBusServer("javaforce.jflinux.network", new JBusMethods());
+      jbusServer.connect();
       createWAPTimer();
       checkInterfaces();
     } catch (Exception e) {
@@ -59,9 +59,9 @@ public class Server {
   }
 
   public void stop() {
-    if (jbusClient != null) {
-      jbusClient.close();
-      jbusClient = null;
+    if (jbusServer != null) {
+      jbusServer.disconnect();
+      jbusServer = null;
     }
     cancelWAPTimer();
   }
@@ -132,7 +132,7 @@ public class Server {
       newWapList += genWAPList(iface, output);
     }
     wapList = newWapList;
-    jbusClient.call("org.jflinux.jfsystemmgr", "broadcastWAPList", quote(wapList));
+    jbusServer.invoke("javaforce.jflinux.system", "broadcastWAPList", new Object[]{wapList});
   }
 
   private String genWAPList(String dev, String[] scan) {
@@ -283,16 +283,17 @@ public class Server {
       NetworkControl.setConfig(dev, nc);
     }
 //WIFI API
-    public void getWAPList(String pack) {
-      jbusClient.call(pack, "setWAPList", quote(wapList));
+    public String getWAPList() {
+      return wapList;
     }
-    public void connectWAP(String pack, String dev, String ssid, String encType, String key) {
-      if (pendingWAP != null) return;
+    public boolean connectWAP(String dev, String ssid, String encType, String key) {
+      if (pendingWAP != null) return false;
       WAPConnection wap = new WAPConnection();
-      wap.init(pack,dev,ssid,encType,key);
+      wap.init(null,dev,ssid,encType,key);
       pendingWAP = wap;
       wap.start();
       wapConnections.add(wap);
+      return true;
     }
     public void disconnectWAP(String pack, String dev) {
       ShellProcess sp = new ShellProcess();
@@ -313,7 +314,7 @@ public class Server {
       pendingWAP = null;
     }
 //BlueTooth API
-    public void getBTdevices(String pack) {
+    public String getBTdevices() {
       ShellProcess sp = new ShellProcess();
 //      ShellProcess.log = true;
 //      ShellProcess.logPrompt = true;
@@ -357,10 +358,10 @@ public class Server {
           }
         }
       }
-      jbusClient.call(pack, "setBTdevices", quote(list));
+      return list;
     }
     //enable bluetook controlling device
-    public void enableBTdevice(String pack, String cmac) {
+    public boolean enableBTdevice(String cmac) {
       final ShellProcess sp = new ShellProcess();
       if (bluez3) {
         sp.addRegexResponse(bluetoothctlPrompt, "select " + cmac + "\n", false);
@@ -379,21 +380,21 @@ public class Server {
 //JFLog.log("enableBTdevice.output=" + output);
         timer.cancel();
         if (output.indexOf("succeeded") != -1) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       } else {
         String output = sp.run(new String[] {"hciconfig", cmac/*dev*/, "up"}, false);
         if (sp.getErrorLevel() == 0) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       }
     }
     //disable bluetook controlling device
-    public void disableBTdevice(String pack, String cmac) {
+    public boolean disableBTdevice(String pack, String cmac) {
       final ShellProcess sp = new ShellProcess();
       if (bluez3) {
         sp.addRegexResponse(bluetoothctlPrompt, "select " + cmac + "\n", false);
@@ -411,21 +412,21 @@ public class Server {
         String output = sp.run(new String[] {"bluetoothctl"}, false);
         timer.cancel();
         if (output.indexOf("succeeded") != -1) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       } else {
         String output = sp.run(new String[] {"hciconfig", cmac/*dev*/, "down"}, false);
         if (sp.getErrorLevel() == 0) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       }
     }
     //connect to end device thru controller
-    public synchronized void connectBT(String pack, String cmac, final String mmac) {
+    public synchronized boolean connectBT(String pack, String cmac, final String mmac) {
       final ShellProcess sp = new ShellProcess();
       if (bluez3) {
         //use bluetoothctl
@@ -475,22 +476,22 @@ public class Server {
         timer.cancel();
 //JFLog.log("connectBT.output=" + output);
         if (output.indexOf("Connection successful") != -1) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       } else {
         //use hcitool (not working yet) [use to use hidd --connect but removed in bluez5.x)
         String output = sp.run(new String[] {"hcitool", "cc", mmac}, false);
         if (sp.getErrorLevel() == 0) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       }
     }
     //disconnect from end device thru controller
-    public void disconnectBT(String pack, String cmac, String mmac) {
+    public boolean disconnectBT(String pack, String cmac, String mmac) {
       final ShellProcess sp = new ShellProcess();
       if (true) {
         //use bluetoothctl
@@ -509,13 +510,13 @@ public class Server {
         String output = sp.run(new String [] {"bluetoothctl"}, false);
         timer.cancel();
         //TODO : check output
-        jbusClient.call(pack, "btSuccess", "");
+        return true;
       } else {
         String output = sp.run(new String[] {"hcitool", "dc", mmac}, false);
         if (sp.getErrorLevel() == 0) {
-          jbusClient.call(pack, "btSuccess", "");
+          return true;
         } else {
-          jbusClient.call(pack, "btFailed", "");
+          return false;
         }
       }
     }

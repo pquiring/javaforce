@@ -14,7 +14,7 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 
@@ -37,8 +37,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     pauseIcon = new javax.swing.ImageIcon(getClass().getResource("/pause.png"));
     model = (DefaultTableModel)table.getModel();
     if (!JF.isWindows()) {
-      jbusClient = new JBusClient(null, null);  //send only
-      jbusClient.start();
+      jbusClient = new JBusClient(null);
+      jbusClient.connect();
     }
     loadIcons();
     xml.root.setName("jMedia");

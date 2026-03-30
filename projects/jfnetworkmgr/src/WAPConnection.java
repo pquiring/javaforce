@@ -10,7 +10,7 @@ import javaforce.*;
 import javaforce.linux.*;
 
 class WAPConnection extends Thread implements ShellProcessListener {
-  public String pack;
+  public String bus;
   public String dev;
   public String ssid;
   public String encType;
@@ -28,7 +28,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
       if (encType.equals("WEP")) {
         if (key.length() > 0) {
           if (!NetworkControl.wifi_set_ssid(dev, ssid, key)) {
-            Server.This.jbusClient.call(pack, "wapFailed", "");
+            Server.This.jbusServer.invoke(bus, "wapFailed", null);
             Server.This.pendingWAP = null;
             return;
           }
@@ -96,7 +96,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
               JF.sleep(250);
               NetworkControl.up(dev);
             }
-            Server.This.jbusClient.call(pack, "wapFailed", "");
+            Server.This.jbusServer.invoke(bus, "wapFailed", null);
             Server.This.pendingWAP = null;
             return;
           }
@@ -107,8 +107,8 @@ class WAPConnection extends Thread implements ShellProcessListener {
     }
   }
 
-  public void init(String pack, String dev, String ssid, String encType, String key) {
-    this.pack = pack;
+  public void init(String bus, String dev, String ssid, String encType, String key) {
+    this.bus = bus;
     this.dev = dev;
     this.ssid = ssid;
     this.encType = encType;

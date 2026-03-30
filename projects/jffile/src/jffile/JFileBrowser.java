@@ -16,7 +16,7 @@ import javax.swing.*;
 import javaforce.*;
 import javaforce.io.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class JFileBrowser extends javax.swing.JComponent implements MouseListener, MouseMotionListener, KeyListener, FolderListener {
@@ -38,7 +38,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
    * @param arrangeIconsVertical - arrange icons vertical (else horizontal)
    * @param showHidden - show hidden files (files that begin with a period)
    * @param autoArrange - auto arrange by name
-   * @param jbusClient - a JBusClient client
+   * @param bus - JBus server/client
    * @param desktopMode - desktopMode (always use openFile for files)
    * @param fileClipboard - file selection storage
    */
@@ -47,7 +47,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     , String wallPaperFile, int wallPaperView, boolean saveConfig
     , String openFolder, String openFile, Color backClr, Color foreClr
     , boolean useScrolling, boolean arrangeIconsVertical, boolean showHidden, boolean autoArrange
-    , JBusClient jbusClient, boolean desktopMode, FileClipboard fileClipboard)
+    , JBus bus, boolean desktopMode, FileClipboard fileClipboard)
   {
     setView(view);
     this.desktopMenu = desktopMenu;
@@ -63,7 +63,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     this.arrangeIconsVertical = arrangeIconsVertical;
     this.showHidden = showHidden;
     this.autoArrange = autoArrange;
-    this.jbusClient = jbusClient;
+    this.bus = bus;
     this.desktopMode = desktopMode;
     this.fileClipboard = fileClipboard;
     filterRegex = ".*";
@@ -102,7 +102,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
   private boolean autoArrange;
   private boolean desktopMode;
   private JFileBrowserListener listener;
-  private JBusClient jbusClient;
+  private JBus bus;
   private FilenameFilter filter;
   private String filterRegex;
   private FileClipboard fileClipboard;
@@ -1415,7 +1415,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
       setSelectedTransparent(true);
       dragicon = false;
       repaint();
-      jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "show", "");
+      bus.invoke("org.jflinux.jfdesktop." + System.getenv("JID"), "show", null);
 /*      if (dragOverlay != null) {
         panel.remove(dragOverlay);
         dragOverlay = null;
@@ -1442,7 +1442,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         setSelectedTransparent(true);
         dragicon = false;
         repaint();
-        jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "show", "");
+        bus.invoke("org.jflinux.jfdesktop." + System.getenv("JID"), "show", null);
 /*        if (dragOverlay != null) {
           panel.remove(dragOverlay);
           dragOverlay = null;

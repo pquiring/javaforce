@@ -29,7 +29,7 @@ public class Desktop extends javax.swing.JWindow {
       browser = new JFileBrowser(JFileBrowser.VIEW_ICONS, JF.getUserPath() + "/Desktop"
         , DesktopMenu, IconMenu, Dock.dock.config.desktopFile, Dock.dock.config.desktopMode
         , true, "jffile", "jfopen", Dock.dock.config.bc, Dock.dock.config.fc
-        , false, true, false, Dock.dock.config.arrangeIconsAuto, Dock.jbusClient, true, Dock.dock);
+        , false, true, false, Dock.dock.config.arrangeIconsAuto, Dock.jbusServer, true, Dock.dock);
       setContentPane(browser);
       browser.refresh();
       if (!new File(JF.getUserPath() + "/Desktop/Home.desktop").exists()) {

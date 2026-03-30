@@ -15,7 +15,7 @@ import javax.swing.JMenuItem;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.linux.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class Logon extends javax.swing.JFrame implements ActionListener {
 
@@ -76,9 +76,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       pack();
       JFAWT.centerWindow(this);
       //connect to JBus
-      if (jbusClient == null) {
-        jbusClient = new JBusClient("org.jflinux.jflogon", new JBusMethods());
-        jbusClient.start();
+      if (jbusServer == null) {
+        jbusServer = new JBusServer("org.jflinux.jflogon", new JBusMethods());
+        jbusServer.connect();
       }
       getWAPList();
     } catch (Exception e) {
@@ -335,7 +335,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JPopupMenu xMenu;
   // End of variables declaration//GEN-END:variables
 
-  public static JBusClient jbusClient;
+  public static JBusServer jbusServer;
   public static Logon This;
   private String lastUser, lastDomain;
 
@@ -532,11 +532,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void getWAPList() {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "getWAPList", quote(jbusClient.pack));
+    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getWAPList", null);
   }
 
   private void getVPNList() {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "getVPNList", quote(jbusClient.pack));
+    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getVPNList", null);
   }
 
   private static class WAP {
@@ -674,7 +674,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
-    jbusClient.call("org.jflinux.jfnetworkmgr", cancelNetworkMethod, "");
+    jbusServer.invoke("org.jflinux.jfnetworkmgr", cancelNetworkMethod, null);
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -684,7 +684,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void disconnectVPN(String name) {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectVPN", quote(name));
+    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectVPN", new Object[] {name});
   }
 
   private void connectVPN(String name) {
@@ -692,12 +692,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusClient.call("org.jflinux.jfnetworkmgr", "connectVPN", quote(jbusClient.pack) + "," + quote(name));
+      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectVPN", new Object[] {name});
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectWAP" , quote(ssid));
+    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectWAP" , new Object[]{ssid});
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -711,8 +711,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusClient.call("org.jflinux.jfnetworkmgr", "connectWAP",
-        quote(jbusClient.pack) + "," + quote(dev) + "," + quote(ssid) + "," + quote(encType) + "," + quote(key));
+      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectWAP",
+        new Object[] { dev, ssid, encType, key});
     }
   }
 

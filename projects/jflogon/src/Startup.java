@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.Linux;
 
 public class Startup implements ShellProcessListener {
@@ -21,7 +21,7 @@ public class Startup implements ShellProcessListener {
   private static Properties props;
 
   public static AutoMounter autoMounter;
-  public static JBusClient jbusClient;
+  public static JBusServer jbusServer;
 
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
@@ -37,8 +37,8 @@ public class Startup implements ShellProcessListener {
       props = Linux.getJFLinuxProperties();
       wayland = getProperty("wayland").equals("true");
       //start jfsystemmgr
-      jbusClient = new JBusClient("org.jflinux.jfsystemmgr", new JBusMethods());
-      jbusClient.start();
+      jbusServer = new JBusServer("javaforce.jflinux.system", new JBusMethods());
+      jbusServer.connect();
       //start automounter
       autoMounter = new AutoMounter();
       autoMounter.start();
@@ -446,7 +446,8 @@ public class Startup implements ShellProcessListener {
       shutdownFlag = true;
     }
     public void upgradesAvailable(int upgrades) {
-      jbusClient.broadcast("org.jflinux.jfdesktop", "updatesAvailable", "" + upgrades);
+      //TODO : broadcast
+      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "updatesAvailable", new Object[] {upgrades});
     }
     public void mount(String dev) {
       JFLog.log("mount:" + dev);
@@ -498,15 +499,15 @@ public class Startup implements ShellProcessListener {
       //mount it back
       Startup.autoMounter.mount(mount.dev);
     }
-    public void getStorageInfo(String pack, String dev) {
+    public String getStorageInfo(String dev) {
       AutoMounter.Mount tmp = new AutoMounter.Mount();
       String volName = Startup.autoMounter.getVolumeName(dev, tmp);
       if (volName == null) volName = "";
       if (tmp.fs == null) tmp.fs = "unknown";
       String mountPt = Startup.autoMounter.getMountPoint(dev);
       if (mountPt == null) mountPt = "";
-      jbusClient.call(pack, "storageInfo", quote(dev) + "," + quote(volName) + "," + quote(tmp.fs) + ","
-        + quote(mountPt));
+      //TODO : xml , json ???
+      return "storageInfo:" + dev + "," + volName + "," + tmp.fs + "," + mountPt;
     }
     public void stopAutoMounter() {
       AutoMounter.paused--;
@@ -515,11 +516,13 @@ public class Startup implements ShellProcessListener {
       AutoMounter.paused++;
     }
     public void broadcastWAPList(String list) {
-      jbusClient.broadcast("org.jflinux.jfdesktop.", "setWAPList", quote(list));
+      //TODO : broadcast
+      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "setWAPList", new Object[] {list});
     }
     public void broadcastVideoChanged(String reason) {
-      jbusClient.broadcast("org.jflinux.jfdesktop.", "videoChanged", quote(reason));
-      jbusClient.broadcast("org.jflinux.jfconfig.", "videoChanged", quote(reason));
+      //TODO : broadcast
+      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "videoChanged", new Object[] {reason});
+      jbusServer.invoke("javaforce.jflinux.jfconfig.*", "videoChanged", new Object[] {reason});
     }
   }
   private static String getProperty(String name) {

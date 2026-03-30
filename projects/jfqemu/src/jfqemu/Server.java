@@ -10,13 +10,13 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class Server {
   public static void main(String args[]) {
     new Server().start();
   }
-  private JBusClient jbusClient;
+  private JBusServer jbusServer;
   private Vector<String> vmsFile = new Vector<String>();
   private Vector<VM> vms = new Vector<VM>();
   private String configFile = "/etc/jfqemu.lst";
@@ -24,8 +24,8 @@ public class Server {
   private void start() {
     JFLog.init("/var/log/jfqemu.log", true);
     loadConfig();
-    jbusClient = new JBusClient("org.jflinux.service.jfqemu", new JBusMethods());
-    jbusClient.start();
+    jbusServer = new JBusServer("javaforce.jflinux.service.jfqemu", new JBusMethods());
+    jbusServer.connect();
   }
   private void loadConfig() {
     try {
@@ -112,11 +112,12 @@ public class Server {
   }
   public class JBusMethods {
     //stanard service methods
-    public void stop() {
+    public boolean stop() {
       System.exit(0);
+      return true;  //does not return
     }
-    public void status(String pack) {
-      jbusClient.call(pack, "serviceStatus", "\"jQEMU running:" + JF.getPID() + "\"");
+    public String status() {
+      return "running:" + JF.getPID();
     }
     public void addVM(String file) {_addVM(file);}
     public void removeVM(String file) {_removeVM(file);}

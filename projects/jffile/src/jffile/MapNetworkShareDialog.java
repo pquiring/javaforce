@@ -13,7 +13,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class MapNetworkShareDialog extends javax.swing.JDialog {
 
@@ -26,9 +26,8 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     setPosition();
     listDrives();
     Mappings.loadMaps();
-    jbusClient = new JBusClient("org.jflinux.jffile." + Math.abs(new Random().nextInt())
-      , new JBusMethods());
-    jbusClient.start();
+    jbusClient = new JBusClient(new JBusMethods());
+    jbusClient.connect();
     JFAWT.assignHotKey(this, accept, KeyEvent.VK_ENTER);
     JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
   }
@@ -212,9 +211,8 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       link = getDrive(drive);
     }
     dialog = this;
-    jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "mount",
-      quote(jbusClient.pack) + "," + quote(uri) + "," + quote(target) + ","
-      + quote(pass) + "," + quote(link));
+    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount",
+      new Object[] {uri, target, pass, link});
   }//GEN-LAST:event_acceptActionPerformed
 
   private void guestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guestActionPerformed
@@ -349,13 +347,11 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       link = "null";
     }
     isMain = true;
-    JBusClient jbusClient = new JBusClient("org.jflinux.jffile." + Math.abs(new Random().nextInt())
-      , new JBusMethods());
-    jbusClient.start();
+    JBusClient jbusClient = new JBusClient(new JBusMethods());
+    jbusClient.connect();
     JFLog.log("mount:calling:" + "org.jflinux.jfdesktop." + System.getenv("JID"));
-    jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "mount",
-      quote(jbusClient.pack) + "," + quote(uri) + "," + quote(target) + ","
-      + quote(pass) + "," + quote(link));
+    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount",
+      new Object[] {uri, target, pass, link});
   }
 
   private void setState(boolean state) {

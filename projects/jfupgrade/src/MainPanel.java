@@ -11,7 +11,7 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class MainPanel extends javax.swing.JPanel {
@@ -418,9 +418,9 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   private static void sendCounts(int upgrade) {
-    JBusClient client = new JBusClient(null, null);
-    client.start();
-    client.call("org.jflinux.jfsystemmgr", "upgradesAvailable", "" + upgrade);
-    client.close();
+    JBusClient client = new JBusClient(null);
+    client.connect();
+    client.invoke("javaforce.jflinux.system", "upgradesAvailable", new Object[]{upgrade});
+    client.disconnect();
   }
 }

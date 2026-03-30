@@ -175,7 +175,7 @@ public class InterfacePanel extends javax.swing.JPanel {
   private void toggleIF() {
     String eth = (String)list.getSelectedValue();
     if (eth == null) return;
-    ConfigApp.jbusClient.call("org.jflinux.jfnetworkmgr", (active ? "ifDown" : "ifUp"), '\"' + eth + '\"');
+    ConfigApp.jbusClient.invoke("javaforce.jflinux.network", (active ? "ifDown" : "ifUp"), new Object[] {eth});
     JF.sleep(250);
     isInterfaceActive();
   }

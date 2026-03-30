@@ -9,7 +9,7 @@ import java.io.*;
 
 import javaforce.*;
 import javaforce.voip.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 
 /** Handles main SIP messages and dispatches them to low-level plugins. */
@@ -23,7 +23,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   private SIPServer ss;
   private Vector<DialChain> dialChainList;
   private Hashtable<String, Extension> extList;
-  private JBusClient jbusClient;
+  private JBusServer jbusServer;
   private boolean relayAudio, relayVideo;
   private Timer timer;
 
@@ -38,8 +38,8 @@ public class Service implements SIPServerInterface, PBXAPI {
 
   public boolean init() {
     if (JF.isUnix()) {
-      jbusClient = new JBusClient("org.jflinux.service.jfpbx", new JBusMethods());
-      jbusClient.start();
+      jbusServer = new JBusServer("javaforce.jflinux.service.jfpbx", new JBusMethods());
+      jbusServer.connect();
     }
     //start service
     ss = new SIPServer();
@@ -695,11 +695,12 @@ public class Service implements SIPServerInterface, PBXAPI {
     JFLog.log(s.patternMatches("011.", "0111231234"));
   }
   public class JBusMethods {
-    public void stop() {
+    public boolean stop() {
       System.exit(0);
+      return true;  //does not return
     }
-    public void status(String pack) {
-      jbusClient.call(pack, "serviceStatus", "\"jfpbx running\"");
+    public String status() {
+      return "running";
     }
   }
   /**

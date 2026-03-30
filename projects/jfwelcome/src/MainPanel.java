@@ -10,7 +10,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class MainPanel extends javax.swing.JPanel implements ActionListener {
 
@@ -23,10 +23,10 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (jid == null) {
       run.setEnabled(false);
     } else {
-      String pack = "org.jflinux.jfwelcome." + jid;
-      jbusClient = new JBusClient(pack, new JBusMethods());
-      jbusClient.start();
-      jbusClient.call("org.jflinux.jfdesktop." + jid, "getWelcome", "\"" + pack + "\"");
+      String bus = "javaforce.jflinux.jfwelcome." + jid;
+      jbusServer = new JBusServer(bus, new JBusMethods());
+      jbusServer.connect();
+      jbusServer.invoke("javaforce.jflinux.jfdesktop." + jid, "getWelcome", null);
     }
     addButtons();
   }
@@ -101,7 +101,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }//GEN-LAST:event_closeActionPerformed
 
   private void runItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_runItemStateChanged
-    jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "setWelcome", "\"" + run.isSelected() + "\"");
+    jbusServer.invoke("org.jflinux.jfdesktop." + System.getenv("JID"), "setWelcome", new Object[] {run.isSelected()});
   }//GEN-LAST:event_runItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -111,7 +111,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private javax.swing.JCheckBox run;
   // End of variables declaration//GEN-END:variables
 
-  private JBusClient jbusClient;
+  private JBusServer jbusServer;
 
   public void actionPerformed(ActionEvent ae) {
     String action = ae.getActionCommand();

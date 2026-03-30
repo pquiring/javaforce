@@ -17,7 +17,7 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.utils.*;
 
 public class Site extends javax.swing.JPanel implements JFileBrowserListener {
@@ -876,15 +876,15 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
   public static class SiteFileClipboard implements FileClipboard {
     public void get() {
-      FileApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "getFileSelection", JBusClient.quote(FileApp.jbusClient.pack));
+      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "getFileSelection", null);
     }
 
     public void set(String fileset) {
-      FileApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "setFileSelection", JBusClient.quote(JBusClient.encodeString(fileset)));
+      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "setFileSelection", new Object[] {fileset});
     }
 
     public void clear() {
-      FileApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "clearFileSelection", "");
+      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "clearFileSelection", null);
     }
   }
 

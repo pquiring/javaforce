@@ -11,7 +11,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class PartitionEditorApp extends javax.swing.JFrame {
 
@@ -21,9 +21,9 @@ public class PartitionEditorApp extends javax.swing.JFrame {
   public PartitionEditorApp() {
     initComponents();
     JFLog.init(JF.getUserPath() + "/.jfparted.log", true);
-    jbusClient = new JBusClient(null, null);
-    jbusClient.start();
-    jbusClient.call("org.jflinux.jfsystemmgr", "stopAutoMounter", "");  //annoying
+    jbusClient = new JBusClient(null);
+    jbusClient.connect();
+    jbusClient.invoke("javaforce.jflinux.system", "stopAutoMounter", null);  //annoying
     setContentPane(new PartitionEditorPanel(true));
     setPosition();
   }
@@ -60,7 +60,7 @@ public class PartitionEditorApp extends javax.swing.JFrame {
   }// </editor-fold>//GEN-END:initComponents
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-    jbusClient.call("org.jflinux.jfsystemmgr", "startAutoMounter", "");
+    jbusClient.invoke("javaforce.jflinux.system", "startAutoMounter", null);
     System.exit(0);
   }//GEN-LAST:event_formWindowClosing
 

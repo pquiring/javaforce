@@ -13,7 +13,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class MainPanel extends javax.swing.JPanel {
 
@@ -26,8 +26,8 @@ public class MainPanel extends javax.swing.JPanel {
     this.frame = frame;
     listVMs();
     if (JF.isJFLinux()) {
-      jbusClient = new JBusClient("org.jflinux.jfqemu.Client" + Math.abs(new Random().nextInt()), new JBusMethods());
-      jbusClient.start();
+      jbusClient = new JBusClient(new JBusMethods());
+      jbusClient.connect();
     } else {
       jflinuxOnly.setVisible(false);
     }
@@ -415,7 +415,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void addVMasService(String xml) {
     try {
-      jbusClient.call("org.jflinux.service.jfqemu", "addVM", "\"" + xml + "\"");
+      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "addVM", new Object[] {xml});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -423,7 +423,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void removeVMasService(String xml) {
     try {
-      jbusClient.call("org.jflinux.service.jfqemu", "removeVM", "\"" + xml + "\"");
+      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "removeVM", new Object[] {xml});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -431,7 +431,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void startVMasService(String xml) {
     try {
-      jbusClient.call("org.jflinux.service.jfqemu", "startVM", "\"" + xml + "\"");
+      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "startVM", new Object[] {xml});
     } catch (Exception e) {
       JFLog.log(e);
     }

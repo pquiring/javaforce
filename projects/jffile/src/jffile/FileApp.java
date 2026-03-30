@@ -19,7 +19,7 @@ import javax.swing.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jni.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 import javaforce.utils.*;
 
 public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, AWTEventListener {
@@ -34,15 +34,14 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     setPosition();
     This = this;
     initDND();
-    int rid = Math.abs(new Random().nextInt());
     JFLog.init(JF.getUserPath() + "/.jffile.log", true);
     Settings.loadSettings();
     if (Settings.settings.defaultView == JFileBrowser.VIEW_LIST) List.setSelected(true);
     if (Settings.settings.defaultView == JFileBrowser.VIEW_DETAILS) Details.setSelected(true);
     NetworkShares.loadShares();
     if (!JF.isWindows()) {
-      jbusClient = new JBusClient("org.jflinux.jffile.j" + rid, new JBusMethods());
-      jbusClient.start();
+      jbusClient = new JBusClient(new JBusMethods());
+      jbusClient.connect();
     }
     localSite = new SiteDetails();
     localSite.host = "localhost";
@@ -513,7 +512,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     String path = placesPath.get(idx);
     if (!path.startsWith("/media/")) return;
     JFLog.log("umount: " + path);
-    jbusClient.call("org.jflinux.jfsystemmgr", "umount", "\"" + path + "\"");
+    jbusClient.invoke("org.jflinux.jfsystemmgr", "umount", new Object[]{path});
   }//GEN-LAST:event_unmountActionPerformed
 
   private void showHiddenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHiddenActionPerformed
@@ -581,7 +580,10 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
     Settings.saveSettings();
-    if (jbusClient != null) jbusClient.close();
+    if (jbusClient != null) {
+      jbusClient.disconnect();
+      jbusClient = null;
+    }
     closeTabs();
     KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
     Toolkit.getDefaultToolkit().removeAWTEventListener(this);
@@ -999,7 +1001,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     String newName = JFAWT.getString("Enter a new name", name);
     inDialog = false;
     if (newName == null) return;
-    jbusClient.call("org.jflinux.jfsystemmgr", "renameDevice", "\"" + name + "\",\"" + newName + "\"");
+    jbusClient.invoke("javaforce.jflinux.system", "renameDevice", new Object[] {name, newName});
   }
 
   private void closeTabs() {
@@ -1124,7 +1126,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
   }
 
   public class JBusMethods {
-    public void rescanMedia() {
+    public boolean rescanMedia() {
       //a request to rename a device label has succeeded
       //or umount() succeeded
       //or autoMounter mounted something
@@ -1141,19 +1143,22 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
           }
         }
       });
+      return true;
     }
-    public void storageInfo(String dev, String volName, String fsType, String mountPt) {
-      if (drives == null) return;
+    public boolean storageInfo(String dev, String volName, String fsType, String mountPt) {
+      if (drives == null) return false;
       drives.storageInfo(dev, volName, fsType, mountPt);
+      return true;
     }
-    public void getFileSelection(String fs) {
+    public boolean getFileSelection(String fs) {
       //call paste in JFileBrowser
-      if (fs == null) return;
+      if (fs == null) return false;
       int idx = tabs.getSelectedIndex();
-      if (idx == -1) return;
+      if (idx == -1) return false;
       Site site = (Site)tabs.getSelectedComponent();
-      if (site == null) return;
-      site.getFocusBrowser().paste(JBusClient.decodeString(fs));
+      if (site == null) return false;
+      site.getFocusBrowser().paste(fs);
+      return true;
     }
   }
 }
