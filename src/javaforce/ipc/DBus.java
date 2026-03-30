@@ -6,7 +6,7 @@ package javaforce.ipc;
  *  - Linux:Unix Sockets
  *  - Windows:Pipes
  *  - invoking remote method and returning value
- *  - signals
+ *  - signals (broadcasting method to all subscribed clients)
  *
  * Supported Data Types:
  *  - java.lang.Byte
@@ -318,7 +318,7 @@ public class DBus implements IPC {
   }
   private Object lock = new Object();
   private ArrayList<Signal> clients = new ArrayList<>();
-  private boolean subscribe(String bus, String method) {
+  private boolean signal_add_client(String bus, String method) {
     synchronized (lock) {
       Signal signal = new Signal();
       signal.method = method;
@@ -327,11 +327,16 @@ public class DBus implements IPC {
     }
     return true;
   }
-  private boolean unsubscribe(String bus, String signal) {
+  private boolean signal_remove_client(String bus, String method) {
     synchronized (lock) {
-      clients.remove(bus);
+      for(Signal client : clients) {
+        if (client.bus.equals(bus) && client.method.equals(method)) {
+          clients.remove(client);
+          return true;
+        }
+      }
     }
-    return true;
+    return false;
   }
 
   /** Invokes a method in all bus members that have subscribed to the method.
@@ -359,6 +364,26 @@ public class DBus implements IPC {
       }
     }
     return true;
+  }
+
+  /** Subscribe to a signal from another client. */
+  public boolean subscribe(String sender, String method) {
+    try {
+      return (boolean)invoke(sender, "subscribe", new Object[] {method});
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /** Unsubscribe to a signal from another client. */
+  public boolean unsubscribe(String sender, String method) {
+    try {
+      return (boolean)invoke(sender, "subscribe", new Object[] {method});
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
   }
 
   private Object write_lock = new Object();
@@ -839,11 +864,11 @@ public class DBus implements IPC {
           String signal = (String)args[0];
           switch (member) {
             case "subscribe":
-              subscribe(sender, signal);
+              signal_add_client(sender, signal);
               write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {true});
               break;
             case "unsubscribe":
-              unsubscribe(sender, signal);
+              signal_remove_client(sender, signal);
               write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {true});
               break;
           }

@@ -184,7 +184,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
     scanning = true;
     if (!isBTEnabled()) {
       enabling = true;
-      Dock.jbusServer.invoke("org.jflinux.jfnetworkmgr", "enableBTdevice",
+      Dock.jbusServer.invoke("org.jflinux.network", "enableBTdevice",
         new Object[] {deviceList[deviceIdx*2]});
       setStatus("Status : Enabling controller...");
       return;
