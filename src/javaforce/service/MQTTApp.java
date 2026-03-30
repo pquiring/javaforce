@@ -8,13 +8,10 @@ package javaforce.service;
  */
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class MQTTApp extends javax.swing.JFrame {
 
@@ -28,22 +25,23 @@ public class MQTTApp extends javax.swing.JFrame {
     img.loadPNG(this.getClass().getResourceAsStream("/javaforce/icons/mqtt.png"));
     new Thread() {
       public void run() {
-        Random r = new Random();
-        busClient = new JBusClient(MQTTServer.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(MQTTServer.getBusPort());
-        busClient.start();
-        busClient.call(MQTTServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(MQTTServer.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(MQTTServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(MQTTServer.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "restart", null);
   }
 
   /**
@@ -186,32 +184,13 @@ public class MQTTApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(MQTTServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    boolean res = (boolean)busClient.invoke(MQTTServer.serviceBus, "genKeys", null);
+    if (res) {
+      JFAWT.showMessage("GenKeys", "OK");
+    } else {
+      JFAWT.showError("GenKeys", "Error");
+    }
   }
 
   public JBusClient busClient;
-
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-    public void getKeys(String status) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (status.equals("OK")) {
-            JFAWT.showMessage("GenKeys", "OK");
-          } else {
-            JFAWT.showError("GenKeys", "Error");
-          }
-        }
-      });
-    }
-  }
 }

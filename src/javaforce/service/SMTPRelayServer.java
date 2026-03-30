@@ -1,6 +1,6 @@
 package javaforce.service;
 
-/** SMTPRelay
+/** SMTP Relay Server
  *
  * Logs into POP3 service periodically and re-sends all messages to another SMTP service.
  *
@@ -15,9 +15,9 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
-public class SMTPRelay {
+public class SMTPRelayServer {
 
   private Server server;
   private String pop3_host;
@@ -42,7 +42,7 @@ public class SMTPRelay {
 
   private static boolean debug = false;
 
-  public final static String busPack = "net.sf.jfsmtprelay";
+  public final static String serviceBus = "javaforce.jfsmtprelay";
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtprelay.cfg";
@@ -50,14 +50,6 @@ public class SMTPRelay {
 
   public static String getLogFile() {
     return JF.getLogPath() + "/jfsmtprelay.log";
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33011;
-    } else {
-      return 777;
-    }
   }
 
   private class Server extends Thread {
@@ -68,9 +60,8 @@ public class SMTPRelay {
       JFLog.log("SMTPRelay : Starting service");
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         active = true;
         while (active) {
           relay();
@@ -98,6 +89,10 @@ public class SMTPRelay {
   public void stop() {
     if (server == null) return;
     server.active = false;
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
+    }
     server = null;
   }
 
@@ -336,52 +331,43 @@ public class SMTPRelay {
   }
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
-    service = new SMTPRelay();
+    service = new SMTPRelayServer();
     service.start();
   }
 
   public static void serviceStop() {
     JFLog.log("SMTPRelay : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     service.stop();
   }
 
-  private static SMTPRelay service;
+  private static SMTPRelayServer service;
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(service.config)));
+    public String getConfig() {
+      return service.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       service.stop();
-      service = new SMTPRelay();
+      service = new SMTPRelayServer();
       service.start();
+      return true;
     }
   }
 }

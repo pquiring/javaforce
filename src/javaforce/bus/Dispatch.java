@@ -1,4 +1,4 @@
-package javaforce.jbus;
+package javaforce.bus;
 
 /** Message Dispatch interface.
  *
@@ -6,5 +6,5 @@ package javaforce.jbus;
  */
 
 public interface Dispatch {
-  public void onMessage(String cmd);
+  public Object onMessage(String method, Object[] args);
 }

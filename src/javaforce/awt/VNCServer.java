@@ -14,9 +14,9 @@ import java.awt.event.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
 import javaforce.jni.*;
 import javaforce.utils.*;
+import javaforce.bus.*;
 
 public class VNCServer {
   public final static String busPack = "net.sf.jfvnc";
@@ -82,9 +82,9 @@ public class VNCServer {
       session_server.stop();
       session_server = null;
     }
-    if (busClient != null) {
-      busClient.close();
-      busClient = null;
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     if (web != null) {
       web.stop();
@@ -98,7 +98,6 @@ public class VNCServer {
   private Server server;
   private ServerSocket ss;
   private VNCSessionServer session_server;
-  private JBusClient busClient;
   private boolean active;
   private boolean service_mode;
   private static boolean debug = false;
@@ -321,9 +320,8 @@ public class VNCServer {
   private class Server extends Thread {
     public void run() {
       VNCRobot robot;
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
+      busServer = new JBusServer(busPack, new JBusMethods());
+      busServer.connect();
       while (active) {
         try {
           Socket s = ss.accept();
@@ -649,28 +647,13 @@ public class VNCServer {
     JFLog.init(getLogFile(), true);
     service = new VNCServer();
     service.start();
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
   }
 
   public static void serviceStop() {
     service.stop();
     if (busServer != null) {
-      busServer.close();
+      busServer.disconnect();
       busServer = null;
-    }
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33015;
-    } else {
-      return 777;
     }
   }
 
@@ -755,35 +738,37 @@ public class VNCServer {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
+    public String getConfig() {
       byte[] cfg = JF.readFile(getConfigFile());
       if (cfg == null) cfg = new byte[0];
       String config = new String(cfg);
-      service.busClient.call(pack, "getConfig", JBusClient.quote(JBusClient.encodeString(config)));
+      return config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
       } catch (Exception e) {
         JFLog.log(e);
       }
+      return true;
     }
-    public void restart() {
+    public boolean restart() {
       service.stop();
       service = new VNCServer();
       service.start();
+      return true;
     }
-    public void getStatus(String pack) {
+    public String getStatus() {
       String status = null;
       if (service != null) {
         status = service.getStatus();
       } else {
         status = "Service not running!";
       }
-      service.busClient.call(pack, "getStatus", JBusClient.quote(JBusClient.encodeString(status)));
+      return status;
     }
   }
 }

@@ -13,7 +13,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class ProxyApp extends javax.swing.JFrame {
 
@@ -29,21 +29,23 @@ public class ProxyApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(ProxyServer.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(ProxyServer.getBusPort());
-        busClient.start();
-        busClient.call(ProxyServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(ProxyServer.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(ProxyServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(ProxyServer.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(ProxyServer.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(ProxyServer.serviceBus, "restart", null);
   }
 
   /**
@@ -162,17 +164,4 @@ public class ProxyApp extends javax.swing.JFrame {
   }
 
   public JBusClient busClient;
-
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-  }
 }

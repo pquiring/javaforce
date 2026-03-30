@@ -14,11 +14,11 @@ import javax.net.ssl.*;
 import java.security.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class ProxyServer {
 
-  public final static String busPack = "net.sf.jfproxy";
+  public final static String serviceBus = "javaforce.jfproxy";
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfproxy.cfg";
@@ -59,7 +59,10 @@ public class ProxyServer {
     try {
       ss.close();
     } catch (Exception e) {}
-    busClient.close();
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
+    }
     //close list
     Session sess;
     while (list.size() > 0) {
@@ -97,9 +100,8 @@ public class ProxyServer {
       Socket s;
       Session sess;
       loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
+      busServer = new JBusServer(serviceBus, new JBusMethods());
+      busServer.connect();
       if (filtersecure) {
         JFLog.log("Setting up secure server...");
         keyPath = JF.getConfigPath() + "/jfproxy";
@@ -965,64 +967,42 @@ public class ProxyServer {
     }
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      proxy.busClient.call(pack, "getConfig", proxy.busClient.quote(proxy.busClient.encodeString(proxy.config)));
+    public String getConfig() {
+      return proxy.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       proxy.stop();
       proxy = new ProxyServer();
       proxy.start();
+      return true;
     }
   }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33003;
-    } else {
-      return 777;
-    }
-  }
-
-  public static void main(String[] args) {
-  }
-
-  //Win32 Service
 
   private static ProxyServer proxy;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     proxy = new ProxyServer();
     proxy.start();
   }
 
   public static void serviceStop() {
     JFLog.log("Proxy : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     proxy.stop();
   }
 }

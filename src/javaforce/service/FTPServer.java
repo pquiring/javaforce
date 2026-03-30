@@ -11,13 +11,13 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import javaforce.bus.*;
 
 import javaforce.*;
 import javaforce.net.*;
-import javaforce.jbus.*;
 
 public class FTPServer {
-  public final static String busPack = "net.sf.jfftp";
+  public final static String serviceBus = "javaforce.jfftp";
 
   public static boolean debug = false;
 
@@ -29,14 +29,6 @@ public class FTPServer {
 
   public static String getLogFile() {
     return JF.getLogPath() + "/jfftp.log";
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33013;
-    } else {
-      return 777;
-    }
   }
 
   private Server server;
@@ -80,9 +72,8 @@ public class FTPServer {
       JFLog.log("FTP : Starting service");
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         for(int p : ports) {
           ServerWorker worker = new ServerWorker(p, false);
           worker.start();
@@ -128,6 +119,10 @@ public class FTPServer {
     }
     synchronized(server) {
       server.notify();
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server = null;
   }
@@ -960,28 +955,16 @@ public class FTPServer {
   private static FTPServer ftp;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     ftp = new FTPServer();
     ftp.start();
   }
 
   public static void serviceStop() {
     JFLog.log("FTP : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     ftp.stop();
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static boolean createKeys() {
@@ -993,33 +976,36 @@ public class FTPServer {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      ftp.busClient.call(pack, "getConfig", ftp.busClient.quote(ftp.busClient.encodeString(ftp.config)));
+    public String getConfig() {
+      return ftp.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       ftp.stop();
       ftp = new FTPServer();
       ftp.start();
+      return true;
     }
 
-    public void genKeys(String pack) {
+    public boolean genKeys() {
       if (createKeys()) {
         JFLog.log("Generated Keys");
-        ftp.busClient.call(pack, "getKeys", ftp.busClient.quote("OK"));
+        return true;
       } else {
-        ftp.busClient.call(pack, "getKeys", ftp.busClient.quote("ERROR"));
+        return false;
       }
     }
   }

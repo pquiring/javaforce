@@ -17,10 +17,10 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.net.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class SMTPServer {
-  public final static String busPack = "net.sf.jfsmtp";
+  public final static String serviceBus = "javaforce.jfsmtp";
 
   public static boolean debug = false;
 
@@ -51,14 +51,6 @@ public class SMTPServer {
     String mail = path.toString();
     new File(mail).mkdirs();
     return mail;
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33009;
-    } else {
-      return 777;
-    }
   }
 
   private static SMTPServer smtp;
@@ -110,9 +102,8 @@ public class SMTPServer {
       active = true;
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         for(int p : ports) {
           ServerWorker worker = new ServerWorker(p, false);
           worker.start();
@@ -158,6 +149,10 @@ public class SMTPServer {
         s.close();
       }
       clients.clear();
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server = null;
   }
@@ -641,28 +636,16 @@ public class SMTPServer {
   }
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     smtp = new SMTPServer();
     smtp.start();
   }
 
   public static void serviceStop() {
     JFLog.log("SMTP : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     smtp.stop();
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static boolean createKeys() {
@@ -674,18 +657,20 @@ public class SMTPServer {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      smtp.busClient.call(pack, "getConfig", smtp.busClient.quote(smtp.busClient.encodeString(smtp.config)));
+    public String getConfig() {
+      return smtp.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
     public void restart() {
@@ -695,12 +680,12 @@ public class SMTPServer {
       smtp.start();
     }
 
-    public void genKeys(String pack) {
+    public boolean genKeys() {
       if (createKeys()) {
         JFLog.log("Generated Keys");
-        smtp.busClient.call(pack, "getKeys", smtp.busClient.quote("OK"));
+        return true;
       } else {
-        smtp.busClient.call(pack, "getKeys", smtp.busClient.quote("ERROR"));
+        return false;
       }
     }
   }

@@ -9,4 +9,4 @@
  *
  * TODO : Implement this using Linux:DBus, Windows:Pipes
  */
-package javaforce.jbus;
+package javaforce.bus;

@@ -12,7 +12,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class VNCApp extends javax.swing.JFrame {
 
@@ -29,21 +29,23 @@ public class VNCApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(VNCServer.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(VNCServer.getBusPort());
-        busClient.start();
-        busClient.call(VNCServer.busPack, "getConfig", JBusClient.quote(busClient.pack));
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String vncconfig = (String)busClient.invoke(VNCServer.busPack, "getConfig", null);
+        config.setText(vncconfig);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(VNCServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.invoke(VNCServer.busPack, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(VNCServer.busPack, "restart", "");
+    busClient.invoke(VNCServer.busPack, "restart", null);
   }
 
   /**
@@ -193,28 +195,11 @@ public class VNCApp extends javax.swing.JFrame {
   }
 
   public void requestStatus() {
-    busClient.call(VNCServer.busPack, "getStatus", JBusClient.quote(busClient.pack));
+    String status = (String)busClient.invoke(VNCServer.busPack, "getStatus", null);
+    if (viewStatus != null) {
+      viewStatus.setText(status);
+    }
   }
 
   public JBusClient busClient;
-
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-    public void getStatus(String status) {
-      if (debug) JFLog.log("gotStatus=" + status);
-      status = JBusClient.decodeString(status);
-      if (viewStatus != null) {
-        viewStatus.setText(status);
-      }
-    }
-  }
 }

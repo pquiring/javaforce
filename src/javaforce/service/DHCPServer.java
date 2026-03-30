@@ -18,11 +18,11 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class DHCPServer {
 
-  public final static String busPack = "net.sf.jfdhcp";
+  public final static String serviceBus = "javaforce.jfdhcp";
 
   public static boolean debug = false;
 
@@ -104,9 +104,8 @@ public class DHCPServer {
       JFLog.log("DHCP : Starting service");
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         if (!validConfig()) {
           throw new Exception("invalid config");
         }
@@ -146,9 +145,9 @@ public class DHCPServer {
       ds = hosts.get(a).ds;
       if (ds != null) ds.close();
     }
-    if (busClient != null) {
-      busClient.close();
-      busClient = null;
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server.active = false;
     synchronized(server) {
@@ -996,36 +995,30 @@ public class DHCPServer {
     }
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      dhcp.busClient.call(pack, "getConfig", dhcp.busClient.quote(dhcp.busClient.encodeString(dhcp.config)));
+    public String getConfig() {
+      return dhcp.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       dhcp.stop();
       dhcp = new DHCPServer();
       dhcp.start();
-    }
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33004;
-    } else {
-      return 777;
+      return true;
     }
   }
 
@@ -1034,23 +1027,12 @@ public class DHCPServer {
   private static DHCPServer dhcp;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     dhcp = new DHCPServer();
     dhcp.start();
   }
 
   public static void serviceStop() {
     JFLog.log("DHCP : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     dhcp.stop();
   }
 }

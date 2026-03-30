@@ -13,7 +13,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class SMTPRelayApp extends javax.swing.JFrame {
 
@@ -28,21 +28,23 @@ public class SMTPRelayApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(SMTPRelay.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(SMTPRelay.getBusPort());
-        busClient.start();
-        busClient.call(SMTPRelay.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(SMTPRelayServer.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(SMTPRelay.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(SMTPRelayServer.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(SMTPRelay.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(SMTPRelayServer.serviceBus, "restart", null);
   }
 
   /**
@@ -170,26 +172,13 @@ public class SMTPRelayApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(new File(SMTPRelay.getLogFile()));
+      viewer = new ViewLog(new File(SMTPRelayServer.getLogFile()));
       viewer.setTitle("SMTPRelay Log");
     }
     viewer.setVisible(true);
   }
 
   public JBusClient busClient;
-
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-  }
 
   private void showHelp() {
     JFAWT.openURL("http://jfsmtprelay.sf.net/help.html");

@@ -8,12 +8,10 @@ package javaforce.service;
  */
 
 import java.io.*;
-import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class DNSApp extends javax.swing.JFrame {
 
@@ -27,22 +25,23 @@ public class DNSApp extends javax.swing.JFrame {
     setIconImage(img.getImage());
     new Thread() {
       public void run() {
-        Random r = new Random();
-        busClient = new JBusClient(DNSServer.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(DNSServer.getBusPort());
-        busClient.start();
-        busClient.call(DNSServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(DNSServer.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(DNSServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(DNSServer.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(DNSServer.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(DNSServer.serviceBus, "restart", null);
   }
 
   /**
@@ -151,6 +150,7 @@ public class DNSApp extends javax.swing.JFrame {
   // End of variables declaration//GEN-END:variables
 
   public ViewLog viewer;
+  public JBusClient busClient;
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
@@ -158,20 +158,5 @@ public class DNSApp extends javax.swing.JFrame {
       viewer.setTitle("DNS Log");
     }
     viewer.setVisible(true);
-  }
-
-  public JBusClient busClient;
-
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
   }
 }

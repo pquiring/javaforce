@@ -8,12 +8,10 @@ package javaforce.service;
  */
 
 import java.io.*;
-import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class POP3App extends javax.swing.JFrame {
 
@@ -27,22 +25,23 @@ public class POP3App extends javax.swing.JFrame {
     setIconImage(img.getImage());
     new Thread() {
       public void run() {
-        Random r = new Random();
-        busClient = new JBusClient(POP3Server.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(POP3Server.getBusPort());
-        busClient.start();
-        busClient.call(POP3Server.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(POP3Server.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(POP3Server.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(POP3Server.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "restart", null);
   }
 
   /**
@@ -202,32 +201,13 @@ public class POP3App extends javax.swing.JFrame {
 
   public JBusClient busClient;
 
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-    public void getKeys(String status) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (status.equals("OK")) {
-            JFAWT.showMessage("GenKeys", "OK");
-          } else {
-            JFAWT.showError("GenKeys", "Error");
-          }
-        }
-      });
-    }
-  }
-
   private void genKeys() {
-    busClient.call(POP3Server.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    boolean res = (boolean)busClient.invoke(POP3Server.serviceBus, "genKeys", null);
+    if (res) {
+      JFAWT.showMessage("GenKeys", "OK");
+    } else {
+      JFAWT.showError("GenKeys", "Error");
+    }
   }
 
   private void showHelp() {

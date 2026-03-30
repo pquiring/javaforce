@@ -18,10 +18,10 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.net.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class POP3Server {
-  public final static String busPack = "net.sf.jfpop3";
+  public final static String serviceBus = "javaforce.jfpop3";
 
   public static boolean debug = false;
 
@@ -48,14 +48,6 @@ public class POP3Server {
     String mail = path.toString();
     new File(mail).mkdirs();
     return mail;
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33010;
-    } else {
-      return 777;
-    }
   }
 
   private Server server;
@@ -101,9 +93,8 @@ public class POP3Server {
       JFLog.log("POP3 : Starting service");
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         for(int p : ports) {
           ServerWorker worker = new ServerWorker(p, false);
           worker.start();
@@ -144,6 +135,10 @@ public class POP3Server {
         s.close();
       }
       clients.clear();
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
   }
 
@@ -767,28 +762,16 @@ public class POP3Server {
   private static POP3Server pop3;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     pop3 = new POP3Server();
     pop3.start();
   }
 
   public static void serviceStop() {
     JFLog.log("POP3 : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     pop3.stop();
   }
 
   private static JBusServer busServer;
-  private JBusClient busClient;
   private String config;
 
   public static boolean createKeys() {
@@ -800,33 +783,35 @@ public class POP3Server {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      pop3.busClient.call(pack, "getConfig", pop3.busClient.quote(pop3.busClient.encodeString(pop3.config)));
+    public String getConfig() {
+      return pop3.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       pop3.stop();
       pop3 = new POP3Server();
       pop3.start();
+      return true;
     }
-
-    public void genKeys(String pack) {
+    public boolean genKeys() {
       if (createKeys()) {
         JFLog.log("Generated Keys");
-        pop3.busClient.call(pack, "getKeys", pop3.busClient.quote("OK"));
+        return true;
       } else {
-        pop3.busClient.call(pack, "getKeys", pop3.busClient.quote("ERROR"));
+        return false;
       }
     }
   }

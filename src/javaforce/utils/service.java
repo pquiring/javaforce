@@ -5,12 +5,12 @@ package javaforce.utils;
  *
  * @author pquiring
  */
-import java.util.*;
-
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class service {
+
+  private static final String systemBus = "javaforce.jflinux.system";
 
   public static void usage() {
     System.out.println("jfservice <command> <service>\n --status-all = show all services\n command = start | stop | status | restart\n");
@@ -18,34 +18,31 @@ public class service {
   }
 
   public static void statusAll() {
-    Random r = new Random();
-    int id = Math.abs(r.nextInt());
-    JBusClient client = new JBusClient("org.jflinux.servicemanager.j" + id, new JBusMethods());
-    client.start();
-    client.call("org.jflinux.jsystemmgr", "serviceStatusAll", "\"" + client.pack + "\"");
-    //wait 4 ever
-    while (true) {
-      JF.sleep(5000);
-    }
+    JBusClient client = new JBusClient(null);
+    client.connect();
+    String status = (String)client.invoke(systemBus, "serviceStatusAll", null);
+    System.out.println(status.replaceAll("[|]", "\n"));
   }
 
   public static void runCommand(String cmd, String svc) {
-    Random r = new Random();
-    int id = Math.abs(r.nextInt());
-    JBusClient client = new JBusClient("org.jflinux.servicemanager.j" + id, new JBusMethods());
-    client.start();
+    JBusClient client = new JBusClient(null);
+    client.connect();
     if (cmd.equals("start")) {
       System.out.println("Requested Service:" + svc + ":start");
-      client.call("org.jflinux.jsystemmgr", "startService", "\"" + svc + "\"");
+      boolean res = (boolean)client.invoke(systemBus, "startService", new Object[] {svc});
+      if (!res ) {
+        JFLog.log("Error:Failed to start service");
+      }
     } else if (cmd.equals("stop")) {
       System.out.println("Requested Service:" + svc + ":stop");
-      client.call("org.jflinux.jsystemmgr", "stopService", "\"" + svc + "\"");
+      boolean res = (boolean)client.invoke(systemBus, "stopService", new Object[] {svc});
+      if (!res ) {
+        JFLog.log("Error:Failed to start service");
+      }
     } else if (cmd.equals("status")) {
       System.out.println("Requested Service:" + svc + ":status");
-      client.call("org.jflinux.service." + svc, "status", "\"" + client.pack + "\"");
-      //wait upto 5 secs
-      JF.sleep(5000);
-      System.out.println("no response");
+      String status = (String)client.invoke("javaforce.jflinux.service." + svc, "status", null);
+      System.out.println(status.replaceAll("[|]", "\n"));
     } else if (cmd.equals("restart")) {
       runCommand(svc, "stop");
       JF.sleep(2500);
@@ -71,18 +68,5 @@ public class service {
     }
     runCommand(args[0], args[1]);
     System.exit(0);
-  }
-
-  public static class JBusMethods {
-
-    public void serviceStatusAll(String status) {
-      System.out.println(status.replaceAll("[|]", "\n"));
-      System.exit(1);
-    }
-
-    public void serviceStatus(String status) {
-      System.out.println(status.replaceAll("[|]", "\n"));
-      System.exit(1);
-    }
   }
 }

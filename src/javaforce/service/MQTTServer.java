@@ -10,12 +10,12 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 import static javaforce.MQTT.*;
 
 public class MQTTServer {
-  public final static String busPack = "net.sf.jfmqtt";
+  public final static String serviceBus = "javaforce.jfmqtt";
 
   private static MQTTServer service;
   private static JBusServer busServer;
@@ -25,11 +25,8 @@ public class MQTTServer {
     service = new MQTTServer();
     service.start();
     if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
+      busServer = new JBusServer(serviceBus, new JBusMethods());
+      busServer.connect();
     }
     for(String arg : args) {
       switch (arg) {
@@ -44,18 +41,6 @@ public class MQTTServer {
     if (service != null) {
       service.stop();
       service = null;
-    }
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33014;
-    } else {
-      return 777;
     }
   }
 
@@ -94,12 +79,12 @@ public class MQTTServer {
       forwarder.stop();
       forwarder = null;
     }
-    if (busClient != null) {
-      busClient.close();
-      busClient = null;
-    }
     synchronized(server) {
       server.notify();
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server = null;
   }
@@ -300,7 +285,6 @@ public class MQTTServer {
   private KeyMgmt keys;
 
   private MQTTForward forwarder;
-  private JBusClient busClient;
 
   private static int bufsiz = 4096;
 
@@ -328,9 +312,6 @@ public class MQTTServer {
             forwarder.start(config.forward, config.forward_port, forward_keys);
           }
         }
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
         if (config.port > 0) {
           ServerWorker worker = new ServerWorker(config.port, false);
           worker.start();
@@ -953,33 +934,35 @@ public class MQTTServer {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
+    public String getConfig() {
       byte[] cfg = JF.readFile(getConfigFile());
       if (cfg == null) cfg = new byte[0];
-      String config = new String(cfg);
-      service.busClient.call(pack, "getConfig", JBusClient.quote(JBusClient.encodeString(config)));
+      return new String(cfg);
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       service.stop();
       service = new MQTTServer();
       service.start();
+      return true;
     }
-    public void genKeys(String pack) {
+    public boolean genKeys() {
       if (createKeys()) {
         JFLog.log("Generated Keys");
-        service.busClient.call(pack, "getKeys", service.busClient.quote("OK"));
+        return true;
       } else {
-        service.busClient.call(pack, "getKeys", service.busClient.quote("ERROR"));
+        return false;
       }
     }
   }

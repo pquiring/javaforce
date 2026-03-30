@@ -16,12 +16,12 @@ import java.io.*;
 import java.nio.*;
 import java.net.*;
 import java.util.*;
+import javaforce.bus.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
 
 public class DNSServer {
-  public final static String busPack = "net.sf.jfdns";
+  public final static String serviceBus = "javaforce.jfdns";
 
   public static boolean debug = false;
 
@@ -63,9 +63,8 @@ public class DNSServer {
       JFLog.log("DNS : Starting service");
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         for(int a=0;a<5;a++) {
           try {
             ds = new DatagramSocket(53);
@@ -101,6 +100,10 @@ public class DNSServer {
     if (server == null) return;
     server.active = false;
     try { if (ds != null) ds.close(); } catch (Exception e) {}
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
+    }
     server = null;
   }
 
@@ -615,38 +618,32 @@ public class DNSServer {
     }
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      dns.busClient.call(pack, "getConfig", dns.busClient.quote(dns.busClient.encodeString(dns.config)));
+    public String getConfig() {
+      return dns.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       dns.stop();
       dns = new DNSServer();
       dns.start();
-    }
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33005;
-    } else {
-      return 777;
+      return true;
     }
   }
 
@@ -655,23 +652,12 @@ public class DNSServer {
   private static DNSServer dns;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     dns = new DNSServer();
     dns.start();
   }
 
   public static void serviceStop() {
     JFLog.log("DNS : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     dns.stop();
   }
 }

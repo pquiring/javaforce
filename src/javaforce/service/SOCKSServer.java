@@ -17,10 +17,10 @@ import javax.net.ssl.*;
 
 import javaforce.*;
 import javaforce.net.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class SOCKSServer {
-  public final static String busPack = "net.sf.jfsocks";
+  public final static String serviceBus = "javaforce.jfsocks";
 
   public static boolean debug = false;
 
@@ -30,14 +30,6 @@ public class SOCKSServer {
 
   public static String getLogFile() {
     return JF.getLogPath() + "/jfsocks.log";
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33008;
-    } else {
-      return 777;
-    }
   }
 
   private ServerSocket ss;
@@ -175,9 +167,8 @@ public class SOCKSServer {
       active = true;
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
         if (secure) {
           JFLog.log("CreateServerSocketSSL");
           keys.setRootAlias("jfsocks");
@@ -264,6 +255,10 @@ public class SOCKSServer {
         f.close();
       }
       forward_remote_workers.clear();
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server = null;
   }
@@ -1066,28 +1061,16 @@ public class SOCKSServer {
   private static SOCKSServer socks;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     socks = new SOCKSServer();
     socks.start();
   }
 
   public static void serviceStop() {
     JFLog.log("SOCKS : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     socks.stop();
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static boolean createKeys() {
@@ -1099,55 +1082,57 @@ public class SOCKSServer {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      socks.busClient.call(pack, "getConfig", socks.busClient.quote(socks.busClient.encodeString(socks.config)));
+    public String getConfig() {
+      return socks.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       socks.stop();
       socks = new SOCKSServer();
       socks.start();
+      return true;
     }
 
-    public void genKeys(String pack) {
+    public boolean genKeys() {
       if (createKeys()) {
         JFLog.log("Generated Keys");
-        socks.busClient.call(pack, "genKeysStatus", socks.busClient.quote("OK"));
+        return true;
       } else {
-        socks.busClient.call(pack, "genKeysStatus", socks.busClient.quote("ERROR"));
+        return false;
       }
     }
 
-    public void getKeys(String pack) {
+    public byte[] getKeys() {
       byte[] data;
       try {
         FileInputStream fis = new FileInputStream(getKeyFile());
         data = fis.readAllBytes();
         fis.close();
-        socks.busClient.call(pack, "giveKeys", socks.busClient.encodeByteArray(data));
+        return data;
       } catch (Exception e) {
         JFLog.log(e);
-        socks.busClient.call(pack, "giveKeys", socks.busClient.quote(""));
+        return null;  //???
       }
     }
 
-    public void setKeys(String pack, String data) {
-      byte[] keys = JBusClient.decodeByteArray(data);
-      if (JF.writeFile(getKeyFile(), keys)) {
-        socks.busClient.call(pack, "setKeysStatus", socks.busClient.quote("OK"));
+    public boolean setKeys(byte[] data) {
+      if (JF.writeFile(getKeyFile(), data)) {
+        return true;
       } else {
-        socks.busClient.call(pack, "setKeysStatus", socks.busClient.quote("ERROR"));
+        return false;
       }
     }
   }

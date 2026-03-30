@@ -8,13 +8,11 @@ package javaforce.service;
  */
 
 import java.io.*;
-import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.awt.security.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class SOCKSApp extends javax.swing.JFrame {
 
@@ -28,22 +26,23 @@ public class SOCKSApp extends javax.swing.JFrame {
     setIconImage(img.getImage());
     new Thread() {
       public void run() {
-        Random r = new Random();
-        busClient = new JBusClient(SOCKSServer.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(SOCKSServer.getBusPort());
-        busClient.start();
-        busClient.call(SOCKSServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(SOCKSServer.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(SOCKSServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(SOCKSServer.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "restart", null);
   }
 
   /**
@@ -219,58 +218,13 @@ public class SOCKSApp extends javax.swing.JFrame {
     viewer.setVisible(true);
   }
 
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-    public void genKeysStatus(String status) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (status.equals("OK")) {
-            JFAWT.showMessage("GenKeys", "OK");
-          } else {
-            JFAWT.showError("GenKeys", "Error");
-          }
-        }
-      });
-    }
-    public void giveKeys(String str) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (keymgr != null) return;
-          String tmpfile = JF.getUserPath() + "/.jfsocks-edit.key";
-          byte[] data = JBusClient.decodeByteArray(str);
-          JF.writeFile(tmpfile, data);
-          keymgr = new KeyMgr(tmpfile, "password");
-          keymgr.setRootAlias("jfsocks");
-          keymgr.setVisible(true);
-          keymgr = null;
-          data = JF.readFile(tmpfile);
-          busClient.call(SOCKSServer.busPack, "setKeys", "\"" + busClient.pack + "\"" + "," + JBusClient.encodeByteArray(data));
-        }
-      });
-    }
-    public void setKeysStatus(String status) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (status.equals("OK")) {
-            JFAWT.showMessage("SetKeys", "OK");
-          } else {
-            JFAWT.showError("SetKeys", "Error");
-          }
-        }
-      });
-    }
-  }
-
   private void genKeys() {
-    busClient.call(SOCKSServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "genKeys", null);
+    if (res) {
+      JFAWT.showMessage("GenKeys", "OK");
+    } else {
+      JFAWT.showError("GenKeys", "Error");
+    }
   }
 
   private void showHelp() {
@@ -281,8 +235,23 @@ public class SOCKSApp extends javax.swing.JFrame {
     return JF.getConfigPath() + "/jfsocks.key";
   }
 
-  private void keymgr() {
-    if (keymgr != null) return;
-    busClient.call(SOCKSServer.busPack, "getKeys", "\"" + busClient.pack + "\"");
+  /** This will read keys from server, edit them in KeyMgr and then send them back to server. */
+  private boolean keymgr() {
+    if (keymgr != null) return false;
+    byte[] data = (byte[])busClient.invoke(SOCKSServer.serviceBus, "getKeys", null);
+    String tmpfile = JF.getUserPath() + "/.jfsocks-edit.key";
+    JF.writeFile(tmpfile, data);
+    keymgr = new KeyMgr(tmpfile, "password");
+    keymgr.setRootAlias("jfsocks");
+    keymgr.setVisible(true);
+    keymgr = null;
+    data = JF.readFile(tmpfile);
+    boolean res = (boolean)busClient.invoke(SOCKSServer.serviceBus, "setKeys", new Object[] {data});
+    if (res) {
+      JFAWT.showMessage("SetKeys", "OK");
+    } else {
+      JFAWT.showError("SetKeys", "Error");
+    }
+    return res;
   }
 }

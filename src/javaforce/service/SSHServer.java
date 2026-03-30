@@ -19,16 +19,15 @@ import org.apache.sshd.scp.server.*;
 
 import javaforce.*;
 import javaforce.net.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class SSHServer {
-  public final static String busPack = "net.sf.jfssh";
+  public final static String serviceBus = "javaforce.jfssh";
 
   public static boolean debug = false;
 
   private static SSHServer ssh;
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
   private static String ldap_domain = null;
   private static String ldap_server = null;
@@ -52,33 +51,14 @@ public class SSHServer {
     return JF.getLogPath() + "/jfssh.log";
   }
 
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33012;
-    } else {
-      return 777;
-    }
-  }
-
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     ssh = new SSHServer();
     ssh.start();
   }
 
   public static void serviceStop() {
     JFLog.log("SSH : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     ssh.stop();
   }
 
@@ -95,9 +75,8 @@ public class SSHServer {
       active = true;
       try {
         loadConfig();
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
+        busServer = new JBusServer(serviceBus, new JBusMethods());
+        busServer.connect();
 
         sshd = SshServer.setUpDefaultServer();
         sshd.setPort(bind.port);
@@ -172,6 +151,10 @@ public class SSHServer {
     if (sshd != null) {
       try {sshd.stop();} catch (Exception e) {}
       sshd = null;
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server = null;
   }
@@ -290,25 +273,28 @@ public class SSHServer {
   }
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      ssh.busClient.call(pack, "getConfig", ssh.busClient.quote(ssh.busClient.encodeString(ssh.config)));
+    public String getConfig() {
+      return ssh.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       ssh.stop();
       ssh = new SSHServer();
       ssh.start();
+      return true;
     }
   }
 }

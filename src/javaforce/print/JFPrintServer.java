@@ -23,21 +23,13 @@ import javax.print.attribute.*;
 import javax.print.attribute.standard.*;
 
 import javaforce.*;
-import javaforce.jbus.*;
 import javaforce.service.*;
+import javaforce.bus.*;
 
 public class JFPrintServer {
-  private static final int port = 33202;
+  private static final int web_port = 33202;
 
-  public final static String busPack = "net.sf.jfprint";
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33016;
-    } else {
-      return 777;
-    }
-  }
+  public final static String serviceBus = "javaforce.jfprint";
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfprint.cfg";
@@ -61,9 +53,9 @@ public class JFPrintServer {
       server.cancel();
       server = null;
     }
-    if (busClient != null) {
-      busClient.close();
-      busClient = null;
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
   }
 
@@ -74,16 +66,21 @@ public class JFPrintServer {
       JFLog.setRetention(30);
       JFLog.log("JFPrint : Starting service");
       loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
+      busServer = new JBusServer(serviceBus, new JBusMethods());
+      busServer.connect();
       web = new WebServer();
-      web.start(this, port);
+      web.start(this, web_port);
     }
 
     public void cancel() {
-      web.stop();
-      web = null;
+      if (web != null) {
+        web.stop();
+        web = null;
+      }
+      if (busServer != null) {
+        busServer.disconnect();
+        busServer = null;
+      }
     }
 
     private String getHeader(WebRequest req, String name, String defaultValue) {
@@ -259,51 +256,42 @@ public class JFPrintServer {
     }
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config = "#JFPrintServer";
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      service.busClient.call(pack, "getConfig", service.busClient.quote(service.busClient.encodeString(service.config)));
+    public String getConfig() {
+      return service.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       service.stop();
       service = new JFPrintServer();
       service.start();
+      return true;
     }
   }
 
   private static JFPrintServer service;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     service = new JFPrintServer();
     service.start();
   }
 
   public static void serviceStop() {
     JFLog.log("JFPrint : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     service.stop();
   }
 }

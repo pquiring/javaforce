@@ -27,13 +27,12 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 import javaforce.*;
-import javaforce.jbus.JBusClient;
-import javaforce.jbus.JBusServer;
+import javaforce.bus.*;
 
 public class STUNServer {
   private static int defaultLifeTime = 600;
 
-  public final static String busPack = "net.sf.jfstun";
+  public final static String serviceBus = "javaforce.jfstun";
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfstun.cfg";
@@ -209,6 +208,10 @@ public class STUNServer {
       } catch (Exception e) {
         JFLog.log(e);
       }
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
   }
 
@@ -822,36 +825,30 @@ public class STUNServer {
     }
   }
 
-  private static JBusServer busServer;
-  private JBusClient busClient;
+  private JBusServer busServer;
   private String config;
 
   public static class JBusMethods {
-    public void getConfig(String pack) {
-      stun.busClient.call(pack, "getConfig", stun.busClient.quote(stun.busClient.encodeString(stun.config)));
+    public String getConfig() {
+      return stun.config;
     }
-    public void setConfig(String cfg) {
+    public boolean setConfig(String cfg) {
       //write new file
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
-        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.write(cfg.getBytes());
         fos.close();
+        return true;
       } catch (Exception e) {
         JFLog.log(e);
+        return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       stun.stop();
       stun = new STUNServer();
       stun.start();
-    }
-  }
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33006;
-    } else {
-      return 777;
+      return true;
     }
   }
 
@@ -866,32 +863,20 @@ public class STUNServer {
       JFLog.setRetention(30);
       JFLog.log("STUN : Starting service");
 
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
+      busServer = new JBusServer(serviceBus, new JBusMethods());
+      busServer.connect();
       doStart();
     }
   }
   private static STUNServer stun;
 
   public static void serviceStart(String[] args) {
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     stun = new STUNServer();
     stun.start();
   }
 
   public static void serviceStop() {
     JFLog.log("STUN : Stopping service");
-    if (busServer != null) {
-      busServer.close();
-      busServer = null;
-    }
     stun.stop();
   }
 }

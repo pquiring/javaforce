@@ -13,7 +13,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jbus.*;
+import javaforce.bus.*;
 
 public class SMTPApp extends javax.swing.JFrame {
 
@@ -28,21 +28,23 @@ public class SMTPApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(SMTPServer.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(SMTPServer.getBusPort());
-        busClient.start();
-        busClient.call(SMTPServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient = new JBusClient(null);
+        busClient.connect();
+        String cfg = (String)busClient.invoke(SMTPServer.serviceBus, "getConfig", null);
+        config.setText(cfg);
+        config.setEnabled(true);
+        save.setEnabled(true);
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(SMTPServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "setConfig", new Object[] {config.getText()});
   }
 
   public void restart() {
-    busClient.call(SMTPServer.busPack, "restart", "");
+    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "restart", null);
   }
 
   /**
@@ -202,32 +204,13 @@ public class SMTPApp extends javax.swing.JFrame {
 
   public JBusClient busClient;
 
-  public class JBusMethods {
-    public void getConfig(String cfg) {
-      final String _cfg = cfg;
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          config.setText(JBusClient.decodeString(_cfg));
-          config.setEnabled(true);
-          save.setEnabled(true);
-        }
-      });
-    }
-    public void getKeys(String status) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (status.equals("OK")) {
-            JFAWT.showMessage("GenKeys", "OK");
-          } else {
-            JFAWT.showError("GenKeys", "Error");
-          }
-        }
-      });
-    }
-  }
-
   private void genKeys() {
-    busClient.call(SMTPServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    boolean res = (boolean)busClient.invoke(SMTPServer.serviceBus, "genKeys", null);
+    if (res) {
+      JFAWT.showMessage("GenKeys", "OK");
+    } else {
+      JFAWT.showError("GenKeys", "Error");
+    }
   }
 
   private void showHelp() {
