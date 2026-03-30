@@ -40,12 +40,42 @@ public class JBus implements EndPoint {
   }
 
   /** Invoke a method on another member on the message bus. */
-  public Object invoke(String dest, String method, Object[] args) {
+  public Object invoke(String dest, String method, Object... args) {
     try {
       return dbus.invoke(dest, method, args);
     } catch (Exception e) {
       JFLog.log(e);
       return null;
+    }
+  }
+
+  /** Invoke a method on all clients that have subscribed to method. */
+  public Object signal(String dest, String method, Object... args) {
+    try {
+      return dbus.signal(method, args);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  /** Subscribe to a signal from another client. */
+  public boolean subscribe(String sender, String method) {
+    try {
+      return dbus.subscribe(sender, method);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /** Unsubscribe to a signal from another client. */
+  public boolean unsubscribe(String sender, String method) {
+    try {
+      return dbus.unsubscribe(sender, method);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
     }
   }
 
