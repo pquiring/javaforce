@@ -17,6 +17,12 @@ package javaforce.ipc;
  *  - java.lang.Boolean
  *  - java.lang.String
  *  - byte[]
+ *  - short[]
+ *  - int[]
+ *  - long[]
+ *  - double[]
+ *  - boolean[]
+ *  - String[]
  *  - javaforce.UShort (not recommended) (primitive type is 'short')
  *  - javaforce.UInteger (not recommended) (primitive type is 'int')
  *  - javaforce.ULong (not recommended) (primitive type is 'long')
