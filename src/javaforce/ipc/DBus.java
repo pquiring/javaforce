@@ -380,11 +380,8 @@ public class DBus implements IPC {
 
   /** Invokes a method in all bus members that have subscribed to the method.
    *
-   * To subscribe to a method:
-   *   invoke("sender", "subscribe", "signalName");
-   *
-   * To unsubscribe to a method:
-   *   invoke("sender", "unsubscribe", "signalName");
+   * @see subscribe()
+   * @see unsubscribe()
    */
   public boolean signal(String method, Object[] args) {
     ArrayList<Signal> remove = new ArrayList<>();
@@ -418,7 +415,7 @@ public class DBus implements IPC {
   /** Unsubscribe to a signal from another client. */
   public boolean unsubscribe(String sender, String method) {
     try {
-      return (boolean)invoke(sender, "subscribe", new Object[] {method});
+      return (boolean)invoke(sender, "unsubscribe", new Object[] {method});
     } catch (Exception e) {
       JFLog.log(e);
       return false;
