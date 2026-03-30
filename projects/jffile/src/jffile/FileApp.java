@@ -512,7 +512,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     String path = placesPath.get(idx);
     if (!path.startsWith("/media/")) return;
     JFLog.log("umount: " + path);
-    jbusClient.invoke("org.jflinux.jfsystemmgr", "umount", new Object[]{path});
+    jbusClient.invoke("org.jflinux.jfsystemmgr", "umount", path);
   }//GEN-LAST:event_unmountActionPerformed
 
   private void showHiddenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHiddenActionPerformed
@@ -1001,7 +1001,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     String newName = JFAWT.getString("Enter a new name", name);
     inDialog = false;
     if (newName == null) return;
-    jbusClient.invoke("javaforce.jflinux.system", "renameDevice", new Object[] {name, newName});
+    jbusClient.invoke("javaforce.jflinux.system", "renameDevice", name, newName);
   }
 
   private void closeTabs() {

@@ -447,7 +447,7 @@ public class Startup implements ShellProcessListener {
     }
     public void upgradesAvailable(int upgrades) {
       //TODO : broadcast
-      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "updatesAvailable", new Object[] {upgrades});
+      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "updatesAvailable", upgrades);
     }
     public void mount(String dev) {
       JFLog.log("mount:" + dev);
@@ -517,12 +517,12 @@ public class Startup implements ShellProcessListener {
     }
     public void broadcastWAPList(String list) {
       //TODO : broadcast
-      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "setWAPList", new Object[] {list});
+      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "setWAPList", list);
     }
     public void broadcastVideoChanged(String reason) {
       //TODO : broadcast
-      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "videoChanged", new Object[] {reason});
-      jbusServer.invoke("javaforce.jflinux.jfconfig.*", "videoChanged", new Object[] {reason});
+      jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "videoChanged", reason);
+      jbusServer.invoke("javaforce.jflinux.jfconfig.*", "videoChanged", reason);
     }
   }
   private static String getProperty(String name) {

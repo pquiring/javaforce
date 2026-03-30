@@ -457,7 +457,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
       JFAWT.showError("Error", "Failed to apply configuration");
       return;
     }
-    ConfigApp.jbusClient.invoke("javaforce.jflinux.system", "broadcastVideoChanged", new Object[] {"jfconfig"});
+    ConfigApp.jbusClient.invoke("javaforce.jflinux.system", "broadcastVideoChanged", "jfconfig");
   }
 
   private void saveMonitor() {

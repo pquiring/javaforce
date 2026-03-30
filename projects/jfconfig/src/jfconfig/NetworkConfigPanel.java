@@ -143,7 +143,7 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
       NetworkControl.sethostname(hostname.getText());
     } else {
       //send to jfnetworkmgr
-      ConfigApp.jbusClient.invoke("javaforce.jflinux.network", "setHostname", new Object[] {hostname.getText()});
+      ConfigApp.jbusClient.invoke("javaforce.jflinux.network", "setHostname", hostname.getText());
     }
     //TODO : domain
   }

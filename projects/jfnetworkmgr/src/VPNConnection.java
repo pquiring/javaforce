@@ -134,7 +134,7 @@ public class VPNConnection extends Thread implements ShellProcessListener {
 //test
       sp.run(cmd.toArray(new String[0]), true);
     } catch (Exception e) {
-      Server.This.jbusServer.invoke(bus, "vpnFailed", new Object[] {id});
+      Server.This.jbusServer.invoke(bus, "vpnFailed", id);
       Server.This.pendingVPN = null;
       JFLog.log(e);
     }
@@ -172,13 +172,13 @@ primary   DNS address 192.168.0.3
       if (lns[a].indexOf("failed") != -1) {
         passwdFile.delete();
         failed = true;
-        Server.This.jbusServer.invoke(bus, "vpnFailed", new Object[] {id});
+        Server.This.jbusServer.invoke(bus, "vpnFailed", id);
         Server.This.pendingVPN = null;
       }
       if (lns[a].indexOf("succeeded") != -1) {
         passwdFile.delete();
         connected = true;
-        Server.This.jbusServer.invoke(bus, "vpnSuccess", new Object[] {id});
+        Server.This.jbusServer.invoke(bus, "vpnSuccess", id);
         Server.This.pendingVPN = null;
       }
       if (lns[a].startsWith("local  IP address ")) {

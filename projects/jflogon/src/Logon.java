@@ -532,11 +532,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void getWAPList() {
-    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getWAPList", null);
+    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getWAPList");
   }
 
   private void getVPNList() {
-    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getVPNList", null);
+    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getVPNList");
   }
 
   private static class WAP {
@@ -674,7 +674,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
-    jbusServer.invoke("org.jflinux.jfnetworkmgr", cancelNetworkMethod, null);
+    jbusServer.invoke("org.jflinux.jfnetworkmgr", cancelNetworkMethod);
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -684,7 +684,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void disconnectVPN(String name) {
-    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectVPN", new Object[] {name});
+    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectVPN", name);
   }
 
   private void connectVPN(String name) {
@@ -692,12 +692,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectVPN", new Object[] {name});
+      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectVPN", name);
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectWAP" , new Object[]{ssid});
+    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectWAP" , ssid);
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -711,8 +711,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectWAP",
-        new Object[] { dev, ssid, encType, key});
+      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectWAP", dev, ssid, encType, key);
     }
   }
 

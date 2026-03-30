@@ -131,7 +131,7 @@ public class AutoMounter extends Thread implements FolderListener {
         mounts.add(mount);
       }
       //TODO : broadcast /media change
-      Startup.jbusServer.invoke("javaforce.jflinux.jffile", "rescanMedia", null);
+      Startup.jbusServer.invoke("javaforce.jflinux.jffile", "rescanMedia");
     }
   }
 
@@ -166,7 +166,7 @@ public class AutoMounter extends Thread implements FolderListener {
     File folder = new File(mount.media);
     folder.delete();
     //TODO : broadcast /media change
-    Startup.jbusServer.invoke("javaforce.jflinux.jffile", "rescanMedia", null);
+    Startup.jbusServer.invoke("javaforce.jflinux.jffile", "rescanMedia");
   }
 
   public String getVolumeName(String dev, Mount mount) {

@@ -211,8 +211,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       link = getDrive(drive);
     }
     dialog = this;
-    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount",
-      new Object[] {uri, target, pass, link});
+    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount", uri, target, pass, link);
   }//GEN-LAST:event_acceptActionPerformed
 
   private void guestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guestActionPerformed
@@ -350,8 +349,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     JBusClient jbusClient = new JBusClient(new JBusMethods());
     jbusClient.connect();
     JFLog.log("mount:calling:" + "org.jflinux.jfdesktop." + System.getenv("JID"));
-    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount",
-      new Object[] {uri, target, pass, link});
+    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount", uri, target, pass, link);
   }
 
   private void setState(boolean state) {

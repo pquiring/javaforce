@@ -132,7 +132,7 @@ public class Server {
       newWapList += genWAPList(iface, output);
     }
     wapList = newWapList;
-    jbusServer.invoke("javaforce.jflinux.system", "broadcastWAPList", new Object[]{wapList});
+    jbusServer.invoke("javaforce.jflinux.system", "broadcastWAPList", wapList);
   }
 
   private String genWAPList(String dev, String[] scan) {

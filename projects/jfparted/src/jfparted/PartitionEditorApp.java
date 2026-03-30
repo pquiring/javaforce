@@ -23,7 +23,7 @@ public class PartitionEditorApp extends javax.swing.JFrame {
     JFLog.init(JF.getUserPath() + "/.jfparted.log", true);
     jbusClient = new JBusClient(null);
     jbusClient.connect();
-    jbusClient.invoke("javaforce.jflinux.system", "stopAutoMounter", null);  //annoying
+    jbusClient.invoke("javaforce.jflinux.system", "stopAutoMounter");  //annoying
     setContentPane(new PartitionEditorPanel(true));
     setPosition();
   }
@@ -60,7 +60,7 @@ public class PartitionEditorApp extends javax.swing.JFrame {
   }// </editor-fold>//GEN-END:initComponents
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-    jbusClient.invoke("javaforce.jflinux.system", "startAutoMounter", null);
+    jbusClient.invoke("javaforce.jflinux.system", "startAutoMounter");
     System.exit(0);
   }//GEN-LAST:event_formWindowClosing
 

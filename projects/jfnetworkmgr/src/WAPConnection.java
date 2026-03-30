@@ -28,7 +28,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
       if (encType.equals("WEP")) {
         if (key.length() > 0) {
           if (!NetworkControl.wifi_set_ssid(dev, ssid, key)) {
-            Server.This.jbusServer.invoke(bus, "wapFailed", null);
+            Server.This.jbusServer.invoke(bus, "wapFailed");
             Server.This.pendingWAP = null;
             return;
           }
@@ -96,7 +96,7 @@ class WAPConnection extends Thread implements ShellProcessListener {
               JF.sleep(250);
               NetworkControl.up(dev);
             }
-            Server.This.jbusServer.invoke(bus, "wapFailed", null);
+            Server.This.jbusServer.invoke(bus, "wapFailed");
             Server.This.pendingWAP = null;
             return;
           }

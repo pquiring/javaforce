@@ -415,7 +415,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void addVMasService(String xml) {
     try {
-      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "addVM", new Object[] {xml});
+      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "addVM", xml);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -423,7 +423,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void removeVMasService(String xml) {
     try {
-      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "removeVM", new Object[] {xml});
+      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "removeVM", xml);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -431,7 +431,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void startVMasService(String xml) {
     try {
-      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "startVM", new Object[] {xml});
+      jbusClient.invoke("javaforce.jflinux.service.jfqemu", "startVM", xml);
     } catch (Exception e) {
       JFLog.log(e);
     }

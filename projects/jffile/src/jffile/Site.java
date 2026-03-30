@@ -876,15 +876,15 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
   public static class SiteFileClipboard implements FileClipboard {
     public void get() {
-      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "getFileSelection", null);
+      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "getFileSelection");
     }
 
     public void set(String fileset) {
-      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "setFileSelection", new Object[] {fileset});
+      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "setFileSelection", fileset);
     }
 
     public void clear() {
-      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "clearFileSelection", null);
+      FileApp.jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "clearFileSelection");
     }
   }
 

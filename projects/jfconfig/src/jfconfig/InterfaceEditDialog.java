@@ -391,7 +391,7 @@ public class InterfaceEditDialog extends javax.swing.JDialog {
       NetworkControl.reload();
     } else {
       //send to jfnetworkmgr
-      ConfigApp.jbusClient.invoke("javaforce.jflinux.network", "setConfig", new Object[] {cfg.toString()});
+      ConfigApp.jbusClient.invoke("javaforce.jflinux.network", "setConfig", cfg.toString());
     }
   }
 
