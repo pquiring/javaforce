@@ -673,11 +673,12 @@ public class SMTPServer {
         return false;
       }
     }
-    public void restart() {
+    public boolean restart() {
       JFLog.log("restart");
       smtp.stop();
       smtp = new SMTPServer();
       smtp.start();
+      return true;
     }
 
     public boolean genKeys() {

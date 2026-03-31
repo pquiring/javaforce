@@ -26,7 +26,7 @@ public class MainPanel extends javax.swing.JPanel {
     this.frame = frame;
     listVMs();
     if (JF.isJFLinux()) {
-      jbusClient = new JBusClient(new JBusMethods());
+      jbusClient = new JBusClient(null);
       jbusClient.connect();
     } else {
       jflinuxOnly.setVisible(false);
@@ -447,8 +447,5 @@ public class MainPanel extends javax.swing.JPanel {
       JFLog.log(e);
       JFAWT.showError("Error", "Failed to start as service");
     }
-  }
-
-  public class JBusMethods {
   }
 }

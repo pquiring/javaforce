@@ -2709,24 +2709,29 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   public class JBusMethods {
-    public void run() {
+    public boolean run() {
       doRun();
+      return true;
     }
-    public void show() {
+    public boolean show() {
       showDock();
+      return true;
     }
-    public void getWelcome(String bus) {
+    public boolean getWelcome(String bus) {
       jbusServer.invoke(bus, "setWelcome", config.welcome);
+      return true;
     }
-    public void setWelcome(String state) {
+    public boolean setWelcome(String state) {
       config.welcome = state.equals("true");
       saveConfig();
+      return true;
     }
-    public void upgradesAvailable(int upgrades) {
+    public boolean upgradesAvailable(int upgrades) {
       setUpgradesAvailable(upgrades);
+      return true;
     }
-    public void volume(String lvl) {
-      if ((lvl == null) || (lvl.length() == 0)) return;
+    public boolean volume(String lvl) {
+      if ((lvl == null) || (lvl.length() == 0)) return false;
       if (isDockHidden) showDock();
       if (soundWindow == null) showSound();
       if (lvl.equals("mute")) {
@@ -2736,83 +2741,97 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       } else if (lvl.charAt(0) == '-') {
         soundWindow.adjustVolume(-JF.atoi(lvl.substring(1)));
       }
+      return true;
     }
-    public void vpnFailed(String id) {
+    public boolean vpnFailed(String id) {
       stopNetworkTimer();
       showNetworkFailed();
+      return true;
     }
-    public void vpnSuccess(String id) {
+    public boolean vpnSuccess(String id) {
       stopNetworkTimer();
+      return true;
     }
-    public void wapFailed() {
+    public boolean wapFailed() {
       stopNetworkTimer();
       showNetworkFailed();
+      return true;
     }
-    public void wapSuccess() {
+    public boolean wapSuccess() {
       stopNetworkTimer();
+      return true;
     }
-    public void btFailed() {
-      if (btDialog == null) return;
+    public boolean btFailed() {
+      if (btDialog == null) return false;
       btDialog.failed();
+      return true;
     }
-    public void btSuccess() {
-      if (btDialog == null) return;
+    public boolean btSuccess() {
+      if (btDialog == null) return false;
       btDialog.success();
+      return true;
     }
-    public void setBTdevices(String list) {
-      if (btDialog == null) return;
+    public boolean setBTdevices(String list) {
+      if (btDialog == null) return false;
       btDialog.devices(list);
+      return true;
     }
-    public void soundSinkVolumeChanged(int idx, int volume) {
+    public boolean soundSinkVolumeChanged(int idx, int volume) {
       if (idx == PulseAudio.sinks.get(0).idx) SoundWindow.setVolume(volume);
       for(int a=0;a<config.sink.length;a++) {
         if (config.sink[a].idx == idx) {
           config.sink[a].volume = volume;
           saveConfig();
-          return;
+          return true;
         }
       }
+      return false;
     }
-    public void soundSourceVolumeChanged(int idx, int volume) {
+    public boolean soundSourceVolumeChanged(int idx, int volume) {
       for(int a=0;a<config.source.length;a++) {
         if (config.source[a].idx == idx) {
           config.source[a].volume = volume;
           saveConfig();
-          return;
+          return true;
         }
       }
+      return false;
     }
-    public void soundSinkPortChanged(int idx, String port) {
+    public boolean soundSinkPortChanged(int idx, String port) {
       for(int a=0;a<config.sink.length;a++) {
         if (config.sink[a].idx == idx) {
           config.sink[a].activePort = port;
           saveConfig();
-          return;
+          return true;
         }
       }
+      return false;
     }
-    public void soundSourcePortChanged(int idx, String port) {
+    public boolean soundSourcePortChanged(int idx, String port) {
       for(int a=0;a<config.source.length;a++) {
         if (config.source[a].idx == idx) {
           config.source[a].activePort = port;
           saveConfig();
-          return;
+          return true;
         }
       }
+      return false;
     }
-    public void soundProfileChanged(int idx, String profile) {
+    public boolean soundProfileChanged(int idx, String profile) {
       for(int a=0;a<config.card.length;a++) {
         if (config.card[a].idx == idx) {
           config.card[a].activeProfile = profile;
           saveConfig();
-          return;
+          return true;
         }
       }
+      return false;
     }
-    public void timeAdjusted() {
+    public boolean timeAdjusted() {
       setupClockTimer();
+      return true;
     }
-    public void videoChanged(String reason) {
+    public boolean videoChanged(String reason) {
       //TODO : popup window asking to load jfconfig:display
       if (reason.equals("jfconfig")) {
         updateConfig();
@@ -2825,11 +2844,13 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
           }
         });
       }
+      return true;
     }
-    public void powerChanged() {
+    public boolean powerChanged() {
       updateBattery();
+      return true;
     }
-    public void mount(String callback, String uri, String mount, String pass, String link) {
+    public boolean mount(String callback, String uri, String mount, String pass, String link) {
       JFLog.log("mount:" + uri + "," + mount);
       final String _callback = callback;
       final String _uri = uri;
@@ -2845,27 +2866,33 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
           }
         }
       }.start();
+      return true;
     }
-    public void setWAPList(String list) {
+    public boolean setWAPList(String list) {
       wapList = list;
+      return true;
     }
-    public void setVPNList(String list) {
+    public boolean setVPNList(String list) {
       vpnList = list;
       showNetworkPopup();
+      return true;
     }
     //jffile : file ops (should use clipboard)
-    public void setFileSelection(String selection) {
+    public boolean setFileSelection(String selection) {
       JFLog.log("setSelection:" + selection);
       fileSelection = selection;
+      return true;
     }
-    public void getFileSelection(String bus) {
-      if (fileSelection == null) return;
+    public boolean getFileSelection(String bus) {
+      if (fileSelection == null) return false;
       JFLog.log("getSelection:" + bus);
       jbusServer.invoke(bus, "getFileSelection", fileSelection);
+      return true;
     }
-    public void clearFileSelection() {
+    public boolean clearFileSelection() {
       JFLog.log("clearSelection");
       fileSelection = null;
+      return true;
     }
   }
 

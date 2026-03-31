@@ -262,25 +262,33 @@ public class Server {
 
   public class JBusMethods {
 //System API
-    public void setHostname(String hostname) {
+    public boolean setHostname(String hostname) {
       Linux.setHostname(hostname);
+      return true;
     }
 //Network API
-    public void notifyUp(String dev) {}
-    public void notifyDown(String dev) {}
-    public void ifUp(String dev) {
+    public boolean notifyUp(String dev) {
+      return true;
+    }
+    public boolean notifyDown(String dev) {
+      return true;
+    }
+    public boolean ifUp(String dev) {
       JFLog.log("ifUp:" + dev);
-      if (isIFactive(dev)) {JFLog.log("already up"); return;}
+      if (isIFactive(dev)) {JFLog.log("already up"); return false;}
       startIF(dev);
+      return true;
     }
-    public void ifDown(String dev) {
+    public boolean ifDown(String dev) {
       JFLog.log("ifDown:" + dev);
-      if (!isIFactive(dev)) {JFLog.log("already down"); return;}
+      if (!isIFactive(dev)) {JFLog.log("already down"); return false;}
       stopIF(dev);
+      return true;
     }
-    public void setConfig(String dev, String cfg) {
+    public boolean setConfig(String dev, String cfg) {
       NetworkConfig nc = NetworkConfig.fromNetworkd(cfg.split("\n"));
       NetworkControl.setConfig(dev, nc);
+      return true;
     }
 //WIFI API
     public String getWAPList() {
@@ -295,7 +303,7 @@ public class Server {
       wapConnections.add(wap);
       return true;
     }
-    public void disconnectWAP(String pack, String dev) {
+    public boolean disconnectWAP(String pack, String dev) {
       ShellProcess sp = new ShellProcess();
       sp.run(new String[] {"iwconfig", dev, "essid", "any"}, false);
       //stop wpa_supplicant if used
@@ -307,11 +315,13 @@ public class Server {
           a++;
         }
       }
+      return true;
     }
-    public void cancelWAP() {
-      if (pendingWAP == null) return;
+    public boolean cancelWAP() {
+      if (pendingWAP == null) return false;
       pendingWAP.close();
       pendingWAP = null;
+      return true;
     }
 //BlueTooth API
     public String getBTdevices() {

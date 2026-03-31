@@ -427,33 +427,38 @@ public class Startup implements ShellProcessListener {
   }
 
   public static class JBusMethods {
-    public void sleep() {
-      if (globalConfig.disableSleep) return;
+    public boolean sleep() {
+      if (globalConfig.disableSleep) return false;
       try {
         JF.exec(new String[] {"systemctl", "suspend"});
       } catch (Exception e) {
         JFLog.log(e);
       }
+      return true;
     }
-    public void reboot() {
-      if (globalConfig.disableSleep) return;
+    public boolean reboot() {
+      if (globalConfig.disableSleep) return false;
       JFLog.log("Reboot requested on Session stop");
       rebootFlag = true;
+      return true;
     }
-    public void shutdown() {
-      if (globalConfig.disableSleep) return;
+    public boolean shutdown() {
+      if (globalConfig.disableSleep) return false;
       JFLog.log("Shutdown requested on Session stop");
       shutdownFlag = true;
+      return true;
     }
-    public void upgradesAvailable(int upgrades) {
+    public boolean upgradesAvailable(int upgrades) {
       //TODO : broadcast
       jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "updatesAvailable", upgrades);
+      return true;
     }
-    public void mount(String dev) {
+    public boolean mount(String dev) {
       JFLog.log("mount:" + dev);
       Startup.autoMounter.mount(dev);
+      return true;
     }
-    public void umount(String path) {
+    public boolean umount(String path) {
       JFLog.log("umount:" + path);
       AutoMounter.Mount mount = Startup.autoMounter.getMount(path);
       if (mount == null) {
@@ -463,6 +468,7 @@ public class Startup implements ShellProcessListener {
         mount.media = path;
       }
       Startup.autoMounter.umount(mount);
+      return true;
     }
     private String cleanName(String name) {
       //filter out bad chars in volume names
@@ -482,13 +488,13 @@ public class Startup implements ShellProcessListener {
       }
       return sb.toString();
     }
-    public void renameDevice(String media, String newName) {
+    public boolean renameDevice(String media, String newName) {
       newName = cleanName(newName);
-      if (newName.length() == 0) return;
+      if (newName.length() == 0) return false;
       //get device name
       AutoMounter.Mount mount = Startup.autoMounter.getMount("/media/" + media);
-      if (mount == null) return;
-      if (mount.fs.equals("iso9660")) return;
+      if (mount == null) return false;
+      if (mount.fs.equals("iso9660")) return false;
       //umount it
       Startup.autoMounter.umount(mount.dev);
       JF.sleep(500);  //just in case
@@ -498,6 +504,7 @@ public class Startup implements ShellProcessListener {
       JF.sleep(500);  //this is needed
       //mount it back
       Startup.autoMounter.mount(mount.dev);
+      return true;
     }
     public String getStorageInfo(String dev) {
       AutoMounter.Mount tmp = new AutoMounter.Mount();
@@ -509,20 +516,24 @@ public class Startup implements ShellProcessListener {
       //TODO : xml , json ???
       return "storageInfo:" + dev + "," + volName + "," + tmp.fs + "," + mountPt;
     }
-    public void stopAutoMounter() {
+    public boolean stopAutoMounter() {
       AutoMounter.paused--;
+      return true;
     }
-    public void startAutoMounter() {
+    public boolean startAutoMounter() {
       AutoMounter.paused++;
+      return true;
     }
-    public void broadcastWAPList(String list) {
+    public boolean broadcastWAPList(String list) {
       //TODO : broadcast
       jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "setWAPList", list);
+      return true;
     }
-    public void broadcastVideoChanged(String reason) {
+    public boolean broadcastVideoChanged(String reason) {
       //TODO : broadcast
       jbusServer.invoke("javaforce.jflinux.jfdesktop.*", "videoChanged", reason);
       jbusServer.invoke("javaforce.jflinux.jfconfig.*", "videoChanged", reason);
+      return true;
     }
   }
   private static String getProperty(String name) {

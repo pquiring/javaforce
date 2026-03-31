@@ -716,26 +716,32 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   public class JBusMethods {
-    public void setWAPList(String list) {
+    public boolean setWAPList(String list) {
       wapList = list;
+      return true;
     }
-    public void setVPNList(String list) {
+    public boolean setVPNList(String list) {
       vpnList = list;
       showNetworkPopup();
+      return true;
     }
-    public void vpnFailed(String id) {
+    public boolean vpnFailed(String id) {
       stopNetworkTimer();
       showNetworkFailed();
+      return true;
     }
-    public void vpnSuccess(String id) {
+    public boolean vpnSuccess(String id) {
       stopNetworkTimer();
+      return true;
     }
-    public void wapFailed() {
+    public boolean wapFailed() {
       stopNetworkTimer();
       showNetworkFailed();
+      return true;
     }
-    public void wapSuccess() {
+    public boolean wapSuccess() {
       stopNetworkTimer();
+      return true;
     }
   }
 

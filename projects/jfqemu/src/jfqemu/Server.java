@@ -119,8 +119,17 @@ public class Server {
     public String status() {
       return "running:" + JF.getPID();
     }
-    public void addVM(String file) {_addVM(file);}
-    public void removeVM(String file) {_removeVM(file);}
-    public void startVM(String file) {_startVM(file);}
+    public boolean addVM(String file) {
+      _addVM(file);
+      return true;
+    }
+    public boolean removeVM(String file) {
+      _removeVM(file);
+      return true;
+    }
+    public boolean startVM(String file) {
+      _startVM(file);
+      return true;
+    }
   }
 }

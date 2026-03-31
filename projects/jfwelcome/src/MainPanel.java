@@ -124,8 +124,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }
 
   public class JBusMethods {
-    public void setWelcome(String state) {
+    public boolean setWelcome(String state) {
       run.setSelected(state.equals("true"));
+      return true;
     }
   }
 

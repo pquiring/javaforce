@@ -371,7 +371,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
   private static MapNetworkShareDialog dialog;
 
   public static class JBusMethods {
-    public void mountSuccess(String uri) {
+    public boolean mountSuccess(String uri) {
       Mappings.addMap(uri, target, pass, link);
       Mappings.saveMaps();
       if (isMain) {
@@ -380,8 +380,9 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       } else {
         dialog.dispose();
       }
+      return true;
     }
-    public void mountFail(String uri) {
+    public boolean mountFail(String uri) {
       if (isMain) {
         System.out.println("Failed");
         System.exit(0);
@@ -389,10 +390,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
         JFAWT.showError("Error", "Failed to connect to share");
         dialog.setState(true);
       }
+      return true;
     }
-  }
-
-  private static String quote(String str) {
-    return "\"" + str + "\"";
   }
 }
