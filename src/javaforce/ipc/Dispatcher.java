@@ -16,7 +16,7 @@ import javaforce.*;
 import static javaforce.ipc.DBus.*;
 
 public class Dispatcher {
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   private Class<?> cls;
   private Object obj;
