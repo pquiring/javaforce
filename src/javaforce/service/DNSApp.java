@@ -25,12 +25,16 @@ public class DNSApp extends javax.swing.JFrame {
     setIconImage(img.getImage());
     new Thread() {
       public void run() {
-        busClient = new JBusClient(null);
-        busClient.connect();
-        String cfg = (String)busClient.invoke(DNSServer.serviceBus, "getConfig");
-        config.setText(cfg);
-        config.setEnabled(true);
-        save.setEnabled(true);
+        try {
+          busClient = new JBusClient(null);
+          busClient.connect();
+          String cfg = (String)busClient.invoke(DNSServer.serviceBus, "getConfig");
+          config.setText(cfg);
+          config.setEnabled(true);
+          save.setEnabled(true);
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
       }
     }.start();
     JFAWT.centerWindow(this);

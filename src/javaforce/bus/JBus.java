@@ -87,10 +87,15 @@ public class JBus implements EndPoint {
   /** Connect to message bus. */
   public boolean connect() {
     try {
-      JFLog.log("JBusClient:starting...");
+      JFLog.log("JBus:starting...");
       dbus = new DBus(this);
-      return dbus.connect();
-    } catch (Exception e3) {
+      boolean res = dbus.connect();
+      if (!res) {
+        JFLog.log("JBus.connect() failed!");
+      }
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
       return false;
     }
   }

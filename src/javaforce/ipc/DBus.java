@@ -990,7 +990,7 @@ public class DBus implements IPC {
       String path = null;
       String sender = null;
       String member = null;
-      String sign = null;
+      String sign = "";
       int cnt = fields.size();
       for(int a=0;a<cnt;a++) {
         Field field = fields.get(a);
