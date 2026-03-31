@@ -10,10 +10,21 @@ See CreateNamedPipe -> Example : Multithreaded Pipe Server
 
 */
 
+bool debug_pipes = false;
+
 JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_pipeCreate
   (JNIEnv *e, jclass c, jstring name, jboolean first)
 {
   const char *cname = e->GetStringUTFChars(name, NULL);
+
+  SECURITY_DESCRIPTOR sd;
+  InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+  // Set DACL to NULL for full access by Everyone
+  SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
+  SECURITY_ATTRIBUTES sa;
+  sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+  sa.lpSecurityDescriptor = &sd;
+  sa.bInheritHandle = FALSE;
 
   int openMode = PIPE_ACCESS_DUPLEX;
   if (first) {
@@ -21,7 +32,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_pipeCreate
   }
   int pipeMode = PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT;
 
-  HANDLE ctx = CreateNamedPipe(cname, openMode, pipeMode, PIPE_UNLIMITED_INSTANCES, 64 * 1024, 64 * 1024, 0, NULL);
+  HANDLE ctx = CreateNamedPipe(cname, openMode, pipeMode, PIPE_UNLIMITED_INSTANCES, 64 * 1024, 64 * 1024, 0, &sa);
 
   e->ReleaseStringUTFChars(name, cname);
 
@@ -69,6 +80,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_pipeWrite
       int error = GetLastError();
       if (error == ERROR_PIPE_BUSY) {  //0xe7
         //try again
+        if (debug_pipes) printf("WinPipe.retry\n");
         continue;
       }
       printf("WinPipe.write() failed:Error=0x%x\n", error);
@@ -80,6 +92,8 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_pipeWrite
       break;
     }
   }
+
+  if (debug_pipes) printf("WinPipe.write success\n");
 
   e->ReleaseStringUTFChars(name, cname);
   e->ReleaseByteArrayElements(buf, cbuf, JNI_ABORT);

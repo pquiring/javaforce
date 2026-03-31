@@ -57,6 +57,7 @@ import javaforce.ipc.transport.*;
 public class DBus implements IPC {
 
   private static final boolean debug = false;
+  private static final boolean debug_reading = false;
 
   private static class Field {
     public byte type;
@@ -254,7 +255,9 @@ public class DBus implements IPC {
 
   /** Connects to message bus. */
   public boolean connect() {
-    return transport.connect(ep.getEndPointName(), this, new Runnable() {
+    String busname = ep.getEndPointName();
+    if (debug) JFLog.log("DBus:busName=" + busname);
+    return transport.connect(busname, this, new Runnable() {
       public void run() {
         reader = new Reader();
         reader.start();
@@ -878,11 +881,11 @@ public class DBus implements IPC {
     ArrayList<Field> fields = new ArrayList<>();
     public void run() {
       while (transport.isAlive()) {
-        if (debug) {
+        if (debug_reading) {
           JFLog.log("DBus.reading...");
         }
         rpkt_len = read(rpkt);
-        if (debug) {
+        if (debug_reading) {
           JFLog.log("DBus.read.length=" + rpkt_len);
         }
         if (rpkt_len < 0) {

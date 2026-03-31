@@ -58,9 +58,9 @@ public class DNSServer {
     public boolean active;
     public void run() {
       active = true;
-      JFLog.append(getLogFile(), false);
+      JFLog.append(getLogFile(), true);
       JFLog.setRetention(30);
-      JFLog.log("DNS : Starting service");
+      JFLog.log("DNS : Starting service/" + JF.getVersion());
       try {
         loadConfig();
         busServer = new JBusServer(serviceBus, new JBusMethods());
@@ -71,6 +71,9 @@ public class DNSServer {
           } catch (Exception e) {
             if (a == 4) {
               JFLog.log(e);
+              while (active) {
+                JF.sleep(100);
+              }
               return;
             }
             JF.sleep(1000);
@@ -623,6 +626,7 @@ public class DNSServer {
 
   public static class JBusMethods {
     public String getConfig() {
+      JFLog.log("getConfig");
       return dns.config;
     }
     public boolean setConfig(String cfg) {

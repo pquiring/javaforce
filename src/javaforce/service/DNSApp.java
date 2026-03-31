@@ -40,12 +40,14 @@ public class DNSApp extends javax.swing.JFrame {
     JFAWT.centerWindow(this);
   }
 
-  public void writeConfig() {
-    boolean res = (boolean)busClient.invoke(DNSServer.serviceBus, "setConfig", new Object[] {config.getText()});
+  public boolean writeConfig() {
+    boolean res = (boolean)busClient.invoke(DNSServer.serviceBus, "setConfig", config.getText());
+    return res;
   }
 
-  public void restart() {
+  public boolean restart() {
     boolean res = (boolean)busClient.invoke(DNSServer.serviceBus, "restart");
+    return res;
   }
 
   /**
@@ -124,7 +126,10 @@ public class DNSApp extends javax.swing.JFrame {
   }// </editor-fold>//GEN-END:initComponents
 
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
-    writeConfig();
+    if (!writeConfig()) {
+      JFAWT.showMessage("Notice", "Settings NOT saved!");
+      return;
+    }
     restart();
     JFAWT.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
