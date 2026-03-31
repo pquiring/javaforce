@@ -36,6 +36,9 @@ package javaforce.ipc;
  *      so caller knows call was successful
  *  - on Linux a dbus conf is installed to allow end points to
  *      use names that begin with "javaforce." (root only)
+ *      Clients should just use a system supplied bus name
+ *      by returning null from EndPoint.getEndPointName();
+ *      Use getBusName() to determine supplied name after connect().
  *  - signal support is implemented internally
  *      DBus does have signal support but is not cross-platform
  *  - there is no way to implement a member with unsigned types
