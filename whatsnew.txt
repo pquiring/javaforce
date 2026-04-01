@@ -1,5 +1,16 @@
 What's new...
 
+Apr 1/2026 : JF/103.0
+  - new : javaforce.ipc.DBus
+    - DBus implementation that supports:
+      - Linux : Unix Sockets (pure java)
+      - Windows : Pipes
+    - DBus is a IPC/RPC system
+  - new : javaforce.bus.JBusServer/Client
+    - replaced TCP server/client with DBus
+    - invoking methods is now more natural
+    - more data types supported
+
 Mar 16/2026 : JF/102.2
   - fix enable debian service
 
