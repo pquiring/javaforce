@@ -323,7 +323,7 @@ public class DBus implements IPC {
    * @param method = method to invoke
    * @param args = arguments
    * @return return value from remote method
-   * @exception thrown if method returned at error message or no reply within timeout duration
+   * @exception Exception thrown if method returned at error message or no reply within timeout duration
    *   Errors could be method not found, mismatch arguments, etc.
    */
   public Object invoke(String dest, String method, Object... args) throws Exception {
@@ -386,8 +386,8 @@ public class DBus implements IPC {
 
   /** Invokes a method in all bus members that have subscribed to the method.
    *
-   * @see subscribe()
-   * @see unsubscribe()
+   * @see subscribe
+   * @see unsubscribe
    */
   public boolean signal(String method, Object... args) {
     ArrayList<Signal> remove = new ArrayList<>();
