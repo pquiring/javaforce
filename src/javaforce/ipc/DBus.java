@@ -309,7 +309,7 @@ public class DBus implements IPC {
 
   private static class Invoke {
     public int serial;  //standard message identifier
-    public boolean dbus;  //org.freedesktop.DBus message
+    public String return_signal;  //return signal
     public Object value;  //return value
     public Object error;  //return error
     public Object lock = new Object();  //timeout/notify lock
@@ -331,7 +331,9 @@ public class DBus implements IPC {
     Invoke invoke = new Invoke();
     invoke.serial = nextSerial();
     if (dest.equals(DBusMessageBus)) {
-      invoke.dbus = true;
+      if (method.equals("RequestName")) {
+        invoke.return_signal = "NameAcquired";
+      }
     }
     synchronized (invoke.lock) {
       synchronized (invokes_lock) {
@@ -973,13 +975,13 @@ public class DBus implements IPC {
               method_call();
               break;
             case MSG_RETURN:
-              method_return();
+              method_return(msg_type);
               break;
             case MSG_ERROR:
               method_error();
               break;
             case MSG_SIGNAL:
-              method_return();
+              method_return(msg_type);
               break;
           }
         } catch (Exception e) {
@@ -1049,7 +1051,7 @@ public class DBus implements IPC {
       if (!(args[0] instanceof String)) return false;
       return true;
     }
-    private void method_return() throws Exception {
+    private void method_return(byte msg_type) throws Exception {
       String path = null;
       String sender = null;
       String member = null;
@@ -1082,13 +1084,31 @@ public class DBus implements IPC {
       }
       Object[] args = read_args(sign);
       synchronized (invokes_lock) {
-        for(Invoke invoke : invokes) {
-          if (invoke.serial == reply_serial || invoke.dbus && dbus) {
-            invoke.value = args[0];
-            synchronized (invoke.lock) {
-              invoke.lock.notify();
+        switch (msg_type) {
+          case MSG_RETURN: {
+            for(Invoke invoke : invokes) {
+              if (invoke.serial == reply_serial) {
+                invoke.value = args[0];
+                synchronized (invoke.lock) {
+                  invoke.lock.notify();
+                }
+                return;
+              }
             }
-            return;
+            break;
+          }
+          case MSG_SIGNAL: {
+            for(Invoke invoke : invokes) {
+              if (invoke.return_signal == null) continue;
+              if (invoke.return_signal.equals(member)) {
+                invoke.value = args[0];
+                synchronized (invoke.lock) {
+                  invoke.lock.notify();
+                }
+                return;
+              }
+            }
+            break;
           }
         }
       }

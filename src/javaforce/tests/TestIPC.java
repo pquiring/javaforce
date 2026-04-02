@@ -12,7 +12,7 @@ import javaforce.ipc.*;
 
 public class TestIPC {
 
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   public static void main(String[] args) {
     if (args.length == 0) {

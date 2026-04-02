@@ -83,6 +83,9 @@ public class UnixSocketTransport extends DBusTransport {
       write_String("BEGIN\r\n");
       start_reader.run();
       busName = DBus_Hello(bus);
+      if (busName == null) {
+        throw new Exception("DBus.Hello() failed");
+      }
       if (debug) {
         JFLog.log("DBus:busName=" + busName);
       }
@@ -91,6 +94,9 @@ public class UnixSocketTransport extends DBusTransport {
           throw new Exception("DBus.RequestName() failed");
         }
         busName = name;
+        if (debug) {
+          JFLog.log("DBus:busName=" + busName);
+        }
       }
       return true;
     } catch (Exception e) {
@@ -149,8 +155,9 @@ public class UnixSocketTransport extends DBusTransport {
   }
 
   private boolean DBus_RequestName(String name, DBus bus) throws Exception {
-    //invoke org.freedesktop.DBus.RequestName(String name, int flags);
+    //invoke org.freedesktop.DBus.RequestName(String name, uint32 flags);
     //flags = 0x04 (do not queue)
+    //NOTE : RequestName() does not return a value but instead sends a signal "NameAcquired(String)"
     Object ret = bus.invoke(DBusMessageBus, "RequestName", name, new UInteger(0x04));
     if (ret == null) return false;
     if (debug) {
