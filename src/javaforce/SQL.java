@@ -23,6 +23,8 @@ public class SQL {
   public static String msSQL = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
   /** MySQL JDBC Class */
   public static String mySQL = "com.mysql.jdbc.Driver";
+  /** PostgreSQL JDBC Class */
+  public static String postgreSQL = "org.postgresql.Driver";
   /** Oracle JDBC Class */
   public static String oracleSQL = "oracle.jdbc.driver.OracleDriver";
   /** jTDS (Microsoft SQL compatible) (jtds.sourceforge.net) */
