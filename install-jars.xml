@@ -45,6 +45,10 @@
     <copyjar name="mysql-jdbc" version="${mysql-jdbc-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-postgresql-jdbc">
+    <copyjar name="postgresql-jdbc" version="${postgresql-jdbc-version}" path="${jarpath}"/>
+  </target>
+
   <!-- bouncycastle -->
 
   <target name="jar-bcprov">
