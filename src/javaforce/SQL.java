@@ -279,7 +279,101 @@ public class SQL {
     return -1;
   }
 
+  public String[] getTables() {
+    ArrayList<String> rows = new ArrayList<String>();
+    java.sql.ResultSet rs = null;
+    java.sql.ResultSetMetaData rsmd = null;
+    String[] types = {"TABLE"};
+    int colcnt;
+    try {
+      rs = conn.getMetaData().getTables(null, null, "%", types);
+      rsmd = rs.getMetaData();
+      colcnt = rsmd.getColumnCount();
+      colNames = new String[colcnt];
+      for(int c=0;c<colcnt;c++) colNames[c] = rsmd.getColumnName(c+1);
+      while (rs.next()) {
+        rows.add(rs.getString("TABLE_NAME"));
+      }
+    } catch (Exception e) {
+      lastException = e;
+      JFLog.log(e);
+      return null;
+    }
+    String[] ret = new String[rows.size()];
+    for(int r=0;r<rows.size();r++) {
+      ret[r] = rows.get(r);
+    }
+    return ret;
+  }
+
   public Exception getLastException() {
     return lastException;
+  }
+
+  /** SQL CLI. */
+  public static void main(String[] args) {
+    if (args.length < 3) {
+      System.out.println("Usage : SQL {sql-type} {connection-string} {command} [args]");
+      System.out.println("  commands:");
+      System.out.println("    select {select-string}");
+      System.out.println("    execute {execute-string}");
+      System.out.println("    gettables");
+      return;
+    }
+    String db_type = args[0];
+    String sql_class = null;
+    String conn_str = args[1];
+    String cmd = args[2];
+    switch (db_type) {
+      case "derbysql": sql_class = derbySQL; break;
+      case "mysql": sql_class = mySQL; break;
+      case "mssql": sql_class = msSQL; break;
+      case "postgresql": sql_class = postgreSQL; break;
+    }
+    if (sql_class == null) {
+      System.out.println("db_type unknown:" + db_type);
+      return;
+    }
+    SQL sql = new SQL();
+    if (!sql.connect(sql_class, conn_str)) {
+      System.out.println("connection failed!");
+      return;
+    }
+    switch (cmd) {
+      case "select": {
+        if (args.length < 4) {
+          System.out.println("Usage : SQL {sql-type} {connection-string} select {query-string}");
+          return;
+        }
+        String[][] data = sql.select(args[3]);
+        for(int row=0;row<data.length;row++) {
+          for(int col=0;col<data[row].length;col++) {
+            System.out.print(data[row][col]);
+            System.out.print(",");
+          }
+          System.out.println("");
+        }
+        break;
+      }
+      case "execute": {
+        if (args.length < 4) {
+          System.out.println("Usage : SQL {sql-type} {connection-string} execute {execute-string}");
+          return;
+        }
+        sql.execute(args[3]);
+        break;
+      }
+      case "gettables": {
+        String[] tables = sql.getTables();
+        for(String table : tables) {
+          System.out.println(table);
+        }
+        break;
+      }
+      default: {
+        System.out.println("unknown cmd:" + cmd);
+        break;
+      }
+    }
   }
 }
