@@ -353,6 +353,7 @@ public class SQL {
       System.out.println("    select {select-string}");
       System.out.println("    execute {execute-string}");
       System.out.println("    gettables");
+      System.out.println("    gettabledesign {table-name}");
       return;
     }
     String db_type = args[0];
@@ -414,7 +415,7 @@ public class SQL {
           System.out.println("Usage : SQL {sql-type} {connection-string} gettabledesign {table}");
           return;
         }
-        System.out.println("Column Names:");
+//        System.out.println("Column Names:");
         String[][] data = sql.getTableDesign(args[3]);
         {
           boolean first = true;
@@ -423,7 +424,8 @@ public class SQL {
             System.out.print(col);
           }
         }
-        System.out.println("\nTable Columns:");
+        System.out.println("");
+//        System.out.println("Table Columns:");
         for(int row=0;row<data.length;row++) {
           boolean first = true;
           for(int col=0;col<data[row].length;col++) {
