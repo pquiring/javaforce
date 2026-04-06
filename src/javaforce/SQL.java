@@ -306,6 +306,41 @@ public class SQL {
     return ret;
   }
 
+  /** Returns design of table
+   * @see colNames for details
+   */
+  public String[][] getTableDesign(String table) {
+    ArrayList<String[]> rows = new ArrayList<String[]>();
+    String[] row;
+    java.sql.ResultSet rs = null;
+    java.sql.ResultSetMetaData rsmd = null;
+    int colcnt;
+    try {
+      DatabaseMetaData metaData = conn.getMetaData();
+      rs = metaData.getColumns(null, null, table, null);
+      rsmd = rs.getMetaData();
+      colcnt = rsmd.getColumnCount();
+      colNames = new String[colcnt];
+      for(int c=0;c<colcnt;c++) colNames[c] = rsmd.getColumnName(c+1);
+      while (rs.next()) {
+        row = new String[colcnt];
+        rows.add(row);
+        for(int c=0;c<colcnt;c++) {
+          row[c] = rs.getString(c+1);
+        }
+      }
+    } catch (Exception e) {
+      lastException = e;
+      JFLog.log(e);
+      return null;
+    }
+    String[][] ret = new String[rows.size()][];
+    for(int r=0;r<rows.size();r++) {
+      ret[r] = rows.get(r);
+    }
+    return ret;
+  }
+
   public Exception getLastException() {
     return lastException;
   }
@@ -347,9 +382,13 @@ public class SQL {
         }
         String[][] data = sql.select(args[3]);
         for(int row=0;row<data.length;row++) {
+          boolean first = true;
           for(int col=0;col<data[row].length;col++) {
+            if (first)
+              first = false;
+            else
+              System.out.print(",");
             System.out.print(data[row][col]);
-            System.out.print(",");
           }
           System.out.println("");
         }
@@ -367,6 +406,31 @@ public class SQL {
         String[] tables = sql.getTables();
         for(String table : tables) {
           System.out.println(table);
+        }
+        break;
+      }
+      case "gettabledesign": {
+        if (args.length < 4) {
+          System.out.println("Usage : SQL {sql-type} {connection-string} gettabledesign {table}");
+          return;
+        }
+        System.out.println("Column Names:");
+        String[][] data = sql.getTableDesign(args[3]);
+        {
+          boolean first = true;
+          for(String col : sql.colNames) {
+            if (first) first = false; else System.out.print(",");
+            System.out.print(col);
+          }
+        }
+        System.out.println("\nTable Columns:");
+        for(int row=0;row<data.length;row++) {
+          boolean first = true;
+          for(int col=0;col<data[row].length;col++) {
+            if (first) first = false; else System.out.print(",");
+            System.out.print(data[row][col]);
+          }
+          System.out.println("");
         }
         break;
       }
