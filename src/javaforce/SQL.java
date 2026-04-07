@@ -7,7 +7,7 @@ import java.sql.*;
 import java.lang.reflect.*;
 
 public class SQL {
-  /** Last exception that occured. */
+  /** Last exception that occurred. */
   public Exception lastException;
   /** Column names from last query. */
   public String[] colNames;
@@ -271,6 +271,7 @@ public class SQL {
     return ret;
   }
 
+  /** Returns column index for supplied column name in colNames. */
   public int getColumnIndex(String col) {
     if (colNames == null) return -1;
     for(int idx=0;idx<colNames.length;idx++) {
@@ -279,6 +280,7 @@ public class SQL {
     return -1;
   }
 
+  /** Returns list of tables in current database. */
   public String[] getTables() {
     ArrayList<String> rows = new ArrayList<String>();
     java.sql.ResultSet rs = null;
@@ -341,6 +343,7 @@ public class SQL {
     return ret;
   }
 
+  /** Returns last exception that occurred. */
   public Exception getLastException() {
     return lastException;
   }
