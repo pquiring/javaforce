@@ -46,9 +46,10 @@ public class SQL {
   }
 
   /** Connects to SQL Server. */
-  public boolean connect(String connectionURL) {
+  public boolean connect(String connectionURL, Properties info) {
     try {
-      conn = DriverManager.getConnection(connectionURL);
+      if (debug) JFLog.log("SQL.connect()" + connectionURL);
+      conn = DriverManager.getConnection(connectionURL, info);
       if ( conn == null ) {
         JFLog.log("Error:Unable to connect to database:" + connectionURL);
         return false;
@@ -59,6 +60,17 @@ public class SQL {
       JFLog.log(e);
       return false;
     }
+  }
+
+  /** Init JDBC driver and connects to SQL Server. */
+  public boolean connect(String jdbcClass, String connectionURL, Properties info) {
+    if (!initClass(jdbcClass)) return false;
+    return connect(connectionURL, info);
+  }
+
+  /** Connects to SQL Server. */
+  public boolean connect(String connectionURL) {
+    return connect(connectionURL, new Properties());
   }
 
   /** Init JDBC driver and connects to SQL Server. */
@@ -351,13 +363,28 @@ public class SQL {
   /** SQL CLI. */
   public static void main(String[] args) {
     if (args.length < 3) {
-      System.out.println("Usage : SQL {sql-type} {connection-string} {command} [args]");
+      System.out.println("Usage : SQL {sql-type} {connection-string} {command} [args] [--user={user}] [--password={password}]");
       System.out.println("  commands:");
       System.out.println("    select {select-string}");
       System.out.println("    execute {execute-string}");
       System.out.println("    gettables");
       System.out.println("    gettabledesign {table-name}");
       return;
+    }
+    Properties info = new Properties();
+    for(String arg : args) {
+      if (!arg.startsWith("--")) continue;
+      arg = arg.substring(2);
+      int idx = arg.indexOf("=");
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = arg.substring(idx + 1);
+      if (debug) JFLog.log(key + "=" + value);
+      if (key.equals("debug")) {
+        debug = value.equals("true");
+        continue;
+      }
+      info.setProperty(key, value);
     }
     String db_type = args[0];
     String sql_class = null;
@@ -374,13 +401,13 @@ public class SQL {
       return;
     }
     SQL sql = new SQL();
-    if (!sql.connect(sql_class, conn_str)) {
+    if (!sql.connect(sql_class, conn_str, info)) {
       System.out.println("connection failed!");
       return;
     }
     switch (cmd) {
       case "select": {
-        if (args.length < 4) {
+        if (args.length < 4 || args[3].startsWith("--")) {
           System.out.println("Usage : SQL {sql-type} {connection-string} select {query-string}");
           return;
         }
@@ -399,7 +426,7 @@ public class SQL {
         break;
       }
       case "execute": {
-        if (args.length < 4) {
+        if (args.length < 4 || args[3].startsWith("--")) {
           System.out.println("Usage : SQL {sql-type} {connection-string} execute {execute-string}");
           return;
         }
@@ -414,7 +441,7 @@ public class SQL {
         break;
       }
       case "gettabledesign": {
-        if (args.length < 4) {
+        if (args.length < 4 || args[3].startsWith("--")) {
           System.out.println("Usage : SQL {sql-type} {connection-string} gettabledesign {table}");
           return;
         }
