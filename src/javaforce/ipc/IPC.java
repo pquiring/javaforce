@@ -8,6 +8,7 @@ package javaforce.ipc;
 public interface IPC {
   /** Connect to IPC service. */
   public boolean connect();
+
   /** Disconnect from IPC service. */
   public boolean disconnect();
 

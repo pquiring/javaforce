@@ -200,17 +200,22 @@ public class DBus implements IPC {
   /** Create DBus with specified EndPoint. */
   public DBus(EndPoint ep) {
     this.ep = ep;
-    if (JF.isUnix()) {
-      transport = new UnixSocketTransport();
-    } else {
-      transport = new WinPipeTransport();
-    }
+    this.transport = createTransport();
   }
 
   /** Create DBus with specified EndPoint and transport. */
   public DBus(EndPoint ep, DBusTransport transport) {
     this.ep = ep;
     this.transport = transport;
+  }
+
+  /** Create transport suitable for OS. */
+  public static DBusTransport createTransport() {
+    if (JF.isUnix()) {
+      return new UnixSocketTransport();
+    } else {
+      return new WinPipeTransport();
+    }
   }
 
   /** Create a client end point with system provided name.

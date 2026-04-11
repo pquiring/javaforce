@@ -9,10 +9,14 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.ipc.*;
+import javaforce.ipc.transport.*;
 
 public class TestIPC {
 
   private static boolean debug = false;
+
+  private static boolean use_tcp = false;
+  private static int tcp_port = 8001;
 
   public static void main(String[] args) {
     if (args.length == 0) {
@@ -27,8 +31,14 @@ public class TestIPC {
     }
   }
   private static void server() {
+    DBusTransport transport;
     try {
-      IPC ipc = new DBus(new TestEndPoint("javaforce.TestIPC.Server"));
+      if (use_tcp) {
+        transport = new TCPTransport(tcp_port);
+      } else {
+        transport = DBus.createTransport();
+      }
+      IPC ipc = new DBus(new TestEndPoint("javaforce.TestIPC.Server"), transport);
       if (!ipc.connect()) {
         JFLog.log("IPC.connect() failed");
         return;
@@ -72,8 +82,14 @@ public class TestIPC {
       this.delay = delay;
     }
     public void run() {
+      DBusTransport transport;
       try {
-        ipc = new DBus(new TestEndPoint(null));
+        if (use_tcp) {
+          transport = new TCPTransport(tcp_port);
+        } else {
+          transport = DBus.createTransport();
+        }
+        ipc = new DBus(new TestEndPoint(null), transport);
         if (!ipc.connect()) {
           JFLog.log("IPC.connect() failed");
           return;
@@ -108,6 +124,7 @@ public class TestIPC {
       data[0] = 0x11;
       data[1] = 0x22;
       data[2] = 0x33;
+      if (debug) JFLog.log(String.format("modify(byte[] {%x %x %x})", data[0], data[1], data[2]));
       byte[] result = (byte[])ipc.invoke("javaforce.TestIPC.Server", "modify", data);
       if (result == null) {
         if (debug) JFLog.log("result == null");
@@ -138,11 +155,11 @@ public class TestIPC {
 
     public static class Methods {
       public boolean ping(int value) {
-        if (debug) JFLog.log(String.format("ping:0x%x", value));
+        if (debug) JFLog.log(String.format("ping(0x%x)", value));
         return true;
       }
       public byte[] modify(byte[] data) {
-        if (debug) JFLog.log(String.format("modify:%d", data.length));
+        if (debug) JFLog.log(String.format("modify(byte[] {%x %x %x})", data[0], data[1], data[2]));
         data[0] = 0x44;
         data[1] = 0x55;
         data[2] = 0x66;

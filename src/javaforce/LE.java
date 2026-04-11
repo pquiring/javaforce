@@ -113,8 +113,9 @@ public class LE {
 
   public static void setString(byte[] data, int offset, int len, String str) {
     int pos = 0;
+    int strlen = str.length();
     while (len > 0) {
-      if (pos >= str.length()) {
+      if (pos >= strlen) {
         data[offset++] = 0;
       } else {
         data[offset++] = (byte)str.charAt(pos++);
