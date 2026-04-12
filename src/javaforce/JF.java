@@ -39,6 +39,14 @@ public class JF {
     return isGraal;
   }
 
+  public static final boolean isJavaforceLoader = Boolean.getBoolean("javaforce.loader");
+
+  /** Returns true if this JVM was started by the JavaForce native loaders
+   *   which includes native support for OpenGL, OpenCL, FFMPEG, etc. */
+  public static boolean hasNativeSupport() {
+    return isJavaforceLoader;
+  }
+
   public static void sleep(int milli) {
     try {
       Thread.sleep(milli);

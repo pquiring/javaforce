@@ -25,8 +25,10 @@ public class JFNative {
    */
   public static void load() {
     if (loaded) return;
-    String loader = System.getProperty("javaforce.loader");
-    if (loader != null) return;
+    if (JF.hasNativeSupport()) {
+      loaded = true;
+      return;
+    }
     System.out.println("Loading javaforce native library...");
     String path = JF.getCurrentPath();
     String file = "/jfnative64";

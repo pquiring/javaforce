@@ -189,6 +189,7 @@ public class DBus implements IPC {
   }
 
   private static final String DBusMessageBus = "org.freedesktop.DBus";
+  private static int tcp_port = -1;
 
   private EndPoint ep;
   private Reader reader;
@@ -212,8 +213,15 @@ public class DBus implements IPC {
   /** Create transport suitable for OS. */
   public static DBusTransport createTransport() {
     if (JF.isUnix()) {
+      if (JF.isMac() && tcp_port != -1) {
+        return new TCPTransport(tcp_port);
+      }
       return new UnixSocketTransport();
     } else {
+      //Windows Pipes requires native support
+      if (!JF.hasNativeSupport() && tcp_port != -1) {
+        return new TCPTransport(tcp_port);
+      }
       return new WinPipeTransport();
     }
   }
@@ -256,6 +264,16 @@ public class DBus implements IPC {
    */
   public static String nameToPath(String name) {
     return "/" + name.replaceAll("[.]", "/");
+  }
+
+  /** Set TCP port for systems that do not fully support DBus.
+   *
+   * Examples:
+   *  -  Windows without native Windows Pipes support.
+   *  -  MacOS
+   */
+  public static void setTCPTransportPort(int port) {
+    tcp_port = port;
   }
 
   /** Connects to message bus. */
