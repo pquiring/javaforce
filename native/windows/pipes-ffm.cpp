@@ -10,13 +10,8 @@ See CreateNamedPipe -> Example : Multithreaded Pipe Server
 
 */
 
-bool debug_pipes = false;
-
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_pipeCreate
-  (JNIEnv *e, jclass c, jstring name, jboolean first)
+HANDLE pipeCreate(const char* name, jboolean first)
 {
-  const char *cname = e->GetStringUTFChars(name, NULL);
-
   SECURITY_DESCRIPTOR sd;
   InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
   // Set DACL to NULL for full access by Everyone
@@ -32,49 +27,40 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_pipeCreate
   }
   int pipeMode = PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT;
 
-  HANDLE ctx = CreateNamedPipe(cname, openMode, pipeMode, PIPE_UNLIMITED_INSTANCES, 64 * 1024, 64 * 1024, 0, &sa);
-
-  e->ReleaseStringUTFChars(name, cname);
+  HANDLE ctx = CreateNamedPipe(name, openMode, pipeMode, PIPE_UNLIMITED_INSTANCES, 64 * 1024, 64 * 1024, 0, &sa);
 
   if (ctx == INVALID_HANDLE_VALUE) {
     printf("CreateNamedPipe:failed:error=0x%x\n", GetLastError());
   }
 
-  return (jlong)ctx;
+  return ctx;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_pipeClose
-  (JNIEnv *e, jclass c, jlong ctx)
+void pipeClose(HANDLE ctx)
 {
-  DisconnectNamedPipe((HANDLE)ctx);
-  CloseHandle((HANDLE)ctx);
+  DisconnectNamedPipe(ctx);
+  CloseHandle(ctx);
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_pipeRead
-  (JNIEnv *e, jclass c, jlong ctx, jbyteArray buf, jint buf_off, jint buf_len)
+jint pipeRead(HANDLE ctx, jbyte* buf, jint buf_off, jint buf_len)
 {
   int read = -1;
-  jbyte *cbuf = e->GetByteArrayElements(buf, NULL);
-  ReadFile((HANDLE)ctx, cbuf + buf_off, buf_len, (LPDWORD)&read, NULL);
-  e->ReleaseByteArrayElements(buf, cbuf, JNI_COMMIT);
+  ReadFile((HANDLE)ctx, buf + buf_off, buf_len, (LPDWORD)&read, NULL);
   return read;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_pipeWrite
-  (JNIEnv *e, jclass c, jstring name, jbyteArray buf, jint buf_off, jint buf_len)
+jint pipeWrite(const char* name, jbyte* buf, jint buf_off, jint buf_len)
 {
   int write = -1;
-  jbyte *cbuf = e->GetByteArrayElements(buf, NULL);
-  const char *cname = e->GetStringUTFChars(name, NULL);
   HANDLE client;
 
   while (1) {
 
-    WaitNamedPipe(cname, 250);  //wait for server to recreate pipe if necessary
+    WaitNamedPipe(name, 250);  //wait for server to recreate pipe if necessary
 
     //NOTE:There is a small chance this fails if multiple clients are trying to send a message at the same time
 
-    client = CreateFile(cname, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    client = CreateFile(name, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
     if (client == INVALID_HANDLE_VALUE) {
       int error = GetLastError();
@@ -86,7 +72,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_pipeWrite
       printf("WinPipe.write() failed:Error=0x%x\n", error);
       break;
     } else {
-      WriteFile(client, cbuf + buf_off, buf_len, (LPDWORD)&write, NULL);
+      WriteFile(client, buf + buf_off, buf_len, (LPDWORD)&write, NULL);
       FlushFileBuffers(client);
       CloseHandle(client);  //client disconnects from server
       break;
@@ -95,8 +81,14 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_pipeWrite
 
   if (debug_pipes) printf("WinPipe.write success\n");
 
-  e->ReleaseStringUTFChars(name, cname);
-  e->ReleaseByteArrayElements(buf, cbuf, JNI_ABORT);
-
   return write;
+}
+
+extern "C" {
+  JNIEXPORT HANDLE (*_pipeCreate)(const char* str, jboolean first) = &pipeCreate;
+  JNIEXPORT void (*_pipeClose)(HANDLE handle) = &pipeClose;
+  JNIEXPORT jint (*_pipeRead)(HANDLE handle, jbyte* ba, jint offset, jint length) = &pipeRead;
+  JNIEXPORT jint (*_pipeWrite)(const char* name, jbyte* ba, jint offset, jint length) = &pipeWrite;
+
+  JNIEXPORT jboolean JNICALL WinPipeAPIinit() {return JNI_TRUE;}
 }

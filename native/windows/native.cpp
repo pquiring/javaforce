@@ -1479,7 +1479,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "monitor-folder-jni.cpp"
 #include "monitor-folder-ffm.cpp"
 
-#include "pipes.cpp"
+#include "pipes-jni.cpp"
+#include "pipes-ffm.cpp"
 
 static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
@@ -1611,11 +1612,6 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"vssDeleteShadowAll", "()Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadowAll},
   {"vssMountShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssMountShadow},
   {"vssUnmountShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssUnmountShadow},
-//pipes
-  {"pipeCreate", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_WinNative_pipeCreate},
-  {"pipeClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_pipeClose},
-  {"pipeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_pipeRead},
-  {"pipeWrite", "(Ljava/lang/String;[BII)I", (void *)&Java_javaforce_jni_WinNative_pipeWrite},
 //test
   {"add", "(II)I", (void *)&Java_javaforce_jni_WinNative_add},
   {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
@@ -1634,6 +1630,13 @@ static JNINativeMethod javaforce_jni_MonitorFolderJNI[] = {
   {"monitorFolderClose", "(J)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose},
 };
 
+static JNINativeMethod javaforce_jni_WinPipeJNI[] = {
+  {"pipeCreate", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_WinPipeJNI_pipeCreate},
+  {"pipeClose", "(J)V", (void *)&Java_javaforce_jni_WinPipeJNI_pipeClose},
+  {"pipeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinPipeJNI_pipeRead},
+  {"pipeWrite", "(Ljava/lang/String;[BII)I", (void *)&Java_javaforce_jni_WinPipeJNI_pipeWrite},
+};
+
 extern "C" void winnative_register(JNIEnv *env);
 
 void winnative_register(JNIEnv *env) {
@@ -1647,6 +1650,9 @@ void winnative_register(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/jni/MonitorFolderJNI");
   registerNatives(env, cls, javaforce_jni_MonitorFolderJNI, sizeof(javaforce_jni_MonitorFolderJNI)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/jni/WinPipeJNI");
+  registerNatives(env, cls, javaforce_jni_WinPipeJNI, sizeof(javaforce_jni_WinPipeJNI)/sizeof(JNINativeMethod));
 
   lib_sas = loadLibrary("sas.dll");
   if (lib_sas == NULL) {

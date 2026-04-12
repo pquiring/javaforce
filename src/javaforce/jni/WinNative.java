@@ -5,6 +5,8 @@ package javaforce.jni;
  * @author pquiring
  */
 
+import javaforce.api.*;
+
 public class WinNative {
   //Windows
   public static native boolean getWindowRect(String name, int[] rect);  //returns x,y,width,height
@@ -80,12 +82,6 @@ public class WinNative {
   public static native boolean vssDeleteShadowAll();
   public static native boolean vssMountShadow(String mount, String shadowVol);
   public static native boolean vssUnmountShadow(String mount);
-
-  //pipes
-  public static native long pipeCreate(String name, boolean first);
-  public static native void pipeClose(long ctx);
-  public static native int pipeRead(long ctx, byte[] buf, int offset, int length);
-  public static native int pipeWrite(String name, byte[] buf, int offset, int length);
 
   //test
   public static native int add(int x, int y);

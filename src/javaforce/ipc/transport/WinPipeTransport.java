@@ -8,11 +8,16 @@ package javaforce.ipc.transport;
 import java.util.*;
 
 import javaforce.ipc.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 public class WinPipeTransport extends DBusTransport {
   private long ctx;
   private String name;
+  private WinPipeAPI api;
+
+  public WinPipeTransport() {
+    api = WinPipeAPI.getInstance();
+  }
 
   private String makePipeName(String name) {
     //network path where "." = localhost
@@ -26,7 +31,7 @@ public class WinPipeTransport extends DBusTransport {
       Random r = new Random();
       name = String.format("javaforce.client.r%x.t%x", r.nextInt(0xfffffff), System.currentTimeMillis());
     }
-    ctx = WinNative.pipeCreate(makePipeName(name), true);
+    ctx = api.pipeCreate(makePipeName(name), true);
     if (ctx != 0) {
       this.name = name;
       if (start_reader != null) {
@@ -38,7 +43,7 @@ public class WinPipeTransport extends DBusTransport {
 
   public boolean disconnect() {
     if (ctx == 0) return false;
-    WinNative.pipeClose(ctx);
+    api.pipeClose(ctx);
     ctx = 0;
     return true;
   }
@@ -48,11 +53,11 @@ public class WinPipeTransport extends DBusTransport {
   }
 
   public int read(byte[] data) {
-    int read = WinNative.pipeRead(ctx, data, 0, data.length);
+    int read = api.pipeRead(ctx, data, 0, data.length);
     if (read > 0) {
       //client connected : need to recreate server pipe
-      long new_ctx = WinNative.pipeCreate(makePipeName(name), false);
-      WinNative.pipeClose(ctx);
+      long new_ctx = api.pipeCreate(makePipeName(name), false);
+      api.pipeClose(ctx);
       ctx = new_ctx;
     }
     return read;
@@ -60,7 +65,7 @@ public class WinPipeTransport extends DBusTransport {
 
   public boolean write(String name, byte[] data, int offset, int length) {
     if (name == null) return false;
-    return WinNative.pipeWrite(makePipeName(name), data, offset, length) == length;
+    return api.pipeWrite(makePipeName(name), data, offset, length) == length;
   }
 
   public boolean isAlive() {
