@@ -38,8 +38,20 @@ public class FFM {
     return enabled;
   }
 
-  /** Enable FFM.  */
+  /** Enable FFM.
+   *
+   * SymbolLookup will be from the executable for this JVM.
+   */
   public static void enable() {
+    enabled = true;
+  }
+
+  /** Enable FFM.
+   *
+   * SymbolLookup will be from the supplied library.
+   */
+  public static void enable(String lib) {
+    FFM.lib = lib;
     enabled = true;
   }
 
@@ -49,8 +61,10 @@ public class FFM {
   }
 
   private static boolean debug = false;
+  private static String lib;  //shared JF library
 
   private Linker linker;
+  private Arena arena;
   private SymbolLookup lookup;
   private ExecSymbolLookup execlookup;
   private static MethodHandle jfArrayFree;
@@ -63,9 +77,16 @@ public class FFM {
   private FFM() {
     try {
       linker = Linker.nativeLinker();
-      lookup = linker.defaultLookup();
-      execlookup = new ExecSymbolLookup();
-      execlookup.init(this);
+      if (lib != null) {
+        //symbol lookup from supplied shared library
+        arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
+        lookup = SymbolLookup.libraryLookup(lib, arena);
+      } else {
+        //symbol lookup from executable of this JVM (JavaForce native loader)
+        lookup = linker.defaultLookup();
+        execlookup = new ExecSymbolLookup();
+        execlookup.init(this);
+      }
       jfArrayFree = getFunctionPtr("_jfArrayFree", getFunctionDesciptorVoid(ADDRESS));
       if (jfArrayFree == null) throw new Exception("FFM:Unable to find jfArrayFree function");
       jfStringFree = getFunctionPtr("_jfStringFree", getFunctionDesciptorVoid(ADDRESS));
