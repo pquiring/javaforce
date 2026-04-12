@@ -8,6 +8,7 @@
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
   <property name="maven" value="io/github/pquiring"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
 
   <property environment="env"/>
 

@@ -28,6 +28,7 @@
 
       <!-- build shared library (optional) -->
       <exec command="gcc ${opt} -shared native.o glfw.o glfw-null.o @{libs} -o ${user.home}/bin/jfnative64.so"/>
+      <copy file="${user.home}/bin/jfnative64.so" todir="/usr/lib"/>
 
       <delete>
         <fileset dir=".">

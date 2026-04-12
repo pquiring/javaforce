@@ -28,6 +28,7 @@
 
     <!-- native shared library (optional) -->
     <exec command="cl /LD /MT ${objs} ${winlibs} libcmt.lib /Fe: ${user.home}/bin/jfnative64.dll /link /MACHINE:X64"/>
+    <copy file="${user.home}/bin/jfnative64.dll" todir="../.."/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>

@@ -1,4 +1,5 @@
 /usr/share/java/javaforce.jar
 /usr/share/java/jficons.jar
 /usr/bin/javaforce
+/usr/lib/jfnative64.so
 /etc/dbus-1/system.d/javaforce.conf

@@ -55,6 +55,19 @@ public class FFM {
     enabled = true;
   }
 
+  /** Enable FFM.
+   *
+   * SymbolLookup will be from native library found in well defined folders.
+   */
+  public static void enableLibrary() {
+    if (JF.isWindows()) {
+      lib = System.getenv("ProgramData") + "/JavaForce/jfnative64.dll";
+    } else {
+      lib = "/usr/lib/jfnative64.so";
+    }
+    enabled = true;
+  }
+
   /** Disable FFM and use JNI instead. */
   public static void disable() {
     enabled = false;
@@ -78,10 +91,12 @@ public class FFM {
     try {
       linker = Linker.nativeLinker();
       if (lib != null) {
+        if (debug) JFLog.log("Loading FFM from:" + lib);
         //symbol lookup from supplied shared library
         arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
         lookup = SymbolLookup.libraryLookup(lib, arena);
       } else {
+        if (debug) JFLog.log("Loading FFM from executable");
         //symbol lookup from executable of this JVM (JavaForce native loader)
         lookup = linker.defaultLookup();
         execlookup = new ExecSymbolLookup();
