@@ -20,7 +20,6 @@ public class TestIPC {
   private static int tcp_port = 8001;
 
   public static void main(String[] args) {
-    FFM.enable();
     if (args.length == 0) {
       System.out.println("usage:TestIPC {server | client} [options]");
       System.out.println(" client options : [--threads=#] [--delay=#]");

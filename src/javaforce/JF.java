@@ -16,6 +16,8 @@ import java.lang.management.ManagementFactory;
 
 import com.sun.management.OperatingSystemMXBean;
 
+import javaforce.ffm.*;
+
 /**
  * A collection of useful static methods.
  *
@@ -41,10 +43,10 @@ public class JF {
 
   public static final boolean isJavaforceLoader = Boolean.getBoolean("javaforce.loader");
 
-  /** Returns true if this JVM was started by the JavaForce native loaders
-   *   which includes native support for OpenGL, OpenCL, FFMPEG, etc. */
+  /** Returns true if JavaForce native API is available (JNI or FFM).
+   */
   public static boolean hasNativeSupport() {
-    return isJavaforceLoader;
+    return isJavaforceLoader || FFM.enabled();
   }
 
   public static void sleep(int milli) {
