@@ -5,6 +5,7 @@ package javaforce.ffm;
  * @author pquiring
  */
 
+import java.io.*;
 import java.lang.foreign.*;
 import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
@@ -51,6 +52,10 @@ public class FFM {
    * SymbolLookup will be from the supplied library.
    */
   public static void enable(String lib) {
+    if (!new File(lib).exists()) {
+      JFLog.log("FFM:Error:Library not found:" + lib);
+      return;
+    }
     FFM.lib = lib;
     enabled = true;
   }
@@ -61,11 +66,10 @@ public class FFM {
    */
   public static void enableLibrary() {
     if (JF.isWindows()) {
-      lib = System.getenv("ProgramData") + "/JavaForce/jfnative64.dll";
+      enable(System.getenv("ProgramData") + "/JavaForce/jfnative64.dll");
     } else {
-      lib = "/usr/lib/jfnative64.so";
+      enable("/usr/lib/jfnative64.so");
     }
-    enabled = true;
   }
 
   /** Disable FFM and use JNI instead. */
