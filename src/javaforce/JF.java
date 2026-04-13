@@ -41,12 +41,17 @@ public class JF {
     return isGraal;
   }
 
-  public static final boolean isJavaforceLoader = Boolean.getBoolean("javaforce.loader");
+  public static final boolean isJavaForceLoader = Boolean.getBoolean("javaforce.loader");
+
+  /** */
+  public static boolean isJavaForceLoader() {
+    return isJavaForceLoader;
+  }
 
   /** Returns true if JavaForce native API is available (JNI or FFM).
    */
   public static boolean hasNativeSupport() {
-    return isJavaforceLoader || FFM.enabled();
+    return isJavaForceLoader || FFM.enabled();
   }
 
   public static void sleep(int milli) {

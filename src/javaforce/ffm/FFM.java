@@ -41,7 +41,7 @@ public class FFM {
 
   /** Enable FFM.
    *
-   * SymbolLookup will be from the executable for this JVM.
+   * SymbolLookup will be auto detected to use executable or shared library.
    */
   public static void enable() {
     enabled = true;
@@ -60,21 +60,17 @@ public class FFM {
     enabled = true;
   }
 
-  /** Enable FFM.
-   *
-   * SymbolLookup will be from native library found in well defined folders.
-   */
-  public static void enableLibrary() {
-    if (JF.isWindows()) {
-      enable(System.getenv("ProgramData") + "/JavaForce/jfnative64.dll");
-    } else {
-      enable("/usr/lib/jfnative64.so");
-    }
-  }
-
   /** Disable FFM and use JNI instead. */
   public static void disable() {
     enabled = false;
+  }
+
+  private static String getLibrary() {
+    if (JF.isWindows()) {
+      return System.getenv("ProgramData") + "/JavaForce/jfnative64.dll";
+    } else {
+      return "/usr/lib/jfnative64.so";
+    }
   }
 
   private static boolean debug = false;
@@ -94,6 +90,15 @@ public class FFM {
   private FFM() {
     try {
       linker = Linker.nativeLinker();
+      if (lib == null) {
+        //auto detect executable or shared library
+        if (!JF.isJavaForceLoader()) {
+          lib = getLibrary();
+          if (!new File(lib).exists()) {
+            throw new Exception("FFM:Error:Library not found:" + lib);
+          }
+        }
+      }
       if (lib != null) {
         if (debug) JFLog.log("Loading FFM from:" + lib);
         //symbol lookup from supplied shared library
