@@ -11,7 +11,7 @@ public class ULong {
 
   public static final long MASK = 0xffffffffffffffffL;
 
-  private long value;
+  private final long value;
 
   public ULong(long value) {
     this.value = value;

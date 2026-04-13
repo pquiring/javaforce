@@ -11,7 +11,7 @@ public class UShort {
 
   public static final int MASK = 0xffff;
 
-  private short value;
+  private final short value;
 
   public UShort(short value) {
     this.value = value;

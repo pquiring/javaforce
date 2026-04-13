@@ -11,7 +11,7 @@ public class UInteger {
 
   public static final int MASK = 0xffffffff;
 
-  private int value;
+  private final int value;
 
   public UInteger(int value) {
     this.value = value;
