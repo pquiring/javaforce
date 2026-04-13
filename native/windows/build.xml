@@ -26,7 +26,7 @@
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG loader.cpp native.lib ${winlibs} /Fe: ${user.home}/bin/jfexecd.exe /link /subsystem:console"/>
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '../headers' /D_JF_CLI /D_JF_DEBUG /D_JF_CLI_SERVICE loader.cpp native.lib ${winlibs} /Fe: ${user.home}/bin/jfexecsd.exe /link /subsystem:console"/>
 
-    <!-- native shared library (optional) -->
+    <!-- native shared library -->
     <exec command="cl /LD /MT ${objs} ${winlibs} libcmt.lib /Fe: ${user.home}/bin/jfnative64.dll /link /MACHINE:X64"/>
     <copy file="${user.home}/bin/jfnative64.dll" todir="../.."/>
 
