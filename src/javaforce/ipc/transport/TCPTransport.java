@@ -26,6 +26,7 @@ public class TCPTransport extends DBusTransport {
   private int port;
   private boolean active;
   private String busName;
+  private boolean localonly = true;
 
   private ServerSocket server;
   private ServerWorker server_worker;
@@ -42,12 +43,21 @@ public class TCPTransport extends DBusTransport {
     this.port = port;
   }
 
+  /** Specify if only localhost clients are allowed (default = true) */
+  public void setLocalOnly(boolean state) {
+    localonly = state;
+  }
+
   public boolean connect(String name, DBus bus, Runnable start_reader) {
     active = true;
     if (name != null) {
       busName = name;
       try {
-        server = new ServerSocket(port);
+        if (localonly) {
+          server = new ServerSocket(port, 1024, InetAddress.getByName("127.0.0.1"));
+        } else {
+          server = new ServerSocket(port);
+        }
         server_worker = new ServerWorker();
         server_worker.start();
       } catch (Exception e) {
@@ -152,12 +162,17 @@ public class TCPTransport extends DBusTransport {
         try {
           Socket socket = server.accept();
           if (socket != null) {
-            ServerClientWorker client = new ServerClientWorker();
-            client.client = socket;
-            synchronized (clients_lock) {
-              clients.add(client);
+            String ip = socket.getInetAddress().toString().substring(1);  //strip leading '/'
+            if (!localonly || ip.equals("127.0.0.1") || ip.equals("0:0:0:0:0:0:0:1")) {  //ip4 || ip6 - localhost
+              ServerClientWorker client = new ServerClientWorker();
+              client.client = socket;
+              synchronized (clients_lock) {
+                clients.add(client);
+              }
+              client.start();
+            } else {
+              JFLog.log("TCPTransport : Unauthorized client : ip=" + ip);
             }
-            client.start();
           }
         } catch (Exception e) {
           JFLog.log(e);
