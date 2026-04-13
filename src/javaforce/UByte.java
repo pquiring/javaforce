@@ -11,7 +11,7 @@ public class UByte {
 
   public static final int MASK = 0xff;
 
-  private byte value;
+  private final byte value;
 
   public UByte(byte value) {
     this.value = value;
