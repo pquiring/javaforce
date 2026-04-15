@@ -63,6 +63,10 @@ public class FFM {
   /** Disable FFM and use JNI instead. */
   public static void disable() {
     enabled = false;
+    if (instance != null) {
+      instance = null;
+      System.gc();
+    }
   }
 
   private static String getLibrary() {
