@@ -7,5 +7,4 @@ To install packages:
   winget install {package-name}
 
 Notes:
-  - only Windows 11 is supported
-  - Windows Server is not supported yet (Microsoft is working on this)
+  - Windows 11 or Windows Server 2025 is supported
