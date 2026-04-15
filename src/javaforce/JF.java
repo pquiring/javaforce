@@ -25,25 +25,33 @@ import javaforce.ffm.*;
  */
 public class JF {
 
+  /** Returns JavaForce version as a String. */
   public static String getVersion() {
     return "103.0";
   }
 
+  /** Console app that displays JavaForce version. */
   public static void main(String[] args) {
     System.out.println("javaforce/" + getVersion());
   }
 
+  /** End-of-line character. Each OS has preferred style. */
   public static final String eol = System.getProperty("line.separator");
 
+  /** Is this JVM created by Graal AOT compiler (native-image). */
   public static final boolean isGraal = Boolean.getBoolean("java.graal");
 
+  /** Returns true if this JVM was created by the Graal AOT compiler (native-image). */
   public static final boolean isGraal() {
     return isGraal;
   }
 
+  /** Is the JVM created by JavaForce loader. */
   public static final boolean isJavaForceLoader = Boolean.getBoolean("javaforce.loader");
 
-  /** */
+  /** Returns true if this JVM was created from JavaForce loaders.
+   * This also implies that JNI methods are available.
+   */
   public static boolean isJavaForceLoader() {
     return isJavaForceLoader;
   }
@@ -54,6 +62,7 @@ public class JF {
     return isJavaForceLoader || FFM.enabled();
   }
 
+  /** Delays current thread for specified milliseconds. */
   public static void sleep(int milli) {
     try {
       Thread.sleep(milli);
@@ -62,12 +71,14 @@ public class JF {
     }
   }
 
+  /** Print msg to console. */
   public static void msg(String msg) {
     java.lang.System.out.println(msg);
   }
 
   //URL functions
 
+  /** Create URL from String. */
   public static URL createURL(String url) {
     try {
       return new URI(url).toURL();
@@ -88,7 +99,7 @@ public class JF {
     return url.substring(0 ,i2 + 3) + url.substring(idx + 1);
   }
 
-
+  /** Reads a URL (http) and returns the contents. */
   public static String readURL(String url) {
     String str = "";
     byte[] data = new byte[1024];
@@ -140,6 +151,7 @@ public class JF {
     }
   }
 
+  /** Encodes a String into URL format. */
   public static String encodeURL(String url) {
     try {
       return URLEncoder.encode(url, "UTF-8");
@@ -148,6 +160,7 @@ public class JF {
     }
   }
 
+  /** Decodes a URL format into a String. */
   public static String decodeURL(String url) {
     try {
       return URLDecoder.decode(url, "UTF-8");
@@ -163,6 +176,7 @@ public class JF {
     return txt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
   }
 
+  /** String to integer. Returns -1 on error. */
   public static int atoi(String str) {
     if (str.length() == 0) {
       return 0;
@@ -178,6 +192,7 @@ public class JF {
     }
   }
 
+  /** String to long. Returns -1 on error. */
   public static long atol(String str) {
     if (str.length() == 0) {
       return 0;
@@ -193,6 +208,7 @@ public class JF {
     }
   }
 
+  /** String to float. Returns -1 on error. */
   public static float atof(String str) {
     if (str.length() == 0) {
       return 0;
@@ -205,6 +221,7 @@ public class JF {
     }
   }
 
+  /** String to double. Returns -1 on error. */
   public static double atod(String str) {
     if (str.length() == 0) {
       return 0;
@@ -217,6 +234,7 @@ public class JF {
     }
   }
 
+  /** String to integer (hex format). Returns -1 on error. */
   public static int atox(String str) {
     if (str.length() == 0) {
       return 0;
@@ -252,14 +270,17 @@ public class JF {
     return new File("/usr/sbin/jlogon").exists();
   }
 
+  /** Returns user home folder. */
   public static String getUserPath() {
     return System.getProperty("user.home");
   }
 
+  /** Returns current user. */
   public static String getCurrentUser() {
     return System.getProperty("user.name");
   }
 
+  /** Returns OS temp path. */
   public static String getTempPath() {
     if (JF.isWindows()) {
       return System.getenv("TEMP");
@@ -270,6 +291,9 @@ public class JF {
 
   private static String user_dir = null;
 
+  /** Returns current path.
+   * NOTE : It is not possible to change current path in Java.
+   */
   public static synchronized String getCurrentPath() {
     if (user_dir == null) {
       user_dir = System.getProperty("user.dir");
@@ -277,8 +301,8 @@ public class JF {
     return user_dir;
   }
 
-  /**
-   * This just changes the internal value returned from getCurrentPath()
+  /** This just changes the internal value returned from getCurrentPath()
+   * It is not possible to actually change current path in Java.
    */
   public static void setCurrentPath(String new_dir) {
     user_dir = new_dir;
@@ -297,6 +321,7 @@ public class JF {
     }
   }
 
+  /** Returns system logs path. */
   public static String getLogPath() {
     if (JF.isWindows()) {
       return System.getenv("windir") + "/Logs";
@@ -305,6 +330,7 @@ public class JF {
     }
   }
 
+  /** Returns system executable file extension. */
   public static String getExecExt() {
     if (isWindows()) {
       return ".exe";
@@ -313,6 +339,7 @@ public class JF {
     }
   }
 
+  /** Returns system script file extension. */
   public static String getScriptExt() {
     if (isWindows()) {
       return ".bat";
@@ -321,6 +348,7 @@ public class JF {
     }
   }
 
+  /** Returns system hostname. */
   public static String getHostname() {
     if (JF.isWindows()) {
       return System.getenv("COMPUTERNAME");
@@ -344,6 +372,7 @@ public class JF {
     return now + offset;
   }
 
+  /** Returns system environment as array of strings. */
   public static String[] getEnvironment() {
     ArrayList<String> strs = new ArrayList<>();
     Map<String, String> env = System.getenv();
@@ -351,6 +380,7 @@ public class JF {
     return strs.toArray(StringArrayType);
   }
 
+  /** Prints system environment to console. */
   public static void printEnvironment() {
     String[] env = getEnvironment();
     for(String e : env) {
@@ -358,6 +388,7 @@ public class JF {
     }
   }
 
+  /** Returns Java Properties as array of strings. */
   public static String[] getSystemProperties() {
     ArrayList<String> strs = new ArrayList<>();
     Properties p = System.getProperties();
@@ -370,6 +401,7 @@ public class JF {
     return strs.toArray(StringArrayType);
   }
 
+  /** Prints Java Properties to console. */
   public static void printSystemProperties() {
     String[] env = getSystemProperties();
     for(String e : env) {
@@ -939,6 +971,7 @@ public class JF {
     }
     return true;
   }
+
 //String char[] functions (StringBuffer is awkward) (these are NOT null terminating)
 
   public static char[] createstr(String str) {
@@ -1037,8 +1070,8 @@ public class JF {
 
 //executable JAR functions
 
+  /** Returns classpath specified for this JVM (list of jar files). */
   public static String getJARPath() {
-    //this will equal your executable JAR filename (like argv[0] in C++)
     return System.getProperty("java.class.path");
   }
 
@@ -1047,14 +1080,17 @@ public class JF {
   public static void randomize(Random random) {
     random.setSeed(System.currentTimeMillis());
   }
+
 //flip endian functions
 
+  /** Flips endian of short. */
   public static short endian(short x) {
     short ret = (short) (x << 8);
     ret += x >>> 8;
     return ret;
   }
 
+  /** Flips endian of int. */
   public static int endian(int x) {
     return (x << 24)
             | ((x << 8) & 0xff0000)
@@ -1062,6 +1098,7 @@ public class JF {
             | (x >>> 24);
   }
 
+  /** Flips endian of long. */
   public static long endian(long x) {
     return (x << 56)
             | ((x << 40) & 0xff000000000000L)
@@ -1073,6 +1110,7 @@ public class JF {
             | (x >>> 56);
   }
 
+  /** Returns PID for this JVM. */
   public static int getPID() {
     return (int)ProcessHandle.current().pid();
   }
@@ -1289,6 +1327,7 @@ public class JF {
     HttpsURLConnection.setDefaultHostnameVerifier(hv);
   }
 
+  /** Connects to secure socket and returns socket. */
   public static Socket connectSSL(String host, int port, KeyMgmt keys) {
     // Let us create the factory where we can set some parameters for the connection
     try {
@@ -1310,7 +1349,7 @@ public class JF {
     }
   }
 
-  //creates SSL socket bound to port
+  /** Creates SSL socket bound to port */
   public static ServerSocket createServerSocketSSL(int port, KeyMgmt keys) {
     // Let us create the factory where we can set some parameters for the connection
     try {
@@ -1330,7 +1369,7 @@ public class JF {
     }
   }
 
-  //creates unbound SSL socket
+  /** Creates unbound SSL socket */
   public static ServerSocket createServerSocketSSL(KeyMgmt keys) {
     // Let us create the factory where we can set some parameters for the connection
     try {
@@ -1350,6 +1389,7 @@ public class JF {
     }
   }
 
+  /** Creates unbound SSL socket */
   public static Socket connectSSL(Socket socket, KeyMgmt keys) {
     // Let us create the factory where we can set some parameters for the connection
     try {
@@ -1617,6 +1657,7 @@ public class JF {
     }
   }
 
+  /** Similar to String.split() except it understands quotes strings (will not split inside quoted sub-strings). */
   public static String[] splitQuoted(String in, char token) {
     ArrayList<String> s = new ArrayList<String>();
     char[] ca = in.toCharArray();
@@ -1644,6 +1685,7 @@ public class JF {
     return s.toArray(StringArrayType);
   }
 
+  /** Reads a line of text but will not stop on eol markers inside quoted sub-strings. */
   public static String readLineQuoted(InputStream is) {
     StringBuilder sb = new StringBuilder();
     boolean quote1 = false;
@@ -1663,6 +1705,7 @@ public class JF {
     return sb.toString();
   }
 
+  /** Read Object from InputStream using Java Serialization. */
   public static Object readObject(InputStream is) {
     try {
       ObjectInputStream ois = new ObjectInputStream(is);
@@ -1674,6 +1717,7 @@ public class JF {
     }
   }
 
+  /** Read Object from a file using Java Serialization. */
   public static Object readObject(String file) {
     try {
       FileInputStream fis = new FileInputStream(file);
@@ -1686,6 +1730,7 @@ public class JF {
     }
   }
 
+  /** Write Object using Java Serialization. */
   public static void writeObject(Object obj, OutputStream os) {
     try {
       ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -1695,6 +1740,7 @@ public class JF {
     }
   }
 
+  /** Write Object to file using Java Serialization. */
   public static void writeObject(Object obj, String file) {
     try {
       FileOutputStream fos = new FileOutputStream(file);
