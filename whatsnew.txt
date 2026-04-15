@@ -1,5 +1,11 @@
 What's new...
 
+Apr 15/2026 : JF/104.0
+  - new : DBus : added TCPTransport for unsupported systems
+  - new : FFM : added support to load native methods from shared library
+  - new : SQL : added getTables() and getTableDesign()
+  - new : WinPipe : added FFM implementation
+
 Apr 1/2026 : JF/103.0
   - new : javaforce.ipc.DBus
     - DBus implementation that supports:
