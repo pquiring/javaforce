@@ -35,7 +35,7 @@ public class ServletsService implements WebHandler {
   public static void serviceStart(String[] args) {
     if (args.length > 0) {
       debug = args[0].equals("debug");
-      WAR.debug = true;
+      WAR.debug = debug;
       JFClassLoader.debug = debug;
     }
     server = new ServletsService();
