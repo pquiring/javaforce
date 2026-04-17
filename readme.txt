@@ -124,9 +124,9 @@ dmg : build Mac dmg file using hdiutil (mac only)
 
 Maven
 -----
-JavaForce is available in Maven Central : io/github/pquiring/javaforce
+JavaForce is available in Maven Central : https://repo1.maven.org/maven2/io/github/pquiring/javaforce/
 Ant tasks are used to download dependancies and upload projects to Maven Central.
-The mvn tool is not required (way too complex).
+The mvn tool is not required (way too complex and has issues with native code).
 A minimal pom.xml is required to upload projects to Maven Central (sonatype).
 
 FFM Support
