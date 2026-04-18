@@ -5,6 +5,8 @@ package javaforce.utils;
  *
  * Builds Wix files like heat does.
  *
+ * Heat was a util from wixtools/3.x
+ *
  * @author pquiring
  */
 
@@ -13,6 +15,8 @@ import java.nio.file.*;
 import java.util.*;
 
 public class WixHeat {
+  public static boolean debug = false;
+
   private static void usage() {
     System.out.println("Usage:WixHeat input_folder output_xml resource_name base_folder [files...]");
     System.exit(1);
@@ -184,7 +188,7 @@ public class WixHeat {
     cmp = "cmp_" + res_name + "_";
     dir = "dir_" + res_name + "_";
     try {
-      System.out.println("WixHeat : input_folder=" + input_folder);
+      if (debug) System.out.println("WixHeat : input_folder=" + input_folder);
       outHeader();
 
       addFolder("APPLICATIONROOTDIRECTORY", "");
