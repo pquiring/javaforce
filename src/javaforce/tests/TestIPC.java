@@ -15,7 +15,7 @@ import javaforce.ipc.transport.*;
 public class TestIPC {
 
   private static boolean debug = false;
-  private static boolean debug_callback = true;
+  private static boolean debug_callback = false;
 
   private static boolean use_tcp = false;
   private static int tcp_port = 8001;
