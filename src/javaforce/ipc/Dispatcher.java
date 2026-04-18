@@ -93,6 +93,10 @@ public class Dispatcher {
     }
     if (debug) JFLog.log("Dispatcher:lookup method");
     Method method = cls.getMethod(method_name, types);
+    if (method == null) {
+      JFLog.log("Dispatcher:Error:method not found:" + method_name);
+      return null;
+    }
     if (debug) JFLog.log("Dispatcher:invoke method");
     return method.invoke(obj, args);
   }

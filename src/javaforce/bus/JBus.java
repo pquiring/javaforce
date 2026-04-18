@@ -15,6 +15,10 @@ public class JBus implements EndPoint {
 
   private DBus dbus;
 
+  /** Create a JBus instance.
+   * @param name = bus name (null = client)
+   * @param obj = object with RPC methods
+   */
   public JBus(String name, Object obj) {
     if (obj == null) obj = new Object();
     this.name = name;
@@ -26,6 +30,7 @@ public class JBus implements EndPoint {
     this.dispatch = dispatch;
   }
 
+  /** Returns bus name */
   public String getEndPointName() {
     return name;
   }
