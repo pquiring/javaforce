@@ -15,6 +15,7 @@ import javaforce.ipc.transport.*;
 public class TestIPC {
 
   private static boolean debug = false;
+  private static boolean debug_callback = true;
 
   private static boolean use_tcp = false;
   private static int tcp_port = 8001;
@@ -39,7 +40,9 @@ public class TestIPC {
       } else {
         transport = DBus.createTransport();
       }
-      IPC ipc = new DBus(new TestEndPoint("javaforce.TestIPC.Server"), transport);
+      TestEndPoint ep = new TestEndPoint("javaforce.TestIPC.Server");
+      IPC ipc = new DBus(ep, transport);
+      ep.setIPC(ipc);
       if (!ipc.connect()) {
         JFLog.log("IPC.connect() failed");
         return;
@@ -90,15 +93,18 @@ public class TestIPC {
         } else {
           transport = DBus.createTransport();
         }
-        ipc = new DBus(new TestEndPoint(null), transport);
+        TestEndPoint ep = new TestEndPoint(null);
+        ipc = new DBus(ep, transport);
         if (!ipc.connect()) {
           JFLog.log("IPC.connect() failed");
           return;
         }
+        ep.setIPC(ipc);
         while (true) {
           try {
             ping();
             modify();
+            callback();
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -135,6 +141,16 @@ public class TestIPC {
         success++;
       }
     }
+    public void callback() throws Exception {
+      Object result = ipc.invoke("javaforce.TestIPC.Server", "process", ipc.getBusName(), 3);
+      if (result == null) {
+        if (debug) JFLog.log("result == null");
+        error++;
+      } else {
+        if (debug) JFLog.log("result = " + result);
+        success++;
+      }
+    }
   }
 
   public static class TestEndPoint implements EndPoint {
@@ -145,6 +161,7 @@ public class TestIPC {
 
     private String name;
     private Dispatcher dispatcher;
+    private IPC ipc;
 
     public String getEndPointName() {
       return name;
@@ -154,7 +171,11 @@ public class TestIPC {
       return dispatcher.dispatch(method, args);
     }
 
-    public static class Methods {
+    public void setIPC(IPC ipc) {
+      this.ipc = ipc;
+    }
+
+    public class Methods {
       public boolean ping(int value) {
         if (debug) JFLog.log(String.format("ping(0x%x)", value));
         return true;
@@ -165,6 +186,22 @@ public class TestIPC {
         data[1] = 0x55;
         data[2] = 0x66;
         return data;
+      }
+      public boolean process(String name, int cnt) {
+        if (ipc != null) {
+          for(int a=0;a<cnt;a++) {
+            try {
+              ipc.invoke(name, "callback", "count=" + a);
+            } catch (Exception e) {
+              JFLog.log(e);
+            }
+          }
+        }
+        return true;
+      }
+      public boolean callback(String value) {
+        if (debug_callback) JFLog.log("callback:" + value);
+        return true;
       }
     }
   }

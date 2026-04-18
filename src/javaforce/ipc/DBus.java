@@ -1064,14 +1064,15 @@ public class DBus implements IPC {
           //to avoid deadlock this must be done on a new thread : TODO : create a thread pool
           String _member = member;
           String _sender = sender;
+          int _msg_serial = msg_serial;  //field value may change with next inbound msg
           new Thread() {
             public void run() {
               try {
                 Object ret = ep.dispatch(_member, args);
-                write_msg(MSG_RETURN, _sender, nextSerial(), msg_serial, _member, new Object[] {ret});
+                write_msg(MSG_RETURN, _sender, nextSerial(), _msg_serial, _member, new Object[] {ret});
               } catch (Exception e) {
                 if (debug) JFLog.log(e);
-                write_msg(MSG_ERROR, _sender, nextSerial(), msg_serial, _member, new Object[] {e.toString()});
+                write_msg(MSG_ERROR, _sender, nextSerial(), _msg_serial, _member, new Object[] {e.toString()});
               }
             }
           }.start();

@@ -12,6 +12,9 @@ public interface IPC {
   /** Disconnect from IPC service. */
   public boolean disconnect();
 
+  /** Return name on message bus. */
+  public String getBusName();
+
   /** Invoke RPC on specified end point. */
   public Object invoke(String dest, String method, Object... args) throws Exception;
 
