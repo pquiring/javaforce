@@ -57,6 +57,7 @@ import javaforce.ipc.transport.*;
 public class DBus implements IPC {
 
   private static final boolean debug = false;
+  private static final boolean debug_msg = false;
   private static final boolean debug_reading = false;
 
   private static class Field {
@@ -731,6 +732,7 @@ public class DBus implements IPC {
 
   private void write_msg(byte type, String dest, int serial, int serial_reply, String member, Object[] args) {
     if (args == null) args = empty;
+    if (debug_msg) JFLog.log("DBus.invoke:" + dest + ":" + member + ":" + serial + ":" + serial_reply);
     synchronized (write_msg_lock) {
       boolean write_to_dbus = dest.equals(DBusMessageBus);
       boolean dest_generic = dest.startsWith(":");
@@ -1042,6 +1044,7 @@ public class DBus implements IPC {
         JFLog.log("DBus:Error:No method name found");
         return;
       }
+      if (debug_msg) JFLog.log("DBus.method_call:" + member);
       //get args using signature and body
       Object[] args = read_args(sign);
       try {
@@ -1113,6 +1116,7 @@ public class DBus implements IPC {
             break;
         }
       }
+      if (debug_msg) JFLog.log("DBus.method_return:" + member + ":" + reply_serial);
       Object[] args = read_args(sign);
       synchronized (invokes_lock) {
         switch (msg_type) {
@@ -1172,6 +1176,7 @@ public class DBus implements IPC {
             break;
         }
       }
+      if (debug_msg) JFLog.log("DBus.method_error:" + member + ":" + reply_serial);
       Object[] args = read_args(sign);
       synchronized (invokes_lock) {
         for(Invoke invoke : invokes) {
