@@ -900,8 +900,8 @@ public class DBus implements IPC {
     byte msg_type;
     byte msg_flags;
     byte msg_ver;
-    int body_len;
-    int serial;
+    int msg_body_length;
+    int msg_serial;
     int field_size;
     ArrayList<Field> fields = new ArrayList<>();
     public void run() {
@@ -938,8 +938,8 @@ public class DBus implements IPC {
           msg_type = read_byte();
           msg_flags = read_byte();
           msg_ver = read_byte();
-          body_len = read_int();
-          serial = read_int();
+          msg_body_length = read_int();
+          msg_serial = read_int();
           field_size = read_int();
           if (debug) {
             JFLog.log("msg:" + msg_names[msg_type]);
@@ -1050,11 +1050,11 @@ public class DBus implements IPC {
           switch (member) {
             case "subscribe":
               signal_add_client(sender, signal);
-              write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {true});
+              write_msg(MSG_RETURN, sender, nextSerial(), msg_serial, member, new Object[] {true});
               break;
             case "unsubscribe":
               signal_remove_client(sender, signal);
-              write_msg(MSG_RETURN, sender, nextSerial(), serial, member, new Object[] {true});
+              write_msg(MSG_RETURN, sender, nextSerial(), msg_serial, member, new Object[] {true});
               break;
           }
         } else {
@@ -1065,16 +1065,17 @@ public class DBus implements IPC {
             public void run() {
               try {
                 Object ret = ep.dispatch(_member, args);
-                write_msg(MSG_RETURN, _sender, nextSerial(), serial, _member, new Object[] {ret});
+                write_msg(MSG_RETURN, _sender, nextSerial(), msg_serial, _member, new Object[] {ret});
               } catch (Exception e) {
                 if (debug) JFLog.log(e);
+                write_msg(MSG_ERROR, _sender, nextSerial(), msg_serial, _member, new Object[] {e.toString()});
               }
             }
           }.start();
         }
       } catch (Exception e) {
         if (debug) JFLog.log(e);
-        write_msg(MSG_ERROR, sender, nextSerial(), serial, member, new Object[] {e.toString()});
+        write_msg(MSG_ERROR, sender, nextSerial(), msg_serial, member, new Object[] {e.toString()});
       }
     }
     private boolean isSignalRequest(String member, Object[] args) {
@@ -1090,7 +1091,6 @@ public class DBus implements IPC {
       String sender = null;
       String member = null;
       String sign = null;
-      boolean dbus = false;
       int reply_serial = -1;
       int cnt = fields.size();
       for(int a=0;a<cnt;a++) {
@@ -1107,9 +1107,6 @@ public class DBus implements IPC {
             break;
           case FIELD_SENDER:
             sender = (String)field.value;
-            if (sender.equals(DBusMessageBus)) {
-              dbus = true;
-            }
             break;
           case FIELD_REPLY_SERIAL:
             reply_serial = (Integer)field.value;
