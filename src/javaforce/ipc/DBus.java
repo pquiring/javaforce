@@ -914,6 +914,7 @@ public class DBus implements IPC {
           JFLog.log("DBus.read.length=" + rpkt_len);
         }
         if (rpkt_len < 0) {
+          JFLog.log("DBus.Reader:read error");
           disconnect();
           break;
         }

@@ -89,6 +89,11 @@ public class JBus implements EndPoint {
     return dbus.getBusName();
   }
 
+  /** Set DBus timeout. */
+  public void setTimeout(int ms) {
+    dbus.setTimeout(ms);
+  }
+
   /** Connect to message bus. */
   public boolean connect() {
     try {
