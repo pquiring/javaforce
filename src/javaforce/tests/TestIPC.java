@@ -82,6 +82,7 @@ public class TestIPC {
     private int delay;
     private Random r = new Random();
     private IPC ipc;
+    private TestEndPoint ep;
     public Client(int delay) {
       this.delay = delay;
     }
@@ -93,7 +94,7 @@ public class TestIPC {
         } else {
           transport = DBus.createTransport();
         }
-        TestEndPoint ep = new TestEndPoint(null);
+        ep = new TestEndPoint(null);
         ipc = new DBus(ep, transport);
         if (!ipc.connect()) {
           JFLog.log("IPC.connect() failed");
@@ -104,7 +105,7 @@ public class TestIPC {
           try {
             ping();
             modify();
-            callback();
+            process();
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -114,6 +115,7 @@ public class TestIPC {
         JFLog.log(e);
       }
     }
+    /** Test pinging server. */
     public void ping() throws Exception {
       int value = r.nextInt();
       if (debug) JFLog.log(String.format("ping(0x%x)", value));
@@ -126,6 +128,7 @@ public class TestIPC {
         success++;
       }
     }
+    /** Test sending/receiving byte array. */
     public void modify() throws Exception {
       byte[] data = new byte[3];
       data[0] = 0x11;
@@ -141,14 +144,22 @@ public class TestIPC {
         success++;
       }
     }
-    public void callback() throws Exception {
-      Object result = ipc.invoke("javaforce.TestIPC.Server", "process", ipc.getBusName(), 3);
+    private static final int callbacks = 3;
+    /** Test long process on server with callbacks. */
+    public void process() throws Exception {
+      ep.callback_count = 0;
+      Object result = ipc.invoke("javaforce.TestIPC.Server", "process", ipc.getBusName(), callbacks);
       if (result == null) {
         if (debug) JFLog.log("result == null");
         error++;
       } else {
-        if (debug) JFLog.log("result = " + result);
-        success++;
+        if (ep.callback_count != callbacks) {
+          if (debug) JFLog.log("callback_count != " + callbacks);
+          error++;
+        } else {
+          if (debug) JFLog.log("result = " + result);
+          success++;
+        }
       }
     }
   }
@@ -163,6 +174,8 @@ public class TestIPC {
     private Dispatcher dispatcher;
     private IPC ipc;
 
+    public int callback_count;
+
     public String getEndPointName() {
       return name;
     }
@@ -176,10 +189,12 @@ public class TestIPC {
     }
 
     public class Methods {
+      /** ping */
       public boolean ping(int value) {
         if (debug) JFLog.log(String.format("ping(0x%x)", value));
         return true;
       }
+      /** Modifies the byte array and returns it. */
       public byte[] modify(byte[] data) {
         if (debug) JFLog.log(String.format("modify(byte[] {%x %x %x})", data[0], data[1], data[2]));
         data[0] = 0x44;
@@ -187,6 +202,11 @@ public class TestIPC {
         data[2] = 0x66;
         return data;
       }
+      /** Process is a long process that will call callback() on the caller.
+       * This method MUST return before the timeout occurs on the caller
+       * or the caller will generate an exception
+       * and will not receive the return value (default = 30 seconds).
+       */
       public boolean process(String name, int cnt) {
         if (ipc != null) {
           for(int a=0;a<cnt;a++) {
@@ -199,8 +219,10 @@ public class TestIPC {
         }
         return true;
       }
+      /** callback to the caller from process() */
       public boolean callback(String value) {
         if (debug_callback) JFLog.log("callback:" + value);
+        callback_count++;
         return true;
       }
     }
