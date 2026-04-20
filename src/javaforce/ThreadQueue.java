@@ -69,8 +69,10 @@ public class ThreadQueue {
 
   /** Closes the ThreadQueue (the queue is first emptied) */
   public void close() {
-    executor.shutdown();
-    executor = null;
+    if (executor != null) {
+      executor.shutdown();
+      executor = null;
+    }
     queue = null;
   }
 
