@@ -198,6 +198,7 @@ public class DBus implements IPC {
   private int timeout = 30 * 1000;
   private int serial = 1;
   private Object serial_lock = new Object();
+  private ThreadQueue queue;
 
   /** Create DBus with specified EndPoint. */
   public DBus(EndPoint ep) {
@@ -281,6 +282,11 @@ public class DBus implements IPC {
   public boolean connect() {
     String busname = ep.getEndPointName();
     if (debug) JFLog.log("DBus:busName=" + busname);
+    if (queue != null) {
+      queue.close();
+      queue = null;
+    }
+    queue = new ThreadQueue();
     return transport.connect(busname, this, new Runnable() {
       public void run() {
         reader = new Reader();
@@ -298,6 +304,10 @@ public class DBus implements IPC {
         reader.join();
       }
       reader = null;
+      if (queue != null) {
+        queue.close();
+        queue = null;
+      }
       return result;
     } catch (Exception e) {
       JFLog.log(e);
@@ -1061,21 +1071,23 @@ public class DBus implements IPC {
               break;
           }
         } else {
-          //to avoid deadlock this must be done on a new thread : TODO : create a thread pool
+          //to avoid deadlock this must be done on a seperate thread
           String _member = member;
           String _sender = sender;
           int _msg_serial = msg_serial;  //field value may change with next inbound msg
-          new Thread() {
-            public void run() {
-              try {
-                Object ret = ep.dispatch(_member, args);
-                write_msg(MSG_RETURN, _sender, nextSerial(), _msg_serial, _member, new Object[] {ret});
-              } catch (Exception e) {
-                if (debug) JFLog.log(e);
-                write_msg(MSG_ERROR, _sender, nextSerial(), _msg_serial, _member, new Object[] {e.toString()});
+          queue.add(
+            new Runnable() {
+              public void run() {
+                try {
+                  Object ret = ep.dispatch(_member, args);
+                  write_msg(MSG_RETURN, _sender, nextSerial(), _msg_serial, _member, new Object[] {ret});
+                } catch (Exception e) {
+                  if (debug) JFLog.log(e);
+                  write_msg(MSG_ERROR, _sender, nextSerial(), _msg_serial, _member, new Object[] {e.toString()});
+                }
               }
             }
-          }.start();
+          );
         }
       } catch (Exception e) {
         if (debug) JFLog.log(e);
