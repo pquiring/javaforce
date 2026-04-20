@@ -1,5 +1,8 @@
 What's new...
 
+Apr 20/2026 : JF/104.1
+  - fix : DBus : process inbound calls on a new thread each time to avoid deadlocks
+
 Apr 15/2026 : JF/104.0
   - new : DBus : added TCPTransport for unsupported systems
   - new : FFM : added support to load native methods from shared library
