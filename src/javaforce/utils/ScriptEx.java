@@ -73,7 +73,7 @@ public class ScriptEx {
         return;
       }
       case "get-epoch-ldap": {
-        System.out.println((System.currentTimeMillis() - 11644473600000L) * 10000L);  //1970 - 1601 = 11644473600000 ms
+        System.out.println((System.currentTimeMillis() + 11644473600000L) * 10000L);  //1970 - 1601 = 369 years = 11644473600000 ms
         return;
       }
       case "runas": {
