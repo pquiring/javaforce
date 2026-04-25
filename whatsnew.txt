@@ -1,5 +1,9 @@
 What's new...
 
+Apr 25/2026 : JF/105.0
+  - new : ThreadQueue now uses a thread pool
+  - new : DBus uses ThreadQueue to process inbound calls for better performance
+
 Apr 20/2026 : JF/104.1
   - fix : DBus : process inbound calls on a new thread each time to avoid deadlocks
 
