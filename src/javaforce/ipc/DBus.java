@@ -199,17 +199,43 @@ public class DBus implements IPC {
   private int serial = 1;
   private Object serial_lock = new Object();
   private ThreadQueue queue;
+  private Options options;
+
+  /** Options provides increase control of DBus operations. */
+  public static class Options {
+    /** Transport to use (null = create default for OS) */
+    public DBusTransport transport = null;
+    /** min threads for processing inbound calls queue. Default = 1 */
+    public int minThreads = 1;
+    /** max threads for processing inbound calls queue. Default = 16 */
+    public int maxThreads = 16;
+    /** idle time before an idle thread is closed (if # threads is more than minThreads). Default = 60 */
+    public int idleSeconds = 60;
+  }
 
   /** Create DBus with specified EndPoint. */
   public DBus(EndPoint ep) {
     this.ep = ep;
     this.transport = createTransport();
+    this.options = new Options();
   }
 
   /** Create DBus with specified EndPoint and transport. */
   public DBus(EndPoint ep, DBusTransport transport) {
     this.ep = ep;
     this.transport = transport;
+    this.options = new Options();
+  }
+
+  /** Create DBus with specified EndPoint and more detailed options. */
+  public DBus(EndPoint ep, Options options) {
+    this.ep = ep;
+    if (options.transport == null) {
+      this.transport = createTransport();
+    } else {
+      this.transport = options.transport;
+    }
+    this.options = options;
   }
 
   /** Create transport suitable for OS. */
@@ -286,7 +312,7 @@ public class DBus implements IPC {
       queue.close();
       queue = null;
     }
-    queue = new ThreadQueue();
+    queue = new ThreadQueue(options.minThreads, options.maxThreads, options.idleSeconds);
     return transport.connect(busname, this, new Runnable() {
       public void run() {
         reader = new Reader();
