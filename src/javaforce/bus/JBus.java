@@ -94,11 +94,14 @@ public class JBus implements EndPoint {
     dbus.setTimeout(ms);
   }
 
+  /** DBus options that must be configured before connect(). */
+  public DBus.Options options = new DBus.Options();
+
   /** Connect to message bus. */
   public boolean connect() {
     try {
       JFLog.log("JBus:starting...");
-      dbus = new DBus(this);
+      dbus = new DBus(this, options);
       boolean res = dbus.connect();
       if (!res) {
         JFLog.log("JBus.connect() failed!");
