@@ -9,6 +9,8 @@ package javaforce;
 
 public class HTML {
 
+  public static final boolean debug = false;
+
   /** Generate html.form.input
    * @param name = element name (optional)
    * @param id = element id (optional)
@@ -142,5 +144,46 @@ public class HTML {
   /** Adds js code inline. */
   public static String addJSinline(String script) {
     return "<script>" + script + "</script>";
+  }
+
+  /** Converts HTML to text/plain. */
+  public static String toText(String html) {
+    StringBuilder txt = new StringBuilder();
+    int html_len = html.length();
+    if (debug) JFLog.log("len=" + html_len);
+    int html_off = 0;
+    while (html_off < html_len) {
+      int i1 = html.indexOf('<', html_off);
+      if (debug) JFLog.log("i1=" + i1);
+      if (i1 == -1) {
+        txt.append(html.substring(html_off, html_len - html_off));
+        html_off = html_len;
+      } else {
+        if (i1 > 0) {
+          if (debug) JFLog.log("substring=" + html_off + "," + i1);
+          txt.append(html.substring(html_off, i1));
+        }
+        int i2 = html.indexOf('>', i1);
+        if (debug) JFLog.log("i2=" + i2);
+        if (i2 == -1) {
+          JFLog.log("HTML.toText() : tag left open");
+          break;
+        } else {
+          String tag = html.substring(i1 + 1, i2);
+          switch (tag) {
+            case "br": txt.append("\r\n"); break;
+          }
+          html_off = i2 + 1;
+        }
+      }
+    }
+    return txt.toString();
+  }
+
+  public static void main(String[] args) {
+    String html = "<h1>This is HTML</h1><br>Converted to text!<br>";
+    System.out.println(html);
+    String txt = toText(html);
+    System.out.println(txt);
   }
 }
