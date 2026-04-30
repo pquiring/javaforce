@@ -146,6 +146,38 @@ public class HTML {
     return "<script>" + script + "</script>";
   }
 
+  /** Convert HTML &amp; codes to text format. */
+  private static String convertAmpCodes(String html) {
+    StringBuilder txt = new StringBuilder();
+    int html_len = html.length();
+    int html_off = 0;
+    while (html_off < html_len) {
+      int i1 = html.indexOf('&', html_off);
+      if (i1 == -1) {
+        txt.append(html.substring(html_off, html_len));
+        html_off = html_len;
+      } else {
+        if (i1 > 0) {
+          txt.append(html.substring(html_off, i1));
+        }
+        int i2 = html.indexOf(';', i1);
+        if (i2 == -1) {
+          JFLog.log("HTML.toText() : amp code left open");
+          break;
+        } else {
+          String tag = html.substring(i1 + 1, i2);
+          switch (tag) {
+            case "amp": txt.append("&"); break;
+            case "lt": txt.append("<"); break;
+            case "gt": txt.append(">"); break;
+          }
+          html_off = i2 + 1;
+        }
+      }
+    }
+    return txt.toString();
+  }
+
   /** Converts HTML to text/plain. */
   public static String toText(String html) {
     StringBuilder txt = new StringBuilder();
@@ -156,12 +188,13 @@ public class HTML {
       int i1 = html.indexOf('<', html_off);
       if (debug) JFLog.log("i1=" + i1);
       if (i1 == -1) {
-        txt.append(html.substring(html_off, html_len - html_off));
+        if (debug) JFLog.log("substring=" + html_off + "," + html_len);
+        txt.append(convertAmpCodes(html.substring(html_off, html_len)));
         html_off = html_len;
       } else {
         if (i1 > 0) {
           if (debug) JFLog.log("substring=" + html_off + "," + i1);
-          txt.append(html.substring(html_off, i1));
+          txt.append(convertAmpCodes(html.substring(html_off, i1)));
         }
         int i2 = html.indexOf('>', i1);
         if (debug) JFLog.log("i2=" + i2);
@@ -181,7 +214,7 @@ public class HTML {
   }
 
   public static void main(String[] args) {
-    String html = "<h1>This is HTML</h1><br>Converted to text!<br>";
+    String html = "<h1>This is HTML</h1><br>Converted to text!<br>Here are some amp codes &amp; &lt; &gt;";
     System.out.println(html);
     String txt = toText(html);
     System.out.println(txt);
