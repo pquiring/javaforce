@@ -84,7 +84,7 @@ function debian {
   #configure JavaForce repository
   if [ ! -f /etc/apt/sources.list.d/javaforce.list ]; then
     echo Download javaforce.list
-    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/debian/$VERSION_ID/$ARCH/javaforce.list
+    wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/$ID/$VERSION_ID/$ARCH/javaforce.list
     if [ $ID = "ubuntu" ]; then
       sed -i 's/debian/ubuntu/g' /etc/apt/sources.list.d/javaforce.list
     fi
@@ -95,7 +95,7 @@ function debian {
   fi
   if [ ! -f /etc/apt/trusted.gpg.d/javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/debian/$VERSION_ID/$ARCH/javaforce.gpg
+    wget -NP /etc/apt/trusted.gpg.d http://javaforce.sf.net/$ID/$VERSION_ID/$ARCH/javaforce.gpg
     chmod 644 /etc/apt/trusted.gpg.d/javaforce.gpg
   fi
 
