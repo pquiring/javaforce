@@ -85,9 +85,6 @@ function debian {
   if [ ! -f /etc/apt/sources.list.d/javaforce.list ]; then
     echo Download javaforce.list
     wget -NP /etc/apt/sources.list.d http://javaforce.sf.net/$ID/$VERSION_ID/$ARCH/javaforce.list
-    if [ $ID = "ubuntu" ]; then
-      sed -i 's/debian/ubuntu/g' /etc/apt/sources.list.d/javaforce.list
-    fi
     chmod 644 /etc/apt/sources.list.d/javaforce.list
   fi
   if [ $UPDATE = "yes" ]; then
