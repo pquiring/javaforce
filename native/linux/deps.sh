@@ -55,7 +55,7 @@ function arch {
 }
 
 function freebsd {
-  pkg install -y gcc ffmpeg libX11 libXrandr libXcursor libXinerama libXi libXt libvirt ncurses mesa-libs
+  xargs -d '\n' pkg install -y < pkg-build.deps
 }
 
 detectos

@@ -1,0 +1,11 @@
+gcc
+ffmpeg
+libX11
+libXrandr
+libXcursor
+libXinerama
+libXi
+libXt
+libvirt
+ncurses
+mesa-libs
