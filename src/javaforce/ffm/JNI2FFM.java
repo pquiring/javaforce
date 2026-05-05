@@ -242,9 +242,13 @@ public class JNI2FFM {
           if (isArray) {
             array_names.add(arg_name);
             String segment_name = "_array_" + arg_name;
-            arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(" + (flag_critical ? "" : "arena, ") + arg_name + ");");
+            arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(");
+            if (!flag_critical || array_type.equals("JAVA_STRING")) {
+              arrays.append("arena, ");
+              arena_needed = true;
+            }
+            arrays.append(arg_name + ");");
             method.append(segment_name);
-            arena_needed = true;
           } else {
             if (java_type.equals("MediaIO")) {
               method.append("FFM.toMemory(arena, ");
