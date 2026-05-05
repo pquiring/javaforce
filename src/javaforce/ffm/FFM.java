@@ -190,6 +190,34 @@ public class FFM {
     }
   }
 
+  /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
+  public MethodHandle getFunctionPtrCritical(String name, FunctionDescriptor fd) {
+    if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
+    try {
+      MemorySegment addr = lookup.findOrThrow(name);
+      if (addr == null || addr.address() == 0) {
+        JFLog.log("FFM:FunctionPtr not found(1):" + name + "=" + addr);
+        return null;
+      }
+      //symbols have zero length, need to reinterpret as a pointer
+      addr = addr.reinterpret(ADDRESS_SIZE);
+      if (addr == null || addr.address() == 0) {
+        JFLog.log("FFM:FunctionPtr not found(2):" + name + "=" + addr);
+        return null;
+      }
+      //now get the contents of the pointer
+      addr = addr.get(ADDRESS, 0);
+      if (addr == null || addr.address() == 0) {
+        JFLog.log("FFM:FunctionPtr not found(3):" + name + "=" + addr);
+        return null;
+      }
+      return linker.downcallHandle(addr, fd, Linker.Option.critical(true));
+    } catch (Exception e) {
+      JFLog.logTrace("FFM:FunctionPtr not found(e):" + name);
+      return null;
+    }
+  }
+
   //upcall helpers
 
   private static ValueLayout classToValueLayout(Class<?> cls) {
@@ -331,6 +359,44 @@ public class FFM {
       array.setAtIndex(ADDRESS, idx++, ptr);
     }
     return array;
+  }
+
+  //array helpers (critical)
+
+  /** Create native array from float[] */
+  public static MemorySegment toMemory(float[] m) {
+    if (m == null) return MemorySegment.NULL;
+    return MemorySegment.ofArray(m);
+  }
+
+  /** Create native array from double[] */
+  public static MemorySegment toMemory(double[] m) {
+    if (m == null) return MemorySegment.NULL;
+    return MemorySegment.ofArray(m);
+  }
+
+  /** Create native array from long[] */
+  public static MemorySegment toMemory(long[] m) {
+    if (m == null) return MemorySegment.NULL;
+    return MemorySegment.ofArray(m);
+  }
+
+  /** Create native array from int[] */
+  public static MemorySegment toMemory(int[] m) {
+    if (m == null) return MemorySegment.NULL;
+    return MemorySegment.ofArray(m);
+  }
+
+  /** Create native array from short[] */
+  public static MemorySegment toMemory(short[] m) {
+    if (m == null) return MemorySegment.NULL;
+    return MemorySegment.ofArray(m);
+  }
+
+  /** Create native array from byte[] */
+  public static MemorySegment toMemory(byte[] m) {
+    if (m == null) return MemorySegment.NULL;
+    return MemorySegment.ofArray(m);
   }
 
   private static final long JAVA_LONG_SIZE = JAVA_LONG.byteSize();

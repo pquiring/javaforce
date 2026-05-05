@@ -61,6 +61,7 @@ public class JNI2FFM {
 
     boolean flag_nofreestring = false;
     boolean flag_nocopyback = false;
+    boolean flag_critical = false;
 
     try {
 
@@ -115,6 +116,10 @@ public class JNI2FFM {
         }
         if (ln.equals("@NoCopyBack")) {
           flag_nocopyback = true;
+          continue;
+        }
+        if (ln.equals("@Critical")) {
+          flag_critical = true;
           continue;
         }
         if (!ln.startsWith("public native")) continue;
@@ -177,7 +182,7 @@ public class JNI2FFM {
         method.append(func_name);
         method.append(".invokeExact(");
 
-        ctor2.append("    " + func_name + " = ffm.getFunctionPtr(\"_" + func_name + "\", ffm.getFunctionDesciptor");
+        ctor2.append("    " + func_name + " = ffm.getFunctionPtr" + (flag_critical ? "Critical": "") + "(\"_" + func_name + "\", ffm.getFunctionDesciptor");
         boolean first = true;
         boolean first_ctor = true;
         if (isRetVoid) {
@@ -228,7 +233,7 @@ public class JNI2FFM {
           if (isArray) {
             array_names.add(arg_name);
             String segment_name = "_array_" + arg_name;
-            arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(arena, " + arg_name + ");");
+            arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(" + (flag_critical ? "" : "arena, ") + arg_name + ");");
             method.append(segment_name);
             arena_needed = true;
           } else {
@@ -306,6 +311,7 @@ public class JNI2FFM {
         }
         flag_nofreestring = false;
         flag_nocopyback = false;
+        flag_critical = false;
       }
       ctor.append("    return true;\n");
       ctor.append("  }\n");

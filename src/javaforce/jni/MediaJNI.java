@@ -6,6 +6,7 @@ package javaforce.jni;
  */
 
 import javaforce.api.*;
+import javaforce.ffm.*;
 import javaforce.media.*;
 
 public class MediaJNI implements MediaAPI {
