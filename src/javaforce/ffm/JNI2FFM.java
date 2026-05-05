@@ -59,9 +59,11 @@ public class JNI2FFM {
       return;
     }
 
+    boolean flag_critical_all = false;
+
     boolean flag_nofreestring = false;
     boolean flag_nocopyback = false;
-    boolean flag_critical = false;
+    boolean flag_critical = flag_critical_all;
 
     try {
 
@@ -120,6 +122,11 @@ public class JNI2FFM {
         }
         if (ln.equals("@Critical")) {
           flag_critical = true;
+          continue;
+        }
+        if (ln.equals("@CriticalAll")) {
+          flag_critical = true;
+          flag_critical_all = true;
           continue;
         }
         if (!ln.startsWith("public native")) continue;
@@ -311,7 +318,7 @@ public class JNI2FFM {
         }
         flag_nofreestring = false;
         flag_nocopyback = false;
-        flag_critical = false;
+        flag_critical = flag_critical_all;
       }
       ctor.append("    return true;\n");
       ctor.append("  }\n");
