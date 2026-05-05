@@ -191,7 +191,9 @@ public class JNI2FFM {
         method.append(func_name);
         method.append(".invokeExact(");
 
-        ctor2.append("    " + func_name + " = ffm.getFunctionPtr" + (flag_critical ? "Critical": "") + "(\"_" + func_name + "\", ffm.getFunctionDesciptor");
+        ctor2.append("    " + func_name + " = ffm.getFunctionPtr");
+        if (flag_critical) ctor2.append("Critical");
+        ctor2.append("(\"_" + func_name + "\", ffm.getFunctionDesciptor");
         boolean first = true;
         boolean first_ctor = true;
         if (isRetVoid) {
