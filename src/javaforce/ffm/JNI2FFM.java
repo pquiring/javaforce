@@ -62,7 +62,7 @@ public class JNI2FFM {
     boolean flag_critical_all = false;
 
     boolean flag_nofreestring = false;
-    boolean flag_nocopyback = false;
+    boolean flag_nocopyback = flag_critical_all;
     boolean flag_critical = flag_critical_all;
 
     try {
@@ -121,10 +121,12 @@ public class JNI2FFM {
           continue;
         }
         if (ln.equals("@Critical")) {
+          flag_nocopyback = true;
           flag_critical = true;
           continue;
         }
         if (ln.equals("@CriticalAll")) {
+          flag_nocopyback = true;
           flag_critical = true;
           flag_critical_all = true;
           continue;
@@ -317,7 +319,7 @@ public class JNI2FFM {
           ctor.append(ctor2);
         }
         flag_nofreestring = false;
-        flag_nocopyback = false;
+        flag_nocopyback = flag_critical_all;
         flag_critical = flag_critical_all;
       }
       ctor.append("    return true;\n");
