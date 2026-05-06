@@ -68,7 +68,6 @@ public class ExecGraalAgent implements ShellProcessListener {
     if (service != null) {
       exec += "s";
     }
-    exec += "d";  //use debug version
     if (JF.isWindows()) {
       exec += ".exe";
     }
