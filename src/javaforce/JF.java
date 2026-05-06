@@ -2068,4 +2068,19 @@ public class JF {
     OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     return osBean.getFreeMemorySize();
   }
+
+  /** Returns free memory in the JVM in bytes. */
+  public long getJavaFreeMemorySize() {
+    return Runtime.getRuntime().freeMemory();
+  }
+
+  /** Returns total memory in the JVM in bytes. */
+  public long getJavaTotalMemorySize() {
+    return Runtime.getRuntime().totalMemory();
+  }
+
+  /** Returns max memory in the JVM in bytes. */
+  public long getJavaMaxMemorySize() {
+    return Runtime.getRuntime().maxMemory();
+  }
 }
