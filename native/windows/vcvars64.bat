@@ -1,8 +1,6 @@
 @echo off
 echo Microsoft Visual C++ 2026 compiler setup
 
-if not "%VCVER%"=="" goto end
-
 SET VCTYPE=Community
 SET VCYEAR=18
 SET VCVER=14.50.35717
@@ -16,6 +14,8 @@ echo VCVER=%VCVER%
 echo WINVER=%WINVER%
 
 if "%1"=="detect" goto detect
+
+if not "%VisualStudioVersion%"=="" goto end
 
 ::vcpkg
 set VCPKG_DEFAULT_TRIPLET=x64-windows
@@ -69,7 +69,9 @@ set Platform=x64
 goto end
 
 :detect
-dir "%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\"
-dir "%MSSDK%\10\bin\"
+echo Detecting MS VC Tools Versions...
+dir /b "%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\"
+echo Detecting MS SDK Versions...
+dir /b "%MSSDK%\10\bin\"
 
 :end
