@@ -254,7 +254,7 @@ JavaVMInitArgs *BuildArgs() {
   int idx;
   char *opts[64];
 
-#ifdef DEBUG
+#ifdef _JF_DEBUG
   debug = true;
 #else
   char jf_debug[64];
