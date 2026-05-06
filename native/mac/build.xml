@@ -19,7 +19,6 @@
 
     <!-- build native cli executable -->
     <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI loader.mm ${libs} -o ${user.home}/bin/jfexec"/>
-    <exec command="gcc -framework CoreFoundation -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers -D_JF_CLI -D_JF_DEBUG loader.mm ${libs} -o ${user.home}/bin/jfexecd"/>
 
     <delete>
       <fileset dir=".">

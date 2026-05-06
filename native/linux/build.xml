@@ -23,8 +23,7 @@
 
       <!-- build cli version -->
       <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI loader.cpp native.a @{libs} -o ${user.home}/bin/jfexec"/>
-      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG loader.cpp native.a @{libs} -o ${user.home}/bin/jfexecd"/>
-      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_DEBUG -D_JF_SERVICE loader.cpp native.a @{libs} -o ${user.home}/bin/jfexecsd"/>
+      <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/@{linux} -I ../headers -I ../opencl -Wno-write-strings -D_JF_CLI -D_JF_SERVICE loader.cpp native.a @{libs} -o ${user.home}/bin/jfexecs"/>
 
       <!-- build shared library -->
       <exec command="gcc ${opt} -shared native.o glfw.o glfw-null.o @{libs} -o ${user.home}/bin/jfnative64.so"/>

@@ -65,6 +65,8 @@ JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
 bool graal = false;
 bool debug = false;
+int debug_port = 9010;
+char debug_opt[64];
 char errmsg[1024];
 
 /* Prototypes */
@@ -254,22 +256,24 @@ JavaVMInitArgs *BuildArgs() {
   int idx;
   char *opts[64];
 
-#ifdef _JF_DEBUG
-  debug = true;
-#else
   char jf_debug[64];
   jf_debug[0] = 0;
   GetEnvironmentVariable("JF_DEBUG", jf_debug, 64);
   if (strcmp(jf_debug, "true") == 0) {
     debug = true;
   }
-#endif
+  jf_debug[0] = 0;
+  GetEnvironmentVariable("JF_DEBUG_PORT", jf_debug, 64);
+  if (jf_debug[0] != 0) {
+    debug_port = atoi(jf_debug);
+  }
 
   if (debug) {
 // Warning : this will cause the app not to load if MSVCRT is not installed at the system level - the one included in the MSI is not found by jmx
     opts[nOpts++] = "-Djava.debug=true";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote";
-    opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
+    sprintf(debug_opt, "-Dcom.sun.management.jmxremote.port=%d", debug_port);
+    opts[nOpts++] = debug_opt;
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
     opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
@@ -493,6 +497,9 @@ bool loadProperties() {
     }
     else if (strncmp(ln1, "DEBUG=", 6) == 0) {
       debug = true;
+    }
+    else if (strncmp(ln1, "DEBUG_PORT=", 11) == 0) {
+      debug_port = atoi(ln1 + 11);
     }
 #ifdef _JF_SERVICE
     else if (strncmp(ln1, "SERVICE=", 8) == 0) {

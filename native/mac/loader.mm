@@ -63,6 +63,9 @@ char method[MAX_PATH];
 char cfgargs[1024];
 char app_path[MAX_PATH];
 char app_name[MAX_PATH];
+bool debug = false;
+int debug_port = 9010;
+char debug_opt[64];
 
 /* Prototypes */
 void error(char *msg);
@@ -153,17 +156,30 @@ JavaVMInitArgs *BuildArgs() {
   int nOpts = 0;
   char *opts[64];
   int idx;
+  char *jf_debug;
 
-#ifdef _JF_DEBUG
-  opts[nOpts++] = "-Djava.debug=true";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
-  opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
-#else
-  opts[nOpts++] = "-XX:-UsePerfData";
-#endif
+  jf_debug = getenv("JF_DEBUG");
+  if (jf_debug != NULL) {
+    if (strcmp(jf_debug, "true") == 0) {
+      debug = true;
+    }
+  }
+  jf_debug = getenv("JF_DEBUG_PORT");
+  if (jf_debug != NULL) {
+    debug_port = atoi(jf_debug);
+  }
+
+  if (debug) {
+    opts[nOpts++] = "-Djava.debug=true";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote";
+    sprintf(debug_opt, "-Dcom.sun.management.jmxremote.port=%d", debug_port);
+    opts[nOpts++] = debug_opt;
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
+    opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+  } else {
+    opts[nOpts++] = "-XX:-UsePerfData";
+  }
   opts[nOpts++] = (char*)"-Djava.app.home=.";
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";
@@ -312,6 +328,12 @@ int loadProperties() {
     }
     else if (strncmp(ln1, "ARGS=", 5) == 0) {
       strcpy(cfgargs, ln1 + 5);
+    }
+    else if (strncmp(ln1, "DEBUG=", 6) == 0) {
+      debug = true;
+    }
+    else if (strncmp(ln1, "DEBUG_PORT=", 11) == 0) {
+      debug_port = atoi(ln1 + 11);
     }
     ln1 = ln2;
   }

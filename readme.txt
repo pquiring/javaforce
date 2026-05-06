@@ -85,13 +85,21 @@ deploy : build maven deployment artifacts (requires pom.xml) and publish to sona
   - must define 'maven' property which is groupId
   - auth token must be defined in ~/.m2/settings.xml
 executable : build native loader
- - a stub loader for the platform is copied into the project folder and configured to load classpath and start main method
- - a project property "apptype" can be defined as:
+ - creates executable for the app and configures it to load classpath and start main method
+ - project property "apptype" can be defined as:
      "window" for Window GUI apps (default)
      "console" for console apps (alias "c")
      "service" for service apps (alias "s")
      "server" for service config GUI apps (same as "window" type plus adds "-server" to executable and package names)
      "client" for client config GUI apps (same as "window" type plus adds "-client" to executable and package names)
+ - {app}.cfg file contains executable properties:
+   - CLASSPATH={list of jar files seperated by ;}  //CLASSPATH will be adjusted to OS requirements
+   - MAINCLASS={main class to find main()}         //startup class to find main() or serviceStart() if apptype=service
+   - DEBUG=true                                    //enable JMX debugging (see JMX Debugging)
+   - DEBUG_PORT={port}                             //JMX port binding (default = 9010)
+   - OPTION={options}                              //JVM options such as heap size, GC options, etc.
+   - JAVA_HOME={path}                              //alternative JVM home (default = search various locations which depends on OS)
+   - METHOD={start method}                         //alternative main method (default = main or serviceStart)
 ffmpeg : copy ffmpeg libraries to project folder (Windows only)
 installapp : install files before package creation (Linux only)
 deb : build Debian deb file (after installapp)
@@ -150,15 +158,13 @@ To build a project using Graal use the following Ant Tasks.
     - library name should be the full class name where main() is defined (ie: javaforce.utils.CopyPath.dll)
 GraalVM support for AWT is still a work in progress.
 
-Debugging
----------
-The CLI native loaders ~/bin/jfexec* enable JMX debugging support on port 9010.
-These loaders are used when you run an app with "ant run".
-From VisualVM you can connect to the JMX as localhost:9010
-You can also enable debug support by adding DEBUG=true to the project .cfg file to have it enabled in the generated executable.
-Debug support can also be enabled with environment variable JF_DEBUG=true
+JMX Debugging
+-------------
+JMX debugging support can be enabled with environment variable JF_DEBUG=true
+The JMX port by default is 9010 but can be overridden with environment variable JF_DEBUG_PORT
+You can enable debug support by adding DEBUG=true and DEBUG_PORT=9010 to the project .cfg file to have it enabled in the generated executable.
+From VisualVM you can connect to the JMX as localhost:9010 if it does not appear automatically.
 Also try adding -Xlog:gc*:gc.log to the OPTIONS= in the project .cfg file.  Then while the app is running use 'tail -f gc.log' from a terminal to watch memory usage.
-This should be removed for any public release.
 
 Requirements
 ------------

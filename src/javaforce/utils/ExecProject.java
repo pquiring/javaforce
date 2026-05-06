@@ -60,8 +60,6 @@ public class ExecProject implements ShellProcessListener {
       exec += "s";
     }
 
-    exec += "d";  //use debug version
-
     if (JF.isWindows()) {
       exec += ".exe";
     }
