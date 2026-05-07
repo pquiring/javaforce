@@ -163,7 +163,7 @@ public class FFM {
   }
 
   /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
-  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
+  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd, boolean critical) {
     if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
     try {
       MemorySegment addr = lookup.findOrThrow(name);
@@ -183,7 +183,10 @@ public class FFM {
         JFLog.log("FFM:FunctionPtr not found(3):" + name + "=" + addr);
         return null;
       }
-      return linker.downcallHandle(addr, fd);
+      if (critical)
+        return linker.downcallHandle(addr, fd, Linker.Option.critical(true));
+      else
+        return linker.downcallHandle(addr, fd);
     } catch (Exception e) {
       JFLog.logTrace("FFM:FunctionPtr not found(e):" + name);
       return null;
@@ -191,31 +194,8 @@ public class FFM {
   }
 
   /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
-  public MethodHandle getFunctionPtrCritical(String name, FunctionDescriptor fd) {
-    if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
-    try {
-      MemorySegment addr = lookup.findOrThrow(name);
-      if (addr == null || addr.address() == 0) {
-        JFLog.log("FFM:FunctionPtr not found(1):" + name + "=" + addr);
-        return null;
-      }
-      //symbols have zero length, need to reinterpret as a pointer
-      addr = addr.reinterpret(ADDRESS_SIZE);
-      if (addr == null || addr.address() == 0) {
-        JFLog.log("FFM:FunctionPtr not found(2):" + name + "=" + addr);
-        return null;
-      }
-      //now get the contents of the pointer
-      addr = addr.get(ADDRESS, 0);
-      if (addr == null || addr.address() == 0) {
-        JFLog.log("FFM:FunctionPtr not found(3):" + name + "=" + addr);
-        return null;
-      }
-      return linker.downcallHandle(addr, fd, Linker.Option.critical(true));
-    } catch (Exception e) {
-      JFLog.logTrace("FFM:FunctionPtr not found(e):" + name);
-      return null;
-    }
+  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
+    return getFunctionPtr(name, fd, false);
   }
 
   //upcall helpers

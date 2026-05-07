@@ -192,7 +192,6 @@ public class JNI2FFM {
         method.append(".invokeExact(");
 
         ctor2.append("    " + func_name + " = ffm.getFunctionPtr");
-        if (flag_critical) ctor2.append("Critical");
         ctor2.append("(\"_" + func_name + "\", ffm.getFunctionDesciptor");
         boolean first = true;
         boolean first_ctor = true;
@@ -320,7 +319,9 @@ public class JNI2FFM {
         src.append(") ");
         src.append(method);  //{ invoke... }
         src.append("\n");
-        ctor2.append("));\n");
+        ctor2.append(")");
+        if (flag_critical) ctor2.append(", true");
+        ctor2.append(");\n");
         if (!isDup) {
           ctor.append(ctor2);
         }
