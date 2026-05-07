@@ -6,6 +6,11 @@ package javaforce.ffm;
  *
  * See Linker.Option.critical()
  *
+ * NOTE : This currently has several problems:
+ *   - FFM critical downcall method can NOT use upcalls (results in JVM crash)
+ *   - returned arrays thru JFArray still need to be copied (slow performance)
+ *   - attempts to use JNI in FFM context failed
+ *
  * @author pquiring
  */
 
