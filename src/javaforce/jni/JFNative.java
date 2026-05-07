@@ -104,4 +104,10 @@ public class JFNative {
 
   /** Returns native handle for Window. */
   public native static long getWindowHandle(Window window);
+
+  /** Pin array and return native pointer. */
+  public native static long pin(Object array);
+
+  /** Unpin array. */
+  public native static void unpin(Object array, long ptr, boolean commit);
 }

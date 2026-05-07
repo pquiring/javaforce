@@ -30,10 +30,24 @@ JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_free
   free(ptr);
 }
 
+JNIEXPORT jlong JNICALL Java_javaforce_jni_JFNative_pin
+  (JNIEnv *e, jclass c, jobject array)
+{
+  return (jlong)e->GetPrimitiveArrayCritical((jarray)array, NULL);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_unpin
+  (JNIEnv *e, jclass c, jobject array, jlong ptr, jboolean commit)
+{
+  e->ReleasePrimitiveArrayCritical((jarray)array, (void*)ptr, commit ? 0 : JNI_ABORT);
+}
+
 static JNINativeMethod javaforce_jni_JFNative[] = {
   {"allocate", "(I)Ljava/nio/ByteBuffer;", (void *)&Java_javaforce_jni_JFNative_allocate},
   {"free", "(Ljava/nio/ByteBuffer;)V", (void *)&Java_javaforce_jni_JFNative_free},
   {"getWindowHandle", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_JFNative_getWindowHandle},
+  {"pin", "(Ljava/lang/Object;)J", (void *)&Java_javaforce_jni_JFNative_pin},
+  {"unpin", "(Ljava/lang/Object;JZ)V", (void *)&Java_javaforce_jni_JFNative_unpin},
 };
 
 void registerCommonNatives(JNIEnv *env) {

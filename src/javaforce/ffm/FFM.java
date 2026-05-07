@@ -11,6 +11,7 @@ import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 
 public class FFM {
   private static FFM instance;
@@ -29,6 +30,9 @@ public class FFM {
    * Due to poor performance in some native APIs this is disabled by default.
    */
   private static boolean enabled = false;
+
+  /** Use JNI to pin arrays. */
+  private static boolean jni_pinning = true;
 
   /** Returns FFM enabled state.  */
   public static boolean enabled() {
@@ -285,36 +289,42 @@ public class FFM {
   /** Create native array from float[] */
   public static MemorySegment toMemory(Arena arena, float[] m) {
     if (m == null) return MemorySegment.NULL;
+    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_FLOAT, m);
   }
 
   /** Create native array from double[] */
   public static MemorySegment toMemory(Arena arena, double[] m) {
     if (m == null) return MemorySegment.NULL;
+    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_DOUBLE, m);
   }
 
   /** Create native array from long[] */
   public static MemorySegment toMemory(Arena arena, long[] m) {
     if (m == null) return MemorySegment.NULL;
+    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_LONG, m);
   }
 
   /** Create native array from int[] */
   public static MemorySegment toMemory(Arena arena, int[] m) {
     if (m == null) return MemorySegment.NULL;
+    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_INT, m);
   }
 
   /** Create native array from short[] */
   public static MemorySegment toMemory(Arena arena, short[] m) {
     if (m == null) return MemorySegment.NULL;
+    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_SHORT, m);
   }
 
   /** Create native array from byte[] */
   public static MemorySegment toMemory(Arena arena, byte[] m) {
     if (m == null) return MemorySegment.NULL;
+    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_BYTE, m);
   }
 
@@ -475,43 +485,67 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, float[] m) {
     if (seg == null || m == null) return;
-    float[] r = seg.toArray(JAVA_FLOAT);
-    System.arraycopy(r, 0, m, 0, m.length);
+    if (jni_pinning) {
+      JFNative.unpin(m, seg.address(), true);
+    } else {
+      float[] r = seg.toArray(JAVA_FLOAT);
+      System.arraycopy(r, 0, m, 0, m.length);
+    }
   }
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, double[] m) {
     if (seg == null || m == null) return;
-    double[] r = seg.toArray(JAVA_DOUBLE);
-    System.arraycopy(r, 0, m, 0, m.length);
+    if (jni_pinning) {
+      JFNative.unpin(m, seg.address(), true);
+    } else {
+      double[] r = seg.toArray(JAVA_DOUBLE);
+      System.arraycopy(r, 0, m, 0, m.length);
+    }
   }
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, long[] m) {
     if (seg == null || m == null) return;
-    long[] r = seg.toArray(JAVA_LONG);
-    System.arraycopy(r, 0, m, 0, m.length);
+    if (jni_pinning) {
+      JFNative.unpin(m, seg.address(), true);
+    } else {
+      long[] r = seg.toArray(JAVA_LONG);
+      System.arraycopy(r, 0, m, 0, m.length);
+    }
   }
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, int[] m) {
     if (seg == null || m == null) return;
-    int[] r = seg.toArray(JAVA_INT);
-    System.arraycopy(r, 0, m, 0, m.length);
+    if (jni_pinning) {
+      JFNative.unpin(m, seg.address(), true);
+    } else {
+      int[] r = seg.toArray(JAVA_INT);
+      System.arraycopy(r, 0, m, 0, m.length);
+    }
   }
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, short[] m) {
     if (seg == null || m == null) return;
-    short[] r = seg.toArray(JAVA_SHORT);
-    System.arraycopy(r, 0, m, 0, m.length);
+    if (jni_pinning) {
+      JFNative.unpin(m, seg.address(), true);
+    } else {
+      short[] r = seg.toArray(JAVA_SHORT);
+      System.arraycopy(r, 0, m, 0, m.length);
+    }
   }
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, byte[] m) {
     if (seg == null || m == null) return;
-    byte[] r = seg.toArray(JAVA_BYTE);
-    System.arraycopy(r, 0, m, 0, m.length);
+    if (jni_pinning) {
+      JFNative.unpin(m, seg.address(), true);
+    } else {
+      byte[] r = seg.toArray(JAVA_BYTE);
+      System.arraycopy(r, 0, m, 0, m.length);
+    }
   }
 
   /** Copy back native array after function returns. */
