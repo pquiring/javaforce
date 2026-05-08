@@ -141,7 +141,8 @@ FFM Support
 -----------
 Javaforce now supports using FFM (Foreign Function & Memory API) to access native functions instead of JNI.
 You can call FFM.enable() or FFM.disable() to revert to JNI.
-Currently FFM is disabled by default due to performance issues with the media framework (FFmpeg).
+Some JNI is used to pin arrays for better performance.
+See docs/ffm.txt for more details.
 
 Graal Support
 -------------

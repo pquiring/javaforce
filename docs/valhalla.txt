@@ -1,0 +1,8 @@
+Java Valhalla
+-------------
+
+Valhalla is a new type system for Java that will flatten fields in memory for better memory usage and performance.
+Why all fields are final I'm not sure.  Thought it would be similar to the C struct but that is not the case.
+Testing has shown that arrays inside value types can have their elements modified.
+Have not figured out how these value types will work with FFM and JNI (project still lacks documentation),
+but will most likely greatly improve native inter-op performance.

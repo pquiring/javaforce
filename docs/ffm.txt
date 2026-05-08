@@ -1,0 +1,14 @@
+Java FFM
+--------
+
+Overall the new FFM system is incomplete compared to JNI.
+
+FFM when used "as is" requires arrays to be copied from Java Heap to Native Heap before a call and then back after a call.
+The resulting performance is poor (the DVR app is unable to keep up with viewing 12 cameras)
+There is a linker option called critical that allows native code to use the Java Heap (know as pinning) but upcalls are not supported
+in critical methods which makes this option useless (attempts to use upcalls results in JVM crash).
+
+JF approach is to use JNI to pin arrays to avoid the excess copying back and forth to maintain acceptable performance.
+
+Maybe the Valhalla project and value types may offer better performance in the future but still have no idea how Valhalla will work with the native systems (FFM/JNI).
+See valhalla.txt for more info.
