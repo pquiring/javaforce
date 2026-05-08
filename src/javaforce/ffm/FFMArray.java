@@ -22,32 +22,43 @@ public class FFMArray {
     return ptr;
   }
 
+  private void unpin() {
+    JFNative.unpin(ref, ptr, true);
+    ptr = 0;
+  }
+
   public long NewByteArray(int size) {
+    if (ptr != 0) unpin();
     ref = new byte[size];
     return pin();
   }
 
   public long NewShortArray(int size) {
+    if (ptr != 0) unpin();
     ref = new short[size];
     return pin();
   }
 
   public long NewIntArray(int size) {
+    if (ptr != 0) unpin();
     ref = new int[size];
     return pin();
   }
 
   public long NewLongArray(int size) {
+    if (ptr != 0) unpin();
     ref = new long[size];
     return pin();
   }
 
   public long NewFloatArray(int size) {
+    if (ptr != 0) unpin();
     ref = new float[size];
     return pin();
   }
 
   public long NewStringArray(int size) {
+    if (ptr != 0) unpin();
     ref = new String[size];
     return pin();
   }
@@ -61,10 +72,7 @@ public class FFMArray {
 
   public Object getArray() {
    if (ref == null) return null;
-   if (ptr != 0) {
-     JFNative.unpin(ref, ptr, true);
-     ptr = 0;
-   }
+   if (ptr != 0) unpin();
    return ref;
   }
 
