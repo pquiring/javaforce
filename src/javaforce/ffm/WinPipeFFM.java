@@ -38,7 +38,7 @@ public class WinPipeFFM implements WinPipeAPI {
   public int pipeRead(long ctx,byte[] buf,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_buf = FFM.toMemory(arena, buf);int _ret_value_ = (int)pipeRead.invokeExact(ctx,_array_buf,offset,length);FFM.copyBack(_array_buf,buf);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pipeWrite;
-  public int pipeWrite(String name,byte[] buf,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_buf = FFM.toMemory(arena, buf);int _ret_value_ = (int)pipeWrite.invokeExact(arena.allocateFrom(name),_array_buf,offset,length);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int pipeWrite(String name,byte[] buf,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_buf = FFM.toMemory(arena, buf);int _ret_value_ = (int)pipeWrite.invokeExact(arena.allocateFrom(name),_array_buf,offset,length);FFM.copyBack(_array_buf,buf);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
 
   private boolean ffm_init() {

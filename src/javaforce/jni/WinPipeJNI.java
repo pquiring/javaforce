@@ -22,6 +22,5 @@ public class WinPipeJNI implements WinPipeAPI {
   public native long pipeCreate(String name, boolean first);
   public native void pipeClose(long ctx);
   public native int pipeRead(long ctx, byte[] buf, int offset, int length);
-  @NoCopyBack
   public native int pipeWrite(String name, byte[] buf, int offset, int length);
 }

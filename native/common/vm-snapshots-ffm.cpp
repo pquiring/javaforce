@@ -24,7 +24,7 @@ jboolean vmSnapshotCreate(const char* name, const char* xml, jint flags)
   return ssptr != NULL;
 }
 
-JFArray* vmSnapshotList(const char* name)
+void* vmSnapshotList(FFMArrayString ffm,const char* name)
 {
   void* conn = connect();
   if (conn == NULL) return JNI_FALSE;
@@ -36,7 +36,7 @@ JFArray* vmSnapshotList(const char* name)
     return JNI_FALSE;
   }
 
-  JFArray* list = NULL;
+  void* list = NULL;
 
   void** ptrs;
 
@@ -47,7 +47,7 @@ JFArray* vmSnapshotList(const char* name)
 #endif
 
   if (cnt > 0) {
-    list = JFArray::create(cnt, sizeof(char*), ARRAY_TYPE_STRING);
+    list = ffm->alloc(cnt);
     for(int i=0;i<cnt;i++) {
       void* ss = ptrs[i];
       const char* name = (*_virDomainSnapshotGetName)(ss);
@@ -61,7 +61,8 @@ JFArray* vmSnapshotList(const char* name)
 #endif
       char* str = (char*)malloc(strlen(item) + 1);
       strcpy(str, item);
-      list->setString(i, str);
+      ffm->setString(i, str);
+      free(str);
       if (parent != ss_empty) free((void*)parent);
       if (desc != ss_empty) free((void*)desc);
       free(item);

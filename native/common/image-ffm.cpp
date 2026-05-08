@@ -1,4 +1,4 @@
-JFArray* uiLoadPNG(jbyte* data, jint data_size, jint* size)
+jint* uiLoadPNG(FFMArrayInt ffm, jbyte* data, jint data_size, jint* size)
 {
   int x, y, chs;
   jboolean isCopy;
@@ -10,10 +10,10 @@ JFArray* uiLoadPNG(jbyte* data, jint data_size, jint* size)
   size[0] = x;
   size[1] = y;
 
-  JFArray* out = JFArray::create(x*y, sizeof(int), ARRAY_TYPE_INT);
+  jint* out = ffm.alloc(x*y);
   //convert RGBA to BGRA
   int xy = x * y;
-  uint8* dst = (uint8*)out->getBufferByte();
+  uint8* dst = (uint8*)out;
   uint8* src = px_ptr;
   int off = 0;
   for(int i=0;i<xy;i++) {
@@ -31,7 +31,7 @@ JFArray* uiLoadPNG(jbyte* data, jint data_size, jint* size)
 
 //HERE
 
-JFArray* uiSavePNG(jint* px, jint x, jint y)
+jbyte* uiSavePNG(FFMArrayByte ffm, jint* px, jint x, jint y)
 {
   write_ctx ctx;
   int xy = x * y;
@@ -56,15 +56,15 @@ JFArray* uiSavePNG(jint* px, jint x, jint y)
 
   free(rgb_ptr);
 
-  JFArray* out = JFArray::create(ctx.siz, sizeof(jbyte), ARRAY_TYPE_BYTE);
-  memcpy(out->getBufferByte(), ctx.buf, ctx.siz);
+  jbyte* out = ffm.alloc(ctx.siz);
+  memcpy(out, ctx.buf, ctx.siz);
 
   free(ctx.buf);
 
   return out;
 }
 
-JFArray* uiLoadJPG(jbyte* data, jint data_size, jint* size)
+jint* uiLoadJPG(FFMArrayInt ffm, jbyte* data, jint data_size, jint* size)
 {
   int x, y, chs;
   jboolean isCopy;
@@ -76,15 +76,15 @@ JFArray* uiLoadJPG(jbyte* data, jint data_size, jint* size)
   size[0] = x;
   size[1] = y;
 
-  JFArray* out = JFArray::create(x*y, sizeof(int), ARRAY_TYPE_INT);
-  memcpy(out->getBufferByte(), px_ptr, x*y*4);
+  jint* out = ffm.alloc(x*y);
+  memcpy(out, px_ptr, x*y*4);
 
   stbi_image_free(px_ptr);
 
   return out;
 }
 
-JFArray* uiSaveJPG(jint* px, jint x, jint y, jint quality)
+jbyte* uiSaveJPG(FFMArrayByte ffm, jint* px, jint x, jint y, jint quality)
 {
   write_ctx ctx;
   jboolean isCopy;
@@ -94,8 +94,8 @@ JFArray* uiSaveJPG(jint* px, jint x, jint y, jint quality)
 
   stbi_write_jpg_to_func(write_func, (void*)&ctx, x, y, 4, px, quality);
 
-  JFArray* out = JFArray::create(ctx.siz, sizeof(jbyte), ARRAY_TYPE_BYTE);
-  memcpy(out->getBufferByte(), ctx.buf, ctx.siz);
+  jbyte* out = ffm.alloc(ctx.siz);
+  memcpy(out, ctx.buf, ctx.siz);
 
   free(ctx.buf);
 
@@ -103,8 +103,8 @@ JFArray* uiSaveJPG(jint* px, jint x, jint y, jint quality)
 }
 
 extern "C" {
-  JNIEXPORT JFArray* (*_uiLoadPNG)(jbyte*,jint,jint*) = &uiLoadPNG;
-  JNIEXPORT JFArray* (*_uiSavePNG)(jint*,jint,jint) = &uiSavePNG;
-  JNIEXPORT JFArray* (*_uiLoadJPG)(jbyte*,jint length,jint*) = &uiLoadJPG;
-  JNIEXPORT JFArray* (*_uiSaveJPG)(jint*,jint,jint,jint) = &uiSaveJPG;
+  JNIEXPORT jint* (*_uiLoadPNG)(FFMArrayInt ffm, jbyte*,jint,jint*) = &uiLoadPNG;
+  JNIEXPORT jbyte* (*_uiSavePNG)(FFMArrayByte ffm, jint*,jint,jint) = &uiSavePNG;
+  JNIEXPORT jint* (*_uiLoadJPG)(FFMArrayInt ffm, jbyte*,jint length,jint*) = &uiLoadJPG;
+  JNIEXPORT jbyte* (*_uiSaveJPG)(FFMArrayByte ffm, jint*,jint,jint,jint) = &uiSaveJPG;
 }

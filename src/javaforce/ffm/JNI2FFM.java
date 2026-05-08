@@ -59,12 +59,6 @@ public class JNI2FFM {
       return;
     }
 
-    boolean flag_critical_all = false;
-
-    boolean flag_nofreestring = false;
-    boolean flag_nocopyback = flag_critical_all;
-    boolean flag_critical = flag_critical_all;
-
     try {
 
       src.append("package javaforce.ffm;\n");
@@ -112,25 +106,6 @@ public class JNI2FFM {
       ctor.append("\n");
       for(String ln : lns) {
         ln = ln.trim();
-        if (ln.equals("@NoFreeString")) {
-          flag_nofreestring = true;
-          continue;
-        }
-        if (ln.equals("@NoCopyBack")) {
-          flag_nocopyback = true;
-          continue;
-        }
-        if (ln.equals("@Critical")) {
-          flag_nocopyback = true;
-          flag_critical = true;
-          continue;
-        }
-        if (ln.equals("@CriticalAll")) {
-          flag_nocopyback = true;
-          flag_critical = true;
-          flag_critical_all = true;
-          continue;
-        }
         if (!ln.startsWith("public native")) continue;
         //public native void glActiveTexture(int i1);
         ln = ln.substring(14, ln.length() - 1);
@@ -175,32 +150,39 @@ public class JNI2FFM {
         boolean arena_needed = false;
         if (!isRetVoid) {
           if (isRetArray) {
-            method.append(java_ret_type + "[] _ret_value_ = FFM.toArray" + capitalize(java_ret_type) + "((MemorySegment)");
+            method.append("FFMArray _ret_value_ = new FFMArray(); ");
+            arena_needed = true;
           } else {
             if (java_ret_type.equals("String")) {
-              if (flag_nofreestring) {
-                method.append("String _ret_value_ = FFM.getStringNoFree((MemorySegment)");
-              } else {
-                method.append("String _ret_value_ = FFM.getString((MemorySegment)");
-              }
+              method.append("String _ret_value_ = FFM.getString((MemorySegment)");
             } else {
               method.append(java_ret_type + " _ret_value_ = (" + java_ret_type + ")");
             }
           }
         }
+        boolean first_method = true;
+        boolean first_src = true;
+        boolean first_ctor = true;
         method.append(func_name);
         method.append(".invokeExact(");
+        if (!isRetVoid) {
+          if (isRetArray) {
+            first_method = false;
+            method.append("_ret_value_.getUpcall(ffm, arena,\"" + capitalize(java_ret_type) + "\")");
+          }
+        }
 
         ctor2.append("    " + func_name + " = ffm.getFunctionPtr");
         ctor2.append("(\"_" + func_name + "\", ffm.getFunctionDesciptor");
-        boolean first = true;
-        boolean first_ctor = true;
         if (isRetVoid) {
           ctor2.append("Void(");
         } else {
+          if (isRetArray) {
+            ctor2.append("Void");
+          }
           ctor2.append("(");
           if (isRetArray) {
-            ctor2.append("ADDRESS");
+            ctor2.append("ADDRESS");  //FFMArray.getUpcall()
           } else {
             ctor2.append(ValueLayout_ret_type);
           }
@@ -228,10 +210,14 @@ public class JNI2FFM {
               ValueLayout_type = "ADDRESS";
             }
           }
-          if (first) {
-            first = false;
+          if (first_src) {
+            first_src = false;
           } else {
             src.append(",");
+          }
+          if (first_method) {
+            first_method = false;
+          } else {
             method.append(",");
           }
           if (first_ctor) {
@@ -244,10 +230,8 @@ public class JNI2FFM {
             array_names.add(arg_name);
             String segment_name = "_array_" + arg_name;
             arrays.append("MemorySegment " + segment_name + " = FFM.toMemory(");
-            if (!flag_critical || array_type.equals("JAVA_STRING")) {
-              arrays.append("arena, ");
-              arena_needed = true;
-            }
+            arrays.append("arena, ");
+            arena_needed = true;
             arrays.append(arg_name + ");");
             method.append(segment_name);
           } else {
@@ -275,7 +259,7 @@ public class JNI2FFM {
           ctor2.append(ValueLayout_type);
         }
         if (isRetArray) {
-          method.append("));");
+          method.append(");");
         } else {
           if (java_ret_type.equals("String")) {
             method.append("));");
@@ -291,14 +275,21 @@ public class JNI2FFM {
           //insert areana after "{ try { "
           method.insert(8, "Arena arena = Arena.ofAuto(); ");
         }
-        if (!flag_nocopyback) {
-          for(String arg_name : array_names) {
-            String segment_name = "_array_" + arg_name;
-            method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
-          }
+        for(String arg_name : array_names) {
+          String segment_name = "_array_" + arg_name;
+          method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
         }
         if (!isRetVoid) {
-          method.append("return _ret_value_;");
+          method.append("return ");
+          if (isRetArray) {
+            method.append("(");
+            method.append(java_ret_type);
+            method.append("[])");
+            method.append("_ret_value_.getArray()");
+          } else {
+            method.append("_ret_value_");
+          }
+          method.append(";");
         }
         method.append(" } catch (Throwable t) { JFLog.log(t); ");
         if (!isRetVoid) {
@@ -320,14 +311,10 @@ public class JNI2FFM {
         src.append(method);  //{ invoke... }
         src.append("\n");
         ctor2.append(")");
-        if (flag_critical) ctor2.append(", true");
         ctor2.append(");\n");
         if (!isDup) {
           ctor.append(ctor2);
         }
-        flag_nofreestring = false;
-        flag_nocopyback = flag_critical_all;
-        flag_critical = flag_critical_all;
       }
       ctor.append("    return true;\n");
       ctor.append("  }\n");

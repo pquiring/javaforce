@@ -25,11 +25,17 @@ public class FFM {
     return instance;
   }
 
-  /** Enabled FFM usage.
-   *
-   * Due to poor performance in some native APIs this is disabled by default.
+  /** Internal usage for JNI. */
+  public static FFM getInstanceJNI() {
+    if (instance == null) {
+      instance = new FFM();
+    }
+    return instance;
+  }
+
+  /** Enabled FFM native inter-ops.
    */
-  private static boolean enabled = false;
+  private static boolean enabled = true;
 
   /** Use JNI to pin arrays. */
   private static boolean jni_pinning = true;
@@ -88,12 +94,6 @@ public class FFM {
   private Arena arena;
   private SymbolLookup lookup;
   private ExecSymbolLookup execlookup;
-  private static MethodHandle jfArrayFree;
-  /** Frees native JFArray struct. */
-  public static void jfArrayFree(MemorySegment arr) { try { jfArrayFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
-  private static MethodHandle jfStringFree;
-  /** Frees native string (char*). */
-  public static void jfStringFree(MemorySegment arr) { try { jfStringFree.invokeExact(arr); } catch (Throwable t) { JFLog.log(t); } }
 
   private FFM() {
     try {
@@ -119,10 +119,6 @@ public class FFM {
         execlookup = new ExecSymbolLookup();
         execlookup.init(this);
       }
-      jfArrayFree = getFunctionPtr("_jfArrayFree", getFunctionDesciptorVoid(ADDRESS));
-      if (jfArrayFree == null) throw new Exception("FFM:Unable to find jfArrayFree function");
-      jfStringFree = getFunctionPtr("_jfStringFree", getFunctionDesciptorVoid(ADDRESS));
-      if (jfStringFree == null) throw new Exception("FFM:Unable to find jfStringFree function");
     } catch (Throwable t) {
       JFLog.log(t);
       enabled = false;
@@ -167,7 +163,7 @@ public class FFM {
   }
 
   /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
-  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd, boolean critical) {
+  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
     if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
     try {
       MemorySegment addr = lookup.findOrThrow(name);
@@ -187,19 +183,11 @@ public class FFM {
         JFLog.log("FFM:FunctionPtr not found(3):" + name + "=" + addr);
         return null;
       }
-      if (critical)
-        return linker.downcallHandle(addr, fd, Linker.Option.critical(true));
-      else
-        return linker.downcallHandle(addr, fd);
+      return linker.downcallHandle(addr, fd);
     } catch (Exception e) {
       JFLog.logTrace("FFM:FunctionPtr not found(e):" + name);
       return null;
     }
-  }
-
-  /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
-  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
-    return getFunctionPtr(name, fd, false);
   }
 
   //upcall helpers
@@ -272,15 +260,7 @@ public class FFM {
   /** Create java String from native String (char*) and then free() the native string. */
   public static String getString(MemorySegment ms) {
     if (ms == null || ms.address() == 0) return null;
-    String str =  ms.reinterpret(Long.MAX_VALUE).getString(0L);
-    jfStringFree(ms);
-    return str;
-  }
-
-  /** Create java String from native String (char*) but do not free native string.*/
-  public static String getStringNoFree(MemorySegment ms) {
-    if (ms == null || ms.address() == 0) return null;
-    String str =  ms.reinterpret(Long.MAX_VALUE).getString(0L);
+    String str = ms.reinterpret(Long.MAX_VALUE).getString(0L);
     return str;
   }
 
@@ -394,93 +374,6 @@ public class FFM {
   private static final long JAVA_SHORT_SIZE = JAVA_SHORT.byteSize();
   private static final long JAVA_BYTE_SIZE = JAVA_BYTE.byteSize();
   private static final long ADDRESS_SIZE = ADDRESS.byteSize();
-  private static final long JFARRAY_HEADER_SIZE = JAVA_INT_SIZE * 2;
-
-  /*
-   Functions that return arrays use this struct:
-   template<typename T, int N>
-   struct JFArray {
-     int count;
-     short size;  //not used in Java
-     short type;  //not used in Java
-     T elements[N];
-   };
-   */
-
-  /** Convert native JFArray to String[] and then free native JFArray */
-  public static String[] toArrayString(MemorySegment m) {
-    if (m == null || m.address() == 0) return null;
-    m = m.reinterpret(JFARRAY_HEADER_SIZE);
-    int count = m.getAtIndex(JAVA_INT, 0);
-    long size = JFARRAY_HEADER_SIZE + count * ADDRESS_SIZE;
-    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * ADDRESS_SIZE);
-    String[] ret = new String[count];
-    for(int i=0;i<count;i++) {
-      ret[i] = arr.getAtIndex(ADDRESS, i).reinterpret(Integer.MAX_VALUE).getString(0);
-    }
-    jfArrayFree(m);
-    return ret;
-  }
-
-  /** Convert native JFArray to long[] and then free native JFArray */
-  public static long[] toArrayLong(MemorySegment m) {
-    if (m == null || m.address() == 0) return null;
-    m = m.reinterpret(JFARRAY_HEADER_SIZE);
-    int count = m.getAtIndex(JAVA_INT, 0);
-    long size = JFARRAY_HEADER_SIZE + count * JAVA_LONG_SIZE;
-    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_LONG_SIZE);
-    long[] ret = new long[count];
-    for(int i=0;i<count;i++) {
-      ret[i] = arr.getAtIndex(JAVA_LONG, i);
-    }
-    jfArrayFree(m);
-    return ret;
-  }
-
-  /** Convert native JFArray to int[] and then free native JFArray */
-  public static int[] toArrayInt(MemorySegment m) {
-    if (m == null || m.address() == 0) return null;
-    m = m.reinterpret(JFARRAY_HEADER_SIZE);
-    int count = m.getAtIndex(JAVA_INT, 0);
-    long size = JFARRAY_HEADER_SIZE + count * JAVA_INT_SIZE;
-    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_INT_SIZE);
-    int[] ret = new int[count];
-    for(int i=0;i<count;i++) {
-      ret[i] = arr.getAtIndex(JAVA_INT, i);
-    }
-    jfArrayFree(m);
-    return ret;
-  }
-
-  /** Convert native JFArray to short[] and then free native JFArray */
-  public static short[] toArrayShort(MemorySegment m) {
-    if (m == null || m.address() == 0) return null;
-    m = m.reinterpret(JFARRAY_HEADER_SIZE);
-    int count = m.getAtIndex(JAVA_INT, 0);
-    long size = JFARRAY_HEADER_SIZE + count * JAVA_SHORT_SIZE;
-    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_SHORT_SIZE);
-    short[] ret = new short[count];
-    for(int i=0;i<count;i++) {
-      ret[i] = arr.getAtIndex(JAVA_SHORT, i);
-    }
-    jfArrayFree(m);
-    return ret;
-  }
-
-  /** Convert native JFArray to byte[] and then free native JFArray */
-  public static byte[] toArrayByte(MemorySegment m) {
-    if (m == null || m.address() == 0) return null;
-    m = m.reinterpret(JFARRAY_HEADER_SIZE);
-    int count = m.getAtIndex(JAVA_INT, 0);
-    long size = JFARRAY_HEADER_SIZE + count * JAVA_BYTE_SIZE;
-    MemorySegment arr = m.reinterpret(size).asSlice(JFARRAY_HEADER_SIZE, count * JAVA_BYTE_SIZE);
-    byte[] ret = new byte[count];
-    for(int i=0;i<count;i++) {
-      ret[i] = arr.getAtIndex(JAVA_BYTE, i);
-    }
-    jfArrayFree(m);
-    return ret;
-  }
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, float[] m) {

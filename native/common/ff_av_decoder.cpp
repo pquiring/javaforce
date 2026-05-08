@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioDecoderStop
   audioDecoderStop_ctx(e, c, ctx);
 }
 
-JFArray* audioDecoderDecode_data(FFContext* ctx, jint length)
+jshort* audioDecoderDecode_data(FFMArrayShort ffm, FFContext* ctx, jint length)
 {
   ctx->pkt->data = ctx->decode_buffer;
   ctx->pkt->size = length;
@@ -210,19 +210,19 @@ JFArray* audioDecoderDecode_data(FFContext* ctx, jint length)
     return NULL;
   }
   int count = converted_nb_samples * ctx->dst_nb_channels;
-  //copy to JFArray
-  JFArray* jfarray = JFArray::create(count, 2, ARRAY_TYPE_SHORT);
-  memcpy(jfarray->getBufferShort(), (const jshort*)ctx->audio_dst_data[0], count*2);
+  //copy to FFMArray
+  jshort* array = ffm.alloc(count);
+  memcpy(array, (const jshort*)ctx->audio_dst_data[0], count*2);
   //free audio_dst_data
   if (ctx->audio_dst_data[0] != NULL) {
     (*_av_free)(ctx->audio_dst_data[0]);
     ctx->audio_dst_data[0] = NULL;
   }
 
-  return jfarray;
+  return array;
 }
 
-JFArray* audioDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint length)
+jshort* audioDecoderDecode(FFMArrayShort ffm, FFContext* ctx, jbyte* data, jint offset, jint length)
 {
   if (ctx == NULL) return NULL;
 
@@ -242,7 +242,7 @@ JFArray* audioDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint lengt
     *(pad++) = 0;
   }
 
-  return audioDecoderDecode_data(ctx, length);
+  return audioDecoderDecode_data(ffm, ctx, length);
 }
 
 JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
@@ -266,23 +266,13 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
     *(pad++) = 0;
   }
 
-  JFArray* jfarray = audioDecoderDecode_data(ctx, length);
+  JNIArrayShort jni(e);
 
-  if (jfarray == NULL) return NULL;
+  jshort* array = audioDecoderDecode_data(jni.toFFM(), ctx, length);
 
-  int count = jfarray->count;
-  if (ctx->jaudio == NULL || ctx->jaudio_length != count) {
-    if (ctx->jaudio != NULL) {
-      //free old audio array
-      e->DeleteGlobalRef(ctx->jaudio);
-    }
-    ctx->jaudio_length = count;
-    ctx->jaudio = (jshortArray)e->NewGlobalRef(e->NewShortArray(count));
-  }
-  e->SetShortArrayRegion(ctx->jaudio, 0, ctx->jaudio_length, (const jshort*)jfarray->getBufferShort());
-  jfArrayFree(jfarray);
+  if (array == NULL) return NULL;
 
-  return ctx->jaudio;
+  return jni.getArray();
 }
 
 jint audioDecoderGetChannels(FFContext* ctx)
@@ -459,7 +449,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoDecoderStop
   freeFFContext(e,c,ctx);
 }
 
-JFArray* videoDecoderDecode_data(FFContext* ctx, jint length)
+jint* videoDecoderDecode_data(FFMArrayInt ffm, FFContext* ctx, jint length)
 {
   if (ctx == NULL) return NULL;
 
@@ -509,13 +499,13 @@ JFArray* videoDecoderDecode_data(FFContext* ctx, jint length)
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
   int px_count = ctx->width * ctx->height;
-  JFArray* jfarray = JFArray::create(px_count, 4, ARRAY_TYPE_INT);
-  memcpy(jfarray->getBufferInt(), ctx->rgb_video_dst_data[0], px_count * 4);
+  jint* array = ffm.alloc(px_count);
+  memcpy(array, ctx->rgb_video_dst_data[0], px_count * 4);
 
-  return jfarray;
+  return array;
 }
 
-JFArray* videoDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint length)
+jint* videoDecoderDecode(FFMArrayInt ffm, FFContext* ctx, jbyte* data, jint offset, jint length)
 {
   if (ctx == NULL) return NULL;
 
@@ -533,7 +523,7 @@ JFArray* videoDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint lengt
     *(pad++) = 0;
   }
 
-  return videoDecoderDecode_data(ctx, length);
+  return videoDecoderDecode_data(ffm, ctx, length);
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_jni_MediaJNI_videoDecoderDecode
@@ -556,20 +546,13 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_MediaJNI_videoDecoderDecode
     *(pad++) = 0;
   }
 
-  JFArray* jfarray = videoDecoderDecode_data(ctx, length);
+  JNIArrayInt jni(e);
 
-  if (jfarray == NULL) return NULL;
+  jint* array = videoDecoderDecode_data(jni.toFFM(), ctx, length);
 
-  if (ctx->jvideo == NULL) {
-    int px_count = ctx->width * ctx->height;
-    ctx->jvideo_length = px_count;
-    ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
-  }
+  if (array == NULL) return NULL;
 
-  e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)jfarray->getBufferInt());
-  jfArrayFree(jfarray);
-
-  return ctx->jvideo;
+  return jni.getArray();
 }
 
 jint videoDecoderGetWidth(FFContext* ctx)

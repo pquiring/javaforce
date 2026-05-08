@@ -52,14 +52,14 @@ jboolean pcapInit(char* lib1, char* lib2)
   return JNI_TRUE;
 }
 
-JFArray* pcapListLocalInterfaces()
+void* pcapListLocalInterfaces(FFMArrayString ffm)
 {
   char err[PCAP_ERRBUF_SIZE];
   int list_count = 0;
   pcap_if_t *list_elements, *c;
   pcap_addr_t *addr;
   char name[256], ip[16];
-  JFArray* array;
+  void* array;
 
   if (library == NULL) return NULL;
 
@@ -81,7 +81,7 @@ JFArray* pcapListLocalInterfaces()
     c = c->next;
   }
 
-  array = JFArray::create(list_count, sizeof(char*), ARRAY_TYPE_STRING);
+  array = ffm->alloc(list_count);
 
   c = list_elements;
   int idx = 0;
@@ -101,7 +101,7 @@ JFArray* pcapListLocalInterfaces()
       }
       char* str = (char*)malloc(strlen(name) + 1);
       strcpy(str, name);
-      array->setString(idx++, str);
+      ffm->setString(idx++, (const char*)str);
     }
     c = c->next;
   }
@@ -155,7 +155,7 @@ jboolean pcapCompile(jlong handle, char* program)
   return ret == 0;
 }
 
-JFArray* pcapRead(jlong handle)
+jbyte* pcapRead(FFMArrayByte ffm, jlong handle)
 {
   struct user_pkt_t user_pkt;
   user_pkt.size = 0;
@@ -163,9 +163,9 @@ JFArray* pcapRead(jlong handle)
   int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, &user_pkt);
 
   if (cnt > 0 && user_pkt.size > 0) {
-    JFArray* ba = JFArray::create(user_pkt.size, 1, ARRAY_TYPE_BYTE);
+    jbyte* ba = ffm.alloc(user_pkt.size);
 
-    memcpy(ba->getBufferByte(), user_pkt.bytes, user_pkt.size);
+    memcpy(ba, user_pkt.bytes, user_pkt.size);
 
     return ba;
   } else {
@@ -188,10 +188,10 @@ jboolean pcapWrite(jlong handle, jbyte* ba, jint offset, jint length)
 
 extern "C" {
   JNIEXPORT jboolean (*_pcapInit)(char*,char*) = &pcapInit;
-  JNIEXPORT JFArray* (*_pcapListLocalInterfaces)() = &pcapListLocalInterfaces;
+  JNIEXPORT void* (*_pcapListLocalInterfaces)(FFMArrayString ffm) = &pcapListLocalInterfaces;
   JNIEXPORT jlong (*_pcapStart)(char*,jboolean) = &pcapStart;
   JNIEXPORT void (*_pcapStop)(jlong) = &pcapStop;
-  JNIEXPORT JFArray* (*_pcapRead)(jlong) = &pcapRead;
+  JNIEXPORT jbyte* (*_pcapRead)(FFMArrayByte ffm, jlong) = &pcapRead;
   JNIEXPORT jboolean (*_pcapWrite)(jlong,jbyte*,jint,jint) = &pcapWrite;
 
   JNIEXPORT jboolean PCapAPIinit() {return JNI_TRUE;}

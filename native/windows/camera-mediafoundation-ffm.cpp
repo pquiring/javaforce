@@ -94,7 +94,7 @@ jboolean cameraUninit(jlong ctxptr)
   return JNI_TRUE;
 }
 
-JFArray* cameraListDevices(jlong ctxptr)
+void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
 {
   printf("MF:CameraListDevices\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
@@ -111,7 +111,7 @@ JFArray* cameraListDevices(jlong ctxptr)
 
   attr->Release();
 
-  JFArray* strs = JFArray::create(ctx->cameraDeviceCount, sizeof(jchar*), ARRAY_TYPE_STRING);
+  void* strs = ffm->alloc(ctx->cameraDeviceCount);
 
   for(int a=0;a<ctx->cameraDeviceCount;a++) {
     UINT32 length;
@@ -123,7 +123,8 @@ JFArray* cameraListDevices(jlong ctxptr)
     int strlen = strlen16((jchar*)name);
     char* str = (char*)malloc(strlen+1);
     strcpy8_16(str, (jchar*)name);
-    strs->setString(a, str);
+    ffm->setString(a, str);
+    free(str);
 
     CoTaskMemFree(name);
     CoTaskMemFree(symlink);
@@ -135,7 +136,7 @@ JFArray* cameraListDevices(jlong ctxptr)
 jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight);
 jboolean cameraStop(jlong ctxptr);
 
-JFArray* cameraListModes(jlong ctxptr, jint deviceIdx)
+void* cameraListModes(FFMArrayString ffm, jlong ctxptr, jint deviceIdx)
 {
   printf("MF:CameraListModes\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
@@ -149,14 +150,15 @@ JFArray* cameraListModes(jlong ctxptr, jint deviceIdx)
   cameraStop(ctxptr);
   ctx->listModes = JNI_FALSE;
 
-  JFArray* strs = JFArray::create(ctx->cameraModeCount, sizeof(jchar*), ARRAY_TYPE_STRING);
+  void* strs = ffm->alloc(ctx->cameraModeCount);
 
   for(int a=0;a<ctx->cameraModeCount;a++) {
     char* mode = ctx->cameraModes[a];
     int len8 = strlen(mode);
     char* str = (char*)malloc(len8+1);
     strcpy8(str, mode);
-    strs->setString(a, str);
+    ffm->setString(a, str);
+    free(str);
   }
 
   return strs;
@@ -340,7 +342,7 @@ jboolean cameraStop(jlong ctxptr)
   return JNI_TRUE;
 }
 
-JFArray* cameraGetFrame(jlong ctxptr)
+jint* cameraGetFrame(FFMArrayInt ffm, jlong ctxptr)
 {
 //  printf("MF:CameraGetFrame\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
@@ -373,10 +375,10 @@ JFArray* cameraGetFrame(jlong ctxptr)
   }
 
   int pxsize = ctx->width * ctx->height;
-  JFArray *px = JFArray::create(pxsize, 4, ARRAY_TYPE_INT);
+  jint *px = ffm.alloc(pxsize);
 
   //copy pixels, flip image, set opaque alpha channel
-  jint *pxptr = px->getBufferInt();
+  jint *pxptr = px;
 
   jint *dst = pxptr;
   jint *src = (jint*)data;
@@ -413,11 +415,11 @@ jint cameraGetHeight(jlong ctxptr)
 extern "C" {
   JNIEXPORT jlong (*_cameraInit)() = &cameraInit;
   JNIEXPORT jboolean (*_cameraUninit)(jlong) = &cameraUninit;
-  JNIEXPORT JFArray* (*_cameraListDevices)(jlong) = &cameraListDevices;
-  JNIEXPORT JFArray* (*_cameraListModes)(jlong, jint) = &cameraListModes;
+  JNIEXPORT void* (*_cameraListDevices)(FFMArrayString,jlong) = &cameraListDevices;
+  JNIEXPORT void* (*_cameraListModes)(FFMArrayString,jlong, jint) = &cameraListModes;
   JNIEXPORT jboolean (*_cameraStart)(jlong , jint , jint , jint ) = &cameraStart;
   JNIEXPORT jboolean (*_cameraStop)(jlong) = &cameraStop;
-  JNIEXPORT JFArray* (*_cameraGetFrame)(jlong) = &cameraGetFrame;
+  JNIEXPORT jint* (*_cameraGetFrame)(FFMArrayInt, jlong) = &cameraGetFrame;
   JNIEXPORT jint (*_cameraGetWidth)(jlong) = &cameraGetWidth;
   JNIEXPORT jint (*_cameraGetHeight)(jlong) = &cameraGetHeight;
 

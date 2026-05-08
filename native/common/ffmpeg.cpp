@@ -779,24 +779,25 @@ extern "C" {
   //MediaAudioDecoder
   JNIEXPORT FFContext* (*_audioDecoderStart)(int codec_id, jint new_chs, jint new_freq) = &audioDecoderStart;
   JNIEXPORT void (*_audioDecoderStop)(FFContext* ctx) = &audioDecoderStop;
-  JNIEXPORT JFArray* (*_audioDecoderDecode)(FFContext* ctx, jbyte* data, jint offset, jint length) = &audioDecoderDecode;
+  JNIEXPORT jshort* (*_audioDecoderDecode)(FFMArrayShort ffm, FFContext* ctx, jbyte* data, jint offset, jint length) = &audioDecoderDecode;
   JNIEXPORT jint (*_audioDecoderGetChannels)(FFContext* ctx) = &audioDecoderGetChannels;
   JNIEXPORT jint (*_audioDecoderGetSampleRate)(FFContext* ctx) = &audioDecoderGetSampleRate;
   JNIEXPORT jboolean (*_audioDecoderChange)(FFContext* ctx, int chs, int freq) = &audioDecoderChange;
   //MediaAudioEncoder
   JNIEXPORT FFContext* (*_audioEncoderStart)(jint codec_id, jint bit_rate, jint chs, jint freq) = &audioEncoderStart;
   JNIEXPORT void (*_audioEncoderStop)(FFContext* ctx) = &audioEncoderStop;
-  JNIEXPORT JFArray* (*_audioEncoderEncode)(FFContext* ctx, jshort* samples, jint offset, jint length) = &audioEncoderEncode;
+  JNIEXPORT jbyte* (*_audioEncoderEncode)(FFMArrayByte ffm, FFContext* ctx, jshort* samples, jint offset, jint length) = &audioEncoderEncode;
   JNIEXPORT jint (*_audioEncoderGetAudioFramesize)(FFContext* ctx) = &audioEncoderGetAudioFramesize;
   //MediaVideoDecoder
   JNIEXPORT FFContext* (*_videoDecoderStart)(jint codec_id, jint new_width, jint new_height) = &videoDecoderStart;
   JNIEXPORT void (*_videoDecoderStop)(FFContext* ctx) = &videoDecoderStop;
-  JNIEXPORT JFArray* (*_videoDecoderDecode)(FFContext* ctx, jbyte* data, jint offset, jint length) = &videoDecoderDecode;
+  JNIEXPORT jint* (*_videoDecoderDecode)(FFMArrayInt ffm, FFContext* ctx, jbyte* data, jint offset, jint length) = &videoDecoderDecode;
   JNIEXPORT jint (*_videoDecoderGetWidth)(FFContext* ctx) = &videoDecoderGetWidth;
   JNIEXPORT jint (*_videoDecoderGetHeight)(FFContext* ctx) = &videoDecoderGetHeight;
   JNIEXPORT jfloat (*_videoDecoderGetFrameRate)(FFContext* ctx) = &videoDecoderGetFrameRate;
   JNIEXPORT jboolean (*_videoDecoderChange)(FFContext* ctx, jint width, jint height) = &videoDecoderChange;
+  //MediaVideoEncoder
   JNIEXPORT FFContext* (*_videoEncoderStart)(int codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval) = &videoEncoderStart;
   JNIEXPORT void (*_videoEncoderStop)(FFContext* ctx) = &videoEncoderStop;
-  JNIEXPORT JFArray* (*_videoEncoderEncode)(FFContext* ctx, jint* px, jint offset, jint length) = &videoEncoderEncode;
+  JNIEXPORT jbyte* (*_videoEncoderEncode)(FFMArrayByte ffm, FFContext* ctx, jint* px, jint offset, jint length) = &videoEncoderEncode;
 }

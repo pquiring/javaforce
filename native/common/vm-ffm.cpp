@@ -326,7 +326,7 @@ jint vmGetState(const char* name)
   return 3;  //error
 }
 
-JFArray* vmList()
+void* vmList(FFMArrayString ffm)
 {
   void* conn = connect();
   if (conn == NULL) return NULL;
@@ -341,13 +341,14 @@ JFArray* vmList()
     return NULL;
   }
 
-  JFArray* array = JFArray::create(count,sizeof(const char*),ARRAY_TYPE_STRING);
+  void* array = ffm->alloc(count);
   for(int idx=0;idx<count;idx++) {
     char* desc = (char*)(*_virDomainGetMetadata)(doms[idx], VIR_DOMAIN_METADATA_DESCRIPTION, NULL, VIR_DOMAIN_AFFECT_CURRENT);
 #ifdef VM_DEBUG
     printf("VM:%s\n", desc);
 #endif
-    array->setString(idx, desc);  //desc must be free()ed later
+    ffm->setString(idx, desc);
+    free(desc);
     (*_virDomainFree)(doms[idx]);
   }
 
@@ -409,7 +410,7 @@ jboolean vmMigrate(const char* name, const char* desthost, jboolean live)
 
 //Storage
 
-JFArray* vmStorageList()
+void* vmStorageList(FFMArrayString ffm)
 {
   void* conn = connect();
   if (conn == NULL) return NULL;
@@ -425,7 +426,7 @@ JFArray* vmStorageList()
   }
 
   char uuid[VIR_UUID_STRING_BUFLEN];  //includes space for NULL
-  JFArray* array = JFArray::create(count, sizeof(const char*), ARRAY_TYPE_STRING);
+  void* array = ffm->alloc(count);
   for(int idx=0;idx<count;idx++) {
     uuid[0] = 0;
     (*_virStoragePoolGetUUIDString)(pools[idx], uuid);
@@ -434,7 +435,8 @@ JFArray* vmStorageList()
 #endif
     char *str = (char*)malloc(strlen(uuid) + 1);
     strcpy(str, uuid);
-    array->setString(idx, str);
+    ffm->setString(idx, str);
+    free(str);
     (*_virStoragePoolFree)(pools[idx]);
   }
 
@@ -620,7 +622,7 @@ jboolean vmDiskCreate(const char* name, const char* xml)
 
 //Network
 
-JFArray* vmNetworkListPhys()
+void* vmNetworkListPhys(FFMArrayString ffm)
 {
   void* conn = connect();
   if (conn == NULL) return NULL;
@@ -635,7 +637,7 @@ JFArray* vmNetworkListPhys()
     return NULL;
   }
 
-  JFArray* array = JFArray::create(count, sizeof(char*), ARRAY_TYPE_STRING);
+  void* array = ffm->alloc(count);
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virInterfaceGetName)(ifaces[idx]);
 #ifdef VM_DEBUG
@@ -643,7 +645,8 @@ JFArray* vmNetworkListPhys()
 #endif
     char *str = (char*)malloc(strlen(name) + 1);
     strcpy(str, name);
-    array->setString(idx, str);
+    ffm->setString(idx, str);
+    free(str);
     (*_virInterfaceFree)(ifaces[idx]);
   }
 
@@ -656,7 +659,7 @@ JFArray* vmNetworkListPhys()
 
 //Device
 
-JFArray* vmDeviceList(jint type)
+void* vmDeviceList(FFMArrayString ffm, jint type)
 {
   char devstr[4*1024];
   void* conn = connect();
@@ -678,7 +681,7 @@ JFArray* vmDeviceList(jint type)
     return NULL;
   }
 
-  JFArray* array = JFArray::create(count, sizeof(char*), ARRAY_TYPE_STRING);
+  void* array = ffm->alloc(count);
   for(int idx=0;idx<count;idx++) {
     const char* name = (*_virNodeDeviceGetName)(devs[idx]);
     char* xml = (*_virNodeDeviceGetXMLDesc)(devs[idx], 0);
@@ -688,7 +691,8 @@ JFArray* vmDeviceList(jint type)
     sprintf(devstr, "%s=%s", name, xml);
     char* str = (char*)malloc(strlen(devstr) + 1);
     strcpy(str, devstr);
-    array->setString(idx, str);
+    ffm->setString(idx, str);
+    free(str);
     (*_virNodeDeviceFree)(devs[idx]);
   }
 
@@ -728,13 +732,13 @@ extern "C" {
   JNIEXPORT jboolean (*_vmConnect)(const char*) = &vmConnect;
   JNIEXPORT jboolean (*_vmGetAllStats)(jint,jint,jint,jint,jint) = &vmGetAllStats;
 
-  JNIEXPORT JFArray* (*_vmDeviceList)(jint) = &vmDeviceList;
+  JNIEXPORT void* (*_vmDeviceList)(FFMArrayString,jint) = &vmDeviceList;
 
   JNIEXPORT jboolean (*_vmDiskCreate)(const char*,const char*) = &vmDiskCreate;
 
-  JNIEXPORT JFArray* (*_vmNetworkListPhys)() = &vmNetworkListPhys;
+  JNIEXPORT void* (*_vmNetworkListPhys)(FFMArrayString) = &vmNetworkListPhys;
 
-  JNIEXPORT JFArray* (*_vmStorageList)() = &vmStorageList;
+  JNIEXPORT void* (*_vmStorageList)(FFMArrayString) = &vmStorageList;
   JNIEXPORT jboolean (*_vmStorageRegister)(const char*) = &vmStorageRegister;
   JNIEXPORT jboolean (*_vmStorageUnregister)(const char*) = &vmStorageUnregister;
   JNIEXPORT jboolean (*_vmStorageStart)(const char*) = &vmStorageStart;
@@ -743,7 +747,7 @@ extern "C" {
   JNIEXPORT const char* (*_vmStorageGetUUID)(const char*) = &vmStorageGetUUID;
 
   JNIEXPORT jboolean (*_vmInit)() = &vmInit;
-  JNIEXPORT JFArray* (*_vmList)() = &vmList;
+  JNIEXPORT void* (*_vmList)(FFMArrayString) = &vmList;
   JNIEXPORT jboolean (*_vmRegister)(const char*) = &vmRegister;
   JNIEXPORT jboolean (*_vmUnregister)(const char*) = &vmUnregister;
   JNIEXPORT jboolean (*_vmStart)(const char*) = &vmStart;
@@ -756,7 +760,7 @@ extern "C" {
   JNIEXPORT const char* (*_vmGet)(const char*) = &vmGet;
   JNIEXPORT jboolean (*_vmMigrate)(const char*,const char*,jboolean) = &vmMigrate;
   JNIEXPORT jboolean (*_vmSnapshotCreate)(const char*,const char*,jint) = &vmSnapshotCreate;
-  JNIEXPORT JFArray* (*_vmSnapshotList)(const char*) = &vmSnapshotList;
+  JNIEXPORT void* (*_vmSnapshotList)(FFMArrayString,const char*) = &vmSnapshotList;
   JNIEXPORT jboolean (*_vmSnapshotExists)(const char*) = &vmSnapshotExists;
   JNIEXPORT const char* (*_vmSnapshotGetCurrent)(const char*) = &vmSnapshotGetCurrent;
   JNIEXPORT jboolean (*_vmSnapshotRestore)(const char*,const char*) = &vmSnapshotRestore;

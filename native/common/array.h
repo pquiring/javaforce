@@ -1,82 +1,88 @@
 /**
 
-C Array
+FFM Array (JNI Array)
 
 Returned from FFM functions that return arrays.
 
 */
 
-#define ARRAY_TYPE_BYTE 1
-#define ARRAY_TYPE_INT 2
-#define ARRAY_TYPE_SHORT 3
-#define ARRAY_TYPE_LONG 4
-#define ARRAY_TYPE_STRING 100
+//FFMArray
 
-//template<typename T, int N>
-struct JFArray {
-  int count;  //# of elements (N)
-  short size;  //element size
-  short type;  //ARRAY_TYPE_...
-  union {
-    //T elements[N];
-    jint ints[0];
-    jshort shorts[0];
-    jbyte bytes[0];
-    char* strs[0];
-  };
-  static JFArray* create(int element_count, short element_size, short element_type) {
-    JFArray* arr = (JFArray*)malloc(8 + (element_count * element_size));
-    arr->count = element_count;
-    arr->size = element_size;
-    arr->type = element_type;
-    return arr;
-  }
+#define FFMArray(upper, lower) struct FFMArray##upper { lower* (*alloc)(int size); };
 
-  //getters
-  int getInt(int idx) {
-    return ints[idx];
-  }
-  short getShort(int idx) {
-    return shorts[idx];
-  }
-  char getByte(int idx) {
-    return bytes[idx];
-  }
-  jbyte* getBufferByte() {
-    return (jbyte*)&bytes;
-  }
-  jint* getBufferInt() {
-    return (jint*)&bytes;
-  }
-  jshort* getBufferShort() {
-    return (jshort*)&bytes;
-  }
+FFMArray(Byte,jbyte);
+FFMArray(Short,jshort);
+FFMArray(Int,jint);
+FFMArray(Float,jfloat);
 
-  //setters
-  void setString(int idx, char* str) {
-    strs[idx] = str;
-  }
+struct _FFMArrayString {
+  void* (*alloc)(int size);
+  void (*setString)(int idx, const char* str);
 };
 
-void jfArrayFree(JFArray* arr) {
-  if (arr == NULL) {
-    printf("Error:JFArrayFree:arr == NULL\n");
-    return;
-  }
-  if (arr->type == ARRAY_TYPE_STRING) {
-    //free all strings
-    for(int i=0;i<arr->count;i++) {
-      free(arr->strs[i]);
-    }
-  }
-  free(arr);
-}
+typedef _FFMArrayString* FFMArrayString;
 
-void jfStringFree(const char* str) {
-  if (str != NULL) free((void*)str);
-}
+//JNIArray (emulate FFMArray)
 
-extern "C" {
-  JNIEXPORT void (*_jfArrayFree)(JFArray*) = &jfArrayFree;
-  JNIEXPORT void (*_jfStringFree)(const char*) = &jfStringFree;
-}
+#define JNIArray(upper,lower,string) \
+struct JNIArray##upper { \
+  JNIEnv *e; \
+  jobject array; \
+  void* ptr; \
+  jclass cls; \
+  jmethodID mid_ctor; \
+  jmethodID mid_getUpcall; \
+  jmethodID mid_getArray; \
+  FFMArray##upper toFFM() { \
+    FFMArray##upper ffm; \
+    ffm.alloc = (lower* (*)(int))ptr; \
+    return ffm; \
+  } \
+  lower##Array getArray() { \
+    return (lower##Array)e->CallObjectMethod(array, mid_getArray); \
+  } \
+  JNIArray##upper(JNIEnv *e) { \
+    this->e = e; \
+    cls = e->FindClass("javaforce/ffm/FFMArray"); \
+    mid_getUpcall = e->GetMethodID(cls, "getUpcall", "(Ljava/lang/String;)J"); \
+    mid_getArray = e->GetMethodID(cls, "getArray", "()Ljava/lang/Object;"); \
+    mid_ctor = e->GetMethodID(cls, "<init>", "()V"); \
+    array = e->NewObject(cls, mid_ctor); \
+    ptr = (void*)e->CallLongMethod(array, mid_getUpcall, e->NewStringUTF(string)); \
+  } \
+};
+
+JNIArray(Byte,jbyte,"Byte")
+JNIArray(Short,jshort,"Short")
+JNIArray(Int,jint,"Int")
+JNIArray(Float,jfloat,"Float")
+
+//special String instance
+
+#define jstringArray jobjectArray
+
+struct JNIArrayString {
+  JNIEnv *e;
+  jobject array;
+  void* ptr;
+  jclass cls;
+  jmethodID mid_ctor;
+  jmethodID mid_getUpcall;
+  jmethodID mid_getArray;
+  FFMArrayString toFFM() {
+    FFMArrayString ffm = (FFMArrayString)ptr;
+    return ffm;
+  }
+  jobjectArray getArray() {
+    return (jstringArray)e->CallObjectMethod(array, mid_getArray);
+  }
+  JNIArrayString(JNIEnv *e) {
+    this->e = e;
+    cls = e->FindClass("javaforce/ffm/FFMArray");
+    mid_getUpcall = e->GetMethodID(cls, "getUpcall", "(Ljava/lang/String;)J");
+    mid_getArray = e->GetMethodID(cls, "getArray", "()Ljava/lang/Object;");
+    mid_ctor = e->GetMethodID(cls, "<init>", "()V");
+    array = e->NewObject(cls, mid_ctor);
+    ptr = (void*)e->CallLongMethod(array, mid_getUpcall, e->NewStringUTF("String"));
+  }
+};

@@ -58,7 +58,6 @@ public class GLJNI implements GL {
   public native int glGetError();
   public native String glGetProgramInfoLog(int id);
   public native String glGetShaderInfoLog(int id);
-  @NoFreeString
   public native String glGetString(int type);
   public native void glGetIntegerv(int type, int[] i);
   public native void glGenBuffers(int i1, int[] i2);
