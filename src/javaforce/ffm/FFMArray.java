@@ -71,9 +71,11 @@ public class FFMArray {
   }
 
   public Object getArray() {
-   if (ref == null) return null;
-   if (ptr != 0) unpin();
-   return ref;
+    if (ref == null) return null;
+    if (ptr != 0) unpin();
+    Object array = ref;
+    ref = null;
+    return array;
   }
 
   /** getUpcall() creates C up-call function to allocate Java Arrays. */
