@@ -18,7 +18,8 @@ public class FFMArray {
   private Arena arena;
 
   private long pin() {
-    return JFNative.pin(ref);
+    ptr = JFNative.pin(ref);
+    return ptr;
   }
 
   public long NewByteArray(int size) {
