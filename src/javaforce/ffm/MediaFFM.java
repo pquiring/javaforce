@@ -57,7 +57,7 @@ public class MediaFFM implements MediaAPI {
   public long inputOpenFile(String file,String format) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)inputOpenFile.invokeExact(arena.allocateFrom(file),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputOpenIO;
-  public long inputOpenIO(MediaIO io) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)inputOpenIO.invokeExact(FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long inputOpenIO(MediaIO io) { try { FFM.setMediaIO(io);long _ret_value_ = (long)inputOpenIO.invokeExact(FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle getDuration;
   public long getDuration(long ctx) { try { long _ret_value_ = (long)getDuration.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -81,16 +81,16 @@ public class MediaFFM implements MediaAPI {
   public int getAudioSampleRate(long ctx) { try { int _ret_value_ = (int)getAudioSampleRate.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputClose;
-  public boolean inputClose(long ctx,MediaIO io) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)inputClose.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean inputClose(long ctx,MediaIO io) { try { FFM.setMediaIO(io);boolean _ret_value_ = (boolean)inputClose.invokeExact(ctx,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle inputOpenVideo;
-  public boolean inputOpenVideo(long ctx,MediaIO io,int width,int height) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)inputOpenVideo.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),width,height);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean inputOpenVideo(long ctx,MediaIO io,int width,int height) { try { FFM.setMediaIO(io);boolean _ret_value_ = (boolean)inputOpenVideo.invokeExact(ctx,FFM.upcall_MediaIO,width,height);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle inputOpenAudio;
-  public boolean inputOpenAudio(long ctx,MediaIO io,int chs,int freq) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)inputOpenAudio.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),chs,freq);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean inputOpenAudio(long ctx,MediaIO io,int chs,int freq) { try { FFM.setMediaIO(io);boolean _ret_value_ = (boolean)inputOpenAudio.invokeExact(ctx,FFM.upcall_MediaIO,chs,freq);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle inputRead;
-  public int inputRead(long ctx,MediaIO io) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)inputRead.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int inputRead(long ctx,MediaIO io) { try { FFM.setMediaIO(io);int _ret_value_ = (int)inputRead.invokeExact(ctx,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle getPacketKeyFrame;
   public boolean getPacketKeyFrame(long ctx) { try { boolean _ret_value_ = (boolean)getPacketKeyFrame.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -99,28 +99,28 @@ public class MediaFFM implements MediaAPI {
   public int getPacketData(long ctx,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);int _ret_value_ = (int)getPacketData.invokeExact(ctx,_array_data,offset,length);FFM.copyBack(_array_data,data);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputSeek;
-  public boolean inputSeek(long ctx,MediaIO io,long seconds) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)inputSeek.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),seconds);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean inputSeek(long ctx,MediaIO io,long seconds) { try { FFM.setMediaIO(io);boolean _ret_value_ = (boolean)inputSeek.invokeExact(ctx,FFM.upcall_MediaIO,seconds);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle outputCreateFile;
   public long outputCreateFile(String file,String format) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)outputCreateFile.invokeExact(arena.allocateFrom(file),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle outputCreateIO;
-  public long outputCreateIO(MediaIO io,String format) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long outputCreateIO(MediaIO io,String format) { try { Arena arena = Arena.ofAuto(); FFM.setMediaIO(io);long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.upcall_MediaIO,arena.allocateFrom(format));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle addVideoStream;
-  public int addVideoStream(long ctx,MediaIO io,int codec_id,int bit_rate,int width,int height,float fps,int keyFrameInterval) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)addVideoStream.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),codec_id,bit_rate,width,height,fps,keyFrameInterval);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int addVideoStream(long ctx,MediaIO io,int codec_id,int bit_rate,int width,int height,float fps,int keyFrameInterval) { try { FFM.setMediaIO(io);int _ret_value_ = (int)addVideoStream.invokeExact(ctx,FFM.upcall_MediaIO,codec_id,bit_rate,width,height,fps,keyFrameInterval);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle addAudioStream;
-  public int addAudioStream(long ctx,MediaIO io,int codec_id,int bit_rate,int chs,int freq) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)addAudioStream.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),codec_id,bit_rate,chs,freq);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int addAudioStream(long ctx,MediaIO io,int codec_id,int bit_rate,int chs,int freq) { try { FFM.setMediaIO(io);int _ret_value_ = (int)addAudioStream.invokeExact(ctx,FFM.upcall_MediaIO,codec_id,bit_rate,chs,freq);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle outputClose;
-  public boolean outputClose(long ctx,MediaIO io) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)outputClose.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean outputClose(long ctx,MediaIO io) { try { FFM.setMediaIO(io);boolean _ret_value_ = (boolean)outputClose.invokeExact(ctx,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle writeHeader;
-  public boolean writeHeader(long ctx,MediaIO io) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)writeHeader.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean writeHeader(long ctx,MediaIO io) { try { FFM.setMediaIO(io);boolean _ret_value_ = (boolean)writeHeader.invokeExact(ctx,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle writePacket;
-  public boolean writePacket(long ctx,MediaIO io,int stream,byte[] data,int offset,int length,boolean keyFrame) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);boolean _ret_value_ = (boolean)writePacket.invokeExact(ctx,FFM.toMemory(arena, new MemorySegment[] {ffm.getFunctionUpCall(io, "read", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "write", int.class, new Class[] {MemorySegment.class, int.class}, arena), ffm.getFunctionUpCall(io, "seek", long.class, new Class[] {long.class, int.class}, arena)}),stream,_array_data,offset,length,keyFrame);FFM.copyBack(_array_data,data);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean writePacket(long ctx,MediaIO io,int stream,byte[] data,int offset,int length,boolean keyFrame) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);FFM.setMediaIO(io);boolean _ret_value_ = (boolean)writePacket.invokeExact(ctx,FFM.upcall_MediaIO,stream,_array_data,offset,length,keyFrame);FFM.copyBack(_array_data,data);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle audioDecoderStart;
   public long audioDecoderStart(int codec_id,int new_chs,int new_freq) { try { long _ret_value_ = (long)audioDecoderStart.invokeExact(codec_id,new_chs,new_freq);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -129,7 +129,7 @@ public class MediaFFM implements MediaAPI {
   public void audioDecoderStop(long ctx) { try { audioDecoderStop.invokeExact(ctx); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle audioDecoderDecode;
-  public short[] audioDecoderDecode(long ctx,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);FFMArray _ret_value_ = new FFMArray(); audioDecoderDecode.invokeExact(_ret_value_.getUpcall(ffm, arena,"Short"),ctx,_array_data,offset,length);FFM.copyBack(_array_data,data);return (short[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public short[] audioDecoderDecode(long ctx,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);audioDecoderDecode.invokeExact(FFM.upcall_FFMArray_NewShortArray,ctx,_array_data,offset,length);FFM.copyBack(_array_data,data);return (short[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle audioDecoderGetChannels;
   public int audioDecoderGetChannels(long ctx) { try { int _ret_value_ = (int)audioDecoderGetChannels.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -147,7 +147,7 @@ public class MediaFFM implements MediaAPI {
   public void audioEncoderStop(long ctx) { try { audioEncoderStop.invokeExact(ctx); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle audioEncoderEncode;
-  public byte[] audioEncoderEncode(long ctx,short[] samples,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_samples = FFM.toMemory(arena, samples);FFMArray _ret_value_ = new FFMArray(); audioEncoderEncode.invokeExact(_ret_value_.getUpcall(ffm, arena,"Byte"),ctx,_array_samples,offset,length);FFM.copyBack(_array_samples,samples);return (byte[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public byte[] audioEncoderEncode(long ctx,short[] samples,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_samples = FFM.toMemory(arena, samples);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);audioEncoderEncode.invokeExact(FFM.upcall_FFMArray_NewByteArray,ctx,_array_samples,offset,length);FFM.copyBack(_array_samples,samples);return (byte[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle audioEncoderGetAudioFramesize;
   public int audioEncoderGetAudioFramesize(long ctx) { try { int _ret_value_ = (int)audioEncoderGetAudioFramesize.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -159,7 +159,7 @@ public class MediaFFM implements MediaAPI {
   public void videoDecoderStop(long ctx) { try { videoDecoderStop.invokeExact(ctx); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle videoDecoderDecode;
-  public int[] videoDecoderDecode(long ctx,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);FFMArray _ret_value_ = new FFMArray(); videoDecoderDecode.invokeExact(_ret_value_.getUpcall(ffm, arena,"Int"),ctx,_array_data,offset,length);FFM.copyBack(_array_data,data);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] videoDecoderDecode(long ctx,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);videoDecoderDecode.invokeExact(FFM.upcall_FFMArray_NewIntArray,ctx,_array_data,offset,length);FFM.copyBack(_array_data,data);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle videoDecoderGetWidth;
   public int videoDecoderGetWidth(long ctx) { try { int _ret_value_ = (int)videoDecoderGetWidth.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -180,7 +180,7 @@ public class MediaFFM implements MediaAPI {
   public void videoEncoderStop(long ctx) { try { videoEncoderStop.invokeExact(ctx); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle videoEncoderEncode;
-  public byte[] videoEncoderEncode(long ctx,int[] px,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_px = FFM.toMemory(arena, px);FFMArray _ret_value_ = new FFMArray(); videoEncoderEncode.invokeExact(_ret_value_.getUpcall(ffm, arena,"Byte"),ctx,_array_px,offset,length);FFM.copyBack(_array_px,px);return (byte[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public byte[] videoEncoderEncode(long ctx,int[] px,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_px = FFM.toMemory(arena, px);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);videoEncoderEncode.invokeExact(FFM.upcall_FFMArray_NewByteArray,ctx,_array_px,offset,length);FFM.copyBack(_array_px,px);return (byte[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle compareFrames;
   public float compareFrames(int[] frame1,int[] frame2,int width,int height) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_frame1 = FFM.toMemory(arena, frame1);MemorySegment _array_frame2 = FFM.toMemory(arena, frame2);float _ret_value_ = (float)compareFrames.invokeExact(_array_frame1,_array_frame2,width,height);FFM.copyBack(_array_frame1,frame1);FFM.copyBack(_array_frame2,frame2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }

@@ -148,9 +148,10 @@ public class JNI2FFM {
         StringBuilder arrays = new StringBuilder();
         method.append("{ try { ");
         boolean arena_needed = false;
+        int before_invoke = method.length();
         if (!isRetVoid) {
           if (isRetArray) {
-            method.append("FFMArray _ret_value_ = new FFMArray(); ");
+            method.append("FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);");
             arena_needed = true;
           } else {
             if (java_ret_type.equals("String")) {
@@ -168,7 +169,7 @@ public class JNI2FFM {
         if (!isRetVoid) {
           if (isRetArray) {
             first_method = false;
-            method.append("_ret_value_.getUpcall(ffm, arena,\"" + capitalize(java_ret_type) + "\")");
+            method.append("FFM.upcall_FFMArray_New" + capitalize(java_ret_type) + "Array");
           }
         }
 
@@ -236,19 +237,14 @@ public class JNI2FFM {
             method.append(segment_name);
           } else {
             if (java_type.equals("MediaIO")) {
-              method.append("FFM.toMemory(arena, ");
-              method.append("new MemorySegment[] {");
-              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"read\", int.class, new Class[] {MemorySegment.class, int.class}, arena)");
-              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"write\", int.class, new Class[] {MemorySegment.class, int.class}, arena)");
-              method.append(", ffm.getFunctionUpCall(" + arg_name + ", \"seek\", long.class, new Class[] {long.class, int.class}, arena)");
-              method.append("})");
-              arena_needed = true;
+              method.append("FFM.upcall_MediaIO");
+              method.insert(before_invoke, "FFM.setMediaIO(" + arg_name + ");");
             } else if (java_type.equals("FolderListener")) {
-              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"folderChangeEvent\", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, arena)");
-              arena_needed = true;
+              method.append("FFM.upcall_FolderListener_folderChangeEvent");
+              method.insert(before_invoke, "FFM.setFolderListener(" + arg_name + ");");
             } else if (java_type.equals("UIEvents")) {
-              method.append("ffm.getFunctionUpCall(" + arg_name + ", \"dispatchEvent\", void.class, new Class[] {int.class, int.class, int.class}, arena)");
-              arena_needed = true;
+              method.append("FFM.upcall_UIEvents_dispatchEvent");
+              method.insert(before_invoke, "FFM.setUIEvents(" + arg_name + ");");
             } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");
               arena_needed = true;

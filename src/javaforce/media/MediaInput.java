@@ -14,7 +14,7 @@ import javaforce.voip.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
 
-public class MediaInput extends MediaFormat implements MediaIOFFM {
+public class MediaInput extends MediaFormat implements MediaIO {
   /** Opens media file for decoding. */
   public boolean open(String file, String format) {
     if (ctx != 0) return false;

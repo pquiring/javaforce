@@ -78,29 +78,19 @@ public class FFMArray {
     return array;
   }
 
-  /** getUpcall() creates C up-call function to allocate Java Arrays. */
-  public MemorySegment getUpcall(FFM ffm, Arena arena, String type) {
-    if (type.equals("String")) {
-      return FFM.toMemory(arena, new MemorySegment[] {
-        ffm.getFunctionUpCall(this, "NewStringArray", long.class, new Class[] {int.class}, arena),
-        ffm.getFunctionUpCall(this, "SetStringElement", void.class, new Class[] {int.class, MemorySegment.class}, arena),
-      });
-    } else {
-      return ffm.getFunctionUpCall(this, "New" + type + "Array", long.class, new Class[] {int.class}, arena);
-    }
-  }
-
   /** getUpcall() creates C up-call function to allocate Java Arrays.
-   * This variant used by JNIArray
+   * Called from JNIArray (see native/common/array.h)
    */
   public long getUpcall(String type) {
-    long addr = 0;
-    try {
-      arena = Arena.ofAuto();
-      addr = getUpcall(FFM.getInstanceJNI(), arena, type).address();
-    } catch (Exception e) {
-      JFLog.log(e);
+    FFM ffm = FFM.getInstanceJNI();  //to call setupUpcalls()
+    switch (type) {
+      case "Byte": return FFM.upcall_FFMArray_NewByteArray.address();
+      case "Short": return FFM.upcall_FFMArray_NewShortArray.address();
+      case "Int": return FFM.upcall_FFMArray_NewIntArray.address();
+      case "Long": return FFM.upcall_FFMArray_NewLongArray.address();
+      case "Float": return FFM.upcall_FFMArray_NewFloatArray.address();
+      case "String": return FFM.upcall_FFMArray_NewStringArray.address();
     }
-    return addr;
+    return 0;
   }
 }

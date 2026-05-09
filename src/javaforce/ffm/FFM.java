@@ -11,7 +11,10 @@ import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
+import javaforce.io.*;
+import javaforce.ui.*;
 import javaforce.jni.*;
+import javaforce.media.*;
 
 public class FFM {
   private static FFM instance;
@@ -119,6 +122,7 @@ public class FFM {
         execlookup = new ExecSymbolLookup();
         execlookup.init(this);
       }
+      setupUpcalls();
     } catch (Throwable t) {
       JFLog.log(t);
       enabled = false;
@@ -226,8 +230,12 @@ public class FFM {
     }
   }
 
-  /** Create up call stub to virtual function. */
-  public MemorySegment getFunctionUpCall(Object obj, String method, Class ret, Class[] args, Arena arena) {
+  /** Create up call stub to virtual function.
+   *
+   * UpCalls are EXPENSIVE and should be limited.
+   * The JVM tries to cache them and holds on to them for a while causing performance issues.
+   */
+  public MemorySegment getFunctionUpCall_404(Object obj, String method, Class ret, Class[] args, Arena arena) {
     MethodType mt;
     MethodHandle mh, bmh;
     MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -242,7 +250,11 @@ public class FFM {
     }
   }
 
-  /** Create up call stub to static function. */
+  /** Create up call stub to static function.
+   *
+   * UpCalls are EXPENSIVE and should be limited.
+   * The JVM tries to cache them and holds on to them for a while causing performance issues.
+   */
   public MemorySegment getFunctionUpCallStatic(Class cls, String method, Class ret, Class[] args, Arena arena) {
     MethodType mt;
     MethodHandle mh;
@@ -445,4 +457,162 @@ public class FFM {
   public static void copyBack(MemorySegment seg, String[] m) {
     //nop
   }
+
+  private static ThreadLocal<FFMArray> FFMArrayBin = new ThreadLocal<>();
+
+  public static void setFFMArray(FFMArray array) {
+    FFMArrayBin.set(array);
+  }
+
+  private static long FFMArray_NewByteArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewByteArray(size);
+  }
+
+  private static long FFMArray_NewShortArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewShortArray(size);
+  }
+
+  private static long FFMArray_NewIntArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewIntArray(size);
+  }
+
+  private static long FFMArray_NewLongArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewLongArray(size);
+  }
+
+  private static long FFMArray_NewFloatArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewFloatArray(size);
+  }
+
+  private static long FFMArray_NewStringArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewStringArray(size);
+  }
+
+  private static void FFMArray_SetStringElement(int idx, MemorySegment str) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return;
+    instance.SetStringElement(idx, str);
+  }
+
+  private static ThreadLocal<MediaIO> MediaIOBin = new ThreadLocal<>();
+
+  public static void setMediaIO(MediaIO io) {
+    MediaIOBin.set(io);
+  }
+
+  private static int MediaIO_read(MemorySegment data, int size) {
+    MediaIO instance = MediaIOBin.get();
+    if (instance == null) return -1;
+    byte[] byteArray = new byte[size];
+    int read = instance.read(null, byteArray);
+    if (read > 0) {
+      MemorySegment.copy(byteArray, 0, data.reinterpret(read), JAVA_BYTE, 0, read);
+    }
+    return read;
+  }
+
+  private static int MediaIO_write(MemorySegment data, int size) {
+    MediaIO instance = MediaIOBin.get();
+    if (instance == null) return -1;
+    byte[] byteArray = data.reinterpret(size).asSlice(0, size).toArray(JAVA_BYTE);
+    return instance.write(null, byteArray);
+  }
+
+  private static long MediaIO_seek(long pos, int how) {
+    MediaIO instance = MediaIOBin.get();
+    if (instance == null) return -1;
+    return instance.seek(null, pos, how);
+  }
+
+  private static ThreadLocal<FolderListener> FolderListenerBin = new ThreadLocal<>();
+
+  public static void setFolderListener(FolderListener listener) {
+    FolderListenerBin.set(listener);
+  }
+
+  private static void FolderListener_folderChangeEvent(MemorySegment event, MemorySegment path) {
+    FolderListener instance = FolderListenerBin.get();
+    if (instance == null) return;
+    String event_str = event.reinterpret(1024).getString(0);
+    if (debug) JFLog.log("event=" + event_str);
+    String path_str = path.reinterpret(1024).getString(0);
+    if (debug) JFLog.log("path=" + path_str);
+    instance.folderChangeEvent(event_str, path_str);
+  }
+
+  private static ThreadLocal<UIEvents> UIEventsBin = new ThreadLocal<>();
+
+  public static void setUIEvents(UIEvents events) {
+    UIEventsBin.set(events);
+  }
+
+  private static void UIEvents_dispatchEvent(int type, int v1, int v2) {
+    UIEvents instance = UIEventsBin.get();
+    if (instance == null) return;
+    instance.dispatchEvent(type, v1, v2);
+  }
+
+  private static Arena global;
+  public static MemorySegment upcall_FFMArray_NewByteArray;
+  public static MemorySegment upcall_FFMArray_NewShortArray;
+  public static MemorySegment upcall_FFMArray_NewIntArray;
+  public static MemorySegment upcall_FFMArray_NewLongArray;
+  public static MemorySegment upcall_FFMArray_NewFloatArray;
+  public static MemorySegment upcall_FFMArray_AllocStringArray;
+  public static MemorySegment upcall_FFMArray_SetStringElement;
+
+  public static MemorySegment upcall_FFMArray_NewStringArray;
+
+  public static MemorySegment upcall_MediaIO;
+  public static MemorySegment upcall_MediaIO_read;
+  public static MemorySegment upcall_MediaIO_write;
+  public static MemorySegment upcall_MediaIO_seek;
+
+  public static MemorySegment upcall_FolderListener_folderChangeEvent;
+
+  public static MemorySegment upcall_UIEvents_dispatchEvent;
+
+  private void setupUpcalls() {
+    global = Arena.global();
+    Class cls = this.getClass();
+    upcall_FFMArray_NewByteArray = getFunctionUpCallStatic(cls, "FFMArray_NewByteArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_NewShortArray = getFunctionUpCallStatic(cls, "FFMArray_NewShortArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_NewIntArray = getFunctionUpCallStatic(cls, "FFMArray_NewIntArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_NewLongArray = getFunctionUpCallStatic(cls, "FFMArray_NewLongArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_NewFloatArray = getFunctionUpCallStatic(cls, "FFMArray_NewFloatArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_AllocStringArray = getFunctionUpCallStatic(cls, "FFMArray_NewStringArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_SetStringElement = getFunctionUpCallStatic(cls, "FFMArray_SetStringElement", void.class, new Class[] {int.class, MemorySegment.class}, global);
+
+    upcall_FFMArray_NewStringArray = toMemory(global, new MemorySegment[] {
+      upcall_FFMArray_AllocStringArray,
+      upcall_FFMArray_SetStringElement,
+    });
+
+    upcall_MediaIO_read = getFunctionUpCallStatic(cls, "MediaIO_read", int.class, new Class[] {MemorySegment.class, int.class}, global);
+    upcall_MediaIO_write = getFunctionUpCallStatic(cls, "MediaIO_write", int.class, new Class[] {MemorySegment.class, int.class}, global);
+    upcall_MediaIO_seek = getFunctionUpCallStatic(cls, "MediaIO_seek", long.class, new Class[] {long.class, int.class}, global);
+
+    upcall_MediaIO = toMemory(global, new MemorySegment[] {
+      upcall_MediaIO_read,
+      upcall_MediaIO_write,
+      upcall_MediaIO_seek,
+    });
+
+    upcall_FolderListener_folderChangeEvent = getFunctionUpCallStatic(cls, "FolderListener_folderChangeEvent", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, global);
+
+    upcall_UIEvents_dispatchEvent = getFunctionUpCallStatic(cls, "UIEvents_dispatchEvent", void.class, new Class[] {int.class, int.class, int.class}, global);
+  }
+
 }

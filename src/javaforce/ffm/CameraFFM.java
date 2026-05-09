@@ -35,10 +35,10 @@ public class CameraFFM implements CameraAPI {
   public boolean cameraUninit(long ctx) { try { boolean _ret_value_ = (boolean)cameraUninit.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle cameraListDevices;
-  public String[] cameraListDevices(long ctx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); cameraListDevices.invokeExact(_ret_value_.getUpcall(ffm, arena,"String"),ctx);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] cameraListDevices(long ctx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);cameraListDevices.invokeExact(FFM.upcall_FFMArray_NewStringArray,ctx);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle cameraListModes;
-  public String[] cameraListModes(long ctx,int deviceIdx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); cameraListModes.invokeExact(_ret_value_.getUpcall(ffm, arena,"String"),ctx,deviceIdx);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] cameraListModes(long ctx,int deviceIdx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);cameraListModes.invokeExact(FFM.upcall_FFMArray_NewStringArray,ctx,deviceIdx);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle cameraStart;
   public boolean cameraStart(long ctx,int deviceIdx,int width,int height) { try { boolean _ret_value_ = (boolean)cameraStart.invokeExact(ctx,deviceIdx,width,height);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -47,7 +47,7 @@ public class CameraFFM implements CameraAPI {
   public boolean cameraStop(long ctx) { try { boolean _ret_value_ = (boolean)cameraStop.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle cameraGetFrame;
-  public int[] cameraGetFrame(long ctx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); cameraGetFrame.invokeExact(_ret_value_.getUpcall(ffm, arena,"Int"),ctx);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] cameraGetFrame(long ctx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);cameraGetFrame.invokeExact(FFM.upcall_FFMArray_NewIntArray,ctx);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle cameraGetWidth;
   public int cameraGetWidth(long ctx) { try { int _ret_value_ = (int)cameraGetWidth.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }

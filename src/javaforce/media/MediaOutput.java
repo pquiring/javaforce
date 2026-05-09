@@ -19,7 +19,7 @@ import javaforce.ffm.*;
 import javaforce.voip.*;
 import javaforce.api.*;
 
-public class MediaOutput extends MediaFormat implements MediaIOFFM {
+public class MediaOutput extends MediaFormat implements MediaIO {
   /** Create output file.
    * @param file = filename
    * @param format = media container (see MediaCoder.AV_FORMAT_ID...)

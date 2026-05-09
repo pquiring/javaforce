@@ -33,7 +33,7 @@ public class MonitorFolderFFM implements MonitorFolderAPI {
   public long monitorFolderCreate(String folder) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)monitorFolderCreate.invokeExact(arena.allocateFrom(folder));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle monitorFolderPoll;
-  public void monitorFolderPoll(long handle,FolderListener listener) { try { Arena arena = Arena.ofAuto(); monitorFolderPoll.invokeExact(handle,ffm.getFunctionUpCall(listener, "folderChangeEvent", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, arena)); } catch (Throwable t) { JFLog.log(t); } }
+  public void monitorFolderPoll(long handle,FolderListener listener) { try { FFM.setFolderListener(listener);monitorFolderPoll.invokeExact(handle,FFM.upcall_FolderListener_folderChangeEvent); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle monitorFolderClose;
   public void monitorFolderClose(long handle) { try { monitorFolderClose.invokeExact(handle); } catch (Throwable t) { JFLog.log(t); } }
