@@ -11,6 +11,7 @@ import java.nio.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.ffm.*;
 
 public class JFNative {
 
@@ -25,6 +26,7 @@ public class JFNative {
    */
   public static void load() {
     if (loaded) return;
+    FFM.setupUpcalls();
     if (JF.hasNativeSupport()) {
       loaded = true;
       return;

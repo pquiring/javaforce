@@ -17,7 +17,7 @@ public class CameraFFM implements CameraAPI {
   private FFM ffm;
 
   private static CameraFFM instance;
-  public static CameraFFM getInstance() {
+  public static CameraFFM getInstance(FFMArray array) {
     if (instance == null) {
       instance = new CameraFFM();
       if (!instance.ffm_init()) {
@@ -25,6 +25,7 @@ public class CameraFFM implements CameraAPI {
         instance = null;
       }
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 
@@ -35,10 +36,10 @@ public class CameraFFM implements CameraAPI {
   public boolean cameraUninit(long ctx) { try { boolean _ret_value_ = (boolean)cameraUninit.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle cameraListDevices;
-  public String[] cameraListDevices(long ctx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);cameraListDevices.invokeExact(FFM.upcall_FFMArray_NewStringArray,ctx);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] cameraListDevices(long ctx) { try { cameraListDevices.invokeExact(ctx);return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle cameraListModes;
-  public String[] cameraListModes(long ctx,int deviceIdx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);cameraListModes.invokeExact(FFM.upcall_FFMArray_NewStringArray,ctx,deviceIdx);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] cameraListModes(long ctx,int deviceIdx) { try { cameraListModes.invokeExact(ctx,deviceIdx);return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle cameraStart;
   public boolean cameraStart(long ctx,int deviceIdx,int width,int height) { try { boolean _ret_value_ = (boolean)cameraStart.invokeExact(ctx,deviceIdx,width,height);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -47,7 +48,7 @@ public class CameraFFM implements CameraAPI {
   public boolean cameraStop(long ctx) { try { boolean _ret_value_ = (boolean)cameraStop.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle cameraGetFrame;
-  public int[] cameraGetFrame(long ctx) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);cameraGetFrame.invokeExact(FFM.upcall_FFMArray_NewIntArray,ctx);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] cameraGetFrame(long ctx) { try { cameraGetFrame.invokeExact(ctx);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle cameraGetWidth;
   public int cameraGetWidth(long ctx) { try { int _ret_value_ = (int)cameraGetWidth.invokeExact(ctx);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -65,11 +66,11 @@ public class CameraFFM implements CameraAPI {
 
     cameraInit = ffm.getFunctionPtr("_cameraInit", ffm.getFunctionDesciptor(JAVA_LONG));
     cameraUninit = ffm.getFunctionPtr("_cameraUninit", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
-    cameraListDevices = ffm.getFunctionPtr("_cameraListDevices", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_LONG));
-    cameraListModes = ffm.getFunctionPtr("_cameraListModes", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_LONG,JAVA_INT));
+    cameraListDevices = ffm.getFunctionPtr("_cameraListDevices", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    cameraListModes = ffm.getFunctionPtr("_cameraListModes", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT));
     cameraStart = ffm.getFunctionPtr("_cameraStart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT));
     cameraStop = ffm.getFunctionPtr("_cameraStop", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
-    cameraGetFrame = ffm.getFunctionPtr("_cameraGetFrame", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_LONG));
+    cameraGetFrame = ffm.getFunctionPtr("_cameraGetFrame", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     cameraGetWidth = ffm.getFunctionPtr("_cameraGetWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     cameraGetHeight = ffm.getFunctionPtr("_cameraGetHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     return true;

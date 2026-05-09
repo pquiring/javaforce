@@ -10,11 +10,11 @@ import javaforce.ffm.*;
 import javaforce.ui.*;
 
 public interface UIAPI {
-  public static UIAPI getInstance() {
+  public static UIAPI getInstance(FFMArray array) {
     if (FFM.enabled()) {
-      return UIFFM.getInstance();
+      return UIFFM.getInstance(array);
     } else {
-      return UIJNI.getInstance();
+      return UIJNI.getInstance(array);
     }
   }
 

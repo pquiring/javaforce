@@ -14,8 +14,10 @@ import java.util.*;
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.awt.priv.*;
+import javaforce.ffm.*;
 
 public class Image extends FontComponent {
+  private FFMArray array = new FFMArray();
   private int[] buffer;
   private int lineStyle = LineStyle.SOLID;
   private int resizeOperation = ResizeOperation.CLEAR;
@@ -57,7 +59,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = UIAPI.getInstance().uiLoadPNG(data, data.length, dim);
+    buffer = UIAPI.getInstance(array).uiLoadPNG(data, data.length, dim);
     if (buffer != null) {
       super.setSize(dim[0], dim[1]);
     }
@@ -77,7 +79,7 @@ public class Image extends FontComponent {
   }
 
   public boolean savePNG(OutputStream os) {
-    byte[] data = UIAPI.getInstance().uiSavePNG(buffer, size.width, size.height);
+    byte[] data = UIAPI.getInstance(array).uiSavePNG(buffer, size.width, size.height);
     if (data == null) return false;
     try {
       os.write(data);
@@ -109,7 +111,7 @@ public class Image extends FontComponent {
       return false;
     }
     int[] dim = new int[2];
-    buffer = UIAPI.getInstance().uiLoadJPG(data, data.length, dim);
+    buffer = UIAPI.getInstance(array).uiLoadJPG(data, data.length, dim);
     return buffer != null;
   }
 
@@ -129,7 +131,7 @@ public class Image extends FontComponent {
   public int jpeg_quality = 90;
 
   public boolean saveJPG(OutputStream os) {
-    byte[] data = UIAPI.getInstance().uiSaveJPG(buffer, size.width, size.height, jpeg_quality);
+    byte[] data = UIAPI.getInstance(array).uiSaveJPG(buffer, size.width, size.height, jpeg_quality);
     if (data == null) return false;
     try {
       os.write(data);

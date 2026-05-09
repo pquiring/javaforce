@@ -8,47 +8,43 @@ Returned from FFM functions that return arrays.
 
 //FFMArray
 
-#define FFMArray(upper, lower) struct FFMArray##upper { lower* (*alloc)(int size); };
+#define jstringArray jobjectArray
 
-FFMArray(Byte,jbyte);
-FFMArray(Short,jshort);
-FFMArray(Int,jint);
-FFMArray(Float,jfloat);
-
-struct _FFMArrayString {
-  void* (*alloc)(int size);
+struct FFMArray {
+  void* (*pin)();
+  void (*unpin)();
+  jbyte* (*newByteArray)(int size);
+  jshort* (*newShortArray)(int size);
+  jint* (*newIntArray)(int size);
+  jlong* (*newLongArray)(int size);
+  jfloat* (*newFloatArray)(int size);
+  jstringArray (*newStringArray)(int size);
   void (*setString)(int idx, const char* str);
-};
+} *ffm;
 
-typedef _FFMArrayString* FFMArrayString;
+void set_upcall_FFMArray(FFMArray *api) {
+  ffm = api;
+}
+
+extern "C" {
+  JNIEXPORT void (*_set_upcall_FFMArray)(FFMArray*) = &set_upcall_FFMArray;
+}
 
 //JNIArray (emulate FFMArray)
 
 #define JNIArray(upper,lower,string) \
 struct JNIArray##upper { \
   JNIEnv *e; \
-  jobject array; \
-  void* ptr; \
   jclass cls; \
   jmethodID mid_ctor; \
-  jmethodID mid_getUpcall; \
   jmethodID mid_getArray; \
-  FFMArray##upper toFFM() { \
-    FFMArray##upper ffm; \
-    ffm.alloc = (lower* (*)(int))ptr; \
-    return ffm; \
-  } \
   lower##Array getArray() { \
-    return (lower##Array)e->CallObjectMethod(array, mid_getArray); \
+    return (lower##Array)e->CallStaticObjectMethod(cls, mid_getArray); \
   } \
   JNIArray##upper(JNIEnv *e) { \
     this->e = e; \
-    cls = e->FindClass("javaforce/ffm/FFMArray"); \
-    mid_getUpcall = e->GetMethodID(cls, "getUpcall", "(Ljava/lang/String;)J"); \
-    mid_getArray = e->GetMethodID(cls, "getArray", "()Ljava/lang/Object;"); \
-    mid_ctor = e->GetMethodID(cls, "<init>", "()V"); \
-    array = e->NewObject(cls, mid_ctor); \
-    ptr = (void*)e->CallLongMethod(array, mid_getUpcall, e->NewStringUTF(string)); \
+    cls = e->FindClass("javaforce/ffm/FFM"); \
+    mid_getArray = e->GetStaticMethodID(cls, "getArray", "()Ljava/lang/Object;"); \
   } \
 };
 
@@ -66,23 +62,13 @@ struct JNIArrayString {
   jobject array;
   void* ptr;
   jclass cls;
-  jmethodID mid_ctor;
-  jmethodID mid_getUpcall;
   jmethodID mid_getArray;
-  FFMArrayString toFFM() {
-    FFMArrayString ffm = (FFMArrayString)ptr;
-    return ffm;
-  }
   jobjectArray getArray() {
-    return (jstringArray)e->CallObjectMethod(array, mid_getArray);
+    return (jstringArray)e->CallStaticObjectMethod(cls, mid_getArray);
   }
   JNIArrayString(JNIEnv *e) {
     this->e = e;
     cls = e->FindClass("javaforce/ffm/FFMArray");
-    mid_getUpcall = e->GetMethodID(cls, "getUpcall", "(Ljava/lang/String;)J");
-    mid_getArray = e->GetMethodID(cls, "getArray", "()Ljava/lang/Object;");
-    mid_ctor = e->GetMethodID(cls, "<init>", "()V");
-    array = e->NewObject(cls, mid_ctor);
-    ptr = (void*)e->CallLongMethod(array, mid_getUpcall, e->NewStringUTF("String"));
+    mid_getArray = e->GetStaticMethodID(cls, "getArray", "()Ljava/lang/Object;");
   }
 };

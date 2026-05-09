@@ -94,7 +94,7 @@ jboolean cameraUninit(jlong ctxptr)
   return JNI_TRUE;
 }
 
-void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
+void* cameraListDevices(jlong ctxptr)
 {
   printf("MF:CameraListDevices\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
@@ -111,7 +111,7 @@ void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
 
   attr->Release();
 
-  void* strs = ffm->alloc(ctx->cameraDeviceCount);
+  void* strs = ffm->newStringArray(ctx->cameraDeviceCount);
 
   for(int a=0;a<ctx->cameraDeviceCount;a++) {
     UINT32 length;
@@ -136,7 +136,7 @@ void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
 jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight);
 jboolean cameraStop(jlong ctxptr);
 
-void* cameraListModes(FFMArrayString ffm, jlong ctxptr, jint deviceIdx)
+void* cameraListModes(jlong ctxptr, jint deviceIdx)
 {
   printf("MF:CameraListModes\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
@@ -150,7 +150,7 @@ void* cameraListModes(FFMArrayString ffm, jlong ctxptr, jint deviceIdx)
   cameraStop(ctxptr);
   ctx->listModes = JNI_FALSE;
 
-  void* strs = ffm->alloc(ctx->cameraModeCount);
+  void* strs = ffm->newStringArray(ctx->cameraModeCount);
 
   for(int a=0;a<ctx->cameraModeCount;a++) {
     char* mode = ctx->cameraModes[a];
@@ -342,7 +342,7 @@ jboolean cameraStop(jlong ctxptr)
   return JNI_TRUE;
 }
 
-jint* cameraGetFrame(FFMArrayInt ffm, jlong ctxptr)
+jint* cameraGetFrame(jlong ctxptr)
 {
 //  printf("MF:CameraGetFrame\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
@@ -375,7 +375,7 @@ jint* cameraGetFrame(FFMArrayInt ffm, jlong ctxptr)
   }
 
   int pxsize = ctx->width * ctx->height;
-  jint *px = ffm.alloc(pxsize);
+  jint *px = ffm->newIntArray(pxsize);
 
   //copy pixels, flip image, set opaque alpha channel
   jint *pxptr = px;
@@ -415,11 +415,11 @@ jint cameraGetHeight(jlong ctxptr)
 extern "C" {
   JNIEXPORT jlong (*_cameraInit)() = &cameraInit;
   JNIEXPORT jboolean (*_cameraUninit)(jlong) = &cameraUninit;
-  JNIEXPORT void* (*_cameraListDevices)(FFMArrayString,jlong) = &cameraListDevices;
-  JNIEXPORT void* (*_cameraListModes)(FFMArrayString,jlong, jint) = &cameraListModes;
+  JNIEXPORT void* (*_cameraListDevices)(jlong) = &cameraListDevices;
+  JNIEXPORT void* (*_cameraListModes)(jlong, jint) = &cameraListModes;
   JNIEXPORT jboolean (*_cameraStart)(jlong , jint , jint , jint ) = &cameraStart;
   JNIEXPORT jboolean (*_cameraStop)(jlong) = &cameraStop;
-  JNIEXPORT jint* (*_cameraGetFrame)(FFMArrayInt, jlong) = &cameraGetFrame;
+  JNIEXPORT jint* (*_cameraGetFrame)(jlong) = &cameraGetFrame;
   JNIEXPORT jint (*_cameraGetWidth)(jlong) = &cameraGetWidth;
   JNIEXPORT jint (*_cameraGetHeight)(jlong) = &cameraGetHeight;
 

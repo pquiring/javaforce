@@ -5,19 +5,19 @@ package javaforce.jni;
  * @author pquiring
  */
 
-import java.io.*;
-
 import javaforce.*;
 import javaforce.api.*;
+import javaforce.ffm.*;
 
 public class PCapJNI implements PCapAPI {
 
   private static PCapJNI instance;
 
-  public static synchronized PCapJNI getInstance() {
+  public static synchronized PCapJNI getInstance(FFMArray array) {
     if (instance == null) {
       instance = new PCapJNI();
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 

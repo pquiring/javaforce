@@ -52,7 +52,7 @@ jboolean pcapInit(char* lib1, char* lib2)
   return JNI_TRUE;
 }
 
-void* pcapListLocalInterfaces(FFMArrayString ffm)
+void* pcapListLocalInterfaces()
 {
   char err[PCAP_ERRBUF_SIZE];
   int list_count = 0;
@@ -81,7 +81,7 @@ void* pcapListLocalInterfaces(FFMArrayString ffm)
     c = c->next;
   }
 
-  array = ffm->alloc(list_count);
+  array = ffm->newStringArray(list_count);
 
   c = list_elements;
   int idx = 0;
@@ -102,6 +102,7 @@ void* pcapListLocalInterfaces(FFMArrayString ffm)
       char* str = (char*)malloc(strlen(name) + 1);
       strcpy(str, name);
       ffm->setString(idx++, (const char*)str);
+      free(str);
     }
     c = c->next;
   }
@@ -155,7 +156,7 @@ jboolean pcapCompile(jlong handle, char* program)
   return ret == 0;
 }
 
-jbyte* pcapRead(FFMArrayByte ffm, jlong handle)
+jbyte* pcapRead(jlong handle)
 {
   struct user_pkt_t user_pkt;
   user_pkt.size = 0;
@@ -163,7 +164,7 @@ jbyte* pcapRead(FFMArrayByte ffm, jlong handle)
   int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, &user_pkt);
 
   if (cnt > 0 && user_pkt.size > 0) {
-    jbyte* ba = ffm.alloc(user_pkt.size);
+    jbyte* ba = ffm->newByteArray(user_pkt.size);
 
     memcpy(ba, user_pkt.bytes, user_pkt.size);
 
@@ -188,10 +189,10 @@ jboolean pcapWrite(jlong handle, jbyte* ba, jint offset, jint length)
 
 extern "C" {
   JNIEXPORT jboolean (*_pcapInit)(char*,char*) = &pcapInit;
-  JNIEXPORT void* (*_pcapListLocalInterfaces)(FFMArrayString ffm) = &pcapListLocalInterfaces;
+  JNIEXPORT void* (*_pcapListLocalInterfaces)() = &pcapListLocalInterfaces;
   JNIEXPORT jlong (*_pcapStart)(char*,jboolean) = &pcapStart;
   JNIEXPORT void (*_pcapStop)(jlong) = &pcapStop;
-  JNIEXPORT jbyte* (*_pcapRead)(FFMArrayByte ffm, jlong) = &pcapRead;
+  JNIEXPORT jbyte* (*_pcapRead)(jlong) = &pcapRead;
   JNIEXPORT jboolean (*_pcapWrite)(jlong,jbyte*,jint,jint) = &pcapWrite;
 
   JNIEXPORT jboolean PCapAPIinit() {return JNI_TRUE;}

@@ -28,14 +28,6 @@ public class FFM {
     return instance;
   }
 
-  /** Internal usage for JNI. */
-  public static FFM getInstanceJNI() {
-    if (instance == null) {
-      instance = new FFM();
-    }
-    return instance;
-  }
-
   /** Enabled FFM native inter-ops.
    */
   private static boolean enabled = true;
@@ -93,12 +85,17 @@ public class FFM {
   private static boolean debug = false;
   private static String lib;  //shared JF library
 
-  private Linker linker;
-  private Arena arena;
-  private SymbolLookup lookup;
-  private ExecSymbolLookup execlookup;
+  private static Linker linker;
+  private static Arena arena;
+  private static SymbolLookup lookup;
+  private static ExecSymbolLookup execlookup;
 
   private FFM() {
+    setupLinker();
+    setupUpcalls();
+  }
+
+  private static void setupLinker() {
     try {
       linker = Linker.nativeLinker();
       if (lib == null) {
@@ -120,38 +117,36 @@ public class FFM {
         //symbol lookup from executable of this JVM (JavaForce native loader)
         lookup = linker.defaultLookup();
         execlookup = new ExecSymbolLookup();
-        execlookup.init(this);
+        execlookup.init();
       }
-      setupUpcalls();
     } catch (Throwable t) {
       JFLog.log(t);
-      enabled = false;
     }
   }
 
   /** Assign a new symbol lookup provider. */
-  public void setSymbolLookup(SymbolLookup lookup) {
+  public static void setSymbolLookup(SymbolLookup lookup) {
     if (debug) JFLog.log("lookup=" + lookup);
-    this.lookup = lookup;
+    FFM.lookup = lookup;
   }
 
   /** Get native FunctionDescriptor for function with no args and specified return value. */
-  public FunctionDescriptor getFunctionDesciptor(MemoryLayout ret) {
+  public static FunctionDescriptor getFunctionDesciptor(MemoryLayout ret) {
     return FunctionDescriptor.of(ret);
   }
 
   /** Get native FunctionDescriptor for function with specified return value and arguments. */
-  public FunctionDescriptor getFunctionDesciptor(MemoryLayout ret, MemoryLayout... args) {
+  public static FunctionDescriptor getFunctionDesciptor(MemoryLayout ret, MemoryLayout... args) {
     return FunctionDescriptor.of(ret, args);
   }
 
   /** Get native FunctionDescriptor for function with void return value and arguments. */
-  public FunctionDescriptor getFunctionDesciptorVoid(MemoryLayout... args) {
+  public static FunctionDescriptor getFunctionDesciptorVoid(MemoryLayout... args) {
     return FunctionDescriptor.ofVoid(args);
   }
 
   /** Get native MethodHandle for specified function name with FunctionDescriptor. */
-  public MethodHandle getFunction(String name, FunctionDescriptor fd) {
+  public static MethodHandle getFunction(String name, FunctionDescriptor fd) {
     if (debug) JFLog.log("FFM:getFunction:" + name);
     try {
       MemorySegment addr = lookup.findOrThrow(name);
@@ -167,7 +162,7 @@ public class FFM {
   }
 
   /** Get native MethodHandle for specified function name with FunctionDescriptor where the symbol is a function pointer. */
-  public MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
+  public static MethodHandle getFunctionPtr(String name, FunctionDescriptor fd) {
     if (debug) JFLog.log("FFM:getFunctionPtr:" + name);
     try {
       MemorySegment addr = lookup.findOrThrow(name);
@@ -235,7 +230,7 @@ public class FFM {
    * UpCalls are EXPENSIVE and should be limited.
    * The JVM tries to cache them and holds on to them for a while causing performance issues.
    */
-  public MemorySegment getFunctionUpCall_404(Object obj, String method, Class ret, Class[] args, Arena arena) {
+  public static MemorySegment getFunctionUpCall_404(Object obj, String method, Class ret, Class[] args, Arena arena) {
     MethodType mt;
     MethodHandle mh, bmh;
     MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -255,7 +250,7 @@ public class FFM {
    * UpCalls are EXPENSIVE and should be limited.
    * The JVM tries to cache them and holds on to them for a while causing performance issues.
    */
-  public MemorySegment getFunctionUpCallStatic(Class cls, String method, Class ret, Class[] args, Arena arena) {
+  public static MemorySegment getFunctionUpCallStatic(Class cls, String method, Class ret, Class[] args, Arena arena) {
     MethodType mt;
     MethodHandle mh;
     MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -464,6 +459,18 @@ public class FFM {
     FFMArrayBin.set(array);
   }
 
+  private static long FFMArray_Pin() {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return 0;
+    return instance.pin();
+  }
+
+  private static void FFMArray_Unpin() {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return;
+    instance.unpin();
+  }
+
   private static long FFMArray_NewByteArray(int size) {
     FFMArray instance = FFMArrayBin.get();
     if (instance == null) return -1;
@@ -504,6 +511,12 @@ public class FFM {
     FFMArray instance = FFMArrayBin.get();
     if (instance == null) return;
     instance.SetStringElement(idx, str);
+  }
+
+  public static Object getArray() {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return null;
+    return instance.getArray();
   }
 
   private static ThreadLocal<MediaIO> MediaIOBin = new ThreadLocal<>();
@@ -565,15 +578,18 @@ public class FFM {
   }
 
   private static Arena global;
+
+  public static MemorySegment upcall_FFMArray;
+  public static MemorySegment upcall_FFMArray_Pin;
+  public static MemorySegment upcall_FFMArray_Unpin;
   public static MemorySegment upcall_FFMArray_NewByteArray;
   public static MemorySegment upcall_FFMArray_NewShortArray;
   public static MemorySegment upcall_FFMArray_NewIntArray;
   public static MemorySegment upcall_FFMArray_NewLongArray;
   public static MemorySegment upcall_FFMArray_NewFloatArray;
-  public static MemorySegment upcall_FFMArray_AllocStringArray;
+  public static MemorySegment upcall_FFMArray_NewStringArray;
   public static MemorySegment upcall_FFMArray_SetStringElement;
 
-  public static MemorySegment upcall_FFMArray_NewStringArray;
 
   public static MemorySegment upcall_MediaIO;
   public static MemorySegment upcall_MediaIO_read;
@@ -584,19 +600,37 @@ public class FFM {
 
   public static MemorySegment upcall_UIEvents_dispatchEvent;
 
-  private void setupUpcalls() {
+  /** Setup static C up calls.
+   *
+   * Upcalls are used from C to invoke Java methods.
+   */
+  public static void setupUpcalls() {
+    if (debug) JFLog.log("FFM.setupUpcalls");
+    if (global != null) return;
     global = Arena.global();
-    Class cls = this.getClass();
+    if (linker == null) {
+      setupLinker();
+    }
+    Class cls = FFM.class;
+    upcall_FFMArray_Pin = getFunctionUpCallStatic(cls, "FFMArray_Pin", long.class, new Class[] {}, global);
+    upcall_FFMArray_Unpin = getFunctionUpCallStatic(cls, "FFMArray_Unpin", void.class, new Class[] {}, global);
     upcall_FFMArray_NewByteArray = getFunctionUpCallStatic(cls, "FFMArray_NewByteArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewShortArray = getFunctionUpCallStatic(cls, "FFMArray_NewShortArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewIntArray = getFunctionUpCallStatic(cls, "FFMArray_NewIntArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewLongArray = getFunctionUpCallStatic(cls, "FFMArray_NewLongArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewFloatArray = getFunctionUpCallStatic(cls, "FFMArray_NewFloatArray", long.class, new Class[] {int.class}, global);
-    upcall_FFMArray_AllocStringArray = getFunctionUpCallStatic(cls, "FFMArray_NewStringArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_NewStringArray = getFunctionUpCallStatic(cls, "FFMArray_NewStringArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_SetStringElement = getFunctionUpCallStatic(cls, "FFMArray_SetStringElement", void.class, new Class[] {int.class, MemorySegment.class}, global);
 
-    upcall_FFMArray_NewStringArray = toMemory(global, new MemorySegment[] {
-      upcall_FFMArray_AllocStringArray,
+    upcall_FFMArray = toMemory(global, new MemorySegment[] {
+      upcall_FFMArray_Pin,
+      upcall_FFMArray_Unpin,
+      upcall_FFMArray_NewByteArray,
+      upcall_FFMArray_NewShortArray,
+      upcall_FFMArray_NewIntArray,
+      upcall_FFMArray_NewLongArray,
+      upcall_FFMArray_NewFloatArray,
+      upcall_FFMArray_NewStringArray,
       upcall_FFMArray_SetStringElement,
     });
 
@@ -613,6 +647,14 @@ public class FFM {
     upcall_FolderListener_folderChangeEvent = getFunctionUpCallStatic(cls, "FolderListener_folderChangeEvent", void.class, new Class[] {MemorySegment.class, MemorySegment.class}, global);
 
     upcall_UIEvents_dispatchEvent = getFunctionUpCallStatic(cls, "UIEvents_dispatchEvent", void.class, new Class[] {int.class, int.class, int.class}, global);
-  }
 
+    //pass FFMArray upcalls to native system
+    MethodHandle setup = FFM.getFunctionPtr("_set_upcall_FFMArray", FFM.getFunctionDesciptorVoid(ADDRESS));
+
+    try {
+      setup.invokeExact(upcall_FFMArray);
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
+  }
 }

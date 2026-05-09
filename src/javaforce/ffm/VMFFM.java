@@ -18,7 +18,7 @@ public class VMFFM implements VMAPI {
   private FFM ffm;
 
   private static VMFFM instance;
-  public static VMFFM getInstance() {
+  public static VMFFM getInstance(FFMArray array) {
     if (instance == null) {
       instance = new VMFFM();
       if (!instance.ffm_init()) {
@@ -26,23 +26,24 @@ public class VMFFM implements VMAPI {
         instance = null;
       }
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 
   private MethodHandle vmDeviceList;
-  public String[] vmDeviceList(int type) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);vmDeviceList.invokeExact(FFM.upcall_FFMArray_NewStringArray,type);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] vmDeviceList(int type) { try { vmDeviceList.invokeExact(type);return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmDiskCreate;
   public boolean vmDiskCreate(String pool_name,String xml) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmDiskCreate.invokeExact(arena.allocateFrom(pool_name),arena.allocateFrom(xml));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmNetworkListPhys;
-  public String[] vmNetworkListPhys() { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);vmNetworkListPhys.invokeExact(FFM.upcall_FFMArray_NewStringArray);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] vmNetworkListPhys() { try { vmNetworkListPhys.invokeExact();return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmSecretCreate;
   public boolean vmSecretCreate(String xml,String passwd) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSecretCreate.invokeExact(arena.allocateFrom(xml),arena.allocateFrom(passwd));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStorageList;
-  public String[] vmStorageList() { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);vmStorageList.invokeExact(FFM.upcall_FFMArray_NewStringArray);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] vmStorageList() { try { vmStorageList.invokeExact();return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmStorageRegister;
   public boolean vmStorageRegister(String xml) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageRegister.invokeExact(arena.allocateFrom(xml));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -87,7 +88,7 @@ public class VMFFM implements VMAPI {
   public int vmGetState(String name) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmGetState.invokeExact(arena.allocateFrom(name));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vmList;
-  public String[] vmList() { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);vmList.invokeExact(FFM.upcall_FFMArray_NewStringArray);return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] vmList() { try { vmList.invokeExact();return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmGet;
   public String vmGet(String name) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmGet.invokeExact(arena.allocateFrom(name)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
@@ -105,7 +106,7 @@ public class VMFFM implements VMAPI {
   public boolean vmSnapshotCreate(String name,String xml,int flags) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotCreate.invokeExact(arena.allocateFrom(name),arena.allocateFrom(xml),flags);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSnapshotList;
-  public String[] vmSnapshotList(String name) { try { Arena arena = Arena.ofAuto(); FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);vmSnapshotList.invokeExact(FFM.upcall_FFMArray_NewStringArray,arena.allocateFrom(name));return (String[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public String[] vmSnapshotList(String name) { try { Arena arena = Arena.ofAuto(); vmSnapshotList.invokeExact(arena.allocateFrom(name));return (String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmSnapshotExists;
   public boolean vmSnapshotExists(String name) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotExists.invokeExact(arena.allocateFrom(name));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -142,11 +143,11 @@ public class VMFFM implements VMAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    vmDeviceList = ffm.getFunctionPtr("_vmDeviceList", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT));
+    vmDeviceList = ffm.getFunctionPtr("_vmDeviceList", ffm.getFunctionDesciptorVoid(JAVA_INT));
     vmDiskCreate = ffm.getFunctionPtr("_vmDiskCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vmNetworkListPhys = ffm.getFunctionPtr("_vmNetworkListPhys", ffm.getFunctionDesciptorVoid(ADDRESS));
+    vmNetworkListPhys = ffm.getFunctionPtr("_vmNetworkListPhys", ffm.getFunctionDesciptorVoid());
     vmSecretCreate = ffm.getFunctionPtr("_vmSecretCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vmStorageList = ffm.getFunctionPtr("_vmStorageList", ffm.getFunctionDesciptorVoid(ADDRESS));
+    vmStorageList = ffm.getFunctionPtr("_vmStorageList", ffm.getFunctionDesciptorVoid());
     vmStorageRegister = ffm.getFunctionPtr("_vmStorageRegister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmStorageUnregister = ffm.getFunctionPtr("_vmStorageUnregister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmStorageStart = ffm.getFunctionPtr("_vmStorageStart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
@@ -161,13 +162,13 @@ public class VMFFM implements VMAPI {
     vmSuspend = ffm.getFunctionPtr("_vmSuspend", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmResume = ffm.getFunctionPtr("_vmResume", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmGetState = ffm.getFunctionPtr("_vmGetState", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
-    vmList = ffm.getFunctionPtr("_vmList", ffm.getFunctionDesciptorVoid(ADDRESS));
+    vmList = ffm.getFunctionPtr("_vmList", ffm.getFunctionDesciptorVoid());
     vmGet = ffm.getFunctionPtr("_vmGet", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
     vmRegister = ffm.getFunctionPtr("_vmRegister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmUnregister = ffm.getFunctionPtr("_vmUnregister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmMigrate = ffm.getFunctionPtr("_vmMigrate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,JAVA_BOOLEAN));
     vmSnapshotCreate = ffm.getFunctionPtr("_vmSnapshotCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,JAVA_INT));
-    vmSnapshotList = ffm.getFunctionPtr("_vmSnapshotList", ffm.getFunctionDesciptorVoid(ADDRESS,ADDRESS));
+    vmSnapshotList = ffm.getFunctionPtr("_vmSnapshotList", ffm.getFunctionDesciptorVoid(ADDRESS));
     vmSnapshotExists = ffm.getFunctionPtr("_vmSnapshotExists", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmSnapshotGetCurrent = ffm.getFunctionPtr("_vmSnapshotGetCurrent", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
     vmSnapshotRestore = ffm.getFunctionPtr("_vmSnapshotRestore", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));

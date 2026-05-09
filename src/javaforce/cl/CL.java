@@ -26,11 +26,7 @@ public class CL {
   public static CL getInstance() {
     if (instance == null) {
       instance = new CL();
-      if (FFM.enabled()) {
-        instance.api = CLFFM.getInstance();
-      } else {
-        instance.api = CLJNI.getInstance();
-      }
+      instance.api = CLAPI.getInstance();
       if (!instance.init()) {
         return null;
       }

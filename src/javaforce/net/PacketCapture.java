@@ -28,14 +28,15 @@ public class PacketCapture {
   public static int TYPE_IP6 = 0x86dd;
 
   private static PacketCapture instance;
+  private static FFMArray array = new FFMArray();
 
   public static PacketCapture getInstance() {
     if (instance == null) {
       instance = new PacketCapture();
       if (FFM.enabled()) {
-        instance.api = PCapFFM.getInstance();
+        instance.api = PCapFFM.getInstance(array);
       } else {
-        instance.api = PCapJNI.getInstance();
+        instance.api = PCapJNI.getInstance(array);
       }
       if (!instance.init()) {
         return null;

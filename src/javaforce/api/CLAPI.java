@@ -5,7 +5,19 @@ package javaforce.api;
  * @author pquiring
  */
 
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
 public interface CLAPI {
+
+  public static CLAPI getInstance() {
+    if (FFM.enabled()) {
+      return CLFFM.getInstance(null);  //no arrays
+    } else {
+      return CLJNI.getInstance();
+    }
+  }
+
   public boolean clLoadLibrary(String lib);
   public long clCreate(String src, int type);
   public long clKernel(long ctx, String func);

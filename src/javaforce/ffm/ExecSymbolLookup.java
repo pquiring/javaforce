@@ -27,24 +27,24 @@ public class ExecSymbolLookup implements SymbolLookup {
 
   private static boolean debug = false;
 
-  public boolean init(FFM ffm) {
+  public boolean init() {
     if (debug) JFLog.log("ExecSymbolLookup init");
     try {
       arena = Arena.global();
       if (JF.isWindows()) {
         SymbolLookup kernel32 = SymbolLookup.libraryLookup("kernel32", arena);
-        ffm.setSymbolLookup(kernel32);
-        MethodHandle GetModuleHandle = ffm.getFunction("GetModuleHandleA", ffm.getFunctionDesciptor(ADDRESS, ADDRESS));
-        getsymbol = ffm.getFunction("GetProcAddress", ffm.getFunctionDesciptor(ADDRESS, ADDRESS, ADDRESS));
+        FFM.setSymbolLookup(kernel32);
+        MethodHandle GetModuleHandle = FFM.getFunction("GetModuleHandleA", FFM.getFunctionDesciptor(ADDRESS, ADDRESS));
+        getsymbol = FFM.getFunction("GetProcAddress", FFM.getFunctionDesciptor(ADDRESS, ADDRESS, ADDRESS));
         try {
           handle = (MemorySegment)GetModuleHandle.invokeExact(MemorySegment.NULL);
         } catch (Throwable t) {
           JFLog.log(t);
         }
       } else {
-        MethodHandle dlopen = ffm.getFunction("dlopen", ffm.getFunctionDesciptor(ADDRESS, ADDRESS, JAVA_INT));
+        MethodHandle dlopen = FFM.getFunction("dlopen", FFM.getFunctionDesciptor(ADDRESS, ADDRESS, JAVA_INT));
         if (debug) JFLog.log("dlopen=" + dlopen);
-        getsymbol = ffm.getFunction("dlsym", ffm.getFunctionDesciptor(ADDRESS, ADDRESS, ADDRESS));
+        getsymbol = FFM.getFunction("dlsym", FFM.getFunctionDesciptor(ADDRESS, ADDRESS, ADDRESS));
         if (debug) JFLog.log("getsymbol=" + getsymbol);
         try {
           handle = (MemorySegment)dlopen.invokeExact(MemorySegment.NULL, RTLD_NOW | RTLD_GLOBAL);
@@ -53,7 +53,7 @@ public class ExecSymbolLookup implements SymbolLookup {
           JFLog.log(t);
         }
       }
-      ffm.setSymbolLookup(this);
+      FFM.setSymbolLookup(this);
       return true;
     } catch (Throwable t) {
       JFLog.log(t);

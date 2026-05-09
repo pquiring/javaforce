@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
   freeFFContext(e,c,ctx);
 }
 
-static jbyte* av_encoder_addAudioFrame(FFMArrayByte ffm, FFContext *ctx, short *sams, int offset, int length)
+static jbyte* av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudioFrame:%p,%p,%d,%d\n", ctx, sams, offset, length);
   int ret;
@@ -178,7 +178,7 @@ static jbyte* av_encoder_addAudioFrame(FFMArrayByte ffm, FFContext *ctx, short *
     return NULL;
   }
 
-  jbyte* array = ffm.alloc(ctx->pkt->size);
+  jbyte* array = ffm->newByteArray(ctx->pkt->size);
 
   memcpy(array, (jbyte*)ctx->pkt->data, ctx->pkt->size);
 
@@ -190,7 +190,7 @@ static jbyte* av_encoder_addAudioFrame(FFMArrayByte ffm, FFContext *ctx, short *
   return array;
 }
 
-static jbyte* av_encoder_addAudio(FFMArrayByte ffm, FFContext *ctx, short *sams, int offset, int length) {
+static jbyte* av_encoder_addAudio(FFContext *ctx, short *sams, int offset, int length) {
   if (ff_debug_log) printf("MediaAudioEncoder.av_encoder_addAudio:%p,%d,%d\n", sams, offset, length);
   int frame_size = length;
   if (!ctx->audio_frame_size_variable) {
@@ -202,7 +202,7 @@ static jbyte* av_encoder_addAudio(FFMArrayByte ffm, FFContext *ctx, short *sams,
       memcpy(ctx->audio_buffer + ctx->audio_buffer_size, sams + offset, size * 2);
       ctx->audio_buffer_size += size;
       if (ctx->audio_buffer_size < ctx->audio_frame_size) return NULL;  //frame still not full
-      av_encoder_addAudioFrame(ffm, ctx, ctx->audio_buffer, 0, ctx->audio_buffer_size);
+      av_encoder_addAudioFrame(ctx, ctx->audio_buffer, 0, ctx->audio_buffer_size);
       ctx->audio_buffer_size = 0;
       offset += size;
       length -= size;
@@ -218,20 +218,20 @@ static jbyte* av_encoder_addAudio(FFMArrayByte ffm, FFContext *ctx, short *sams,
       ctx->audio_buffer_size = size;
       return NULL;
     }
-    jbyte* array = av_encoder_addAudioFrame(ffm, ctx, sams, offset, size);
+    jbyte* array = av_encoder_addAudioFrame(ctx, sams, offset, size);
     return array;
   }
 
   return NULL;
 }
 
-jbyte* audioEncoderEncode(FFMArrayByte ffm, FFContext* ctx, jshort* sams, jint offset, jint length)
+jbyte* audioEncoderEncode(FFContext* ctx, jshort* sams, jint offset, jint length)
 {
   if (ctx == NULL) return NULL;
 
   if (ctx->audio_codec_ctx == NULL) return NULL;
 
-  jbyte* array = av_encoder_addAudio(ffm, ctx, sams, offset, length);
+  jbyte* array = av_encoder_addAudio(ctx, sams, offset, length);
 
   return array;
 }
@@ -250,7 +250,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
 
   JNIArrayByte jni(e);
 
-  jbyte* array = av_encoder_addAudio(jni.toFFM(), ctx, sams_ptr, offset, length);
+  jbyte* array = av_encoder_addAudio(ctx, sams_ptr, offset, length);
 
   e->ReleasePrimitiveArrayCritical(sams, sams_ptr, JNI_ABORT);
 
@@ -390,7 +390,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
   freeFFContext(e,c,ctx);
 }
 
-static jbyte* av_encoder_addVideo(FFMArrayByte ffm, FFContext *ctx, int *px)
+static jbyte* av_encoder_addVideo(FFContext *ctx, int *px)
 {
   int length = ctx->org_width * ctx->org_height * 4;
   (*_av_frame_make_writable)(ctx->video_frame);  //ensure we can write to it now
@@ -433,7 +433,7 @@ static jbyte* av_encoder_addVideo(FFMArrayByte ffm, FFContext *ctx, int *px)
     return NULL;
   }
 
-  jbyte* array = ffm.alloc(ctx->pkt->size);
+  jbyte* array = ffm->newByteArray(ctx->pkt->size);
 
   memcpy(array, (jbyte*)ctx->pkt->data, ctx->pkt->size);
 
@@ -444,13 +444,13 @@ static jbyte* av_encoder_addVideo(FFMArrayByte ffm, FFContext *ctx, int *px)
   return array;
 }
 
-jbyte* videoEncoderEncode(FFMArrayByte ffm, FFContext* ctx, jint* px, jint offset, jint length)
+jbyte* videoEncoderEncode(FFContext* ctx, jint* px, jint offset, jint length)
 {
   if (ctx == NULL) return NULL;
 
   if (ctx->video_codec_ctx == NULL) return NULL;
 
-  return av_encoder_addVideo(ffm, ctx, px);
+  return av_encoder_addVideo(ctx, px);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
@@ -467,7 +467,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
 
   JNIArrayByte jni(e);
 
-  jbyte* array = av_encoder_addVideo(jni.toFFM(), ctx, (int*)px_ptr);
+  jbyte* array = av_encoder_addVideo(ctx, (int*)px_ptr);
 
   e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 

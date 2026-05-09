@@ -9,9 +9,12 @@ import java.io.*;
 
 import javaforce.*;
 import javaforce.api.*;
+import javaforce.ffm.*;
 
 public class Disk implements Serializable {
   private static final long serialVersionUID = 1L;
+
+  private static FFMArray array = new FFMArray();
 
   public String pool;  //storage pool
   public String folder;  //usually vm name
@@ -94,7 +97,7 @@ public class Disk implements Serializable {
       //use libvirt (not working per docs)
       String xml = getCreateXML(provision);
       JFLog.log("Disk.xml=" + xml);
-      return VMAPI.getInstance().vmDiskCreate(pool, xml);
+      return VMAPI.getInstance(array).vmDiskCreate(pool, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();
@@ -141,7 +144,7 @@ public class Disk implements Serializable {
       //use libvirt (not working per docs)
       String xml = getCreateXML(0);
       JFLog.log("Disk.xml=" + xml);
-      return VMAPI.getInstance().vmDiskCreate(pool.name, xml);
+      return VMAPI.getInstance(array).vmDiskCreate(pool.name, xml);
     } else {
       //use qemu-img
       ShellProcess sp = new ShellProcess();

@@ -51,7 +51,7 @@ jboolean cameraUninit(jlong ctxptr)
   return JNI_TRUE;
 }
 
-void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
+void* cameraListDevices(jlong ctxptr)
 {
   FFMCamContext *ctx = (FFMCamContext*)ctxptr;
   if (ctx == NULL) return NULL;
@@ -72,7 +72,7 @@ void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
     idx++;
   }
 
-  void* strs = ffm->alloc(ctx->cameraDeviceCount);
+  void* strs = ffm->newStringArray(ctx->cameraDeviceCount);
   for(int a=0;a<ctx->cameraDeviceCount;a++) {
     char*name = ctx->cameraDeviceNames[a];
     int strlen = strlen8(name);
@@ -84,7 +84,7 @@ void* cameraListDevices(FFMArrayString ffm, jlong ctxptr)
   return strs;
 }
 
-void* cameraListModes(FFMArrayString ffm, jlong ctxptr, jint deviceIdx)
+void* cameraListModes(jlong ctxptr, jint deviceIdx)
 {
   return NULL;
 }

@@ -17,7 +17,7 @@ public class GLFFM implements GL {
   private FFM ffm;
 
   private static GLFFM instance;
-  public static GLFFM getInstance() {
+  public static GLFFM getInstance(FFMArray array) {
     if (instance == null) {
       instance = new GLFFM();
       if (!instance.ffm_init()) {
@@ -25,6 +25,7 @@ public class GLFFM implements GL {
         instance = null;
       }
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 

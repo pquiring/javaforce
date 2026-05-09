@@ -9,11 +9,11 @@ import javaforce.jni.*;
 import javaforce.ffm.*;
 
 public interface VMAPI {
-  public static VMAPI getInstance() {
+  public static VMAPI getInstance(FFMArray array) {
     if (FFM.enabled()) {
-      return VMFFM.getInstance();
+      return VMFFM.getInstance(array);
     } else {
-      return VMJNI.getInstance();
+      return VMJNI.getInstance(array);
     }
   }
 

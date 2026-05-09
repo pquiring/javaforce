@@ -24,7 +24,7 @@ jboolean vmSnapshotCreate(const char* name, const char* xml, jint flags)
   return ssptr != NULL;
 }
 
-void* vmSnapshotList(FFMArrayString ffm,const char* name)
+void* vmSnapshotList(const char* name)
 {
   void* conn = connect();
   if (conn == NULL) return JNI_FALSE;
@@ -47,7 +47,7 @@ void* vmSnapshotList(FFMArrayString ffm,const char* name)
 #endif
 
   if (cnt > 0) {
-    list = ffm->alloc(cnt);
+    list = ffm->newStringArray(cnt);
     for(int i=0;i<cnt;i++) {
       void* ss = ptrs[i];
       const char* name = (*_virDomainSnapshotGetName)(ss);

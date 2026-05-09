@@ -17,7 +17,7 @@ public class SpeexFFM implements SpeexAPI {
   private FFM ffm;
 
   private static SpeexFFM instance;
-  public static SpeexFFM getInstance() {
+  public static SpeexFFM getInstance(FFMArray array) {
     if (instance == null) {
       instance = new SpeexFFM();
       if (!instance.ffm_init()) {
@@ -25,6 +25,7 @@ public class SpeexFFM implements SpeexAPI {
         instance = null;
       }
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 

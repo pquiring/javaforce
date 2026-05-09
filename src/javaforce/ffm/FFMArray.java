@@ -2,7 +2,9 @@ package javaforce.ffm;
 
 /** FFMArray
  *
- * Used to create Java array for native functions that return an array.
+ * Array Factory used by native C code to create Java arrays.
+ *
+ * Also serves as a cache for arrays.
  *
  * @author pquiring
  */
@@ -15,59 +17,80 @@ import javaforce.jni.*;
 public class FFMArray {
   private Object ref;
   private long ptr;
-  private Arena arena;
 
-  private long pin() {
+  public long pin() {
     ptr = JFNative.pin(ref);
     return ptr;
   }
 
-  private void unpin() {
+  public void unpin() {
     JFNative.unpin(ref, ptr, true);
     ptr = 0;
   }
 
+  private byte[] ba;
   public long NewByteArray(int size) {
     if (ptr != 0) unpin();
-    ref = new byte[size];
+    if (ba == null || ba.length != size) {
+      ba = new byte[size];
+    }
+    ref = ba;
     return pin();
   }
 
+  private short[] sa;
   public long NewShortArray(int size) {
     if (ptr != 0) unpin();
-    ref = new short[size];
+    if (sa == null || sa.length != size) {
+      sa = new short[size];
+    }
+    ref = sa;
     return pin();
   }
 
+  private int[] ia;
   public long NewIntArray(int size) {
     if (ptr != 0) unpin();
-    ref = new int[size];
+    if (ia == null || ia.length != size) {
+      ia = new int[size];
+    }
+    ref = ia;
     return pin();
   }
 
+  private long[] la;
   public long NewLongArray(int size) {
     if (ptr != 0) unpin();
-    ref = new long[size];
+    if (la == null || la.length != size) {
+      la = new long[size];
+    }
+    ref = la;
     return pin();
   }
 
+  private float[] fa;
   public long NewFloatArray(int size) {
     if (ptr != 0) unpin();
-    ref = new float[size];
+    if (fa == null || fa.length != size) {
+      fa = new float[size];
+    }
+    ref = fa;
     return pin();
   }
 
+  private String[] Sa;
   public long NewStringArray(int size) {
     if (ptr != 0) unpin();
-    ref = new String[size];
+    //always create new String array
+    Sa = new String[size];
+    ref = Sa;
     return pin();
   }
 
   public void SetStringElement(int idx, MemorySegment str) {
     if (ref == null) return;
-    String[] strs = (String[])ref;
-    if (idx < 0 || idx >= strs.length) return;
-    strs[idx] = FFM.getString(str);
+    if (idx < 0 || idx >= Sa.length) return;
+    Sa[idx] = FFM.getString(str);
   }
 
   public Object getArray() {
@@ -76,21 +99,5 @@ public class FFMArray {
     Object array = ref;
     ref = null;
     return array;
-  }
-
-  /** getUpcall() creates C up-call function to allocate Java Arrays.
-   * Called from JNIArray (see native/common/array.h)
-   */
-  public long getUpcall(String type) {
-    FFM ffm = FFM.getInstanceJNI();  //to call setupUpcalls()
-    switch (type) {
-      case "Byte": return FFM.upcall_FFMArray_NewByteArray.address();
-      case "Short": return FFM.upcall_FFMArray_NewShortArray.address();
-      case "Int": return FFM.upcall_FFMArray_NewIntArray.address();
-      case "Long": return FFM.upcall_FFMArray_NewLongArray.address();
-      case "Float": return FFM.upcall_FFMArray_NewFloatArray.address();
-      case "String": return FFM.upcall_FFMArray_NewStringArray.address();
-    }
-    return 0;
   }
 }

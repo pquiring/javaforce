@@ -5,15 +5,17 @@ package javaforce.jni;
  * @author pquiring
  */
 
+import javaforce.ffm.*;
 import javaforce.api.*;
 
 public class CameraJNI implements CameraAPI {
   private static CameraJNI instance;
 
-  public static synchronized CameraJNI getInstance() {
+  public static synchronized CameraJNI getInstance(FFMArray array) {
     if (instance == null) {
       instance = new CameraJNI();
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 

@@ -17,7 +17,7 @@ public class GPIOFFM implements GPIOAPI {
   private FFM ffm;
 
   private static GPIOFFM instance;
-  public static GPIOFFM getInstance() {
+  public static GPIOFFM getInstance(FFMArray array) {
     if (instance == null) {
       instance = new GPIOFFM();
       if (!instance.ffm_init()) {
@@ -25,6 +25,7 @@ public class GPIOFFM implements GPIOAPI {
         instance = null;
       }
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 

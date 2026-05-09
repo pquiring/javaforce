@@ -20,13 +20,14 @@ import javaforce.voip.*;
 import javaforce.api.*;
 
 public class MediaOutput extends MediaFormat implements MediaIO {
+  private FFMArray array = new FFMArray();
   /** Create output file.
    * @param file = filename
    * @param format = media container (see MediaCoder.AV_FORMAT_ID...)
    */
   public boolean create(String file, String format) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance().outputCreateFile(file, format);
+    ctx = MediaAPI.getInstance(array).outputCreateFile(file, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateFile() == 0");
     }
@@ -63,7 +64,7 @@ public class MediaOutput extends MediaFormat implements MediaIO {
   public boolean create(MediaIO io, String format) {
     if (ctx != 0) return false;
     this.io = io;
-    ctx = MediaAPI.getInstance().outputCreateIO(this, format);
+    ctx = MediaAPI.getInstance(array).outputCreateIO(this, format);
     if (ctx == 0) {
       JFLog.log("MediaOutput.ncreateIO() == 0");
     }
@@ -83,7 +84,7 @@ public class MediaOutput extends MediaFormat implements MediaIO {
    *         info.video_codec = selected codec
    */
   public boolean addVideoStream(CodecInfo info) {
-    info.video_stream = MediaAPI.getInstance().addVideoStream(ctx, this, info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
+    info.video_stream = MediaAPI.getInstance(array).addVideoStream(ctx, this, info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
     if (info.video_stream == -1) {
       JFLog.log("addVideoStream == -1");
       return false;
@@ -106,7 +107,7 @@ public class MediaOutput extends MediaFormat implements MediaIO {
    *         info.audio_codec = selected codec
    */
   public boolean addAudioStream(CodecInfo info) {
-    info.audio_stream = MediaAPI.getInstance().addAudioStream(ctx, this, info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
+    info.audio_stream = MediaAPI.getInstance(array).addAudioStream(ctx, this, info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
     if (info.audio_stream == -1) {
       JFLog.log("addAudioStream == -1");
       return false;
@@ -138,7 +139,7 @@ public class MediaOutput extends MediaFormat implements MediaIO {
   /** Closes media file and frees resources. */
   public boolean close() {
     if (ctx == 0) return false;
-    boolean res = MediaAPI.getInstance().outputClose(ctx, this);
+    boolean res = MediaAPI.getInstance(array).outputClose(ctx, this);
     ctx = 0;
     return res;
   }
@@ -149,9 +150,9 @@ public class MediaOutput extends MediaFormat implements MediaIO {
   public boolean writePacket(Packet packet) {
     if (!header) {
       //write header must be called after streams are added
-      MediaAPI.getInstance().writeHeader(ctx, this);
+      MediaAPI.getInstance(array).writeHeader(ctx, this);
       header = true;
     }
-    return MediaAPI.getInstance().writePacket(ctx, this, packet.stream, packet.data, packet.offset, packet.length, packet.keyFrame);
+    return MediaAPI.getInstance(array).writePacket(ctx, this, packet.stream, packet.data, packet.offset, packet.length, packet.keyFrame);
   }
 }

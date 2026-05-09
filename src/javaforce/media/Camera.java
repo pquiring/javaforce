@@ -9,15 +9,17 @@ package javaforce.media;
  */
 
 import javaforce.api.*;
+import javaforce.ffm.*;
 
 public class Camera {
   private long ctx = 0;
   private int[] mirror;
   private int[] flip;
   private CameraAPI api;
+  private FFMArray array = new FFMArray();
 
   public Camera() {
-    api = CameraAPI.getInstance();
+    api = CameraAPI.getInstance(array);
   }
 
   public boolean init() {

@@ -18,7 +18,7 @@ public class ComPort {
   private String name;
   private ComPort() {
     if (FFM.enabled()) {
-      api = ComPortFFM.getInstance();
+      api = ComPortFFM.getInstance(null);  //ComPortFFM does not return arrays
     } else {
       api = ComPortJNI.getInstance();
     }

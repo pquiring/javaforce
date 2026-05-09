@@ -10,8 +10,10 @@ package javaforce.media;
 
 import javaforce.awt.*;
 import javaforce.api.*;
+import javaforce.ffm.*;
 
 public class VideoBuffer {
+  private static FFMArray array = new FFMArray();
   private JFImage[] images;
   private int head = 0, tail = 0;
   private boolean headInUse, tailInUse;
@@ -90,6 +92,6 @@ public class VideoBuffer {
 
   /** Compares two frames returning percentage of pixels that are different. */
   public static float compareFrames(int[] frame1, int[] frame2, int width, int height) {
-    return MediaAPI.getInstance().compareFrames(frame1, frame2, width, height);
+    return MediaAPI.getInstance(array).compareFrames(frame1, frame2, width, height);
   }
 }

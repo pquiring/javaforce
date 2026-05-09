@@ -6,15 +6,17 @@ package javaforce.jni;
  */
 
 import javaforce.api.*;
+import javaforce.ffm.*;
 import javaforce.ui.*;
 
 public class UIJNI implements UIAPI {
 
   private static UIAPI api;
-  public static UIAPI getInstance() {
+  public static UIAPI getInstance(FFMArray array) {
     if (api == null) {
       api = new UIJNI();
     }
+    FFM.setFFMArray(array);
     return api;
   }
 

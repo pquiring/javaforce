@@ -84,7 +84,7 @@ public class JNI2FFM {
       src.append("  private FFM ffm;\n");
       src.append("\n");
       src.append("  private static " + cls_out + " instance;\n");
-      src.append("  public static " + cls_out + " getInstance() {\n");
+      src.append("  public static " + cls_out + " getInstance(FFMArray array) {\n");
       src.append("    if (instance == null) {\n");
       src.append("      instance = new " + cls_out + "();\n");
       src.append("      if (!instance.ffm_init()) {\n");
@@ -92,6 +92,7 @@ public class JNI2FFM {
       src.append("        instance = null;\n");
       src.append("      }\n");
       src.append("    }\n");
+      src.append("    FFM.setFFMArray(array);\n");
       src.append("    return instance;\n");
       src.append("  }\n");
       src.append("\n");
@@ -151,8 +152,7 @@ public class JNI2FFM {
         int before_invoke = method.length();
         if (!isRetVoid) {
           if (isRetArray) {
-            method.append("FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);");
-            arena_needed = true;
+            //nop
           } else {
             if (java_ret_type.equals("String")) {
               method.append("String _ret_value_ = FFM.getString((MemorySegment)");
@@ -166,12 +166,6 @@ public class JNI2FFM {
         boolean first_ctor = true;
         method.append(func_name);
         method.append(".invokeExact(");
-        if (!isRetVoid) {
-          if (isRetArray) {
-            first_method = false;
-            method.append("FFM.upcall_FFMArray_New" + capitalize(java_ret_type) + "Array");
-          }
-        }
 
         ctor2.append("    " + func_name + " = ffm.getFunctionPtr");
         ctor2.append("(\"_" + func_name + "\", ffm.getFunctionDesciptor");
@@ -183,11 +177,11 @@ public class JNI2FFM {
           }
           ctor2.append("(");
           if (isRetArray) {
-            ctor2.append("ADDRESS");  //FFMArray.getUpcall()
+            //nop
           } else {
             ctor2.append(ValueLayout_ret_type);
+            first_ctor = false;
           }
-          first_ctor = false;
         }
         ArrayList<String> array_names = new ArrayList<>();
         for(String pair : pairs) {
@@ -281,7 +275,7 @@ public class JNI2FFM {
             method.append("(");
             method.append(java_ret_type);
             method.append("[])");
-            method.append("_ret_value_.getArray()");
+            method.append("FFM.getArray()");
           } else {
             method.append("_ret_value_");
           }

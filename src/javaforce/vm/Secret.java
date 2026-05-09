@@ -8,8 +8,10 @@ package javaforce.vm;
  */
 
 import javaforce.api.*;
+import javaforce.ffm.*;
 
 public class Secret {
+  private static FFMArray array = new FFMArray();
   public static boolean create(String name, String passwd) {
     StringBuilder xml = new StringBuilder();
     xml.append("<secret ephemeral='yes' private='yes'>");
@@ -17,6 +19,6 @@ public class Secret {
     xml.append("<target>" + name + "</target>");
     xml.append("</usage>");
     xml.append("</secret>");
-    return VMAPI.getInstance().vmSecretCreate(xml.toString(), passwd);
+    return VMAPI.getInstance(array).vmSecretCreate(xml.toString(), passwd);
   }
 }

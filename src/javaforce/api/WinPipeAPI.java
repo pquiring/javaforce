@@ -11,7 +11,7 @@ import javaforce.jni.*;
 public interface WinPipeAPI {
   public static WinPipeAPI getInstance() {
     if (FFM.enabled()) {
-      return WinPipeFFM.getInstance();
+      return WinPipeFFM.getInstance(null);  //WinPipeFFM does not return arrays
     } else {
       return WinPipeJNI.getInstance();
     }

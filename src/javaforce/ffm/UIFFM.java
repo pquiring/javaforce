@@ -18,7 +18,7 @@ public class UIFFM implements UIAPI {
   private FFM ffm;
 
   private static UIFFM instance;
-  public static UIFFM getInstance() {
+  public static UIFFM getInstance(FFMArray array) {
     if (instance == null) {
       instance = new UIFFM();
       if (!instance.ffm_init()) {
@@ -26,6 +26,7 @@ public class UIFFM implements UIAPI {
         instance = null;
       }
     }
+    FFM.setFFMArray(array);
     return instance;
   }
 
@@ -33,16 +34,16 @@ public class UIFFM implements UIAPI {
   public int uiLoadFont(byte[] font,int ptSize,int[] fontinfo,int[] coords,int[] adv,int[] cps,byte[] pixels,int px,int py) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_font = FFM.toMemory(arena, font);MemorySegment _array_fontinfo = FFM.toMemory(arena, fontinfo);MemorySegment _array_coords = FFM.toMemory(arena, coords);MemorySegment _array_adv = FFM.toMemory(arena, adv);MemorySegment _array_cps = FFM.toMemory(arena, cps);MemorySegment _array_pixels = FFM.toMemory(arena, pixels);int _ret_value_ = (int)uiLoadFont.invokeExact(_array_font,ptSize,_array_fontinfo,_array_coords,_array_adv,_array_cps,_array_pixels,px,py);FFM.copyBack(_array_font,font);FFM.copyBack(_array_fontinfo,fontinfo);FFM.copyBack(_array_coords,coords);FFM.copyBack(_array_adv,adv);FFM.copyBack(_array_cps,cps);FFM.copyBack(_array_pixels,pixels);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle uiLoadPNG;
-  public int[] uiLoadPNG(byte[] data,int length,int[] dim) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);MemorySegment _array_dim = FFM.toMemory(arena, dim);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);uiLoadPNG.invokeExact(FFM.upcall_FFMArray_NewIntArray,_array_data,length,_array_dim);FFM.copyBack(_array_data,data);FFM.copyBack(_array_dim,dim);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] uiLoadPNG(byte[] data,int length,int[] dim) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);MemorySegment _array_dim = FFM.toMemory(arena, dim);uiLoadPNG.invokeExact(_array_data,length,_array_dim);FFM.copyBack(_array_data,data);FFM.copyBack(_array_dim,dim);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle uiSavePNG;
-  public byte[] uiSavePNG(int[] pixels,int width,int height) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_pixels = FFM.toMemory(arena, pixels);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);uiSavePNG.invokeExact(FFM.upcall_FFMArray_NewByteArray,_array_pixels,width,height);FFM.copyBack(_array_pixels,pixels);return (byte[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public byte[] uiSavePNG(int[] pixels,int width,int height) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_pixels = FFM.toMemory(arena, pixels);uiSavePNG.invokeExact(_array_pixels,width,height);FFM.copyBack(_array_pixels,pixels);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle uiLoadJPG;
-  public int[] uiLoadJPG(byte[] data,int length,int[] dim) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);MemorySegment _array_dim = FFM.toMemory(arena, dim);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);uiLoadJPG.invokeExact(FFM.upcall_FFMArray_NewIntArray,_array_data,length,_array_dim);FFM.copyBack(_array_data,data);FFM.copyBack(_array_dim,dim);return (int[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] uiLoadJPG(byte[] data,int length,int[] dim) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);MemorySegment _array_dim = FFM.toMemory(arena, dim);uiLoadJPG.invokeExact(_array_data,length,_array_dim);FFM.copyBack(_array_data,data);FFM.copyBack(_array_dim,dim);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle uiSaveJPG;
-  public byte[] uiSaveJPG(int[] pixels,int width,int height,int quality) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_pixels = FFM.toMemory(arena, pixels);FFMArray _ret_value_ = new FFMArray(); FFM.setFFMArray(_ret_value_);uiSaveJPG.invokeExact(FFM.upcall_FFMArray_NewByteArray,_array_pixels,width,height,quality);FFM.copyBack(_array_pixels,pixels);return (byte[])_ret_value_.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public byte[] uiSaveJPG(int[] pixels,int width,int height,int quality) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_pixels = FFM.toMemory(arena, pixels);uiSaveJPG.invokeExact(_array_pixels,width,height,quality);FFM.copyBack(_array_pixels,pixels);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle uiInit;
   public boolean uiInit() { try { boolean _ret_value_ = (boolean)uiInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -98,10 +99,10 @@ public class UIFFM implements UIAPI {
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
     uiLoadFont = ffm.getFunctionPtr("_uiLoadFont", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,ADDRESS,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
-    uiLoadPNG = ffm.getFunctionPtr("_uiLoadPNG", ffm.getFunctionDesciptorVoid(ADDRESS,ADDRESS,JAVA_INT,ADDRESS));
-    uiSavePNG = ffm.getFunctionPtr("_uiSavePNG", ffm.getFunctionDesciptorVoid(ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
-    uiLoadJPG = ffm.getFunctionPtr("_uiLoadJPG", ffm.getFunctionDesciptorVoid(ADDRESS,ADDRESS,JAVA_INT,ADDRESS));
-    uiSaveJPG = ffm.getFunctionPtr("_uiSaveJPG", ffm.getFunctionDesciptorVoid(ADDRESS,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT));
+    uiLoadPNG = ffm.getFunctionPtr("_uiLoadPNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
+    uiSavePNG = ffm.getFunctionPtr("_uiSavePNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
+    uiLoadJPG = ffm.getFunctionPtr("_uiLoadJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
+    uiSaveJPG = ffm.getFunctionPtr("_uiSaveJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT));
     uiInit = ffm.getFunctionPtr("_uiInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     uiWindowCreate = ffm.getFunctionPtr("_uiWindowCreate", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT,JAVA_LONG));
     uiWindowDestroy = ffm.getFunctionPtr("_uiWindowDestroy", ffm.getFunctionDesciptorVoid(JAVA_LONG));

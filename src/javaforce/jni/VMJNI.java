@@ -7,15 +7,17 @@ package javaforce.jni;
 
 import javaforce.webui.tasks.*;
 import javaforce.api.*;
+import javaforce.ffm.*;
 import javaforce.vm.*;
 
 public class VMJNI implements VMAPI {
 
   private static VMAPI api;
-  public static VMAPI getInstance() {
+  public static VMAPI getInstance(FFMArray array) {
     if (api == null) {
       api = new VMJNI();
     }
+    FFM.setFFMArray(array);
     return api;
   }
 
