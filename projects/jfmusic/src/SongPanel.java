@@ -2273,11 +2273,11 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
 //MediaCoderIO interface
 
-  public int read(MediaCoder coder, byte[] bytes) {
+  public int read(byte[] bytes) {
     return 0;
   }
 
-  public int write(MediaCoder coder, byte[] bytes) {
+  public int write(byte[] bytes) {
     try {
       exportFile.write(bytes);
     } catch (Exception e) {
@@ -2286,7 +2286,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     return bytes.length;
   }
 
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(long pos, int how) {
     try {
       switch (how) {
         case MediaCoder.SEEK_SET:
