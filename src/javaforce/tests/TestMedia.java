@@ -219,7 +219,7 @@ public class TestMedia implements MediaIO {
     raf = null;
   }
 
-  public int read(MediaCoder coder, byte[] data) {
+  public int read(byte[] data) {
     try {
       return raf.read(data);
     } catch (Exception e) {
@@ -230,7 +230,7 @@ public class TestMedia implements MediaIO {
 
   public long size;
 
-  public int write(MediaCoder coder, byte[] data) {
+  public int write(byte[] data) {
     try {
       size += data.length;
       raf.write(data);
@@ -241,7 +241,7 @@ public class TestMedia implements MediaIO {
     }
   }
 
-  public long seek(MediaCoder coder, long pos, int type) {
+  public long seek(long pos, int type) {
     try {
       switch (type) {
         case MediaCoder.SEEK_SET:

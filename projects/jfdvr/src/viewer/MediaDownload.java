@@ -89,7 +89,7 @@ public class MediaDownload extends javax.swing.JDialog implements MediaIO {
   private RandomAccessFile raf;
   private Viewer viewer;
   private boolean complete;
-  public int read(MediaCoder coder, byte data[]) {
+  public int read(byte data[]) {
     try {
       return raf.read(data);
     } catch (Exception e) {
@@ -97,7 +97,7 @@ public class MediaDownload extends javax.swing.JDialog implements MediaIO {
       return 0;
     }
   }
-  public int write(MediaCoder coder, byte data[]) {
+  public int write(byte data[]) {
     try {
       raf.write(data);
       return data.length;
@@ -106,7 +106,7 @@ public class MediaDownload extends javax.swing.JDialog implements MediaIO {
       return 0;
     }
   }
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(long pos, int how) {
     try {
       switch (how) {
         case MediaCoder.SEEK_SET: raf.seek(pos); break;

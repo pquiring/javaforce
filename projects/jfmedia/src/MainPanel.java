@@ -970,7 +970,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       decoder = null;
       JFLog.log("read thread exit");
     }
-    public int read(MediaCoder coder, byte data[]) {
+    public int read(byte data[]) {
       int read = 0;
       try {
         read = raf.read(data, 0, data.length);
@@ -981,11 +981,11 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       if (read == -1) read = 0;
       return read;
     }
-    public int write(MediaCoder coder, byte data[]) {
+    public int write(byte data[]) {
 //    jfmedia does not create media files
       return 0;
     }
-    public long seek(MediaCoder coder, long pos, int how) {
+    public long seek(long pos, int how) {
       long opos = pos;
       try {
         switch (how) {
@@ -1328,7 +1328,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     }
 
     //interface MediaIO
-    public int read(MediaCoder coder, byte data[]) {
+    public int read(byte data[]) {
       int read = 0;
       try {
         //TODO : read network data
@@ -1339,11 +1339,11 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       if (read == -1) read = 0;
       return read;
     }
-    public int write(MediaCoder coder, byte data[]) {
+    public int write(byte data[]) {
       //jfmedia does not create media files
       return 0;
     }
-    public long seek(MediaCoder coder, long pos, int how) {
+    public long seek(long pos, int how) {
       return -1;
     }
 

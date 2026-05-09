@@ -994,11 +994,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   }
 
   //MediaIO interface
-  public int read(MediaCoder coder, byte[] bytes) {
+  public int read(byte[] bytes) {
     return 0;
   }
 
-  public int write(MediaCoder coder, byte[] bytes) {
+  public int write(byte[] bytes) {
     try {
       raf.write(bytes);
       return bytes.length;
@@ -1008,7 +1008,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     }
   }
 
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(long pos, int how) {
     try {
       switch (how) {
         case MediaCoder.SEEK_SET: break;

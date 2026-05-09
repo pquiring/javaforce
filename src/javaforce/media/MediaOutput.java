@@ -35,22 +35,22 @@ public class MediaOutput extends MediaFormat implements MediaIO {
   }
 
   private MediaIO io;
-  public int read(MediaCoder coder, byte[] data) {
-    int size = io.read(coder, data);
+  public int read(byte[] data) {
+    int size = io.read(data);
     if (debug) {
       JFLog.log("read:" + size);
     }
     return size;
   }
-  public int write(MediaCoder coder, byte[] data) {
-    int size = io.write(coder, data);
+  public int write(byte[] data) {
+    int size = io.write(data);
     if (debug) {
       JFLog.log("write:" + size);
     }
     return size;
   }
-  public long seek(MediaCoder coder, long pos, int how) {
-    long newpos = io.seek(coder, pos, how);
+  public long seek(long pos, int how) {
+    long newpos = io.seek(pos, how);
     if (debug) {
       JFLog.log("seek:" + newpos);
     }

@@ -529,7 +529,7 @@ public class FFM {
     MediaIO instance = MediaIOBin.get();
     if (instance == null) return -1;
     byte[] byteArray = new byte[size];
-    int read = instance.read(null, byteArray);
+    int read = instance.read(byteArray);
     if (read > 0) {
       MemorySegment.copy(byteArray, 0, data.reinterpret(read), JAVA_BYTE, 0, read);
     }
@@ -540,13 +540,13 @@ public class FFM {
     MediaIO instance = MediaIOBin.get();
     if (instance == null) return -1;
     byte[] byteArray = data.reinterpret(size).asSlice(0, size).toArray(JAVA_BYTE);
-    return instance.write(null, byteArray);
+    return instance.write(byteArray);
   }
 
   private static long MediaIO_seek(long pos, int how) {
     MediaIO instance = MediaIOBin.get();
     if (instance == null) return -1;
-    return instance.seek(null, pos, how);
+    return instance.seek(pos, how);
   }
 
   private static ThreadLocal<FolderListener> FolderListenerBin = new ThreadLocal<>();

@@ -45,7 +45,7 @@ public class Element implements MediaIO {
     fx = "";
   }
 
-  public int read(MediaCoder coder, byte[] bytes) {
+  public int read(byte[] bytes) {
     try {
       return raf.read(bytes, 0, bytes.length);
     } catch (Exception e) {
@@ -54,7 +54,7 @@ public class Element implements MediaIO {
     return 0;
   }
 
-  public int write(MediaCoder coder, byte[] bytes) {
+  public int write(byte[] bytes) {
     try {
       return raf.read(bytes, 0, bytes.length);
     } catch (Exception e) {
@@ -63,7 +63,7 @@ public class Element implements MediaIO {
     return 0;
   }
 
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(long pos, int how) {
     try {
       switch (how) {
         case MediaCoder.SEEK_SET: break;  //seek set

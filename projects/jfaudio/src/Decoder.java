@@ -51,36 +51,30 @@ public class Decoder implements MediaIO {
     }
   }
 
-  public int read(MediaCoder coder, byte[] bytes) {
-    if (coder == decoder) {
-      try {
-        return fin.read(bytes, 0, bytes.length);
-      } catch (Exception e) {
-        JFLog.log(e);
-        return 0;
-      }
-    }
-    return 0;
-  }
-
-  public int write(MediaCoder coder, byte[] bytes) {
-    return 0;
-  }
-
-  public long seek(MediaCoder coder, long pos, int how) {
-    if (coder == decoder) {
-      try {
-        switch (how) {
-          case MediaCoder.SEEK_SET: break;
-          case MediaCoder.SEEK_CUR: pos += fin.getFilePointer(); break;
-          case MediaCoder.SEEK_END: pos += fin.length(); break;
-        }
-        fin.seek(pos);
-        return pos;
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
+  public int read(byte[] bytes) {
+    try {
+      return fin.read(bytes, 0, bytes.length);
+    } catch (Exception e) {
+      JFLog.log(e);
       return 0;
+    }
+  }
+
+  public int write(byte[] bytes) {
+    return 0;
+  }
+
+  public long seek(long pos, int how) {
+    try {
+      switch (how) {
+        case MediaCoder.SEEK_SET: break;
+        case MediaCoder.SEEK_CUR: pos += fin.getFilePointer(); break;
+        case MediaCoder.SEEK_END: pos += fin.length(); break;
+      }
+      fin.seek(pos);
+      return pos;
+    } catch (Exception e) {
+      JFLog.log(e);
     }
     return 0;
   }

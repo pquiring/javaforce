@@ -535,7 +535,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
   public TrackPanel dragTrack, dragSrcTrack;
   private CameraPanel camera;
 
-  public int read(MediaCoder coder, byte[] bytes) {
+  public int read(byte[] bytes) {
     int read = 0;
     try {
       read = raf.read(bytes, 0, bytes.length);
@@ -546,7 +546,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     return read;
   }
 
-  public int write(MediaCoder coder, byte[] bytes) {
+  public int write(byte[] bytes) {
     try {
       raf.write(bytes, 0, bytes.length);
     } catch (Exception e) {
@@ -556,7 +556,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     return bytes.length;
   }
 
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(long pos, int how) {
     try {
       switch (how) {
         case MediaCoder.SEEK_SET: break;  //seek set

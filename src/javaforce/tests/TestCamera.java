@@ -272,7 +272,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   //MediaIO
 
-  public int read(MediaCoder coder, byte[] data) {
+  public int read(byte[] data) {
     JFLog.log("read:" + data.length);
     return -1;
   }
@@ -285,7 +285,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     moof / mdat = frame
   */
 
-  public int write(MediaCoder coder, byte[] data) {
+  public int write(byte[] data) {
     JFLog.log("dash.write:" + data.length + ":" + getCurrentTime());
     boolean is_init = init_segment == null;
     boolean is_start_segment = false;
@@ -332,7 +332,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     return data.length;
   }
 
-  public long seek(MediaCoder coder, long pos, int type) {
+  public long seek(long pos, int type) {
     JFLog.log("seek:" + pos + "," + type);
     return pos;
   }

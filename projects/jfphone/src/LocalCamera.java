@@ -279,11 +279,11 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
   private MediaOutput encoder;
   private MediaVideoEncoder video;
 
-  public int read(MediaCoder coder, byte[] bytes) {
+  public int read(byte[] bytes) {
     return 0;
   }
 
-  public int write(MediaCoder coder, byte[] bytes) {
+  public int write(byte[] bytes) {
     int len = bytes.length;
     if (codec.name.equals("H263")) {
       //        printArray("encoded_h263", bytes, 0, bytes.length);
@@ -324,7 +324,7 @@ public class LocalCamera extends Thread implements MediaIO, PacketReceiver {
     return len;
   }
 
-  public long seek(MediaCoder coder, long l, int i) {
+  public long seek(long pos, int how) {
     return 0;
   }
 

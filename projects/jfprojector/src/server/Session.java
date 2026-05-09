@@ -166,7 +166,7 @@ public class Session {
       decoder = null;
       inuse = false;
     }
-    public int read(MediaCoder coder, byte data[]) {
+    public int read(byte data[]) {
       int read = 0;
       try {
         read = is.read(data, 0, data.length);
@@ -181,10 +181,10 @@ public class Session {
       }
       return read;
     }
-    public int write(MediaCoder coder, byte data[]) {
+    public int write(byte data[]) {
       return 0;
     }
-    public long seek(MediaCoder coder, long pos, int how) {
+    public long seek(long pos, int how) {
       switch (how) {
         case MediaCoder.SEEK_SET: return pos;
         case MediaCoder.SEEK_CUR: return pos;

@@ -19,19 +19,19 @@ public class MediaTest implements MediaIO {
     try { raf = new RandomAccessFile("test.mp4", "rw"); } catch (Exception e) {}
   }
 
-  public int read(MediaCoder coder, byte[] buffer) {
+  public int read(byte[] buffer) {
     JFLog.log("read:" + buffer.length);
     return -1;
   }
 
-  public int write(MediaCoder coder, byte[] buffer) {
+  public int write(byte[] buffer) {
     long pos = 0;
     try { pos=raf.getFilePointer(); raf.write(buffer); } catch (Exception e) {}
     JFLog.log("write:" + buffer.length + "@" + pos);
     return buffer.length;
   }
 
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(long pos, int how) {
     JFLog.log("seek:" + pos + ":" + how);
     long newpos = 0;
     try {
