@@ -522,6 +522,7 @@ static jboolean encoder_start(FFContext *ctx, const char *format, jint video_cod
   return JNI_TRUE;
 }
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstart
   (JNIEnv *e, jobject c, jobject mio, jint width, jint height, jint fps, jint chs, jint freq, jstring format, jint video_codec, jint audio_codec)
 {
@@ -649,6 +650,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_nstartFile
 
   return ret;
 }
+*/
 
 static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
@@ -766,6 +768,7 @@ static jboolean encoder_addAudio(FFContext *ctx, short *sams, int offset, int le
   return ok;
 }
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
   (JNIEnv *e, jobject c, jshortArray sams, jint offset, jint length)
 {
@@ -784,6 +787,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
 
   return ok;
 }
+*/
 
 static jboolean encoder_addVideo(FFContext *ctx, int *px)
 {
@@ -826,6 +830,7 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
   return JNI_TRUE;
 }
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
   (JNIEnv *e, jobject c, jintArray px)
 {
@@ -860,6 +865,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaEncoder_getLastPTS
   if (ctx == NULL) return 0;
   return ctx->last_pts;
 }
+*/
 
 static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size, jboolean ts, jlong dts, jlong pts) {
   (*_av_init_packet)(ctx->pkt);
@@ -886,6 +892,7 @@ static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size, 
   return ret == 0;
 }
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncoded
   (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length)
 {
@@ -919,6 +926,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncodedTS
 
   return ok;
 }
+*/
 
 static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame, jboolean ts, jlong dts, jlong pts) {
   (*_av_init_packet)(ctx->pkt);
@@ -949,6 +957,7 @@ static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, 
   return ret == 0;
 }
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
   (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jboolean key_frame)
 {
@@ -992,6 +1001,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaEncoder_getAudioFramesize
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->frame_size;
 }
+*/
 
 static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStream *stream, jboolean endOfStream) {
   (*_av_init_packet)(ctx->pkt);
@@ -1021,6 +1031,7 @@ static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStrea
   return JNI_TRUE;
 }
 
+/*
 JNIEXPORT void JNICALL Java_javaforce_media_MediaEncoder_flush
   (JNIEnv *e, jobject c)
 {
@@ -1039,6 +1050,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaEncoder_flush
     }
   }
 }
+*/
 
 static void encoder_stop(FFContext *ctx)
 {
@@ -1120,6 +1132,7 @@ static void encoder_stop(FFContext *ctx)
   }
 }
 
+/*
 JNIEXPORT void JNICALL Java_javaforce_media_MediaEncoder_stop
   (JNIEnv *e, jobject c)
 {
@@ -1128,3 +1141,4 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaEncoder_stop
   encoder_stop(ctx);
   deleteFFContext(e,c,ctx);
 }
+*/

@@ -137,6 +137,7 @@ static jboolean decoder_alloc_packet(FFContext *ctx) {
  * NOTE : Audio output is always 16bit
  */
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   (JNIEnv *e, jobject c, jobject mio, jint new_width, jint new_height, jint new_chs, jint new_freq, jboolean seekable)
 {
@@ -180,6 +181,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
 
   return JNI_TRUE;
 }
+*/
 
 /**
  * Alternative start that works with files.
@@ -189,6 +191,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
  * NOTE:format may be NULL
  */
 
+/*
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
   (JNIEnv *e, jobject c, jstring file, jstring format, jint new_width, jint new_height, jint new_chs, jint new_freq)
 {
@@ -291,8 +294,10 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
   }
   deleteFFContext(e,c,ctx);
 }
+*/
 
 /** Reads next frame in stream and returns what type it was : AUDIO_FRAME, VIDEO_FRAME, NULL_FRAME or END_FRAME */
+/*
 JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   (JNIEnv *e, jobject c)
 {
@@ -481,10 +486,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_seek
 
   //AV_TIME_BASE is 1000000fps
   seconds *= AV_TIME_BASE;
-/*
-  int ret = avformat.avformat_seek_file(fmt_ctx, -1
-    , seconds - AV_TIME_BASE_PARTIAL, seconds, seconds + AV_TIME_BASE_PARTIAL, 0);
-*/
+//  int ret = avformat.avformat_seek_file(fmt_ctx, -1, seconds - AV_TIME_BASE_PARTIAL, seconds, seconds + AV_TIME_BASE_PARTIAL, 0);
   int ret = (*_av_seek_frame)(ctx->fmt_ctx, -1, seconds, 0);
   if (ret < 0) {
     printf("MediaDecoder:av_seek_frame() failed : %d\n", ret);
@@ -557,3 +559,4 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_resize
 
   return JNI_TRUE;
 }
+*/
