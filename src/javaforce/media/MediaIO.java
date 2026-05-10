@@ -2,6 +2,8 @@ package javaforce.media;
 
 /** Interface for reading/writing files for media coders.
  *
+ * NOTE : These methods must NOT invoke other "native" APIs.
+ *
  * @author pquiring
  */
 

@@ -8,7 +8,7 @@ The resulting performance is poor (the DVR app is unable to keep up with viewing
 There is a linker option called critical that allows native code to use the Java Heap (know as pinning) but upcalls are not supported
 in critical methods which makes this option useless (attempts to use upcalls results in JVM crash).
 
-JF approach is to use JNI to pin arrays to avoid the excess copying back and forth to maintain acceptable performance.
+JF uses a hybrid approach by using JNI to pin arrays to avoid the excess copying back and forth to maintain acceptable performance.
 
 Maybe the Valhalla project and value types may offer better performance in the future but still have no idea how Valhalla will work with the native systems (FFM/JNI).
 See valhalla.txt for more info.
@@ -16,4 +16,4 @@ See valhalla.txt for more info.
 Notes:
   - FFM upcalls (allows C code to call Java) are somewhat expensive so instead of creating them for each native invocation static upcalls are used instead
     - in order for static upcalls to call virtual methods ThreadLocal storage is used to track which object invoked the native method
-    - one caveat to this is that callback methods can NOT call another native method
+    - one caveat to this is that callback methods can NOT call another native method (such as methods in MediaIO, FolderListener, UIEvents)
