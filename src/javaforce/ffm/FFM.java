@@ -501,6 +501,12 @@ public class FFM {
     return instance.NewFloatArray(size);
   }
 
+  private static long FFMArray_NewDoubleArray(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewDoubleArray(size);
+  }
+
   private static long FFMArray_NewStringArray(int size) {
     FFMArray instance = FFMArrayBin.get();
     if (instance == null) return -1;
@@ -587,6 +593,7 @@ public class FFM {
   public static MemorySegment upcall_FFMArray_NewIntArray;
   public static MemorySegment upcall_FFMArray_NewLongArray;
   public static MemorySegment upcall_FFMArray_NewFloatArray;
+  public static MemorySegment upcall_FFMArray_NewDoubleArray;
   public static MemorySegment upcall_FFMArray_NewStringArray;
   public static MemorySegment upcall_FFMArray_SetStringElement;
 
@@ -619,6 +626,7 @@ public class FFM {
     upcall_FFMArray_NewIntArray = getFunctionUpCallStatic(cls, "FFMArray_NewIntArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewLongArray = getFunctionUpCallStatic(cls, "FFMArray_NewLongArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewFloatArray = getFunctionUpCallStatic(cls, "FFMArray_NewFloatArray", long.class, new Class[] {int.class}, global);
+    upcall_FFMArray_NewDoubleArray = getFunctionUpCallStatic(cls, "FFMArray_NewDoubleArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewStringArray = getFunctionUpCallStatic(cls, "FFMArray_NewStringArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_SetStringElement = getFunctionUpCallStatic(cls, "FFMArray_SetStringElement", void.class, new Class[] {int.class, MemorySegment.class}, global);
 
@@ -630,6 +638,7 @@ public class FFM {
       upcall_FFMArray_NewIntArray,
       upcall_FFMArray_NewLongArray,
       upcall_FFMArray_NewFloatArray,
+      upcall_FFMArray_NewDoubleArray,
       upcall_FFMArray_NewStringArray,
       upcall_FFMArray_SetStringElement,
     });

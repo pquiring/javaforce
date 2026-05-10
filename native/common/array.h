@@ -18,6 +18,7 @@ struct FFMArray {
   jint* (*newIntArray)(int size);
   jlong* (*newLongArray)(int size);
   jfloat* (*newFloatArray)(int size);
+  jdouble* (*newDoubleArray)(int size);
   jstringArray (*newStringArray)(int size);
   void (*setString)(int idx, const char* str);
 } *ffm;
@@ -52,6 +53,7 @@ JNIArray(Byte,jbyte,"Byte")
 JNIArray(Short,jshort,"Short")
 JNIArray(Int,jint,"Int")
 JNIArray(Float,jfloat,"Float")
+JNIArray(Double,jdouble,"Double")
 
 //special String instance
 

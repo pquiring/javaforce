@@ -78,6 +78,16 @@ public class FFMArray {
     return pin();
   }
 
+  private double[] da;
+  public long NewDoubleArray(int size) {
+    if (ptr != 0) unpin();
+    if (da == null || da.length != size) {
+      da = new double[size];
+    }
+    ref = da;
+    return pin();
+  }
+
   private String[] Sa;
   public long NewStringArray(int size) {
     if (ptr != 0) unpin();
