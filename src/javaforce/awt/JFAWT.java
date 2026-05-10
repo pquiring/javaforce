@@ -34,6 +34,12 @@ public class JFAWT {
     }
   }
 
+  /** Creates a JFrame with desired size and position.
+   * @param title = Window title
+   * @param x,y = position of window
+   * @param w,h = size of client area within window
+   * @param lm = LayoutManager
+   */
   public static JFrame createJFrame(String title, int x, int y, int w, int h, LayoutManager lm) {
     //NOTE : When you add components, you must validate() the frame
     JFrame frame = new JFrame(title);
@@ -48,6 +54,7 @@ public class JFAWT {
     return frame;
   }
 
+  /** Creates JPanel that will fill parent container. */
   public static JPanel createJPanel(LayoutManager lm, Container parent) {
     JPanel ret = new JPanel();
     ret.setLayout(lm);
@@ -61,6 +68,7 @@ public class JFAWT {
     return ret;
   }
 
+  /** Creates JPanel with size and position within container. */
   public static JPanel createJPanel(int x, int y, int w, int h, LayoutManager lm, Container parent) {
     JPanel ret = new JPanel();
     ret.setLayout(lm);
@@ -72,6 +80,7 @@ public class JFAWT {
     return ret;
   }
 
+  /** Creates JFImage that will fill parent container. */
   public static JFImage createJFImage(Container parent) {
     JFImage ret = new JFImage();
     if (parent != null) {
@@ -81,6 +90,7 @@ public class JFAWT {
     return ret;
   }
 
+  /** Creates JFImage with size and position within container. */
   public static JFImage createJFImage(int x, int y, int w, int h, Container parent) {
     JFImage ret = new JFImage();
     ret.setBounds(x, y, w, h);
@@ -156,25 +166,31 @@ public class JFAWT {
     return ret;
   }
 
+  /** Show a message with title. */
   public static void showMessage(String title, String msg) {
     JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
   }
 
+  /** Show error message with title. */
   public static void showError(String title, String msg) {
     JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE);
   }
 
+  /** Popup dialog that allows String input. */
   public static String getString(String msg, String str) {
     return JOptionPane.showInputDialog(null, msg, str);
   }
 
+  /** Show confirmation popup with message and title (OK, CANCEL). */
   public static boolean showConfirm(String title, String msg) {
     return JOptionPane.showConfirmDialog(null, msg, title, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION;
   }
+
   public static final int YES = JOptionPane.YES_OPTION;
   public static final int NO = JOptionPane.NO_OPTION;
   public static final int CANCEL = JOptionPane.CANCEL_OPTION;
 
+  /** Show confirmation popup with message and title that includes 3 options (YES, NO, CANCEL). */
   public static final int showConfirm3(String title, String msg) {
     return JOptionPane.showConfirmDialog(null, msg, title, JOptionPane.YES_NO_CANCEL_OPTION);
   }
@@ -320,6 +336,7 @@ public class JFAWT {
     showMessage("Donate", "If you find this program useful,\nplease send $5 US or more via Paypal to pquiring@gmail.com\nThanks!");
   }
 
+  /** Show open file dialog with init path. */
   public static String getOpenFile(String path) {
     return getOpenFile(path, null);
   }
@@ -328,7 +345,7 @@ public class JFAWT {
    *
    * @param path = init path
    * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
-   * @return
+   * @return selected file (null = cancel)
    */
   public static String getOpenFile(String path, String[][] filters) {
     JFileChooser chooser = new JFileChooser();
@@ -349,6 +366,7 @@ public class JFAWT {
     }
   }
 
+  /** Show save file dialog with init path. */
   public static String getSaveFile(String file) {
     return getSaveFile(file, null);
   }
@@ -357,7 +375,7 @@ public class JFAWT {
    *
    * @param file = init file
    * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
-   * @return
+   * @return selected file (null = cancel)
    */
   public static String getSaveFile(String file, String[][] filters) {
     JFileChooser chooser = new JFileChooser();
@@ -386,15 +404,16 @@ public class JFAWT {
     }
   }
 
+  /** Show save file as dialog with init path. */
   public static String getSaveAsFile(String path) {
     return getSaveAsFile(path, null);
   }
 
-  /** Show save file dialog.
+  /** Show save file as dialog.
    *
    * @param path = init path
    * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
-   * @return
+   * @return selected file (null = cancel)
    */
   public static String getSaveAsFile(String path, String[][] filters) {
     JFileChooser chooser = new JFileChooser();
@@ -422,6 +441,7 @@ public class JFAWT {
     }
   }
 
+  /** Show select folder dialog with init path. */
   public static String getOpenFolder(String path) {
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -434,6 +454,7 @@ public class JFAWT {
     }
   }
 
+  /** Change LAF to Metal theme. */
   public static void setMetalLAF() {
     try {
       javax.swing.UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -459,13 +480,6 @@ public class JFAWT {
     return device.getDisplayMode().getWidth() / (double) device.getDefaultConfiguration().getBounds().width;
   }
 
-  public static void main(String[] args) {
-    while (true) {
-      System.out.println("scaling=" + getScaling());
-      JF.sleep(1000);
-    }
-  }
-
   /** Loads font config for graal apps. */
   public static void loadFontConfig() {
     try {
@@ -489,6 +503,7 @@ public class JFAWT {
     }
   }
 
+  /** Creates empty Set of AWTKeyStoke. */
   public static Set<? extends AWTKeyStroke> emptyKeys() {
     HashSet<AWTKeyStroke> list = new HashSet<>();
     return list;
