@@ -230,7 +230,7 @@ public class FFM {
    * UpCalls are EXPENSIVE and should be limited.
    * The JVM tries to cache them and holds on to them for a while causing performance issues.
    */
-  public static MemorySegment getFunctionUpCall_404(Object obj, String method, Class ret, Class[] args, Arena arena) {
+  public static MemorySegment getFunctionUpCall(Object obj, String method, Class ret, Class[] args, Arena arena) {
     MethodType mt;
     MethodHandle mh, bmh;
     MethodHandles.Lookup lookup = MethodHandles.lookup();

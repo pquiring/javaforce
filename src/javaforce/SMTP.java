@@ -399,7 +399,7 @@ public class SMTP {
   /** Sends an enhanced message in html format with headers and optional attachments.
    * Text message is generated automatically.
    *
-   * @param html = body of message in HTML format
+   * @param body_html = body of message in HTML format
    * @param attachments = files to attach
    */
   public boolean data(String body_html, Attachment[] attachments) throws Exception {

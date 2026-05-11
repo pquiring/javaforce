@@ -1,5 +1,11 @@
 What's new...
 
+May 11/2026 : JF/106.0
+  - new : FFM is back and enabled by default
+    - performance issues have been resolved
+    - JNI is used to pin arrays instead of copying to/from native heap
+    - see docs/ffm.txt for more info
+
 Apr 25/2026 : JF/105.0
   - new : ThreadQueue now uses a thread pool
   - new : DBus uses ThreadQueue to process inbound calls for better performance
