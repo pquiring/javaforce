@@ -20,19 +20,29 @@ public class SMTP {
     /** attachment content */
     public byte[] data;
 
-    public static Attachment readFile(String fn) {
+    public static Attachment readStream(InputStream fis, String filename) {
       try {
         Attachment attach = new Attachment();
-        FileInputStream fis = new FileInputStream(fn);
         attach.data = fis.readAllBytes();
-        fis.close();
-        fn = fn.replaceAll("\\\\", "/");
-        int idx = fn.lastIndexOf('/');
+        filename = filename.replaceAll("\\\\", "/");
+        int idx = filename.lastIndexOf('/');
         if (idx == -1) {
-          attach.name = fn;
+          attach.name = filename;
         } else {
-          attach.name = fn.substring(idx + 1);
+          attach.name = filename.substring(idx + 1);
         }
+        return attach;
+      } catch (Exception e) {
+        JFLog.log(log, e);
+        return null;
+      }
+    }
+
+    public static Attachment readFile(String fn) {
+      try {
+        FileInputStream fis = new FileInputStream(fn);
+        Attachment attach = readStream(fis, fn);
+        fis.close();
         return attach;
       } catch (Exception e) {
         JFLog.log(log, e);
