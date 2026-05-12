@@ -10,6 +10,7 @@ import java.util.*;
 
 import javax.servlet.*;
 
+import javaforce.service.*;
 
 public class HttpServletRequestImpl implements HttpServletRequest {
   private HashMap<String, Object> req;
@@ -104,5 +105,16 @@ public class HttpServletRequestImpl implements HttpServletRequest {
 
   public HttpSession getSession() {
     return session;
+  }
+
+  public Part getPart(String name) {
+    WebFile[] files = (WebFile[])req.get("files");
+    if (files == null) return null;
+    for(WebFile file : files) {
+      if (file.name.equalsIgnoreCase(name)) {
+        return new PartImpl(file);
+      }
+    }
+    return null;
   }
 }

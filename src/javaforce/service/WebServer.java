@@ -161,7 +161,7 @@ public class WebServer {
               res.setStatus(501, "Error - Uploads disabled");
             } else {
               WebUpload upload = new WebUpload();
-              upload.processRequest(req, upload_folder);
+              req.files = upload.processRequest(req, upload_folder);
             }
           }
           else if (req.fields0[0].equals("GET")) {

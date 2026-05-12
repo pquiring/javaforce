@@ -22,6 +22,7 @@ public class WebRequest {
   public int serverPort, remotePort;
   public String method;
   public HTTP.Parameters params;
+  public WebFile[] files;
   public boolean secure;
 
   public static class Session {
@@ -148,6 +149,16 @@ public class WebRequest {
     return params.get(name);
   }
 
+  public WebFile getPart(String name) {
+    if (files == null) return null;
+    for(WebFile file : files) {
+      if (file.name.equalsIgnoreCase(name)) {
+        return file;
+      }
+    }
+    return null;
+  }
+
   /** Reads and returns POST data. */
   public byte[] getData() {
     String method = getMethod();
@@ -180,6 +191,7 @@ public class WebRequest {
     map.put("URL", getURL());
     map.put("Method", getMethod());
     map.put("session", session.props);
+    map.put("files", files);
     return map;
   }
 };

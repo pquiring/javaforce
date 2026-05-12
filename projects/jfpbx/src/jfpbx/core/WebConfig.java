@@ -954,7 +954,7 @@ public class WebConfig implements WebHandler {
         if (WebUpload.isMultipartContent(req)) {
           String dirName = Paths.sounds + Paths.lang + "/";
           WebUpload webUpload = new WebUpload();
-          WebUpload.WebFile files[] = webUpload.processRequest(req, dirName);
+          WebFile[] files = webUpload.processRequest(req, dirName);
           JFLog.log("files=" + files.length);
           for(int a=0;a<files.length;a++) {
             String fileName = files[a].name;

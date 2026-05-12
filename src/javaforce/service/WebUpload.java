@@ -27,20 +27,6 @@ public class WebUpload {
     return (contentType.trim().startsWith("multipart/form-data;"));
   }
 
-  /** Uploaded file. */
-  public static class WebFile {
-    /** Uploaded file. */
-    public File file;
-    /** Name of file (excluding any path info) */
-    public String name;
-    /** Moves uploaded file to dest file. (optional) */
-    public boolean move(File dest) throws Exception {
-      if (dest.exists()) return false;
-      return JF.moveFile(file, dest);
-    }
-    public String getName() {return name;}
-  }
-
   private static long maxlength = 64 * JF.MB;  //64MBs
   /** Sets max file upload (-1 = unlimited) (default = 64MBs) */
   public static void setMaxLength(long maxlength) {
@@ -60,6 +46,7 @@ public class WebUpload {
   public WebFile[] processRequest(WebRequest req, String out_folder) {
     String file_size = null;
     Status status = null;
+    String file_content_type = null;
     OutputStream fos = null;
     try {
       //Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...
@@ -195,6 +182,10 @@ public class WebUpload {
               file_size = p_value;
               break;
             }
+            case "Content-Type": {
+              file_content_type = p_value;
+              break;
+            }
           }
         }
         int type = 0;
@@ -221,6 +212,7 @@ public class WebUpload {
           WebFile uploadFile = new WebFile();
           uploadFile.name = cd_filename;
           uploadFile.file = new File(out_folder + "/" + cd_filename);
+          uploadFile.contentType = file_content_type;
           files.add(uploadFile);
           fos = new FileOutputStream(uploadFile.file);
           if (status != null) {
