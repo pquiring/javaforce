@@ -9,6 +9,7 @@ There is a linker option called critical that allows native code to use the Java
 in critical methods which makes this option useless (attempts to use upcalls results in JVM crash).
 
 JF uses a hybrid approach by using JNI to pin arrays to avoid the excess copying back and forth to maintain acceptable performance.
+This method has been tested with Adoptium, OpenJ9 and Zula JVMs.
 
 Maybe the Valhalla project and value types may offer better performance in the future but still have no idea how Valhalla will work with the native systems (FFM/JNI).
 See valhalla.txt for more info.
