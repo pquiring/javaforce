@@ -107,6 +107,18 @@ public class HttpServletRequestImpl implements HttpServletRequest {
     return session;
   }
 
+  public Collection<Part> getParts() {
+    WebFile[] files = (WebFile[])req.get("files");
+    if (files == null) return null;
+    int length = files.length;
+    Part[] parts = new Part[length];
+    for(int i=0;i<length;i++) {
+      WebFile file = files[i];
+      parts[i] = new PartImpl(file);
+    }
+    return Arrays.asList(parts);
+  }
+
   public Part getPart(String name) {
     WebFile[] files = (WebFile[])req.get("files");
     if (files == null) return null;
