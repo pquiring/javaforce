@@ -29,29 +29,6 @@ public class Container extends Component {
       get(a).events();
     }
   }
-  /** Get Component by user assigned name. */
-  @Deprecated
-  public Component getComponent(String name) {
-    String this_name = getName();
-    if (this_name != null && this_name.equals(name)) {
-      return this;
-    }
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      Component child = get(a);
-      if (child instanceof Container) {
-        Container container = (Container)child;
-        child = container.getComponent(name);
-        if (child != null) return child;
-      } else {
-        String child_name = child.getName();
-        if (child_name != null && child_name.equals(name)) {
-          return child;
-        }
-      }
-    }
-    return null;
-  }
   private ArrayList<Component> components = new ArrayList<Component>();
   public Component get(int idx) {
     return components.get(idx);

@@ -34,26 +34,26 @@ public class Events {
     switch (func) {
       case "showMenu": {
         if (client.getProperty("user") == null) {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
+          PopupPanel panel = context.jfc_login;
           panel.setVisible(true);
         } else {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
+          PopupPanel panel = context.jfc_menu;
           panel.setVisible(true);
         }
         break;
       }
       case "jfc_error_ok": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error");
+        PopupPanel panel = context.jfc_error;
         panel.setVisible(false);
         break;
       }
       case "jfc_error_textarea_ok": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error_textarea");
+        PopupPanel panel = context.jfc_error_textarea;
         panel.setVisible(false);
         break;
       }
       case "jfc_confirm_ok": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
+        PopupPanel panel = context.jfc_confirm;
         panel.setVisible(false);
         String action = (String)client.getProperty("action");
         arg = (String)client.getProperty("arg");
@@ -128,20 +128,20 @@ public class Events {
         break;
       }
       case "jfc_confirm_cancel": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
+        PopupPanel panel = context.jfc_confirm;
         panel.setVisible(false);
         break;
       }
       case "jfc_logout": {
         client.setProperty("user", null);
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
+        PopupPanel panel = context.jfc_menu;
         panel.setVisible(false);
         client.setPanel(Panels.getPanel("usr_Main", client));
         break;
       }
       case "jfc_login_ok": {
-        String user = ((TextField)client.getPanel().getComponent("user")).getText();
-        String pass = ((TextField)client.getPanel().getComponent("password")).getText();
+        String user = ((TextField)context.getComponent("user")).getText();
+        String pass = ((TextField)context.getComponent("password")).getText();
         UserRow data[] = Database.users.getRows().toArray(new UserRow[0]);
         boolean ok = false;
         for(int a=0;a<data.length;a++) {
@@ -152,18 +152,18 @@ public class Events {
           }
         }
         if (!ok) {
-          Label lbl = (Label)client.getPanel().getComponent("errmsg");
+          Label lbl = (Label)context.getComponent("errmsg");
           lbl.setText("Invalid username or password!");
           break;
         }
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
+        PopupPanel panel = context.jfc_login;
         panel.setVisible(false);
         break;
       }
       case "jfc_login_cancel": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
-        ((TextField)panel.getComponent("user")).setText("");
-        ((TextField)panel.getComponent("pass")).setText("");
+        PopupPanel panel = context.jfc_login;
+        ((TextField)context.getComponent("user")).setText("");
+        ((TextField)context.getComponent("pass")).setText("");
         panel.setVisible(false);
         break;
       }
@@ -207,15 +207,15 @@ public class Events {
         int id = Integer.valueOf(client.getProperty("ctrl").toString());
         int cid = Database.getControllerCID(id);
         String tag_type = cid == 0 ? "tag_udt" : "tag";
-        ComboBox cbType = (ComboBox)client.getPanel().getComponent(tag_type + "_type");
+        ComboBox cbType = (ComboBox)context.getComponent(tag_type + "_type");
         clear(cbType, 0);
-        CheckBox array = (CheckBox)client.getPanel().getComponent(tag_type + "_array");
+        CheckBox array = (CheckBox)context.getComponent(tag_type + "_array");
         clear(array, false);
-        TextField arraysize = (TextField)client.getPanel().getComponent(tag_type + "_arraysize");
+        TextField arraysize = (TextField)context.getComponent(tag_type + "_arraysize");
         clear(arraysize, "0");
-        TextField name = (TextField)client.getPanel().getComponent(tag_type + "_name");
+        TextField name = (TextField)context.getComponent(tag_type + "_name");
         clear(name, "");
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_" + tag_type);
+        PopupPanel panel = (PopupPanel)context.getComponent("jfc_new_" + tag_type);
         panel.setVisible(true);
         break;
       }
@@ -228,13 +228,13 @@ public class Events {
           int type = 0;
           int idx = 0;
           String tag_type = cid == 0 ? "tag_udt" : "tag";
-          ComboBox cbType = (ComboBox)client.getPanel().getComponent(tag_type + "_type");
+          ComboBox cbType = (ComboBox)context.getComponent(tag_type + "_type");
           idx = cbType.getSelectedIndex();
-          CheckBox isarray = (CheckBox)client.getPanel().getComponent(tag_type + "_array");
+          CheckBox isarray = (CheckBox)context.getComponent(tag_type + "_array");
           boolean is_array = isarray.isSelected();
-          TextField arraysize = (TextField)client.getPanel().getComponent(tag_type + "_arraysize");
+          TextField arraysize = (TextField)context.getComponent(tag_type + "_arraysize");
           int array_size = Integer.valueOf(arraysize.getText());
-          TextField name = (TextField)client.getPanel().getComponent(tag_type + "_name");
+          TextField name = (TextField)context.getComponent(tag_type + "_name");
           String tag_name = name.getText();
           clearError(name);
           if (!TagsService.validTagName(cid, tag_name)) {
@@ -254,10 +254,10 @@ public class Events {
             }
           }
           if (cid == 0) {
-            PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
+            PopupPanel panel = (PopupPanel)context.getComponent("jfc_new_tag_udt");
             panel.setVisible(false);
           } else {
-            PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
+            PopupPanel panel = (PopupPanel)context.getComponent("jfc_new_tag");
             panel.setVisible(false);
           }
           type = Integer.valueOf(cbType.getSelectedValue());
@@ -274,10 +274,10 @@ public class Events {
         int id = Integer.valueOf(client.getProperty("ctrl").toString());
         int cid = Database.getControllerCID(id);
         if (cid == 0) {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
+          PopupPanel panel = (PopupPanel)context.getComponent("jfc_new_tag_udt");
           panel.setVisible(false);
         } else {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
+          PopupPanel panel = (PopupPanel)context.getComponent("jfc_new_tag");
           panel.setVisible(false);
         }
         break;
@@ -369,19 +369,19 @@ public class Events {
       }
       case "jfc_config_password": {
         Panel panel = client.getPanel();
-        ((TextField)panel.getComponent("jfc_password_old")).setText("");
-        ((TextField)panel.getComponent("jfc_password_new")).setText("");
-        ((TextField)panel.getComponent("jfc_password_confirm")).setText("");
-        panel.getComponent("jfc_change_password").setVisible(true);
+        ((TextField)context.getComponent("jfc_password_old")).setText("");
+        ((TextField)context.getComponent("jfc_password_new")).setText("");
+        ((TextField)context.getComponent("jfc_password_confirm")).setText("");
+        context.getComponent("jfc_change_password").setVisible(true);
         break;
       }
       case "jfc_change_password_ok": {
         String user = (String)client.getProperty("user");
         Panel panel = client.getPanel();
-        panel.getComponent("jfc_change_password").setVisible(false);
-        String old = ((TextField)panel.getComponent("jfc_password_old")).getText();
-        String newpw = ((TextField)panel.getComponent("jfc_password_new")).getText();
-        String cfmpw = ((TextField)panel.getComponent("jfc_password_confirm")).getText();
+        context.getComponent("jfc_change_password").setVisible(false);
+        String old = ((TextField)context.getComponent("jfc_password_old")).getText();
+        String newpw = ((TextField)context.getComponent("jfc_password_new")).getText();
+        String cfmpw = ((TextField)context.getComponent("jfc_password_confirm")).getText();
         UserRow userobj = Database.getUser(user);
         if (!userobj.pass.equals(old)) {
           Panels.showError(client, "Wrong current password");
@@ -401,20 +401,19 @@ public class Events {
         break;
       }
       case "jfc_change_password_cancel": {
-        Panel panel = client.getPanel();
-        panel.getComponent("jfc_change_password").setVisible(false);
+        context.getComponent("jfc_change_password").setVisible(false);
         break;
       }
       case "jfc_config_shutdown": {
         Main.stop();
         Database.stop();
-        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        Label lbl = (Label)context.getComponent("jfc_config_status");
         lbl.setText("Database Shutdown");
         break;
       }
       case "jfc_config_restart": {
         Main.restart();
-        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        Label lbl = (Label)context.getComponent("jfc_config_status");
         lbl.setText("System running");
         break;
       }
@@ -422,17 +421,17 @@ public class Events {
         Main.stop();
         String msg = Database.backup();
         Main.start();
-        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        Label lbl = (Label)context.getComponent("jfc_config_status");
         lbl.setText(msg);
         break;
       }
       case "jfc_config_restore": {
-        ComboBox cb = (ComboBox)client.getPanel().getComponent("backups");
+        ComboBox cb = (ComboBox)context.getComponent("backups");
         String filename = cb.getSelectedText();
         Main.stop();
         String msg = Database.restore(Paths.backupPath + "/" + filename);
         Main.start();
-        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        Label lbl = (Label)context.getComponent("jfc_config_status");
         lbl.setText(msg);
         break;
       }
@@ -523,13 +522,13 @@ public class Events {
         break;
       }
       case "jfc_panel_editor_add": {
-        ComboBox cb = (ComboBox)client.getPanel().getComponent("panel_type");
+        ComboBox cb = (ComboBox)context.getComponent("panel_type");
         String type = cb.getSelectedText();
         Block focus = (Block)client.getProperty("focus");
         if (focus == null) break;
         Rectangle r = (Rectangle)focus.getProperty("rect");
         Rectangle nr = new Rectangle(r);
-        Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        Table t1 = (Table)context.getComponent("t1");  //components
         if (t1.get(r.x, r.y, false) != null) break;  //something already there
         Component nc = null;
         String text = "new";
@@ -556,14 +555,14 @@ public class Events {
         Block focus = (Block)client.getProperty("focus");
         if (focus == null) break;
         Rectangle r = (Rectangle)focus.getProperty("rect");
-        Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        Table t1 = (Table)context.getComponent("t1");  //components
         Component comp = t1.get(r.x, r.y, false);
         if (comp == null) break;
         t1.remove(r.x, r.y);
         int pid = (Integer)client.getProperty("panel");
         Database.deleteCell(pid, r.x, r.y);
         if (r.width > 1 || r.height > 1) {
-          Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
+          Table t2 = (Table)context.getComponent("t2");  //overlays
           t2.remove(r.x, r.y);
           int x2 = r.x + r.width - 1;
           int y2 = r.y + r.height - 1;
@@ -579,7 +578,7 @@ public class Events {
         Component focus = (Component)client.getProperty("focus");
         if (focus == null) break;
         Rectangle r = (Rectangle)focus.getProperty("rect");
-        Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        Table t1 = (Table)context.getComponent("t1");  //components
         Component comp = t1.get(r.x, r.y, false);
         if (comp == null) break;
         String type = getComponentType(comp);
@@ -598,30 +597,30 @@ public class Events {
         if (style == null) style = "";
         Panel panel = client.getPanel();
 
-        Label textLbl = (Label)panel.getComponent("textLbl");
-        TextField textTF = (TextField)panel.getComponent("text");
-        Label c0Lbl = (Label)panel.getComponent("c0Lbl");
-        Light c0L = (Light)panel.getComponent("c0");
-        Label c1Lbl = (Label)panel.getComponent("c1Lbl");
-        Light c1L = (Light)panel.getComponent("c1");
-        Label cnLbl = (Label)panel.getComponent("cnLbl");
-        Light cnL = (Light)panel.getComponent("cn");
+        Label textLbl = (Label)context.getComponent("textLbl");
+        TextField textTF = (TextField)context.getComponent("text");
+        Label c0Lbl = (Label)context.getComponent("c0Lbl");
+        Light c0L = (Light)context.getComponent("c0");
+        Label c1Lbl = (Label)context.getComponent("c1Lbl");
+        Light c1L = (Light)context.getComponent("c1");
+        Label cnLbl = (Label)context.getComponent("cnLbl");
+        Light cnL = (Light)context.getComponent("cn");
 
-        Label v0Lbl = (Label)panel.getComponent("v0Lbl");
-        TextField v0TF = (TextField)panel.getComponent("v0");
-        Label v1Lbl = (Label)panel.getComponent("v1Lbl");
-        TextField v1TF = (TextField)panel.getComponent("v1");
-        Label v2Lbl = (Label)panel.getComponent("v2Lbl");
-        TextField v2TF = (TextField)panel.getComponent("v2");
+        Label v0Lbl = (Label)context.getComponent("v0Lbl");
+        TextField v0TF = (TextField)context.getComponent("v0");
+        Label v1Lbl = (Label)context.getComponent("v1Lbl");
+        TextField v1TF = (TextField)context.getComponent("v1");
+        Label v2Lbl = (Label)context.getComponent("v2Lbl");
+        TextField v2TF = (TextField)context.getComponent("v2");
 
-        Label dir = (Label)panel.getComponent("dir");
-        ToggleButton h = (ToggleButton)panel.getComponent("h");
-        ToggleButton v = (ToggleButton)panel.getComponent("v");
+        Label dir = (Label)context.getComponent("dir");
+        ToggleButton h = (ToggleButton)context.getComponent("h");
+        ToggleButton v = (ToggleButton)context.getComponent("v");
 
-        TextField tagTF = (TextField)panel.getComponent("tag");
-        TextField pressTF = (TextField)panel.getComponent("press");
-        TextField releaseTF = (TextField)panel.getComponent("release");
-        TextField clickTF = (TextField)panel.getComponent("click");
+        TextField tagTF = (TextField)context.getComponent("tag");
+        TextField pressTF = (TextField)context.getComponent("press");
+        TextField releaseTF = (TextField)context.getComponent("release");
+        TextField clickTF = (TextField)context.getComponent("click");
         String press = "", release = "", click = "";
         String c0 = "", c1 = "", cn = "";
         String o = "";
@@ -815,46 +814,46 @@ public class Events {
             JFLog.log("Error:unknown panel type:" + type);
             break;
         }
-        PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
+        PopupPanel props = (PopupPanel)context.getComponent("jfc_panel_props");
         props.setVisible(true);
         break;
       }
       case "jfc_panel_props_c0": {
-        Light light = (Light)client.getPanel().getComponent("c0");
+        Light light = (Light)context.getComponent("c0");
         client.setProperty("light", light);
-        ColorChooserPanel color = (ColorChooserPanel)client.getPanel().getComponent("colorpanel");
+        ColorChooserPanel color = (ColorChooserPanel)context.getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
         break;
       }
       case "jfc_panel_props_c1": {
-        Light light = (Light)client.getPanel().getComponent("c1");
+        Light light = (Light)context.getComponent("c1");
         client.setProperty("light", light);
-        ColorChooserPanel color = (ColorChooserPanel)client.getPanel().getComponent("colorpanel");
+        ColorChooserPanel color = (ColorChooserPanel)context.getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
         break;
       }
       case "jfc_panel_props_cn": {
-        Light light = (Light)client.getPanel().getComponent("cn");
+        Light light = (Light)context.getComponent("cn");
         client.setProperty("light", light);
-        ColorChooserPanel color = (ColorChooserPanel)client.getPanel().getComponent("colorpanel");
+        ColorChooserPanel color = (ColorChooserPanel)context.getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
         break;
       }
       case "jfc_panel_props_h": {
         Panel panel = client.getPanel();
-        ToggleButton hTB = (ToggleButton)panel.getComponent("h");
-        ToggleButton vTB = (ToggleButton)panel.getComponent("v");
+        ToggleButton hTB = (ToggleButton)context.getComponent("h");
+        ToggleButton vTB = (ToggleButton)context.getComponent("v");
         boolean state = hTB.isSelected();
         vTB.setSelected(!state);
         break;
       }
       case "jfc_panel_props_v": {
         Panel panel = client.getPanel();
-        ToggleButton hTB = (ToggleButton)panel.getComponent("h");
-        ToggleButton vTB = (ToggleButton)panel.getComponent("v");
+        ToggleButton hTB = (ToggleButton)context.getComponent("h");
+        ToggleButton vTB = (ToggleButton)context.getComponent("v");
         boolean state = vTB.isSelected();
         hTB.setSelected(!state);
         break;
@@ -863,52 +862,52 @@ public class Events {
         Panel panel = client.getPanel();
         Component focus = (Component)client.getProperty("focus");
         if (focus != null) {
-          TextField textTF = (TextField)panel.getComponent("text");
+          TextField textTF = (TextField)context.getComponent("text");
           String text = textTF.getText();
           if (text.indexOf("|") != -1) {
             setError(textTF);
             break;
           }
-          TextField tagTF = (TextField)panel.getComponent("tag");
+          TextField tagTF = (TextField)context.getComponent("tag");
           String tag = tagTF.getText();
           if (tag.indexOf("|") != -1) {
             setError(tagTF);
             break;
           }
-          TextField pressTF = (TextField)panel.getComponent("press");
+          TextField pressTF = (TextField)context.getComponent("press");
           String press = pressTF.getText();
           if (press.indexOf("|") != -1) {
             setError(pressTF);
             break;
           }
-          TextField releaseTF = (TextField)panel.getComponent("release");
+          TextField releaseTF = (TextField)context.getComponent("release");
           String release = releaseTF.getText();
           if (release.indexOf("|") != -1) {
             setError(releaseTF);
             break;
           }
-          TextField clickTF = (TextField)panel.getComponent("click");
+          TextField clickTF = (TextField)context.getComponent("click");
           String click = clickTF.getText();
           if (click.indexOf("|") != -1) {
             setError(clickTF);
             break;
           }
-          TextField v0TF = (TextField)panel.getComponent("v0");
-          TextField v1TF = (TextField)panel.getComponent("v1");
-          TextField v2TF = (TextField)panel.getComponent("v2");
-          ToggleButton hTB = (ToggleButton)panel.getComponent("h");
-          ToggleButton vTB = (ToggleButton)panel.getComponent("v");
-          Light c0L = (Light)panel.getComponent("c0");
+          TextField v0TF = (TextField)context.getComponent("v0");
+          TextField v1TF = (TextField)context.getComponent("v1");
+          TextField v2TF = (TextField)context.getComponent("v2");
+          ToggleButton hTB = (ToggleButton)context.getComponent("h");
+          ToggleButton vTB = (ToggleButton)context.getComponent("v");
+          Light c0L = (Light)context.getComponent("c0");
           String c0 = Integer.toString(c0L.getBackColor(), 16);
-          Light c1L = (Light)panel.getComponent("c1");
+          Light c1L = (Light)context.getComponent("c1");
           String c1 = Integer.toString(c1L.getBackColor(), 16);
-          Light cnL = (Light)panel.getComponent("cn");
+          Light cnL = (Light)context.getComponent("cn");
           String cn = Integer.toString(cnL.getBackColor(), 16);
           String v0 = v0TF.getText();
           String v1 = v1TF.getText();
           String v2 = v2TF.getText();
           Rectangle r = (Rectangle)focus.getProperty("rect");
-          Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+          Table t1 = (Table)context.getComponent("t1");  //components
           Component comp = t1.get(r.x, r.y, false);
           String type = getComponentType(comp);
           String style = "";
@@ -944,12 +943,12 @@ public class Events {
           cell.style = style;
           Database.saveCellTable(Database.getPanelById(pid).name);
         }
-        PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
+        PopupPanel props = (PopupPanel)context.getComponent("jfc_panel_props");
         props.setVisible(false);
         break;
       }
       case "jfc_panel_props_cancel": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
+        PopupPanel panel = (PopupPanel)context.getComponent("jfc_panel_props");
         panel.setVisible(false);
         break;
       }
@@ -1014,7 +1013,7 @@ public class Events {
         if (context.debug != null) {
           context.debug.cancel();
           context.debug = null;
-          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          Button debug = (Button)context.getComponent("jfc_debug");
           debug.setText("Debug");
         }
         int fid = (Integer)client.getProperty("func");
@@ -1063,7 +1062,7 @@ public class Events {
         if (context.debug != null) {
           context.debug.cancel();
           context.debug = null;
-          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          Button debug = (Button)context.getComponent("jfc_debug");
           debug.setText("Debug");
         }
         Panels.confirm(client, "Delete rung?", "jfc_func_editor_del_rung");
@@ -1074,7 +1073,7 @@ public class Events {
         if (context.debug != null) {
           context.debug.cancel();
           context.debug = null;
-          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          Button debug = (Button)context.getComponent("jfc_debug");
           debug.setText("Debug");
         }
         Component focus = (Component)client.getProperty("focus");
@@ -1169,7 +1168,7 @@ public class Events {
         if (node.next == null || !node.next.validFork()) {
           node = node.insertNode('h', x, y);
         }
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
+        Table logic = (Table)context.getComponent("jfc_rung_editor_table");
         Panels.layoutNodes(node.root, logic, client);
         break;
       }
@@ -1187,7 +1186,7 @@ public class Events {
         if (node.parent != null) {
           node = node.parent;
         }
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
+        Table logic = (Table)context.getComponent("jfc_rung_editor_table");
         node.delete(logic, client);
         Panels.layoutNodes(node.root, logic, client);
         break;
@@ -1241,7 +1240,7 @@ public class Events {
         }
         RungRow rungobj = Database.getRungById(fid, rid);
         rungobj.logic = str;
-        TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
+        TextField tf = (TextField)context.getComponent("comment" + rid);
         String cmt = tf.getText();
         rungobj.comment = cmt;
         Database.saveRungsById(fid);
@@ -1257,7 +1256,7 @@ public class Events {
         if (context.debug != null) {
           context.debug.cancel();
           context.debug = null;
-          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          Button debug = (Button)context.getComponent("jfc_debug");
           debug.setText("Debug");
         }
         int fid = (Integer)client.getProperty("func");

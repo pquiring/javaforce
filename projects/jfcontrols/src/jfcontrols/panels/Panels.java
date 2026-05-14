@@ -25,8 +25,20 @@ public class Panels {
   public static int cellWidth = 32;
   public static int cellHeight = 32;
   public static PopupPanel getPopupPanel(WebUIClient client, String title, String name) {
+    ClientContext context = (ClientContext)client.getProperty("context");
     PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel(title, name), name, client);
     panel.setModal(true);
+    //setup context panels here
+    if (name.startsWith("jfc_")) {
+      switch (name) {
+        case "jfc_error": context.jfc_error = panel; break;
+        case "jfc_error_textarea": context.jfc_error_textarea = panel; break;
+        case "jfc_confirm": context.jfc_confirm = panel; break;
+        case "jfc_login": context.jfc_login = panel; break;
+        case "jfc_menu": context.jfc_menu = panel; break;
+        default:
+      }
+    }
     return panel;
   }
   private static PopupPanel createPopupPanel(String title, String name) {
@@ -52,8 +64,16 @@ public class Panels {
     CellRow cells[] = Database.getCells(pnl.name);
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
+    if (!pnl.popup) {
+      context.cmps.clear();
+    }
     buildTable(table, panel, cells, client, -1, -1, null);
-    if (pnl.popup) return panel;
+
+    if (pnl.popup) {
+      //this is a popup panel
+      return panel;
+    }
+
     //add top components
     int x = 0;
     int width = client.getWidth();
@@ -132,6 +152,7 @@ public class Panels {
       panel.add(getPopupPanel(client, "Change Password", "jfc_change_password"));
     }
     KeyPad keypad = new KeyPad("KeyPad", cellWidth);
+    context.keypad = keypad;
     keypad.setName("keypad");
     panel.add(keypad);
     if (pname.equals("jfc_panel_editor")) {
@@ -171,27 +192,29 @@ public class Panels {
     Component cs[] = new Component[cells.length];
     Rectangle rs[] = new Rectangle[cells.length];
     for(int a=0;a<cells.length;a++) {
+      CellRow cell = cells[a];
       Rectangle r = new Rectangle();
       rs[a] = r;
-      r.x = cells[a].x;
-      r.y = cells[a].y;
-      r.width = cells[a].w;
-      r.height = cells[a].h;
-      String compType = cells[a].comp;
-      String tagName = cells[a].tag;
+      r.x = cell.x;
+      r.y = cell.y;
+      r.width = cell.w;
+      r.height = cell.h;
+      String compType = cell.comp;
+      String tagName = cell.tag;
       if (tagName != null && !tagName.startsWith("jfc_") && tagName.length() > 0) {
         TagBase tag = context.getTag(tagName);
         if (tag == null) {
           JFLog.log("Error:Tag not found:" + tagName);
         } else {
-          cells[a].text = tag.getValue();
+          cell.text = tag.getValue();
         }
       }
-      Component c = getCell(compType, container, cells[a], rs[a], client, context);
+      Component c = getCell(compType, container, cell, rs[a], client, context);
       if (c == null) {
         JFLog.log("Error:cell == null:" + compType);
         c = new Label("null");
       }
+      context.cmps.add(c);
       c.setProperty("name", compType);
       cs[a] = c;
       int x2 = rs[a].x + rs[a].width;
@@ -242,13 +265,22 @@ public class Panels {
           });
         }
       }
-      c.setProperty("func", cells[a].func);
-      c.setProperty("arg", cells[a].arg);
-      c.setProperty("events", cells[a].events);
-      if (cells[a].name != null) {
-        c.setName(cells[a].name);
-      } else if (cells[a].tag != null) {
-        c.setName(cells[a].tag);
+      c.setProperty("func", cell.func);
+      c.setProperty("arg", cell.arg);
+      c.setProperty("events", cell.events);
+      if (cell.name != null) {
+        c.setName(cell.name);
+        if (cell.name.startsWith("jfc_")) {
+          //setup context cells here
+          switch (cell.name) {
+            case "jfc_error_msg": context.jfc_error_msg = (Label)c; break;
+            case "jfc_error_textarea_msg": context.jfc_error_textarea_msg = (Label)c; break;
+            case "jfc_error_textarea_textarea": context.jfc_error_textarea_textarea = (TextArea)c; break;
+            case "jfc_confirm_msg": context.jfc_confirm_msg = (Label)c; break;
+          }
+        }
+      } else if (cell.tag != null) {
+        c.setName(cell.tag);
       }
       if (nodes != null && nodes.length > a) {
         c.setProperty("node", nodes[a]);
@@ -269,7 +301,7 @@ public class Panels {
           }
         });
       }
-      String style = cells[a].style;
+      String style = cell.style;
       if (style != null) {
         String styles[] = style.split(";");
         for(int b=0;b<styles.length;b++) {
@@ -489,11 +521,11 @@ public class Panels {
       tf.setPassword(true);
     } else {
       tf.addClickListener((me, comp) -> {
-        KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
+        KeyPad keypad = context.keypad;
         keypad.show((TextField)comp);
       });
       tf.addKeyDownListener((ke, comp) -> {
-        KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
+        KeyPad keypad = context.keypad;
         if (keypad.isVisible()) {
           keypad.setVisible(false);
         }
@@ -912,6 +944,7 @@ public class Panels {
         LayersPanel layers = new LayersPanel();
         table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, data, client, 64, 64, null);
         table.setName("t1");
+        context.t1 = table;
         r.width = table.getColumns();
         r.height = table.getRows();
         layers.add(table);
@@ -929,6 +962,7 @@ public class Panels {
         }
         table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), client, 64, 64, null);
         table.setName("t2");
+        context.t2 = table;
         layers.add(table);
         return layers;
       }
@@ -1409,14 +1443,14 @@ public class Panels {
     int y1 = fr.y + deltay;
     int y2 = fr.y + fr.height + deltay - 1;
     if ((x1 < 0) || (x2 > 63) || (y1 < 0) || (y2 > 63)) return;  //off screen
-    Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+    Table t1 = context.t1;  //components
     Component comp = t1.get(fr.x, fr.y, false);
     if (comp == null) {
       JFLog.log("Error:nothing there:" + fr.x + "," + fr.y);
       return;
     }
     Rectangle cr = (Rectangle)comp.getProperty("rect");
-    Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
+    Table t2 = context.t2;  //overlays
     for(int x=x1;x<=x2;x++) {
       for(int y=y1;y<=y2;y++) {
         Component cell = t1.get(x, y, true);
@@ -1491,14 +1525,14 @@ public class Panels {
     int y2 = fr.y + fr.height + deltay - 1;
     if ((x1 < 0) || (x2 > 63) || (y1 < 0) || (y2 > 63)) return;  //off screen
     if (x2 < x1 || y2 < y1) return;  //too small
-    Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+    Table t1 = context.t1;  //components
     Component comp = t1.get(fr.x, fr.y, false);
     if (comp == null) {
       JFLog.log("Error:nothing there:" + fr.x + "," + fr.y);
       return;
     }
     Rectangle cr = (Rectangle)comp.getProperty("rect");
-    Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
+    Table t2 = context.t2;  //overlays
     for(int x=x1;x<=x2;x++) {
       for(int y=y1;y<=y2;y++) {
         Component cell = t1.get(x, y, true);
@@ -2143,23 +2177,26 @@ public class Panels {
     logic.setTableSize(mx, my);
   }
   public static void showError(WebUIClient client, String msg) {
-    Label lbl = (Label)client.getPanel().getComponent("jfc_error_msg");
+    ClientContext context = (ClientContext)client.getProperty("context");
+    Label lbl = context.jfc_error_msg;
     lbl.setText(msg);
-    PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error");
+    PopupPanel panel = context.jfc_error;
     panel.setVisible(true);
   }
   public static void showErrorText(WebUIClient client, String msg, String text) {
-    Label lbl = (Label)client.getPanel().getComponent("jfc_error_textarea_msg");
+    ClientContext context = (ClientContext)client.getProperty("context");
+    Label lbl = context.jfc_error_textarea_msg;
     lbl.setText(msg);
-    TextArea ta = (TextArea)client.getPanel().getComponent("jfc_error_textarea_textarea");
+    TextArea ta = context.jfc_error_textarea_textarea;
     ta.setText(text);
-    PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error_textarea");
+    PopupPanel panel = context.jfc_error_textarea;
     panel.setVisible(true);
   }
   public static void confirm(WebUIClient client, String msg, String action) {
-    Label lbl = (Label)client.getPanel().getComponent("jfc_confirm_msg");
+    ClientContext context = (ClientContext)client.getProperty("context");
+    Label lbl = context.jfc_confirm_msg;
     lbl.setText(msg);
-    PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
+    PopupPanel panel = context.jfc_confirm;
     panel.setVisible(true);
     client.setProperty("action", action);
   }

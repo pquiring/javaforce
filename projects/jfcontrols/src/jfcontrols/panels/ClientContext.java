@@ -29,6 +29,21 @@ public class ClientContext extends Thread {
   public WatchContext watch;
   public boolean alarmActive;
 
+  //UI elements
+  public KeyPad keypad;
+  public Table t1, t2;
+  public PopupPanel jfc_error;
+  public Label jfc_error_msg;
+  public PopupPanel jfc_error_textarea;
+  public Label jfc_error_textarea_msg;
+  public TextArea jfc_error_textarea_textarea;
+  public PopupPanel jfc_confirm;
+  public Label jfc_confirm_msg;
+  public PopupPanel jfc_login;
+  public PopupPanel jfc_menu;
+//  public ArrayList<Component> popups = new ArrayList<>();
+  public ArrayList<Component> cmps = new ArrayList<>();
+
   public ClientContext(WebUIClient client) {
     this.client = client;
   }
@@ -144,5 +159,14 @@ public class ClientContext extends Thread {
       debug.cancel();
       debug = null;
     }
+  }
+
+  public Component getComponent(String name) {
+    for(Component c : cmps) {
+      if (c.getName().equals(name)) {
+        return c;
+      }
+    }
+    return null;
   }
 }

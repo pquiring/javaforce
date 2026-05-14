@@ -159,6 +159,7 @@ public class VisionSystem {
       public void onChanged(Component cmp) {
         Rectangle rect = draw.getRect();
         WebUIClient client = panel.getClient();
+        ClientContext context = (ClientContext)client.getProperty("context");
         int pid = (Integer)client.getProperty("visionprogram");
         int sid = (Integer)client.getProperty("visionshot");
         int rid = (Integer)client.getProperty("visionarea");
@@ -172,13 +173,13 @@ public class VisionSystem {
         row.y1 = scaleUpY(rect.y);
         row.x2 = scaleUpX(rect.x + rect.width - 1);
         row.y2 = scaleUpY(rect.y + rect.height - 1);
-        TextField x1 = (TextField)client.getPanel().getComponent("jfc_visionareas_x1_int_" + rid);
+        TextField x1 = (TextField)context.getComponent("jfc_visionareas_x1_int_" + rid);
         x1.setText(Integer.toString(row.x1));
-        TextField y1 = (TextField)client.getPanel().getComponent("jfc_visionareas_y1_int_" + rid);
+        TextField y1 = (TextField)context.getComponent("jfc_visionareas_y1_int_" + rid);
         y1.setText(Integer.toString(row.y1));
-        TextField x2 = (TextField)client.getPanel().getComponent("jfc_visionareas_x2_int_" + rid);
+        TextField x2 = (TextField)context.getComponent("jfc_visionareas_x2_int_" + rid);
         x2.setText(Integer.toString(row.x2));
-        TextField y2 = (TextField)client.getPanel().getComponent("jfc_visionareas_y2_int_" + rid);
+        TextField y2 = (TextField)context.getComponent("jfc_visionareas_y2_int_" + rid);
         y2.setText(Integer.toString(row.y2));
         Database.visionareas.save();
         setupVisionImage(panel, p_id, s_id, r_id);

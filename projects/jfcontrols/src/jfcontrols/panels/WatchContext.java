@@ -30,7 +30,7 @@ public class WatchContext extends Thread {
     Panel panel = client.getPanel();
     for(int a=0;a<cnt;a++) {
       tags[a] = context.getTag(data[a].tag);
-      tv[a] = (Label)panel.getComponent("tag_" + a);
+      tv[a] = (Label)context.getComponent("tag_" + a);
     }
     return true;
   }

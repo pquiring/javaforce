@@ -36,8 +36,8 @@ public class DebugContext extends Thread {
     boolean state[][] = new boolean[debug_en.length][2];
     Component cmp[][] = new Component[debug_en.length][2];
     for(int a=0;a<debug_en.length;a++) {
-      cmp[a][0] = panel.getComponent("en_0_" + a);
-      cmp[a][1] = panel.getComponent("en_1_" + a);
+      cmp[a][0] = context.getComponent("en_0_" + a);
+      cmp[a][1] = context.getComponent("en_1_" + a);
     }
 
     String debug_tv[] = FunctionService.getDebugTagValues(fid);
@@ -47,7 +47,7 @@ public class DebugContext extends Thread {
     }
     Label tv[] = new Label[debug_tv.length];
     for(int a=0;a<debug_tv.length;a++) {
-      tv[a] = (Label)panel.getComponent("tv_" + a);
+      tv[a] = (Label)context.getComponent("tv_" + a);
     }
     func.debug = true;
     boolean first = true;

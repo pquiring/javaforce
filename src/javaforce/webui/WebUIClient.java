@@ -106,10 +106,6 @@ public class WebUIClient {
   public Panel getPanel() {
     return root;
   }
-  /** Get Component by user assigned name. */
-  public Component getComponent(String name) {
-    return root.getComponent(name);
-  }
   public void setPanel(Panel root) {
     this.root = root;
     initPanel();
