@@ -11,7 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.io.*;
 
-public class Config extends SerialObject implements Serializable {
+public class Config implements Serializable {
   public static final long serialVersionUID = 1;
   public static Config current;
 
@@ -26,19 +26,10 @@ public class Config extends SerialObject implements Serializable {
   public static void load() {
     String file = Paths.dataPath + "/config.dat";
     try {
-      boolean isJavaSerial = isJavaSerialObject(file);
       FileInputStream fis = new FileInputStream(file);
-      if (isJavaSerial) {
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        current = (Config)ois.readObject();
-        fis.close();
-      } else {
-        JFLog.log("Upgrading config...");
-        ObjectReader or = new ObjectReader(fis);
-        current = (Config)or.readObject(new Config());
-        fis.close();
-        save();
-      }
+      ObjectInputStream ois = new ObjectInputStream(fis);
+      current = (Config)ois.readObject();
+      fis.close();
     } catch (FileNotFoundException e) {
       current = new Config();
       JFLog.log("No config found!");
@@ -143,68 +134,5 @@ public class Config extends SerialObject implements Serializable {
     int port = nextPort;
     nextPort += 2;
     return port;
-  }
-
-  public static final short id_cameras = id_array + 1;
-  public static final short id_groups = id_array + 2;
-  public static final short id_user = id_len + 1;
-  public static final short id_pass = id_len + 2;
-
-  public void readObject() throws Exception {
-    int cnt;
-    do {
-      short id = readShort();
-      switch (id) {
-        case id_cameras:
-          cnt = readInt();
-          cameras = new Camera[cnt];
-          for(int a=0;a<cnt;a++) {
-            cameras[a] = new Camera();
-            cameras[a].readInit(this);
-            cameras[a].readObject();
-          }
-          break;
-        case id_groups:
-          cnt = readInt();
-          groups = new Group[cnt];
-          for(int a=0;a<cnt;a++) {
-            groups[a] = new Group();
-            groups[a].readInit(this);
-            groups[a].readObject();
-          }
-          break;
-        case id_user:
-          user = readString();
-          break;
-        case id_pass:
-          pass = readString();
-          break;
-        case id_end: return;
-        default: skipChunk(id); break;
-      }
-    } while (true);
-  }
-
-  public void writeObject() throws Exception {
-    int cnt;
-    writeShort(id_cameras);
-    cnt = cameras.length;
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      cameras[a].writeInit(this);
-      cameras[a].writeObject();
-    }
-    writeShort(id_groups);
-    cnt = groups.length;
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      groups[a].writeInit(this);
-      groups[a].writeObject();
-    }
-    writeShort(id_user);
-    writeString(user);
-    writeShort(id_pass);
-    writeString(pass);
-    writeShort(id_end);
   }
 }

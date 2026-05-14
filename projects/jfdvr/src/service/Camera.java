@@ -12,7 +12,7 @@ import javaforce.*;
 import javaforce.io.*;
 import javaforce.voip.*;
 
-public class Camera extends SerialObject implements Serializable, RTPInterface {
+public class Camera implements Serializable, RTPInterface {
   public static final long serialVersionUID = 1;
 
   public String name;
@@ -144,84 +144,6 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
         }
       }
     }
-  }
-
-  public static final short id_name = id_len + 1;
-  public static final short id_url = id_len + 2;
-  public static final short id_controller = id_len + 3;
-  public static final short id_tag_trigger = id_len + 4;
-  public static final short id_tag_value = id_len + 5;
-  public static final short id_url_low = id_len + 6;
-
-  public static final short id_record_motion = id_1 + 1;
-  public static final short id_pos_edge = id_1 + 2;
-  public static final short id_enabled = id_1 + 3;
-
-  public static final short id_record_motion_threshold = id_4 + 1;
-  public static final short id_record_motion_after = id_4 + 2;
-  public static final short id_max_file_size = id_4 + 3;
-  public static final short id_max_folder_size = id_4 + 4;
-
-  public void readObject() throws Exception {
-    do {
-      short id = readShort();
-      switch (id) {
-        case id_name: name = readString(); break;
-        case id_url: url = readString(); break;
-        case id_url_low: url_low = readString(); break;
-        case id_record_motion: record_motion = readBoolean(); break;
-        case id_record_motion_threshold: record_motion_threshold = readInt(); break;
-        case id_record_motion_after: readInt(); break;  //obsolete
-        case id_max_file_size: readInt(); break;  //obsolete
-        case id_max_folder_size: max_folder_size = readInt(); break;
-        case id_controller: controller = readString(); break;
-        case id_tag_trigger: tag_trigger = readString(); break;
-        case id_tag_value: tag_value = readString(); break;
-        case id_pos_edge: pos_edge = readBoolean(); break;
-        case id_enabled: enabled = readBoolean(); break;
-        case id_end: {
-          if (name == null) name = "camera";
-          return;
-        }
-        default: skipChunk(id); break;
-      }
-    } while (true);
-  }
-
-  public void writeObject() throws Exception {
-    writeShort(id_name);
-    writeString(name);
-    writeShort(id_url);
-    writeString(url);
-    writeShort(id_url_low);
-    writeString(url_low);
-    writeShort(id_record_motion);
-    writeBoolean(record_motion);
-    writeShort(id_record_motion_threshold);
-    writeInt(record_motion_threshold);
-    writeShort(id_record_motion_after);
-    writeInt(0);  //old:record_motion_after
-    writeShort(id_max_file_size);
-    writeInt(0);  //old:max_file_size
-    writeShort(id_max_folder_size);
-    writeInt(max_folder_size);
-    if (controller != null) {
-      writeShort(id_controller);
-      writeString(controller);
-      if (tag_trigger != null) {
-        writeShort(id_tag_trigger);
-        writeString(tag_trigger);
-      }
-      if (tag_value != null) {
-        writeShort(id_tag_value);
-        writeString(tag_value);
-      }
-      writeShort(id_pos_edge);
-      writeBoolean(pos_edge);
-    }
-    writeShort(id_enabled);
-    writeBoolean(enabled);
-    writeShort(id_end);
   }
 
   //RTPInterface
