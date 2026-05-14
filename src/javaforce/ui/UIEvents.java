@@ -2,6 +2,8 @@ package javaforce.ui;
 
 /** UI Events
  *
+ * NOTE : These methods must NOT invoke other "native" APIs.
+ *
  * @author pquiring
  */
 
