@@ -73,21 +73,4 @@ public class TagInt extends TagBase {
   public void setDouble(int idx, double value) {
     values[idx] = (int)value;
   }
-
-  public void readObject() throws Exception {
-    super.readObject();
-    int cnt = readInt();
-    values = new int[cnt];
-    for(int a=0;a<cnt;a++) {
-      values[a] = readInt();
-    }
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    int cnt = values.length;
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      writeInt(values[a]);
-    }
-  }
 }

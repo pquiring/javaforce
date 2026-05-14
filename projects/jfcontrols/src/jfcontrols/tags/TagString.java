@@ -67,22 +67,4 @@ public class TagString extends TagBase {
   public void setString8(int idx, String str) {
     values[idx] = str.toCharArray();
   }
-
-  public void readObject() throws Exception {
-    super.readObject();
-    int cnt = readInt();
-    values = new char[cnt][];
-    for(int a=0;a<cnt;a++) {
-      values[a] = readString().toCharArray();
-    }
-
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    int cnt = values.length;
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      writeString(new String(values[a]));
-    }
-  }
 }

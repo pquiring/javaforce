@@ -67,21 +67,4 @@ public class TagLong extends TagBase {
   public void setDouble(int idx, double value) {
     values[idx] = (long)value;
   }
-  
-  public void readObject() throws Exception {
-    super.readObject();
-    int cnt = readInt();
-    values = new long[cnt];
-    for(int a=0;a<cnt;a++) {
-      values[a] = readLong();
-    }
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    int cnt = values.length;
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      writeLong(values[a]);
-    }
-  }
 }

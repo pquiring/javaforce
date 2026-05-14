@@ -108,15 +108,7 @@ public class TagsService extends Thread {
     if (tag == null) return;
     try {
       String filename = Paths.tagsPath + "/" + tag.tid + ".dat";
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectWriter oos = new ObjectWriter(baos);
-      if (tag.type == -1) {
-        JFLog.log("Error:tag.type==-1");
-      }
-      oos.writeObject(tag, tag.type);
-      RandomAccessFile raf = new RandomAccessFile(filename, "rw");
-      raf.write(baos.toByteArray());
-      raf.close();
+      Compression.serialize(filename, tag);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -127,22 +119,7 @@ public class TagsService extends Thread {
       String filename = Paths.tagsPath + "/" + tid + ".dat";
       File file = new File(filename);
       if (!file.exists()) return null;
-      RandomAccessFile raf = new RandomAccessFile(filename, "rw");
-      int size = (int)raf.length();
-      byte data[] = new byte[size];
-      int done = 0;
-      while (done != size) {
-        int read = raf.read(data, done, size - done);
-        if (read > 0) {
-          done += read;
-        }
-      }
-      raf.close();
-      ObjectReader ois = new ObjectReader(new ByteArrayInputStream(data));
-      ois.readHeader();
-      int type = ois.getType();
-      TagBase tag = createTag(type);
-      ois.readObject(tag);
+      TagBase tag = (TagBase)Compression.deserialize(filename);
       tag.init(tag);
       return tag;
     } catch (Exception e) {

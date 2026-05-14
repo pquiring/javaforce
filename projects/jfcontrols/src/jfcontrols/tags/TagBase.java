@@ -297,25 +297,4 @@ public abstract class TagBase extends Row {
   public TagBase[] getFields() {return null;}
   public TagBase[] getFields(int idx) {return null;}
   public TagBase getField(int idx, String name) {return null;}
-
-  public void readObject() throws Exception {
-    super.readObject();
-    type = readInt();
-    cid = readInt();
-    tid = readInt();
-    name = readString();
-    comment = readString();
-    unsigned = readBoolean();
-    isArray = readBoolean();
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    writeInt(type);
-    writeInt(cid);
-    writeInt(tid);
-    writeString(name);
-    writeString(comment);
-    writeBoolean(unsigned);
-    writeBoolean(isArray);
-  }
 }

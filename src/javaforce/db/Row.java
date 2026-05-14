@@ -1,10 +1,10 @@
 package javaforce.db;
 
 import java.io.*;
-import javaforce.io.*;
 
-@Deprecated
-public class Row extends SerialObject {
+public class Row implements Serializable {
+  public static final long serialVersionUID = 1L;
+
   /** auto-increment id */
   public int id;
 
@@ -22,19 +22,5 @@ public class Row extends SerialObject {
 
   public static interface Creator {
     public Row newInstance();
-  }
-
-  private static final int version = 1;
-
-  public void readObject() throws Exception {
-    int ver = readInt();
-    id = readInt();
-    timestamp = readLong();
-  }
-
-  public void writeObject() throws Exception {
-    writeInt(version);
-    writeInt(id);
-    writeLong(timestamp);
   }
 }

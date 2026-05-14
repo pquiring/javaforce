@@ -102,10 +102,4 @@ public class TagUDTIndex extends TagUDT {
   public TagBase getField(int idx, String name) {
     return tag.getField(idx, name);
   }
-  public void readObject() throws Exception {
-    super.readObject();
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-  }
 }

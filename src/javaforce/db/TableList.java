@@ -9,10 +9,8 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.io.*;
 
-@Deprecated
-public class TableList<ROW extends Row> extends SerialObject {
+public class TableList<ROW extends Row> implements Serializable {
   private Row.Creator ctr;
 
   @SuppressWarnings("unchecked")
@@ -44,23 +42,20 @@ public class TableList<ROW extends Row> extends SerialObject {
     }
   }
 
-  public boolean load(String folder) {
-    this.folder = folder;
+  @SuppressWarnings("unchecked")
+  public static TableList load(String folder) {
     try {
       File file = new File(folder + "/0.dat");
       if (!file.exists()) {
-        return false;
+        return null;
       }
-      String filename = folder + "/0.dat";
-      FileInputStream fis = new FileInputStream(filename);
-      new ObjectReader(fis).readObject(this);
-      fis.close();
-      tables = new ArrayList<Table<ROW>>();
-      loadTables();
-      return true;
+      TableList list = (TableList)Compression.deserialize(file);
+      list.tables = new ArrayList<Table>();
+      list.loadTables();
+      return list;
     } catch (Exception e) {
       JFLog.log(e);
-      return false;
+      return null;
     }
   }
 
@@ -90,10 +85,7 @@ public class TableList<ROW extends Row> extends SerialObject {
   private void save() {
     try {
       new File(folder).mkdirs();
-      FileOutputStream fos = new FileOutputStream(folder + "/0.dat");
-      ObjectWriter oos = new ObjectWriter(fos);
-      oos.writeObject(this);
-      fos.close();
+      Compression.serialize(folder + "/0.dat", this);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -125,23 +117,5 @@ public class TableList<ROW extends Row> extends SerialObject {
         break;
       }
     }
-  }
-
-  private static final int version = 1;
-
-  public void readObject() throws Exception {
-    int ver = readInt();
-    folder = readString();
-    minid = readInt();
-    nextid = readInt();
-    maxid = readInt();
-  }
-
-  public void writeObject() throws Exception {
-    writeInt(version);
-    writeString(folder);
-    writeInt(minid);
-    writeInt(nextid);
-    writeInt(maxid);
   }
 }

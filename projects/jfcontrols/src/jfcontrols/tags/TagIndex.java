@@ -100,10 +100,4 @@ public class TagIndex extends TagBase {
     TagUDT udt = (TagUDT)tag;
     return udt.getFields(idx);
   }
-  public void readObject() throws Exception {
-    super.readObject();
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-  }
 }

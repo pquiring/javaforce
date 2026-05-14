@@ -70,12 +70,4 @@ public class TagByte extends TagBase {
   public void setDouble(int idx, double value) {
     values[idx] = (byte)value;
   }
-  public void readObject() throws Exception {
-    super.readObject();
-    values = readBytes();
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    writeBytes(values);
-  }
 }

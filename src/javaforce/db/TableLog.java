@@ -14,7 +14,6 @@ import java.util.*;
 import javaforce.*;
 import javaforce.io.*;
 
-@Deprecated
 public class TableLog<ROW extends Row> {
   private String folder;
   private RandomAccessFile raf;
@@ -34,6 +33,8 @@ public class TableLog<ROW extends Row> {
   @SuppressWarnings("unchecked")
   public ROW[] get(long start, long end) {
     ArrayList<ROW> rows = new ArrayList<ROW>();
+    byte[] len = new byte[4];
+    InputStream is = Channels.newInputStream(raf.getChannel());
     try {
       synchronized(lock) {
         long current = start;
@@ -43,8 +44,10 @@ public class TableLog<ROW extends Row> {
             //load all rows within start to end
             raf.seek(0);
             while (raf.getFilePointer() < raf.length()) {
-              ObjectReader ois = new ObjectReader(Channels.newInputStream(raf.getChannel()));
-              ROW row = (ROW)ois.readObject(create());
+              //read length
+              is.read(len);
+              int length = BE.getuint32(len, 0);
+              ROW row = (ROW)Compression.deserialize(is, length);
               if (row.timestamp >= start && row.timestamp <= end) {
                 rows.add(row);
               }
@@ -95,11 +98,20 @@ public class TableLog<ROW extends Row> {
   public void add(ROW row) {
     row.id = -1;  //not used
     row.timestamp = System.currentTimeMillis();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    OutputStream os = Channels.newOutputStream(raf.getChannel());
+    byte[] len = new byte[4];
     synchronized(lock) {
       open(row.timestamp, true);
       try {
-        ObjectWriter oos = new ObjectWriter(Channels.newOutputStream(raf.getChannel()));
-        oos.writeObject(row);
+        Compression.serialize(baos, row);
+        //write length
+        int length = baos.size();
+        BE.setuint32(len, length, length);
+        os.write(len);
+        //write object
+        ByteArrayInputStream is = new ByteArrayInputStream(baos.toByteArray());
+        JF.copyAll(is, os);
       } catch (Exception e) {
         JFLog.log(e);
       }

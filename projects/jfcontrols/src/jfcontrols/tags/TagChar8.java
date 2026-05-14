@@ -73,12 +73,4 @@ public class TagChar8 extends TagBase {
     }
     return new String(values, 0, len);
   }
-  public void readObject() throws Exception {
-    super.readObject();
-    writeBytes(values);
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    values = readBytes();
-  }
 }

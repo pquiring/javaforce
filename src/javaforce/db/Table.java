@@ -4,16 +4,15 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.io.*;
 
 /** Tables store Row's in memory for fast access.
  *
  * @author pquiring
  */
 
-@Deprecated
-public class Table<ROW extends Row> extends SerialObject {
+public class Table<ROW extends Row> implements Serializable {
   private Row.Creator ctr;
+
   @SuppressWarnings("unchecked")
   private ROW create() {
     return (ROW)ctr.newInstance();
@@ -36,31 +35,19 @@ public class Table<ROW extends Row> extends SerialObject {
 
   protected transient String filename;
 
-  public boolean load(String filename) {
-    rows.clear();
-    this.filename = filename;
-    if (!new File(filename).exists()) {
-      return false;
-    }
+  public static Table load(String filename) {
     try {
-      FileInputStream fis = new FileInputStream(filename);
-      ObjectReader ois = new ObjectReader(fis);
-      ois.readObject(this);
-      fis.close();
-      return true;
+      Table table = (Table)Compression.deserialize(filename);
+      return table;
     } catch (Exception e) {
       JFLog.log(e);
-      return false;
+      return null;
     }
   }
 
   public boolean save() {
     try {
-      FileOutputStream fos = new FileOutputStream(filename);
-      ObjectWriter oos = new ObjectWriter(fos);
-      oos.writeObject(this);
-      fos.close();
-      return true;
+      return Compression.serialize(this.filename, this);
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -192,43 +179,5 @@ public class Table<ROW extends Row> extends SerialObject {
 
   public void setReuseIds(boolean state) {
     reuseids = state;
-  }
-
-  private static final int version = 1;
-
-  public void readObject() throws Exception {
-    int ver = readInt();
-    minid = readInt();
-    nextid = readInt();
-    maxid = readInt();
-    reuseids = readBoolean();
-    id = readInt();
-    name = readString();
-    xid = readInt();
-    int cnt = readInt();
-    for(int a=0;a<cnt;a++) {
-      ROW row = create();
-      row.readInit(this);
-      row.readObject();
-      rows.add(row);
-    }
-  }
-
-  public void writeObject() throws Exception {
-    writeInt(version);
-    writeInt(minid);
-    writeInt(nextid);
-    writeInt(maxid);
-    writeBoolean(reuseids);
-    writeInt(id);
-    writeString(name);
-    writeInt(xid);
-    int cnt = rows.size();
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      ROW row = rows.get(a);
-      row.writeInit(this);
-      row.writeObject();
-    }
   }
 }

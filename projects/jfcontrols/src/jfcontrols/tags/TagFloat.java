@@ -68,21 +68,4 @@ public class TagFloat extends TagBase {
   public void setDouble(int idx, double value) {
     values[idx] = (float)value;
   }
-  
-  public void readObject() throws Exception {
-    super.readObject();
-    int cnt = readInt();
-    values = new float[cnt];
-    for(int a=0;a<cnt;a++) {
-      values[a] = readFloat();
-    }
-  }
-  public void writeObject() throws Exception {
-    super.writeObject();
-    int cnt = values.length;
-    writeInt(cnt);
-    for(int a=0;a<cnt;a++) {
-      writeFloat(values[a]);
-    }
-  }
 }
