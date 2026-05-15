@@ -64,6 +64,10 @@ Supported distros : Debian, Fedora, Arch.
 All packages are stored in /repo and can then be processed and uploaded to a repo server.
 Pre-built packages are hosted on sourceforge.net which can be installed through the jfLinux install process (see /linux).
 
+Native ABI Compatibility
+------------------------
+This version of JavaForce is compatible with native loaders/library since 106.0
+
 JavaForce Ant tasks:
 --------------------
 get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
