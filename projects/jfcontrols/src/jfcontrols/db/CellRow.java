@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class CellRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public CellRow() {};
   public CellRow(int pid, int x, int y, int w, int h, String comp, String name, String text) {
     this.pid = pid;

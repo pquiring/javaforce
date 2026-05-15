@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class BlockRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public int fid;
   public int rid;
   public int bid;

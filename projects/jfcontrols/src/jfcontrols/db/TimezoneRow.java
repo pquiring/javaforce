@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class TimezoneRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   //format 00:00 to 23:59
   public static class Time extends javaforce.db.Row {
     public int hour;

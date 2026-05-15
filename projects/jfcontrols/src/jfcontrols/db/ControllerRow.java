@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class ControllerRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public int cid;
   public String ip;
   public int type;

@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class AlarmRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public AlarmRow() {}
   public AlarmRow(int id) {
     this.aid = id;

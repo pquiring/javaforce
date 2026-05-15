@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class VisionAreaRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public int pid;  //program
   public int sid;  //shot
   public String name;

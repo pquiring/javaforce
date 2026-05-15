@@ -11,6 +11,7 @@ import javaforce.*;
  */
 
 public class Table<ROW extends Row> implements Serializable {
+  public static final long serialVersionUID = 1L;
   private Row.Creator ctr;
 
   @SuppressWarnings("unchecked")

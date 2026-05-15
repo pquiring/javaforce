@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class UDTMember extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public int uid;
   public int mid;
   public String name;

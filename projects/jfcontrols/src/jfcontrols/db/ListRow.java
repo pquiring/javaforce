@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class ListRow extends javaforce.db.Row {
+  public static final long serialVersionUID = 1L;
   public ListRow() {}
   public ListRow(int idx, String value) {
     this.idx = idx;
