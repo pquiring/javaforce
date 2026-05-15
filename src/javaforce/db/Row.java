@@ -1,5 +1,12 @@
 package javaforce.db;
 
+/** Row
+ *
+ * This class holds data for one row in a database table.
+ * Extend this class to hold user data.
+ *
+ */
+
 import java.io.*;
 
 public class Row implements Serializable {

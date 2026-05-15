@@ -18,12 +18,17 @@ public class Table<ROW extends Row> {
     return (ROW)ctr.newInstance();
   }
 
+  /** Table ctor.
+   *
+   * @param rowCreator = method to create new instance of Row.
+   *
+   */
   public Table(Row.Creator rowCreator) {
     ctr = rowCreator;
     data = new Data<ROW>();
   }
 
-  public static class Data<ROW> implements Serializable {
+  private static class Data<ROW> implements Serializable {
     public static final long serialVersionUID = 1L;
     public ArrayList<ROW> rows = new ArrayList<>();
     public int minid = 1;  //row starting ID
@@ -40,6 +45,7 @@ public class Table<ROW extends Row> {
   private Data<ROW> data;
   private String filename;
 
+  /** Loads table from file. */
   @SuppressWarnings("unchecked")
   public boolean load(String filename) {
     this.filename = filename;
@@ -53,6 +59,7 @@ public class Table<ROW extends Row> {
     }
   }
 
+  /** Saves table to existing file. */
   public boolean save() {
     try {
       return Compression.serialize(filename, data);
@@ -96,6 +103,11 @@ public class Table<ROW extends Row> {
     }
   }
 
+  /** Adds row to table.
+   *
+   * The row.id will be assigned.
+   *
+   */
   public void add(ROW row) {
     if (data.reuseids) {
       int id = data.minid;
@@ -123,6 +135,7 @@ public class Table<ROW extends Row> {
     data.rows.add(findIdx(row), row);
   }
 
+  /** Returns row with assigned id. */
   public ROW get(int id) {
     int size = data.rows.size();
     for(int a=0;a<size;a++) {
@@ -132,6 +145,7 @@ public class Table<ROW extends Row> {
     return null;
   }
 
+  /** Removes row with assigned id. */
   public void remove(int id) {
     int size = data.rows.size();
     for(int a=0;a<size;a++) {
@@ -143,31 +157,37 @@ public class Table<ROW extends Row> {
     }
   }
 
+  /** Removes all rows from table. */
   public void clear() {
     data.rows.clear();
   }
 
-  @SuppressWarnings("unchecked")
+  /** Return all rows. */
   public ArrayList<ROW> getRows() {
     return data.rows;
   }
 
+  /** Return number of rows. */
   public int getCount() {
     return data.rows.size();
   }
 
+  /** Return min (starting) id. */
   public int getMinId() {
     return data.minid;
   }
 
+  /** Return max id. */
   public int getMaxId() {
     return data.maxid;
   }
 
+  /** Return current id that would be assigned to next row added. */
   public int getNextId() {
     return data.nextid;
   }
 
+  /** Set min (starting) id. */
   public void setMinId(int id) {
     if (data.nextid < id) {
       data.nextid = id;
@@ -175,6 +195,7 @@ public class Table<ROW extends Row> {
     data.minid = id;
   }
 
+  /** Return max id. */
   public void setMaxId(int id) {
     if (data.nextid > id) {
       data.nextid = data.minid;
@@ -182,42 +203,52 @@ public class Table<ROW extends Row> {
     data.maxid = id;
   }
 
+  /** Return wether ids can be reused. */
   public boolean getReuseIds() {
     return data.reuseids;
   }
 
+  /** Sets if ids can be reused. */
   public void setReuseIds(boolean state) {
     data.reuseids = state;
   }
 
+  /** Returns table id (used in TableLists). */
   public int getTableId() {
     return data.id;
   }
 
+  /** Sets table id (used in TableLists). */
   public void setTableId(int id) {
     data.id = id;
   }
 
+  /** Returns user-defined table name. */
   public String getName() {
     return data.name;
   }
 
+  /** Sets user-defined table name. */
   public void setName(String name) {
     data.name = name;
   }
 
+  /** Returns filename. */
   public String getFilename() {
     return filename;
   }
 
+  /** Sets filename. */
   public void setFilename(String filename) {
     this.filename = filename;
   }
 
+  /** Returns user-defined id. */
   public int getXId() {
     return data.xid;
   }
 
+  /** Sets user-defined id. */
   public void setXId(int id) {
     data.xid = id;
   }

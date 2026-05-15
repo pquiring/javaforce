@@ -12,26 +12,27 @@ import java.nio.channels.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.io.*;
 
 public class TableLog<ROW extends Row> {
   private String folder;
   private RandomAccessFile raf;
   private String filename;
   private Object lock = new Object();
-//  private Row.Creator ctr;
+  private Row.Creator ctr;
 
-  public TableLog(String folder, Row.Creator rowCreator) {
-    this.folder = folder;
-//    this.ctr = rowCreator;
-  }
-/*
   @SuppressWarnings("unchecked")
   private ROW create() {
     return (ROW)ctr.newInstance();
   }
-*/
+
+  public TableLog(String folder, Row.Creator rowCreator) {
+    this.folder = folder;
+    this.ctr = rowCreator;
+  }
+
   private final long ms_per_day = 24 * 60 * 60 * 1000;  //ms per day
+
+  /** Loads rows that are within provided timestamps. */
   @SuppressWarnings("unchecked")
   public ROW[] get(long start, long end) {
     ArrayList<ROW> rows = new ArrayList<ROW>();
@@ -64,6 +65,7 @@ public class TableLog<ROW extends Row> {
       return null;
     }
   }
+
   private boolean open(long timestamp, boolean create) {
     Calendar now = Calendar.getInstance();
     now.setTimeInMillis(timestamp);
@@ -87,6 +89,8 @@ public class TableLog<ROW extends Row> {
       return false;
     }
   }
+
+  /** Close this TableLog. */
   public void close() {
     synchronized(lock) {
       if (raf != null) {
@@ -97,6 +101,12 @@ public class TableLog<ROW extends Row> {
       }
     }
   }
+
+  /** Add a new row to TableLog.
+   *
+   * The row is not assigned an id but the timestamp is set instead.
+   *
+   */
   public void add(ROW row) {
     row.id = -1;  //not used
     row.timestamp = System.currentTimeMillis();
