@@ -24,7 +24,7 @@ public class TableList<ROW extends Row>  {
   }
 
   public static class Data implements Serializable {
-  public static final long serialVersionUID = 1L;
+    public static final long serialVersionUID = 1L;
     public int minid = 1;
     public int nextid = 1;
     public int maxid = 2147483647;  //2^31-1
