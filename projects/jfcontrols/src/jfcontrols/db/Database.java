@@ -179,7 +179,7 @@ public class Database {
         if (table == null) {
           table = addCellTable(row.name, row.id);
         } else {
-          table.name = "usr_" + name;
+          table.setName("usr_" + name);
         }
         table.save();
       }
@@ -189,11 +189,11 @@ public class Database {
       ArrayList<Table<CellRow>> rows = cells.getTables();
       int cnt = rows.size();
       for(int idx = 0;idx<cnt;) {
-        Table<CellRow> row = rows.get(idx);
-        JFLog.log("cellTable:" + row.name + ":" + row.xid);
-        if (Database.getPanelById(row.xid) == null) {
-          JFLog.log("deleteCellTable:" + row.name + ":" + row.xid);
-          cells.remove(row.id);
+        Table<CellRow> table = rows.get(idx);
+        JFLog.log("cellTable:" + table.getName() + ":" + table.getXId());
+        if (Database.getPanelById(table.getXId()) == null) {
+          JFLog.log("deleteCellTable:" + table.getName() + ":" + table.getXId());
+          cells.remove(table.getTableId());
           cnt--;
         } else {
           idx++;
@@ -852,7 +852,7 @@ public class Database {
 
   public static Table<ListRow> addList(String name) {
     Table<ListRow> list = new Table<>(() -> {return new ListRow();});
-    list.name = name;
+    list.setName(name);
     lists.add(list);
     return list;
   }
@@ -1131,7 +1131,7 @@ public class Database {
     panels.remove(id);
     panels.save();
     Table table = getCellTableById(id);
-    cells.remove(table.id);
+    cells.remove(table.getTableId());
   }
   public static PanelRow[] getPanelsUsingTagId(int id) {
     TagRow tag = (TagRow)tags.get(id);
@@ -1175,8 +1175,8 @@ public class Database {
 
   public static Table<CellRow> addCellTable(String name, int pid) {
     Table<CellRow> table = new Table<>(() -> {return new CellRow();});
-    table.name = name;
-    table.xid = pid;
+    table.setName(name);
+    table.setXId(pid);
     cells.add(table);
     table.save();
     return table;
@@ -1185,7 +1185,7 @@ public class Database {
     ArrayList<Table<CellRow>> tables = cells.getTables();
     for(int a=0;a<tables.size();a++) {
       Table<CellRow> table = tables.get(a);
-      if (table.xid == pid) return table;
+      if (table.getXId() == pid) return table;
     }
     return null;
   }
@@ -1195,7 +1195,7 @@ public class Database {
   public static void deleteCellTableById(int pid) {
     Table table = getCellTableById(pid);
     if (table != null) {
-      cells.remove(table.id);
+      cells.remove(table.getTableId());
     }
   }
   public static CellRow[] getCells(String name) {
@@ -1242,11 +1242,11 @@ public class Database {
     funcs.add(func);
     funcs.save();
     Table<RungRow> rungsTable = new Table<>(() -> {return new RungRow();});
-    rungsTable.xid = func.id;
+    rungsTable.setXId(func.id);
     rungs.add(rungsTable);
     rungsTable.save();
     Table<BlockRow> blocksTable = new Table<>(() -> {return new BlockRow();});
-    blocksTable.xid = func.id;
+    blocksTable.setXId(func.id);
     blocks.add(blocksTable);
     blocksTable.save();
   }
@@ -1305,7 +1305,7 @@ public class Database {
     ArrayList<Table<RungRow>> tables = rungs.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
-      if (table.xid == fid) return table.id;
+      if (table.getXId() == fid) return table.getTableId();
     }
     return -1;
   }
@@ -1426,7 +1426,7 @@ public class Database {
     ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
-      if (table.xid == fid) return table.id;
+      if (table.getXId() == fid) return table.getTableId();
     }
     return -1;
   }
@@ -1526,8 +1526,8 @@ public class Database {
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
       Table table = tables.get(a);
-      if (table.xid == fid) {
-        blocks.remove(table.id);
+      if (table.getXId() == fid) {
+        blocks.remove(table.getTableId());
         break;
       }
     }
@@ -1564,7 +1564,7 @@ public class Database {
 
   public static void addWatchTable(String name) {
     Table<WatchRow> table = new Table<>(() -> {return new WatchRow();});
-    table.name = name;
+    table.setName(name);
     watches.add(table);
   }
   public static void deleteWatchTable(int wid) {
@@ -1954,8 +1954,8 @@ public class Database {
           case "name": {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
-              if (table.id == tableid) {
-                table.name = value;
+              if (table.getTableId() == tableid) {
+                table.setName(value);
                 table.save();
                 return true;
               }
@@ -1977,7 +1977,7 @@ public class Database {
           case "tag": {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
-              if (table.id == tableid) {
+              if (table.getTableId() == tableid) {
                 ArrayList<WatchRow> rows = table.getRows();
                 for(int b=0;b<rows.size();b++) {
                   WatchRow row = (WatchRow)rows.get(b);
@@ -2071,7 +2071,7 @@ public class Database {
                 table.save();
                 //must update cellTable name too
                 Table<CellRow> cellTable = cells.get(oldname);
-                cellTable.name = "usr_" + value;
+                cellTable.setName("usr_" + value);
                 cellTable.save();
                 return true;
               }
@@ -2392,8 +2392,8 @@ public class Database {
           case "name": {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
-              if (table.id == tableid) {
-                return table.name;
+              if (table.getTableId() == tableid) {
+                return table.getName();
               }
             }
             break;
@@ -2413,7 +2413,7 @@ public class Database {
           case "tag": {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
-              if (table.id == tableid) {
+              if (table.getTableId() == tableid) {
                 ArrayList<WatchRow> rows = table.getRows();
                 for(int b=0;b<rows.size();b++) {
                   WatchRow row = (WatchRow)rows.get(b);

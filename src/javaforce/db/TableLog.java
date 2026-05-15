@@ -19,16 +19,18 @@ public class TableLog<ROW extends Row> {
   private RandomAccessFile raf;
   private String filename;
   private Object lock = new Object();
-  private Row.Creator ctr;
+//  private Row.Creator ctr;
 
   public TableLog(String folder, Row.Creator rowCreator) {
     this.folder = folder;
-    this.ctr = rowCreator;
+//    this.ctr = rowCreator;
   }
+/*
   @SuppressWarnings("unchecked")
   private ROW create() {
     return (ROW)ctr.newInstance();
   }
+*/
   private final long ms_per_day = 24 * 60 * 60 * 1000;  //ms per day
   @SuppressWarnings("unchecked")
   public ROW[] get(long start, long end) {

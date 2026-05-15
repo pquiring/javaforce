@@ -65,7 +65,7 @@ public class Panels {
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
     if (!pnl.popup) {
-      context.cmps.clear();
+      context.clearComponents();
     }
     buildTable(table, panel, cells, client, -1, -1, null);
 
@@ -214,7 +214,7 @@ public class Panels {
         JFLog.log("Error:cell == null:" + compType);
         c = new Label("null");
       }
-      context.cmps.add(c);
+      context.addComponent(c);
       c.setProperty("name", compType);
       cs[a] = c;
       int x2 = rs[a].x + rs[a].width;
@@ -854,7 +854,7 @@ public class Panels {
       case "jfc_watch": {
         javaforce.db.Table data[] = Database.watches.getTables().toArray(new javaforce.db.Table[0]);
         for(int a=0;a<data.length;a++) {
-          String wid = Integer.toString(data[a].id);
+          String wid = Integer.toString(data[a].getTableId());
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watch_name_str_" + wid, null, null, null));
           cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_watch_edit", wid, null));
           cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_watch_delete", wid, null));

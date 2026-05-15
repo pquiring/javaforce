@@ -5,7 +5,7 @@ import java.io.*;
 public class Row implements Serializable {
   public static final long serialVersionUID = 1L;
 
-  /** auto-increment id */
+  /** auto-increment id assigned by containing Table */
   public int id;
 
   /** insert timestamp */

@@ -10,8 +10,7 @@ import javaforce.*;
  * @author pquiring
  */
 
-public class Table<ROW extends Row> implements Serializable {
-  public static final long serialVersionUID = 1L;
+public class Table<ROW extends Row> {
   private Row.Creator ctr;
 
   @SuppressWarnings("unchecked")
@@ -21,34 +20,42 @@ public class Table<ROW extends Row> implements Serializable {
 
   public Table(Row.Creator rowCreator) {
     ctr = rowCreator;
+    data = new Data<ROW>();
   }
 
-  private ArrayList<ROW> rows = new ArrayList<ROW>();
-  private int minid = 1;
-  private int nextid = 1;
-  private int maxid = 2147483647;  //2^31-1
-  private boolean reuseids = false;
+  public static class Data<ROW> implements Serializable {
+    public static final long serialVersionUID = 1L;
+    public ArrayList<ROW> rows = new ArrayList<>();
+    public int minid = 1;  //row starting ID
+    public int nextid = 1;  //row next ID to assign
+    public int maxid = 2147483647;  //2^31-1
+    public boolean reuseids = false;
 
-  public int id;  //table id if in TableList (else free to use)
-  public String name;  //user defined table name
+    public int id;  //table id if in TableList (else free to use)
 
-  public int xid;  //user defined xref table id
+    public int xid;  //user id
+    public String name;  //user defined table name
+  }
 
-  protected transient String filename;
+  private Data<ROW> data;
+  private String filename;
 
-  public static Table load(String filename) {
+  @SuppressWarnings("unchecked")
+  public boolean load(String filename) {
+    this.filename = filename;
+    if (!new File(filename).exists()) return false;
     try {
-      Table table = (Table)Compression.deserialize(filename);
-      return table;
+      data = (Data<ROW>)Compression.deserialize(filename);
+      return true;
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return false;
     }
   }
 
   public boolean save() {
     try {
-      return Compression.serialize(this.filename, this);
+      return Compression.serialize(filename, data);
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -56,15 +63,15 @@ public class Table<ROW extends Row> implements Serializable {
   }
 
   private int findIdx(ROW row) {
-    int cnt = rows.size();
-    if (cnt == 0) return 0;
+    int cnt = data.rows.size();
+    if (cnt == 0) return 0;  //insert @ start
     int min = 0;
     int idx = cnt / 2;
     int max = cnt;
     int tmp, delta;
     while (true) {
       if (idx == cnt) return idx;
-      ROW r = rows.get(idx);
+      ROW r = data.rows.get(idx);
       switch (r.compare(row)) {
         case 0: return idx;
         case -1:
@@ -89,15 +96,15 @@ public class Table<ROW extends Row> implements Serializable {
     }
   }
 
-  public synchronized void add(ROW row) {
-    if (reuseids) {
-      int id = minid;
+  public void add(ROW row) {
+    if (data.reuseids) {
+      int id = data.minid;
       int cnt = getCount();
       for(int a=0;a<cnt;a++) {
-        ROW r = rows.get(a);
+        ROW r = data.rows.get(a);
         if (r.id == id) {
           id++;
-          if (id == maxid) {
+          if (id == data.maxid) {
             JFLog.log("Warning:Table is full!");
             return;
           }
@@ -106,79 +113,112 @@ public class Table<ROW extends Row> implements Serializable {
       }
       row.id = id;
     } else {
-      row.id = nextid++;
-      if (nextid == maxid) {
+      row.id = data.nextid++;
+      if (data.nextid == data.maxid) {
         JFLog.log("Warning:Table id reset to start!");
-        nextid = minid;
+        data.nextid = data.minid;
       }
     }
     row.timestamp = System.currentTimeMillis();
-    rows.add(findIdx(row), row);
+    data.rows.add(findIdx(row), row);
   }
 
   public ROW get(int id) {
-    int size = rows.size();
+    int size = data.rows.size();
     for(int a=0;a<size;a++) {
-      ROW row = rows.get(a);
+      ROW row = data.rows.get(a);
       if (row.id == id) return row;
     }
     return null;
   }
 
   public void remove(int id) {
-    int size = rows.size();
+    int size = data.rows.size();
     for(int a=0;a<size;a++) {
-      ROW row = rows.get(a);
+      ROW row = data.rows.get(a);
       if (row.id == id) {
-        rows.remove(a);
+        data.rows.remove(a);
         break;
       }
     }
   }
 
   public void clear() {
-    rows.clear();
+    data.rows.clear();
   }
 
+  @SuppressWarnings("unchecked")
   public ArrayList<ROW> getRows() {
-    return rows;
+    return data.rows;
   }
 
   public int getCount() {
-    return rows.size();
+    return data.rows.size();
   }
 
   public int getMinId() {
-    return minid;
+    return data.minid;
   }
 
   public int getMaxId() {
-    return maxid;
+    return data.maxid;
   }
 
   public int getNextId() {
-    return nextid;
+    return data.nextid;
   }
 
   public void setMinId(int id) {
-    if (nextid < id) {
-      nextid = id;
+    if (data.nextid < id) {
+      data.nextid = id;
     }
-    minid = id;
+    data.minid = id;
   }
 
   public void setMaxId(int id) {
-    if (nextid > id) {
-      nextid = minid;
+    if (data.nextid > id) {
+      data.nextid = data.minid;
     }
-    maxid = id;
+    data.maxid = id;
   }
 
   public boolean getReuseIds() {
-    return reuseids;
+    return data.reuseids;
   }
 
   public void setReuseIds(boolean state) {
-    reuseids = state;
+    data.reuseids = state;
+  }
+
+  public int getTableId() {
+    return data.id;
+  }
+
+  public void setTableId(int id) {
+    data.id = id;
+  }
+
+  public String getName() {
+    return data.name;
+  }
+
+  public void setName(String name) {
+    data.name = name;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
+  public int getXId() {
+    return data.xid;
+  }
+
+  public void setXId(int id) {
+    data.xid = id;
   }
 }

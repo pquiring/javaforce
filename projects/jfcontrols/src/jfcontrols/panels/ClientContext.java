@@ -161,12 +161,21 @@ public class ClientContext extends Thread {
     }
   }
 
+  public void clearComponents() {
+    cmps.clear();
+  }
+
+  public void addComponent(Component cmp) {
+    cmps.add(cmp);
+  }
+
   public Component getComponent(String name) {
     for(Component c : cmps) {
       if (c.getName().equals(name)) {
         return c;
       }
     }
+    JFLog.log("Component not found:" + name);
     return null;
   }
 }

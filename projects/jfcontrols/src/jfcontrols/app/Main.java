@@ -41,17 +41,17 @@ public class Main implements WebUIHandler {
       }
     }
 //    if (debug) SQL.debug = true;
-    Paths.init();
+    try { Paths.init(); } catch (Exception e) {JFLog.log(e);}
     //start database
-    Database.start();
+    try { Database.start(); } catch (Exception e) {JFLog.log(e);}
     //start tags server
-    TagsService.main();
+    try { TagsService.main(); } catch (Exception e) {JFLog.log(e);}
     //start logic server
-    FunctionService.main();
+    try { FunctionService.main(); } catch (Exception e) {JFLog.log(e);}
     //start api server
-    APIService.main();
+    try { APIService.main(); } catch (Exception e) {JFLog.log(e);}
     //init https keys
-    initSecureWebKeys();
+    try { initSecureWebKeys(); } catch (Exception e) {JFLog.log(e);}
     //start webui server
     server = new WebUIServer();
     server.start(new Main(), 443, keys);

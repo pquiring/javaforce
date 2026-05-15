@@ -10,8 +10,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class TableList<ROW extends Row> implements Serializable {
-  public static final long serialVersionUID = 1L;
+public class TableList<ROW extends Row>  {
   private Row.Creator ctr;
 
   @SuppressWarnings("unchecked")
@@ -21,16 +20,22 @@ public class TableList<ROW extends Row> implements Serializable {
 
   public TableList(Row.Creator rowCreator) {
     ctr = rowCreator;
+    data = new Data();
+  }
+
+  public static class Data implements Serializable {
+  public static final long serialVersionUID = 1L;
+    public int minid = 1;
+    public int nextid = 1;
+    public int maxid = 2147483647;  //2^31-1
   }
 
   private String folder;
-  private int minid = 1;
-  private int nextid = 1;
-  private int maxid = 2147483647;  //2^31-1
-  private transient ArrayList<Table<ROW>> tables = new ArrayList<Table<ROW>>();
+  private ArrayList<Table<ROW>> tables = new ArrayList<Table<ROW>>();
+  private Data data;
 
   private void loadTables() {
-    for(int a=1;a<nextid;a++) {
+    for(int a=data.minid;a<data.nextid;a++) {
       String filename = folder + "/" + a + ".dat";
       if (!new File(filename).exists()) continue;
       Table<ROW> table = create();
@@ -43,20 +48,20 @@ public class TableList<ROW extends Row> implements Serializable {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public static TableList load(String folder) {
+  public boolean load(String folder) {
+    this.folder = folder;
     try {
       File file = new File(folder + "/0.dat");
       if (!file.exists()) {
-        return null;
+        return false;
       }
-      TableList list = (TableList)Compression.deserialize(file);
-      list.tables = new ArrayList<Table>();
-      list.loadTables();
-      return list;
+      data = (Data)Compression.deserialize(file);
+      tables = new ArrayList<Table<ROW>>();
+      loadTables();
+      return true;
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return false;
     }
   }
 
@@ -64,7 +69,7 @@ public class TableList<ROW extends Row> implements Serializable {
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
       Table<ROW> table = tables.get(a);
-      if (table.id == id) return table;
+      if (table.getTableId() == id) return table;
     }
     return null;
   }
@@ -72,33 +77,35 @@ public class TableList<ROW extends Row> implements Serializable {
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
       Table<ROW> table = tables.get(a);
-      if (table.name.equals(name)) return table;
+      if (table.getName().equals(name)) return table;
     }
     JFLog.log("Error:Table not found:" + name);
     return null;
   }
+
   public void save(int id) {
     Table table = get(id);
     if (table != null) {
       table.save();
     }
   }
+
   private void save() {
     try {
       new File(folder).mkdirs();
-      Compression.serialize(folder + "/0.dat", this);
+      Compression.serialize(folder + "/0.dat", data);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  public synchronized void add(Table<ROW> table) {
-    table.id = nextid++;
-    if (nextid == maxid) {
+  public void add(Table<ROW> table) {
+    table.setTableId(data.nextid++);
+    if (data.nextid == data.maxid) {
       JFLog.log("Warning:TableList:next id reset to start");
-      nextid = minid;
+      data.nextid = data.minid;
     }
-    table.filename = folder + "/" + table.id + ".dat";
+    table.setFilename(folder + "/" + table.getTableId() + ".dat");
     tables.add(table);
     save();
   }
@@ -113,7 +120,7 @@ public class TableList<ROW extends Row> implements Serializable {
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
       Table table = tables.get(a);
-      if (table.id == id) {
+      if (table.getTableId() == id) {
         tables.remove(a);
         break;
       }
