@@ -28,12 +28,15 @@ public class FFM {
     return instance;
   }
 
-  /** Enabled FFM native inter-ops.
+  /** Enabled FFM native inter-ops (default = true)
    */
   private static boolean enabled = true;
 
   /** Use JNI to pin arrays. */
   private static boolean jni_pinning = true;
+
+  /** Load JF native library to load JNI methods. */
+  private static boolean jni_load = false;
 
   /** Returns FFM enabled state.  */
   public static boolean enabled() {
@@ -74,6 +77,16 @@ public class FFM {
     }
   }
 
+  /** Set wether to load the JF native library to find JNI methods.
+   * Default = false
+   *
+   * For Tomcat edit conf/server.xml and add to the <server> section:
+   *   <Listener className="org.apache.catalina.core.JniLifecycleListener" libraryPath="c:\programdata\javaforce\jfnative64.dll" />
+   */
+  public static void setLoadLibrary(boolean state) {
+    jni_load = state;
+  }
+
   private static String getLibrary() {
     if (JF.isWindows()) {
       return System.getenv("ProgramData") + "/JavaForce/jfnative64.dll";
@@ -112,7 +125,9 @@ public class FFM {
         //symbol lookup from supplied shared library
         arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
         lookup = SymbolLookup.libraryLookup(lib, arena);
-        try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
+        if (jni_load) {
+          try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
+        }
       } else {
         if (debug) JFLog.log("Loading FFM from executable");
         //symbol lookup from executable of this JVM (JavaForce native loader)
