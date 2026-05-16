@@ -36,6 +36,7 @@
 #include "javaforce_jni_UIJNI.h"
 #include "javaforce_jni_PCapJNI.h"
 #include "javaforce_jni_CLJNI.h"
+#include "javaforce_jni_JFNative.h"
 
 #include "../common/string.h"
 #include "../common/array.h"

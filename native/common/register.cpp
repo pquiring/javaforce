@@ -17,8 +17,6 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
   }
 }
 
-extern "C" {
-
 JNIEXPORT jobject JNICALL Java_javaforce_jni_JFNative_allocate
   (JNIEnv *e, jclass c, jint size)
 {
@@ -43,8 +41,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_unpin
 {
   e->ReleasePrimitiveArrayCritical((jarray)array, (void*)ptr, commit ? 0 : JNI_ABORT);
 }
-
-}  //extern "C"
 
 static JNINativeMethod javaforce_jni_JFNative[] = {
   {"allocate", "(I)Ljava/nio/ByteBuffer;", (void *)&Java_javaforce_jni_JFNative_allocate},

@@ -2,6 +2,11 @@ package javaforce.ffm;
 
 /** FFM support class.
  *
+ * For Tomcat edit conf/server.xml and add to the <server> section:
+ *   <Listener className="org.apache.catalina.core.JniLifecycleListener" libraryPath="c:/programdata/javaforce/jfnative64.dll" />
+ * for Linux:
+ *   <Listener className="org.apache.catalina.core.JniLifecycleListener" libraryPath="/usr/lib/jfnative64.so" />
+ *
  * @author pquiring
  */
 
@@ -79,9 +84,6 @@ public class FFM {
 
   /** Set wether to load the JF native library to find JNI methods.
    * Default = false
-   *
-   * For Tomcat edit conf/server.xml and add to the <server> section:
-   *   <Listener className="org.apache.catalina.core.JniLifecycleListener" libraryPath="c:\programdata\javaforce\jfnative64.dll" />
    */
   public static void setLoadLibrary(boolean state) {
     jni_load = state;

@@ -26,6 +26,7 @@ public class TestIPC {
       System.out.println(" client options : [--threads=#] [--delay=#]");
       return;
     }
+    FFM.setLoadLibrary(true);  //load JNI manually
     switch (args[0]) {
       case "server": server(); break;
       case "client": client(args); break;
