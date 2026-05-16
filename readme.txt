@@ -97,13 +97,13 @@ executable : build native loader
      "server" for service config GUI apps (same as "window" type plus adds "-server" to executable and package names)
      "client" for client config GUI apps (same as "window" type plus adds "-client" to executable and package names)
  - {app}.cfg file contains executable properties:
-   - CLASSPATH={list of jar files seperated by ;}  //CLASSPATH will be adjusted to OS requirements
-   - MAINCLASS={main class to find main()}         //startup class to find main() or serviceStart() if apptype=service
-   - DEBUG=true                                    //enable JMX debugging (see JMX Debugging)
-   - DEBUG_PORT={port}                             //JMX port binding (default = 9010)
-   - OPTION={options}                              //JVM options such as heap size, GC options, etc.
-   - JAVA_HOME={path}                              //alternative JVM home (default = search various locations which depends on OS)
-   - METHOD={start method}                         //alternative main method (default = main or serviceStart)
+   - CLASSPATH={jar files seperated by ;}  //CLASSPATH will be adjusted to OS requirements
+   - MAINCLASS={main class with main()}    //startup class to find main() or serviceStart() if apptype=service
+   - DEBUG=true                            //enable JMX debugging (see JMX Debugging)
+   - DEBUG_PORT={port}                     //JMX port binding (default = 9010)
+   - OPTIONS={options}                     //JVM options such as heap size, GC options, etc.
+   - JAVA_HOME={path}                      //alternative JVM home (default = search various locations depending on OS)
+   - METHOD={start method}                 //alternative main method (default = main or serviceStart)
 ffmpeg : copy ffmpeg libraries to project folder (Windows only)
 installapp : install files before package creation (Linux only)
 deb : build Debian deb file (after installapp)
