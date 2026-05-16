@@ -112,6 +112,7 @@ public class FFM {
         //symbol lookup from supplied shared library
         arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
         lookup = SymbolLookup.libraryLookup(lib, arena);
+        try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
       } else {
         if (debug) JFLog.log("Loading FFM from executable");
         //symbol lookup from executable of this JVM (JavaForce native loader)
