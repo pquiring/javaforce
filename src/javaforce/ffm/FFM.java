@@ -28,7 +28,7 @@ public class FFM {
    *
    * Due to poor performance in some native APIs this is disabled by default.
    */
-  private static boolean enabled = false;
+  private static boolean enabled = true;
 
   /** Returns FFM enabled state.  */
   public static boolean enabled() {
