@@ -62,17 +62,17 @@ public class example extends HttpServlet {
   }
 
   public void doRequest(HttpServletRequest request, HttpServletResponse response) {
+    response.setContentType("text/html;charset=UTF-8");
     try {
       PrintWriter out = response.getWriter();
-      StringBuilder sb = new StringBuilder();
-      sb.append("Example Servlet<br><br>");
-      sb.append("JavaForce/" + JF.getVersion() + "<br>");
-      out.print(sb.toString());
-    } catch (Exception e) {
+      StringBuilder html = new StringBuilder();
+      html.append("Example Servlet<br><br>");
+      html.append("JavaForce/" + JF.getVersion() + "<br>");
+      out.print(html.toString());
+    } catch (Throwable t) {
       try {
-        response.setContentType("text/html;charset=UTF-8");
         OutputStream out = response.getOutputStream();
-        out.write(("Exception:" + e).getBytes());
+        out.write(HTML.toString(t).getBytes());
       } catch (Exception e2) {}
     }
   }

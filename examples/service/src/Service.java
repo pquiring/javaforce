@@ -29,7 +29,7 @@ public class Service extends Thread implements WebHandler {
     service = new Service();
     service.start();
     web = new WebServer();
-    web.start(service, port, false);
+    web.start(service, port);
   }
 
   public static void serviceStop() {
