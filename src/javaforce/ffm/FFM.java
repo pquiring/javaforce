@@ -26,7 +26,7 @@ public class FFM {
 
   /** Returns singleton instance of this class. */
   public static FFM getInstance() {
-    if (!enabled) return null;
+    if (!enabled_ffm) return null;
     if (instance == null) {
       instance = new FFM();
     }
@@ -35,21 +35,18 @@ public class FFM {
 
   /** Enabled FFM native inter-ops (default = true)
    */
-  private static boolean enabled = true;
+  private static boolean enabled_ffm = true;
 
   /** Use JNI to pin arrays. */
-  private static boolean jni_pinning = true;
-
-  /** Load JF native library to load JNI methods. */
-  private static boolean jni_load = false;
+  private static boolean enabled_jni = true;
 
   /** Returns FFM enabled state.  */
   public static boolean enabled() {
-    if (!enabled) {
+    if (!enabled_ffm) {
       return false;
     }
     getInstance();
-    return enabled;
+    return enabled_ffm;
   }
 
   /** Enable FFM.
@@ -57,7 +54,7 @@ public class FFM {
    * SymbolLookup will be auto detected to use executable or shared library.
    */
   public static void enable() {
-    enabled = true;
+    enabled_ffm = true;
   }
 
   /** Enable FFM.
@@ -70,23 +67,30 @@ public class FFM {
       return;
     }
     FFM.lib = lib;
-    enabled = true;
+    enabled_ffm = true;
   }
 
   /** Disable FFM and use JNI instead. */
   public static void disable() {
-    enabled = false;
+    enabled_ffm = false;
     if (instance != null) {
       instance = null;
       System.gc();
     }
   }
 
-  /** Set wether to load the JF native library to find JNI methods.
-   * Default = false
+  /** Enable JNI pinning for best performance.
+   * Default = true
    */
-  public static void setLoadLibrary(boolean state) {
-    jni_load = state;
+  public static void enableJNI() {
+    enabled_jni = true;
+  }
+
+  /** Disable JNI pinning.
+   * Default = true
+   */
+  public static void disableJNI() {
+    enabled_jni = false;
   }
 
   private static String getLibrary() {
@@ -127,7 +131,7 @@ public class FFM {
         //symbol lookup from supplied shared library
         arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
         lookup = SymbolLookup.libraryLookup(lib, arena);
-        if (jni_load) {
+        if (enabled_jni) {
           try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
         }
       } else {
@@ -294,42 +298,42 @@ public class FFM {
   /** Create native array from float[] */
   public static MemorySegment toMemory(Arena arena, float[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_FLOAT, m);
   }
 
   /** Create native array from double[] */
   public static MemorySegment toMemory(Arena arena, double[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_DOUBLE, m);
   }
 
   /** Create native array from long[] */
   public static MemorySegment toMemory(Arena arena, long[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_LONG, m);
   }
 
   /** Create native array from int[] */
   public static MemorySegment toMemory(Arena arena, int[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_INT, m);
   }
 
   /** Create native array from short[] */
   public static MemorySegment toMemory(Arena arena, short[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_SHORT, m);
   }
 
   /** Create native array from byte[] */
   public static MemorySegment toMemory(Arena arena, byte[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (jni_pinning) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
     return arena.allocateFrom(JAVA_BYTE, m);
   }
 
@@ -403,7 +407,7 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, float[] m) {
     if (seg == null || m == null) return;
-    if (jni_pinning) {
+    if (enabled_jni) {
       JFNative.unpin(m, seg.address(), true);
     } else {
       float[] r = seg.toArray(JAVA_FLOAT);
@@ -414,7 +418,7 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, double[] m) {
     if (seg == null || m == null) return;
-    if (jni_pinning) {
+    if (enabled_jni) {
       JFNative.unpin(m, seg.address(), true);
     } else {
       double[] r = seg.toArray(JAVA_DOUBLE);
@@ -425,7 +429,7 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, long[] m) {
     if (seg == null || m == null) return;
-    if (jni_pinning) {
+    if (enabled_jni) {
       JFNative.unpin(m, seg.address(), true);
     } else {
       long[] r = seg.toArray(JAVA_LONG);
@@ -436,7 +440,7 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, int[] m) {
     if (seg == null || m == null) return;
-    if (jni_pinning) {
+    if (enabled_jni) {
       JFNative.unpin(m, seg.address(), true);
     } else {
       int[] r = seg.toArray(JAVA_INT);
@@ -447,7 +451,7 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, short[] m) {
     if (seg == null || m == null) return;
-    if (jni_pinning) {
+    if (enabled_jni) {
       JFNative.unpin(m, seg.address(), true);
     } else {
       short[] r = seg.toArray(JAVA_SHORT);
@@ -458,7 +462,7 @@ public class FFM {
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, byte[] m) {
     if (seg == null || m == null) return;
-    if (jni_pinning) {
+    if (enabled_jni) {
       JFNative.unpin(m, seg.address(), true);
     } else {
       byte[] r = seg.toArray(JAVA_BYTE);
