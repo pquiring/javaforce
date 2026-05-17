@@ -117,12 +117,12 @@ public class HTML {
   }
   /** Generate HTML stack trace of exception.
    */
-  public static String toString(Exception ex) {
+  public static String toString(Throwable t) {
     StringBuilder sb = new StringBuilder();
     sb.append("Exception:");
-    sb.append(ex.toString());
+    sb.append(t.toString());
     sb.append("<br>");
-    StackTraceElement[] stes = ex.getStackTrace();
+    StackTraceElement[] stes = t.getStackTrace();
     for(StackTraceElement ste : stes) {
       sb.append(ste.toString());
       sb.append("<br>");
