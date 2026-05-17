@@ -1,5 +1,7 @@
 const char* nclass;
 
+typedef int (JNICALL *JNI_GetCreatedJavaVMs_t)(JavaVM**, int, int*);
+
 jclass findClass(JNIEnv *env, const char *clsname) {
   nclass = clsname;
   jclass cls = env->FindClass(clsname);
@@ -50,11 +52,15 @@ static JNINativeMethod javaforce_jni_JFNative[] = {
   {"unpin", "(Ljava/lang/Object;JZ)V", (void *)&Java_javaforce_jni_JFNative_unpin},
 };
 
-void registerCommonNatives(JNIEnv *env) {
+void jfnative_register(JNIEnv *env) {
   jclass cls;
 
   cls = findClass(env, "javaforce/jni/JFNative");
   registerNatives(env, cls, javaforce_jni_JFNative, sizeof(javaforce_jni_JFNative)/sizeof(JNINativeMethod));
+}
+
+void registerCommonNatives(JNIEnv *env) {
+  jfnative_register(env);
 
   gl_register(env);
 

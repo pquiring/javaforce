@@ -1671,8 +1671,17 @@ void winnative_register(JNIEnv *env) {
 
 #include "../common/register.cpp"
 
+JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
+  HMODULE dll = GetModuleHandle("jvm.dll");
+  if (dll == NULL) {
+    printf("GetModuleHandle('jvm.dll') failed\n");
+    return NULL;
+  }
+  return (JNI_GetCreatedJavaVMs_t)GetProcAddress(dll, "JNI_GetCreatedJavaVMs");
+}
+
 /** DLL Entry Point. */
-BOOL APIENTRY DllMain( HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
   return TRUE;
 }
