@@ -36,6 +36,9 @@ public class FFM {
     if (!enabled_ffm) return null;
     if (instance == null) {
       instance = new FFM();
+      if (enabled_jni) {
+        enabled_jni = jni_test();
+      }
     }
     return instance;
   }
@@ -139,7 +142,6 @@ public class FFM {
         lookup = SymbolLookup.libraryLookup(lib, arena);
         if (enabled_jni) {
           try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
-          enabled_jni = jni_test();
         }
       } else {
         if (debug) JFLog.log("Loading FFM from executable");
@@ -156,6 +158,7 @@ public class FFM {
   private static boolean jni_test() {
     byte[] ba = new byte[1];
     try {
+      //Warning : JFNative.load() will invoke FFM.getInstance()
       long ptr = JFNative.pin(ba);
       JFNative.unpin(ba, ptr, true);
       return true;

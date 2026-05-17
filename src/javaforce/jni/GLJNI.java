@@ -11,6 +11,7 @@ public class GLJNI implements GL {
 
   public static synchronized GL getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new GLJNI();
       instance.init();
     }

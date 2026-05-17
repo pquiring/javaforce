@@ -13,6 +13,7 @@ public class CameraJNI implements CameraAPI {
 
   public static synchronized CameraJNI getInstance(FFMArray array) {
     if (instance == null) {
+      JFNative.load();
       instance = new CameraJNI();
     }
     FFM.setFFMArray(array);

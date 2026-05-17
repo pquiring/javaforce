@@ -12,6 +12,7 @@ public class ComPortJNI implements ComPortAPI {
   private static ComPortJNI instance;
   public static ComPortJNI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new ComPortJNI();
     }
     return instance;

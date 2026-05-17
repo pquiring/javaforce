@@ -16,6 +16,7 @@ public class SpeexJNI implements SpeexAPI {
   private static SpeexJNI instance;
   public static SpeexJNI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new SpeexJNI();
     }
     return instance;

@@ -17,6 +17,7 @@ public class GPIOJNI implements GPIOAPI {
 
   public static GPIOAPI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new GPIOJNI();
       if (!instance.init()) {
         instance = null;

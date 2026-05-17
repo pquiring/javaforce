@@ -12,6 +12,7 @@ public class I2CJNI implements I2CAPI {
 
   public static I2CAPI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new I2CJNI();
       if (!instance.i2cSetup()) {
         instance = null;

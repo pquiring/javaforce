@@ -14,6 +14,7 @@ public class WinPipeJNI implements WinPipeAPI {
 
   public static WinPipeAPI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new WinPipeJNI();
     }
     return instance;

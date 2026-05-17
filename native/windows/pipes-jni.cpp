@@ -13,7 +13,7 @@ See CreateNamedPipe -> Example : Multithreaded Pipe Server
 bool debug_pipes = false;
 
 JNIEXPORT jlong JNICALL Java_javaforce_jni_WinPipeJNI_pipeCreate
-  (JNIEnv *e, jclass c, jstring name, jboolean first)
+  (JNIEnv *e, jobject c, jstring name, jboolean first)
 {
   const char *cname = e->GetStringUTFChars(name, NULL);
 
@@ -44,14 +44,14 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinPipeJNI_pipeCreate
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_WinPipeJNI_pipeClose
-  (JNIEnv *e, jclass c, jlong ctx)
+  (JNIEnv *e, jobject c, jlong ctx)
 {
   DisconnectNamedPipe((HANDLE)ctx);
   CloseHandle((HANDLE)ctx);
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinPipeJNI_pipeRead
-  (JNIEnv *e, jclass c, jlong ctx, jbyteArray buf, jint buf_off, jint buf_len)
+  (JNIEnv *e, jobject c, jlong ctx, jbyteArray buf, jint buf_off, jint buf_len)
 {
   int read = -1;
   jbyte *cbuf = e->GetByteArrayElements(buf, NULL);
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinPipeJNI_pipeRead
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinPipeJNI_pipeWrite
-  (JNIEnv *e, jclass c, jstring name, jbyteArray buf, jint buf_off, jint buf_len)
+  (JNIEnv *e, jobject c, jstring name, jbyteArray buf, jint buf_off, jint buf_len)
 {
   int write = -1;
   jbyte *cbuf = e->GetByteArrayElements(buf, NULL);

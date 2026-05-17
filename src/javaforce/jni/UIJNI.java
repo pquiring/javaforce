@@ -14,6 +14,7 @@ public class UIJNI implements UIAPI {
   private static UIAPI api;
   public static UIAPI getInstance(FFMArray array) {
     if (api == null) {
+      JFNative.load();
       api = new UIJNI();
     }
     FFM.setFFMArray(array);

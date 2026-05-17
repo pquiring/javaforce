@@ -15,6 +15,7 @@ public class PCapJNI implements PCapAPI {
 
   public static synchronized PCapJNI getInstance(FFMArray array) {
     if (instance == null) {
+      JFNative.load();
       instance = new PCapJNI();
     }
     FFM.setFFMArray(array);

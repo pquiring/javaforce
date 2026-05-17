@@ -15,11 +15,12 @@ import javaforce.ffm.*;
 
 public class JFNative {
 
+  private static boolean debug = false;
+  private static boolean loaded = false;  //must be defined before static {}
+
   static {
     load();
   }
-
-  private static boolean loaded = false;
 
   /** Loads the JavaForce native library (optional).
    * This library is not needed if the JavaForce loaders are used.
@@ -31,7 +32,7 @@ public class JFNative {
       loaded = true;
       return;
     }
-    System.out.println("Loading javaforce native library...");
+    if (debug) JFLog.log("Loading javaforce native library...");
     String path = JF.getCurrentPath();
     String file = "/jfnative64";
     String ext = Library.getExt();

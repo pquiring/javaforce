@@ -13,6 +13,7 @@ public class CLJNI implements CLAPI {
 
   public synchronized static CLJNI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new CLJNI();
     }
     return instance;

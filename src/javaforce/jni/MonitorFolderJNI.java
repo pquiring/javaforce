@@ -14,6 +14,7 @@ public class MonitorFolderJNI implements MonitorFolderAPI {
 
   public static MonitorFolderJNI getInstance() {
     if (instance == null) {
+      JFNative.load();
       instance = new MonitorFolderJNI();
     }
     return instance;

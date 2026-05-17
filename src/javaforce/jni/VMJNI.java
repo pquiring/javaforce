@@ -15,6 +15,7 @@ public class VMJNI implements VMAPI {
   private static VMAPI api;
   public static VMAPI getInstance(FFMArray array) {
     if (api == null) {
+      JFNative.load();
       api = new VMJNI();
     }
     FFM.setFFMArray(array);
