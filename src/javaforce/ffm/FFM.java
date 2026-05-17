@@ -102,7 +102,8 @@ public class FFM {
     enabled_jni = false;
   }
 
-  private static String getLibrary() {
+  /** Returns JF native library from standard locations. */
+  public static String getLibrary() {
     if (JF.isWindows()) {
       return System.getenv("ProgramData") + "/JavaForce/jfnative64.dll";
     } else {

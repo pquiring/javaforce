@@ -33,11 +33,8 @@ public class JFNative {
       return;
     }
     if (debug) JFLog.log("Loading javaforce native library...");
-    String path = JF.getCurrentPath();
-    String file = "/jfnative64";
-    String ext = Library.getExt();
     try {
-      System.load(path + file + ext);
+      System.load(FFM.getLibrary());
     } catch(Throwable t) {
       JFLog.log(t);
     }
