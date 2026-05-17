@@ -139,6 +139,7 @@ public class FFM {
         lookup = SymbolLookup.libraryLookup(lib, arena);
         if (enabled_jni) {
           try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
+          enabled_jni = jni_test();
         }
       } else {
         if (debug) JFLog.log("Loading FFM from executable");
@@ -149,6 +150,18 @@ public class FFM {
       }
     } catch (Throwable t) {
       JFLog.log(t);
+    }
+  }
+
+  private static boolean jni_test() {
+    byte[] ba = new byte[1];
+    try {
+      long ptr = JFNative.pin(ba);
+      JFNative.unpin(ba, ptr, true);
+      return true;
+    } catch (Throwable t) {
+      JFLog.log(t);
+      return false;
     }
   }
 
