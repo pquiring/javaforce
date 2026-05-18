@@ -1,5 +1,19 @@
 What's new...
 
+May 18/2026 : JF/107.0
+  - new : improved FFM/JNI setup
+  - new : javaforce.db.* has switched to Java Serialization
+    - removed old deprecated custom serialization methods
+  - jfDVR/0.39
+    - removed old config format
+    - you must run 0.34 - 0.38 to upgrade config before upgrading to 0.39
+  - new : removed deprecated functions from webui
+  - issue : FFM works great in Tomcat but loading the two JNI methods
+    does not work yet (JFNative.pin() and unpin()).
+    The Tomcat JniLifecycleListener does not seem to load the library properly.
+    For now I'm using FFM.disableJNI() in my servlets init() method
+    until this can be resolved.
+
 May 11/2026 : JF/106.0
   - new : FFM is back and enabled by default
     - performance issues have been resolved
