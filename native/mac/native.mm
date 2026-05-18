@@ -89,3 +89,12 @@ void camera_register(JNIEnv *env) {
 }
 
 #include "../common/register.cpp"
+
+JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
+  void* lib = dlopen("libjvm.so", RTLD_NOW | RTLD_GLOBAL);
+  if (lib == NULL) {
+    printf("dlopen('libjvm.so') failed\n");
+    return NULL;
+  }
+  return (JNI_GetCreatedJavaVMs_t)dlsym(lib, "JNI_GetCreatedJavaVMs");
+}
