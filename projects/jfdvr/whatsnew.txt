@@ -1,3 +1,8 @@
+May 18, 2026 : 0.39 released!
+  - new : removed old config format
+    - you must run version 0.34 - 0.38 to upgrade config
+      before upgrading to this version
+
 Mar 5, 2026 : 0.38 released!
   - fix : Media Framework fixes
 
