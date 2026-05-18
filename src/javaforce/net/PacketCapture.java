@@ -16,7 +16,7 @@ import javaforce.jni.*;
 
 public class PacketCapture {
 
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   private static byte[] local_mac;
   private static byte[] local_ip;
@@ -44,6 +44,7 @@ public class PacketCapture {
         String dll2 = windir + "/system32/npcap/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
           inited = PCapAPI.getInstance(array).pcapInit(dll1, dll2);
+          return inited;
         }
       }
       {
@@ -52,6 +53,7 @@ public class PacketCapture {
         String dll2 = windir + "/system32/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
           inited =  PCapAPI.getInstance(array).pcapInit(dll1, dll2);
+          return inited;
         }
       }
       return inited;
@@ -125,16 +127,17 @@ public class PacketCapture {
     return PCapAPI.getInstance(array).pcapWrite(handle, packet, offset, length);
   }
 
-  public static void print_mac(byte[] mac) {
+  /** mac address to String */
+  public static String toString(byte[] mac) {
     if (mac == null) {
-      JFLog.log("null");
-      return;
+      return "null";
     }
+    StringBuilder str = new StringBuilder();
     for(int a=0;a<mac.length;a++) {
-      if (a > 0) System.out.print(":");
-      System.out.print(String.format("%02x", mac[a]));
+      if (a > 0) str.append(":");
+      str.append(String.format("%02x", mac[a]));
     }
-    JFLog.log("");
+    return str.toString();
   }
 
   public static byte[] get_mac(String ip) {
@@ -150,7 +153,7 @@ public class PacketCapture {
             byte[] mac = interf.getHardwareAddress();
             if (debug) {
               JFLog.log("IP=" + ip);
-              print_mac(mac);
+              toString(mac);
             }
             return mac;
           }
@@ -318,13 +321,23 @@ public class PacketCapture {
         }
         if (pkt != null) {
           if (pkt.length >= pkt_length) {
-            if (get_ethernet_type(pkt) == TYPE_ARP) {
-              if (get_arp_opcode(pkt) == ARP_REPLY) {
+            int type = get_ethernet_type(pkt);
+            if (type == TYPE_ARP) {
+              int opcode = get_arp_opcode(pkt);
+              if (opcode == ARP_REPLY) {
                 if (arp_ip_equals(pkt, ip)) {
                   return get_arp_mac(pkt);
+                } else {
+                  if (debug) JFLog.log("packet.ip is unknown!");
                 }
+              } else {
+                if (debug) JFLog.log("packet.opcode=" + opcode + ":expected=" + ARP_REPLY);
               }
+            } else {
+              if (debug) JFLog.log("packet.type=" + type + ":expected=" + TYPE_ARP);
             }
+          } else {
+            if (debug) JFLog.log("packet too short:" + pkt.length + ":min=" + pkt_length);
           }
         }
       } while (pkt != null);

@@ -74,8 +74,7 @@ public class TestPCAP {
     cap.compile(id, "arp");
     byte[] mac = PacketCapture.arp(id, ip, Integer.valueOf(timeout));
     cap.stop(id);
-    System.out.print("MAC=");
-    PacketCapture.print_mac(mac);
+    JFLog.log("MAC=" + PacketCapture.toString(mac));
   }
 
   private static void parse_opts(String[] args) {
