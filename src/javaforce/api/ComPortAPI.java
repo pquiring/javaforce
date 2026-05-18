@@ -5,7 +5,17 @@ package javaforce.api;
  * @author pquiring
  */
 
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
 public interface ComPortAPI {
+  public static ComPortAPI getInstance() {
+    if (FFM.enabled()) {
+      return ComPortFFM.getInstance(null);  //no returned arrays
+    } else {
+      return ComPortJNI.getInstance();
+    }
+  }
   /** Opens a com port.
    *
    * @param name = com port name (com1, com2, etc)

@@ -13,15 +13,9 @@ import javaforce.jni.*;
 import javaforce.ffm.*;
 
 public class ComPort {
-  private ComPortAPI api;
   private long handle;
   private String name;
   private ComPort() {
-    if (FFM.enabled()) {
-      api = ComPortFFM.getInstance(null);  //ComPortFFM does not return arrays
-    } else {
-      api = ComPortJNI.getInstance();
-    }
   }
   /** Lists available Com ports. */
   public static String[] list() {
@@ -62,7 +56,7 @@ public class ComPort {
    */
   public static ComPort open(String name, int baud) {
     ComPort port = new ComPort();
-    port.handle = port.api.comOpen(name, baud);
+    port.handle = ComPortAPI.getInstance().comOpen(name, baud);
     if (port.handle == 0) return null;
     port.name = name;
     return port;
@@ -73,14 +67,14 @@ public class ComPort {
   }
   /** Read data from Com Port (blocking) */
   public int read(byte[] data) {
-    return api.comRead(handle, data, data.length);
+    return ComPortAPI.getInstance().comRead(handle, data, data.length);
   }
   /** Writes data to Com Port */
   public int write(byte[] data) {
-    return api.comWrite(handle, data, data.length);
+    return ComPortAPI.getInstance().comWrite(handle, data, data.length);
   }
   /** Closes Com Port */
   public void close() {
-    api.comClose(handle);
+    ComPortAPI.getInstance().comClose(handle);
   }
 }

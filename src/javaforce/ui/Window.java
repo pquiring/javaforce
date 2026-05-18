@@ -9,13 +9,14 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.api.*;
+import javaforce.ffm.*;
 import javaforce.gl.*;
 import javaforce.ui.theme.*;
 import static javaforce.gl.GL.*;
 
 public class Window implements UIEvents {
   public static boolean init() {
-    return UIAPI.getInstance(null).uiInit();
+    return UIAPI.getInstance(new FFMArray()).uiInit();
   }
 
   private long ctx;
@@ -30,6 +31,7 @@ public class Window implements UIEvents {
   private Object3 object;
   private boolean active = true;
   private Component content;
+  private FFMArray array = new FFMArray();
 
   private static ArrayList<Canvas> canvasList = new ArrayList<>();
   private static ArrayList<Window> windows = new ArrayList<>();
@@ -71,7 +73,7 @@ public class Window implements UIEvents {
   public boolean create(int style, String title, int width, int height, Window shared) {
     this.width = width;
     this.height = height;
-    ctx = UIAPI.getInstance(null).uiWindowCreate(style, title, width, height, shared == null ? 0 : shared.ctx);
+    ctx = UIAPI.getInstance(array).uiWindowCreate(style, title, width, height, shared == null ? 0 : shared.ctx);
     if (ctx != 0) {
       synchronized(windows) {
         windows.add(this);
@@ -84,7 +86,7 @@ public class Window implements UIEvents {
   public void destroy() {
     if (ctx == 0) return;
     active = false;
-    UIAPI.getInstance(null).uiWindowDestroy(ctx);
+    UIAPI.getInstance(array).uiWindowDestroy(ctx);
     ctx = 0;
     synchronized(windows) {
       windows.remove(this);
@@ -93,7 +95,7 @@ public class Window implements UIEvents {
 
   /** Set the OpenGL Context current for this window. */
   public void setCurrent() {
-    UIAPI.getInstance(null).uiWindowSetCurrent(ctx);
+    UIAPI.getInstance(array).uiWindowSetCurrent(ctx);
   }
 
   /** Set an icon to the window.
@@ -102,7 +104,7 @@ public class Window implements UIEvents {
    * @param filename = file (.ico for windows)
    */
   public void setIcon(String filename, int x, int y) {
-    UIAPI.getInstance(null).uiWindowSetIcon(ctx, filename, x, y);
+    UIAPI.getInstance(array).uiWindowSetIcon(ctx, filename, x, y);
   }
 
   public void setKeyListener(KeyEvents keys) {
@@ -124,12 +126,12 @@ public class Window implements UIEvents {
    *    x = wait x milliseconds
    */
   public void pollEvents(int wait) {
-    UIAPI.getInstance(null).uiPollEvents(ctx, wait, this);
+    UIAPI.getInstance(array).uiPollEvents(ctx, wait, this);
   }
 
   /** Posts an empty event to wake main thread. */
   public void postEvent() {
-    UIAPI.getInstance(null).uiPostEvent();
+    UIAPI.getInstance(array).uiPostEvent();
   }
 
   /** Polls for events. Does not wait for an event.  Same as pollEvents(0); */
@@ -139,36 +141,36 @@ public class Window implements UIEvents {
 
   /** Show the window. */
   public void show() {
-    UIAPI.getInstance(null).uiWindowShow(ctx);
+    UIAPI.getInstance(array).uiWindowShow(ctx);
     visible = true;
   }
 
   /** Hide the window. */
   public void hide() {
-    UIAPI.getInstance(null).uiWindowHide(ctx);
+    UIAPI.getInstance(array).uiWindowHide(ctx);
     visible = false;
   }
 
   /** Swaps the OpenGL Buffers. */
   public void swap() {
-    UIAPI.getInstance(null).uiWindowSwap(ctx);
+    UIAPI.getInstance(array).uiWindowSwap(ctx);
   }
 
   /** Hide the cursor. */
   public void hideCursor() {
-    UIAPI.getInstance(null).uiWindowHideCursor(ctx);
+    UIAPI.getInstance(array).uiWindowHideCursor(ctx);
   }
 
   /** Show the cursor (default). */
   public void showCursor() {
-    UIAPI.getInstance(null).uiWindowShowCursor(ctx);
+    UIAPI.getInstance(array).uiWindowShowCursor(ctx);
   }
 
   /** Hide the cursor and lock to this window.
    * Use showCursor() to unlock.
    */
   public void lockCursor() {
-    UIAPI.getInstance(null).uiWindowLockCursor(ctx);
+    UIAPI.getInstance(array).uiWindowLockCursor(ctx);
   }
 
   /** Get window position.
@@ -176,7 +178,7 @@ public class Window implements UIEvents {
    */
   public int[] getPosition() {
     int[] ret = new int[2];
-    UIAPI.getInstance(null).uiWindowGetPos(ctx, ret);
+    UIAPI.getInstance(array).uiWindowGetPos(ctx, ret);
     return ret;
   }
 
@@ -184,7 +186,7 @@ public class Window implements UIEvents {
    * return: int[0] = x, int[1] = y
    */
   public void setPosition(int x,int y) {
-    UIAPI.getInstance(null).uiWindowSetPos(ctx, x, y);
+    UIAPI.getInstance(array).uiWindowSetPos(ctx, x, y);
   }
 
   public int getWidth() {
@@ -296,6 +298,6 @@ public class Window implements UIEvents {
 
   public static void redrawAll() {
     if (windows.size() == 0) return;
-    UIAPI.getInstance(null).uiPostEvent();
+    UIAPI.getInstance(new FFMArray()).uiPostEvent();
   }
 }

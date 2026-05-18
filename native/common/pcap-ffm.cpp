@@ -192,6 +192,7 @@ extern "C" {
   JNIEXPORT void* (*_pcapListLocalInterfaces)() = &pcapListLocalInterfaces;
   JNIEXPORT jlong (*_pcapStart)(char*,jboolean) = &pcapStart;
   JNIEXPORT void (*_pcapStop)(jlong) = &pcapStop;
+  JNIEXPORT jboolean (*_pcapCompile)(jlong,char*) = &pcapCompile;
   JNIEXPORT jbyte* (*_pcapRead)(jlong) = &pcapRead;
   JNIEXPORT jboolean (*_pcapWrite)(jlong,jbyte*,jint,jint) = &pcapWrite;
 

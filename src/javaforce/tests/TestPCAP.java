@@ -40,7 +40,7 @@ public class TestPCAP {
   }
 
   public static void cmd_list() {
-    PacketCapture cap = PacketCapture.getInstance();
+    PacketCapture cap = new PacketCapture();
     String[] ifs = cap.listLocalInterfaces();
     for(int a=0;a<ifs.length;a++) {
       JFLog.log(ifs[a]);
@@ -48,7 +48,7 @@ public class TestPCAP {
   }
 
   public static void cmd_arp(String ip) {
-    PacketCapture cap = PacketCapture.getInstance();
+    PacketCapture cap = new PacketCapture();
     String[] nics = cap.listLocalInterfaces();
     int nicidx = 0;
     if (nic_ip != null) {

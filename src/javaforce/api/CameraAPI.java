@@ -13,7 +13,7 @@ public interface CameraAPI {
     if (FFM.enabled()) {
       return CameraFFM.getInstance(array);
     } else {
-      return CameraJNI.getInstance(array);
+      return CameraJNI.getInstance();
     }
   }
 

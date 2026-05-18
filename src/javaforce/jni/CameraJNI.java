@@ -11,12 +11,11 @@ import javaforce.api.*;
 public class CameraJNI implements CameraAPI {
   private static CameraJNI instance;
 
-  public static synchronized CameraJNI getInstance(FFMArray array) {
+  public static synchronized CameraJNI getInstance() {
     if (instance == null) {
       JFNative.load();
       instance = new CameraJNI();
     }
-    FFM.setFFMArray(array);
     return instance;
   }
 

@@ -18,8 +18,6 @@ public class PacketCapture {
 
   public static boolean debug = false;
 
-  private PCapAPI api;
-
   private static byte[] local_mac;
   private static byte[] local_ip;
 
@@ -27,26 +25,17 @@ public class PacketCapture {
   public static int TYPE_ARP = 0x0806;
   public static int TYPE_IP6 = 0x86dd;
 
-  private static PacketCapture instance;
   private static FFMArray array = new FFMArray();
 
-  public static PacketCapture getInstance() {
-    if (instance == null) {
-      instance = new PacketCapture();
-      if (FFM.enabled()) {
-        instance.api = PCapFFM.getInstance(array);
-      } else {
-        instance.api = PCapJNI.getInstance(array);
-      }
-      if (!instance.init()) {
-        return null;
-      }
-    }
-    return instance;
+  public PacketCapture() {
+    init();
   }
+
+  private static boolean inited = false;
 
   /** Load native libraries. */
   private boolean init() {
+    if (inited) return true;
     if (JF.isWindows()) {
       String windir = System.getenv("windir").replaceAll("\\\\", "/");
       {
@@ -54,7 +43,7 @@ public class PacketCapture {
         String dll1 = windir + "/system32/npcap/packet.dll";
         String dll2 = windir + "/system32/npcap/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
-          return api.pcapInit(dll1, dll2);
+          inited = PCapAPI.getInstance(array).pcapInit(dll1, dll2);
         }
       }
       {
@@ -62,30 +51,31 @@ public class PacketCapture {
         String dll1 = windir + "/system32/packet.dll";
         String dll2 = windir + "/system32/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
-          return api.pcapInit(dll1, dll2);
+          inited =  PCapAPI.getInstance(array).pcapInit(dll1, dll2);
         }
       }
-      return false;
+      return inited;
     }
     if (JF.isUnix()) {
       Library so = new Library("pcap");
       JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
-      return api.pcapInit(null, so.path);
+      inited = PCapAPI.getInstance(array).pcapInit(null, so.path);
+      return inited;
     }
-    return false;
+    return inited;
   }
 
   /** List local interfaces.
    * Return is array of strings, each is comma delimited list.
    * DeviceName,IP/MAC,IP/MAC,...
    */
-  public String[] listLocalInterfaces() {
-    return api.pcapListLocalInterfaces();
+  public static String[] listLocalInterfaces() {
+    return PCapAPI.getInstance(array).pcapListLocalInterfaces();
   }
 
   /** Find interface that contains IP address. */
   public static String findInterface(String ip) {
-    String[] ifs = getInstance().listLocalInterfaces();
+    String[] ifs = listLocalInterfaces();
     if (debug) {
       JFLog.log("local interfaces:" + ifs.length + " found");
     }
@@ -107,7 +97,7 @@ public class PacketCapture {
   public long start(String local_interface, String local_ip, boolean nonblocking) {
     this.local_ip = PacketCapture.decode_ip(local_ip);
     this.local_mac = PacketCapture.get_mac(local_ip);
-    return api.pcapStart(local_interface, nonblocking);
+    return PCapAPI.getInstance(array).pcapStart(local_interface, nonblocking);
   }
 
   /** Start process on local interface with blocking mode enabled. */
@@ -117,22 +107,22 @@ public class PacketCapture {
 
   /** Stop processing. */
   public void stop(long id) {
-    api.pcapStop(id);
+    PCapAPI.getInstance(array).pcapStop(id);
   }
 
   /** Compile program. */
   public boolean compile(long handle, String program) {
-    return api.pcapCompile(handle, program);
+    return PCapAPI.getInstance(array).pcapCompile(handle, program);
   }
 
   /** Read packet. */
   public byte[] read(long handle) {
-    return api.pcapRead(handle);
+    return PCapAPI.getInstance(array).pcapRead(handle);
   }
 
   /** Write packet. */
   public boolean write(long handle, byte[] packet, int offset, int length) {
-    return api.pcapWrite(handle, packet, offset, length);
+    return PCapAPI.getInstance(array).pcapWrite(handle, packet, offset, length);
   }
 
   public static void print_mac(byte[] mac) {
@@ -302,7 +292,7 @@ public class PacketCapture {
 
   /** Returns MAC address for IP address. */
   public static byte[] arp(long handle, String target_ip, int ms) {
-    PacketCapture pcap = getInstance();
+    PacketCapture pcap = new PacketCapture();
     //padding (packet must not be < 52 bytes)
     if (debug) {
       JFLog.log("arp.timeout=" + ms);
