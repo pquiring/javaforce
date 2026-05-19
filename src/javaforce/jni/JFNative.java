@@ -15,31 +15,12 @@ import javaforce.ffm.*;
 
 public class JFNative {
 
-  private static boolean debug = false;
-  private static boolean loaded = false;  //must be defined before static {}
-
   static {
-    load();
+    FFM.getInstance();
   }
 
-  /** Loads the JavaForce native library (optional).
-   * This library is not needed if the JavaForce loaders are used.
-   */
-  public static void load() {
-    if (loaded) return;
-    FFM.setupUpcalls();
-    if (JF.hasNativeSupport()) {
-      loaded = true;
-      return;
-    }
-    if (debug) JFLog.log("Loading javaforce native library...");
-    try {
-      System.load(FFM.getLibrary());
-    } catch(Throwable t) {
-      JFLog.log(t);
-    }
-    loaded = true;
-  }
+  //ensures native methods are registered
+  public static void load() {}
 
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File[] folders, Library[] libs, String ext) {

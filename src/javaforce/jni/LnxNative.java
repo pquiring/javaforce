@@ -12,8 +12,15 @@ import java.nio.channels.*;
 import java.nio.file.*;
 
 import javaforce.*;
+import javaforce.ffm.*;
 
 public class LnxNative {
+
+  static {
+    FFM.getInstance();
+  }
+
+  //invoked from native/linux/loader.cpp
   private static void load() {
     Library[] libs = {new Library("X11"), new Library("GL"), new Library("v4l2"), new Library("pam"), new Library("ncurses")};
     JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so");

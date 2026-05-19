@@ -6,8 +6,14 @@ package javaforce.jni;
  */
 
 import javaforce.api.*;
+import javaforce.ffm.*;
 
 public class WinNative {
+
+  static {
+    FFM.getInstance();
+  }
+
   //Windows
   public static native boolean getWindowRect(String name, int[] rect);  //returns x,y,width,height
   public static native String getLog();
