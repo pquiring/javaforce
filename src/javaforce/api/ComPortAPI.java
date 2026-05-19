@@ -11,7 +11,7 @@ import javaforce.jni.*;
 public interface ComPortAPI {
   public static ComPortAPI getInstance() {
     if (FFM.enabled()) {
-      return ComPortFFM.getInstance(null);  //no returned arrays
+      return ComPortFFM.getInstance();
     } else {
       return ComPortJNI.getInstance();
     }

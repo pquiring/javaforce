@@ -12,12 +12,11 @@ import javaforce.ui.*;
 public class UIJNI implements UIAPI {
 
   private static UIAPI api;
-  public static UIAPI getInstance(FFMArray array) {
+  public static UIAPI getInstance() {
     if (api == null) {
       JFNative.load();
       api = new UIJNI();
     }
-    FFM.setFFMArray(array);
     return api;
   }
 

@@ -11,15 +11,13 @@ import javaforce.ffm.*;
 public class NetworkInterface extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private static FFMArray array = new FFMArray();
-
   protected NetworkInterface(String name) {
     super(name);
   }
 
   /** List server physical network interfaces. */
   public static NetworkInterface[] listPhysical() {
-    String[] list = VMAPI.getInstance(array).vmNetworkListPhys();
+    String[] list = VMAPI.getInstance().vmNetworkListPhys();
     if (list == null) list = new String[0];
     NetworkInterface[] nics = new NetworkInterface[list.length];
     for(int idx = 0;idx<list.length;idx++) {

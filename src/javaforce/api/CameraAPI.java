@@ -9,9 +9,9 @@ import javaforce.ffm.*;
 import javaforce.jni.*;
 
 public interface CameraAPI {
-  public static CameraAPI getInstance(FFMArray array) {
+  public static CameraAPI getInstance() {
     if (FFM.enabled()) {
-      return CameraFFM.getInstance(array);
+      return CameraFFM.getInstance();
     } else {
       return CameraJNI.getInstance();
     }

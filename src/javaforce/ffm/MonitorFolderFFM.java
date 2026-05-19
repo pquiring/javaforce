@@ -18,7 +18,7 @@ public class MonitorFolderFFM implements MonitorFolderAPI {
   private FFM ffm;
 
   private static MonitorFolderFFM instance;
-  public static MonitorFolderFFM getInstance(FFMArray array) {
+  public static MonitorFolderFFM getInstance() {
     if (instance == null) {
       instance = new MonitorFolderFFM();
       if (!instance.ffm_init()) {
@@ -26,7 +26,6 @@ public class MonitorFolderFFM implements MonitorFolderAPI {
         instance = null;
       }
     }
-    FFM.setFFMArray(array);
     return instance;
   }
 

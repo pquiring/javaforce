@@ -15,7 +15,7 @@ public class I2C {
   private I2CAPI api;
   public static I2C getInstance() {
     if (FFM.enabled()) {
-      return new I2C(I2CFFM.getInstance(null));  //no arrays
+      return new I2C(I2CFFM.getInstance());
     } else {
       return new I2C(I2CJNI.getInstance());
     }

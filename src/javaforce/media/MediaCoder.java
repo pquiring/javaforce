@@ -10,10 +10,8 @@ import java.io.*;
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.jni.*;
-import javaforce.ffm.*;
 
 public class MediaCoder {
-  private static FFMArray array = new FFMArray();
   protected long ctx = 0;
   protected boolean shared;
   private int stream;
@@ -68,7 +66,7 @@ public class MediaCoder {
       JFLog.log("MediaCoder.load() failed");
       System.exit(1);
     }
-    if (!MediaAPI.getInstance(array).mediaLoadLibs(
+    if (!MediaAPI.getInstance().mediaLoadLibs(
       libs[0].path,
       libs[1].path,
       libs[2].path,
@@ -91,7 +89,7 @@ public class MediaCoder {
 
   /** Sets debug logging in media framework. */
   public static void setLogging(boolean state) {
-    MediaAPI.getInstance(array).mediaSetLogging(state);
+    MediaAPI.getInstance().mediaSetLogging(state);
   }
 
   //seek types

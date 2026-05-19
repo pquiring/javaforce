@@ -15,11 +15,10 @@ import javaforce.api.*;
 import javaforce.ffm.*;
 
 public class MediaInput extends MediaFormat implements MediaIO {
-  private FFMArray array = new FFMArray();
   /** Opens media file for decoding. */
   public boolean open(String file, String format) {
     if (ctx != 0) return false;
-    ctx = MediaAPI.getInstance(array).inputOpenFile(file, format);
+    ctx = MediaAPI.getInstance().inputOpenFile(file, format);
     return ctx != 0;
   }
 
@@ -50,32 +49,32 @@ public class MediaInput extends MediaFormat implements MediaIO {
   public boolean open(MediaIO io) {
     if (ctx != 0) return false;
     this.io = io;
-    ctx = MediaAPI.getInstance(array).inputOpenIO(this);
+    ctx = MediaAPI.getInstance().inputOpenIO(this);
     return ctx != 0;
   }
 
   public long getDuration(long ctx) {
-    return MediaAPI.getInstance(array).getDuration(ctx);
+    return MediaAPI.getInstance().getDuration(ctx);
   }
 
   public int getVideoWidth(long ctx) {
-    return MediaAPI.getInstance(array).getVideoWidth(ctx);
+    return MediaAPI.getInstance().getVideoWidth(ctx);
   }
   public int getVideoHeight(long ctx) {
-    return MediaAPI.getInstance(array).getVideoHeight(ctx);
+    return MediaAPI.getInstance().getVideoHeight(ctx);
   }
   public float getVideoFrameRate(long ctx) {
-    return MediaAPI.getInstance(array).getVideoFrameRate(ctx);
+    return MediaAPI.getInstance().getVideoFrameRate(ctx);
   }
   public int getVideoKeyFrameInterval(long ctx) {
-    return MediaAPI.getInstance(array).getVideoKeyFrameInterval(ctx);
+    return MediaAPI.getInstance().getVideoKeyFrameInterval(ctx);
   }
 
   public int getAudioChannels(long ctx) {
-    return MediaAPI.getInstance(array).getAudioChannels(ctx);
+    return MediaAPI.getInstance().getAudioChannels(ctx);
   }
   public int getAudioSampleRate(long ctx) {
-    return MediaAPI.getInstance(array).getAudioSampleRate(ctx);
+    return MediaAPI.getInstance().getAudioSampleRate(ctx);
   }
 
   /** Returns media video/audio codec info. */
@@ -107,7 +106,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
   /** Closes media file and frees resources. */
   public boolean close() {
     if (ctx == 0) return false;
-    boolean res = MediaAPI.getInstance(array).inputClose(ctx, this);
+    boolean res = MediaAPI.getInstance().inputClose(ctx, this);
     ctx = 0;
     return res;
   }
@@ -118,7 +117,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
    * @param height = desired height (-1 = no conversion)
    */
   public MediaVideoDecoder createVideoDecoder(int width, int height) {
-    if (!MediaAPI.getInstance(array).inputOpenVideo(ctx, this, width, height)) return null;
+    if (!MediaAPI.getInstance().inputOpenVideo(ctx, this, width, height)) return null;
     MediaVideoDecoder decoder = new MediaVideoDecoder(this);
     decoder.setStream(getVideoStream());
     return decoder;
@@ -135,7 +134,7 @@ public class MediaInput extends MediaFormat implements MediaIO {
    * @param freq = desired sample rate (-1 = no conversion)
    */
   public MediaAudioDecoder createAudioDecoder(int chs, int freq) {
-    if (!MediaAPI.getInstance(array).inputOpenAudio(ctx, this, chs, freq)) return null;
+    if (!MediaAPI.getInstance().inputOpenAudio(ctx, this, chs, freq)) return null;
     MediaAudioDecoder decoder = new MediaAudioDecoder(this);
     decoder.setStream(getAudioStream());
     return decoder;
@@ -148,17 +147,17 @@ public class MediaInput extends MediaFormat implements MediaIO {
 
   /** Reads next packet and returns size. Used internally by readPacket(). */
   public int read(long ctx) {
-    return MediaAPI.getInstance(array).inputRead(ctx, this);
+    return MediaAPI.getInstance().inputRead(ctx, this);
   }
 
   /** Returns next packet key frame flag. Used internally by readPacket(). */
   public boolean getPacketKeyFrame(long ctx) {
-    return MediaAPI.getInstance(array).getPacketKeyFrame(ctx);
+    return MediaAPI.getInstance().getPacketKeyFrame(ctx);
   }
 
   /** Copies next packet into data and returns stream. Used internally by readPacket(). */
   public int getPacketData(long ctx, byte[] data, int offset, int length) {
-    return MediaAPI.getInstance(array).getPacketData(ctx, data, offset, length);
+    return MediaAPI.getInstance().getPacketData(ctx, data, offset, length);
   }
 
   private Packet packet;
@@ -185,6 +184,6 @@ public class MediaInput extends MediaFormat implements MediaIO {
 
   /** Seek media to time in seconds. */
   public boolean seek(long seconds) {
-    return MediaAPI.getInstance(array).inputSeek(ctx, this, seconds);
+    return MediaAPI.getInstance().inputSeek(ctx, this, seconds);
   }
 }

@@ -16,7 +16,7 @@ public class GPIO {
 
   public static GPIO getInstance() {
     if (FFM.enabled()) {
-      return new GPIO(GPIOFFM.getInstance(null));  //no arrays
+      return new GPIO(GPIOFFM.getInstance());
     } else {
       return new GPIO(GPIOJNI.getInstance());
     }

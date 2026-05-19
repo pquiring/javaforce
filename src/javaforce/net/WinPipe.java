@@ -14,7 +14,7 @@ public class WinPipe {
 
   public WinPipe() {
     if (FFM.enabled()) {
-      api = WinPipeFFM.getInstance(null);  //WinPipeFFM does not return arrays
+      api = WinPipeFFM.getInstance();
     } else {
       api = WinPipeJNI.getInstance();
     }

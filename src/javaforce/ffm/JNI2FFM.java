@@ -84,7 +84,7 @@ public class JNI2FFM {
       src.append("  private FFM ffm;\n");
       src.append("\n");
       src.append("  private static " + cls_out + " instance;\n");
-      src.append("  public static " + cls_out + " getInstance(FFMArray array) {\n");
+      src.append("  public static " + cls_out + " getInstance() {\n");
       src.append("    if (instance == null) {\n");
       src.append("      instance = new " + cls_out + "();\n");
       src.append("      if (!instance.ffm_init()) {\n");
@@ -92,7 +92,6 @@ public class JNI2FFM {
       src.append("        instance = null;\n");
       src.append("      }\n");
       src.append("    }\n");
-      src.append("    FFM.setFFMArray(array);\n");
       src.append("    return instance;\n");
       src.append("  }\n");
       src.append("\n");
@@ -152,7 +151,7 @@ public class JNI2FFM {
         int before_invoke = method.length();
         if (!isRetVoid) {
           if (isRetArray) {
-            //nop
+            method.append("FFM.createFFMArray();");
           } else {
             if (java_ret_type.equals("String")) {
               method.append("String _ret_value_ = FFM.getString((MemorySegment)");

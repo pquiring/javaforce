@@ -25,8 +25,6 @@ public class PacketCapture {
   public static int TYPE_ARP = 0x0806;
   public static int TYPE_IP6 = 0x86dd;
 
-  private static FFMArray array = new FFMArray();
-
   public PacketCapture() {
     init();
   }
@@ -43,7 +41,7 @@ public class PacketCapture {
         String dll1 = windir + "/system32/npcap/packet.dll";
         String dll2 = windir + "/system32/npcap/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
-          inited = PCapAPI.getInstance(array).pcapInit(dll1, dll2);
+          inited = PCapAPI.getInstance().pcapInit(dll1, dll2);
           return inited;
         }
       }
@@ -52,7 +50,7 @@ public class PacketCapture {
         String dll1 = windir + "/system32/packet.dll";
         String dll2 = windir + "/system32/wpcap.dll";
         if (new File(dll1).exists() && new File(dll2).exists()) {
-          inited =  PCapAPI.getInstance(array).pcapInit(dll1, dll2);
+          inited =  PCapAPI.getInstance().pcapInit(dll1, dll2);
           return inited;
         }
       }
@@ -61,7 +59,7 @@ public class PacketCapture {
     if (JF.isUnix()) {
       Library so = new Library("pcap");
       JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())}, new Library[] {so}, ".so");
-      inited = PCapAPI.getInstance(array).pcapInit(null, so.path);
+      inited = PCapAPI.getInstance().pcapInit(null, so.path);
       return inited;
     }
     return inited;
@@ -72,7 +70,7 @@ public class PacketCapture {
    * DeviceName,IP/MAC,IP/MAC,...
    */
   public static String[] listLocalInterfaces() {
-    return PCapAPI.getInstance(array).pcapListLocalInterfaces();
+    return PCapAPI.getInstance().pcapListLocalInterfaces();
   }
 
   /** Find interface that contains IP address. */
@@ -99,7 +97,7 @@ public class PacketCapture {
   public long start(String local_interface, String local_ip, boolean nonblocking) {
     this.local_ip = PacketCapture.decode_ip(local_ip);
     this.local_mac = PacketCapture.get_mac(local_ip);
-    return PCapAPI.getInstance(array).pcapStart(local_interface, nonblocking);
+    return PCapAPI.getInstance().pcapStart(local_interface, nonblocking);
   }
 
   /** Start process on local interface with blocking mode enabled. */
@@ -109,22 +107,22 @@ public class PacketCapture {
 
   /** Stop processing. */
   public void stop(long id) {
-    PCapAPI.getInstance(array).pcapStop(id);
+    PCapAPI.getInstance().pcapStop(id);
   }
 
   /** Compile program. */
   public boolean compile(long handle, String program) {
-    return PCapAPI.getInstance(array).pcapCompile(handle, program);
+    return PCapAPI.getInstance().pcapCompile(handle, program);
   }
 
   /** Read packet. */
   public byte[] read(long handle) {
-    return PCapAPI.getInstance(array).pcapRead(handle);
+    return PCapAPI.getInstance().pcapRead(handle);
   }
 
   /** Write packet. */
   public boolean write(long handle, byte[] packet, int offset, int length) {
-    return PCapAPI.getInstance(array).pcapWrite(handle, packet, offset, length);
+    return PCapAPI.getInstance().pcapWrite(handle, packet, offset, length);
   }
 
   /** mac address to String */

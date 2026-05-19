@@ -512,8 +512,11 @@ public class FFM {
 
   private static ThreadLocal<FFMArray> FFMArrayBin = new ThreadLocal<>();
 
-  public static void setFFMArray(FFMArray array) {
-    FFMArrayBin.set(array);
+  public static void createFFMArray() {
+    FFMArray array = FFMArrayBin.get();
+    if (array == null) {
+      FFMArrayBin.set(new FFMArray());
+    }
   }
 
   private static long FFMArray_Pin() {

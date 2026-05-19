@@ -11,12 +11,11 @@ import javaforce.media.*;
 
 public class MediaJNI implements MediaAPI {
   private static MediaAPI instance;
-  public static MediaAPI getInstance(FFMArray array) {
+  public static MediaAPI getInstance() {
     if (instance == null) {
       JFNative.load();
       instance = new MediaJNI();
     }
-    FFM.setFFMArray(array);
     return instance;
   }
 

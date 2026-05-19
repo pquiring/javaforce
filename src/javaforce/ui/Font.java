@@ -14,8 +14,6 @@ import javaforce.gl.*;
 import javaforce.ffm.*;
 
 public class Font {
-  private FFMArray array = new FFMArray();
-
   public static boolean debug = false;
 
   private static final int SystemFontSize = 20;
@@ -48,7 +46,7 @@ public class Font {
     width = size;
     height = size;
     px = new byte[width*height];  //pixel data
-    boolean loaded = UIAPI.getInstance(array).uiLoadFont(font, ptSize, fontinfo, coords, glyphinfo, codes, px, width, height) == 256;
+    boolean loaded = UIAPI.getInstance().uiLoadFont(font, ptSize, fontinfo, coords, glyphinfo, codes, px, width, height) == 256;
     if (loaded) {
       avg_ascent = fontinfo[0];
       avg_descent = fontinfo[1];

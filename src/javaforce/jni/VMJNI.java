@@ -13,12 +13,11 @@ import javaforce.vm.*;
 public class VMJNI implements VMAPI {
 
   private static VMAPI api;
-  public static VMAPI getInstance(FFMArray array) {
+  public static VMAPI getInstance() {
     if (api == null) {
       JFNative.load();
       api = new VMJNI();
     }
-    FFM.setFFMArray(array);
     return api;
   }
 

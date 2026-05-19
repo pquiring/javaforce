@@ -32,7 +32,7 @@ public interface GL {
    */
   public static GL getInstance() {
     if (FFM.enabled()) {
-      return GLFFM.getInstance(null);  //GLFFM does not return arrays
+      return GLFFM.getInstance();
     } else {
       return GLJNI.getInstance();
     }

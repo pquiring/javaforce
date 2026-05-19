@@ -12,7 +12,7 @@ public interface CLAPI {
 
   public static CLAPI getInstance() {
     if (FFM.enabled()) {
-      return CLFFM.getInstance(null);  //no arrays
+      return CLFFM.getInstance();
     } else {
       return CLJNI.getInstance();
     }

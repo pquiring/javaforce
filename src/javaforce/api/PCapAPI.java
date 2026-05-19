@@ -9,11 +9,11 @@ import javaforce.ffm.*;
 import javaforce.jni.*;
 
 public interface PCapAPI {
-  public static PCapAPI getInstance(FFMArray array) {
+  public static PCapAPI getInstance() {
     if (FFM.enabled()) {
-      return PCapFFM.getInstance(array);
+      return PCapFFM.getInstance();
     } else {
-      return PCapJNI.getInstance(array);
+      return PCapJNI.getInstance();
     }
   }
   public boolean pcapInit(String lib1, String lib2);

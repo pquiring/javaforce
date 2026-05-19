@@ -17,7 +17,7 @@ public class WinPipeFFM implements WinPipeAPI {
   private FFM ffm;
 
   private static WinPipeFFM instance;
-  public static WinPipeFFM getInstance(FFMArray array) {
+  public static WinPipeFFM getInstance() {
     if (instance == null) {
       instance = new WinPipeFFM();
       if (!instance.ffm_init()) {
@@ -25,7 +25,6 @@ public class WinPipeFFM implements WinPipeAPI {
         instance = null;
       }
     }
-    FFM.setFFMArray(array);
     return instance;
   }
 

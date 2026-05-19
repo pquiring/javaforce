@@ -11,11 +11,11 @@ import javaforce.ffm.*;
 
 public interface MediaAPI {
 
-  public static MediaAPI getInstance(FFMArray array) {
+  public static MediaAPI getInstance() {
     if (FFM.enabled()) {
-      return MediaFFM.getInstance(array);
+      return MediaFFM.getInstance();
     } else {
-      return MediaJNI.getInstance(array);
+      return MediaJNI.getInstance();
     }
   }
 

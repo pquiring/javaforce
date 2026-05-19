@@ -16,7 +16,7 @@ public class MonitorFolder {
   public static MonitorFolder getInstance() {
     MonitorFolder mf = new MonitorFolder();
     if (FFM.enabled()) {
-      mf.api = MonitorFolderFFM.getInstance(null);  //MonitorFolderFFM does not return arrays
+      mf.api = MonitorFolderFFM.getInstance();
     } else {
       mf.api = MonitorFolderJNI.getInstance();
     }

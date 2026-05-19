@@ -10,7 +10,6 @@ import javaforce.api.*;
 import javaforce.ffm.*;
 
 public class MediaVideoEncoder extends MediaCoder {
-  private FFMArray array = new FFMArray();
   /** Create a stand-alone video encoder for raw video. */
   public MediaVideoEncoder() {}
   /** Create a video encoder for a stream in a container format. */
@@ -21,13 +20,13 @@ public class MediaVideoEncoder extends MediaCoder {
   /** Starts a stand-alone video encoder. */
   public boolean start(CodecInfo info) {
     if (ctx != 0 || shared) return false;
-    ctx = MediaAPI.getInstance(array).videoEncoderStart(info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
+    ctx = MediaAPI.getInstance().videoEncoderStart(info.video_codec, info.video_bit_rate, info.width, info.height, info.fps, info.keyFrameInterval);
     return ctx != 0;
   }
   /** Stops a stand-alone video encoder. */
   public void stop() {
     if (ctx == 0 || shared) return;
-    MediaAPI.getInstance(array).videoEncoderStop(ctx);
+    MediaAPI.getInstance().videoEncoderStop(ctx);
     ctx = 0;
   }
   private Packet packet;
@@ -38,7 +37,7 @@ public class MediaVideoEncoder extends MediaCoder {
       packet = new Packet();
       packet.stream = getStream();
     }
-    packet.data = MediaAPI.getInstance(array).videoEncoderEncode(ctx, px, offset, length);
+    packet.data = MediaAPI.getInstance().videoEncoderEncode(ctx, px, offset, length);
     if (packet.data == null) return null;
     packet.length = packet.data.length;
     return packet;

@@ -17,7 +17,7 @@ public class ComPortFFM implements ComPortAPI {
   private FFM ffm;
 
   private static ComPortFFM instance;
-  public static ComPortFFM getInstance(FFMArray array) {
+  public static ComPortFFM getInstance() {
     if (instance == null) {
       instance = new ComPortFFM();
       if (!instance.ffm_init()) {
@@ -25,7 +25,6 @@ public class ComPortFFM implements ComPortAPI {
         instance = null;
       }
     }
-    FFM.setFFMArray(array);
     return instance;
   }
 

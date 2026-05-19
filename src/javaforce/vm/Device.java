@@ -18,8 +18,6 @@ import javaforce.ffm.*;
 public class Device extends Address implements Serializable {
   private static final long serialVersionUID = 1L;
 
-  private static FFMArray array = new FFMArray();
-
   public static boolean debug = true;
 
   public int type;
@@ -34,7 +32,7 @@ public class Device extends Address implements Serializable {
   //virConnectListAllNodeDevices
   public static Device[] list(int type) {
     if (type < 1 || type > 2) return null;
-    String[] list = VMAPI.getInstance(array).vmDeviceList(type);
+    String[] list = VMAPI.getInstance().vmDeviceList(type);
     if (list == null) list = new String[0];
     Device[] dlist = new Device[list.length];
     for(int idx=0;idx<list.length;idx++) {

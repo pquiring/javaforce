@@ -11,7 +11,6 @@ import javaforce.api.*;
 import javaforce.ffm.*;
 
 public class MediaAudioEncoder extends MediaCoder {
-  private FFMArray array = new FFMArray();
   /** Create a stand-alone audio encoder for raw audio. */
   public MediaAudioEncoder() {}
   /** Create an audio encoder for a stream in a container format. */
@@ -22,13 +21,13 @@ public class MediaAudioEncoder extends MediaCoder {
   /** Starts a stand-alone audio encoder. */
   public boolean start(CodecInfo info) {
     if (ctx != 0 || shared) return false;
-    ctx = MediaAPI.getInstance(array).audioEncoderStart(info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
+    ctx = MediaAPI.getInstance().audioEncoderStart(info.audio_codec, info.audio_bit_rate, info.chs, info.freq);
     return ctx != 0;
   }
   /** Stops a stand-alone audio encoder. */
   public void stop() {
     if (ctx == 0 || shared) return;
-    MediaAPI.getInstance(array).audioEncoderStop(ctx);
+    MediaAPI.getInstance().audioEncoderStop(ctx);
     ctx = 0;
   }
   private Packet packet;
@@ -42,7 +41,7 @@ public class MediaAudioEncoder extends MediaCoder {
       packet = new Packet();
       packet.stream = getStream();
     }
-    packet.data = MediaAPI.getInstance(array).audioEncoderEncode(ctx, samples, offset, length);
+    packet.data = MediaAPI.getInstance().audioEncoderEncode(ctx, samples, offset, length);
     if (packet.data == null) {
       JFLog.log("MediaAudioEncoder.nencode:data == null");
       return null;
@@ -52,6 +51,6 @@ public class MediaAudioEncoder extends MediaCoder {
   }
   /** Returns optimal audio frame size in samples. */
   public int getAudioFramesize() {
-    return MediaAPI.getInstance(array).audioEncoderGetAudioFramesize(ctx);
+    return MediaAPI.getInstance().audioEncoderGetAudioFramesize(ctx);
   }
 }
