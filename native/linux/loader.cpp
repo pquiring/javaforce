@@ -336,10 +336,6 @@ bool CreateJVM() {
   return true;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxServiceStop(JNIEnv *env, jclass c) {
-  return InvokeMethodVoid(mainclass, "serviceStop", "()V", NULL);
-}
-
 #include "../common/register.h"
 
 extern "C" void lnxnative_register(JNIEnv *env);

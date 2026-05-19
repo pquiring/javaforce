@@ -529,7 +529,6 @@ void camera_register(JNIEnv *env) {
 //Linux native methods
 static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
-  {"lnxServiceStop", "()Z", (void *)&Java_javaforce_jni_LnxNative_lnxServiceStop},
   {"ptyAlloc", "()J", (void *)&Java_javaforce_jni_LnxNative_ptyAlloc},
   {"ptyFree", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyFree},
   {"ptyOpen", "(J)Ljava/lang/String;", (void *)&Java_javaforce_jni_LnxNative_ptyOpen},

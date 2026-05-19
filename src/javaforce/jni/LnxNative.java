@@ -10,6 +10,7 @@ import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.nio.file.*;
+import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
@@ -68,6 +69,7 @@ public class LnxNative {
   }
 
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2, String pam, String ncurses);
+
   /** Creates a unix socket which commands to the service can be issued.
    * Only supported command is "stop".  (see lnxServiceRequestStop())
    * Socket file is stored at /usr/lib/systemd/system/{service}.socket
@@ -102,9 +104,23 @@ public class LnxNative {
       }
     }.start();
   }
+
   /** Invokes the services serviceStop() method.
    */
-  private static native boolean lnxServiceStop();
+  @SuppressWarnings("unchecked")
+  private static boolean lnxServiceStop() {
+    String clsname = System.getProperty("java.app.name");
+    try {
+      Class cls = Class.forName(clsname);
+      Method method = cls.getMethod("serviceStop");
+      method.invoke(null, new Object[] {});
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   /** Sends a "stop" command to the service's unix socket.
    */
   private static void lnxServiceRequestStop() {
