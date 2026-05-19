@@ -29,7 +29,7 @@ public class FFM {
       if (enabled_jni) {
         enabled_jni = jni_test();
         if (!enabled_jni) {
-          JFLog.log("FFM:Warning:JNI failed:performance degraded!");
+          JFLog.log("FFM:Warning:JNI setup failed:performance degraded!");
         }
       }
     }

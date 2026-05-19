@@ -16,7 +16,9 @@ import javaforce.ffm.*;
 public class JFNative {
 
   static {
-    FFM.getInstance();
+    if (!JF.isJavaForceLoader) {
+      FFM.getInstance();
+    }
   }
 
   //ensures native methods are registered
