@@ -38,6 +38,9 @@ public class FFM {
       instance = new FFM();
       if (enabled_jni) {
         enabled_jni = jni_test();
+        if (!enabled_jni) {
+          JFLog.log("FFM:Warning:JNI failed:performance degraded!");
+        }
       }
     }
     return instance;
@@ -125,6 +128,7 @@ public class FFM {
   }
 
   private static void setupLinker() {
+    if (debug) JFLog.log("FFM.setupLinker");
     try {
       linker = Linker.nativeLinker();
       if (lib == null) {
@@ -142,7 +146,16 @@ public class FFM {
         arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
         lookup = SymbolLookup.libraryLookup(lib, arena);
         if (enabled_jni) {
-          try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}  //load JNI methods
+          //load JNI methods in JFHeap
+          if (false) {
+            //using System.load() is not available in some contexts (ie: Tomcat servlet)
+            try {System.load(lib);} catch (Throwable t) {JFLog.log(t);}
+          } else {
+            //this works in all contexts
+            if (!jni_test()) {
+              setupJNI();
+            }
+          }
         }
       } else {
         if (debug) JFLog.log("Loading FFM from executable");
@@ -159,12 +172,11 @@ public class FFM {
   private static boolean jni_test() {
     byte[] ba = new byte[1];
     try {
-      //Warning : JFNative.load() will invoke FFM.getInstance()
-      long ptr = JFNative.pin(ba);
-      JFNative.unpin(ba, ptr, true);
+      long ptr = JFHeap.pin(ba);
+      JFHeap.unpin(ba, ptr, true);
       return true;
     } catch (Throwable t) {
-      JFLog.log(t);
+      if (debug) JFLog.log(t);
       return false;
     }
   }
@@ -321,42 +333,42 @@ public class FFM {
   /** Create native array from float[] */
   public static MemorySegment toMemory(Arena arena, float[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFHeap.pin(m));
     return arena.allocateFrom(JAVA_FLOAT, m);
   }
 
   /** Create native array from double[] */
   public static MemorySegment toMemory(Arena arena, double[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFHeap.pin(m));
     return arena.allocateFrom(JAVA_DOUBLE, m);
   }
 
   /** Create native array from long[] */
   public static MemorySegment toMemory(Arena arena, long[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFHeap.pin(m));
     return arena.allocateFrom(JAVA_LONG, m);
   }
 
   /** Create native array from int[] */
   public static MemorySegment toMemory(Arena arena, int[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFHeap.pin(m));
     return arena.allocateFrom(JAVA_INT, m);
   }
 
   /** Create native array from short[] */
   public static MemorySegment toMemory(Arena arena, short[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFHeap.pin(m));
     return arena.allocateFrom(JAVA_SHORT, m);
   }
 
   /** Create native array from byte[] */
   public static MemorySegment toMemory(Arena arena, byte[] m) {
     if (m == null) return MemorySegment.NULL;
-    if (enabled_jni) return MemorySegment.ofAddress(JFNative.pin(m));
+    if (enabled_jni) return MemorySegment.ofAddress(JFHeap.pin(m));
     return arena.allocateFrom(JAVA_BYTE, m);
   }
 
@@ -431,7 +443,7 @@ public class FFM {
   public static void copyBack(MemorySegment seg, float[] m) {
     if (seg == null || m == null) return;
     if (enabled_jni) {
-      JFNative.unpin(m, seg.address(), true);
+      JFHeap.unpin(m, seg.address(), true);
     } else {
       float[] r = seg.toArray(JAVA_FLOAT);
       System.arraycopy(r, 0, m, 0, m.length);
@@ -442,7 +454,7 @@ public class FFM {
   public static void copyBack(MemorySegment seg, double[] m) {
     if (seg == null || m == null) return;
     if (enabled_jni) {
-      JFNative.unpin(m, seg.address(), true);
+      JFHeap.unpin(m, seg.address(), true);
     } else {
       double[] r = seg.toArray(JAVA_DOUBLE);
       System.arraycopy(r, 0, m, 0, m.length);
@@ -453,7 +465,7 @@ public class FFM {
   public static void copyBack(MemorySegment seg, long[] m) {
     if (seg == null || m == null) return;
     if (enabled_jni) {
-      JFNative.unpin(m, seg.address(), true);
+      JFHeap.unpin(m, seg.address(), true);
     } else {
       long[] r = seg.toArray(JAVA_LONG);
       System.arraycopy(r, 0, m, 0, m.length);
@@ -464,7 +476,7 @@ public class FFM {
   public static void copyBack(MemorySegment seg, int[] m) {
     if (seg == null || m == null) return;
     if (enabled_jni) {
-      JFNative.unpin(m, seg.address(), true);
+      JFHeap.unpin(m, seg.address(), true);
     } else {
       int[] r = seg.toArray(JAVA_INT);
       System.arraycopy(r, 0, m, 0, m.length);
@@ -475,7 +487,7 @@ public class FFM {
   public static void copyBack(MemorySegment seg, short[] m) {
     if (seg == null || m == null) return;
     if (enabled_jni) {
-      JFNative.unpin(m, seg.address(), true);
+      JFHeap.unpin(m, seg.address(), true);
     } else {
       short[] r = seg.toArray(JAVA_SHORT);
       System.arraycopy(r, 0, m, 0, m.length);
@@ -486,7 +498,7 @@ public class FFM {
   public static void copyBack(MemorySegment seg, byte[] m) {
     if (seg == null || m == null) return;
     if (enabled_jni) {
-      JFNative.unpin(m, seg.address(), true);
+      JFHeap.unpin(m, seg.address(), true);
     } else {
       byte[] r = seg.toArray(JAVA_BYTE);
       System.arraycopy(r, 0, m, 0, m.length);
@@ -707,6 +719,24 @@ public class FFM {
 
     try {
       setup.invokeExact(upcall_FFMArray);
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
+  }
+
+  /** Setup JNI methods in JFHeap */
+  public static void setupJNI() {
+    if (debug) JFLog.log("FFM.setupJNI");
+    MethodHandle setup = FFM.getFunctionPtr("_setup_JFHeap", FFM.getFunctionDesciptor(JAVA_BOOLEAN, ADDRESS, JAVA_INT));
+
+    try {
+      InputStream is = FFM.class.getClassLoader().getResourceAsStream("javaforce/jni/JFHeap.class");
+      byte[] data = is.readAllBytes();
+      is.close();
+      boolean result = (boolean)setup.invokeExact(arena.allocateFrom(JAVA_BYTE, data), data.length);
+      if (!result) {
+        throw new Exception("FFM.setupJNI() failed!");
+      }
     } catch (Throwable t) {
       JFLog.log(t);
     }

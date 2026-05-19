@@ -32,10 +32,6 @@ public class JFNative {
       loaded = true;
       return;
     }
-    if (jni_test()) {
-      loaded = true;
-      return;
-    }
     if (debug) JFLog.log("Loading javaforce native library...");
     try {
       System.load(FFM.getLibrary());
@@ -43,19 +39,6 @@ public class JFNative {
       JFLog.log(t);
     }
     loaded = true;
-  }
-
-  private static boolean jni_test() {
-    byte[] ba = new byte[1];
-    try {
-      //Warning : JFNative.load() will invoke FFM.getInstance()
-      long ptr = JFNative.pin(ba);
-      JFNative.unpin(ba, ptr, true);
-      return true;
-    } catch (Throwable t) {
-      if (debug) JFLog.log(t);
-      return false;
-    }
   }
 
   /** Find native libraries in folder (recursive). */
@@ -121,10 +104,4 @@ public class JFNative {
 
   /** Returns native handle for Window. */
   public native static long getWindowHandle(Window window);
-
-  /** Pin array and return native pointer. */
-  public native static long pin(Object array);
-
-  /** Unpin array. */
-  public native static void unpin(Object array, long ptr, boolean commit);
 }

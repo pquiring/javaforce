@@ -19,12 +19,12 @@ public class FFMArray {
   private long ptr;
 
   public long pin() {
-    ptr = JFNative.pin(ref);
+    ptr = JFHeap.pin(ref);
     return ptr;
   }
 
   public void unpin() {
-    JFNative.unpin(ref, ptr, true);
+    JFHeap.unpin(ref, ptr, true);
     ptr = 0;
   }
 
