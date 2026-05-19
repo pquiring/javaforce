@@ -22,7 +22,7 @@ public class Main extends javax.swing.JFrame {
   public Main() {
     initComponents();
     resized();
-    PacketCapture cap = PacketCapture.getInstance();
+    PacketCapture cap = new PacketCapture();
     if (cap == null) {
       JFAWT.showError("error", "unable to init packet capture");
       System.exit(1);
@@ -219,7 +219,7 @@ public class Main extends javax.swing.JFrame {
           System.out.println("no IPs to monitor");
           return;
         }
-        pcap = PacketCapture.getInstance();
+        pcap = new PacketCapture();
 //        PacketCapture.debug = true;
         iface_nic = PacketCapture.findInterface(iface_ip.toString());
         if (iface_nic == null) {

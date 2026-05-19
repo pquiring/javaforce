@@ -24,7 +24,7 @@ public class ScanNetwork {
   }
 
   private byte[] run() {
-    PacketCapture cap = PacketCapture.getInstance();
+    PacketCapture cap = new PacketCapture();
 //    PacketCapture.debug = debug;
     String nif = PacketCapture.findInterface(nifip);
     if (nif == null) {
