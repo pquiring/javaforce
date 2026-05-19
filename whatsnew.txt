@@ -1,5 +1,8 @@
 What's new...
 
+May 19/2026 : JF/107.1
+  - fix : FFM Camera, PCap, Window
+
 May 18/2026 : JF/107.0
   - new : improved FFM/JNI setup
   - new : javaforce.db.* has switched to Java Serialization
