@@ -107,7 +107,6 @@ public class JNI2FFM {
       for(String ln : lns) {
         ln = ln.trim();
         if (!ln.startsWith("public native")) continue;
-        //public native void glActiveTexture(int i1);
         ln = ln.substring(14, ln.length() - 1);
         idx = ln.indexOf(' ');
         String java_ret_type = ln.substring(0, idx);

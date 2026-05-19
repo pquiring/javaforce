@@ -612,6 +612,9 @@ void lnxnative_register(JNIEnv *env) {
 #endif
 }
 
+#define OS_NATIVES_CLASS "javaforce.jni.LnxNative"
+#define OS_NATIVES_METHODS javaforce_jni_LnxNative
+
 #include "../common/register.cpp"
 
 JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {

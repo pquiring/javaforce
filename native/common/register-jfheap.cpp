@@ -45,19 +45,29 @@ jboolean setup_JFHeap(jbyte* jfheap_class, jint jfheap_size) {
   //define javaforce/jni/JFHeap class
 
   jclass cls = NULL;
+  jstring classNameStr = NULL;
 
-  //e->FindClass("javaforce/jni/JFHeap");  //uses native class loader, need to use Thread class loader
+  //JNIEnv->FindClass("javaforce...");  //uses native class loader, need to use Thread class loader
 
-  jstring classNameStr = e->NewStringUTF("javaforce.jni.JFHeap");
+  classNameStr = e->NewStringUTF("javaforce.jni.JFHeap");
   cls = (jclass)e->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);
 
   if (cls == NULL) {
+    printf("define class\n");
     e->ExceptionClear();
     cls = e->DefineClass("javaforce/jni/JFHeap", contextClassLoader, jfheap_class, jfheap_size);
   }
 
-  //jfheap_register(e);
   registerNatives(e, cls, javaforce_jni_JFHeap, sizeof(javaforce_jni_JFHeap)/sizeof(JNINativeMethod));
+
+#ifdef OS_NATIVES_CLASS
+
+  classNameStr = e->NewStringUTF(OS_NATIVES_CLASS);
+  cls = (jclass)e->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);
+
+  registerNatives(e, cls, OS_NATIVES_METHODS, sizeof(OS_NATIVES_METHODS)/sizeof(JNINativeMethod));
+
+#endif
 
   return JNI_TRUE;
 }

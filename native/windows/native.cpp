@@ -1670,6 +1670,9 @@ void winnative_register(JNIEnv *env) {
   speex_dsp_register(env);
 }
 
+#define OS_NATIVES_CLASS "javaforce.jni.WinNative"
+#define OS_NATIVES_METHODS javaforce_jni_WinNative
+
 #include "../common/register.cpp"
 
 JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
