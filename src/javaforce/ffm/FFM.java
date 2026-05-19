@@ -4,16 +4,6 @@ package javaforce.ffm;
  *
  * The FFM system also uses JNI to pin arrays for best performance (hybrid system).
  *
- * You may have problems using JNI in systems such as Tomcat
- *   where only one classpath may load a native JNI library.
- *
- * To remedy this you could load the JNI library in Tomcat's common classpath:
- * For Tomcat edit conf/server.xml and add to the <server> section:
- *   <Listener className="org.apache.catalina.core.JniLifecycleListener" libraryPath="c:/programdata/javaforce/jfnative64.dll" />
- * for Linux:
- *   <Listener className="org.apache.catalina.core.JniLifecycleListener" libraryPath="/usr/lib/jfnative64.so" />
- * If that does not work you can call disableJNI()
- *
  * @author pquiring
  */
 
