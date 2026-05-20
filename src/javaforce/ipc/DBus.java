@@ -65,7 +65,7 @@ public class DBus implements IPC {
     public String sign;
     public Object value;  //variant
     public String toString() {
-      return "DBus.Field:" + field_names[type] + "=" + value;
+      return field_names[type] + "=" + value;
     }
   }
 
@@ -96,16 +96,16 @@ public class DBus implements IPC {
   private static final byte FIELD_FD           = 0x09;  //                         # of fd (not used)
 
   private static final String[] field_names = {
-    "null",
-    "path",
-    "interface",
-    "member",
-    "error",
-    "reply_serial",
-    "dest",
-    "sender",
-    "signature",
-    "fd"
+    "NULL",
+    "PATH",
+    "INTERFACE",
+    "MEMBER",
+    "ERROR",
+    "REPLY_SERIAL",
+    "DEST",
+    "SENDER",
+    "SIGNATURE",
+    "FD"
   };
 
   //Data Types (only small subset supported)
@@ -773,7 +773,7 @@ public class DBus implements IPC {
       boolean write_to_dbus = dest.equals(DBusMessageBus);
       boolean dest_generic = dest.startsWith(":");
       String iface = dest_generic ? "javaforce.endpoint" : dest;
-      String obj_path = nameToPath(iface);
+      String path = nameToPath(iface);
       int body_size = args_length(args);
       String sign = args_sign(args);
       wpos = 0;
@@ -785,9 +785,9 @@ public class DBus implements IPC {
         write_byte((byte)0);  //flags
         write_byte((byte)1);  //major version
 
-        if (debug) JFLog.log("write.body_size:" + body_size);
+        if (debug) JFLog.log("write.body_size=" + body_size);
         write_int(body_size);
-        if (debug) JFLog.log("write.serial:" + serial);
+        if (debug) JFLog.log("write.serial=" + serial);
         write_int(serial);
 
         //write fields (DEST, METHOD, SIGNATURE, SENDER, [REPLY_SERIAL])
@@ -798,29 +798,29 @@ public class DBus implements IPC {
         if (msg_type != MSG_RETURN) {
           //field:obj_path
           walign(8);
-          if (debug) JFLog.log("write.field:OBJ_PATH:" + obj_path);
+          if (debug) JFLog.log("write.field:PATH=" + path);
           write_byte(FIELD_PATH);
           write_sign(TYPE_OBJECT_PATH);
-          write_String(obj_path);
+          write_String(path);
         }
         if (msg_type != MSG_RETURN) {
           //field:interface
           walign(8);
-          if (debug) JFLog.log("write.field:INTERFACE:" + iface);
+          if (debug) JFLog.log("write.field:INTERFACE=" + iface);
           write_byte(FIELD_INTERFACE);
           write_sign(TYPE_STRING);
           write_String(iface);
         }
         //field:member
         walign(8);
-        if (debug) JFLog.log("write.field:MEMBER:" + member);
+        if (debug) JFLog.log("write.field:MEMBER=" + member);
         write_byte(FIELD_MEMBER);
         write_sign(TYPE_STRING);
         write_String(member);
         if (args.length > 0) {
           //field:signature
           walign(8);
-          if (debug) JFLog.log("write.field:SIGNATURE:" + sign);
+          if (debug) JFLog.log("write.field:SIGNATURE=" + sign);
           write_byte(FIELD_SIGNATURE);
           write_sign(TYPE_SIGNATURE);
           write_sign(sign);
@@ -828,21 +828,21 @@ public class DBus implements IPC {
         if (!write_to_dbus) {
           //field:sender
           walign(8);
-          if (debug) JFLog.log("write.field:SENDER:" + transport.getBusName());
+          if (debug) JFLog.log("write.field:SENDER=" + transport.getBusName());
           write_byte(FIELD_SENDER);
           write_sign(TYPE_STRING);
           write_String(transport.getBusName());
         }
         //field:dest
         walign(8);
-        if (debug) JFLog.log("write.field:DEST:" + dest);
+        if (debug) JFLog.log("write.field:DEST=" + dest);
         write_byte(FIELD_DEST);
         write_sign(TYPE_STRING);
         write_String(dest);
         if (msg_type == MSG_RETURN) {
           //field:reply_serial
           walign(8);
-          if (debug) JFLog.log("write.field:REPLY_SERIAL:" + serial_reply);
+          if (debug) JFLog.log("write.field:REPLY_SERIAL=" + serial_reply);
           write_byte(FIELD_REPLY_SERIAL);
           write_sign(TYPE_UINT32);
           write_int(serial_reply);
