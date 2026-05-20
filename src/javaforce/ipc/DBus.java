@@ -766,7 +766,7 @@ public class DBus implements IPC {
 
   private static final Object[] empty = new Object[0];
 
-  private void write_msg(byte type, String dest, int serial, int serial_reply, String member, Object[] args) {
+  private void write_msg(byte msg_type, String dest, int serial, int serial_reply, String member, Object[] args) {
     if (args == null) args = empty;
     if (debug_msg) JFLog.log("DBus.invoke:" + dest + ":" + member + ":" + serial + ":" + serial_reply);
     synchronized (write_msg_lock) {
@@ -781,7 +781,7 @@ public class DBus implements IPC {
 
       try {
         write_byte((byte)'l');  //little endian
-        write_byte(type);
+        write_byte(msg_type);
         write_byte((byte)0);  //flags
         write_byte((byte)1);  //major version
 
@@ -795,7 +795,7 @@ public class DBus implements IPC {
         write_int(-1);  //array size in bytes (excluding init padding)
         int array_offset = wpos - 4;
         int array_start = wpos;
-        if (type != MSG_RETURN) {
+        if (msg_type != MSG_RETURN) {
           //field:obj_path
           walign(8);
           if (debug) JFLog.log("write.field:OBJ_PATH:" + obj_path);
@@ -803,13 +803,13 @@ public class DBus implements IPC {
           write_sign(TYPE_OBJECT_PATH);
           write_String(obj_path);
         }
-        if (type != MSG_RETURN) {
+        if (msg_type != MSG_RETURN) {
           //field:interface
           walign(8);
-          if (debug) JFLog.log("write.field:INTERFACE:" + dest);
+          if (debug) JFLog.log("write.field:INTERFACE:" + iface);
           write_byte(FIELD_INTERFACE);
           write_sign(TYPE_STRING);
-          write_String(dest);
+          write_String(iface);
         }
         //field:member
         walign(8);
@@ -839,7 +839,7 @@ public class DBus implements IPC {
         write_byte(FIELD_DEST);
         write_sign(TYPE_STRING);
         write_String(dest);
-        if (type == MSG_RETURN) {
+        if (msg_type == MSG_RETURN) {
           //field:reply_serial
           walign(8);
           if (debug) JFLog.log("write.field:REPLY_SERIAL:" + serial_reply);
