@@ -9,6 +9,7 @@
   <target name="windows" description="create windows native files">
     <echo>ffmpeg-src=${home}/ffmpeg-src/${ffmpeg-version}</echo>
     <mkdir dir="${user.home}/bin"/>
+    <mkdir dir="${env.ProgramData}/JavaForce"/>
     <!-- native library -->
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${home}/ffmpeg-src/${ffmpeg-version}' /I '../headers' /I '../opencl' native.cpp /c /Fo: native.obj"/>
     <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw.obj"/>
@@ -28,7 +29,7 @@
     <!-- native shared library -->
     <exec command="cl /LD /MT ${objs} ${winlibs} libcmt.lib /Fe: ${user.home}/bin/jfnative64.dll /link /MACHINE:X64"/>
     <copy file="${user.home}/bin/jfnative64.dll" todir="../.."/>
-    <copy file="${user.home}/bin/jfnative64.dll" todir="${env.ProgramData}/javaforce"/>
+    <copy file="${user.home}/bin/jfnative64.dll" todir="${env.ProgramData}/JavaForce"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>
