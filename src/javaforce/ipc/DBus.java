@@ -772,6 +772,8 @@ public class DBus implements IPC {
     synchronized (write_msg_lock) {
       boolean write_to_dbus = dest.equals(DBusMessageBus);
       boolean dest_generic = dest.startsWith(":");
+      String iface = dest_generic ? "javaforce.endpoint" : dest;
+      String obj_path = nameToPath(iface);
       int body_size = args_length(args);
       String sign = args_sign(args);
       wpos = 0;
@@ -783,6 +785,7 @@ public class DBus implements IPC {
         write_byte((byte)0);  //flags
         write_byte((byte)1);  //major version
 
+        if (debug) JFLog.log("write.body_size:" + body_size);
         write_int(body_size);
         if (debug) JFLog.log("write.serial:" + serial);
         write_int(serial);
@@ -792,15 +795,15 @@ public class DBus implements IPC {
         write_int(-1);  //array size in bytes (excluding init padding)
         int array_offset = wpos - 4;
         int array_start = wpos;
-        if (!dest_generic) {
-          //field:dest
+        if (type != MSG_RETURN) {
+          //field:obj_path
           walign(8);
-          if (debug) JFLog.log("write.field:OBJ_PATH:" + nameToPath(dest));
+          if (debug) JFLog.log("write.field:OBJ_PATH:" + obj_path);
           write_byte(FIELD_PATH);
           write_sign(TYPE_OBJECT_PATH);
-          write_String(nameToPath(dest));
+          write_String(obj_path);
         }
-        if (!dest_generic) {
+        if (type != MSG_RETURN) {
           //field:interface
           walign(8);
           if (debug) JFLog.log("write.field:INTERFACE:" + dest);
