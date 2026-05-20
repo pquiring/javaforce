@@ -1,5 +1,13 @@
 What's new...
 
+May 20/2026 : JF/108.0
+  - new : FFM can now register JNI methods from native code
+      without using System.load()
+      Also works in Tomcat Servlet contexts in multiple classpaths.
+      This is a game changer, thanks to AI for putting the pieces together.
+      See native/common/register-jfheap.cpp
+  - new : DBus now supports calling methods from server to client on Linux
+
 May 19/2026 : JF/107.1
   - fix : FFM Camera, PCap, Window
 
