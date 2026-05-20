@@ -3,7 +3,7 @@ extern "C" {
 }
 
 //FFM : register natives for JFHeap
-jboolean setup_JFHeap(jbyte* jfheap_class, jint jfheap_size) {
+jboolean setup_JFHeap() {
   JavaVM* jvm;
   int cnt = 1;
   JNI_GetCreatedJavaVMs_t getvms = get_JNI_GetCreatedJavaVMs();
@@ -52,12 +52,6 @@ jboolean setup_JFHeap(jbyte* jfheap_class, jint jfheap_size) {
   classNameStr = e->NewStringUTF("javaforce.jni.JFHeap");
   cls = (jclass)e->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);
 
-  if (cls == NULL) {
-    printf("define class\n");
-    e->ExceptionClear();
-    cls = e->DefineClass("javaforce/jni/JFHeap", contextClassLoader, jfheap_class, jfheap_size);
-  }
-
   registerNatives(e, cls, javaforce_jni_JFHeap, sizeof(javaforce_jni_JFHeap)/sizeof(JNINativeMethod));
 
 #ifdef OS_NATIVES_CLASS
@@ -73,5 +67,5 @@ jboolean setup_JFHeap(jbyte* jfheap_class, jint jfheap_size) {
 }
 
 extern "C" {
-  JNIEXPORT jboolean (*_setup_JFHeap)(jbyte*,jint) = &setup_JFHeap;
+  JNIEXPORT jboolean (*_setup_JFHeap)() = &setup_JFHeap;
 }

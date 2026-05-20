@@ -4,6 +4,7 @@
   <property name="winlibs" value="user32.lib userenv.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib mf.lib mfplat.lib mfreadwrite.lib mfuuid.lib"/>
   <property name="objs" value="native.obj glfw.obj glfw-null.obj"/>
   <property file="${home}/versions.properties"/>
+  <property environment="env"/>
 
   <target name="windows" description="create windows native files">
     <echo>ffmpeg-src=${home}/ffmpeg-src/${ffmpeg-version}</echo>
@@ -27,6 +28,7 @@
     <!-- native shared library -->
     <exec command="cl /LD /MT ${objs} ${winlibs} libcmt.lib /Fe: ${user.home}/bin/jfnative64.dll /link /MACHINE:X64"/>
     <copy file="${user.home}/bin/jfnative64.dll" todir="../.."/>
+    <copy file="${user.home}/bin/jfnative64.dll" todir="${env.ProgramData}/javaforce"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>

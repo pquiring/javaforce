@@ -720,13 +720,10 @@ public class FFM {
   /** Setup JNI methods in JFHeap */
   public static void setupJNI() {
     if (debug) JFLog.log("FFM.setupJNI");
-    MethodHandle setup = FFM.getFunctionPtr("_setup_JFHeap", FFM.getFunctionDesciptor(JAVA_BOOLEAN, ADDRESS, JAVA_INT));
+    MethodHandle setup = FFM.getFunctionPtr("_setup_JFHeap", FFM.getFunctionDesciptor(JAVA_BOOLEAN));
 
     try {
-      InputStream is = FFM.class.getClassLoader().getResourceAsStream("javaforce/jni/JFHeap.class");
-      byte[] data = is.readAllBytes();
-      is.close();
-      boolean result = (boolean)setup.invokeExact(arena.allocateFrom(JAVA_BYTE, data), data.length);
+      boolean result = (boolean)setup.invokeExact();
       if (!result) {
         throw new Exception("FFM.setupJNI() failed!");
       }
