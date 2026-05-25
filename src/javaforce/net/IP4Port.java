@@ -12,7 +12,10 @@ import javaforce.*;
 public class IP4Port extends IP4 {
   public int port;
   public boolean setPort(String str) {
-    port = JF.atoi(str);
+    return setPort(JF.atoi(str));
+  }
+  public boolean setPort(int port) {
+    this.port = port;
     if (port < 1 || port > 65535) {
       JFLog.log("invalid port:" + port);
       port = -1;
