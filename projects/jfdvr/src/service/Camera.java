@@ -45,15 +45,23 @@ public class Camera implements Serializable, RTPInterface {
     tag_value = "";
     pos_edge = true;
     enabled = true;
+    init();
+  }
+
+  /** init transient fields. */
+  public void init() {
+    viewersLock = new Object();
+    viewers_live = new ArrayList<>();
+    viewers_file = new ArrayList<>();
   }
 
   public transient volatile float motion_value;
   public transient volatile byte[] preview;  //png image
   public transient volatile boolean viewing;
   public transient volatile boolean update_preview;
-  public transient volatile Object viewersLock = new Object();
-  public transient volatile ArrayList<RTSPSession> viewers_live = new ArrayList<>();
-  public transient volatile ArrayList<RTSPSession> viewers_file = new ArrayList<>();
+  public transient volatile Object viewersLock;
+  public transient volatile ArrayList<RTSPSession> viewers_live;
+  public transient volatile ArrayList<RTSPSession> viewers_file;
 
   public transient Codec codec;
   public transient float fps = -1;  //viewer fps (not decoder)

@@ -20,8 +20,18 @@ public class Config implements Serializable {
   public String user = "dvr";
   public String pass = "password";
 
-  public transient Object camerasLock = new Object();
-  public transient Object groupsLock = new Object();
+  public transient Object camerasLock;
+  public transient Object groupsLock;
+
+  public Config() {
+    init();
+  }
+
+  /** init transient fields. */
+  private void init() {
+    camerasLock = new Object();
+    groupsLock = new Object();
+  }
 
   public static void load() {
     String file = Paths.dataPath + "/config.dat";
@@ -30,6 +40,10 @@ public class Config implements Serializable {
       ObjectInputStream ois = new ObjectInputStream(fis);
       current = (Config)ois.readObject();
       fis.close();
+      current.init();
+      for(Camera camera : current.cameras) {
+        camera.init();
+      }
     } catch (FileNotFoundException e) {
       current = new Config();
       JFLog.log("No config found!");
