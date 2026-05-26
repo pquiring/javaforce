@@ -1,3 +1,6 @@
+May 26, 2026 : 0.40 released!
+  - fix : loading new config
+
 May 18, 2026 : 0.39 released!
   - new : removed old config format
     - you must run version 0.34 - 0.38 to upgrade config

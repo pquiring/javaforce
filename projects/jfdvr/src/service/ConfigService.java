@@ -14,7 +14,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.39";
+  public static String version = "0.40";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
