@@ -1,5 +1,8 @@
 What's new...
 
+May 26/2026 : JF/108.1
+  - fix : jfDVR/0.40 : loading new config issue fixed
+
 May 20/2026 : JF/108.0
   - new : FFM can now register JNI methods from native code
       without using System.load()
