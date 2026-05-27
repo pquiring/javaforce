@@ -36,6 +36,9 @@ public class ViewerApp extends javax.swing.JFrame {
     setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View)");
     RTP.setClientPortRange();
     Config.randomPort();
+    setExtendedState(Frame.MAXIMIZED_BOTH);
+    maximized = true;
+    fullscreen = false;
     for(String arg : args) {
       if (arg.startsWith("rtsp://")) {
         if (viewer == null) {
@@ -49,12 +52,14 @@ public class ViewerApp extends javax.swing.JFrame {
         }
       } else if (arg.equals("jni")) {
         //nop
-      } else if (arg.equals("debug")) {
+      } else if (arg.equals("--debug")) {
         debug = true;
         Viewer.debug = true;
         VideoPanel.debug = true;
         JFLog.append(JF.getUserPath() + "/jfdvr-viewer.log", true);
         JFLog.setRetention(7);
+      } else if (arg.equals("--fullscreen")) {
+        toggleFullScreen();
       } else {
         if (selector == null) {
           selector = new SelectView();
@@ -65,8 +70,6 @@ public class ViewerApp extends javax.swing.JFrame {
         }
       }
     }
-    setExtendedState(Frame.MAXIMIZED_BOTH);
-    fullscreen = true;
     ToolTipManager.sharedInstance().setInitialDelay(100);  //force faster tool tips
   }
 
@@ -138,7 +141,6 @@ public class ViewerApp extends javax.swing.JFrame {
   public static Container root;
   public static JFImage cameraicon;
   public static boolean debug;
-  public boolean fullscreen;
 
   private void setPosition() {
     Dimension d = getSize();
@@ -151,20 +153,21 @@ public class ViewerApp extends javax.swing.JFrame {
     setLocation(s.width/2 - d.width/2, s.height/2 - d.height/2);
   }
 
-  public boolean fullScreen = false;
+  public boolean maximized = false;
+  public boolean fullscreen = false;
 
   public void toggleFullScreen() {
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    if (fullScreen) {
+    if (fullscreen) {
       gd.setFullScreenWindow(null);
     } else {
       gd.setFullScreenWindow(this);
     }
-    fullScreen = !fullScreen;
+    fullscreen = !fullscreen;
   }
 
   public boolean isFullScreen() {
-    return fullScreen;
+    return fullscreen;
   }
 
   public static void stopViewer() {
@@ -208,14 +211,19 @@ public class ViewerApp extends javax.swing.JFrame {
     }
   }
 
-  public static void toggleFullscreen() {
-    if (self.fullScreen) {
-      self.setExtendedState(Frame.NORMAL);
+  public void toggleMaximized() {
+    if (maximized) {
+      setExtendedState(Frame.NORMAL);
     } else {
-      self.setExtendedState(Frame.MAXIMIZED_BOTH);
+      setExtendedState(Frame.MAXIMIZED_BOTH);
     }
-    self.fullScreen = !self.fullScreen;
+    maximized = !maximized;
   }
+
+  public boolean isMaximized() {
+    return maximized;
+  }
+
 
   public static void setPanel(JPanel panel) {
     if (debug) JFLog.log("setPanel:" + panel);
@@ -235,7 +243,7 @@ public class ViewerApp extends javax.swing.JFrame {
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
-    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {toggleFullscreen();}}, KeyEvent.VK_F11);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {self.toggleMaximized();}}, KeyEvent.VK_F11);
     panel.revalidate();
   }
 
