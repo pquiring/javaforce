@@ -1,15 +1,5 @@
 #Arch with build tools
 
-#To build: docker build -f arch.docker -t amd64/arch ..
-
-#ARM64 n/a
-
-#To use: cd repo ; docker-amd64.sh arch latest
-
-#ARM64 n/a
-
-#see https://docs.docker.com/reference/dockerfile/
-
 FROM archlinux:latest
 
 WORKDIR /opt/

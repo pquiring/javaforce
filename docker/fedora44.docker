@@ -1,15 +1,5 @@
 #Fedora/44 with build tools
 
-#To build on AMD64: docker build -f fedora44.docker -t amd64/fedora44 ..
-
-#To build on ARM64: docker build -f fedora44.docker -t arm64v8/fedora44 ..
-
-#To use on AMD64: cd repo ; docker-amd64.sh fedora44 latest
-
-#To use on ARM64: cd repo ; docker-arm64.sh fedora44 latest
-
-#see https://docs.docker.com/reference/dockerfile/
-
 FROM fedora:44
 
 WORKDIR /opt/
