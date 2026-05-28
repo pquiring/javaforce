@@ -33,7 +33,7 @@ public class ViewerApp extends javax.swing.JFrame {
     self = this;
     root = getContentPane();
     setPosition();
-    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View)");
+    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View | F11 = Toggle Full Screen)");
     RTP.setClientPortRange();
     Config.randomPort();
     setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -191,7 +191,8 @@ public class ViewerApp extends javax.swing.JFrame {
       "F1 = Help\n" +
       "F2 = Select View\n" +
       "F5 = Refresh\n" +
-      "F11 = Full Screen\n"
+      "F10 = Toggle Maximized\n" +
+      "F11 = Toggle Full Screen\n"
     );
   }
 
@@ -252,7 +253,8 @@ public class ViewerApp extends javax.swing.JFrame {
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
-    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {self.toggleMaximized();}}, KeyEvent.VK_F11);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {self.toggleMaximized();}}, KeyEvent.VK_F10);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {self.toggleFullScreen();}}, KeyEvent.VK_F11);
     panel.revalidate();
   }
 
