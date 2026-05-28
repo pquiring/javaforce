@@ -162,14 +162,23 @@ public class MediaApp extends javax.swing.JFrame {
 
   public boolean fullScreen = false;
 
+  private void hide_peer() {
+    setVisible(false);
+    removeNotify();  //forces non-displayable so setUndecorated() works
+  }
+
   public void toggleFullScreen() {
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    hide_peer();
     if (fullScreen) {
+      setUndecorated(false);
       gd.setFullScreenWindow(null);
     } else {
+      setUndecorated(true);
       gd.setFullScreenWindow(this);
     }
     fullScreen = !fullScreen;
+    setVisible(true);
   }
 
   public boolean isFullScreen() {

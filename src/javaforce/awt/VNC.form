@@ -53,7 +53,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="jButton3">
+        <Component class="javax.swing.JButton" name="b_refresh">
           <Properties>
             <Property name="text" type="java.lang.String" value="Refresh"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -61,10 +61,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_refreshActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="b_cad">
           <Properties>
             <Property name="text" type="java.lang.String" value="C+A+D"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -72,10 +72,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_cadActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton4">
+        <Component class="javax.swing.JButton" name="b_win_key">
           <Properties>
             <Property name="text" type="java.lang.String" value="WinKey"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -83,10 +83,10 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton4ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_win_keyActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="fullscreen">
+        <Component class="javax.swing.JButton" name="b_fullscreen">
           <Properties>
             <Property name="text" type="java.lang.String" value="FullScreen"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -94,7 +94,7 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fullscreenActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="b_fullscreenActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

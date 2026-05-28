@@ -19,11 +19,9 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   private int port;
   private String pass;
 
-  private static JFImage image;
+  private JFImage image;
   private int buttons;
-  private static boolean is_fullscreen;
-  private VNC vnc_windowed;
-  private VNC vnc_fullscreen;
+  private boolean fullscreen;
 
   public static boolean debug;
   public static boolean debugKeys;
@@ -38,21 +36,8 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     this.host = host;
     this.port = port;
     this.pass = pass;
-    vnc_windowed = this;
     setTitle("VNC : " + host);
     new Connect().start();
-  }
-
-  /** Create fullscreen window. */
-  public VNC(VNC windowed) {
-    vnc_windowed = windowed;
-    scroll = new javax.swing.JScrollPane();
-    scroll.setBorder(null);
-    setUndecorated(true);
-    setContentPane(scroll);
-    is_fullscreen = true;
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-    setTitle("VNC : " + windowed.host);
   }
 
   /**
@@ -66,10 +51,10 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
 
     jButton2 = new javax.swing.JButton();
     tools = new javax.swing.JToolBar();
-    jButton3 = new javax.swing.JButton();
-    jButton1 = new javax.swing.JButton();
-    jButton4 = new javax.swing.JButton();
-    fullscreen = new javax.swing.JButton();
+    b_refresh = new javax.swing.JButton();
+    b_cad = new javax.swing.JButton();
+    b_win_key = new javax.swing.JButton();
+    b_fullscreen = new javax.swing.JButton();
     scroll = new javax.swing.JScrollPane();
 
     jButton2.setText("jButton2");
@@ -79,49 +64,49 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
 
     tools.setRollover(true);
 
-    jButton3.setText("Refresh");
-    jButton3.setFocusable(false);
-    jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton3.addActionListener(new java.awt.event.ActionListener() {
+    b_refresh.setText("Refresh");
+    b_refresh.setFocusable(false);
+    b_refresh.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    b_refresh.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    b_refresh.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton3ActionPerformed(evt);
+        b_refreshActionPerformed(evt);
       }
     });
-    tools.add(jButton3);
+    tools.add(b_refresh);
 
-    jButton1.setText("C+A+D");
-    jButton1.setFocusable(false);
-    jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    b_cad.setText("C+A+D");
+    b_cad.setFocusable(false);
+    b_cad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    b_cad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    b_cad.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        b_cadActionPerformed(evt);
       }
     });
-    tools.add(jButton1);
+    tools.add(b_cad);
 
-    jButton4.setText("WinKey");
-    jButton4.setFocusable(false);
-    jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton4.addActionListener(new java.awt.event.ActionListener() {
+    b_win_key.setText("WinKey");
+    b_win_key.setFocusable(false);
+    b_win_key.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    b_win_key.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    b_win_key.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton4ActionPerformed(evt);
+        b_win_keyActionPerformed(evt);
       }
     });
-    tools.add(jButton4);
+    tools.add(b_win_key);
 
-    fullscreen.setText("FullScreen");
-    fullscreen.setFocusable(false);
-    fullscreen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    fullscreen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    fullscreen.addActionListener(new java.awt.event.ActionListener() {
+    b_fullscreen.setText("FullScreen");
+    b_fullscreen.setFocusable(false);
+    b_fullscreen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    b_fullscreen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    b_fullscreen.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        fullscreenActionPerformed(evt);
+        b_fullscreenActionPerformed(evt);
       }
     });
-    tools.add(fullscreen);
+    tools.add(b_fullscreen);
 
     scroll.setBorder(null);
 
@@ -143,21 +128,21 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void b_cadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_cadActionPerformed
     ctrl_alt_del();
-  }//GEN-LAST:event_jButton1ActionPerformed
+  }//GEN-LAST:event_b_cadActionPerformed
 
-  private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+  private void b_win_keyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_win_keyActionPerformed
     win_key();
-  }//GEN-LAST:event_jButton4ActionPerformed
+  }//GEN-LAST:event_b_win_keyActionPerformed
 
-  private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+  private void b_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_refreshActionPerformed
     refresh();
-  }//GEN-LAST:event_jButton3ActionPerformed
+  }//GEN-LAST:event_b_refreshActionPerformed
 
-  private void fullscreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fullscreenActionPerformed
-    fullscreen();
-  }//GEN-LAST:event_fullscreenActionPerformed
+  private void b_fullscreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_fullscreenActionPerformed
+    toggleFullscreen();
+  }//GEN-LAST:event_b_fullscreenActionPerformed
 
   /**
    * @param args the command line arguments
@@ -212,17 +197,17 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton fullscreen;
-  private javax.swing.JButton jButton1;
+  private javax.swing.JButton b_cad;
+  private javax.swing.JButton b_fullscreen;
+  private javax.swing.JButton b_refresh;
+  private javax.swing.JButton b_win_key;
   private javax.swing.JButton jButton2;
-  private javax.swing.JButton jButton3;
-  private javax.swing.JButton jButton4;
   private javax.swing.JScrollPane scroll;
   private javax.swing.JToolBar tools;
   // End of variables declaration//GEN-END:variables
 
   public void setupEvents() {
-    if (!is_fullscreen) {
+    if (!fullscreen) {
       image.addMouseListener(this);
       image.addMouseMotionListener(this);
       image.addMouseListener(this);
@@ -283,25 +268,23 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     rfb.writeBufferUpdateRequest(0, 0, width, height, false);
   }
 
-  public void fullscreen() {
-    try {
-      if (is_fullscreen) {
-        JFLog.log("!fullscreen");
-        vnc_fullscreen.dispose();
-        vnc_windowed.setVisible(true);
-        vnc_windowed.scroll.setViewportView(image);
-        is_fullscreen = false;
-      } else {
-        JFLog.log("fullscreen");
-        vnc_windowed.setVisible(false);
-        vnc_fullscreen = new VNC(this);
-        vnc_fullscreen.setVisible(true);
-        vnc_fullscreen.scroll.setViewportView(image);
-        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(vnc_fullscreen);
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
+  private void hide_peer() {
+    setVisible(false);
+    removeNotify();  //forces non-displayable so setUndecorated() works
+  }
+
+  public void toggleFullscreen() {
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    hide_peer();
+    if (fullscreen) {
+      setUndecorated(false);
+      gd.setFullScreenWindow(null);
+    } else {
+      setUndecorated(true);
+      gd.setFullScreenWindow(this);
     }
+    fullscreen = !fullscreen;
+    setVisible(true);
   }
 
   public class Connect extends Thread {
@@ -508,7 +491,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     }
     if (e.isAltDown() && e.isShiftDown() && e.isControlDown()) {
       if (code == KeyEvent.VK_F) {
-        fullscreen();
+        toggleFullscreen();
       }
       e.consume();
       return;

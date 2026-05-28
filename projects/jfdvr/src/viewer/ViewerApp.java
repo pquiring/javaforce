@@ -156,14 +156,23 @@ public class ViewerApp extends javax.swing.JFrame {
   public boolean maximized = false;
   public boolean fullscreen = false;
 
+  private void hide_peer() {
+    setVisible(false);
+    removeNotify();  //forces non-displayable so setUndecorated() works
+  }
+
   public void toggleFullScreen() {
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    hide_peer();
     if (fullscreen) {
+      setUndecorated(false);
       gd.setFullScreenWindow(null);
     } else {
+      setUndecorated(true);
       gd.setFullScreenWindow(this);
     }
     fullscreen = !fullscreen;
+    setVisible(true);
   }
 
   public boolean isFullScreen() {
