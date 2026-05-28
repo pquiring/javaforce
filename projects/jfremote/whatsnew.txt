@@ -1,3 +1,6 @@
+2026-05-28 : v0.9
+  - new : improved toggleFullscreen()
+
 2025-02-25 : v0.8
   - fixed VNC:HexTile encoding
 

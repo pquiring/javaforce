@@ -1,3 +1,7 @@
+May 28, 2026 : 0.41 released!
+  - new : improved toggleFullscreen()
+  - new : added --fullscreen option
+
 May 26, 2026 : 0.40 released!
   - fix : loading new config
 
