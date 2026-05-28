@@ -277,9 +277,11 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     hide_peer();
     if (fullscreen) {
+      tools.setVisible(true);
       setUndecorated(false);
       gd.setFullScreenWindow(null);
     } else {
+      tools.setVisible(false);
       setUndecorated(true);
       gd.setFullScreenWindow(this);
     }
