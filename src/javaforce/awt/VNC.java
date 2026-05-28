@@ -18,6 +18,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   private String host;
   private int port;
   private String pass;
+  private boolean fast;
 
   private JFImage image;
   private int buttons;
@@ -26,7 +27,6 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   public static boolean debug;
   public static boolean debugKeys;
 
-  private static boolean fast = true;
 
   /**
    * Creates new form VNC
@@ -36,6 +36,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     this.host = host;
     this.port = port;
     this.pass = pass;
+    this.fast = true;
     setTitle("VNC : " + host);
     new Connect().start();
   }
@@ -157,6 +158,8 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     if (args.length > 1) {
       pass = args[1];
     }
+    boolean cli_fast = true;
+    boolean cli_fullscreen = false;
     for(int a=2;a<args.length;a++) {
       switch (args[a]) {
         case "--debug":
@@ -165,10 +168,13 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
           JFImage.debug = true;
           break;
         case "--fast":
-          fast = true;
+          cli_fast = true;
           break;
         case "--lean":
-          fast = false;
+          cli_fast = false;
+          break;
+        case "--fullscreen":
+          cli_fullscreen = true;
           break;
       }
     }
@@ -188,10 +194,17 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     String _host = host;
     int _port = port;
     String _pass = RFB.checkPassword(pass);
+    boolean _fast = cli_fast;
+    boolean _fullscreen = cli_fullscreen;
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new VNC(_host, _port, _pass).setVisible(true);
+        VNC vnc = new VNC(_host, _port, _pass);
+        vnc.setFast(_fast);
+        if (_fullscreen) {
+          vnc.toggleFullscreen();
+        }
+        vnc.setVisible(true);
       }
     });
   }
@@ -205,6 +218,10 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
   private javax.swing.JScrollPane scroll;
   private javax.swing.JToolBar tools;
   // End of variables declaration//GEN-END:variables
+
+  public void setFast(boolean fast) {
+    this.fast = fast;
+  }
 
   public void setupEvents() {
     if (!fullscreen) {
