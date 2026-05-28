@@ -27,7 +27,7 @@ public class JF {
 
   /** Returns JavaForce version as a String. */
   public static String getVersion() {
-    return "108.1";
+    return "109.0";
   }
 
   /** Console app that displays JavaForce version. */

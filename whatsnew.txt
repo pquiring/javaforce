@@ -1,5 +1,10 @@
 What's new...
 
+May 28/2026 : JF/109.0
+  - jfDVR/0.41 jfMedia/0.29 jfVNC/0.10 jfRemote/0.9
+    - new : improved toggleFullscreen()
+    - new : added --fullscreen option
+
 May 26/2026 : JF/108.1
   - fix : jfDVR/0.40 : loading new config issue fixed
 
