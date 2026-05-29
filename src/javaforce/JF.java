@@ -17,6 +17,7 @@ import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;
 
 import javaforce.ffm.*;
+import javaforce.jni.*;
 
 /**
  * A collection of useful static methods.
@@ -33,6 +34,7 @@ public class JF {
   /** Console app that displays JavaForce version. */
   public static void main(String[] args) {
     System.out.println("javaforce/" + getVersion());
+    System.out.println("javaforce.native.abi/" + JFNative.getVersion());
   }
 
   /** End-of-line character. Each OS has preferred style. */

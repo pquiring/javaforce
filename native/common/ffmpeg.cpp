@@ -36,7 +36,6 @@ JF_LIB_HANDLE ffilter = NULL;
 JF_LIB_HANDLE format = NULL;
 JF_LIB_HANDLE util = NULL;
 JF_LIB_HANDLE resample = NULL;
-JF_LIB_HANDLE postproc = NULL;
 JF_LIB_HANDLE scale = NULL;
 jboolean shownCopyWarning = JNI_FALSE;
 
@@ -114,8 +113,7 @@ int (*_avformat_version)();
 int (*_avformat_query_codec)(const AVOutputFormat *ofmt, int codec_id, int std_compliance);
 
 //avutil functions
-void (*_av_image_copy)(uint8_t* dst_data[],int dst_linesizes[]
-  , uint8_t* src_data[],int src_linesizes[],int pix_fmt,int width,int height);
+void (*_av_image_copy)(uint8_t* dst_data[],int dst_linesizes[], uint8_t* src_data[],int src_linesizes[],int pix_fmt,int width,int height);
 int (*_av_get_bytes_per_sample)(int sample_fmt);
 void* (*_av_malloc)(int size);
 void* (*_av_mallocz)(int size);
@@ -213,7 +211,7 @@ static int64_t currentTimeMillis() {
 }
 
 jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
-  , const char* utilFile, const char* scaleFile, const char* postFile, const char* resampleFile)
+  , const char* utilFile, const char* scaleFile, const char* resampleFile)
 {
   //load libraries (order is important)
   printf("ffmpeg init...");
@@ -233,12 +231,6 @@ jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char
   scale = loadLibrary(scaleFile);
   if (scale == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), scaleFile);
-    return JNI_FALSE;
-  }
-
-  postproc = loadLibrary(postFile);
-  if (postproc == NULL) {
-    printf("Could not find(0x%x):%s\n", GetLastError(), postFile);
     return JNI_FALSE;
   }
 
@@ -408,7 +400,7 @@ jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
-  (JNIEnv *e, jobject c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale)
+  (JNIEnv *e, jobject c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jscale)
 {
   if (ffmpeg_loaded) return ffmpeg_loaded;
 
@@ -424,11 +416,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
 
   const char *resampleFile = e->GetStringUTFChars(jresample, NULL);
 
-  const char *postFile = e->GetStringUTFChars(jpostproc, NULL);
-
   const char *scaleFile = e->GetStringUTFChars(jscale, NULL);
 
-  jboolean ret = mediaLoadLibs(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, postFile, scaleFile);
+  jboolean ret = mediaLoadLibs(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, scaleFile);
 
   e->ReleaseStringUTFChars(jcodec, codecFile);
   e->ReleaseStringUTFChars(jdevice, deviceFile);
@@ -436,7 +426,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
   e->ReleaseStringUTFChars(jformat, formatFile);
   e->ReleaseStringUTFChars(jutil, utilFile);
   e->ReleaseStringUTFChars(jresample, resampleFile);
-  e->ReleaseStringUTFChars(jpostproc, postFile);
   e->ReleaseStringUTFChars(jscale, scaleFile);
 
   if (!ret) {
@@ -598,7 +587,7 @@ static jlong seek_packet(FFContext* ctx, jlong offset, int how) {
 //JNI registration
 
 static JNINativeMethod javaforce_media_MediaCoder[] = {
-  {"mediaLoadLibs", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_MediaJNI_mediaLoadLibs},
+  {"mediaLoadLibs", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_MediaJNI_mediaLoadLibs},
   {"mediaSetLogging", "(Z)V", (void *)&Java_javaforce_jni_MediaJNI_mediaSetLogging},
 };
 
@@ -742,7 +731,7 @@ extern "C" {
     return JNI_TRUE;
   }
   //MediaCoder
-  JNIEXPORT jboolean (*_mediaLoadLibs)(const char* codec, const char* device, const char* filter, const char* format, const char* util, const char* scale, const char* postproc, const char* resample) = &mediaLoadLibs;
+  JNIEXPORT jboolean (*_mediaLoadLibs)(const char* codec, const char* device, const char* filter, const char* format, const char* util, const char* scale, const char* resample) = &mediaLoadLibs;
   JNIEXPORT void (*_mediaSetLogging)(jboolean state) = &mediaSetLogging;
   //MediaFormat
   JNIEXPORT jint (*_getVideoStream)(FFContext* ctx) = &getVideoStream;

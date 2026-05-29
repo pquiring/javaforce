@@ -20,7 +20,7 @@ public class MediaJNI implements MediaAPI {
   }
 
   //MediaCoder
-  public native boolean mediaLoadLibs(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample);
+  public native boolean mediaLoadLibs(String codec, String device, String filter, String format, String util, String swscale, String swresample);
   public native void mediaSetLogging(boolean state);
 
   //MediaFormat

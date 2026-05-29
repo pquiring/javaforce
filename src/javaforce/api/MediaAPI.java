@@ -20,7 +20,7 @@ public interface MediaAPI {
   }
 
   //MediaCoder
-  public boolean mediaLoadLibs(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample);
+  public boolean mediaLoadLibs(String codec, String device, String filter, String format, String util, String swscale, String swresample);
   public void mediaSetLogging(boolean state);
 
   //MediaFormat

@@ -1,3 +1,5 @@
+#include "jf_version.h"
+
 const char* nclass;
 
 typedef int (JNICALL *JNI_GetCreatedJavaVMs_t)(JavaVM**, int, int*);
@@ -17,6 +19,12 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
   if (res != 0) {
     printf("Registering natives for %s failed : count=%d error=%d\n", nclass, count, res);
   }
+}
+
+JNIEXPORT jstring JNICALL Java_javaforce_jni_JFNative_getVersion
+  (JNIEnv *e, jclass c)
+{
+  return e->NewStringUTF(JF_ABI_VERSION);
 }
 
 JNIEXPORT jobject JNICALL Java_javaforce_jni_JFNative_allocate
@@ -45,6 +53,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_JFHeap_unpin
 }
 
 static JNINativeMethod javaforce_jni_JFNative[] = {
+  {"getVersion", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_JFNative_getVersion},
   {"allocate", "(I)Ljava/nio/ByteBuffer;", (void *)&Java_javaforce_jni_JFNative_allocate},
   {"free", "(Ljava/nio/ByteBuffer;)V", (void *)&Java_javaforce_jni_JFNative_free},
   {"getWindowHandle", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_JFNative_getWindowHandle},

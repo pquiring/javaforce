@@ -77,6 +77,9 @@ public class JFNative {
     return ok;
   }
 
+  /** Returns native ABI Version. */
+  public native static String getVersion();
+
   /** Allocate a Direct ByteBuffer. */
   public native static ByteBuffer allocate(int size);
 

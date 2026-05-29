@@ -35,12 +35,10 @@ public class MediaCoder {
 
   private static boolean haveLibs(Library[] libs) {
     int cnt = 0;
-    for(int a=0;a<7;a++) {
+    for(int a=0;a<libs.length;a++) {
       if (libs[a].path != null) cnt++;
     }
-    if (libs[7].path != null) cnt++;
-    else if (libs[8].path != null) cnt++;
-    return cnt == 8;
+    return cnt == libs.length;
   }
 
   private static boolean mediaInit() {
@@ -53,7 +51,6 @@ public class MediaCoder {
       , new Library("avformat")
       , new Library("avutil")
       , new Library("swscale")
-      , new Library("postproc")
       , new Library("swresample")
     };
     JFNative.findLibraries(sysFolders, libs, ext);
@@ -73,8 +70,7 @@ public class MediaCoder {
       libs[3].path,
       libs[4].path,
       libs[5].path,
-      libs[6].path,
-      libs[7].path
+      libs[6].path
     ))
     {
       System.exit(1);
