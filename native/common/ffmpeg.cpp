@@ -43,10 +43,6 @@ static AVChannelLayout channel_layout_1;
 static AVChannelLayout channel_layout_2;
 static AVChannelLayout channel_layout_4;
 
-#if ((LIBAVCODEC_VERSION_MAJOR == 61 && LIBAVCODEC_VERSION_MINOR >= 19) || (LIBAVCODEC_VERSION_MAJOR > 61))
-#define FF_7_1
-#endif
-
 static void copyWarning() {
   printf("Warning : JNI::Get*ArrayElements returned a copy : Performance will be degraded!\n");
   shownCopyWarning = JNI_TRUE;
@@ -79,9 +75,7 @@ int (*_avcodec_receive_packet)(AVCodecContext *ctx, const AVPacket *pkt);
 int (*_avcodec_send_packet)(AVCodecContext *ctx, const AVPacket *pkt);
 int (*_avcodec_receive_frame)(AVCodecContext *ctx, const AVFrame *frame);
 //info
-#ifdef FF_7_1
 int (*_avcodec_get_supported_config)(AVCodecContext *avctx, AVCodec *codec, AVCodecConfig config, unsigned flags, void **out_configs, int *out_num_configs);
-#endif
 //avdevice functions
 
 //avfilter functions
@@ -281,9 +275,7 @@ jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char
   getFunction(codec, (void**)&_avcodec_receive_packet, "avcodec_receive_packet");
   getFunction(codec, (void**)&_avcodec_send_packet, "avcodec_send_packet");
   getFunction(codec, (void**)&_avcodec_receive_frame, "avcodec_receive_frame");
-#ifdef FF_7_1
   getFunction(codec, (void**)&_avcodec_get_supported_config, "avcodec_get_supported_config");
-#endif
 
   getFunction(format, (void**)&_av_guess_format, "av_guess_format");
   getFunction(format, (void**)&_av_find_best_stream, "av_find_best_stream");

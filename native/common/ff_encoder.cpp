@@ -193,15 +193,10 @@ static jboolean encoder_init_video(FFContext *ctx) {
   return JNI_TRUE;
 }
 
-//NOTE : ffmpeg/7.1 has deprecated AVCodec.sample_fmts : must use avcodec_get_supported_config() instead which was only added in 7.1
 static AVSampleFormat* get_codec_sample_fmts(AVCodecContext *codec_ctx, AVCodec *codec) {
-#ifdef FF_7_1
   AVSampleFormat *fmts;
   (*_avcodec_get_supported_config)(codec_ctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (void**)&fmts, NULL);
   return fmts;
-#else
-  return (AVSampleFormat *)codec->sample_fmts;
-#endif
 }
 
 static jboolean encoder_init_audio(FFContext *ctx) {
