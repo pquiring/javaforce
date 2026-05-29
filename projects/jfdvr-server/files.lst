@@ -1,0 +1,4 @@
+/usr/share/java/jfdvr-server.jar
+/usr/bin/jfdvr-server
+/usr/share/icons/hicolor/48x48/apps/jfdvr-server.png
+/lib/systemd/system/jfdvr-server.service

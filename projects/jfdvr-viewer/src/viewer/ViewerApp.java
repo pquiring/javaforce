@@ -26,19 +26,20 @@ public class ViewerApp extends javax.swing.JFrame {
     RTSPURL.register();
     initComponents();
     JFImage icon = new JFImage();
-    icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdvr.png"));
+    icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdvr-viewer.png"));
     setIconImage(icon.getImage());
     cameraicon = new JFImage();
     cameraicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("camera.png"));
     self = this;
     root = getContentPane();
     setPosition();
-    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F2 = Select View | F11 = Toggle Full Screen)");
+    setTitle("jfDVR Viewer/" + Config.version + " (F1 = Help | F2 = Select View | F11 = Toggle Full Screen)");
     RTP.setClientPortRange();
     Config.randomPort();
     setExtendedState(Frame.MAXIMIZED_BOTH);
     maximized = true;
     fullscreen = false;
+    String server = null;
     for(String arg : args) {
       if (arg.startsWith("rtsp://")) {
         if (viewer == null) {
@@ -61,13 +62,16 @@ public class ViewerApp extends javax.swing.JFrame {
       } else if (arg.equals("--fullscreen")) {
         toggleFullScreen();
       } else {
-        if (selector == null) {
-          selector = new SelectView();
-          if (args.length > 0) {
-            selector.setServer(arg);
-          }
-          setPanel(selector);
+        server = arg;
+      }
+    }
+    if (viewer == null) {
+      if (selector == null) {
+        selector = new SelectView();
+        if (server != null) {
+          selector.setServer(server);
         }
+        setPanel(selector);
       }
     }
     ToolTipManager.sharedInstance().setInitialDelay(100);  //force faster tool tips
@@ -187,7 +191,7 @@ public class ViewerApp extends javax.swing.JFrame {
 
   public static void showHelp() {
     JFAWT.showMessage("Help",
-      "jfDVR/" + service.ConfigService.version + "\n\n" +
+      "jfDVR/" + Config.version + "\n\n" +
       "F1 = Help\n" +
       "F2 = Select View\n" +
       "F5 = Refresh\n" +

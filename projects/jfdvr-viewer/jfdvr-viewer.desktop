@@ -2,7 +2,7 @@
 Name=DVR Viewer
 Comment=DVR Viewer
 
-Icon=jfdvr
+Icon=jfdvr-viewer
 
 Type=Application
 Categories=AudioVideo
