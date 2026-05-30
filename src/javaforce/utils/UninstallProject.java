@@ -30,11 +30,6 @@ public class UninstallProject implements ShellProcessListener {
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
 
-    switch (apptype) {
-      case "client": app = app + "-client"; break;
-      case "server": app = app + "-server"; break;
-    }
-
     //delete /usr/bin/${app}
     new File("/usr/bin/" + app).delete();
 

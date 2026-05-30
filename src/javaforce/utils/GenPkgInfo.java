@@ -55,15 +55,6 @@ public class GenPkgInfo {
     apptype = tools.getProperty("apptype");
     deps = getDepends(distro, release);
     service = apptype.equals("service");
-    switch (apptype) {
-      case "client":
-      case "server":
-        apptype = "-" + apptype;
-        break;
-      default:
-        apptype = "";
-        break;
-    }
     desc = tools.getTag("description");
     ver = tools.getProperty("version");
     switch (distro) {
@@ -132,7 +123,7 @@ public class GenPkgInfo {
     try {
       StringBuffer sb = new StringBuffer();
       //mandatory
-      sb.append("Package: " + app + apptype + "\n");
+      sb.append("Package: " + app + "\n");
       sb.append("Version: " + ver + "\n");
       sb.append("Architecture: " + arch + "\n");
       sb.append("Description: " + desc + "\n");
@@ -210,7 +201,7 @@ public class GenPkgInfo {
     try {
       StringBuffer sb = new StringBuffer();
       sb.append("Buildroot: /.\n");
-      sb.append("Name: " + app + apptype + "\n");
+      sb.append("Name: " + app + "\n");
       sb.append("Version: " + ver.replaceAll("-", "_") + "\n");
       sb.append("Release: 1\n");
       sb.append("License: LGPL\n");
@@ -274,7 +265,7 @@ public class GenPkgInfo {
   private void arch() {
     try {
       StringBuffer sb = new StringBuffer();
-      sb.append("pkgname = " + app + apptype + "\n");
+      sb.append("pkgname = " + app + "\n");
       sb.append("pkgver = " + ver + "-1\n");
       sb.append("pkgdesc = " + desc + "\n");
       sb.append("builddate = " + Long.toString(Calendar.getInstance().getTimeInMillis() / 1000L) + "\n");

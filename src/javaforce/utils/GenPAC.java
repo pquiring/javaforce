@@ -45,17 +45,7 @@ public class GenPAC {
     String version = tools.getProperty("version");
     String home = tools.getProperty("home");
 
-    switch (apptype) {
-      case "client":
-      case "server":
-        apptype = "-" + apptype;
-        break;
-      default:
-        apptype = "";
-        break;
-    }
-
-    String out = app + apptype + "-" + version + "-" + archext + ".pkg.tar.xz";
+    String out = app + "-" + version + "-" + archext + ".pkg.tar.xz";
 
     String files_tmp = ".files.tmp";
     String data = ".MTREE";

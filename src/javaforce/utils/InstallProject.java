@@ -30,11 +30,6 @@ public class InstallProject implements ShellProcessListener {
     String app = tools.getProperty("app");
     String apptype = tools.getProperty("apptype");
 
-    switch (apptype) {
-      case "client": app = app + "-client"; break;
-      case "server": app = app + "-server"; break;
-    }
-
     //cp ${app}.bin /usr/bin/${app}
     JFLog.log("Installing executable:" + app + ".bin to /usr/bin");
     JF.copyFile(app + ".bin", "/usr/bin/" + app);

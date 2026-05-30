@@ -46,18 +46,8 @@ public class GenMSI {
     String ffmpeg_version = tools.getVersion("ffmpeg-version");
     String ffmpeg_folder = home + "/ffmpeg-bin/" + ffmpeg_version;
 
-    switch (apptype) {
-      case "client":
-      case "server":
-        apptype = "-" + apptype;
-        break;
-      default:
-        apptype = "";
-        break;
-    }
-
-    String out = msi + apptype + "-" + version + "-win64.msi";
-    String pdb = msi + apptype + "-" + version + "-win64.wixpdb";
+    String out = msi + "-" + version + "-win64.msi";
+    String pdb = msi + "-" + version + "-win64.wixpdb";
 
     try {
       {

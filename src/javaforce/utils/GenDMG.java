@@ -34,17 +34,7 @@ public class GenDMG {
     String jre = tools.getProperty("jre");
     String ffmpeg = tools.getProperty("ffmpeg_home");
 
-    switch (apptype) {
-      case "client":
-      case "server":
-        apptype = "-" + apptype;
-        break;
-      default:
-        apptype = "";
-        break;
-    }
-
-    String out = app + apptype + "-" + version + ".dmg";
+    String out = app + "-" + version + ".dmg";
 
     String tmp_contents = "/tmp/" + app + "/" + app + ".app/Contents";
     String tmp_contents_resources = "/tmp/" + app + "/" + app + ".app/Contents/Resources";

@@ -42,12 +42,8 @@ public class GenExecutable implements ShellProcessListener {
       if (JF.isWindows()) {
         //windows
         switch (apptype) {
-          case "c":  //legacy
           case "console": type = "c"; break;
-          case "s":  //legacy
           case "service": type = "s"; break;
-          case "client": app = app + "-client"; break;
-          case "server": app = app + "-server"; break;
         }
         if (!JF.copyFile(user_home + "/bin/win64" + type + ".exe", app + ".exe")) {
           throw new Exception("copy error:" + app + ".exe");
@@ -58,18 +54,11 @@ public class GenExecutable implements ShellProcessListener {
         WinPE.main(new String[] {app + ".exe", ico, cfg});
       } else if (JF.isMac()) {
         //mac
-        switch (apptype) {
-          case "client": app = app + "-client"; break;
-          case "server": app = app + "-server"; break;
-        }
         JF.copyFile(user_home + "/bin/mac64.bin", app);
       } else {
         //linux
         switch (apptype) {
-          case "s":  //legacy
           case "service": type = "s"; break;
-          case "client": app = app + "-client"; break;
-          case "server": app = app + "-server"; break;
         }
         JF.copyFile(user_home + "/bin/linux64" + type + ".bin", app + ".bin");
         ResourceManager.main(new String[] {app + ".bin", cfg});

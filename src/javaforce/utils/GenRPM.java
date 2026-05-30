@@ -44,17 +44,7 @@ public class GenRPM {
     String version = tools.getProperty("version").replaceAll("-", "_");
     String home = tools.getProperty("home");
 
-    switch (apptype) {
-      case "client":
-      case "server":
-        apptype = "-" + apptype;
-        break;
-      default:
-        apptype = "";
-        break;
-    }
-
-    String out = app + apptype + "-" + version + "-1." + archext + ".rpm";
+    String out = app + "-" + version + "-1." + archext + ".rpm";
 
     String data = "data.tar.bz2";
     String tmpdir = "/tmp/jfrpm.tmp";

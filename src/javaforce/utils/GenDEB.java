@@ -49,17 +49,7 @@ public class GenDEB {
     String version = tools.getProperty("version");
     String home = tools.getProperty("home");
 
-    switch (apptype) {
-      case "client":
-      case "server":
-        apptype = "-" + apptype;
-        break;
-      default:
-        apptype = "";
-        break;
-    }
-
-    String out = app + apptype + "-" + version + "_" + archext + ".deb";
+    String out = app + "-" + version + "_" + archext + ".deb";
 
     String control = "control.tar.gz";
     String data = "data.tar.bz2";
