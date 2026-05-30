@@ -1,0 +1,52 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.10" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring" InstallerVersion="300">
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+    <Icon Id="icon.ico" SourceFile="jfvnc.ico" />
+    <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+    <!-- Step 1: Define the directory structure -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfvnc" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfVNC Server"/> -->
+    </StandardDirectory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{D5197194-0C29-4ED0-B79D-BEC0951B545D}" Bitness="always64">
+        <File Id="jfvncserver.exe" Source="jfvnc-server.exe" KeyPath="yes">
+          <fire:FirewallException Id="FirewallRule5900" Name="jfVNCServer5900" Protocol="tcp" Port="5900" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule5800" Name="jfVNCServer5800" Protocol="tcp" Port="5800" Scope="any" IgnoreFailure="yes" Profile="all" />
+          <fire:FirewallException Id="FirewallRule5843" Name="jfVNCServer5843" Protocol="tcp" Port="5843" Scope="any" IgnoreFailure="yes" Profile="all" />
+        </File>
+        <File Id="javaforce.jar" Source="javaforce.jar" />
+        <File Id="jfvnccli.exe" Source="jfvnccli.exe" />
+        <File Id="jfvncconfig.exe" Source="jfvncconfig.exe" />
+        <File Id="jfvncsession.exe" Source="jfvncsession.exe" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfVNCServer" DisplayName="jfVNCServer" Description="jf VNC Server" Start="auto" ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfVNCServer" Wait="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF463}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVNC Config" Description="VNC Config" Target="[APPLICATIONROOTDIRECTORY]jfvncconfig.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentGroupRef Id="JRE" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    </Package>
+</Wix>

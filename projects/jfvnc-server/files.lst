@@ -1,0 +1,5 @@
+/usr/bin/jfvnc-server
+/usr/bin/jfvnccli
+/usr/bin/jfvncsession
+/usr/bin/jfvncconfig
+/lib/systemd/system/jfvnc-server.service

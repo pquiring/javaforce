@@ -1,10 +1,6 @@
-VNC Viewer:
-
- - jfvnc.exe : vnc client
-
 VNC Server:
 
- - jfvncsvc.exe : service based server which runs in the background
+ - jfvnc-server.exe : service based server which runs in the background
    - jfvncsession.exe : used internally by service for each connection
    - supports Windows and Linux (X11)
  - jfvnccli.exe : app based server which runs as a user app with limited functionality

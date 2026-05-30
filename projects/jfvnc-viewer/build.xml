@@ -2,24 +2,25 @@
   <description>jfvnc</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfvnc"/>
+  <property name="apptype" value="window"/>
   <property name="home" location="../.."/>
-  <property name="src" location="src"/>
-  <property name="build" location="classes"/>
+  <property name="ico" value="jfvnc.ico"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.10"/>
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-javaforce">
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
-  <target name="jar" depends="depjars" description="build jar file">
+  <target name="compile" depends="depjars" description="compile the source">
   </target>
 
-  <!-- sudo ant install -->
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
   <target name="install" description="install files">
-    <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

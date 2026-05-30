@@ -3,8 +3,8 @@ Description=JavaForce VNC Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfvncsvc
-ExecStop=/usr/bin/jfvncsvc --stop
+ExecStart=/usr/bin/jfvnc-server
+ExecStop=/usr/bin/jfvnc-server --stop
 Restart=always
 
 [Install]

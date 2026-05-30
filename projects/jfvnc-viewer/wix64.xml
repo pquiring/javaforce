@@ -1,5 +1,5 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.10" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{6B16EE42-7483-4F5C-9535-B56F3C3986BD}" Version="0.10" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
@@ -13,38 +13,25 @@
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfVNC"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfVNC Viewer"/> -->
     </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{D5197194-0C29-4ED0-B79D-BEC0951B545D}" Bitness="always64">
-        <File Id="jfvncsvc.exe" Source="jfvncsvc.exe" KeyPath="yes">
-          <fire:FirewallException Id="FirewallRule5900" Name="jfVNCServer5900" Protocol="tcp" Port="5900" Scope="any" IgnoreFailure="yes" Profile="all" />
-          <fire:FirewallException Id="FirewallRule5800" Name="jfVNCServer5800" Protocol="tcp" Port="5800" Scope="any" IgnoreFailure="yes" Profile="all" />
-          <fire:FirewallException Id="FirewallRule5843" Name="jfVNCServer5843" Protocol="tcp" Port="5843" Scope="any" IgnoreFailure="yes" Profile="all" />
-        </File>
+      <Component Id="appfiles" Guid="{9D3399AD-198A-480F-9F8D-8FEB218BB6DC}" Bitness="always64">
+        <File Id="jfvnc.exe" Source="jfvnc.exe" KeyPath="yes" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
-        <File Id="jfvnc.exe" Source="jfvnc.exe" />
-        <File Id="jfvnccli.exe" Source="jfvnccli.exe" />
-        <File Id="jfvncconfig.exe" Source="jfvncconfig.exe" />
-        <File Id="jfvncsession.exe" Source="jfvncsession.exe" />
-        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfVNCServer" DisplayName="jfVNCServer" Description="jf VNC Server" Start="auto" ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfVNCServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
     <!-- Step 2b: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <StandardDirectory Id="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF462}">
+      <Component Id="ApplicationShortcut" Guid="{B58DAA4F-1A61-4744-A62F-08F784B02DFE}">
         <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVNC Client" Description="VNC Client" Target="[APPLICATIONROOTDIRECTORY]jfvnc.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfVNC" Name="installed" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-      <Component Id="ApplicationShortcut2" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF463}">
-        <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfVNC Config" Description="VNC Client" Target="[APPLICATIONROOTDIRECTORY]jfvncconfig.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
       </Component>
     </StandardDirectory>
 
@@ -53,7 +40,6 @@
       <ComponentRef Id="appfiles" />
       <ComponentGroupRef Id="JRE" />
       <ComponentRef Id="ApplicationShortcut" />
-      <ComponentRef Id="ApplicationShortcut2" />
     </Feature>
 
     </Package>
