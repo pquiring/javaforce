@@ -92,10 +92,8 @@ executable : build native loader
  - creates executable for the app and configures it to load classpath and start main method
  - project property "apptype" can be defined as:
      "window" for Window GUI apps (default)
-     "console" for console apps (alias "c")
-     "service" for service apps (alias "s")
-     "server" for service config GUI apps (same as "window" type plus adds "-server" to executable and package names)
-     "client" for client config GUI apps (same as "window" type plus adds "-client" to executable and package names)
+     "console" for console apps
+     "service" for service apps
  - {app}.cfg file contains executable properties:
    - CLASSPATH={jar files seperated by ;}  //CLASSPATH will be adjusted to OS requirements
    - MAINCLASS={main class with main()}    //startup class to find main() or serviceStart() if apptype=service

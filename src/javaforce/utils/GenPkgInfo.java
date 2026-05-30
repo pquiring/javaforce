@@ -25,6 +25,7 @@ public class GenPkgInfo {
   private BuildTools tools;
   private String app, apptype, desc, arch, ver;
   private String distro, release;
+  private String symlink;
   private long size;  //in bytes
   private boolean service;
   private String[] deps;
@@ -53,6 +54,8 @@ public class GenPkgInfo {
     //load build.xml and extract app , desc , etc.
     app = tools.getProperty("app");
     apptype = tools.getProperty("apptype");
+    symlink = tools.getProperty("symlink");
+    if (symlink.length() == 0) symlink = null;
     deps = getDepends(distro, release);
     service = apptype.equals("service");
     desc = tools.getTag("description");
@@ -63,6 +66,14 @@ public class GenPkgInfo {
       case "arch": arch(); break;
       default: error("Unknown distro:" + distro);
     }
+  }
+
+  private String getLinkCommand() {
+    return "ln -sf /usr/bin/" + app + " /usr/bin/" + symlink + "\n";
+  }
+
+  private String getUnlinkCommand() {
+    return "rm /usr/bin/" + symlink + "\n";
   }
 
   private long calcSize(String files_list) {
@@ -170,6 +181,9 @@ public class GenPkgInfo {
         if (app.equals("javaforce")) {
           fos.write(("systemctl reload dbus\n").getBytes());
         }
+        if (symlink != null) {
+          fos.write(getLinkCommand().getBytes());
+        }
         fos.close();
       }
 
@@ -187,6 +201,9 @@ public class GenPkgInfo {
       if (!new File("deb/postrm").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postrm");
         fos.write("#!/bin/sh\n".getBytes());
+        if (symlink != null) {
+          fos.write(getUnlinkCommand().getBytes());
+        }
         fos.close();
       }
 
@@ -238,6 +255,9 @@ public class GenPkgInfo {
       if (app.equals("javaforce")) {
         sb.append("systemctl reload dbus\n");
       }
+      if (symlink != null) {
+        sb.append(getLinkCommand());
+      }
       //pre remove
       sb.append("%preun\n");
       sb.append("#!/bin/sh\n");
@@ -249,6 +269,9 @@ public class GenPkgInfo {
       sb.append("#!/bin/sh\n");
       if (service) {
         sb.append("%systemd_postun_with_restart " + app + ".service\n");
+      }
+      if (symlink != null) {
+        sb.append(getUnlinkCommand());
       }
       sb.append("%files\n");
       //files.lst is added by jfrpm
