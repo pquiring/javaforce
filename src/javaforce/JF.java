@@ -45,7 +45,7 @@ public class JF {
     float nat_ver = Float.valueOf(nat_ver_str);
     String min_ver_str = getMinNativeVersion();
     float min_ver = Float.valueOf(min_ver_str);
-    System.out.println("javaforce.native.abi/" + nat_ver_str + (nat_ver < min_ver ? " (incompatible)" : ""));
+    System.out.println("javaforce.native/" + nat_ver_str + (nat_ver < min_ver ? " (incompatible)" : ""));
   }
 
   /** End-of-line character. Each OS has preferred style. */
