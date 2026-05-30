@@ -2,7 +2,7 @@
 Name=FTP Manager
 Comment=Manage your ftp files.
 
-Icon=jfftp
+Icon=jfftp-client
 
 Type=Application
 Categories=Utility

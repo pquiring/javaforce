@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfftp.ico" />
+    <Icon Id="icon.ico" SourceFile="jfftp-client.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
@@ -19,13 +19,13 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{71FE1D1E-FE5F-44EB-8EA8-3815BC36D3DC}" Bitness="always64">
-        <File Id="jfftp.jar" Source="jfftp.jar" KeyPath="yes" />
+        <File Id="jfftpclient.jar" Source="jfftp-client.jar" KeyPath="yes" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jcifs.jar" Source="jcifs.jar" />
         <File Id="sshdcore.jar" Source="sshd-core.jar" />
         <File Id="sshdcommon.jar" Source="sshd-common.jar" />
         <File Id="sshdsftp.jar" Source="sshd-sftp.jar" />
-        <File Id="jfftp_client.exe" Source="jfftp-client.exe" />
+        <File Id="jfftpclient.exe" Source="jfftp-client.exe" />
       </Component>
     </DirectoryRef>
 
