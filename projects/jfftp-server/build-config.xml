@@ -1,0 +1,21 @@
+<project name="jfftp-config" default="jar" basedir=".">
+  <description>ftp config</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfftp-config"/>
+  <property name="apptype" value="window"/>
+  <property name="home" location="../.."/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="jar-javaforce" description="jar">
+  </target>
+
+  <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="${app}.desktop" todir="/usr/share/applications"/>
+    <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+  </target>
+</project>

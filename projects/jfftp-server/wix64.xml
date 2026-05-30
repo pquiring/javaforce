@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfftp.ico" />
+    <Icon Id="icon.ico" SourceFile="jfftp-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
@@ -19,10 +19,10 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{5F416CC0-CD6E-41F6-B049-DF5F47F156D2}" Bitness="always64">
-        <File Id="jfftpsvc.exe" Source="jfftpsvc.exe" KeyPath="yes">
+        <File Id="jfftpserver.exe" Source="jfftp-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule21" Name="jfFTPServer" Protocol="tcp" Port="21" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
-        <File Id="jfftp_server.exe" Source="jfftp-server.exe" />
+        <File Id="jfftpconfig.exe" Source="jfftp-config.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfFTPServer" DisplayName="jfFTPServer" Description="jf FTP Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfFTPServer" Wait="yes" />
