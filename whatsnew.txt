@@ -1,5 +1,11 @@
 What's new...
 
+Jun 1/2026 : JF/110.0
+  - new : ffmpeg support upgraded to 8.x [removed libpostproc]
+    - min version now 7.1
+  - new : jfDVR/0.42 split into server/viewer apps
+  - new : jfVNC/0.11 split into server/viewer apps
+
 May 28/2026 : JF/109.0
   - jfDVR/0.41 jfMedia/0.29 jfVNC/0.10 jfRemote/0.9
     - new : improved toggleFullscreen()
