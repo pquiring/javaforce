@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <link rel=stylesheet href="http://javaforce.sf.net/style.css" type="text/css">
+    <title>jfDataLogger</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfDataLogger</div>
+  </div>
+  <div class=content>
+
+<div>
+Host/Tag format examples:<br>
+<ul>
+<li>Siemens : Host=IP Address, Tag Examples=DB0.DBW1, I2.3, IW4, M5.6, etc.</li>
+<ul>
+<li>Peripheral I/O (PI/PQ) not supported (create logic to copy them to DB or MB)</li>
+</ul>
+<li>AllenBradley : Host=IP Address, Tag Examples=MyTag.MyArray[0], Program:MainProgram.MyTag, MyTag[0].MyArray[0].MyElement, etc.</li>
+<li>ModBus : Host=IP Address, Tag Examples=C1-65536, DI1-65536, IR0-65535, IRX0-FFFF, HR0-65535, HRX0-FFFF</li>
+<li>National Instruments : the host specifies the controller and port options (the tag is not used).</li>
+<li>NI Examples:</li>
+<ul>
+<li>AnalogInput : Host=cDAQ9188-189E9F4Mod6/ai0 DataType=float64</li>
+<li>DigitalInput : Host=cDAQ9188-189E9F4Mod8/port0/line0 DataType=int8</li>
+<li>CounterInput : Host=cDAQ9188-189E9F4Mod1/ctr0/pfi0 DataType=float64</li>
+</ul>
+</ul>
+<br>
+</div>
+<br>
+<br>
+<center>
+<a href="help.php">Help</a>
+ <img valign="center" src="http://javaforce.sf.net/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfdatalogger">Project Page</a>
+ <img valign="center" src="http://javaforce.sf.net/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfdatalogger/files">Download</a>
+ <img valign="center" src="http://javaforce.sf.net/img/vr.gif" width=2 height=12>
+<a href="whatsnew.txt">ChangeLog</a>
+ <img valign="center" src="http://javaforce.sf.net/img/vr.gif" width=2 height=12>
+<a href="http://javaforce.sf.net/">JavaForce</a>
+
+</center>
+  </div>
+  </body>
+</html>
+
+<script type="text/javascript" src="http://javaforce.sf.net/style.js"></script>

@@ -249,7 +249,7 @@ public class TagDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_typeItemStateChanged
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-    JFAWT.openURL("http://jfdatalogger.sf.net/help.php");
+    JFAWT.openURL("https://pquiring.github.io/javaforce/projects/jfdatalogger/docs/help.html");
   }//GEN-LAST:event_helpActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
