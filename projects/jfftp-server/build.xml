@@ -21,4 +21,13 @@
   <target name="install" description="install files for linux">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
+
+  <target name="zip-msi" description="zip msi packages">
+    <zip destfile="jfftp-${version}.zip">
+      <fileset dir="../../repo/windows/amd64">
+        <include name="jfftp-*.msi"/>
+      </fileset>
+    </zip>
+  </target>
+
 </project>

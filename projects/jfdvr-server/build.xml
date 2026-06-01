@@ -42,6 +42,14 @@
     <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 
+  <target name="zip-msi" description="zip msi packages">
+    <zip destfile="jfdvr-${version}.zip">
+      <fileset dir="../../repo/windows/amd64">
+        <include name="jfdvr-*.msi"/>
+      </fileset>
+    </zip>
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>
