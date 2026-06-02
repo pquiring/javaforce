@@ -343,6 +343,15 @@ public class JF {
     }
   }
 
+  /** Returns common folder where jar files are stored. */
+  public static String getClassPath() {
+    if (JF.isWindows()) {
+      return System.getenv("ProgramData") + "/JavaForce";
+    } else {
+      return "/usr/share/java";
+    }
+  }
+
   /** Returns system executable file extension. */
   public static String getExecExt() {
     if (isWindows()) {

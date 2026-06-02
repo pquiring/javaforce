@@ -19,6 +19,7 @@ package javaforce.webui;
 
 import java.io.*;
 import java.util.*;
+import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.access.*;
@@ -29,6 +30,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   private WebServer web;
   private WebUIHandler handler;
   private AccessControl access;
+  private HashMap<String, WebUIServlet> servlets;
 
   /** Enable debug log messages. */
   public static boolean debug = false;
@@ -43,6 +45,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     this.handler = handler;
     if (web != null) stop();
     clients = new ArrayList<WebUIClient>();
+    servlets = new HashMap<String, WebUIServlet>();
     web = new WebServer();
     web.setWebSocketHandler(this);
     web.start(this, port, keys);
@@ -188,6 +191,50 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     }
     JFLog.log("WebUIServer:client not found by hash {" + hash + "}");
     return null;
+  }
+
+  public static WebUIServlet createServlet(String[] classpath, String className) {
+    JFClassLoader loader = new JFClassLoader(classpath);
+    try {
+      Class<?> cls = loader.findClass(className);
+      Constructor<?> ctor = cls.getConstructors()[0];
+      Object obj = ctor.newInstance();
+      return (WebUIServlet)obj;
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return null;
+  }
+
+  public static WebUIServlet createServlet(String folder, String[] classpath, String className) {
+    int cnt = classpath.length;
+    String[] fullpath = new String[cnt];
+    for(int i=0;i<cnt;i++) {
+      fullpath[i] = folder + "/" + classpath[i];
+    }
+    return createServlet(fullpath, className);
+  }
+
+  public void addServlet(WebUIServlet servlet) {
+    servlet.init();
+    synchronized (servlets) {
+      servlets.put(servlet.getName(), servlet);
+    }
+  }
+
+  public void removeServlet(WebUIServlet servlet) {
+    synchronized (servlets) {
+      servlets.remove(servlet.getName());
+    }
+    servlet.destroy();
+  }
+
+  public WebUIServlet getServlet(String name) {
+    WebUIServlet servlet;
+    synchronized (servlets) {
+      servlet = servlets.get(name);
+    }
+    return servlet;
   }
 
   public boolean doWebSocketConnect(WebSocket sock) {
