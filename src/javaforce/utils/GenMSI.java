@@ -122,6 +122,7 @@ public class GenMSI {
         new File("msvcrt.xml").delete();
         new File(pdb).delete();
         if (new File(home + "/repo/windows/amd64/readme.txt").exists()) {
+          JF.sleep(500);  //wix sometimes holds file causing move error during ant processing
           if (!JF.moveFile(out, home + "/repo/windows/amd64/" + out)) throw new Exception("move failed");
         }
       }

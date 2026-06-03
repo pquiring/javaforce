@@ -352,6 +352,15 @@ public class JF {
     }
   }
 
+  /** Returns system data path. */
+  public static String getDataPath() {
+    if (JF.isWindows()) {
+      return getConfigPath();
+    } else {
+      return "/var";
+    }
+  }
+
   /** Returns system executable file extension. */
   public static String getExecExt() {
     if (isWindows()) {
