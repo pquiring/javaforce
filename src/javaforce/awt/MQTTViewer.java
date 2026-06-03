@@ -366,7 +366,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
   public void subscribe() {
     if (client == null) return;
-    String _topic = topic.getText();
+    String _topic = topic.getText().trim();
     client.subscribe(_topic);
     addText("Subscribed to : " + _topic + "\r\n");
   }
