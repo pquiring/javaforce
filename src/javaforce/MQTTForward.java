@@ -131,14 +131,15 @@ public class MQTTForward {
   }
 
   private class Server extends Thread implements MQTTEvents {
-    public float count;
+    public int count;
     public void run() {
       while (active) {
         Entry entry = remove();
+        count += 500;  //remove() timeout is 500ms
         if (entry == null) {
           JF.sleep(500);
           if (keep_alive > 0) {
-            count += 500;
+            count += 500;  //sleep 500ms
             if (count >= keep_alive) {
               count = 0;
             } else {

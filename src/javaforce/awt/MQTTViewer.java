@@ -402,8 +402,12 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     }
     String topic = send_topic.getText();
     String msg = send_msg.getText();
-    if (!client.publish(topic, msg)) {
-      addText("Failed to send msg");
+    if (topic.equals("ping")) {
+      client.ping();
+    } else {
+      if (!client.publish(topic, msg)) {
+        addText("Failed to send msg");
+      }
     }
   }
 
