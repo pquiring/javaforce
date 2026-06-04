@@ -121,7 +121,7 @@ public class MQTTForward {
       synchronized (queue_lock) {
         if (queue.size() == 0) {
           try { queue_lock.wait(500); } catch (Exception e) {}
-          return null;
+          if (queue.size() == 0) return null;
         }
         Entry entry = queue.remove(0);
         return entry;
