@@ -19,7 +19,7 @@ public class MQTTForward {
   private String user;
   private String pass;
   private int max_queue_size = 1000;
-  private int keep_alive = 30;
+  private int keep_alive = 5000;  //ms
   private long last_packet = -1;
   private boolean connected;
 
@@ -99,11 +99,11 @@ public class MQTTForward {
     }
   }
 
-  /** Set keep alive interval in seconds (default = 30) (0 = disabled)
+  /** Set keep alive interval in seconds (default = 5) (0 = disabled)
    * Send a ping() to maintain connection.
    */
   public void setKeepAlive(int value) {
-    keep_alive = value;
+    keep_alive = value * 1000;
   }
 
   public void reconnect() {
@@ -131,14 +131,14 @@ public class MQTTForward {
   }
 
   private class Server extends Thread implements MQTTEvents {
-    public int count;
+    public float count;
     public void run() {
       while (active) {
         Entry entry = remove();
         if (entry == null) {
           JF.sleep(500);
           if (keep_alive > 0) {
-            count++;
+            count += 500;
             if (count >= keep_alive) {
               count = 0;
             } else {
@@ -152,7 +152,7 @@ public class MQTTForward {
         try {
           synchronized (client_lock) {
             if (client != null && keep_alive > 0) {
-              long timeout = System.currentTimeMillis() - (keep_alive * 1000 * 2);
+              long timeout = System.currentTimeMillis() - (keep_alive * 2);
               if (client.getLastPacketTimestamp() < timeout) {
                 reconnect();
               }
