@@ -71,7 +71,7 @@ public class LnxNative {
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2, String pam, String ncurses);
 
   /** Creates a unix socket which commands to the service can be issued.
-   * Only supported command is "stop".  (see lnxServiceRequestStop())
+   * Supports : stop, reload
    * Socket file is stored at /usr/lib/systemd/system/{service}.socket
    *
    * Note : unix sockets requires Java 16 (JEP 380).
