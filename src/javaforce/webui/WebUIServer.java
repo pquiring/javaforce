@@ -239,7 +239,9 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public void clearServlets() {
     synchronized (servlets) {
-      servlets.clear();
+      for(WebUIServlet servlet : servlets.values()) {
+        removeServlet(servlet);
+      }
     }
   }
 
