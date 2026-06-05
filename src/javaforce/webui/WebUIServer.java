@@ -237,6 +237,12 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     return servlet;
   }
 
+  public WebUIServlet[] getServlets() {
+    synchronized (servlets) {
+      return servlets.values().toArray(new WebUIServlet[0]);
+    }
+  }
+
   public void clearServlets() {
     synchronized (servlets) {
       for(WebUIServlet servlet : servlets.values()) {
