@@ -93,6 +93,7 @@ public class LnxNative {
               if (msg == null) break;
               switch (msg) {
                 case "stop": lnxServiceStop(); active = false; break;
+                case "reload": lnxServiceReload(); break;
               }
             }
             channel.close();
@@ -121,6 +122,22 @@ public class LnxNative {
     }
   }
 
+  /** Invokes the services serviceReload() method.
+   */
+  @SuppressWarnings("unchecked")
+  private static boolean lnxServiceReload() {
+    String clsname = System.getProperty("java.app.name");
+    try {
+      Class cls = Class.forName(clsname);
+      Method method = cls.getMethod("serviceReload");
+      method.invoke(null, new Object[] {});
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   /** Sends a "stop" command to the service's unix socket.
    */
   private static void lnxServiceRequestStop() {
@@ -132,6 +149,27 @@ public class LnxNative {
       ByteBuffer buffer = ByteBuffer.allocate(1024);
       buffer.clear();
       buffer.put("stop".getBytes());
+      buffer.flip();
+      while (buffer.hasRemaining()) {
+        channel.write(buffer);
+      }
+      channel.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  /** Sends a "reload" command to the service's unix socket.
+   */
+  private static void lnxServiceRequestReload() {
+    //connect to unix socket and send stop command
+    try {
+      SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+      UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(getServiceSocket());
+      channel.connect(socketAddress);
+      ByteBuffer buffer = ByteBuffer.allocate(1024);
+      buffer.clear();
+      buffer.put("reload".getBytes());
       buffer.flip();
       while (buffer.hasRemaining()) {
         channel.write(buffer);

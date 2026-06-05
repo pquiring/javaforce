@@ -367,6 +367,10 @@ bool JavaThread(void *ignore) {
     //request service shutdown
     return InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceRequestStop", "()V", NULL);
   }
+  if (g_argc == 2 && (strcmp(g_argv[1], "--reload") == 0)) {
+    //request service reload config
+    return InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceRequestReload", "()V", NULL);
+  }
   //setup service shutdown
   InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceInit", "()V", NULL);
 #endif
