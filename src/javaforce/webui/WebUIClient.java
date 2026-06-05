@@ -396,4 +396,9 @@ public class WebUIClient {
   public void setUploadStatus(Status status) {
     upload_status = status;
   }
+
+  public boolean isAdminServicePresent() {
+    String file = JF.getJARPath() + "/jfadmin.jar";
+    return new File(file).exists();
+  }
 }
