@@ -1,0 +1,10 @@
+[Unit]
+Description=jfAdmin
+
+[Service]
+ExecStart=/usr/bin/jfadmin
+ExecStop=/usr/bin/jfadmin --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

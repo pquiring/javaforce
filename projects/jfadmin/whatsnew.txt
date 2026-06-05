@@ -1,0 +1,2 @@
+2026-??-?? : 0.1
+  - new : init app release

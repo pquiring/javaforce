@@ -1,0 +1,3 @@
+/usr/bin/jfadmin
+/usr/share/java/jfadmin.jar
+/lib/systemd/system/jfadmin.service
