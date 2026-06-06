@@ -40,6 +40,10 @@ public class Service extends Thread implements WebHandler {
     }
   }
 
+  public static void serviceReload() {
+    //reload config (Linux only)
+  }
+
   public void cancel() {
     active = false;
   }
