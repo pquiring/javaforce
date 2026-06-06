@@ -310,11 +310,12 @@ public class ConfigService implements WebUIHandler {
   }
 
   private void loadServlets() {
-    String[] files = new File(Paths.adminPath).list();
+    File[] files = new File(Paths.adminPath).listFiles();
     if (files == null) return;
-    for(String file : files) {
-      if (!file.endsWith(".cfg")) continue;
-      loadServlet(file);
+    for(File file : files) {
+      String name = file.getName();
+      if (!name.endsWith(".cfg")) continue;
+      loadServlet(file.getAbsolutePath());
     }
   }
 
@@ -335,8 +336,14 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       String[] cp = classpath.split(";");
-      WebUIServlet servlet = server.createServlet(JF.getClassFolder(), cp, cls);
-      if (servlet == null) return;
+      int i1 = file.lastIndexOf('/');
+      int i2 = file.lastIndexOf('.');
+      String name = file.substring(i1 + 1, i2);
+      WebUIServlet servlet = server.createServlet(JF.getClassFolder(name), cp, cls);
+      if (servlet == null) {
+        JFLog.log("Servlet failed to load:" + file);
+        return;
+      }
       server.addServlet(servlet);
     } catch (Exception e) {
       JFLog.log(e);

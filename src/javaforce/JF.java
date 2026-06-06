@@ -355,16 +355,12 @@ public class JF {
   /** Returns common folder where jar files are stored for specifed app name. */
   public static String getClassFolder(String appName) {
     if (JF.isWindows()) {
-      String folder = System.getenv("ProgramData") + "/JavaForce";
+      String folder = System.getenv("ProgramFiles");
       String folder_appName = folder + "/" + appName;
       if (new File(folder_appName).exists()) {
         return folder_appName;
       }
-      String folder_jf_appName = folder + "/jf" + appName;
-      if (new File(folder_jf_appName).exists()) {
-        return folder_jf_appName;
-      }
-      return folder;
+      return getClassFolder();
     } else {
       return "/usr/share/java";
     }
