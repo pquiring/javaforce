@@ -398,7 +398,7 @@ public class WebUIClient {
   }
 
   public boolean isAdminServicePresent() {
-    String file = JF.getJARPath() + "/jfadmin.jar";
+    String file = JF.getClassFolder() + "/jfadmin.jar";
     return new File(file).exists();
   }
 }

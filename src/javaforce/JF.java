@@ -344,12 +344,35 @@ public class JF {
   }
 
   /** Returns common folder where jar files are stored. */
-  public static String getClassPath() {
+  public static String getClassFolder() {
     if (JF.isWindows()) {
       return System.getenv("ProgramData") + "/JavaForce";
     } else {
       return "/usr/share/java";
     }
+  }
+
+  /** Returns common folder where jar files are stored for specifed app name. */
+  public static String getClassFolder(String appName) {
+    if (JF.isWindows()) {
+      String folder = System.getenv("ProgramData") + "/JavaForce";
+      String folder_appName = folder + "/" + appName;
+      if (new File(folder_appName).exists()) {
+        return folder_appName;
+      }
+      String folder_jf_appName = folder + "/jf" + appName;
+      if (new File(folder_jf_appName).exists()) {
+        return folder_jf_appName;
+      }
+      return folder;
+    } else {
+      return "/usr/share/java";
+    }
+  }
+
+  /** Returns classpath specified for this JVM (list of jar files). */
+  public static String getClassPath() {
+    return System.getProperty("java.class.path");
   }
 
   /** Returns system data path. */
@@ -1097,13 +1120,6 @@ public class JF {
       }
     }
     return true;
-  }
-
-//executable JAR functions
-
-  /** Returns classpath specified for this JVM (list of jar files). */
-  public static String getJARPath() {
-    return System.getProperty("java.class.path");
   }
 
 //misc functions

@@ -335,7 +335,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       String[] cp = classpath.split(";");
-      WebUIServlet servlet = server.createServlet(JF.getJARPath(), cp, cls);
+      WebUIServlet servlet = server.createServlet(JF.getClassFolder(), cp, cls);
       if (servlet == null) return;
       server.addServlet(servlet);
     } catch (Exception e) {
