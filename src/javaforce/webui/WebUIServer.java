@@ -199,7 +199,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       Class<?> cls = loader.findClass(className);
       Constructor<?> ctor = cls.getConstructors()[0];
       Object obj = ctor.newInstance();
-      return (WebUIServlet)obj;
+      return new WebUIServletProxy(loader, cls, obj);
     } catch (Exception e) {
       JFLog.log(e);
     }
