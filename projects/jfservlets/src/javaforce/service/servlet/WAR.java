@@ -30,9 +30,14 @@ public class WAR {
   public static class Servlet {
     //must use reflection to get servlet from loader
     private Object servlet;
+
+    private Class<?> cls_request;
+    private Class<?> cls_response;
+
     private Method service;
     private Method init;
     private Method destroy;
+
     private Class<?> req;
     private Constructor<?> req_ctor;
     private Class<?> res;
@@ -145,27 +150,11 @@ public class WAR {
                     Constructor<?> ctor = cls.getConstructor();
                     if (ctor == null) throw new Exception("WAR:ctor not found:" + cls_name);
                     servlet.servlet = ctor.newInstance();
-                    Method[] methods = cls.getMethods();
-                    for(Method method : methods) {
-                      String sign = method.toString();
-                      if (debug) {
-                        JFLog.log("method:name=" + method.getName() + ":signature=" + sign);
-                      }
-                      switch (sign) {
-                        case "public void javax.servlet.http.HttpServlet.service(javax.servlet.ServletRequest,javax.servlet.ServletResponse)":
-                          servlet.service = method;
-                          break;
-                        case "public void javax.servlet.http.GenericServlet.init()":
-                          servlet.init = method;
-                          break;
-                        case "public void javax.servlet.http.GenericServlet.destroy()":
-                          servlet.destroy = method;
-                          break;
-                      }
-                    }
-                    if (servlet.service == null) {
-                      JFLog.log("Error:service not found:" + name);
-                    }
+                    servlet.cls_request = war.loader.loadClass("javax.servlet.ServletRequest");
+                    servlet.cls_response = war.loader.loadClass("javax.servlet.ServletResponse");
+                    servlet.init = cls.getMethod("init");
+                    servlet.destroy = cls.getMethod("destroy");
+                    servlet.service = cls.getMethod("service", servlet.cls_request, servlet.cls_response);
                   }
                   {
                     Class<?> cls = war.loader.findClass("javax.servlet.http.HttpServletRequestImpl");
