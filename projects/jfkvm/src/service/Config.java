@@ -125,12 +125,17 @@ public class Config implements Serializable {
   public synchronized boolean save() {
     valid();
     String file = Paths.dataPath + "/config.dat";
+    boolean result = false;
     try {
-      return Compression.serialize(file, current);
+      result = Compression.serialize(file, current);
     } catch (Exception e) {
       JFLog.log(e);
-      return false;
+      result = false;
     }
+    if (result) {
+      KVMService.bus_client.invoke(KVMService.busName, "reload");
+    }
+    return result;
   }
 
   public String getKeyStatus() {

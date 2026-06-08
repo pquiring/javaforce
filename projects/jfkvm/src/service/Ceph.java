@@ -206,7 +206,7 @@ public class Ceph {
   public static void main(String[] args) {
     //test addsshkeys
     try {
-      Paths.init();
+      Paths.init(false);
       Config.load();
       Host[] hosts = Config.current.hosts.values().toArray(new Host[0]);
       JFLog.log("Installing sshkeys...");

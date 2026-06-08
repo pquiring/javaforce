@@ -2126,4 +2126,9 @@ public class JF {
   public long getJavaMaxMemorySize() {
     return Runtime.getRuntime().maxMemory();
   }
+
+  public static boolean isAdminServicePresent() {
+    String file = getClassFolder("jfadmin") + "/jfadmin.jar";
+    return new File(file).exists();
+  }
 }

@@ -1,3 +1,4 @@
 /usr/bin/jfkvm
 /usr/share/java/jfkvm.jar
 /lib/systemd/system/jfkvm.service
+/etc/javaforce/admin/jfkvm.cfg

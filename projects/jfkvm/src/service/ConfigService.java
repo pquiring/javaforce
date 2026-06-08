@@ -25,11 +25,12 @@ import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 import static javaforce.webui.Component.*;
 
-public class ConfigService implements WebUIHandler {
+public class ConfigService implements WebUIServlet {
   public static String version = "10.0";
   public static String appname = "jfKVM";
   public static boolean debug = false;
   public static boolean debug_api = false;
+  public static boolean servlet = false;
   public WebUIServer server;
   public AccessControl access;
   private KeyMgmt keys;
@@ -8176,5 +8177,33 @@ public class ConfigService implements WebUIHandler {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  /** Perform init within a WebUIServlet context. */
+  public void init() {
+    //init paths
+    Paths.init(true);
+    //detect OS
+    Linux.detectDistro();
+    //libvirt init
+    if (!VirtualMachine.init()) {
+      JFLog.log("Failed to load libvirt");
+      return;
+    }
+    //load config
+    Config.load();
+    //start bus client
+    KVMService.init();
+  }
+
+  /** Release resources for WebUIServlet. */
+  public void destroy() {
+    //stop bus client
+    KVMService.destroy();
+  }
+
+  /** Return WebUIServlet name. */
+  public String getName() {
+    return "KVM";
   }
 }

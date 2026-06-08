@@ -9,6 +9,7 @@ package service;
  */
 
 import javaforce.*;
+import javaforce.bus.*;
 import javaforce.linux.Linux;
 import javaforce.vm.*;
 import javaforce.service.*;
@@ -20,6 +21,9 @@ public class KVMService extends Thread {
   public static WebServerRedir redirService;
   public static FileSyncServer syncService;
   public static Stats stats;
+  public static JBusServer bus_server;
+  public static JBusClient bus_client;
+  public static String busName = "javaforce.jfkvm";
 
   public static void serviceStart(String args[]) {
     if (kvmService != null) return;
@@ -35,7 +39,7 @@ public class KVMService extends Thread {
 
   public void run() {
     //init paths
-    Paths.init();
+    Paths.init(false);
     //detect OS
     Linux.detectDistro();
     //libvirt init
@@ -59,8 +63,12 @@ public class KVMService extends Thread {
     syncService = new FileSyncServer(Config.current.token, "/volumes");
     syncService.start();
     //start config service
-    configService = new ConfigService();
-    configService.start();
+    if (!JF.isAdminServicePresent()) {
+      //start bus server
+      bus_server = new JBusServer("javaforce.jfkvm", new BusMethods());
+      configService = new ConfigService();
+      configService.start();
+    }
     //start redir service
     redirService = new WebServerRedir();
     redirService.start(80, 443);
@@ -114,6 +122,32 @@ public class KVMService extends Thread {
         JFLog.log(e);
       }
       syncService = null;
+    }
+    if (bus_server != null) {
+      bus_server.disconnect();
+      bus_server = null;
+    }
+  }
+
+  public static void init() {
+    //start bus client
+    bus_client = new JBusClient(new BusMethods());
+    ConfigService.servlet = true;
+  }
+
+  /** Destroy resources within WebUIServlet context. */
+  public static void destroy() {
+    if (bus_client != null) {
+      bus_client.disconnect();
+      bus_client = null;
+    }
+  }
+
+  /** IPC methods. */
+  public static class BusMethods {
+    public boolean reload() {
+      Config.load();
+      return true;
     }
   }
 }

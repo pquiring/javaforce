@@ -38,6 +38,7 @@
   <target name="install" description="install files">
     <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
+    <copy file="${app}.cfg" todir="/etc/javaforce/admin"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

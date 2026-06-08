@@ -23,7 +23,7 @@ public class Paths {
   public static int LOG_DEFAULT = 0;
   public static int LOG_SYSTEMD = 1;
 
-  public static void init() {
+  public static void init(boolean servlet) {
     if (JF.isWindows()) {
       dataPath = System.getenv("ProgramData") + "/jfkvm";
     } else {
@@ -45,9 +45,21 @@ public class Paths {
     new File(tasksPath).mkdirs();
     new File(accessPath).mkdirs();
     Linux.chmod(accessPath, 0700);  //must secure folder
-    JFLog.append(LOG_DEFAULT, logsPath + "/jfkvm.log", true);
+    String log_kvm;
+    if (!servlet) {
+      log_kvm = logsPath + "/jfkvm.log";
+    } else {
+      log_kvm = logsPath + "/jfkvm-webui.log";
+    }
+    JFLog.append(LOG_DEFAULT, log_kvm, true);
     JFLog.setRetention(LOG_DEFAULT, 30);
-    JFLog.append(LOG_SYSTEMD, logsPath + "/systemd.log", true);
+    String log_systemd;
+    if (!servlet) {
+      log_systemd = logsPath + "/systemd.log";
+    } else {
+      log_systemd = logsPath + "/systemd-webui.log";
+    }
+    JFLog.append(LOG_SYSTEMD, log_systemd, true);
     JFLog.setRetention(LOG_SYSTEMD, 30);
     JFLog.setShowCause(true);
     ServiceControl.setLog(LOG_SYSTEMD);
