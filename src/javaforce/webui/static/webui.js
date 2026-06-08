@@ -53,10 +53,12 @@ function wsclose(event) {
 function connect() {
   var url;
   if (location.protocol === "https:") {
-    url = "wss://" + location.host + "/webui";
+    url = "wss://";
   } else {
-    url = "ws://" + location.host + "/webui";
+    url = "ws://";
   }
+  url += location.host;
+  url += location.pathname;
   console.log("url=" + url);
   ws = new WebSocket(url);
   //WebSocket binaryType default is Blob but converting it to TypedArray is very SLOW, so ask to get data in ArrayBuffer format instead
