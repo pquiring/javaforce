@@ -179,9 +179,8 @@ public class ConfigService implements WebUIHandler {
     panel.add(ui.top_bottom_split);
     ui.top_bottom_split.setDividerPosition(bottomSize);
 
-    int leftSize = 128;
+    int leftSize = 64;
     ui.left_right_split = new SplitPanel(SplitPanel.VERTICAL);
-    ui.left_right_split = ui.left_right_split;
     ui.left_right_split.setDividerPosition(leftSize);
     ui.left_right_split.setLeftComponent(leftPanel(ui, leftSize));
     ui.left_right_split.setRightComponent(configPanel(ui));
