@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+June 8, 2026 : v0.30 released!
+  - fix : version bump for ABI changes
+
 May 29, 2026 : v0.29 released!
   - new : improved toggleFullscreen()
   - new : added --fullscreen option
