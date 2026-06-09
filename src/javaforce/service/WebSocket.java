@@ -18,7 +18,8 @@ public class WebSocket {
   protected String url;
 
   private boolean connected = true;
-  private String host;
+  private String server_host;
+  private String client_host;
 
   public static final int TYPE_CONT = 0x0;  //do not use
   public static final int TYPE_TEXT = 0x1;
@@ -31,8 +32,9 @@ public class WebSocket {
   public static final int FIN = 0x80;
   public static final int MASK = 0x80;
 
-  public WebSocket(String host, InputStream is, OutputStream os, String url) {
-    this.host = host;
+  public WebSocket(String server_host, String client_host, InputStream is, OutputStream os, String url) {
+    this.server_host = server_host;
+    this.client_host = client_host;
     this.is = is;
     this.os = os;
     this.url = url;
@@ -46,8 +48,12 @@ public class WebSocket {
     return url;
   }
 
-  public String getHost() {
-    return host;
+  public String getClientHost() {
+    return client_host;
+  }
+
+  public String getServerHost() {
+    return server_host;
   }
 
   public InputStream getInputStream() {
@@ -103,7 +109,7 @@ public class WebSocket {
       os.write(msg);
     } catch (SocketException e) {
       connected = false;
-      JFLog.logTrace("WebSocket closed:" + host);
+      JFLog.logTrace("WebSocket closed:" + client_host);
       return false;
     } catch (Exception e) {
       connected = false;

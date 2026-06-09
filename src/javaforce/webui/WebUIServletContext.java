@@ -37,7 +37,7 @@ public class WebUIServletContext {
       server = server_ctor.newInstance();
       startServlet = server_cls.getMethod("startServlet", servlet_cls);
       stopServlet = server_cls.getMethod("stopServlet");
-      connectServlet = server_cls.getMethod("connectServlet", String.class, InputStream.class, OutputStream.class);
+      connectServlet = server_cls.getMethod("connectServlet", String.class, String.class, InputStream.class, OutputStream.class);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -61,9 +61,9 @@ public class WebUIServletContext {
     }
   }
 
-  public void connectServlet(String host, InputStream is, OutputStream os) {
+  public void connectServlet(String server_host, String client_host, InputStream is, OutputStream os) {
     try {
-      connectServlet.invoke(server, host, is, os);
+      connectServlet.invoke(server, server_host, client_host, is, os);
     } catch (Exception e) {
       JFLog.log(e);
     }
