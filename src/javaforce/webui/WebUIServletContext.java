@@ -27,7 +27,7 @@ public class WebUIServletContext {
     this.servlet = servlet;
 
     try {
-      Class<?> servlet_cls = servlet.getClass();
+      Class<?> servlet_cls = loader.findClass("javaforce.webui.WebUIServlet");
       init = servlet_cls.getMethod("init");
       destroy = servlet_cls.getMethod("destroy");
       getName = servlet_cls.getMethod("getName");
