@@ -8,5 +8,5 @@ package javaforce;
  */
 
 public interface Condition {
-  public boolean call();
+  public boolean check();
 }

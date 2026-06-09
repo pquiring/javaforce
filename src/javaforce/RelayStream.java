@@ -24,7 +24,7 @@ public class RelayStream extends Thread {
   public void run() {
     byte[] data = new byte[1024];
     try {
-      while (connected.call()) {
+      while (connected.check()) {
         int read = in.read(data);
         if (read == -1) break;
         if (read > 0) {
