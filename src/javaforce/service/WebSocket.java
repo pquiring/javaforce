@@ -31,8 +31,11 @@ public class WebSocket {
   public static final int FIN = 0x80;
   public static final int MASK = 0x80;
 
-  public WebSocket(String host) {
+  public WebSocket(String host, InputStream is, OutputStream os, String url) {
     this.host = host;
+    this.is = is;
+    this.os = os;
+    this.url = url;
   }
 
   /** Free to use data */
