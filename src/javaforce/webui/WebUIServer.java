@@ -24,13 +24,14 @@ import java.lang.reflect.*;
 import javaforce.*;
 import javaforce.access.*;
 import javaforce.service.*;
-import javaforce.webui.panel.*;
 
 public class WebUIServer implements WebHandler, WebSocketHandler {
   private WebServer web;
   private WebUIHandler handler;
   private AccessControl access;
-  private HashMap<String, WebUIServlet> servlets;
+
+  //servlets
+  private HashMap<String, WebUIServletContext> servlets;
 
   /** Enable debug log messages. */
   public static boolean debug = false;
@@ -45,17 +46,53 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     this.handler = handler;
     if (web != null) stop();
     clients = new ArrayList<WebUIClient>();
-    servlets = new HashMap<String, WebUIServlet>();
     web = new WebServer();
     web.setWebSocketHandler(this);
     web.start(this, port, keys);
     JFLog.log("WebUI Server starting on port " + port + "...");
   }
 
+  /** Shutdown WebUIServer. */
   public void stop() {
     if (web != null) {
       web.stop();
       web = null;
+    }
+    clients = null;
+  }
+
+  /** Start support for WebUIServlets.
+   */
+  public void startServlets() {
+    servlets = new HashMap<>();
+  }
+
+  /** startServlet on Servlet side
+   * See WebUIServletContext
+   */
+  private void startServlet(WebUIServlet handler) {
+    this.handler = handler;
+    clients = new ArrayList<WebUIClient>();
+  }
+
+  /** stopServlet on Servlet side
+   * See WebUIServletContext
+   */
+  private void stopServlet() {
+    clients = null;
+  }
+
+  /** connectServlet on Servlet side
+   * See WebUIServletContext
+   */
+  private void connectServlet(String host, InputStream is, OutputStream os) {
+    try {
+      WebSocket websock = new WebSocket(host, is, os, null);
+      WebUIClient client = new WebUIClient(this, websock, handler);
+      clients.add(client);
+      handler.clientConnected(client);
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 
@@ -193,20 +230,21 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     return null;
   }
 
-  public static WebUIServlet createServlet(String[] classpath, String className) {
+  public static WebUIServletContext createServlet(String[] classpath, String className) {
     JFClassLoader loader = new JFClassLoader(classpath);
     try {
       Class<?> cls = loader.findClass(className);
       Constructor<?> ctor = cls.getConstructors()[0];
       Object obj = ctor.newInstance();
-      return new WebUIServletProxy(loader, cls, obj);
+      WebUIServletContext context = new WebUIServletContext(loader, obj);
+      return context;
     } catch (Exception e) {
       JFLog.log(e);
     }
     return null;
   }
 
-  public static WebUIServlet createServlet(String folder, String[] classpath, String className) {
+  public static WebUIServletContext createServlet(String folder, String[] classpath, String className) {
     int cnt = classpath.length;
     String[] fullpath = new String[cnt];
     for(int i=0;i<cnt;i++) {
@@ -215,37 +253,39 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     return createServlet(fullpath, className);
   }
 
-  public void addServlet(WebUIServlet servlet) {
+  public void addServlet(WebUIServletContext servlet) {
+    servlet.server_start();
     servlet.init();
     synchronized (servlets) {
       servlets.put(servlet.getName(), servlet);
     }
   }
 
-  public void removeServlet(WebUIServlet servlet) {
+  public void removeServlet(WebUIServletContext servlet) {
     synchronized (servlets) {
       servlets.remove(servlet.getName());
     }
     servlet.destroy();
+    servlet.server_stop();
   }
 
-  public WebUIServlet getServlet(String name) {
-    WebUIServlet servlet;
+  public WebUIServletContext getServlet(String name) {
+    WebUIServletContext servlet;
     synchronized (servlets) {
       servlet = servlets.get(name);
     }
     return servlet;
   }
 
-  public WebUIServlet[] getServlets() {
+  public WebUIServletContext[] getServlets() {
     synchronized (servlets) {
-      return servlets.values().toArray(new WebUIServlet[0]);
+      return servlets.values().toArray(new WebUIServletContext[0]);
     }
   }
 
   public void clearServlets() {
     synchronized (servlets) {
-      for(WebUIServlet servlet : servlets.values()) {
+      for(WebUIServletContext servlet : servlets.values()) {
         removeServlet(servlet);
       }
     }
@@ -253,9 +293,22 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public boolean doWebSocketConnect(WebSocket sock) {
     try {
-      WebUIClient client = new WebUIClient(this, sock, handler);
-      clients.add(client);
-      handler.clientConnected(client);
+      String url = sock.getURL();
+      if (url.equals("/")) {
+        WebUIClient client = new WebUIClient(this, sock, handler);
+        clients.add(client);
+        handler.clientConnected(client);
+        return true;
+      }
+      //servlets
+      if (servlets == null) return false;
+      String name = url.substring(1);
+      WebUIServletContext servlet;
+      synchronized (servlets) {
+        servlet = servlets.get(name);
+      }
+      if (servlet == null) return false;
+      servlet.connectServlet(sock.getHost(), sock.getInputStream(), sock.getOutputStream());
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -311,5 +364,8 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public class BusMethods {
   }
 }

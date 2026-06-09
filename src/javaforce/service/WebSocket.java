@@ -50,6 +50,14 @@ public class WebSocket {
     return host;
   }
 
+  public InputStream getInputStream() {
+    return is;
+  }
+
+  public OutputStream getOutputStream() {
+    return os;
+  }
+
   /** Writes a WebSocket message to client.
    * Type = TYPE_TEXT
    */

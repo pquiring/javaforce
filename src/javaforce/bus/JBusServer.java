@@ -1,7 +1,7 @@
 package javaforce.bus;
 
 /**
- * JBusServer is a server for inter-process communications (RPC).
+ * JBusServer is a server for inter-process communications (IPC).
  *
  * Based on DBus.  JBusServer is a "named" end point.
  *

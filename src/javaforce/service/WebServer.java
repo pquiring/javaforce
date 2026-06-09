@@ -142,7 +142,8 @@ public class WebServer {
           req.fields0 = req.fields[0].split(" ");
           req.init(res);
           if (isWebSocketRequest(req)) {
-            if (debug) JFLog.log("WebServer:WEB_SOCKET");
+            String url = req.getURL();
+            if (debug) JFLog.log("WebServer:WEB_SOCKET:" + url);
             WebSocket socket = new WebSocket(s.getInetAddress().getHostAddress(), is, res.os, req.fields0[1]);
             if (web.wsapi != null && web.wsapi.doWebSocketConnect(socket)) {
               sendWebSocketAccepted(req, res);

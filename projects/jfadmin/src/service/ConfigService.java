@@ -37,6 +37,7 @@ public class ConfigService implements WebUIHandler {
     access = new AccessControl();
     access.setConfigFolder(Paths.accessPath);
     server.setAccessControl(access);
+    server.startServlets();
     loadServlets();
   }
 
@@ -298,12 +299,12 @@ public class ConfigService implements WebUIHandler {
   }
 
   private void addServlets(Panel panel, UI ui) {
-    WebUIServlet[] servlets = server.getServlets();
-    for(WebUIServlet servlet : servlets) {
+    WebUIServletContext[] servlets = server.getServlets();
+    for(WebUIServletContext servlet : servlets) {
       Button button = new Button(servlet.getName());
       panel.add(button);
       button.addClickListener((me, cmp) -> {
-        ui.setRightPanel(servlet.getPanel("root", null, ui.client));
+        ui.setRightPanel(new IFramePanel("https://" + ui.client.getHost() + "/" + servlet.getName()));
       });
     }
   }
@@ -338,7 +339,7 @@ public class ConfigService implements WebUIHandler {
       int i1 = file.lastIndexOf('/');
       int i2 = file.lastIndexOf('.');
       String name = file.substring(i1 + 1, i2);
-      WebUIServlet servlet = server.createServlet(JF.getClassFolder(name), cp, cls);
+      WebUIServletContext servlet = server.createServlet(JF.getClassFolder(name), cp, cls);
       if (servlet == null) {
         JFLog.log("Servlet failed to load:" + file);
         return;
