@@ -19,8 +19,8 @@ public class WebUIServletContext {
   private Method getName;
 
   private Object server;
-  private Method start;
-  private Method stop;
+  private Method startServlet;
+  private Method stopServlet;
   private Method connectServlet;
 
   public WebUIServletContext(JFClassLoader loader, Object servlet) {
@@ -35,8 +35,8 @@ public class WebUIServletContext {
       Class<?> server_cls = loader.findClass("javaforce.webui.WebUIServer");
       Constructor<?> server_ctor = server_cls.getConstructor();
       server = server_ctor.newInstance();
-      start = server_cls.getMethod("startServlet", servlet_cls);
-      stop = server_cls.getMethod("stopServlet");
+      startServlet = server_cls.getMethod("startServlet", servlet_cls);
+      stopServlet = server_cls.getMethod("stopServlet");
       connectServlet = server_cls.getMethod("connectServlet", String.class, InputStream.class, OutputStream.class);
     } catch (Exception e) {
       JFLog.log(e);
@@ -44,18 +44,18 @@ public class WebUIServletContext {
   }
 
   //start WebUIServer within Servlet context
-  public void server_start() {
+  public void startServlet() {
     try {
-      start.invoke(server, servlet);
+      startServlet.invoke(server, servlet);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
   //stop WebUIServer within Servlet context
-  public void server_stop() {
+  public void stopServlet() {
     try {
-      stop.invoke(server);
+      stopServlet.invoke(server);
     } catch (Exception e) {
       JFLog.log(e);
     }

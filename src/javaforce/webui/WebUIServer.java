@@ -70,7 +70,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   /** startServlet on Servlet side
    * See WebUIServletContext
    */
-  private void startServlet(WebUIServlet handler) {
+  public void startServlet(WebUIServlet handler) {
     this.handler = handler;
     clients = new ArrayList<WebUIClient>();
   }
@@ -78,14 +78,14 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   /** stopServlet on Servlet side
    * See WebUIServletContext
    */
-  private void stopServlet() {
+  public void stopServlet() {
     clients = null;
   }
 
   /** connectServlet on Servlet side
    * See WebUIServletContext
    */
-  private void connectServlet(String host, InputStream is, OutputStream os) {
+  public void connectServlet(String host, InputStream is, OutputStream os) {
     try {
       WebSocket websock = new WebSocket(host, is, os, null);
       WebUIClient client = new WebUIClient(this, websock, handler);
@@ -254,7 +254,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   }
 
   public void addServlet(WebUIServletContext servlet) {
-    servlet.server_start();
+    servlet.startServlet();
     servlet.init();
     synchronized (servlets) {
       servlets.put(servlet.getName(), servlet);
@@ -266,7 +266,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       servlets.remove(servlet.getName());
     }
     servlet.destroy();
-    servlet.server_stop();
+    servlet.stopServlet();
   }
 
   public WebUIServletContext getServlet(String name) {
