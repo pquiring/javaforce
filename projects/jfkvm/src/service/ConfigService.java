@@ -8194,6 +8194,9 @@ public class ConfigService implements WebUIServlet {
     Config.load();
     //start bus client
     KVMService.init();
+    //setup access control (TODO : use standard folder)
+    access = new AccessControl();
+    access.setConfigFolder(Paths.accessPath);
   }
 
   /** Release resources for WebUIServlet. */
