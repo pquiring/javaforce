@@ -18,6 +18,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     initComponents();
     initSecureWebKeys();
     setState(true);
+    keepalive = new KeepAlive();
+    keepalive.start();
     if (args.length > 0) {
       server.setText(args[0]);
       if (args.length > 1) {
@@ -280,6 +282,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
   private MQTT client;
   private KeyMgmt keys;
+  private boolean connected;
+  private KeepAlive keepalive;
 
   private static String[] args;
 
@@ -289,10 +293,12 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
   public void onConnect() {
     addText("connection accepted!\r\n");
+    connected = true;
   }
 
   public void onDisconnect() {
     addText("connection lost!\r\n");
+    connected = false;
   }
 
   public void onSubscribe(String topic) {
@@ -356,6 +362,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   }
 
   public void stop() {
+    connected = false;
     if (client != null) {
       client.disconnect();
       client = null;
@@ -433,6 +440,19 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     } else {
       //generate random keys
       keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
+    }
+  }
+
+  public class KeepAlive extends Thread {
+    public void run() {
+      while (true) {
+        for(int a=0;a<5;a++) {
+          JF.sleep(1000);
+        }
+        if (connected && client != null) {
+          client.ping();
+        }
+      }
     }
   }
 }
