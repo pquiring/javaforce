@@ -281,9 +281,9 @@ public class MQTT {
     }
   }
 
-  /** Send MQTT PUBLISH command. (QOS = 0) */
+  /** Send MQTT PUBLISH command. (QOS = 1) */
   public boolean publish(String topic, String msg) {
-    return publish(topic, msg, QOS_0);
+    return publish(topic, msg, QOS_1);
   }
 
   /** Send MQTT SUBSCRIBE command. */
