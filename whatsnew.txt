@@ -1,5 +1,19 @@
 What's new...
 
+Jun 10/2026 : JF/111.0
+  - new : WebUI : added WebUIServlet
+    - allows embedding WebUI apps into a common server
+    - after several attempts this is finally complete
+    - currently only KVM is implemented but more services
+      will be upgraded in the near future
+  - new : MQTTForward
+    - improve keep alive logic
+  - new : jfAdmin/0.1
+    - WebUI common interface for WebUIServlets
+  - new : jfKVM/10.1
+    - added WebUIServlet interface to integrate with jfAdmin
+  - new : jfMonitor/0.26, jfTermServer/0.6, jfMQTT/0.13
+
 Jun 1/2026 : JF/110.0
   - new : ffmpeg support upgraded to 8.x [removed libpostproc]
     - min version now 7.1
