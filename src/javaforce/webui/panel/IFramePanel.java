@@ -8,7 +8,11 @@ package javaforce.webui.panel;
 import javaforce.webui.*;
 
 public class IFramePanel extends Panel {
+  private IFrame frame;
   public IFramePanel(String url) {
-    add(new IFrame(url));
+    frame = new IFrame(url);
+    frame.setMaxWidth();
+    frame.setMaxHeight();
+    add(frame);
   }
 }
