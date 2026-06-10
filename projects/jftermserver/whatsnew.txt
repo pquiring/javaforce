@@ -1,3 +1,6 @@
+2026-06-10 : 0.6 released
+  - fix : version bump for JF changes
+
 2026-02-06 : 0.5
   - fix : ComPort issues fixed
 
