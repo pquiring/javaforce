@@ -22,6 +22,7 @@ public class ConfigService implements WebUIHandler {
   public static String appname = "jfAdmin";
   public static boolean debug = false;
   public static boolean debug_api = false;
+  public static boolean show_tasklog = false;  //TODO : share TaskLog with Servlets
   public WebUIServer server;
   public AccessControl access;
   private KeyMgmt keys;
@@ -191,7 +192,11 @@ public class ConfigService implements WebUIHandler {
     ui.top_bottom_split.setTopComponent(ui.left_right_split);
     ui.top_bottom_split.setBottomComponent(tasks);
 
-    return panel;
+    if (show_tasklog) {
+      return panel;
+    } else {
+      return ui.left_right_split;
+    }
   }
 
   private Panel tasksPanel(UI ui) {
@@ -287,7 +292,9 @@ public class ConfigService implements WebUIHandler {
     addServlets(list, ui, size);
     Button tasks_log = new Button("Tasks Log");
     tasks_log.setWidth(size);
-    list.add(tasks_log);
+    if (show_tasklog) {
+      list.add(tasks_log);
+    }
 
     config.addClickListener((me, cmp) -> {
       ui.setRightPanel(configPanel(ui));
