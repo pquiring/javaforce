@@ -89,6 +89,10 @@ public class WebUIClient {
   }
 
   public AccessControl getAccessControl() {
+    if (access == null) {
+      access = new AccessControl();
+      access.setConfigFolder(JF.getConfigPath() + "/javaforce/access");
+    }
     return access;
   }
 
@@ -411,5 +415,40 @@ public class WebUIClient {
 
   public static boolean isAdminServicePresent() {
     return JF.isAdminServicePresent();
+  }
+
+  public String getUser() {
+    String user = (String)getProperty("user");
+    if (user != null) return user;
+    user = getCookie("user");
+    if (user != null) {
+      String token = getCookie("token");
+      User profile = access.getUser(user);
+      if (profile.token == null) {
+        user = null;
+      } else {
+        if (profile.token.equals(token)) {
+          //valid user/token
+          setProperty("user", user);
+          setProperty("groups", getAccessControl().getGroups(user));
+        } else {
+          //invalid token
+          user = null;
+        }
+      }
+    }
+    return user;
+  }
+
+  public void setUser(String user) {
+    User profile = getAccessControl().getUser(user);
+    setProperty("user", user);
+    setCookie("user", user);
+    if (profile.token == null) {
+      profile.generateToken();
+    }
+    setProperty("token", profile.token);
+    setCookie("token", profile.token);
+    setProperty("groups", getAccessControl().getGroups(user));
   }
 }

@@ -272,7 +272,7 @@ public class ConfigService implements WebUIServlet {
     if (name.equals("terminal")) {
       return getWebTerminal(params, client);
     }
-    String user = (String)client.getProperty("user");
+    String user = client.getUser();
     if (user == null) {
       return loginPanel(client);
     }

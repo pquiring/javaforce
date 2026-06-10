@@ -80,29 +80,16 @@ public class LoginPanel extends Panel {
       msg.setText("");
       String user = username.getText();
       String pass = password.getText();
-      String token = null;
       boolean success = false;
       if (login == null) {
         //use WebUIClient
         success = client.getAccessControl().login(user, pass);
-        if (success) {
-          User profile = client.getAccessControl().getUser(user);
-          if (profile.token == null) {
-            profile.generateToken();
-          }
-          token = profile.token;
-        }
       } else {
+        //user Login (deprecated)
         success = login.login(user, pass);
       }
       if (success) {
-        client.setProperty("user", user);
-        client.setCookie("user", user);
-        if (token != null) {
-          client.setProperty("token", token);
-          client.setCookie("token", token);
-        }
-        client.setProperty("groups", client.getAccessControl().getGroups(user));
+        client.setUser(user);
         client.refresh();
       } else {
         msg.setText("Wrong password");
