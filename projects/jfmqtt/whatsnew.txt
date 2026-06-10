@@ -1,3 +1,6 @@
+2026-06-10 : 0.13 released
+  - fix : version bump for JF changes
+
 2026-02-20 - v0.12
   - fix : processing messages of certain size (server side)
 
