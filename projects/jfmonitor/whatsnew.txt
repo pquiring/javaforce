@@ -1,3 +1,6 @@
+Jun 10/2026 : 0.26 released
+  - fix : version bump for JF changes
+
 Mar 5/2026 : 0.25 released
   - fix : version bump for native changes
 
