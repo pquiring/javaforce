@@ -80,6 +80,14 @@ public class WebSocket {
     return null;
   }
 
+  public void addCookie(String name, String value) {
+    int length = cookies.length;
+    String[] new_cookies = new String[length + 1];
+    System.arraycopy(cookies, 0, new_cookies, 0, length);
+    cookies = new_cookies;
+    cookies[length] = name + "=" + value;
+  }
+
   /** Writes a WebSocket message to client.
    * Type = TYPE_TEXT
    */

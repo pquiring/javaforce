@@ -400,6 +400,15 @@ public class WebUIClient {
     upload_status = status;
   }
 
+  public void setCookie(String name, String value) {
+    sendEvent("body", "setcookie", new String[] {"name=" + name, "value=" + value});
+    socket.addCookie(name, value);
+  }
+
+  public String getCookie(String name) {
+    return socket.getCookie(name);
+  }
+
   public static boolean isAdminServicePresent() {
     return JF.isAdminServicePresent();
   }

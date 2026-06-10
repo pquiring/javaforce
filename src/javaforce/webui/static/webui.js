@@ -304,6 +304,10 @@ function wsevent(event) {
     case "media_seek":
       media_seek(element, msg.time);
       break;
+    case "setcookie":
+      var cookie = msg.name + '=' + msg.value;
+      document.cookie = cookie;
+      break;
   }
 };
 
