@@ -117,7 +117,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   private String getIP(WebUIClient client) {
-    return client.getHost();
+    return client.getClientHost();
   }
 
   private TaskEvent createEvent(String action, UI ui) {
