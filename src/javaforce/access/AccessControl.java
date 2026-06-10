@@ -78,6 +78,7 @@ public class AccessControl {
   public void saveUsers() {
     synchronized (lock) {
       Compression.serialize(users_file, users);
+      users_last_saved = users_file.lastModified();
     }
   }
 
@@ -99,6 +100,7 @@ public class AccessControl {
   public void saveGroups() {
     synchronized (lock) {
       Compression.serialize(groups_file, groups);
+      groups_last_saved = groups_file.lastModified();
     }
   }
 

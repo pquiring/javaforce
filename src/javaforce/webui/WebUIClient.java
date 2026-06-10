@@ -447,6 +447,7 @@ public class WebUIClient {
     setProperty("user", user);
     setCookie("user", user);
     if (profile.token == null) {
+      //TODO : regenerate token if old
       getAccessControl().reload();
       profile.generateToken();
       getAccessControl().saveUsers();

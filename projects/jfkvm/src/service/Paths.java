@@ -35,7 +35,11 @@ public class Paths {
     secretPath = "/root/secret";
     statsPath = dataPath + "/stats";
     tasksPath = dataPath + "/tasks";
-    accessPath = dataPath + "/access";
+    if (servlet) {
+      accessPath = JF.getConfigPath() + "/javaforce/access";
+    } else {
+      accessPath = dataPath + "/access";
+    }
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
     new File(volsPath).mkdirs();
