@@ -229,6 +229,7 @@ public class MQTT {
     }
   }
 
+  /** Returns connection status. */
   public boolean isConnected() {
     if (worker == null) return false;
     return worker.active;

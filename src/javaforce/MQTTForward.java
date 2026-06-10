@@ -43,26 +43,32 @@ public class MQTTForward {
   private Server server;
   private boolean active;
 
+  /** Start sending messages to MQTT Server on host:port without encryption. */
   public void start(String host, int port) {
     start(host, port, null, null, null);
   }
 
+  /** Start sending messages to MQTT Server on host:port with encryption. */
   public void start(String host, int port, KeyMgmt keys) {
     start(host, port, keys, null, null);
   }
 
+  /** Start sending messages to MQTT Server on host without encryption with supplied login details. */
   public void start(String host, String user, String pass) {
     start(host, 1883, null, user, pass);
   }
 
+  /** Start sending messages to MQTT Server on host with encryption with supplied login details. */
   public void start(String host, KeyMgmt keys, String user, String pass) {
     start(host, 1883, keys, user, pass);
   }
 
+  /** Start sending messages to MQTT Server on host:port without encryption with supplied login details. */
   public void start(String host, int port, String user, String pass) {
     start(host, port, null, user, pass);
   }
 
+  /** Start sending messages to MQTT Server on host:port with encryption. */
   public void start(String host, int port, KeyMgmt keys, String user, String pass) {
     this.host = host;
     this.port = port;
@@ -74,6 +80,7 @@ public class MQTTForward {
     server.start();
   }
 
+  /** Stop forwarding messages and shutdown any connection. */
   public void stop() {
     active = false;
   }
@@ -131,6 +138,7 @@ public class MQTTForward {
     keep_alive = value * 1000;
   }
 
+  /** Force a reconnection to MQTT Server. */
   public void reconnect() {
     synchronized (client_lock) {
       connected = false;
@@ -231,17 +239,21 @@ public class MQTTForward {
       }
     }
 
+    /** MQTTEvents.onConnect() */
     public void onConnect() {
       connected = true;
     }
 
+    /** MQTTEvents.onDisconnect() */
     public void onDisconnect() {
       connected = false;
     }
 
+    /** MQTTEvents.onSubscribe() */
     public void onSubscribe(String topic) {
     }
 
+    /** MQTTEvents.onMessage() */
     public void onMessage(String topic, String msg) {
     }
   }
