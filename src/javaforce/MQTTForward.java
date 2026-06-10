@@ -11,6 +11,7 @@ package javaforce;
 import java.util.*;
 
 import javaforce.*;
+import static javaforce.service.MQTTServer.*;
 
 public class MQTTForward {
   private String host;
@@ -20,8 +21,8 @@ public class MQTTForward {
   private String pass;
   private int max_queue_size = 1000;
   private int keep_alive = 5000;  //ms
-  private long last_packet = -1;
   private boolean connected;
+  private byte qos = QOS_1;
 
   private static class Entry {
     public Entry(String topic, String msg) {
@@ -86,6 +87,23 @@ public class MQTTForward {
   public void setMaxQueueSize(int size) {
     if (size < 100) size = 100;
     max_queue_size = size;
+  }
+
+  /** Set QOS (Quality of service)
+   *
+   * QOS effects publish acknowledgements.
+   * QOS values are defined in javaforce.service.MQTTServer
+   *
+   * QOS_0 = NO ACK
+   * QOS_1 = ACK
+   * QOS_2 = REC, REL, CMP
+   * QOS_3 = reserved
+   *
+   * @param qos = quality of service (default = QOS_1)
+   *
+   */
+  public void setQOS(byte qos) {
+    this.qos = qos;
   }
 
   public void publish(String topic, String msg) {  //tag:value
@@ -194,7 +212,7 @@ public class MQTTForward {
               }
             }
             if (entry != null) {
-              client.publish(entry.topic, entry.msg);
+              client.publish(entry.topic, entry.msg, qos);
             } else {
               client.ping();
             }

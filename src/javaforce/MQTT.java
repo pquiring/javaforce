@@ -270,7 +270,9 @@ public class MQTT {
     try {
       if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
-      last_packet = System.currentTimeMillis();
+      if (qos == QOS_0) {
+        last_packet = System.currentTimeMillis();
+      }
       return true;
     } catch (Exception e) {
       disconnect();
@@ -313,7 +315,6 @@ public class MQTT {
     try {
       if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
-      last_packet = System.currentTimeMillis();
     } catch (Exception e) {
       disconnect();
       JFLog.log(e);
@@ -348,7 +349,6 @@ public class MQTT {
     try {
       if (debug) JFLog.log("write=" + packet.length, packet, 0, packet.length);
       os.write(packet);
-      last_packet = System.currentTimeMillis();
     } catch (Exception e) {
       disconnect();
       JFLog.log(e);
