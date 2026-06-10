@@ -21,6 +21,8 @@ public class User implements Name, Serializable {
   public ArrayList<Contact> contacts = new ArrayList<>();
   public int pass_hash_type;
 
+  public transient String token;
+
   public static final int PASSWORD_HASH_NONE = 0;
   public static final int PASSWORD_HASH_MD5 = 1;
 
@@ -71,5 +73,10 @@ public class User implements Name, Serializable {
   public void addContact(Contact contact) {
     //TODO : check existing
     contacts.add(contact);
+  }
+
+  /** Generates a random transient token. */
+  public void generateToken() {
+    token = JF.generateUUID();
   }
 }
