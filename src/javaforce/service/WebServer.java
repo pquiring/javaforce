@@ -160,6 +160,7 @@ public class WebServer {
                 break;
               case DETACH:
                 sendWebSocketAccepted(req, res);
+                s = null;  //do not close
                 break;
             }
             break;
