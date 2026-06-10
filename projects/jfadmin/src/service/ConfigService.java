@@ -284,7 +284,7 @@ public class ConfigService implements WebUIHandler {
     config.setWidth(size);
     list.add(config);
     //add WebUIServlets
-    addServlets(panel, ui);
+    addServlets(list, ui, size);
     Button tasks_log = new Button("Tasks Log");
     tasks_log.setWidth(size);
     list.add(tasks_log);
@@ -298,11 +298,12 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private void addServlets(Panel panel, UI ui) {
+  private void addServlets(ListBox list, UI ui, int size) {
     WebUIServletContext[] servlets = server.getServlets();
     for(WebUIServletContext servlet : servlets) {
       Button button = new Button(servlet.getName());
-      panel.add(button);
+      button.setWidth(size);
+      list.add(button);
       button.addClickListener((me, cmp) -> {
         ui.setRightPanel(new IFramePanel("https://" + ui.client.getServerHost() + "/" + servlet.getName()));
       });
