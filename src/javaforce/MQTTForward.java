@@ -22,6 +22,7 @@ public class MQTTForward {
   private int max_queue_size = 1000;
   private int keep_alive = 5000;  //ms
   private boolean connected;
+  private int connects;
   private byte qos = QOS_1;
 
   private static class Entry {
@@ -77,8 +78,14 @@ public class MQTTForward {
     active = false;
   }
 
+  /** Returns connection status. */
   public boolean isConnected() {
     return connected;
+  }
+
+  /** Returns # of times a connection was created. */
+  public int getConnects() {
+    return connects;
   }
 
   /** Set maximum queue size (default = 1000)
@@ -180,6 +187,7 @@ public class MQTTForward {
               reconnect();
             }
             while (client == null) {
+              connects++;
               client = new MQTT();
               client.setListener(this);
               if (keys == null) {
