@@ -20,8 +20,7 @@ public class User implements Name, Serializable {
   public String pass;
   public ArrayList<Contact> contacts = new ArrayList<>();
   public int pass_hash_type;
-
-  public transient String token;
+  public String token;
 
   public static final int PASSWORD_HASH_NONE = 0;
   public static final int PASSWORD_HASH_MD5 = 1;

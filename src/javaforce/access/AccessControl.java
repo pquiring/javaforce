@@ -4,6 +4,8 @@ package javaforce.access;
  *
  * Maintains a list of users and groups.
  *
+ * TODO : perform locking.
+ *
  * @author pquiring
  */
 
@@ -20,7 +22,9 @@ public class AccessControl {
   public Object lock = new Object();
 
   private Users users;
+  private long users_last_saved;
   private Groups groups;
+  private long groups_last_saved;
 
   /** Set folder where users and groups are stored.
    * Folder should be in a secure location since it will store hashed passwords.
@@ -40,15 +44,33 @@ public class AccessControl {
     return exists;
   }
 
+  /** Reloads users/groups if changed in storage folder. */
+  public void reload() {
+    {
+      long last_saved = users_file.lastModified();
+      if (last_saved > users_last_saved) {
+        loadUsers();
+      }
+    }
+    {
+      long last_saved = groups_file.lastModified();
+      if (last_saved > groups_last_saved) {
+        loadGroups();
+      }
+    }
+  }
+
   private boolean loadUsers() {
     if (users_file.exists()) {
       users = (Users)Compression.deserialize(users_file);
+      users_last_saved = users_file.lastModified();
       return true;
     } else {
       //create defaults
       users = new Users();
       users.addUser(new User("admin", "admin", "Built-in admin account"));
       saveUsers();
+      users_last_saved = users_file.lastModified();
       return false;
     }
   }
@@ -62,12 +84,14 @@ public class AccessControl {
   private boolean loadGroups() {
     if (groups_file.exists()) {
       groups = (Groups)Compression.deserialize(groups_file);
+      groups_last_saved = groups_file.lastModified();
       return true;
     } else {
       //create defaults
       groups = new Groups();
       groups.addGroup(new Group("administrators", "Built-in administrators group", new String[] {"admin"}));
       saveGroups();
+      groups_last_saved = groups_file.lastModified();
       return false;
     }
   }

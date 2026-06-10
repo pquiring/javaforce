@@ -422,8 +422,9 @@ public class WebUIClient {
     if (user != null) return user;
     user = getCookie("user");
     if (user != null) {
+      getAccessControl().reload();
       String token = getCookie("token");
-      User profile = access.getUser(user);
+      User profile = getAccessControl().getUser(user);
       if (profile.token == null) {
         user = null;
       } else {
@@ -433,6 +434,7 @@ public class WebUIClient {
           setProperty("groups", getAccessControl().getGroups(user));
         } else {
           //invalid token
+          JFLog.log("WebUIClient : invalid user token : user=" + user + " : token=" + token);
           user = null;
         }
       }
@@ -445,7 +447,9 @@ public class WebUIClient {
     setProperty("user", user);
     setCookie("user", user);
     if (profile.token == null) {
+      getAccessControl().reload();
       profile.generateToken();
+      getAccessControl().saveUsers();
     }
     setProperty("token", profile.token);
     setCookie("token", profile.token);
