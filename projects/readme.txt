@@ -1,6 +1,7 @@
 Project Descriptions
 ====================
 
+jfadmin - WebUI Server supporting Servlets (browser based admin tool)
 jfapps - Application Management for jfLinux
 jfarchive - Archive Manager for jfLinux
 jfaudio - Audio Editor
