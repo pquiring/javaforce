@@ -254,7 +254,7 @@ public class ConfigService implements WebUIServlet {
   }
 
   private String getIP(WebUIClient client) {
-    return client.getHost();
+    return client.getClientHost();
   }
 
   private TaskEvent createEvent(String action, UI ui) {
