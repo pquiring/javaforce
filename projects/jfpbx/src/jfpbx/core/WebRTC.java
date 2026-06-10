@@ -13,6 +13,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.service.*;
 import javaforce.voip.*;
+import static javaforce.service.WebSocketHandler.*;
 
 public class WebRTC implements WebSocketHandler, SIPClientInterface {
   private static byte crt[], privateKey[];
@@ -203,12 +204,12 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
     return port;
   }
 
-  public boolean doWebSocketConnect(WebSocket sock) {
-    if (!sock.getURL().equals("/webrtcsocket")) return false;
+  public int doWebSocketConnect(WebSocket sock) {
+    if (!sock.getURL().equals("/webrtcsocket")) return REJECT;
     RTC rtc = new RTC();
     rtc.sock = sock;
     sock.userobj = rtc;
-    return true;
+    return ACCEPT;
   }
 
   public void doWebSocketClosed(WebSocket sock) {

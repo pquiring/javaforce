@@ -24,6 +24,7 @@ import java.lang.reflect.*;
 import javaforce.*;
 import javaforce.access.*;
 import javaforce.service.*;
+import static javaforce.service.WebSocketHandler.*;
 
 public class WebUIServer implements WebHandler, WebSocketHandler {
   private WebServer web;
@@ -73,13 +74,16 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   public void startServlet(WebUIServlet handler) {
     this.handler = handler;
     clients = new ArrayList<WebUIClient>();
+    web = new WebServer();
+    web.setWebSocketHandler(this);
+    //do not start web
   }
 
   /** stopServlet on Servlet side
    * See WebUIServletContext
    */
   public void stopServlet() {
-    clients = null;
+    stop();
   }
 
   /** connectServlet on Servlet side
@@ -91,6 +95,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       WebUIClient web_client = new WebUIClient(this, websock, handler);
       clients.add(web_client);
       handler.clientConnected(web_client);
+      web.attachWebSocket(websock);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -291,28 +296,28 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     }
   }
 
-  public boolean doWebSocketConnect(WebSocket sock) {
+  public int doWebSocketConnect(WebSocket sock) {
     try {
       String url = sock.getURL();
       if (url.equals("/")) {
         WebUIClient client = new WebUIClient(this, sock, handler);
         clients.add(client);
         handler.clientConnected(client);
-        return true;
+        return ACCEPT;
       }
       //servlets
-      if (servlets == null) return false;
+      if (servlets == null) return REJECT;
       String name = url.substring(1);
       WebUIServletContext servlet;
       synchronized (servlets) {
         servlet = servlets.get(name);
       }
-      if (servlet == null) return false;
+      if (servlet == null) return REJECT;
       servlet.connectServlet(sock.getServerHost(), sock.getClientHost(), sock.getInputStream(), sock.getOutputStream());
-      return true;
+      return DETACH;
     } catch (Exception e) {
       JFLog.log(e);
-      return false;
+      return REJECT;
     }
   }
 

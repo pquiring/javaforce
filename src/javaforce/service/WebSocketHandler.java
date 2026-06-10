@@ -8,8 +8,16 @@ package javaforce.service;
  */
 
 public interface WebSocketHandler {
-  /** Return true/false to accept connection.  Always return false if not using WebSockets. */
-  public boolean doWebSocketConnect(WebSocket sock);
+
+  /** Accept inbound socket connection. */
+  public static final int REJECT = 0;
+  /** Reject inbound socket connection. */
+  public static final int ACCEPT = 1;
+  /** Accept but detach from inbound socket connection. */
+  public static final int DETACH = 2;
+
+  /** Return ACCEPT, REJECT or DETACH. Always return REJECT if not using web sockets. */
+  public int doWebSocketConnect(WebSocket sock);
   /** Triggered when a WebSocket connection has closed. */
   public void doWebSocketClosed(WebSocket sock);
   /** Process a WebSocket message. */

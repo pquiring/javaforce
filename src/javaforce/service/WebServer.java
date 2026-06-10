@@ -13,6 +13,7 @@ import java.security.*;
 import javax.net.ssl.*;
 
 import javaforce.*;
+import static javaforce.service.WebSocketHandler.*;
 
 public class WebServer {
   private WebHandler api;
@@ -145,11 +146,21 @@ public class WebServer {
             String url = req.getURL();
             if (debug) JFLog.log("WebServer:WEB_SOCKET:" + url);
             WebSocket socket = new WebSocket(s.getLocalAddress().getHostAddress(), s.getInetAddress().getHostAddress(), is, res.os, req.fields0[1]);
-            if (web.wsapi != null && web.wsapi.doWebSocketConnect(socket)) {
-              sendWebSocketAccepted(req, res);
-              processWebSocket(socket);
-            } else {
-              sendWebSocketDenied(req, res);
+            int action = WebSocketHandler.REJECT;
+            if (web.wsapi != null) {
+              action = web.wsapi.doWebSocketConnect(socket);
+            }
+            switch (action) {
+              case ACCEPT:
+                sendWebSocketAccepted(req, res);
+                processWebSocket(web, socket);
+                break;
+              case REJECT:
+                sendWebSocketDenied(req, res);
+                break;
+              case DETACH:
+                sendWebSocketAccepted(req, res);
+                break;
             }
             break;
           }
@@ -260,79 +271,87 @@ public class WebServer {
         JFLog.log(e);
       }
     }
-    private void processWebSocket(WebSocket socket) {
-      //keep reading packets and deliver to WebHandler
-      byte[] maskKey = new byte[4];
-      try {
-        while (web.active) {
-          int opcode = socket.is.read();
-          if (opcode == -1) throw new Exception("socket error");
-          boolean fin = (opcode & 0x80) == 0x80;
-          opcode &= 0xf;
-          if (opcode == WebSocket.TYPE_CLOSE) break; //closed
-          long length = 0;
-          int len7 = socket.is.read();
-          if (len7 == -1) throw new Exception("socket error");
-          boolean hasMask = (len7 & WebSocket.MASK) == WebSocket.MASK;
-          len7 &= 0x7f;
-          switch (len7) {
-            case 126:  //16bits = payload
-              for(int a=0;a<2;a++) {
-                int len8 = socket.is.read();
-                if (len8 == -1) throw new Exception("socket error");
-                length <<= 8;
-                length |= len8;
-              }
-              break;
-            case 127:  //64bits = payload
-              for(int a=0;a<8;a++) {
-                long len8 = socket.is.read();
-                if (len8 == -1) throw new Exception("socket error");
-                length <<= 8;
-                length |= len8;
-              }
-              break;
-            default:
-              length = len7;
-          }
-          if (hasMask) {
-            for(int a=0;a<4;a++) {
-              int mask8 = socket.is.read();
-              if (mask8 == -1) throw new Exception("socket error");
-              maskKey[a] = (byte)mask8;
+  }
+  private static void processWebSocket(WebServer web, WebSocket socket) {
+    //keep reading packets and deliver to WebHandler
+    byte[] maskKey = new byte[4];
+    try {
+      while (web.active) {
+        int opcode = socket.is.read();
+        if (opcode == -1) throw new Exception("socket error");
+        boolean fin = (opcode & 0x80) == 0x80;
+        opcode &= 0xf;
+        if (opcode == WebSocket.TYPE_CLOSE) break; //closed
+        long length = 0;
+        int len7 = socket.is.read();
+        if (len7 == -1) throw new Exception("socket error");
+        boolean hasMask = (len7 & WebSocket.MASK) == WebSocket.MASK;
+        len7 &= 0x7f;
+        switch (len7) {
+          case 126:  //16bits = payload
+            for(int a=0;a<2;a++) {
+              int len8 = socket.is.read();
+              if (len8 == -1) throw new Exception("socket error");
+              length <<= 8;
+              length |= len8;
             }
-          } else {
-            throw new Exception("WebSocket message without mask");
-          }
-          if (length > 16777216) {
-            throw new Exception("WebSocket message > 16MB");
-          }
-          //now read data
-          byte[] data = JF.readAll(socket.is, (int)length);
-          //unmask data
-          for(int a=0;a<length;a++) {
-            data[a] ^= maskKey[a % 4];
-          }
-          if (opcode == WebSocket.TYPE_PING) {
-            //ping message
-            socket.write(data, WebSocket.TYPE_PONG);
-            continue;
-          }
-          if (opcode > 0x8) continue;  //other control message
-          web.wsapi.doWebSocketMessage(socket, data, opcode);
+            break;
+          case 127:  //64bits = payload
+            for(int a=0;a<8;a++) {
+              long len8 = socket.is.read();
+              if (len8 == -1) throw new Exception("socket error");
+              length <<= 8;
+              length |= len8;
+            }
+            break;
+          default:
+            length = len7;
         }
-      } catch (SocketException e) {
-        if (debug) JFLog.log("WebServer.Websocket:disconnected");
-      } catch (Exception e) {
-        JFLog.log(e);
+        if (hasMask) {
+          for(int a=0;a<4;a++) {
+            int mask8 = socket.is.read();
+            if (mask8 == -1) throw new Exception("socket error");
+            maskKey[a] = (byte)mask8;
+          }
+        } else {
+          throw new Exception("WebSocket message without mask");
+        }
+        if (length > 16777216) {
+          throw new Exception("WebSocket message > 16MB");
+        }
+        //now read data
+        byte[] data = JF.readAll(socket.is, (int)length);
+        //unmask data
+        for(int a=0;a<length;a++) {
+          data[a] ^= maskKey[a % 4];
+        }
+        if (opcode == WebSocket.TYPE_PING) {
+          //ping message
+          socket.write(data, WebSocket.TYPE_PONG);
+          continue;
+        }
+        if (opcode > 0x8) continue;  //other control message
+        web.wsapi.doWebSocketMessage(socket, data, opcode);
       }
-      web.wsapi.doWebSocketClosed(socket);
+    } catch (SocketException e) {
+      if (debug) JFLog.log("WebServer.Websocket:disconnected");
+    } catch (Exception e) {
+      JFLog.log(e);
     }
+    web.wsapi.doWebSocketClosed(socket);
   }
   /** Returns a chunk header for a block of data for transmission in Transfer-Encoding: chunked
    * Make sure to send \r\n after actual block of data.
    */
   public static byte[] chunkHeader(byte[] in) {
     return String.format("%x\r\n", in.length).getBytes();
+  }
+
+  public void attachWebSocket(WebSocket socket) {
+    new Thread() {
+      public void run() {
+        processWebSocket(WebServer.this, socket);
+      }
+    }.start();
   }
 }
