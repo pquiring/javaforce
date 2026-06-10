@@ -16,6 +16,7 @@ public class WebSocket {
   protected InputStream is;
   protected OutputStream os;
   protected String url;
+  protected String[] cookies;
 
   private boolean connected = true;
   private String server_host;
@@ -32,12 +33,13 @@ public class WebSocket {
   public static final int FIN = 0x80;
   public static final int MASK = 0x80;
 
-  public WebSocket(String server_host, String client_host, InputStream is, OutputStream os, String url) {
+  public WebSocket(String server_host, String client_host, InputStream is, OutputStream os, String url, String[] cookies) {
     this.server_host = server_host;
     this.client_host = client_host;
     this.is = is;
     this.os = os;
     this.url = url;
+    this.cookies = cookies;
   }
 
   /** Free to use data */
@@ -62,6 +64,20 @@ public class WebSocket {
 
   public OutputStream getOutputStream() {
     return os;
+  }
+
+  public String[] getCookies() {
+    return cookies;
+  }
+
+  public String getCookie(String name) {
+    name += "=";
+    for(int a=0;a<cookies.length;a++) {
+      if (cookies[a].startsWith(name)) {
+        return cookies[a].substring(name.length());
+      }
+    }
+    return null;
   }
 
   /** Writes a WebSocket message to client.
