@@ -1109,6 +1109,7 @@ public class DBus implements IPC {
               public void run() {
                 try {
                   Object ret = ep.dispatch(_member, args);
+                  if (ret == null) throw new Exception("null");
                   write_msg(MSG_RETURN, _sender, nextSerial(), _msg_serial, _member, new Object[] {ret});
                 } catch (Exception e) {
                   if (debug) JFLog.log(e);
