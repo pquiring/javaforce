@@ -13,6 +13,7 @@ public class Paths {
   public static String dataPath;
   public static String logsPath;
   public static String videoPath;
+  public static String accessPath;
 
   public static void init() {
     if (JF.isWindows()) {
@@ -22,6 +23,7 @@ public class Paths {
     }
     logsPath = dataPath + "/logs";
     videoPath = dataPath + "/cameras";
+    accessPath = JF.getConfigPath() + "/javaforce/access";
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
     new File(videoPath).mkdirs();

@@ -13,9 +13,11 @@ import javaforce.bus.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+import javaforce.webui.panel.*;
 
 public class ConfigService implements WebUIServlet {
   public static String version = "0.42";
+  public static String appname = "jfDVR";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
@@ -111,6 +113,11 @@ public class ConfigService implements WebUIServlet {
     Row row, row2;
     Pad pad;
     int cnt;
+
+    String user = client.getUser();
+    if (user == null) {
+      return new LoginPanel(appname, client);
+    }
 
     client.setProperty("view", "cameras");
 
