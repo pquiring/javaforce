@@ -19,6 +19,11 @@ public class Group implements Serializable {
   public String name;
   public String[] cameras = new String[0];
 
+  public void copy(Group other) {
+    name = other.name;
+    cameras = other.cameras;
+  }
+
   public void add(String camera) {
     cameras = Arrays.copyOf(cameras, cameras.length + 1);
     cameras[cameras.length-1] = camera;

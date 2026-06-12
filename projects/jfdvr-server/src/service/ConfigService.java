@@ -9,16 +9,18 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.bus.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
-public class ConfigService implements WebUIHandler {
+public class ConfigService implements WebUIServlet {
   public static String version = "0.42";
   public static boolean debug = false;
   public WebUIServer server;
   private KeyMgmt keys;
   private byte[] cameraicon;
+  private JBusClient busClient;
 
   public void start() {
     initSecureWebKeys();
@@ -28,6 +30,10 @@ public class ConfigService implements WebUIHandler {
       cameraicon = this.getClass().getClassLoader().getResourceAsStream("camera.png").readAllBytes();
     } catch (Exception e) {
       JFLog.log(e);
+    }
+    busClient = new JBusClient(new BusMethods());
+    if (!busClient.connect()) {
+      JFLog.log("Failed to start JBusClient");
     }
   }
 
@@ -96,8 +102,7 @@ public class ConfigService implements WebUIHandler {
     }
     Camera camera = (Camera)client.getProperty("camera");
     if (camera != null) {
-      camera.viewing = false;
-      camera.preview = null;
+      viewing(camera, false);
     }
   }
 
@@ -378,14 +383,8 @@ public class ConfigService implements WebUIHandler {
         switch (opt_type) {
           case "Camera": {
             //select camera
-            int camera_cnt = Config.current.cameras.length;
             Camera camera = null;
-            for(int a=0;a<camera_cnt;a++) {
-              if (Config.current.cameras[a].name.equals(opt_name)) {
-                camera = Config.current.cameras[a];
-                break;
-              }
-            }
+            camera = Config.current.getCamera(opt_name);
             if (camera == null) break;
             camera_name.setText(camera.name);
             camera_url.setText(camera.url);
@@ -412,8 +411,7 @@ public class ConfigService implements WebUIHandler {
             }, 500, 500);
             client.setProperty("timer", timer);
             preview_panel.setVisible(true);
-            camera.viewing = true;
-            camera.update_preview = true;
+            viewing(camera, true);
             camera_panel.setVisible(true);
             group_panel.setVisible(false);
             client.setProperty("view", "cameras");
@@ -421,14 +419,8 @@ public class ConfigService implements WebUIHandler {
           }
           case "Group": {
             //select group
-            int group_cnt = Config.current.groups.length;
             Group group = null;
-            for(int a=0;a<group_cnt;a++) {
-              if (Config.current.groups[a].name.equals(opt_name)) {
-                group = Config.current.groups[a];
-                break;
-              }
-            }
+            group = Config.current.getGroup(opt_name);
             if (group == null) break;
             group_name.setText(group.name);
             update_group_lists(group, group_list_avail, group_list_selected);
@@ -492,10 +484,11 @@ public class ConfigService implements WebUIHandler {
             errmsg.setText("Invalid URL (low quality)");
             return;
           }
-          boolean reload = false;
           Camera camera = null;
+          boolean add = false;
           if (list.getSelectedIndex() == -1) {
             //create new camera
+            add = true;
             int ccnt = Config.current.cameras.length;
             for(int a=0;a<ccnt;a++) {
               if (Config.current.cameras[a].name.equals(_name)) {
@@ -506,36 +499,27 @@ public class ConfigService implements WebUIHandler {
             camera = new Camera();
             int listIdx = Config.current.cameras.length;
             list.add(listIdx, "Camera:" + _name);
-            Config.current.addCamera(camera);
             list.setSelectedIndex(listIdx);
           } else {
             //update existing camera
+            add = false;
             String opt = list.getSelectedItem();
             if (opt == null) return;
             int idx = opt.indexOf(':');
             String opt_type = opt.substring(0, idx);
             String opt_name = opt.substring(idx+1);
             //update existing camera
-            int camera_cnt = Config.current.cameras.length;
-            for(int a=0;a<camera_cnt;a++) {
-              if (Config.current.cameras[a].name.equals(opt_name)) {
-                camera = Config.current.cameras[a];
-                break;
-              }
-            }
+            camera = Config.current.getCamera(opt_name);
             if (camera == null) break;
-            //check if name/url are the same
-            if (camera.name.equals(_name) && camera.url.equals(_url)) {
-              reload = true;
-            } else {
-              DVRService.dvrService.stopCamera(camera);
+            if (!camera.name.equals(_name)) {
+              Config.current.renamedCamera(camera.name, _name);
             }
-            Config.current.renamedCamera(camera.name, _name);
             int listIdx = list.getSelectedIndex();
             list.remove(listIdx);
             list.add(listIdx, "Camera:" + _name);
             list.setSelectedIndex(listIdx);
           }
+          String org_name = camera.name;
           camera.name = _name;
           camera.url = _url;
           camera.url_low = _url_low;
@@ -550,18 +534,12 @@ public class ConfigService implements WebUIHandler {
           camera.tag_trigger = tag_trigger.getText();
           camera.tag_value = tag_value.getText();
           camera.pos_edge = pos_edge.isSelected();
-          if (reload) {
-            if (camera.enabled) {
-              DVRService.dvrService.reloadCamera(camera);
-            } else {
-              DVRService.dvrService.stopCamera(camera);
-            }
+          if (add) {
+            addCamera(camera);
           } else {
-            if (camera.enabled) {
-              DVRService.dvrService.startCamera(camera);
-            }
+            editCamera(org_name, camera);
           }
-          Config.current.save();
+          Config.load();
           stopTimer(client);
           break;
         }
@@ -575,9 +553,11 @@ public class ConfigService implements WebUIHandler {
             return;
           }
 
+          boolean add = false;
           Group group = null;
           if (list.getSelectedIndex() == -1) {
             //create new group
+            add = true;
             int ccnt = Config.current.groups.length;
             for(int a=0;a<ccnt;a++) {
               if (Config.current.groups[a].name.equals(_name)) {
@@ -590,35 +570,35 @@ public class ConfigService implements WebUIHandler {
             int listIdx = list.count();
             list.add("Group:" + _name);
             list.setSelectedIndex(listIdx);
-            Config.current.addGroup(group);
             client.setProperty("new_group", null);
           } else {
             //update existing group
+            add = false;
             String opt = list.getSelectedItem();
             if (opt == null) return;
             int idx = opt.indexOf(':');
             String opt_type = opt.substring(0, idx);
             String opt_name = opt.substring(idx+1);
             //update existing group
-            int group_cnt = Config.current.groups.length;
-            for(int a=0;a<group_cnt;a++) {
-              if (Config.current.groups[a].name.equals(opt_name)) {
-                group = Config.current.groups[a];
-                break;
-              }
-            }
+            group = Config.current.getGroup(opt_name);
             if (group == null) break;
             int listIdx = list.getSelectedIndex();
             list.remove(listIdx);
             list.add(listIdx, "Group:" + _name);
             list.setSelectedIndex(listIdx);
           }
+          String org_name = group.name;
           group.name = _name;
           update_group_lists(group, group_list_avail, group_list_selected);
+          if (add) {
+            addGroup(group);
+          } else {
+            editGroup(org_name, group);
+          }
+          Config.load();
           break;
         }
       }
-      Config.save();
     });
 
     b_group_add_camera.addClickListener((MouseEvent e, Component button) -> {
@@ -630,13 +610,7 @@ public class ConfigService implements WebUIHandler {
 
       Group group = null;
 
-      int group_cnt = Config.current.groups.length;
-      for(int a=0;a<group_cnt;a++) {
-        if (Config.current.groups[a].name.equals(opt_name)) {
-          group = Config.current.groups[a];
-          break;
-        }
-      }
+      group = Config.current.getGroup(opt_name);
       if (group == null) {
         group = (Group)client.getProperty("new_group");
       }
@@ -646,6 +620,7 @@ public class ConfigService implements WebUIHandler {
 
       group.add(camera);
       update_group_lists(group, group_list_avail, group_list_selected);
+      editGroup(group.name, group);
     });
 
     b_group_remove_camera.addClickListener((MouseEvent e, Component button) -> {
@@ -657,13 +632,7 @@ public class ConfigService implements WebUIHandler {
 
       Group group = null;
 
-      int group_cnt = Config.current.groups.length;
-      for(int a=0;a<group_cnt;a++) {
-        if (Config.current.groups[a].name.equals(opt_name)) {
-          group = Config.current.groups[a];
-          break;
-        }
-      }
+      group = Config.current.getGroup(opt_name);
       if (group == null) {
         group = (Group)client.getProperty("new_group");
       }
@@ -673,6 +642,7 @@ public class ConfigService implements WebUIHandler {
 
       group.remove(camera);
       update_group_lists(group, group_list_avail, group_list_selected);
+      editGroup(group.name, group);
     });
 
     b_group_camera_move_up.addClickListener((MouseEvent e, Component button) -> {
@@ -684,13 +654,7 @@ public class ConfigService implements WebUIHandler {
 
       Group group = null;
 
-      int group_cnt = Config.current.groups.length;
-      for(int a=0;a<group_cnt;a++) {
-        if (Config.current.groups[a].name.equals(opt_name)) {
-          group = Config.current.groups[a];
-          break;
-        }
-      }
+      group = Config.current.getGroup(opt_name);
       if (group == null) {
         group = (Group)client.getProperty("new_group");
       }
@@ -701,6 +665,7 @@ public class ConfigService implements WebUIHandler {
       group.moveUp(camidx);
 
       update_group_lists(group, group_list_avail, group_list_selected);
+      editGroup(group.name, group);
     });
 
     b_group_camera_move_down.addClickListener((MouseEvent e, Component button) -> {
@@ -712,13 +677,7 @@ public class ConfigService implements WebUIHandler {
 
       Group group = null;
 
-      int group_cnt = Config.current.groups.length;
-      for(int a=0;a<group_cnt;a++) {
-        if (Config.current.groups[a].name.equals(opt_name)) {
-          group = Config.current.groups[a];
-          break;
-        }
-      }
+      group = Config.current.getGroup(opt_name);
       if (group == null) {
         group = (Group)client.getProperty("new_group");
       }
@@ -729,6 +688,7 @@ public class ConfigService implements WebUIHandler {
       group.moveDown(camidx);
 
       update_group_lists(group, group_list_avail, group_list_selected);
+      editGroup(group.name, group);
     });
 
     PopupPanel popup = new PopupPanel("Confirm");
@@ -750,40 +710,26 @@ public class ConfigService implements WebUIHandler {
         case "cameras":
           //delete camera
           Camera camera = null;
-          int camera_cnt = Config.current.cameras.length;
-          for(int a=0;a<camera_cnt;a++) {
-            if (Config.current.cameras[a].name.equals(opt_name)) {
-              camera = Config.current.cameras[a];
-              break;
-            }
-          }
+          camera = Config.current.getCamera(opt_name);
           if (camera == null) break;
-          DVRService.dvrService.stopCamera(camera);
-          Config.current.removeCamera(camera);
-          Config.current.save();
+          removeCamera(camera);
+          Config.load();
           list.remove(selidx);
           popup.setVisible(false);
           stopTimer(client);
           break;
         case "groups":
           //delete group
-          int group_cnt = Config.current.groups.length;
           Group group = null;
-          for(int a=0;a<group_cnt;a++) {
-            if (Config.current.groups[a].name.equals(opt_name)) {
-              group = Config.current.groups[a];
-              break;
-            }
-          }
+          group = Config.current.getGroup(opt_name);
           if (group == null) break;
-          Config.current.removeGroup(group);
-          Config.current.save();
+          removeGroup(group);
+          Config.load();
           list.remove(selidx);
           popup.setVisible(false);
           stopTimer(client);
           break;
       }
-      Config.save();
     });
     Button popup_b_cancel = new Button("Cancel");
     popup.add(popup_b_cancel);
@@ -800,7 +746,7 @@ public class ConfigService implements WebUIHandler {
     });
     if (System.getProperty("java.debug") != null) {
       b_shutdown.addClickListener((MouseEvent e, Component button) -> {
-        DVRService.serviceStop();
+        serviceStop();
       });
     }
 
@@ -851,12 +797,11 @@ public class ConfigService implements WebUIHandler {
       JFLog.log("ConfigServer.getResouce() : camera == null");
       return null;
     }
-    camera.update_preview = true;
-    byte[] result = camera.preview;
-    if (result == null) {
-      result = cameraicon;
+    byte[] preview = (byte[])busClient.invoke(DVRService.busName, "getPreview");
+    if (preview == null || preview.length == 0) {
+      preview = cameraicon;
     }
-    return result;
+    return preview;
   }
 
   public void clientConnected(WebUIClient client) {
@@ -864,5 +809,62 @@ public class ConfigService implements WebUIHandler {
 
   public void clientDisconnected(WebUIClient client) {
     stopTimer(client);
+  }
+
+  public void init() {
+    //init Paths
+    Paths.init();
+    Config.load();
+  }
+
+  public void destroy() {
+  }
+
+  public String getName() {
+    return "DVR";
+  }
+
+  /** server -> client methods (none) */
+  public class BusMethods {
+  }
+
+  public void addCamera(Camera camera) {
+    ByteArrayOutputStream instance = new ByteArrayOutputStream();
+    Compression.serialize(instance, camera);
+    busClient.invoke(DVRService.busName, "addCamera", camera.name, instance.toByteArray());
+  }
+
+  public void removeCamera(Camera camera) {
+    busClient.invoke(DVRService.busName, "removeCamera", camera.name);
+  }
+
+  public void editCamera(String org_name, Camera camera) {
+    ByteArrayOutputStream instance = new ByteArrayOutputStream();
+    Compression.serialize(instance, camera);
+    busClient.invoke(DVRService.busName, "editCamera", org_name, instance.toByteArray());
+  }
+
+  public void addGroup(Group group) {
+    ByteArrayOutputStream instance = new ByteArrayOutputStream();
+    Compression.serialize(instance, group);
+    busClient.invoke(DVRService.busName, "addGroup", group.name, instance.toByteArray());
+  }
+
+  public void removeGroup(Group group) {
+    busClient.invoke(DVRService.busName, "removeGroup", group.name);
+  }
+
+  public void editGroup(String org_name, Group group) {
+    ByteArrayOutputStream instance = new ByteArrayOutputStream();
+    Compression.serialize(instance, group);
+    busClient.invoke(DVRService.busName, "editGroup", org_name, instance.toByteArray());
+  }
+
+  public void serviceStop() {
+    busClient.invoke(DVRService.busName, "serviceStop");
+  }
+
+  public void viewing(Camera camera, boolean state) {
+    busClient.invoke(DVRService.busName, "viewing", camera.name, state);
   }
 }

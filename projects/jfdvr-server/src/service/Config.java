@@ -45,11 +45,11 @@ public class Config implements Serializable {
         camera.init();
       }
     } catch (FileNotFoundException e) {
-      current = new Config();
       JFLog.log("No config found!");
-    } catch (Exception e) {
       current = new Config();
+    } catch (Exception e) {
       JFLog.log(e);
+      current = new Config();
     }
   }
 

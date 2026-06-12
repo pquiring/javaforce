@@ -19,6 +19,7 @@ public class Camera implements Serializable, RTPInterface {
   public String url;  //high res stream (viewing)
   public String url_low;  //low res stream (decoding, motion)
   public boolean enabled;
+
   public boolean record_motion;
   public int record_motion_threshold;
   public int max_folder_size;  //in GBs
@@ -37,14 +38,16 @@ public class Camera implements Serializable, RTPInterface {
     name = "";
     url = "";
     url_low = "";
+    enabled = true;
+
     record_motion = true;
     record_motion_threshold = 20;
     max_folder_size = 100;
+
     controller = "";
     tag_trigger = "";
     tag_value = "";
     pos_edge = true;
-    enabled = true;
     init();
   }
 
@@ -53,6 +56,40 @@ public class Camera implements Serializable, RTPInterface {
     viewersLock = new Object();
     viewers_live = new ArrayList<>();
     viewers_file = new ArrayList<>();
+  }
+
+  public boolean compare(Camera other) {
+    if (!name.equals(other.name)) return false;
+    if (!url.equals(other.url)) return false;
+    if (!url_low.equals(other.url_low)) return false;
+    if (enabled != other.enabled) return false;
+
+    if (record_motion != other.record_motion) return false;
+    if (record_motion_threshold != other.record_motion_threshold) return false;
+    if (max_folder_size != other.max_folder_size) return false;
+
+    if (!controller.equals(other.controller)) return false;
+    if (!tag_trigger.equals(other.tag_trigger)) return false;
+    if (!tag_value.equals(other.tag_value)) return false;
+    if (pos_edge != other.pos_edge) return false;
+
+    return true;
+  }
+
+  public void copy(Camera other) {
+    name = other.name;
+    url = other.url;
+    url_low = other.url_low;
+    enabled = other.enabled;
+
+    record_motion = other.record_motion;
+    record_motion_threshold = other.record_motion_threshold;
+    max_folder_size = other.max_folder_size;
+
+    controller = other.controller;
+    tag_trigger = other.tag_trigger;
+    tag_value = other.tag_value;
+    pos_edge = other.pos_edge;
   }
 
   public transient volatile float motion_value;
@@ -122,7 +159,7 @@ public class Camera implements Serializable, RTPInterface {
       stream.framerate = 10;
       stream.addCodec(new Codec("H264", 96));
     }
-    stream.setIP(DVRService.rtspServer.resolve(sess.remotehost));
+    stream.setIP(DVRService.dvrService.rtspServer.resolve(sess.remotehost));
     stream.setPort(-1);
     if (sess.rtp != null) {
       sess.rtp.uninit();

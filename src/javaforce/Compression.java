@@ -1,4 +1,9 @@
-/** Compression
+/** Compression and Serialization.
+ *
+ * Provides methods to serialize/compress and decompress/deserialize Objects.
+ *
+ * Objects must implement java.io.Serializable and should include a serialVersionUID.
+ *   public static final long serialVersionUID = 1L;
  *
  * @author pquiring
  */

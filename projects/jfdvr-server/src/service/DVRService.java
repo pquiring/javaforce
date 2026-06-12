@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.*;
 
 import javaforce.*;
+import javaforce.bus.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.voip.*;
@@ -17,11 +18,14 @@ import javaforce.media.*;
 
 public class DVRService implements RTSPServerInterface {
   public static DVRService dvrService;
-  public static ConfigService configService;
-  public static WebServerRedir redirService;
-  public static RTSPServer rtspServer;
-  public static DebugState debugState;
-  public static WorkerKeepAlive keepAlive;
+  public ConfigService configService;
+  public WebServerRedir redirService;
+  public RTSPServer rtspServer;
+  public DebugState debugState;
+  public WorkerKeepAlive keepAlive;
+
+  public static String busName = "javaforce.jfdvr";
+  public JBusServer busServer;
 
   public static boolean active = true;
 
@@ -159,6 +163,10 @@ public class DVRService implements RTSPServerInterface {
   public void start() {
     server = new Server();
     server.start();
+    busServer = new JBusServer(busName, new BusMethods());
+    if (!busServer.connect()) {
+      JFLog.log("Failed to start JBusServer");
+    }
   }
 
   public void stop() {
@@ -199,6 +207,10 @@ public class DVRService implements RTSPServerInterface {
     if (debugState != null) {
       debugState.cancel();
       debugState = null;
+    }
+    if (busServer != null) {
+      busServer.disconnect();
+      busServer = null;
     }
     server = null;
   }
@@ -539,6 +551,93 @@ public class DVRService implements RTSPServerInterface {
           if (debug) JFLog.log(log, e);
         }
       }
+    }
+  }
+
+  public Camera getCamera(String name) {
+    return Config.current.getCamera(name);
+  }
+  public Group getGroup(String name) {
+    return Config.current.getGroup(name);
+  }
+
+  /** client -> server methods */
+  public class BusMethods {
+    public boolean addCamera(String name, byte[] instance) {
+      Config.save();
+      Camera new_camera = (Camera)Compression.deserialize(new ByteArrayInputStream(instance), instance.length);
+      Config.current.addCamera(new_camera);
+      startCamera(new_camera);
+      Config.save();
+      return true;
+    }
+    public boolean removeCamera(String name) {
+      Camera camera = getCamera(name);
+      if (camera == null) return false;
+      stopCamera(camera);
+      Config.current.removeCamera(camera);
+      Config.save();
+      return true;
+    }
+    public boolean editCamera(String name, byte[] instance) {
+      Camera camera = getCamera(name);
+      if (camera == null) return false;
+      Camera edit_camera = (Camera)Compression.deserialize(new ByteArrayInputStream(instance), instance.length);
+      stopCamera(camera);
+      if (!camera.name.equals(edit_camera.name)) {
+        Config.current.renamedCamera(camera.name, edit_camera.name);
+      }
+      camera.copy(edit_camera);
+      startCamera(camera);
+      Config.save();
+      return true;
+    }
+
+    public boolean addGroup(String name, byte[] instance) {
+      Group new_group = (Group)Compression.deserialize(new ByteArrayInputStream(instance), instance.length);
+      Config.current.addGroup(new_group);
+      Config.save();
+      return true;
+    }
+    public boolean removeGroup(String name) {
+      Group group = getGroup(name);
+      if (group == null) return false;
+      Config.current.removeGroup(group);
+      Config.save();
+      return true;
+    }
+    public boolean editGroup(String name, byte[] instance) {
+      Group group = getGroup(name);
+      if (group == null) return false;
+      Group edit_group = (Group)Compression.deserialize(new ByteArrayInputStream(instance), instance.length);
+      group.copy(edit_group);
+      Config.save();
+      return true;
+    }
+
+    public boolean serviceStop() {
+      DVRService.this.serviceStop();
+      return true;
+    }
+    public boolean viewing(String name, boolean viewing) {
+      Camera camera = getCamera(name);
+      if (camera == null) return false;
+      camera.viewing = viewing;
+      if (viewing) {
+        camera.update_preview = true;
+      } else {
+        camera.preview = null;
+      }
+      return true;
+    }
+    public byte[] getPreview(String name) {
+      byte[] result = new byte[0];
+      Camera camera = getCamera(name);
+      if (camera == null) return result;
+      if (camera.preview == null) return result;
+      result = camera.preview;
+      camera.update_preview = true;
+      return result;
     }
   }
 }
