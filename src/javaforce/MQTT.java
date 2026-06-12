@@ -598,7 +598,7 @@ public class MQTT {
           break;
         case CMD_UNSUBSCRIBE_ACK:
           //TODO : decode topic ?
-          if (debug_msg) JFLog.log("subscribe_ack");
+          if (debug_msg) JFLog.log("unsubscribe_ack");
           if (events != null) {
             events.onUnsubscribe(null);
           }
