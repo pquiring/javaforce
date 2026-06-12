@@ -78,6 +78,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     send_msg = new javax.swing.JTextField();
     send = new javax.swing.JButton();
     subscribe = new javax.swing.JButton();
+    jButton1 = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("MQTT Viewer");
@@ -146,6 +147,13 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
       }
     });
 
+    jButton1.setText("Unsubscribe");
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -158,6 +166,8 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
             .addComponent(jLabel2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(topic)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jButton1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(subscribe))
           .addGroup(layout.createSequentialGroup()
@@ -212,7 +222,9 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
           .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
             .addComponent(jLabel2)
             .addComponent(topic, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(subscribe, javax.swing.GroupLayout.Alignment.TRAILING))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+            .addComponent(subscribe)
+            .addComponent(jButton1)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -244,6 +256,10 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     subscribe();
   }//GEN-LAST:event_subscribeActionPerformed
 
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    unsubscribe();
+  }//GEN-LAST:event_jButton1ActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -260,6 +276,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JCheckBox authenticate;
   private javax.swing.JButton clear;
+  private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
@@ -303,6 +320,10 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 
   public void onSubscribe(String topic) {
     addText("subscribe accepted!\r\n");
+  }
+
+  public void onUnsubscribe(String topic) {
+    addText("unsubscribe accepted!\r\n");
   }
 
   public void onMessage(String topic, String msg) {
@@ -376,6 +397,13 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     String _topic = topic.getText().trim();
     client.subscribe(_topic);
     addText("Subscribed to : " + _topic + "\r\n");
+  }
+
+  public void unsubscribe() {
+    if (client == null) return;
+    String _topic = topic.getText().trim();
+    client.unsubscribe(_topic);
+    addText("Unsubscribed to : " + _topic + "\r\n");
   }
 
   private void setState(boolean state) {

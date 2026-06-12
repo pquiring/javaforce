@@ -253,6 +253,10 @@ public class MQTTForward {
     public void onSubscribe(String topic) {
     }
 
+    /** MQTTEvents.onUnsubscribe() */
+    public void onUnsubscribe(String topic) {
+    }
+
     /** MQTTEvents.onMessage() */
     public void onMessage(String topic, String msg) {
     }

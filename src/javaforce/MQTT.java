@@ -596,6 +596,13 @@ public class MQTT {
             events.onSubscribe(null);
           }
           break;
+        case CMD_UNSUBSCRIBE_ACK:
+          //TODO : decode topic ?
+          if (debug_msg) JFLog.log("subscribe_ack");
+          if (events != null) {
+            events.onUnsubscribe(null);
+          }
+          break;
         case CMD_PING:
           reply = new byte[2];
           reply[0] = (byte)(CMD_PONG << 4);
@@ -640,6 +647,7 @@ public class MQTT {
       JFLog.log("disconnected");
     }
     public void onSubscribe(String topic) {}
+    public void onUnsubscribe(String topic) {}
     public void onMessage(String topic, String msg) {
       JFLog.log("msg:" + topic + "=" + msg);
       resub = topic;
