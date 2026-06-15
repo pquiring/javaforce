@@ -3,11 +3,11 @@ echo Microsoft Visual C++ 2026 compiler setup
 
 SET VCTYPE=Community
 SET VCYEAR=18
-SET VCVER=14.50.35717
+SET VCVER=14.51.36231
 SET WINVER=10.0.26100.0
 
-SET MSVS=C:\Program Files\Microsoft Visual Studio
-SET MSSDK=C:\Program Files (x86)\Windows Kits
+SET MSVS=%ProgramFiles%\Microsoft Visual Studio
+SET MSSDK=%ProgramFiles(x86)%\Windows Kits
 
 echo VCYEAR=%VCYEAR%
 echo VCVER=%VCVER%
@@ -19,7 +19,7 @@ if not "%VisualStudioVersion%"=="" goto end
 
 ::vcpkg
 set VCPKG_DEFAULT_TRIPLET=x64-windows
-::set VCPKG=c:\program files\vcpkg
+::set VCPKG=%ProgramFiles%\vcpkg
 ::set PATH=%VCPKG%\installed\x64-windows\bin;%PATH%
 
 ::VC Paths
@@ -48,7 +48,7 @@ SET LIB=%LIB%;%MSVS%\%VCYEAR%\%VCTYPE%\MSBuild\Current\Bin\Roslyn
 ::VC Libpaths
 SET LIBPATH=%LIBPATH%;%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\%VCVER%\lib\x64
 SET LIBPATH=%LIBPATH%;%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\%VCVER%\lib\x86\store\references
-::SET LIBPATH=%LIBPATH%;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+::SET LIBPATH=%LIBPATH%;%windir%\Microsoft.NET\Framework64\v4.0.30319
 
 ::VC IFCPATH
 SET IFCPATH=%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\%VCVER%\ifc\x64
