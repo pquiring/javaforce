@@ -5,6 +5,7 @@ package javaforce.service;
  * Proprietary protocol similar in function to rsync but over SSL.
  *
  * Secure and fast.
+ * Client @ javaforce.utils.FileSync
  *
  * TCP Port 33203
  *
