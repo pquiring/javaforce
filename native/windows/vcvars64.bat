@@ -1,14 +1,21 @@
 @echo off
 echo Microsoft Visual C++ 2026 compiler setup
 
-SET VCTYPE=Community
 SET VCYEAR=18
 SET VCVER=14.51.36231
 SET WINVER=10.0.26100.0
 
-SET MSVS=%ProgramFiles%\Microsoft Visual Studio
-SET MSSDK=%ProgramFiles(x86)%\Windows Kits
+if exist "%ProgramFiles%\Microsoft Visual Studio\%VCYEAR%" SET MSVS=%ProgramFiles%\Microsoft Visual Studio
+if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%VCYEAR%" SET MSVS=%ProgramFiles(x86)%\Microsoft Visual Studio
 
+if exist "%ProgramFiles%\Windows Kits" SET MSSDK=%ProgramFiles%\Windows Kits
+if exist "%ProgramFiles(x86)%\Windows Kits" SET MSSDK=%ProgramFiles(x86)%\Windows Kits
+
+if exist "%MSVS%\%VCYEAR%\Community" set VCTYPE=Community
+if exist "%MSVS%\%VCYEAR%\BuildTools" set VCTYPE=BuildTools
+
+echo MSVS=%MSVS%
+echo MSSDK=%MSSDK%
 echo VCYEAR=%VCYEAR%
 echo VCVER=%VCVER%
 echo WINVER=%WINVER%
