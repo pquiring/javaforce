@@ -2,8 +2,6 @@
 echo Microsoft Visual C++ 2026 compiler setup
 
 SET VCYEAR=18
-SET VCVER=14.51.36231
-SET WINVER=10.0.26100.0
 
 if exist "%ProgramFiles%\Microsoft Visual Studio\%VCYEAR%" SET MSVS=%ProgramFiles%\Microsoft Visual Studio
 if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\%VCYEAR%" SET MSVS=%ProgramFiles(x86)%\Microsoft Visual Studio
@@ -13,6 +11,14 @@ if exist "%ProgramFiles(x86)%\Windows Kits" SET MSSDK=%ProgramFiles(x86)%\Window
 
 if exist "%MSVS%\%VCYEAR%\Community" set VCTYPE=Community
 if exist "%MSVS%\%VCYEAR%\BuildTools" set VCTYPE=BuildTools
+
+:detect_vcver
+
+for /d %%a in ("%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\*") do (set VCVER=%%~nxa)
+
+:detect_winver
+
+for /d %%a in ("%MSSDK%\10\include\*") do (set WINVER=%%~nxa)
 
 echo MSVS=%MSVS%
 echo MSSDK=%MSSDK%
@@ -79,6 +85,6 @@ goto end
 echo Detecting MS VC Tools Versions...
 dir /b "%MSVS%\%VCYEAR%\%VCTYPE%\VC\Tools\MSVC\"
 echo Detecting MS SDK Versions...
-dir /b "%MSSDK%\10\bin\"
+dir /b "%MSSDK%\10\include\"
 
 :end
