@@ -17,5 +17,6 @@
 
   <target name="install" description="install files for linux">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
+    <copy file="${app}.cfg" todir="/etc/javaforce/admin"/>
   </target>
 </project>
