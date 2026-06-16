@@ -17,7 +17,7 @@ if [ ! -f /opt/netbeans/bin/netbeans ]; then
 
   #no special folder
 
-  echo export PATH=/opt/ant/bin:\$PATH >> ~/.bashrc
+  echo export PATH=/opt/netbeans/bin:\$PATH >> ~/.bashrc
 
   echo NetBeans Install complete!
   echo Please logout and login for bash PATH to update!
