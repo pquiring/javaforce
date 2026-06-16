@@ -274,7 +274,7 @@ public class ConfigService implements WebUIServlet {
     }
     String user = client.getUser();
     if (user == null) {
-      return loginPanel(client);
+      return new LoginPanel(appname, client);
     }
     Panel panel = new Panel();
     UI ui = (UI)client.getProperty("ui");
@@ -1820,10 +1820,6 @@ public class ConfigService implements WebUIServlet {
       cancel.click();
     });
     return panel;
-  }
-
-  private Panel loginPanel(WebUIClient client) {
-    return new LoginPanel(appname, client);
   }
 
   private Panel leftPanel(UI ui, int size) {

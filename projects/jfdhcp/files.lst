@@ -1,5 +1,2 @@
 /usr/bin/jfdhcp
-/usr/bin/jfdhcpsvc
 /lib/systemd/system/jfdhcp.service
-
-

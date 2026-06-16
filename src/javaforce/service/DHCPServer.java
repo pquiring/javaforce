@@ -20,11 +20,15 @@ import java.util.*;
 import javaforce.*;
 import javaforce.bus.*;
 
-public class DHCPServer {
+public class DHCPServer extends ConfigServlet {
 
   public final static String serviceBus = "javaforce.jfdhcp";
 
   public static boolean debug = false;
+
+  public String getAppName() {return "DHCP";}
+
+  public String getBusName() {return serviceBus;}
 
   /** DHCP Notification interface. */
   public static interface Notify {
@@ -1019,6 +1023,9 @@ public class DHCPServer {
       dhcp = new DHCPServer();
       dhcp.start();
       return true;
+    }
+    public String getLogFile() {
+      return DHCPServer.getLogFile();
     }
   }
 

@@ -1,0 +1,137 @@
+package javaforce.service;
+
+/** Common Config Servlet.
+ *
+ * Service must implement IPC methods:
+ *   String getConfig()
+ *   boolean setConfig(String cfg)
+ *   String getLogFile()
+ *
+ * @author pquiring
+ */
+
+import java.io.*;
+
+import javaforce.*;
+import javaforce.bus.*;
+import javaforce.webui.*;
+import javaforce.webui.panel.*;
+
+public abstract class ConfigServlet implements WebUIServlet {
+
+  private String appName;
+  private JBusClient busClient;
+  private String busName;
+
+  public abstract String getAppName();
+  public abstract String getBusName();
+
+  private class UI {
+    TextArea view_log_textarea;
+  }
+
+  public void init() {
+    appName = getAppName();
+    busName = getBusName();
+    busClient = new JBusClient(null);
+    busClient.connect();
+  }
+
+  public void destroy() {
+  }
+
+  public String getName() {
+    return appName;
+  }
+
+  public Panel getPanel(String name, HTTP.Parameters params, WebUIClient client) {
+    String user = client.getUser();
+    if (user == null) {
+      return new LoginPanel(appName, client);
+    }
+    Panel panel = new Panel();
+
+    UI ui = new UI();
+
+    Panel viewLogPanel = getViewLogPanel(ui);
+    panel.add(viewLogPanel);
+
+    Label title = new Label(appName + " Configuration");
+    panel.add(title);
+
+    TextArea config = new TextArea("");
+    panel.add(config);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+
+    Button view_log = new Button("View Log");
+    tools.add(view_log);
+
+    Button load = new Button("Load Config");
+    tools.add(load);
+
+    Button save = new Button("Save Config");
+    tools.add(save);
+
+    view_log.addClickListener((me, cmp) -> {
+      viewLogRefresh(ui);
+      viewLogPanel.setVisible(true);
+    });
+
+    load.addClickListener((me, cmp) -> {
+      String cfg = (String)busClient.invoke(busName, "getConfig");
+      config.setText(cfg);
+    });
+
+    save.addClickListener((me, cmp) -> {
+      String cfg = (String)config.getText();
+      busClient.invoke(busName, "setConfig", cfg);
+    });
+
+    return panel;
+  }
+
+  public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse response) {
+    return null;
+  }
+
+  public void clientConnected(WebUIClient client) {
+  }
+
+  public void clientDisconnected(WebUIClient client) {
+  }
+
+  private void viewLogRefresh(UI ui) {
+    String logfile = (String)busClient.invoke(busName, "getLogFile");
+    String log = "";
+    try {
+      FileInputStream fis = new FileInputStream(logfile);
+      byte[] data = fis.readAllBytes();
+      fis.close();
+      log = new String(data);
+    } catch (Exception e) {
+      log = e.toString();
+    }
+    ui.view_log_textarea.setText(log);
+  }
+
+  private Panel getViewLogPanel(UI ui) {
+    Panel panel = new PopupPanel("View Log");
+
+    ui.view_log_textarea = new TextArea("");
+    panel.add(ui.view_log_textarea);
+
+    ToolBar tools = new ToolBar();
+    panel.add(tools);
+
+    Button refresh = new Button("Refresh");
+    tools.add(refresh);
+
+    refresh.addClickListener((me, cmp) -> {
+      viewLogRefresh(ui);
+    });
+
+    return panel;
+  }
+}

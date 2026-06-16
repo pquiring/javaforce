@@ -3,8 +3,8 @@ Description=JavaForce DHCP Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfdhcpsvc
-ExecStop=/usr/bin/jfdhcpsvc --stop
+ExecStart=/usr/bin/jfdhcp
+ExecStop=/usr/bin/jfdhcp --stop
 Restart=always
 
 [Install]
