@@ -375,6 +375,7 @@ public class SMTP {
     if (has_attachments) {
       //boundary
       for(Attachment attach : attachments) {
+        if (attach == null) continue;
         full.append("--" + boundary_mixed + "\r\n");
         //headers
         full.append("Content-Type: application/octet-stream\r\n");
