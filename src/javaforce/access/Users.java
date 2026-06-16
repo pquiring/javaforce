@@ -13,6 +13,15 @@ public class Users implements Serializable {
 
   public ArrayList<User> users = new ArrayList<>();
 
+  public void validate() {
+    if (users == null) {
+      users = new ArrayList<>();
+    }
+    for(User user : users) {
+      user.validate();
+    }
+  }
+
   public User[] getUsers() {
     return users.toArray(User.ARRAY_TYPE);
   }

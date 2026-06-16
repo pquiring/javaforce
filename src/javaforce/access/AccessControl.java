@@ -63,6 +63,7 @@ public class AccessControl {
   private boolean loadUsers() {
     if (users_file.exists()) {
       users = (Users)Compression.deserialize(users_file);
+      users.validate();
       users_last_saved = users_file.lastModified();
       return true;
     } else {
@@ -85,6 +86,7 @@ public class AccessControl {
   private boolean loadGroups() {
     if (groups_file.exists()) {
       groups = (Groups)Compression.deserialize(groups_file);
+      groups.validate();
       groups_last_saved = groups_file.lastModified();
       return true;
     } else {

@@ -21,6 +21,7 @@ public class User implements Name, Serializable {
   public ArrayList<Contact> contacts = new ArrayList<>();
   public int pass_hash_type;
   public String token;
+  public HashMap<String, String> props = new HashMap<>();
 
   public static final int PASSWORD_HASH_NONE = 0;
   public static final int PASSWORD_HASH_MD5 = 1;
@@ -39,6 +40,15 @@ public class User implements Name, Serializable {
     this.desc = desc;
     this.pass_hash_type = password_hash_type;
     setPassword(pass);
+  }
+
+  public void validate() {
+    if (contacts == null) {
+      contacts = new ArrayList<>();
+    }
+    if (props == null) {
+      props = new HashMap<>();
+    }
   }
 
   /** Encode a password using md5. */
@@ -77,5 +87,13 @@ public class User implements Name, Serializable {
   /** Generates a random transient token. */
   public void generateToken() {
     token = JF.generateUUID();
+  }
+
+  public String getProperty(String name) {
+    return props.get(name);
+  }
+
+  public void setProperty(String name, String value) {
+    props.put(name, value);
   }
 }

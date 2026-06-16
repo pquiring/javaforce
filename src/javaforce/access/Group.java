@@ -17,6 +17,7 @@ public class Group implements Name, Serializable {
   public String name;
   public String desc;
   public ArrayList<String> users = new ArrayList<>();
+  public HashMap<String, String> props = new HashMap<>();
 
   public Group() {
   }
@@ -31,6 +32,15 @@ public class Group implements Name, Serializable {
     this.desc = desc;
     for(String user : user_list) {
       users.add(user);
+    }
+  }
+
+  public void validate() {
+    if (users == null) {
+      users = new ArrayList<>();
+    }
+    if (props == null) {
+      props = new HashMap<>();
     }
   }
 
@@ -53,5 +63,13 @@ public class Group implements Name, Serializable {
 
   public boolean contains(String user) {
     return users.contains(user);
+  }
+
+  public String getProperty(String name) {
+    return props.get(name);
+  }
+
+  public void setProperty(String name, String value) {
+    props.put(name, value);
   }
 }

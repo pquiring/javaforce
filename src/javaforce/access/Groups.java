@@ -13,6 +13,15 @@ public class Groups implements Serializable {
 
   public ArrayList<Group> groups = new ArrayList<>();
 
+  public void validate() {
+    if (groups == null) {
+      groups = new ArrayList<>();
+    }
+    for(Group group : groups) {
+      group.validate();
+    }
+  }
+
   public Group[] getGroups() {
     return groups.toArray(Group.ARRAY_TYPE);
   }
