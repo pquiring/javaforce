@@ -52,7 +52,7 @@ public class VNCWebConsole extends Thread implements Resized {
     }
     boolean opt_toolbar = (opts & OPT_TOOLBAR) != 0;
     boolean opt_scale = (opts & OPT_SCALE) != 0;
-    Panel panel = new Panel();
+    Panel panel = new ScrollPanel();
     Canvas canvas = new Canvas();
     canvas.setSize(1, 1);
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, opts, canvas);
