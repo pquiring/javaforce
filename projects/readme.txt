@@ -22,7 +22,8 @@ jfdataloggerplus - PLC Data Logger to SQL
 jfdesktop - Desktop Service for jfLinux
 jfdhcp - DHCP Service
 jfdns - DNS Service
-jfdvr - DVR Service (IP Camera Recording)
+jfdvr-server - DVR Service (IP Camera Recording)
+jfdvr-viewer - DVR Viewer
  - E -
 jfedit - Multi-Tabbed Text Editor
  - F -
@@ -87,7 +88,8 @@ jftorrent - Torrent Server/Client
 jfupgrade - Package Upgrade Manager for jfLinux
  - V -
 jfvideo - Video Creator
-jfvnc - VNC Server/Client
+jfvnc-server - VNC Server
+jfvnc-viewer - VNC Client
  - W -
 jfwelcome - Welcome App for jfLinux
  - X -
