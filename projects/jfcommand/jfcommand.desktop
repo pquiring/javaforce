@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=System Commander
+Comment=System Commander
+
+Icon=jfcommand
+
+Type=Application
+Categories=Utility
+
+Exec=jfcommand
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfCommand
