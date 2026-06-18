@@ -189,14 +189,11 @@ public class CommandApp implements ActionListener {
       //does not work
       WinNative.impersonateUser(domain, user, pass);
     } else {
-      int opts = 0;
-      String cmdline;
       if (runas1 == false) {
         //stage 1
-        cmdline = "--runas1";
         if (false) {
           //does not work
-          WinNative.createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe " + cmdline, opts);
+          WinNative.createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe --runas1", 0);
         } else {
           //works
           try {
@@ -207,11 +204,9 @@ public class CommandApp implements ActionListener {
         }
       } else {
         //stage 2
-        cmdline = "--runas2";
         if (false) {
           //does not work
-          opts = WinNative.FLAG_ELEVATE;
-          WinNative.createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe " + cmdline, opts);
+          WinNative.createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe --runas2", WinNative.FLAG_ELEVATE);
         } else {
           //works
           try {
