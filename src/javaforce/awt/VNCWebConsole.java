@@ -19,7 +19,7 @@ public class VNCWebConsole extends Thread implements Resized {
   private int vnc_port;
   private String vnc_password;
   private int opts;
-  private Panel panel;
+  private ScrollPanel panel;
   private ToolBar tools;
   private Canvas canvas;
   private RFB rfb;
@@ -52,7 +52,7 @@ public class VNCWebConsole extends Thread implements Resized {
     }
     boolean opt_toolbar = (opts & OPT_TOOLBAR) != 0;
     boolean opt_scale = (opts & OPT_SCALE) != 0;
-    Panel panel = new ScrollPanel();
+    ScrollPanel panel = new ScrollPanel();
     Canvas canvas = new Canvas();
     canvas.setSize(1, 1);
     VNCWebConsole console = new VNCWebConsole(vnc_port, password, opts, canvas);
@@ -249,9 +249,11 @@ public class VNCWebConsole extends Thread implements Resized {
     if (scaled) {
       scaled = false;
       canvas.setscale(1.0f, 1.0f);
+      panel.setScroll(true);
     } else {
       scaled = true;
       canvas.requestSize();  //triggers onResized()
+      panel.setScroll(false);
     }
   }
 
