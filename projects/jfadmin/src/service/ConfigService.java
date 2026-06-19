@@ -344,7 +344,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       String[] cp = classpath.split(";");
-      int i1 = file.lastIndexOf('/');
+      int i1 = file.lastIndexOf(File.separatorChar);
       int i2 = file.lastIndexOf('.');
       String name = file.substring(i1 + 1, i2);
       WebUIServletContext servlet = server.createServlet(JF.getClassFolder(name), cp, cls);

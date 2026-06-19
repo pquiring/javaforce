@@ -68,10 +68,10 @@ public class KVMService extends Thread {
       bus_server = new JBusServer("javaforce.jfkvm", new BusMethods());
       configService = new ConfigService();
       configService.start();
+      //start redir service
+      redirService = new WebServerRedir();
+      redirService.start(80, 443);
     }
-    //start redir service
-    redirService = new WebServerRedir();
-    redirService.start(80, 443);
   }
 
   public void cancel() {

@@ -135,12 +135,14 @@ public class DVRService implements RTSPServerInterface {
         }});
         debugState.start();
       }
-      //start config service
-      configService = new ConfigService();
-      configService.start();
-      //start redir service
-      redirService = new WebServerRedir();
-      redirService.start(80, 443);
+      if (!JF.isAdminServicePresent()) {
+        //start config service
+        configService = new ConfigService();
+        configService.start();
+        //start redir service
+        redirService = new WebServerRedir();
+        redirService.start(80, 443);
+      }
       //start keep alive thread
       keepAlive = new WorkerKeepAlive();
       keepAlive.start();

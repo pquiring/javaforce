@@ -34,7 +34,13 @@ public class WebSocket {
   public static final int MASK = 0x80;
 
   public WebSocket(String server_host, String client_host, InputStream is, OutputStream os, String url, String[] cookies) {
+    if (server_host.equals("0:0:0:0:0:0:0:1")) {
+      server_host = "127.0.0.1";
+    }
     this.server_host = server_host;
+    if (client_host.equals("0:0:0:0:0:0:0:1")) {
+      client_host = "127.0.0.1";
+    }
     this.client_host = client_host;
     this.is = is;
     this.os = os;
