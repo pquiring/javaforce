@@ -41,6 +41,8 @@ public class LLRP implements LLRPEndpoint {
   private int sensitivity = 1;
   private int session = 1;
   private boolean enableAccessSpec = false;
+  private boolean wait4reply = false;
+  private int waitTimeout = 0;
 
   public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
   public static final int IMPINJ_SEARCH_MODE_DUAL = 2;
@@ -88,13 +90,53 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  /** If enabled causes send() to wait for reply before returning.
+   *
+   * Some systems/routers may merge multiple outbound packets which the controller will ignore.
+   * This will help avoid these issues.
+   */
+  public void setWaitForReply(boolean state, int timeout) {
+    wait4reply = state;
+    waitTimeout = timeout;
+  }
+
+  /** If enabled causes send() to wait for reply before returning.
+   * Timeout = 5000ms
+   */
+  public void setWaitForReply(boolean state) {
+    setWaitForReply(state, 5000);
+  }
+
   private void send(LLRPMessage msg) {
+    long prevMsg = lastMsg;
     if (debug) {
       JFLog.log("LLRP:send:" + ip + ":" + msg);
     }
-    llrp.send(msg);
-    //a small delay avoids packet concatenation
-    JF.sleep(delay);
+    try {
+      llrp.send(msg);
+      if (wait4reply) {
+        int cnt = 0;
+        int maxcnt = waitTimeout / delay;
+        while (prevMsg == lastMsg) {
+          JF.sleep(delay);
+          cnt++;
+          if (cnt == maxcnt) {
+            break;
+          }
+        }
+        if (prevMsg == lastMsg) {
+          throw new Exception("send:no reply");
+        }
+      } else {
+        //small delay avoids packet merging
+        JF.sleep(delay);
+      }
+    } catch (Exception e) {
+      if (debug) JFLog.log(log, e);
+      active = false;
+      connected = false;
+      disconnect();
+    }
   }
 
   /** Pings LLRP Controller to keep connection alive.
