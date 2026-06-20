@@ -12,6 +12,7 @@ import org.apache.tomcat.jdbc.pool.*;
 public class SQLPool {
   private DataSource dataSource;
 
+  /** Init SQL connection pool. */
   public boolean init(String jdbcClass, String connectionURL) {
     // 1. Configure Pool Properties
     PoolProperties p = new PoolProperties();
@@ -35,11 +36,13 @@ public class SQLPool {
     return true;
   }
 
+  /** Allocate an raw java SQL connection. */
   public Connection getConnection() throws SQLException {
     if (dataSource == null) return null;
     return dataSource.getConnection();
   }
 
+  /** Allocate an SQL connection in a javaforce.SQL class. */
   public SQL getSQL() throws SQLException {
     return new SQL(getConnection());
   }

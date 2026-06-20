@@ -53,7 +53,6 @@ public class SQL {
     this.conn = conn;
   }
 
-
   /** Connects to SQL Server. */
   public boolean connect(String connectionURL, Properties info) {
     try {
