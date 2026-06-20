@@ -88,6 +88,13 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  private void send(LLRPMessage msg) {
+    if (debug) {
+      JFLog.log("LLRP:send:" + ip + ":" + msg);
+    }
+    llrp.send(msg);
+  }
+
   /** Pings LLRP Controller to keep connection alive.
    * timeout = 5000ms
    */
@@ -103,7 +110,7 @@ public class LLRP implements LLRPEndpoint {
       //some readers do not support it, but it will still "test" the connection
       {
         KEEPALIVE msg = new KEEPALIVE();
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       int cnt = 0;
@@ -217,7 +224,7 @@ public class LLRP implements LLRPEndpoint {
     ArrayList<GPOWriteData> list = new ArrayList<GPOWriteData>();
     list.add(write);
     msg.setGPOWriteDataList(list);
-    llrp.send(msg);
+    send(msg);
   }
 
   /** Include an Access Spec with RO Spec during inventory scan.
@@ -261,7 +268,7 @@ public class LLRP implements LLRPEndpoint {
         SET_READER_CONFIG msg = new SET_READER_CONFIG();
         msg.setResetToFactoryDefault(new Bit(true));
 //        JFLog.log("reset_reader");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //delete all RO specs
@@ -269,7 +276,7 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ROSPEC msg = new DELETE_ROSPEC();
         msg.setROSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete all RO specs");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //delete all Access Specs
@@ -277,7 +284,7 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ACCESSSPEC msg = new DELETE_ACCESSSPEC();
         msg.setAccessSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete all ACCESS specs");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       {
@@ -309,7 +316,7 @@ public class LLRP implements LLRPEndpoint {
         events.setEventNotificationStateList(eventsList);
         msg.setReaderEventNotificationSpec(events);
 //        JFLog.log("reset_reader");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       if (impinj_search_mode != -1) {
@@ -318,7 +325,7 @@ public class LLRP implements LLRPEndpoint {
         msg.setVendorIdentifier(new UnsignedInteger(25882));
         msg.setMessageSubtype(new UnsignedByte(21));
         msg.setData(new BytesToEnd_HEX("00000000"));
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //add RO (read operation) spec
@@ -326,7 +333,7 @@ public class LLRP implements LLRPEndpoint {
         ADD_ROSPEC msg = new ADD_ROSPEC();
         msg.setROSpec(rospec);
 //        JFLog.log("add RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //add ACCESS spec
@@ -334,7 +341,7 @@ public class LLRP implements LLRPEndpoint {
         ADD_ACCESSSPEC msg = new ADD_ACCESSSPEC();
         msg.setAccessSpec(accessspec);
 //        JFLog.log("add ACCESS spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //enable RO spec
@@ -342,7 +349,7 @@ public class LLRP implements LLRPEndpoint {
         ENABLE_ROSPEC msg = new ENABLE_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("enable RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //enable Access spec
@@ -350,7 +357,7 @@ public class LLRP implements LLRPEndpoint {
         ENABLE_ACCESSSPEC msg = new ENABLE_ACCESSSPEC();
         msg.setAccessSpecID(accessspec.getAccessSpecID());
 //        JFLog.log("enable ACCESS spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //start RO spec
@@ -358,7 +365,7 @@ public class LLRP implements LLRPEndpoint {
         START_ROSPEC msg = new START_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("start RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       return true;
@@ -377,7 +384,7 @@ public class LLRP implements LLRPEndpoint {
         DISABLE_ROSPEC msg = new DISABLE_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("disable RO spec");
-        llrp.send(msg);
+        send(msg);
         rospec = null;
       }
       //delete RO spec
@@ -385,20 +392,20 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ROSPEC msg = new DELETE_ROSPEC();
         msg.setROSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete RO spec");
-        llrp.send(msg);
+        send(msg);
       }
       if (accessspec != null) {
         DISABLE_ACCESSSPEC msg = new DISABLE_ACCESSSPEC();
         msg.setAccessSpecID(accessspec.getROSpecID());
 //        JFLog.log("disable RO spec");
-        llrp.send(msg);
+        send(msg);
         accessspec = null;
       }
       {
         DELETE_ACCESSSPEC msg = new DELETE_ACCESSSPEC();
         msg.setAccessSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete Access spec");
-        llrp.send(msg);
+        send(msg);
       }
       active = false;
     } catch (Exception e) {
@@ -429,7 +436,7 @@ public class LLRP implements LLRPEndpoint {
         SET_READER_CONFIG msg = new SET_READER_CONFIG();
         msg.setResetToFactoryDefault(new Bit(true));
 //        JFLog.log("reset_reader");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //delete all RO specs
@@ -437,7 +444,7 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ROSPEC msg = new DELETE_ROSPEC();
         msg.setROSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete all RO specs");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //delete all Access Specs
@@ -445,7 +452,7 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ACCESSSPEC msg = new DELETE_ACCESSSPEC();
         msg.setAccessSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete all ACCESS specs");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //add RO (read operation) spec
@@ -453,7 +460,7 @@ public class LLRP implements LLRPEndpoint {
         ADD_ROSPEC msg = new ADD_ROSPEC();
         msg.setROSpec(rospec);
 //        JFLog.log("add RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //add ACCESS spec
@@ -461,7 +468,7 @@ public class LLRP implements LLRPEndpoint {
         ADD_ACCESSSPEC msg = new ADD_ACCESSSPEC();
         msg.setAccessSpec(accessspec);
 //        JFLog.log("add ACCESS spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //enable RO spec
@@ -469,7 +476,7 @@ public class LLRP implements LLRPEndpoint {
         ENABLE_ROSPEC msg = new ENABLE_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("enable RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //enable Access spec
@@ -477,7 +484,7 @@ public class LLRP implements LLRPEndpoint {
         ENABLE_ACCESSSPEC msg = new ENABLE_ACCESSSPEC();
         msg.setAccessSpecID(accessspec.getAccessSpecID());
 //        JFLog.log("enable ACCESS spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //start RO spec
@@ -485,7 +492,7 @@ public class LLRP implements LLRPEndpoint {
         START_ROSPEC msg = new START_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("start RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       return true;
@@ -526,7 +533,7 @@ public class LLRP implements LLRPEndpoint {
         SET_READER_CONFIG msg = new SET_READER_CONFIG();
         msg.setResetToFactoryDefault(new Bit(true));
 //        JFLog.log("reset_reader");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //delete all RO specs
@@ -534,7 +541,7 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ROSPEC msg = new DELETE_ROSPEC();
         msg.setROSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete all RO specs");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //delete all Access Specs
@@ -542,7 +549,7 @@ public class LLRP implements LLRPEndpoint {
         DELETE_ACCESSSPEC msg = new DELETE_ACCESSSPEC();
         msg.setAccessSpecID(new UnsignedInteger(0));
 //        JFLog.log("delete all ACCESS specs");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //add RO (read operation) spec
@@ -550,7 +557,7 @@ public class LLRP implements LLRPEndpoint {
         ADD_ROSPEC msg = new ADD_ROSPEC();
         msg.setROSpec(rospec);
 //        JFLog.log("add RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //add ACCESS spec
@@ -558,7 +565,7 @@ public class LLRP implements LLRPEndpoint {
         ADD_ACCESSSPEC msg = new ADD_ACCESSSPEC();
         msg.setAccessSpec(accessspec);
 //        JFLog.log("add ACCESS spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //enable RO spec
@@ -566,7 +573,7 @@ public class LLRP implements LLRPEndpoint {
         ENABLE_ROSPEC msg = new ENABLE_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("enable RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //enable Access spec
@@ -574,7 +581,7 @@ public class LLRP implements LLRPEndpoint {
         ENABLE_ACCESSSPEC msg = new ENABLE_ACCESSSPEC();
         msg.setAccessSpecID(accessspec.getAccessSpecID());
 //        JFLog.log("enable ACCESS spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       //start RO spec
@@ -582,7 +589,7 @@ public class LLRP implements LLRPEndpoint {
         START_ROSPEC msg = new START_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("start RO spec");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       return true;
@@ -608,7 +615,7 @@ public class LLRP implements LLRPEndpoint {
         SET_READER_CONFIG msg = new SET_READER_CONFIG();
         msg.setResetToFactoryDefault(new Bit(true));
 //        JFLog.log("reset_reader");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       reading_power_levels = true;
@@ -616,7 +623,7 @@ public class LLRP implements LLRPEndpoint {
         GET_READER_CAPABILITIES caps = new GET_READER_CAPABILITIES();
         caps.setRequestedData(new GetReaderCapabilitiesRequestedData(GetReaderCapabilitiesRequestedData.All));
 //        JFLog.log("get_reader_caps");
-        llrp.send(caps);
+        send(caps);
         JF.sleep(delay);
       }
       int max = 12;
@@ -652,7 +659,7 @@ public class LLRP implements LLRPEndpoint {
         SET_READER_CONFIG msg = new SET_READER_CONFIG();
         msg.setResetToFactoryDefault(new Bit(true));
 //        JFLog.log("reset_reader");
-        llrp.send(msg);
+        send(msg);
         JF.sleep(delay);
       }
       reading_sensitivity_levels = true;
@@ -660,7 +667,7 @@ public class LLRP implements LLRPEndpoint {
         GET_READER_CAPABILITIES caps = new GET_READER_CAPABILITIES();
         caps.setRequestedData(new GetReaderCapabilitiesRequestedData(GetReaderCapabilitiesRequestedData.All));
 //        JFLog.log("get_reader_caps");
-        llrp.send(caps);
+        send(caps);
         JF.sleep(delay);
       }
       int max = 12;
