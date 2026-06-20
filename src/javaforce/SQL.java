@@ -406,6 +406,14 @@ public class SQL {
       System.out.println("connection failed!");
       return;
     }
+    {
+      long end = System.currentTimeMillis();
+      long delta = end - start;
+      if (debug) {
+        JFLog.log("connect.time(ms)=" + delta);
+      }
+      start = end;
+    }
     switch (cmd) {
       case "select": {
         if (args.length < 4 || args[3].startsWith("--")) {
@@ -472,10 +480,12 @@ public class SQL {
         break;
       }
     }
-    long end = System.currentTimeMillis();
-    long delta = end - start;
-    if (debug) {
-      JFLog.log("time(ms)=" + delta);
+    {
+      long end = System.currentTimeMillis();
+      long delta = end - start;
+      if (debug) {
+        JFLog.log("query.time(ms)=" + delta);
+      }
     }
   }
 }
