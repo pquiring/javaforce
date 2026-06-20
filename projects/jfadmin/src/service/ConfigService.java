@@ -312,7 +312,7 @@ public class ConfigService implements WebUIHandler {
       button.setWidth(size);
       list.add(button);
       button.addClickListener((me, cmp) -> {
-        ui.setRightPanel(new IFramePanel("https://" + ui.client.getServerHost() + "/" + servlet.getName()));
+        ui.setRightPanel(new IFramePanel("https://" + ui.client.getHost() + "/" + servlet.getName()));
       });
     }
   }

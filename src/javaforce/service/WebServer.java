@@ -145,7 +145,7 @@ public class WebServer {
           if (isWebSocketRequest(req)) {
             String url = req.getURL();
             if (debug) JFLog.log("WebServer:WEB_SOCKET:" + url);
-            WebSocket socket = new WebSocket(s.getLocalAddress().getHostAddress(), s.getInetAddress().getHostAddress(), is, res.os, req.fields0[1], req.cookies);
+            WebSocket socket = new WebSocket(s.getLocalAddress().getHostAddress(), s.getInetAddress().getHostAddress(), is, res.os, req.getHost(), req.fields0[1], req.cookies);
             int action = WebSocketHandler.REJECT;
             if (web.wsapi != null) {
               action = web.wsapi.doWebSocketConnect(socket);

@@ -30,6 +30,11 @@ public class Config implements Serializable {
       if (current == null) throw new Exception("failed to load config");
       current.valid();
       return true;
+    } catch (FileNotFoundException e) {
+      JFLog.log("config not found, using defaults.");
+      current = new Config();
+      current.valid();
+      return false;
     } catch (Exception e) {
       JFLog.log(e);
       current = new Config();

@@ -15,6 +15,7 @@ import javaforce.*;
 public class WebSocket {
   protected InputStream is;
   protected OutputStream os;
+  protected String host;
   protected String url;
   protected String[] cookies;
 
@@ -33,7 +34,7 @@ public class WebSocket {
   public static final int FIN = 0x80;
   public static final int MASK = 0x80;
 
-  public WebSocket(String server_host, String client_host, InputStream is, OutputStream os, String url, String[] cookies) {
+  public WebSocket(String server_host, String client_host, InputStream is, OutputStream os, String host, String url, String[] cookies) {
     if (server_host.equals("0:0:0:0:0:0:0:1")) {
       server_host = "127.0.0.1";
     }
@@ -44,6 +45,7 @@ public class WebSocket {
     this.client_host = client_host;
     this.is = is;
     this.os = os;
+    this.host = host;
     this.url = url;
     this.cookies = cookies;
   }
@@ -62,6 +64,10 @@ public class WebSocket {
 
   public String getServerHost() {
     return server_host;
+  }
+
+  public String getHost() {
+    return host;
   }
 
   public InputStream getInputStream() {

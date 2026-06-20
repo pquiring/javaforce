@@ -365,6 +365,9 @@ public class WebUIClient {
   public String getServerHost() {
     return socket.getServerHost();
   }
+  public String getHost() {
+    return socket.getHost();
+  }
   public void setTitle(String title) {
     sendEvent("body", "settitle", new String[] {"title=" + title});
   }

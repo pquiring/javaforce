@@ -89,9 +89,9 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   /** connectServlet on Servlet side
    * See WebUIServletContext
    */
-  public void connectServlet(String server, String client, InputStream is, OutputStream os, String[] cookies) {
+  public void connectServlet(String server, String client, InputStream is, OutputStream os, String host, String url, String[] cookies) {
     try {
-      WebSocket websock = new WebSocket(server, client, is, os, null, cookies);
+      WebSocket websock = new WebSocket(server, client, is, os, host, url, cookies);
       WebUIClient web_client = new WebUIClient(this, websock, handler);
       clients.add(web_client);
       handler.clientConnected(web_client);
@@ -313,7 +313,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         servlet = servlets.get(name);
       }
       if (servlet == null) return REJECT;
-      servlet.connectServlet(sock.getServerHost(), sock.getClientHost(), sock.getInputStream(), sock.getOutputStream(), sock.getCookies());
+      servlet.connectServlet(sock.getServerHost(), sock.getClientHost(), sock.getInputStream(), sock.getOutputStream(), sock.getHost(), sock.getURL(), sock.getCookies());
       return DETACH;
     } catch (Exception e) {
       JFLog.log(e);
