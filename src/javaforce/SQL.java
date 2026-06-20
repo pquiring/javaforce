@@ -400,6 +400,7 @@ public class SQL {
       System.out.println("db_type unknown:" + db_type);
       return;
     }
+    long start = System.currentTimeMillis();
     SQL sql = new SQL();
     if (!sql.connect(sql_class, conn_str, info)) {
       System.out.println("connection failed!");
@@ -470,6 +471,11 @@ public class SQL {
         System.out.println("unknown cmd:" + cmd);
         break;
       }
+    }
+    long end = System.currentTimeMillis();
+    long delta = end - start;
+    if (debug) {
+      JFLog.log("time(ms)=" + delta);
     }
   }
 }
