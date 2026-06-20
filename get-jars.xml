@@ -84,6 +84,11 @@
     <maven name="tomcat-websocket-api" dest="websocket-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
+  <available property="have-jdbc-api" file="${lib}/jdbc-api-${tomcat-version}.jar"/>
+  <target name="get-jdbc-api" unless="have-jdbc-api">
+    <maven name="tomcat-jdbc" dest="jdbc-api" path="org/apache/tomcat" version="${tomcat-version}"/>
+  </target>
+
   <!-- jakarta api (servlets) -->
 
   <available property="have-jakarta-servlet-api" file="${lib}/jakarta-servlet-api-${jakarta-servlet-version}.jar"/>
@@ -328,6 +333,7 @@
     <antcall target="get-servlet-api"/>
     <antcall target="get-jsp-api"/>
     <antcall target="get-websocket-api"/>
+    <antcall target="get-jdbc-api"/>
     <antcall target="get-jakarta-servlet-api"/>
     <antcall target="get-jakarta-jsp-api"/>
     <antcall target="get-jakarta-websocket-api"/>

@@ -19,6 +19,7 @@
     <include name="jcifs.jar"/>
     <include name="jdom.jar"/>
     <include name="llrp.jar"/>
+    <include name="jdbc-api.jar"/>
     <include name="sshd-common.jar"/>
     <include name="sshd-core.jar"/>
     <include name="sshd-sftp.jar"/>
@@ -103,6 +104,8 @@
     <antcall target="jar-filters"/>
     <antcall target="jar-llrp"/>
     <antcall target="jar-jdom"/>
+    <antcall target="jar-servlet-api"/>
+    <antcall target="jar-jdbc-api"/>
     <antcall target="jar-sshd-core"/>
     <antcall target="jar-sshd-common"/>
     <antcall target="jar-sshd-sftp"/>

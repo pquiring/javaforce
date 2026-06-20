@@ -45,6 +45,15 @@ public class SQL {
     }
   }
 
+  /** Default ctor. */
+  public SQL() {}
+
+  /** Wrap this class around existing SQL connection. */
+  public SQL(java.sql.Connection conn) {
+    this.conn = conn;
+  }
+
+
   /** Connects to SQL Server. */
   public boolean connect(String connectionURL, Properties info) {
     try {

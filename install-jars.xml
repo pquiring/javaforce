@@ -77,6 +77,10 @@
     <copyjar name="websocket-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-jdbc-api">
+    <copyjar name="jdbc-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
   <!-- jakarta api (servlets) -->
 
   <target name="jar-jakarta-servlet-api">
