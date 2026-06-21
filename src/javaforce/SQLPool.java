@@ -2,6 +2,11 @@ package javaforce;
 
 /** SQLPool based on Tomcat Connection Pool.
  *
+ * NOTE : If using in standalone project you must include tomcat jar files.
+ *   These jar files are renamed during the download:
+ *     tomcat-jdbc-X,Y.Z.jar -> jdbc-api.jar
+ *     tomcat-juli-X.Y.Z.jar -> juli-api.jar
+ *
  * @author pquiring
  */
 
