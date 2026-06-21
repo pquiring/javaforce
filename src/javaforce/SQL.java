@@ -408,8 +408,18 @@ public class SQL {
       System.out.println("db_type unknown:" + db_type);
       return;
     }
-    long start = System.currentTimeMillis();
     SQL sql = new SQL();
+    if (debug) {
+      //load once so connection time does not include class loading
+      debug = false;
+      if (!sql.connect(sql_class, conn_str, info)) {
+        System.out.println("connection failed!");
+        return;
+      }
+      sql.close();
+      debug = true;
+    }
+    long start = System.currentTimeMillis();
     if (!sql.connect(sql_class, conn_str, info)) {
       System.out.println("connection failed!");
       return;
