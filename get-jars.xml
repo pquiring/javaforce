@@ -89,6 +89,11 @@
     <maven name="tomcat-jdbc" dest="jdbc-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
+  <available property="have-juli-api" file="${lib}/juli-api-${tomcat-version}.jar"/>
+  <target name="get-juli-api" unless="have-juli-api">
+    <maven name="tomcat-juli" dest="juli-api" path="org/apache/tomcat" version="${tomcat-version}"/>
+  </target>
+
   <!-- jakarta api (servlets) -->
 
   <available property="have-jakarta-servlet-api" file="${lib}/jakarta-servlet-api-${jakarta-servlet-version}.jar"/>
@@ -334,6 +339,7 @@
     <antcall target="get-jsp-api"/>
     <antcall target="get-websocket-api"/>
     <antcall target="get-jdbc-api"/>
+    <antcall target="get-juli-api"/>
     <antcall target="get-jakarta-servlet-api"/>
     <antcall target="get-jakarta-jsp-api"/>
     <antcall target="get-jakarta-websocket-api"/>

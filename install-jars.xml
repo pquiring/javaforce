@@ -81,6 +81,10 @@
     <copyjar name="jdbc-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-juli-api">
+    <copyjar name="juli-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
   <!-- jakarta api (servlets) -->
 
   <target name="jar-jakarta-servlet-api">
