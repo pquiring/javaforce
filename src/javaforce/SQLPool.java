@@ -52,7 +52,9 @@ public class SQLPool {
 
   /** Allocate an SQL connection in a javaforce.SQL class. */
   public SQL getSQL() throws SQLException {
-    return new SQL(getConnection());
+    Connection conn = getConnection();
+    if (conn == null) return null;
+    return new SQL(conn);
   }
 
   /** Close the connection pool.
