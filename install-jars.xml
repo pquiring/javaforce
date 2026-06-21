@@ -63,7 +63,7 @@
     <copyjar name="bcutil" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
-  <!-- tomcat api (servlets) -->
+  <!-- tomcat 9.x api (servlets) -->
 
   <target name="jar-servlet-api">
     <copyjar name="servlet-api" version="${tomcat-version}" path="${jarpath}"/>
@@ -83,6 +83,28 @@
 
   <target name="jar-juli-api">
     <copyjar name="juli-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
+  <!-- tomcat 11.x api (servlets) -->
+
+  <target name="jar-servlet11-api">
+    <copyjar name="servlet11-api" version="${tomcat11-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jsp11-api">
+    <copyjar name="jsp11-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-websocket11-api">
+    <copyjar name="websocket11-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jdbc11-api">
+    <copyjar name="jdbc11-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-juli11-api">
+    <copyjar name="juli11-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
 
   <!-- jakarta api (servlets) -->

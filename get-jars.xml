@@ -67,7 +67,7 @@
     <maven name="bcutil-jdk18on" dest="bcutil" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
-  <!-- tomcat api (servlets) -->
+  <!-- tomcat 9.x api (servlets) -->
 
   <available property="have-servlet-api" file="${lib}/servlet-api-${tomcat-version}.jar"/>
   <target name="get-servlet-api" unless="have-servlet-api">
@@ -92,6 +92,33 @@
   <available property="have-juli-api" file="${lib}/juli-api-${tomcat-version}.jar"/>
   <target name="get-juli-api" unless="have-juli-api">
     <maven name="tomcat-juli" dest="juli-api" path="org/apache/tomcat" version="${tomcat-version}"/>
+  </target>
+
+  <!-- tomcat 11.x api (servlets) -->
+
+  <available property="have-servlet11-api" file="${lib}/servlet-api-${tomcat11-version}.jar"/>
+  <target name="get-servlet11-api" unless="have-servlet11-api">
+    <maven name="tomcat-servlet-api" dest="servlet-api" path="org/apache/tomcat" version="${tomcat11-version}"/>
+  </target>
+
+  <available property="have-jsp11-api" file="${lib}/jsp-api-${tomcat11-version}.jar"/>
+  <target name="get-jsp11-api" unless="have-jsp11-api">
+    <maven name="tomcat-jsp-api" dest="jsp-api" path="org/apache/tomcat" version="${tomcat11-version}"/>
+  </target>
+
+  <available property="have-websocket11-api" file="${lib}/websocket-api-${tomcat11-version}.jar"/>
+  <target name="get-websocket11-api" unless="have-websocket11-api">
+    <maven name="tomcat-websocket-api" dest="websocket-api" path="org/apache/tomcat" version="${tomcat11-version}"/>
+  </target>
+
+  <available property="have-jdbc11-api" file="${lib}/jdbc-api-${tomcat11-version}.jar"/>
+  <target name="get-jdbc11-api" unless="have-jdbc11-api">
+    <maven name="tomcat-jdbc" dest="jdbc-api" path="org/apache/tomcat" version="${tomcat11-version}"/>
+  </target>
+
+  <available property="have-juli11-api" file="${lib}/juli-api-${tomcat11-version}.jar"/>
+  <target name="get-juli11-api" unless="have-juli11-api">
+    <maven name="tomcat-juli" dest="juli-api" path="org/apache/tomcat" version="${tomcat11-version}"/>
   </target>
 
   <!-- jakarta api (servlets) -->
@@ -340,6 +367,11 @@
     <antcall target="get-websocket-api"/>
     <antcall target="get-jdbc-api"/>
     <antcall target="get-juli-api"/>
+    <antcall target="get-servlet11-api"/>
+    <antcall target="get-jsp11-api"/>
+    <antcall target="get-websocket11-api"/>
+    <antcall target="get-jdbc11-api"/>
+    <antcall target="get-juli11-api"/>
     <antcall target="get-jakarta-servlet-api"/>
     <antcall target="get-jakarta-jsp-api"/>
     <antcall target="get-jakarta-websocket-api"/>
