@@ -2,6 +2,7 @@
   <description>dns</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfdns"/>
+  <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.12"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
@@ -14,7 +15,6 @@
   <target name="jar" depends="depjars" description="jar">
   </target>
 
-  <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>

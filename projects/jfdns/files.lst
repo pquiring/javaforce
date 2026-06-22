@@ -1,5 +1,2 @@
 /usr/bin/jfdns
-/usr/bin/jfdnssvc
 /lib/systemd/system/jfdns.service
-
-

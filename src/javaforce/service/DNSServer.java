@@ -20,10 +20,14 @@ import javaforce.bus.*;
 
 import javaforce.*;
 
-public class DNSServer {
+public class DNSServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfdns";
 
   public static boolean debug = false;
+
+  public String getAppName() {return "DNS";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfdns.cfg";
@@ -648,6 +652,9 @@ public class DNSServer {
       dns = new DNSServer();
       dns.start();
       return true;
+    }
+    public String getLogFile() {
+      return DNSServer.getLogFile();
     }
   }
 
