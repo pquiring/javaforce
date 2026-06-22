@@ -32,7 +32,7 @@ function detectos {
   if [ ! -f /etc/os-release ]; then
     echo Unable to detect os
     echo /etc/os-release not found!
-    exit
+    ID=unknown
   fi
   . /etc/os-release
   #remove "quotes"
@@ -51,9 +51,9 @@ function detectos {
 
       ;;
     *)
+      OS=unknown
       echo Unknown os detected!
       echo ID=$ID
-      exit
       ;;
   esac
 }
