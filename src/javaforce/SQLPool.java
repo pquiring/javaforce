@@ -4,8 +4,8 @@ package javaforce;
  *
  * NOTE : If using in standalone project you must include tomcat jar files.
  *   These jar files are renamed during the download:
- *     tomcat-jdbc-X,Y.Z.jar -> jdbc-api.jar
- *     tomcat-juli-X.Y.Z.jar -> juli-api.jar
+ *     tomcat-jdbc-X,Y.Z.jar -> jdbc-api.jar (ant task jar-jdbc-api)
+ *     tomcat-juli-X.Y.Z.jar -> juli-api.jar (ant task jar-juli-api)
  *
  * @author pquiring
  */
