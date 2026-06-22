@@ -35,13 +35,14 @@ function detectos {
     exit
   fi
   . /etc/os-release
+  #remove "quotes"
+  ID=${ID//\"/}
+  VERSION_ID=${VERSION_ID//\"/}
   case $ID in
     debian | ubuntu)
       OS=debian
-      #need to remove quotes from VERSION_ID
-      VERSION_ID=${VERSION_ID//\"/}
       ;;
-    fedora)
+    fedora | centos)
       OS=fedora
 
       ;;
@@ -51,7 +52,7 @@ function detectos {
       ;;
     *)
       echo Unknown os detected!
-      echo ID=%ID
+      echo ID=$ID
       exit
       ;;
   esac
@@ -120,10 +121,17 @@ function debian {
 function fedora {
   dnf -y install wget
 
+  if [ $ID = "centos" ]; then
+    #centos : add required repos
+    dnf -y install epel-release
+    dnf -y install dnf-utils
+    dnf config-manager --set-enabled crb
+  fi
+
   #configure JavaForce repository
   if [ ! -f /etc/yum.repos.d/javaforce.repo ]; then
     echo Download javaforce.repo
-    wget -NP /etc/yum.repos.d http://javaforce.sf.net/fedora/$VERSION_ID/$HOSTTYPE/javaforce.repo
+    wget -NP /etc/yum.repos.d http://javaforce.sf.net/$ID/$VERSION_ID/$HOSTTYPE/javaforce.repo
     chmod 644 /etc/yum.repos.d/javaforce.repo
   fi
 
@@ -160,7 +168,7 @@ function arch {
 
   echo "[javaforce]" >> /etc/pacman.conf
   echo "SigLevel = TrustAll" >> /etc/pacman.conf
-  echo "Server = http://javaforce.sourceforge.net/arch/$HOSTTYPE" >> /etc/pacman.conf
+  echo "Server = http://javaforce.sourceforge.net/$ID/$HOSTTYPE" >> /etc/pacman.conf
 
   if [ $UPDATE = "yes" ]; then
     rm /tmp/javaforce.gpg
@@ -168,7 +176,7 @@ function arch {
 
   if [ ! -f /tmp/javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget -NP /tmp http://javaforce.sf.net/arch/$HOSTTYPE/javaforce.gpg
+    wget -NP /tmp http://javaforce.sf.net/$ID/$HOSTTYPE/javaforce.gpg
     chmod 644 /tmp/javaforce.gpg
   fi
 

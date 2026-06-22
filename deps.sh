@@ -9,26 +9,25 @@ function detectos {
     exit
   fi
   . /etc/os-release
+  #remove "quotes"
+  ID=${ID//\"/}
+  VERSION_ID=${VERSION_ID//\"/}
   case $ID in
     debian | ubuntu)
       OS=debian
-
       ;;
-    fedora)
+    fedora | centos)
       OS=fedora
-
       ;;
     arch)
       OS=arch
-
       ;;
     freebsd)
       OS=freebsd
-
       ;;
     *)
       echo Unknown os detected!
-      echo ID=%ID
+      echo ID=$ID
       exit
       ;;
   esac

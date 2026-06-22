@@ -1,4 +1,5 @@
 gcc
+gcc-c++
 java-25-openjdk-devel
 ant
 libX11-devel
