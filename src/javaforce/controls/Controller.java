@@ -478,11 +478,15 @@ public class Controller {
             if (part == null) {
               return null;
             }
-            System.arraycopy(part, 0, data, offset, part.length);
-            left -= part.length;
-            read += part.length;
-            s7.offset += part.length << 3;
-            offset += part.length;
+            int part_length = part.length;
+            if (part_length > left) {
+              part_length = left;
+            }
+            System.arraycopy(part, 0, data, offset, part_length);
+            left -= part_length;
+            read += part_length;
+            s7.offset += part_length << 3;
+            offset += part_length;
           }
           return data;
         }
