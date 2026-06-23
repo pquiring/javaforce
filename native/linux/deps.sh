@@ -45,6 +45,12 @@ function debian {
 }
 
 function fedora {
+  if [ $ID = "centos" ]; then
+    #centos : add required repos
+    dnf -y install epel-release
+    dnf -y install dnf-utils
+    dnf config-manager --set-enabled crb
+  fi
   xargs -d '\n' dnf -y install < rpm-build.deps
 }
 
