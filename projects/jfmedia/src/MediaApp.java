@@ -72,7 +72,7 @@ public class MediaApp extends javax.swing.JFrame {
       public void run() {
         showLogs();
       }
-    }, KeyEvent.VK_F2);
+    }, KeyEvent.VK_F4);
     JFAWT.assignHotKey(getRootPane(), new Runnable() {
       public void run() {
         toggleMaximized();
@@ -89,7 +89,7 @@ public class MediaApp extends javax.swing.JFrame {
     JFAWT.showMessage("Help",
       "jfMedia Player/" + version + "\n\n"
       + "F1 = Help\n"
-      + "F2 = Logs\n"
+      + "F4 = Logs\n"
       + "F10 = Full Screen\n"
     );
   }

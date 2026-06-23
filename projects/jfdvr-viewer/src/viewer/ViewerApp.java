@@ -194,6 +194,7 @@ public class ViewerApp extends javax.swing.JFrame {
       "jfDVR/" + Config.version + "\n\n" +
       "F1 = Help\n" +
       "F2 = Select View\n" +
+      "F4 = View Logs\n" +
       "F5 = Refresh\n" +
       "F10 = Toggle Maximized\n" +
       "F11 = Toggle Full Screen\n"
@@ -215,6 +216,10 @@ public class ViewerApp extends javax.swing.JFrame {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public static void showLogs() {
+    new ViewJFLog().setVisible(true);
   }
 
   public static void refresh() {
@@ -256,6 +261,7 @@ public class ViewerApp extends javax.swing.JFrame {
     self.setContentPane(panel);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F2);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showLogs();}}, KeyEvent.VK_F4);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {refresh();}}, KeyEvent.VK_F5);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {self.toggleMaximized();}}, KeyEvent.VK_F10);
     JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {self.toggleFullScreen();}}, KeyEvent.VK_F11);
