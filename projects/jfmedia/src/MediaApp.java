@@ -18,10 +18,14 @@ public class MediaApp extends javax.swing.JFrame {
 
   public static String version = "0.30";
 
+  private static String logfile = JF.getUserPath() + "/.jfmedia.log";
+
   /**
    * Creates new form MediaApp
    */
   public MediaApp() {
+    JFLog.init(logfile, true);
+    JFLog.setRetention(3);
     RTSPURL.register();
     initComponents();
     JFImage icon = new JFImage();
@@ -66,6 +70,11 @@ public class MediaApp extends javax.swing.JFrame {
     }, KeyEvent.VK_F1);
     JFAWT.assignHotKey(getRootPane(), new Runnable() {
       public void run() {
+        showLogs();
+      }
+    }, KeyEvent.VK_F2);
+    JFAWT.assignHotKey(getRootPane(), new Runnable() {
+      public void run() {
         toggleMaximized();
       }
     }, KeyEvent.VK_F10);
@@ -80,8 +89,13 @@ public class MediaApp extends javax.swing.JFrame {
     JFAWT.showMessage("Help",
       "jfMedia Player/" + version + "\n\n"
       + "F1 = Help\n"
+      + "F2 = Logs\n"
       + "F10 = Full Screen\n"
     );
+  }
+
+  public void showLogs() {
+    new ViewJFLog().setVisible(true);
   }
 
   public void toggleMaximized() {

@@ -83,7 +83,7 @@ public class JFLog {
   }
 
   public static int[] getIDs() {
-    Integer[] set = (Integer[])list.keySet().toArray();
+    Integer[] set = (Integer[])list.keySet().toArray(new Integer[0]);
     int size = set.length;
     int[] ids = new int[size];
     for(int a=0;a<size;a++) {
