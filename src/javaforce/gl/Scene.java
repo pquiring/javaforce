@@ -7,7 +7,8 @@ import javaforce.gl.model.*;
 import static javaforce.gl.GL.*;
 
 /** Scene is a primitive 3D framework.
- * Holds all loaded 3D meshes and related resources.
+ *
+ * Stores all 3D models and related resources.
  */
 
 public class Scene {

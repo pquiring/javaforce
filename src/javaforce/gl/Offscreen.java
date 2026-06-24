@@ -1,15 +1,15 @@
 package javaforce.gl;
 
-/**
- * GL Offscreen rendering buffer.
- */
-
 import java.awt.Image;
 
 import javaforce.*;
 import javaforce.awt.*;
 
 import static javaforce.gl.GL.*;
+
+/**
+ * GL Offscreen rendering buffer.
+ */
 
 public class Offscreen {
   //offscreen data

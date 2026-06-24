@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores scale. */
+/** Scale 3 stores scale. */
 
 public class Scale3 {
   public float x, y, z;

@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores one vector (x,y,z) with optional w component (default = 1.0f). */
+/** Vector3 stores one vector (x,y,z) with optional w component (default = 1.0f). */
 
 public class Vector4 {
   public float[] v = new float[4];

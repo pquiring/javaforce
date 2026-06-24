@@ -1,7 +1,7 @@
 package javaforce.gl;
 
 /**
- * Represents a plane in 3d space.
+ * Plane vectors.
  *
  * @author pquiring
  */

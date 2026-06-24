@@ -1,12 +1,12 @@
 package javaforce.gl;
 
+import static javaforce.gl.GL.*;
+
 /**
- * Renders a view of a Scene
+ * Renders a view of a Scene.
  *
  * @author pquiring
  */
-
-import static javaforce.gl.GL.*;
 
 public class Render {
   private int iwx, iwy; //window size (int)

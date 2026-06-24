@@ -1,9 +1,11 @@
 package javaforce.gl;
 
-/**
- * Stores Euler angles (x,y,z). See https://en.wikipedia.org/wiki/Euler_angles
- */
 import javaforce.*;
+
+/** Angles3 - Stores Euler angles (x,y,z).
+ *
+ * See https://en.wikipedia.org/wiki/Euler_angles
+ */
 
 public class Angles3 {
 

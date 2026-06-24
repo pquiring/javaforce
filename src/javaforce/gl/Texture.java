@@ -3,11 +3,11 @@ package javaforce.gl;
 import java.io.*;
 
 import javaforce.*;
-import javaforce.awt.*;
 import javaforce.ui.*;
 import static javaforce.gl.GL.*;
 
-/** Stores a 2D Texture (image).
+/** Texture stores a 2D Texture (image).
+ *
  * Textures are usually loaded after a new model is loaded.
  * All model's share the same set of textures. */
 

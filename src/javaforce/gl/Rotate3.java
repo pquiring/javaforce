@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores angle-axis rotation. */
+/** Rotate3 stores angle-axis rotation. */
 
 public class Rotate3 {  //rotate
   public float angle, x, y, z;

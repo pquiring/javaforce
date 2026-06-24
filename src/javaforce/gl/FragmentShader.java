@@ -1,15 +1,13 @@
 package javaforce.gl;
 
 /**
- * Reference Fragment Shader
+ * Reference Fragment Shader.
+ *
+ * uniform = set with glUniform...()
+ * in(formerly varying) = passed from vertex shader to fragment shader (shared memory)
  *
  * @author pquiring
  *
- */
-
-/*
- * uniform = set with glUniform...()
- * in(formerly varying) = passed from vertex shader to fragment shader (shared memory)
  */
 
 public class FragmentShader {

@@ -1,6 +1,8 @@
 package javaforce.gl;
 
-/** Quaternion
+import javaforce.*;
+
+/** Quaternion.
  *
  * See : https://en.wikipedia.org/wiki/Quaternion
  *
@@ -17,8 +19,6 @@ package javaforce.gl;
  *     zang = angle in z plane
  *
  */
-
-import javaforce.*;
 
 public class Quaternion {
   public float x,y,z,w;

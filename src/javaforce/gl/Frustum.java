@@ -1,7 +1,7 @@
 package javaforce.gl;
 
 /**
- * Represents the frustum (viewable area of a perspective)
+ * Frustum (viewable area of a perspective)
  *
  * @author pquiring
  */

@@ -1,13 +1,13 @@
 package javaforce.gl;
 
+import javaforce.*;
+import static javaforce.gl.GL.*;
+
 /**
  * UV Map - 2D Texture coordinates (see Object3)
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import static javaforce.gl.GL.*;
 
 public class UVMap {
   public JFArrayFloat uvl;  //texture coords list (UV)

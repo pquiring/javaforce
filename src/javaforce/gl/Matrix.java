@@ -1,6 +1,7 @@
 package javaforce.gl;
 
 /** 4x4 matrix */
+
 public class Matrix implements Cloneable {
   public float[] m = new float[16];
   private float[] r;  //result temp

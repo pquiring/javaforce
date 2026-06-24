@@ -1,7 +1,11 @@
 package javaforce.gl;
 
+import javaforce.*;
+import javaforce.jni.*;
+import javaforce.ffm.*;
+
 /**
- * OpenGL binding for Java
+ * OpenGL API.
  *
  * @author pquiring
  *
@@ -11,15 +15,8 @@ package javaforce.gl;
  *   - only supports OpenGL 2.0 or better (1.x not supported)
  *   - targeting OpenGL 3.3 API
  *   - only call GL functions from the EDT (event dispatching thread)
- *   - Supports Windows, Linux and MacOSX.VI or better (aka SnowLeopard)
- *   - if there are functions or constants missing feel free to add them
- *     - add constants to end of "GL Constants" list
- *     - open a bug report and I will add it
+ *   - Supports Windows, Linux and MacOS
  */
-
-import javaforce.*;
-import javaforce.jni.*;
-import javaforce.ffm.*;
 
 public interface GL {
 

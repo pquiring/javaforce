@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores one vector (x,y,z). */
+/** Vector3 stores one vector (x,y,z). */
 
 public class Vector3 {
   public float[] v = new float[3];

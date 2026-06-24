@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Stores a translation (movement). */
+/** Translate3 stores a translation (movement). */
 
 public class Translate3 {
   public float x, y, z;

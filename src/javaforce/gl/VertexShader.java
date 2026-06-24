@@ -1,16 +1,13 @@
 package javaforce.gl;
 
 /**
- * Reference Vertex Shader
+ * Reference Vertex Shader.
  *
- * @author pquiring
- *
- */
-
-/*
  * uniform = set with glUniform...()
  * in(formerly attribute) = points to input array with glVertexAttribPointer()
  * out(formerly varying) = passed from vertex shader to fragment shader (shared memory)
+ *
+ * @author pquiring
  */
 
 public class VertexShader {

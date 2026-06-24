@@ -5,7 +5,8 @@ import java.util.*;
 import javaforce.*;
 import static javaforce.gl.GL.*;
 
-/** <code>Object3</code> consists of vertex points, and polygons (usually triangles).
+/** Object3 consists of vertex points, and polygons (usually triangles).
+ * 
  * All polygons share the same orientation (rotation, translation, scale).
  */
 
