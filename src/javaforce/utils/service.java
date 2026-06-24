@@ -1,12 +1,15 @@
 package javaforce.utils;
 
+import javaforce.*;
+import javaforce.bus.*;
+
 /**
+ * JF Service control CLI
+ *
  * Created : July 9, 2012
  *
  * @author pquiring
  */
-import javaforce.*;
-import javaforce.bus.*;
 
 public class service {
 

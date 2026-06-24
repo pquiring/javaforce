@@ -1,14 +1,12 @@
 package javaforce.utils;
 
-/** deltree
- *
- * Delete files/folder that are x days old.
+import java.io.*;
+import java.util.*;
+
+/** deltree : Delete files/folder that are x days old.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
 
 public class deltree {
   public static long timestamp;

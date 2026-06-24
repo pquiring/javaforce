@@ -1,16 +1,14 @@
 package javaforce.utils;
 
-/** GenPAC
- *
- * Generates Arch Linux .pac files.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.linux.*;
+
+/** GenPAC :  Generates Arch Linux .pac files.
+ *
+ * @author pquiring
+ */
 
 public class GenPAC {
   private BuildTools tools;

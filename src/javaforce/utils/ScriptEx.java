@@ -1,15 +1,15 @@
 package javaforce.utils;
 
-/** Scripting Utils
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
 import javaforce.ansi.server.*;
 import javaforce.jni.*;
+
+/** Scripting Utils
+ *
+ * @author pquiring
+ */
 
 public class ScriptEx {
   public static String[] args;

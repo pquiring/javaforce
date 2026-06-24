@@ -1,15 +1,13 @@
 package javaforce.utils;
 
-/** GenMSI
- *
- * Generates Windows MSI file (wixtoolset)
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
+
+/** GenMSI : Generates Windows MSI file (wixtoolset)
+ *
+ * @author pquiring
+ */
 
 public class GenMSI {
   private BuildTools tools;

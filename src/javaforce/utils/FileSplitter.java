@@ -1,16 +1,15 @@
 package javaforce.utils;
 
-/*/
-
- File splitter
-
- Usage : filein fileout1 fileout2 [size_of_fileout1]
-
- /*/
-
 import java.io.*;
 
 import javaforce.*;
+
+/**
+ * File splitter.
+ *
+ * Usage : filein fileout1 fileout2 [size_of_fileout1]
+ *
+ */
 
 public class FileSplitter {
 

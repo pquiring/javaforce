@@ -1,14 +1,14 @@
 package javaforce.utils;
 
-/** Build Tools
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+
+/** Build Tools
+ *
+ * @author pquiring
+ */
 
 public class BuildTools {
   private XML xml;

@@ -1,16 +1,15 @@
 package javaforce.utils;
 
-/** CopyPath
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.nio.file.*;
 
 import javaforce.*;
 import javaforce.ansi.server.*;
-import javaforce.jni.*;
+
+/** CopyPath
+ *
+ * @author pquiring
+ */
 
 public class CopyPath implements KeyEvents {
   public static String[] args;

@@ -1,16 +1,16 @@
 package javaforce.utils;
 
+import java.io.*;
+
+import javaforce.*;
+
 /**
- *  Resource Manager.
+ * Resource Manager.
  *
  * Adds resource files to any file (such as Linux executables)
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class ResourceManager {
   public static void main(String[] args) {

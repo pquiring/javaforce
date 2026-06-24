@@ -1,11 +1,13 @@
 package javaforce.utils;
 
-/**
+import javaforce.*;
+
+/** smbget CLI.
+ * 
  * Created : May 10, 2012
  *
  * @author pquiring
  */
-import javaforce.*;
 
 public class smbget {
 

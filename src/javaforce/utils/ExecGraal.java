@@ -1,14 +1,14 @@
 package javaforce.utils;
 
-/** Executes Graal 'native-image' command.
- *
- * @author pquiring
- */
-
 import java.util.*;
 import java.io.*;
 
 import javaforce.*;
+
+/** Executes Graal 'native-image' command.
+ *
+ * @author pquiring
+ */
 
 public class ExecGraal implements ShellProcessListener {
   private BuildTools tools;

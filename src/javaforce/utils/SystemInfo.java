@@ -1,13 +1,12 @@
 package javaforce.utils;
 
+import javaforce.*;
 import javaforce.awt.*;
 
 /** SystemInfo
  *
  * @author peter.quiring
  */
-
-import javaforce.*;
 
 public class SystemInfo extends javax.swing.JFrame {
 

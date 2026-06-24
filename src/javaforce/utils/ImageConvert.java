@@ -3,6 +3,8 @@ package javaforce.utils;
 import javaforce.*;
 import javaforce.awt.*;
 
+/** ImageConvert utility. */
+
 public class ImageConvert {
   public static boolean debug = false;
   public static boolean quiet = false;

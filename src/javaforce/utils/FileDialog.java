@@ -1,14 +1,14 @@
 package javaforce.utils;
 
-/** File Dialog (used by jfFile)
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.awt.*;
+
+/** File Dialog (used by jfFile)
+ *
+ * @author pquiring
+ */
 
 public class FileDialog extends javax.swing.JFrame {
 

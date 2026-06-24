@@ -1,16 +1,16 @@
 package javaforce.utils;
 
-/** Simple web server that serves files from current folder.
+import java.io.*;
+
+import javaforce.*;
+import javaforce.service.*;
+
+/** Web server that serves files from current folder.
  *
  * @author pquiring
  *
  * Created : Mar 4, 2014
  */
-
-import java.io.*;
-
-import javaforce.*;
-import javaforce.service.*;
 
 public class web implements WebHandler {
   private static boolean debug;

@@ -1,13 +1,11 @@
 package javaforce.utils;
 
-/** WinService
- *
- * Windows Service API
+import javaforce.*;
+
+/** WinService : Windows Service API
  *
  * @author peter.quiring
  */
-
-import javaforce.*;
 
 public class WinService {
   public static boolean create(String name, String exe) {

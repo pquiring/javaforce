@@ -1,15 +1,13 @@
 package javaforce.utils;
 
-/** GenDMG
- *
- * Generates MacOS .dmg files.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
+
+/** GenDMG : Generates MacOS .dmg files.
+ *
+ * @author pquiring
+ */
 
 public class GenDMG {
   private BuildTools tools;

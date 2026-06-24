@@ -1,16 +1,16 @@
 package javaforce.utils;
 
-/** properties
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** properties.
  *
  * CLI to view properties (works with yaml files too)
  *
  * @author peter.quiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class properties {
   public static void main(String[] args) {

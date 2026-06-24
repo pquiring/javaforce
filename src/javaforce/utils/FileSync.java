@@ -1,6 +1,15 @@
 package javaforce.utils;
 
-/** FileSync
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.service.*;
+import javaforce.webui.tasks.*;
+import static javaforce.service.FileSyncServer.*;
+
+/** FileSync client.
  *
  * Sync folder to remote server.
  *
@@ -14,15 +23,6 @@ package javaforce.utils;
  *
  * @author pquiring
  */
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.service.*;
-import javaforce.webui.tasks.*;
-import static javaforce.service.FileSyncServer.*;
 
 public class FileSync {
 

@@ -1,7 +1,11 @@
 package javaforce.utils;
 
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
 /**
- * Heat for JavaForce.
+ * Heat for JavaForce (wixtoolset).
  *
  * Builds Wix files like heat does.
  *
@@ -9,10 +13,6 @@ package javaforce.utils;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
 
 public class WixHeat {
   public static boolean debug = false;

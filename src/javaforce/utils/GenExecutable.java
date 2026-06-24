@@ -1,14 +1,14 @@
 package javaforce.utils;
 
-/** Generates executable for platform.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+
+/** Generates executable for platform.
+ *
+ * @author pquiring
+ */
 
 public class GenExecutable implements ShellProcessListener {
   private BuildTools tools;

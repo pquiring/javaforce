@@ -1,16 +1,14 @@
 package javaforce.utils;
 
-/** GenDEB
- *
- * Generates Debian .deb files.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.linux.*;
+
+/** GenDEB : Generates Debian .deb files.
+ *
+ * @author pquiring
+ */
 
 public class GenDEB {
   private BuildTools tools;

@@ -1,11 +1,11 @@
 package javaforce.utils;
 
+import javaforce.*;
+
 /** grep CLI
  *
  * @author pquiring
  */
-
-import javaforce.*;
 
 public class grep {
   public static void main(String[] args) {

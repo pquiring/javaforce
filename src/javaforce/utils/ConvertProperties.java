@@ -1,14 +1,13 @@
 package javaforce.utils;
 
-/** Convert '-' properties to '_' properties
- *   for bash scripts
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
+
+/** Convert '-' properties to '_' properties for bash scripts.
+ *
+ * @author pquiring
+ */
 
 public class ConvertProperties {
   public static void main(String[] args) {

@@ -6,12 +6,13 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.cl.*;
 
-/** CPU Hogger
+/** CPU Hogger.
  *
  * Utility that consumes 100% CPU for system stress testing.
  *
  * @author User
  */
+
 public class CPUHogger extends javax.swing.JFrame {
 
   public static boolean debug = true;

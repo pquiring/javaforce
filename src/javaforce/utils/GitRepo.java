@@ -1,16 +1,16 @@
 package javaforce.utils;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
 /** Processes a git repo as a package repo.
  *
  * Uses bfg.jar to delete old packages.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class GitRepo {
   private static char d1 = '-';

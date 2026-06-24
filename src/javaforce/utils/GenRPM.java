@@ -1,16 +1,14 @@
 package javaforce.utils;
 
-/** GenRPM
- *
- * Generates RedHat .rpm files.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.linux.*;
+
+/** GenRPM : Generates RedHat .rpm files.
+ *
+ * @author pquiring
+ */
 
 public class GenRPM {
   private BuildTools tools;

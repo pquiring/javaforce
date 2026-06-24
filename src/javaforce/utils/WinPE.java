@@ -1,16 +1,16 @@
 package javaforce.utils;
 
+import java.io.*;
+
+import javaforce.*;
+import javaforce.jni.*;
+
 /** Tool to add resources to Windows PE exe files.
  *
  * Based on WinRun4J source code (converted to Java).
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
-import javaforce.jni.*;
 
 public class WinPE {
   public static void usage() {

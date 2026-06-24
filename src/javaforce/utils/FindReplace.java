@@ -1,21 +1,21 @@
 package javaforce.utils;
 
-/*/
-
- Find & Replace utility.
-
- Usage : "oldstr" "newstr" filespec [-i] [-asis] [-r]
- -i = case-insensitive
- -asis = no C-ctyle string processing
- -r = recursive
-
- Strings may contain C-style chars : \n\t\r \xHH \DDD \\
-
- /*/
 import java.io.*;
 import java.util.Random;
 
 import javaforce.*;
+
+/**
+ * Find & Replace utility.
+ *
+ * Usage : "oldstr" "newstr" filespec [-i] [-asis] [-r]
+ * -i = case-insensitive
+ * -asis = no C-ctyle string processing
+ * -r = recursive
+ *
+ * Strings may contain C-style chars : \n\t\r \xHH \DDD \\
+ *
+ */
 
 public class FindReplace {
 

@@ -1,9 +1,9 @@
 package javaforce.utils;
 
+import java.io.*;
+
 /**
- * Created : Sept 16, 2012
- *
- * Desc : Lists chunks in a .blend file
+ * listblend : Lists chunks in a .blend file.
  *
  * NOTE : This file is largely incomplete. Only main header and sub-headers are
  * processed so far.
@@ -11,10 +11,9 @@ package javaforce.utils;
  * Usage : java -cp /usr/share/java/javaforce.jar javaforce.utils.listblend
  * filein.blend
  *
+ * Created : Sept 16, 2012
  * @author pquiring
  */
-
-import java.io.*;
 
 public class listblend {
 

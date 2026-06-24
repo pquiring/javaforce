@@ -1,14 +1,16 @@
 package javaforce.utils;
 
-/*
- * Created : Apr 13, 2012
- */
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+
+/** sudo
+ *
+ * Created : Apr 13, 2012
+ */
 
 public class Sudo {
 

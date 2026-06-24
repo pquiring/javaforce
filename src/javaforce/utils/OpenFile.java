@@ -1,13 +1,15 @@
 package javaforce.utils;
 
-/**
+import java.io.*;
+import javaforce.*;
+import javaforce.linux.*;
+
+/** OpenFile CLI utility.
+ *
  * Created : Apr 16, 2012
  *
  * @author pquiring
  */
-import java.io.*;
-import javaforce.*;
-import javaforce.linux.*;
 
 public class OpenFile {
 

@@ -1,6 +1,10 @@
 package javaforce.utils;
 
-/**
+import java.io.*;
+import java.util.*;
+
+/** updatedesktopdatabase.
+ *
  * Created : Apr 27, 2012
  *
  * @author pquiring
@@ -29,8 +33,6 @@ package javaforce.utils;
  * manually you will have to run this command manually.
  *
  */
-import java.io.*;
-import java.util.*;
 
 public class updatedesktopdatabase {
 

@@ -1,13 +1,13 @@
 package javaforce.utils;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** Uninstall Project files.
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class UninstallProject implements ShellProcessListener {
   private BuildTools tools;

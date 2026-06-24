@@ -1,12 +1,12 @@
 package javaforce.utils;
 
+import javaforce.*;
+import javaforce.jni.WinNative;
+
 /** VSS - Volume Shadow Service command line API
   *
   * @author pquiring
   */
-
-import javaforce.*;
-import javaforce.jni.WinNative;
 
 public class VSS {
   public static void usage() {

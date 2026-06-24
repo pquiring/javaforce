@@ -1,15 +1,13 @@
 package javaforce.utils;
 
-/** xml
- *
- * CLI to view xml tags.
- *
- * @author peter.quiring
- */
-
 import java.util.*;
 
 import javaforce.*;
+
+/** xml CLI.
+ *
+ * @author peter.quiring
+ */
 
 public class xml {
   public static void main(String[] args) {

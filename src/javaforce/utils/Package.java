@@ -1,17 +1,15 @@
 package javaforce.utils;
 
-/** Package everything for current OS.
- *
- * THIS IS A WIP!!!  See TODO's
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.linux.*;
+
+/** Package everything for current OS (WIP).
+ *
+ * @author pquiring
+ */
 
 public class Package {
   public static void main(String[] args) {

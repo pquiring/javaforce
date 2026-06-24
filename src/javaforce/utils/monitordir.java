@@ -1,5 +1,8 @@
 package javaforce.utils;
 
+import javaforce.*;
+import javaforce.io.*;
+
 /**
  * Monitor Directory utility
  *
@@ -7,9 +10,6 @@ package javaforce.utils;
  *
  * Created : Nov 3, 2013
  */
-
-import javaforce.*;
-import javaforce.io.*;
 
 public class monitordir implements FolderListener {
   public static void main(String[] args) {

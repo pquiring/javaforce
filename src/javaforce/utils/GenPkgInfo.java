@@ -1,8 +1,11 @@
 package javaforce.utils;
 
-/** genpkginfo
- *
- * Generates Linux package info files.
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** genpkginfo : Generates Linux package info files.
  *
  * debian : deb/control
  * fedora : rpm.spec
@@ -10,11 +13,6 @@ package javaforce.utils;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class GenPkgInfo {
   private void error(String msg) {

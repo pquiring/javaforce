@@ -1,11 +1,11 @@
 package javaforce.utils;
 
+import java.io.*;
+
 /** Format Source code to assist in Java to C# conversion.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class FormatSource {
   public static void main(String[] args) {

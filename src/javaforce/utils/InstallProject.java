@@ -1,13 +1,13 @@
 package javaforce.utils;
 
+import java.util.*;
+
+import javaforce.*;
+
 /** Install Project files.
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class InstallProject implements ShellProcessListener {
   private BuildTools tools;

@@ -1,13 +1,13 @@
 package javaforce.utils;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** Generate icons
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class GenIcons {
   public static void main(String[] args) {

@@ -1,6 +1,10 @@
 package javaforce.utils;
 
-/** Publish to maven central (sonatype.org)
+import java.io.*;
+
+import javaforce.*;
+
+/** Publish to maven central (sonatype.org).
  *
  * Auth Tokens : ${user.home}/.m2/settings.xml
  *
@@ -8,10 +12,6 @@ package javaforce.utils;
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class Publish {
   public static void main(String[] args) {

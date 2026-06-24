@@ -1,13 +1,14 @@
 package javaforce.utils;
 
+import java.io.*;
+
 /**
- * Desc : Lists chunks in a 3DS file
+ * Desc : Lists chunks in a 3DS file.
  *
  * Usage : java -cp /usr/share/java/javaforce.jar javaforce.utils.list3ds
  * filein.3ds
  *
  */
-import java.io.*;
 
 public class list3ds {
 

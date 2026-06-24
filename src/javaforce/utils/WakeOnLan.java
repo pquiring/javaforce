@@ -1,13 +1,13 @@
 package javaforce.utils;
 
+import java.net.*;
+
+import javaforce.*;
+
 /** Service to send out WakeOnLan packets.
  *
  * @author pquiring
  */
-
-import java.net.*;
-
-import javaforce.*;
 
 public class WakeOnLan {
   private DatagramSocket socket;

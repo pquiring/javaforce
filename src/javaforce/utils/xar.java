@@ -1,8 +1,11 @@
 package javaforce.utils;
 
-/** Utility to work with xar files.
- *
- * INCOMPLETE!!!
+import java.io.*;
+import java.util.zip.*;
+
+import javaforce.*;
+
+/** Utility to work with xar files (WIP).
  *
  * Used primarily for Mac OS X installation packages (.pkg).
  *
@@ -10,11 +13,6 @@ package javaforce.utils;
  *
  * Created : May 31, 2014
  */
-
-import java.io.*;
-import java.util.zip.*;
-
-import javaforce.*;
 
 public class xar {
   private RandomAccessFile raf;

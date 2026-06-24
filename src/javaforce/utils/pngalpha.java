@@ -3,6 +3,8 @@ package javaforce.utils;
 import javaforce.*;
 import javaforce.awt.*;
 
+/** pngalpha */
+
 public class pngalpha {
 
   public static void error(String msg) {
