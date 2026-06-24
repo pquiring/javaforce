@@ -1,13 +1,13 @@
 package javaforce.webui;
 
+import java.util.*;
+
+import javaforce.webui.event.*;
+
 /** Table
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.webui.event.*;
 
 public class Table extends Container implements Click {
   private int cellWidth, cellHeight, cols, rows;

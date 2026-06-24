@@ -1,6 +1,6 @@
 package javaforce.webui;
 
-/** Icon
+/** Icon.
  *
  * Displays an icon from classpath /javaforce/icons
  *

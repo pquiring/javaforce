@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.event.*;
+
 /** ListBox
  *
  * @author pquiring
  */
-
-import javaforce.webui.event.*;
 
 public class ListBox extends ScrollPanel implements Click {
 

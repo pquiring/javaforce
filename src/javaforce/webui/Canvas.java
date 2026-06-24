@@ -1,14 +1,14 @@
 package javaforce.webui;
 
-/** Canvas for 2D and 3D output.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.awt.JFImage;
 import javaforce.JFLog;
+
+/** Canvas for 2D and 3D output.
+ *
+ * @author pquiring
+ */
 
 public class Canvas extends Container {
   private Rectangle rect;

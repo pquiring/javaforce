@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import java.util.*;
+
 /** WebUI TreePath
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class TreePath {
   private ArrayList<TreeNode> path = new ArrayList<TreeNode>();

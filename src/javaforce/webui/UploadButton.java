@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.tasks.*;
+
 /** Upload Button
  *
  * @author pquiring
  */
-
-import javaforce.webui.tasks.*;
 
 public class UploadButton extends Button {
 

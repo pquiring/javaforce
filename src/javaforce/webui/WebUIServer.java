@@ -1,5 +1,14 @@
 package javaforce.webui;
 
+import java.io.*;
+import java.util.*;
+import java.lang.reflect.*;
+
+import javaforce.*;
+import javaforce.access.*;
+import javaforce.service.*;
+import static javaforce.service.WebSocketHandler.*;
+
 /** WebUI Server.
  *
  * WebUI uses a WebSocket to communicate between the server and client side to create
@@ -16,15 +25,6 @@ package javaforce.webui;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-
-import javaforce.*;
-import javaforce.access.*;
-import javaforce.service.*;
-import static javaforce.service.WebSocketHandler.*;
 
 public class WebUIServer implements WebHandler, WebSocketHandler {
   private WebServer web;

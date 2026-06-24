@@ -1,6 +1,6 @@
 package javaforce.webui;
 
-/** FlexBox
+/** FlexBox.
  *
  * Fills up space or gap between other components like a spring.
  *

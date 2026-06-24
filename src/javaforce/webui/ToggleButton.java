@@ -2,8 +2,6 @@ package javaforce.webui;
 
 /** ToggleButton
  *
- * Toggle button.
- *
  * @author pquiring
  */
 

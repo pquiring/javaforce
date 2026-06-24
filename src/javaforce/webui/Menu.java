@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.event.*;
+
 /** Menu (place on MenuBar or PopupMenu)
  *
  * @author pquiring
  */
-
-import javaforce.webui.event.*;
 
 public class Menu extends MenuItem {
   public PopupMenu popupMenu;

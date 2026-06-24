@@ -2,8 +2,6 @@ package javaforce.webui;
 
 /** Label
  *
- * Generic Label.
- *
  * @author pquiring
  */
 

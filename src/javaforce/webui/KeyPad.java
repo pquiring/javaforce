@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.event.*;
+
 /** KeyPad for TextComponent
  *
  * @author pquiring
  */
-
-import javaforce.webui.event.*;
 
 public class KeyPad extends PopupPanel implements Click {
   private TextComponent field;

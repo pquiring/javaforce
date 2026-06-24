@@ -1,12 +1,5 @@
 package javaforce.webui;
 
-/** WebClient
- *
- * Tracks web page state for one client.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -16,6 +9,13 @@ import javaforce.service.*;
 import javaforce.webui.event.*;
 import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
+
+/** WebClient.
+ *
+ * Tracks web page state for one client.
+ *
+ * @author pquiring
+ */
 
 public class WebUIClient {
   public WebUIServer server;

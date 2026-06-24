@@ -7,8 +7,9 @@ import java.util.*;
 import javaforce.*;
 
 /**
- * XML is a TreeModel data model that encapsules a complete XML file.<br> Each
- * XML tag (element) is treated as a node in the tree. Once read() it can be
+ * XML is a TreeModel data model that encapsules a complete XML file.
+ * 
+ * Each XML tag (element) is treated as a node in the tree. Once read() it can be
  * viewed and edited with a JTree. Then you can write() it back to a file. XML
  * will monitor changes made and update nodes as needed. The read() functions
  * include a callback interface so you can further tweak the layout of the XML

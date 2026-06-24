@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import java.util.*;
+
 /** TreeNode
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class TreeNode {
   private Object data;

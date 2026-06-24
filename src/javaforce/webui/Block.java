@@ -1,6 +1,6 @@
 package javaforce.webui;
 
-/** Simple block (div) container.
+/** Block (div) container.
  *
  * @author pquiring
  */

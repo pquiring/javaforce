@@ -1,16 +1,16 @@
 package javaforce.webui;
 
-/** WebUIServletContext
+import java.io.*;
+import java.lang.reflect.*;
+
+import javaforce.*;
+
+/** WebUIServletContext.
  *
  * Server-side context.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.lang.reflect.*;
-
-import javaforce.*;
 
 public class WebUIServletContext {
   private Object servlet;

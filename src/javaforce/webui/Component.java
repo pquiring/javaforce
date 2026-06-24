@@ -1,16 +1,16 @@
 package javaforce.webui;
 
-/** Base class for all components.
- *
- * @author pquiring
- */
-
 import java.util.*;
 import java.net.*;
 
 import javaforce.*;
 import javaforce.webui.event.*;
 import static javaforce.webui.event.KeyEvent.*;
+
+/** Base class for all components.
+ *
+ * @author pquiring
+ */
 
 public abstract class Component {
 

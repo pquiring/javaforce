@@ -1,12 +1,12 @@
 package javaforce.webui;
 
+import javaforce.*;
+import javaforce.service.*;
+
 /** WebUI Handler
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.service.*;
 
 public interface WebUIHandler {
   /** Returns a root panel for a new client. */

@@ -2,8 +2,6 @@ package javaforce.webui;
 
 /** Button
  *
- * Generic button.
- *
  * @author pquiring
  */
 

@@ -1,14 +1,15 @@
 package javaforce.webui;
 
+import java.io.InputStream;
+import java.util.HashMap;
+
+import javaforce.*;
+
 /** Resource
  *
  * @author pquiring
  */
 
-import java.io.InputStream;
-import java.util.HashMap;
-
-import javaforce.*;
 
 public class Resource {
   public byte[] data;

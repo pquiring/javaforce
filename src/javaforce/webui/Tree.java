@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.event.*;
+
 /** Tree
  *
  * @author pquiring
  */
-
-import javaforce.webui.event.*;
 
 public class Tree extends ScrollPanel implements Click {
   public Tree() {

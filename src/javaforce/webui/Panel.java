@@ -1,13 +1,13 @@
 package javaforce.webui;
 
+import java.util.*;
+
+import javaforce.webui.event.*;
+
 /** Panel to display components.
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.webui.event.*;
 
 public class Panel extends Container {
   private int overflow = -1;

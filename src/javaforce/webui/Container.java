@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import java.util.*;
+
 /** Base class for components that can "contain" other components.
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class Container extends Component {
   public void setClient(WebUIClient client) {

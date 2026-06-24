@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import java.util.*;
+
 /** ComboBox
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class ComboBox extends Component {
   public ComboBox() {

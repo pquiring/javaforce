@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.event.*;
+
 /** Media : Base class for Audio and Video elements.
  *
  * @author pquiring
  */
-
-import javaforce.webui.event.*;
 
 public class MediaComponent extends Container {
   private String tag;

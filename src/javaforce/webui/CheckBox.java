@@ -1,11 +1,11 @@
 package javaforce.webui;
 
+import javaforce.webui.event.*;
+
 /** CheckBox
  *
  * @author pquiring
  */
-
-import javaforce.webui.event.*;
 
 public class CheckBox extends Container {
   private HTMLContainer input;
