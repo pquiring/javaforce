@@ -1,15 +1,15 @@
 package javaforce.pi;
 
-/** I2C
+import javaforce.api.*;
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** I2C.
  *
  * Provides access to read/write data on the I2C bus.
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public class I2C {
   private I2CAPI api;

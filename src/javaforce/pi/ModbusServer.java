@@ -1,7 +1,13 @@
 package javaforce.pi;
 
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
 /**
- * Modbus Server for Raspberry PI 2/3
+ * Modbus Server for Raspberry PI.
  *
  * Supports:
  *  - coils (digital outputs via GPIO)
@@ -20,12 +26,6 @@ package javaforce.pi;
  *
  * @author User
  */
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class ModbusServer extends Thread {
   public static void main(String[] args) {

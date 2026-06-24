@@ -1,15 +1,15 @@
 package javaforce.pi;
 
-/** GPIO
+import javaforce.api.*;
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** GPIO.
  *
  * Used to configure/read/write Raspberry PI GPIO pins.
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public class GPIO {
   private GPIOAPI api;
