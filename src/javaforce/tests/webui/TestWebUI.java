@@ -1,10 +1,5 @@
 package javaforce.tests.webui;
 
-/** Test WebUI.
- *
- * @author pquiring
- */
-
 import java.util.*;
 import java.io.*;
 
@@ -13,6 +8,11 @@ import javaforce.service.*;
 import javaforce.awt.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+
+/** Test WebUI.
+ *
+ * @author pquiring
+ */
 
 public class TestWebUI implements WebUIHandler {
   public Resource img;

@@ -1,16 +1,16 @@
 package javaforce.tests.webui;
 
-/** Test WebUI.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+
+/** Test WebUI / Media.
+ *
+ * @author pquiring
+ */
 
 public class TestMedia implements WebUIHandler {
 

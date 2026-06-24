@@ -1,14 +1,14 @@
 package javaforce.tests.webui;
 
-/** Test WebUI / WebGL.
- *
- * @author pquiring
- */
-
 import javaforce.*;
 import javaforce.gl.*;
 import javaforce.service.*;
 import javaforce.webui.*;
+
+/** Test WebUI / WebGL.
+ *
+ * @author pquiring
+ */
 
 public class TestGL implements WebUIHandler {
   public Resource img;

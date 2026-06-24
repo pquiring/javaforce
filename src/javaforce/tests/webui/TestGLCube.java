@@ -1,10 +1,5 @@
 package javaforce.tests.webui;
 
-/** Test WebUI / WebGL.
- *
- * @author pquiring
- */
-
 import java.awt.Font;
 import java.util.*;
 
@@ -13,6 +8,11 @@ import javaforce.gl.*;
 import javaforce.awt.*;
 import javaforce.service.*;
 import javaforce.webui.*;
+
+/** Test WebUI / WebGL.
+ *
+ * @author pquiring
+ */
 
 public class TestGLCube implements WebUIHandler {
   public TestGLCube() {
