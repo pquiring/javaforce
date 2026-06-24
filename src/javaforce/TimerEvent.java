@@ -7,6 +7,7 @@ import javaforce.JFTimer;
  *
  * @author Peter Quiring
  */
+
 public interface TimerEvent {
 
   public void timerEvent(JFTimer id);

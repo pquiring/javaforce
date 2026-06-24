@@ -1,10 +1,5 @@
 package javaforce;
 
-/** SSH Client
- *
- * @author peterq.admin
- */
-
 import java.io.*;
 import java.util.*;
 import java.security.*;
@@ -16,6 +11,11 @@ import org.apache.sshd.client.channel.ChannelShell;
 import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
+
+/** SSH Client.
+ *
+ * @author peterq.admin
+ */
 
 public class SSH {
 

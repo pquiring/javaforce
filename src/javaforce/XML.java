@@ -5,11 +5,11 @@ import java.io.*;
 import java.util.*;
 
 /**
- * XML encapsules a complete XML file.<br>
+ * XML file.
  * Each XML tag (element) is treated as a node in the tree.
  * The read() functions
  * include a callback interface so you can further tweak the layout of the XML
- * tree.<br>
+ * tree.
  * Then you can write() it back to a file.
  * Typical XML Tag:<br> &lt;name [attributes...]&gt; content |
  * children &lt;/name&gt;<br> Singleton XML Tag: (no children)<br> &lt;name

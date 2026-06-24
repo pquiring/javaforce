@@ -3,6 +3,8 @@ package javaforce;
 import java.io.*;
 import java.net.*;
 
+/** DatagramInputStream allows DatagramSocket to be used as an InputStream. */
+
 public class DatagramInputStream extends InputStream {
 
   private static final int MAX = 1460;

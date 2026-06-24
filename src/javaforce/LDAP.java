@@ -1,13 +1,13 @@
 package javaforce;
 
-/** LDAP
- *
- * @author pquiring
- */
-
 import java.util.*;
 import javax.naming.*;
 import javax.naming.directory.*;
+
+/** LDAP client functions.
+ *
+ * @author pquiring
+ */
 
 public class LDAP {
   private static boolean debug = false;

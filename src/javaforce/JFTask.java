@@ -1,16 +1,16 @@
 package javaforce;
 
-/**
+import java.util.*;
+
+/** Thread (task) for ProgressDialog.
+ *
+ * You should override work();
+ *
  * Created : Mar 12, 2012
  *
  * @author pquiring
  */
 
-import java.util.*;
-
-/**
- * A special Thread (task) for ProgressDialog.<br> You should override work();
- */
 public abstract class JFTask extends Thread implements ShellProcessListener {
 
   private JFTaskListener listener;

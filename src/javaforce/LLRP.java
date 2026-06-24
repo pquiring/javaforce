@@ -1,14 +1,5 @@
 package javaforce;
 
-/** LLRP API read/write tags from LLRP compatible controllers.
- *
- * Uses the LLRP Toolkit: https://sourceforge.net/projects/llrp-toolkit
- *
- * Javadoc : http://llrp.org/docs/javaapidoc
- *
- * @author Peter Quiring
- */
-
 import java.util.*;
 
 import org.llrp.ltk.net.*;
@@ -18,6 +9,15 @@ import org.llrp.ltk.generated.messages.*;
 import org.llrp.ltk.generated.parameters.*;
 import org.llrp.ltk.generated.interfaces.*;
 import org.llrp.ltk.generated.enumerations.*;
+
+/** LLRP API to read/write RFID tags from compatible controllers.
+ *
+ * Uses the LLRP Toolkit: https://sourceforge.net/projects/llrp-toolkit
+ *
+ * Javadoc : http://llrp.org/docs/javaapidoc
+ *
+ * @author Peter Quiring
+ */
 
 public class LLRP implements LLRPEndpoint {
   private static final int delay = 10;

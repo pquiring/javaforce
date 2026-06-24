@@ -1,12 +1,5 @@
 package javaforce;
 
-/** FTP over SSH
- *
- * Using Apache SSHD.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -18,6 +11,13 @@ import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.impl.DefaultSftpClientFactory;
+
+/** FTP over SSH.
+ *
+ * Using Apache SSHD.
+ *
+ * @author pquiring
+ */
 
 public class SFTP {
   private SshClient client;  //ssh

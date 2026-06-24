@@ -2,6 +2,11 @@ package javaforce;
 
 import java.io.*;
 
+/** Base64 encoder / decoder.
+ *
+ * @author pquiring
+ */
+
 public class Base64 {
 
   private static final byte[] etable = new byte[] {

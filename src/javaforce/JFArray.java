@@ -1,13 +1,11 @@
 package javaforce;
 
-/** JF Array generic
- *
- * T must be Object (not primitive)
+import java.util.*;
+
+/** JF Array generic.
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public abstract class JFArray<T> {
   protected T[] buf;

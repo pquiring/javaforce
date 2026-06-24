@@ -1,6 +1,6 @@
 package javaforce;
 
-/** Condition
+/** Condition interface.
  *
  * Similar to java.util.concurrent.Callable but only returns primitive boolean type.
  *

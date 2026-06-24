@@ -1,12 +1,12 @@
 package javaforce;
 
-/** FTPS : Secure FTP.
+import java.io.*;
+import java.net.*;
+
+/** FTPS (Secure FTP).
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
 
 public class FTPS extends FTP {
   public boolean connect(String host) throws Exception {

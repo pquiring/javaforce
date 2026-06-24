@@ -1,10 +1,10 @@
 package javaforce;
 
-/** JDBC SQL helper. */
-
 import java.util.*;
 import java.sql.*;
 import java.lang.reflect.*;
+
+/** JDBC SQL functions. */
 
 public class SQL {
   /** Last exception that occurred. */

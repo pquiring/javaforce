@@ -10,6 +10,7 @@ import java.util.TimerTask;
  * @see TimerEvent
  * @author Peter Quiring
  */
+
 public class JFTimer {
 
   private Timer timer;

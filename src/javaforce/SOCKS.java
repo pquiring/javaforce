@@ -1,12 +1,12 @@
 package javaforce;
 
-/** SOCKS client connect functions
+import java.io.*;
+import java.net.*;
+
+/** SOCKS client.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
 
 public class SOCKS {
   /** Connects to host via a SOCKS4 server.

@@ -3,6 +3,8 @@ package javaforce;
 import java.io.*;
 import java.net.*;
 
+/** DatagramOutputStream allows DatagramSocket to be used as an OutputStream. */
+
 public class DatagramOutputStream extends OutputStream {
 
   private DatagramSocket ds;

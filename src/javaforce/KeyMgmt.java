@@ -1,21 +1,5 @@
 package javaforce;
 
-/**
- * Key Management.
- *
- * Contains a keystore and its password.
- *
- * key = private key (password protected)
- * crt = public certificate
- * csr = PKCS10 cert sign request
- *
- * see https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html
- *
- * @author pquiring
- *
- * Created : Oct 8, 2013
- */
-
 import java.security.CodeSigner;
 import java.security.KeyStore;
 import java.security.KeyFactory;
@@ -37,6 +21,22 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.io.*;
 import java.util.*;
+
+/**
+ * Key Management keystore.
+ *
+ * Contains a keystore and its password.
+ *
+ * key = private key (password protected)
+ * crt = public certificate
+ * csr = PKCS10 cert sign request
+ *
+ * see https://docs.oracle.com/en/java/javase/17/docs/specs/man/keytool.html
+ *
+ * @author pquiring
+ *
+ * Created : Oct 8, 2013
+ */
 
 public class KeyMgmt {
 

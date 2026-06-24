@@ -1,12 +1,12 @@
 package javaforce;
 
+import java.io.*;
+import java.net.*;
+
 /** Telnet client.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
 
 public class Telnet {
   private Socket socket;

@@ -1,6 +1,6 @@
 package javaforce;
 
-/**
+/** JFTaskListener interface.
  *
  * @author pquiring
  */

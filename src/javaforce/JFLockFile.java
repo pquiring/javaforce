@@ -1,12 +1,12 @@
 package javaforce;
 
+import java.io.*;
+import java.nio.channels.*;
+
 /** File Locking object.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.nio.channels.*;
 
 public class JFLockFile {
   private RandomAccessFile lockraf; // The file we'll lock

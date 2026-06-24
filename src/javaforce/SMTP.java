@@ -9,8 +9,9 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 /**
- * SMTP client class.
+ * SMTP client.
  */
+
 public class SMTP {
 
   /** Email Attachment */

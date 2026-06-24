@@ -1,6 +1,10 @@
 package javaforce;
 
-/** DebugState
+import java.io.*;
+
+import javaforce.*;
+
+/** DebugState.
  *
  * Continuously updates debug info.
  *
@@ -10,10 +14,6 @@ package javaforce;
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class DebugState extends Thread {
   private RandomAccessFile file;

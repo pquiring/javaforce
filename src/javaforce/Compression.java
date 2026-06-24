@@ -1,3 +1,9 @@
+package javaforce;
+
+import java.io.*;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
+
 /** Compression and Serialization.
  *
  * Provides methods to serialize/compress and decompress/deserialize Objects.
@@ -7,11 +13,6 @@
  *
  * @author pquiring
  */
-package javaforce;
-
-import java.io.*;
-import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 public class Compression {
   public static class UnitTest implements Serializable {

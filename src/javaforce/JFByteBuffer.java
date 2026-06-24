@@ -1,6 +1,9 @@
 package javaforce;
 
-/** Byte Buffer (fifo)
+import java.io.*;
+import java.util.*;
+
+/** Byte Buffer (fifo).
  *
  * Supports read() and write() operations in Big Endian format.
  *
@@ -12,9 +15,6 @@ package javaforce;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
 
 public class JFByteBuffer {
   private byte[] buffer;

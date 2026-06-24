@@ -1,17 +1,17 @@
 package javaforce;
 
-/** MQTT Forward
+import java.util.*;
+
+import javaforce.*;
+import static javaforce.service.MQTTServer.*;
+
+/** MQTT Forward.
  *
  * Provides a queue of messages to be sent to an MQTT service.
  * MQTTForward will work in the background to send messages.
  *
  * @author peter.quiring
  */
-
-import java.util.*;
-
-import javaforce.*;
-import static javaforce.service.MQTTServer.*;
 
 public class MQTTForward {
   private String host;

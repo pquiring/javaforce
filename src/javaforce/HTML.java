@@ -1,8 +1,6 @@
 package javaforce;
 
-/** HTML.
- *
- * Helper functions for generating HTML.
+/** HTML generation functions.
  *
  * @author pquiring
  */

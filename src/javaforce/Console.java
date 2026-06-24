@@ -1,13 +1,13 @@
 package javaforce;
 
-/** Console
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.jni.*;
+
+/** Console (alternative to System.in/out).
+ *
+ * @author pquiring
+ */
 
 public class Console {
   private static boolean isWindows = JF.isWindows();

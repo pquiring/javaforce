@@ -3,7 +3,8 @@ package javaforce.voip;
 import javaforce.*;
 import java.io.*;
 
-/** Loads a WAV file specific to VoIP requirements (must be 8000Hz, mono, 16bit PCM)
+/** Loads a WAV file specific to VoIP requirements (must be 8000Hz, mono, 16bit PCM).
+ *
  *  Samples are returned in 20ms blocks (last partial block is chopped).
  */
 

@@ -19,10 +19,11 @@ import java.io.*;
 import java.util.*;
 
 /**
- * This is a simple class for parsing command line options.
+ * Parsing command line options.
  *
  * @author Peter Quiring
  */
+
 public class ParseArgs extends JF {
 
   public ArrayList<String> arg_opts;

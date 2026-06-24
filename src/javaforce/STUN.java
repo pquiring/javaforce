@@ -1,5 +1,12 @@
 package javaforce;
 
+import java.net.*;
+import java.nio.*;
+import java.util.*;
+import java.util.zip.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+
 /** STUN (w/ TURN support) client.
  *
  * Created : Nov 25, 2013
@@ -12,13 +19,6 @@ package javaforce;
  * I can't stand reading RFCs.  Built this mostly with X-Lite and Wireshark as usual.
  * Thanks to resiprocate open-source project, would have NEVER figured out the HmacSHA1 stuff.
  */
-
-import java.net.*;
-import java.nio.*;
-import java.util.*;
-import java.util.zip.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
 
 public class STUN {
   public interface Listener {

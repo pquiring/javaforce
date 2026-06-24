@@ -1,10 +1,10 @@
 package javaforce;
 
-/**
- * HMACT64
- */
-
 import java.security.MessageDigest;
+
+/**
+ * HMACT64 MessageDigest.
+ */
 
 public class HMACT64 extends MessageDigest implements Cloneable {
 

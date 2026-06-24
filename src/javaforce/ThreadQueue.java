@@ -1,7 +1,9 @@
 package javaforce;
 
+import java.util.concurrent.*;
+
 /**
- * This queue will process Runnable objects with a Thread pool.
+ * Processes Runnable objects with a Thread pool.
  *
  * Parameters:
  *
@@ -20,8 +22,6 @@ package javaforce;
  *
  * @author pquiring
  */
-
-import java.util.concurrent.*;
 
 public class ThreadQueue {
   private ThreadPoolExecutor executor;

@@ -1,6 +1,7 @@
 package javaforce;
 
-public interface ShellProcessListener {
+/** ShellProcessListener. */
 
+public interface ShellProcessListener {
   public void shellProcessOutput(String str);
 }

@@ -1,11 +1,11 @@
 package javaforce;
 
+import java.security.MessageDigest;
+
 /**
- * MD4
+ * MD4 MessageDigest (128bit).
  *
  */
-
-import java.security.MessageDigest;
 
 public final class MD4 extends MessageDigest implements Cloneable {
   /**

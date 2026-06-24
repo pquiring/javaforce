@@ -1,13 +1,13 @@
 package javaforce;
 
-/**
+import java.util.*;
+
+/** JFArrayChar.
  *
  * @author pquiring
  *
  * Created : May 4, 2015
  */
-
-import java.util.*;
 
 public class JFArrayChar {
   private char[] buf;

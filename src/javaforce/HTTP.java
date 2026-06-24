@@ -1,13 +1,13 @@
 package javaforce;
 
-/** HTTP Client
- *
- * @author pquiring
- */
-
 import java.net.*;
 import java.io.*;
 import java.util.*;
+
+/** HTTP Client.
+ *
+ * @author pquiring
+ */
 
 public class HTTP {
   protected Socket s;
@@ -142,6 +142,8 @@ public class HTTP {
      */
     public void progress(long downloaded, long length);
   }
+
+  /** Internal HTTP Buffer. */
 
   protected static class Buffer {
     public byte[] buf;

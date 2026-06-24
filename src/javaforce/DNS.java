@@ -1,6 +1,10 @@
 package javaforce;
 
-/** DNS Client
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+/** DNS Client.
  *
  * Transports Supported : UDP, DNS over HTTPS (DOH)
  * Records Supported : A,AAAA,CNAME,MX,NS,SOA,SRV,NAPTR
@@ -9,10 +13,6 @@ package javaforce;
  *
  * @author pquiring
  */
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
 
 public class DNS {
   private InetSocketAddress server;

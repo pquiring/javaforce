@@ -1,5 +1,10 @@
 package javaforce;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.zip.*;
+
 /** Class Loader from a ClassPath.
  *
  * You could use URLClassLoader with file://... but this is easier.
@@ -9,11 +14,6 @@ package javaforce;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.zip.*;
 
 public class JFClassLoader extends ClassLoader {
   private static class Folder {

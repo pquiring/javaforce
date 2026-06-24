@@ -1,21 +1,11 @@
 package javaforce;
 
-/**
-*
-* JSON parser (JavaScript Object Notation)
-*
-* https://en.wikipedia.org/wiki/JSON
-*
-* Does NOT Support multi-dimension arrays.
-*
-*/
-
 import java.util.*;
 import java.io.*;
 
 /*
 
-example:
+json example:
 
 {
   "key": "value",
@@ -28,6 +18,15 @@ example:
   "key5" : [ { "t1": "v1"}, {"t2": "v2", "t2b": "v2b"}]
 }
 
+*/
+
+/**
+* JSON (JavaScript Object Notation) parser.
+*
+* https://en.wikipedia.org/wiki/JSON
+*
+* Does NOT Support multi-dimension arrays.
+*
 */
 
 public class JSON {

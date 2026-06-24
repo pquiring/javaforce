@@ -1,13 +1,13 @@
 package javaforce;
 
-/** Relay Stream
+import java.io.*;
+
+/** Relay Stream.
  *
  * Continuously reads data from input stream and writes to output stream.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class RelayStream extends Thread {
   private InputStream in;

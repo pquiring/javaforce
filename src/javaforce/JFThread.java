@@ -2,6 +2,8 @@ package javaforce;
 
 /** Convenience thread to pass in value via ctor.
  *
+ * Extend and override run() as in Thread usage.
+ *
  * @author pquiring
  */
 

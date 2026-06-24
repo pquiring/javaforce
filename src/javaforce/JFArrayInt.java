@@ -1,13 +1,13 @@
 package javaforce;
 
-/**
+import java.util.*;
+
+/** JFArrayInt.
  *
  * @author pquiring
  *
  * Created : Sept 17, 2013
  */
-
-import java.util.*;
 
 public class JFArrayInt {
   private int[] buf;

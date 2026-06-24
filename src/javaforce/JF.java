@@ -24,6 +24,7 @@ import javaforce.jni.*;
  *
  * @author Peter Quiring
  */
+
 public class JF {
 
   /** Returns JavaForce version as a String. */

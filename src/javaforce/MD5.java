@@ -23,11 +23,11 @@ package javaforce;
  These notices must be retained in any copies of any part of this
  documentation and/or software.
  */
+
 /**
- * In cryptography,
- * <code>MD5</code> (Message-Digest algorithm 5) is a widely used cryptographic
- * hash function with a 128-bit hash value.
+ * MD5 MessageDigest (128-bit).
  */
+
 public class MD5 {
 
   public MD5() {

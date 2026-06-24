@@ -1,6 +1,6 @@
 package javaforce;
 
-/** Console Output
+/** Console Output.
  *
  * Alternative to System.out which has issues in Graal.
  *

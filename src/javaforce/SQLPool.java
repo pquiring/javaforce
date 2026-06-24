@@ -1,5 +1,9 @@
 package javaforce;
 
+import java.sql.*;
+
+import org.apache.tomcat.jdbc.pool.*;
+
 /** SQLPool based on Tomcat Connection Pool.
  *
  * NOTE : If using in standalone project you must include tomcat jar files.
@@ -9,10 +13,6 @@ package javaforce;
  *
  * @author pquiring
  */
-
-import java.sql.*;
-
-import org.apache.tomcat.jdbc.pool.*;
 
 public class SQLPool {
   private DataSource dataSource;

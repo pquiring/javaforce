@@ -5,8 +5,9 @@ import java.net.*;
 import java.util.*;
 
 /**
- * POP3 client class.
+ * POP3 client.
  */
+
 public class POP3 {
 
   private Socket s;

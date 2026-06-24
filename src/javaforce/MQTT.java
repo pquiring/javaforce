@@ -1,17 +1,17 @@
 package javaforce;
 
-/** MQTT client
- *
- * https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html
- *
- * @author peter.quiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 import static javaforce.service.MQTTServer.*;
+
+/** MQTT client.
+ *
+ * https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html
+ *
+ * @author peter.quiring
+ */
 
 public class MQTT {
   private Socket s;

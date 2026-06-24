@@ -1,6 +1,10 @@
+package javaforce;
+
+import java.util.*;
+import java.io.*;
+
 /**
- * Provides services to run shell processes with input/output and sudo password
- * authentication.
+ * Runs shell processes with input/output and sudo password authentication.
  *
  * Created : Feb 18, 2012
  *
@@ -8,11 +12,6 @@
  * expects input.
  *
  */
-package javaforce;
-
-import java.lang.reflect.*;
-import java.util.*;
-import java.io.*;
 
 public class ShellProcess {
 
