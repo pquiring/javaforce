@@ -1,11 +1,11 @@
 package javaforce.ui.theme;
 
+import javaforce.ui.Color;
+
 /** Dark Theme
  *
  * @author pquiring
  */
-
-import javaforce.ui.Color;
 
 public class DarkTheme extends Theme {
   public DarkTheme() {

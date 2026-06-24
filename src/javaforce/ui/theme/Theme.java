@@ -1,11 +1,11 @@
 package javaforce.ui.theme;
 
+import javaforce.ui.*;
+
 /** Base class for Themes.
  *
  * @author pquiring
  */
-
-import javaforce.ui.*;
 
 public class Theme {
   private static Theme current = new BasicTheme();
