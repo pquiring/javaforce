@@ -12,6 +12,7 @@ import javaforce.*;
  *
  * @author Peter Quiring
  */
+
 public class bmp {
   /*/
    struct _bmp_main {   //18 bytes

@@ -1,17 +1,17 @@
 package javaforce.awt.priv;
 
-/** XPM image api
- *
- * Supports XPM3 only.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import java.awt.*;
 
 import javaforce.*;
+
+/** Internal class for XPM images.
+ *
+ * Supports XPM3 only.
+ *
+ * @author pquiring
+ */
 
 public class xpm {
   private int pos = 0;

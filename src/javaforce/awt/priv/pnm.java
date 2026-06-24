@@ -1,16 +1,16 @@
 package javaforce.awt.priv;
 
-/** pgm, ppm images.
+import java.io.*;
+
+import javaforce.*;
+import javaforce.ui.*;
+
+/** Internal class for pgm, ppm images.
  *
  * Only supports 8bit binary gray scale or color images (P5, P6).
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
-import javaforce.ui.*;
 
 public class pnm {
 
