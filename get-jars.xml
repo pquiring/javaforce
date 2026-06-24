@@ -269,46 +269,16 @@
     <maven name="plc4j-driver-s7" path="org/apache/plc4x" version="${plc4j-version}"/>
   </target>
 
-  <!-- others -->
-
-  <available property="have-bfg" file="${lib}/bfg-${bfg-version}.jar"/>
-  <target name="get-bfg" unless="have-bfg">
-    <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
-  </target>
+  <!-- apache -->
 
   <available property="have-derby" file="${lib}/derby-${derby-version}.jar"/>
   <target name="get-derby" unless="have-derby">
     <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
   </target>
 
-  <available property="have-jcifs" file="${lib}/jcifs-${jcifs-version}.jar"/>
-  <target name="get-jcifs" unless="have-jcifs">
-    <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
-  </target>
-
-  <available property="have-filters" file="${lib}/filters-${filters-version}.jar"/>
-  <target name="get-filters" unless="have-filters">
-    <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
-  </target>
-
   <available property="have-xerces" file="${lib}/xerces-${xerces-version}.jar"/>
   <target name="get-xerces" unless="have-xerces">
     <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
-  </target>
-
-  <available property="have-jdom" file="${lib}/jdom-${jdom-version}.jar"/>
-  <target name="get-jdom" unless="have-jdom">
-    <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
-  </target>
-
-  <available property="have-jargs" file="${lib}/jargs-${jargs-version}.jar"/>
-  <target name="get-jargs" unless="have-jargs">
-    <maven name="jargs" path="io/github/pquiring" version="${jargs-version}"/>
-  </target>
-
-  <available property="have-llrp" file="${lib}/llrp-${llrp-version}.jar"/>
-  <target name="get-llrp" unless="have-llrp">
-    <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
   </target>
 
   <available property="have-commons-lang3" file="${lib}/commons-lang3-${commons-lang3-version}.jar"/>
@@ -356,6 +326,38 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
+  <!-- others -->
+
+  <available property="have-bfg" file="${lib}/bfg-${bfg-version}.jar"/>
+  <target name="get-bfg" unless="have-bfg">
+    <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
+  </target>
+
+  <available property="have-jcifs" file="${lib}/jcifs-${jcifs-version}.jar"/>
+  <target name="get-jcifs" unless="have-jcifs">
+    <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
+  </target>
+
+  <available property="have-filters" file="${lib}/filters-${filters-version}.jar"/>
+  <target name="get-filters" unless="have-filters">
+    <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
+  </target>
+
+  <available property="have-jdom" file="${lib}/jdom-${jdom-version}.jar"/>
+  <target name="get-jdom" unless="have-jdom">
+    <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
+  </target>
+
+  <available property="have-jargs" file="${lib}/jargs-${jargs-version}.jar"/>
+  <target name="get-jargs" unless="have-jargs">
+    <maven name="jargs" path="io/github/pquiring" version="${jargs-version}"/>
+  </target>
+
+  <available property="have-llrp" file="${lib}/llrp-${llrp-version}.jar"/>
+  <target name="get-llrp" unless="have-llrp">
+    <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
+  </target>
+
   <available property="have-jsvg" file="${lib}/jsvg-${jsvg-version}.jar"/>
   <target name="get-jsvg" unless="have-jsvg">
     <maven name="jsvg" path="com/github/weisj" version="${jsvg-version}"/>
@@ -379,8 +381,6 @@
     <antcall target="get-twelvemonkeys-imageio-core"/>
     <antcall target="get-twelvemonkeys-imageio-metadata"/>
     <antcall target="get-twelvemonkeys-imageio-tiff"/>
-    <antcall target="get-derby"/>
-    <antcall target="get-jcifs"/>
     <antcall target="get-mssql-jdbc"/>
     <antcall target="get-mysql-jdbc"/>
     <antcall target="get-postgresql-jdbc"/>
@@ -417,8 +417,7 @@
     <antcall target="get-sshd-mina"/>
     <antcall target="get-sshd-sftp"/>
     <antcall target="get-sshd-scp"/>
-    <antcall target="get-jargs"/>
-    <antcall target="get-llrp"/>
+    <antcall target="get-derby"/>
     <antcall target="get-commons-lang3"/>
     <antcall target="get-commons-logging"/>
     <antcall target="get-batik-all"/>
@@ -428,6 +427,9 @@
     <antcall target="get-fontbox"/>
     <antcall target="get-xmpbox"/>
     <antcall target="get-xml-apis-ext"/>
+    <antcall target="get-jcifs"/>
+    <antcall target="get-jargs"/>
+    <antcall target="get-llrp"/>
     <antcall target="get-jsvg"/>
     <antcall target="get-tinyradius"/>
     <antcall target="get-protobuf"/>

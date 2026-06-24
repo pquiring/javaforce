@@ -227,34 +227,14 @@
     <copyjar name="plc4j-driver-s7" version="${plc4j-version}" path="${jarpath}"/>
   </target>
 
-  <!-- others -->
+  <!-- apache -->
 
   <target name="jar-derby">
     <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-jcifs">
-    <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-filters">
-    <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
-  </target>
-
   <target name="jar-xerces">
     <copyjar name="xerces" version="${xerces-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-jdom">
-    <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-jargs">
-    <copyjar name="jargs" version="${jargs-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-llrp">
-    <copyjar name="llrp" version="${llrp-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-commons-lang3">
@@ -291,6 +271,28 @@
 
   <target name="jar-xml-apis-ext">
     <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
+  </target>
+
+  <!-- others -->
+
+  <target name="jar-jcifs">
+    <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-filters">
+    <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jdom">
+    <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jargs">
+    <copyjar name="jargs" version="${jargs-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-llrp">
+    <copyjar name="llrp" version="${llrp-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-jsvg">
