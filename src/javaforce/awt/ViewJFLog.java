@@ -1,5 +1,10 @@
 package javaforce.awt;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
 /** View JF Log File(s)
  *
  * Views all registered JFLog files.
@@ -7,11 +12,6 @@ package javaforce.awt;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class ViewJFLog extends javax.swing.JDialog {
 

@@ -1,14 +1,14 @@
 package javaforce.awt;
 
-/** VNCRobot
- *
- * @author peter.quiring
- */
-
 import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+
+/** VNCRobot interface.
+ *
+ * @author peter.quiring
+ */
 
 public interface VNCRobot {
   public Rectangle getScreenSize();

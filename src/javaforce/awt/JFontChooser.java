@@ -1,15 +1,16 @@
 package javaforce.awt;
 
-/**
- *
- * JFontChooser - from jfontchooser.sourceforge.net
- *
- */
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.*;
+
+/**
+ * JFontChooser.
+ *
+ * From jfontchooser.sourceforge.net
+ *
+ */
 
 public class JFontChooser extends JDialog {
 

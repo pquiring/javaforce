@@ -1,6 +1,13 @@
 package javaforce.awt;
 
-/** VNCSessionClient
+import java.io.*;
+import java.net.*;
+import java.awt.*;
+
+import javaforce.*;
+import javaforce.jni.*;
+
+/** VNCSessionClient.
  *
  * Runs in current session context to capture screen and simulate input events.
  * Used only when VNCServer runs as a system service.
@@ -9,13 +16,6 @@ package javaforce.awt;
  *
  * @author peter.quiring
  */
-
-import java.io.*;
-import java.net.*;
-import java.awt.*;
-
-import javaforce.*;
-import javaforce.jni.*;
 
 public class VNCSessionClient extends VNCJavaRobot {
 

@@ -1,10 +1,5 @@
 package javaforce.awt;
 
-/** Deprecated AWT/Swing functions
- *
- * @author pquiring
- */
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -14,6 +9,11 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 import javaforce.*;
+
+/** AWT/Swing misc functions
+ *
+ * @author pquiring
+ */
 
 public class JFAWT {
 

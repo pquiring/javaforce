@@ -1,12 +1,5 @@
 package javaforce.awt;
 
-/** VNCWebConsole
- *
- * Connects to local VNC server and render output thru WebUI.
- *
- * @author pquiring
- */
-
 import javaforce.webui.panel.LoginPanel;
 import java.awt.event.KeyEvent;
 
@@ -14,6 +7,13 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+
+/** VNCWebConsole.
+ *
+ * Connects to local VNC server and render output thru WebUI.
+ *
+ * @author pquiring
+ */
 
 public class VNCWebConsole extends Thread implements Resized {
   private int vnc_port;

@@ -1,13 +1,13 @@
 package javaforce.awt;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** View Log File
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class ViewLog extends javax.swing.JDialog {
 

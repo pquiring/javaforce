@@ -1,12 +1,5 @@
 package javaforce.awt;
 
-/** VNCSessionServer
- *
- * RPC server that accepts connections from VNCSessionClient on port 5999.
- *
- * @author peter.quiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.awt.*;
@@ -15,6 +8,13 @@ import javaforce.*;
 import javaforce.jni.*;
 
 import static javaforce.awt.VNCSessionClient.*;
+
+/** VNCSessionServer.
+ *
+ * RPC server that accepts connections from VNCSessionClient on port 5999.
+ *
+ * @author peter.quiring
+ */
 
 public class VNCSessionServer {
 

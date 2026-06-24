@@ -1,15 +1,15 @@
 package javaforce.awt;
 
-/** VNC Client.
- *
- * @author pquiring
- */
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+
+/** VNC Client.
+ *
+ * @author pquiring
+ */
 
 public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 

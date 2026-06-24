@@ -1,12 +1,5 @@
 package javaforce.awt;
 
-/** RFB Protocol (VNC) server/client.
- *
- * RFC : 6143
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -16,6 +9,13 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 import javaforce.*;
+
+/** RFB Protocol (VNC) server/client.
+ *
+ * RFC : 6143
+ *
+ * @author pquiring
+ */
 
 public class RFB {
   private Socket s;

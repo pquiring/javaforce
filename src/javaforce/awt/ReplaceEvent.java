@@ -5,6 +5,7 @@ package javaforce.awt;
  *
  * @author Peter Quiring
  */
+
 public interface ReplaceEvent {
 
   public boolean findEvent(ReplaceDialog dialog);

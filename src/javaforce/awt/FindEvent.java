@@ -5,6 +5,7 @@ package javaforce.awt;
  *
  * @author Peter Quiring
  */
+
 public interface FindEvent {
 
   public void findEvent(FindDialog id);

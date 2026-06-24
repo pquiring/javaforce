@@ -1,15 +1,14 @@
-/*
- * FindDialog.java
- *
- * Created on July 29, 2007, 4:04 PM
- */
 package javaforce.awt;
 
 import javaforce.awt.FindEvent;
 import java.awt.event.KeyEvent;
 
-/**
- * Opens a find text dialog which uses FindEvent for callback handling.
+/*
+ * FindDialog.
+
+ * Opens a find dialog which uses FindEvent for callback handling.
+ *
+ * Created on July 29, 2007, 4:04 PM
  *
  * @author Peter Quiring
  */

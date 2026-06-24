@@ -1,13 +1,13 @@
 package javaforce.awt;
 
-/** MQTT Viewer
- *
- * @author peter.quiring
- */
-
 import java.io.*;
 
 import javaforce.*;
+
+/** MQTT client viewer.
+ *
+ * @author peter.quiring
+ */
 
 public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
 

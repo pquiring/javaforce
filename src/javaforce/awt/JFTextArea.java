@@ -10,9 +10,9 @@ import javax.swing.plaf.*;
 import javax.swing.undo.*;
 
 /**
- * Extends JTextArea to provide some extra features such as overwrite mode, and
- * undo/redo
+ * Extends JTextArea to provide some extra features such as overwrite mode, and undo/redo.
  */
+
 public class JFTextArea extends JTextArea {
 
   private static Toolkit toolkit = Toolkit.getDefaultToolkit();

@@ -1,18 +1,18 @@
 package javaforce.awt;
 
-/** VNC server config App
- *
- * @author pquiring
- *
- * Created : Nov 16, 2013
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.bus.*;
+
+/** VNC server config App
+ *
+ * @author pquiring
+ *
+ * Created : Nov 16, 2013
+ */
 
 public class VNCApp extends javax.swing.JFrame {
 

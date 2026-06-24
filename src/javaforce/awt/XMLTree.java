@@ -11,12 +11,14 @@ import javax.swing.event.*;
 import javaforce.*;
 
 /**
- * XML is a TreeModel data model that encapsules a complete XML file.<br> Each
- * XML tag (element) is treated as a node in the tree. Once read() it can be
- * viewed and edited with a JTree. Then you can write() it back to a file. XML
- * will monitor changes made and update nodes as needed. The read() functions
- * include a callback interface so you can further tweak the layout of the XML
- * tree.<br> Typical XML Tag:<br> &lt;name [attributes...]&gt; content |
+ * XML is a TreeModel data model that encapsules a complete XML file.
+ * 
+ * Each XML tag (element) is treated as a node in the tree.
+ * Once read() it can be viewed and edited with a JTree.
+ * Then you can write() it back to a file.
+ * XML will monitor changes made and update nodes as needed.
+ * The read() functions include a callback interface so you can further tweak the layout of the XML tree.
+ * Typical XML Tag:<br> &lt;name [attributes...]&gt; content |
  * children &lt;/name&gt;<br> Singleton XML Tag: (no children)<br> &lt;name
  * [attributes...] /&gt;<br> Caveats:<br> Only leaf nodes can contain actual
  * data (content) (in other words @XmlMixed is not supported).<br>

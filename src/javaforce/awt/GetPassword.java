@@ -1,18 +1,18 @@
 package javaforce.awt;
 
-/*
- * GetPassword.java
- *
- * Created on August 3, 2007, 1:57 PM
- *
- * @author  pquiring
- */
-
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+
+/*
+ * GetPassword dialog.
+ *
+ * Created on August 3, 2007, 1:57 PM
+ *
+ * @author  pquiring
+ */
 
 public class GetPassword extends javax.swing.JDialog {
 

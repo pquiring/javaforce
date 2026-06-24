@@ -1,6 +1,14 @@
 package javaforce.awt;
 
-/** Clipboard
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.datatransfer.*;
+import java.io.*;
+import javax.swing.*;
+
+import javaforce.*;
+
+/** Clipboard functions.
  *
  * NOTE : in readFiles() and writeFiles() the Action is ignored (Java does not support it)
  *   The Action is only valid in DND unfortunately.
@@ -9,14 +17,6 @@ package javaforce.awt;
  *
  * Created : Oct 9, 2013
  */
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.datatransfer.*;
-import java.io.*;
-import javax.swing.*;
-
-import javaforce.*;
 
 public class JFClipboard {
   public static class ImageTransferable implements Transferable

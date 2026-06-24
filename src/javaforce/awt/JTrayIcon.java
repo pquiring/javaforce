@@ -1,20 +1,17 @@
 package javaforce.awt;
 
-/** JTrayIcon
- *
- * TrayIcon that uses swing JPopupMenu instead of awt PopupMenu
- *
- * Fixes graalvm issues with TrayIcon PopupMenu distorted.
- * https://github.com/oracle/graal/issues/7037
- *
- * @author peter.quiring
- */
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+
+/** JTrayIcon (swing version of java.awt.TrayIcon).
+ *
+ * TrayIcon that uses swing JPopupMenu instead of awt PopupMenu
+ *
+ * @author peter.quiring
+ */
 
 public class JTrayIcon extends TrayIcon {
 

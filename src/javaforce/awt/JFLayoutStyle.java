@@ -6,6 +6,8 @@ import javax.swing.JComponent;
 /**
  * Provides a uniform layout style.
  *
+ * Extends javax.swing.LayoutStyle.
+ *
  * To use in ctor:
  *
  * public myComponent {

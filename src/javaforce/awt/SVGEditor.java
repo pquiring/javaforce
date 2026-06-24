@@ -1,15 +1,15 @@
 package javaforce.awt;
 
-/** SVG Editor
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+
+/** SVG Text Editor
+ *
+ * @author pquiring
+ */
 
 public class SVGEditor extends javax.swing.JFrame {
 

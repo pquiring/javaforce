@@ -15,7 +15,12 @@ import javaforce.*;
 import javaforce.awt.priv.*;
 
 /**
- * Encapsules BufferedImage to provide more functions.
+ * Graphics image with many functions.
+ *
+ * Internally uses BufferedImage and Graphics2D.
+ *
+ * Extends JComponent so it can be used in Swing UI.
+ *
  * Implements javax.swing.Icon so it can also be used with JLabel.
  *
  * @author Peter Quiring

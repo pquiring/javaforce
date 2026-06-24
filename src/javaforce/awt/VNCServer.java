@@ -1,12 +1,5 @@
 package javaforce.awt;
 
-/** VNCServer.
- *
- * Default port : 5900
- *
- * @author peter.quiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.awt.*;
@@ -17,6 +10,13 @@ import javaforce.*;
 import javaforce.jni.*;
 import javaforce.utils.*;
 import javaforce.bus.*;
+
+/** VNCServer (5900).
+ *
+ * Default port : 5900
+ *
+ * @author peter.quiring
+ */
 
 public class VNCServer {
   public final static String busPack = "net.sf.jfvnc";

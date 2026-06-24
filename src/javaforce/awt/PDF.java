@@ -1,10 +1,5 @@
 package javaforce.awt;
 
-/** Convert PDF to Images.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.awt.image.*;
 
@@ -13,6 +8,11 @@ import javaforce.*;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
+
+/** Convert PDF to Images.
+ *
+ * @author pquiring
+ */
 
 public class PDF {
 

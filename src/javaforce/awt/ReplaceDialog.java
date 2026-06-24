@@ -1,17 +1,14 @@
 package javaforce.awt;
 
-/*
- * ReplaceDialog.java
- *
- * Created on July 29, 2007, 4:04 PM
- */
-
 import java.awt.event.KeyEvent;
 
 /**
+ * ReplaceDialog.
+ *
  * Opens a replace text dialog that uses the ReplaceEvent interface for event
  * handling.
  *
+ * Created on July 29, 2007, 4:04 PM
  * @author Peter Quiring
  */
 public class ReplaceDialog extends javax.swing.JDialog {

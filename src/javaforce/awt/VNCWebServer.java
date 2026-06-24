@@ -1,13 +1,5 @@
 package javaforce.awt;
 
-/** VNC Web Server
- *
- * Default port : 5800
- * Secure port : 5843
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -16,6 +8,14 @@ import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.service.*;
+
+/** VNC Web Server (5800/5843).
+ *
+ * Default port : 5800
+ * Secure port : 5843
+ *
+ * @author pquiring
+ */
 
 public class VNCWebServer implements WebUIHandler {
 

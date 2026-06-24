@@ -1,14 +1,14 @@
 package javaforce.awt;
 
-/** VNCJavaRobot
- *
- * @author peter.quiring
- */
-
 import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+
+/** VNCJavaRobot
+ *
+ * @author peter.quiring
+ */
 
 public class VNCJavaRobot implements VNCRobot {
 
