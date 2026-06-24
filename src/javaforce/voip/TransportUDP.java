@@ -1,15 +1,15 @@
 package javaforce.voip;
 
+import java.net.*;
+
+import javaforce.*;
+
 /** SIP UDP Transport
  *
  * @author pquiring
  *
  * Created Jan 30, 2014
  */
-
-import java.net.*;
-
-import javaforce.*;
 
 public class TransportUDP implements Transport {
   public static boolean debug = false;

@@ -1,5 +1,8 @@
 package javaforce.voip.codec;
 
+import javaforce.*;
+import javaforce.voip.*;
+
 /*
  struct rtp_header {
  byte version;  //usually 0x80
@@ -9,9 +12,6 @@ package javaforce.voip.codec;
  int syncsrcid;
  };
  */
-
-import javaforce.*;
-import javaforce.voip.*;
 
 /**
  * Encodes/decodes g711 packets (A-Law).  (European format)

@@ -7,6 +7,8 @@ import javaforce.*;
 import javaforce.media.*;
 import javaforce.voip.codec.*;
 
+/** RTPChannel */
+
 public class RTPChannel {
 
   private int seqnum = 0;

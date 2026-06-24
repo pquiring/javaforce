@@ -1,7 +1,10 @@
 package javaforce.voip;
 
+import javaforce.*;
+import javaforce.media.*;
+
 /**
- * Encodes/Decodes RTP/H264 packets
+ * Encodes/Decodes RTP/H264 packets.
  *
  * RTP packets are "fragments" of H264 packets.
  *
@@ -10,9 +13,6 @@ package javaforce.voip;
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.media.*;
 
 public class RTPH264 implements RTPVideoCoder {
 

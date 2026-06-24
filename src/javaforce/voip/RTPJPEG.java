@@ -1,5 +1,7 @@
 package javaforce.voip;
 
+import javaforce.*;
+
 /**
  * Encodes/Decodes RTP/JPEG packets (type 26).
  *
@@ -7,10 +9,6 @@ package javaforce.voip;
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class RTPJPEG implements RTPVideoCoder {
 

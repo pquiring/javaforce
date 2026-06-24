@@ -1,14 +1,14 @@
 package javaforce.voip;
 
-/** PacketBuffer
+import javaforce.*;
+
+/** PacketBuffer.
  *
  * Combines H264/H265 packets into full frames.
  *
  * For H265 sometimes a frame is split into slices.
  *
  */
-
-import javaforce.*;
 
 public class PacketBuffer {
   private static final int maxPacketsSize = 16 * 1024 * 1024;

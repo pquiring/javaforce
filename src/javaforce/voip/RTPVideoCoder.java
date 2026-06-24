@@ -1,6 +1,6 @@
 package javaforce.voip;
 
-/** RTPVideoCoder
+/** RTPVideoCoder.
  *
  * Base interface for all video codec encoders/decoders.
  *

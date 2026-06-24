@@ -1,6 +1,13 @@
 package javaforce.voip;
 
-/** SIP TLS Transport
+import java.net.*;
+import javax.net.ssl.*;
+import java.security.*;
+import java.security.cert.*;
+
+import javaforce.*;
+
+/** SIP TLS Transport.
  *
  * Client needs to only connect to one endpoint.
  *
@@ -8,13 +15,6 @@ package javaforce.voip;
  *
  * Created : Jan 29, 2014
  */
-
-import java.net.*;
-import javax.net.ssl.*;
-import java.security.*;
-import java.security.cert.*;
-
-import javaforce.*;
 
 public class TransportTLSClient extends TransportTCPClient {
   private static TrustManager[] trustAllCerts = new TrustManager[] {

@@ -1,11 +1,11 @@
 package javaforce.voip;
 
+import java.net.*;
+
 /** RTSP session
  *
  * @author pquiring
  */
-
-import java.net.*;
 
 public class RTSPSession {
   public RTSPSession(String localhost, int localport) {

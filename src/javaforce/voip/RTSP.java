@@ -6,6 +6,7 @@ import javaforce.*;
 
 /**
  * Base class for RTSP communications (Real Time Streaming Protocol).
+ * 
  * Opens the TCP port and passes any received packets thru the RTSPInterface.
  * Direct Known subclasses : RTSPClient
  *

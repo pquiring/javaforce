@@ -1,7 +1,7 @@
 package javaforce.voip;
 
 /**
- * Encodes/Decodes RTP/H263 packets
+ * Encodes/Decodes RTP/H263 packets.
  *
  * Payload type = 34
  *
@@ -16,8 +16,6 @@ package javaforce.voip;
  *
  * @author pquiring
  */
-
-import javaforce.*;
 
 public class RTPH263 implements RTPVideoCoder {
 

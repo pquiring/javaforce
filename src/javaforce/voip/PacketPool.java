@@ -1,11 +1,11 @@
 package javaforce.voip;
 
+import java.util.*;
+
 /** Packet Pool
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class PacketPool {
 

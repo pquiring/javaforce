@@ -1,6 +1,15 @@
 package javaforce.voip;
 
-/*
+import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
+import javax.crypto.Cipher;
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+/**
+ * SRTPContext.
+ *
  * Copyright 2011 Voxeo Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +25,6 @@ package javaforce.voip;
  * limitations under the License.
  *
  */
-
-import java.nio.ByteBuffer;
-import java.security.GeneralSecurityException;
-import javax.crypto.Cipher;
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 public class SRTPContext {
 

@@ -1,15 +1,15 @@
 package javaforce.voip.codec;
 
-/** opus rtp coder
+import javaforce.*;
+import javaforce.codec.opus.*;
+import javaforce.voip.*;
+
+/** opus rtp coder.
  *
  * RFC : 7587
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.codec.opus.*;
-import javaforce.voip.*;
 
 public class opus implements RTPAudioCoder {
 

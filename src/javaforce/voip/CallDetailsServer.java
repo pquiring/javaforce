@@ -5,8 +5,6 @@ package javaforce.voip;
  * Extends CallDetails for Server side details.
  */
 
-import java.util.*;
-
 public class CallDetailsServer extends CallDetails {
   /*
    SideDetails Layout:

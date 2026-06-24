@@ -1,6 +1,16 @@
 package javaforce.voip;
 
-/** Secure RTP using Java9 DTLS (not working yet)
+import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.security.*;
+import java.security.cert.*;
+import java.util.*;
+import javax.net.ssl.*;
+
+import javaforce.*;
+
+/** Secure RTP using Java9 DTLS (not working yet).
  *
  * JEP 219
  *
@@ -15,16 +25,6 @@ package javaforce.voip;
  * http://tools.ietf.org/html/rfc4568 - Using SDP to exchange keys for SRTP (old method before DTLS) (obsolete)
  * http://tools.ietf.org/html/rfc5764 - Using DTLS to exchange keys for SRTP
  */
-
-import java.io.*;
-import java.net.*;
-import java.nio.*;
-import java.security.*;
-import java.security.cert.*;
-import java.util.*;
-import javax.net.ssl.*;
-
-import javaforce.*;
 
 public class SRTPChannelJ9 extends RTPChannel {
   private boolean server;

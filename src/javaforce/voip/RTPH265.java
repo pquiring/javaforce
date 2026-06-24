@@ -1,15 +1,15 @@
 package javaforce.voip;
 
+import javaforce.*;
+import javaforce.media.*;
+
 /**
- * Encodes/Decodes RTP/H265 (HEVC) packets
+ * Encodes/Decodes RTP/H265 (HEVC) packets.
  *
  * http://tools.ietf.org/html/rfc7798
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.media.*;
 
 public class RTPH265 implements RTPVideoCoder {
 

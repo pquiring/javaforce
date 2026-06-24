@@ -1,12 +1,13 @@
 package javaforce.voip;
 
+import java.io.IOException;
+import java.net.*;
+
 /** Registers the RTSP protocol with java.net.URL.
  *
  * @author pquiring
  */
 
-import java.io.IOException;
-import java.net.*;
 
 public class RTSPURL extends URLStreamHandler implements URLStreamHandlerFactory {
   private static boolean registered = false;

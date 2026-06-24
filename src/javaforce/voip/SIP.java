@@ -6,6 +6,7 @@ import javaforce.*;
 
 /**
  * Base class for SIP communications (Session Initiation Protocol).
+ * 
  * Opens the UDP port and passes any received packets thru the SIPInterface.
  * Direct Known subclasses : SIPClient, SIPServer.
  * RFC 3261 (2543) - SIP

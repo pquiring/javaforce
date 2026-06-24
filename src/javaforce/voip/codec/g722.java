@@ -1,7 +1,9 @@
 package javaforce.voip.codec;
 
+import javaforce.voip.*;
+
 /**
- * G.722 codec
+ * G.722 codec.
  *
  * Derived from Asterisk source code.
  *
@@ -13,8 +15,6 @@ package javaforce.voip.codec;
  * Created : July 5, 2014
  *
  */
-
-import javaforce.voip.*;
 
 public class g722 implements RTPAudioCoder {
 

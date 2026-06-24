@@ -1,5 +1,7 @@
 package javaforce.voip;
 
+/** Codec. */
+
 public class Codec {
 
   public final String name;  //"PCMU", "PCMA", "G729" , "JPEG", "H263", "H264", "telephone-event"

@@ -1,6 +1,7 @@
 package javaforce.voip;
 
-/** DTMF (Dual Tone Multi Freq)
+/** DTMF (Dual Tone Multi Freq).
+ * 
  * Generates DTMF tones for local playback.
  */
 

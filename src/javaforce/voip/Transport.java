@@ -1,6 +1,8 @@
 package javaforce.voip;
 
-/** SIP Transport interface
+import java.net.*;
+
+/** SIP Transport interface.
  *
  * NOTE:There is no "connect" function since this interface must work for "connection" and "connectionless" type
  * protocols.  It's up to the implementing class to connect in the send() function if needed.
@@ -9,8 +11,6 @@ package javaforce.voip;
  *
  * Created : Jan 30, 2014
  */
-
-import java.net.*;
 
 public interface Transport {
   public boolean open(String localhost, int localport, TransportInterface iface);

@@ -1,16 +1,14 @@
 package javaforce.voip;
 
+import javaforce.*;
+
 /**
- * Encodes/Decodes RTP/VP9 packets
+ * Encodes/Decodes RTP/VP9 packets.
  *
  * https://www.ietf.org/archive/id/draft-ietf-payload-vp9-00.txt
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class RTPVP9 implements RTPVideoCoder {
 

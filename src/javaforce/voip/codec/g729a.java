@@ -1,5 +1,9 @@
 package javaforce.voip.codec;
 
+import javaforce.*;
+import javaforce.voip.*;
+import javaforce.codec.g729a.*;
+
 /*
  struct rtp_header {
  byte version;  //usually 0x80
@@ -9,10 +13,6 @@ package javaforce.voip.codec;
  int syncsrcid;
  };
  */
-
-import javaforce.*;
-import javaforce.voip.*;
-import javaforce.codec.g729a.*;
 
 /**
  * Encodes/decodes g729a packets.

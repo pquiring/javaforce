@@ -1,6 +1,22 @@
 package javaforce.voip;
 
-/** Secure RTP
+import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.security.*;
+import java.util.*;
+import javax.crypto.Mac;
+
+import javaforce.*;
+
+import org.bouncycastle.tls.*;
+import org.bouncycastle.tls.crypto.*;
+import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.crypto.util.*;
+import org.bouncycastle.tls.crypto.impl.bc.*;
+import org.bouncycastle.asn1.pkcs.*;
+
+/** Secure RTP.
  *
  * @author pquiring
  *
@@ -18,22 +34,6 @@ package javaforce.voip;
  *  - Asterisk is stripping ICE credentials - not directly related to SRTP (could be a configuration issue)
  *
  */
-
-import java.io.*;
-import java.net.*;
-import java.nio.*;
-import java.security.*;
-import java.util.*;
-import javax.crypto.Mac;
-
-import javaforce.*;
-
-import org.bouncycastle.tls.*;
-import org.bouncycastle.tls.crypto.*;
-import org.bouncycastle.crypto.params.*;
-import org.bouncycastle.crypto.util.*;
-import org.bouncycastle.tls.crypto.impl.bc.*;
-import org.bouncycastle.asn1.pkcs.*;
 
 public class SRTPChannel extends RTPChannel {
   public SRTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {

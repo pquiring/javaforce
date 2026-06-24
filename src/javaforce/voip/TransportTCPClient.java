@@ -1,6 +1,11 @@
 package javaforce.voip;
 
-/** SIP TCP Transport
+import java.net.*;
+import java.io.*;
+
+import javaforce.*;
+
+/** SIP TCP Transport.
  *
  * Client needs to only connect to one endpoint.
  *
@@ -8,11 +13,6 @@ package javaforce.voip;
  *
  * Created : Jan 29, 2014
  */
-
-import java.net.*;
-import java.io.*;
-
-import javaforce.*;
 
 public class TransportTCPClient implements Transport {
   protected boolean active = false;

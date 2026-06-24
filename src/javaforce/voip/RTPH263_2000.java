@@ -1,7 +1,7 @@
 package javaforce.voip;
 
 /**
- * Encodes/Decodes RTP/H263+ packets (H263-2000)
+ * Encodes/Decodes RTP/H263+ packets (H263-2000).
  *
  * Payload type is Dynamic
  *

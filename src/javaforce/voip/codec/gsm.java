@@ -7,6 +7,7 @@ import javaforce.voip.*;
 /**
  * Encodes/decodes GSM packets.
  */
+
 public class gsm implements RTPAudioCoder {
 
   private GSMEncoder encoder = new GSMEncoder();

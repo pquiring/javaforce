@@ -1,16 +1,14 @@
 package javaforce.voip;
 
+import javaforce.*;
+
 /**
- * Encodes/Decodes RTP/VP8 packets
+ * Encodes/Decodes RTP/VP8 packets.
  *
  * http://tools.ietf.org/html/rfc7741
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class RTPVP8 implements RTPVideoCoder {
 

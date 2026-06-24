@@ -1,10 +1,10 @@
 package javaforce.voip;
 
+import java.net.*;
+
 /**
  * Keeps track of Call Details based on the 'callid' field of SIP messages.
  */
-
-import java.net.*;
 
 public class CallDetails implements Cloneable {
 

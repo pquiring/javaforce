@@ -1,6 +1,12 @@
 package javaforce.voip;
 
-/** SIP TCP Transport Server
+import java.net.*;
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** SIP TCP Transport Server.
  *
  * This is very complex since this transport needs to track all endpoints.
  *
@@ -8,12 +14,6 @@ package javaforce.voip;
  *
  * Created : Jan 29, 2014
  */
-
-import java.net.*;
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class TransportTCPServer implements Transport {
   protected ServerSocket ss;

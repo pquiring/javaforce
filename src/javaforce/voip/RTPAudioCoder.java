@@ -1,6 +1,6 @@
 package javaforce.voip;
 
-/** RTPAudioCoder
+/** RTPAudioCoder.
  *
  * Base interface for all audio codec encoders/decoders.
  *
