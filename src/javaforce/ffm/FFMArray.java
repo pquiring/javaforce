@@ -1,6 +1,11 @@
 package javaforce.ffm;
 
-/** FFMArray
+import java.lang.foreign.*;
+
+import javaforce.*;
+import javaforce.jni.*;
+
+/** FFMArray.
  *
  * Array Factory used by native C code to create Java arrays.
  *
@@ -8,11 +13,6 @@ package javaforce.ffm;
  *
  * @author pquiring
  */
-
-import java.lang.foreign.*;
-
-import javaforce.*;
-import javaforce.jni.*;
 
 public class FFMArray {
   private Object ref;

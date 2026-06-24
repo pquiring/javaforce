@@ -1,12 +1,5 @@
 package javaforce.ffm;
 
-/** Executable Symbol Lookup
- *
- * Find symbols in the main executable.
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import java.lang.foreign.*;
@@ -14,6 +7,13 @@ import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
+
+/** Executable Symbol Lookup.
+ *
+ * Find symbols in the main executable.
+ *
+ * @author pquiring
+ */
 
 public class ExecSymbolLookup implements SymbolLookup {
 

@@ -1,15 +1,17 @@
 package javaforce.ffm;
 
-/** WinPipeAPI FFM implementation.
- * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
- */
-
 import java.lang.foreign.*;
 import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+
+/** WinPipeAPI FFM implementation.
+ *
+ * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
+ */
+
 import javaforce.api.*;
 
 public class WinPipeFFM implements WinPipeAPI {

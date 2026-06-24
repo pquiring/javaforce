@@ -1,12 +1,5 @@
 package javaforce.ffm;
 
-/** FFM support class.
- *
- * The FFM system also uses JNI to pin arrays for best performance (hybrid system).
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.lang.foreign.*;
 import java.lang.invoke.*;
@@ -17,6 +10,13 @@ import javaforce.io.*;
 import javaforce.ui.*;
 import javaforce.jni.*;
 import javaforce.media.*;
+
+/** FFM support class.
+ *
+ * The FFM system also uses JNI to pin arrays for best performance (hybrid system).
+ *
+ * @author pquiring
+ */
 
 public class FFM {
   private static FFM instance;

@@ -1,16 +1,16 @@
 package javaforce.ffm;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
 /** JNI to FFM conversion.
  *
  * Generates FFM code from JNI class.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class JNI2FFM {
   public static void main(String[] args) {
@@ -63,16 +63,18 @@ public class JNI2FFM {
 
       src.append("package javaforce.ffm;\n");
       src.append("\n");
-      src.append("/** " + basecls + " FFM implementation.\n");
-      src.append(" * NON-AI MACHINE GENERATED CODE - DO NOT EDIT\n");
-      src.append(" */\n");
-      src.append("\n");
       src.append("import java.lang.foreign.*;\n");
       src.append("import java.lang.invoke.*;\n");
       src.append("import static java.lang.foreign.ValueLayout.*;\n");
       src.append("\n");
       src.append("import javaforce.*;\n");
       src.append("import javaforce.ffm.*;\n");
+      src.append("\n");
+      src.append("/** " + basecls + " FFM implementation.\n");
+      src.append(" *\n");
+      src.append(" * NON-AI MACHINE GENERATED CODE - DO NOT EDIT\n");
+      src.append(" */\n");
+      src.append("\n");
       String[] packs = pack.split(",");
       for(String p : packs) {
         src.append("import javaforce." + p + ".*;\n");

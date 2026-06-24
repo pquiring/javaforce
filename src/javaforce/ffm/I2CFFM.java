@@ -1,15 +1,17 @@
 package javaforce.ffm;
 
-/** I2CAPI FFM implementation.
- * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
- */
-
 import java.lang.foreign.*;
 import java.lang.invoke.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+
+/** I2CAPI FFM implementation.
+ *
+ * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
+ */
+
 import javaforce.api.*;
 
 public class I2CFFM implements I2CAPI {
