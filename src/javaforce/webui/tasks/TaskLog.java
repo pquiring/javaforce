@@ -1,16 +1,16 @@
 package javaforce.webui.tasks;
 
-/** Task Log
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** Task Log.
  *
  * Historical log of tasks completed.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class TaskLog {
   private String folder;

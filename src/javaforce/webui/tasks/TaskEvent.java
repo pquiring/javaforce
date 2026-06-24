@@ -1,11 +1,11 @@
 package javaforce.webui.tasks;
 
+import javaforce.*;
+
 /** Task Event
  *
  * @author pquiring
  */
-
-import javaforce.*;
 
 public class TaskEvent {
   public long task_id;

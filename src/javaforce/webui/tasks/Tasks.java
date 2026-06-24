@@ -1,16 +1,16 @@
 package javaforce.webui.tasks;
 
+import java.util.*;
+
+import javaforce.*;
+import javaforce.webui.*;
+
 /** Tasks.
  *
  * Tasks run in the background and their results are displayed to any logged in user.
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
-import javaforce.webui.*;
 
 public class Tasks extends Thread {
   private Object lock = new Object();

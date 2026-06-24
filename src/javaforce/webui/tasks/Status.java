@@ -1,11 +1,11 @@
 package javaforce.webui.tasks;
 
+import javaforce.*;
+
 /** Task status callback.
  *
  * @author pquiring
  */
-
-import javaforce.*;
 
 public interface Status {
   public void setStatus(String msg);

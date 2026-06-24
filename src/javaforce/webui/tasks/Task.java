@@ -1,5 +1,9 @@
 package javaforce.webui.tasks;
 
+import javaforce.*;
+import javaforce.webui.*;
+import javaforce.webui.tasks.*;
+
 /** Task.
  *
  * Runs in the background.
@@ -8,10 +12,6 @@ package javaforce.webui.tasks;
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.webui.*;
-import javaforce.webui.tasks.*;
 
 public class Task extends Thread implements Status {
   protected boolean running;

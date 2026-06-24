@@ -1,13 +1,13 @@
 package javaforce.webui.tasks;
 
+import java.util.*;
+
+import javaforce.webui.*;
+
 /** Task Log UI Panel
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.webui.*;
 
 public class TaskLogUI extends Panel {
   private TaskLog log;
