@@ -1,0 +1,15 @@
+Generics in Java are equivalent to C++ templates.
+
+class MyClass<T> {...}
+
+In Java the type of T is always assumed to be Object (know as type erasure).
+The benefit of this is that there is only one compiled version of MyClass<T> regardless of how many different classes are used for T.
+In C++ the compiler must generate code for EACH different type of T as well as specialized instances when the base template does not work for certain types (excessively complex).
+One problem with type erasure is that methods in the generic class do NOT know what the type of T is and therefore can not create instances of it.
+So you'll often see methods like:
+  toArray()
+  toArray(T[] array)
+The first method does not know the type of T and must create a generic array of Object[] (hence the name generics).
+The second method has an input array with a type that can be examined and create an array of that type.
+
+This may all change though with Valhalla.
