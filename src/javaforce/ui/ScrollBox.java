@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class ScrollBox extends Component implements ScrollLink {
   private Image buffer;
   private ScrollBar vBar, hBar;

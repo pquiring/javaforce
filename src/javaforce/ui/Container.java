@@ -1,13 +1,11 @@
 package javaforce.ui;
 
+import java.util.*;
+
 /** Container - contains other Components.
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public abstract class Container extends Component {
   public ArrayList<Component> children;

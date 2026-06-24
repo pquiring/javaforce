@@ -1,6 +1,6 @@
 package javaforce.ui;
 
-/** UI Events
+/** UI Events.
  *
  * NOTE : These methods must NOT invoke other "native" APIs.
  *

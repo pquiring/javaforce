@@ -1,12 +1,12 @@
 package javaforce.ui;
 
+import javaforce.*;
+import javaforce.ui.theme.*;
+
 /** Component - base class for all UI elements.
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.ui.theme.*;
 
 public class Component implements KeyEvents, MouseEvents {
   protected Color foreClr;

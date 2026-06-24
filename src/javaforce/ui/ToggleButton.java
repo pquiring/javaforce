@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class ToggleButton extends Button {
   private boolean selected;
 

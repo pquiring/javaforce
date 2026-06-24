@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.gl.*;
-
 public class Canvas extends Component {
   public final void render(Image image) {
     //register canvas to render after Window

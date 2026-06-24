@@ -1,11 +1,11 @@
 package javaforce.ui;
 
+import javaforce.*;
+
 /** Icon Resources
  *
  * @author pquiring
  */
-
-import javaforce.*;
 
 public class Icons {
   private static Image arrow_up;

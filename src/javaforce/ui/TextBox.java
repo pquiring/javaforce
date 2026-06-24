@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class TextBox extends TextComponent {
   private Image buffer;
 

@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class Button extends TextComponent {
   private ActionListener action;
   private Image icon;

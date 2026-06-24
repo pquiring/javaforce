@@ -1,6 +1,6 @@
 package javaforce.ui;
 
-/** Scroll Link
+/** Scroll Link.
  *
  * Links a Component that semi scrolls with a Scroll Box with scroll bars.
  *

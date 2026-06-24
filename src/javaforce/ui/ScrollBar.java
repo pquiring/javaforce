@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class ScrollBar extends Component {
   private int dir;
   private int value;

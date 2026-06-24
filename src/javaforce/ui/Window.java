@@ -1,10 +1,5 @@
 package javaforce.ui;
 
-/** OpenGL Window.
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
@@ -13,6 +8,11 @@ import javaforce.ffm.*;
 import javaforce.gl.*;
 import javaforce.ui.theme.*;
 import static javaforce.gl.GL.*;
+
+/** OpenGL Window.
+ *
+ * @author pquiring
+ */
 
 public class Window implements UIEvents {
   public static boolean init() {

@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class ComboBox extends Container {
   private TextField text;
   private Button button;

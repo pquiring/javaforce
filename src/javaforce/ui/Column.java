@@ -5,8 +5,6 @@ package javaforce.ui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class Column extends Container {
 
   public Dimension getMinSize() {

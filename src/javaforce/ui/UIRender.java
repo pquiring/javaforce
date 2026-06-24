@@ -1,12 +1,11 @@
 package javaforce.ui;
 
+import javaforce.gl.*;
+
 /** UIRender - main render loop.
  *
  * @author pquiring
  */
-
-import javaforce.gl.*;
-import static javaforce.gl.GL.*;
 
 public class UIRender {
 

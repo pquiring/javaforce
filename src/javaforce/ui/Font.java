@@ -1,10 +1,5 @@
 package javaforce.ui;
 
-/** Font
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -12,6 +7,11 @@ import javaforce.*;
 import javaforce.api.*;
 import javaforce.gl.*;
 import javaforce.ffm.*;
+
+/** Font
+ *
+ * @author pquiring
+ */
 
 public class Font {
   public static boolean debug = false;

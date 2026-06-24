@@ -1,13 +1,13 @@
 package javaforce.ui;
 
+import java.util.*;
+
+import javaforce.*;
+
 /** Component with text content.
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class TextComponent extends FontComponent implements ScrollLink {
   private char[][] text;

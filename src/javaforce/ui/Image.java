@@ -1,13 +1,5 @@
 package javaforce.ui;
 
-/** Image
- *
- * Contains an image that can be load()ed or save()ed.
- * Image is also a Component that can be embedded in Windows.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -15,6 +7,14 @@ import javaforce.*;
 import javaforce.api.*;
 import javaforce.awt.priv.*;
 import javaforce.ffm.*;
+
+/** Image.
+ *
+ * Contains an image that can be load()ed or save()ed.
+ * Image is also a Component that can be embedded in Windows.
+ *
+ * @author pquiring
+ */
 
 public class Image extends FontComponent {
   private int[] buffer;
