@@ -1,12 +1,12 @@
 package javaforce.awt.security;
 
-/**
+import javaforce.*;
+import javaforce.awt.*;
+
+/** GenKeyPair dialog.
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.awt.*;
 
 public class GenKeyPair extends javax.swing.JDialog {
 

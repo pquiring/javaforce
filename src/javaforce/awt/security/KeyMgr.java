@@ -1,10 +1,5 @@
 package javaforce.awt.security;
 
-/** JF Key Manager
- *
- * @author pquiring
- */
-
 import java.security.KeyStore;
 import java.security.Key;
 import java.security.PublicKey;
@@ -17,6 +12,11 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+
+/** JF Key Manager dialog.
+ *
+ * @author pquiring
+ */
 
 public class KeyMgr extends javax.swing.JDialog {
 
