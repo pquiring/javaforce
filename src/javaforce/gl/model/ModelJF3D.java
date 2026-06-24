@@ -5,8 +5,7 @@ import javaforce.*;
 import javaforce.gl.*;
 
 /**
- * JF3D - New format designed for JavaForce
- *   Chunk based format
+ * JF3D - 3d model format designed for JavaForce.
  *
  * Supports:
  *   - GLModel, GLObject, GLUVMap(s)

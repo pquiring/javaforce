@@ -1,15 +1,15 @@
 package javaforce.gl.model;
 
-/** FBX is owned by AutoDesk
+import java.io.*;
+
+import javaforce.gl.*;
+
+/** AutoDesk FBX reader.
  *
  * https://en.wikipedia.org/wiki/FBX
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.gl.*;
 
 public class ModelFBX implements Model_IO {
 

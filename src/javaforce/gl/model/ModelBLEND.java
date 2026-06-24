@@ -6,7 +6,7 @@ import javaforce.*;
 import javaforce.gl.*;
 
 /**
- * Blender .blend reader
+ * Blender blend reader.
  *
  * NOTE:
  *   Supports Blender v2.63+ thru 4.02 (some versions in between may not be supported)

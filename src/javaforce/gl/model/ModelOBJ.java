@@ -1,6 +1,12 @@
 package javaforce.gl.model;
 
-/** Wavefront .obj file.
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.gl.*;
+
+/** Wavefront obj reader.
  *
  * https://en.wikipedia.org/wiki/Wavefront_.obj_file
  *
@@ -9,12 +15,6 @@ package javaforce.gl.model;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.gl.*;
 
 public class ModelOBJ implements Model_IO {
   private static boolean debug = false;

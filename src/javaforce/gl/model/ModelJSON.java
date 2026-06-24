@@ -1,6 +1,12 @@
 package javaforce.gl.model;
 
-/** Loads JSON Model.
+import java.io.*;
+
+import javaforce.*;
+import static javaforce.JSON.Element;
+import javaforce.gl.*;
+
+/** JSON Model reader.
  *
  * see https://minecraft.fandom.com/wiki/Tutorials/Models
  *
@@ -9,12 +15,6 @@ package javaforce.gl.model;
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
-import static javaforce.JSON.Element;
-import javaforce.gl.*;
 
 public class ModelJSON implements Model_IO {
   private static boolean debug = false;

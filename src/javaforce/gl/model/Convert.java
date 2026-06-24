@@ -1,16 +1,16 @@
 package javaforce.gl.model;
 
-/**
- * Converts 3d model files to JF3D.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.gl.*;
 import javaforce.gl.model.*;
+
+/**
+ * Converts 3d model files to JF3D.
+ *
+ * @author pquiring
+ */
 
 public class Convert {
   public static void usage() {

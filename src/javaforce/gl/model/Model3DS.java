@@ -12,7 +12,7 @@ import javaforce.gl.Translate3;
 import javaforce.gl.UVMap;
 
 /**
- * Autodesk .3DS reader
+ * Autodesk 3DS reader.
  *
  * Supports:
  *   - Mesh, UVMap, animation data
