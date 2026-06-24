@@ -1,11 +1,11 @@
 package javaforce.ansi.server;
 
+import java.awt.event.KeyEvent;
+
 /** MessageDialog
  *
  * @author Peter Quiring
  */
-
-import java.awt.event.KeyEvent;
 
 public class MessageDialog implements Dialog {
   private String[] lines;

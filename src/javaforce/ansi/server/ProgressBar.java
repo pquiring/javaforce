@@ -1,11 +1,11 @@
 package javaforce.ansi.server;
 
-/**
+import javaforce.ASCII8;
+
+/** ProgressBar.
  *
  * @author pquiring
  */
-
-import javaforce.ASCII8;
 
 public class ProgressBar extends Field {
   private int value;  //percent

@@ -1,11 +1,11 @@
 package javaforce.ansi.server;
 
+import java.awt.event.KeyEvent;
+
 /** InputDialog
  *
  * @author Peter Quiring
  */
-
-import java.awt.event.KeyEvent;
 
 public class InputDialog implements Dialog {
   private ANSI ansi;

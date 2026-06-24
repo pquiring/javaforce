@@ -1,9 +1,10 @@
 package javaforce.ansi.server;
 
-/** FileDialog
- *
- * @author pquiring
- */
+import java.io.*;
+import java.util.*;
+import java.awt.event.KeyEvent;
+
+import javaforce.*;
 
 /*
  *  Layout:
@@ -19,11 +20,10 @@ package javaforce.ansi.server;
  * *************************************
  */
 
-import java.io.*;
-import java.util.*;
-import java.awt.event.KeyEvent;
-
-import javaforce.*;
+/** FileDialog
+ *
+ * @author pquiring
+ */
 
 public class FileDialog implements Dialog {
   private ANSI ansi;

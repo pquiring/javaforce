@@ -1,5 +1,15 @@
+package javaforce.ansi.client;
+
+import java.lang.reflect.*;
+import java.io.*;
+import javax.swing.*;
+
+import javaforce.awt.*;
+import javaforce.*;
+
 /**
- * Scripting support for JFTerm.<br>
+ * Scripting support for JFTerm.
+ *
  * Language syntax:<br>
  *   Type "text"<br>
  *   Wait "text"<br>
@@ -16,15 +26,6 @@
  *<br>
  * Some VK_...: VK_ENTER, VK_TAB, VK_SPACE, etc.<br>
  */
-
-package javaforce.ansi.client;
-
-import java.lang.reflect.*;
-import java.io.*;
-import javax.swing.*;
-
-import javaforce.awt.*;
-import javaforce.*;
 
 public class Script {
   private Script() {}  //private ctor - must call load()

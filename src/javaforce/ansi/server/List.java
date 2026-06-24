@@ -1,11 +1,11 @@
 package javaforce.ansi.server;
 
+import java.awt.event.KeyEvent;
+
 /** List
  *
  * @author pquiring
  */
-
-import java.awt.event.KeyEvent;
 
 public class List extends Field {
   public String[] items;

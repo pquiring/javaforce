@@ -1,5 +1,10 @@
 package javaforce.access;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
 /** Access Control.
  *
  * Maintains a list of users and groups.
@@ -8,11 +13,6 @@ package javaforce.access;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class AccessControl {
 

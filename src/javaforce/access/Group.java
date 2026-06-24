@@ -1,14 +1,14 @@
 package javaforce.access;
 
-/** User Group
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+
+/** User Group
+ *
+ * @author pquiring
+ */
 
 public class Group implements Name, Serializable {
   private static final long serialVersionUID = 1L;

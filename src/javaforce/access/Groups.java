@@ -1,12 +1,12 @@
 package javaforce.access;
 
+import java.io.*;
+import java.util.*;
+
 /** List of Groups.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
 
 public class Groups implements Serializable {
   private static final long serialVersionUID = 1L;

@@ -1,11 +1,11 @@
 package javaforce.access;
 
+import java.io.*;
+
 /** User contact.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class Contact implements Serializable {
   private static final long serialVersionUID = 1L;

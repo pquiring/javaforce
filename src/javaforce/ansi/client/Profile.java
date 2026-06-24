@@ -1,11 +1,11 @@
 package javaforce.ansi.client;
 
+import java.awt.*;
+
 /** Site Profile
  *
  * @author pquiring
  */
-
-import java.awt.*;
 
 public class Profile {
   public int foreColor = 0x000000;

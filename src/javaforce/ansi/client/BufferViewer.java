@@ -1,12 +1,3 @@
-/*
- * BufferViewer.java
- *
- * Created on May 10, 2019, 1:34 PM
- *
- * @author pquiring
- *
- */
-
 package javaforce.ansi.client;
 
 import java.awt.*;
@@ -16,6 +7,15 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+
+/*
+ * BufferViewer is a javax.swing.JComponent to view a Buffer.
+ *
+ * Created on May 10, 2019, 1:34 PM
+ *
+ * @author pquiring
+ *
+ */
 
 public class BufferViewer extends JComponent implements KeyListener, MouseListener, MouseMotionListener, Buffer.UI {
 

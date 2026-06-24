@@ -1,11 +1,11 @@
 package javaforce.ansi.server;
 
+import java.awt.event.KeyEvent;
+
 /** Menu
  *
  * @author pquiring
  */
-
-import java.awt.event.KeyEvent;
 
 public class Menu implements Dialog {
   private boolean closed = false;

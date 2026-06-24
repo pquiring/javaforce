@@ -1,14 +1,14 @@
 package javaforce.ansi.client;
 
+import java.util.*;
+
 /**
- * Line.java
+ * Line of text in a Buffer.
  *
  * Created on August 2, 2007, 8:06 PM
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class Line {
 

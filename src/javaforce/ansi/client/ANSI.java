@@ -1,17 +1,17 @@
-/**
- * ANSI.java
- *
- * Created on August 3, 2007, 8:37 PM
- *
- * @author pquiring
- */
-
 package javaforce.ansi.client;
 
 import java.awt.event.KeyEvent;
 import java.awt.Color;
 
 import javaforce.*;
+
+/**
+ * ANSI client-side functions.
+ *
+ * Created on August 3, 2007, 8:37 PM
+ *
+ * @author pquiring
+ */
 
 public class ANSI {
 

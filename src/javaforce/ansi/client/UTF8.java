@@ -1,5 +1,7 @@
+package javaforce.ansi.client;
+
 /**
- * UTF8.java
+ * UTF8 decoder.
  *
  * Processes utf-8 codes.
  *
@@ -8,8 +10,6 @@
  * @author pquiring
  *
  */
-
-package javaforce.ansi.client;
 
 public class UTF8 {
 

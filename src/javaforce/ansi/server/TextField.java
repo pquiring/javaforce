@@ -1,11 +1,11 @@
 package javaforce.ansi.server;
 
+import java.awt.event.KeyEvent;
+
 /** TextField
  *
  * @author pquiring
  */
-
-import java.awt.event.KeyEvent;
 
 public class TextField extends Field {
   public StringBuilder text = new StringBuilder();

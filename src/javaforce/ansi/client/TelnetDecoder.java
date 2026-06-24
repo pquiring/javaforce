@@ -1,7 +1,9 @@
 package javaforce.ansi.client;
 
+import static javaforce.Telnet.*;
+
 /**
- * TelnetDecoder.java
+ * TelnetDecoder.
  *
  * Processes telnet codes.
  *
@@ -9,8 +11,6 @@ package javaforce.ansi.client;
  *
  * @author pquiring
  */
-
-import static javaforce.Telnet.*;
 
 public class TelnetDecoder {
 

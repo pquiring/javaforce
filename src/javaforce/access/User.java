@@ -1,14 +1,14 @@
 package javaforce.access;
 
-/** User account.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+
+/** User account.
+ *
+ * @author pquiring
+ */
 
 public class User implements Name, Serializable {
   private static final long serialVersionUID = 1L;

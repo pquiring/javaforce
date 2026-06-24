@@ -1,6 +1,6 @@
 package javaforce.ansi.server;
 
-/**
+/** TextArea
  *
  * @author pquiring
  */

@@ -1,14 +1,5 @@
 package javaforce.ansi.client;
 
-/*
- * Buffer.java
- *
- * Created on May 10, 2019, 1:34 PM
- *
- * @author pquiring
- *
- */
-
 import java.io.*;
 import java.net.*;
 import javax.net.ssl.*;
@@ -26,6 +17,15 @@ import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
+
+/*
+ * ANSI Screen Buffer.
+ *
+ * Created on May 10, 2019, 1:34 PM
+ *
+ * @author pquiring
+ *
+ */
 
 public class Buffer implements Screen {
 

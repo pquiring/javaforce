@@ -1,16 +1,16 @@
 package javaforce.ansi.server.games;
 
-/** ANSI Tetris
- *
- * @author pquiring
- */
-
 import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.ansi.server.*;
+
+/** ANSI Tetris game.
+ *
+ * @author pquiring
+ */
 
 public class Tetris implements KeyEvents {
 

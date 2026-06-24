@@ -1,7 +1,13 @@
 package javaforce.ansi.server;
 
+import java.util.*;
+import java.awt.event.KeyEvent;
+
+import javaforce.*;
+import javaforce.jni.*;
+
 /**
- * ANSI.java
+ * ANSI server side functions.
  *
  * Created on Dec 17, 2018, 9:49 AM
  *
@@ -9,12 +15,6 @@ package javaforce.ansi.server;
  *
  * @author pquiring
  */
-
-import java.util.*;
-import java.awt.event.KeyEvent;
-
-import javaforce.*;
-import javaforce.jni.*;
 
 public class ANSI {
   private static boolean debug = false;
