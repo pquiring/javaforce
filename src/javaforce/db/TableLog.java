@@ -1,17 +1,17 @@
 package javaforce.db;
 
+import java.io.*;
+import java.nio.channels.*;
+import java.util.*;
+
+import javaforce.*;
+
 /** Table that logs Row's with date/time.
  *
  * Rows are NOT stored in memory.
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.nio.channels.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class TableLog<ROW extends Row> {
   private String folder;

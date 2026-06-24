@@ -1,13 +1,13 @@
 package javaforce.db;
 
-/** Row
+import java.io.*;
+
+/** Row.
  *
  * This class holds data for one row in a database table.
  * Extend this class to hold user data.
  *
  */
-
-import java.io.*;
 
 public class Row implements Serializable {
   public static final long serialVersionUID = 1L;

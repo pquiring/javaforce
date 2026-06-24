@@ -1,14 +1,14 @@
 package javaforce.db;
 
-/** List of tables stored in a folder.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+
+/** List of tables stored in a folder.
+ *
+ * @author pquiring
+ */
 
 public class TableList<ROW extends Row>  {
   private Row.Creator ctr;
