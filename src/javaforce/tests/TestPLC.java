@@ -1,14 +1,14 @@
 package javaforce.tests;
 
-/** Test PLC (Controller)
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
 import javaforce.controls.*;
+
+/** Test PLC (Controller)
+ *
+ * @author pquiring
+ */
 
 public class TestPLC {
   private static void usage() {

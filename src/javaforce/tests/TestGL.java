@@ -1,10 +1,5 @@
 package javaforce.tests;
 
-/** OpenGL Test
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
@@ -12,6 +7,11 @@ import javaforce.awt.*;
 import javaforce.ui.*;
 import javaforce.gl.*;
 import static javaforce.gl.GL.*;
+
+/** OpenGL Test
+ *
+ * @author pquiring
+ */
 
 public class TestGL implements WindowEvents {
   public static Window gl;

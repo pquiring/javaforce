@@ -1,15 +1,15 @@
 package javaforce.tests;
 
-/** TestAWT
- *
- * @author pquiring
- */
-
 import java.awt.*;
 
 import javaforce.*;
 import javaforce.jni.*;
 import javaforce.awt.*;
+
+/** TestAWT
+ *
+ * @author pquiring
+ */
 
 public class TestAWT extends java.awt.Frame {
 

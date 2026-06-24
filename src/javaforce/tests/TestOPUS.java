@@ -1,13 +1,13 @@
 package javaforce.tests;
 
+import javaforce.*;
+import javaforce.media.*;
+import javaforce.codec.opus.*;
+
 /** Opus test
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.media.*;
-import javaforce.codec.opus.*;
 
 public class TestOPUS {
   private static final int frame_size = 960;

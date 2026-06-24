@@ -1,14 +1,14 @@
 package javaforce.tests;
 
-/** Test SOCKS server
- *
- * @author pquiring
- */
-
 import java.net.*;
 import java.io.*;
 import javaforce.JF;
 import javaforce.SOCKS;
+
+/** Test SOCKS server
+ *
+ * @author pquiring
+ */
 
 public class TestSOCKS {
   public static void main(String[] args) {

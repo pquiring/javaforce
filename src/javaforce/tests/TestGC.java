@@ -1,6 +1,11 @@
 package javaforce.tests;
 
-/** TestGC
+import java.util.*;
+
+import javaforce.*;
+import javaforce.jni.*;
+
+/** TestGC.
  *
  * Uses 1GB memory with very high turn over, run with max of 8GB.
  *
@@ -20,11 +25,6 @@ package javaforce.tests;
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
-import javaforce.jni.*;
 
 public class TestGC extends Thread {
   public static int threadCount = 64;

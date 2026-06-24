@@ -1,15 +1,15 @@
 package javaforce.tests;
 
-/** Test OpenCL
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
 import javaforce.cl.*;
 import static javaforce.cl.CL.*;
+
+/** Test OpenCL
+ *
+ * @author pquiring
+ */
 
 public class TestCL {
   public static void main(String[] args) {

@@ -1,12 +1,12 @@
 package javaforce.tests;
 
+import java.io.*;
+import java.util.*;
+
 /** Test : Print System Properties
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
 
 public class TestSysProps {
   public static void list(Properties p) {

@@ -1,12 +1,5 @@
 package javaforce.tests;
 
-/** Tests Camera function
- *
- * @author pquiring
- *
- * Created : Jun 9, 2014
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -16,6 +9,13 @@ import javaforce.service.*;
 import javaforce.media.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+
+/** Tests Camera function
+ *
+ * @author pquiring
+ *
+ * Created : Jun 9, 2014
+ */
 
 public class TestCamera extends javax.swing.JFrame implements WebUIHandler, MediaIO {
 

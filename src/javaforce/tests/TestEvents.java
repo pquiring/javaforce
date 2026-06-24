@@ -1,11 +1,11 @@
 package javaforce.tests;
 
+import java.awt.event.*;
+
 /** TestEvents
  *
  * @author pquiring
  */
-
-import java.awt.event.*;
 
 public class TestEvents extends javax.swing.JFrame implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 

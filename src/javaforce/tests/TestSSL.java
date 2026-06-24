@@ -1,6 +1,18 @@
 package javaforce.tests;
 
-/** Test SSL
+import java.net.*;
+import java.io.*;
+import javax.net.*;
+import javax.net.ssl.*;
+import java.nio.*;
+import java.util.*;
+import java.security.cert.*;
+import java.security.*;
+import static javax.net.ssl.SSLEngineResult.*;
+
+import javaforce.*;
+
+/** Test SSL.
  *
  * Note : use keytool to generate a keystore : testssl.key
  *
@@ -16,18 +28,6 @@ package javaforce.tests;
  *
  * @author pquiring
  */
-
-import java.net.*;
-import java.io.*;
-import javax.net.*;
-import javax.net.ssl.*;
-import java.nio.*;
-import java.util.*;
-import java.security.cert.*;
-import java.security.*;
-import static javax.net.ssl.SSLEngineResult.*;
-
-import javaforce.*;
 
 public class TestSSL {
   public static void main(String[] args) {

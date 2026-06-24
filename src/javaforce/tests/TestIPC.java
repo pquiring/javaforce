@@ -1,16 +1,16 @@
 package javaforce.tests;
 
-/** Test IPC (DBus)
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
 import javaforce.ipc.*;
 import javaforce.ipc.transport.*;
+
+/** Test IPC (DBus)
+ *
+ * @author pquiring
+ */
 
 public class TestIPC {
 

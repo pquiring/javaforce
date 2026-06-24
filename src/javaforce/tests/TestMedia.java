@@ -1,13 +1,5 @@
 package javaforce.tests;
 
-/** TestMedia
- *
- * To run :
- *   bin/jfexec -cp javaforce.jar javaforce.utils.TestMedia
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -15,6 +7,14 @@ import javaforce.*;
 import javaforce.ffm.*;
 import javaforce.media.*;
 import javaforce.voip.*;
+
+/** TestMedia.
+ *
+ * To run :
+ *   bin/jfexec -cp javaforce.jar javaforce.utils.TestMedia
+ *
+ * @author pquiring
+ */
 
 public class TestMedia implements MediaIO {
   public static void usage() {

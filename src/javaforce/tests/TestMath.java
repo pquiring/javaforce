@@ -1,11 +1,11 @@
 package javaforce.tests;
 
-/**
+import javaforce.gl.*;
+
+/** Test 3d math functions.
  *
  * @author User
  */
-
-import javaforce.gl.*;
 
 public class TestMath {
   private static void print(Matrix mat) {

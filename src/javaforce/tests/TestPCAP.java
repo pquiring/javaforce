@@ -1,12 +1,12 @@
 package javaforce.tests;
 
+import javaforce.*;
+import javaforce.net.*;
+
 /** Tests PCAP
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.net.*;
 
 public class TestPCAP {
   private static String nic_ip = null;

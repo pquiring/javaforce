@@ -3,10 +3,11 @@ package javaforce.tests;
 import javaforce.*;
 import javaforce.awt.*;
 
-/**
+/** Test LDAP.
  *
  * @author User
  */
+
 public class TestLDAP extends javax.swing.JFrame {
 
   /**

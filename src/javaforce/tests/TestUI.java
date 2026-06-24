@@ -1,14 +1,14 @@
 package javaforce.tests;
 
-/** TestUI
- *
- * @author pquiring
- */
-
 import javaforce.*;
 import javaforce.gl.*;
 import javaforce.ui.*;
 import javaforce.ui.theme.*;
+
+/** TestUI
+ *
+ * @author pquiring
+ */
 
 public class TestUI implements WindowEvents {
   public static UIRender render;
