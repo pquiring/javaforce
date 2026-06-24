@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
+import javaforce.webui.*;
+
 /** Tree Event
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface TreeEventClick {
   public void nodeClick(TreeNode node);

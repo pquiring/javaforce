@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
+import javaforce.webui.*;
+
 /** KeyUp
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface KeyUp {
   public void onKeyUp(KeyEvent e, Component c);

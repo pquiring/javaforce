@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
+import javaforce.webui.*;
+
 /** MouseEnter handler.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface MouseEnter {
   public void onMouseEnter(MouseEvent me, Component c);

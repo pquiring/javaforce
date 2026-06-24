@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
+import javaforce.webui.*;
+
 /** Change handler.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface Changed {
   public void onChanged(Component comp);

@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
+import javaforce.webui.*;
+
 /** Click handler.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface Click {
   public void onClick(MouseEvent e, Component c);

@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
+import javaforce.webui.*;
+
 /** Moved handler.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface Moved {
   public void onMoved(Component comp, int x, int y);

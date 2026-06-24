@@ -1,11 +1,11 @@
 package javaforce.webui.event;
 
-/** KeyDown
+import javaforce.webui.*;
+
+/** KeyDown Event
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public interface KeyDown {
   public void onKeyDown(KeyEvent e, Component c);
