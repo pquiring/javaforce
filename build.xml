@@ -25,6 +25,8 @@
     <include name="sshd-sftp.jar"/>
     <include name="sshd-scp.jar"/>
     <include name="jsvg.jar"/>
+    <include name="pdfbox.jar"/>
+    <include name="pdfbox-io.jar"/>
     <include name="slf4j-api.jar"/>
     <include name="plc4j-api.jar"/>
   </fileset>
@@ -118,6 +120,10 @@
     <antcall target="jar-log4j-core"/>
     <antcall target="jar-log4j-api"/>
     <antcall target="jar-jsvg"/>
+    <antcall target="jar-pdfbox"/>
+    <antcall target="jar-pdfbox-io"/>
+    <antcall target="jar-fontbox"/>
+    <antcall target="jar-xmpbox"/>
     <antcall target="jar-netty-common"/>
     <antcall target="jar-netty-buffer"/>
     <antcall target="jar-netty-transport"/>

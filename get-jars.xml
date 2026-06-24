@@ -316,6 +316,11 @@
     <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
   </target>
 
+  <available property="have-commons-logging" file="${lib}/commons-logging-${commons-logging-version}.jar"/>
+  <target name="get-commons-logging" unless="have-commons-logging">
+    <maven name="commons-logging" path="commons-logging" version="${commons-logging-version}"/>
+  </target>
+
   <available property="have-batik-all" file="${lib}/batik-all-${batik-version}.jar"/>
   <target name="get-batik-all" unless="have-batik-all">
     <maven name="batik-all" path="org/apache/xmlgraphics" version="${batik-version}"/>
@@ -324,6 +329,26 @@
   <available property="have-xmlgraphics-commons" file="${lib}/xmlgraphics-commons-${xmlgraphics-commons-version}.jar"/>
   <target name="get-xmlgraphics-commons" unless="have-xmlgraphics-commons">
     <maven name="xmlgraphics-commons" path="org/apache/xmlgraphics" version="${xmlgraphics-commons-version}"/>
+  </target>
+
+  <available property="have-pdfbox" file="${lib}/pdfbox-${pdfbox-version}.jar"/>
+  <target name="get-pdfbox" unless="have-pdfbox">
+    <maven name="pdfbox" path="org/apache/pdfbox" version="${pdfbox-version}"/>
+  </target>
+
+  <available property="have-pdfbox-io" file="${lib}/pdfbox-io-${pdfbox-version}.jar"/>
+  <target name="get-pdfbox-io" unless="have-pdfbox-io">
+    <maven name="pdfbox-io" path="org/apache/pdfbox" version="${pdfbox-version}"/>
+  </target>
+
+  <available property="have-fontbox" file="${lib}/fontbox-${pdfbox-version}.jar"/>
+  <target name="get-fontbox" unless="have-fontbox">
+    <maven name="fontbox" path="org/apache/pdfbox" version="${pdfbox-version}"/>
+  </target>
+
+  <available property="have-xmpbox" file="${lib}/xmpbox-${pdfbox-version}.jar"/>
+  <target name="get-xmpbox" unless="have-xmpbox">
+    <maven name="xmpbox" path="org/apache/pdfbox" version="${pdfbox-version}"/>
   </target>
 
   <available property="have-xml-apis-ext" file="${lib}/xml-apis-ext-${xml-apis-ext-version}.jar"/>
@@ -395,8 +420,13 @@
     <antcall target="get-jargs"/>
     <antcall target="get-llrp"/>
     <antcall target="get-commons-lang3"/>
+    <antcall target="get-commons-logging"/>
     <antcall target="get-batik-all"/>
     <antcall target="get-xmlgraphics-commons"/>
+    <antcall target="get-pdfbox"/>
+    <antcall target="get-pdfbox-io"/>
+    <antcall target="get-fontbox"/>
+    <antcall target="get-xmpbox"/>
     <antcall target="get-xml-apis-ext"/>
     <antcall target="get-jsvg"/>
     <antcall target="get-tinyradius"/>

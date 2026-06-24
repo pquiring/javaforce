@@ -40,6 +40,18 @@ public class JFImage extends JComponent implements Icon {
   public static final int BLUE_MASK = 0x000000ff;
   public static final int RGB_MASK = 0x00ffffff;
 
+  public static final String FORMAT_PNG = "png";
+  public static final String FORMAT_JPG = "jpg";
+  public static final String FORMAT_JPEG = "jpeg";
+  public static final String FORMAT_BMP = "bmp";
+  public static final String FORMAT_ICO = "ico";
+  public static final String FORMAT_ICNS = "icns";
+  public static final String FORMAT_SVG = "svg";
+  public static final String FORMAT_XPM = "xpm";
+  public static final String FORMAT_TIFF = "tiff";
+  public static final String FORMAT_PGM = "pgm";
+  public static final String FORMAT_PPM = "ppm";
+
   private static int defColor = JFImage.OPAQUE | 0x000000;
 
   public enum ResizeOperation {

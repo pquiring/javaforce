@@ -261,12 +261,32 @@
     <copyjar name="commons-lang3" version="${commons-lang3-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-commons-logging">
+    <copyjar name="commons-logging" version="${commons-logging-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-batik-all">
     <copyjar name="batik-all" version="${batik-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-xmlgraphics-commons">
     <copyjar name="xmlgraphics-commons" version="${xmlgraphics-commons-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-pdfbox">
+    <copyjar name="pdfbox" version="${pdfbox-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-pdfbox-io">
+    <copyjar name="pdfbox-io" version="${pdfbox-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-fontbox">
+    <copyjar name="fontbox" version="${pdfbox-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-xmpbox">
+    <copyjar name="xmpbox" version="${pdfbox-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-xml-apis-ext">

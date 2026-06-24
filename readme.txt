@@ -22,6 +22,8 @@ JF is also the core library in jfLinux, a Java infused Linux Operating system:
 JF is also used to create jfCraft, a Minecraft clone:
   https://github.com/pquiring/jfcraft
 
+Online Javadoc : https://javadoc.io/doc/io.github.pquiring/javaforce/latest/index.html
+
 Folders
 =======
  /          - main folder (run ant here to build /src)
