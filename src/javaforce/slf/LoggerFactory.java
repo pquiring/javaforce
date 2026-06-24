@@ -2,7 +2,7 @@ package javaforce.slf;
 
 import org.slf4j.Logger;
 
-/**
+/** LoggerFactory
  *
  * @author peter.quiring
  */
