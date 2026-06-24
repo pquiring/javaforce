@@ -1,18 +1,18 @@
 package javaforce.ipc.transport;
 
-/** TCP Server/Client Transport for DBus
- *
- * DBus packets are encapsulated in packet with small header.
- *
- * @author pquiring
- */
-
 import java.net.*;
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.ipc.*;
+
+/** TCP Server/Client Transport for DBus.
+ *
+ * DBus packets are encapsulated in packet with small header.
+ *
+ * @author pquiring
+ */
 
 public class TCPTransport extends DBusTransport {
 

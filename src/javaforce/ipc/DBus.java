@@ -1,6 +1,11 @@
 package javaforce.ipc;
 
-/** DBus IPC/RPC implementation
+import java.util.*;
+
+import javaforce.*;
+import javaforce.ipc.transport.*;
+
+/** DBus IPC/RPC implementation.
  *
  * Supported:
  *  - Linux:Unix Sockets
@@ -48,11 +53,6 @@ package javaforce.ipc;
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
-import javaforce.ipc.transport.*;
 
 public class DBus implements IPC {
 

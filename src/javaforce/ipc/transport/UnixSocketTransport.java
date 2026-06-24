@@ -1,12 +1,5 @@
 package javaforce.ipc.transport;
 
-/** DBus over Unix Socket Transport
- *
- * Requires Java 16+
- *
- * @author pquiring
- */
-
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
@@ -14,6 +7,13 @@ import java.nio.channels.*;
 import javaforce.*;
 import javaforce.jni.*;
 import javaforce.ipc.*;
+
+/** DBus over Unix Socket Transport.
+ *
+ * Requires Java 16+
+ *
+ * @author pquiring
+ */
 
 public class UnixSocketTransport extends DBusTransport {
 

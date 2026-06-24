@@ -1,14 +1,14 @@
 package javaforce.ipc.transport;
 
-/** DBus over Windows Pipes Transport
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.ipc.*;
 import javaforce.api.*;
+
+/** DBus over Windows Pipes Transport.
+ *
+ * @author pquiring
+ */
 
 public class WinPipeTransport extends DBusTransport {
   private long ctx;

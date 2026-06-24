@@ -1,11 +1,11 @@
 package javaforce.ipc.transport;
 
+import javaforce.ipc.*;
+
 /** DBus Transport base class.
  *
  * @author pquiring
  */
-
-import javaforce.ipc.*;
 
 public abstract class DBusTransport {
   public abstract boolean connect(String name, DBus bus, Runnable start_reader);

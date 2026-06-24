@@ -1,6 +1,11 @@
 package javaforce.ipc;
 
-/** Dispatcher
+import java.lang.reflect.*;
+
+import javaforce.*;
+import static javaforce.ipc.DBus.*;
+
+/** Dispatcher.
  *
  * This class can dispatch RPC messages to methods in an Object using reflection.
  *
@@ -9,11 +14,6 @@ package javaforce.ipc;
  *
  * @author pquiring
  */
-
-import java.lang.reflect.*;
-
-import javaforce.*;
-import static javaforce.ipc.DBus.*;
 
 public class Dispatcher {
   private static boolean debug = false;
