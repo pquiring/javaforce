@@ -1,18 +1,18 @@
 package javaforce.print;
 
-/** JFPrintApp
- *
- * @author pquiring
- *
- * Created : Sept 16, 2024
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.bus.*;
+
+/** JFPrintApp.
+ *
+ * @author pquiring
+ *
+ * Created : Sept 16, 2024
+ */
 
 public class JFPrintApp extends javax.swing.JFrame {
 

@@ -1,18 +1,18 @@
 package javaforce.print;
 
-/** Intermec Printing Language (IPL)
+import java.util.*;
+import java.io.*;
+import java.net.*;
+
+import javaforce.*;
+
+/** Intermec Printing Language (IPL).
  *
  * v1.0
  *
  * @author pquiring
  * @date July 13, 2020
  */
-
-import java.util.*;
-import java.io.*;
-import java.net.*;
-
-import javaforce.*;
 
 public class IPL {
   private StringBuilder sb = new StringBuilder();

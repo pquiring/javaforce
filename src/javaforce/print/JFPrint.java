@@ -1,13 +1,13 @@
 package javaforce.print;
 
-/** JFPrint
+import javaforce.*;
+
+/** JFPrint client.
  *
  * Send print jobs to JFPrintServer
  *
  * @author peter.quiring
  */
-
-import javaforce.*;
 
 public class JFPrint {
   public static final String unit_inch = "inch";

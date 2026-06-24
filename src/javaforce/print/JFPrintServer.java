@@ -1,6 +1,17 @@
 package javaforce.print;
 
-/** JFPrintServer
+import java.io.*;
+import java.util.*;
+
+import javax.print.*;
+import javax.print.attribute.*;
+import javax.print.attribute.standard.*;
+
+import javaforce.*;
+import javaforce.service.*;
+import javaforce.bus.*;
+
+/** JFPrintServer.
  *
  * HTTP based print server on port 33202.
  *
@@ -14,17 +25,6 @@ package javaforce.print;
  *
  * @author peter.quiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javax.print.*;
-import javax.print.attribute.*;
-import javax.print.attribute.standard.*;
-
-import javaforce.*;
-import javaforce.service.*;
-import javaforce.bus.*;
 
 public class JFPrintServer {
   private static final int web_port = 33202;
