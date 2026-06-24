@@ -1,6 +1,6 @@
 package javaforce.jni;
 
-/** JF Heap
+/** JF Heap.
  *
  * Provides JNI API to acquire Java Heap address of arrays.
  *

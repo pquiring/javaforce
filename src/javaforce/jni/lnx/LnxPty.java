@@ -1,17 +1,17 @@
 package javaforce.jni.lnx;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.jni.*;
+
 /** Linux PTY support.
  *
  * @author pquiring
  *
  * Created : Jan 17, 2014
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.jni.*;
 
 public class LnxPty {
 

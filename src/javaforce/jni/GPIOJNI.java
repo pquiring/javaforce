@@ -1,15 +1,15 @@
 package javaforce.jni;
 
-/** GPIO JNI
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.jni.*;
 import javaforce.api.*;
+
+/** GPIO JNI implementation
+ *
+ * @author pquiring
+ */
 
 public class GPIOJNI implements GPIOAPI {
 

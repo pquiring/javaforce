@@ -1,10 +1,5 @@
 package javaforce.jni;
 
-/** JFNative
- *
- * @author pquiring
- */
-
 import java.awt.*;
 import java.io.*;
 import java.nio.*;
@@ -12,6 +7,11 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+
+/** JFNative provides native library loading functions.
+ *
+ * @author pquiring
+ */
 
 public class JFNative {
 

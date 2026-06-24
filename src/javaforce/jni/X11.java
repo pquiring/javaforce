@@ -1,13 +1,13 @@
 package javaforce.jni;
 
+import java.awt.*;
+
+import javaforce.linux.*;
+
 /** X11 native JNI methods
  *
  * @author pquiring
  */
-
-import java.awt.*;
-
-import javaforce.linux.*;
 
 public class X11 {
   public static native long x11_get_id(Window w);

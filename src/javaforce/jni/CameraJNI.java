@@ -1,12 +1,12 @@
 package javaforce.jni;
 
+import javaforce.ffm.*;
+import javaforce.api.*;
+
 /** Camera JNI
  *
  * @author pquiring
  */
-
-import javaforce.ffm.*;
-import javaforce.api.*;
 
 public class CameraJNI implements CameraAPI {
   private static CameraJNI instance;

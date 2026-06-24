@@ -1,13 +1,13 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+import javaforce.ffm.*;
+import javaforce.ui.*;
+
 /** UI JNI
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
-import javaforce.ui.*;
 
 public class UIJNI implements UIAPI {
 

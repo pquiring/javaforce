@@ -1,11 +1,11 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+
 /** speex JNI
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
 
 public class SpeexJNI implements SpeexAPI {
   public native long speexCreate(int sample_rate, int echo_buffers);

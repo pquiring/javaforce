@@ -1,10 +1,5 @@
 package javaforce.jni;
 
-/** Linux Native API
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.nio.*;
@@ -14,6 +9,11 @@ import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+
+/** Linux Native API
+ *
+ * @author pquiring
+ */
 
 public class LnxNative {
 

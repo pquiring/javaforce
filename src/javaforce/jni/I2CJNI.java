@@ -1,11 +1,11 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+
 /** I2C JNI
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
 
 public class I2CJNI implements I2CAPI {
   private static I2CJNI instance;

@@ -1,12 +1,12 @@
 package javaforce.jni;
 
-/**
+import javaforce.api.*;
+import javaforce.io.*;
+
+/**MonitorFolder JNI implementation.
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.io.*;
 
 public class MonitorFolderJNI implements MonitorFolderAPI {
 

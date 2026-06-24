@@ -1,14 +1,14 @@
 package javaforce.jni;
 
-/** VM JNI
- *
- * @author pquiring
- */
-
 import javaforce.webui.tasks.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
 import javaforce.vm.*;
+
+/** VM JNI
+ *
+ * @author pquiring
+ */
 
 public class VMJNI implements VMAPI {
 

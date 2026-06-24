@@ -1,13 +1,13 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+import javaforce.ffm.*;
+import javaforce.media.*;
+
 /** Media native API (JNI implementation)
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
-import javaforce.media.*;
 
 public class MediaJNI implements MediaAPI {
   private static MediaAPI instance;

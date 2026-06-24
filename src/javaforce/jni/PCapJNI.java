@@ -1,13 +1,13 @@
 package javaforce.jni;
 
-/** pcap native api
- *
- * @author pquiring
- */
-
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
+
+/** pcap JNI implementation.
+ *
+ * @author pquiring
+ */
 
 public class PCapJNI implements PCapAPI {
 

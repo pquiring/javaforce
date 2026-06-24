@@ -1,13 +1,13 @@
 package javaforce.jni;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** Native Library
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class Library {
   public String name;

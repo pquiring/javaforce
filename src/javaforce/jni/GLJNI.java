@@ -3,7 +3,7 @@ package javaforce.jni;
 import javaforce.ffm.*;
 import javaforce.gl.*;
 
-/** JNI implementation of GL. */
+/** OpenGL JNI implementation. */
 
 public class GLJNI implements GL {
 

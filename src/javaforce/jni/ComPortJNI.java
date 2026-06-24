@@ -1,11 +1,11 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+
 /** Com Port JNI
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
 
 public class ComPortJNI implements ComPortAPI {
 

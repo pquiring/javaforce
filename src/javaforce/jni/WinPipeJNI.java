@@ -1,12 +1,12 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** WinPipe JNI
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class WinPipeJNI implements WinPipeAPI {
 

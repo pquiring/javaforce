@@ -1,12 +1,12 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** Windows Native API
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class WinNative {
 

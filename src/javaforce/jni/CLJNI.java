@@ -1,11 +1,11 @@
 package javaforce.jni;
 
+import javaforce.api.*;
+
 /** OpenCL JNI implementation
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
 
 public class CLJNI implements CLAPI {
 
