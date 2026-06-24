@@ -1,6 +1,11 @@
 package javaforce.vm;
 
-/** Network Bridge - "virtual switch"
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** Network Bridge - "virtual switch".
  *
  * NOTE : Open vSwitch is required for VLAN tagging guest networks.
  *
@@ -15,11 +20,6 @@ package javaforce.vm;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class NetworkBridge extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;

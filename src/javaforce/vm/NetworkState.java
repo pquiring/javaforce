@@ -1,11 +1,11 @@
 package javaforce.vm;
 
+import java.io.*;
+
 /** NetworkConfig
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class NetworkState implements Serializable {
   private static final long serialVersionUID = 1L;

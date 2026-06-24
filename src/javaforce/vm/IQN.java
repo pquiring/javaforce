@@ -1,11 +1,11 @@
 package javaforce.vm;
 
+import java.util.*;
+
 /** IQN
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class IQN {
   public static String generate(String fqn) {

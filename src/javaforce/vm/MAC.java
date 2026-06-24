@@ -1,11 +1,11 @@
 package javaforce.vm;
 
-/** MAC
+import java.util.*;
+
+/** MAC Address
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class MAC {
   public static String generate() {

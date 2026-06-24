@@ -1,13 +1,13 @@
 package javaforce.vm;
 
+import java.io.*;
+
 /** Network guest NIC.
  *
  * To list available models : kvm -net nic,model=?
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class Network extends Address implements Serializable {
   private static final long serialVersionUID = 1L;

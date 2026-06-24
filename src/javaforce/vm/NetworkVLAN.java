@@ -1,11 +1,11 @@
 package javaforce.vm;
 
+import java.io.*;
+
 /** Network VLAN used by guest VM's.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class NetworkVLAN implements Serializable {
   private static final long serialVersionUID = 1L;

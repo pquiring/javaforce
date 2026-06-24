@@ -1,13 +1,13 @@
 package javaforce.vm;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** Address {PCI, USB}
  *
  * @author pquiring
 */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class Address implements Serializable {
   private static final long serialVersionUID = 1L;

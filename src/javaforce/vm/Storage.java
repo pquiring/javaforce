@@ -1,13 +1,5 @@
 package javaforce.vm;
 
-/** Storage pool registered with libvirt.
- *
- *  Pools are mounted in /volumes
- *
- * https://en.wikipedia.org/wiki/Clustered_file_system
- *
- */
-
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -16,6 +8,14 @@ import javaforce.*;
 import javaforce.api.*;
 import javaforce.linux.*;
 import javaforce.ffm.*;
+
+/** Storage pool registered with libvirt.
+ *
+ *  Pools are mounted in /volumes
+ *
+ * https://en.wikipedia.org/wiki/Clustered_file_system
+ *
+ */
 
 public class Storage implements Serializable {
   private static final long serialVersionUID = 1L;

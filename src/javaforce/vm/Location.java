@@ -1,13 +1,13 @@
 package javaforce.vm;
 
+import java.io.*;
+
 /** Location.
  *
  * Specifies where a VirtualMachine is stored.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class Location implements Serializable {
   private static final long serialVersionUID = 1L;

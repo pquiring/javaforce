@@ -1,15 +1,15 @@
 package javaforce.vm;
 
-/** Disk.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
+
+/** Disk.
+ *
+ * @author pquiring
+ */
 
 public class Disk implements Serializable {
   private static final long serialVersionUID = 1L;

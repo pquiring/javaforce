@@ -1,14 +1,14 @@
 package javaforce.vm;
 
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** Secret.
  *
  * Define a password for iSCSI chap auth.
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class Secret {
   public static boolean create(String name, String passwd) {

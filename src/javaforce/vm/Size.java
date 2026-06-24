@@ -1,11 +1,11 @@
 package javaforce.vm;
 
+import java.io.*;
+
 /** Represents memory or storage sizes.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class Size implements Serializable {
   private static final long serialVersionUID = 1L;

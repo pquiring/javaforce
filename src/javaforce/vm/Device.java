@@ -1,5 +1,11 @@
 package javaforce.vm;
 
+import java.io.*;
+
+import javaforce.*;
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** Host Device (USB or PCI).
  *
  * this.Address = host device address.
@@ -8,12 +14,6 @@ package javaforce.vm;
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class Device extends Address implements Serializable {
   private static final long serialVersionUID = 1L;

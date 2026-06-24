@@ -1,14 +1,14 @@
 package javaforce.vm;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** Network virtual interface.
  *
  * Used by VM Host.
  *
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class NetworkVirtual extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;

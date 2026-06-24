@@ -1,15 +1,15 @@
 package javaforce.vm;
 
-/** Provides some statistics of the VM Host.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.api.*;
 import javaforce.linux.*;
 import javaforce.ffm.*;
+
+/** Provides some statistics of the VM Host.
+ *
+ * @author pquiring
+ */
 
 public class VMHost {
   public static long total_memory() {

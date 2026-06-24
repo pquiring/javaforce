@@ -1,6 +1,6 @@
 package javaforce.vm;
 
-/** VMProvider
+/** VMProvider.
  *
  * Provides details from VM Management System of a Virtual Machine.
  *

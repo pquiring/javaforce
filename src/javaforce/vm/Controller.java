@@ -1,13 +1,13 @@
 package javaforce.vm;
 
+import java.io.*;
+
 /** Controller (optional).
  *
  * libvirt will usually automatically add required controllers.
  *
  * @author pquiring
  */
-
-import java.io.*;
 
 public class Controller extends Address implements Serializable {
   private static final long serialVersionUID = 1L;

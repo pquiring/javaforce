@@ -1,12 +1,12 @@
 package javaforce.vm;
 
-/** Network physical interface.
- *
- */
-
 import java.io.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
+
+/** Network physical interface.
+ *
+ */
 
 public class NetworkInterface extends NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;

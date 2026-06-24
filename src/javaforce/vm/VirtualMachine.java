@@ -1,7 +1,5 @@
 package javaforce.vm;
 
-/** Virtual Machine registered with libvirt. */
-
 import java.io.*;
 import java.util.*;
 import java.nio.file.*;
@@ -10,6 +8,8 @@ import javaforce.*;
 import javaforce.api.*;
 import javaforce.utils.*;
 import javaforce.webui.tasks.*;
+
+/** Virtual Machine registered with libvirt. */
 
 public class VirtualMachine implements Serializable {
   private static final long serialVersionUID = 1L;

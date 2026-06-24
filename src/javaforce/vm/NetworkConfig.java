@@ -1,14 +1,14 @@
 package javaforce.vm;
 
-/** NetworkConfig
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.net.*;
+
+/** NetworkConfig
+ *
+ * @author pquiring
+ */
 
 public class NetworkConfig implements Serializable {
   private static final long serialVersionUID = 1L;

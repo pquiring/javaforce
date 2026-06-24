@@ -1,5 +1,10 @@
 package javaforce.vm;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
 /** Hardware setup for a Virtual Machine.
  *
  * Supported hardware:
@@ -14,11 +19,6 @@ package javaforce.vm;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class Hardware implements Serializable {
   private static final long serialVersionUID = 1L;
