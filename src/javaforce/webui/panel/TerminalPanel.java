@@ -1,6 +1,17 @@
 package javaforce.webui.panel;
 
-/** Linux Terminal
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.ansi.client.*;
+import javaforce.webui.*;
+import javaforce.webui.event.*;
+import javaforce.jni.lnx.*;
+import javaforce.service.*;
+import javaforce.io.*;
+
+/** Linux Terminal.
  *
  * Displays a Linux shell in a Panel.
  *
@@ -12,17 +23,6 @@ package javaforce.webui.panel;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.ansi.client.*;
-import javaforce.webui.*;
-import javaforce.webui.event.*;
-import javaforce.jni.lnx.*;
-import javaforce.service.*;
-import javaforce.io.*;
 
 public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, MouseDown {
 

@@ -1,6 +1,8 @@
 package javaforce.webui.panel;
 
-/** TextArea Popup
+import javaforce.webui.*;
+
+/** TextArea Popup.
  *
  * Shows a popup message with a TextArea and OK / Cancel buttons.
  *
@@ -8,8 +10,6 @@ package javaforce.webui.panel;
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public class TextAreaPanel extends PopupPanel {
   public TextAreaPanel(String title, String msg, String text, boolean showCancel) {

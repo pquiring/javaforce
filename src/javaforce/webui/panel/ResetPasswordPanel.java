@@ -1,12 +1,12 @@
 package javaforce.webui.panel;
 
+import javaforce.access.*;
+import javaforce.webui.*;
+
 /** Reset Password Panel
  *
  * @author pquiring
  */
-
-import javaforce.access.*;
-import javaforce.webui.*;
 
 public class ResetPasswordPanel extends PopupPanel {
   private TextField pass1;

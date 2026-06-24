@@ -1,13 +1,13 @@
 package javaforce.webui.panel;
 
+import javaforce.webui.*;
+
 /** Message Panel.
  *
  * Presents a message with OK.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public class MessagePanel extends PopupPanel {
 

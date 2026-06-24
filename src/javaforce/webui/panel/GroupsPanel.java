@@ -1,12 +1,12 @@
 package javaforce.webui.panel;
 
+import javaforce.access.*;
+import javaforce.webui.*;
+
 /** Groups Panel
  *
  * @author pquiring
  */
-
-import javaforce.access.*;
-import javaforce.webui.*;
 
 public class GroupsPanel extends Panel {
   private Table table;

@@ -1,12 +1,12 @@
 package javaforce.webui.panel;
 
+import javaforce.access.*;
+import javaforce.webui.*;
+
 /** Users Panel
  *
  * @author pquiring
  */
-
-import javaforce.access.*;
-import javaforce.webui.*;
 
 public class UsersPanel extends Panel {
   private Table table;

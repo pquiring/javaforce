@@ -1,11 +1,11 @@
 package javaforce.webui.panel;
 
+import javaforce.webui.*;
+
 /** IFrame in a Panel
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public class IFramePanel extends Panel {
   private IFrame frame;

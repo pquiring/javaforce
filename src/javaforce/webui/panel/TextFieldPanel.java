@@ -1,6 +1,8 @@
 package javaforce.webui.panel;
 
-/** TextField Popup
+import javaforce.webui.*;
+
+/** TextField Popup.
  *
  * Shows a popup message with a TextField and OK / Cancel buttons.
  *
@@ -8,8 +10,6 @@ package javaforce.webui.panel;
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public class TextFieldPanel extends PopupPanel {
   public TextFieldPanel(String title, String msg, String text, boolean showCancel) {

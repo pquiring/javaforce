@@ -1,13 +1,13 @@
 package javaforce.webui.panel;
 
+import javaforce.*;
+import javaforce.access.*;
+import javaforce.webui.*;
+
 /** New User Panel
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.access.*;
-import javaforce.webui.*;
 
 public class NewUserPanel extends PopupPanel {
   private TextField name;

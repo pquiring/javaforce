@@ -1,14 +1,14 @@
 package javaforce.webui.panel;
 
-/** Edit User Panel
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.access.*;
 import javaforce.webui.*;
+
+/** Edit User Panel
+ *
+ * @author pquiring
+ */
 
 public class EditUserPanel extends PopupPanel {
   private TextField name;

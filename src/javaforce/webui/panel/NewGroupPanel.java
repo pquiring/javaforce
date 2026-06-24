@@ -1,13 +1,13 @@
 package javaforce.webui.panel;
 
+import javaforce.*;
+import javaforce.access.*;
+import javaforce.webui.*;
+
 /** New Group Panel
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.access.*;
-import javaforce.webui.*;
 
 public class NewGroupPanel extends PopupPanel {
   private TextField name;

@@ -1,14 +1,14 @@
 package javaforce.webui.panel;
 
-/** Edit Group Panel
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.access.*;
 import javaforce.webui.*;
+
+/** Edit Group Panel
+ *
+ * @author pquiring
+ */
 
 public class EditGroupPanel extends PopupPanel {
   private TextField name;

@@ -1,14 +1,14 @@
 package javaforce.webui.panel;
 
-/** Login Panel
- *
- * @author pquiring
- */
-
 import javaforce.access.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 import static javaforce.webui.event.KeyEvent.*;
+
+/** Login Panel
+ *
+ * @author pquiring
+ */
 
 public class LoginPanel extends Panel {
   /** Callback interface to validate provided password. */

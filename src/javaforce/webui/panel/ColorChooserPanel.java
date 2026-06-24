@@ -7,7 +7,7 @@ import javaforce.webui.PopupPanel;
 import javaforce.webui.Row;
 import javaforce.webui.Slider;
 
-/** Color Chooser Popup
+/** Color Chooser Popup.
  *
  *  Shows a popup dialog to select a RGB color.
  *

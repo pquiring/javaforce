@@ -1,12 +1,12 @@
 package javaforce.webui.panel;
 
+import javaforce.access.*;
+import javaforce.webui.*;
+
 /** Change Password Panel
  *
  * @author pquiring
  */
-
-import javaforce.access.*;
-import javaforce.webui.*;
 
 public class ChangePasswordPanel extends PopupPanel {
   private TextField passc;

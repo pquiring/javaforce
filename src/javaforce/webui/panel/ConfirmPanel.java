@@ -1,13 +1,13 @@
 package javaforce.webui.panel;
 
+import javaforce.webui.*;
+
 /** Confirm Action Panel.
  *
  * Presents a message with OK or CANCEL buttons.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public class ConfirmPanel extends PopupPanel {
 

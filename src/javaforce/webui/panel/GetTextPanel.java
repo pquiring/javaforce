@@ -1,13 +1,13 @@
 package javaforce.webui.panel;
 
-/** GetTextPopup
+import javaforce.webui.*;
+
+/** GetTextPopup.
  *
  *  Shows a popup dialog to input text with OK / Cancel buttons.
  *
  * @author pquiring
  */
-
-import javaforce.webui.*;
 
 public class GetTextPanel extends PopupPanel {
   public GetTextPanel(String title, String msg, String initText) {

@@ -1,12 +1,12 @@
 package javaforce.webui.panel;
 
+import javaforce.*;
+import javaforce.webui.*;
+
 /** Select From List Popup Panel
  *
  * @author pquiring
  */
-
-import javaforce.*;
-import javaforce.webui.*;
 
 public class SelectFromListPanel extends PopupPanel {
 
