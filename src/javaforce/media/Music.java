@@ -1,5 +1,10 @@
 package javaforce.media;
 
+import java.util.*;
+import java.io.*;
+
+import javaforce.*;
+
 /**
  * Music player.
  *
@@ -9,11 +14,6 @@ package javaforce.media;
  *
  * @author pquiring
  */
-
-import java.util.*;
-import java.io.*;
-
-import javaforce.*;
 
 public class Music {
   public static final int VERSION = 1;

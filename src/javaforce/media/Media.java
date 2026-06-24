@@ -1,8 +1,13 @@
 package javaforce.media;
 
-/** JavaForce Media File
+import java.io.*;
+
+import javaforce.*;
+import javaforce.voip.*;
+
+/** JavaForce Media File.
  *
- * Open multi-media file format supporting multiple streams.
+ * Open Source multi-media file format supporting multiple streams.
  *
  * Designed to be very quick and easy to use.
  *
@@ -15,11 +20,6 @@ package javaforce.media;
  *
  * @author peter.quiring
  */
-
-import java.io.*;
-
-import javaforce.*;
-import javaforce.voip.*;
 
 public class Media {
   private RandomAccessFile raf;

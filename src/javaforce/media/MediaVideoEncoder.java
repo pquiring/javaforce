@@ -1,13 +1,13 @@
 package javaforce.media;
 
+import javaforce.voip.*;
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** Media video encoder.
  *
  * @author pquiring
  */
-
-import javaforce.voip.*;
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class MediaVideoEncoder extends MediaCoder {
   /** Create a stand-alone video encoder for raw video. */

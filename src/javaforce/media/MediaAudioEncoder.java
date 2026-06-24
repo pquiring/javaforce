@@ -1,14 +1,14 @@
 package javaforce.media;
 
-/** Media audio encoder.
- *
- * @author pquiring
- */
-
 import javaforce.*;
 import javaforce.voip.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
+
+/** Media audio encoder.
+ *
+ * @author pquiring
+ */
 
 public class MediaAudioEncoder extends MediaCoder {
   /** Create a stand-alone audio encoder for raw audio. */

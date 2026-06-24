@@ -1,13 +1,13 @@
 package javaforce.media;
 
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** Base class for MediaInput, MediaOutput
- *   and MediaEncoder, MediaDecoder
+ *   and MediaEncoder, MediaDecoder.
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class MediaFormat extends MediaCoder {
   /** Gets video stream index. */

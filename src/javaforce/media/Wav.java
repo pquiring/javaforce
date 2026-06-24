@@ -5,7 +5,7 @@ import java.nio.*;
 
 import javaforce.*;
 
-/** Wav audio file
+/** Wav audio file.
  *
  * Supports:
  *   bits : 16,24,32bit (24bit converted to 32bit on load)

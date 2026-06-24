@@ -1,15 +1,15 @@
 package javaforce.media;
 
-/** Base class for Media Coders.
- *
- * @author pquiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.jni.*;
+
+/** Base class for Media Coders.
+ *
+ * @author pquiring
+ */
 
 public class MediaCoder {
   protected long ctx = 0;

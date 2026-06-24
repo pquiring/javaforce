@@ -1,13 +1,13 @@
 package javaforce.media;
 
+import javaforce.voip.*;
+import javaforce.api.*;
+import javaforce.ffm.*;
+
 /** Media audio decoder.
  *
  * @author pquiring
  */
-
-import javaforce.voip.*;
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class MediaAudioDecoder extends MediaCoder {
   /** Create a stand-alone audio decoder for raw audio. */

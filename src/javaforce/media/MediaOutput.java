@@ -1,6 +1,11 @@
 package javaforce.media;
 
-/** MediaOutput
+import javaforce.*;
+import javaforce.ffm.*;
+import javaforce.voip.*;
+import javaforce.api.*;
+
+/** MediaOutput.
  *
  * Create container media files.
  *
@@ -13,11 +18,6 @@ package javaforce.media;
  *
  * @author peter.quiring
  */
-
-import javaforce.*;
-import javaforce.ffm.*;
-import javaforce.voip.*;
-import javaforce.api.*;
 
 public class MediaOutput extends MediaFormat implements MediaIO {
   /** Create output file.

@@ -1,6 +1,11 @@
 package javaforce.media;
 
-/** MediaInput
+import javaforce.*;
+import javaforce.voip.*;
+import javaforce.api.*;
+import javaforce.ffm.*;
+
+/** MediaInput.
  *
  * Decodes media files.
  *
@@ -8,11 +13,6 @@ package javaforce.media;
  *
  * @author peter.quiring
  */
-
-import javaforce.*;
-import javaforce.voip.*;
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class MediaInput extends MediaFormat implements MediaIO {
   /** Opens media file for decoding. */

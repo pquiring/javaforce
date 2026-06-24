@@ -1,16 +1,17 @@
 package javaforce.media;
 
-/** FIFO buffer for video frames (images)
+import javaforce.awt.*;
+import javaforce.api.*;
+import javaforce.ffm.*;
+
+/** FIFO buffer for video frames (images).
+ *
  * Uses a cyclical buffer to avoid using locks or reallocation.
  *
  * @author pquiring
  *
  * Created : Oct 24, 2013
  */
-
-import javaforce.awt.*;
-import javaforce.api.*;
-import javaforce.ffm.*;
 
 public class VideoBuffer {
   private JFImage[] images;
