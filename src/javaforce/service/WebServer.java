@@ -1,11 +1,5 @@
 package javaforce.service;
 
-/**
- * Mini web service
- *
- * Created : Aug 23, 2013
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -14,6 +8,12 @@ import javax.net.ssl.*;
 
 import javaforce.*;
 import static javaforce.service.WebSocketHandler.*;
+
+/**
+ * Web server.
+ *
+ * Created : Aug 23, 2013
+ */
 
 public class WebServer {
   private WebHandler api;

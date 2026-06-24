@@ -1,13 +1,13 @@
 package javaforce.service;
 
+import java.io.*;
+
+import javaforce.*;
+
 /** Web File uploaded to server.
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
 
 public class WebFile {
   private FileInputStream is;

@@ -1,6 +1,6 @@
 package javaforce.service;
 
-/** Simple web server that redirects users to a different port.
+/** Web server that redirects users to a different port.
  *
  * Typical used to redirect port 80 to 443.
  *

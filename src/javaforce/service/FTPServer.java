@@ -1,13 +1,5 @@
 package javaforce.service;
 
-/** FTP Server.
- *
- * Known issue:
- *  windows command line ftp app requires passive mode.  port mode fails although FileZilla works fine.
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -15,6 +7,14 @@ import javaforce.bus.*;
 
 import javaforce.*;
 import javaforce.net.*;
+
+/** FTP Server.
+ *
+ * Known issue:
+ *  windows command line ftp app requires passive mode.  port mode fails although FileZilla works fine.
+ *
+ * @author pquiring
+ */
 
 public class FTPServer {
   public final static String serviceBus = "javaforce.jfftp";

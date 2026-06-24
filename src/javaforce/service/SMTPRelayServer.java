@@ -1,6 +1,12 @@
 package javaforce.service;
 
-/** SMTP Relay Server
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.bus.*;
+
+/** SMTP Relay Server.
  *
  * Logs into POP3 service periodically and re-sends all messages to another SMTP service.
  *
@@ -10,12 +16,6 @@ package javaforce.service;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.bus.*;
 
 public class SMTPRelayServer {
 

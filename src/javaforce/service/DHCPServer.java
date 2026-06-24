@@ -1,7 +1,14 @@
 package javaforce.service;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.bus.*;
+
 /**
- * DHCP Server
+ * DHCP Server.
  *
  * Supports:
  *  - IP4 pools
@@ -12,13 +19,6 @@ package javaforce.service;
  *
  * Created : Nov 17, 2013
  */
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.bus.*;
 
 public class DHCPServer extends ConfigServlet {
 

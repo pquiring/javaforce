@@ -1,12 +1,13 @@
 package javaforce.service;
 
-/**
- * Created : Aug 23, 2013
- */
-
 import java.io.*;
 import java.util.*;
 import java.util.zip.*;
+
+/** WebResponse
+ *
+ * Created : Aug 23, 2013
+ */
 
 public class WebResponse extends OutputStream {
   OutputStream os;

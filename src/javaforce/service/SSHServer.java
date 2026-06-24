@@ -1,10 +1,5 @@
 package javaforce.service;
 
-/** SSH Server
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -20,6 +15,11 @@ import org.apache.sshd.scp.server.*;
 import javaforce.*;
 import javaforce.net.*;
 import javaforce.bus.*;
+
+/** SSH Server
+ *
+ * @author pquiring
+ */
 
 public class SSHServer {
   public final static String serviceBus = "javaforce.jfssh";

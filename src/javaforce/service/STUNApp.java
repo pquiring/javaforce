@@ -1,12 +1,5 @@
 package javaforce.service;
 
-/**
- *
- * @author pquiring
- *
- * Created : Dec 24, 2013
- */
-
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -14,6 +7,13 @@ import javax.swing.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.bus.*;
+
+/** STUN Server Config App
+ *
+ * @author pquiring
+ *
+ * Created : Dec 24, 2013
+ */
 
 public class STUNApp extends javax.swing.JFrame {
 

@@ -1,5 +1,12 @@
 package javaforce.service;
 
+import java.io.*;
+
+import javaforce.*;
+import javaforce.bus.*;
+import javaforce.webui.*;
+import javaforce.webui.panel.*;
+
 /** Common Config Servlet.
  *
  * Service must implement IPC methods:
@@ -9,13 +16,6 @@ package javaforce.service;
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.*;
-import javaforce.bus.*;
-import javaforce.webui.*;
-import javaforce.webui.panel.*;
 
 public abstract class ConfigServlet implements WebUIServlet {
 

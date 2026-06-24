@@ -1,5 +1,12 @@
 package javaforce.service;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.net.*;
+
 /** File Sync Server.
  *
  * Proprietary protocol similar in function to rsync but over SSL.
@@ -11,13 +18,6 @@ package javaforce.service;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.net.*;
 
 public class FileSyncServer {
 

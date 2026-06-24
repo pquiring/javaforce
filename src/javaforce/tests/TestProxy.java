@@ -1,16 +1,16 @@
-package javaforce.service;
-
-/** ProxyTest
- *
- * @author pquiring
- */
+package javaforce.tests;
 
 import java.io.*;
 import java.net.*;
 
 import javaforce.*;
 
-public class ProxyTest {
+/** TestProxy
+ *
+ * @author pquiring
+ */
+
+public class TestProxy {
   public static void load(String urlstr) {
     try {
       System.out.println("GET " + urlstr);

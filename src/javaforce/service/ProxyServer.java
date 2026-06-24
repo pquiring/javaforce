@@ -1,12 +1,5 @@
 package javaforce.service;
 
-/**
- * Web Proxy Server
- *
- * @author pquiring
- *
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -15,6 +8,13 @@ import java.security.*;
 
 import javaforce.*;
 import javaforce.bus.*;
+
+/**
+ * Web Proxy Server
+ *
+ * @author pquiring
+ *
+ */
 
 public class ProxyServer {
 

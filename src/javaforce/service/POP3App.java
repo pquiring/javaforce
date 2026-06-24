@@ -1,17 +1,17 @@
 package javaforce.service;
 
-/**
- *
- * @author pquiring
- *
- * Created : Nov 16, 2013
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.bus.*;
+
+/** POP3 Server Config App.
+ *
+ * @author pquiring
+ *
+ * Created : Nov 16, 2013
+ */
 
 public class POP3App extends javax.swing.JFrame {
 

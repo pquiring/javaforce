@@ -1,5 +1,18 @@
 package javaforce.service;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.net.*;
+import java.nio.*;
+import java.util.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+
+import javaforce.*;
+import javaforce.bus.*;
+
 /** STUN (w/ TURN support) server.
  *
  * Created : Dec 24, 2013
@@ -15,19 +28,6 @@ package javaforce.service;
  *  - bind & alloc use the same timer (refresh one, the other is refreshed too)
  *  - limit one channel per client ip/port
  */
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.net.*;
-import java.nio.*;
-import java.util.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
-
-import javaforce.*;
-import javaforce.bus.*;
 
 public class STUNServer {
   private static int defaultLifeTime = 600;

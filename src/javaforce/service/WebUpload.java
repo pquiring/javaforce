@@ -1,5 +1,12 @@
 package javaforce.service;
 
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.webui.*;
+import javaforce.webui.tasks.*;
+
 /** WebUpload.
  *
  * Processes HTTP upload requests.
@@ -8,13 +15,6 @@ package javaforce.service;
  *
  * Created : Sept 16, 2013
  */
-
-import java.io.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.webui.*;
-import javaforce.webui.tasks.*;
 
 /** A class to handle file uploads (default max 64MBs) */
 public class WebUpload {

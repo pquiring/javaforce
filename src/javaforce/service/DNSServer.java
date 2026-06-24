@@ -1,7 +1,15 @@
 package javaforce.service;
 
+import java.io.*;
+import java.nio.*;
+import java.net.*;
+import java.util.*;
+import javaforce.bus.*;
+
+import javaforce.*;
+
 /**
- * Basic DNS Server
+ * DNS Server.
  *
  * Supports : A,CNAME,MX,AAAA
  *
@@ -11,14 +19,6 @@ package javaforce.service;
  *
  * Created : Nov 17, 2013
  */
-
-import java.io.*;
-import java.nio.*;
-import java.net.*;
-import java.util.*;
-import javaforce.bus.*;
-
-import javaforce.*;
 
 public class DNSServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfdns";

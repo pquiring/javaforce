@@ -1,16 +1,16 @@
 package javaforce.service;
 
+import java.io.*;
+import java.net.*;
+
+import javaforce.*;
+
 /** WebSocket
  *
  * @author pquiring
  *
  * See : RFC 6455
  */
-
-import java.io.*;
-import java.net.*;
-
-import javaforce.*;
 
 public class WebSocket {
   protected InputStream is;

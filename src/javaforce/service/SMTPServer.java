@@ -1,5 +1,13 @@
 package javaforce.service;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.net.*;
+import javaforce.bus.*;
+
 /** SMTP Server.
  *
  * Simple non-relaying mail server.
@@ -10,14 +18,6 @@ package javaforce.service;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.net.*;
-import javaforce.bus.*;
 
 public class SMTPServer {
   public final static String serviceBus = "javaforce.jfsmtp";

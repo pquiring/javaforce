@@ -1,10 +1,5 @@
 package javaforce.service;
 
-/** MQTTBroker service
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -13,6 +8,11 @@ import javaforce.*;
 import javaforce.bus.*;
 
 import static javaforce.MQTT.*;
+
+/** MQTTServer (broker) service
+ *
+ * @author pquiring
+ */
 
 public class MQTTServer {
   public final static String serviceBus = "javaforce.jfmqtt";

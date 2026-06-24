@@ -1,14 +1,5 @@
 package javaforce.service;
 
-/** Socks 4/4a/5 Server
- *
- * Default Port 1080
- *
- * https://en.wikipedia.org/wiki/SOCKS
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -18,6 +9,15 @@ import javax.net.ssl.*;
 import javaforce.*;
 import javaforce.net.*;
 import javaforce.bus.*;
+
+/** Socks 4/4a/5 Server.
+ *
+ * Default Port 1080
+ *
+ * https://en.wikipedia.org/wiki/SOCKS
+ *
+ * @author pquiring
+ */
 
 public class SOCKSServer {
   public final static String serviceBus = "javaforce.jfsocks";

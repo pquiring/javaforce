@@ -1,5 +1,13 @@
 package javaforce.service;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import javaforce.*;
+import javaforce.net.*;
+import javaforce.bus.*;
+
 /** POP3 Server.
  *
  * Retrieves messages from SMTP service.
@@ -11,14 +19,6 @@ package javaforce.service;
  *
  * @author pquiring
  */
-
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import javaforce.*;
-import javaforce.net.*;
-import javaforce.bus.*;
 
 public class POP3Server {
   public final static String serviceBus = "javaforce.jfpop3";

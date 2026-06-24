@@ -1,18 +1,18 @@
 package javaforce.service;
 
-/** SOCKS Server Config App
- *
- * @author pquiring
- *
- * Created : Sept 14, 2020
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.awt.security.*;
 import javaforce.bus.*;
+
+/** SOCKS Server Config App
+ *
+ * @author pquiring
+ *
+ * Created : Sept 14, 2020
+ */
 
 public class SOCKSApp extends javax.swing.JFrame {
 

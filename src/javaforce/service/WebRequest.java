@@ -1,13 +1,15 @@
 package javaforce.service;
 
-/**
- * Created : Aug 23, 2013
- */
 
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+
+/** WebRequest
+ * 
+ * Created : Aug 23, 2013
+ */
 
 public class WebRequest {
   //public fields
