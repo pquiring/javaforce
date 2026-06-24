@@ -1,8 +1,3 @@
-/**
-  * Packet Capture API (pcap)
-  *
-  */
-
 package javaforce.net;
 
 import java.io.*;
@@ -13,6 +8,11 @@ import javaforce.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
 import javaforce.jni.*;
+
+/**
+ * Packet Capture API (pcap)
+ *
+ */
 
 public class PacketCapture {
 

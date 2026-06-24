@@ -1,13 +1,13 @@
 package javaforce.net;
 
+import java.net.*;
+
+import javaforce.*;
+
 /** Subnet : IP4 + Mask
  *
  * @author pquiring
  */
-
-import java.net.*;
-
-import javaforce.*;
 
 public class Subnet4 {
   private IP4 ip = new IP4();

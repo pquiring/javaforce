@@ -1,13 +1,13 @@
 package javaforce.net;
 
+import java.net.*;
+
+import javaforce.*;
+
 /** IP4 + Port
  *
  * @author pquiring
  */
-
-import java.net.*;
-
-import javaforce.*;
 
 public class IP4Port extends IP4 {
   public int port;

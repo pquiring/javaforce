@@ -1,6 +1,11 @@
 package javaforce.net;
 
-/** IP6
+import java.net.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** IP6.
  *
  * 128 bits : 64 = network addr (subnet) + 64 = host addr
  *
@@ -8,11 +13,6 @@ package javaforce.net;
  *
  * @author pquiring
  */
-
-import java.net.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class IP6 {
   /** IP6 Address. */

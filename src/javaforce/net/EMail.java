@@ -1,5 +1,7 @@
 package javaforce.net;
 
+import java.util.*;
+
 /** EMail.
  *
  * General Format:
@@ -9,8 +11,6 @@ package javaforce.net;
  *
  * @author pquiring
  */
-
-import java.util.*;
 
 public class EMail {
   public String user;  //from

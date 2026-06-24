@@ -1,13 +1,13 @@
 package javaforce.net;
 
+import java.net.*;
+
+import javaforce.*;
+
 /** IP6 + Port
  *
  * @author pquiring
  */
-
-import java.net.*;
-
-import javaforce.*;
 
 public class IP6Port extends IP6 {
   public int port;

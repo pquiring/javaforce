@@ -1,13 +1,13 @@
 package javaforce.net;
 
+import java.util.*;
+
+import javaforce.*;
+
 /** Network Interface Settings
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class NetworkConfig {
   public String dev;

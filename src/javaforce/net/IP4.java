@@ -1,6 +1,11 @@
 package javaforce.net;
 
-/** IP4
+import java.net.*;
+import java.util.*;
+
+import javaforce.*;
+
+/** IP4.
  *
  * 32 bits = host addr
  *
@@ -8,11 +13,6 @@ package javaforce.net;
  *
  * @author pquiring
  */
-
-import java.net.*;
-import java.util.*;
-
-import javaforce.*;
 
 public class IP4 implements Comparable<IP4> {
   /** IP4 Address. */
