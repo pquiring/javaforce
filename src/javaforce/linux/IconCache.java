@@ -1,17 +1,17 @@
 package javaforce.linux;
 
-/** Cache of icons used in .desktop files.
- *
- * Created : Aug 16, 2012
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.utils.*;  //for jfopen
+
+/** IconCache of icons used in desktop files.
+ *
+ * Created : Aug 16, 2012
+ *
+ * @author pquiring
+ */
 
 public class IconCache {
   private static HashMap<String, JFImage> icons = new HashMap<String, JFImage>();

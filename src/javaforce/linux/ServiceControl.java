@@ -1,11 +1,11 @@
 package javaforce.linux;
 
+import javaforce.*;
+
 /** Service Control (systemctl)
  *
  * @author pquiring
  */
-
-import javaforce.*;
 
 public class ServiceControl {
   public static int logid = 0;

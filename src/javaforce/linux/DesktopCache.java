@@ -8,7 +8,7 @@ import javaforce.io.*;
 import javaforce.utils.*;
 
 /**
- * Cache of .desktop files
+ * DesktopCache maintains cache of desktop files.
  *
  * @author pquiring
  *

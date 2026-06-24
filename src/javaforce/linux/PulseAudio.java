@@ -1,17 +1,17 @@
 package javaforce.linux;
 
-/**
- * Created : May 27, 2012
- *
- * @author pquiring
- */
 import java.util.*;
 
 import javaforce.*;
 
 /**
- * Retrieves PulseAudio configuration
+ * Retrieves PulseAudio configuration.
+ *
+ * Created : May 27, 2012
+ *
+ * @author pquiring
  */
+
 public class PulseAudio {
 
   public static class Card {

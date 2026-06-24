@@ -1,15 +1,15 @@
 package javaforce.linux;
 
-/** Tools for systemd
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.net.*;
+
+/** Tools for systemd
+ *
+ * @author pquiring
+ */
 
 public class SystemdUtils {
   public static void main(String[] args) {

@@ -1,11 +1,5 @@
 package javaforce.linux;
 
-/**
- * Created : Mar 12, 2012
- *
- * @author pquiring
- */
-
 import java.util.*;
 import java.io.*;
 
@@ -15,6 +9,10 @@ import javaforce.jni.*;
 
 /**
  * Common functions for Linux administration.
+ *
+ * Created : Mar 12, 2012
+ *
+ * @author pquiring
  */
 
 public class Linux {

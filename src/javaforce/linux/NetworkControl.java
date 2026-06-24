@@ -1,15 +1,15 @@
 package javaforce.linux;
 
-/** Network Control
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.net.*;
+
+/** Linux Network Control
+ *
+ * @author pquiring
+ */
 
 public class NetworkControl {
   public static int logid = 0;
