@@ -1,12 +1,12 @@
 package javaforce.api;
 
-/** Camera native API
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** Camera native API.
  *
  * @author pquiring
  */
-
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public interface CameraAPI {
   public static CameraAPI getInstance() {

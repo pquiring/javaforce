@@ -1,12 +1,12 @@
 package javaforce.api;
 
-/** Com Port native API
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** Com Port native API.
  *
  * @author pquiring
  */
-
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public interface ComPortAPI {
   public static ComPortAPI getInstance() {

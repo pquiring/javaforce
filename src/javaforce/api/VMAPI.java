@@ -1,12 +1,12 @@
 package javaforce.api;
 
-/** VM Native API
+import javaforce.jni.*;
+import javaforce.ffm.*;
+
+/** VM native API
  *
  * @author pquiring
  */
-
-import javaforce.jni.*;
-import javaforce.ffm.*;
 
 public interface VMAPI {
   public static VMAPI getInstance() {

@@ -1,13 +1,13 @@
 package javaforce.api;
 
-/** UI Native API
- *
- * @author pquiring
- */
-
 import javaforce.jni.*;
 import javaforce.ffm.*;
 import javaforce.ui.*;
+
+/** UI native API
+ *
+ * @author pquiring
+ */
 
 public interface UIAPI {
   public static UIAPI getInstance() {

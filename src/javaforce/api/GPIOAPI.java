@@ -1,6 +1,6 @@
 package javaforce.api;
 
-/** GPIO native API
+/** GPIO native API.
  *
  * @author pquiring
  */

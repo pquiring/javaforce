@@ -1,12 +1,12 @@
 package javaforce.api;
 
-/** pcap API
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** pcap API.
  *
  * @author pquiring
  */
-
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public interface PCapAPI {
   public static PCapAPI getInstance() {

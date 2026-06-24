@@ -1,14 +1,14 @@
 package javaforce.api;
 
-/** Monitor Folder API
+import javaforce.io.*;
+
+/** Monitor Folder API.
  *
  * Linux : inotify
  * Windows : FindFirstChangeNotification, FindNextChangeNotification, ReadDirectoryChanges
  *
  * @author pquiring
  */
-
-import javaforce.io.*;
 
 public interface MonitorFolderAPI {
   public long monitorFolderCreate(String folder);

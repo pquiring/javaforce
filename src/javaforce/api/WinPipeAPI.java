@@ -1,12 +1,12 @@
 package javaforce.api;
 
-/** Windows Pipes API
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** Windows Pipes native API
  *
  * @author pquiring
  */
-
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public interface WinPipeAPI {
   public static WinPipeAPI getInstance() {

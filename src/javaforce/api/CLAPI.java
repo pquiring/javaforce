@@ -1,12 +1,12 @@
 package javaforce.api;
 
-/** OpenCL native API
+import javaforce.ffm.*;
+import javaforce.jni.*;
+
+/** OpenCL native API.
  *
  * @author pquiring
  */
-
-import javaforce.ffm.*;
-import javaforce.jni.*;
 
 public interface CLAPI {
 
