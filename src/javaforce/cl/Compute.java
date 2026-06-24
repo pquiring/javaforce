@@ -1,13 +1,11 @@
 package javaforce.cl;
 
-/** Compute
- *
- * Various kernels (computations).
+import javaforce.*;
+
+/** Compute kernels (computations).
  *
  * @author peter.quiring
  */
-
-import javaforce.*;
 
 public class Compute {
   private CL cl;

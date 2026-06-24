@@ -1,16 +1,16 @@
 package javaforce.cl;
 
-/** OpenCL
- *
- * @author peter.quiring
- */
-
 import java.io.*;
 
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
 import javaforce.jni.*;
+
+/** OpenCL methods.
+ *
+ * @author peter.quiring
+ */
 
 public class CL {
 
