@@ -1,6 +1,6 @@
 package javaforce.io;
 
-/** Folder Change Event Listener
+/** Folder Change Event Listener.
  *
  * NOTE : These methods must NOT invoke other "native" APIs.
  *

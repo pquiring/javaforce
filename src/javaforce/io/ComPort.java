@@ -1,16 +1,16 @@
 package javaforce.io;
 
-/** Com Port interface
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.jni.*;
 import javaforce.ffm.*;
+
+/** Com Port API.
+ *
+ * @author pquiring
+ */
 
 public class ComPort {
   private long handle;

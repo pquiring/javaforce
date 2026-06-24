@@ -1,13 +1,13 @@
 package javaforce.io;
 
+import javaforce.api.*;
+import javaforce.jni.*;
+import javaforce.ffm.*;
+
 /** Monitor Folder for changes.
  *
  * @author pquiring
  */
-
-import javaforce.api.*;
-import javaforce.jni.*;
-import javaforce.ffm.*;
 
 public class MonitorFolder {
   private long handle;
