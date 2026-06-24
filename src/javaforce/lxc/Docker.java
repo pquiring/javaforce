@@ -1,14 +1,14 @@
 package javaforce.lxc;
 
-/** Docker implementation of ContainerManager
- *
- * @author pquiring
- */
-
 import java.util.*;
 
 import javaforce.jni.lnx.*;
 import javaforce.*;
+
+/** Docker implementation of ContainerManager
+ *
+ * @author pquiring
+ */
 
 public class Docker implements LxcContainerManager {
 

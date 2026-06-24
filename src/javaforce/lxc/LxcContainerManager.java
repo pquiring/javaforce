@@ -1,11 +1,11 @@
 package javaforce.lxc;
 
+import javaforce.jni.lnx.*;
+
 /** Linux Container Manager interface
  *
  * @author pquiring
  */
-
-import javaforce.jni.lnx.*;
 
 public interface LxcContainerManager {
   //Images

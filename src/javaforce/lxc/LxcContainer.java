@@ -1,11 +1,11 @@
 package javaforce.lxc;
 
+import javaforce.jni.lnx.*;
+
 /** Linux Container interface
  *
  * @author pquiring
  */
-
-import javaforce.jni.lnx.*;
 
 public abstract class LxcContainer {
 

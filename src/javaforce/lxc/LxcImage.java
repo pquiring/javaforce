@@ -1,6 +1,6 @@
 package javaforce.lxc;
 
-/** Linux Image
+/** Linux Image.
  *
  * example:
  * [repo/]amd64/debian:trixie
