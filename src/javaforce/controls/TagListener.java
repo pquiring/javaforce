@@ -1,6 +1,6 @@
 package javaforce.controls;
 
-/** Tag Listener
+/** Tag Listener interface.
  *
  * @author pquiring
  */

@@ -1,15 +1,15 @@
 package javaforce.controls;
 
+import java.util.*;
+
+import javaforce.*;
+
 /** Monitors a PLC Tag.
  *
  * Auto-reconnects when disconnects.
  *
  * @author pquiring
  */
-
-import java.util.*;
-
-import javaforce.*;
 
 public class Tag {
   /** Host (usually IP Address) */

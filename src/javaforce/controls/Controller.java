@@ -1,11 +1,3 @@
-/**
- * Controller
- *
- * Connects to PLCs and read/write data.
- *
- * @author pquiring
- */
-
 package javaforce.controls;
 
 import java.io.*;
@@ -25,6 +17,14 @@ import org.apache.plc4x.java.api.messages.*;
 import org.apache.plc4x.java.api.model.*;
 import org.apache.plc4x.java.api.types.*;
 import org.apache.plc4x.java.api.value.*;
+
+/**
+ * Controller for PLCs.
+ *
+ * Connects to PLCs and read/write data.
+ *
+ * @author pquiring
+ */
 
 public class Controller {
   private boolean connected;
