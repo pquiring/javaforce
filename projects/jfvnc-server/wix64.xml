@@ -26,26 +26,16 @@
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jfvnccli.exe" Source="jfvnccli.exe" />
-        <File Id="jfvncconfig.exe" Source="jfvncconfig.exe" />
         <File Id="jfvncsession.exe" Source="jfvncsession.exe" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfVNCServer" DisplayName="jfVNCServer" Description="jf VNC Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfVNCServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
-    <!-- Step 2b: Add the shortcut to your installer package -->
-<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <StandardDirectory Id="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF463}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVNC Config" Description="VNC Config" Target="[APPLICATIONROOTDIRECTORY]jfvncconfig.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
-      </Component>
-    </StandardDirectory>
-
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
       <ComponentGroupRef Id="JRE" />
-      <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
     </Package>
