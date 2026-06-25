@@ -775,5 +775,8 @@ public class VNCServer extends ConfigServlet {
       }
       return status;
     }
+    public String getLogFile() {
+      return getLogFile();
+    }
   }
 }
