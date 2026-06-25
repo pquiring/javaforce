@@ -1,6 +1,4 @@
 /**
- * package javaforce.db;
- *
  * These classes provide a framework for persistent app data storage.
  *
  * Classes that derive from Row are records that are serialized and saved to disk.

@@ -1,6 +1,4 @@
 /**
- * package javaforce.net;
- *
  * Provides network related classes.
  *
  */

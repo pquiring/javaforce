@@ -1,6 +1,4 @@
 /**
- * package javaforce.tests;
- *
  * Collection of unit tests.
  *
  */

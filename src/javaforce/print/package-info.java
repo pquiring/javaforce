@@ -1,6 +1,4 @@
 /**
- * package javaforce.print;
- *
  * Provides low level printing services.
  *
  */

@@ -1,6 +1,4 @@
 /**
- * package javaforce.jbus;
- *
  * JBus is an inter-process communications protocol.
  *
  * JBusServer connects to a message bus with a specified name.

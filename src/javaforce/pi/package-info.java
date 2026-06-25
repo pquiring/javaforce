@@ -1,6 +1,4 @@
 /**
- * package javaforce.pi;
- *
  * Provides Raspberry PI related functions.
  *
  */

@@ -1,6 +1,4 @@
 /**
- * package javaforce.ui;
- *
  * This package includes a UI framework to replace AWT.
  * The GLFW project is used to create Windows and process events.
  *

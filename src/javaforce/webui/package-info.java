@@ -1,6 +1,4 @@
 /**
- * package javaforce.webui;
- *
  * WebUI is a web-based UI service.
  *
  * "Codes like a Desktop app, runs in a Browser."
