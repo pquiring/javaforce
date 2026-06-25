@@ -35,8 +35,8 @@ install.sh parameters
 
 Currently supported
 -------------------
-  debian : amd64 arm64 (includes Ubuntu)
-  fedora : amd64 arm64
+  debian : amd64 arm64 (includes ubuntu)
+  fedora : amd64 arm64 (includes centos)
   arch : amd64
 Full details are here : https://pquiring.github.io/repo/javaforce-status.txt
 
