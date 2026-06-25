@@ -10,6 +10,7 @@ import javaforce.*;
 import javaforce.jni.*;
 import javaforce.utils.*;
 import javaforce.bus.*;
+import javaforce.service.*;
 
 /** VNCServer (5900).
  *
@@ -18,10 +19,14 @@ import javaforce.bus.*;
  * @author peter.quiring
  */
 
-public class VNCServer {
-  public final static String busPack = "net.sf.jfvnc";
+public class VNCServer extends ConfigServlet {
+  public final static String busName = "net.sf.jfvnc";
 
   private VNCWebServer web;
+
+  public String getAppName() {return "VNC";}
+
+  public String getBusName() {return busName;}
 
   private boolean start() {
     return start(loadConfig(), true);
@@ -320,7 +325,7 @@ public class VNCServer {
   private class Server extends Thread {
     public void run() {
       VNCRobot robot;
-      busServer = new JBusServer(busPack, new JBusMethods());
+      busServer = new JBusServer(busName, new JBusMethods());
       busServer.connect();
       while (active) {
         try {
