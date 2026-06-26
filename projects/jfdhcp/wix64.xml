@@ -9,12 +9,12 @@
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcpserver" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcp" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCPServer"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCP"/> -->
     </StandardDirectory>
 
     <StandardDirectory Id="CommonAppDataFolder">
@@ -44,6 +44,7 @@
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
+      <ComponentRef Id="adminfiles" />
       <ComponentGroupRef Id="JRE" />
     </Feature>
 
