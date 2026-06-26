@@ -68,8 +68,8 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     servlets = new HashMap<>();
   }
 
-  /** startServlet on Servlet side
-   * See WebUIServletContext
+  /** startServlet on Servlet side.
+   * @see WebUIServletContext
    */
   public void startServlet(WebUIServlet handler) {
     this.handler = handler;
@@ -79,15 +79,16 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     //do not start web
   }
 
-  /** stopServlet on Servlet side
-   * See WebUIServletContext
+  /** stopServlet on Servlet side.
+   * @see WebUIServletContext
    */
   public void stopServlet() {
     stop();
   }
 
-  /** connectServlet on Servlet side
-   * See WebUIServletContext
+  /** connectServlet on Servlet side.
+   * Parameters are same as WebSocket ctor.
+   * @see WebUIServletContext
    */
   public void connectServlet(String server, String client, InputStream is, OutputStream os, String host, String url, String[] cookies) {
     try {
