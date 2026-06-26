@@ -26,8 +26,6 @@ public class ConfigService implements WebUIHandler {
   public WebUIServer server;
   public AccessControl access;
   private KeyMgmt keys;
-  private ArrayList<ComPort> com_sessions = new ArrayList<>();
-  private Object com_lock = new Object();
 
   public void start() {
     initSecureWebKeys();
@@ -78,7 +76,6 @@ public class ConfigService implements WebUIHandler {
   private static class UI {
     public WebUIClient client;
     public String user;
-    public Calendar now;
 
     public SplitPanel top_bottom_split;
     public SplitPanel left_right_split;
@@ -93,42 +90,11 @@ public class ConfigService implements WebUIHandler {
     public Button confirm_button;
     public Runnable confirm_action;
 
-    public PopupPanel browse_popup;
-    public Runnable browse_init;
-    public Label browse_errmsg;
-    public String browse_path;
-    public Button browse_button_select;
-    public Button browse_button_edit;
-    public String browse_file;
-    public String[] browse_filters;
-    public Runnable browse_complete_select;
-    public Runnable browse_complete_edit;
-    public Task browse_upload_task;
-    public Object browse_upload_wait;
-
-    public ComPort com;
-
     public void setRightPanel(Panel panel) {
       if (panel == null) return;
       right_panel = panel;
       left_right_split.setRightComponent(panel);
     }
-  }
-
-  private String getUser(WebUIClient client) {
-    return (String)client.getProperty("user");
-  }
-
-  private String getIP(WebUIClient client) {
-    return client.getClientHost();
-  }
-
-  private TaskEvent createEvent(String action, UI ui) {
-    return TaskEvent.create(action, getUser(ui.client), getIP(ui.client));
-  }
-
-  private TaskEvent createEvent(String action, String user, String ip) {
-    return TaskEvent.create(action, user, ip);
   }
 
   //WebUIHandler interface
@@ -141,16 +107,6 @@ public class ConfigService implements WebUIHandler {
   public void clientDisconnected(WebUIClient client) {
     UI ui = (UI)client.getProperty("ui");
     if (ui == null) return;
-    try {
-      if (ui.com != null) {
-        synchronized (com_lock) {
-          com_sessions.remove(ui.com);
-        }
-        ui.com.close();
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
   }
 
   public byte[] getResource(String url, HTTP.Parameters params, WebRequest request, WebResponse res) {
