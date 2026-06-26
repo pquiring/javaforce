@@ -40,6 +40,7 @@
     <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
+    <copy file="${app}.cfg" todir="/etc/javaforce/admin"/>
   </target>
 
   <target name="zip-msi" description="zip msi packages">

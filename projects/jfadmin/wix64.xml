@@ -12,6 +12,7 @@
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfAdmin" />
     </StandardDirectory>
+
     <StandardDirectory Id="ProgramMenuFolder">
     </StandardDirectory>
 
@@ -45,5 +46,5 @@
       <ComponentGroupRef Id="JRE" />
     </Feature>
 
-    </Package>
+  </Package>
 </Wix>

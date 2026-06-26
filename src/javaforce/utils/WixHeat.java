@@ -109,6 +109,7 @@ public class WixHeat {
 
     out.append("<Fragment>\n");
     out.append("    <DirectoryRef Id=\"" + did + "\">\n");
+    //                                                       {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx} : baseguid=0x10-0xff : guid=1000 - 1999
     out.append("        <Component Id=\"" + cid + "\" Guid=\"{8A8E15CB-3AA6-4D96-AD6D-5241AD" + Integer.toHexString(baseguid) + guid++ + "}\" Bitness=\"always64\">\n");
     int cnt = wixfiles.size();
     for(int a=0;a<cnt;a++) {

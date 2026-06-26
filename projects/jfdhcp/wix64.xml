@@ -11,9 +11,16 @@
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcpserver" />
     </StandardDirectory>
+
     <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCPServer"/> -->
+    </StandardDirectory>
+
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="APPLICATIONDATADIRECTORY_JAVAFORCE" Name="JavaForce">
+        <Directory Id="APPLICATIONDATADIRECTORY_JFADMIN" Name="admin" />
+      </Directory>
     </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
@@ -25,6 +32,12 @@
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfDHCPServer" DisplayName="jfDHCPServer" Description="jf DHCP Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDHCPServer" Wait="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
+      <Component Id="adminfiles" Guid="{244F45B7-7212-4E5A-A936-5268BFB7BBCD}">
+        <File Id="jfdhcp.cfg" Source="jfdhcp.cfg" />
       </Component>
     </DirectoryRef>
 
