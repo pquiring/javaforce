@@ -353,7 +353,7 @@ public class JF {
     }
   }
 
-  /** Returns common folder where jar files are stored for specifed app name. */
+  /** Returns common folder where jar files are stored for specified app name. */
   public static String getClassFolder(String appName) {
     if (JF.isWindows()) {
       String folder = System.getenv("ProgramFiles");

@@ -347,6 +347,7 @@ public class ConfigService implements WebUIHandler {
       int i1 = file.lastIndexOf(File.separatorChar);
       int i2 = file.lastIndexOf('.');
       String name = file.substring(i1 + 1, i2);
+      JFLog.log("Loading Servlet:" + file);
       WebUIServletContext servlet = server.createServlet(JF.getClassFolder(name), cp, cls);
       if (servlet == null) {
         JFLog.log("Servlet failed to load:" + file);

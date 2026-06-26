@@ -10,7 +10,7 @@
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfDVR Server" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfDVR-Server" />
     </StandardDirectory>
 
     <StandardDirectory Id="CommonAppDataFolder">
