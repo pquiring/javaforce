@@ -658,8 +658,6 @@ public class DNSServer extends ConfigServlet {
     }
   }
 
-  //Win32 Service
-
   private static DNSServer dns;
 
   public static void serviceStart(String[] args) {

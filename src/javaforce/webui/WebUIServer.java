@@ -260,10 +260,14 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   }
 
   public void addServlet(WebUIServletContext servlet) {
-    servlet.startServlet();
-    servlet.init();
-    synchronized (servlets) {
-      servlets.put(servlet.getName(), servlet);
+    try {
+      servlet.startServlet();
+      servlet.init();
+      synchronized (servlets) {
+        servlets.put(servlet.getName(), servlet);
+      }
+    } catch (Throwable t) {
+      JFLog.log(t);
     }
   }
 
@@ -271,8 +275,12 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     synchronized (servlets) {
       servlets.remove(servlet.getName());
     }
-    servlet.destroy();
-    servlet.stopServlet();
+    try {
+      servlet.destroy();
+      servlet.stopServlet();
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
   }
 
   public WebUIServletContext getServlet(String name) {

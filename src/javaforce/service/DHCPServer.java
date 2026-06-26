@@ -1029,8 +1029,6 @@ public class DHCPServer extends ConfigServlet {
     }
   }
 
-  //Win32 Service
-
   private static DHCPServer dhcp;
 
   public static void serviceStart(String[] args) {
