@@ -1,3 +1,0 @@
-/usr/bin/jfdns
-/lib/systemd/system/jfdns.service
-/etc/javaforce/admin/jfdns.cfg

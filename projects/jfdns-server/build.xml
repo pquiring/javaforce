@@ -1,7 +1,7 @@
 <project name="jfdns" default="jar" basedir=".">
   <description>dns</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfdns"/>
+  <property name="app" value="jfdns-server"/>
   <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.12"/>

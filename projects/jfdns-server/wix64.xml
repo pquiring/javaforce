@@ -4,12 +4,12 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfdns.ico" />
+    <Icon Id="icon.ico" SourceFile="jfdns-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdns" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdns-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{B5CB89AD-03DD-4853-BCDD-189F7E352AA2}" Bitness="always64">
-        <File Id="jfdns.exe" Source="jfdns.exe" KeyPath="yes">
+        <File Id="jfdns_server.exe" Source="jfdns-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule" Name="jfDNSServer" Protocol="udp" Port="53" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
@@ -37,7 +37,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{84AAFCC3-8F79-4746-BC89-24F4E62FD4A7}">
-        <File Id="jfdns.cfg" Source="jfdns.cfg" />
+        <File Id="jfdns_server.cfg" Source="jfdns-server.cfg" />
       </Component>
     </DirectoryRef>
 

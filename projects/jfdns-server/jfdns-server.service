@@ -3,8 +3,8 @@ Description=JavaForce DNS Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfdnssvc
-ExecStop=/usr/bin/jfdnssvc --stop
+ExecStart=/usr/bin/jfdns-server
+ExecStop=/usr/bin/jfdns-server --stop
 Restart=always
 
 [Install]
