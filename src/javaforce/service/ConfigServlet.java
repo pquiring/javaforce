@@ -93,6 +93,7 @@ public abstract class ConfigServlet implements WebUIServlet {
 
     save.addClickListener((me, cmp) -> {
       String cfg = (String)config.getText();
+      if (cfg.length() == 0) return;
       busClient.invoke(busName, "setConfig", cfg);
     });
 
