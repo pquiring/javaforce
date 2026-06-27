@@ -47,7 +47,7 @@ jboolean setup_JFHeap() {
   jclass cls = NULL;
   jstring classNameStr = NULL;
 
-  //JNIEnv->FindClass("javaforce...");  //uses native class loader, need to use Thread class loader
+  //JNIEnv->FindClass("javaforce...");  //uses platform class loader, need to use Thread class loader
 
   classNameStr = e->NewStringUTF("javaforce.jni.JFHeap");
   cls = (jclass)e->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);

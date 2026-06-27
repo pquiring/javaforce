@@ -261,6 +261,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public void addServlet(WebUIServletContext servlet) {
     try {
+      Thread.currentThread().setContextClassLoader(servlet.getClassLoader());
       servlet.startServlet();
       servlet.init();
       synchronized (servlets) {
@@ -276,6 +277,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       servlets.remove(servlet.getName());
     }
     try {
+      Thread.currentThread().setContextClassLoader(servlet.getClassLoader());
       servlet.destroy();
       servlet.stopServlet();
     } catch (Throwable t) {
@@ -322,6 +324,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
         servlet = servlets.get(name);
       }
       if (servlet == null) return REJECT;
+      Thread.currentThread().setContextClassLoader(servlet.getClassLoader());
       servlet.connectServlet(sock.getServerHost(), sock.getClientHost(), sock.getInputStream(), sock.getOutputStream(), sock.getHost(), sock.getURL(), sock.getCookies());
       return DETACH;
     } catch (Exception e) {

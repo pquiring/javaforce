@@ -348,6 +348,10 @@ public class WebServer {
     return String.format("%x\r\n", in.length).getBytes();
   }
 
+  /** Process WebSocket within WebUIServlet context.
+   *
+   * This method creates a new Thread that runs in the WebUIServlet ClassLoader.
+   */
   public void attachWebSocket(WebSocket socket) {
     new Thread() {
       public void run() {

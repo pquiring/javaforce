@@ -31,10 +31,15 @@ public abstract class ConfigServlet implements WebUIServlet {
   }
 
   public void init() {
-    appName = getAppName();
-    busName = getBusName();
-    busClient = new JBusClient(null);
-    busClient.connect();
+    try {
+      appName = getAppName();
+      busName = getBusName();
+      JFLog.init(JF.getLogPath() + "/" + appName + "-servlet.log", true);
+      busClient = new JBusClient(null);
+      busClient.connect();
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
   }
 
   public void destroy() {

@@ -153,6 +153,9 @@ public class FFM {
         lookup = linker.defaultLookup();
         execlookup = new ExecSymbolLookup();
         execlookup.init();
+        if (!jni_test()) {
+          setupJNI();
+        }
       }
     } catch (Throwable t) {
       JFLog.log(t);
@@ -718,7 +721,7 @@ public class FFM {
   }
 
   /** Setup JNI methods in JFHeap */
-  public static void setupJNI() {
+  private static void setupJNI() {
     if (debug) JFLog.log("FFM.setupJNI");
     MethodHandle setup = FFM.getFunctionPtr("_setup_JFHeap", FFM.getFunctionDesciptor(JAVA_BOOLEAN));
 

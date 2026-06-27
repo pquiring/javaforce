@@ -13,6 +13,8 @@ import javaforce.*;
  */
 
 public class WebUIServletContext {
+  private JFClassLoader loader;
+
   private Object servlet;
   private Method init;
   private Method destroy;
@@ -24,6 +26,7 @@ public class WebUIServletContext {
   private Method connectServlet;
 
   public WebUIServletContext(JFClassLoader loader, Object servlet) {
+    this.loader = loader;
     this.servlet = servlet;
 
     try {
@@ -41,6 +44,10 @@ public class WebUIServletContext {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public JFClassLoader getClassLoader() {
+    return loader;
   }
 
   //start WebUIServer within Servlet context
