@@ -1,0 +1,3 @@
+/usr/bin/jfdhcp-server
+/lib/systemd/system/jfdhcp-server.service
+/etc/javaforce/admin/jfdhcp-server.cfg

@@ -4,17 +4,17 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfdhcp.ico" />
+    <Icon Id="icon.ico" SourceFile="jfdhcp-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcp" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcp-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCP"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCPServer"/> -->
     </StandardDirectory>
 
     <StandardDirectory Id="CommonAppDataFolder">
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{E6CA49CE-48B5-43CF-950D-49C9D9BA9C4F}" Bitness="always64">
-        <File Id="jfdhcp.exe" Source="jfdhcp.exe" KeyPath="yes">
+        <File Id="jfdhcp_server.exe" Source="jfdhcp-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule" Name="jfDHCPServer" Protocol="udp" Port="67" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
@@ -37,7 +37,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{244F45B7-7212-4E5A-A936-5268BFB7BBCD}">
-        <File Id="jfdhcp.cfg" Source="jfdhcp.cfg" />
+        <File Id="jfdhcp_server.cfg" Source="jfdhcp-server.cfg" />
       </Component>
     </DirectoryRef>
 
