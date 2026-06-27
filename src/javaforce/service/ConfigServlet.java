@@ -61,23 +61,25 @@ public abstract class ConfigServlet implements WebUIServlet {
     Panel viewLogPanel = getViewLogPanel(ui);
     panel.add(viewLogPanel);
 
-    Label title = new Label(appName + " Configuration");
-    panel.add(title);
-
-    TextArea config = new TextArea("");
-    panel.add(config);
-
     ToolBar tools = new ToolBar();
     panel.add(tools);
 
-    Button view_log = new Button("View Log");
-    tools.add(view_log);
+    Label title = new Label(appName + " Configuration");
+    tools.add(title);
 
     Button load = new Button("Load Config");
     tools.add(load);
 
     Button save = new Button("Save Config");
     tools.add(save);
+
+    Button view_log = new Button("View Log");
+    tools.add(view_log);
+
+    TextArea config = new TextArea("");
+    config.setMaxWidth();
+    config.setFlex(true);
+    panel.add(config);
 
     view_log.addClickListener((me, cmp) -> {
       viewLogRefresh(ui);
@@ -124,7 +126,10 @@ public abstract class ConfigServlet implements WebUIServlet {
   private Panel getViewLogPanel(UI ui) {
     Panel panel = new PopupPanel("View Log");
 
-    ui.view_log_textarea = new TextArea("");
+    TextArea text = new TextArea("");
+    text.setWidth(1024);
+    text.setHeight(512);
+    ui.view_log_textarea = text;
     panel.add(ui.view_log_textarea);
 
     ToolBar tools = new ToolBar();
