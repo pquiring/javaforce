@@ -123,9 +123,9 @@ public class UnixSocketTransport extends DBusTransport {
     return busName;
   }
 
-  public int read(byte[] data) {
+  public int read(byte[] data, int offset, int length) {
     try {
-      int read = client.read(ByteBuffer.wrap(data));
+      int read = client.read(ByteBuffer.wrap(data, offset, length));
       return read;
     } catch (Exception e) {
       JFLog.log(e);
@@ -142,6 +142,8 @@ public class UnixSocketTransport extends DBusTransport {
       return false;
     }
   }
+
+  public void reconnect() {}
 
   public boolean isAlive() {
     return client != null;

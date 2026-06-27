@@ -25,7 +25,7 @@ HANDLE pipeCreate(const char* name, jboolean first)
   if (first) {
     openMode |= FILE_FLAG_FIRST_PIPE_INSTANCE;
   }
-  int pipeMode = PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT;
+  int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
 
   HANDLE ctx = CreateNamedPipe(name, openMode, pipeMode, PIPE_UNLIMITED_INSTANCES, 64 * 1024, 64 * 1024, 0, &sa);
 
@@ -46,6 +46,9 @@ jint pipeRead(HANDLE ctx, jbyte* buf, jint buf_off, jint buf_len)
 {
   int read = -1;
   ReadFile((HANDLE)ctx, buf + buf_off, buf_len, (LPDWORD)&read, NULL);
+  if (debug_pipes) {
+    printf("Pipe.Read=%d LastError=0x%x\n", read, GetLastError());
+  }
   return read;
 }
 

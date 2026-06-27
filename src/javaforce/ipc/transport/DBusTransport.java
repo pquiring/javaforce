@@ -10,14 +10,17 @@ import javaforce.ipc.*;
 public abstract class DBusTransport {
   public abstract boolean connect(String name, DBus bus, Runnable start_reader);
   public abstract boolean disconnect();
-  public abstract int read(byte[] data);
+  public abstract int read(byte[] data, int offset, int length);
   public abstract boolean write(String name, byte[] data, int offset, int length);
+  /** reconnect must be called after a complete message is read. */
+  public abstract void reconnect();
   public abstract boolean isAlive();
   public abstract String getBusName();
 
   private byte[] rString = new byte[1024];
+  /** Read String (max length ~ 1024) */
   public String read_String() {
-    int read = read(rString);
+    int read = read(rString, 0, 1024);
     if (read <= 0) return null;
     return new String(rString, 0, read);
   }

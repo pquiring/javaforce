@@ -60,6 +60,8 @@ public class DBus implements IPC {
   private static final boolean debug_msg = false;
   private static final boolean debug_reading = false;
 
+  private static final long max_packet_size = 32 * JF.MB;
+
   private static class Field {
     public byte type;
     public String sign;
@@ -502,8 +504,8 @@ public class DBus implements IPC {
     }
   }
 
-  private int read(byte[] data) {
-    return transport.read(data);
+  private int read(byte[] data, int offset, int length) {
+    return transport.read(data, offset, length);
   }
 
   int bodyLength;
@@ -950,7 +952,7 @@ public class DBus implements IPC {
         if (debug_reading) {
           JFLog.log("DBus.reading...");
         }
-        rpkt_len = read(rpkt);
+        rpkt_len = read(rpkt, 0, 16);
         if (debug_reading) {
           JFLog.log("DBus.read.length=" + rpkt_len);
         }
@@ -962,6 +964,11 @@ public class DBus implements IPC {
         if (rpkt_len == 0) {
           JF.sleep(100);
           continue;
+        }
+        if (rpkt_len != 16) {
+          JFLog.log("DBus.Reader:read header error");
+          disconnect();
+          break;
         }
         rpos = 0;
         fields.clear();
@@ -982,6 +989,46 @@ public class DBus implements IPC {
           msg_body_length = read_int();
           msg_serial = read_int();
           field_size = read_int();
+
+          int length = field_size;
+          //add padding to 8 bytes
+          int padding = (8 - (length % 8)) & 0x7;
+          length += padding;
+          //add body length
+          length += msg_body_length;
+
+          if (length > max_packet_size) {
+            JFLog.log("DBus.Reader:packet too large");
+            disconnect();
+            break;
+          }
+          while (rpkt.length < length) {
+            rpkt = new byte[rpkt.length << 1];
+          }
+          rpkt_len = 0;
+          while (rpkt_len != length) {
+            if (debug_reading) {
+              JFLog.log("DBus.reading:" + (rpkt.length - rpkt_len));
+            }
+            int read = read(rpkt, rpkt_len, rpkt.length - rpkt_len);
+            if (debug_reading) {
+              JFLog.log("DBus.read.length=" + read);
+            }
+            if (read == 0) {
+              JF.sleep(100);
+              continue;
+            }
+            if (read < 0) {
+              JFLog.log("DBus.Reader:read error");
+              disconnect();
+              break;
+            }
+            if (read > 0) {
+              rpkt_len += read;
+            }
+          }
+          transport.reconnect();
+          rpos = 0;
           if (debug) {
             JFLog.log("msg:" + msg_names[msg_type]);
             JFLog.log("field_size=" + field_size);

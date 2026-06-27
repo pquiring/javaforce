@@ -2,6 +2,7 @@ package javaforce.ipc.transport;
 
 import java.util.*;
 
+import javaforce.*;
 import javaforce.ipc.*;
 import javaforce.api.*;
 
@@ -52,20 +53,21 @@ public class WinPipeTransport extends DBusTransport {
     return name;
   }
 
-  public int read(byte[] data) {
-    int read = api.pipeRead(ctx, data, 0, data.length);
-    if (read > 0) {
-      //client connected : need to recreate server pipe
-      long new_ctx = api.pipeCreate(makePipeName(name), false);
-      api.pipeClose(ctx);
-      ctx = new_ctx;
-    }
+  public int read(byte[] data, int offset, int length) {
+    int read = api.pipeRead(ctx, data, offset, length);
     return read;
   }
 
   public boolean write(String name, byte[] data, int offset, int length) {
     if (name == null) return false;
     return api.pipeWrite(makePipeName(name), data, offset, length) == length;
+  }
+
+  public void reconnect() {
+    //client connected : need to recreate server pipe
+    long new_ctx = api.pipeCreate(makePipeName(name), false);
+    api.pipeClose(ctx);
+    ctx = new_ctx;
   }
 
   public boolean isAlive() {

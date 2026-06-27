@@ -109,18 +109,18 @@ public class TCPTransport extends DBusTransport {
   }
 
   /** Read DBus packet. */
-  public int read(byte[] data) {
+  public int read(byte[] data, int offset, int length) {
     byte[] pkt;
     synchronized (packets_lock) {
       try {packets_lock.wait(100);} catch (Exception e) {return 0;}
       if (packets.size() == 0) return 0;
       pkt = packets.remove(0);
     }
-    if (pkt.length > data.length) {
-      JFLog.log("TCPTransport:Error:pkt.length > data.length");
+    if (pkt.length > length) {
+      JFLog.log("TCPTransport:Error:pkt.length > length");
       return -1;
     }
-    System.arraycopy(pkt, 0, data, 0, pkt.length);
+    System.arraycopy(pkt, 0, data, offset, pkt.length);
     return pkt.length;
   }
 
@@ -147,6 +147,8 @@ public class TCPTransport extends DBusTransport {
       return false;
     }
   }
+
+  public void reconnect() {}
 
   public boolean isAlive() {
     return active;

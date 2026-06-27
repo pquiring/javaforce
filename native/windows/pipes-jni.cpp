@@ -30,7 +30,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinPipeJNI_pipeCreate
   if (first) {
     openMode |= FILE_FLAG_FIRST_PIPE_INSTANCE;
   }
-  int pipeMode = PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT;
+  int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
 
   HANDLE ctx = CreateNamedPipe(cname, openMode, pipeMode, PIPE_UNLIMITED_INSTANCES, 64 * 1024, 64 * 1024, 0, &sa);
 
@@ -57,6 +57,9 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinPipeJNI_pipeRead
   jbyte *cbuf = e->GetByteArrayElements(buf, NULL);
   ReadFile((HANDLE)ctx, cbuf + buf_off, buf_len, (LPDWORD)&read, NULL);
   e->ReleaseByteArrayElements(buf, cbuf, JNI_COMMIT);
+  if (debug_pipes) {
+    printf("Pipe.Read=%d LastError=0x%x\n", read, GetLastError());
+  }
   return read;
 }
 
