@@ -28,6 +28,7 @@ public class WAR {
   private WAR() {}
 
   public static class Servlet {
+    public JFClassLoader loader;
     //must use reflection to get servlet from loader
     private Object servlet;
 
@@ -48,6 +49,7 @@ public class WAR {
     private Object lock = new Object();
 
     private void init() {
+      Thread.currentThread().setContextClassLoader(loader);
       synchronized (lock) {
         if (inited) return;
         try {
@@ -62,6 +64,7 @@ public class WAR {
     }
 
     private void destroy() {
+      Thread.currentThread().setContextClassLoader(loader);
       synchronized (lock) {
         if (!inited) return;
         try {
@@ -97,6 +100,7 @@ public class WAR {
       if (!inited) {
         init();
       }
+      Thread.currentThread().setContextClassLoader(loader);
       try {
         service.invoke(servlet, http_req, http_res);
       } catch (Throwable t) {
@@ -143,6 +147,7 @@ public class WAR {
                 try {
                   String cls_name = child.content;
                   servlet = new Servlet();
+                  servlet.loader = war.loader;
                   servlet.name = name;
                   {
                     Class<?> cls = war.loader.findClass(cls_name);
