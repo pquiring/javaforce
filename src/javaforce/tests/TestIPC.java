@@ -106,6 +106,7 @@ public class TestIPC {
             ping();
             modify();
             process();
+            getString();
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -161,6 +162,9 @@ public class TestIPC {
           success++;
         }
       }
+    }
+    public void getString() throws Exception {
+      Object result = ipc.invoke("javaforce.TestIPC.Server", "getString");
     }
   }
 
@@ -224,6 +228,12 @@ public class TestIPC {
         if (debug_callback) JFLog.log("callback:" + value);
         callback_count++;
         return true;
+      }
+      private StringBuilder str = new StringBuilder();
+      /** Returns String that grows with each call. */
+      public String getString() {
+        str.append("0123456789abcdef");
+        return str.toString();
       }
     }
   }
