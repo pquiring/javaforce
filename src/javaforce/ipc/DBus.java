@@ -1008,9 +1008,9 @@ public class DBus implements IPC {
           rpkt_len = 0;
           while (rpkt_len != length) {
             if (debug_reading) {
-              JFLog.log("DBus.reading:" + (rpkt.length - rpkt_len));
+              JFLog.log("DBus.reading:" + (length - rpkt_len));
             }
-            int read = read(rpkt, rpkt_len, rpkt.length - rpkt_len);
+            int read = read(rpkt, rpkt_len, length - rpkt_len);
             if (debug_reading) {
               JFLog.log("DBus.read.length=" + read);
             }
