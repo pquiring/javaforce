@@ -20,7 +20,7 @@ import javaforce.service.*;
  */
 
 public class VNCServer extends ConfigServlet {
-  public final static String busName = "net.sf.jfvnc";
+  public final static String busName = "javaforce.jfvnc";
 
   private VNCWebServer web;
 
