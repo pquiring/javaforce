@@ -23,28 +23,30 @@ function detectos {
     return
   fi
   . /etc/os-release
+  #remove "quotes"
+  ID=${ID//\"/}
+  VERSION_ID=${VERSION_ID//\"/}
   case $ID in
     debian)
       pkg=deb
       PKG=DEB
       OS=debian
-      #need to remove quotes from VERSION_ID
-      RELEASE=${VERSION_ID//\"/}
+      RELEASE=$VERSION_ID
       case $HOSTTYPE in
-      x86_64)
-        ARCH=amd64
-        ;;
-      aarch64)
-        ARCH=arm64
-        ;;
-      *)
-        echo Invalid HOSTTYPE!
-        ABORT=true
-        return
-        ;;
+        x86_64)
+          ARCH=amd64
+          ;;
+        aarch64)
+          ARCH=arm64
+          ;;
+        *)
+          echo Invalid HOSTTYPE!
+          ABORT=true
+          return
+          ;;
       esac
       ;;
-    fedora)
+    fedora | centos)
       pkg=rpm
       PKG=RPM
       OS=fedora
@@ -67,7 +69,7 @@ function detectos {
       ;;
     *)
       echo Unknown os detected!
-      echo ID=%ID
+      echo ID=$ID
       ABORT=true
       return
       ;;
