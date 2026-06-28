@@ -14,7 +14,7 @@ public class GenFFM {
   public static void main(String[] args) {
     int idx;
     if (args.length != 5) {
-      System.out.println("Usage: JNI2FFM filein.java fileout.java package(s) implements_extends baseclass");
+      System.out.println("Usage: GenFFM filein.java fileout.java package(s) implements_extends baseclass");
       return;
     }
 
