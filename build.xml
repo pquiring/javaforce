@@ -229,93 +229,93 @@
     <delete dir="jre_base_javac/legal"/>
   </target>
 
-  <target name="jni2ffm" description="generate FFM sources">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/GLJNI.java"/>
+  <target name="genffm" description="generate FFM sources">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/gl/GL.java"/>
       <arg value="src/javaforce/ffm/GLFFM.java"/>
       <arg value="gl"/>
       <arg value="implements"/>
       <arg value="GL"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/CLJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/CLAPI.java"/>
       <arg value="src/javaforce/ffm/CLFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="CLAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/CameraJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/CameraAPI.java"/>
       <arg value="src/javaforce/ffm/CameraFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="CameraAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/PCapJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/PCapAPI.java"/>
       <arg value="src/javaforce/ffm/PCapFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="PCapAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/MediaJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/MediaAPI.java"/>
       <arg value="src/javaforce/ffm/MediaFFM.java"/>
       <arg value="api,media"/>
       <arg value="implements"/>
       <arg value="MediaAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/ComPortJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/ComPortAPI.java"/>
       <arg value="src/javaforce/ffm/ComPortFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="ComPortAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/MonitorFolderJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/MonitorFolderAPI.java"/>
       <arg value="src/javaforce/ffm/MonitorFolderFFM.java"/>
       <arg value="api,io"/>
       <arg value="implements"/>
       <arg value="MonitorFolderAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/SpeexJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/SpeexAPI.java"/>
       <arg value="src/javaforce/ffm/SpeexFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="SpeexAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/GPIOJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/GPIOAPI.java"/>
       <arg value="src/javaforce/ffm/GPIOFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="GPIOAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/I2CJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/I2CAPI.java"/>
       <arg value="src/javaforce/ffm/I2CFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="I2CAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/UIJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/UIAPI.java"/>
       <arg value="src/javaforce/ffm/UIFFM.java"/>
       <arg value="api,ui"/>
       <arg value="implements"/>
       <arg value="UIAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/VMJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/VMAPI.java"/>
       <arg value="src/javaforce/ffm/VMFFM.java"/>
       <arg value="api,vm"/>
       <arg value="implements"/>
       <arg value="VMAPI"/>
     </java>
-    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.JNI2FFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/jni/WinPipeJNI.java"/>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/WinPipeAPI.java"/>
       <arg value="src/javaforce/ffm/WinPipeFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>

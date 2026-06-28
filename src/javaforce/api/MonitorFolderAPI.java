@@ -12,6 +12,6 @@ import javaforce.io.*;
 
 public interface MonitorFolderAPI {
   public long monitorFolderCreate(String folder);
-  public void monitorFolderPoll(long handle, FolderListener listener);  //blocking until closed
+  public void monitorFolderPoll(long handle, FolderListener listener);
   public void monitorFolderClose(long handle);
 }

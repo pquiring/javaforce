@@ -12,7 +12,7 @@ import javaforce.*;
  * @author pquiring
  */
 
-public class JNI2FFM {
+public class GenFFM {
   public static void main(String[] args) {
     int idx;
     if (args.length != 5) {
