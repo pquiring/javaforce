@@ -49,7 +49,7 @@ function detectos {
     fedora | centos)
       pkg=rpm
       PKG=RPM
-      OS=fedora
+      OS=$ID
       RELEASE=$VERSION_ID
       ARCH=$HOSTTYPE
       ;;
