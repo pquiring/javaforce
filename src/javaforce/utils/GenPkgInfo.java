@@ -32,7 +32,7 @@ public class GenPkgInfo {
     if (args == null || args.length < 3) {
       System.out.println("GenPkgInfo : build linux package info files");
       System.out.println("  Usage : GenPkgInfo distro archtype release files.list");
-      System.out.println("    distro = debian fedora arch");
+      System.out.println("    distro = debian fedora centos arch");
       System.exit(1);
     }
     try {
@@ -61,6 +61,7 @@ public class GenPkgInfo {
     switch (distro) {
       case "debian": debian(); break;
       case "fedora": fedora(); break;
+      case "centos": fedora(); break;
       case "arch": arch(); break;
       default: error("Unknown distro:" + distro);
     }
@@ -95,6 +96,7 @@ public class GenPkgInfo {
     switch (distro) {
       case "debian": filename = "deb.deps"; break;
       case "fedora": filename = "rpm.deps"; break;
+      case "centos": filename = "rpm.deps"; break;
       case "arch": filename = "pac.deps"; break;
       default: return new String[0];
     }

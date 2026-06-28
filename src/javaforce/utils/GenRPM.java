@@ -26,9 +26,22 @@ public class GenRPM {
   public void run(String buildfile) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
+    String id = Linux.getOSRelease("ID");
     String files = "files.lst";
-    if (new File("files-fedora.lst").exists()) {
-      files = "files-fedora.lst";
+    switch (id) {
+      case "fedora":
+        if (new File("files-fedora.lst").exists()) {
+          files = "files-fedora.lst";
+        }
+        break;
+      case "centos":
+        if (new File("files-centos.lst").exists()) {
+          files = "files-centos.lst";
+        }
+        break;
+      default:
+        System.exit(1);
+        break;
     }
     if (!BuildTools.checkFiles(files)) {
       System.exit(1);
@@ -51,7 +64,7 @@ public class GenRPM {
     Process p;
     boolean debug = System.getenv("DEBUG") != null;
     try {
-      GenPkgInfo.main(new String[] {"fedora", arch, release, files});
+      GenPkgInfo.main(new String[] {id, arch, release, files});
       JF.copyAllAppend(files, "rpm.spec");
       if (new File(data).exists()) {
         new File(data).delete();
@@ -76,8 +89,8 @@ public class GenRPM {
       rt.exec(new String[] {"mv", JF.getUserPath() + "/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
       System.out.println(out + " created!");
       String version_id = Linux.getOSRelease("VERSION_ID");
-      if (new File(home + "/repo/fedora/readme.txt").exists()) {
-        if (!JF.moveFile(out, home + "/repo/fedora/" + version_id + "/" + archext + "/" + out)) throw new Exception("move failed");
+      if (new File(home + "/repo/" + id + "/readme.txt").exists()) {
+        if (!JF.moveFile(out, home + "/repo/" + id + "/" + version_id + "/" + archext + "/" + out)) throw new Exception("move failed");
       }
       System.exit(0);
     } catch (Exception e) {
@@ -94,7 +107,7 @@ public class GenRPM {
         JFLog.log("Error:Unable to detect CPU from env:HOSTTYPE or property:os.arch");
       }
     }
-    //fedora uses GNU names
+    //fedora/centos use GNU names
     switch (arch) {
       case "amd64": return "x86_64";
       case "arm64": return "aarch64";
