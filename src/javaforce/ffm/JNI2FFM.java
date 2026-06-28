@@ -59,6 +59,8 @@ public class JNI2FFM {
       return;
     }
 
+    int lnidx = 0;
+
     try {
 
       src.append("package javaforce.ffm;\n");
@@ -107,12 +109,24 @@ public class JNI2FFM {
       ctor.append("    try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}\n");
       ctor.append("\n");
       for(String ln : lns) {
+        lnidx++;
         ln = ln.trim();
-        String[] f = ln.split(" ");
+        String[] f = ln.split(" +");
         if (!f[0].equals("public")) continue;
         if (f.length < 2) continue;
-        if (!f[1].equals("native")) continue;
-        ln = ln.substring(14, ln.length() - 1);  //remove "public native" and ";" at end
+        switch (f[1]) {
+          case "interface":
+          case "static":
+          case "class":
+          case "synchronized":
+            continue;
+          case "native":
+            ln = ln.substring(14, ln.length() - 1);  //remove "public native" and ";" at end
+            break;
+          default:
+            ln = ln.substring(7, ln.length() - 1);  //remove "public " and ";" at end
+            break;
+        }
         idx = ln.indexOf(' ');
         String java_ret_type = ln.substring(0, idx);
         String ValueLayout_ret_type = null;
@@ -316,6 +330,7 @@ public class JNI2FFM {
       src.append("}\n");
 
     } catch (Exception e) {
+      JFLog.log("Exception on Line:" + lnidx);
       JFLog.log(e);
       return;
     }
