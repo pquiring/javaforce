@@ -5,9 +5,7 @@ import java.util.*;
 
 import javaforce.*;
 
-/** JNI to FFM conversion.
- *
- * Generates FFM code from JNI class.
+/** Generates FFM code from API class.
  *
  * @author pquiring
  */
