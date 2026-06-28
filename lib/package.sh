@@ -21,7 +21,7 @@ function detectos {
       pkg=deb
       PKG=DEB
       ;;
-    fedora)
+    fedora | centos)
       pkg=rpm
       PKG=RPM
       ;;
