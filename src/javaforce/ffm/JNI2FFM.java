@@ -108,8 +108,11 @@ public class JNI2FFM {
       ctor.append("\n");
       for(String ln : lns) {
         ln = ln.trim();
-        if (!ln.startsWith("public native")) continue;
-        ln = ln.substring(14, ln.length() - 1);
+        String[] f = ln.split(" ");
+        if (!f[0].equals("public")) continue;
+        if (f.length < 2) continue;
+        if (!f[1].equals("native")) continue;
+        ln = ln.substring(14, ln.length() - 1);  //remove "public native" and ";" at end
         idx = ln.indexOf(' ');
         String java_ret_type = ln.substring(0, idx);
         String ValueLayout_ret_type = null;
