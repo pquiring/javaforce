@@ -1,3 +1,7 @@
+Jun 29, 2026 : 0.43 released!
+  - new : now supports WebUIServlets to configure settings
+      with jfAdmin
+
 Jun 1, 2026 : 0.42 released!
   - new : split server/viewer into seperate packages
 
