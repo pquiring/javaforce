@@ -14,7 +14,7 @@ public class Config implements Serializable {
   private static final long serialVersionUID = 1L;
   public static Config current;
 
-  public static final String version = "0.1";
+  public static final String version = "0.2";
 
   public static final int LOG_SYSTEM = 0;
   public static final int LOG_ACCESS = 1;

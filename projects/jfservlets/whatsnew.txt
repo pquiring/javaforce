@@ -1,2 +1,6 @@
+2026-06-29 : 0.2 released
+  - new : classpath is assigned to Thread using setContextClassLoader()
+      before invoking servlet APIs
+
 2024-07-02 : 0.1 released
   - init release
