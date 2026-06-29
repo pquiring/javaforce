@@ -1,4 +1,4 @@
-package javaforce.jni.lnx;
+package javaforce.linux;
 
 import java.io.*;
 import java.util.*;

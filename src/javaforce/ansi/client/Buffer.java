@@ -11,7 +11,7 @@ import javax.swing.*;
 import javaforce.*;
 import javaforce.io.*;
 import javaforce.awt.*;
-import javaforce.jni.lnx.*;
+import javaforce.linux.*;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ClientChannel;

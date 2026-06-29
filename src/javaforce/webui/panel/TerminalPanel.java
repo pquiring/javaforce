@@ -1,5 +1,6 @@
 package javaforce.webui.panel;
 
+import javaforce.linux.LnxPty;
 import java.io.*;
 import java.util.*;
 
@@ -7,7 +8,6 @@ import javaforce.*;
 import javaforce.ansi.client.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
-import javaforce.jni.lnx.*;
 import javaforce.service.*;
 import javaforce.io.*;
 

@@ -1,6 +1,6 @@
 package javaforce.lxc;
 
-import javaforce.jni.lnx.*;
+import javaforce.linux.*;
 
 /** Linux Container Manager interface
  *

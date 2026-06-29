@@ -2,8 +2,8 @@ package javaforce.lxc;
 
 import java.util.*;
 
-import javaforce.jni.lnx.*;
 import javaforce.*;
+import javaforce.linux.*;
 
 /** Docker implementation of ContainerManager
  *
