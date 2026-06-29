@@ -1,5 +1,29 @@
 What's new...
 
+Jun 26/2026 : JF/112.0
+  - jfAdmin/0.2
+    - WebUIServlet API changed and is not compatible with previous version
+  - jfDVR-server/0.43
+    - implement WebUIServlet to configure settings within jfAdmin
+  - jfCommand/0.1
+    - system tray to run apps as admin
+  - jfVNCServer/0.12
+    - implement WebUIServlet to configure settings within jfAdmin
+  - jfServlets/0.2
+    - classpath is assigned to Thread using setContextClassLoader()
+  - jfDHCP/0.12
+    - implement WebUIServlet to configure settings within jfAdmin
+  - jfDNS/0.13
+    - implement WebUIServlet to configure settings within jfAdmin
+  - new javaforce.SQLPool
+    - Tomcat based SQL Connection Pool
+  - LLRP
+    - fixed sending messages issues
+  - centos
+    - added to repos hosted on sf.net
+  - MQTT
+    - added onUnsubscribe
+
 Jun 10/2026 : JF/111.0
   - new : WebUI : added WebUIServlet
     - allows embedding WebUI apps into a common server
