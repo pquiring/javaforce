@@ -4,7 +4,7 @@
   <property name="app" value="jfdhcp-server"/>
   <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.11"/>
+  <property name="version" value="0.12"/>
   <property name="jre" location="${home}/jre_base"/>
 
   <import file="${home}/base.xml"/>
