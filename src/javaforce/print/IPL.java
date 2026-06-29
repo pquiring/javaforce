@@ -10,8 +10,9 @@ import javaforce.*;
  *
  * v1.0
  *
+ * Created July 13, 2020
+ *
  * @author pquiring
- * @date July 13, 2020
  */
 
 public class IPL {

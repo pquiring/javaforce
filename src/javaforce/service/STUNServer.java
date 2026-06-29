@@ -25,7 +25,7 @@ import javaforce.bus.*;
  *
  * Notes:
  *  - Doesn't support CHANGE_REQUEST w/ Different IP
- *  - bind & alloc use the same timer (refresh one, the other is refreshed too)
+ *  - bind and alloc use the same timer (refresh one, the other is refreshed too)
  *  - limit one channel per client ip/port
  */
 

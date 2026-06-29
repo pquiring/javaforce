@@ -6,7 +6,7 @@ import java.util.Random;
 import javaforce.*;
 
 /**
- * Find & Replace utility.
+ * Find and Replace utility.
  *
  * Usage : "oldstr" "newstr" filespec [-i] [-asis] [-r]
  * -i = case-insensitive

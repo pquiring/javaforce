@@ -5,7 +5,7 @@ import java.util.*;
 /** EMail.
  *
  * General Format:
- * HEADER: real name <user@domain>
+ * HEADER: real name &lt;user@domain&gt;
  *
  * Includes user defined fields : pass, flags;
  *
