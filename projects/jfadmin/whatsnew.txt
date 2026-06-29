@@ -1,2 +1,6 @@
+2026-06-29 : 0.2
+  - new : changes to WebUIServlet API
+    - not compatible with older versions
+
 2026-06-10 : 0.1
   - new : init app release
