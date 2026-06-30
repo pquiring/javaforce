@@ -16,7 +16,6 @@ import javaforce.awt.*;
 import javaforce.vm.*;
 import javaforce.lxc.*;
 import javaforce.linux.*;
-import javaforce.jni.lnx.*;
 import javaforce.net.*;
 import javaforce.service.*;
 import javaforce.webui.*;

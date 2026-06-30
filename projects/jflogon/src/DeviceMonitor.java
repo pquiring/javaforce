@@ -6,7 +6,7 @@
 
 import javaforce.*;
 import javaforce.jni.*;
-import javaforce.jni.lnx.*;
+import javaforce.linux.*;
 import javaforce.utils.*;
 
 public class DeviceMonitor extends Thread implements ShellProcessListener {

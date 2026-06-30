@@ -12,7 +12,7 @@ import java.awt.Color;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jni.*;
-import javaforce.jni.lnx.*;
+import javaforce.linux.*;
 
 public class Settings {
   public static Settings settings = new Settings();
