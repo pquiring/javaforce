@@ -52,6 +52,18 @@ JNIEXPORT void JNICALL Java_javaforce_jni_JFHeap_unpin
   e->ReleasePrimitiveArrayCritical((jarray)array, (void*)ptr, commit ? 0 : JNI_ABORT);
 }
 
+JNIEXPORT jlong JNICALL Java_javaforce_jni_JFHeap_ref
+  (JNIEnv *e, jclass c, jobject obj)
+{
+  return (jlong)e->NewGlobalRef(obj);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_JFHeap_unref
+  (JNIEnv *e, jclass c, jlong ref)
+{
+  e->DeleteGlobalRef((jobject)ref);
+}
+
 static JNINativeMethod javaforce_jni_JFNative[] = {
   {"getVersion", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_JFNative_getVersion},
   {"allocate", "(I)Ljava/nio/ByteBuffer;", (void *)&Java_javaforce_jni_JFNative_allocate},
@@ -69,6 +81,8 @@ void jfnative_register(JNIEnv *env) {
 static JNINativeMethod javaforce_jni_JFHeap[] = {
   {"pin", "(Ljava/lang/Object;)J", (void *)&Java_javaforce_jni_JFHeap_pin},
   {"unpin", "(Ljava/lang/Object;JZ)V", (void *)&Java_javaforce_jni_JFHeap_unpin},
+  {"ref", "(Ljava/lang/Object;)J", (void *)&Java_javaforce_jni_JFHeap_ref},
+  {"unref", "(J)V", (void *)&Java_javaforce_jni_JFHeap_unref},
 };
 
 void jfheap_register(JNIEnv *env) {

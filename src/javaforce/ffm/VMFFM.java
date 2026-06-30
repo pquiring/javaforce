@@ -6,14 +6,14 @@ import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+import javaforce.api.*;
+import javaforce.vm.*;
 
 /** VMAPI FFM implementation.
  *
  * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
  */
 
-import javaforce.api.*;
-import javaforce.vm.*;
 
 public class VMFFM implements VMAPI {
 

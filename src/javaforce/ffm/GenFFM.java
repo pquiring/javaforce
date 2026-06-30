@@ -63,22 +63,25 @@ public class GenFFM {
 
       src.append("package javaforce.ffm;\n");
       src.append("\n");
+      if (basecls.equals("X11API")) {
+        src.append("import java.awt.*;\n");
+      }
       src.append("import java.lang.foreign.*;\n");
       src.append("import java.lang.invoke.*;\n");
       src.append("import static java.lang.foreign.ValueLayout.*;\n");
       src.append("\n");
       src.append("import javaforce.*;\n");
       src.append("import javaforce.ffm.*;\n");
+      String[] packs = pack.split(",");
+      for(String p : packs) {
+        src.append("import javaforce." + p + ".*;\n");
+      }
       src.append("\n");
       src.append("/** " + basecls + " FFM implementation.\n");
       src.append(" *\n");
       src.append(" * NON-AI MACHINE GENERATED CODE - DO NOT EDIT\n");
       src.append(" */\n");
       src.append("\n");
-      String[] packs = pack.split(",");
-      for(String p : packs) {
-        src.append("import javaforce." + p + ".*;\n");
-      }
       src.append("\n");
       src.append("public class " + cls_out + " " + i_e + " " + basecls + " {\n");
       src.append("\n");
@@ -123,6 +126,7 @@ public class GenFFM {
           case "static":
           case "class":
           case "synchronized":
+          case "final":
             continue;
           case "native":
             ln = ln.substring(14, ln.length() - 1);  //remove "public native" and ";" at end
@@ -185,6 +189,7 @@ public class GenFFM {
         boolean first_method = true;
         boolean first_src = true;
         boolean first_ctor = true;
+        String object = null;
         method.append(func_name);
         method.append(".invokeExact(");
 
@@ -263,6 +268,12 @@ public class GenFFM {
             } else if (java_type.equals("String")) {
               method.append("arena.allocateFrom(" + arg_name + ")");
               arena_needed = true;
+            } else if (java_type.equals("X11Listener")) {
+              method.append("FFM.upcall_X11Listener");
+              method.insert(before_invoke, "FFM.setX11Listener(" + arg_name + ");");
+            } else if (java_type.equals("Window")) {
+              method.append("FFM.ref_object(" + arg_name + ")");
+              object = arg_name;
             } else {
               method.append(arg_name);
             }
@@ -290,6 +301,9 @@ public class GenFFM {
           String segment_name = "_array_" + arg_name;
           method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
         }
+        if (object != null) {
+          method.append("FFM.unref_object(" + object + ");");
+        }
         if (!isRetVoid) {
           method.append("return ");
           if (isRetArray) {
@@ -312,6 +326,7 @@ public class GenFFM {
             switch (java_ret_type) {
               case "String": method.append("null"); break;
               case "boolean": method.append("false"); break;
+              case "char": method.append("(char)-1"); break;
               default: method.append("-1"); break;
             }
           }

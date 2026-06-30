@@ -6,13 +6,13 @@ import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+import javaforce.gl.*;
 
 /** GL FFM implementation.
  *
  * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
  */
 
-import javaforce.gl.*;
 
 public class GLFFM implements GL {
 

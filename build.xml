@@ -321,6 +321,27 @@
       <arg value="implements"/>
       <arg value="WinPipeAPI"/>
     </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/X11API.java"/>
+      <arg value="src/javaforce/ffm/X11FFM.java"/>
+      <arg value="api,linux"/>
+      <arg value="implements"/>
+      <arg value="X11API"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/LinuxAPI.java"/>
+      <arg value="src/javaforce/ffm/LinuxFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="LinuxAPI"/>
+    </java>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/api/WindowsAPI.java"/>
+      <arg value="src/javaforce/ffm/WindowsFFM.java"/>
+      <arg value="api"/>
+      <arg value="implements"/>
+      <arg value="WindowsAPI"/>
+    </java>
   </target>
 
   <target name="clean" description="deletes compiled files">

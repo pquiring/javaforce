@@ -6,13 +6,13 @@ import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+import javaforce.api.*;
 
 /** GPIOAPI FFM implementation.
  *
  * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
  */
 
-import javaforce.api.*;
 
 public class GPIOFFM implements GPIOAPI {
 

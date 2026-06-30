@@ -6,13 +6,13 @@ import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ffm.*;
+import javaforce.api.*;
 
 /** ComPortAPI FFM implementation.
  *
  * NON-AI MACHINE GENERATED CODE - DO NOT EDIT
  */
 
-import javaforce.api.*;
 
 public class ComPortFFM implements ComPortAPI {
 
