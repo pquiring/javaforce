@@ -108,6 +108,12 @@ public class GenFFM {
       ctor.append("\n");
       for(String ln : lns) {
         lnidx++;
+        //remove comments
+        int cmt = ln.indexOf("//");
+        if (cmt != -1) {
+          ln = ln.substring(0, cmt);
+        }
+        //remove whitespace
         ln = ln.trim();
         String[] f = ln.split(" +");
         if (!f[0].equals("public")) continue;
