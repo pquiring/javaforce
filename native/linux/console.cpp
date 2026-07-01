@@ -1,20 +1,16 @@
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsoleSize
-  (JNIEnv *e, jclass c)
+jint* getConsoleSize()
 {
-  int xy[2];
+  jint* xy = ffm->newIntArray(2);
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
   xy[0] = w.ws_col;
   xy[1] = w.ws_row;
-  jintArray ia = e->NewIntArray(2);
-  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
-  return ia;
+  return xy;
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsolePos
-  (JNIEnv *e, jclass c)
+jint* getConsolePos()
 {
-  int xy[2];
+  jint* xy = ffm->newIntArray(2);
   //print ESC[6n
   printf("\x1b[6n");
   int x = 1;
@@ -40,9 +36,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsolePos
   }
   xy[0] = x;
   xy[1] = y;
-  jintArray ia = e->NewIntArray(2);
-  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
-  return ia;
+  return xy;
 }
 
 static char console_buffer[8];
@@ -56,8 +50,7 @@ static void StringCopy(char *dest, const char *src) {
 
 static struct termios oldt, newt;
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_enableConsoleMode
-  (JNIEnv *e, jclass c)
+void enableConsoleMode()
 {
   console_buffer[0] = 0;
   (*_initscr)();
@@ -68,14 +61,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_enableConsoleMode
   (*_wtimeout)(*_stdscr, -1);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_disableConsoleMode
-  (JNIEnv *e, jclass c)
+void disableConsoleMode()
 {
   (*_endwin)();
 }
 
-JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
-  (JNIEnv *e, jclass c)
+jchar readConsole()
 {
   if (console_buffer[0] != 0) {
     char ret = console_buffer[0];
@@ -104,8 +95,7 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
   return (jchar)ch;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
-  (JNIEnv *e, jclass c)
+jboolean peekConsole()
 {
   if (console_buffer[0] != 0) return JNI_TRUE;
   (*_wtimeout)(*_stdscr, 0);
@@ -138,17 +128,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsole
-  (JNIEnv *e, jclass c, jint ch)
+void writeConsole(jint ch)
 {
   printf("%c", ch);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
-  (JNIEnv *e, jclass c, jbyteArray ba, jint off, jint len)
+void writeConsoleArray(jbyte* baptr, jint off, jint len)
 {
   jbyte tmp[128];
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
   int length = len;
   int pos = off;
   while (length > 0) {
@@ -164,5 +151,15 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
     }
     printf("%s", tmp);
   }
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+}
+
+extern "C" {
+  JNIEXPORT jint* (*_getConsoleSize)() = &getConsoleSize;
+  JNIEXPORT jint* (*_getConsolePos)() = &getConsolePos;
+  JNIEXPORT void (*_enableConsoleMode)() = &enableConsoleMode;
+  JNIEXPORT void (*_disableConsoleMode)() = &disableConsoleMode;
+  JNIEXPORT jchar (*_readConsole)() = &readConsole;
+  JNIEXPORT jboolean (*_peekConsole)() = &peekConsole;
+  JNIEXPORT void (*_writeConsole)(jint) = &writeConsole;
+  JNIEXPORT void (*_writeConsoleArray)(jbyte*,jint,jint) = &writeConsoleArray;
 }

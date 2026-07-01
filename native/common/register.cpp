@@ -66,9 +66,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_JFHeap_unref
 
 static JNINativeMethod javaforce_jni_JFNative[] = {
   {"getVersion", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_JFNative_getVersion},
-  {"allocate", "(I)Ljava/nio/ByteBuffer;", (void *)&Java_javaforce_jni_JFNative_allocate},
-  {"free", "(Ljava/nio/ByteBuffer;)V", (void *)&Java_javaforce_jni_JFNative_free},
-  {"getWindowHandle", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_JFNative_getWindowHandle},
 };
 
 void jfnative_register(JNIEnv *env) {

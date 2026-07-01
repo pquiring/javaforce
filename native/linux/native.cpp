@@ -135,8 +135,7 @@ void sleep_ms(int milliseconds) {
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
-  (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libv4l2_so, jstring libpam_so, jstring libncurses_so)
+jboolean lnxInit(const char* libX11_so, const char* libgl_so, const char* libv4l2_so, const char* libpam_so, const char* libncurses_so)
 {
   if (jawt == NULL) {
     jawt = loadLibrary("libjawt.so");
@@ -148,9 +147,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   }
   isWayland = getenv("WAYLAND_DISPLAY") != NULL;
   if (x11 == NULL && libX11_so != NULL) {
-    const char *clibX11_so = e->GetStringUTFChars(libX11_so,NULL);
-    x11 = dlopen(clibX11_so, RTLD_LAZY | RTLD_GLOBAL);
-    e->ReleaseStringUTFChars(libX11_so, clibX11_so);
+    x11 = dlopen(libX11_so, RTLD_LAZY | RTLD_GLOBAL);
     if (x11 == NULL) {
       printf("Warning:dlopen(libX11.so) unsuccessful\n");
     } else {
@@ -179,9 +176,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     }
   }
   if (xgl == NULL && libgl_so != NULL) {
-    const char *clibgl_so = e->GetStringUTFChars(libgl_so,NULL);
-    xgl = dlopen(clibgl_so, RTLD_LAZY | RTLD_GLOBAL);
-    e->ReleaseStringUTFChars(libgl_so, clibgl_so);
+    xgl = dlopen(libgl_so, RTLD_LAZY | RTLD_GLOBAL);
     if (xgl == NULL) {
       printf("Warning:dlopen(libGL.so) unsuccessful\n");
     } else {
@@ -194,9 +189,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     }
   }
   if (v4l2 == NULL && libv4l2_so != NULL) {
-    const char *clibv4l2_so = e->GetStringUTFChars(libv4l2_so,NULL);
-    v4l2 = dlopen(clibv4l2_so, RTLD_LAZY | RTLD_GLOBAL);
-    e->ReleaseStringUTFChars(libv4l2_so, clibv4l2_so);
+    v4l2 = dlopen(libv4l2_so, RTLD_LAZY | RTLD_GLOBAL);
     if (v4l2 == NULL) {
       printf("Warning:dlopen(libv4l2.so) unsuccessful\n");
     } else {
@@ -210,9 +203,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     }
   }
   if (pam == NULL && libpam_so != NULL) {
-    const char *clibpam_so = e->GetStringUTFChars(libpam_so,NULL);
-    pam = dlopen(clibpam_so, RTLD_LAZY | RTLD_GLOBAL);
-    e->ReleaseStringUTFChars(libpam_so, clibpam_so);
+    pam = dlopen(libpam_so, RTLD_LAZY | RTLD_GLOBAL);
     if (pam == NULL) {
       printf("Warning:dlopen(libpam.so) unsuccessful\n");
     } else {
@@ -222,9 +213,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     }
   }
   if (ncurses == NULL && libncurses_so != NULL) {
-    const char *clibncurses_so = e->GetStringUTFChars(libncurses_so,NULL);
-    ncurses = dlopen(clibncurses_so, RTLD_LAZY | RTLD_GLOBAL);
-    e->ReleaseStringUTFChars(libncurses_so, clibncurses_so);
+    ncurses = dlopen(libncurses_so, RTLD_LAZY | RTLD_GLOBAL);
     if (ncurses == NULL) {
       printf("Warning:dlopen(libncurses.so) unsuccessful\n");
     } else {
@@ -335,15 +324,6 @@ static jlong getWaylandID(JNIEnv *e, jobject c) {
   return handle;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_JFNative_getWindowHandle
-  (JNIEnv *e, jclass c, jobject window)
-{
-  if (isWayland)
-    return getWaylandID(e, window);
-  else
-    return getX11ID(e, window);
-}
-
 #include "../common/ui-jni.cpp"
 #include "../common/ui-ffm.cpp"
 
@@ -374,12 +354,6 @@ void uiWindowSetIcon(GLFWContextFFM* ctx, const char* filename, jint x, jint y)
   //TODO
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
-  (JNIEnv *e, jobject c, jlong id, jstring filename, jint x, jint y)
-{
-  //TODO
-}
-
 extern "C" {
   JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*,const char*,jint,jint) = &uiWindowSetIcon;
 }
@@ -405,74 +379,53 @@ extern "C" {
 
 //misc
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_setenv
-  (JNIEnv *e, jclass c, jstring name, jstring value)
+void setEnv(const char* name, const char* value)
 {
-  const char *cname = e->GetStringUTFChars(name,NULL);
-  const char *cvalue = e->GetStringUTFChars(value,NULL);
-  setenv(cname, cvalue, 1);
-  e->ReleaseStringUTFChars(name, cname);
-  e->ReleaseStringUTFChars(value, cvalue);
+  setenv(name, value, 1);
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_fileGetMode
-  (JNIEnv *e, jclass c, jstring name)
+jint fileGetMode(const char* name)
 {
   struct stat s;
-  const char *cname = e->GetStringUTFChars(name,NULL);
-  ::lstat((const char *)cname, (struct stat*)&s);
-  e->ReleaseStringUTFChars(name, cname);
+  ::lstat(name, (struct stat*)&s);
   return s.st_mode;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetMode
-  (JNIEnv *e, jclass c, jstring name, jint mode)
+void fileSetMode(const char* name, jint mode)
 {
-  const char *cname = e->GetStringUTFChars(name,NULL);
-  ::chmod((const char *)cname, mode);
-  e->ReleaseStringUTFChars(name, cname);
+  ::chmod(name, mode);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetAccessTime
-  (JNIEnv *e, jclass c, jstring name, jlong ts)
+void fileSetAccessTime(const char* name, jlong ts)
 {
   struct stat s;
   struct utimbuf tb;
-  const char *cname = e->GetStringUTFChars(name,NULL);
-  ::lstat((const char *)cname, (struct stat*)&s);
+  ::lstat(name, (struct stat*)&s);
   ts /= 1000L;
   tb.actime = ts;
   tb.modtime = s.st_mtime;
-  ::utime((const char *)cname, &tb);
-  e->ReleaseStringUTFChars(name, cname);
+  ::utime(name, &tb);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetModifiedTime
-  (JNIEnv *e, jclass c, jstring name, jlong ts)
+void fileSetModifiedTime(const char* name, jlong ts)
 {
   struct stat s;
   struct utimbuf tb;
-  const char *cname = e->GetStringUTFChars(name,NULL);
-  ::lstat((const char *)cname, (struct stat*)&s);
+  ::lstat(name, (struct stat*)&s);
   ts /= 1000L;
   tb.actime = s.st_atime;
   tb.modtime = ts;
-  ::utime((const char *)cname, &tb);
-  e->ReleaseStringUTFChars(name, cname);
+  ::utime(name, &tb);
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_fileGetID
-  (JNIEnv *e, jclass c, jstring name)
+jlong fileGetID(const char* name)
 {
   struct stat s;
-  const char *cname = e->GetStringUTFChars(name,NULL);
-  ::lstat((const char *)cname, (struct stat*)&s);
-  e->ReleaseStringUTFChars(name, cname);
+  ::lstat(name, (struct stat*)&s);
   return s.st_ino;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_getuid
-  (JNIEnv *e, jclass c)
+jint getUID()
 {
   return getuid();
 }
@@ -526,35 +479,6 @@ void camera_register(JNIEnv *env) {
 
 #endif  //__FreeBSD__
 
-//Linux native methods
-static JNINativeMethod javaforce_jni_LnxNative[] = {
-  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
-  {"ptyAlloc", "()J", (void *)&Java_javaforce_jni_LnxNative_ptyAlloc},
-  {"ptyFree", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyFree},
-  {"ptyOpen", "(J)Ljava/lang/String;", (void *)&Java_javaforce_jni_LnxNative_ptyOpen},
-  {"ptyClose", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyClose},
-  {"ptyRead", "(J[B)I", (void *)&Java_javaforce_jni_LnxNative_ptyRead},
-  {"ptyWrite", "(J[B)V", (void *)&Java_javaforce_jni_LnxNative_ptyWrite},
-  {"ptySetSize", "(JII)V", (void *)&Java_javaforce_jni_LnxNative_ptySetSize},
-  {"ptyChildExec", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_ptyChildExec},
-  {"authUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
-  {"setenv", "(Ljava/lang/String;Ljava/lang/String;)V", (void *)&Java_javaforce_jni_LnxNative_setenv},
-  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_enableConsoleMode},
-  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_disableConsoleMode},
-  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsoleSize},
-  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsolePos},
-  {"readConsole", "()C", (void *)&Java_javaforce_jni_LnxNative_readConsole},
-  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_LnxNative_peekConsole},
-  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_LnxNative_writeConsole},
-  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_LnxNative_writeConsoleArray},
-  {"fileGetMode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_fileGetMode},
-  {"fileSetMode", "(Ljava/lang/String;I)V", (void *)&Java_javaforce_jni_LnxNative_fileSetMode},
-  {"fileSetAccessTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetAccessTime},
-  {"fileSetModifiedTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetModifiedTime},
-  {"fileGetID", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_fileGetID},
-  {"getuid", "()I", (void *)&Java_javaforce_jni_LnxNative_getuid},
-};
-
 static JNINativeMethod javaforce_jni_X11[] = {
   {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_X11_x11_1get_1id},
   {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1set_1desktop},
@@ -596,9 +520,6 @@ extern "C" void lnxnative_register(JNIEnv *env);
 void lnxnative_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/jni/LnxNative");
-  registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
-
   cls = findClass(env, "javaforce/jni/X11");
   registerNatives(env, cls, javaforce_jni_X11, sizeof(javaforce_jni_X11)/sizeof(JNINativeMethod));
 
@@ -611,9 +532,6 @@ void lnxnative_register(JNIEnv *env) {
 #endif
 }
 
-#define OS_NATIVES_CLASS "javaforce.jni.LnxNative"
-#define OS_NATIVES_METHODS javaforce_jni_LnxNative
-
 #include "../common/register.cpp"
 
 JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
@@ -623,4 +541,15 @@ JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
     return NULL;
   }
   return (JNI_GetCreatedJavaVMs_t)dlsym(lib, "JNI_GetCreatedJavaVMs");
+}
+
+extern "C" {
+  JNIEXPORT jboolean (*_lnxInit)(const char*,const char*,const char*,const char*,const char*) = &lnxInit;
+  JNIEXPORT void (*_setEnv)(const char*,const char*) = &setEnv;
+  JNIEXPORT jint (*_fileGetMode)(const char*) = &fileGetMode;
+  JNIEXPORT void (*_fileSetMode)(const char*,jint) = &fileSetMode;
+  JNIEXPORT void (*_fileSetAccessTime)(const char*,jlong) = &fileSetAccessTime;
+  JNIEXPORT void (*_fileSetModifiedTime)(const char*,jlong) = &fileSetModifiedTime;
+  JNIEXPORT jlong (*_fileGetID)(const char*) = &fileGetID;
+  JNIEXPORT jint (*_getUID)() = & getUID;
 }

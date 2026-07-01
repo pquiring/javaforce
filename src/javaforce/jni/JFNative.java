@@ -79,15 +79,4 @@ public class JFNative {
 
   /** Returns native ABI Version. */
   public native static String getVersion();
-
-  /** Allocate a Direct ByteBuffer. */
-  public native static ByteBuffer allocate(int size);
-
-  /** Free memory backing a Direct ByteBuffer.
-   * Failing to call free() will result in memory leak.
-   */
-  public native static void free(ByteBuffer buffer);
-
-  /** Returns native handle for Window. */
-  public native static long getWindowHandle(Window window);
 }

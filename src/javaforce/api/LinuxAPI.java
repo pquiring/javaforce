@@ -14,8 +14,8 @@ public interface LinuxAPI {
   public void ptyFree(long ctx);  //free resources on parent side
   public String ptyOpen(long ctx);  //creates a pty and returns the slaveName (one use per ctx)
   public void ptyClose(long ctx);  //close pty
-  public int ptyRead(long ctx, byte[] data);  //read child output on parent side
-  public void ptyWrite(long ctx, byte[] data);  //write to child on parent side
+  public int ptyRead(long ctx, byte[] data, int offset, int length);  //read child output on parent side
+  public void ptyWrite(long ctx, byte[] data, int offset, int length);  //write to child on parent side
   public void ptySetSize(long ctx, int x, int y);  //set child term size
   public long ptyChildExec(String slaveName, String cmd, String[] args, String[] env);  //spawn child process
 
@@ -23,7 +23,7 @@ public interface LinuxAPI {
   public boolean authUser(String user, String pass, String backend);
 
   //setenv
-  public void setenv(String name, String value);
+  public void setEnv(String name, String value);
 
   //console
   public void enableConsoleMode();
@@ -43,5 +43,5 @@ public interface LinuxAPI {
   public long fileGetID(String path);
 
   //user
-  public int getuid();
+  public int getUID();
 }

@@ -95,6 +95,5 @@ public class TestAWT extends java.awt.Frame {
   // End of variables declaration//GEN-END:variables
 
   private void test() {
-    JFLog.log(String.format("Window Handle = %x", JFNative.getWindowHandle(this)));
   }
 }

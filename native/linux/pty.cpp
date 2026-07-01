@@ -4,8 +4,7 @@ struct Pty {
   jboolean closed;
 };
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyAlloc
-  (JNIEnv *e, jclass c)
+jlong ptyAlloc()
 {
   Pty *pty;
   pty = (Pty*)malloc(sizeof(Pty));
@@ -13,15 +12,13 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyAlloc
   return (jlong)pty;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptyFree
-  (JNIEnv *e, jclass c, jlong ctx)
+void ptyFree(jlong ctx)
 {
   Pty *pty = (Pty*)ctx;
   free(pty);
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_jni_LnxNative_ptyOpen
-  (JNIEnv *e, jclass c, jlong ctx)
+const char* ptyOpen(jlong ctx)
 {
   Pty *pty = (Pty*)ctx;
   pty->master = posix_openpt(O_RDWR | O_NOCTTY);
@@ -43,19 +40,17 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_LnxNative_ptyOpen
     printf("LnxPty:unlockpt() failed\n");
     return NULL;
   }
-  return e->NewStringUTF(pty->slaveName);
+  return pty->slaveName;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptyClose
-  (JNIEnv *e, jclass c, jlong ctx)
+void ptyClose(jlong ctx)
 {
   Pty *pty = (Pty*)ctx;
   if (pty->master != 0) close(pty->master);
   pty->closed = JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
-  (JNIEnv *e, jclass c, jlong ctx, jbyteArray ba)
+jint ptyRead(jlong ctx, jbyte* baptr, int offset, int length)
 {
   Pty *pty = (Pty*)ctx;
 
@@ -89,9 +84,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
     return -1;
   }
   if (FD_ISSET(pty->master, &read_set)) {
-    jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-    int readAmt = read(pty->master, baptr, e->GetArrayLength(ba));
-    e->ReleaseByteArrayElements(ba, baptr, 0);
+    int readAmt = read(pty->master, baptr + offset, length);
     if (readAmt < 0) {
       printf("LnxPty:read() failed:%d:%d\n", readAmt, errno);
       return -1;
@@ -104,17 +97,13 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
   return 0;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptyWrite
-  (JNIEnv *e, jclass c, jlong ctx, jbyteArray ba)
+void ptyWrite(jlong ctx, jbyte* baptr, int offset, int length)
 {
   Pty *pty = (Pty*)ctx;
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int res = write(pty->master, baptr, e->GetArrayLength(ba));
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+  int res = write(pty->master, baptr + offset, length);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptySetSize
-  (JNIEnv *e, jclass c, jlong ctx, jint x, jint y)
+void ptySetSize(jlong ctx, jint x, jint y)
 {
   Pty *pty = (Pty*)ctx;
   winsize size;
@@ -133,12 +122,18 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptySetSize
 #endif
 #endif
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
-  (JNIEnv *e, jclass c, jstring slaveName, jstring cmd, jobjectArray args, jobjectArray env)
+int stringArrayLength(const char**arr) {
+  int cnt = 0;
+  while (*arr != NULL) {
+    cnt++;
+    arr++;
+  }
+  return cnt;
+}
+
+jlong ptyChildExec(const char* slaveName, const char* cmd, const char** args, const char** env)
 {
-  const char *cslaveName = e->GetStringUTFChars(slaveName,NULL);
-  int slave = open(cslaveName, O_RDWR);
-  e->ReleaseStringUTFChars(slaveName, cslaveName);
+  int slave = open(slaveName, O_RDWR);
   if (slave == -1) {
     printf("LnxPty:unable to open slave pty\n");
     exit(0);
@@ -165,33 +160,38 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
   signal(SIGCHLD, SIG_DFL);
 
   //build args
-  int nargs = e->GetArrayLength(args);
+  int nargs = stringArrayLength(args);
   char **cargs = (char **)malloc((nargs+1) * sizeof(char*));  //+1 NULL terminator
   for(int a=0;a<nargs;a++) {
-    jstring jstr = (jstring)e->GetObjectArrayElement(args, a);
-    const char *cstr = e->GetStringUTFChars(jstr,NULL);
+    const char* cstr = args[a];
     int sl = strlen(cstr);
     cargs[a] = (char*)malloc(sl+1);
     strcpy(cargs[a], cstr);
-    e->ReleaseStringUTFChars(jstr, cstr);
   }
   cargs[nargs] = NULL;
 
   //build env
-  int nenv = e->GetArrayLength(env);
+  int nenv = stringArrayLength(env);
   char **cenv = (char **)malloc((nenv+1) * sizeof(char*));  //+1 NULL terminator
   for(int a=0;a<nenv;a++) {
-    jstring jstr = (jstring)e->GetObjectArrayElement(env, a);
-    const char *cstr = e->GetStringUTFChars(jstr,NULL);
+    const char* cstr = env[a];
     int sl = strlen(cstr);
     cenv[a] = (char*)malloc(sl+1);
     strcpy(cenv[a], cstr);
-    e->ReleaseStringUTFChars(jstr, cstr);
   }
   cenv[nenv] = NULL;
 
-  const char *ccmd = e->GetStringUTFChars(cmd, NULL);
-  execvpe(ccmd, cargs, cenv);
-  e->ReleaseStringUTFChars(cmd, ccmd);
+  execvpe(cmd, cargs, cenv);
   return 0;
+}
+
+extern "C" {
+  JNIEXPORT jlong (*_ptyAlloc)() = &ptyAlloc;
+  JNIEXPORT void (*_ptyFree)(jlong) = &ptyFree;
+  JNIEXPORT const char* (*_ptyOpen)(jlong) = &ptyOpen;
+  JNIEXPORT void (*_ptyClose)(jlong) = &ptyClose;
+  JNIEXPORT jint (*_ptyRead)(jlong,jbyte*,int,int) = &ptyRead;
+  JNIEXPORT void (*_ptyWrite)(jlong,jbyte*,int,int) = &ptyWrite;
+  JNIEXPORT void (*_ptySetSize)(jlong,jint,jint) = &ptySetSize;
+  JNIEXPORT jlong (*_ptyChildExec)(const char*,const char*,const char**,const char**) = &ptyChildExec;
 }
