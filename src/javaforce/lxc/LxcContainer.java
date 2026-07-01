@@ -14,7 +14,7 @@ public abstract class LxcContainer {
   public String id;
   public LxcImage image;
 
-  public abstract LnxPty attach();
+  public abstract Pty attach();
   public abstract boolean detach();
   public abstract boolean close();
   public abstract boolean restart();

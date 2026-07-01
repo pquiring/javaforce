@@ -86,7 +86,7 @@ public class Settings {
 
   static {
     if (!JF.isWindows()) {
-      LnxPty.init();
+      Pty.init();
     }
   }
 }

@@ -10,13 +10,13 @@ import javaforce.utils.*;
 
 public class DeviceMonitor extends Thread implements ShellProcessListener {
   private StringBuilder output = new StringBuilder();;
-  private LnxPty pty;
+  private Pty pty;
 
   public void run() {
-    LnxPty.init();
+    Pty.init();
     // NOTE : udevadm requires a tty to operate ???
     if (true) {
-      pty = LnxPty.exec("udevadm", new String[] {"udevadm", "monitor", "--kernel", null}, LnxPty.makeEnvironment());
+      pty = Pty.exec("udevadm", new String[] {"udevadm", "monitor", "--kernel", null}, Pty.makeEnvironment());
       new Thread() {
         public void run() {
           byte data[] = new byte[1024];

@@ -226,8 +226,8 @@ public class ConfigService implements WebUIServlet {
     public ArrayList<NetworkVirtual> nics_virt;
     public NetworkVLAN[] nics_vlans;
 
-    private LnxPty pty;  //Container or Host Terminal (one per webui connection)
-    public LnxPty new_pty;
+    private Pty pty;  //Container or Host Terminal (one per webui connection)
+    public Pty new_pty;
 
     public void setRightPanel(Panel panel) {
       if (panel == null) return;
@@ -4758,7 +4758,7 @@ public class ConfigService implements WebUIServlet {
 
     pull.addClickListener((me, cmp) -> {
       String anc = a_n_c.getText();
-      LnxPty pty = lxcmgr.pullImage(new LxcImage(anc));
+      Pty pty = lxcmgr.pullImage(new LxcImage(anc));
       if (pty == null) {
         errmsg.setText("Error:pull image request failed, check logs.");
         return;
@@ -4843,7 +4843,7 @@ public class ConfigService implements WebUIServlet {
         errmsg.setText("Error:" + e.toString());
         return;
       }
-      LnxPty pty = lxcmgr.createImage(filename, new LxcImage(tag.getText()), wd.getText());
+      Pty pty = lxcmgr.createImage(filename, new LxcImage(tag.getText()), wd.getText());
       if (pty == null) {
         errmsg.setText("Error:create image request failed, check logs.");
         return;
@@ -6850,10 +6850,10 @@ public class ConfigService implements WebUIServlet {
 
   private Panel terminalPanel(UI ui) {
     ui.close_pty();
-    ui.new_pty = LnxPty.exec(
+    ui.new_pty = Pty.exec(
       "/usr/bin/bash",
       new String[] {"/usr/bin/bash", "-i", "-l", null},
-      LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
+      Pty.makeEnvironment(new String[] {"TERM=xterm"})
     );
     Panel panel = createTerminalPanel(ui.new_pty, "Host Terminal");
     return panel;
@@ -7050,7 +7050,7 @@ public class ConfigService implements WebUIServlet {
     return panel;
   }
 
-  private Panel createTerminalPanel(LnxPty pty, String msg) {
+  private Panel createTerminalPanel(Pty pty, String msg) {
     Panel panel = new Panel();
     Row row = new Row();
     panel.add(row);

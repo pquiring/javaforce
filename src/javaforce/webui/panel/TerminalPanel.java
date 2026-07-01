@@ -1,6 +1,6 @@
 package javaforce.webui.panel;
 
-import javaforce.linux.LnxPty;
+import javaforce.linux.Pty;
 import java.io.*;
 import java.util.*;
 
@@ -33,21 +33,20 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
   }
 
   private class PtyTerm implements Term {
-    private LnxPty pty;
+    private Pty pty;
 
     public PtyTerm() {
     }
-    public PtyTerm(LnxPty pty) {
+    public PtyTerm(Pty pty) {
       this.pty = pty;
     }
 
     public boolean connect() {
       try {
         if (pty == null) {
-          pty = LnxPty.exec(
-            cmd[0],
+          pty = Pty.exec(cmd[0],
             cmd,
-            LnxPty.makeEnvironment(new String[] {"TERM=xterm"})
+            Pty.makeEnvironment(new String[] {"TERM=xterm"})
           );
           if (pty == null) throw new Exception("pty failed");
         }
@@ -296,7 +295,7 @@ public class TerminalPanel extends Panel implements Screen, Resized, KeyDown, Mo
    *
    * @param pty = existing pty interface.
    */
-  public void setup(LnxPty pty) {
+  public void setup(Pty pty) {
     setup();
     term = new PtyTerm(pty);
   }

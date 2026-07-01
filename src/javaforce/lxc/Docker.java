@@ -16,15 +16,15 @@ public class Docker implements LxcContainerManager {
 
     public DockerContainer(String id) {super(id);}
 
-    private LnxPty pty;
+    private Pty pty;
 
-    public LnxPty attach() {
+    public Pty attach() {
       ArrayList<String> cmd = new ArrayList<>();
       cmd.add("/usr/bin/docker");
       cmd.add("attach");
       cmd.add(id);
       cmd.add(null);
-      pty = LnxPty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), LnxPty.makeEnvironment(new String[] {"TERM=xterm"}));
+      pty = Pty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), Pty.makeEnvironment(new String[] {"TERM=xterm"}));
       return pty;
     }
 
@@ -107,17 +107,17 @@ server/arch/name version    123456781234   age            size
     return images.toArray(new LxcImage[0]);
   }
 
-  public LnxPty pullImage(LxcImage image) {
+  public Pty pullImage(LxcImage image) {
     ArrayList<String> cmd = new ArrayList<>();
     cmd.add("/usr/bin/docker");
     cmd.add("image");
     cmd.add("pull");
     cmd.add(image.toString());
     cmd.add(null);
-    return LnxPty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), LnxPty.makeEnvironment(new String[] {"TERM=xterm"}));
+    return Pty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), Pty.makeEnvironment(new String[] {"TERM=xterm"}));
   }
 
-  public LnxPty createImage(String script_file, LxcImage image, String src_folder) {
+  public Pty createImage(String script_file, LxcImage image, String src_folder) {
     ArrayList<String> cmd = new ArrayList<>();
     cmd.add("/usr/bin/docker");
     cmd.add("build");
@@ -127,7 +127,7 @@ server/arch/name version    123456781234   age            size
     cmd.add(image.toString());
     cmd.add(src_folder);
     cmd.add(null);
-    return LnxPty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), LnxPty.makeEnvironment(new String[] {"TERM=xterm"}));
+    return Pty.exec("/usr/bin/docker", cmd.toArray(JF.StringArrayType), Pty.makeEnvironment(new String[] {"TERM=xterm"}));
   }
 
   public LxcContainer[] listContainers() {

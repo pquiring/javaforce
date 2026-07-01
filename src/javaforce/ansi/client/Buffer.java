@@ -137,7 +137,7 @@ public class Buffer implements Screen {
   private boolean eol = false;
   public boolean closed = false;
   private boolean init = false;
-  private LnxPty pty;
+  private Pty pty;
   private boolean autowrap = true;
 
   public byte[] char2byte(char[] buf, int buflen) {
@@ -710,9 +710,9 @@ public class Buffer implements Screen {
     JFLog.log("connectLocal:" + profile.termApp);
     try {
       profile.termArgs[0] = profile.termApp;
-      pty = LnxPty.exec(profile.termApp
+      pty = Pty.exec(profile.termApp
         , profile.termArgs
-        , LnxPty.makeEnvironment(new String[] {"TERM=" + profile.termType}));
+        , Pty.makeEnvironment(new String[] {"TERM=" + profile.termType}));
       if (pty == null) throw new Exception("pty failed");
       in = new InputStream() {
         public int read() {return -1;}

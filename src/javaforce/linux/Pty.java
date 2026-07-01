@@ -13,7 +13,7 @@ import javaforce.api.*;
  * Created : Jan 17, 2014
  */
 
-public class LnxPty {
+public class Pty {
 
   private static final boolean debug = false;
 
@@ -22,8 +22,8 @@ public class LnxPty {
   }
 
   /** Spawns cmd with args and env (both must be null terminated arrays) and returns new pty. */
-  public static LnxPty exec(String cmd, String[] args, String[] env) {
-    LnxPty pty = new LnxPty();
+  public static Pty exec(String cmd, String[] args, String[] env) {
+    Pty pty = new Pty();
     if (!pty.fork(cmd, args, env)) return null;
     return pty;
   }
@@ -32,7 +32,7 @@ public class LnxPty {
    * Captures all output (stdout and stderr) and returns it.
    * Does not return until child process exits. */
   public static String execOutput(String cmd, String[] args, String[] env) {
-    LnxPty pty = new LnxPty();
+    Pty pty = new Pty();
     if (!pty.fork(cmd, args, env)) return null;
     StringBuilder sb = new StringBuilder();
     byte[] data = new byte[1024];
