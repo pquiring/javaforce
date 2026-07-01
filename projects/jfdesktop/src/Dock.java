@@ -586,6 +586,10 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     });
   }
 
+  public void windowAdded(long l, int i, String string, String string1, String string2, String string3) {}
+
+  public void windowDeleted(long l) {}
+
   private static class Window {
     public long xid;
     public String title;
