@@ -1,7 +1,5 @@
 /* pcap FFM */
 
-#include "register.h"
-
 //pcap types
 
 struct pcap_addr {

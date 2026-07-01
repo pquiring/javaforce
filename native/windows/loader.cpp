@@ -343,8 +343,6 @@ void AttachJVM() {
   g_jvm->AttachCurrentThread((void**)&g_env, NULL);
 }
 
-#include "../common/register.h"
-
 /** Invokes the main method in a new thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();

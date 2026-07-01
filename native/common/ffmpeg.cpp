@@ -13,8 +13,6 @@
 
 #include <chrono>
 
-#include "register.h"
-
 //returned by Decoder.read()
 #define END_FRAME -1
 #define NULL_FRAME 0  //could be metadata frame

@@ -1,7 +1,5 @@
 //OpenGL functions
 
-#include "register.h"
-
 jboolean glPlatformInit();
 jboolean glGetFunction(void **funcPtr, const char *name);  //platform impl
 

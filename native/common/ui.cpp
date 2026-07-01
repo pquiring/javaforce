@@ -1,7 +1,5 @@
 #include "../glfw/include/GLFW/glfw3.h"
 
-#include "register.h"
-
 //see javaforce.ui.Window
 int KEY_TYPED = 1;
 int KEY_PRESS = 2;

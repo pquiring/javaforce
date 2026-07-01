@@ -21,38 +21,7 @@ void registerNatives(JNIEnv *env, jclass cls, JNINativeMethod *methods, jint cou
   }
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_ffm_JFHeap_pin
-  (JNIEnv *e, jclass c, jobject array)
-{
-  return (jlong)e->GetPrimitiveArrayCritical((jarray)array, NULL);
-}
-
-JNIEXPORT void JNICALL Java_javaforce_ffm_JFHeap_unpin
-  (JNIEnv *e, jclass c, jobject array, jlong ptr, jboolean commit)
-{
-  e->ReleasePrimitiveArrayCritical((jarray)array, (void*)ptr, commit ? 0 : JNI_ABORT);
-}
-
-JNIEXPORT jlong JNICALL Java_javaforce_ffm_JFHeap_ref
-  (JNIEnv *e, jclass c, jobject obj)
-{
-  return (jlong)e->NewGlobalRef(obj);
-}
-
-JNIEXPORT void JNICALL Java_javaforce_ffm_JFHeap_unref
-  (JNIEnv *e, jclass c, jlong ref)
-{
-  e->DeleteGlobalRef((jobject)ref);
-}
-
-static JNINativeMethod javaforce_ffm_JFHeap[] = {
-  {"pin", "(Ljava/lang/Object;)J", (void *)&Java_javaforce_ffm_JFHeap_pin},
-  {"unpin", "(Ljava/lang/Object;JZ)V", (void *)&Java_javaforce_ffm_JFHeap_unpin},
-  {"ref", "(Ljava/lang/Object;)J", (void *)&Java_javaforce_ffm_JFHeap_ref},
-  {"unref", "(J)V", (void *)&Java_javaforce_ffm_JFHeap_unref},
-};
-
-#include "register-jfheap.cpp"
+#include "jfheap.cpp"
 
 const char* get_javaforce_version() {
   return JF_ABI_VERSION;

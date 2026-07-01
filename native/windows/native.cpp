@@ -19,7 +19,6 @@
 #include "../common/string.h"
 #include "../common/array.h"
 #include "../common/library.h"
-#include "../common/register.h"
 
 HMODULE wgl = NULL;
 

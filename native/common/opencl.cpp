@@ -5,8 +5,6 @@
 #include "../opencl/CL/cl.h"
 #include "../opencl/CL/cl_function_types.h"
 
-#include "register.h"
-
 JF_LIB_HANDLE opencl = NULL;
 
 static jboolean opencl_loaded = JNI_FALSE;

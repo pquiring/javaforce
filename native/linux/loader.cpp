@@ -328,8 +328,6 @@ bool CreateJVM() {
   return true;
 }
 
-#include "../common/register.h"
-
 /** Continues loading the JVM in a new Thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();

@@ -18,8 +18,6 @@
   #include "arm64.cpp"
 #endif
 
-#include "register.h"
-
 jfloat compareFrames(jint* img1, jint* img2, jint width, jint height)
 {
   int size = width * height;

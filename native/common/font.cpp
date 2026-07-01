@@ -1,8 +1,6 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../stb/stb_truetype.h"
 
-#include "register.h"
-
 jint uiLoadFont(jbyte* fontdata, jint ptSize, jint* fontinfo, jint* coords, jint* glyph, jint* cps, jbyte* pixels, jint px, jint py)
 {
   stbtt_fontinfo font;

@@ -11,8 +11,6 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../stb/stb_image_write.h"
 
-#include "register.h"
-
 jint* uiLoadPNG(jbyte* data, jint data_size, jint* size)
 {
   int x, y, chs;
