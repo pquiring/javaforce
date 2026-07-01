@@ -409,6 +409,12 @@ JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
   return (JNI_GetCreatedJavaVMs_t)dlsym(lib, "JNI_GetCreatedJavaVMs");
 }
 
+JNIEXPORT void* _ignored() {
+  void* _setup_JFHeap = (void*)&setup_JFHeap;
+  void* _set_upcall_FFMArray = (void*)&set_upcall_FFMArray;
+  return _setup_JFHeap;
+}
+
 extern "C" {
   JNIEXPORT jboolean (*_lnxInit)(const char*,const char*,const char*,const char*,const char*) = &lnxInit;
   JNIEXPORT void (*_setEnv)(const char*,const char*) = &setEnv;
