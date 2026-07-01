@@ -364,58 +364,7 @@ extern "C" {
 
 #endif  //__FreeBSD__
 
-//misc
-
-void setEnv(const char* name, const char* value)
-{
-  setenv(name, value, 1);
-}
-
-jint fileGetMode(const char* name)
-{
-  struct stat s;
-  ::lstat(name, (struct stat*)&s);
-  return s.st_mode;
-}
-
-void fileSetMode(const char* name, jint mode)
-{
-  ::chmod(name, mode);
-}
-
-void fileSetAccessTime(const char* name, jlong ts)
-{
-  struct stat s;
-  struct utimbuf tb;
-  ::lstat(name, (struct stat*)&s);
-  ts /= 1000L;
-  tb.actime = ts;
-  tb.modtime = s.st_mtime;
-  ::utime(name, &tb);
-}
-
-void fileSetModifiedTime(const char* name, jlong ts)
-{
-  struct stat s;
-  struct utimbuf tb;
-  ::lstat(name, (struct stat*)&s);
-  ts /= 1000L;
-  tb.actime = s.st_atime;
-  tb.modtime = ts;
-  ::utime(name, &tb);
-}
-
-jlong fileGetID(const char* name)
-{
-  struct stat s;
-  ::lstat(name, (struct stat*)&s);
-  return s.st_ino;
-}
-
-jint getUID()
-{
-  return getuid();
-}
+#include "file.cpp"
 
 #include "console.cpp"
 
@@ -439,6 +388,18 @@ jint getUID()
 
 #include "../common/register.cpp"
 
+//misc
+
+void setEnv(const char* name, const char* value)
+{
+  setenv(name, value, 1);
+}
+
+jint getUID()
+{
+  return getuid();
+}
+
 JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
   void* lib = dlopen("libjvm.so", RTLD_NOW | RTLD_GLOBAL);
   if (lib == NULL) {
@@ -451,11 +412,6 @@ JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
 extern "C" {
   JNIEXPORT jboolean (*_lnxInit)(const char*,const char*,const char*,const char*,const char*) = &lnxInit;
   JNIEXPORT void (*_setEnv)(const char*,const char*) = &setEnv;
-  JNIEXPORT jint (*_fileGetMode)(const char*) = &fileGetMode;
-  JNIEXPORT void (*_fileSetMode)(const char*,jint) = &fileSetMode;
-  JNIEXPORT void (*_fileSetAccessTime)(const char*,jlong) = &fileSetAccessTime;
-  JNIEXPORT void (*_fileSetModifiedTime)(const char*,jlong) = &fileSetModifiedTime;
-  JNIEXPORT jlong (*_fileGetID)(const char*) = &fileGetID;
   JNIEXPORT jint (*_getUID)() = & getUID;
 
   JNIEXPORT jboolean JNICALL LinuxAPIinit() {return JNI_TRUE;}
