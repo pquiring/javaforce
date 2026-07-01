@@ -5,7 +5,7 @@
 # This script will package these dep jars to be placed in the JavaForce repos
 
 # convert '-' properties to '_' properties
-java -cp ../javaforce.jar javaforce.utils.ConvertProperties ../versions.properties versions_properties
+$HOME/bin/jfexec -cp ../javaforce.jar javaforce.utils.ConvertProperties ../versions.properties versions_properties
 . versions_properties
 rm versions_properties
 
@@ -49,7 +49,7 @@ function package {
   echo "<property name=\"version\" value=\"$3\"/>" >> build.xml
   echo "<property name=\"home\" value=\"..\"/>" >> build.xml
   echo "</project>" >> build.xml
-  java -cp ../javaforce.jar javaforce.utils.Gen$PKG build.xml
+  $HOME/bin/jfexec -cp ../javaforce.jar javaforce.utils.Gen$PKG build.xml
   rm files.lst
   rm build.xml
 }
