@@ -607,11 +607,17 @@ void replace(char *str, char find, char with) {
   }
 }
 
+extern "C" {
+  void* _ignored();
+}
+
 /** Main entry point. */
 int main(int argc, char **argv) {
   void *retval;
   g_argv = argv;
   g_argc = argc;
+
+  _ignored();
 
   loadProperties();
 
