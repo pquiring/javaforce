@@ -7,12 +7,14 @@ bool debug_jfheap = false;
 JNIEXPORT jlong JNICALL Java_javaforce_ffm_JFHeap_pin
   (JNIEnv *e, jclass c, jobject array)
 {
+  if (array == NULL) return 0;
   return (jlong)e->GetPrimitiveArrayCritical((jarray)array, NULL);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_ffm_JFHeap_unpin
   (JNIEnv *e, jclass c, jobject array, jlong ptr, jboolean commit)
 {
+  if (ptr == 0) return;
   e->ReleasePrimitiveArrayCritical((jarray)array, (void*)ptr, commit ? 0 : JNI_ABORT);
 }
 
