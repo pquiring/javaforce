@@ -83,7 +83,8 @@ public class X11FFM implements X11API {
   private MethodHandle x11_send_event;
   public boolean x11_send_event(int keycode,boolean down) { try { boolean _ret_value_ = (boolean)x11_send_event.invokeExact(keycode,down);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  public boolean x11_send_event(long id,int keycode,boolean down) { try { boolean _ret_value_ = (boolean)x11_send_event.invokeExact(id,keycode,down);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle x11_send_event_id;
+  public boolean x11_send_event_id(long id,int keycode,boolean down) { try { boolean _ret_value_ = (boolean)x11_send_event_id.invokeExact(id,keycode,down);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
 
   private boolean ffm_init() {
@@ -110,6 +111,7 @@ public class X11FFM implements X11API {
     x11_unmap_window = ffm.getFunctionPtr("_x11_unmap_window", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     x11_keysym_to_keycode = ffm.getFunctionPtr("_x11_keysym_to_keycode", ffm.getFunctionDesciptor(JAVA_INT,JAVA_CHAR));
     x11_send_event = ffm.getFunctionPtr("_x11_send_event", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,JAVA_BOOLEAN));
+    x11_send_event_id = ffm.getFunctionPtr("_x11_send_event_id", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_BOOLEAN));
     return true;
   }
 }

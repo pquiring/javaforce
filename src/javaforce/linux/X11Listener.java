@@ -15,4 +15,8 @@ public interface X11Listener {
   public void trayIconRemoved(int count);
   /** Triggered when a new top-level window has changed */
   public void windowsChanged();
+  /** Provide new window added event. */
+  public void windowAdded(long xid, int pid, String title, String name, String res_name, String res_class);
+  /** Provide window deleted event. */
+  public void windowDeleted(long xid);
 }

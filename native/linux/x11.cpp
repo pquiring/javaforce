@@ -1,11 +1,22 @@
-JNIEXPORT jlong JNICALL Java_javaforce_jni_X11_x11_1get_1id
-  (JNIEnv *e, jclass c, jobject window)
+struct X11Listener {
+  void (*trayIconAdded)(jint);
+  void (*trayIconRemoved)(jint);
+  void (*windowsChanged)();
+  void (*windowAdded)(jlong,jint,const char*,const char*,const char*,const char*);
+  void (*windowDeleted)(jlong);
+};
+
+X11Listener* x11_listener;
+
+extern JNIEnv* get_jnienv();
+
+jlong x11_get_id(jlong window)
 {
-  return getX11ID(e,window);
+  JNIEnv* jnienv = get_jnienv();
+  return getX11ID(jnienv, (jobject)window);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1set_1desktop
-  (JNIEnv *e, jclass c, jlong xid)
+void x11_set_desktop(jlong xid)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   int ret;
@@ -27,8 +38,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1set_1desktop
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1set_1dock
-  (JNIEnv *e, jclass c, jlong xid)
+void x11_set_dock(jlong xid)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   int ret;
@@ -50,8 +60,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1set_1dock
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1set_1strut
-  (JNIEnv *e, jclass c, jlong xid, jint panelHeight, jint x, jint y, jint width, jint height)
+void x11_set_strut(jlong xid, jint panelHeight, jint x, jint y, jint width, jint height)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   Atom strut = (*_XInternAtom)(display, "_NET_WM_STRUT_PARTIAL", 0);
@@ -80,16 +89,6 @@ static Atom tray_opcode;//, tray_data;
 static XID tray_window;
 static jboolean tray_active;
 static int tray_count = 0;
-static JavaVM *x11_VM;
-static JNIEnv *x11_tray_e;
-static jobject x11_listener;
-static jmethodID mid_x11_listener_trayIconAdded;
-static jmethodID mid_x11_listener_trayIconRemoved;
-static jmethodID mid_x11_listener_windowsChanged;
-static JNIEnv *x11_window_e;
-static jclass cid_javaforce_linux_Linux;
-static jmethodID mid_x11_window_add;
-static jmethodID mid_x11_window_del;
 #define tray_icon_size 24  //fixed
 static int tray_height = 24+4;
 static int tray_rows = 2;
@@ -97,13 +96,6 @@ static int borderSize = 4;
 static int tray_pos = 0;
 static int tray_pad = 2;
 static int tray_width = 24+4;
-
-static JNIEnv* x11_GetEnv() {
-  JNIEnv *env;
-  if (x11_VM->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_OK) return env;
-  x11_VM->AttachCurrentThread((void**)&env, NULL);
-  return env;
-}
 
 static void tray_move_icons() {
   Display* display = (*_XOpenDisplay)(NULL);
@@ -155,8 +147,7 @@ static void tray_add_icon(XID w) {
   (*_XReparentWindow)(display, w, tray_window, 0, 0);
   tray_move_icons();
   (*_XMapWindow)(display, w);
-  x11_tray_e->CallVoidMethod(x11_listener, mid_x11_listener_trayIconAdded);
-  if (x11_tray_e->ExceptionCheck()) x11_tray_e->ExceptionClear();
+  x11_listener->trayIconAdded(tray_count);
   (*_XCloseDisplay)(display);
 }
 
@@ -199,17 +190,14 @@ static void tray_remove_icon(XDestroyWindowEvent *ev) {
       tray_icons[a] = 0;
       tray_count--;
       tray_move_icons();
-      x11_tray_e->CallVoidMethod(x11_listener, mid_x11_listener_trayIconRemoved, tray_count);
-      if (x11_tray_e->ExceptionCheck()) x11_tray_e->ExceptionClear();
+      x11_listener->trayIconRemoved(tray_count);
       break;
     }
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1tray_1main
-  (JNIEnv *e, jclass c, jlong pid, jint screenWidth, jint trayPos, jint trayHeight)
+void x11_tray_main(jlong pid, jint screenWidth, jint trayPos, jint trayHeight)
 {
-  x11_tray_e = e;
   for(int a=0;a<MAX_TRAY_ICONS;a++) {
     tray_icons[a] = 0;
   }
@@ -260,8 +248,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1tray_1main
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1tray_1reposition
-  (JNIEnv *e, jclass c, jint screenWidth, jint trayPos, jint trayHeight)
+void x11_tray_reposition(jint screenWidth, jint trayPos, jint trayHeight)
 {
   if (screenWidth != -1) screen_width = screenWidth;
   if (trayPos != -1) tray_pos = trayPos;
@@ -288,14 +275,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1tray_1reposition
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_X11_x11_1tray_1width
-  (JNIEnv *e, jclass c)
+jint x11_tray_width()
 {
   return tray_width;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1tray_1stop
-  (JNIEnv *e, jclass c)
+void x11_tray_stop()
 {
   tray_active = JNI_FALSE;
   Display* display = (*_XOpenDisplay)(NULL);
@@ -314,14 +299,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1tray_1stop
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1set_1listener
-  (JNIEnv *e, jclass c, jobject obj)
+void x11_set_listener(X11Listener* obj)
 {
-  jclass cls = e->FindClass("javaforce/linux/X11Listener");
-  x11_listener = e->NewGlobalRef(obj);
-  mid_x11_listener_trayIconAdded = e->GetMethodID(cls, "trayIconAdded", "(I)V");
-  mid_x11_listener_trayIconRemoved = e->GetMethodID(cls, "trayIconRemoved", "(I)V");
-  mid_x11_listener_windowsChanged = e->GetMethodID(cls, "windowsChanged", "()V");
+  x11_listener = obj;
 }
 
 #define MAX_WINDOWS 1024
@@ -398,20 +378,7 @@ static void x11_update_window_list(Display *display) {
     res_class = hint.res_class;
 
     //add to list
-    jstring jtitle = NULL;
-    if (title != NULL) jtitle = x11_window_e->NewStringUTF(title);
-    jstring jname = NULL;
-    if (name != NULL) jname = x11_window_e->NewStringUTF(name);
-    jstring jres_name = NULL;
-    if (res_name != NULL) jres_name = x11_window_e->NewStringUTF(res_name);
-    jstring jres_class = NULL;
-    if (res_class != NULL) jres_class = x11_window_e->NewStringUTF(res_class);
-    x11_window_e->CallStaticVoidMethod(cid_javaforce_linux_Linux, mid_x11_window_add, xid, pid, jtitle, jname, jres_name, jres_class);
-    if (x11_window_e->ExceptionCheck()) x11_window_e->ExceptionClear();
-    if (jtitle != NULL) x11_window_e->DeleteLocalRef(jtitle);
-    if (jname != NULL) x11_window_e->DeleteLocalRef(jname);
-    if (jres_name != NULL) x11_window_e->DeleteLocalRef(jres_name);
-    if (jres_class != NULL) x11_window_e->DeleteLocalRef(jres_class);
+    x11_listener->windowAdded(xid, pid, title, name, res_name, res_class);
     if (xids != NULL) {
       (*_XFree)(xids);
     }
@@ -465,23 +432,15 @@ static void x11_update_window_list(Display *display) {
         window_list_event_mask[z-1] = window_list_event_mask[z];
       }
       window_list_size--;
-      x11_window_e->CallStaticVoidMethod(cid_javaforce_linux_Linux, mid_x11_window_del, xid);
-      if (x11_window_e->ExceptionCheck()) x11_window_e->ExceptionClear();
+      x11_listener->windowDeleted(xid);
     } else {
       a++;
     }
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1window_1list_1main
-  (JNIEnv *e, jclass c)
+void x11_window_list_main()
 {
-  cid_javaforce_linux_Linux = e->FindClass("javaforce/linux/Linux");
-  mid_x11_window_add = e->GetStaticMethodID(cid_javaforce_linux_Linux, "x11_window_add", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-  mid_x11_window_del = e->GetStaticMethodID(cid_javaforce_linux_Linux, "x11_window_del", "(J)V");
-
-  x11_window_e = e;
-
   XEvent ev;
 
   Display* display = (*_XOpenDisplay)(NULL);
@@ -512,8 +471,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1window_1list_1main
            )
         {
           x11_update_window_list(display);
-          x11_window_e->CallVoidMethod(x11_listener, mid_x11_listener_windowsChanged);
-          if (x11_window_e->ExceptionCheck()) x11_window_e->ExceptionClear();
+          x11_listener->windowsChanged();
         }
         break;
     }
@@ -522,15 +480,13 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1window_1list_1main
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1window_1list_1stop
-  (JNIEnv *e, jclass c)
+void x11_window_list_stop()
 {
   window_list_active = JNI_FALSE;
   //TODO : send a message to ??? to cause main() loop to abort
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1minimize_1all
-  (JNIEnv *e, jclass c)
+void x11_minimize_all()
 {
   Display* display = (*_XOpenDisplay)(NULL);
   //TODO : need to lock list ???
@@ -540,32 +496,28 @@ JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1minimize_1all
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1raise_1window
-  (JNIEnv *e, jclass c, jlong xid)
+void x11_raise_window(jlong xid)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   (*_XRaiseWindow)(display, (XID)xid);
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1map_1window
-  (JNIEnv *e, jclass c, jlong xid)
+void x11_map_window(jlong xid)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   (*_XMapWindow)(display, (XID)xid);
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_X11_x11_1unmap_1window
-  (JNIEnv *e, jclass c, jlong xid)
+void x11_unmap_window(jlong xid)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   (*_XUnmapWindow)(display, (XID)xid);
   (*_XCloseDisplay)(display);
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_X11_x11_1keysym_1to_1keycode
-  (JNIEnv *e, jclass c, jchar keysym)
+jint x11_keysym_to_keycode(jchar keysym)
 {
   Display* display = (*_XOpenDisplay)(NULL);
   int keycode = (*_XKeysymToKeycode)(display, keysym);
@@ -586,8 +538,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_X11_x11_1keysym_1to_1keycode
   return keycode;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_X11_x11_1send_1event__IZ
-  (JNIEnv *e, jclass c, jint keycode, jboolean down)
+jboolean x11_send_event(jint keycode, jboolean down)
 {
   Display* display = (*_XOpenDisplay)(NULL);
 
@@ -618,8 +569,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_X11_x11_1send_1event__IZ
   return status != 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_X11_x11_1send_1event__JIZ
-  (JNIEnv *e, jclass c, jlong id, jint keycode, jboolean down)
+jboolean x11_send_event_id(jlong id, jint keycode, jboolean down)
 {
   Display* display = (*_XOpenDisplay)(NULL);
 
@@ -644,4 +594,25 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_X11_x11_1send_1event__JIZ
   (*_XCloseDisplay)(display);
 
   return status != 0;
+}
+
+extern "C" {
+  JNIEXPORT jlong (*_x11_get_id)(jlong) = &x11_get_id;
+  JNIEXPORT void (*_x11_set_desktop)(jlong) = &x11_set_desktop;
+  JNIEXPORT void (*_x11_set_dock)(jlong) = &x11_set_dock;
+  JNIEXPORT void (*_x11_set_strut)(jlong,jint,jint,jint,jint,jint) = &x11_set_strut;
+  JNIEXPORT void (*_x11_tray_main)(jlong,jint,jint,jint) = &x11_tray_main;
+  JNIEXPORT void (*_x11_tray_reposition)(jint,jint,jint) = &x11_tray_reposition;
+  JNIEXPORT jint (*_x11_tray_width)() = &x11_tray_width;
+  JNIEXPORT void (*_x11_tray_stop)() = &x11_tray_stop;
+  JNIEXPORT void (*_x11_set_listener)(X11Listener*) = &x11_set_listener;
+  JNIEXPORT void (*_x11_window_list_main)() = &x11_window_list_main;
+  JNIEXPORT void (*_x11_window_list_stop)() = &x11_window_list_stop;
+  JNIEXPORT void (*_x11_minimize_all)() = &x11_minimize_all;
+  JNIEXPORT void (*_x11_raise_window)(jlong) = &x11_raise_window;
+  JNIEXPORT void (*_x11_map_window)(jlong) = &x11_map_window;
+  JNIEXPORT void (*_x11_unmap_window)(jlong) = &x11_unmap_window;
+  JNIEXPORT jint (*_x11_keysym_to_keycode)(jchar) = &x11_keysym_to_keycode;
+  JNIEXPORT jboolean (*_x11_send_event)(jint,jboolean) = &x11_send_event;
+  JNIEXPORT jboolean (*_x11_send_event_id)(jlong,jint,jboolean) = &x11_send_event_id;
 }

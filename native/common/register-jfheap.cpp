@@ -6,10 +6,10 @@ extern "C" {
 JavaVM* javavm;
 
 //JNIEnv : per thread
-thread_local JNIEnv *jnienv;
-
-void get_jnienv() {
+JNIEnv* get_jnienv() {
+  JNIEnv *jnienv;
   javavm->GetEnv((void**)&jnienv, JNI_VERSION_24);
+  return jnienv;
 }
 
 //FFM : register natives for JFHeap
@@ -25,7 +25,7 @@ jboolean setup_JFHeap() {
     printf("JNI_GetCreatedJavaVMs failed\n");
     return JNI_FALSE;
   }
-  get_jnienv();
+  JNIEnv* jnienv = get_jnienv();
   if (jnienv == NULL) {
     printf("JavaVM::GetEnv failed\n");
     return JNI_FALSE;

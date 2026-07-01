@@ -13,7 +13,7 @@ import javaforce.ffm.*;
 public interface X11API {
 
   public static X11API getInstance() {
-    return X11FFM.getInstance();
+    return null; //X11FFM.getInstance();
   }
 
   public long x11_get_id(Window w);
@@ -33,5 +33,5 @@ public interface X11API {
   public void x11_unmap_window(long xid);
   public int x11_keysym_to_keycode(char keysym);
   public boolean x11_send_event(int keycode, boolean down);
-  public boolean x11_send_event(long id, int keycode, boolean down);
+  public boolean x11_send_event_id(long id, int keycode, boolean down);
 }

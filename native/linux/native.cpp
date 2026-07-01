@@ -479,27 +479,6 @@ void camera_register(JNIEnv *env) {
 
 #endif  //__FreeBSD__
 
-static JNINativeMethod javaforce_jni_X11[] = {
-  {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_X11_x11_1get_1id},
-  {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1set_1desktop},
-  {"x11_set_dock", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1set_1dock},
-  {"x11_set_strut", "(JIIIII)V", (void *)&Java_javaforce_jni_X11_x11_1set_1strut},
-  {"x11_tray_main", "(JIII)V", (void *)&Java_javaforce_jni_X11_x11_1tray_1main},
-  {"x11_tray_reposition", "(III)V", (void *)&Java_javaforce_jni_X11_x11_1tray_1reposition},
-  {"x11_tray_width", "()I", (void *)&Java_javaforce_jni_X11_x11_1tray_1width},
-  {"x11_tray_stop", "()V", (void *)&Java_javaforce_jni_X11_x11_1tray_1stop},
-  {"x11_set_listener", "(Ljavaforce/linux/X11Listener;)V", (void *)&Java_javaforce_jni_X11_x11_1set_1listener},
-  {"x11_window_list_main", "()V", (void *)&Java_javaforce_jni_X11_x11_1window_1list_1main},
-  {"x11_window_list_stop", "()V", (void *)&Java_javaforce_jni_X11_x11_1window_1list_1stop},
-  {"x11_minimize_all", "()V", (void *)&Java_javaforce_jni_X11_x11_1minimize_1all},
-  {"x11_raise_window", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1raise_1window},
-  {"x11_map_window", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1map_1window},
-  {"x11_unmap_window", "(J)V", (void *)&Java_javaforce_jni_X11_x11_1unmap_1window},
-  {"x11_keysym_to_keycode", "(C)I", (void *)&Java_javaforce_jni_X11_x11_1keysym_1to_1keycode},
-  {"x11_send_event", "(IZ)Z", (void *)&Java_javaforce_jni_X11_x11_1send_1event__IZ},
-  {"x11_send_event", "(JIZ)Z", (void *)&Java_javaforce_jni_X11_x11_1send_1event__JIZ},
-};
-
 static JNINativeMethod javaforce_jni_ComPortJNI[] = {
   {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
   {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
@@ -519,9 +498,6 @@ extern "C" void lnxnative_register(JNIEnv *env);
 
 void lnxnative_register(JNIEnv *env) {
   jclass cls;
-
-  cls = findClass(env, "javaforce/jni/X11");
-  registerNatives(env, cls, javaforce_jni_X11, sizeof(javaforce_jni_X11)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/jni/ComPortJNI");
   registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));

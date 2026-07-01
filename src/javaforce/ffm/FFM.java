@@ -557,6 +557,16 @@ public class FFM {
     listener.windowsChanged();
   }
 
+  public static void X11Listener_windowAdded(long xid, int pid, String title, String name, String res_name, String res_class) {
+    X11Listener listener = X11ListenerBin.get();
+    listener.windowAdded(xid, pid, title, name, res_name, res_class);
+  }
+
+  public static void X11Listener_windowDeleted(long xid) {
+    X11Listener listener = X11ListenerBin.get();
+    listener.windowDeleted(xid);
+  }
+
   private static Arena global;
 
   public static MemorySegment upcall_FFMArray;
@@ -585,6 +595,8 @@ public class FFM {
   public static MemorySegment upcall_X11Listener_trayIconAdded;
   public static MemorySegment upcall_X11Listener_trayIconRemoved;
   public static MemorySegment upcall_X11Listener_windowsChanged;
+  public static MemorySegment upcall_X11Listener_windowAdded;
+  public static MemorySegment upcall_X11Listener_windowDeleted;
 
   /** Setup static C up calls.
    *
@@ -641,11 +653,15 @@ public class FFM {
     upcall_X11Listener_trayIconAdded = getFunctionUpCallStatic(cls, "X11Listener_trayIconAdded", void.class, new Class[] {int.class}, global);
     upcall_X11Listener_trayIconRemoved = getFunctionUpCallStatic(cls, "X11Listener_trayIconRemoved", void.class, new Class[] {int.class}, global);
     upcall_X11Listener_windowsChanged = getFunctionUpCallStatic(cls, "X11Listener_windowsChanged", void.class, new Class[] {}, global);
+    upcall_X11Listener_windowAdded = getFunctionUpCallStatic(cls, "X11Listener_windowAdded", void.class, new Class[] {long.class,int.class,String.class,String.class,String.class,String.class}, global);
+    upcall_X11Listener_windowDeleted = getFunctionUpCallStatic(cls, "X11Listener_windowDeleted", void.class, new Class[] {long.class}, global);
 
     upcall_X11Listener = toMemory(global, new MemorySegment[] {
       upcall_X11Listener_trayIconAdded,
       upcall_X11Listener_trayIconRemoved,
       upcall_X11Listener_windowsChanged,
+      upcall_X11Listener_windowAdded,
+      upcall_X11Listener_windowDeleted,
     });
 
     //pass FFMArray upcalls to native system

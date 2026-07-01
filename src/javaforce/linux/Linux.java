@@ -905,7 +905,7 @@ public class Linux {
   }
 
   //called from native code to add/update a window
-  private static void x11_window_add(long xid, int pid, String title, String name, String res_name, String res_class) {
+  public void windowAdded(long xid, int pid, String title, String name, String res_name, String res_class) {
     Window window = new Window(xid, pid, title, name, res_name, res_class);
     synchronized(currentListLock) {
       int cnt = currentList.size();
@@ -920,7 +920,7 @@ public class Linux {
   }
 
   //called from native code to delete a window
-  private static void x11_window_del(long xid) {
+  public void windowDeleted(long xid) {
     synchronized(currentListLock) {
       int cnt = currentList.size();
       for(int a=0;a<cnt;a++) {
@@ -1490,6 +1490,14 @@ public class Linux {
 
       public void windowsChanged() {
         System.out.println("windowsChanged");
+      }
+
+      public void windowAdded(long xid, int pid, String title, String name, String res_name, String res_class) {
+        System.out.println("windowAdded:" + xid);
+      }
+
+      public void windowDeleted(long xid) {
+        System.out.println("windowDeleted:" + xid);
       }
     });
     x11_window_list_main();
