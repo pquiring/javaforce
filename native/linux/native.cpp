@@ -457,4 +457,6 @@ extern "C" {
   JNIEXPORT void (*_fileSetModifiedTime)(const char*,jlong) = &fileSetModifiedTime;
   JNIEXPORT jlong (*_fileGetID)(const char*) = &fileGetID;
   JNIEXPORT jint (*_getUID)() = & getUID;
+
+  JNIEXPORT jboolean JNICALL LinuxAPIinit() {return JNI_TRUE;}
 }

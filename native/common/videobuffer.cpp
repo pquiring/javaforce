@@ -41,51 +41,6 @@ jfloat compareFrames(jint* img1, jint* img2, jint width, jint height)
   return changed;
 }
 
-JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_compareFrames
-  (JNIEnv *e, jobject c, jintArray img1, jintArray img2, jint width, jint height)
-{
-  if (img1 == NULL) return 100.0f;
-  if (img2 == NULL) return 100.0f;
-  jboolean isCopy1, isCopy2;
-  jint *px1 = (jint*)e->GetPrimitiveArrayCritical(img1, &isCopy1);
-  if (!shownCopyWarning && isCopy1 == JNI_TRUE) copyWarning();
-  jint *px2 = (jint*)e->GetPrimitiveArrayCritical(img2, &isCopy2);
-  if (!shownCopyWarning && isCopy2 == JNI_TRUE) copyWarning();
-
-  int s1 = e->GetArrayLength(img1);
-  int s2 = e->GetArrayLength(img2);
-
-  int size = width * height;
-  if (s1 != size) {
-    printf("Error: VideoBuffer.compareFrames() img1 is wrong size\n");
-    return 100.0f;
-  }
-  if (s2 != size) {
-    printf("Error: VideoBuffer.compareFrames() img2 is wrong size\n");
-    return 100.0f;
-  }
-
-  float changed = compareFrames(px1, px2, width, height);
-
-  e->ReleasePrimitiveArrayCritical(img1, px1, JNI_ABORT);
-  e->ReleasePrimitiveArrayCritical(img2, px2, JNI_ABORT);
-
-  return changed;
-}
-
-static JNINativeMethod javaforce_media_VideoBuffer[] = {
-  {"compareFrames", "([I[III)F", (void *)&Java_javaforce_jni_MediaJNI_compareFrames},
-};
-
-extern "C" void videobuffer_register(JNIEnv *env);
-
-void videobuffer_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/MediaJNI");
-  registerNatives(env, cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
-}
-
 extern "C" {
   //VideoBuffer
   JNIEXPORT float (*_compareFrames)(jint* frame1, jint* frame2, jint width, jint height) = &compareFrames;

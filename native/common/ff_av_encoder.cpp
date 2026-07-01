@@ -41,6 +41,7 @@ FFContext* audioEncoderStart(jint codec_id, jint bit_rate, jint chs, jint freq)
   return ctx;
 }
 
+/*
 JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
   (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint chs, jint freq)
 {
@@ -54,6 +55,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
 
   return (jlong)ctx;
 }
+*/
 
 void audioEncoderStop_ctx(FFContext* ctx) {
   if (ctx == NULL) return;
@@ -84,6 +86,7 @@ void audioEncoderStop(FFContext* ctx)
   freeFFContext(NULL,NULL,ctx);
 }
 
+/*
 JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
@@ -94,6 +97,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
 
   freeFFContext(e,c,ctx);
 }
+*/
 
 static jbyte* av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
@@ -236,6 +240,7 @@ jbyte* audioEncoderEncode(FFContext* ctx, jshort* sams, jint offset, jint length
   return array;
 }
 
+/*
 JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
   (JNIEnv *e, jobject c, jlong ctxptr, jshortArray sams, jint offset, jint length)
 {
@@ -258,6 +263,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
 
   return jni.getArray();
 }
+*/
 
 jint audioEncoderGetAudioFramesize(FFContext* ctx)
 {
@@ -267,6 +273,7 @@ jint audioEncoderGetAudioFramesize(FFContext* ctx)
   return ctx->audio_codec_ctx->frame_size;
 }
 
+/*
 JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
@@ -275,6 +282,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize
 
   return audioEncoderGetAudioFramesize(ctx);
 }
+*/
 
 //video encoder codebase
 
@@ -335,6 +343,7 @@ FFContext* videoEncoderStart(jint codec_id, jint bit_rate, jint width, jint heig
   return ctx;
 }
 
+/*
 JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
   (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
 {
@@ -348,6 +357,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
 
   return (jlong)ctx;
 }
+*/
 
 void videoEncoderStop_ctx(FFContext *ctx)
 {
@@ -379,6 +389,7 @@ void videoEncoderStop(FFContext *ctx)
   freeFFContext(NULL, NULL, ctx);
 }
 
+/*
 JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
   (JNIEnv *e, jobject c, jlong ctxptr)
 {
@@ -389,6 +400,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
 
   freeFFContext(e,c,ctx);
 }
+*/
 
 static jbyte* av_encoder_addVideo(FFContext *ctx, int *px)
 {
@@ -453,6 +465,7 @@ jbyte* videoEncoderEncode(FFContext* ctx, jint* px, jint offset, jint length)
   return av_encoder_addVideo(ctx, px);
 }
 
+/*
 JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
   (JNIEnv *e, jobject c, jlong ctxptr, jintArray px, jint offset, jint length)
 {
@@ -475,3 +488,4 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
 
   return jni.getArray();
 }
+*/

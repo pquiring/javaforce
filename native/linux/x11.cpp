@@ -615,4 +615,6 @@ extern "C" {
   JNIEXPORT jint (*_x11_keysym_to_keycode)(jchar) = &x11_keysym_to_keycode;
   JNIEXPORT jboolean (*_x11_send_event)(jint,jboolean) = &x11_send_event;
   JNIEXPORT jboolean (*_x11_send_event_id)(jlong,jint,jboolean) = &x11_send_event_id;
+
+  JNIEXPORT jboolean JNICALL X11APIinit() {return JNI_TRUE;}
 }

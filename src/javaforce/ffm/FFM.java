@@ -89,6 +89,7 @@ public class FFM {
 
   private FFM() {
     setupLinker();
+    setupJFHeap();
     setupUpcalls();
   }
 
@@ -110,15 +111,12 @@ public class FFM {
         //symbol lookup from supplied shared library
         arena = Arena.ofAuto();  //freed by gc (which will also close the library at that time)
         lookup = SymbolLookup.libraryLookup(lib, arena);
-        //load JNI methods in JFHeap
-        setupJNI();
       } else {
         if (debug) JFLog.log("Loading FFM from executable");
         //symbol lookup from executable of this JVM (JavaForce native loader)
         lookup = linker.defaultLookup();
         execlookup = new ExecSymbolLookup();
         execlookup.init();
-        setupJNI();
       }
     } catch (Throwable t) {
       JFLog.log(t);
@@ -465,7 +463,7 @@ public class FFM {
     instance.SetStringElement(idx, str);
   }
 
-  private static long FFMArray_NewString2Array(int size) {
+  private static long FFMArray_NewString2Array() {
     FFMArray instance = FFMArrayBin.get();
     if (instance == null) return -1;
     return instance.NewString2Array();
@@ -556,9 +554,9 @@ public class FFM {
     listener.windowsChanged();
   }
 
-  public static void X11Listener_windowAdded(long xid, int pid, String title, String name, String res_name, String res_class) {
+  public static void X11Listener_windowAdded(long xid, int pid, MemorySegment title, MemorySegment name, MemorySegment res_name, MemorySegment res_class) {
     X11Listener listener = X11ListenerBin.get();
-    listener.windowAdded(xid, pid, title, name, res_name, res_class);
+    listener.windowAdded(xid, pid, title.reinterpret(1024).getString(0), name.reinterpret(1024).getString(0), res_name.reinterpret(1024).getString(0), res_class.reinterpret(1024).getString(0));
   }
 
   public static void X11Listener_windowDeleted(long xid) {
@@ -652,7 +650,7 @@ public class FFM {
     upcall_X11Listener_trayIconAdded = getFunctionUpCallStatic(cls, "X11Listener_trayIconAdded", void.class, new Class[] {int.class}, global);
     upcall_X11Listener_trayIconRemoved = getFunctionUpCallStatic(cls, "X11Listener_trayIconRemoved", void.class, new Class[] {int.class}, global);
     upcall_X11Listener_windowsChanged = getFunctionUpCallStatic(cls, "X11Listener_windowsChanged", void.class, new Class[] {}, global);
-    upcall_X11Listener_windowAdded = getFunctionUpCallStatic(cls, "X11Listener_windowAdded", void.class, new Class[] {long.class,int.class,String.class,String.class,String.class,String.class}, global);
+    upcall_X11Listener_windowAdded = getFunctionUpCallStatic(cls, "X11Listener_windowAdded", void.class, new Class[] {long.class,int.class,MemorySegment.class,MemorySegment.class,MemorySegment.class,MemorySegment.class}, global);
     upcall_X11Listener_windowDeleted = getFunctionUpCallStatic(cls, "X11Listener_windowDeleted", void.class, new Class[] {long.class}, global);
 
     upcall_X11Listener = toMemory(global, new MemorySegment[] {
@@ -674,14 +672,14 @@ public class FFM {
   }
 
   /** Setup JNI methods in JFHeap */
-  private static void setupJNI() {
+  private static void setupJFHeap() {
     if (debug) JFLog.log("FFM.setupJNI");
     MethodHandle setup = FFM.getFunctionPtr("_setup_JFHeap", FFM.getFunctionDesciptor(JAVA_BOOLEAN));
 
     try {
       boolean result = (boolean)setup.invokeExact();
       if (!result) {
-        throw new Exception("FFM.setupJNI() failed!");
+        throw new Exception("FFM.setupJFHeap() failed!");
       }
     } catch (Throwable t) {
       JFLog.log(t);

@@ -1131,7 +1131,7 @@ jint tapeDriveDefaultBlockSize()
   return tape_drive_def_blocksize;
 }
 
-jint tape_LastError()
+jint tapeLastError()
 {
   return tapeLastErrorValue;
 }
@@ -1152,7 +1152,7 @@ extern "C" {
   JNIEXPORT jint (*_tapeDriveMinBlockSize)() = &tapeDriveMinBlockSize;
   JNIEXPORT jint (*_tapeDriveMaxBlockSize)() = &tapeDriveMaxBlockSize;
   JNIEXPORT jint (*_tapeDriveDefaultBlockSize)() = &tapeDriveDefaultBlockSize;
-  JNIEXPORT jint (*_tape_LastError)() = &tape_LastError;
+  JNIEXPORT jint (*_tapeLastError)() = &tapeLastError;
 }
 
 //tape changer
@@ -1368,6 +1368,8 @@ extern "C" {
   JNIEXPORT void (*_changerClose)(jlong) = &changerClose;
   JNIEXPORT jstringArray (*_changerList)(jlong) = &changerList;
   JNIEXPORT jboolean (*_changerMove)(jlong,const char*,const char*,const char*) = &changerMove;
+
+  JNIEXPORT jboolean JNICALL WindowsAPIinit() {return JNI_TRUE;}
 }
 
 #include "../common/ffmpeg.cpp"

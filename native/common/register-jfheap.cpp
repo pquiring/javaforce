@@ -2,6 +2,8 @@ extern "C" {
   JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs();
 }
 
+bool debug_jfheap = false;
+
 //JavaVM : per process
 JavaVM* javavm;
 
@@ -16,6 +18,9 @@ JNIEnv* get_jnienv() {
 jboolean setup_JFHeap() {
   int cnt = 1;
   JNI_GetCreatedJavaVMs_t getvms = get_JNI_GetCreatedJavaVMs();
+  if (debug_jfheap) {
+    printf("JNI_GetCreatedJavaVMs=%p\n", getvms);
+  }
   if (getvms == NULL) {
     printf("get_JNI_GetCreatedJavaVMs failed\n");
     return JNI_FALSE;
@@ -25,16 +30,25 @@ jboolean setup_JFHeap() {
     printf("JNI_GetCreatedJavaVMs failed\n");
     return JNI_FALSE;
   }
+  if (debug_jfheap) {
+    printf("JavaVM=%p\n", javavm);
+  }
   JNIEnv* jnienv = get_jnienv();
   if (jnienv == NULL) {
     printf("JavaVM::GetEnv failed\n");
     return JNI_FALSE;
+  }
+  if (debug_jfheap) {
+    printf("JNIEnv=%p\n", jnienv);
   }
 
   jclass classLoaderClass = jnienv->FindClass("java/lang/ClassLoader");
   if (classLoaderClass == NULL) {
     printf("ClassLoader not found\n");
     return JNI_FALSE;
+  }
+  if (debug_jfheap) {
+    printf("ClassLoader.class=%p\n", classLoaderClass);
   }
 
 /*
@@ -58,7 +72,7 @@ jboolean setup_JFHeap() {
 
   //JNIEnv->FindClass("javaforce...");  //uses platform class loader, need to use Thread class loader
 
-  classNameStr = jnienv->NewStringUTF("javaforce.jni.JFHeap");
+  classNameStr = jnienv->NewStringUTF("javaforce.ffm.JFHeap");
   cls = (jclass)jnienv->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);
 
   registerNatives(jnienv, cls, javaforce_ffm_JFHeap, sizeof(javaforce_ffm_JFHeap)/sizeof(JNINativeMethod));
