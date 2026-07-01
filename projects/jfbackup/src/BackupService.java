@@ -4,7 +4,7 @@
  */
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 import javaforce.service.*;
 
 public class BackupService extends Thread {
@@ -16,7 +16,7 @@ public class BackupService extends Thread {
   public static Client client;
 
   public static void serviceStart(String args[]) {
-    WinNative.vssInit();
+    WindowsAPI.getInstance().vssInit();
     if (backupService != null) return;
     backupService = new BackupService();
     backupService.start();

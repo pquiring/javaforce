@@ -11,7 +11,6 @@ import java.awt.Color;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
 import javaforce.linux.*;
 
 public class Settings {

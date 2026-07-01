@@ -11,7 +11,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.WinNative;
+import javaforce.api.*;
 
 public class CommandApp implements ActionListener {
 
@@ -187,13 +187,13 @@ public class CommandApp implements ActionListener {
   private void elevate_win(String user, String pass) {
     if (false) {
       //does not work
-      WinNative.impersonateUser(domain, user, pass);
+      WindowsAPI.getInstance().impersonateUser(domain, user, pass);
     } else {
       if (runas1 == false) {
         //stage 1
         if (false) {
           //does not work
-          WinNative.createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe --runas1", 0);
+          WindowsAPI.getInstance().createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe --runas1", 0);
         } else {
           //works
           try {
@@ -206,7 +206,7 @@ public class CommandApp implements ActionListener {
         //stage 2
         if (false) {
           //does not work
-          WinNative.createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe --runas2", WinNative.FLAG_ELEVATE);
+          WindowsAPI.getInstance().createProcessAsUser(domain, user, pass, "jfcommand.exe", "jfcommand.exe --runas2", WindowsAPI.getInstance().FLAG_ELEVATE);
         } else {
           //works
           try {

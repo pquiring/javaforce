@@ -9,7 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.utils.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 public class Client extends Thread {
   private Socket s;
@@ -215,7 +215,7 @@ public class Client extends Thread {
     return LE.getuint64(data, 0);
   }
   private void listvolumes() throws Exception {
-    String vols[] = WinNative.vssListVols();
+    String vols[] = WindowsAPI.getInstance().vssListVols();
     StringBuilder list = new StringBuilder();
     for(int a=0;a<vols.length;a++) {
       list.append(vols[a]);
@@ -233,7 +233,7 @@ public class Client extends Thread {
     byte[] arg = read(arglen);
     String vol = new String(arg);
     cleanMounts();
-    if (!WinNative.vssCreateShadow(vol, Paths.vssPath)) {
+    if (!WindowsAPI.getInstance().vssCreateShadow(vol, Paths.vssPath)) {
       writeLength(4);
       os.write("FAIL".getBytes());
       return;
@@ -253,8 +253,8 @@ public class Client extends Thread {
     }
     byte[] arg = read(arglen);
     String vol = new String(arg);
-    WinNative.vssUnmountShadow(Paths.vssPath);
-    if (!WinNative.vssDeleteShadowAll()) {
+    WindowsAPI.getInstance().vssUnmountShadow(Paths.vssPath);
+    if (!WindowsAPI.getInstance().vssDeleteShadowAll()) {
       writeLength(4);
       os.write("FAIL".getBytes());
     } else {
@@ -268,14 +268,14 @@ public class Client extends Thread {
   public static void cleanMounts() {
     //remove old mount if exists
     if (new File(Paths.vssPath).exists()) {
-      WinNative.vssUnmountShadow(Paths.vssPath);
+      WindowsAPI.getInstance().vssUnmountShadow(Paths.vssPath);
       new File(Paths.vssPath).delete();
     }
     //delete all old shadow copies
-    WinNative.vssDeleteShadowAll();
+    WindowsAPI.getInstance().vssDeleteShadowAll();
     //remove old mount if exists (2nd attempt)
     if (new File(Paths.vssPath).exists()) {
-      WinNative.vssUnmountShadow(Paths.vssPath);
+      WindowsAPI.getInstance().vssUnmountShadow(Paths.vssPath);
       new File(Paths.vssPath).delete();
     }
   }

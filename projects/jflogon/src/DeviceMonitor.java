@@ -5,7 +5,6 @@
  */
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.linux.*;
 import javaforce.utils.*;
 

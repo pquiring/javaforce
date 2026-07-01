@@ -10,7 +10,6 @@ import java.util.*;
 import java.awt.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.awt.*;
 import javaforce.net.*;
 

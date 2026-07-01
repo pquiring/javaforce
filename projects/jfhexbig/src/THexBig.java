@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 
 import javaforce.*;
 import javaforce.ansi.server.*;
-import javaforce.jni.*;
 
 public class THexBig implements KeyEvents {
   public static String args[];

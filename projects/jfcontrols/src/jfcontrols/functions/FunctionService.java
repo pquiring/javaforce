@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 import jfcontrols.app.*;
 import jfcontrols.api.*;
@@ -31,7 +31,7 @@ public class FunctionService extends Thread {
   static {
     String ext = null;
     if (JF.isWindows()) {
-      jdk = WinNative.findJDKHome();
+      jdk = WindowsAPI.getInstance().findJDKHome();
       JFLog.log("java.app.home=" + System.getProperty("java.app.home"));
       ext = ".exe";
     } else {

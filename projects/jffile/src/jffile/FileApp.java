@@ -18,7 +18,6 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
 import javaforce.bus.*;
 import javaforce.utils.*;
 
