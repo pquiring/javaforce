@@ -43,6 +43,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     preview = new javax.swing.JLabel();
     cameraList = new javax.swing.JComboBox<>();
     mirror = new javax.swing.JToggleButton();
+    flip = new javax.swing.JToggleButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Camera Test");
@@ -66,6 +67,13 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     cameraList.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
     mirror.setText("Mirror Image");
+    mirror.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        mirrorActionPerformed(evt);
+      }
+    });
+
+    flip.setText("Flip Image");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -83,7 +91,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(mirror)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 449, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(flip)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE))
               .addComponent(cameraList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         .addContainerGap())
     );
@@ -97,7 +107,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           .addGroup(layout.createSequentialGroup()
             .addComponent(cameraList, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-            .addComponent(mirror)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(mirror)
+              .addComponent(flip))))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
         .addContainerGap())
@@ -131,7 +143,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     timer.scheduleAtFixedRate(new TimerTask() {
       public void run() {
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
-          int[] px = mirror.isSelected() ? camera.getFrameMirror() : camera.getFrame();
+          boolean m = mirror.isSelected();
+          boolean f = flip.isSelected();
+          int[] px = m ? (f ? camera.getFrameMirrorAndFlip() : camera.getFrameMirror() ) : (f ? camera.getFrameFlip() : camera.getFrame());
           if (px == null) return;  //not ready
           if (img == null) {
             img = new JFImage(width, height);
@@ -158,6 +172,10 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     setState(true);
   }//GEN-LAST:event_stopActionPerformed
 
+  private void mirrorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mirrorActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_mirrorActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -173,6 +191,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox<String> cameraList;
+  private javax.swing.JToggleButton flip;
   private javax.swing.JToggleButton mirror;
   private javax.swing.JLabel preview;
   private javax.swing.JButton start;
