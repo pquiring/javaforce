@@ -64,22 +64,6 @@ FFContext* audioDecoderStart(jint codec_id, jint chs, jint freq)
   return ctx;
 }
 
-/*
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioDecoderStart
-  (JNIEnv *e, jobject c, jint codec_id, jint chs, jint freq)
-{
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return 0;
-
-  if (!audioDecoderStart_ctx(NULL, NULL, ctx, codec_id, chs, freq)) {
-    freeFFContext(e, c, ctx);
-    ctx = NULL;
-  }
-
-  return (jlong)ctx;
-}
-*/
-
 void audioDecoderStop_ctx(JNIEnv *e, jobject c, FFContext* ctx)
 {
   if (ctx == NULL) return;
@@ -118,17 +102,6 @@ void audioDecoderStop(FFContext* ctx)
 
   audioDecoderStop_ctx(NULL, NULL, ctx);
 }
-
-/*
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioDecoderStop
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return;
-
-  audioDecoderStop_ctx(e, c, ctx);
-}
-*/
 
 jshort* audioDecoderDecode_data(FFContext* ctx, jint length)
 {
@@ -249,54 +222,11 @@ jshort* audioDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint length
   return audioDecoderDecode_data(ctx, length);
 }
 
-/*
-JNIEXPORT jshortArray JNICALL Java_javaforce_jni_MediaJNI_audioDecoderDecode
-  (JNIEnv *e, jobject c, jlong ctxptr, jbyteArray data, jint offset, jint length)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return NULL;
-
-  //there should always be AV_INPUT_BUFFER_PADDING_SIZE bytes after the data to decode
-  if (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
-    (*_av_free)(ctx->decode_buffer);
-    while (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
-      ctx->decode_buffer_size <<= 1;
-    }
-    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
-  }
-
-  e->GetByteArrayRegion(data, offset, length, (jbyte*)ctx->decode_buffer);
-  uint8_t *pad = ctx->decode_buffer + offset + length;
-  for(int a=0;a<AV_INPUT_BUFFER_PADDING_SIZE;a++) {
-    *(pad++) = 0;
-  }
-
-  JNIArrayShort jni(e);
-
-  jshort* array = audioDecoderDecode_data(ctx, length);
-
-  if (array == NULL) return NULL;
-
-  return jni.getArray();
-}
-*/
-
 jint audioDecoderGetChannels(FFContext* ctx)
 {
   if (ctx == NULL) return 0;
   return ctx->dst_nb_channels;
 }
-
-/*
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioDecoderGetChannels
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
-
-  return audioDecoderGetChannels(ctx);
-}
-*/
 
 jint audioDecoderGetSampleRate(FFContext* ctx)
 {
@@ -305,33 +235,11 @@ jint audioDecoderGetSampleRate(FFContext* ctx)
   return ctx->audio_codec_ctx->sample_rate;
 }
 
-/*
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioDecoderGetSampleRate
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
-
-  return audioDecoderGetSampleRate(ctx);
-}
-*/
-
 jboolean audioDecoderChange(FFContext* ctx, jint chs, jint freq)
 {
   //TODO
   return JNI_FALSE;
 }
-
-/*
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_audioDecoderChange
-  (JNIEnv *e, jobject c, jlong ctxptr, jint chs, jint freq)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return JNI_FALSE;
-
-  return audioDecoderChange(ctx, chs, freq);
-}
-*/
 
 //video decoder codebase
 
@@ -389,22 +297,6 @@ FFContext* videoDecoderStart(jint codec_id, jint width, jint height)
   return ctx;
 }
 
-/*
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoDecoderStart
-  (JNIEnv *e, jobject c, jint codec_id, jint width, jint height)
-{
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return JNI_FALSE;
-
-  if (!videoDecoderStart_ctx(ctx, codec_id, width, height)) {
-    freeFFContext(e,c,ctx);
-    ctx = NULL;
-  }
-
-  return (jlong)ctx;
-}
-*/
-
 void videoDecoderStop_ctx(FFContext* ctx)
 {
   if (ctx == NULL) return;
@@ -451,19 +343,6 @@ void videoDecoderStop(FFContext* ctx)
 
   freeFFContext(NULL,NULL,ctx);
 }
-
-/*
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoDecoderStop
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return;
-
-  videoDecoderStop_ctx(ctx);
-
-  freeFFContext(e,c,ctx);
-}
-*/
 
 jint* videoDecoderDecode_data(FFContext* ctx, jint length)
 {
@@ -542,54 +421,12 @@ jint* videoDecoderDecode(FFContext* ctx, jbyte* data, jint offset, jint length)
   return videoDecoderDecode_data(ctx, length);
 }
 
-/*
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_MediaJNI_videoDecoderDecode
-  (JNIEnv *e, jobject c, jlong ctxptr, jbyteArray data, jint offset, jint length)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return NULL;
-
-  //there should always be AV_INPUT_BUFFER_PADDING_SIZE bytes after the data to decode
-  if (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
-    (*_av_free)(ctx->decode_buffer);
-    while (length + AV_INPUT_BUFFER_PADDING_SIZE > ctx->decode_buffer_size) {
-      ctx->decode_buffer_size <<= 1;
-    }
-    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
-  }
-  e->GetByteArrayRegion(data, offset, length, (jbyte*)ctx->decode_buffer);
-  uint8_t *pad = ctx->decode_buffer + offset + length;
-  for(int a=0;a<AV_INPUT_BUFFER_PADDING_SIZE;a++) {
-    *(pad++) = 0;
-  }
-
-  JNIArrayInt jni(e);
-
-  jint* array = videoDecoderDecode_data(ctx, length);
-
-  if (array == NULL) return NULL;
-
-  return jni.getArray();
-}
-*/
-
 jint videoDecoderGetWidth(FFContext* ctx)
 {
   if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->width;
 }
-
-/*
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_videoDecoderGetWidth
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
-
-  return videoDecoderGetWidth(ctx);
-}
-*/
 
 jint videoDecoderGetHeight(FFContext* ctx)
 {
@@ -598,16 +435,6 @@ jint videoDecoderGetHeight(FFContext* ctx)
   return ctx->video_codec_ctx->height;
 }
 
-/*
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_videoDecoderGetHeight
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
-  return videoDecoderGetHeight(ctx);
-}
-*/
-
 jfloat videoDecoderGetFrameRate(FFContext* ctx)
 {
   if (ctx == NULL) return 0.0f;
@@ -615,17 +442,6 @@ jfloat videoDecoderGetFrameRate(FFContext* ctx)
   if (ctx->video_codec_ctx->framerate.den == 0) return 0.0f;
   return ctx->video_codec_ctx->framerate.num / ctx->video_codec_ctx->framerate.den;
 }
-
-/*
-JNIEXPORT jfloat JNICALL Java_javaforce_jni_MediaJNI_videoDecoderGetFrameRate
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0.0f;
-
-  return videoDecoderGetFrameRate(ctx);
-}
-*/
 
 jboolean videoDecoderChange(FFContext* ctx, jint new_width, jint new_height)
 {
@@ -655,24 +471,3 @@ jboolean videoDecoderChange(FFContext* ctx, jint new_width, jint new_height)
 
   return JNI_TRUE;
 }
-
-/*
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_videoDecoderChange
-  (JNIEnv *e, jobject c, jlong ctxptr, jint new_width, jint new_height)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return JNI_FALSE;
-
-  if (!videoDecoderChange(ctx, new_width, new_height)) {
-    return JNI_FALSE;
-  }
-
-  if (ctx->jvideo != NULL) {
-    e->DeleteGlobalRef(ctx->jvideo);
-  }
-  ctx->jvideo_length = ctx->rgb_video_dst_bufsize/4;
-  ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
-
-  return JNI_TRUE;
-}
-*/

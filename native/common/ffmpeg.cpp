@@ -389,57 +389,10 @@ jboolean mediaLoadLibs(const char* codecFile, const char* deviceFile, const char
   return JNI_TRUE;
 }
 
-/*
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_MediaJNI_mediaLoadLibs
-  (JNIEnv *e, jobject c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jscale)
-{
-  if (ffmpeg_loaded) return ffmpeg_loaded;
-
-  const char *codecFile = e->GetStringUTFChars(jcodec, NULL);
-
-  const char *deviceFile = e->GetStringUTFChars(jdevice, NULL);
-
-  const char *filterFile = e->GetStringUTFChars(jfilter, NULL);
-
-  const char *formatFile = e->GetStringUTFChars(jformat, NULL);
-
-  const char *utilFile = e->GetStringUTFChars(jutil, NULL);
-
-  const char *resampleFile = e->GetStringUTFChars(jresample, NULL);
-
-  const char *scaleFile = e->GetStringUTFChars(jscale, NULL);
-
-  jboolean ret = mediaLoadLibs(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, scaleFile);
-
-  e->ReleaseStringUTFChars(jcodec, codecFile);
-  e->ReleaseStringUTFChars(jdevice, deviceFile);
-  e->ReleaseStringUTFChars(jfilter, filterFile);
-  e->ReleaseStringUTFChars(jformat, formatFile);
-  e->ReleaseStringUTFChars(jutil, utilFile);
-  e->ReleaseStringUTFChars(jresample, resampleFile);
-  e->ReleaseStringUTFChars(jscale, scaleFile);
-
-  if (!ret) {
-    printf("ffmpeg_init failed : %d\n", ret);
-    return JNI_FALSE;
-  }
-
-  return JNI_TRUE;
-}
-*/
-
 void mediaSetLogging(jboolean state)
 {
   (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
 }
-
-/*
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_mediaSetLogging
-  (JNIEnv *e, jobject c, jboolean state)
-{
-  mediaSetLogging(state);
-}
-*/
 
 static int ff_min(int a, int b) {
   if (a < b) return a; else return b;

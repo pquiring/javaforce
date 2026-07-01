@@ -41,22 +41,6 @@ FFContext* audioEncoderStart(jint codec_id, jint bit_rate, jint chs, jint freq)
   return ctx;
 }
 
-/*
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStart
-  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint chs, jint freq)
-{
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return 0;
-
-  if (!audioEncoderStart_ctx(ctx, codec_id, bit_rate, chs, freq)) {
-    freeFFContext(e,c,ctx);
-    ctx = NULL;
-  }
-
-  return (jlong)ctx;
-}
-*/
-
 void audioEncoderStop_ctx(FFContext* ctx) {
   if (ctx == NULL) return;
   if (ctx->audio_frame != NULL) {
@@ -85,19 +69,6 @@ void audioEncoderStop(FFContext* ctx)
 
   freeFFContext(NULL,NULL,ctx);
 }
-
-/*
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_audioEncoderStop
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return;
-
-  audioEncoderStop_ctx(ctx);
-
-  freeFFContext(e,c,ctx);
-}
-*/
 
 static jbyte* av_encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
@@ -240,31 +211,6 @@ jbyte* audioEncoderEncode(FFContext* ctx, jshort* sams, jint offset, jint length
   return array;
 }
 
-/*
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_audioEncoderEncode
-  (JNIEnv *e, jobject c, jlong ctxptr, jshortArray sams, jint offset, jint length)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return NULL;
-
-  if (ctx->audio_codec_ctx == NULL) return NULL;
-
-  jboolean isCopy;
-  jshort* sams_ptr = (jshort*)e->GetPrimitiveArrayCritical(sams, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-  JNIArrayByte jni(e);
-
-  jbyte* array = av_encoder_addAudio(ctx, sams_ptr, offset, length);
-
-  e->ReleasePrimitiveArrayCritical(sams, sams_ptr, JNI_ABORT);
-
-  if (array == NULL) return NULL;
-
-  return jni.getArray();
-}
-*/
-
 jint audioEncoderGetAudioFramesize(FFContext* ctx)
 {
   if (ctx == NULL) return 0;
@@ -272,17 +218,6 @@ jint audioEncoderGetAudioFramesize(FFContext* ctx)
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->frame_size;
 }
-
-/*
-JNIEXPORT jint JNICALL Java_javaforce_jni_MediaJNI_audioEncoderGetAudioFramesize
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return 0;
-
-  return audioEncoderGetAudioFramesize(ctx);
-}
-*/
 
 //video encoder codebase
 
@@ -343,22 +278,6 @@ FFContext* videoEncoderStart(jint codec_id, jint bit_rate, jint width, jint heig
   return ctx;
 }
 
-/*
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStart
-  (JNIEnv *e, jobject c, jint codec_id, jint bit_rate, jint width, jint height, jfloat fps, jint keyFrameInterval)
-{
-  FFContext *ctx = newFFContext(e,c);
-  if (ctx == NULL) return 0;
-
-  if (!videoEncoderStart_ctx(ctx, codec_id, bit_rate, width, height, fps, keyFrameInterval)) {
-    freeFFContext(e, c, ctx);
-    ctx = NULL;
-  }
-
-  return (jlong)ctx;
-}
-*/
-
 void videoEncoderStop_ctx(FFContext *ctx)
 {
   if (ctx == NULL) return;
@@ -388,19 +307,6 @@ void videoEncoderStop(FFContext *ctx)
 
   freeFFContext(NULL, NULL, ctx);
 }
-
-/*
-JNIEXPORT void JNICALL Java_javaforce_jni_MediaJNI_videoEncoderStop
-  (JNIEnv *e, jobject c, jlong ctxptr)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return;
-
-  videoEncoderStop_ctx(ctx);
-
-  freeFFContext(e,c,ctx);
-}
-*/
 
 static jbyte* av_encoder_addVideo(FFContext *ctx, int *px)
 {
@@ -464,28 +370,3 @@ jbyte* videoEncoderEncode(FFContext* ctx, jint* px, jint offset, jint length)
 
   return av_encoder_addVideo(ctx, px);
 }
-
-/*
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_MediaJNI_videoEncoderEncode
-  (JNIEnv *e, jobject c, jlong ctxptr, jintArray px, jint offset, jint length)
-{
-  FFContext *ctx = castFFContext(e, c, ctxptr);
-  if (ctx == NULL) return NULL;
-
-  if (ctx->video_codec_ctx == NULL) return NULL;
-
-  jboolean isCopy;
-  jint *px_ptr = (jint*)e->GetPrimitiveArrayCritical(px, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-  JNIArrayByte jni(e);
-
-  jbyte* array = av_encoder_addVideo(ctx, (int*)px_ptr);
-
-  e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
-
-  if (array == NULL) return NULL;
-
-  return jni.getArray();
-}
-*/
