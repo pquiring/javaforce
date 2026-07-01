@@ -335,7 +335,7 @@ bool JavaThread(void *ignore) {
   CreateJVM();
 
   //load linux shared libraries
-  InvokeMethodVoid("javaforce/jni/LnxNative", "load", "()V", NULL);
+  InvokeMethodVoid("javaforce/linux/Linux", "load", "()V", NULL);
 
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
