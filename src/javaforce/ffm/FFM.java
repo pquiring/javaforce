@@ -321,6 +321,10 @@ public class FFM {
     MemorySegment ptrs = arena.allocate(ADDRESS, length);
     int idx = 0;
     for(String str : strs) {
+      if (str == null) {
+        idx++;
+        continue;
+      }
       MemorySegment ba = arena.allocateFrom(str);
       ptrs.setAtIndex(ADDRESS, idx++, ba);
     }
@@ -337,6 +341,10 @@ public class FFM {
     MemorySegment array = arena.allocate(ADDRESS, length);
     int idx = 0;
     for(MemorySegment ptr : ptrs) {
+      if (ptr == null) {
+        idx++;
+        continue;
+      }
       array.setAtIndex(ADDRESS, idx++, ptr);
     }
     return array;
