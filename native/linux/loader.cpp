@@ -334,9 +334,6 @@ bool CreateJVM() {
 bool JavaThread(void *ignore) {
   CreateJVM();
 
-  //load linux shared libraries
-  InvokeMethodVoid("javaforce/linux/Linux", "load", "()V", NULL);
-
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
     //request service shutdown
