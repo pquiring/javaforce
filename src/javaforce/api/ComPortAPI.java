@@ -1,7 +1,6 @@
 package javaforce.api;
 
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /** Com Port native API.
  *
@@ -10,11 +9,7 @@ import javaforce.jni.*;
 
 public interface ComPortAPI {
   public static ComPortAPI getInstance() {
-    if (FFM.enabled()) {
-      return ComPortFFM.getInstance();
-    } else {
-      return ComPortJNI.getInstance();
-    }
+    return ComPortFFM.getInstance();
   }
   /** Opens a com port.
    *

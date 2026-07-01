@@ -27,14 +27,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_GLJNI.h"
-#include "javaforce_jni_UIJNI.h"
-#include "javaforce_jni_LnxNative.h"
-#include "javaforce_jni_CameraJNI.h"
-#include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_PCapJNI.h"
-#include "javaforce_jni_CLJNI.h"
-
 /* Global variables */
 int type;
 char version[MAX_PATH];
@@ -338,26 +330,9 @@ bool CreateJVM() {
 
 #include "../common/register.h"
 
-extern "C" void lnxnative_register(JNIEnv *env);
-
-extern "C" void vm_register(JNIEnv *env);
-
-/** Register natives embedded with executable. */
-void registerAllNatives(JNIEnv *env) {
-  jclass cls;
-
-  registerCommonNatives(env);
-
-  lnxnative_register(env);
-
-  vm_register(env);
-}
-
 /** Continues loading the JVM in a new Thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();
-
-  registerAllNatives(g_env);
 
   //load linux shared libraries
   InvokeMethodVoid("javaforce/jni/LnxNative", "load", "()V", NULL);

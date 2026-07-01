@@ -5,17 +5,6 @@ struct MonitorContext {
   jboolean closed;
 };
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate
-  (JNIEnv *e, jclass c, jstring path)
-{
-  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
-  memset(ctx, 0, sizeof(MonitorContext));
-  const char *cpath = e->GetStringUTFChars(path,NULL);
-  ctx->handle = CreateFile(cpath, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
-  e->ReleaseStringUTFChars(path, cpath);
-  return (jlong)ctx;
-}
-
 struct FILE_NOTIFY_STRUCT {
   DWORD NextEntryOffset;
   DWORD Action;
@@ -23,20 +12,23 @@ struct FILE_NOTIFY_STRUCT {
   WCHAR FileName[0];
 };
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
-  (JNIEnv *e, jclass c, jlong ctx_ptr, jobject listener)
+MonitorContext* monitorFolderCreate(const char* path)
 {
-  MonitorContext* ctx = (MonitorContext*)ctx_ptr;
+  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
+  memset(ctx, 0, sizeof(MonitorContext));
+  ctx->handle = CreateFile(path, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+  return ctx;
+}
+
+void monitorFolderPoll(MonitorContext* ctx, void* listener)
+{
   if (ctx == NULL) return;
-
-  jclass cls;
-  jmethodID mid;
-
-  cls = e->GetObjectClass(listener);
-  mid = e->GetMethodID(cls, "folderEvent", "(Ljava/lang/String;Ljava/lang/String;)V");
 
   alignas(DWORD) char buffer[1024];
   int size;
+  char path8[1024];
+
+  void (*folderChangeEvent)(const char*, const char*) = (void (*)(const char*, const char*))listener;
 
   while (1) {
     if (ctx->close) {
@@ -52,8 +44,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
     while (size > sizeof(FILE_NOTIFY_STRUCT)) {
       FILE_NOTIFY_STRUCT *info = (FILE_NOTIFY_STRUCT*)(buffer + pos);
 
-      const char* event = NULL;
-      const jchar* path = NULL;
+      char* event = NULL;
+      jchar* path16 = NULL;
 
       switch (info->Action) {
         case FILE_ACTION_ADDED: event = "CREATED"; break;
@@ -76,15 +68,11 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
         printf("MonitorFolder:buffer too small:size=%d expected=%d\n", size, strlen);
         break;
       }
-      path = (jchar*)(buffer + pos);
+      path16 = (jchar*)(buffer + pos);
 
-      jstring jevent = e->NewStringUTF(event);
-      jstring jpath = e->NewString(path, strlen / 2);
+      strcpy8_16_len(path8, path16, strlen / 2);
 
-      e->CallVoidMethod(listener, mid, jevent, jpath);
-
-      e->DeleteLocalRef(jevent);
-      e->DeleteLocalRef(jpath);
+      (*folderChangeEvent)(event, path8);
 
       pos += strlen;
       size -= strlen;
@@ -92,10 +80,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
-  (JNIEnv *e, jclass c, jlong ctx_ptr)
+void monitorFolderClose(MonitorContext* ctx)
 {
-  MonitorContext* ctx = (MonitorContext*)ctx_ptr;
   if (ctx == NULL) return;
   ctx->close = JNI_TRUE;
   while (!ctx->closed) {
@@ -106,4 +92,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
   }
   CloseHandle(ctx->handle);
   free(ctx);
+}
+
+extern "C" {
+  JNIEXPORT MonitorContext* (*_monitorFolderCreate)(const char*) = &monitorFolderCreate;
+  JNIEXPORT void (*_monitorFolderPoll)(MonitorContext* ctx, void*) = &monitorFolderPoll;
+  JNIEXPORT void (*_monitorFolderClose)(MonitorContext* ctx) = &monitorFolderClose;
+
+  JNIEXPORT jboolean JNICALL MonitorFolderAPIinit() {return JNI_TRUE;}
 }

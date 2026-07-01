@@ -10,6 +10,8 @@ See CreateNamedPipe -> Example : Multithreaded Pipe Server
 
 */
 
+bool debug_pipes = false;
+
 HANDLE pipeCreate(const char* name, jboolean first)
 {
   SECURITY_DESCRIPTOR sd;

@@ -63,7 +63,7 @@ public class ANSI {
     if (JF.isWindows()) {
       xy = WindowsAPI.getInstance().getConsoleSize();
     } else {
-      xy = LnxNative.getConsoleSize();
+      xy = LinuxAPI.getInstance().getConsoleSize();
     }
     boolean changed = width != xy[0] || height != xy[1];
     if (changed) {
@@ -77,7 +77,7 @@ public class ANSI {
     if (JF.isWindows()) {
       return WindowsAPI.getInstance().getConsolePos();
     } else {
-      return LnxNative.getConsolePos();
+      return LinuxAPI.getInstance().getConsolePos();
     }
   }
 
@@ -91,7 +91,7 @@ public class ANSI {
     if (JF.isWindows()) {
       ch = WindowsAPI.getInstance().readConsole();
     } else {
-      ch = LnxNative.readConsole();
+      ch = LinuxAPI.getInstance().readConsole();
     }
     return ch;
   }

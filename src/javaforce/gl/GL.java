@@ -28,11 +28,7 @@ public interface GL {
    *
    */
   public static GL getInstance() {
-    if (FFM.enabled()) {
-      return GLFFM.getInstance();
-    } else {
-      return GLJNI.getInstance();
-    }
+    return GLFFM.getInstance();
   }
 
   public static final boolean debug = false;  //enable to see lots of debug info

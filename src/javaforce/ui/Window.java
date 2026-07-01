@@ -35,6 +35,7 @@ public class Window implements UIEvents {
   private static ArrayList<Canvas> canvasList = new ArrayList<>();
   private static ArrayList<Window> windows = new ArrayList<>();
 
+  //see also native/common/ui.cpp
   private static final int KEY_TYPED = 1;
   private static final int KEY_PRESS = 2;
   private static final int KEY_RELEASE = 3;
@@ -64,6 +65,7 @@ public class Window implements UIEvents {
     }
   }
 
+  //see also native/common/ui.cpp
   public static final int STYLE_VISIBLE = 1;
   public static final int STYLE_RESIZABLE = 2;
   public static final int STYLE_TITLEBAR = 4;

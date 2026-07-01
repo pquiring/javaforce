@@ -29,15 +29,6 @@
 #include <jawt.h>
 #include <jawt_md.h>
 
-#include "javaforce_jni_LnxNative.h"
-#include "javaforce_jni_GLJNI.h"
-#include "javaforce_jni_CameraJNI.h"
-#include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_UIJNI.h"
-#include "javaforce_jni_PCapJNI.h"
-#include "javaforce_jni_CLJNI.h"
-#include "javaforce_jni_JFNative.h"
-
 #include "../common/string.h"
 #include "../common/array.h"
 #include "../common/library.h"
@@ -324,8 +315,7 @@ static jlong getWaylandID(JNIEnv *e, jobject c) {
   return handle;
 }
 
-#include "../common/ui-jni.cpp"
-#include "../common/ui-ffm.cpp"
+#include "../common/ui.cpp"
 
 #include "../common/gl.cpp"
 
@@ -358,11 +348,9 @@ extern "C" {
   JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*,const char*,jint,jint) = &uiWindowSetIcon;
 }
 
-#include "camera-jni.cpp"
-#include "camera-ffm.cpp"
+#include "camera.cpp"
 
-#include "comport-jni.cpp"
-#include "comport-ffm.cpp"
+#include "comport.cpp"
 
 #include "pty.cpp"
 
@@ -372,8 +360,7 @@ extern "C" {
 
 #ifndef __FreeBSD__
 
-#include "monitor-folder-jni.cpp"
-#include "monitor-folder-ffm.cpp"
+#include "monitor-folder.cpp"
 
 #endif  //__FreeBSD__
 
@@ -436,77 +423,19 @@ jint getUID()
 
 #include "../common/videobuffer.cpp"
 
-#include "../common/opencl-jni.cpp"
-#include "../common/opencl-ffm.cpp"
+#include "../common/opencl.cpp"
 
 #include "../common/types.h"
 
-#include "../common/font-jni.cpp"
-#include "../common/font-ffm.cpp"
+#include "../common/font.cpp"
 
-#include "../common/image-jni.cpp"
-#include "../common/image-ffm.cpp"
+#include "../common/image.cpp"
 
-#include "../common/pcap-jni.cpp"
-#include "../common/pcap-ffm.cpp"
+#include "../common/pcap.cpp"
 
 #include "../common/vm.cpp"
 
 #include "../speexdsp/speex_dsp.c"
-
-#ifndef __FreeBSD__
-
-static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
-  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
-  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListDevices},
-  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListModes},
-  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStart},
-  {"cameraStop", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStop},
-  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetFrame},
-  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetWidth},
-  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetHeight},
-};
-
-extern "C" void camera_register(JNIEnv *env);
-
-void camera_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/CameraJNI");
-  registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
-}
-
-#endif  //__FreeBSD__
-
-static JNINativeMethod javaforce_jni_ComPortJNI[] = {
-  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
-  {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
-  {"comRead", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
-  {"comWrite", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
-};
-
-#ifndef __FreeBSD__
-static JNINativeMethod javaforce_jni_MonitorFolderJNI[] = {
-  {"monitorFolderCreate", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate},
-  {"monitorFolderPoll", "(JLjavaforce/io/FolderListener;)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll},
-  {"monitorFolderClose", "(J)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose},
-};
-#endif
-
-extern "C" void lnxnative_register(JNIEnv *env);
-
-void lnxnative_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/ComPortJNI");
-  registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
-
-#ifndef __FreeBSD__
-  cls = findClass(env, "javaforce/jni/MonitorFolderJNI");
-  registerNatives(env, cls, javaforce_jni_MonitorFolderJNI, sizeof(javaforce_jni_MonitorFolderJNI)/sizeof(JNINativeMethod));
-#endif
-}
 
 #include "../common/register.cpp"
 

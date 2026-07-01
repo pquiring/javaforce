@@ -61,16 +61,7 @@ jboolean setup_JFHeap() {
   classNameStr = jnienv->NewStringUTF("javaforce.jni.JFHeap");
   cls = (jclass)jnienv->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);
 
-  registerNatives(jnienv, cls, javaforce_jni_JFHeap, sizeof(javaforce_jni_JFHeap)/sizeof(JNINativeMethod));
-
-#ifdef OS_NATIVES_CLASS
-
-  classNameStr = jnienv->NewStringUTF(OS_NATIVES_CLASS);
-  cls = (jclass)jnienv->CallObjectMethod(contextClassLoader, findClassMid, classNameStr);
-
-  registerNatives(jnienv, cls, OS_NATIVES_METHODS, sizeof(OS_NATIVES_METHODS)/sizeof(JNINativeMethod));
-
-#endif
+  registerNatives(jnienv, cls, javaforce_ffm_JFHeap, sizeof(javaforce_ffm_JFHeap)/sizeof(JNINativeMethod));
 
   return JNI_TRUE;
 }

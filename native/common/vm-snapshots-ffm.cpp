@@ -1,5 +1,44 @@
 //#define VM_SNAPSHOTS_DEBUG
 
+static const char * ss_empty = "";
+
+const char* snapshot_get_desc(void* ss) {
+  const char* xml = (*_virDomainSnapshotGetXMLDesc)(ss, 0);
+
+  if (xml == NULL) return ss_empty;
+
+  const char *p1 = strstr(xml, "<description>");
+
+  const char *p2 = strstr(xml, "</description>");
+
+  if (p1 == NULL || p2 == NULL) {
+    p1 = xml;
+    p2 = xml;
+  } else {
+    p1 += 13;
+  }
+
+  int len = p2 - p1;
+  char * name = (char*)malloc(len + 1);
+  memcpy(name, p1, len);
+  name[len] = 0;
+
+  free((void*)xml);
+
+  return name;
+}
+
+const char* snapshot_get_parent(void* ss) {
+  void* parent = (*_virDomainSnapshotGetParent)(ss, 0);
+  if (parent == NULL) return ss_empty;
+  const char* name = (*_virDomainSnapshotGetName)(parent);
+  if (name == NULL) name = ss_empty;
+  char* copy = (char*)malloc(strlen(name) + 1);
+  strcpy(copy, name);
+  (*_virDomainSnapshotFree)(parent);
+  return (const char*)copy;
+}
+
 jboolean vmSnapshotCreate(const char* name, const char* xml, jint flags)
 {
   void* conn = connect();

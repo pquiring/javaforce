@@ -29,7 +29,7 @@ public class ConsoleOutput extends OutputStream {
       if (isWindows) {
         WindowsAPI.getInstance().writeConsole(c);
       } else {
-        LnxNative.writeConsole(c);
+        LinuxAPI.getInstance().writeConsole(c);
       }
       low = -1;
     }

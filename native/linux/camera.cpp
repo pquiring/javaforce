@@ -2,6 +2,21 @@
 
 #ifndef __FreeBSD__
 
+#define MAX_NUM_CAMERAS 32
+
+struct mmapbuffer {
+  void* start;
+  int length;
+};
+
+static int xioctl(int fd, int req, void* arg) {
+  int r;
+  do {
+    r = (*_v4l2_ioctl)(fd, req, arg);
+  } while (r == -1 && errno == EINTR);
+  return r;
+}
+
 struct FFMCamContext {
   int cameraDeviceCount;
   char **cameraDeviceNames;

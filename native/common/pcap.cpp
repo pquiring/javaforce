@@ -1,4 +1,4 @@
-/* pcap */
+/* pcap FFM */
 
 #include "register.h"
 
@@ -33,6 +33,8 @@ struct pcap_if {
 #define PCAP_IF_CONNECTION_STATUS_NOT_APPLICABLE  0x00000030  /* not applicable */
 
 #define PCAP_NETMASK_UNKNOWN	0xffffffff
+
+#define UP_RUNNING (PCAP_IF_UP | PCAP_IF_RUNNING | PCAP_IF_CONNECTION_STATUS_CONNECTED)
 
 typedef struct pcap_if pcap_if_t;
 
@@ -76,33 +78,35 @@ int (*pcap_setnonblock)(pcap_t *p, int nonblock, char *errbuf);
 
 #define PCAP_ERRBUF_SIZE 256
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapInit
-  (JNIEnv *e, jobject obj, jstring lib1, jstring lib2)
+struct bpf_program cap_program;
+
+static void cap_callback(struct user_pkt_t *user_pkt, const struct pcap_pkthdr *pkt, const u_char *bytes)
+{
+  //printf("pkt.size:%d,%d\n", pkt->caplen, pkt->len);
+  user_pkt->size = pkt->caplen;
+  user_pkt->bytes = (jbyte*)bytes;
+}
+
+jboolean pcapInit(char* lib1, char* lib2)
 {
   char err[PCAP_ERRBUF_SIZE];
 
   if (lib1 != NULL) {
     //Windows only
-    const char *clib1 = e->GetStringUTFChars(lib1, NULL);
-    printf("Loading:%s\n", clib1);
-    lib_packet = loadLibrary(clib1);
+    printf("Loading:%s\n", lib1);
+    lib_packet = loadLibrary(lib1);
     if (lib_packet == NULL) {
-      printf("Error:library not found:%s\n", clib1);
-      e->ReleaseStringUTFChars(lib1, clib1);
+      printf("Error:library not found:%s\n", lib1);
       return JNI_FALSE;
     }
-    e->ReleaseStringUTFChars(lib1, clib1);
   }
 
-  const char *clib2 = e->GetStringUTFChars(lib2, NULL);
-  printf("Loading:%s\n", clib2);
-  library = loadLibrary(clib2);
+  printf("Loading:%s\n", lib2);
+  library = loadLibrary(lib2);
   if (library == NULL) {
-    printf("Error:library not found:%s\n", clib2);
-    e->ReleaseStringUTFChars(lib2, clib2);
+    printf("Error:library not found:%s\n", lib2);
     return JNI_FALSE;
   }
-  e->ReleaseStringUTFChars(lib2, clib2);
 
   getFunction(library, (void**)(&pcap_init), "pcap_init");
   getFunction(library, (void**)(&pcap_open_live), "pcap_open_live");
@@ -135,17 +139,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapInit
   return JNI_TRUE;
 }
 
-#define UP_RUNNING (PCAP_IF_UP | PCAP_IF_RUNNING | PCAP_IF_CONNECTION_STATUS_CONNECTED)
-
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_pcapListLocalInterfaces
-  (JNIEnv *e, jobject obj)
+void* pcapListLocalInterfaces()
 {
   char err[PCAP_ERRBUF_SIZE];
   int list_count = 0;
   pcap_if_t *list_elements, *c;
   pcap_addr_t *addr;
   char name[256], ip[16];
-  jobjectArray array;
+  void* array;
 
   if (library == NULL) return NULL;
 
@@ -167,7 +168,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_pcapListLocalInterface
     c = c->next;
   }
 
-  array = (jobjectArray)e->NewObjectArray(list_count,e->FindClass("java/lang/String"),e->NewStringUTF(""));
+  array = ffm->newStringArray(list_count);
 
   c = list_elements;
   int idx = 0;
@@ -185,7 +186,10 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_pcapListLocalInterface
         }
         addr = addr->next;
       }
-      e->SetObjectArrayElement(array,idx++,e->NewStringUTF(name));
+      char* str = (char*)malloc(strlen(name) + 1);
+      strcpy(str, name);
+      ffm->setString(idx++, (const char*)str);
+      free(str);
     }
     c = c->next;
   }
@@ -195,16 +199,12 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_PCapJNI_pcapListLocalInterface
   return array;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_PCapJNI_pcapStart
-  (JNIEnv *e, jobject obj, jstring dev, jboolean nonblocking)
+jlong pcapStart(char* dev, jboolean nonblocking)
 {
   if (library == NULL) return 0;
   char err[PCAP_ERRBUF_SIZE];
-  const char *cdev = e->GetStringUTFChars(dev, NULL);
 
-  jlong handle = (jlong)(*pcap_open_live)(cdev, 100, 1, 10, err);
-
-  e->ReleaseStringUTFChars(dev, cdev);
+  jlong handle = (jlong)(*pcap_open_live)(dev, 100, 1, 10, err);
 
   if (handle == 0) {
     printf("Error:pcap_open_live:%s\n", err);
@@ -221,23 +221,15 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_PCapJNI_pcapStart
   return handle;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_PCapJNI_pcapStop
-  (JNIEnv *e, jobject obj, jlong handle)
+void pcapStop(jlong handle)
 {
   if (library == NULL) return;
   (*pcap_close)((pcap_t*)handle);
 }
 
-struct bpf_program cap_program;
-
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapCompile
-  (JNIEnv *e, jobject obj, jlong handle, jstring program)
+jboolean pcapCompile(jlong handle, char* program)
 {
-  const char *cprogram = e->GetStringUTFChars(program, NULL);
-
-  int ret = (*pcap_compile)((pcap_t*)handle, &cap_program, cprogram, 0, PCAP_NETMASK_UNKNOWN);
-
-  e->ReleaseStringUTFChars(program, cprogram);
+  int ret = (*pcap_compile)((pcap_t*)handle, &cap_program, program, 0, PCAP_NETMASK_UNKNOWN);
 
   if (ret != 0) {
     printf("Error:pcap_compile:%d\n", ret);
@@ -251,15 +243,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapCompile
   return ret == 0;
 }
 
-static void cap_callback(struct user_pkt_t *user_pkt, const struct pcap_pkthdr *pkt, const u_char *bytes)
-{
-  //printf("pkt.size:%d,%d\n", pkt->caplen, pkt->len);
-  user_pkt->size = pkt->caplen;
-  user_pkt->bytes = (jbyte*)bytes;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_pcapRead
-  (JNIEnv *e, jobject obj, jlong handle)
+jbyte* pcapRead(jlong handle)
 {
   struct user_pkt_t user_pkt;
   user_pkt.size = 0;
@@ -267,9 +251,9 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_pcapRead
   int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, &user_pkt);
 
   if (cnt > 0 && user_pkt.size > 0) {
-    jbyteArray ba = e->NewByteArray(user_pkt.size);
+    jbyte* ba = ffm->newByteArray(user_pkt.size);
 
-    e->SetByteArrayRegion(ba, 0, user_pkt.size, user_pkt.bytes);
+    memcpy(ba, user_pkt.bytes, user_pkt.size);
 
     return ba;
   } else {
@@ -277,39 +261,27 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_PCapJNI_pcapRead
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_PCapJNI_pcapWrite
-  (JNIEnv *e, jobject obj, jlong handle, jbyteArray ba, jint offset, jint length)
+jboolean pcapWrite(jlong handle, jbyte* ba, jint offset, jint length)
 {
   if (ba == NULL) return JNI_FALSE;
   jboolean isCopy;
-  jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
-  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  int ret = (*pcap_sendpacket)((pcap_t*)handle, ba_ptr + offset, length);
+  int ret = (*pcap_sendpacket)((pcap_t*)handle, ba + offset, length);
   if (ret != 0) {
     printf("Error:pcap_sendpacket:%d\n", ret);
   }
 
-  e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
-
   return ret == 0;
 }
 
-static JNINativeMethod javaforce_net_PacketCapture[] = {
-  {"pcapInit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_pcapInit},
-  {"pcapListLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_PCapJNI_pcapListLocalInterfaces},
-  {"pcapStart", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_PCapJNI_pcapStart},
-  {"pcapStop", "(J)V", (void *)&Java_javaforce_jni_PCapJNI_pcapStop},
-  {"pcapCompile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_jni_PCapJNI_pcapCompile},
-  {"pcapRead", "(J)[B", (void *)&Java_javaforce_jni_PCapJNI_pcapRead},
-  {"pcapWrite", "(J[BII)Z", (void *)&Java_javaforce_jni_PCapJNI_pcapWrite},
-};
+extern "C" {
+  JNIEXPORT jboolean (*_pcapInit)(char*,char*) = &pcapInit;
+  JNIEXPORT void* (*_pcapListLocalInterfaces)() = &pcapListLocalInterfaces;
+  JNIEXPORT jlong (*_pcapStart)(char*,jboolean) = &pcapStart;
+  JNIEXPORT void (*_pcapStop)(jlong) = &pcapStop;
+  JNIEXPORT jboolean (*_pcapCompile)(jlong,char*) = &pcapCompile;
+  JNIEXPORT jbyte* (*_pcapRead)(jlong) = &pcapRead;
+  JNIEXPORT jboolean (*_pcapWrite)(jlong,jbyte*,jint,jint) = &pcapWrite;
 
-extern "C" void pcap_register(JNIEnv *env);
-
-void pcap_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/PCapJNI");
-  registerNatives(env, cls, javaforce_net_PacketCapture, sizeof(javaforce_net_PacketCapture)/sizeof(JNINativeMethod));
+  JNIEXPORT jboolean PCapAPIinit() {return JNI_TRUE;}
 }

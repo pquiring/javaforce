@@ -5,18 +5,6 @@ struct MonitorContext {
   jboolean closed;
 };
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate
-  (JNIEnv *e, jclass c, jstring path)
-{
-  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
-  memset(ctx, 0, sizeof(MonitorContext));
-  ctx->fd = inotify_init1(IN_NONBLOCK);
-  const char *cpath = e->GetStringUTFChars(path,NULL);
-  ctx->wd = inotify_add_watch(ctx->fd, cpath, 0xfc0);
-  e->ReleaseStringUTFChars(path, cpath);
-  return (jlong)ctx;
-}
-
 struct _inotify_event {
   int      wd;       /* Watch descriptor */
   uint32_t mask;     /* Mask describing event */
@@ -25,17 +13,20 @@ struct _inotify_event {
   char     name[0];  /* Optional null-terminated name */
 };
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
-  (JNIEnv *e, jclass c, jlong ctx_ptr, jobject listener)
+MonitorContext* monitorFolderCreate(const char* path)
 {
-  MonitorContext* ctx = (MonitorContext*)ctx_ptr;
+  MonitorContext* ctx = (MonitorContext*)malloc(sizeof(MonitorContext));
+  memset(ctx, 0, sizeof(MonitorContext));
+  ctx->fd = inotify_init1(IN_NONBLOCK);
+  ctx->wd = inotify_add_watch(ctx->fd, path, 0xfc0);
+  return ctx;
+}
+
+void monitorFolderPoll(MonitorContext* ctx, void* listener)
+{
   if (ctx == NULL) return;
 
-  jclass cls;
-  jmethodID mid;
-
-  cls = e->GetObjectClass(listener);
-  mid = e->GetMethodID(cls, "folderEvent", "(Ljava/lang/String;Ljava/lang/String;)V");
+  void (*folderChangeEvent)(const char*, const char*) = (void (*)(const char*, const char*))listener;
 
   char inotify_buffer[512];
   while (1) {
@@ -73,10 +64,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
       if (strlen == 0 || strlen > size) continue;
       path = (char*)(inotify_buffer + pos);
 
-      jstring jevent = e->NewStringUTF(event);
-      jstring jpath = e->NewStringUTF(path);
-
-      e->CallVoidMethod(listener, mid, jevent, jpath);
+      (*folderChangeEvent)(event, path);
 
       pos += strlen;
       size -= strlen;
@@ -84,10 +72,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
-  (JNIEnv *e, jclass c, jlong ctx_ptr)
+void monitorFolderClose(MonitorContext* ctx)
 {
-  MonitorContext* ctx = (MonitorContext*)ctx_ptr;
   if (ctx == NULL) return;
   ctx->close = JNI_TRUE;
   close(ctx->fd);
@@ -96,4 +82,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose
     sleep_ms(100);
   }
   free(ctx);
+}
+
+extern "C" {
+  JNIEXPORT MonitorContext* (*_monitorFolderCreate)(const char*) = &monitorFolderCreate;
+  JNIEXPORT void (*_monitorFolderPoll)(MonitorContext*, void*) = &monitorFolderPoll;
+  JNIEXPORT void (*_monitorFolderClose)(MonitorContext*) = &monitorFolderClose;
+
+  JNIEXPORT jboolean JNICALL MonitorFolderAPIinit() {return JNI_TRUE;}
 }

@@ -1,7 +1,6 @@
 package javaforce.api;
 
 import javaforce.media.*;
-import javaforce.jni.*;
 import javaforce.ffm.*;
 
 /** Media API
@@ -12,11 +11,7 @@ import javaforce.ffm.*;
 public interface MediaAPI {
 
   public static MediaAPI getInstance() {
-    if (FFM.enabled()) {
-      return MediaFFM.getInstance();
-    } else {
-      return MediaJNI.getInstance();
-    }
+    return MediaFFM.getInstance();
   }
 
   //MediaCoder

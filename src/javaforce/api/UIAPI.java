@@ -11,11 +11,7 @@ import javaforce.ui.*;
 
 public interface UIAPI {
   public static UIAPI getInstance() {
-    if (FFM.enabled()) {
-      return UIFFM.getInstance();
-    } else {
-      return UIJNI.getInstance();
-    }
+    return UIFFM.getInstance();
   }
 
   public static final int KEY_TYPED = 1;

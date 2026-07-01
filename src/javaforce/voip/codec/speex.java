@@ -24,11 +24,7 @@ public class speex implements RTPAudioCoder {
 
   private SpeexAPI api;
   public speex() {
-    if (FFM.enabled()) {
-      api = SpeexFFM.getInstance();
-    } else {
-      api = SpeexJNI.getInstance();
-    }
+    api = SpeexFFM.getInstance();
   }
 
   private static boolean debug = false;

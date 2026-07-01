@@ -227,11 +227,8 @@ static void disconnect(void* ptr) {
   (*_virConnectClose)(ptr);
 }
 
-#include "vm-snapshots-jni.cpp"
 #include "vm-snapshots-ffm.cpp"
 
-#include "vm-stats-jni.cpp"
 #include "vm-stats-ffm.cpp"
 
-#include "vm-jni.cpp"
 #include "vm-ffm.cpp"

@@ -2,10 +2,16 @@ package javaforce.linux;
 
 import java.util.*;
 import java.io.*;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
+import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jni.*;
+import javaforce.api.*;
 
 /**
  * Common functions for Linux administration.
@@ -15,7 +21,7 @@ import javaforce.jni.*;
  * @author pquiring
  */
 
-public class Linux {
+public class Linux implements X11Listener {
 
   /** Returns Linux version as float. */
   public static String getVersion() {
@@ -818,30 +824,30 @@ public class Linux {
   }
 
   public static long x11_get_id(java.awt.Window w) {
-    return X11.x11_get_id(w);
+    return X11API.getInstance().x11_get_id(w);
   }
 
   public static void x11_set_desktop(long xid) {
-    X11.x11_set_desktop(xid);
+    X11API.getInstance().x11_set_desktop(xid);
   }
 
   public static void x11_set_dock(long xid) {
-    X11.x11_set_dock(xid);
+    X11API.getInstance().x11_set_dock(xid);
   }
 
   public static void x11_set_strut(long xid, int panelHeight, int x, int y, int width, int height) {
-    X11.x11_set_strut(xid, panelHeight,x,y,width,height);
+    X11API.getInstance().x11_set_strut(xid, panelHeight,x,y,width,height);
   }
 
 //tray functions
 
   public static void x11_set_listener(X11Listener cb) {
-    X11.x11_set_listener(cb);
+    X11API.getInstance().x11_set_listener(cb);
   }
 
   /** Polls and dispatches tray events.  Does not return until x11_tray_stop() is called. */
   public static void x11_tray_main(long pid, int screenWidth, int trayPos, int trayHeight) {
-    X11.x11_tray_main(pid, screenWidth, trayPos, trayHeight);
+    X11API.getInstance().x11_tray_main(pid, screenWidth, trayPos, trayHeight);
   }
 
   /** Repositions tray icons and the tray window itself.
@@ -849,27 +855,27 @@ public class Linux {
    * @param screenWidth = new screen width (-1 = has not changed)
    */
   public static void x11_tray_reposition(int screenWidth, int trayPos, int trayHeight) {
-    X11.x11_tray_reposition(screenWidth, trayPos, trayHeight);
+    X11API.getInstance().x11_tray_reposition(screenWidth, trayPos, trayHeight);
   }
 
   /** Stops x11_tray_main() */
   public static void x11_tray_stop() {
-    X11.x11_tray_stop();
+    X11API.getInstance().x11_tray_stop();
   }
 
   public static int x11_tray_width() {
-    return X11.x11_tray_width();
+    return X11API.getInstance().x11_tray_width();
   }
 
 //top-level x11 windows monitor
 
   /** Polls and dispatches top-level windows events.  Does not return until x11_window_list_stop() is called. */
   public static void x11_window_list_main() {
-    X11.x11_window_list_main();
+    X11API.getInstance().x11_window_list_main();
   }
 
   public static void x11_window_list_stop() {
-    X11.x11_window_list_stop();
+    X11API.getInstance().x11_window_list_stop();
     //TODO : send a message to ??? to cause main() loop to abort
   }
 
@@ -904,6 +910,10 @@ public class Linux {
     }
   }
 
+  public void trayIconAdded(int count) {}
+  public void trayIconRemoved(int count) {}
+  public void windowsChanged() {}
+
   //called from native code to add/update a window
   public void windowAdded(long xid, int pid, String title, String name, String res_name, String res_class) {
     Window window = new Window(xid, pid, title, name, res_name, res_class);
@@ -933,35 +943,35 @@ public class Linux {
   }
 
   public static void x11_minimize_all() {
-    X11.x11_minimize_all();
+    X11API.getInstance().x11_minimize_all();
   }
 
   public static void x11_raise_window(long xid) {
-    X11.x11_raise_window(xid);
+    X11API.getInstance().x11_raise_window(xid);
   }
 
   public static void x11_map_window(long xid) {
-    X11.x11_map_window(xid);
+    X11API.getInstance().x11_map_window(xid);
   }
 
   public static void x11_unmap_window(long xid) {
-    X11.x11_unmap_window(xid);
+    X11API.getInstance().x11_unmap_window(xid);
   }
 
 //x11 send event functions
 
   public static int x11_keysym_to_keycode(char keysym) {
-    return X11.x11_keysym_to_keycode(keysym);
+    return X11API.getInstance().x11_keysym_to_keycode(keysym);
   }
 
   /** Send keyboard event to window with focus. */
   public static boolean x11_send_event(int keycode, boolean down) {
-    return X11.x11_send_event(keycode, down);
+    return X11API.getInstance().x11_send_event(keycode, down);
   }
 
   /** Send keyboard event to specific window. */
   public static boolean x11_send_event(long id, int keycode, boolean down) {
-    return X11.x11_send_event(id, keycode, down);
+    return X11API.getInstance().x11_send_event_id(id, keycode, down);
   }
 
   //X11 : RandR support
@@ -1338,7 +1348,7 @@ public class Linux {
       case Arch: backend = "system-auth"; break;
       default: return false;
     }
-    return LnxNative.authUser(user, pass, backend);
+    return LinuxAPI.getInstance().authUser(user, pass, backend);
   }
 
   public static final int SIGKILL = 9;
@@ -1352,8 +1362,8 @@ public class Linux {
     }
   }
 
-  public static void setenv(String name, String value) {
-    LnxNative.setenv(name, value);
+  public static void setEnv(String name, String value) {
+    LinuxAPI.getInstance().setEnv(name, value);
   }
 
   public static String getHostname() {
@@ -1475,6 +1485,140 @@ public class Linux {
       JFLog.log(e);
     }
     return new Properties();
+  }
+
+  private static String readSocketMessage(SocketChannel channel) throws IOException {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    int bytesRead = channel.read(buffer);
+    if (bytesRead < 0) return null;
+    byte[] bytes = new byte[bytesRead];
+    buffer.flip();
+    buffer.get(bytes);
+    String message = new String(bytes);
+    return message;
+  }
+
+  private static String getServiceSocket() {
+    try {
+      String path = Path.of("/proc/self/exe").toRealPath().toString();
+      int idx = path.lastIndexOf('/');
+      String app = path.substring(idx+1);
+      String sockpath = "/usr/lib/systemd/system/" + app + ".socket";
+      return sockpath;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  /** Creates a unix socket which commands to the service can be issued.
+   * Supports : stop, reload
+   * Socket file is stored at /usr/lib/systemd/system/{service}.socket
+   *
+   * Note : unix sockets requires Java 16 (JEP 380).
+   */
+  private static void lnxServiceInit() {
+    new Thread() {
+      public void run() {
+        try {
+          String socketPath = getServiceSocket();
+          UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(socketPath);
+          ServerSocketChannel serverChannel = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
+          new File(socketPath).delete();
+          serverChannel.bind(socketAddress);
+          boolean active = true;
+          while (active) {
+            SocketChannel channel = serverChannel.accept();
+            while (active) {
+              String msg = readSocketMessage(channel);
+              if (msg == null) break;
+              switch (msg) {
+                case "stop": lnxServiceStop(); active = false; break;
+                case "reload": lnxServiceReload(); break;
+              }
+            }
+            channel.close();
+            new File(socketPath).delete();
+          }
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+      }
+    }.start();
+  }
+
+  /** Invokes the services serviceStop() method.
+   */
+  @SuppressWarnings("unchecked")
+  private static boolean lnxServiceStop() {
+    String clsname = System.getProperty("java.app.name");
+    try {
+      Class cls = Class.forName(clsname);
+      Method method = cls.getMethod("serviceStop");
+      method.invoke(null, new Object[] {});
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /** Invokes the services serviceReload() method.
+   */
+  @SuppressWarnings("unchecked")
+  private static boolean lnxServiceReload() {
+    String clsname = System.getProperty("java.app.name");
+    try {
+      Class cls = Class.forName(clsname);
+      Method method = cls.getMethod("serviceReload");
+      method.invoke(null, new Object[] {});
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /** Sends a "stop" command to the service's unix socket.
+   */
+  private static void lnxServiceRequestStop() {
+    //connect to unix socket and send stop command
+    try {
+      SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+      UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(getServiceSocket());
+      channel.connect(socketAddress);
+      ByteBuffer buffer = ByteBuffer.allocate(1024);
+      buffer.clear();
+      buffer.put("stop".getBytes());
+      buffer.flip();
+      while (buffer.hasRemaining()) {
+        channel.write(buffer);
+      }
+      channel.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  /** Sends a "reload" command to the service's unix socket.
+   */
+  private static void lnxServiceRequestReload() {
+    //connect to unix socket and send stop command
+    try {
+      SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+      UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(getServiceSocket());
+      channel.connect(socketAddress);
+      ByteBuffer buffer = ByteBuffer.allocate(1024);
+      buffer.clear();
+      buffer.put("reload".getBytes());
+      buffer.flip();
+      while (buffer.hasRemaining()) {
+        channel.write(buffer);
+      }
+      channel.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   /* Test */

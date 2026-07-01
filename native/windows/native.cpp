@@ -16,17 +16,6 @@
 #include <jawt.h>
 #include <jawt_md.h>
 
-#include "javaforce_jni_WinNative.h"
-#include "javaforce_jni_GLJNI.h"
-#include "javaforce_jni_CameraJNI.h"
-#include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_UIJNI.h"
-#include "javaforce_jni_PCapJNI.h"
-#include "javaforce_jni_CLJNI.h"
-#include "javaforce_jni_ComPortJNI.h"
-#include "javaforce_jni_WinPipeJNI.h"
-#include "javaforce_jni_JFNative.h"
-
 #include "../common/string.h"
 #include "../common/array.h"
 #include "../common/library.h"
@@ -62,8 +51,7 @@ jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 
 //OpenGL API
 
-#include "../common/ui-jni.cpp"
-#include "../common/ui-ffm.cpp"
+#include "../common/ui.cpp"
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WGL
@@ -127,8 +115,7 @@ jboolean glGetFunction(void **funcPtr, const char *name)
 
 #if 1
 //MediaFoundation (WinVista era) Camera API
-#include "camera-mediafoundation-jni.cpp"
-#include "camera-mediafoundation-ffm.cpp"
+#include "camera-mediafoundation.cpp"
 #endif
 
 //winPE resources
@@ -1387,55 +1374,25 @@ extern "C" {
 
 #include "../common/videobuffer.cpp"
 
-#include "../common/opencl-jni.cpp"
-#include "../common/opencl-ffm.cpp"
+#include "../common/opencl.cpp"
 
 #include "../common/types.h"
 
-#include "../common/font-jni.cpp"
-#include "../common/font-ffm.cpp"
+#include "../common/font.cpp"
 
-#include "../common/image-jni.cpp"
-#include "../common/image-ffm.cpp"
+#include "../common/image.cpp"
 
-#include "../common/pcap-jni.cpp"
-#include "../common/pcap-ffm.cpp"
+#include "../common/pcap.cpp"
 
 #include "../speexdsp/speex_dsp.c"
 
 #include "vss.cpp"
 
-#include "comport-jni.cpp"
-#include "comport-ffm.cpp"
+#include "comport.cpp"
 
-#include "monitor-folder-jni.cpp"
-#include "monitor-folder-ffm.cpp"
+#include "monitor-folder.cpp"
 
-#include "pipes-jni.cpp"
-#include "pipes-ffm.cpp"
-
-static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
-  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
-  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListDevices},
-  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListModes},
-  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStart},
-  {"cameraStop", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStop},
-  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetFrame},
-  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetWidth},
-  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetHeight},
-};
-
-extern "C" void camera_register(JNIEnv *env);
-
-void camera_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/CameraJNI");
-  registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
-}
-
-//JFNative
+#include "pipes.cpp"
 
 static jlong getHWND(JNIEnv *e, jobject c) {
   JAWT_DrawingSurface* ds;
@@ -1481,46 +1438,7 @@ static jlong getHWND(JNIEnv *e, jobject c) {
   return handle;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_JFNative_getWindowHandle
-  (JNIEnv *e, jclass c, jobject window)
-{
-  return getHWND(e, window);
-}
-
-static JNINativeMethod javaforce_jni_ComPortJNI[] = {
-  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
-  {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
-  {"comRead", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comRead},
-  {"comWrite", "(J[BI)I", (void *)&Java_javaforce_jni_ComPortJNI_comWrite},
-};
-
-static JNINativeMethod javaforce_jni_MonitorFolderJNI[] = {
-  {"monitorFolderCreate", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderCreate},
-  {"monitorFolderPoll", "(JLjavaforce/io/FolderListener;)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderPoll},
-  {"monitorFolderClose", "(J)V", (void *)&Java_javaforce_jni_MonitorFolderJNI_monitorFolderClose},
-};
-
-static JNINativeMethod javaforce_jni_WinPipeJNI[] = {
-  {"pipeCreate", "(Ljava/lang/String;Z)J", (void *)&Java_javaforce_jni_WinPipeJNI_pipeCreate},
-  {"pipeClose", "(J)V", (void *)&Java_javaforce_jni_WinPipeJNI_pipeClose},
-  {"pipeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinPipeJNI_pipeRead},
-  {"pipeWrite", "(Ljava/lang/String;[BII)I", (void *)&Java_javaforce_jni_WinPipeJNI_pipeWrite},
-};
-
-extern "C" void winnative_register(JNIEnv *env);
-
-void winnative_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/ComPortJNI");
-  registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
-
-  cls = findClass(env, "javaforce/jni/MonitorFolderJNI");
-  registerNatives(env, cls, javaforce_jni_MonitorFolderJNI, sizeof(javaforce_jni_MonitorFolderJNI)/sizeof(JNINativeMethod));
-
-  cls = findClass(env, "javaforce/jni/WinPipeJNI");
-  registerNatives(env, cls, javaforce_jni_WinPipeJNI, sizeof(javaforce_jni_WinPipeJNI)/sizeof(JNINativeMethod));
-
+/*
   lib_sas = loadLibrary("sas.dll");
   if (lib_sas == NULL) {
     printf("Warning:Unable to open sas.dll");
@@ -1531,9 +1449,7 @@ void winnative_register(JNIEnv *env) {
   if (jawt_dll != NULL) {
     getFunction(jawt_dll, (void**)&_JAWT_GetAWT, "JAWT_GetAWT");
   }
-
-  speex_dsp_register(env);
-}
+*/
 
 #include "../common/register.cpp"
 

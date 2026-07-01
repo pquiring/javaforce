@@ -1,3 +1,71 @@
+/*
+
+  virDomainStatsRecord {
+    void* dom;
+    virTypedParameter* params;
+    int nparams;
+  }
+
+  virTypedParameter {
+    char field[VIR_TYPED_PARAM_FIELD_LENGTH];
+    int type;
+    union {i,ui,l,ul,d,b,s};
+  }
+
+  CPU_TOTAL = cpu.time  (use delta between two samples to calc percentage)
+
+  BALLOON = balloon.current, balloon.maximum, balloon.available, balloon.rss (resident set size), balloon.usable, balloon.unused
+
+  INTERFACE = net.count, net.<num>.rx/tx.bytes
+
+  BLOCK = block.count, block.<num>.name, block.<num>.rd/wr.bytes,
+
+*/
+
+//grepish string compare : * = match all numeric chars
+static bool str_cmp(char* field, char* grep) {
+  while (*grep) {
+    if (*field == 0) return false;
+    if (*grep == '*') {
+      while (*field >= '0' && *field <= '9') {
+        field++;
+      }
+      grep++;
+    } else {
+      if (*field != *grep) return false;
+      field++;
+      grep++;
+    }
+  }
+  if (*field != 0) return false;
+  return true;
+}
+
+static void append_domain_stat(char* uuid, int year, int month, int day, int hour, int sample, const char* type, jlong v1, jlong v2, jlong v3) {
+  char file[256];
+  sprintf(file, "/var/jfkvm/stats/%s/%s-%04d-%02d-%02d-%02d.stat", uuid, type, year, month, day, hour);
+  int fd = open(file, O_WRONLY | O_APPEND | O_CREAT, 0600);
+  if (fd == -1) {
+    printf("vm-stats:open() failed:file=%s\n", file);
+    return;
+  }
+  struct {
+    jlong sample;
+    jlong v1, v2, v3;
+  } r;
+  r.sample = sample;
+  r.v1 = v1;
+  r.v2 = v2;
+  r.v3 = v3;
+  int len = 4 * sizeof(jlong);
+  if (write(fd, &r, len) != len) {
+    printf("vm-stats:write() failed:file=%s\n", file);
+  }
+  if (close(fd) != 0) {
+    printf("vm-stats:close() failed:file=%s\n", file);
+  }
+}
+
 jboolean vmGetAllStats(jint year, jint month, jint day, jint hour, jint sample)
 {
   void* conn = connect();

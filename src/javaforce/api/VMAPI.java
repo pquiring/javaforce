@@ -10,11 +10,7 @@ import javaforce.ffm.*;
 
 public interface VMAPI {
   public static VMAPI getInstance() {
-    if (FFM.enabled()) {
-      return VMFFM.getInstance();
-    } else {
-      return VMJNI.getInstance();
-    }
+    return VMFFM.getInstance();
   }
 
   //Device

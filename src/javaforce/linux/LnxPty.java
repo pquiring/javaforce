@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 /** Linux PTY support.
  *
@@ -58,9 +58,9 @@ public class LnxPty {
    * Note:args, env MUST be null terminated.
    */
   private boolean fork(String cmd, String[] args, String[] env) {
-    ctx = LnxNative.ptyAlloc();
+    ctx = LinuxAPI.getInstance().ptyAlloc();
     if (debug) JFLog.log("LnxPty:ctx=0x" + Long.toHexString(ctx));
-    String slaveName = LnxNative.ptyOpen(ctx);
+    String slaveName = LinuxAPI.getInstance().ptyOpen(ctx);
     if (debug) JFLog.log("LnxPty:slaveName=" + slaveName);
     if (slaveName == null) return false;
 
@@ -132,7 +132,7 @@ public class LnxPty {
     }
 
     try {
-      LnxNative.ptyChildExec(slaveName, cmd, process_args.toArray(JF.StringArrayType), process_env.toArray(JF.StringArrayType));
+      LinuxAPI.getInstance().ptyChildExec(slaveName, cmd, process_args.toArray(JF.StringArrayType), process_env.toArray(JF.StringArrayType));
       throw new Exception("pty child returned");  //should not happen
     } catch (Exception e) {
       e.printStackTrace();
@@ -146,24 +146,24 @@ public class LnxPty {
     if (debug) {
       JFLog.logTrace("LnxPty:close()");
     }
-    LnxNative.ptyClose(ctx);
+    LinuxAPI.getInstance().ptyClose(ctx);
     closed = true;
   }
 
   /** Writes to child process (max 1024 bytes) */
   public void write(byte[] buf) {
-    LnxNative.ptyWrite(ctx, buf);
+    LinuxAPI.getInstance().ptyWrite(ctx, buf, 0, buf.length);
   }
 
   /** Reads from child process (max 1024 bytes) */
   public int read(byte[] buf) {
     if (closed) return -1;
-    return LnxNative.ptyRead(ctx, buf);
+    return LinuxAPI.getInstance().ptyRead(ctx, buf, 0, buf.length);
   }
 
   /** Sets the size of the pty */
   public void setSize(int x, int y) {
-    LnxNative.ptySetSize(ctx, x, y);
+    LinuxAPI.getInstance().ptySetSize(ctx, x, y);
   }
 
   /** Returns current processes environment variables plus those passed in extra.

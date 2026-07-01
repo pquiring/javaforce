@@ -13,11 +13,7 @@ public class WinPipe {
   private WinPipeAPI api;
 
   public WinPipe() {
-    if (FFM.enabled()) {
-      api = WinPipeFFM.getInstance();
-    } else {
-      api = WinPipeJNI.getInstance();
-    }
+    api = WinPipeFFM.getInstance();
   }
 
   public long pipeCreate(String name, boolean first) {

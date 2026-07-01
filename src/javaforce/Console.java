@@ -19,7 +19,7 @@ public class Console {
         if (isWindows) {
           ch = WindowsAPI.getInstance().readConsole();
         } else {
-          ch = LnxNative.readConsole();
+          ch = LinuxAPI.getInstance().readConsole();
         }
         return ch;
       }
@@ -50,7 +50,7 @@ public class Console {
         if (isWindows) {
           WindowsAPI.getInstance().writeConsole(ch);
         } else {
-          LnxNative.writeConsole(ch);
+          LinuxAPI.getInstance().writeConsole(ch);
         }
       }
     };
@@ -60,21 +60,21 @@ public class Console {
     if (JF.isWindows())
       WindowsAPI.getInstance().enableConsoleMode();
     else
-      LnxNative.enableConsoleMode();
+      LinuxAPI.getInstance().enableConsoleMode();
   }
 
   public static void disableConsoleMode() {
     if (JF.isWindows())
       WindowsAPI.getInstance().disableConsoleMode();
     else
-      LnxNative.disableConsoleMode();
+      LinuxAPI.getInstance().disableConsoleMode();
   }
 
   public static boolean kbhit() {
     if (JF.isWindows()) {
       return WindowsAPI.getInstance().peekConsole();
     } else {
-      return LnxNative.peekConsole();
+      return LinuxAPI.getInstance().peekConsole();
     }
   }
 

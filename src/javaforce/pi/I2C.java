@@ -2,7 +2,6 @@ package javaforce.pi;
 
 import javaforce.api.*;
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /** I2C.
  *
@@ -14,11 +13,7 @@ import javaforce.jni.*;
 public class I2C {
   private I2CAPI api;
   public static I2C getInstance() {
-    if (FFM.enabled()) {
-      return new I2C(I2CFFM.getInstance());
-    } else {
-      return new I2C(I2CJNI.getInstance());
-    }
+    return new I2C(I2CFFM.getInstance());
   }
   public I2C(I2CAPI api) {
     this.api = api;

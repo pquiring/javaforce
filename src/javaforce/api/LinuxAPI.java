@@ -1,11 +1,18 @@
 package javaforce.api;
 
+import javaforce.ffm.*;
+
 /** Linux OS specific API.
  *
  * @author pquiring
  */
 
 public interface LinuxAPI {
+
+  public static LinuxAPI getInstance() {
+    return LinuxFFM.getInstance();
+  }
+
   //init
   public boolean lnxInit(String libX11, String libGL, String libv4l2, String pam, String ncurses);
 

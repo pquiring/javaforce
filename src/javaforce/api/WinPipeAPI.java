@@ -10,11 +10,7 @@ import javaforce.jni.*;
 
 public interface WinPipeAPI {
   public static WinPipeAPI getInstance() {
-    if (FFM.enabled()) {
-      return WinPipeFFM.getInstance();
-    } else {
-      return WinPipeJNI.getInstance();
-    }
+    return WinPipeFFM.getInstance();
   }
 
   public long pipeCreate(String name, boolean first);

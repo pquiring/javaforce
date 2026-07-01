@@ -1,3 +1,23 @@
+#include "../glfw/include/GLFW/glfw3.h"
+
+#include "register.h"
+
+//see javaforce.ui.Window
+int KEY_TYPED = 1;
+int KEY_PRESS = 2;
+int KEY_RELEASE = 3;
+int MOUSE_MOVE = 4;
+int MOUSE_DOWN = 5;
+int MOUSE_UP = 6;
+int MOUSE_SCROLL = 7;
+int WIN_RESIZE = 8;
+int WIN_CLOSING = 9;
+
+int STYLE_VISIBLE = 1;
+int STYLE_RESIZABLE = 2;
+int STYLE_TITLEBAR = 4;
+int STYLE_FULLSCREEN = 8;
+
 struct GLFWContextFFM {
   GLFWwindow *window;
   void (*dispatchEvent)(int,int,int);
@@ -8,22 +28,22 @@ static void key_callback_ffm(GLFWwindow* window, int key, int scancode, int acti
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
   int type;
   if (action > 0)
-    type = javaforce_jni_UIJNI_KEY_PRESS;
+    type = KEY_PRESS;
   else
-    type = javaforce_jni_UIJNI_KEY_RELEASE;
+    type = KEY_RELEASE;
   ctx->dispatchEvent(type, key, 0);
 }
 
 static void character_callback_ffm(GLFWwindow* window, unsigned int codepoint)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
-  ctx->dispatchEvent(javaforce_jni_UIJNI_KEY_TYPED, codepoint, 0);
+  ctx->dispatchEvent(KEY_TYPED, codepoint, 0);
 }
 
 static void cursor_position_callback_ffm(GLFWwindow* window, double xpos, double ypos)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
-  ctx->dispatchEvent(javaforce_jni_UIJNI_MOUSE_MOVE, (int)xpos, (int)ypos);
+  ctx->dispatchEvent(MOUSE_MOVE, (int)xpos, (int)ypos);
 }
 
 static void mouse_button_callback_ffm(GLFWwindow* window, int button, int action, int mods)
@@ -31,28 +51,28 @@ static void mouse_button_callback_ffm(GLFWwindow* window, int button, int action
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
   int type;
   if (action > 0)
-    type = javaforce_jni_UIJNI_MOUSE_DOWN;
+    type = MOUSE_DOWN;
   else
-    type = javaforce_jni_UIJNI_MOUSE_UP;
+    type = MOUSE_UP;
   ctx->dispatchEvent(type, ++button, 0);
 }
 
 static void scroll_callback_ffm(GLFWwindow* window, double xoffset, double yoffset)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
-  ctx->dispatchEvent(javaforce_jni_UIJNI_MOUSE_SCROLL, (int)-xoffset, (int)-yoffset);
+  ctx->dispatchEvent(MOUSE_SCROLL, (int)-xoffset, (int)-yoffset);
 }
 
 static void window_close_callback_ffm(GLFWwindow* window)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
-  ctx->dispatchEvent(javaforce_jni_UIJNI_WIN_CLOSING, 0, 0);
+  ctx->dispatchEvent(WIN_CLOSING, 0, 0);
 }
 
 static void window_size_callback_ffm(GLFWwindow* window, int width, int height)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)glfwGetWindowUserPointer(window);
-  ctx->dispatchEvent(javaforce_jni_UIJNI_WIN_RESIZE, width, height);
+  ctx->dispatchEvent(WIN_RESIZE, width, height);
 }
 
 jboolean uiInit()
@@ -66,12 +86,12 @@ GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GL
   memset(ctx, 0, sizeof(GLFWContextFFM));
 
   GLFWmonitor *monitor = NULL;
-  if (style & javaforce_jni_UIJNI_STYLE_FULLSCREEN) monitor = glfwGetPrimaryMonitor();
+  if (style & STYLE_FULLSCREEN) monitor = glfwGetPrimaryMonitor();
 
   glfwDefaultWindowHints();
-  glfwWindowHint(GLFW_VISIBLE, (style & javaforce_jni_UIJNI_STYLE_VISIBLE ? GL_TRUE : GL_FALSE));
-  glfwWindowHint(GLFW_RESIZABLE, (style & javaforce_jni_UIJNI_STYLE_RESIZABLE ? GL_TRUE : GL_FALSE));
-  glfwWindowHint(GLFW_DECORATED, (style & javaforce_jni_UIJNI_STYLE_TITLEBAR ? GL_TRUE : GL_FALSE));
+  glfwWindowHint(GLFW_VISIBLE, (style & STYLE_VISIBLE ? GL_TRUE : GL_FALSE));
+  glfwWindowHint(GLFW_RESIZABLE, (style & STYLE_RESIZABLE ? GL_TRUE : GL_FALSE));
+  glfwWindowHint(GLFW_DECORATED, (style & STYLE_TITLEBAR ? GL_TRUE : GL_FALSE));
 
   GLFWwindow *sharedWin = NULL;
   if (shared != NULL) {
@@ -81,14 +101,14 @@ GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GL
   int px, py;
   const GLFWvidmode *vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-  if (!(style & javaforce_jni_UIJNI_STYLE_FULLSCREEN)) {
+  if (!(style & STYLE_FULLSCREEN)) {
     px = (vidmode->width - x) / 2;
     py = (vidmode->height - y) / 2;
   }
 
   ctx->window = glfwCreateWindow(x, y, title, monitor, sharedWin);
 
-  if (!(style & javaforce_jni_UIJNI_STYLE_FULLSCREEN)) {
+  if (!(style & STYLE_FULLSCREEN)) {
     glfwSetWindowPos(ctx->window, px, py);
   }
 

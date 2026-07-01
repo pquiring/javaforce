@@ -42,7 +42,7 @@ public class JF {
     String lib_ver_str = getVersion();
     float lib_ver = Float.valueOf(lib_ver_str);
     System.out.println("javaforce/" + lib_ver_str);
-    String nat_ver_str = JFNative.getVersion();
+    String nat_ver_str = getVersion();  //TODO
     float nat_ver = Float.valueOf(nat_ver_str);
     String min_ver_str = getMinNativeVersion();
     float min_ver = Float.valueOf(min_ver_str);

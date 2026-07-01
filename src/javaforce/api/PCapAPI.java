@@ -10,11 +10,7 @@ import javaforce.jni.*;
 
 public interface PCapAPI {
   public static PCapAPI getInstance() {
-    if (FFM.enabled()) {
-      return PCapFFM.getInstance();
-    } else {
-      return PCapJNI.getInstance();
-    }
+    return PCapFFM.getInstance();
   }
   public boolean pcapInit(String lib1, String lib2);
   public String[] pcapListLocalInterfaces();

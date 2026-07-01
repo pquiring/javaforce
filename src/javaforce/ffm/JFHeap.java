@@ -1,4 +1,4 @@
-package javaforce.jni;
+package javaforce.ffm;
 
 /** JF Heap.
  *

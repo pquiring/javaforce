@@ -1,3 +1,18 @@
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_NO_BMP
+#define STBI_NO_PSD
+#define STBI_NO_TGA
+#define STBI_NO_GIF
+#define STBI_NO_GIF
+#define STBI_NO_PIC
+#define STBI_NO_PNM
+#include "../stb/stb_image.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../stb/stb_image_write.h"
+
+#include "register.h"
+
 jint* uiLoadPNG(jbyte* data, jint data_size, jint* size)
 {
   int x, y, chs;
@@ -29,7 +44,24 @@ jint* uiLoadPNG(jbyte* data, jint data_size, jint* size)
   return out;
 }
 
-//HERE
+struct write_ctx {
+  uint8* buf;
+  int siz;
+};
+
+static void write_func(void *context, void *data, int size) {
+  write_ctx* ctx = (write_ctx*)context;
+
+  if (ctx->buf == NULL) {
+    ctx->buf = (uint8*)malloc(size);
+    memcpy(ctx->buf, data, size);
+    ctx->siz = size;
+  } else {
+    ctx->buf = (uint8*)realloc(ctx->buf, ctx->siz + size);
+    memcpy(ctx->buf + ctx->siz, data, size);
+    ctx->siz += size;
+  }
+}
 
 jbyte* uiSavePNG(jint* px, jint x, jint y)
 {

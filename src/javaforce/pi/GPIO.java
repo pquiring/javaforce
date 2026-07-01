@@ -2,7 +2,6 @@ package javaforce.pi;
 
 import javaforce.api.*;
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /** GPIO.
  *
@@ -15,11 +14,7 @@ public class GPIO {
   private GPIOAPI api;
 
   public static GPIO getInstance() {
-    if (FFM.enabled()) {
-      return new GPIO(GPIOFFM.getInstance());
-    } else {
-      return new GPIO(GPIOJNI.getInstance());
-    }
+    return new GPIO(GPIOFFM.getInstance());
   }
 
   public GPIO(GPIOAPI api) {

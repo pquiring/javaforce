@@ -1,5 +1,7 @@
 //Com Port JNI API
 
+static termios orgattrs;
+
 jlong comOpen(const char* str, jint baud)
 {
   int baudcode = -1;

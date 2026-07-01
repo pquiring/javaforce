@@ -11,11 +11,7 @@ import javaforce.jni.*;
 public interface CLAPI {
 
   public static CLAPI getInstance() {
-    if (FFM.enabled()) {
-      return CLFFM.getInstance();
-    } else {
-      return CLJNI.getInstance();
-    }
+    return CLFFM.getInstance();
   }
 
   public boolean clLoadLibrary(String file);

@@ -1,4 +1,4 @@
-//OpenCL
+//OpenCL FFM
 
 #define CL_TARGET_OPENCL_VERSION 300
 
@@ -298,16 +298,11 @@ static const char* KernelSource = "\n" \
 "}\n" \
 "\n";
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clLoadLibrary
-  (JNIEnv* e, jobject o, jstring jopencl)
+jboolean clLoadLibrary(char* openclFile)
 {
   if (opencl_loaded) return opencl_loaded;
 
-  const char* openclFile = e->GetStringUTFChars(jopencl, NULL);
-
   jboolean ret = opencl_init(openclFile);
-
-  e->ReleaseStringUTFChars(jopencl, openclFile);
 
   if (!ret) return JNI_FALSE;
 
@@ -489,8 +484,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clLoadLibrary
   return JNI_TRUE;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clCreate
-  (JNIEnv *e, jobject o, jstring src, jint type)
+jlong clCreate(char* src, jint type)
 {
   int res, err;
   CLContext *ctx = (CLContext*)malloc(sizeof(CLContext));
@@ -552,12 +546,8 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clCreate
     printf("commands=%p\n", ctx->commands);
   }
 
-  const char *c_src = e->GetStringUTFChars(src, NULL);
-
   // Create the compute program from the source buffer
-  ctx->program = (*_cl_CreateProgramWithSource)(ctx->context, 1, (const char**)&c_src, NULL, &err);
-
-  e->ReleaseStringUTFChars(src, c_src);
+  ctx->program = (*_cl_CreateProgramWithSource)(ctx->context, 1, (const char**)&src, NULL, &err);
 
   if (!ctx->program)
   {
@@ -587,19 +577,14 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clCreate
   return (jlong)ctx;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clKernel
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jstring kernel)
+jlong clKernel(jlong ctx_ptr, char* kernel)
 {
   if (ctx_ptr == 0) return 0;
   CLContext *ctx = (CLContext*)ctx_ptr;
   int err;
 
-  const char *c_kernel = e->GetStringUTFChars(kernel, NULL);
-
   // Create the compute kernel in the program we wish to run
-  jlong kernel_ptr = (jlong)(*_cl_CreateKernel)(ctx->program, c_kernel, &err);
-
-  e->ReleaseStringUTFChars(kernel, c_kernel);
+  jlong kernel_ptr = (jlong)(*_cl_CreateKernel)(ctx->program, kernel, &err);
 
   if (!kernel_ptr || err != CL_SUCCESS)
   {
@@ -610,8 +595,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clKernel
   return kernel_ptr;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clCreateBuffer
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jint size, jint type)
+jlong clCreateBuffer(jlong ctx_ptr, jint size, jint type)
 {
   if (ctx_ptr == 0) return 0;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -621,68 +605,49 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_CLJNI_clCreateBuffer
   return (jlong)buffer;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clSetArg
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint idx, jbyteArray data, jint size)
+jboolean clSetArg(jlong ctx_ptr, jlong kernel, jint idx, jbyte* data, jint size)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-
-  int err = (*_cl_SetKernelArg)((cl_kernel)kernel, idx, size, dataptr);
+  int err = (*_cl_SetKernelArg)((cl_kernel)kernel, idx, size, data);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to set kernel arguments! %d\n", err);
   }
 
-  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
-
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clWriteBufferi8
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jbyteArray data, jint size)
+jboolean clWriteBufferi8(jlong ctx_ptr, jlong buffer, jbyte* data, jint size)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-
-  int err = (*_cl_EnqueueWriteBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size, dataptr, 0, NULL, NULL);
+  int err = (*_cl_EnqueueWriteBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size, data, 0, NULL, NULL);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to write buffer! %d\n", err);
   }
 
-  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
-
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clWriteBufferf32
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jfloatArray data, jint size)
+jboolean clWriteBufferf32(jlong ctx_ptr, jlong buffer, jfloat* data, jint size)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-
-  int err = (*_cl_EnqueueWriteBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size * 4, dataptr, 0, NULL, NULL);
+  int err = (*_cl_EnqueueWriteBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size * 4, data, 0, NULL, NULL);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to write buffer! %d\n", err);
   }
 
-  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
-
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count)
+jboolean clExecute(jlong ctx_ptr, jlong kernel, jint count)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -717,8 +682,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute2
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count1, jint count2)
+jboolean clExecute2(jlong ctx_ptr, jlong kernel, jint count1, jint count2)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -757,8 +721,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute2
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute3
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3)
+jboolean clExecute3(jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -799,8 +762,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute3
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute4
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3, jint count4)
+jboolean clExecute4(jlong ctx_ptr, jlong kernel, jint count1, jint count2, jint count3, jint count4)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -843,48 +805,35 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clExecute4
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clReadBufferi8
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jbyteArray data, jint size)
+jboolean clReadBufferi8(jlong ctx_ptr, jlong buffer, jbyte* data, jint size)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-
-  int err = (*_cl_EnqueueReadBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size, dataptr, 0, NULL, NULL);
+  int err = (*_cl_EnqueueReadBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size, data, 0, NULL, NULL);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to write buffer! %d\n", err);
   }
 
-  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
-
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clReadBufferf32
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer, jfloatArray data, jint size)
+jboolean clReadBufferf32(jlong ctx_ptr, jlong buffer, jfloat* data, jint size)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
 
-  jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
-
-  int err = (*_cl_EnqueueReadBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size * 4, dataptr, 0, NULL, NULL);
+  int err = (*_cl_EnqueueReadBuffer)(ctx->commands, (cl_mem)buffer, CL_TRUE, 0, size * 4, data, 0, NULL, NULL);
   if (err != CL_SUCCESS)
   {
     printf("Error: Failed to write buffer! %d\n", err);
   }
 
-  e->ReleasePrimitiveArrayCritical(data, dataptr, JNI_ABORT);
-
   return err == CL_SUCCESS;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clFreeKernel
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong kernel)
+jboolean clFreeKernel(jlong ctx_ptr, jlong kernel)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -894,8 +843,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clFreeKernel
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clFreeBuffer
-  (JNIEnv *e, jobject o, jlong ctx_ptr, jlong buffer)
+jboolean clFreeBuffer(jlong ctx_ptr, jlong buffer)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -905,8 +853,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clFreeBuffer
   return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clClose
-  (JNIEnv *e, jobject o, jlong ctx_ptr)
+jboolean clClose(jlong ctx_ptr)
 {
   if (ctx_ptr == 0) return JNI_FALSE;
   CLContext *ctx = (CLContext*)ctx_ptr;
@@ -919,30 +866,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_CLJNI_clClose
   return JNI_TRUE;
 }
 
-static JNINativeMethod javaforce_cl_CL[] = {
-  {"clLoadLibrary", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_CLJNI_clLoadLibrary},
-  {"clCreate", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_CLJNI_clCreate},
-  {"clKernel", "(JLjava/lang/String;)J", (void *)&Java_javaforce_jni_CLJNI_clKernel},
-  {"clCreateBuffer", "(JII)J", (void *)&Java_javaforce_jni_CLJNI_clCreateBuffer},
-  {"clSetArg", "(JJI[BI)Z", (void *)&Java_javaforce_jni_CLJNI_clSetArg},
-  {"clWriteBufferi8", "(JJ[BI)Z", (void *)&Java_javaforce_jni_CLJNI_clWriteBufferi8},
-  {"clWriteBufferf32", "(JJ[FI)Z", (void *)&Java_javaforce_jni_CLJNI_clWriteBufferf32},
-  {"clExecute", "(JJI)Z", (void *)&Java_javaforce_jni_CLJNI_clExecute},
-  {"clExecute2", "(JJII)Z", (void *)&Java_javaforce_jni_CLJNI_clExecute2},
-  {"clExecute3", "(JJIII)Z", (void *)&Java_javaforce_jni_CLJNI_clExecute3},
-  {"clExecute4", "(JJIIII)Z", (void *)&Java_javaforce_jni_CLJNI_clExecute4},
-  {"clReadBufferi8", "(JJ[BI)Z", (void *)&Java_javaforce_jni_CLJNI_clReadBufferi8},
-  {"clReadBufferf32", "(JJ[FI)Z", (void *)&Java_javaforce_jni_CLJNI_clReadBufferf32},
-  {"clFreeKernel", "(JJ)Z", (void *)&Java_javaforce_jni_CLJNI_clFreeKernel},
-  {"clFreeBuffer", "(JJ)Z", (void *)&Java_javaforce_jni_CLJNI_clFreeBuffer},
-  {"clClose", "(J)Z", (void *)&Java_javaforce_jni_CLJNI_clClose},
-};
+extern "C" {
+  JNIEXPORT jboolean (*_clLoadLibrary)(char*) = &clLoadLibrary;
+  JNIEXPORT jlong (*_clCreate)(char*,jint) = &clCreate;
+  JNIEXPORT jlong (*_clKernel)(jlong,char*) = &clKernel;
+  JNIEXPORT jlong (*_clCreateBuffer)(jlong,jint,jint) = &clCreateBuffer;
+  JNIEXPORT jboolean (*_clSetArg)(jlong,jlong,jint idx,jbyte*,jint) = &clSetArg;
+  JNIEXPORT jboolean (*_clWriteBufferi8)(jlong,jlong,jbyte*,jint) = &clWriteBufferi8;
+  JNIEXPORT jboolean (*_clWriteBufferf32)(jlong,jlong,jfloat*,jint) = &clWriteBufferf32;
+  JNIEXPORT jboolean (*_clExecute)(jlong,jlong,jint) = &clExecute;
+  JNIEXPORT jboolean (*_clExecute2)(jlong,jlong,jint,jint) = &clExecute2;
+  JNIEXPORT jboolean (*_clExecute3)(jlong,jlong,jint,jint,jint) = &clExecute3;
+  JNIEXPORT jboolean (*_clExecute4)(jlong,jlong,jint,jint,jint,jint) = &clExecute4;
+  JNIEXPORT jboolean (*_clReadBufferi8)(jlong,jlong,jbyte*,jint) = &clReadBufferi8;
+  JNIEXPORT jboolean (*_clReadBufferf32)(jlong,jlong,jfloat*,jint) = &clReadBufferf32;
+  JNIEXPORT jboolean (*_clFreeKernel)(jlong,jlong) = &clFreeKernel;
+  JNIEXPORT jboolean (*_clFreeBuffer)(jlong,jlong) = &clFreeBuffer;
+  JNIEXPORT jboolean (*_clClose)(jlong) = &clClose;
 
-extern "C" void cl_register(JNIEnv *env);
-
-void cl_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/CLJNI");
-  registerNatives(env, cls, javaforce_cl_CL, sizeof(javaforce_cl_CL)/sizeof(JNINativeMethod));
+  JNIEXPORT jboolean CLAPIinit() {return JNI_TRUE;}
 }

@@ -48,11 +48,11 @@ public class CL {
       sysFolders = new File[] {new File("/System/Library/Frameworks/OpenCL.framework/Versions/Current/Libraries"), new File(apphome), new File(".")};
       ext = ".dylib";
     } else {
-      sysFolders = new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())};
+      sysFolders = new File[] {new File("/usr/lib"), new File(Library.getArchLibFolder())};
       ext = ".so";
     }
     Library[] libs = {new Library(name)};
-    JFNative.findLibraries(sysFolders, libs, ext);
+    Library.findLibraries(sysFolders, libs, ext);
     if (libs[0].path == null) {
       JFLog.log("Error:Unable to find OpenCL library");
       return false;

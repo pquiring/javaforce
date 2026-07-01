@@ -25,14 +25,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_GLJNI.h"
-#include "javaforce_jni_WinNative.h"
-#include "javaforce_jni_CameraJNI.h"
-#include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_UIJNI.h"
-#include "javaforce_jni_PCapJNI.h"
-#include "javaforce_jni_CLJNI.h"
-
 /* Global variables */
 HKEY key, subkey;
 int type;
@@ -353,22 +345,9 @@ void AttachJVM() {
 
 #include "../common/register.h"
 
-extern "C" void winnative_register(JNIEnv *env);
-
-/** Register natives embedded with executable. */
-void registerAllNatives(JNIEnv *env) {
-  jclass cls;
-
-  registerCommonNatives(env);
-
-  winnative_register(env);
-}
-
 /** Invokes the main method in a new thread. */
 bool JavaThread(void *ignore) {
   CreateJVM();
-
-  registerAllNatives(g_env);
 
   char **argv = g_argv;
   int argc = g_argc;
