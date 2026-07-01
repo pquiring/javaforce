@@ -46,7 +46,6 @@ public class TestGC extends Thread {
     while (true) {
       JF.sleep(50);
       int size = 16 * 1024 * 1024 + r.nextInt(1024);
-      WinNative.hold(new int[size], 50);
     }
   }
 }

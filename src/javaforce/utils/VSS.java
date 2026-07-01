@@ -1,7 +1,7 @@
 package javaforce.utils;
 
 import javaforce.*;
-import javaforce.jni.WinNative;
+import javaforce.api.*;
 
 /** VSS - Volume Shadow Service command line API
   *
@@ -22,7 +22,7 @@ public class VSS {
 
   public static void main(String[] args) {
     if (args.length == 0) usage();
-    if (!WinNative.vssInit()) {
+    if (!WindowsAPI.getInstance().vssInit()) {
       JFLog.log("VSS Init Failed");
       return;
     }
@@ -38,14 +38,14 @@ public class VSS {
   }
 
   public static void listvols(String[] args) {
-    String[] vols = WinNative.vssListVols();
+    String[] vols = WindowsAPI.getInstance().vssListVols();
     for(String vol : vols) {
       System.out.println("Volume : " + vol);
     }
   }
 
   public static void listshadows(String[] args) {
-    String[][] shadows = WinNative.vssListShadows();
+    String[][] shadows = WindowsAPI.getInstance().vssListShadows();
     for(String[] shadow : shadows) {
       System.out.println("GUID : " + shadow[0]);
       System.out.println("Shadow Volume : " + shadow[1]);
@@ -56,13 +56,13 @@ public class VSS {
   public static void createshadow(String[] args) {
     if (args.length < 2) usage();
     if (args.length > 2) {
-      if (WinNative.vssCreateShadow(args[1], args[2])) {
+      if (WindowsAPI.getInstance().vssCreateShadow(args[1], args[2])) {
         System.out.println("Shadow creation and mount successful!");
       } else {
         System.out.println("Shadow creation failed!");
       }
     } else {
-      if (WinNative.vssCreateShadow(args[1])) {
+      if (WindowsAPI.getInstance().vssCreateShadow(args[1], null)) {
         System.out.println("Shadow creation successful!");
       } else {
         System.out.println("Shadow creation failed!");
@@ -72,7 +72,7 @@ public class VSS {
 
   public static void mountshadow(String[] args) {
     if (args.length != 3) usage();
-    if (WinNative.vssMountShadow(args[1], args[2])) {
+    if (WindowsAPI.getInstance().vssMountShadow(args[1], args[2])) {
       System.out.println("Shadow mount successful!");
     } else {
       System.out.println("Shadow mount failed!");
@@ -81,7 +81,7 @@ public class VSS {
 
   public static void unmountshadow(String[] args) {
     if (args.length != 2) usage();
-    if (WinNative.vssUnmountShadow(args[1])) {
+    if (WindowsAPI.getInstance().vssUnmountShadow(args[1])) {
       System.out.println("Shadow unmount successful!");
     } else {
       System.out.println("Shadow unmount failed!");
@@ -91,13 +91,13 @@ public class VSS {
   public static void deleteshadow(String[] args) {
     if (args.length != 2) usage();
     if (args[1].equals("/all")) {
-      if (WinNative.vssDeleteShadowAll()) {
+      if (WindowsAPI.getInstance().vssDeleteShadowAll()) {
         System.out.println("Shadow deletion(s) successful!");
       } else {
         System.out.println("Shadow deletion(s) failed!");
       }
     } else {
-      if (WinNative.vssDeleteShadow(args[1])) {
+      if (WindowsAPI.getInstance().vssDeleteShadow(args[1])) {
         System.out.println("Shadow deletion successful!");
       } else {
         System.out.println("Shadow deletion failed!");

@@ -65,7 +65,8 @@ static void vssGetFunction(HMODULE handle, void **funcPtr, const char *name) {
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssInit(JNIEnv *e, jclass c) {
+jboolean vssInit()
+{
   vss_lib = LoadLibrary("vssapi.dll");
   if (vss_lib == NULL) {
     printf("VSS:LoadLibrary Failed\n");
@@ -105,31 +106,42 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssInit(JNIEnv *e, jclas
   return JNI_TRUE;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListVols(JNIEnv *e, jclass c) {
+int vssDrives[26];
+
+jstringArray vssListVols()
+{
   //list volumes that can be shadowed
   char path[16];
   char16 path16[8];
   BOOL supported;
-  Vector<jstring> strlst;
   if (pVss == NULL) return NULL;
-  jclass strcls = e->FindClass("java/lang/String");
   int cnt = 0;
+  int idx = 2;
   for(int drv='C';drv<='Z';drv++) {
     sprintf(path, "%c:\\", drv);
     int res = pVss->IsVolumeSupported(GUID_NULL, (VSS_PWSZ)str8_to_str16(path, path16), &supported);
     if (res == S_OK && supported) {
-      strlst.add(e->NewStringUTF(path));
+      vssDrives[idx] = 1;
       cnt++;
+    } else {
+      vssDrives[idx] = 0;
     }
+    idx++;
   }
-  jobjectArray strs = e->NewObjectArray(cnt, strcls, NULL);
-  for(int idx=0;idx<cnt;idx++) {
-    e->SetObjectArrayElement(strs, idx, strlst.getAt(idx));
+  jstringArray strs = ffm->newStringArray(cnt);
+  idx = 2;
+  for(int drv='C';drv<='Z';drv++) {
+    if (vssDrives[idx]) {
+      sprintf(path, "%c:\\", drv);
+      ffm->setString(idx, path);
+    }
+    idx++;
   }
   return strs;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListShadows(JNIEnv *e, jclass c) {
+jobjectArray vssListShadows()
+{
   VSS_OBJECT_PROP prop;
   VSS_SNAPSHOT_PROP *snap;
   ULONG copied;
@@ -139,8 +151,6 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListShadows(JNIEn
   char16 str16[128];
   int cnt = 0;
   if (pVss == NULL) return NULL;
-  jclass strcls = e->FindClass("java/lang/String");
-  jclass strarraycls = e->FindClass("[Ljava/lang/String;");
   int res = pVss->SetContext(VSS_CTX_ALL);
   if (res != S_OK) {
     printf("VSS:SetContext Failed:%x\n", res);
@@ -151,29 +161,26 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListShadows(JNIEn
     printf("VSS:Query Failed:%x\n", res);
     return NULL;
   }
-  Vector<jobjectArray> strlst;
+  jobjectArray strstrs = ffm->newString2Array();
   while (pEnum->Next(1, &prop, &copied) == S_OK) {
     if (prop.Type == VSS_OBJECT_SNAPSHOT) {
       snap = (VSS_SNAPSHOT_PROP *)&prop.Obj;
-      jobjectArray strs = e->NewObjectArray(3, strcls, NULL);
+      jobjectArray strs = ffm->newStringArray(3);
       guid_to_string(&snap->m_SnapshotId, guid);
-      e->SetObjectArrayElement(strs, 0, e->NewStringUTF(guid));
+      ffm->setString(0, guid);
       str16_to_str8((char16*)snap->m_pwszSnapshotDeviceObject, str8vol);
-      e->SetObjectArrayElement(strs, 1, e->NewStringUTF(str8vol));
+      ffm->setString(1, str8vol);
       str16_to_str8((char16*)snap->m_pwszOriginalVolumeName, str8org);
-      e->SetObjectArrayElement(strs, 2, e->NewStringUTF(str8org));
-      strlst.add(strs);
+      ffm->setString(2, str8org);
       cnt++;
     }
-  }
-  jobjectArray strstrs = e->NewObjectArray(cnt, strarraycls, NULL);
-  for(int idx=0;idx<cnt;idx++) {
-    e->SetObjectArrayElement(strstrs, idx, strlst.getAt(idx));
   }
   return strstrs;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssCreateShadow(JNIEnv *e, jclass c, jstring drv, jstring mount) {
+jboolean vssMountShadow(const char* shadow, const char* mount);
+
+jboolean vssCreateShadow(const char* drv, const char* mount) {
   VSS_ID id_set, id_drv;
   char16 drv16[128];
   if (pVss == NULL) return JNI_FALSE;
@@ -200,9 +207,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssCreateShadow(JNIEnv *
     pVss->AbortBackup();
     return JNI_FALSE;
   }
-  const char *c_drv = e->GetStringUTFChars(drv, NULL);
-  res = pVss->AddToSnapshotSet((VSS_PWSZ)str8_to_str16((char*)c_drv, drv16), GUID_NULL, &id_drv);
-  e->ReleaseStringUTFChars(drv, c_drv);
+  res = pVss->AddToSnapshotSet((VSS_PWSZ)str8_to_str16((char*)drv, drv16), GUID_NULL, &id_drv);
   if (res != S_OK) {
     printf("VSS:AddToSnapshotSet Failed:%x\n", res);
     pVss->AbortBackup();
@@ -243,14 +248,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssCreateShadow(JNIEnv *
   char* shadow_set_id = guid_to_string(&id_set, guid_set);
   char* shadow_vol_id = guid_to_string(&id_drv, guid_vol);
   if (mount != NULL) {
-    jstring shadow = e->NewStringUTF(str8vol);
-    ret = Java_javaforce_jni_WinNative_vssMountShadow(e, c, mount, shadow);
-    e->DeleteLocalRef(shadow);
+    ret = vssMountShadow(mount, str8vol);
   }
   return ret;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadow(JNIEnv *e, jclass c, jstring shadow) {
+jboolean vssDeleteShadow(const char* shadow) {
   VSS_OBJECT_PROP prop;
   VSS_SNAPSHOT_PROP *snap;
   ULONG copied;
@@ -268,13 +271,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadow(JNIEnv *
     printf("VSS:Query Failed:%x\n", res);
     return 1;
   }
-  const char *c_shadow = e->GetStringUTFChars(shadow, NULL);
   jboolean ret = JNI_TRUE;
   while (pEnum->Next(1, &prop, &copied) == S_OK) {
     if (prop.Type == VSS_OBJECT_SNAPSHOT) {
       snap = (VSS_SNAPSHOT_PROP *)&prop.Obj;
       guid_to_string(&snap->m_SnapshotId, guid);
-      if (stricmp(guid, c_shadow) == 0) {
+      if (stricmp(guid, shadow) == 0) {
         res = pVss->DeleteSnapshots(snap->m_SnapshotId, VSS_OBJECT_SNAPSHOT, TRUE, &done, &notdone);
         if (res != S_OK) {
           printf("VSS:DeleteSnapshots Failed:%x\n", res);
@@ -283,11 +285,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadow(JNIEnv *
       }
     }
   }
-  e->ReleaseStringUTFChars(shadow, c_shadow);
   return ret;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadowAll(JNIEnv *e, jclass c) {
+jboolean vssDeleteShadowAll() {
   VSS_OBJECT_PROP prop;
   VSS_SNAPSHOT_PROP *snap;
   ULONG copied;
@@ -318,28 +319,33 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadowAll(JNIEn
   return 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssMountShadow(JNIEnv *e, jclass c, jstring shadow, jstring mount) {
-  const char *c_shadow = e->GetStringUTFChars(shadow, NULL);
-  const char *c_mount = e->GetStringUTFChars(mount, NULL);
+jboolean vssMountShadow(const char* shadow, const char* mount) {
   char shadow2[1024];
-  sprintf(shadow2, "%s\\", c_shadow);
+  sprintf(shadow2, "%s\\", shadow);
   jboolean ret = JNI_TRUE;
-  if (!CreateSymbolicLink(c_mount, shadow2, SYMBOLIC_LINK_FLAG_DIRECTORY)) {
+  if (!CreateSymbolicLink(mount, shadow2, SYMBOLIC_LINK_FLAG_DIRECTORY)) {
     printf("VSS:CreateSymbolicLink Failed\n");
     ret = JNI_FALSE;
   }
-  e->ReleaseStringUTFChars(shadow, c_shadow);
-  e->ReleaseStringUTFChars(mount, c_mount);
   return ret;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssUnmountShadow(JNIEnv *e, jclass c, jstring mount) {
-  const char *c_mount = e->GetStringUTFChars(mount, NULL);
+jboolean vssUnmountShadow(const char* mount) {
   jboolean ret = JNI_TRUE;
-  if (!RemoveDirectory(c_mount)) {
+  if (!RemoveDirectory(mount)) {
     printf("VSS:RemoveDirectory Failed\n");
     ret = JNI_FALSE;
   }
-  e->ReleaseStringUTFChars(mount, c_mount);
   return ret;
+}
+
+extern "C" {
+  JNIEXPORT jboolean (*_vssInit)() = &vssInit;
+  JNIEXPORT jstringArray (*_vssListVols)() = &vssListVols;
+  JNIEXPORT jobjectArray (*_vssListShadows)() = &vssListShadows;
+  JNIEXPORT jboolean (*_vssCreateShadow)(const char*,const char*) = &vssCreateShadow;
+  JNIEXPORT jboolean (*_vssDeleteShadow)(const char*) = &vssDeleteShadow;
+  JNIEXPORT jboolean (*_vssDeleteShadowAll)() = &vssDeleteShadowAll;
+  JNIEXPORT jboolean (*_vssMountShadow)(const char*,const char*) = &vssMountShadow;
+  JNIEXPORT jboolean (*_vssUnmountShadow)(const char*) = &vssUnmountShadow;
 }

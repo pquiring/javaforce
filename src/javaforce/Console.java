@@ -2,6 +2,7 @@ package javaforce;
 
 import java.io.*;
 
+import javaforce.api.*;
 import javaforce.jni.*;
 
 /** Console (alternative to System.in/out).
@@ -16,7 +17,7 @@ public class Console {
       public int read() throws IOException {
         int ch;
         if (isWindows) {
-          ch = WinNative.readConsole();
+          ch = WindowsAPI.getInstance().readConsole();
         } else {
           ch = LnxNative.readConsole();
         }
@@ -47,7 +48,7 @@ public class Console {
       public void write(int utf16) throws IOException {
         char ch = ASCII8.convertUTF16(utf16);
         if (isWindows) {
-          WinNative.writeConsole(ch);
+          WindowsAPI.getInstance().writeConsole(ch);
         } else {
           LnxNative.writeConsole(ch);
         }
@@ -57,21 +58,21 @@ public class Console {
 
   public static void enableConsoleMode() {
     if (JF.isWindows())
-      WinNative.enableConsoleMode();
+      WindowsAPI.getInstance().enableConsoleMode();
     else
       LnxNative.enableConsoleMode();
   }
 
   public static void disableConsoleMode() {
     if (JF.isWindows())
-      WinNative.disableConsoleMode();
+      WindowsAPI.getInstance().disableConsoleMode();
     else
       LnxNative.disableConsoleMode();
   }
 
   public static boolean kbhit() {
     if (JF.isWindows()) {
-      return WinNative.peekConsole();
+      return WindowsAPI.getInstance().peekConsole();
     } else {
       return LnxNative.peekConsole();
     }

@@ -31,10 +31,7 @@ public class WindowsFFM implements WindowsAPI {
   }
 
   private MethodHandle getWindowRect;
-  public boolean getWindowRect(String name,int[] rect) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_rect = FFM.toMemory(arena, rect);boolean _ret_value_ = (boolean)getWindowRect.invokeExact(arena.allocateFrom(name),_array_rect);FFM.copyBack(_array_rect,rect);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle getLog;
-  public String getLog() { try { String _ret_value_ = FFM.getString((MemorySegment)getLog.invokeExact());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] getWindowRect(String name) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();getWindowRect.invokeExact(arena.allocateFrom(name));return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle executeSession;
   public long executeSession(String cmd,String[] args) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_args = FFM.toMemory(arena, args);long _ret_value_ = (long)executeSession.invokeExact(arena.allocateFrom(cmd),_array_args);FFM.copyBack(_array_args,args);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -58,10 +55,10 @@ public class WindowsFFM implements WindowsAPI {
   public long peBegin(String file) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)peBegin.invokeExact(arena.allocateFrom(file));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle peAddIcon;
-  public void peAddIcon(long handle,byte[] data) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);peAddIcon.invokeExact(handle,_array_data);FFM.copyBack(_array_data,data); } catch (Throwable t) { JFLog.log(t); } }
+  public void peAddIcon(long handle,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);peAddIcon.invokeExact(handle,_array_data,offset,length);FFM.copyBack(_array_data,data); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle peAddString;
-  public void peAddString(long handle,int name,int idx,byte[] data) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);peAddString.invokeExact(handle,name,idx,_array_data);FFM.copyBack(_array_data,data); } catch (Throwable t) { JFLog.log(t); } }
+  public void peAddString(long handle,int name,int idx,byte[] data,int offset,int length) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_data = FFM.toMemory(arena, data);peAddString.invokeExact(handle,name,idx,_array_data,offset,length);FFM.copyBack(_array_data,data); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle peEnd;
   public void peEnd(long handle) { try { peEnd.invokeExact(handle); } catch (Throwable t) { JFLog.log(t); } }
@@ -175,8 +172,6 @@ public class WindowsFFM implements WindowsAPI {
   public String[][] vssListShadows() { try { FFM.createFFMArray();vssListShadows.invokeExact();return (String[][])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vssCreateShadow;
-  public boolean vssCreateShadow(String drv) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssCreateShadow.invokeExact(arena.allocateFrom(drv));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
   public boolean vssCreateShadow(String drv,String mount) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssCreateShadow.invokeExact(arena.allocateFrom(drv),arena.allocateFrom(mount));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vssDeleteShadow;
@@ -199,8 +194,7 @@ public class WindowsFFM implements WindowsAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    getWindowRect = ffm.getFunctionPtr("_getWindowRect", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    getLog = ffm.getFunctionPtr("_getLog", ffm.getFunctionDesciptor(ADDRESS));
+    getWindowRect = ffm.getFunctionPtr("_getWindowRect", ffm.getFunctionDesciptorVoid(ADDRESS));
     executeSession = ffm.getFunctionPtr("_executeSession", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
     simulateCtrlAltDel = ffm.getFunctionPtr("_simulateCtrlAltDel", ffm.getFunctionDesciptorVoid());
     setInputDesktop = ffm.getFunctionPtr("_setInputDesktop", ffm.getFunctionDesciptorVoid());
@@ -208,8 +202,8 @@ public class WindowsFFM implements WindowsAPI {
     setSessionID = ffm.getFunctionPtr("_setSessionID", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT));
     closeSession = ffm.getFunctionPtr("_closeSession", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     peBegin = ffm.getFunctionPtr("_peBegin", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
-    peAddIcon = ffm.getFunctionPtr("_peAddIcon", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
-    peAddString = ffm.getFunctionPtr("_peAddString", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS));
+    peAddIcon = ffm.getFunctionPtr("_peAddIcon", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    peAddString = ffm.getFunctionPtr("_peAddString", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT));
     peEnd = ffm.getFunctionPtr("_peEnd", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     impersonateUser = ffm.getFunctionPtr("_impersonateUser", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS));
     revertToSelf = ffm.getFunctionPtr("_revertToSelf", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
@@ -247,7 +241,7 @@ public class WindowsFFM implements WindowsAPI {
     vssInit = ffm.getFunctionPtr("_vssInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     vssListVols = ffm.getFunctionPtr("_vssListVols", ffm.getFunctionDesciptorVoid());
     vssListShadows = ffm.getFunctionPtr("_vssListShadows", ffm.getFunctionDesciptorVoid());
-    vssCreateShadow = ffm.getFunctionPtr("_vssCreateShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vssCreateShadow = ffm.getFunctionPtr("_vssCreateShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
     vssDeleteShadow = ffm.getFunctionPtr("_vssDeleteShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vssDeleteShadowAll = ffm.getFunctionPtr("_vssDeleteShadowAll", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     vssMountShadow = ffm.getFunctionPtr("_vssMountShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));

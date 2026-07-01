@@ -79,18 +79,6 @@ void uiWindowSetIcon(GLFWContextFFM* ctx, const char* filename, jint x, jint y)
   SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_UIJNI_uiWindowSetIcon
-  (JNIEnv *e, jobject c, jlong id, jstring filename, jint x, jint y)
-{
-  GLFWContextJNI *ctx = (GLFWContextJNI*)id;
-  const char *cstr = e->GetStringUTFChars(filename,NULL);
-  HANDLE icon = LoadImage(NULL, cstr, IMAGE_ICON, x, y, LR_LOADFROMFILE);
-  e->ReleaseStringUTFChars(filename, cstr);
-  HWND hwnd = glfwGetWin32Window(ctx->window);
-  SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
-  SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon);
-}
-
 extern "C" {
   JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*,const char*,jint,jint) = &uiWindowSetIcon;
 }
@@ -178,23 +166,17 @@ struct ICONIMAGE {  //actually a BITMAPINFO struct + xors_ands
 
 #define EN_US 0x409  //MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US)
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_peBegin
-  (JNIEnv *e, jclass c, jstring file)
+jlong peBegin(const char* cstr)
 {
-  const char *cstr = e->GetStringUTFChars(file,NULL);
   HANDLE handle = BeginUpdateResource(cstr, FALSE);
   if (handle == NULL) {
     printf("peBegin failed:file=%s:error=%d\n", cstr, GetLastError());
   }
-  e->ReleaseStringUTFChars(file, cstr);
   return (jlong)handle;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peAddIcon
-  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba)
+void peAddIcon(jlong handle, jbyte* baptr, int offset, int length)
 {
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-
   ICONHEADER i;
   ICONHEADER *ih;
     ICONENTRY *ihE;
@@ -218,7 +200,6 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peAddIcon
     ii[a] = (ICONIMAGE*)malloc(iiSize[a]);
     memcpy(ii[a], baptr + ptr, iiSize[a]);
   }
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
   size = sizeof(GRPICONHEADER) + sizeof(GRPICONENTRY) * i.count;
   grp = (GRPICONHEADER*)malloc(size);
   memset(grp, 0, size);
@@ -248,51 +229,39 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peAddIcon
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peAddString
-  (JNIEnv *e, jclass c, jlong handle, jint type, jint idx, jbyteArray ba)
+void peAddString(jlong handle, jint type, jint idx, jbyte* baptr, int offset, int length)
 {
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  UpdateResource((HANDLE)handle, (LPCSTR)(jlong)type, (LPCSTR)(jlong)idx, EN_US, baptr, e->GetArrayLength(ba));
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+  UpdateResource((HANDLE)handle, (LPCSTR)(jlong)type, (LPCSTR)(jlong)idx, EN_US, baptr + offset, length);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peEnd
-  (JNIEnv *e, jclass c, jlong handle)
+void peEnd(jlong handle)
 {
   EndUpdateResource((HANDLE)handle, FALSE);
 }
 
+extern "C" {
+  JNIEXPORT jlong (*_peBegin)(const char*) = &peBegin;
+  JNIEXPORT void (*_peAddIcon)(jlong, jbyte*, int, int) = &peAddIcon;
+  JNIEXPORT void (*_peAddString)(jlong, int, int, jbyte*, int, int) = &peAddString;
+  JNIEXPORT void (*_peEnd)(jlong) = &peEnd;
+}
+
 //Windows
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_getWindowRect
-  (JNIEnv *e, jclass c, jstring name, jintArray rect)
+jint* getWindowRect(const char* cstr)
 {
-  jint *rectptr = e->GetIntArrayElements(rect,NULL);
-  const char *cstr = e->GetStringUTFChars(name,NULL);
   HWND hwnd = FindWindow(NULL, cstr);
   RECT winrect;
-  jboolean ok = JNI_FALSE;
+  jint* rectptr = ffm->newIntArray(4);
   if (hwnd != NULL) {
     if (GetWindowRect(hwnd, &winrect)) {
       rectptr[0] = winrect.left;
       rectptr[1] = winrect.top;
       rectptr[2] = winrect.right - winrect.left;
       rectptr[3] = winrect.bottom - winrect.top;
-      ok = JNI_TRUE;
     }
   }
-  e->ReleaseStringUTFChars(name, cstr);
-  e->ReleaseIntArrayElements(rect, rectptr, 0);
-  return ok;
-}
-
-JNIEXPORT jstring JNICALL Java_javaforce_jni_WinNative_getLog
-  (JNIEnv *e, jclass c)
-{
-  if (log_log == NULL) return NULL;
-  jstring log = e->NewStringUTF(log_log);
-  log_reset();
-  return log;
+  return rectptr;
 }
 
 BOOL CALLBACK EnumWindowStationProc(_In_ LPTSTR lpszWindowStation,_In_ LPARAM lParam) {
@@ -316,20 +285,27 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd,_In_ LPARAM lParam) {
   return true;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
-  (JNIEnv *e, jclass c, jstring cmd, jobjectArray args)
+int strArrayLength(const char** sa) {
+  int len = 0;
+  int idx = 0;
+  while (sa[idx] != NULL) {
+    len++;
+    idx++;
+  }
+  return len;
+}
+
+jlong executeSession(const char* cmd, const char** args)
 {
   char msg[1024];
   //build args
-  int nargs = e->GetArrayLength(args);
+  int nargs = strArrayLength(args);
   char **cargs = (char **)malloc((nargs+1) * sizeof(char*));  //+1 NULL terminator
   for(int a=0;a<nargs;a++) {
-    jstring jstr = (jstring)e->GetObjectArrayElement(args, a);
-    const char *cstr = e->GetStringUTFChars(jstr,NULL);
+    const char *cstr = args[a];
     int sl = strlen(cstr);
     cargs[a] = (char*)malloc(sl+1);
     strcpy(cargs[a], cstr);
-    e->ReleaseStringUTFChars(jstr, cstr);
   }
   cargs[nargs] = NULL;
 
@@ -366,11 +342,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
 
   dwCreationFlags |= CREATE_UNICODE_ENVIRONMENT;
 
-  const char *ccmd = e->GetStringUTFChars(cmd, NULL);
-
-  jboolean res = CreateProcessAsUser(hNewToken, 0, (LPSTR)ccmd, NULL, NULL, FALSE, dwCreationFlags, pEnvBlock, NULL, &si, &pi);
-
-  e->ReleaseStringUTFChars(cmd, ccmd);
+  jboolean res = CreateProcessAsUser(hNewToken, 0, (LPSTR)cmd, NULL, NULL, FALSE, dwCreationFlags, pEnvBlock, NULL, &si, &pi);
 
   if (hToken) CloseHandle(hToken);
   if (pEnvBlock) DestroyEnvironmentBlock(pEnvBlock);
@@ -386,14 +358,12 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_executeSession
 JF_LIB_HANDLE lib_sas;
 void (*_SendSAS)(bool asUser);
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_simulateCtrlAltDel
-  (JNIEnv *e, jclass c)
+void simulateCtrlAltDel()
 {
   (*_SendSAS)(false);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_setInputDesktop
-  (JNIEnv *e, jclass c)
+void setInputDesktop()
 {
   char msg[1024];
   //change between default and winlogon desktops
@@ -403,14 +373,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_setInputDesktop
   }
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_getSessionID
-  (JNIEnv *e, jclass c)
+jint getSessionID()
 {
   return WTSGetActiveConsoleSessionId();
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_setSessionID
-  (JNIEnv *e, jclass c, jlong token, jint sid)
+jboolean setSessionID(jlong token, jint sid)
 {
   if (token == 0) return JNI_FALSE;
   HANDLE hToken = (HANDLE)token;
@@ -420,29 +388,31 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_setSessionID
   return JNI_TRUE;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_closeSession
-  (JNIEnv *e, jclass c, jlong token)
+void closeSession(jlong token)
 {
   if (token == 0) return;
   HANDLE hToken = (HANDLE)token;
   CloseHandle(hToken);
 }
 
+extern "C" {
+  JNIEXPORT jint* (*_getWindowRect)(const char*) = &getWindowRect;
+  JNIEXPORT jlong (*_executeSession)(const char*, const char**) = &executeSession;
+  JNIEXPORT void (*_simulateCtrlAltDel)() = &simulateCtrlAltDel;
+  JNIEXPORT void (*_setInputDesktop)() = &setInputDesktop;
+  JNIEXPORT jint (*_getSessionID)() = &getSessionID;
+  JNIEXPORT jboolean (*_setSessionID)(jlong, int) = &setSessionID;
+  JNIEXPORT void (*_closeSession)(jlong) = &closeSession;
+}
+
 //impersonate user
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
-  (JNIEnv *e, jclass c, jstring domain, jstring user, jstring passwd)
+jboolean impersonateUser(const char* domain, const char* user, const char* passwd)
 {
   HANDLE token;
   int ok;
 
-  const char *cdomain = e->GetStringUTFChars(domain,NULL);
-  const char *cuser = e->GetStringUTFChars(user,NULL);
-  const char *cpasswd = e->GetStringUTFChars(passwd,NULL);
-  ok = LogonUser(cuser, cdomain, cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);
-  e->ReleaseStringUTFChars(domain, cdomain);
-  e->ReleaseStringUTFChars(user, cuser);
-  e->ReleaseStringUTFChars(passwd, cpasswd);
+  ok = LogonUser(user, domain, passwd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);
   if (!ok) return JNI_FALSE;
   ok = ImpersonateLoggedOnUser(token);
   if (!ok) {
@@ -451,8 +421,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
   return ok ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_revertToSelf
-  (JNIEnv *e, jclass c)
+jboolean revertToSelf()
 {
   return RevertToSelf();
 }
@@ -501,8 +470,7 @@ static bool EnablePrivilege(LPCSTR privName)
 #define FLAG_LIMIT 1
 #define FLAG_ELEVATE 2
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
-  (JNIEnv *e, jclass c, jstring domain, jstring user, jstring passwd, jstring app, jstring cmdline, jint flags)
+jboolean createProcessAsUser(const char* domain, const char* user, const char* passwd, const char* app, const char* cmdline, jint flags)
 {
   int ok;
 
@@ -535,13 +503,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
     EnablePrivilege(SE_IMPERSONATE_NAME);
   }
 
-  const jchar *cdomain = e->GetStringChars(domain,NULL);
-  const jchar *cuser = e->GetStringChars(user,NULL);
-  const jchar *cpasswd = e->GetStringChars(passwd,NULL);
-  const jchar *capp = e->GetStringChars(app,NULL);
-  const jchar *ccmdline = e->GetStringChars(cmdline,NULL);
-
-  ok = LogonUserW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_WINNT50, &hToken);
+  ok = LogonUserW((LPCWSTR)user, (LPCWSTR)domain, (LPCWSTR)passwd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_WINNT50, &hToken);
   if (!ok) {
     printf("LogonUserW Failed:0x%x\n", GetLastError());
   }
@@ -641,7 +603,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
 
   if (true) {
     RevertToSelf();
-    ok = CreateProcessWithLogonW((LPCWSTR)cuser, (LPCWSTR)cdomain, (LPCWSTR)cpasswd, LOGON_WITH_PROFILE, (LPCWSTR)capp, (LPWSTR)ccmdline, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    ok = CreateProcessWithLogonW((LPCWSTR)user, (LPCWSTR)domain, (LPCWSTR)passwd, LOGON_WITH_PROFILE, (LPCWSTR)app, (LPWSTR)cmdline, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
     if (!ok) {
       printf("CreateProcessWithLogonW Failed:0x%x\n", GetLastError());
     }
@@ -650,7 +612,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
   if (false) {
     //0x522
     RevertToSelf();
-    ok = CreateProcessWithTokenW(hToken, LOGON_WITH_PROFILE, (LPCWSTR)capp, (LPWSTR)ccmdline, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    ok = CreateProcessWithTokenW(hToken, LOGON_WITH_PROFILE, (LPCWSTR)app, (LPWSTR)cmdline, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
     if (!ok) {
       printf("CreateProcessWithTokenW Failed:0x%x\n", GetLastError());
     }
@@ -659,7 +621,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
   if (false) {
     //0x522
     RevertToSelf();
-    ok = CreateProcessAsUserW(hToken, (LPCWSTR)capp, (LPWSTR)ccmdline, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    ok = CreateProcessAsUserW(hToken, (LPCWSTR)app, (LPWSTR)cmdline, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
     if (!ok) {
       printf("CreateProcessAsUserW Failed:0x%x\n", GetLastError());
     }
@@ -667,7 +629,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
 
   if (false) {
     //user profile not fully loaded
-    ok = CreateProcessW((LPCWSTR)capp, (LPWSTR)ccmdline, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
+    ok = CreateProcessW((LPCWSTR)app, (LPWSTR)cmdline, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT | CREATE_NEW_CONSOLE, pEnv, NULL, &si, &pi);
     if (ok == 0) {
       printf("CreateProcessW Failed:0x%x\n", GetLastError());
     }
@@ -679,40 +641,26 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_createProcessAsUser
 
   RevertToSelf();
 
-  e->ReleaseStringChars(app, capp);
-  e->ReleaseStringChars(cmdline, ccmdline);
-  e->ReleaseStringChars(domain, cdomain);
-  e->ReleaseStringChars(user, cuser);
-  e->ReleaseStringChars(passwd, cpasswd);
-
   return ok ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_shellExecute
-  (JNIEnv *e, jclass c, jstring op, jstring app, jstring args)
+jboolean shellExecute(const char* op, const char* app, const char* args)
 {
-  const jchar *cop = e->GetStringChars(op, NULL);
-  const jchar *capp = e->GetStringChars(app, NULL);
-  const jchar *cargs = e->GetStringChars(args, NULL);
-
-  bool ok = ShellExecuteW(NULL, (LPCWSTR)cop, (LPCWSTR)capp, (LPCWSTR)cargs, NULL, SW_NORMAL);
-
-  e->ReleaseStringChars(op, cop);
-  e->ReleaseStringChars(app, capp);
-  e->ReleaseStringChars(args, cargs);
+  bool ok = ShellExecuteW(NULL, (LPCWSTR)op, (LPCWSTR)app, (LPCWSTR)args, NULL, SW_NORMAL);
 
   return ok;
 }
 
 //find JDK Home
 
-JNIEXPORT jstring JNICALL Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jclass c) {
+char jdk_path[MAX_PATH];
+
+const char* findJDKHome() {
   //try to find JDK in Registry
   HKEY key, subkey;
   int type;
   int size;
   char version[MAX_PATH];
-  char path[MAX_PATH];
 
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JDK", 0, KEY_READ, &key) != 0) {
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Development Kit", 0, KEY_READ, &key) != 0) {
@@ -740,39 +688,33 @@ JNIEXPORT jstring JNICALL Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jc
   }
 
   size = MAX_PATH;
-  if (RegQueryValueEx(subkey, "JavaHome", 0, 0, (LPBYTE)path, (LPDWORD)&size) != 0) {
+  if (RegQueryValueEx(subkey, "JavaHome", 0, 0, (LPBYTE)jdk_path, (LPDWORD)&size) != 0) {
     return NULL;
   }
 
   RegCloseKey(key);
   RegCloseKey(subkey);
-  return e->NewStringUTF(path);
+  return jdk_path;
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_WinNative_getConsoleSize
-  (JNIEnv *e, jclass c)
+jint* getConsoleSize()
 {
   CONSOLE_SCREEN_BUFFER_INFO info;
-  int xy[2];
+  jint* xy = ffm->newIntArray(2);
   GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
   xy[0] = info.srWindow.Right - info.srWindow.Left + 1;
   xy[1] = info.srWindow.Bottom - info.srWindow.Top + 1;
-  jintArray ia = e->NewIntArray(2);
-  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
-  return ia;
+  return xy;
 }
 
-JNIEXPORT jintArray JNICALL Java_javaforce_jni_WinNative_getConsolePos
-  (JNIEnv *e, jclass c)
+jint* getConsolePos()
 {
   CONSOLE_SCREEN_BUFFER_INFO info;
-  int xy[2];
+  jint* xy = ffm->newIntArray(2);
   GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
   xy[0] = info.dwCursorPosition.X - info.srWindow.Left + 1;
   xy[1] = info.dwCursorPosition.Y - info.srWindow.Top + 1;
-  jintArray ia = e->NewIntArray(2);
-  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
-  return ia;
+  return xy;
 }
 
 static DWORD input_console_mode;
@@ -810,8 +752,7 @@ static void StringCopy(char *dest, const char *src) {
   *dest = *src;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_enableConsoleMode
-  (JNIEnv *e, jclass c)
+void enableConsoleMode()
 {
   GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &input_console_mode);
   GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), &output_console_mode);
@@ -827,15 +768,13 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_enableConsoleMode
   console_buffer[0] = 0;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_disableConsoleMode
-  (JNIEnv *e, jclass c)
+void disableConsoleMode()
 {
   SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), input_console_mode);
   SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), output_console_mode);
 }
 
-JNIEXPORT jchar JNICALL Java_javaforce_jni_WinNative_readConsole
-  (JNIEnv *e, jclass c)
+jchar readConsole()
 {
   INPUT_RECORD input;
   DWORD read;
@@ -919,8 +858,7 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_WinNative_readConsole
   return 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
-  (JNIEnv *e, jclass c)
+jboolean peekConsole()
 {
   DWORD count;
   GetNumberOfConsoleInputEvents(GetStdHandle(STD_INPUT_HANDLE), &count);
@@ -938,17 +876,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
       10xxxxxx = 6bit
 */
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsole
-  (JNIEnv *e, jclass c, jint ch)
+void writeConsole(jint ch)
 {
   printf("%c", ch);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsoleArray
-  (JNIEnv *e, jclass c, jbyteArray ba, jint off, jint len)
+void writeConsoleArray(jbyte* baptr, jint off, jint len)
 {
   jbyte tmp[128];
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
   int length = len;
   int pos = off;
   while (length > 0) {
@@ -964,35 +899,44 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsoleArray
     }
     printf("%s", tmp);
   }
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
 }
 
+extern "C" {
+  JNIEXPORT jboolean (*_impersonateUser)(const char*, const char*, const char*) = &impersonateUser;
+  JNIEXPORT jboolean (*_revertToSelf)() = &revertToSelf;
+  JNIEXPORT jboolean (*_createProcessAsUser)(const char*, const char*, const char*, const char*, const char*, jint) = &createProcessAsUser;
+  JNIEXPORT jboolean (*_shellExecute)(const char*, const char*, const char*) = &shellExecute;
+  JNIEXPORT const char* (*_findJDKHome)() = &findJDKHome;
+  JNIEXPORT void (*_enableConsoleMode)() = &enableConsoleMode;
+  JNIEXPORT void (*_disableConsoleMode)() = &disableConsoleMode;
+  JNIEXPORT jint* (*_getConsoleSize)() = &getConsoleSize;
+  JNIEXPORT jint* (*_getConsolePos)() = &getConsolePos;
+  JNIEXPORT jchar (*_readConsole)() = &readConsole;
+  JNIEXPORT jboolean (*_peekConsole)() = &peekConsole;
+  JNIEXPORT void (*_writeConsole)(jint) = &writeConsole;
+  JNIEXPORT void (*_writeConsoleArray)(jbyte*, int, int) = &writeConsoleArray;
+}
 
 //tape drive API
 
-static int tapeLastError;
+static int tapeLastErrorValue;
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeOpen
-  (JNIEnv *e, jclass c, jstring name)
+jlong tapeOpen(const char* name)
 {
-  const char *cstr = e->GetStringUTFChars(name,NULL);
-  HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, NULL);
-  e->ReleaseStringUTFChars(name, cstr);
+  HANDLE handle = CreateFileA(name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, NULL);
   if (handle == INVALID_HANDLE_VALUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return 0;
   }
   return (jlong)handle;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_tapeClose
-  (JNIEnv *e, jclass c, jlong handle)
+void tapeClose(jlong handle)
 {
   CloseHandle((HANDLE)handle);
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
-  (JNIEnv *e, jclass c, jlong handle, jint blocksize)
+jboolean tapeFormat(jlong handle, jint blocksize)
 {
   HANDLE dev = (HANDLE)handle;
   DWORD bytesReturn;
@@ -1014,7 +958,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
   );
   if (ret != TRUE) {
     printf("TAPE_PREPARE Failed\r\n");
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     //return JNI_FALSE;  //ignore error - not supported on all drives
   }
 */
@@ -1033,46 +977,38 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
   );
   if (ret != TRUE) {
     printf("TAPE_SET_MEDIA_PARAMETERS Failed\r\n");
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return JNI_FALSE;
   }
 
   return JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeRead
-  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
+jint tapeRead(jlong handle, jbyte* baptr, jint offset, jint length)
 {
-  jboolean isCopy;
-  jbyte *baptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (baptr == NULL) {
-    tapeLastError = -1;
+    tapeLastErrorValue = -1;
     return 0;
   }
   int read = 0;
   ReadFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&read, NULL);
-  tapeLastError = GetLastError();
-  e->ReleasePrimitiveArrayCritical(ba, (jbyte*)baptr, JNI_ABORT);
+  tapeLastErrorValue = GetLastError();
   return read;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeWrite
-  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
+jint tapeWrite(jlong handle, jbyte* baptr, jint offset, jint length)
 {
-  jboolean isCopy;
-  jbyte *baptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (baptr == NULL) {
-    tapeLastError = -1;
+    tapeLastErrorValue = -1;
     return 0;
   }
   int write = 0;
   WriteFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&write, NULL);
-  tapeLastError = GetLastError();
-  e->ReleasePrimitiveArrayCritical(ba, (jbyte*)baptr, JNI_ABORT);
+  tapeLastErrorValue = GetLastError();
   return write;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeSetpos(JNIEnv *e, jclass c, jlong handle, jlong pos)
+jboolean tapeSetpos(jlong handle, jlong pos)
 {
   HANDLE dev = (HANDLE)handle;
   TAPE_SET_POSITION tapePos;
@@ -1092,13 +1028,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeSetpos(JNIEnv *e, jc
     nullptr
   );
   if (ret != TRUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return JNI_FALSE;
   }
   return JNI_TRUE;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeGetpos(JNIEnv *e, jclass c, jlong handle)
+jlong tapeGetpos(jlong handle)
 {
   HANDLE dev = (HANDLE)handle;
   TAPE_GET_POSITION tapePos;
@@ -1114,7 +1050,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeGetpos(JNIEnv *e, jclas
     nullptr
   );
   if (ret != TRUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return -1;
   }
   return tapePos.Offset.QuadPart;
@@ -1124,7 +1060,7 @@ static jlong tape_media_size;
 static jint tape_media_blocksize;
 static jboolean tape_media_readonly;
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jclass c, jlong handle)
+jboolean tapeMedia(jlong handle)
 {
   HANDLE dev = (HANDLE)handle;
   TAPE_GET_MEDIA_PARAMETERS params;
@@ -1140,7 +1076,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jcl
     nullptr
   );
   if (ret != TRUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return JNI_FALSE;
   }
   tape_media_size = params.Capacity.QuadPart;
@@ -1149,17 +1085,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jcl
   return JNI_TRUE;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeMediaSize(JNIEnv *e, jclass c)
+jlong tapeMediaSize()
 {
   return tape_media_size;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeMediaBlockSize(JNIEnv *e, jclass c)
+jint tapeMediaBlockSize()
 {
   return tape_media_blocksize;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMediaReadOnly(JNIEnv *e, jclass c)
+jboolean tapeMediaReadOnly()
 {
   return tape_media_readonly;
 }
@@ -1168,7 +1104,7 @@ static jint tape_drive_def_blocksize;
 static jint tape_drive_max_blocksize;
 static jint tape_drive_min_blocksize;
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeDrive(JNIEnv *e, jclass c, jlong handle)
+jboolean tapeDrive(jlong handle)
 {
   HANDLE dev = (HANDLE)handle;
   TAPE_GET_DRIVE_PARAMETERS params;
@@ -1184,7 +1120,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeDrive(JNIEnv *e, jcl
     nullptr
   );
   if (ret != TRUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return JNI_FALSE;
   }
   tape_drive_def_blocksize = params.DefaultBlockSize;
@@ -1193,36 +1129,58 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeDrive(JNIEnv *e, jcl
   return JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeDriveMinBlockSize(JNIEnv *e, jclass c)
+jint tapeDriveMinBlockSize()
 {
   return tape_drive_min_blocksize;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeDriveMaxBlockSize(JNIEnv *e, jclass c)
+jint tapeDriveMaxBlockSize()
 {
   return tape_drive_max_blocksize;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeDriveDefaultBlockSize(JNIEnv *e, jclass c)
+jint tapeDriveDefaultBlockSize()
 {
   return tape_drive_def_blocksize;
 }
 
+jint tape_LastError()
+{
+  return tapeLastErrorValue;
+}
+
+extern "C" {
+  JNIEXPORT jlong (*_tapeOpen)(const char*) = &tapeOpen;
+  JNIEXPORT void (*_tapeClose)(jlong) = &tapeClose;
+  JNIEXPORT jboolean (*_tapeFormat)(jlong, jint) = &tapeFormat;
+  JNIEXPORT jint (*_tapeRead)(jlong,jbyte*,jint,jint) = &tapeRead;
+  JNIEXPORT jint (*_tapeWrite)(jlong,jbyte*,jint,jint) = &tapeWrite;
+  JNIEXPORT jboolean (*_tapeSetpos)(jlong,jlong) = &tapeSetpos;
+  JNIEXPORT jlong (*_tapeGetpos)(jlong) = &tapeGetpos;
+  JNIEXPORT jboolean (*_tapeMedia)(jlong) = &tapeMedia;
+  JNIEXPORT jlong (*_tapeMediaSize)() = &tapeMediaSize;
+  JNIEXPORT jint (*_tapeMediaBlockSize)() = &tapeMediaBlockSize;
+  JNIEXPORT jboolean (*_tapeMediaReadOnly)() = &tapeMediaReadOnly;
+  JNIEXPORT jboolean (*_tapeDrive)(jlong) = &tapeDrive;
+  JNIEXPORT jint (*_tapeDriveMinBlockSize)() = &tapeDriveMinBlockSize;
+  JNIEXPORT jint (*_tapeDriveMaxBlockSize)() = &tapeDriveMaxBlockSize;
+  JNIEXPORT jint (*_tapeDriveDefaultBlockSize)() = &tapeDriveDefaultBlockSize;
+  JNIEXPORT jint (*_tape_LastError)() = &tape_LastError;
+}
+
 //tape changer
 
-JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_changerOpen(JNIEnv *e, jclass c, jstring name)
+jlong changerOpen(const char* name)
 {
-  const char *cstr = e->GetStringUTFChars(name, NULL);
-  HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-  e->ReleaseStringUTFChars(name, cstr);
+  HANDLE handle = CreateFileA(name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
   if (handle == INVALID_HANDLE_VALUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return 0;
   }
   return (jlong)handle;
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_changerClose(JNIEnv *e, jclass c, jlong handle)
+void changerClose(jlong handle)
 {
   CloseHandle((HANDLE)handle);
 }
@@ -1278,7 +1236,7 @@ static int listType(HANDLE dev, _ELEMENT_TYPE type, const char* name) {
   return 0;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_changerList(JNIEnv *e, jclass c, jlong handle)
+jstringArray changerList(jlong handle)
 {
   HANDLE dev = (HANDLE)handle;
 
@@ -1289,10 +1247,10 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_changerList(JNIEnv *
   listType(dev, ELEMENT_TYPE::ChangerSlot, "slot");
   listType(dev, ELEMENT_TYPE::ChangerIEPort, "port");
 
-  jobjectArray ret = (jobjectArray)e->NewObjectArray(list_count,e->FindClass("java/lang/String"),e->NewStringUTF(""));
+  jstringArray ret = ffm->newStringArray(list_count);
 
   for(int i=0;i<list_count;i++) {
-    e->SetObjectArrayElement(ret,i,e->NewStringUTF(list_elements[i]));
+    ffm->setString(i,list_elements[i]);
     free(list_elements[i]);
   }
 
@@ -1349,15 +1307,9 @@ static int getElementAddress(const char* loc) {
   return value - 1;  //return zero based
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_changerMove(JNIEnv *e, jclass c, jlong handle, jstring jsrc, jstring jtransport, jstring jdst)
+jboolean changerMove(jlong handle, const char* src, const char* transport, const char* dst)
 {
   HANDLE dev = (HANDLE)handle;
-
-  const char *src = e->GetStringUTFChars(jsrc,NULL);
-  const char *transport = nullptr;
-  const char *dst = e->GetStringUTFChars(jdst,NULL);
-
-  if (jtransport != nullptr) transport = e->GetStringUTFChars(jtransport,NULL);
 
   if (!isValidElement(src)) {
     printf("Error:src invalid\n");
@@ -1417,41 +1369,19 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_changerMove(JNIEnv *e, j
     &bytesReturn,
     nullptr
   );
-  e->ReleaseStringUTFChars(jsrc, src);
-  if (transport != nullptr) e->ReleaseStringUTFChars(jtransport, transport);
-  e->ReleaseStringUTFChars(jdst, dst);
   if (ret != TRUE) {
-    tapeLastError = GetLastError();
+    tapeLastErrorValue = GetLastError();
     return JNI_FALSE;
   }
   return JNI_TRUE;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeLastError
-  (JNIEnv *e, jclass c)
-{
-  return tapeLastError;
+extern "C" {
+  JNIEXPORT jlong (*_changerOpen)(const char*) = &changerOpen;
+  JNIEXPORT void (*_changerClose)(jlong) = &changerClose;
+  JNIEXPORT jstringArray (*_changerList)(jlong) = &changerList;
+  JNIEXPORT jboolean (*_changerMove)(jlong,const char*,const char*,const char*) = &changerMove;
 }
-
-//test
-
-JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_add
-  (JNIEnv *e, jclass c, jint x, jint y)
-{
-  return x+y;
-}
-
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
-  (JNIEnv *e, jclass c, jintArray a, jint ms)
-{
-  jboolean isCopy;
-  jint *aptr = (jint*)e->GetPrimitiveArrayCritical(a, &isCopy);
-
-  ::Sleep(ms);
-
-  e->ReleasePrimitiveArrayCritical(a, aptr, 0);
-}
-
 
 #include "../common/ffmpeg.cpp"
 
@@ -1557,68 +1487,6 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_JFNative_getWindowHandle
   return getHWND(e, window);
 }
 
-//Windows native methods
-static JNINativeMethod javaforce_jni_WinNative[] = {
-  {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
-  {"getLog", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_getLog},
-  {"executeSession", "(Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_executeSession},
-  {"simulateCtrlAltDel", "()V", (void *)&Java_javaforce_jni_WinNative_simulateCtrlAltDel},
-  {"setInputDesktop", "()V", (void *)&Java_javaforce_jni_WinNative_setInputDesktop},
-  {"getSessionID", "()I", (void *)&Java_javaforce_jni_WinNative_getSessionID},
-  {"setSessionID", "(JI)Z", (void *)&Java_javaforce_jni_WinNative_setSessionID},
-  {"closeSession", "(J)V", (void *)&Java_javaforce_jni_WinNative_closeSession},
-
-  {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
-  {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},
-  {"peAddString", "(JII[B)V", (void *)&Java_javaforce_jni_WinNative_peAddString},
-  {"peEnd", "(J)V", (void *)&Java_javaforce_jni_WinNative_peEnd},
-  {"impersonateUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_impersonateUser},
-  {"revertToSelf", "()Z", (void *)&Java_javaforce_jni_WinNative_revertToSelf},
-  {"createProcessAsUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)Z", (void *)&Java_javaforce_jni_WinNative_createProcessAsUser},
-  {"shellExecute", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_shellExecute},
-  {"findJDKHome", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_findJDKHome},
-  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_enableConsoleMode},
-  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_disableConsoleMode},
-  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_WinNative_getConsoleSize},
-  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_WinNative_getConsolePos},
-  {"readConsole", "()C", (void *)&Java_javaforce_jni_WinNative_readConsole},
-  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_WinNative_peekConsole},
-  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_WinNative_writeConsole},
-  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_WinNative_writeConsoleArray},
-  {"tapeOpen", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_tapeOpen},
-  {"tapeClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_tapeClose},
-  {"tapeFormat", "(JI)Z", (void *)&Java_javaforce_jni_WinNative_tapeFormat},
-  {"tapeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_tapeRead},
-  {"tapeWrite", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_tapeWrite},
-  {"tapeSetpos", "(JJ)Z", (void *)&Java_javaforce_jni_WinNative_tapeSetpos},
-  {"tapeGetpos", "(J)J", (void *)&Java_javaforce_jni_WinNative_tapeGetpos},
-  {"tapeMedia", "(J)Z", (void *)&Java_javaforce_jni_WinNative_tapeMedia},
-  {"tapeMediaSize", "()J", (void *)&Java_javaforce_jni_WinNative_tapeMediaSize},
-  {"tapeMediaBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeMediaBlockSize},
-  {"tapeMediaReadOnly", "()Z", (void *)&Java_javaforce_jni_WinNative_tapeMediaReadOnly},
-  {"tapeDrive", "(J)Z", (void *)&Java_javaforce_jni_WinNative_tapeDrive},
-  {"tapeDriveMinBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveMinBlockSize},
-  {"tapeDriveMaxBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveMaxBlockSize},
-  {"tapeDriveDefaultBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveDefaultBlockSize},
-  {"tapeLastError", "()I", (void *)&Java_javaforce_jni_WinNative_tapeLastError},
-  {"changerOpen", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_changerOpen},
-  {"changerClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_changerClose},
-  {"changerList", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_changerList},
-  {"changerMove", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_changerMove},
-//vss
-  {"vssInit", "()Z", (void *)&Java_javaforce_jni_WinNative_vssInit},
-  {"vssListVols", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_vssListVols},
-  {"vssListShadows", "()[[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_vssListShadows},
-  {"vssCreateShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssCreateShadow},
-  {"vssDeleteShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadow},
-  {"vssDeleteShadowAll", "()Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadowAll},
-  {"vssMountShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssMountShadow},
-  {"vssUnmountShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssUnmountShadow},
-//test
-  {"add", "(II)I", (void *)&Java_javaforce_jni_WinNative_add},
-  {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
-};
-
 static JNINativeMethod javaforce_jni_ComPortJNI[] = {
   {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_ComPortJNI_comOpen},
   {"comClose", "(J)V", (void *)&Java_javaforce_jni_ComPortJNI_comClose},
@@ -1644,9 +1512,6 @@ extern "C" void winnative_register(JNIEnv *env);
 void winnative_register(JNIEnv *env) {
   jclass cls;
 
-  cls = findClass(env, "javaforce/jni/WinNative");
-  registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
-
   cls = findClass(env, "javaforce/jni/ComPortJNI");
   registerNatives(env, cls, javaforce_jni_ComPortJNI, sizeof(javaforce_jni_ComPortJNI)/sizeof(JNINativeMethod));
 
@@ -1669,9 +1534,6 @@ void winnative_register(JNIEnv *env) {
 
   speex_dsp_register(env);
 }
-
-#define OS_NATIVES_CLASS "javaforce.jni.WinNative"
-#define OS_NATIVES_METHODS javaforce_jni_WinNative
 
 #include "../common/register.cpp"
 

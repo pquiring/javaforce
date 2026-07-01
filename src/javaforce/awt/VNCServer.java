@@ -7,7 +7,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 import javaforce.utils.*;
 import javaforce.bus.*;
 import javaforce.service.*;
@@ -264,9 +264,9 @@ public class VNCServer extends ConfigServlet {
     long token = -1;
     if (JF.isWindows()) {
       if (debug) {
-        JFLog.log("Session ID=" + WinNative.getSessionID());
+        JFLog.log("Session ID=" + WindowsAPI.getInstance().getSessionID());
       }
-      token = WinNative.executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {});
+      token = WindowsAPI.getInstance().executeSession(System.getProperty("java.app.home") + "/jfvncsession.exe", new String[] {});
     } else {
       try {
         //support X11 now (wayland in the future)
@@ -285,7 +285,7 @@ public class VNCServer extends ConfigServlet {
       robot.token = token;
       robot.sid = -1;
       while (robot.sid == -1) {
-        robot.sid = WinNative.getSessionID();
+        robot.sid = WindowsAPI.getInstance().getSessionID();
         JF.sleep(100);
       }
     }
@@ -468,7 +468,7 @@ public class VNCServer extends ConfigServlet {
                       if (debug) {
                         JFLog.log("Simulating Ctrl+Alt+Del");
                       }
-                      WinNative.simulateCtrlAltDel();
+                      WindowsAPI.getInstance().simulateCtrlAltDel();
                     }
                   }
                   if (code != -1) {
@@ -540,7 +540,7 @@ public class VNCServer extends ConfigServlet {
           if (JF.isWindows()) {
             sid = -1;
             while (sid == -1) {
-              sid = WinNative.getSessionID();
+              sid = WindowsAPI.getInstance().getSessionID();
               JF.sleep(100);
             }
           }
@@ -550,7 +550,7 @@ public class VNCServer extends ConfigServlet {
               continue;
             }
             if (JF.isWindows() && service_mode && !update_sid) {
-              int newsid = WinNative.getSessionID();
+              int newsid = WindowsAPI.getInstance().getSessionID();
               if (newsid != -1 && newsid != sid) {
                 //client needs a new robot
                 if (debug) {

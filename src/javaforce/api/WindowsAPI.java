@@ -12,9 +12,8 @@ public interface WindowsAPI {
   }
 
   //Windows
-  public boolean getWindowRect(String name, int[] rect);  //returns x,y,width,height
-  public String getLog();
-  public long executeSession(String cmd, String[] args);  //execute child process in current session id
+  public int[] getWindowRect(String name);  //returns x,y,width,height
+  public long executeSession(String cmd, String[] args);  //execute child process in current session id (args MUST be NULL terminated)
   public void simulateCtrlAltDel();
   public void setInputDesktop();
   public int getSessionID();
@@ -23,8 +22,8 @@ public interface WindowsAPI {
 
   //WinPE resources
   public long peBegin(String file);  //returns handle
-  public void peAddIcon(long handle, byte[] data);
-  public void peAddString(long handle, int name, int idx, byte[] data);
+  public void peAddIcon(long handle, byte[] data, int offset, int length);
+  public void peAddString(long handle, int name, int idx, byte[] data, int offset, int length);
   public void peEnd(long handle);
 
   //Impersonate User
@@ -77,8 +76,7 @@ public interface WindowsAPI {
   public boolean vssInit();
   public String[] vssListVols();
   public String[][] vssListShadows();  //ret = GUID, shadow volume, org volume
-  public boolean vssCreateShadow(String drv);  // { return vssCreateShadow(drv, null); }
-  public boolean vssCreateShadow(String drv, String mount);
+  public boolean vssCreateShadow(String drv, String mount);  //mount optional
   public boolean vssDeleteShadow(String shadowID);
   public boolean vssDeleteShadowAll();
   public boolean vssMountShadow(String mount, String shadowVol);

@@ -9,6 +9,7 @@ package javaforce;
 
 import java.io.*;
 
+import javaforce.api.*;
 import javaforce.jni.*;
 
 public class ConsoleOutput extends OutputStream {
@@ -26,7 +27,7 @@ public class ConsoleOutput extends OutputStream {
       b |= low;
       char c = ASCII8.convertUTF16(b);
       if (isWindows) {
-        WinNative.writeConsole(c);
+        WindowsAPI.getInstance().writeConsole(c);
       } else {
         LnxNative.writeConsole(c);
       }

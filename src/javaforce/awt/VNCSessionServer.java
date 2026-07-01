@@ -5,7 +5,7 @@ import java.net.*;
 import java.awt.*;
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 import static javaforce.awt.VNCSessionClient.*;
 
@@ -117,19 +117,15 @@ public class VNCSessionServer {
     public Rectangle getScreenSize() {
       try {
         if (JF.isWindows() && VNCServer.update_sid) {
-          int newsid = WinNative.getSessionID();
+          int newsid = WindowsAPI.getInstance().getSessionID();
           if ((newsid != -1) && (newsid != sid)) {
-            if (!WinNative.setSessionID(token, newsid)) {
+            if (!WindowsAPI.getInstance().setSessionID(token, newsid)) {
               JFLog.log("VNCSessionServer:setSessionID failed");
             }
             if (debug) {
               JFLog.log("VNCSessionServer:Update Session:old=" + sid + ":new=" + newsid + ":token=0x" + Long.toString(token, 16));
             }
             sid = newsid;
-          }
-          String log = WinNative.getLog();
-          if (log != null) {
-            JFLog.log(log);
           }
         }
         os.write(CMD_GET_SCREEN_SIZE);
@@ -234,7 +230,7 @@ public class VNCSessionServer {
       connected = false;
       if (JF.isWindows()) {
         if (token != 0) {
-          WinNative.closeSession(token);
+          WindowsAPI.getInstance().closeSession(token);
         }
         token = 0;
       }

@@ -4,7 +4,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.ansi.server.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 /** Scripting Utils
  *
@@ -96,7 +96,7 @@ public class ScriptEx {
           for(int a=3;a<args.length;a++) {
             cmd[a - 3] = args[a];
           }
-          if (!WinNative.impersonateUser(domain, user, pass)) {
+          if (!WindowsAPI.getInstance().impersonateUser(domain, user, pass)) {
             JFLog.log("Logon failed");
             return;
           }
@@ -110,7 +110,7 @@ public class ScriptEx {
             if (cmdargs.length() > 0) cmdargs += " ";
             cmdargs += args[a];
           }
-          if (!WinNative.createProcessAsUser(domain, user, pass, cmd, cmdargs, flags)) {
+          if (!WindowsAPI.getInstance().createProcessAsUser(domain, user, pass, cmd, cmdargs, flags)) {
             JFLog.log("Logon failed");
             return;
           }
@@ -124,7 +124,7 @@ public class ScriptEx {
           if (cmdargs.length() > 0) cmdargs += " ";
           cmdargs += args[a];
         }
-        WinNative.shellExecute("runas", cmd, cmdargs);
+        WindowsAPI.getInstance().shellExecute("runas", cmd, cmdargs);
         return;
       }
       default: {

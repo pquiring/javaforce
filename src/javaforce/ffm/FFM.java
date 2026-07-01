@@ -488,6 +488,12 @@ public class FFM {
     instance.SetStringElement(idx, str);
   }
 
+  private static long FFMArray_NewString2Array(int size) {
+    FFMArray instance = FFMArrayBin.get();
+    if (instance == null) return -1;
+    return instance.NewString2Array();
+  }
+
   public static Object getArray() {
     FFMArray instance = FFMArrayBin.get();
     if (instance == null) return null;
@@ -586,7 +592,7 @@ public class FFM {
   public static MemorySegment upcall_FFMArray_NewDoubleArray;
   public static MemorySegment upcall_FFMArray_NewStringArray;
   public static MemorySegment upcall_FFMArray_SetStringElement;
-
+  public static MemorySegment upcall_FFMArray_NewString2Array;
 
   public static MemorySegment upcall_MediaIO;
   public static MemorySegment upcall_MediaIO_read;
@@ -624,6 +630,7 @@ public class FFM {
     upcall_FFMArray_NewDoubleArray = getFunctionUpCallStatic(cls, "FFMArray_NewDoubleArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_NewStringArray = getFunctionUpCallStatic(cls, "FFMArray_NewStringArray", long.class, new Class[] {int.class}, global);
     upcall_FFMArray_SetStringElement = getFunctionUpCallStatic(cls, "FFMArray_SetStringElement", void.class, new Class[] {int.class, MemorySegment.class}, global);
+    upcall_FFMArray_NewString2Array = getFunctionUpCallStatic(cls, "FFMArray_NewString2Array", long.class, new Class[] {}, global);
 
     upcall_FFMArray = toMemory(global, new MemorySegment[] {
       upcall_FFMArray_Pin,
@@ -636,6 +643,7 @@ public class FFM {
       upcall_FFMArray_NewDoubleArray,
       upcall_FFMArray_NewStringArray,
       upcall_FFMArray_SetStringElement,
+      upcall_FFMArray_NewString2Array,
     });
 
     upcall_MediaIO_read = getFunctionUpCallStatic(cls, "MediaIO_read", int.class, new Class[] {MemorySegment.class, int.class}, global);

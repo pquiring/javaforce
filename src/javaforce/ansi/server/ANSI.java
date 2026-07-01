@@ -4,6 +4,7 @@ import java.util.*;
 import java.awt.event.KeyEvent;
 
 import javaforce.*;
+import javaforce.api.*;
 import javaforce.jni.*;
 
 /**
@@ -60,7 +61,7 @@ public class ANSI {
   public boolean getConsoleSize() {
     int[] xy;
     if (JF.isWindows()) {
-      xy = WinNative.getConsoleSize();
+      xy = WindowsAPI.getInstance().getConsoleSize();
     } else {
       xy = LnxNative.getConsoleSize();
     }
@@ -74,7 +75,7 @@ public class ANSI {
 
   public int[] getConsolePos() {
     if (JF.isWindows()) {
-      return WinNative.getConsolePos();
+      return WindowsAPI.getInstance().getConsolePos();
     } else {
       return LnxNative.getConsolePos();
     }
@@ -88,7 +89,7 @@ public class ANSI {
     //System.in is buffered and not suitable for console apps
     char ch;
     if (JF.isWindows()) {
-      ch = WinNative.readConsole();
+      ch = WindowsAPI.getInstance().readConsole();
     } else {
       ch = LnxNative.readConsole();
     }

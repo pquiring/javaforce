@@ -15,17 +15,28 @@ import javaforce.jni.*;
  */
 
 public class FFMArray {
-  private Object ref;
+  private Object obj;
   private long ptr;
+  private long ref;
+  private boolean string2;
 
   public long pin() {
-    ptr = JFHeap.pin(ref);
+    ptr = JFHeap.pin(obj);
     return ptr;
   }
 
   public void unpin() {
-    JFHeap.unpin(ref, ptr, true);
+    JFHeap.unpin(obj, ptr, true);
     ptr = 0;
+  }
+
+  public long ref() {
+    ref = JFHeap.ref(obj);
+    return ref;
+  }
+
+  public void unref() {
+    JFHeap.unref(ref);
   }
 
   private byte[] ba;
@@ -34,7 +45,7 @@ public class FFMArray {
     if (ba == null || ba.length != size) {
       ba = new byte[size];
     }
-    ref = ba;
+    obj = ba;
     return pin();
   }
 
@@ -44,7 +55,7 @@ public class FFMArray {
     if (sa == null || sa.length != size) {
       sa = new short[size];
     }
-    ref = sa;
+    obj = sa;
     return pin();
   }
 
@@ -54,7 +65,7 @@ public class FFMArray {
     if (ia == null || ia.length != size) {
       ia = new int[size];
     }
-    ref = ia;
+    obj = ia;
     return pin();
   }
 
@@ -64,7 +75,7 @@ public class FFMArray {
     if (la == null || la.length != size) {
       la = new long[size];
     }
-    ref = la;
+    obj = la;
     return pin();
   }
 
@@ -74,7 +85,7 @@ public class FFMArray {
     if (fa == null || fa.length != size) {
       fa = new float[size];
     }
-    ref = fa;
+    obj = fa;
     return pin();
   }
 
@@ -84,7 +95,7 @@ public class FFMArray {
     if (da == null || da.length != size) {
       da = new double[size];
     }
-    ref = da;
+    obj = da;
     return pin();
   }
 
@@ -93,21 +104,40 @@ public class FFMArray {
     if (ptr != 0) unpin();
     //always create new String array
     Sa = new String[size];
-    ref = Sa;
-    return pin();
+    if (!string2) {
+      obj = Sa;
+    } else {
+      String[][] org = Sa2;
+      Sa2 = new String[org.length + 1][];
+      System.arraycopy(org, 0, Sa2, 0, org.length);
+      Sa2[org.length] = Sa;
+    }
+    return ref();
   }
 
   public void SetStringElement(int idx, MemorySegment str) {
-    if (ref == null) return;
+    if (obj == null) return;
     if (idx < 0 || idx >= Sa.length) return;
     Sa[idx] = FFM.getString(str);
   }
 
-  public Object getArray() {
-    if (ref == null) return null;
+  private String[][] Sa2;
+  /** To create a String[][] call this method first and each time NewStringArray() is called it will be appended to this String[][] array. */
+  public long NewString2Array() {
     if (ptr != 0) unpin();
-    Object array = ref;
-    ref = null;
+    //always create new String array
+    Sa2 = new String[0][];
+    obj = Sa2;
+    string2 = true;
+    return ref();
+  }
+
+  public Object getArray() {
+    if (obj == null) return null;
+    if (ptr != 0) unpin();
+    Object array = obj;
+    obj = null;
+    string2 = false;
     return array;
   }
 }

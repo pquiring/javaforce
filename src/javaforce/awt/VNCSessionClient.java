@@ -5,7 +5,7 @@ import java.net.*;
 import java.awt.*;
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 /** VNCSessionClient.
  *
@@ -68,7 +68,7 @@ public class VNCSessionClient extends VNCJavaRobot {
       if (JF.isWindows()) {
         sid = -1;
         while (sid == -1) {
-          sid = WinNative.getSessionID();
+          sid = WindowsAPI.getInstance().getSessionID();
           JF.sleep(100);
         }
       }
@@ -83,9 +83,9 @@ public class VNCSessionClient extends VNCJavaRobot {
           }
           case CMD_GET_SCREEN: {
             if (JF.isWindows()) {
-              WinNative.setInputDesktop();
+              WindowsAPI.getInstance().setInputDesktop();
               if (VNCServer.update_sid) {
-                int newsid = WinNative.getSessionID();
+                int newsid = WindowsAPI.getInstance().getSessionID();
                 if ((newsid != -1) && (newsid != sid)) {
                   GraphicsEnvironment gfx = GraphicsEnvironment.getLocalGraphicsEnvironment();
                   setRobot(gfx.getDefaultScreenDevice());

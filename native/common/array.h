@@ -21,6 +21,7 @@ struct FFMArray {
   jdouble* (*newDoubleArray)(int size);
   jstringArray (*newStringArray)(int size);
   void (*setString)(int idx, const char* str);
+  jobjectArray (*newString2Array)();
 } *ffm;
 
 void set_upcall_FFMArray(FFMArray *api) {

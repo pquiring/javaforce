@@ -243,7 +243,7 @@ static JNINativeMethod javaforce_ui_Window[] = {
   {"uiWindowCreate", "(ILjava/lang/String;IIJ)J", (void *)&Java_javaforce_jni_UIJNI_uiWindowCreate},
   {"uiWindowDestroy", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowDestroy},
   {"uiWindowSetCurrent", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowSetCurrent},
-  {"uiWindowSetIcon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowSetIcon},
+//  {"uiWindowSetIcon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowSetIcon},
   {"uiPollEvents", "(JILjavaforce/ui/UIEvents;)V", (void *)&Java_javaforce_jni_UIJNI_uiPollEvents},
   {"uiPostEvent", "()V", (void *)&Java_javaforce_jni_UIJNI_uiPostEvent},
   {"uiWindowShow", "(J)V", (void *)&Java_javaforce_jni_UIJNI_uiWindowShow},

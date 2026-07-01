@@ -3,7 +3,7 @@ package javaforce.utils;
 import java.io.*;
 
 import javaforce.*;
-import javaforce.jni.*;
+import javaforce.api.*;
 
 /** Tool to add resources to Windows PE exe files.
  *
@@ -54,17 +54,17 @@ public class WinPE {
       fis.close();
 
       //Begin
-      long exe = WinNative.peBegin(exeFile);
+      long exe = WindowsAPI.getInstance().peBegin(exeFile);
       if (exe == 0) {
         System.out.println("Unable to open:" + exeFile);
         return;
       }
 
       //add icon(s)
-      WinNative.peAddIcon(exe, ico);
+      WindowsAPI.getInstance().peAddIcon(exe, ico, 0, ico.length);
 
       //end
-      WinNative.peEnd(exe);
+      WindowsAPI.getInstance().peEnd(exe);
 
       System.out.println("Added:" + icoFile);
     } catch (Exception e) {
@@ -79,17 +79,17 @@ public class WinPE {
       fis.close();
 
       //Begin
-      long exe = WinNative.peBegin(exeFile);
+      long exe = WindowsAPI.getInstance().peBegin(exeFile);
       if (exe == 0) {
         System.out.println("Unable to open:" + exeFile);
         return;
       }
 
       //add manifest
-      WinNative.peAddString(exe, RT_MANIFEST, 1, str);
+      WindowsAPI.getInstance().peAddString(exe, RT_MANIFEST, 1, str, 0, str.length);
 
       //end
-      WinNative.peEnd(exe);
+      WindowsAPI.getInstance().peEnd(exe);
 
       System.out.println("Added:" + manifestFile);
     } catch (Exception e) {
@@ -104,17 +104,17 @@ public class WinPE {
       fis.close();
 
       //Begin
-      long exe = WinNative.peBegin(exeFile);
+      long exe = WindowsAPI.getInstance().peBegin(exeFile);
       if (exe == 0) {
         System.out.println("Unable to open:" + exeFile);
         return;
       }
 
       //add cfg
-      WinNative.peAddString(exe, RT_RCDATA, 1, str);
+      WindowsAPI.getInstance().peAddString(exe, RT_RCDATA, 1, str, 0, str.length);
 
       //end
-      WinNative.peEnd(exe);
+      WindowsAPI.getInstance().peEnd(exe);
 
       System.out.println("Added:" + cfgFile);
     } catch (Exception e) {
