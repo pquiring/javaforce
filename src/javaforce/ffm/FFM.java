@@ -314,7 +314,11 @@ public class FFM {
   /** Create native array from String[] */
   public static MemorySegment toMemory(Arena arena, String[] strs) {
     if (strs == null) return MemorySegment.NULL;
-    MemorySegment ptrs = arena.allocate(ADDRESS, strs.length);
+    int length = strs.length;
+    if (length == 0 || strs[length-1] != null) {
+      length++;  //add NULL string to end of array
+    }
+    MemorySegment ptrs = arena.allocate(ADDRESS, length);
     int idx = 0;
     for(String str : strs) {
       MemorySegment ba = arena.allocateFrom(str);
@@ -326,50 +330,16 @@ public class FFM {
   /** Create native array from native void* array */
   public static MemorySegment toMemory(Arena arena, MemorySegment[] ptrs) {
     if (ptrs == null) return MemorySegment.NULL;
-    MemorySegment array = arena.allocate(ADDRESS, ptrs.length);
+    int length = ptrs.length;
+    if (length == 0 || ptrs[length-1] != null) {
+      length++;  //add NULL pointer to end of array
+    }
+    MemorySegment array = arena.allocate(ADDRESS, length);
     int idx = 0;
     for(MemorySegment ptr : ptrs) {
       array.setAtIndex(ADDRESS, idx++, ptr);
     }
     return array;
-  }
-
-  //array helpers (critical)
-
-  /** Create native array from float[] */
-  public static MemorySegment toMemory(float[] m) {
-    if (m == null) return MemorySegment.NULL;
-    return MemorySegment.ofArray(m);
-  }
-
-  /** Create native array from double[] */
-  public static MemorySegment toMemory(double[] m) {
-    if (m == null) return MemorySegment.NULL;
-    return MemorySegment.ofArray(m);
-  }
-
-  /** Create native array from long[] */
-  public static MemorySegment toMemory(long[] m) {
-    if (m == null) return MemorySegment.NULL;
-    return MemorySegment.ofArray(m);
-  }
-
-  /** Create native array from int[] */
-  public static MemorySegment toMemory(int[] m) {
-    if (m == null) return MemorySegment.NULL;
-    return MemorySegment.ofArray(m);
-  }
-
-  /** Create native array from short[] */
-  public static MemorySegment toMemory(short[] m) {
-    if (m == null) return MemorySegment.NULL;
-    return MemorySegment.ofArray(m);
-  }
-
-  /** Create native array from byte[] */
-  public static MemorySegment toMemory(byte[] m) {
-    if (m == null) return MemorySegment.NULL;
-    return MemorySegment.ofArray(m);
   }
 
   private static final long JAVA_LONG_SIZE = JAVA_LONG.byteSize();
