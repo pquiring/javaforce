@@ -25,6 +25,9 @@ public class FFM {
   public static FFM getInstance() {
     if (instance == null) {
       instance = new FFM();
+      if (JF.isUnix()) {
+        Linux.load();
+      }
     }
     return instance;
   }

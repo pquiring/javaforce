@@ -23,13 +23,17 @@ import javaforce.ffm.*;
 
 public class Linux implements X11Listener {
 
-  static {
+  private static boolean loaded = false;
+
+  /** Loads Linux native libraries. */
+  public static void load() {
+    if (loaded) return;
+    if (!JF.isUnix()) return;
     Library[] libs = {new Library("X11"), new Library("GL"), new Library("v4l2"), new Library("pam"), new Library("ncurses")};
     Library.findLibraries(new File[] {new File("/usr/lib"), new File(Library.getArchLibFolder())}, libs, ".so");
     LinuxAPI.getInstance().lnxInit(libs[0].path, libs[1].path, libs[2].path, libs[3].path, libs[4].path);
+    loaded = true;
   }
-
-  public static void load() {}
 
   /** Returns Linux version as float. */
   public static String getVersion() {
