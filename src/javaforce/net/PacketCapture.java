@@ -7,7 +7,6 @@ import java.util.*;
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /**
  * Packet Capture API (pcap)

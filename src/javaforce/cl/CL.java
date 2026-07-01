@@ -5,7 +5,6 @@ import java.io.*;
 import javaforce.*;
 import javaforce.api.*;
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /** OpenCL methods.
  *

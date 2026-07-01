@@ -1,5 +1,7 @@
 package javaforce.api;
 
+import javaforce.ffm.*;
+
 /** Windows OS specific API.
  *
  * @author pquiring
@@ -8,7 +10,7 @@ package javaforce.api;
 public interface WindowsAPI {
 
   public static WindowsAPI getInstance() {
-    return null;  //TODO
+    return WindowsFFM.getInstance();
   }
 
   //Windows

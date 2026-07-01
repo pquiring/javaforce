@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 
 import javaforce.*;
 import javaforce.api.*;
-import javaforce.jni.*;
 
 /**
  * ANSI server side functions.

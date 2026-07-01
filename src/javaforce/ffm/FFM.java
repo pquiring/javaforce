@@ -9,7 +9,6 @@ import javaforce.*;
 import javaforce.io.*;
 import javaforce.ui.*;
 import javaforce.linux.*;
-import javaforce.jni.*;
 import javaforce.media.*;
 
 /** FFM support class.

@@ -4,7 +4,6 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.api.*;
-import javaforce.jni.*;
 import javaforce.ffm.*;
 
 /** Com Port API.

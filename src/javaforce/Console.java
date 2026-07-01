@@ -3,7 +3,6 @@ package javaforce;
 import java.io.*;
 
 import javaforce.api.*;
-import javaforce.jni.*;
 
 /** Console (alternative to System.in/out).
  *

@@ -3,7 +3,6 @@ package javaforce.tests;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 
 /** TestGC.
  *

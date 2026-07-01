@@ -3,7 +3,6 @@ package javaforce.ffm;
 import java.lang.foreign.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 
 /** FFMArray.
  *

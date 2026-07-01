@@ -1,7 +1,6 @@
 package javaforce.api;
 
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /** Windows Pipes native API
  *

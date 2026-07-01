@@ -1,6 +1,5 @@
 package javaforce.api;
 
-import javaforce.jni.*;
 import javaforce.ffm.*;
 
 /** VM native API

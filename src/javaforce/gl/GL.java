@@ -1,7 +1,6 @@
 package javaforce.gl;
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.ffm.*;
 
 /**

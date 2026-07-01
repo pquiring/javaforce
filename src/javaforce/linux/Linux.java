@@ -10,7 +10,6 @@ import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.*;
 import javaforce.api.*;
 
 /**

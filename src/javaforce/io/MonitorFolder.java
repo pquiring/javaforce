@@ -1,7 +1,6 @@
 package javaforce.io;
 
 import javaforce.api.*;
-import javaforce.jni.*;
 import javaforce.ffm.*;
 
 /** Monitor Folder for changes.

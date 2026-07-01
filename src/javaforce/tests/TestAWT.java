@@ -3,7 +3,6 @@ package javaforce.tests;
 import java.awt.*;
 
 import javaforce.*;
-import javaforce.jni.*;
 import javaforce.awt.*;
 
 /** TestAWT

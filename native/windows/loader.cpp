@@ -633,7 +633,6 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceHandle = RegisterServiceCtrlHandlerEx(service, (LPHANDLER_FUNCTION_EX)ServiceControlEx, NULL);
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
-  registerAllNatives(g_env);
   InvokeMethodVoid(mainclass, "serviceStart", "([Ljava/lang/String;)V", ConvertStringArray(g_env, argc, argv));
   g_jvm->DestroyJavaVM();
 }

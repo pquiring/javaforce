@@ -1,16 +1,15 @@
 package javaforce;
 
+import java.io.*;
+
+import javaforce.api.*;
+
 /** Console Output.
  *
  * Alternative to System.out which has issues in Graal.
  *
  * @author pquiring
  */
-
-import java.io.*;
-
-import javaforce.api.*;
-import javaforce.jni.*;
 
 public class ConsoleOutput extends OutputStream {
   private int low = -1;

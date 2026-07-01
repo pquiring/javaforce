@@ -6,7 +6,6 @@ import javaforce.*;
 import javaforce.api.*;
 import javaforce.codec.speex.*;
 import javaforce.voip.*;
-import javaforce.jni.*;
 import javaforce.ffm.*;
 
 /**

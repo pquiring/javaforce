@@ -17,7 +17,6 @@ import java.lang.management.ManagementFactory;
 import com.sun.management.OperatingSystemMXBean;
 
 import javaforce.ffm.*;
-import javaforce.jni.*;
 
 /**
  * A collection of useful static methods.
