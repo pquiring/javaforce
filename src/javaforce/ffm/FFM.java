@@ -674,6 +674,22 @@ public class FFM {
     }
   }
 
+  /** Get Native JF Version */
+  public String getVersion() {
+    if (debug) JFLog.log("FFM.getVersion");
+    MethodHandle setup = FFM.getFunctionPtr("_get_javaforce_version", FFM.getFunctionDesciptor(ADDRESS));
+
+    String version = null;
+
+    try {
+      MemorySegment seg = (MemorySegment)setup.invokeExact();
+      version = seg.reinterpret(1024).getString(0);
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
+    return version;
+  }
+
   /** Setup JNI methods in JFHeap */
   private static void setupJFHeap() {
     if (debug) JFLog.log("FFM.setupJNI");

@@ -53,3 +53,11 @@ static JNINativeMethod javaforce_ffm_JFHeap[] = {
 };
 
 #include "register-jfheap.cpp"
+
+const char* get_javaforce_version() {
+  return JF_ABI_VERSION;
+}
+
+extern "C" {
+  JNIEXPORT const char* (*_get_javaforce_version)() = &get_javaforce_version;
+}
