@@ -101,7 +101,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }//GEN-LAST:event_closeActionPerformed
 
   private void runItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_runItemStateChanged
-    jbusServer.invoke("org.jflinux.jfdesktop." + System.getenv("JID"), "setWelcome", run.isSelected());
+    jbusServer.invoke(SystemBusNames.desktop + "." + System.getenv("JID"), "setWelcome", run.isSelected());
   }//GEN-LAST:event_runItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

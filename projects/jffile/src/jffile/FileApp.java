@@ -511,7 +511,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     String path = placesPath.get(idx);
     if (!path.startsWith("/media/")) return;
     JFLog.log("umount: " + path);
-    jbusClient.invoke("org.jflinux.jfsystemmgr", "umount", path);
+    jbusClient.invoke(SystemBusNames.system, "umount", path);
   }//GEN-LAST:event_unmountActionPerformed
 
   private void showHiddenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showHiddenActionPerformed

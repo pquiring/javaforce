@@ -1,6 +1,5 @@
 /**
  * jfLinux Startup
- *  - includes org.jflinux.jfsystemmgr
  *
  * Created : Mar 31, 2012
  *

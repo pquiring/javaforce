@@ -77,7 +77,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JFAWT.centerWindow(this);
       //connect to JBus
       if (jbusServer == null) {
-        jbusServer = new JBusServer("org.jflinux.jflogon", new JBusMethods());
+        jbusServer = new JBusServer(SystemBusNames.logon, new JBusMethods());
         jbusServer.connect();
       }
       getWAPList();
@@ -532,11 +532,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void getWAPList() {
-    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getWAPList");
+    String list = (String)jbusServer.invoke(SystemBusNames.network, "getWAPList");
   }
 
   private void getVPNList() {
-    String list = (String)jbusServer.invoke("org.jflinux.jfnetworkmgr", "getVPNList");
+    String list = (String)jbusServer.invoke(SystemBusNames.network, "getVPNList");
   }
 
   private static class WAP {
@@ -674,7 +674,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
-    jbusServer.invoke("org.jflinux.jfnetworkmgr", cancelNetworkMethod);
+    jbusServer.invoke(SystemBusNames.network, cancelNetworkMethod);
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -684,7 +684,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void disconnectVPN(String name) {
-    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectVPN", name);
+    jbusServer.invoke(SystemBusNames.network, "disconnectVPN", name);
   }
 
   private void connectVPN(String name) {
@@ -692,12 +692,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectVPN", name);
+      jbusServer.invoke(SystemBusNames.network, "connectVPN", name);
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusServer.invoke("org.jflinux.jfnetworkmgr", "disconnectWAP" , ssid);
+    jbusServer.invoke(SystemBusNames.network, "disconnectWAP" , ssid);
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -711,7 +711,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusServer.invoke("org.jflinux.jfnetworkmgr", "connectWAP", dev, ssid, encType, key);
+      jbusServer.invoke(SystemBusNames.network, "connectWAP", dev, ssid, encType, key);
     }
   }
 

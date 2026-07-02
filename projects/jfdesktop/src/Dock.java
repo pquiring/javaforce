@@ -80,8 +80,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       addMouseListener(ClockPopup);
       addMouseListener(TaskbarPopup);
       //connect to JBus
-      JFLog.log("jbusClient:package=org.jflinux.jfdesktop." + System.getenv("JID"));
-      jbusServer = new JBusServer("javaforce.jflinux.jfdesktop." + System.getenv("JID"), new JBusMethods());
+      JFLog.log("jbusClient:package=" + SystemBusNames.desktop + "." + System.getenv("JID"));
+      jbusServer = new JBusServer(SystemBusNames.desktop + "." + System.getenv("JID"), new JBusMethods());
       jbusServer.connect();
       if (new File("/usr/sbin/hciconfig").exists()) {
         checkBluetooth();

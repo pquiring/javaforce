@@ -348,8 +348,8 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     isMain = true;
     JBusClient jbusClient = new JBusClient(new JBusMethods());
     jbusClient.connect();
-    JFLog.log("mount:calling:" + "org.jflinux.jfdesktop." + System.getenv("JID"));
-    jbusClient.invoke("javaforce.jflinux.jfdesktop." + System.getenv("JID"), "mount", uri, target, pass, link);
+    JFLog.log("mount:calling:" + SystemBusNames.desktop + "." + System.getenv("JID"));
+    jbusClient.invoke(SystemBusNames.desktop + "." + System.getenv("JID"), "mount", uri, target, pass, link);
   }
 
   private void setState(boolean state) {

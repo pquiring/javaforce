@@ -1415,7 +1415,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
       setSelectedTransparent(true);
       dragicon = false;
       repaint();
-      bus.invoke("org.jflinux.jfdesktop." + System.getenv("JID"), "show", null);
+      bus.invoke(SystemBusNames.desktop + "." + System.getenv("JID"), "show", null);
 /*      if (dragOverlay != null) {
         panel.remove(dragOverlay);
         dragOverlay = null;
@@ -1442,7 +1442,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         setSelectedTransparent(true);
         dragicon = false;
         repaint();
-        bus.invoke("org.jflinux.jfdesktop." + System.getenv("JID"), "show", null);
+        bus.invoke(SystemBusNames.desktop + "." + System.getenv("JID"), "show", null);
 /*        if (dragOverlay != null) {
           panel.remove(dragOverlay);
           dragOverlay = null;

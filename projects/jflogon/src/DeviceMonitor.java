@@ -6,7 +6,7 @@
 
 import javaforce.*;
 import javaforce.linux.*;
-import javaforce.utils.*;
+import javaforce.bus.*;
 
 public class DeviceMonitor extends Thread implements ShellProcessListener {
   private StringBuilder output = new StringBuilder();;
@@ -52,13 +52,13 @@ public class DeviceMonitor extends Thread implements ShellProcessListener {
       output.delete(0, idx+1);
       if (msg.endsWith("(drm)")) {
         //TODO : broadcast
-        Startup.jbusServer.invoke("org.jflinux.jfdesktop.", "videoChanged", "udev");
+        Startup.jbusServer.invoke(SystemBusNames.desktop, "videoChanged", "udev");
         //TODO : broadcast
-        Startup.jbusServer.invoke("org.jflinux.jfconfig.", "videoChanged", "udev");
+        Startup.jbusServer.invoke(SystemBusNames.config, "videoChanged", "udev");
       }
       if (msg.endsWith("(power_supply)")) {
         //TODO : broadcast
-        Startup.jbusServer.invoke("org.jflinux.jfdesktop.", "powerChanged");
+        Startup.jbusServer.invoke(SystemBusNames.desktop, "powerChanged");
       }
       if (msg.endsWith("(block)")) {
         //could be an audio cd-rom inserted
