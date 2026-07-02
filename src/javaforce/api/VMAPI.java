@@ -1,6 +1,7 @@
 package javaforce.api;
 
 import javaforce.ffm.*;
+import javaforce.linux.*;
 
 /** VM native API
  *
@@ -9,6 +10,7 @@ import javaforce.ffm.*;
 
 public interface VMAPI {
   public static VMAPI getInstance() {
+    Linux.getInstance();  //load linux libs
     return VMFFM.getInstance();
   }
 

@@ -1,6 +1,6 @@
 package javaforce.api;
 
-import javaforce.ffm.*;
+import javaforce.linux.*;
 
 /** Linux OS specific API.
  *
@@ -10,7 +10,7 @@ import javaforce.ffm.*;
 public interface LinuxAPI {
 
   public static LinuxAPI getInstance() {
-    return LinuxFFM.getInstance();
+    return Linux.getInstance();
   }
 
   //init

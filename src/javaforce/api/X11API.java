@@ -13,6 +13,7 @@ import javaforce.ffm.*;
 public interface X11API {
 
   public static X11API getInstance() {
+    Linux.getInstance();  //load linux libs
     return X11FFM.getInstance();
   }
 
