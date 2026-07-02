@@ -32,9 +32,17 @@ jboolean authUser(const char* user, const char* pass, const char* backend)
   conv.conv = &pam_callback;
   conv.appdata_ptr = NULL;
 
+  if (_pam_start == NULL) {
+    printf("authUser:libpam not loaded!\n");
+    return JNI_FALSE;
+  }
   int res = (*_pam_start)(backend, pam_user, &conv, &handle);
   if (res != 0) {
     printf("pam_start() failed:%d:%d\n", res, errno);
+    return JNI_FALSE;
+  }
+  if (_pam_authenticate == NULL) {
+    printf("authUser:libpam not loaded!\n");
     return JNI_FALSE;
   }
   res = (*_pam_authenticate)(handle, PAM_SILENT);
