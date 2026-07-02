@@ -335,14 +335,14 @@ bool JavaThread(void *ignore) {
 #ifdef _JF_SERVICE
   if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
     //request service shutdown
-    return InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceRequestStop", "()V", NULL);
+    return InvokeMethodVoid("javaforce/linux/Linux", "lnxServiceRequestStop", "()V", NULL);
   }
   if (g_argc == 2 && (strcmp(g_argv[1], "--reload") == 0)) {
     //request service reload config
-    return InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceRequestReload", "()V", NULL);
+    return InvokeMethodVoid("javaforce/linux/Linux", "lnxServiceRequestReload", "()V", NULL);
   }
   //setup service shutdown
-  InvokeMethodVoid("javaforce/jni/LnxNative", "lnxServiceInit", "()V", NULL);
+  InvokeMethodVoid("javaforce/linux/Linux", "lnxServiceInit", "()V", NULL);
 #endif
 
   char **argv = g_argv;
