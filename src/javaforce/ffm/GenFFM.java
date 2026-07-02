@@ -227,6 +227,8 @@ public class GenFFM {
           } else {
             if (isPrimitiveType(java_type)) {
               ValueLayout_type = "JAVA_" + java_type.toUpperCase();
+            } else if (java_type.equals("Window")) {
+              ValueLayout_type = "JAVA_LONG";
             } else {
               ValueLayout_type = "ADDRESS";
             }

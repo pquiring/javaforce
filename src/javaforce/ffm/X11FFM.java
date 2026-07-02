@@ -94,7 +94,7 @@ public class X11FFM implements X11API {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    x11_get_id = ffm.getFunctionPtr("_x11_get_id", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    x11_get_id = ffm.getFunctionPtr("_x11_get_id", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));
     x11_set_desktop = ffm.getFunctionPtr("_x11_set_desktop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     x11_set_dock = ffm.getFunctionPtr("_x11_set_dock", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     x11_set_strut = ffm.getFunctionPtr("_x11_set_strut", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
