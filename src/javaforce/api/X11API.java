@@ -13,7 +13,7 @@ import javaforce.ffm.*;
 public interface X11API {
 
   public static X11API getInstance() {
-    return null; //X11FFM.getInstance();
+    return X11FFM.getInstance();
   }
 
   public long x11_get_id(Window w);
