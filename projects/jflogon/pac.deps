@@ -5,8 +5,7 @@ labwc
 xorg-server
 xorg-xrandr
 xorg-xset
-null
-systemd-networkd
+plymouth
 systemd-resolved
 gvfs
 bluez
