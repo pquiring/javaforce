@@ -32,7 +32,7 @@ public class CIP implements SubPacket {
   public short sub_cmd_len;  //size of following {} in bytes
   //{
     public byte sub_cmd;
-    public byte data_words;  //size of segments in 16bit words (multiple segments)
+    public byte sub_count;  //size of segments in 16bit words (multiple segments)
     public TagSegment[] segments;
   //}
   public byte route_size = 0x01;  //size of following {} in 16bit words
@@ -49,6 +49,8 @@ public class CIP implements SubPacket {
   public long clock;  //unix epoch (ms) * 1000 (=us)
   //}
 
+  public static final byte CMD_GET_ADDR_ALL = 0x01;
+  public static final byte CMD_GET_ADDR_SINGLE = 0x06;
   public static final byte CMD_UNCONNECTED_SEND = 0x52;
 
   public CIP() {}
@@ -146,8 +148,10 @@ public class CIP implements SubPacket {
   //CMD_TAGS : sub_cmd
   public static final byte SUB_CMD_READTAG = 0x4c;
   public static final byte SUB_CMD_WRITETAG = 0x4d;
+  public static final byte SUB_CMD_GET_ATTR_ALL = 0x01;
   public static final byte SUB_CMD_GET_ATTR = 0x03;
   public static final byte SUB_CMD_SET_ATTR = 0x04;
+  public static final byte SUB_CMD_GET_ATTR_ONE = 0x0e;
 
   public int getSize() {
     if ((cmd & 0x80) == 0x80) {
@@ -158,9 +162,10 @@ public class CIP implements SubPacket {
       }
       return 0;
     }
-    int size = 12;
+    int size = 6;  //header
     switch (cmd) {
       case CMD_UNCONNECTED_SEND:
+        size += 6;  //header
         switch (sub_cmd) {
           case SUB_CMD_READTAG:
           case SUB_CMD_WRITETAG:
@@ -174,13 +179,15 @@ public class CIP implements SubPacket {
             }
             break;
           case SUB_CMD_GET_ATTR:
-            size += 4;
-            break;
+          case SUB_CMD_GET_ATTR_ALL:
+          case SUB_CMD_GET_ATTR_ONE:
+            size += 10;
+            return size;
           case SUB_CMD_SET_ATTR:
             size += 12;
-            break;
+            return size;
         }
-        size += 4;
+        size += 4;  //route path
         return size;
     }
     return 0;
@@ -202,8 +209,9 @@ public class CIP implements SubPacket {
         packet.writeByte(ticktime);
         packet.writeByte(ticktimeout);
         packet.writeShort(sub_cmd_len);
+        //embedded CIP packet follows
         packet.writeByte(sub_cmd);
-        packet.writeByte(data_words);
+        packet.writeByte(sub_count);
         switch (sub_cmd) {
           case SUB_CMD_READTAG:
           case SUB_CMD_WRITETAG:
@@ -217,9 +225,17 @@ public class CIP implements SubPacket {
             }
             break;
           case SUB_CMD_GET_ATTR:
+          case SUB_CMD_GET_ATTR_ALL:
+          case SUB_CMD_GET_ATTR_ONE:
+            packet.writeByte((byte)0x20);  //path_1
+            packet.writeByte((byte)0x8b);  //class_1 (WallClockTime)
+            packet.writeByte((byte)0x24);  //path_2
+            packet.writeByte((byte)0x01);  //class_2 (Instance 1)
+            packet.writeByte((byte)0x30);  //path_3
+            packet.writeByte((byte)0x01);  //class_3 (LocalDateTime)
             packet.writeShort(attr_count);
             packet.writeShort(attr_clock);
-            break;
+            return;
           case SUB_CMD_SET_ATTR:
             packet.writeShort(attr_count);
             packet.writeShort(attr_clock);
@@ -290,12 +306,10 @@ public class CIP implements SubPacket {
   }
 
   public void setReadClock() {
-    class_1 = (byte)0x8b;
     setLengths();
   }
 
   public void setWriteClock() {
-    class_1 = (byte)0x8b;
     setLengths();
   }
 
@@ -309,21 +323,24 @@ public class CIP implements SubPacket {
             size += segments[a].size();
           }
         }
-        data_words = (byte)((size) >> 1);
+        sub_count = (byte)((size) >> 1);
         if (data != null) {
           size += data.length;
         }
+        size += 2;
         break;
       case SUB_CMD_GET_ATTR:
-        size = 4;
-        data_words = 0;
+      case SUB_CMD_GET_ATTR_ALL:
+      case SUB_CMD_GET_ATTR_ONE:
+        size = 12;
+        sub_count = 3;
         break;
       case SUB_CMD_SET_ATTR:
-        size = 4 + 8;
-        data_words = 0;
+        size = 12;
+        sub_count = 3;
         break;
     }
-    sub_cmd_len = (short)(2 + size);
+    sub_cmd_len = (short)size;
   }
 
   public void read(Packet packet) throws Exception {

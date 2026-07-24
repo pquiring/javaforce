@@ -58,7 +58,7 @@ public class ABPacket {
   public static byte[] makeReadClockPacket(ENIPContext context) {
     Packet packet = new Packet(Endian.L);
     ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
-    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_GET_ATTR);
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_GET_ATTR_ALL);
     cip.setReadClock();
     ip.setSizes(cip.getSize());
     try {
