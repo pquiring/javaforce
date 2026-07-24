@@ -49,9 +49,21 @@ public class CIP implements SubPacket {
   public long clock;  //unix epoch (ms) * 1000 (=us)
   //}
 
+  public static final byte DEVICE_PLC = 0x0e;
+
   public static final byte CMD_GET_ADDR_ALL = 0x01;
   public static final byte CMD_GET_ADDR_SINGLE = 0x06;
   public static final byte CMD_UNCONNECTED_SEND = 0x52;
+
+  public static final byte PATH_CLASS = 0x20;
+  public static final byte PATH_INSTANCE = 0x24;
+  public static final byte PATH_ATTRIBUTE = 0x30;
+
+  public static final byte CLS_IDENTITY = 0x01;
+  public static final byte CLS_ASSEMBLY = 0x04;
+  public static final byte CLS_CONNECTION = 0x05;
+  public static final byte CLS_CONNECTION_MANAGER = 0x06;
+  public static final byte CLS_WALLCLOCK = (byte)0x8b;
 
   public CIP() {}
 

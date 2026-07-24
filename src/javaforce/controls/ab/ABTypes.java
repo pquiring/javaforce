@@ -17,6 +17,8 @@ public class ABTypes {
   public static final byte LWORD = (byte)0xc9;  //long
   public static final byte REAL = (byte)0xca;  //float
   public static final byte LREAL = (byte)0xcb;  //double
+  public static final byte BYTE = (byte)0xd1;  //8bit boolean array
+  public static final byte WORD = (byte)0xd2;  //16bit boolean array
   public static final byte DWORD = (byte)0xd3;  //32bit boolean array
   public static final byte STRING = (byte)0xda;
 }
