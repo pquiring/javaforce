@@ -370,16 +370,18 @@ public class CIP implements SubPacket {
   }
 
   private void set_sub_cmd_len() {
-    short size = 0;
+    short size = 2;  //sub_cmd, sub_count
     switch (sub_cmd) {
       case SUB_CMD_READTAG:
       case SUB_CMD_WRITETAG:
+        int sub_size = 0;
         if (segments != null) {
           for(int a=0;a<segments.length;a++) {
-            size += segments[a].size();
+            sub_size += segments[a].size();
           }
         }
-        sub_count = (byte)((size) >> 1);
+        sub_count = (byte)((sub_size) >> 1);
+        size += sub_size;
         if (data != null) {
           size += data.length;
         }
@@ -401,7 +403,6 @@ public class CIP implements SubPacket {
         sub_count = 3;
         break;
     }
-    size += 2;  //sub_cmd, sub_count
     sub_cmd_len = size;
   }
 
