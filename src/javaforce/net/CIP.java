@@ -142,7 +142,7 @@ public class CIP implements SubPacket {
     public byte[] chars;
     public int size() {
       int len = 2 + chars.length;
-      if (len % 2 != 0) len++;
+      if ((len % 2) != 0) len++;  //padding
       return len;
     }
     public void writeSegment(Packet packet) throws Exception {
@@ -150,6 +150,9 @@ public class CIP implements SubPacket {
       packet.writeByte(len);
       for(int a=0;a<chars.length;a++) {
         packet.writeByte(chars[a]);
+      }
+      if ((chars.length % 2) != 0) {
+        packet.writeByte((byte)0x00);  //padding
       }
     }
   }
