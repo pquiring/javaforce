@@ -4,17 +4,19 @@ import javaforce.controls.ab.*;
 
 /** CIP : Common Industrial Protocol
  *
+ * See https://github.com/wireshark/wireshark/blob/master/epan/dissectors/packet-cip.h
+ *
  * @author pquiring
  */
 
 public class CIP implements SubPacket {
   //CIP header
-  public byte cmd = 0;  //0x80=reply 0x7f=cmd
-  public byte count = 2;
-  public byte path_1 = 0x20;  //8bit class segment
-  public byte class_1 = 0x06;  //connection manager
-  public byte path_2 = 0x24;  //8bit instance segment
-  public byte class_2 = 0x01;  //instance
+  public byte cmd;  //0x80=reply 0x7f=cmd
+  public byte count;
+  public byte path_1;
+  public byte class_1;
+  public byte path_2;
+  public byte class_2;
 
   //reply data
   public byte reserved1;
@@ -27,8 +29,8 @@ public class CIP implements SubPacket {
 
   //CMD_TAGS {
   //connection manager header
-  public byte ticktime = 0x07;
-  public byte ticktimeout = (byte)0xf9;
+  public byte ticktime;
+  public byte ticktimeout;
   public short sub_cmd_len;  //size of following {} in bytes
   //{
     public byte sub_cmd;
@@ -55,25 +57,69 @@ public class CIP implements SubPacket {
   public static final byte CMD_GET_ADDR_SINGLE = 0x06;
   public static final byte CMD_UNCONNECTED_SEND = 0x52;
 
-  public static final byte PATH_CLASS = 0x20;
-  public static final byte PATH_INSTANCE = 0x24;
-  public static final byte PATH_ATTRIBUTE = 0x30;
+  //sub_cmd (service code)
+  public static final byte SUB_CMD_GET_ATTR_ALL = 0x01;
+  public static final byte SUB_CMD_SET_ATTR_ALL = 0x02;
+  public static final byte SUB_CMD_GET_ATTR_LIST = 0x03;
+  public static final byte SUB_CMD_SET_ATTR_LIST = 0x04;
+  public static final byte SUB_CMD_MULTI = 0x0a;
+  public static final byte SUB_CMD_GET_ATTR_ONE = 0x0e;
+  public static final byte SUB_CMD_SET_ATTR_ONE = 0x10;
+  public static final byte SUB_CMD_READTAG = 0x4c;
+  public static final byte SUB_CMD_WRITETAG = 0x4d;
+  public static final byte SUB_CMD_READFRAG = 0x52;
+  public static final byte SUB_CMD_WRITEFRAG = 0x53;
+  public static final byte SUB_CMD_LIST_TAGS = 0x55;
+
+  public static final byte PATH_SEGMENT_TYPE_MASK = (byte)0xe0;
+  public static final byte PATH_PORT = 0x00;
+  public static final byte PATH_LOGICAL = 0x20;
+  public static final byte PATH_NETWORK = 0x40;
+  public static final byte PATH_SYM = 0x60;
+  public static final byte PATH_DATA = (byte)0x80;
+
+  public static final byte PATH_LOGICAL_CLASS = 0x20;
+  public static final byte PATH_LOGICAL_INSTANCE = 0x24;
+  public static final byte PATH_LOGICAL_INSTANCE_16 = 0x25;
+  public static final byte PATH_LOGICAL_MEMBER = 0x28;
+  public static final byte PATH_LOGICAL_CONNPOINT = 0x2c;
+  public static final byte PATH_LOGICAL_ATTRIBUTE = 0x30;
 
   public static final byte CLS_IDENTITY = 0x01;
   public static final byte CLS_ASSEMBLY = 0x04;
   public static final byte CLS_CONNECTION = 0x05;
   public static final byte CLS_CONNECTION_MANAGER = 0x06;
+  public static final byte CLS_TAG_INFO = 0x6b;
   public static final byte CLS_WALLCLOCK = (byte)0x8b;
 
-  public CIP() {}
+  public static final byte ATTR_TAG_NAME = 0x01;
+  public static final byte ATTR_TAG_TYPE = 0x02;
+  public static final byte ATTR_TAG_BASE_SIZE = 0x07;
+  public static final byte ATTR_TAG_ARRAY_DIMS = 0x08;  //3x32bit
+
+  public CIP() {
+    init();
+  }
 
   public CIP(byte _cmd, byte _sub_cmd) {
+    init();
     cmd = _cmd;
     sub_cmd = _sub_cmd;
     switch (cmd) {
       case CMD_UNCONNECTED_SEND:
         break;
     }
+  }
+
+  private void init() {
+    count = 2;
+    path_1 = PATH_LOGICAL_CLASS;
+    class_1 = CLS_CONNECTION_MANAGER;
+    path_2 = PATH_LOGICAL_INSTANCE;
+    class_2 = 0x01;
+
+    ticktime = 0x07;
+    ticktimeout = (byte)0xf9;
   }
 
   private static abstract class TagSegment {
@@ -157,14 +203,6 @@ public class CIP implements SubPacket {
     }
   }
 
-  //CMD_TAGS : sub_cmd
-  public static final byte SUB_CMD_READTAG = 0x4c;
-  public static final byte SUB_CMD_WRITETAG = 0x4d;
-  public static final byte SUB_CMD_GET_ATTR_ALL = 0x01;
-  public static final byte SUB_CMD_GET_ATTR = 0x03;
-  public static final byte SUB_CMD_SET_ATTR = 0x04;
-  public static final byte SUB_CMD_GET_ATTR_ONE = 0x0e;
-
   public int getSize() {
     if ((cmd & 0x80) == 0x80) {
       //reply
@@ -190,14 +228,14 @@ public class CIP implements SubPacket {
               size += data.length;
             }
             break;
-          case SUB_CMD_GET_ATTR:
           case SUB_CMD_GET_ATTR_ALL:
           case SUB_CMD_GET_ATTR_ONE:
-            size += 10;
-            return size;
-          case SUB_CMD_SET_ATTR:
+            size += 6;
+            break;
+          case SUB_CMD_SET_ATTR_ALL:
+          case SUB_CMD_SET_ATTR_ONE:
             size += 12;
-            return size;
+            break;
         }
         size += 4;  //route path
         return size;
@@ -236,19 +274,25 @@ public class CIP implements SubPacket {
               packet.write(data);
             }
             break;
-          case SUB_CMD_GET_ATTR:
           case SUB_CMD_GET_ATTR_ALL:
           case SUB_CMD_GET_ATTR_ONE:
-            packet.writeByte((byte)0x20);  //path_1
-            packet.writeByte((byte)0x8b);  //class_1 (WallClockTime)
-            packet.writeByte((byte)0x24);  //path_2
-            packet.writeByte((byte)0x01);  //class_2 (Instance 1)
-            packet.writeByte((byte)0x30);  //path_3
-            packet.writeByte((byte)0x01);  //class_3 (LocalDateTime)
-            packet.writeShort(attr_count);
-            packet.writeShort(attr_clock);
-            return;
-          case SUB_CMD_SET_ATTR:
+          case SUB_CMD_GET_ATTR_LIST:
+            packet.writeByte(PATH_LOGICAL_CLASS);  //path_1
+            packet.writeByte(CLS_WALLCLOCK);  //class_1
+            packet.writeByte(PATH_LOGICAL_INSTANCE_16);  //path_2
+            packet.writeByte((byte)0x00);  //padding
+            packet.writeShort((short)0x00);  //instance
+//            packet.writeByte((byte)0x01);  //class_2
+//            packet.writeByte((byte)0x01);  //class_2
+//            packet.writeByte(PATH_ATTRIBUTE);  //path_3
+//            packet.writeByte((byte)0x01);  //All Attributes
+//            packet.writeShort(attr_count);
+//            packet.writeShort(attr_clock);
+//            packet.writeByte((byte)0x01);  //ALL attributes
+            break;
+          case SUB_CMD_SET_ATTR_ALL:
+          case SUB_CMD_SET_ATTR_ONE:
+          case SUB_CMD_SET_ATTR_LIST:
             packet.writeShort(attr_count);
             packet.writeShort(attr_clock);
             packet.writeLong(clock);
@@ -303,7 +347,7 @@ public class CIP implements SubPacket {
   public void setRead(String tag) {
     decodeTag(tag);
     data = new byte[] {0x01, 0x00};  //count
-    setLengths();
+    set_sub_cmd_len();
   }
 
   public void setWrite(String tag, byte type, byte[] data) {
@@ -314,19 +358,19 @@ public class CIP implements SubPacket {
     this.data[2] = 1;
     this.data[3] = 0;
     System.arraycopy(data, 0, this.data, 4, data.length);
-    setLengths();
+    set_sub_cmd_len();
   }
 
   public void setReadClock() {
-    setLengths();
+    set_sub_cmd_len();
   }
 
   public void setWriteClock() {
-    setLengths();
+    set_sub_cmd_len();
   }
 
-  private void setLengths() {
-    int size = 0;
+  private void set_sub_cmd_len() {
+    short size = 0;
     switch (sub_cmd) {
       case SUB_CMD_READTAG:
       case SUB_CMD_WRITETAG:
@@ -339,20 +383,26 @@ public class CIP implements SubPacket {
         if (data != null) {
           size += data.length;
         }
-        size += 2;
         break;
-      case SUB_CMD_GET_ATTR:
       case SUB_CMD_GET_ATTR_ALL:
-      case SUB_CMD_GET_ATTR_ONE:
-        size = 12;
+        size += 6;
         sub_count = 3;
         break;
-      case SUB_CMD_SET_ATTR:
-        size = 12;
+      case SUB_CMD_GET_ATTR_ONE:
+        size += 6;
+        sub_count = 3;
+        break;
+      case SUB_CMD_SET_ATTR_ALL:
+        size += 12;
+        sub_count = 2;
+        break;
+      case SUB_CMD_SET_ATTR_ONE:
+        size += 12;
         sub_count = 3;
         break;
     }
-    sub_cmd_len = (short)size;
+    size += 2;  //sub_cmd, sub_count
+    sub_cmd_len = size;
   }
 
   public void read(Packet packet) throws Exception {
@@ -366,11 +416,11 @@ public class CIP implements SubPacket {
         readReplyWriteTag(packet);
         break;
       }
-      case CIP.SUB_CMD_GET_ATTR: {
+      case CIP.SUB_CMD_GET_ATTR_ALL: {
         readReplyGetAttrs(packet);
         break;
       }
-      case CIP.SUB_CMD_SET_ATTR: {
+      case CIP.SUB_CMD_SET_ATTR_ALL: {
         readReplySetAttrs(packet);
         break;
       }

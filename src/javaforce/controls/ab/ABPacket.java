@@ -28,7 +28,7 @@ import javaforce.net.*;
 public class ABPacket {
   public static byte[] makeConnectPacket(ENIPContext context) {
     Packet packet = new Packet(Endian.L);
-    ENIP ip = new ENIP(ENIP.CMD_GET_SESSION);
+    ENIP ip = new ENIP(ENIP.CMD_REG_SESSION);
     ip.setSizes(0);
     try {
       ip.write(packet, context);
@@ -41,7 +41,7 @@ public class ABPacket {
 
   public static byte[] makeReadPacket(String tag, ENIPContext context) {
     Packet packet = new Packet(Endian.L);
-    ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
+    ENIP ip = new ENIP(ENIP.CMD_UNCONNECTED_SEND);
     CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_READTAG);
     cip.setRead(tag);
     ip.setSizes(cip.getSize());
@@ -57,7 +57,7 @@ public class ABPacket {
 
   public static byte[] makeReadClockPacket(ENIPContext context) {
     Packet packet = new Packet(Endian.L);
-    ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
+    ENIP ip = new ENIP(ENIP.CMD_UNCONNECTED_SEND);
     CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_GET_ATTR_ALL);
     cip.setReadClock();
     ip.setSizes(cip.getSize());
@@ -73,7 +73,7 @@ public class ABPacket {
 
   public static byte[] makeWritePacket(String tag, byte type, byte[] data, ENIPContext context) {
     Packet packet = new Packet(Endian.L);
-    ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
+    ENIP ip = new ENIP(ENIP.CMD_UNCONNECTED_SEND);
     CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_WRITETAG);
     cip.setWrite(tag, type, data);
     ip.setSizes(cip.getSize());
@@ -89,8 +89,8 @@ public class ABPacket {
 
   public static byte[] makeWriteClockPacket(Calendar dt, ENIPContext context) {
     Packet packet = new Packet(Endian.L);
-    ENIP ip = new ENIP(ENIP.CMD_SEND_UNIT_DATA);
-    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_SET_ATTR);
+    ENIP ip = new ENIP(ENIP.CMD_CONNECTED_SEND);
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_SET_ATTR_ALL);
     cip.clock = dt.getTimeInMillis() * 1000L;
     cip.setWriteClock();
     ip.setSizes(cip.getSize());
@@ -109,7 +109,7 @@ public class ABPacket {
     ENIP ip = new ENIP();
     try {
       ip.read(packet);
-      if (ip.cmd == ENIP.CMD_GET_SESSION) return new byte[0];
+      if (ip.cmd == ENIP.CMD_REG_SESSION) return new byte[0];
       CIP cip = new CIP();
       cip.read(packet);
       switch (cip.cmd & 0x7f) {
@@ -119,10 +119,10 @@ public class ABPacket {
         case CIP.SUB_CMD_WRITETAG: {
           return new byte[0];
         }
-        case CIP.SUB_CMD_GET_ATTR: {
+        case CIP.SUB_CMD_GET_ATTR_ALL: {
           return cip.attrs[0];
         }
-        case CIP.SUB_CMD_SET_ATTR: {
+        case CIP.SUB_CMD_SET_ATTR_ALL: {
           return new byte[0];
         }
         default: {
