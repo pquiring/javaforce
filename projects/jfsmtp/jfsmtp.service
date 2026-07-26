@@ -3,8 +3,8 @@ Description=JavaForce SMTP Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfsmtpsvc
-ExecStop=/usr/bin/jfsmtpsvc --stop
+ExecStart=/usr/bin/jfsmtp
+ExecStop=/usr/bin/jfsmtp --stop
 Restart=always
 
 [Install]

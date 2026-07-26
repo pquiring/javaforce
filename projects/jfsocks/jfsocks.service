@@ -3,8 +3,8 @@ Description=JavaForce Socks Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfsockssvc
-ExecStop=/usr/bin/jfsockssvc --stop
+ExecStart=/usr/bin/jfsocks
+ExecStop=/usr/bin/jfsocks --stop
 Restart=always
 
 [Install]

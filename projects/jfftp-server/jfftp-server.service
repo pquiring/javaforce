@@ -3,8 +3,8 @@ Description=JavaForce FTP Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfftpsvc
-ExecStop=/usr/bin/jfftpsvc --stop
+ExecStart=/usr/bin/jfftp
+ExecStop=/usr/bin/jfftp --stop
 Restart=always
 
 [Install]
