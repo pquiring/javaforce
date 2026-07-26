@@ -19,7 +19,7 @@ import javaforce.bus.*;
  * @author pquiring
  */
 
-public class SMTPServer {
+public class SMTPServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfsmtp";
 
   public static boolean debug = false;
@@ -27,6 +27,10 @@ public class SMTPServer {
   public interface Events {
     public void message(SMTPServer server, String msgfile);
   }
+
+  public String getAppName() {return "SMTP";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtp.cfg";
@@ -688,6 +692,9 @@ public class SMTPServer {
       } else {
         return false;
       }
+    }
+    public String getLogFile() {
+      return SMTPServer.getLogFile();
     }
   }
 }
