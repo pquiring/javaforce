@@ -21,7 +21,7 @@ import javaforce.bus.*;
  * @author pquiring
  */
 
-public class SSHServer {
+public class SSHServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfssh";
 
   public static boolean debug = false;
@@ -42,6 +42,10 @@ public class SSHServer {
   private boolean enable_shell = true;
   private boolean enable_sftp = true;
   private boolean enable_scp = true;
+
+  public String getAppName() {return "SSH";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfssh.cfg";
@@ -295,6 +299,9 @@ public class SSHServer {
       ssh = new SSHServer();
       ssh.start();
       return true;
+    }
+    public String getLogFile() {
+      return SSHServer.getLogFile();
     }
   }
 }
