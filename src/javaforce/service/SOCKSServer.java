@@ -19,10 +19,14 @@ import javaforce.bus.*;
  * @author pquiring
  */
 
-public class SOCKSServer {
+public class SOCKSServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfsocks";
 
   public static boolean debug = false;
+
+  public String getAppName() {return "SOCKS";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsocks.cfg";
@@ -1134,6 +1138,9 @@ public class SOCKSServer {
       } else {
         return false;
       }
+    }
+    public String getLogFile() {
+      return SOCKSServer.getLogFile();
     }
   }
 }
