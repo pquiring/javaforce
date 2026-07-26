@@ -24,7 +24,6 @@
           <fire:FirewallException Id="FirewallRule8883" Name="jfMQTTServer8883" Protocol="tcp" Port="8883" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jfmqttviewer.exe" Source="jfmqttviewer.exe" />
-        <File Id="jfmqttconfig.exe" Source="jfmqttconfig.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfMQTTServer" DisplayName="jfMQTTServer" Description="jf MQTT Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfMQTTServer" Wait="yes" />
