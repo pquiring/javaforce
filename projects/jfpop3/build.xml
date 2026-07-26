@@ -1,21 +1,20 @@
-<project name="jfpop3" default="jar" basedir=".">
-  <description>pop3</description>
+<project name="jfpop3" basedir=".">
   <!-- set global properties for this build -->
   <property name="app" value="jfpop3"/>
-  <property name="home" location="../.."/>
-  <property name="version" value="0.1"/>
-  <property name="jre" location="${home}/jre_base_desktop"/>
+  <property name="apptype" value="service"/>
+  <property name="home" value="../.."/>
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-javaforce" description="jar">
+  <target name="depjars" depends="depnatives">
   </target>
 
-  <target name="jar" depends="depjars" description="jar">
+  <target name="compile" depends="depjars" description="compile the source">
   </target>
 
-  <!-- sudo ant install -->
-  <target name="install" description="install files">
-    <copy file="${app}.service" todir="/lib/systemd/system"/>
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
+  <target name="install" description="install files for linux">
   </target>
 </project>

@@ -19,11 +19,10 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{223FF75A-CD8A-47A0-A957-68D9D0127C8A}" Bitness="always64">
-        <File Id="jfpop3svc.exe" Source="jfpop3svc.exe" KeyPath="yes">
+        <File Id="jfpop3.exe" Source="jfpop3.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule110" Name="jfPOP3Server" Protocol="tcp" Port="110" Scope="any" IgnoreFailure="yes" Profile="all" />
           <fire:FirewallException Id="FirewallRule995" Name="jfPOP3Server" Protocol="tcp" Port="995" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
-        <File Id="jfpop3.exe" Source="jfpop3.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfPOP3Server" DisplayName="jfPOP3Server" Description="jf POP3 Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfPOP3Server" Wait="yes" />
@@ -44,7 +43,6 @@
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
-      <ComponentRef Id="ApplicationShortcut" />
       <ComponentGroupRef Id="JRE" />
     </Feature>
 
