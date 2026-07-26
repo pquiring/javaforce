@@ -14,12 +14,16 @@ import static javaforce.MQTT.*;
  * @author pquiring
  */
 
-public class MQTTServer {
+public class MQTTServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfmqtt";
 
   private static MQTTServer service;
   private static JBusServer busServer;
   private ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
+
+  public String getAppName() {return "MQTT";}
+
+  public String getBusName() {return serviceBus;}
 
   public static void serviceStart(String[] args) {
     service = new MQTTServer();
@@ -964,6 +968,9 @@ public class MQTTServer {
       } else {
         return false;
       }
+    }
+    public String getLogFile() {
+      return MQTTServer.getLogFile();
     }
   }
 }
