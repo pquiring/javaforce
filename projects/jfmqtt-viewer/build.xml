@@ -1,8 +1,10 @@
-<project name="jfmqttviewer" basedir=".">
+<project name="jfmqtt-viewer" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jfmqttviewer"/>
+  <property name="app" value="jfmqtt-viewer"/>
   <property name="apptype" value="window"/>
   <property name="home" value="../.."/>
+  <property name="version" value="0.13"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
 
   <import file="${home}/base.xml"/>
 
