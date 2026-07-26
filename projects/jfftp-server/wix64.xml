@@ -22,7 +22,6 @@
         <File Id="jfftpserver.exe" Source="jfftp-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule21" Name="jfFTPServer" Protocol="tcp" Port="21" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
-        <File Id="jfftpconfig.exe" Source="jfftp-config.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfFTPServer" DisplayName="jfFTPServer" Description="jf FTP Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfFTPServer" Wait="yes" />

@@ -1,5 +1,4 @@
 /usr/bin/jfftp-server
-/usr/bin/jfftp-config
 /usr/share/applications/jfftp-config.desktop
 /usr/share/icons/hicolor/48x48/apps/jfftp-config.png
 /lib/systemd/system/jfftp-server.service
