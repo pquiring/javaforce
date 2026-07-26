@@ -1,4 +1,5 @@
 <project name="jfmqtt-viewer" basedir=".">
+  <description>MQTT Viewer</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfmqtt-viewer"/>
   <property name="apptype" value="window"/>
