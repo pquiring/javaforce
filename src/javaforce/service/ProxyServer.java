@@ -16,9 +16,13 @@ import javaforce.bus.*;
  *
  */
 
-public class ProxyServer {
+public class ProxyServer extends ConfigServlet {
 
   public final static String serviceBus = "javaforce.jfproxy";
+
+  public String getAppName() {return "Proxy";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfproxy.cfg";
@@ -991,6 +995,9 @@ public class ProxyServer {
       proxy = new ProxyServer();
       proxy.start();
       return true;
+    }
+    public String getLogFile() {
+      return ProxyServer.getLogFile();
     }
   }
 
