@@ -26,10 +26,14 @@ import javaforce.bus.*;
  * @author peter.quiring
  */
 
-public class JFPrintServer {
+public class JFPrintServer extends ConfigServlet {
   private static final int web_port = 33202;
 
   public final static String serviceBus = "javaforce.jfprint";
+
+  public String getAppName() {return "Print";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfprint.cfg";
@@ -280,6 +284,9 @@ public class JFPrintServer {
       service = new JFPrintServer();
       service.start();
       return true;
+    }
+    public String getLogFile() {
+      return JFPrintServer.getLogFile();
     }
   }
 
