@@ -17,7 +17,7 @@ import javaforce.bus.*;
  * @author pquiring
  */
 
-public class SMTPRelayServer {
+public class SMTPRelayServer extends ConfigServlet {
 
   private Server server;
   private String pop3_host;
@@ -43,6 +43,10 @@ public class SMTPRelayServer {
   private static boolean debug = false;
 
   public final static String serviceBus = "javaforce.jfsmtprelay";
+
+  public String getAppName() {return "SMTPRelay";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtprelay.cfg";
@@ -368,6 +372,9 @@ public class SMTPRelayServer {
       service = new SMTPRelayServer();
       service.start();
       return true;
+    }
+    public String getLogFile() {
+      return SMTPRelayServer.getLogFile();
     }
   }
 }
