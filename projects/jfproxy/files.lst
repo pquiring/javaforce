@@ -1,5 +1,2 @@
 /usr/bin/jfproxy
-/usr/bin/jfproxysvc
 /lib/systemd/system/jfproxy.service
-
-

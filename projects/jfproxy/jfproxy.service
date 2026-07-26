@@ -3,8 +3,8 @@ Description=JavaForce Proxy Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfproxysvc
-ExecStop=/usr/bin/jfproxysvc --stop
+ExecStart=/usr/bin/jfproxy
+ExecStop=/usr/bin/jfproxy --stop
 Restart=always
 
 [Install]

@@ -31,12 +31,6 @@
     <!-- Step 2b: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <StandardDirectory Id="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut" Guid="{CD9CC532-A506-45FD-835E-E947471B8A00}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTPServer" Description="FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftp-server.exe" WorkingDirectory="APPLICATIONROOTDIRECTORY" />
-<!-- Use the following if you want Shortcut in its own folder -->
-<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfFTP" Name="installed" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
     </StandardDirectory>
 
     <!-- Step 3: Tell WiX to install the files -->
