@@ -38,6 +38,7 @@ public class VNC extends javax.swing.JFrame implements MouseListener, MouseMotio
     this.pass = pass;
     this.fast = true;
     setTitle("VNC : " + host);
+    setIconImage(JFImage.loadIcon16("javaforce").getImage());
     new Connect().start();
   }
 

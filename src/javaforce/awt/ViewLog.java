@@ -24,6 +24,7 @@ public class ViewLog extends javax.swing.JDialog {
   public ViewLog(File file) {
     super((javax.swing.JFrame)null, true);
     initComponents();
+    setIconImage(JFImage.loadIcon16("javaforce").getImage());
     init();
     this.file = file;
     load(file);

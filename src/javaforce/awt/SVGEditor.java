@@ -20,6 +20,7 @@ public class SVGEditor extends javax.swing.JFrame {
    */
   public SVGEditor() {
     initComponents();
+    setIconImage(JFImage.loadIcon16("javaforce").getImage());
     svg.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(java.awt.event.KeyEvent evt) {
         keyPressedEvent(evt);

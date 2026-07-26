@@ -21,6 +21,7 @@ public class ViewJFLog extends javax.swing.JDialog {
   public ViewJFLog() {
     super((javax.swing.JFrame)null, true);
     initComponents();
+    setIconImage(JFImage.loadIcon16("javaforce").getImage());
     init();
   }
 

@@ -18,6 +18,7 @@ public class MQTTViewer extends javax.swing.JFrame implements MQTTEvents {
     initComponents();
     initSecureWebKeys();
     setState(true);
+    setIconImage(JFImage.loadIcon16("javaforce").getImage());
     keepalive = new KeepAlive();
     keepalive.start();
     if (args.length > 0) {
