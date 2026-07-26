@@ -1,5 +1,6 @@
 package javaforce.net;
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -166,6 +167,20 @@ public class Packet {
     }
   }
 
+  public void writeInt24(int value) throws Exception {
+    if (offset + 4 > data.length) throw new Exception("Buffer overflow");
+    if (endian == Endian.B) {
+      BE.setuint32(data, offset, value);
+      System.arraycopy(data, offset + 1, data, offset, 3);
+    } else {
+      LE.setuint32(data, offset, value);
+    }
+    offset += 3;
+    if (offset > length) {
+      length = offset;
+    }
+  }
+
   public void writeLong(long value) throws Exception {
     if (offset + 8 > data.length) throw new Exception("Buffer overflow");
     if (endian == Endian.B)
@@ -201,6 +216,16 @@ public class Packet {
       return data;
     }
     return Arrays.copyOf(data, length);
+  }
+
+  public void toFile(String filename) {
+    try {
+      FileOutputStream fos = new FileOutputStream(filename);
+      fos.write(data, 0, length);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public String toString() {

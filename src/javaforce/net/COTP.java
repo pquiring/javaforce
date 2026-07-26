@@ -8,7 +8,7 @@ package javaforce.net;
 public class COTP implements SubPacket {
   public byte length;
   public byte PDU_type;
-  public byte[] pdata;
+  public byte[] pdata;  //convert to Packet
 
   private short src_ref;
 
@@ -28,7 +28,10 @@ public class COTP implements SubPacket {
     return length + 1;
   }
   public int getDataSize() {
-    return -1;
+    if (pdata != null) {
+      return pdata.length;
+    }
+    return 0;
   }
   public void write(Packet packet) throws Exception {
     packet.writeByte(length);
