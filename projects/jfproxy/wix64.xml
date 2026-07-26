@@ -11,11 +11,17 @@
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfproxyserver" />
     </StandardDirectory>
+
     <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <Directory Id="ApplicationProgramsFolder" Name="jfProxyServer"/> -->
     </StandardDirectory>
 
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="APPLICATIONDATADIRECTORY_JAVAFORCE" Name="JavaForce">
+        <Directory Id="APPLICATIONDATADIRECTORY_JFADMIN" Name="admin" />
+      </Directory>
+    </StandardDirectory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
@@ -34,9 +40,16 @@
     <StandardDirectory Id="ProgramMenuFolder">
     </StandardDirectory>
 
+    <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
+      <Component Id="adminfiles" Guid="{80034CA3-6299-4E0D-A948-62CCF9BF232A}">
+        <File Id="jfproxy.cfg" Source="jfproxy.cfg" />
+      </Component>
+    </DirectoryRef>
+
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
+      <ComponentRef Id="adminfiles" />
       <ComponentGroupRef Id="JRE" />
     </Feature>
 

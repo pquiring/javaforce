@@ -3,6 +3,7 @@
   <property name="app" value="jfproxy"/>
   <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
+  <property name="version" value="0.9"/>
   <property name="jre" location="${home}/jre_base"/>
 
   <import file="${home}/base.xml"/>
@@ -17,5 +18,7 @@
   </target>
 
   <target name="install" description="install files for linux">
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
+    <copy file="${app}.cfg" todir="/etc/javaforce/admin"/>
   </target>
 </project>
