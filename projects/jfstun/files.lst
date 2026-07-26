@@ -1,4 +1,2 @@
 /usr/bin/jfstun
-/usr/bin/jfstunsvc
 /lib/systemd/system/jfstun.service
-

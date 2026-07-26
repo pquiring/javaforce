@@ -3,8 +3,8 @@ Description=JavaForce STUN Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfstunsvc
-ExecStop=/usr/bin/jfstunsvc --stop
+ExecStart=/usr/bin/jfstun
+ExecStop=/usr/bin/jfstun --stop
 Restart=always
 
 [Install]
