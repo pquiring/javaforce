@@ -29,10 +29,14 @@ import javaforce.bus.*;
  *  - limit one channel per client ip/port
  */
 
-public class STUNServer {
+public class STUNServer extends ConfigServlet {
   private static int defaultLifeTime = 600;
 
   public final static String serviceBus = "javaforce.jfstun";
+
+  public String getAppName() {return "STUN";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfstun.cfg";
@@ -849,6 +853,9 @@ public class STUNServer {
       stun = new STUNServer();
       stun.start();
       return true;
+    }
+    public String getLogFile() {
+      return STUNServer.getLogFile();
     }
   }
 
