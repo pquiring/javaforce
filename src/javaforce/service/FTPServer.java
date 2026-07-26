@@ -16,12 +16,16 @@ import javaforce.net.*;
  * @author pquiring
  */
 
-public class FTPServer {
+public class FTPServer extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfftp";
 
   public static boolean debug = false;
 
   private static final int bufsiz = (1500 - 20 - 20);  //ethernet=1500 ip=20 tcp=20
+
+  public String getAppName() {return "FTP";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfftp.cfg";
@@ -1007,6 +1011,9 @@ public class FTPServer {
       } else {
         return false;
       }
+    }
+    public String getLogFile() {
+      return FTPServer.getLogFile();
     }
   }
 }
