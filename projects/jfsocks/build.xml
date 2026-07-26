@@ -1,7 +1,8 @@
-<project name="jfsocks-config" default="jar" basedir=".">
-  <description>SOCKS Server Config Tool</description>
+<project name="jfsocks-service" default="jar" basedir=".">
+  <description>SOCKS Server</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfsocks"/>
+  <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.17"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
@@ -17,12 +18,5 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
-  </target>
-
-  <target name="clean" description="deletes compiled files">
-    <delete>
-      <fileset dir="." includes="**/*.class"/>
-      <fileset dir="." includes="**/*.jar"/>
-    </delete>
   </target>
 </project>
