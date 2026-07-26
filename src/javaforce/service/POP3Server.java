@@ -20,10 +20,14 @@ import javaforce.bus.*;
  * @author pquiring
  */
 
-public class POP3Server {
+public class POP3Server extends ConfigServlet {
   public final static String serviceBus = "javaforce.jfpop3";
 
   public static boolean debug = false;
+
+  public String getAppName() {return "POP3";}
+
+  public String getBusName() {return serviceBus;}
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfpop3.cfg";
@@ -813,6 +817,9 @@ public class POP3Server {
       } else {
         return false;
       }
+    }
+    public String getLogFile() {
+      return POP3Server.getLogFile();
     }
   }
 }
