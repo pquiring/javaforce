@@ -1,23 +1,23 @@
-<project name="jfssh" default="jar" basedir=".">
-  <description>ssh</description>
+<project name="jfssh" basedir=".">
   <!-- set global properties for this build -->
   <property name="app" value="jfssh"/>
-  <property name="home" location="../.."/>
+  <property name="apptype" value="service"/>
+  <property name="home" value="../.."/>
   <property name="version" value="0.3"/>
-  <property name="jre" location="${home}/jre_base_desktop"/>
+  <property name="jre" location="${home}/jre_base"/>
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-javaforce,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-log4j-core,jar-log4j-api,jar-slf4j-api" description="jar">
+  <target name="depjars" depends="depnatives">
   </target>
 
-  <target name="jar" depends="depjars" description="jar">
+  <target name="compile" depends="depjars" description="compile the source">
   </target>
 
-  <!-- sudo ant install -->
-  <target name="install" description="install files">
-    <copy file="${app}.desktop" todir="/usr/share/applications"/>
-    <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
+  <target name="install" description="install files for linux">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 </project>
