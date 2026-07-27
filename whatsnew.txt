@@ -1,5 +1,14 @@
 What's new...
 
+Jul 27/2026 : JF/115.0
+  - fix : DBus : improved dict, struct and variant support
+  - new : Linux : added Wifi to control Wifi using wpa-supplicant over DBus
+  - new : Linux : added Bluetooth to control Bluetooth devices using bluez over DBus (WIP)
+  - jfRemote/0.11
+    - upgraded to FreeRDP/3.30 (floatbar fixed)
+  - fix : Controller : AB PLC : getTime() setTime() now working
+    - thanks to support from libplctag
+
 Jul 10/2026 : JF/114.0
   - fix : WinPipes
   - jfDVR/0.45
