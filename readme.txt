@@ -173,6 +173,13 @@ You can enable debug support by adding DEBUG=true and DEBUG_PORT=9010 to the pro
 From VisualVM you can connect to the JMX as localhost:9010 if it does not appear automatically.
 Also try adding -Xlog:gc*:gc.log to the OPTIONS= in the project .cfg file.  Then while the app is running use 'tail -f gc.log' from a terminal to watch memory usage.
 
+WIP
+---
+The following components are WIP and not working yet:
+  - Wayland components
+  - Bluetooth
+  - RDP
+
 Requirements
 ------------
   - JDK 25+
