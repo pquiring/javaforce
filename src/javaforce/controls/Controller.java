@@ -785,7 +785,7 @@ public class Controller {
           } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
           byte[] clock = ABPacket.decodePacket(reply);
           Calendar dt = Calendar.getInstance();
-          dt.setTimeInMillis(LE.getuint64(clock, 0));
+          dt.setTimeInMillis(LE.getuint64(clock, 0) / 1000L);
           return dt;
         } catch (Exception e) {
           JFLog.log(e);

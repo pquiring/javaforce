@@ -58,7 +58,7 @@ public class ABPacket {
   public static byte[] makeReadClockPacket(ENIPContext context) {
     Packet packet = new Packet(Endian.L);
     ENIP ip = new ENIP(ENIP.CMD_UNCONNECTED_SEND);
-    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_GET_ATTR_ALL);
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_GET_ATTR_LIST);
     cip.setReadClock();
     ip.setSizes(cip.getSize());
     try {
@@ -90,9 +90,8 @@ public class ABPacket {
   public static byte[] makeWriteClockPacket(Calendar dt, ENIPContext context) {
     Packet packet = new Packet(Endian.L);
     ENIP ip = new ENIP(ENIP.CMD_CONNECTED_SEND);
-    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_SET_ATTR_ALL);
-    cip.clock = dt.getTimeInMillis() * 1000L;
-    cip.setWriteClock();
+    CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_SET_ATTR_LIST);
+    cip.setWriteClock(dt.getTimeInMillis() * 1000L);
     ip.setSizes(cip.getSize());
     try {
       ip.write(packet, context);
@@ -119,11 +118,15 @@ public class ABPacket {
         case CIP.SUB_CMD_WRITETAG: {
           return new byte[0];
         }
+        case CIP.SUB_CMD_GET_ATTR_ONE:
+        case CIP.SUB_CMD_GET_ATTR_LIST:
         case CIP.SUB_CMD_GET_ATTR_ALL: {
-          return cip.attrs[0];
+          return cip.attr_values[0];
         }
+        case CIP.SUB_CMD_SET_ATTR_ONE:
+        case CIP.SUB_CMD_SET_ATTR_LIST:
         case CIP.SUB_CMD_SET_ATTR_ALL: {
-          return new byte[0];
+          return cip.attrs_success;
         }
         default: {
           JFLog.log("ABPacket:Unknown CIP cmd:0x" + Integer.toHexString(cip.cmd & 0xff));

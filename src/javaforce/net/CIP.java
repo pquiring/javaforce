@@ -1,5 +1,6 @@
 package javaforce.net;
 
+import javaforce.*;
 import javaforce.controls.ab.*;
 
 /** CIP : Common Industrial Protocol
@@ -25,7 +26,9 @@ public class CIP implements SubPacket {
   public byte type = 0;  //ABTypes
   public byte reserved;
   public byte[] data;  //tag data
-  public byte[][] attrs;
+  public short[] attrs;
+  public byte[] attrs_success;
+  public byte[][] attr_values;
 
   //CMD_TAGS {
   //connection manager header
@@ -43,12 +46,6 @@ public class CIP implements SubPacket {
     public byte route_seg = 0x01;
     public byte route_addr = 0x00;
   //  }
-  //}
-
-  //CMD_*_ATTRS {
-  public short attr_count = 1;
-  public short attr_clock = 6;  //clock (timestamp)
-  public long clock;  //unix epoch (ms) * 1000 (=us)
   //}
 
   public static final byte DEVICE_PLC = 0x0e;
@@ -96,6 +93,8 @@ public class CIP implements SubPacket {
   public static final byte ATTR_TAG_TYPE = 0x02;
   public static final byte ATTR_TAG_BASE_SIZE = 0x07;
   public static final byte ATTR_TAG_ARRAY_DIMS = 0x08;  //3x32bit
+
+  public static final byte ATTR_WALLCLOCK_EPOCH = 0x0b;  //us since Jan 1, 1970
 
   public CIP() {
     init();
@@ -233,11 +232,24 @@ public class CIP implements SubPacket {
             break;
           case SUB_CMD_GET_ATTR_ALL:
           case SUB_CMD_GET_ATTR_ONE:
+          case SUB_CMD_GET_ATTR_LIST:
             size += 6;
+            if (attrs != null) {
+              size += 2;  //count
+              size += attrs.length * 2;
+            }
             break;
           case SUB_CMD_SET_ATTR_ALL:
           case SUB_CMD_SET_ATTR_ONE:
-            size += 12;
+          case SUB_CMD_SET_ATTR_LIST:
+            size += 6;
+            if (attrs != null) {
+              size += 2;  //count
+              size += attrs.length * 2;
+            }
+            if (attr_values != null) {
+              size += attr_values.length * 8;
+            }
             break;
         }
         size += 4;  //route path
@@ -247,7 +259,7 @@ public class CIP implements SubPacket {
   }
 
   public int getDataSize() {
-    return -1;
+    return 0;
   }
 
   public void write(Packet packet) throws Exception {
@@ -265,6 +277,10 @@ public class CIP implements SubPacket {
         //embedded CIP packet follows
         packet.writeByte(sub_cmd);
         packet.writeByte(sub_count);
+        boolean write_route = true;
+        boolean write_attrs = false;
+        boolean write_attrs_count = false;
+        boolean write_attr_values = false;
         switch (sub_cmd) {
           case SUB_CMD_READTAG:
           case SUB_CMD_WRITETAG:
@@ -277,34 +293,48 @@ public class CIP implements SubPacket {
               packet.write(data);
             }
             break;
-          case SUB_CMD_GET_ATTR_ALL:
-          case SUB_CMD_GET_ATTR_ONE:
           case SUB_CMD_GET_ATTR_LIST:
+            write_attrs_count = true;
+          case SUB_CMD_GET_ATTR_ONE:
+            write_attrs = true;
+          case SUB_CMD_GET_ATTR_ALL:
             packet.writeByte(PATH_LOGICAL_CLASS);  //path_1
             packet.writeByte(CLS_WALLCLOCK);  //class_1
             packet.writeByte(PATH_LOGICAL_INSTANCE_16);  //path_2
             packet.writeByte((byte)0x00);  //padding
-            packet.writeShort((short)0x00);  //instance
-//            packet.writeByte((byte)0x01);  //class_2
-//            packet.writeByte((byte)0x01);  //class_2
-//            packet.writeByte(PATH_ATTRIBUTE);  //path_3
-//            packet.writeByte((byte)0x01);  //All Attributes
-//            packet.writeShort(attr_count);
-//            packet.writeShort(attr_clock);
-//            packet.writeByte((byte)0x01);  //ALL attributes
+            packet.writeShort((short)0x01);  //instance
             break;
-          case SUB_CMD_SET_ATTR_ALL:
-          case SUB_CMD_SET_ATTR_ONE:
           case SUB_CMD_SET_ATTR_LIST:
-            packet.writeShort(attr_count);
-            packet.writeShort(attr_clock);
-            packet.writeLong(clock);
+            write_attrs_count = true;
+          case SUB_CMD_SET_ATTR_ONE:
+            write_attrs = true;
+          case SUB_CMD_SET_ATTR_ALL:
+            write_attr_values = true;
+            packet.writeByte(PATH_LOGICAL_CLASS);  //path_1
+            packet.writeByte(CLS_WALLCLOCK);  //class_1
+            packet.writeByte(PATH_LOGICAL_INSTANCE_16);  //path_2
+            packet.writeByte((byte)0x00);  //padding
+            packet.writeShort((short)0x01);  //instance
             break;
         }
-        packet.writeByte(route_size);
-        packet.writeByte(route_res);
-        packet.writeByte(route_seg);
-        packet.writeByte(route_addr);
+        if (write_attrs && attrs != null) {
+          int cnt = attrs.length;
+          if (write_attrs_count) {
+            packet.writeShort((short)cnt);
+          }
+          for(int i=0;i<cnt;i++) {
+            packet.writeShort(attrs[i]);
+            if (write_attr_values && attr_values != null) {
+              packet.write(attr_values[i]);
+            }
+          }
+        }
+        if (write_route) {
+          packet.writeByte(route_size);
+          packet.writeByte(route_res);
+          packet.writeByte(route_seg);
+          packet.writeByte(route_addr);
+        }
         break;
     }
   }
@@ -365,10 +395,14 @@ public class CIP implements SubPacket {
   }
 
   public void setReadClock() {
+    attrs = new short[] {ATTR_WALLCLOCK_EPOCH};
     set_sub_cmd_len();
   }
 
-  public void setWriteClock() {
+  public void setWriteClock(long epoch) {
+    attrs = new short[] {ATTR_WALLCLOCK_EPOCH};
+    attr_values = new byte[1][8];
+    LE.setuint64(attr_values[0], 0, epoch);
     set_sub_cmd_len();
   }
 
@@ -394,15 +428,23 @@ public class CIP implements SubPacket {
         sub_count = 3;
         break;
       case SUB_CMD_GET_ATTR_ONE:
-        size += 6;
+        size += 6 + 2;
+        sub_count = 3;
+        break;
+      case SUB_CMD_GET_ATTR_LIST:
+        size += 6 + 2 + (attrs.length * 2);
         sub_count = 3;
         break;
       case SUB_CMD_SET_ATTR_ALL:
-        size += 12;
-        sub_count = 2;
+        size += 6 + 2 + (attrs.length * 2) + (attr_values.length * 8);
+        sub_count = 3;
         break;
       case SUB_CMD_SET_ATTR_ONE:
-        size += 12;
+        size += 6 + 2 + (attrs.length * 2);
+        sub_count = 3;
+        break;
+      case SUB_CMD_SET_ATTR_LIST:
+        size += 6 + 2 + (attrs.length * 2) + (attr_values.length * 8);
         sub_count = 3;
         break;
     }
@@ -420,16 +462,32 @@ public class CIP implements SubPacket {
         readReplyWriteTag(packet);
         break;
       }
+      case CIP.SUB_CMD_GET_ATTR_ONE: {
+        readReplyGetAttrs(packet, false);
+        break;
+      }
+      case CIP.SUB_CMD_GET_ATTR_LIST: {
+        readReplyGetAttrs(packet, true);
+        break;
+      }
       case CIP.SUB_CMD_GET_ATTR_ALL: {
-        readReplyGetAttrs(packet);
+        readReplyGetAttrs(packet, false);
+        break;
+      }
+      case CIP.SUB_CMD_SET_ATTR_ONE: {
+        readReplySetAttrs(packet, false);
+        break;
+      }
+      case CIP.SUB_CMD_SET_ATTR_LIST: {
+        readReplySetAttrs(packet, true);
         break;
       }
       case CIP.SUB_CMD_SET_ATTR_ALL: {
-        readReplySetAttrs(packet);
+        readReplySetAttrs(packet, true);
         break;
       }
       default:
-        throw new Exception("CIP:Unknown cmd:0x" + Integer.toHexString(cmd & 0xff));
+        throw new Exception("CIP:Unknown cmd:0x" + Integer.toHexString(cmd & 0x7f));
     }
   }
 
@@ -462,27 +520,37 @@ public class CIP implements SubPacket {
     reserved3 = packet.readByte();
   }
 
-  private void readReplyGetAttrs(Packet packet) throws Exception {
-    count = packet.readByte();
-    path_1 = packet.readByte();
-    class_1 = packet.readByte();
-    path_2 = packet.readByte();
-    class_2 = packet.readByte();
-    short attr_count = (short)packet.readShort();
-    attrs = new byte[attr_count][];
+  private void readReplyGetAttrs(Packet packet, boolean count) throws Exception {
+    reserved1 = packet.readByte();
+    reserved2 = packet.readByte();
+    reserved3 = packet.readByte();
+    short attr_count = 0;
+    if (count) {
+      attr_count = (short)packet.readShort();
+    } else {
+      attr_count = 1;
+    }
+    attrs = new short[attr_count];
+    attrs_success = new byte[attr_count];
+    attr_values = new byte[attr_count][8];
     for(int i=0;i<attr_count;i++) {
-      attrs[i] = new byte[8];
-      packet.read(attrs[i]);
+      attrs[i] = packet.readShort();
+      attrs_success[i] = packet.readByte();
+      packet.readByte();  //padding
+      packet.read(attr_values[i]);
     }
   }
 
-  private void readReplySetAttrs(Packet packet) throws Exception {
-    count = packet.readByte();
-    short attr_count = (short)packet.readShort();
-    attrs = new byte[attr_count][];
+  private void readReplySetAttrs(Packet packet, boolean count) throws Exception {
+    short attr_count = 0;
+    if (count) {
+      attr_count = (short)packet.readShort();
+    } else {
+      attr_count = 1;
+    }
+    attrs_success = new byte[attr_count];
     for(int i=0;i<attr_count;i++) {
-      attrs[i] = new byte[1];
-      attrs[i][0] = packet.readByte();  //0 = success
+      attrs_success[i] = packet.readByte();  //0 = success
       packet.readByte();  //padding ???
     }
   }
