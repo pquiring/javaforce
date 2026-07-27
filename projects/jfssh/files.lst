@@ -1,5 +1,2 @@
 /usr/bin/jfssh
-/usr/bin/jfsshsvc
-/usr/share/applications/jfssh.desktop
-/usr/share/icons/hicolor/48x48/apps/jfssh.png
 /lib/systemd/system/jfssh.service
