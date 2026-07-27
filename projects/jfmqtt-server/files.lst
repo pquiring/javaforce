@@ -1,2 +1,2 @@
 /usr/bin/jfmqtt-server
-/lib/systemd/system/jfmqtt.service
+/lib/systemd/system/jfmqtt-server.service
