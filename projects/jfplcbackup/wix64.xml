@@ -21,6 +21,7 @@
       <Component Id="appfiles" Guid="{00263126-5FB9-413F-809A-F0AB319C3C16}" Bitness="always64">
         <File Id="jfplcbackup.exe" Source="jfplcbackup.exe" KeyPath="yes" />
         <File Id="jfplcrestore.exe" Source="jfplcrestore.exe" />
+        <File Id="jfplcclock.exe" Source="jfplcclock.exe" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <File Id="jfplc.jar" Source="jfplc.jar" />
       </Component>

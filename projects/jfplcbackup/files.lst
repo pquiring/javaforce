@@ -1,4 +1,5 @@
 /usr/bin/jfplcbackup
 /usr/bin/jfplcrestore
+/usr/bin/jfplcclock
 /usr/share/java/jfplc.jar
 
