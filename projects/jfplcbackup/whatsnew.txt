@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+Jul 27, 2026 : v0.3 released
+  - new : added jfplcclock to read/write PLC clock
+
 Nov 4, 2021 : v0.2 released
   - new : improved support for more Allen Bradley tags
     - such as struct elements, arrays, program tags, etc.
