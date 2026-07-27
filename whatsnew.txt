@@ -8,6 +8,7 @@ Jul 27/2026 : JF/115.0
     - upgraded to FreeRDP/3.30 (floatbar fixed)
   - fix : Controller : AB PLC : getTime() setTime() now working
     - thanks to support from libplctag
+  - remainging services were converted to WebUIServlets for jfAdmin
 
 Jul 10/2026 : JF/114.0
   - fix : WinPipes
