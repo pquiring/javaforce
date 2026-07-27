@@ -89,7 +89,7 @@ public class ABPacket {
 
   public static byte[] makeWriteClockPacket(Calendar dt, ENIPContext context) {
     Packet packet = new Packet(Endian.L);
-    ENIP ip = new ENIP(ENIP.CMD_CONNECTED_SEND);
+    ENIP ip = new ENIP(ENIP.CMD_UNCONNECTED_SEND);
     CIP cip = new CIP(CIP.CMD_UNCONNECTED_SEND, CIP.SUB_CMD_SET_ATTR_LIST);
     cip.setWriteClock(dt.getTimeInMillis() * 1000L);
     ip.setSizes(cip.getSize());
