@@ -671,7 +671,7 @@ public class DBus implements IPC {
   }
 
   /** Subscribe to a signal from another client.
-   * @rule = dbus rule (command separated list of key/value pairs)
+   * @param rule = dbus rule (command separated list of key/value pairs)
    *   type='signal'
    *   sender='javaforce.originator'
    *   path='/javaforce/originator'
