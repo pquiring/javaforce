@@ -3,8 +3,8 @@ Description=JavaForce MQTT Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfmqtt
-ExecStop=/usr/bin/jfmqtt --stop
+ExecStart=/usr/bin/jfmqtt-server
+ExecStop=/usr/bin/jfmqtt-server --stop
 Restart=always
 
 [Install]
