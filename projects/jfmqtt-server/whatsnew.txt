@@ -1,3 +1,6 @@
+2026-07-28 : 0.14 released
+  - fix : version bump for server/viewer split
+
 2026-06-10 : 0.13 released
   - fix : version bump for JF changes
 
