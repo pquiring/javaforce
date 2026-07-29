@@ -60,8 +60,8 @@ public class CommandApp implements ActionListener {
     }
   }
 
-  public void actionPerformed(ActionEvent e) {
-    Object o = e.getSource();
+  public void actionPerformed(ActionEvent event) {
+    Object o = event.getSource();
     if (o == exit) {
       active = false;
       System.exit(0);
@@ -70,6 +70,15 @@ public class CommandApp implements ActionListener {
       if (o == action.item) {
         execute(action.cmd);
       }
+    }
+    try {
+      File file = new File(filename);
+      if (file.lastModified() > lastConfig) {
+        loadConfig(false);
+        addTrayIcon();
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 
@@ -97,9 +106,7 @@ public class CommandApp implements ActionListener {
       cfg.append("timedate=rundll32.exe shell32.dll,Control_RunDLL timedate.cpl\n");
       cfg.append("regedit=regedit.exe\n");
       cfg.append("taskmgr=taskmgr.exe\n");
-      //NOTE : Does not work : appwiz.cpl, ncpa.cpl
-
-//these do not work and still present the UAC prompt (control.exe inherits rights from explorer.exe shell) (trying to run explorer.exe with admin rights fails)
+//      NOTE : these do not work and still present the UAC prompt (control.exe inherits rights from explorer.exe shell)
 //      cfg.append("appwiz=control.exe appwiz.cpl\n");
 //      cfg.append("ncpa=control.exe ncpa.cpl\n");
       cfg.append("");
@@ -245,8 +252,10 @@ public class CommandApp implements ActionListener {
 
   private void addTrayIcon() {
     try {
-      trayicon = new JFImage();
-      trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfcommand_tray.png"));
+      if (trayicon == null) {
+        trayicon = new JFImage();
+        trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfcommand_tray.png"));
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -263,8 +272,12 @@ public class CommandApp implements ActionListener {
       exit = new JMenuItem("Exit");
       exit.addActionListener(this);
       popup.add(exit);
-      icon = new JTrayIcon(trayicon.getImage(), "Command", popup);
-      SystemTray.getSystemTray().add(icon);
+      if (icon == null) {
+        icon = new JTrayIcon(trayicon.getImage(), "Command", popup);
+        SystemTray.getSystemTray().add(icon);
+      } else {
+        icon.setPopupMenu(popup);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }

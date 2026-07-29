@@ -17,10 +17,13 @@ public class JTrayIcon extends TrayIcon {
 
   private static final boolean debug = false;
 
+  private JPopupMenu menu;
   private int count;
 
-  public JTrayIcon(Image image, String tooltip, JPopupMenu menu) {
+  /** JTrayIcon. */
+  public JTrayIcon(Image image, String tooltip, JPopupMenu popup_menu) {
     super(image, tooltip);
+    this.menu = popup_menu;
     this.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON3) {
@@ -59,6 +62,11 @@ public class JTrayIcon extends TrayIcon {
         }
       });
     }
+  }
+
+  /** Replace JPopupMenu. */
+  public void setPopupMenu(JPopupMenu popup_menu) {
+    this.menu = popup_menu;
   }
 
   private boolean inside(JPopupMenu menu, int x, int y) {
