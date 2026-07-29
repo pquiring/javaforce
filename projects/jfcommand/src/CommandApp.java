@@ -23,7 +23,7 @@ public class CommandApp implements ActionListener {
   private static boolean sudo;
 
   public static void main(String[] args) {
-    JFLog.log("main");
+    JFLog.init(JF.getUserPath() + "/.jfcommand.log", false);
     for(String arg : args) {
       switch (arg) {
         case "--runas1": runas1 = true; break;
@@ -45,6 +45,7 @@ public class CommandApp implements ActionListener {
   }
 
   private void execute(String cmd) {
+    cmd = JF.expandEnv(cmd);
     JFLog.log("execute:" + cmd);
     try {
       if (false) {
@@ -81,7 +82,9 @@ public class CommandApp implements ActionListener {
       cfg.append("#domain={domain}\n");
       cfg.append("#runas={user:pass}\n");
       cfg.append("[actions]\n");
-      cfg.append("command=cmd.exe /c start cmd.exe\n");  //cmd.exe alone runs in current console environment, need to run a second copy to open new console window
+      //cmd.exe and powershell.exe need to be run in a new console
+      cfg.append("command=cmd.exe /c start cmd.exe\n");
+      cfg.append("powershell=cmd.exe /c start %windir%/system32/windowspowershell/v1.0/powershell.exe");
       cfg.append("services=mmc.exe services.msc\n");
       cfg.append("devmgmt=mmc.exe devmgmt.msc\n");
       cfg.append("diskmgmt=mmc.exe diskmgmt.msc\n");
@@ -107,9 +110,11 @@ public class CommandApp implements ActionListener {
       cfg.append("terminal=jfterm\n");
     }
     try {
-      FileOutputStream fos = new FileOutputStream(filename);
+      File file = new File(filename);
+      FileOutputStream fos = new FileOutputStream(file);
       fos.write(cfg.toString().getBytes());
       fos.close();
+      lastConfig = file.lastModified();
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -132,6 +137,7 @@ public class CommandApp implements ActionListener {
         }
         return;
       }
+      lastConfig = file.lastModified();
       FileInputStream fis = new FileInputStream(file);
       String cfg = new String(fis.readAllBytes());
       fis.close();
@@ -268,4 +274,5 @@ public class CommandApp implements ActionListener {
   private JTrayIcon icon;
   private JMenuItem exit;
   private ArrayList<Action> actions;
+  private long lastConfig;
 }

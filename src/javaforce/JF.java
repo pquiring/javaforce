@@ -1565,6 +1565,30 @@ public class JF {
     return list.toArray(new String[list.size()]);
   }
 
+  /** Expand Environment variables in a String.
+   *
+   * Windows : %name%
+   * Linux : $name or ${name}
+   */
+  public static String expandEnv(String in) {
+    Map<String, String> env = System.getenv();
+    if (JF.isWindows()) {
+      for (Map.Entry<String, String> entry : env.entrySet()) {
+        String key = entry.getKey();
+        String value = entry.getValue();
+        in = in.replace("%" + key + "%", value);
+      }
+    } else {
+      for (Map.Entry<String, String> entry : env.entrySet()) {
+        String key = entry.getKey();
+        String value = entry.getValue();
+        in = in.replace("${" + key + "}", value);
+        in = in.replace("$" + key, value);
+      }
+    }
+    return in;
+  }
+
   public static String java_app_home = ".";
 
   public static void setJavaAppHome(String value) {
