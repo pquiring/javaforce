@@ -250,6 +250,7 @@ public class GenFFM {
           }
         }
         ArrayList<String> array_names = new ArrayList<>();
+        ArrayList<String> struct_names = new ArrayList<>();
         for(String pair : pairs) {
           pair = pair.trim();
           if (pair.length() == 0) continue;
@@ -316,6 +317,10 @@ public class GenFFM {
             } else if (java_type.equals("Window")) {
               method.append("FFM.ref_object(" + arg_name + ")");
               object = arg_name;
+            } else if (java_type.startsWith("Vk")) {
+              struct_names.add(arg_name);
+              method.append(arg_name + ".marshall(arena)");
+              arena_needed = true;
             } else {
               method.append(arg_name);
             }
@@ -342,6 +347,9 @@ public class GenFFM {
         for(String arg_name : array_names) {
           String segment_name = "_array_" + arg_name;
           method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
+        }
+        for(String arg_name : struct_names) {
+          method.append(arg_name + ".unmarshall();");
         }
         if (object != null) {
           method.append("FFM.unref_object(" + object + ");");
