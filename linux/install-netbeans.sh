@@ -9,6 +9,7 @@ if [ ! -f /opt/netbeans/bin/netbeans ]; then
 
   #no special folder
 
+  mkdir -p /opt
   cd /opt
 
   wget https://dlcdn.apache.org/netbeans/netbeans/$version/$zip

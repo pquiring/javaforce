@@ -9,6 +9,7 @@ if [ ! -f /opt/ant/bin/ant ]; then
 
   folder=apache-ant-$version
 
+  mkdir -p /opt
   cd /opt
 
   wget https://dlcdn.apache.org/ant/binaries/$zip
