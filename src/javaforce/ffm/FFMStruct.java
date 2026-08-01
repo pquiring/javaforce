@@ -55,11 +55,21 @@ public class FFMStruct {
       String name = jfields[i].getName();
       int flags = 0;
       if (!name.startsWith("ptr_")) flags |= FLAG_INLINE;
-      fields[i] = new FFMField(offset, name, flags);
       int field_size = getFieldSize(jfields[i]);
+      int align_size = getFieldAlignment(jfields[i]);
+      int padding = getPadding(offset, align_size);
+      offset += padding;
+      fields[i] = new FFMField(offset, name, flags);
       offset += field_size;
     }
     size = offset;
+  }
+
+  private int getPadding(int offset, int size) {
+    if (size == 1) return 0;
+    int mod = (offset % size);
+    if (mod == 0) return 0;
+    return size - mod;
   }
 
   private int getFieldSize(Field jfield) {
@@ -110,6 +120,52 @@ public class FFMStruct {
     }
     JFLog.log("FFMStruct:Unknown field type:" + type);
     return 0;
+  }
+
+  private int getFieldAlignment(Field jfield) {
+    String name = jfield.getName();
+    if (name.startsWith("ptr_")) return 8;
+    Class<?> type = jfield.getType();
+    if (type == byte.class) return 1;
+    if (type == short.class) return 2;
+    if (type == int.class) return 4;
+    if (type == long.class) return 8;
+    if (type == float.class) return 4;
+    if (type == double.class) return 8;
+    if (type == byte[].class) return 1;
+    if (type == short[].class) return 2;
+    if (type == int[].class) return 4;
+    if (type == long[].class) return 8;
+    if (type == float[].class) return 4;
+    if (type == double[].class) return 8;
+    if (type.isAssignableFrom(FFMStruct.class)) {
+      FFMStruct substruct = (FFMStruct)getValue(jfield);
+      return substruct.getLargestFieldAlignment();
+    }
+    if (type.isAssignableFrom(FFMStruct[].class)) {
+      FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
+      int max_align = 0;
+      for(FFMStruct substruct : substructs) {
+        int this_align = substruct.getLargestFieldAlignment();
+        if (this_align > max_align) {
+          max_align = this_align;
+        }
+      }
+      return max_align;
+    }
+    JFLog.log("FFMStruct:Unknown field type:" + type);
+    return 0;
+  }
+
+  private int getLargestFieldAlignment() {
+    int max_align = 0;
+    for(FFMField field : fields) {
+      int this_align = getFieldAlignment(getField(field.name));
+      if (this_align > max_align) {
+        max_align = this_align;
+      }
+    }
+    return max_align;
   }
 
   public int getSize() {
