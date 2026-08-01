@@ -2,6 +2,7 @@ package javaforce.ffm;
 
 import java.lang.foreign.*;
 import java.lang.reflect.*;
+import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 
@@ -14,14 +15,18 @@ import javaforce.*;
 
 public class FFMStruct {
 
+  public static final int FLAG_INLINE = 0x0001;
+
   public static class FFMField {
     public int offset;
     public String name;
     public Object value;
     public long ptr;
-    public FFMField(int offset, String name) {
+    public boolean inline;
+    public FFMField(int offset, String name, int flags) {
       this.offset = offset;
       this.name = name;
+      inline = (flags & FLAG_INLINE) == FLAG_INLINE;
     }
     public long pin() {
       if (value == null) return 0;
@@ -38,21 +43,89 @@ public class FFMStruct {
 
   public FFMField[] fields;
 
-  private int endian;
-  private int size;
-  private byte[] struct;
-  private long ptr;
+  private int size = -1;
+  private MemorySegment struct;
 
-  public void setupStruct(int endian, int size, FFMField[] fields) {
-    this.endian = endian;
-    this.size = size;
-    this.fields = fields;
+  private void init() {
+    Field[] jfields = getClass().getDeclaredFields();
+    int cnt = jfields.length;
+    fields = new FFMField[cnt];
+    int offset = 0;
+    for(int i=0;i<cnt;i++) {
+      String name = jfields[i].getName();
+      int flags = 0;
+      if (!name.startsWith("ptr_")) flags |= FLAG_INLINE;
+      fields[i] = new FFMField(offset, name, flags);
+      int field_size = getFieldSize(jfields[i]);
+      offset += field_size;
+    }
+    size = offset;
   }
 
-  public long marshall(Arena arena) {
-    if (fields == null) return 0;
-    struct = alloc();
-    if (struct == null) return 0;
+  private int getFieldSize(Field jfield) {
+    String name = jfield.getName();
+    if (name.startsWith("ptr_")) return 8;
+    Class<?> type = jfield.getType();
+    if (type == byte.class) return 1;
+    if (type == short.class) return 2;
+    if (type == int.class) return 4;
+    if (type == long.class) return 8;
+    if (type == float.class) return 4;
+    if (type == double.class) return 8;
+    if (type == byte[].class) {
+      byte[] array = (byte[])getValue(jfield);
+      return array.length;
+    }
+    if (type == short[].class) {
+      short[] array = (short[])getValue(jfield);
+      return array.length * 2;
+    }
+    if (type == int[].class) {
+      int[] array = (int[])getValue(jfield);
+      return array.length * 4;
+    }
+    if (type == long[].class) {
+      long[] array = (long[])getValue(jfield);
+      return array.length * 8;
+    }
+    if (type == float[].class) {
+      float[] array = (float[])getValue(jfield);
+      return array.length * 4;
+    }
+    if (type == double[].class) {
+      double[] array = (double[])getValue(jfield);
+      return array.length * 8;
+    }
+    if (type.isAssignableFrom(FFMStruct.class)) {
+      FFMStruct substruct = (FFMStruct)getValue(jfield);
+      return substruct.getSize();
+    }
+    if (type.isAssignableFrom(FFMStruct[].class)) {
+      FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
+      int size = 0;
+      for(FFMStruct substruct : substructs) {
+        size += substruct.getSize();
+      }
+      return size;
+    }
+    JFLog.log("FFMStruct:Unknown field type:" + type);
+    return 0;
+  }
+
+  public int getSize() {
+    if (size == -1) {
+      init();
+    }
+    return size;
+  }
+
+  public MemorySegment marshall(Arena arena) {
+    if (size == -1) {
+      init();
+    }
+    if (fields == null) return MemorySegment.NULL;
+    struct = alloc(arena);
+    if (struct == null) return MemorySegment.NULL;
     for(FFMField sfield : fields) {
       if (sfield.name  == null) continue;
       Field jfield = getField(sfield.name);
@@ -61,84 +134,87 @@ public class FFMStruct {
       Object value = getValue(jfield);
       if (value == null) continue;
       if (type == byte.class) {
-        struct[sfield.offset] = (byte)value;
+        struct.set(JAVA_BYTE, sfield.offset, (byte)value);
         continue;
       }
       if (type == short.class) {
-        if (endian == Endian.L)
-          LE.setuint16(struct, sfield.offset, (short)value);
-        else
-          BE.setuint16(struct, sfield.offset, (short)value);
+        struct.set(JAVA_SHORT, sfield.offset, (short)value);
         continue;
       }
       if (type == int.class) {
-        if (endian == Endian.L)
-          LE.setuint32(struct, sfield.offset, (int)value);
-        else
-          BE.setuint32(struct, sfield.offset, (int)value);
+        struct.set(JAVA_INT, sfield.offset, (int)value);
         continue;
       }
       if (type == long.class) {
-        if (endian == Endian.L)
-          LE.setuint64(struct, sfield.offset, (long)value);
-        else
-          BE.setuint64(struct, sfield.offset, (long)value);
+        struct.set(JAVA_LONG, sfield.offset, (long)value);
         continue;
       }
       if (type == float.class) {
-        if (endian == Endian.L)
-          LE.setfloat(struct, sfield.offset, (float)value);
-        else
-          BE.setfloat(struct, sfield.offset, (float)value);
+        struct.set(JAVA_FLOAT, sfield.offset, (float)value);
         continue;
       }
       if (type == double.class) {
-        if (endian == Endian.L)
-          LE.setdouble(struct, sfield.offset, (double)value);
-        else
-          BE.setdouble(struct, sfield.offset, (double)value);
+        struct.set(JAVA_DOUBLE, sfield.offset, (double)value);
         continue;
       }
       if (type == String.class) {
         String str = (String)value;
         sfield.ptr = arena.allocateFrom(str).address();
-
-        if (endian == Endian.L)
-          LE.setuint64(struct, sfield.offset, sfield.ptr);
-        else
-          BE.setuint64(struct, sfield.offset, sfield.ptr);
+        struct.set(JAVA_LONG, sfield.offset, sfield.ptr);
         continue;
       }
       if (type == String[].class) {
         String[] strs = (String[])value;
         sfield.ptr = FFM.toMemory(arena, strs).address();
-
-        if (endian == Endian.L)
-          LE.setuint64(struct, sfield.offset, sfield.ptr);
-        else
-          BE.setuint64(struct, sfield.offset, sfield.ptr);
+        struct.set(JAVA_LONG, sfield.offset, sfield.ptr);
         continue;
       }
       if (isPrimitiveArray(type)) {
-        sfield.value = value;
-        sfield.pin();
-        if (endian == Endian.L)
-          LE.setuint64(struct, sfield.offset, sfield.ptr);
-        else
-          BE.setuint64(struct, sfield.offset, sfield.ptr);
+        if (sfield.inline) {
+          array_copy(value, sfield.offset, type);
+        } else {
+          sfield.value = value;
+          sfield.pin();
+          struct.set(JAVA_LONG, sfield.offset, sfield.ptr);
+        }
         continue;
       }
       if (type.isAssignableFrom(FFMStruct.class)) {
-        FFMStruct substruct = (FFMStruct)value;
-        if (endian == Endian.L)
-          LE.setuint64(struct, sfield.offset, substruct.marshall(arena));
-        else
-          BE.setuint64(struct, sfield.offset, substruct.marshall(arena));
+        if (sfield.inline) {
+          struct_copy(value, sfield.offset, arena);
+        } else {
+          FFMStruct substruct = (FFMStruct)value;
+          sfield.ptr = substruct.marshall(arena).address();
+          struct.set(JAVA_LONG, sfield.offset, sfield.ptr);
+        }
+        continue;
+      }
+      if (type.isAssignableFrom(FFMStruct[].class)) {
+        if (sfield.inline) {
+          FFMStruct[] substructs = (FFMStruct[])value;
+          int cnt = substructs.length;
+          int offset = sfield.offset;
+          for(int i=0;i<cnt;i++) {
+            FFMStruct substruct = substructs[i];
+            struct_copy(substruct, offset, arena);
+            offset += substruct.getSize();
+          }
+        } else {
+          FFMStruct[] substructs = (FFMStruct[])value;
+          int cnt = substructs.length;
+          MemorySegment array = arena.allocate(JAVA_LONG, cnt);
+          for(int i=0;i<cnt;i++) {
+            FFMStruct substruct = substructs[i];
+            long ptr = substruct.marshall(arena).address();
+            array.set(JAVA_LONG, i, ptr);
+          }
+          return array;
+        }
         continue;
       }
       JFLog.log("FFMStruct:Unknown field type:" + sfield);
     }
-    return pin();
+    return struct;
   }
 
   public void unmarshall() {
@@ -149,42 +225,27 @@ public class FFMStruct {
       if (jfield == null) continue;
       Class<?> type = jfield.getType();
       if (type == byte.class) {
-        setValue(jfield, struct[sfield.offset]);
+        setValue(jfield, struct.get(JAVA_BYTE, sfield.offset));
         continue;
       }
       if (type == short.class) {
-        if (endian == Endian.L)
-          setValue(jfield, LE.getuint16(struct, sfield.offset));
-        else
-          setValue(jfield, BE.getuint16(struct, sfield.offset));
+        setValue(jfield, struct.get(JAVA_SHORT, sfield.offset));
         continue;
       }
       if (type == int.class) {
-        if (endian == Endian.L)
-          setValue(jfield, LE.getuint32(struct, sfield.offset));
-        else
-          setValue(jfield, BE.getuint32(struct, sfield.offset));
+        setValue(jfield, struct.get(JAVA_INT, sfield.offset));
         continue;
       }
       if (type == long.class) {
-        if (endian == Endian.L)
-          setValue(jfield, LE.getuint64(struct, sfield.offset));
-        else
-          setValue(jfield, BE.getuint64(struct, sfield.offset));
+        setValue(jfield, struct.get(JAVA_LONG, sfield.offset));
         continue;
       }
       if (type == float.class) {
-        if (endian == Endian.L)
-          setValue(jfield, LE.getfloat(struct, sfield.offset));
-        else
-          setValue(jfield, BE.getfloat(struct, sfield.offset));
+        setValue(jfield, struct.get(JAVA_FLOAT, sfield.offset));
         continue;
       }
       if (type == double.class) {
-        if (endian == Endian.L)
-          setValue(jfield, LE.getdouble(struct, sfield.offset));
-        else
-          setValue(jfield, BE.getdouble(struct, sfield.offset));
+        setValue(jfield, struct.get(JAVA_DOUBLE, sfield.offset));
         continue;
       }
       if (type == String.class) {
@@ -196,21 +257,88 @@ public class FFMStruct {
         continue;
       }
       if (isPrimitiveArray(type)) {
-        sfield.unpin();
+        if (sfield.inline) {
+          //nop
+        } else {
+          sfield.unpin();
+        }
         continue;
       }
       if (type.isAssignableFrom(FFMStruct.class)) {
-        FFMStruct substruct = (FFMStruct)getValue(jfield);
-        if (endian == Endian.L)
-          substruct.ptr = LE.getuint64(struct, sfield.offset);
-        else
-          substruct.ptr = BE.getuint64(struct, sfield.offset);
-        substruct.unmarshall();
+        if (sfield.inline) {
+          //TODO
+        } else {
+          FFMStruct substruct = (FFMStruct)getValue(jfield);
+          substruct.unmarshall();
+        }
         continue;
       }
       JFLog.log("FFMStruct:Unknown field type:" + sfield);
     }
-    unpin();
+  }
+
+  private void array_copy(Object array, int offset, Class<?> type) {
+    //TODO : major optz
+    if (type == byte[].class) {
+      byte[] src = (byte[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        struct.set(JAVA_BYTE, offset++, src[i]);
+      }
+      return;
+    }
+    if (type == short[].class) {
+      short[] src = (short[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        struct.set(JAVA_SHORT, offset, src[i]);
+        offset += 2;
+      }
+      return;
+    }
+    if (type == int[].class) {
+      int[] src = (int[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        struct.set(JAVA_INT, offset, src[i]);
+        offset += 4;
+      }
+      return;
+    }
+    if (type == long[].class) {
+      long[] src = (long[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        struct.set(JAVA_LONG, offset, src[i]);
+        offset += 8;
+      }
+      return;
+    }
+    if (type == float[].class) {
+      float[] src = (float[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        struct.set(JAVA_FLOAT, offset, src[i]);
+        offset += 4;
+      }
+      return;
+    }
+    if (type == double[].class) {
+      double[] src = (double[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        struct.set(JAVA_DOUBLE, offset, src[i]);
+        offset += 8;
+      }
+      return;
+    }
+  }
+
+  private void struct_copy(Object value, int offset, Arena arena) {
+    FFMStruct substruct = (FFMStruct)value;
+    substruct.marshall(arena);
+    //TODO : copy substruct to struct @ offset
+    substruct.unmarshall();
   }
 
   private boolean isPrimitiveArray(Class<?> type) {
@@ -249,20 +377,8 @@ public class FFMStruct {
     }
   }
 
-  private byte[] alloc() {
+  private MemorySegment alloc(Arena arena) {
     if (size == 0) return null;
-    return new byte[size];
-  }
-
-  private long pin() {
-    ptr = JFHeap.pin(struct);
-    return ptr;
-  }
-
-  private void unpin() {
-    if (ptr == 0) return;
-    JFHeap.unpin(struct, ptr, true);
-    struct = null;
-    ptr = 0;
+    return arena.allocate(JAVA_BYTE, size);
   }
 }
