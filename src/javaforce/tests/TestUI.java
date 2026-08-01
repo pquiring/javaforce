@@ -14,7 +14,6 @@ public class TestUI implements WindowEvents {
   public static UIRender render;
   public static Window window;
   public static void main(String[] args) {
-    Window.init();
     render = new UIRender();
     window = new Window();
     window.create(Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "TestUI", 1024, 512, window);

@@ -15,8 +15,16 @@ import static javaforce.gl.GL.*;
  */
 
 public class Window implements UIEvents {
-  public static boolean init() {
+  private static boolean inited;
+  private static boolean init() {
     return UIAPI.getInstance().uiInit();
+  }
+
+  public Window() {
+    if (!inited) {
+      init();
+      inited = true;
+    }
   }
 
   private long ctx;
