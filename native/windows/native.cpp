@@ -20,8 +20,6 @@
 #include "../common/array.h"
 #include "../common/library.h"
 
-HMODULE wgl = NULL;
-
 JF_LIB_HANDLE jawt_dll;
 jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 

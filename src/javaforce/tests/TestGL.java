@@ -6,7 +6,6 @@ import javaforce.*;
 import javaforce.awt.*;
 import javaforce.ui.*;
 import javaforce.gl.*;
-import static javaforce.gl.GL.*;
 
 /** OpenGL Test
  *
@@ -14,35 +13,35 @@ import static javaforce.gl.GL.*;
  */
 
 public class TestGL implements WindowEvents {
-  public static Window gl;
-  public static GLCode code;
+  public static Window window;
+  public static Cube cube;
   public static void main(String args[]) {
-    gl = new Window();
-    gl.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "Test", 512, 512, null);
-    gl.show();
-    gl.setWindowListener(new TestGL());
-    GL.getInstance();  //must call AFTER window is created
-    code = new GLCode(true);
-    code.init();
+    window = new Window();
+    window.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "Test", 512, 512, null);
+    window.show();
+    window.setWindowListener(new TestGL());
+    GL.getInstance();  //must call AFTER window is created to load func ptrs
+    cube = new Cube(true);
+    cube.init();
     while (true) {
-      code.render();
-      gl.pollEvents();
+      cube.render();
+      window.pollEvents();
     }
   }
 
   public static void swap() {
-    gl.swap();
+    window.swap();
   }
 
   public void windowResize(int x, int y) {
-    code.resize(x, y);
+    cube.resize(x, y);
   }
 
   public void windowClosing() {
     System.exit(0);
   }
 
-  public static class GLCode {
+  public static class Cube {
     java.util.Timer glTimer, fpsTimer;
     final Object fpsLock = new Object();
     int fpsCounter;
@@ -63,16 +62,15 @@ public class TestGL implements WindowEvents {
 
     boolean doSwap = false;
 
-    public GLCode(boolean doSwap) {
+    public Cube(boolean doSwap) {
       this.doSwap = doSwap;
     }
 
-  //interface GLInterface
     public void init() {
       scene.texturePath = "./";
 
       System.out.println("GL Version=" + GL.getInstance().glGetString(GL.GL_VERSION));
-      int glver[] = getVersion();
+      int glver[] = GL.getVersion();
       if (glver[0] < 2) {
         JFAWT.showError("Error", "OpenGL Version < 2.0 : Detected : " + glver[0] + "." + glver[1]);
         System.exit(0);

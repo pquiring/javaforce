@@ -1,5 +1,7 @@
 //Windows OpenGL
 
+HMODULE wgl = NULL;
+
 jboolean glGetFunction(void **funcPtr, const char *name)
 {
   void *func;
@@ -29,4 +31,3 @@ JNIEXPORT jboolean JNICALL GLinit(const char* libgl_so)
   GL_get_functions();
   return TRUE;
 }
-
