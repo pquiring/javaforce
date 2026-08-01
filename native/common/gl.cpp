@@ -1,6 +1,5 @@
 //OpenGL functions
 
-jboolean glPlatformInit();
 jboolean glGetFunction(void **funcPtr, const char *name);  //platform impl
 
 #ifdef __cplusplus

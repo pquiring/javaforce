@@ -34,9 +34,11 @@ h"
 
 void *gl;
 
-jboolean glPlatformInit() {
+JNIEXPORT jboolean JNICALL GLinit(const char* libgl_so)
+{
   gl = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/OpenGL.dylib", RTLD_LAZY | RTLD_GLOBAL);
-  return gl != NULL;
+  GL_get_functions();
+  return TRUE;
 }
 
 jboolean glGetFunction(void **funcPtr, const char *name)
