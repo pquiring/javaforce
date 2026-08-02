@@ -322,10 +322,21 @@ public class FFMStruct {
       }
       if (type.isAssignableFrom(FFMStruct.class)) {
         if (sfield.inline) {
-          //TODO
+          //nop
         } else {
           FFMStruct substruct = (FFMStruct)getValue(jfield);
           substruct.unmarshall();
+        }
+        continue;
+      }
+      if (type.isAssignableFrom(FFMStruct[].class)) {
+        if (sfield.inline) {
+          //nop
+        } else {
+          FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
+          for(FFMStruct substruct : substructs) {
+            substruct.unmarshall();
+          }
         }
         continue;
       }
