@@ -392,8 +392,10 @@ public class FFMStruct {
 
   private void struct_copy(Object value, int offset, Arena arena) {
     FFMStruct substruct = (FFMStruct)value;
-    substruct.marshall(arena);
-    //TODO : copy substruct to struct @ offset
+    int length = substruct.getSize();
+    MemorySegment src = substruct.marshall(arena);
+    MemorySegment dst = struct.asSlice(offset, length);
+    dst.copyFrom(src);
     substruct.unmarshall();
   }
 
