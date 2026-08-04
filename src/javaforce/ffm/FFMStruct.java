@@ -3,6 +3,7 @@ package javaforce.ffm;
 import java.lang.foreign.*;
 import java.lang.reflect.*;
 import static java.lang.foreign.ValueLayout.*;
+import java.lang.annotation.*;
 
 import javaforce.*;
 

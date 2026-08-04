@@ -347,6 +347,24 @@ public class FFM {
     return array;
   }
 
+  public static MemorySegment toMemory(Arena arena, FFMStruct[] structs) {
+    if (structs == null) return MemorySegment.NULL;
+    int length = structs.length;
+    if (length == 0 || structs[length-1] != null) {
+      length++;  //add NULL pointer to end of array
+    }
+    MemorySegment array = arena.allocate(ADDRESS, length);
+    int idx = 0;
+    for(FFMStruct struct : structs) {
+      if (struct == null) {
+        idx++;
+        continue;
+      }
+      array.setAtIndex(ADDRESS, idx++, struct.marshall(arena));
+    }
+    return array;
+  }
+
   private static final long JAVA_LONG_SIZE = JAVA_LONG.byteSize();
   private static final long JAVA_INT_SIZE = JAVA_INT.byteSize();
   private static final long JAVA_SHORT_SIZE = JAVA_SHORT.byteSize();
@@ -391,6 +409,11 @@ public class FFM {
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, String[] m) {
+    //nop
+  }
+
+  /** Copy back native array after function returns. */
+  public static void copyBack(MemorySegment seg, FFMStruct[] structs) {
     //nop
   }
 
