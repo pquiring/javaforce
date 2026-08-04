@@ -223,12 +223,17 @@ public class S7Params implements SubPacket {
   public void read(Packet packet, S7Data out) throws Exception {
     func = packet.readByte();
     byte count = packet.readByte();
+    boolean padding = false;
     for(int a=0;a<count;a++) {
       byte success = packet.readByte();
       if (success != (byte)0xff) {
         throw new Exception("Error:success=" + success);
       }
       if (func == READ) {
+        if (padding) {
+          packet.readByte();  //fill byte
+          padding = false;
+        }
         byte transport_type = packet.readByte();
         int len = packet.readShort();
         if (isBits(transport_type)) {
@@ -241,7 +246,7 @@ public class S7Params implements SubPacket {
           System.arraycopy(data,0, out.data,0, len);
         }
         if (len % 2 == 1) {
-          packet.readByte();  //fill byte
+          padding = true;
         }
       }
     }
@@ -251,6 +256,7 @@ public class S7Params implements SubPacket {
   public void read(Packet packet, S7Data[] outs) throws Exception {
     func = packet.readByte();
     byte count = packet.readByte();
+    boolean padding = false;
     for(int a=0;a<count;a++) {
       S7Data out = outs[a];
       byte success = packet.readByte();
@@ -258,6 +264,10 @@ public class S7Params implements SubPacket {
         throw new Exception("Error:success=" + success);
       }
       if (func == READ) {
+        if (padding) {
+          packet.readByte();  //fill byte
+          padding = false;
+        }
         byte transport_type = packet.readByte();
         int len = packet.readShort();
         if (isBits(transport_type)) {
@@ -266,7 +276,7 @@ public class S7Params implements SubPacket {
         out.data = new byte[len];
         packet.read(out.data);
         if (len % 2 == 1) {
-          packet.readByte();  //fill byte
+          padding = true;
         }
       }
     }
