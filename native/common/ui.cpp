@@ -1,4 +1,5 @@
-#include "../glfw/include/GLFW/glfw3.h"
+#include <vulkan/vulkan.h>
+#include <GLFW/glfw3.h>
 
 //see javaforce.ui.Window
 int KEY_TYPED = 1;
@@ -19,6 +20,7 @@ int STYLE_FULLSCREEN = 8;
 struct GLFWContextFFM {
   GLFWwindow *window;
   void (*dispatchEvent)(int,int,int);
+  //vulkan stuff here
 };
 
 static void key_callback_ffm(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -133,6 +135,14 @@ void uiWindowDestroy(GLFWContextFFM* ctx)
   free(ctx);
 }
 
+void* uiWindowCreateSurface(GLFWContextFFM* ctx, VkInstance instance)
+{
+  VkSurfaceKHR surface;
+  glfwCreateWindowSurface(instance, ctx->window, NULL, &surface);
+  return (void*)surface;
+}
+
+
 void uiWindowSetCurrent(GLFWContextFFM* ctx)
 {
   if (ctx == NULL) return;
@@ -215,6 +225,7 @@ void uiWindowSetPos(GLFWContextFFM* ctx, jint x, jint y)
 extern "C" {
   JNIEXPORT jboolean (*_uiInit)() = &uiInit;
   JNIEXPORT GLFWContextFFM* (*_uiWindowCreate)(jint,const char*,jint,jint,GLFWContextFFM*) = &uiWindowCreate;
+  JNIEXPORT void* (*_uiWindowCreateSurface)(GLFWContextFFM*,VkInstance) = &uiWindowCreateSurface;
   JNIEXPORT void (*_uiWindowDestroy)(GLFWContextFFM*) = &uiWindowDestroy;
   JNIEXPORT void (*_uiWindowSetCurrent)(GLFWContextFFM*) = &uiWindowSetCurrent;
 //  JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*, const char*,jint,jint) = &uiWindowSetIcon;

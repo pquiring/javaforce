@@ -9,7 +9,7 @@ import java.lang.annotation.*;
  * @author pquiring
  */
 
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface NativeLibrary {
   String value();

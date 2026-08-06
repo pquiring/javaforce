@@ -78,6 +78,7 @@ public class Window implements UIEvents {
   public static final int STYLE_RESIZABLE = 2;
   public static final int STYLE_TITLEBAR = 4;
   public static final int STYLE_FULLSCREEN = 8;
+  public static final int STYLE_VULKAN = 16;
 
   public boolean create(int style, String title, int width, int height, Window shared) {
     this.width = width;
@@ -100,6 +101,11 @@ public class Window implements UIEvents {
     synchronized(windows) {
       windows.remove(this);
     }
+  }
+
+  /** Create Vulkan surface. */
+  public long createSurface(long vkInstance) {
+    return UIAPI.getInstance().uiWindowCreateSurface(ctx, vkInstance);
   }
 
   /** Set the OpenGL Context current for this window. */

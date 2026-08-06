@@ -68,6 +68,12 @@
     <exec command="git checkout -q tags/${opencl-version}" dir="native/opencl"/>
   </target>
 
+  <available property="have-vulkan" file="native/vulkan/include/vulkan/vulkan.h"/>
+  <target name="get-vulkan" unless="have-vulkan" description="download vulkan headers">
+    <exec command="git clone https://github.com/KhronosGroup/Vulkan-Headers.git native/vulkan"/>
+    <exec command="git checkout -q tags/${vulkan-version}" dir="native/vulkan"/>
+  </target>
+
   <!-- download ffmpeg (windows only) -->
 
   <target name="get-ffmpeg-win64-bin" description="download ffmpeg for Win64">
@@ -97,6 +103,7 @@
     <antcall target="get-glfw"/>
     <antcall target="get-stb"/>
     <antcall target="get-opencl"/>
+    <antcall target="get-vulkan"/>
     <antcall target="get-repo"/>
     <antcall target="getjars"/>
     <antcall target="jar-jcifs"/>
@@ -231,77 +238,77 @@
 
   <target name="genffm" description="generate FFM sources">
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/gl/GL.java"/>
+      <arg value="javaforce.gl.GL"/>
       <arg value="src/javaforce/ffm/GLFFM.java"/>
       <arg value="gl"/>
       <arg value="implements"/>
       <arg value="GL"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/CLAPI.java"/>
+      <arg value="javaforce.api.CLAPI"/>
       <arg value="src/javaforce/ffm/CLFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="CLAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/CameraAPI.java"/>
+      <arg value="javaforce.api.CameraAPI"/>
       <arg value="src/javaforce/ffm/CameraFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="CameraAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/PCapAPI.java"/>
+      <arg value="javaforce.api.PCapAPI"/>
       <arg value="src/javaforce/ffm/PCapFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="PCapAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/MediaAPI.java"/>
+      <arg value="javaforce.api.MediaAPI"/>
       <arg value="src/javaforce/ffm/MediaFFM.java"/>
       <arg value="api,media"/>
       <arg value="implements"/>
       <arg value="MediaAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/ComPortAPI.java"/>
+      <arg value="javaforce.api.ComPortAPI"/>
       <arg value="src/javaforce/ffm/ComPortFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="ComPortAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/MonitorFolderAPI.java"/>
+      <arg value="javaforce.api.MonitorFolderAPI"/>
       <arg value="src/javaforce/ffm/MonitorFolderFFM.java"/>
       <arg value="api,io"/>
       <arg value="implements"/>
       <arg value="MonitorFolderAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/SpeexAPI.java"/>
+      <arg value="javaforce.api.SpeexAPI"/>
       <arg value="src/javaforce/ffm/SpeexFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="SpeexAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/GPIOAPI.java"/>
+      <arg value="javaforce.api.GPIOAPI"/>
       <arg value="src/javaforce/ffm/GPIOFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="GPIOAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/I2CAPI.java"/>
+      <arg value="javaforce.api.I2CAPI"/>
       <arg value="src/javaforce/ffm/I2CFFM.java"/>
       <arg value="api"/>
       <arg value="implements"/>
       <arg value="I2CAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/UIAPI.java"/>
+      <arg value="javaforce.api.UIAPI"/>
       <arg value="src/javaforce/ffm/UIFFM.java"/>
       <arg value="api,ui"/>
       <arg value="implements"/>
@@ -311,28 +318,28 @@
     <!-- Linux APIs -->
 
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/linux/LinuxAPI.java"/>
+      <arg value="javaforce.api.linux.LinuxAPI"/>
       <arg value="src/javaforce/ffm/LinuxFFM.java"/>
       <arg value="api.linux"/>
       <arg value="implements"/>
       <arg value="LinuxAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/linux/VMAPI.java"/>
+      <arg value="javaforce.api.linux.VMAPI"/>
       <arg value="src/javaforce/ffm/VMFFM.java"/>
       <arg value="api.linux,vm"/>
       <arg value="implements"/>
       <arg value="VMAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/linux/X11API.java"/>
+      <arg value="javaforce.api.linux.X11API"/>
       <arg value="src/javaforce/ffm/X11FFM.java"/>
       <arg value="api.linux,linux"/>
       <arg value="implements"/>
       <arg value="X11API"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/linux/WaylandAPI.java"/>
+      <arg value="javaforce.api.linux.WaylandAPI"/>
       <arg value="src/javaforce/ffm/WaylandFFM.java"/>
       <arg value="api.linux,linux"/>
       <arg value="implements"/>
@@ -342,20 +349,21 @@
     <!-- Windows APIs -->
 
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/windows/WindowsAPI.java"/>
+      <arg value="javaforce.api.windows.WindowsAPI"/>
       <arg value="src/javaforce/ffm/WindowsFFM.java"/>
       <arg value="api.windows"/>
       <arg value="implements"/>
       <arg value="WindowsAPI"/>
     </java>
     <java classpath="${home}/javaforce.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
-      <arg value="src/javaforce/api/windows/PipesAPI.java"/>
+      <arg value="javaforce.api.windows.PipesAPI"/>
       <arg value="src/javaforce/ffm/PipesFFM.java"/>
       <arg value="api.windows"/>
       <arg value="implements"/>
       <arg value="PipesAPI"/>
     </java>
   </target>
+
 
   <target name="clean" description="deletes compiled files">
     <delete>

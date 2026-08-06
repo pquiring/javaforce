@@ -11,7 +11,7 @@
     <mkdir dir="${user.home}/bin"/>
     <mkdir dir="${env.ProgramData}/JavaForce"/>
     <!-- native library -->
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${home}/ffmpeg-src/${ffmpeg-version}' /I '../headers' /I '../opencl' native.cpp /c /Fo: native.obj"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${home}/ffmpeg-src/${ffmpeg-version}' /I '../headers' /I '../opencl' /I '../glfw/include' /I '../vulkan/include' native.cpp /c /Fo: native.obj"/>
     <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw.obj"/>
     <exec command="cl /I '../glfw/include' glfw-null.c /c /Fo: glfw-null.obj"/>
     <exec command="lib /nologo /out:native.lib ${objs}"/>

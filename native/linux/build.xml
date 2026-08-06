@@ -9,7 +9,7 @@
     <sequential>
       <mkdir dir="${user.home}/bin"/>
       <!-- build native library -->
-      <exec command="gcc ${opt} -I /usr/include/ffmpeg -I ${java.home}/include/@{linux} -I ${java.home}/include -I ../headers -I ../opencl -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
+      <exec command="gcc ${opt} -I /usr/include/ffmpeg -I ${java.home}/include/@{linux} -I ${java.home}/include -I ../headers -I ../opencl -I ../glfw/include -I ../vulkan/include -Wno-write-strings native.cpp -c -o native.o -fPIC"/>
       <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC -Wno-implicit-function-declaration"/>
       <exec command="gcc ${opt} -I ../glfw/include glfw-null.c -c -o glfw-null.o -fPIC"/>
       <exec command="ar r native.a native.o glfw.o glfw-null.o"/>

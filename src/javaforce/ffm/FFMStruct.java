@@ -3,7 +3,6 @@ package javaforce.ffm;
 import java.lang.foreign.*;
 import java.lang.reflect.*;
 import static java.lang.foreign.ValueLayout.*;
-import java.lang.annotation.*;
 
 import javaforce.*;
 
@@ -45,7 +44,7 @@ public class FFMStruct {
   public FFMField[] fields;
 
   private int size = -1;
-  private MemorySegment struct;
+  public MemorySegment struct;
 
   private void init() {
     Field[] jfields = getClass().getDeclaredFields();
@@ -119,6 +118,20 @@ public class FFMStruct {
       }
       return size;
     }
+    if (type.isAssignableFrom(FFMType.Integer.class)) {
+      return 4;
+    }
+    if (type.isAssignableFrom(FFMType.Long.class)) {
+      return 8;
+    }
+    if (type.isAssignableFrom(FFMType.Integer[].class)) {
+      FFMType.Integer[] types = (FFMType.Integer[])getValue(jfield);
+      return types.length * 4;
+    }
+    if (type.isAssignableFrom(FFMType.Long[].class)) {
+      FFMType.Long[] types = (FFMType.Long[])getValue(jfield);
+      return types.length * 8;
+    }
     JFLog.log("FFMStruct:Unknown field type:" + type);
     return 0;
   }
@@ -153,6 +166,18 @@ public class FFMStruct {
         }
       }
       return max_align;
+    }
+    if (type.isAssignableFrom(FFMType.Integer.class)) {
+      return 4;
+    }
+    if (type.isAssignableFrom(FFMType.Long.class)) {
+      return 8;
+    }
+    if (type.isAssignableFrom(FFMType.Integer[].class)) {
+      return 4;
+    }
+    if (type.isAssignableFrom(FFMType.Long[].class)) {
+      return 8;
     }
     JFLog.log("FFMStruct:Unknown field type:" + type);
     return 0;
@@ -247,9 +272,9 @@ public class FFMStruct {
         continue;
       }
       if (type.isAssignableFrom(FFMStruct[].class)) {
+        FFMStruct[] substructs = (FFMStruct[])value;
+        int cnt = substructs.length;
         if (sfield.inline) {
-          FFMStruct[] substructs = (FFMStruct[])value;
-          int cnt = substructs.length;
           int offset = sfield.offset;
           for(int i=0;i<cnt;i++) {
             FFMStruct substruct = substructs[i];
@@ -257,8 +282,6 @@ public class FFMStruct {
             offset += substruct.getSize();
           }
         } else {
-          FFMStruct[] substructs = (FFMStruct[])value;
-          int cnt = substructs.length;
           MemorySegment array = arena.allocate(JAVA_LONG, cnt);
           for(int i=0;i<cnt;i++) {
             FFMStruct substruct = substructs[i];
@@ -266,6 +289,34 @@ public class FFMStruct {
             array.set(JAVA_LONG, i, ptr);
           }
           return array;
+        }
+        continue;
+      }
+      if (type.isAssignableFrom(FFMType.Integer.class)) {
+        FFMType.Integer ffmtype = (FFMType.Integer)value;
+        struct.set(JAVA_INT, sfield.offset, ffmtype.value);
+        continue;
+      }
+      if (type.isAssignableFrom(FFMType.Long.class)) {
+        FFMType.Long ffmtype = (FFMType.Long)value;
+        struct.set(JAVA_LONG, sfield.offset, ffmtype.value);
+        continue;
+      }
+      if (type.isAssignableFrom(FFMType.Integer[].class)) {
+        FFMType.Integer[] ffmtypes = (FFMType.Integer[])value;
+        if (sfield.inline) {
+          //TODO
+        } else {
+          //TODO
+        }
+        continue;
+      }
+      if (type.isAssignableFrom(FFMType.Long[].class)) {
+        FFMType.Long[] ffmtype = (FFMType.Long[])value;
+        if (sfield.inline) {
+          //TODO
+        } else {
+          //TODO
         }
         continue;
       }
@@ -450,5 +501,23 @@ public class FFMStruct {
   private MemorySegment alloc(Arena arena) {
     if (size == 0) return null;
     return arena.allocate(JAVA_BYTE, size);
+  }
+
+  public static boolean isStruct(Class<?> type) {
+    try {
+      return (type.isAssignableFrom(FFMStruct.class));
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+  public static boolean isStruct(Field field) {
+    try {
+      Class<?> cls = field.getType();
+      return (cls.isAssignableFrom(FFMStruct.class));
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
   }
 }
