@@ -30,20 +30,20 @@ public class GPIOFFM implements GPIOAPI {
     return instance;
   }
 
-  private MethodHandle gpioConfigOutput;
-  public boolean gpioConfigOutput(int a1) { try { boolean _ret_value_ = (boolean)gpioConfigOutput.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
   private MethodHandle gpioConfigInput;
   public boolean gpioConfigInput(int a1) { try { boolean _ret_value_ = (boolean)gpioConfigInput.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle gpioConfigOutput;
+  public boolean gpioConfigOutput(int a1) { try { boolean _ret_value_ = (boolean)gpioConfigOutput.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle gpioRead;
   public boolean gpioRead(int a1) { try { boolean _ret_value_ = (boolean)gpioRead.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle gpioWrite;
-  public boolean gpioWrite(int a1,boolean a2) { try { boolean _ret_value_ = (boolean)gpioWrite.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
   private MethodHandle gpioSetup;
   public boolean gpioSetup(int a1) { try { boolean _ret_value_ = (boolean)gpioSetup.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle gpioWrite;
+  public boolean gpioWrite(int a1,boolean a2) { try { boolean _ret_value_ = (boolean)gpioWrite.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
 
   private boolean ffm_init() {
@@ -54,11 +54,11 @@ public class GPIOFFM implements GPIOAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    gpioConfigOutput = ffm.getFunctionPtr("_gpioConfigOutput", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     gpioConfigInput = ffm.getFunctionPtr("_gpioConfigInput", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
+    gpioConfigOutput = ffm.getFunctionPtr("_gpioConfigOutput", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     gpioRead = ffm.getFunctionPtr("_gpioRead", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
-    gpioWrite = ffm.getFunctionPtr("_gpioWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,JAVA_BOOLEAN));
     gpioSetup = ffm.getFunctionPtr("_gpioSetup", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
+    gpioWrite = ffm.getFunctionPtr("_gpioWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,JAVA_BOOLEAN));
     if (FFM.debug) JFLog.log("GPIOFFM init complete");
     return true;
   }

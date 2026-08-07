@@ -30,17 +30,17 @@ public class I2CFFM implements I2CAPI {
     return instance;
   }
 
+  private MethodHandle i2cSetSlave;
+  public boolean i2cSetSlave(int a1) { try { boolean _ret_value_ = (boolean)i2cSetSlave.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle i2cSetup;
+  public boolean i2cSetup() { try { boolean _ret_value_ = (boolean)i2cSetup.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle i2cWrite;
   public boolean i2cWrite(byte[] a1,int a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);boolean _ret_value_ = (boolean)i2cWrite.invokeExact(_array_a1,a2);FFM.copyBack(_array_a1,a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle i2cRead;
   public int i2cRead(byte[] a1,int a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);int _ret_value_ = (int)i2cRead.invokeExact(_array_a1,a2);FFM.copyBack(_array_a1,a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle i2cSetup;
-  public boolean i2cSetup() { try { boolean _ret_value_ = (boolean)i2cSetup.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle i2cSetSlave;
-  public boolean i2cSetSlave(int a1) { try { boolean _ret_value_ = (boolean)i2cSetSlave.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
 
   private boolean ffm_init() {
@@ -51,10 +51,10 @@ public class I2CFFM implements I2CAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
+    i2cSetSlave = ffm.getFunctionPtr("_i2cSetSlave", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
+    i2cSetup = ffm.getFunctionPtr("_i2cSetup", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     i2cWrite = ffm.getFunctionPtr("_i2cWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,JAVA_INT));
     i2cRead = ffm.getFunctionPtr("_i2cRead", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,JAVA_INT));
-    i2cSetup = ffm.getFunctionPtr("_i2cSetup", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    i2cSetSlave = ffm.getFunctionPtr("_i2cSetSlave", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     if (FFM.debug) JFLog.log("I2CFFM init complete");
     return true;
   }

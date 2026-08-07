@@ -31,71 +31,71 @@ public class UIFFM implements UIAPI {
     return instance;
   }
 
-  private MethodHandle uiLoadFont;
-  public int uiLoadFont(byte[] a1,int a2,int[] a3,int[] a4,int[] a5,int[] a6,byte[] a7,int a8,int a9) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);MemorySegment _array_a6 = FFM.toMemory(arena, a6);MemorySegment _array_a7 = FFM.toMemory(arena, a7);int _ret_value_ = (int)uiLoadFont.invokeExact(_array_a1,a2,_array_a3,_array_a4,_array_a5,_array_a6,_array_a7,a8,a9);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);FFM.copyBack(_array_a6,a6);FFM.copyBack(_array_a7,a7);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle uiSavePNG;
-  public byte[] uiSavePNG(int[] a1,int a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);FFM.createFFMArray();uiSavePNG.invokeExact(_array_a1,a2,a3);FFM.copyBack(_array_a1,a1);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle uiLoadPNG;
-  public int[] uiLoadPNG(byte[] a1,int a2,int[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a3 = FFM.toMemory(arena, a3);FFM.createFFMArray();uiLoadPNG.invokeExact(_array_a1,a2,_array_a3);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a3,a3);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle uiLoadJPG;
-  public int[] uiLoadJPG(byte[] a1,int a2,int[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a3 = FFM.toMemory(arena, a3);FFM.createFFMArray();uiLoadJPG.invokeExact(_array_a1,a2,_array_a3);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a3,a3);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  private MethodHandle uiInit;
+  public boolean uiInit() { try { boolean _ret_value_ = (boolean)uiInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle uiSaveJPG;
   public byte[] uiSaveJPG(int[] a1,int a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);FFM.createFFMArray();uiSaveJPG.invokeExact(_array_a1,a2,a3,a4);FFM.copyBack(_array_a1,a1);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
-  private MethodHandle uiInit;
-  public boolean uiInit() { try { boolean _ret_value_ = (boolean)uiInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle uiSavePNG;
+  public byte[] uiSavePNG(int[] a1,int a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);FFM.createFFMArray();uiSavePNG.invokeExact(_array_a1,a2,a3);FFM.copyBack(_array_a1,a1);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
-  private MethodHandle uiWindowDestroy;
-  public void uiWindowDestroy(long a1) { try { uiWindowDestroy.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle uiLoadFont;
+  public int uiLoadFont(byte[] a1,int a2,int[] a3,int[] a4,int[] a5,int[] a6,byte[] a7,int a8,int a9) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);MemorySegment _array_a5 = FFM.toMemory(arena, a5);MemorySegment _array_a6 = FFM.toMemory(arena, a6);MemorySegment _array_a7 = FFM.toMemory(arena, a7);int _ret_value_ = (int)uiLoadFont.invokeExact(_array_a1,a2,_array_a3,_array_a4,_array_a5,_array_a6,_array_a7,a8,a9);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);FFM.copyBack(_array_a5,a5);FFM.copyBack(_array_a6,a6);FFM.copyBack(_array_a7,a7);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle uiWindowSetIcon;
-  public void uiWindowSetIcon(long a1,java.lang.String a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); uiWindowSetIcon.invokeExact(a1,arena.allocateFrom(a2),a3,a4); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle uiLoadJPG;
+  public int[] uiLoadJPG(byte[] a1,int a2,int[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a3 = FFM.toMemory(arena, a3);FFM.createFFMArray();uiLoadJPG.invokeExact(_array_a1,a2,_array_a3);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a3,a3);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
-  private MethodHandle uiWindowShowCursor;
-  public void uiWindowShowCursor(long a1) { try { uiWindowShowCursor.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle uiWindowGetPos;
-  public void uiWindowGetPos(long a1,int[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);uiWindowGetPos.invokeExact(a1,_array_a2);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle uiWindowCreate;
-  public long uiWindowCreate(int a1,java.lang.String a2,int a3,int a4,long a5) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)uiWindowCreate.invokeExact(a1,arena.allocateFrom(a2),a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle uiLoadPNG;
+  public int[] uiLoadPNG(byte[] a1,int a2,int[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a3 = FFM.toMemory(arena, a3);FFM.createFFMArray();uiLoadPNG.invokeExact(_array_a1,a2,_array_a3);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a3,a3);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle uiWindowGetFramebufferSize;
   public int[] uiWindowGetFramebufferSize(long a1) { try { FFM.createFFMArray();uiWindowGetFramebufferSize.invokeExact(a1);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
-  private MethodHandle uiWindowSetCurrent;
-  public void uiWindowSetCurrent(long a1) { try { uiWindowSetCurrent.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle uiWindowCreate;
+  public long uiWindowCreate(int a1,java.lang.String a2,int a3,int a4,long a5) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)uiWindowCreate.invokeExact(a1,arena.allocateFrom(a2),a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle uiWindowCreateSurface;
   public long uiWindowCreateSurface(long a1,long a2) { try { long _ret_value_ = (long)uiWindowCreateSurface.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle uiPollEvents;
+  public void uiPollEvents(long a1,int a2,javaforce.ui.UIEvents a3) { try { FFM.setUIEvents(a3);uiPollEvents.invokeExact(a1,a2,FFM.upcall_UIEvents_dispatchEvent); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle uiPostEvent;
   public void uiPostEvent() { try { uiPostEvent.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
 
-  private MethodHandle uiWindowSwap;
-  public void uiWindowSwap(long a1) { try { uiWindowSwap.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle uiWindowDestroy;
+  public void uiWindowDestroy(long a1) { try { uiWindowDestroy.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
-  private MethodHandle uiWindowHideCursor;
-  public void uiWindowHideCursor(long a1) { try { uiWindowHideCursor.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle uiWindowShow;
-  public void uiWindowShow(long a1) { try { uiWindowShow.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle uiWindowLockCursor;
-  public void uiWindowLockCursor(long a1) { try { uiWindowLockCursor.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle uiWindowSetPos;
-  public void uiWindowSetPos(long a1,int a2,int a3) { try { uiWindowSetPos.invokeExact(a1,a2,a3); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle uiWindowGetPos;
+  public void uiWindowGetPos(long a1,int[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);uiWindowGetPos.invokeExact(a1,_array_a2);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle uiWindowHide;
   public void uiWindowHide(long a1) { try { uiWindowHide.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
-  private MethodHandle uiPollEvents;
-  public void uiPollEvents(long a1,int a2,javaforce.ui.UIEvents a3) { try { FFM.setUIEvents(a3);uiPollEvents.invokeExact(a1,a2,FFM.upcall_UIEvents_dispatchEvent); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle uiWindowHideCursor;
+  public void uiWindowHideCursor(long a1) { try { uiWindowHideCursor.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowLockCursor;
+  public void uiWindowLockCursor(long a1) { try { uiWindowLockCursor.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowSetCurrent;
+  public void uiWindowSetCurrent(long a1) { try { uiWindowSetCurrent.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowSetIcon;
+  public void uiWindowSetIcon(long a1,java.lang.String a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); uiWindowSetIcon.invokeExact(a1,arena.allocateFrom(a2),a3,a4); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowSetPos;
+  public void uiWindowSetPos(long a1,int a2,int a3) { try { uiWindowSetPos.invokeExact(a1,a2,a3); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowShow;
+  public void uiWindowShow(long a1) { try { uiWindowShow.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowShowCursor;
+  public void uiWindowShowCursor(long a1) { try { uiWindowShowCursor.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle uiWindowSwap;
+  public void uiWindowSwap(long a1) { try { uiWindowSwap.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
 
   private boolean ffm_init() {
@@ -106,28 +106,28 @@ public class UIFFM implements UIAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    uiLoadFont = ffm.getFunctionPtr("_uiLoadFont", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,ADDRESS,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
-    uiSavePNG = ffm.getFunctionPtr("_uiSavePNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
-    uiLoadPNG = ffm.getFunctionPtr("_uiLoadPNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
-    uiLoadJPG = ffm.getFunctionPtr("_uiLoadJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
-    uiSaveJPG = ffm.getFunctionPtr("_uiSaveJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT));
     uiInit = ffm.getFunctionPtr("_uiInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    uiWindowDestroy = ffm.getFunctionPtr("_uiWindowDestroy", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowSetIcon = ffm.getFunctionPtr("_uiWindowSetIcon", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    uiWindowShowCursor = ffm.getFunctionPtr("_uiWindowShowCursor", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowGetPos = ffm.getFunctionPtr("_uiWindowGetPos", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
-    uiWindowCreate = ffm.getFunctionPtr("_uiWindowCreate", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT,JAVA_LONG));
+    uiSaveJPG = ffm.getFunctionPtr("_uiSaveJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT));
+    uiSavePNG = ffm.getFunctionPtr("_uiSavePNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
+    uiLoadFont = ffm.getFunctionPtr("_uiLoadFont", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,ADDRESS,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
+    uiLoadJPG = ffm.getFunctionPtr("_uiLoadJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
+    uiLoadPNG = ffm.getFunctionPtr("_uiLoadPNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
     uiWindowGetFramebufferSize = ffm.getFunctionPtr("_uiWindowGetFramebufferSize", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowSetCurrent = ffm.getFunctionPtr("_uiWindowSetCurrent", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowCreate = ffm.getFunctionPtr("_uiWindowCreate", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT,JAVA_LONG));
     uiWindowCreateSurface = ffm.getFunctionPtr("_uiWindowCreateSurface", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_LONG));
-    uiPostEvent = ffm.getFunctionPtr("_uiPostEvent", ffm.getFunctionDesciptorVoid());
-    uiWindowSwap = ffm.getFunctionPtr("_uiWindowSwap", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowHideCursor = ffm.getFunctionPtr("_uiWindowHideCursor", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowShow = ffm.getFunctionPtr("_uiWindowShow", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowLockCursor = ffm.getFunctionPtr("_uiWindowLockCursor", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    uiWindowSetPos = ffm.getFunctionPtr("_uiWindowSetPos", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT));
-    uiWindowHide = ffm.getFunctionPtr("_uiWindowHide", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     uiPollEvents = ffm.getFunctionPtr("_uiPollEvents", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,ADDRESS));
+    uiPostEvent = ffm.getFunctionPtr("_uiPostEvent", ffm.getFunctionDesciptorVoid());
+    uiWindowDestroy = ffm.getFunctionPtr("_uiWindowDestroy", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowGetPos = ffm.getFunctionPtr("_uiWindowGetPos", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
+    uiWindowHide = ffm.getFunctionPtr("_uiWindowHide", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowHideCursor = ffm.getFunctionPtr("_uiWindowHideCursor", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowLockCursor = ffm.getFunctionPtr("_uiWindowLockCursor", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowSetCurrent = ffm.getFunctionPtr("_uiWindowSetCurrent", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowSetIcon = ffm.getFunctionPtr("_uiWindowSetIcon", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    uiWindowSetPos = ffm.getFunctionPtr("_uiWindowSetPos", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT));
+    uiWindowShow = ffm.getFunctionPtr("_uiWindowShow", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowShowCursor = ffm.getFunctionPtr("_uiWindowShowCursor", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowSwap = ffm.getFunctionPtr("_uiWindowSwap", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     if (FFM.debug) JFLog.log("UIFFM init complete");
     return true;
   }

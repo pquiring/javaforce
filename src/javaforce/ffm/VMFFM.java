@@ -31,110 +31,110 @@ public class VMFFM implements VMAPI {
     return instance;
   }
 
-  private MethodHandle vmUnregister;
-  public boolean vmUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmUnregister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmSnapshotExists;
-  public boolean vmSnapshotExists(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotExists.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmSnapshotList;
-  public java.lang.String[] vmSnapshotList(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();vmSnapshotList.invokeExact(arena.allocateFrom(a1));return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmFreeMemory;
-  public long vmFreeMemory() { try { long _ret_value_ = (long)vmFreeMemory.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle vmSnapshotDelete;
-  public boolean vmSnapshotDelete(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotDelete.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmTotalMemory;
-  public long vmTotalMemory() { try { long _ret_value_ = (long)vmTotalMemory.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle vmGetAllStats;
-  public boolean vmGetAllStats(int a1,int a2,int a3,int a4,int a5) { try { boolean _ret_value_ = (boolean)vmGetAllStats.invokeExact(a1,a2,a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmSnapshotRestore;
-  public boolean vmSnapshotRestore(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotRestore.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmSnapshotGetCurrent;
-  public java.lang.String vmSnapshotGetCurrent(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmSnapshotGetCurrent.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmSnapshotCreate;
-  public boolean vmSnapshotCreate(java.lang.String a1,java.lang.String a2,int a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStorageStop;
-  public boolean vmStorageStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStop.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStorageGetState;
-  public int vmStorageGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmStorageGetState.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle vmStorageGetUUID;
-  public java.lang.String vmStorageGetUUID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmStorageGetUUID.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  private MethodHandle vmConnect;
+  public boolean vmConnect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmConnect.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmDiskCreate;
   public boolean vmDiskCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmDiskCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle vmNetworkListPhys;
-  public java.lang.String[] vmNetworkListPhys() { try { FFM.createFFMArray();vmNetworkListPhys.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmSecretCreate;
-  public boolean vmSecretCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSecretCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStorageList;
-  public java.lang.String[] vmStorageList() { try { FFM.createFFMArray();vmStorageList.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmDeviceList;
-  public java.lang.String[] vmDeviceList(int a1) { try { FFM.createFFMArray();vmDeviceList.invokeExact(a1);return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmStorageRegister;
-  public boolean vmStorageRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageRegister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStorageUnregister;
-  public boolean vmStorageUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageUnregister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStorageStart;
-  public boolean vmStorageStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStop;
-  public boolean vmStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStop.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmStart;
-  public boolean vmStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmPowerOff;
-  public boolean vmPowerOff(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmPowerOff.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmRestart;
-  public boolean vmRestart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRestart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmList;
-  public java.lang.String[] vmList() { try { FFM.createFFMArray();vmList.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmGet;
-  public java.lang.String vmGet(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmGet.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vmMigrate;
-  public boolean vmMigrate(java.lang.String a1,java.lang.String a2,boolean a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmMigrate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmCpuLoad;
-  public long vmCpuLoad() { try { long _ret_value_ = (long)vmCpuLoad.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle vmConnect;
-  public boolean vmConnect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmConnect.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vmSuspend;
-  public boolean vmSuspend(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSuspend.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle vmGetAllStats;
+  public boolean vmGetAllStats(int a1,int a2,int a3,int a4,int a5) { try { boolean _ret_value_ = (boolean)vmGetAllStats.invokeExact(a1,a2,a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmInit;
   public boolean vmInit() { try { boolean _ret_value_ = (boolean)vmInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle vmGetState;
-  public int vmGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmGetState.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle vmMigrate;
+  public boolean vmMigrate(java.lang.String a1,java.lang.String a2,boolean a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmMigrate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmPowerOff;
+  public boolean vmPowerOff(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmPowerOff.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmRegister;
   public boolean vmRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRegister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle vmRestart;
+  public boolean vmRestart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRestart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle vmResume;
   public boolean vmResume(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmResume.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmSecretCreate;
+  public boolean vmSecretCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSecretCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmSnapshotCreate;
+  public boolean vmSnapshotCreate(java.lang.String a1,java.lang.String a2,int a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmSnapshotDelete;
+  public boolean vmSnapshotDelete(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotDelete.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmSnapshotExists;
+  public boolean vmSnapshotExists(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotExists.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmSnapshotRestore;
+  public boolean vmSnapshotRestore(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotRestore.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmStart;
+  public boolean vmStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmStop;
+  public boolean vmStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStop.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmStorageRegister;
+  public boolean vmStorageRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageRegister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmStorageStart;
+  public boolean vmStorageStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmStorageStop;
+  public boolean vmStorageStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStop.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmStorageUnregister;
+  public boolean vmStorageUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageUnregister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmSuspend;
+  public boolean vmSuspend(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSuspend.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmUnregister;
+  public boolean vmUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmUnregister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vmGetState;
+  public int vmGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmGetState.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vmStorageGetState;
+  public int vmStorageGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmStorageGetState.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vmGet;
+  public java.lang.String vmGet(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmGet.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmSnapshotGetCurrent;
+  public java.lang.String vmSnapshotGetCurrent(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmSnapshotGetCurrent.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmStorageGetUUID;
+  public java.lang.String vmStorageGetUUID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmStorageGetUUID.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmDeviceList;
+  public java.lang.String[] vmDeviceList(int a1) { try { FFM.createFFMArray();vmDeviceList.invokeExact(a1);return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmList;
+  public java.lang.String[] vmList() { try { FFM.createFFMArray();vmList.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmNetworkListPhys;
+  public java.lang.String[] vmNetworkListPhys() { try { FFM.createFFMArray();vmNetworkListPhys.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmSnapshotList;
+  public java.lang.String[] vmSnapshotList(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();vmSnapshotList.invokeExact(arena.allocateFrom(a1));return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmStorageList;
+  public java.lang.String[] vmStorageList() { try { FFM.createFFMArray();vmStorageList.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vmCpuLoad;
+  public long vmCpuLoad() { try { long _ret_value_ = (long)vmCpuLoad.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vmFreeMemory;
+  public long vmFreeMemory() { try { long _ret_value_ = (long)vmFreeMemory.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vmTotalMemory;
+  public long vmTotalMemory() { try { long _ret_value_ = (long)vmTotalMemory.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
 
   private boolean ffm_init() {
@@ -145,41 +145,41 @@ public class VMFFM implements VMAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    vmUnregister = ffm.getFunctionPtr("_vmUnregister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmSnapshotExists = ffm.getFunctionPtr("_vmSnapshotExists", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmSnapshotList = ffm.getFunctionPtr("_vmSnapshotList", ffm.getFunctionDesciptorVoid(ADDRESS));
-    vmFreeMemory = ffm.getFunctionPtr("_vmFreeMemory", ffm.getFunctionDesciptor(JAVA_LONG));
-    vmSnapshotDelete = ffm.getFunctionPtr("_vmSnapshotDelete", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vmTotalMemory = ffm.getFunctionPtr("_vmTotalMemory", ffm.getFunctionDesciptor(JAVA_LONG));
-    vmGetAllStats = ffm.getFunctionPtr("_vmGetAllStats", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
-    vmSnapshotRestore = ffm.getFunctionPtr("_vmSnapshotRestore", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vmSnapshotGetCurrent = ffm.getFunctionPtr("_vmSnapshotGetCurrent", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
-    vmSnapshotCreate = ffm.getFunctionPtr("_vmSnapshotCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,JAVA_INT));
-    vmStorageStop = ffm.getFunctionPtr("_vmStorageStop", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmStorageGetState = ffm.getFunctionPtr("_vmStorageGetState", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
-    vmStorageGetUUID = ffm.getFunctionPtr("_vmStorageGetUUID", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
-    vmDiskCreate = ffm.getFunctionPtr("_vmDiskCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vmNetworkListPhys = ffm.getFunctionPtr("_vmNetworkListPhys", ffm.getFunctionDesciptorVoid());
-    vmSecretCreate = ffm.getFunctionPtr("_vmSecretCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vmStorageList = ffm.getFunctionPtr("_vmStorageList", ffm.getFunctionDesciptorVoid());
-    vmDeviceList = ffm.getFunctionPtr("_vmDeviceList", ffm.getFunctionDesciptorVoid(JAVA_INT));
-    vmStorageRegister = ffm.getFunctionPtr("_vmStorageRegister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmStorageUnregister = ffm.getFunctionPtr("_vmStorageUnregister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmStorageStart = ffm.getFunctionPtr("_vmStorageStart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmStop = ffm.getFunctionPtr("_vmStop", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmStart = ffm.getFunctionPtr("_vmStart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmPowerOff = ffm.getFunctionPtr("_vmPowerOff", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmRestart = ffm.getFunctionPtr("_vmRestart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmList = ffm.getFunctionPtr("_vmList", ffm.getFunctionDesciptorVoid());
-    vmGet = ffm.getFunctionPtr("_vmGet", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
-    vmMigrate = ffm.getFunctionPtr("_vmMigrate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,JAVA_BOOLEAN));
-    vmCpuLoad = ffm.getFunctionPtr("_vmCpuLoad", ffm.getFunctionDesciptor(JAVA_LONG));
     vmConnect = ffm.getFunctionPtr("_vmConnect", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    vmSuspend = ffm.getFunctionPtr("_vmSuspend", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmDiskCreate = ffm.getFunctionPtr("_vmDiskCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    vmGetAllStats = ffm.getFunctionPtr("_vmGetAllStats", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
     vmInit = ffm.getFunctionPtr("_vmInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    vmGetState = ffm.getFunctionPtr("_vmGetState", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
+    vmMigrate = ffm.getFunctionPtr("_vmMigrate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,JAVA_BOOLEAN));
+    vmPowerOff = ffm.getFunctionPtr("_vmPowerOff", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmRegister = ffm.getFunctionPtr("_vmRegister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmRestart = ffm.getFunctionPtr("_vmRestart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
     vmResume = ffm.getFunctionPtr("_vmResume", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmSecretCreate = ffm.getFunctionPtr("_vmSecretCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    vmSnapshotCreate = ffm.getFunctionPtr("_vmSnapshotCreate", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,JAVA_INT));
+    vmSnapshotDelete = ffm.getFunctionPtr("_vmSnapshotDelete", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    vmSnapshotExists = ffm.getFunctionPtr("_vmSnapshotExists", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmSnapshotRestore = ffm.getFunctionPtr("_vmSnapshotRestore", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    vmStart = ffm.getFunctionPtr("_vmStart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmStop = ffm.getFunctionPtr("_vmStop", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmStorageRegister = ffm.getFunctionPtr("_vmStorageRegister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmStorageStart = ffm.getFunctionPtr("_vmStorageStart", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmStorageStop = ffm.getFunctionPtr("_vmStorageStop", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmStorageUnregister = ffm.getFunctionPtr("_vmStorageUnregister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmSuspend = ffm.getFunctionPtr("_vmSuspend", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmUnregister = ffm.getFunctionPtr("_vmUnregister", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vmGetState = ffm.getFunctionPtr("_vmGetState", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
+    vmStorageGetState = ffm.getFunctionPtr("_vmStorageGetState", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
+    vmGet = ffm.getFunctionPtr("_vmGet", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
+    vmSnapshotGetCurrent = ffm.getFunctionPtr("_vmSnapshotGetCurrent", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
+    vmStorageGetUUID = ffm.getFunctionPtr("_vmStorageGetUUID", ffm.getFunctionDesciptor(ADDRESS,ADDRESS));
+    vmDeviceList = ffm.getFunctionPtr("_vmDeviceList", ffm.getFunctionDesciptorVoid(JAVA_INT));
+    vmList = ffm.getFunctionPtr("_vmList", ffm.getFunctionDesciptorVoid());
+    vmNetworkListPhys = ffm.getFunctionPtr("_vmNetworkListPhys", ffm.getFunctionDesciptorVoid());
+    vmSnapshotList = ffm.getFunctionPtr("_vmSnapshotList", ffm.getFunctionDesciptorVoid(ADDRESS));
+    vmStorageList = ffm.getFunctionPtr("_vmStorageList", ffm.getFunctionDesciptorVoid());
+    vmCpuLoad = ffm.getFunctionPtr("_vmCpuLoad", ffm.getFunctionDesciptor(JAVA_LONG));
+    vmFreeMemory = ffm.getFunctionPtr("_vmFreeMemory", ffm.getFunctionDesciptor(JAVA_LONG));
+    vmTotalMemory = ffm.getFunctionPtr("_vmTotalMemory", ffm.getFunctionDesciptor(JAVA_LONG));
     if (FFM.debug) JFLog.log("VMFFM init complete");
     return true;
   }

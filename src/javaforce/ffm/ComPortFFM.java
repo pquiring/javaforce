@@ -30,17 +30,17 @@ public class ComPortFFM implements ComPortAPI {
     return instance;
   }
 
-  private MethodHandle comClose;
-  public void comClose(long a1) { try { comClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle comRead;
+  public int comRead(long a1,byte[] a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)comRead.invokeExact(a1,_array_a2,a3);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle comWrite;
   public int comWrite(long a1,byte[] a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)comWrite.invokeExact(a1,_array_a2,a3);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle comRead;
-  public int comRead(long a1,byte[] a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)comRead.invokeExact(a1,_array_a2,a3);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
   private MethodHandle comOpen;
   public long comOpen(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)comOpen.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle comClose;
+  public void comClose(long a1) { try { comClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
 
   private boolean ffm_init() {
@@ -51,10 +51,10 @@ public class ComPortFFM implements ComPortAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    comClose = ffm.getFunctionPtr("_comClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    comWrite = ffm.getFunctionPtr("_comWrite", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT));
     comRead = ffm.getFunctionPtr("_comRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT));
+    comWrite = ffm.getFunctionPtr("_comWrite", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT));
     comOpen = ffm.getFunctionPtr("_comOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_INT));
+    comClose = ffm.getFunctionPtr("_comClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     if (FFM.debug) JFLog.log("ComPortFFM init complete");
     return true;
   }

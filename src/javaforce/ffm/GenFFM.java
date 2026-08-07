@@ -63,6 +63,11 @@ public class GenFFM {
       }
       methods = cls.getDeclaredMethods();
 
+      //sort methods
+      Arrays.sort(methods, (m1, m2) -> {
+        return m1.toGenericString().compareTo(m2.toGenericString());
+      });
+
       src.append("package javaforce.ffm;\n");
       src.append("\n");
       if (basecls.equals("X11API")) {

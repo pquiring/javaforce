@@ -30,17 +30,17 @@ public class PipesFFM implements PipesAPI {
     return instance;
   }
 
-  private MethodHandle pipeCreate;
-  public long pipeCreate(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pipeCreate.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle pipeRead;
+  public int pipeRead(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)pipeRead.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pipeWrite;
   public int pipeWrite(java.lang.String a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)pipeWrite.invokeExact(arena.allocateFrom(a1),_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle pipeCreate;
+  public long pipeCreate(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pipeCreate.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle pipeClose;
   public void pipeClose(long a1) { try { pipeClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle pipeRead;
-  public int pipeRead(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)pipeRead.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
 
   private boolean ffm_init() {
@@ -51,10 +51,10 @@ public class PipesFFM implements PipesAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    pipeCreate = ffm.getFunctionPtr("_pipeCreate", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_BOOLEAN));
-    pipeWrite = ffm.getFunctionPtr("_pipeWrite", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
-    pipeClose = ffm.getFunctionPtr("_pipeClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     pipeRead = ffm.getFunctionPtr("_pipeRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    pipeWrite = ffm.getFunctionPtr("_pipeWrite", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
+    pipeCreate = ffm.getFunctionPtr("_pipeCreate", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_BOOLEAN));
+    pipeClose = ffm.getFunctionPtr("_pipeClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     if (FFM.debug) JFLog.log("PipesFFM init complete");
     return true;
   }
