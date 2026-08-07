@@ -36,11 +36,11 @@ public class SpeexFFM implements SpeexAPI {
   private MethodHandle speexDenoise;
   public void speexDenoise(long a1,short[] a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);speexDenoise.invokeExact(a1,_array_a2,a3);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
 
-  private MethodHandle speexFree;
-  public void speexFree(long a1) { try { speexFree.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
   private MethodHandle speexEcho;
   public void speexEcho(long a1,short[] a2,short[] a3,short[] a4,int a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);speexEcho.invokeExact(a1,_array_a2,_array_a3,_array_a4,a5);FFM.copyBack(_array_a2,a2);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle speexFree;
+  public void speexFree(long a1) { try { speexFree.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
 
   private boolean ffm_init() {
@@ -53,8 +53,8 @@ public class SpeexFFM implements SpeexAPI {
 
     speexCreate = ffm.getFunctionPtr("_speexCreate", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT));
     speexDenoise = ffm.getFunctionPtr("_speexDenoise", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT));
-    speexFree = ffm.getFunctionPtr("_speexFree", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     speexEcho = ffm.getFunctionPtr("_speexEcho", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,ADDRESS,ADDRESS,JAVA_INT));
+    speexFree = ffm.getFunctionPtr("_speexFree", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     if (FFM.debug) JFLog.log("SpeexFFM init complete");
     return true;
   }

@@ -34,95 +34,83 @@ public class MediaFFM implements MediaAPI {
   private MethodHandle getDuration;
   public long getDuration(long a1) { try { long _ret_value_ = (long)getDuration.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle audioEncoderGetAudioFramesize;
-  public int audioEncoderGetAudioFramesize(long a1) { try { int _ret_value_ = (int)audioEncoderGetAudioFramesize.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle inputClose;
+  public boolean inputClose(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputClose.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle videoDecoderChange;
-  public boolean videoDecoderChange(long a1,int a2,int a3) { try { boolean _ret_value_ = (boolean)videoDecoderChange.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle inputSeek;
+  public boolean inputSeek(long a1,javaforce.media.MediaIO a2,long a3) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputSeek.invokeExact(a1,FFM.upcall_MediaIO,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle videoDecoderGetHeight;
-  public int videoDecoderGetHeight(long a1) { try { int _ret_value_ = (int)videoDecoderGetHeight.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle inputRead;
+  public int inputRead(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)inputRead.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle videoEncoderStop;
-  public void videoEncoderStop(long a1) { try { videoEncoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle getPacketKeyFrame;
+  public boolean getPacketKeyFrame(long a1) { try { boolean _ret_value_ = (boolean)getPacketKeyFrame.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle videoEncoderStart;
-  public long videoEncoderStart(int a1,int a2,int a3,int a4,float a5,int a6) { try { long _ret_value_ = (long)videoEncoderStart.invokeExact(a1,a2,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle videoDecoderStop;
-  public void videoDecoderStop(long a1) { try { videoDecoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle videoDecoderGetFrameRate;
-  public float videoDecoderGetFrameRate(long a1) { try { float _ret_value_ = (float)videoDecoderGetFrameRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle compareFrames;
-  public float compareFrames(int[] a1,int[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a2 = FFM.toMemory(arena, a2);float _ret_value_ = (float)compareFrames.invokeExact(_array_a1,_array_a2,a3,a4);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle videoDecoderGetWidth;
-  public int videoDecoderGetWidth(long a1) { try { int _ret_value_ = (int)videoDecoderGetWidth.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle videoDecoderDecode;
-  public int[] videoDecoderDecode(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();videoDecoderDecode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle videoEncoderEncode;
-  public byte[] videoEncoderEncode(long a1,int[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();videoEncoderEncode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle inputOpenAudio;
-  public boolean inputOpenAudio(long a1,javaforce.media.MediaIO a2,int a3,int a4) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputOpenAudio.invokeExact(a1,FFM.upcall_MediaIO,a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle audioDecoderStart;
-  public long audioDecoderStart(int a1,int a2,int a3) { try { long _ret_value_ = (long)audioDecoderStart.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle audioDecoderStop;
-  public void audioDecoderStop(long a1) { try { audioDecoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle audioDecoderDecode;
-  public short[] audioDecoderDecode(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();audioDecoderDecode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (short[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle inputOpenFile;
-  public long inputOpenFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)inputOpenFile.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle audioDecoderGetChannels;
-  public int audioDecoderGetChannels(long a1) { try { int _ret_value_ = (int)audioDecoderGetChannels.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getAudioBitRate;
-  public int getAudioBitRate(long a1) { try { int _ret_value_ = (int)getAudioBitRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle audioDecoderChange;
-  public boolean audioDecoderChange(long a1,int a2,int a3) { try { boolean _ret_value_ = (boolean)audioDecoderChange.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle audioEncoderStart;
-  public long audioEncoderStart(int a1,int a2,int a3,int a4) { try { long _ret_value_ = (long)audioEncoderStart.invokeExact(a1,a2,a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle audioEncoderStop;
-  public void audioEncoderStop(long a1) { try { audioEncoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle getVideoHeight;
-  public int getVideoHeight(long a1) { try { int _ret_value_ = (int)getVideoHeight.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle audioEncoderEncode;
-  public byte[] audioEncoderEncode(long a1,short[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();audioEncoderEncode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle getAudioStream;
-  public int getAudioStream(long a1) { try { int _ret_value_ = (int)getAudioStream.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getAudioSampleRate;
-  public int getAudioSampleRate(long a1) { try { int _ret_value_ = (int)getAudioSampleRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle getVideoStream;
+  public int getVideoStream(long a1) { try { int _ret_value_ = (int)getVideoStream.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle outputCreateIO;
   public long outputCreateIO(javaforce.media.MediaIO a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); FFM.setMediaIO(a1);long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.upcall_MediaIO,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle audioDecoderGetSampleRate;
-  public int audioDecoderGetSampleRate(long a1) { try { int _ret_value_ = (int)audioDecoderGetSampleRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle inputOpenAudio;
+  public boolean inputOpenAudio(long a1,javaforce.media.MediaIO a2,int a3,int a4) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputOpenAudio.invokeExact(a1,FFM.upcall_MediaIO,a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle outputClose;
+  public boolean outputClose(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)outputClose.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle getVideoKeyFrameInterval;
+  public int getVideoKeyFrameInterval(long a1) { try { int _ret_value_ = (int)getVideoKeyFrameInterval.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle audioDecoderStart;
+  public long audioDecoderStart(int a1,int a2,int a3) { try { long _ret_value_ = (long)audioDecoderStart.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle videoDecoderGetWidth;
+  public int videoDecoderGetWidth(long a1) { try { int _ret_value_ = (int)videoDecoderGetWidth.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle addVideoStream;
+  public int addVideoStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6,float a7,int a8) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)addVideoStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6,a7,a8);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle videoEncoderStop;
+  public void videoEncoderStop(long a1) { try { videoEncoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle videoEncoderEncode;
+  public byte[] videoEncoderEncode(long a1,int[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();videoEncoderEncode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle getAudioBitRate;
+  public int getAudioBitRate(long a1) { try { int _ret_value_ = (int)getAudioBitRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle videoDecoderStart;
   public long videoDecoderStart(int a1,int a2,int a3) { try { long _ret_value_ = (long)videoDecoderStart.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle getVideoCodecID;
-  public int getVideoCodecID(long a1) { try { int _ret_value_ = (int)getVideoCodecID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle videoDecoderChange;
+  public boolean videoDecoderChange(long a1,int a2,int a3) { try { boolean _ret_value_ = (boolean)videoDecoderChange.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle getVideoBitRate;
-  public int getVideoBitRate(long a1) { try { int _ret_value_ = (int)getVideoBitRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle videoDecoderStop;
+  public void videoDecoderStop(long a1) { try { videoDecoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle getVideoHeight;
+  public int getVideoHeight(long a1) { try { int _ret_value_ = (int)getVideoHeight.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle getPacketData;
+  public int getPacketData(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)getPacketData.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle addAudioStream;
+  public int addAudioStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)addAudioStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle writeHeader;
+  public boolean writeHeader(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)writeHeader.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle audioDecoderGetChannels;
+  public int audioDecoderGetChannels(long a1) { try { int _ret_value_ = (int)audioDecoderGetChannels.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle mediaSetLogging;
+  public void mediaSetLogging(boolean a1) { try { mediaSetLogging.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle outputCreateFile;
+  public long outputCreateFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)outputCreateFile.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle audioEncoderStart;
+  public long audioEncoderStart(int a1,int a2,int a3,int a4) { try { long _ret_value_ = (long)audioEncoderStart.invokeExact(a1,a2,a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputOpenIO;
   public long inputOpenIO(javaforce.media.MediaIO a1) { try { FFM.setMediaIO(a1);long _ret_value_ = (long)inputOpenIO.invokeExact(FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -130,59 +118,71 @@ public class MediaFFM implements MediaAPI {
   private MethodHandle getVideoFrameRate;
   public float getVideoFrameRate(long a1) { try { float _ret_value_ = (float)getVideoFrameRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle getVideoWidth;
-  public int getVideoWidth(long a1) { try { int _ret_value_ = (int)getVideoWidth.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getAudioChannels;
-  public int getAudioChannels(long a1) { try { int _ret_value_ = (int)getAudioChannels.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle mediaSetLogging;
-  public void mediaSetLogging(boolean a1) { try { mediaSetLogging.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle getVideoCodecID;
+  public int getVideoCodecID(long a1) { try { int _ret_value_ = (int)getVideoCodecID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputOpenVideo;
   public boolean inputOpenVideo(long a1,javaforce.media.MediaIO a2,int a3,int a4) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputOpenVideo.invokeExact(a1,FFM.upcall_MediaIO,a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle outputCreateFile;
-  public long outputCreateFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)outputCreateFile.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle getAudioSampleRate;
+  public int getAudioSampleRate(long a1) { try { int _ret_value_ = (int)getAudioSampleRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle getVideoStream;
-  public int getVideoStream(long a1) { try { int _ret_value_ = (int)getVideoStream.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle addAudioStream;
-  public int addAudioStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)addAudioStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getPacketKeyFrame;
-  public boolean getPacketKeyFrame(long a1) { try { boolean _ret_value_ = (boolean)getPacketKeyFrame.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle writeHeader;
-  public boolean writeHeader(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)writeHeader.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle getPacketData;
-  public int getPacketData(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)getPacketData.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getAudioCodecID;
-  public int getAudioCodecID(long a1) { try { int _ret_value_ = (int)getAudioCodecID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle addVideoStream;
-  public int addVideoStream(long a1,javaforce.media.MediaIO a2,int a3,int a4,int a5,int a6,float a7,int a8) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)addVideoStream.invokeExact(a1,FFM.upcall_MediaIO,a3,a4,a5,a6,a7,a8);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getVideoKeyFrameInterval;
-  public int getVideoKeyFrameInterval(long a1) { try { int _ret_value_ = (int)getVideoKeyFrameInterval.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle outputClose;
-  public boolean outputClose(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)outputClose.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle audioDecoderGetSampleRate;
+  public int audioDecoderGetSampleRate(long a1) { try { int _ret_value_ = (int)audioDecoderGetSampleRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle writePacket;
   public boolean writePacket(long a1,javaforce.media.MediaIO a2,int a3,byte[] a4,int a5,int a6,boolean a7) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)writePacket.invokeExact(a1,FFM.upcall_MediaIO,a3,_array_a4,a5,a6,a7);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle inputRead;
-  public int inputRead(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);int _ret_value_ = (int)inputRead.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle videoDecoderGetFrameRate;
+  public float videoDecoderGetFrameRate(long a1) { try { float _ret_value_ = (float)videoDecoderGetFrameRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle inputSeek;
-  public boolean inputSeek(long a1,javaforce.media.MediaIO a2,long a3) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputSeek.invokeExact(a1,FFM.upcall_MediaIO,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle getAudioChannels;
+  public int getAudioChannels(long a1) { try { int _ret_value_ = (int)getAudioChannels.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle inputClose;
-  public boolean inputClose(long a1,javaforce.media.MediaIO a2) { try { FFM.setMediaIO(a2);boolean _ret_value_ = (boolean)inputClose.invokeExact(a1,FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle audioEncoderStop;
+  public void audioEncoderStop(long a1) { try { audioEncoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle audioDecoderStop;
+  public void audioDecoderStop(long a1) { try { audioDecoderStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle getVideoBitRate;
+  public int getVideoBitRate(long a1) { try { int _ret_value_ = (int)getVideoBitRate.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle videoDecoderGetHeight;
+  public int videoDecoderGetHeight(long a1) { try { int _ret_value_ = (int)videoDecoderGetHeight.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle audioDecoderChange;
+  public boolean audioDecoderChange(long a1,int a2,int a3) { try { boolean _ret_value_ = (boolean)audioDecoderChange.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle inputOpenFile;
+  public long inputOpenFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)inputOpenFile.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle getVideoWidth;
+  public int getVideoWidth(long a1) { try { int _ret_value_ = (int)getVideoWidth.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle videoDecoderDecode;
+  public int[] videoDecoderDecode(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();videoDecoderDecode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle getAudioStream;
+  public int getAudioStream(long a1) { try { int _ret_value_ = (int)getAudioStream.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle videoEncoderStart;
+  public long videoEncoderStart(int a1,int a2,int a3,int a4,float a5,int a6) { try { long _ret_value_ = (long)videoEncoderStart.invokeExact(a1,a2,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle compareFrames;
+  public float compareFrames(int[] a1,int[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);MemorySegment _array_a2 = FFM.toMemory(arena, a2);float _ret_value_ = (float)compareFrames.invokeExact(_array_a1,_array_a2,a3,a4);FFM.copyBack(_array_a1,a1);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle getAudioCodecID;
+  public int getAudioCodecID(long a1) { try { int _ret_value_ = (int)getAudioCodecID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle audioDecoderDecode;
+  public short[] audioDecoderDecode(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();audioDecoderDecode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (short[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle audioEncoderEncode;
+  public byte[] audioEncoderEncode(long a1,short[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);FFM.createFFMArray();audioEncoderEncode.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle audioEncoderGetAudioFramesize;
+  public int audioEncoderGetAudioFramesize(long a1) { try { int _ret_value_ = (int)audioEncoderGetAudioFramesize.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
 
   private boolean ffm_init() {
@@ -197,56 +197,56 @@ public class MediaFFM implements MediaAPI {
     try {if (!(boolean)init.invokeExact(libs[0].getPath(arena),libs[1].getPath(arena),libs[2].getPath(arena),libs[3].getPath(arena),libs[4].getPath(arena),libs[5].getPath(arena),libs[6].getPath(arena))) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
     getDuration = ffm.getFunctionPtr("_getDuration", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));
-    audioEncoderGetAudioFramesize = ffm.getFunctionPtr("_audioEncoderGetAudioFramesize", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    videoDecoderChange = ffm.getFunctionPtr("_videoDecoderChange", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_INT));
-    videoDecoderGetHeight = ffm.getFunctionPtr("_videoDecoderGetHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    videoEncoderStop = ffm.getFunctionPtr("_videoEncoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    videoEncoderStart = ffm.getFunctionPtr("_videoEncoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_FLOAT,JAVA_INT));
-    videoDecoderStop = ffm.getFunctionPtr("_videoDecoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    videoDecoderGetFrameRate = ffm.getFunctionPtr("_videoDecoderGetFrameRate", ffm.getFunctionDesciptor(JAVA_FLOAT,JAVA_LONG));
-    compareFrames = ffm.getFunctionPtr("_compareFrames", ffm.getFunctionDesciptor(JAVA_FLOAT,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
-    videoDecoderGetWidth = ffm.getFunctionPtr("_videoDecoderGetWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    videoDecoderDecode = ffm.getFunctionPtr("_videoDecoderDecode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    videoEncoderEncode = ffm.getFunctionPtr("_videoEncoderEncode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    inputOpenAudio = ffm.getFunctionPtr("_inputOpenAudio", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    audioDecoderStart = ffm.getFunctionPtr("_audioDecoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT));
-    audioDecoderStop = ffm.getFunctionPtr("_audioDecoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    audioDecoderDecode = ffm.getFunctionPtr("_audioDecoderDecode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    inputOpenFile = ffm.getFunctionPtr("_inputOpenFile", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
-    audioDecoderGetChannels = ffm.getFunctionPtr("_audioDecoderGetChannels", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    getAudioBitRate = ffm.getFunctionPtr("_getAudioBitRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    audioDecoderChange = ffm.getFunctionPtr("_audioDecoderChange", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_INT));
-    audioEncoderStart = ffm.getFunctionPtr("_audioEncoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
-    audioEncoderStop = ffm.getFunctionPtr("_audioEncoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    getVideoHeight = ffm.getFunctionPtr("_getVideoHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    audioEncoderEncode = ffm.getFunctionPtr("_audioEncoderEncode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    getAudioStream = ffm.getFunctionPtr("_getAudioStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    getAudioSampleRate = ffm.getFunctionPtr("_getAudioSampleRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    inputClose = ffm.getFunctionPtr("_inputClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    inputSeek = ffm.getFunctionPtr("_inputSeek", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_LONG));
+    inputRead = ffm.getFunctionPtr("_inputRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS));
+    getPacketKeyFrame = ffm.getFunctionPtr("_getPacketKeyFrame", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
+    getVideoStream = ffm.getFunctionPtr("_getVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     outputCreateIO = ffm.getFunctionPtr("_outputCreateIO", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
-    audioDecoderGetSampleRate = ffm.getFunctionPtr("_audioDecoderGetSampleRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    inputOpenAudio = ffm.getFunctionPtr("_inputOpenAudio", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    outputClose = ffm.getFunctionPtr("_outputClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    getVideoKeyFrameInterval = ffm.getFunctionPtr("_getVideoKeyFrameInterval", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    audioDecoderStart = ffm.getFunctionPtr("_audioDecoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT));
+    videoDecoderGetWidth = ffm.getFunctionPtr("_videoDecoderGetWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    addVideoStream = ffm.getFunctionPtr("_addVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_FLOAT,JAVA_INT));
+    videoEncoderStop = ffm.getFunctionPtr("_videoEncoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    videoEncoderEncode = ffm.getFunctionPtr("_videoEncoderEncode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    getAudioBitRate = ffm.getFunctionPtr("_getAudioBitRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     videoDecoderStart = ffm.getFunctionPtr("_videoDecoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT));
-    getVideoCodecID = ffm.getFunctionPtr("_getVideoCodecID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    getVideoBitRate = ffm.getFunctionPtr("_getVideoBitRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    videoDecoderChange = ffm.getFunctionPtr("_videoDecoderChange", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_INT));
+    videoDecoderStop = ffm.getFunctionPtr("_videoDecoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    getVideoHeight = ffm.getFunctionPtr("_getVideoHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    getPacketData = ffm.getFunctionPtr("_getPacketData", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    addAudioStream = ffm.getFunctionPtr("_addAudioStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
+    writeHeader = ffm.getFunctionPtr("_writeHeader", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    audioDecoderGetChannels = ffm.getFunctionPtr("_audioDecoderGetChannels", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    mediaSetLogging = ffm.getFunctionPtr("_mediaSetLogging", ffm.getFunctionDesciptorVoid(JAVA_BOOLEAN));
+    outputCreateFile = ffm.getFunctionPtr("_outputCreateFile", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
+    audioEncoderStart = ffm.getFunctionPtr("_audioEncoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
     inputOpenIO = ffm.getFunctionPtr("_inputOpenIO", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
     getVideoFrameRate = ffm.getFunctionPtr("_getVideoFrameRate", ffm.getFunctionDesciptor(JAVA_FLOAT,JAVA_LONG));
-    getVideoWidth = ffm.getFunctionPtr("_getVideoWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    getAudioChannels = ffm.getFunctionPtr("_getAudioChannels", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    mediaSetLogging = ffm.getFunctionPtr("_mediaSetLogging", ffm.getFunctionDesciptorVoid(JAVA_BOOLEAN));
+    getVideoCodecID = ffm.getFunctionPtr("_getVideoCodecID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     inputOpenVideo = ffm.getFunctionPtr("_inputOpenVideo", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    outputCreateFile = ffm.getFunctionPtr("_outputCreateFile", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
-    getVideoStream = ffm.getFunctionPtr("_getVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    addAudioStream = ffm.getFunctionPtr("_addAudioStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
-    getPacketKeyFrame = ffm.getFunctionPtr("_getPacketKeyFrame", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
-    writeHeader = ffm.getFunctionPtr("_writeHeader", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
-    getPacketData = ffm.getFunctionPtr("_getPacketData", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    getAudioCodecID = ffm.getFunctionPtr("_getAudioCodecID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    addVideoStream = ffm.getFunctionPtr("_addVideoStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_FLOAT,JAVA_INT));
-    getVideoKeyFrameInterval = ffm.getFunctionPtr("_getVideoKeyFrameInterval", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
-    outputClose = ffm.getFunctionPtr("_outputClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    getAudioSampleRate = ffm.getFunctionPtr("_getAudioSampleRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    audioDecoderGetSampleRate = ffm.getFunctionPtr("_audioDecoderGetSampleRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     writePacket = ffm.getFunctionPtr("_writePacket", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT,JAVA_BOOLEAN));
-    inputRead = ffm.getFunctionPtr("_inputRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS));
-    inputSeek = ffm.getFunctionPtr("_inputSeek", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_LONG));
-    inputClose = ffm.getFunctionPtr("_inputClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    videoDecoderGetFrameRate = ffm.getFunctionPtr("_videoDecoderGetFrameRate", ffm.getFunctionDesciptor(JAVA_FLOAT,JAVA_LONG));
+    getAudioChannels = ffm.getFunctionPtr("_getAudioChannels", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    audioEncoderStop = ffm.getFunctionPtr("_audioEncoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    audioDecoderStop = ffm.getFunctionPtr("_audioDecoderStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    getVideoBitRate = ffm.getFunctionPtr("_getVideoBitRate", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    videoDecoderGetHeight = ffm.getFunctionPtr("_videoDecoderGetHeight", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    audioDecoderChange = ffm.getFunctionPtr("_audioDecoderChange", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,JAVA_INT));
+    inputOpenFile = ffm.getFunctionPtr("_inputOpenFile", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
+    getVideoWidth = ffm.getFunctionPtr("_getVideoWidth", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    videoDecoderDecode = ffm.getFunctionPtr("_videoDecoderDecode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    getAudioStream = ffm.getFunctionPtr("_getAudioStream", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    videoEncoderStart = ffm.getFunctionPtr("_videoEncoderStart", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_FLOAT,JAVA_INT));
+    compareFrames = ffm.getFunctionPtr("_compareFrames", ffm.getFunctionDesciptor(JAVA_FLOAT,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));
+    getAudioCodecID = ffm.getFunctionPtr("_getAudioCodecID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
+    audioDecoderDecode = ffm.getFunctionPtr("_audioDecoderDecode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    audioEncoderEncode = ffm.getFunctionPtr("_audioEncoderEncode", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    audioEncoderGetAudioFramesize = ffm.getFunctionPtr("_audioEncoderGetAudioFramesize", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     if (FFM.debug) JFLog.log("MediaFFM init complete");
     return true;
   }

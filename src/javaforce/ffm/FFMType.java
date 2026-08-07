@@ -20,6 +20,10 @@ public abstract class FFMType {
     public String getType() {return "int";}
     public int getValue() {return value;}
     public void setValue(int value) {this.value = value;}
+    public void set(Integer value) {this.value = value.value;}
+    public Integer() {}
+    public Integer(int value) {setValue(value);}
+    public Integer(Integer value) {setValue(value.value);}
   }
 
   public static class Long extends FFMType {
@@ -27,6 +31,10 @@ public abstract class FFMType {
     public String getType() {return "long";}
     public long getValue() {return value;}
     public void setValue(long value) {this.value = value;}
+    public void set(Long value) {this.value = value.value;}
+    public Long() {}
+    public Long(long value) {setValue(value);}
+    public Long(Long value) {setValue(value.value);}
   }
 
   public static boolean isType(Class<?> type) {

@@ -108,6 +108,14 @@ public class Window implements UIEvents {
     return UIAPI.getInstance().uiWindowCreateSurface(ctx, vkInstance);
   }
 
+  /** Get Framebuffer Size
+   *  [0] = width
+   *  [1] = height
+   */
+  public int[] getFramebufferSize() {
+    return UIAPI.getInstance().uiWindowGetFramebufferSize(ctx);
+  }
+
   /** Set the OpenGL Context current for this window. */
   public void setCurrent() {
     UIAPI.getInstance().uiWindowSetCurrent(ctx);

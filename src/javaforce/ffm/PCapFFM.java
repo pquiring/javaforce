@@ -30,14 +30,11 @@ public class PCapFFM implements PCapAPI {
     return instance;
   }
 
-  private MethodHandle pcapListLocalInterfaces;
-  public java.lang.String[] pcapListLocalInterfaces() { try { FFM.createFFMArray();pcapListLocalInterfaces.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle pcapCompile;
-  public boolean pcapCompile(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapCompile.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
   private MethodHandle pcapInit;
   public boolean pcapInit(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapInit.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle pcapStart;
+  public long pcapStart(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pcapStart.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pcapWrite;
   public boolean pcapWrite(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);boolean _ret_value_ = (boolean)pcapWrite.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -48,8 +45,11 @@ public class PCapFFM implements PCapAPI {
   private MethodHandle pcapStop;
   public void pcapStop(long a1) { try { pcapStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
-  private MethodHandle pcapStart;
-  public long pcapStart(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pcapStart.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle pcapCompile;
+  public boolean pcapCompile(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapCompile.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle pcapListLocalInterfaces;
+  public java.lang.String[] pcapListLocalInterfaces() { try { FFM.createFFMArray();pcapListLocalInterfaces.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
 
   private boolean ffm_init() {
@@ -60,13 +60,13 @@ public class PCapFFM implements PCapAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    pcapListLocalInterfaces = ffm.getFunctionPtr("_pcapListLocalInterfaces", ffm.getFunctionDesciptorVoid());
-    pcapCompile = ffm.getFunctionPtr("_pcapCompile", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
     pcapInit = ffm.getFunctionPtr("_pcapInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    pcapStart = ffm.getFunctionPtr("_pcapStart", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_BOOLEAN));
     pcapWrite = ffm.getFunctionPtr("_pcapWrite", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
     pcapRead = ffm.getFunctionPtr("_pcapRead", ffm.getFunctionDesciptorVoid(JAVA_LONG));
     pcapStop = ffm.getFunctionPtr("_pcapStop", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    pcapStart = ffm.getFunctionPtr("_pcapStart", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_BOOLEAN));
+    pcapCompile = ffm.getFunctionPtr("_pcapCompile", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    pcapListLocalInterfaces = ffm.getFunctionPtr("_pcapListLocalInterfaces", ffm.getFunctionDesciptorVoid());
     if (FFM.debug) JFLog.log("PCapFFM init complete");
     return true;
   }

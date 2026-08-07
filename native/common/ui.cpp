@@ -142,6 +142,15 @@ void* uiWindowCreateSurface(GLFWContextFFM* ctx, VkInstance instance)
   return (void*)surface;
 }
 
+int* uiWindowGetFramebufferSize(GLFWContextFFM* ctx)
+{
+  int width, height;
+  glfwGetFramebufferSize(ctx->window, &width, &height);
+  jint* size = ffm->newIntArray(2);
+  size[0] = width;
+  size[1] = height;
+  return (int*)size;
+}
 
 void uiWindowSetCurrent(GLFWContextFFM* ctx)
 {
@@ -226,6 +235,7 @@ extern "C" {
   JNIEXPORT jboolean (*_uiInit)() = &uiInit;
   JNIEXPORT GLFWContextFFM* (*_uiWindowCreate)(jint,const char*,jint,jint,GLFWContextFFM*) = &uiWindowCreate;
   JNIEXPORT void* (*_uiWindowCreateSurface)(GLFWContextFFM*,VkInstance) = &uiWindowCreateSurface;
+  JNIEXPORT int* (*_uiWindowGetFramebufferSize)(GLFWContextFFM*) = &uiWindowGetFramebufferSize;
   JNIEXPORT void (*_uiWindowDestroy)(GLFWContextFFM*) = &uiWindowDestroy;
   JNIEXPORT void (*_uiWindowSetCurrent)(GLFWContextFFM*) = &uiWindowSetCurrent;
 //  JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*, const char*,jint,jint) = &uiWindowSetIcon;

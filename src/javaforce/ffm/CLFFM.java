@@ -30,26 +30,17 @@ public class CLFFM implements CLAPI {
     return instance;
   }
 
-  private MethodHandle clCreateBuffer;
-  public long clCreateBuffer(long a1,int a2,int a3) { try { long _ret_value_ = (long)clCreateBuffer.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle clCreate;
+  public long clCreate(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clCreate.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle clWriteBufferi8;
-  public boolean clWriteBufferi8(long a1,long a2,byte[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clWriteBufferi8.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle clKernel;
+  public long clKernel(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clKernel.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle clFreeKernel;
-  public boolean clFreeKernel(long a1,long a2) { try { boolean _ret_value_ = (boolean)clFreeKernel.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle clSetArg;
+  public boolean clSetArg(long a1,long a2,int a3,byte[] a4,int a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);boolean _ret_value_ = (boolean)clSetArg.invokeExact(a1,a2,a3,_array_a4,a5);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle clFreeBuffer;
-  public boolean clFreeBuffer(long a1,long a2) { try { boolean _ret_value_ = (boolean)clFreeBuffer.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle clWriteBufferf32;
-  public boolean clWriteBufferf32(long a1,long a2,float[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clWriteBufferf32.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle clReadBufferi8;
-  public boolean clReadBufferi8(long a1,long a2,byte[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clReadBufferi8.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle clReadBufferf32;
-  public boolean clReadBufferf32(long a1,long a2,float[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clReadBufferf32.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle clExecute;
+  public boolean clExecute(long a1,long a2,int a3) { try { boolean _ret_value_ = (boolean)clExecute.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle clExecute2;
   public boolean clExecute2(long a1,long a2,int a3,int a4) { try { boolean _ret_value_ = (boolean)clExecute2.invokeExact(a1,a2,a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -57,23 +48,32 @@ public class CLFFM implements CLAPI {
   private MethodHandle clExecute3;
   public boolean clExecute3(long a1,long a2,int a3,int a4,int a5) { try { boolean _ret_value_ = (boolean)clExecute3.invokeExact(a1,a2,a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle clExecute;
-  public boolean clExecute(long a1,long a2,int a3) { try { boolean _ret_value_ = (boolean)clExecute.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle clExecute4;
+  public boolean clExecute4(long a1,long a2,int a3,int a4,int a5,int a6) { try { boolean _ret_value_ = (boolean)clExecute4.invokeExact(a1,a2,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle clClose;
   public boolean clClose(long a1) { try { boolean _ret_value_ = (boolean)clClose.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle clCreate;
-  public long clCreate(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clCreate.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle clReadBufferi8;
+  public boolean clReadBufferi8(long a1,long a2,byte[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clReadBufferi8.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle clExecute4;
-  public boolean clExecute4(long a1,long a2,int a3,int a4,int a5,int a6) { try { boolean _ret_value_ = (boolean)clExecute4.invokeExact(a1,a2,a3,a4,a5,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle clFreeKernel;
+  public boolean clFreeKernel(long a1,long a2) { try { boolean _ret_value_ = (boolean)clFreeKernel.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle clSetArg;
-  public boolean clSetArg(long a1,long a2,int a3,byte[] a4,int a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);boolean _ret_value_ = (boolean)clSetArg.invokeExact(a1,a2,a3,_array_a4,a5);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle clCreateBuffer;
+  public long clCreateBuffer(long a1,int a2,int a3) { try { long _ret_value_ = (long)clCreateBuffer.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
-  private MethodHandle clKernel;
-  public long clKernel(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clKernel.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle clReadBufferf32;
+  public boolean clReadBufferf32(long a1,long a2,float[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clReadBufferf32.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle clWriteBufferf32;
+  public boolean clWriteBufferf32(long a1,long a2,float[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clWriteBufferf32.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle clFreeBuffer;
+  public boolean clFreeBuffer(long a1,long a2) { try { boolean _ret_value_ = (boolean)clFreeBuffer.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle clWriteBufferi8;
+  public boolean clWriteBufferi8(long a1,long a2,byte[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clWriteBufferi8.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
 
   private boolean ffm_init() {
@@ -87,21 +87,21 @@ public class CLFFM implements CLAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact(libs[0].getPath(arena))) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    clCreateBuffer = ffm.getFunctionPtr("_clCreateBuffer", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_INT));
-    clWriteBufferi8 = ffm.getFunctionPtr("_clWriteBufferi8", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
-    clFreeKernel = ffm.getFunctionPtr("_clFreeKernel", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG));
-    clFreeBuffer = ffm.getFunctionPtr("_clFreeBuffer", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG));
-    clWriteBufferf32 = ffm.getFunctionPtr("_clWriteBufferf32", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
-    clReadBufferi8 = ffm.getFunctionPtr("_clReadBufferi8", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
-    clReadBufferf32 = ffm.getFunctionPtr("_clReadBufferf32", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
+    clCreate = ffm.getFunctionPtr("_clCreate", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_INT));
+    clKernel = ffm.getFunctionPtr("_clKernel", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,ADDRESS));
+    clSetArg = ffm.getFunctionPtr("_clSetArg", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT));
+    clExecute = ffm.getFunctionPtr("_clExecute", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT));
     clExecute2 = ffm.getFunctionPtr("_clExecute2", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_INT));
     clExecute3 = ffm.getFunctionPtr("_clExecute3", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT));
-    clExecute = ffm.getFunctionPtr("_clExecute", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT));
-    clClose = ffm.getFunctionPtr("_clClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
-    clCreate = ffm.getFunctionPtr("_clCreate", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,JAVA_INT));
     clExecute4 = ffm.getFunctionPtr("_clExecute4", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
-    clSetArg = ffm.getFunctionPtr("_clSetArg", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT));
-    clKernel = ffm.getFunctionPtr("_clKernel", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,ADDRESS));
+    clClose = ffm.getFunctionPtr("_clClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
+    clReadBufferi8 = ffm.getFunctionPtr("_clReadBufferi8", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
+    clFreeKernel = ffm.getFunctionPtr("_clFreeKernel", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG));
+    clCreateBuffer = ffm.getFunctionPtr("_clCreateBuffer", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_INT));
+    clReadBufferf32 = ffm.getFunctionPtr("_clReadBufferf32", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
+    clWriteBufferf32 = ffm.getFunctionPtr("_clWriteBufferf32", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
+    clFreeBuffer = ffm.getFunctionPtr("_clFreeBuffer", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG));
+    clWriteBufferi8 = ffm.getFunctionPtr("_clWriteBufferi8", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG,ADDRESS,JAVA_INT));
     if (FFM.debug) JFLog.log("CLFFM init complete");
     return true;
   }

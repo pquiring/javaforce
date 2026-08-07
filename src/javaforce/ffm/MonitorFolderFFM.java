@@ -31,14 +31,14 @@ public class MonitorFolderFFM implements MonitorFolderAPI {
     return instance;
   }
 
+  private MethodHandle monitorFolderPoll;
+  public void monitorFolderPoll(long a1,javaforce.io.FolderListener a2) { try { FFM.setFolderListener(a2);monitorFolderPoll.invokeExact(a1,FFM.upcall_FolderListener_folderChangeEvent); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle monitorFolderCreate;
   public long monitorFolderCreate(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)monitorFolderCreate.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle monitorFolderClose;
   public void monitorFolderClose(long a1) { try { monitorFolderClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle monitorFolderPoll;
-  public void monitorFolderPoll(long a1,javaforce.io.FolderListener a2) { try { FFM.setFolderListener(a2);monitorFolderPoll.invokeExact(a1,FFM.upcall_FolderListener_folderChangeEvent); } catch (Throwable t) { JFLog.log(t); } }
 
 
   private boolean ffm_init() {
@@ -49,9 +49,9 @@ public class MonitorFolderFFM implements MonitorFolderAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
+    monitorFolderPoll = ffm.getFunctionPtr("_monitorFolderPoll", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
     monitorFolderCreate = ffm.getFunctionPtr("_monitorFolderCreate", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
     monitorFolderClose = ffm.getFunctionPtr("_monitorFolderClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    monitorFolderPoll = ffm.getFunctionPtr("_monitorFolderPoll", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
     if (FFM.debug) JFLog.log("MonitorFolderFFM init complete");
     return true;
   }

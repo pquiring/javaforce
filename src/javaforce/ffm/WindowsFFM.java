@@ -30,134 +30,8 @@ public class WindowsFFM implements WindowsAPI {
     return instance;
   }
 
-  private MethodHandle disableConsoleMode;
-  public void disableConsoleMode() { try { disableConsoleMode.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle shellExecute;
-  public boolean shellExecute(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)shellExecute.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle writeConsole;
-  public void writeConsole(int a1) { try { writeConsole.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle tapeDriveMinBlockSize;
-  public int tapeDriveMinBlockSize() { try { int _ret_value_ = (int)tapeDriveMinBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle tapeDriveDefaultBlockSize;
-  public int tapeDriveDefaultBlockSize() { try { int _ret_value_ = (int)tapeDriveDefaultBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle tapeLastError;
-  public int tapeLastError() { try { int _ret_value_ = (int)tapeLastError.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle vssListVols;
-  public java.lang.String[] vssListVols() { try { FFM.createFFMArray();vssListVols.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle changerMove;
-  public boolean changerMove(long a1,java.lang.String a2,java.lang.String a3,java.lang.String a4) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)changerMove.invokeExact(a1,arena.allocateFrom(a2),arena.allocateFrom(a3),arena.allocateFrom(a4));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vssListShadows;
-  public java.lang.String[][] vssListShadows() { try { FFM.createFFMArray();vssListShadows.invokeExact();return (java.lang.String[][])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle simulateCtrlAltDel;
-  public void simulateCtrlAltDel() { try { simulateCtrlAltDel.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle enableConsoleMode;
-  public void enableConsoleMode() { try { enableConsoleMode.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle vssDeleteShadowAll;
-  public boolean vssDeleteShadowAll() { try { boolean _ret_value_ = (boolean)vssDeleteShadowAll.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vssMountShadow;
-  public boolean vssMountShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssMountShadow.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle changerClose;
-  public void changerClose(long a1) { try { changerClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle vssUnmountShadow;
-  public boolean vssUnmountShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssUnmountShadow.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle tapeDriveMaxBlockSize;
-  public int tapeDriveMaxBlockSize() { try { int _ret_value_ = (int)tapeDriveMaxBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle closeSession;
-  public void closeSession(long a1) { try { closeSession.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle readConsole;
-  public char readConsole() { try { char _ret_value_ = (char)readConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return (char)-1;} }
-
-  private MethodHandle tapeMediaSize;
-  public long tapeMediaSize() { try { long _ret_value_ = (long)tapeMediaSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle setInputDesktop;
-  public void setInputDesktop() { try { setInputDesktop.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle findJDKHome;
-  public java.lang.String findJDKHome() { try { String _ret_value_ = FFM.getString((MemorySegment)findJDKHome.invokeExact());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle vssCreateShadow;
-  public boolean vssCreateShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssCreateShadow.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle vssDeleteShadow;
-  public boolean vssDeleteShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssDeleteShadow.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle executeSession;
-  public long executeSession(java.lang.String a1,java.lang.String[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);long _ret_value_ = (long)executeSession.invokeExact(arena.allocateFrom(a1),_array_a2);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getSessionID;
-  public int getSessionID() { try { int _ret_value_ = (int)getSessionID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle getConsolePos;
-  public int[] getConsolePos() { try { FFM.createFFMArray();getConsolePos.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle tapeMediaReadOnly;
-  public boolean tapeMediaReadOnly() { try { boolean _ret_value_ = (boolean)tapeMediaReadOnly.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle changerList;
-  public java.lang.String[] changerList(long a1) { try { FFM.createFFMArray();changerList.invokeExact(a1);return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle writeConsoleArray;
-  public void writeConsoleArray(byte[] a1,int a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);writeConsoleArray.invokeExact(_array_a1,a2,a3);FFM.copyBack(_array_a1,a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle getWindowRect;
-  public int[] getWindowRect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();getWindowRect.invokeExact(arena.allocateFrom(a1));return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle setSessionID;
-  public boolean setSessionID(long a1,int a2) { try { boolean _ret_value_ = (boolean)setSessionID.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle tapeMediaBlockSize;
-  public int tapeMediaBlockSize() { try { int _ret_value_ = (int)tapeMediaBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle changerOpen;
-  public long changerOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)changerOpen.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle revertToSelf;
-  public boolean revertToSelf() { try { boolean _ret_value_ = (boolean)revertToSelf.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle createProcessAsUser;
-  public boolean createProcessAsUser(java.lang.String a1,java.lang.String a2,java.lang.String a3,java.lang.String a4,java.lang.String a5,int a6) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)createProcessAsUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3),arena.allocateFrom(a4),arena.allocateFrom(a5),a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle impersonateUser;
-  public boolean impersonateUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)impersonateUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle getConsoleSize;
-  public int[] getConsoleSize() { try { FFM.createFFMArray();getConsoleSize.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
-
-  private MethodHandle peekConsole;
-  public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle peAddString;
-  public void peAddString(long a1,int a2,int a3,byte[] a4,int a5,int a6) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);peAddString.invokeExact(a1,a2,a3,_array_a4,a5,a6);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle tapeClose;
-  public void tapeClose(long a1) { try { tapeClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle tapeWrite;
-  public int tapeWrite(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)tapeWrite.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle peBegin;
-  public long peBegin(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)peBegin.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle peAddIcon;
-  public void peAddIcon(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);peAddIcon.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
+  private MethodHandle tapeOpen;
+  public long tapeOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)tapeOpen.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle tapeDrive;
   public boolean tapeDrive(long a1) { try { boolean _ret_value_ = (boolean)tapeDrive.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -168,23 +42,149 @@ public class WindowsFFM implements WindowsAPI {
   private MethodHandle tapeMedia;
   public boolean tapeMedia(long a1) { try { boolean _ret_value_ = (boolean)tapeMedia.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
-  private MethodHandle tapeRead;
-  public int tapeRead(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)tapeRead.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
-
-  private MethodHandle tapeSetpos;
-  public boolean tapeSetpos(long a1,long a2) { try { boolean _ret_value_ = (boolean)tapeSetpos.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
-
-  private MethodHandle peEnd;
-  public void peEnd(long a1) { try { peEnd.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
-
-  private MethodHandle tapeOpen;
-  public long tapeOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)tapeOpen.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  private MethodHandle peAddIcon;
+  public void peAddIcon(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);peAddIcon.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle tapeFormat;
   public boolean tapeFormat(long a1,int a2) { try { boolean _ret_value_ = (boolean)tapeFormat.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle tapeSetpos;
+  public boolean tapeSetpos(long a1,long a2) { try { boolean _ret_value_ = (boolean)tapeSetpos.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle tapeGetpos;
   public long tapeGetpos(long a1) { try { long _ret_value_ = (long)tapeGetpos.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle tapeWrite;
+  public int tapeWrite(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)tapeWrite.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle tapeClose;
+  public void tapeClose(long a1) { try { tapeClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle peBegin;
+  public long peBegin(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)peBegin.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle peEnd;
+  public void peEnd(long a1) { try { peEnd.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle tapeRead;
+  public int tapeRead(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)tapeRead.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle executeSession;
+  public long executeSession(java.lang.String a1,java.lang.String[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);long _ret_value_ = (long)executeSession.invokeExact(arena.allocateFrom(a1),_array_a2);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle impersonateUser;
+  public boolean impersonateUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)impersonateUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle revertToSelf;
+  public boolean revertToSelf() { try { boolean _ret_value_ = (boolean)revertToSelf.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle createProcessAsUser;
+  public boolean createProcessAsUser(java.lang.String a1,java.lang.String a2,java.lang.String a3,java.lang.String a4,java.lang.String a5,int a6) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)createProcessAsUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3),arena.allocateFrom(a4),arena.allocateFrom(a5),a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle findJDKHome;
+  public java.lang.String findJDKHome() { try { String _ret_value_ = FFM.getString((MemorySegment)findJDKHome.invokeExact());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle enableConsoleMode;
+  public void enableConsoleMode() { try { enableConsoleMode.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle tapeMediaBlockSize;
+  public int tapeMediaBlockSize() { try { int _ret_value_ = (int)tapeMediaBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle tapeDriveMinBlockSize;
+  public int tapeDriveMinBlockSize() { try { int _ret_value_ = (int)tapeDriveMinBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle setInputDesktop;
+  public void setInputDesktop() { try { setInputDesktop.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle peAddString;
+  public void peAddString(long a1,int a2,int a3,byte[] a4,int a5,int a6) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);peAddString.invokeExact(a1,a2,a3,_array_a4,a5,a6);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle disableConsoleMode;
+  public void disableConsoleMode() { try { disableConsoleMode.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle getConsolePos;
+  public int[] getConsolePos() { try { FFM.createFFMArray();getConsolePos.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle tapeMediaSize;
+  public long tapeMediaSize() { try { long _ret_value_ = (long)tapeMediaSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle tapeDriveMaxBlockSize;
+  public int tapeDriveMaxBlockSize() { try { int _ret_value_ = (int)tapeDriveMaxBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle setSessionID;
+  public boolean setSessionID(long a1,int a2) { try { boolean _ret_value_ = (boolean)setSessionID.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle peekConsole;
+  public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle writeConsole;
+  public void writeConsole(int a1) { try { writeConsole.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle closeSession;
+  public void closeSession(long a1) { try { closeSession.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle readConsole;
+  public char readConsole() { try { char _ret_value_ = (char)readConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return (char)-1;} }
+
+  private MethodHandle simulateCtrlAltDel;
+  public void simulateCtrlAltDel() { try { simulateCtrlAltDel.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle getSessionID;
+  public int getSessionID() { try { int _ret_value_ = (int)getSessionID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle shellExecute;
+  public boolean shellExecute(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)shellExecute.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle tapeMediaReadOnly;
+  public boolean tapeMediaReadOnly() { try { boolean _ret_value_ = (boolean)tapeMediaReadOnly.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle tapeLastError;
+  public int tapeLastError() { try { int _ret_value_ = (int)tapeLastError.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle getConsoleSize;
+  public int[] getConsoleSize() { try { FFM.createFFMArray();getConsoleSize.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle writeConsoleArray;
+  public void writeConsoleArray(byte[] a1,int a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);writeConsoleArray.invokeExact(_array_a1,a2,a3);FFM.copyBack(_array_a1,a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle tapeDriveDefaultBlockSize;
+  public int tapeDriveDefaultBlockSize() { try { int _ret_value_ = (int)tapeDriveDefaultBlockSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle getWindowRect;
+  public int[] getWindowRect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();getWindowRect.invokeExact(arena.allocateFrom(a1));return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vssMountShadow;
+  public boolean vssMountShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssMountShadow.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle changerClose;
+  public void changerClose(long a1) { try { changerClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle changerOpen;
+  public long changerOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)changerOpen.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vssListShadows;
+  public java.lang.String[][] vssListShadows() { try { FFM.createFFMArray();vssListShadows.invokeExact();return (java.lang.String[][])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vssCreateShadow;
+  public boolean vssCreateShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssCreateShadow.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle changerList;
+  public java.lang.String[] changerList(long a1) { try { FFM.createFFMArray();changerList.invokeExact(a1);return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
+  private MethodHandle vssDeleteShadow;
+  public boolean vssDeleteShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssDeleteShadow.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vssDeleteShadowAll;
+  public boolean vssDeleteShadowAll() { try { boolean _ret_value_ = (boolean)vssDeleteShadowAll.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vssUnmountShadow;
+  public boolean vssUnmountShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssUnmountShadow.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle changerMove;
+  public boolean changerMove(long a1,java.lang.String a2,java.lang.String a3,java.lang.String a4) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)changerMove.invokeExact(a1,arena.allocateFrom(a2),arena.allocateFrom(a3),arena.allocateFrom(a4));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle vssListVols;
+  public java.lang.String[] vssListVols() { try { FFM.createFFMArray();vssListVols.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
 
   private boolean ffm_init() {
@@ -195,58 +195,58 @@ public class WindowsFFM implements WindowsAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    disableConsoleMode = ffm.getFunctionPtr("_disableConsoleMode", ffm.getFunctionDesciptorVoid());
-    shellExecute = ffm.getFunctionPtr("_shellExecute", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS));
-    writeConsole = ffm.getFunctionPtr("_writeConsole", ffm.getFunctionDesciptorVoid(JAVA_INT));
-    tapeDriveMinBlockSize = ffm.getFunctionPtr("_tapeDriveMinBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
-    tapeDriveDefaultBlockSize = ffm.getFunctionPtr("_tapeDriveDefaultBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
-    tapeLastError = ffm.getFunctionPtr("_tapeLastError", ffm.getFunctionDesciptor(JAVA_INT));
-    vssListVols = ffm.getFunctionPtr("_vssListVols", ffm.getFunctionDesciptorVoid());
-    changerMove = ffm.getFunctionPtr("_changerMove", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,ADDRESS,ADDRESS));
-    vssListShadows = ffm.getFunctionPtr("_vssListShadows", ffm.getFunctionDesciptorVoid());
-    simulateCtrlAltDel = ffm.getFunctionPtr("_simulateCtrlAltDel", ffm.getFunctionDesciptorVoid());
-    enableConsoleMode = ffm.getFunctionPtr("_enableConsoleMode", ffm.getFunctionDesciptorVoid());
-    vssDeleteShadowAll = ffm.getFunctionPtr("_vssDeleteShadowAll", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    vssMountShadow = ffm.getFunctionPtr("_vssMountShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    changerClose = ffm.getFunctionPtr("_changerClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    vssUnmountShadow = ffm.getFunctionPtr("_vssUnmountShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    tapeDriveMaxBlockSize = ffm.getFunctionPtr("_tapeDriveMaxBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
-    closeSession = ffm.getFunctionPtr("_closeSession", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
-    tapeMediaSize = ffm.getFunctionPtr("_tapeMediaSize", ffm.getFunctionDesciptor(JAVA_LONG));
-    setInputDesktop = ffm.getFunctionPtr("_setInputDesktop", ffm.getFunctionDesciptorVoid());
-    findJDKHome = ffm.getFunctionPtr("_findJDKHome", ffm.getFunctionDesciptor(ADDRESS));
-    vssCreateShadow = ffm.getFunctionPtr("_vssCreateShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
-    vssDeleteShadow = ffm.getFunctionPtr("_vssDeleteShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
-    executeSession = ffm.getFunctionPtr("_executeSession", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
-    getSessionID = ffm.getFunctionPtr("_getSessionID", ffm.getFunctionDesciptor(JAVA_INT));
-    getConsolePos = ffm.getFunctionPtr("_getConsolePos", ffm.getFunctionDesciptorVoid());
-    tapeMediaReadOnly = ffm.getFunctionPtr("_tapeMediaReadOnly", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    changerList = ffm.getFunctionPtr("_changerList", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    writeConsoleArray = ffm.getFunctionPtr("_writeConsoleArray", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
-    getWindowRect = ffm.getFunctionPtr("_getWindowRect", ffm.getFunctionDesciptorVoid(ADDRESS));
-    setSessionID = ffm.getFunctionPtr("_setSessionID", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT));
-    tapeMediaBlockSize = ffm.getFunctionPtr("_tapeMediaBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
-    changerOpen = ffm.getFunctionPtr("_changerOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
-    revertToSelf = ffm.getFunctionPtr("_revertToSelf", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    createProcessAsUser = ffm.getFunctionPtr("_createProcessAsUser", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS,ADDRESS,ADDRESS,JAVA_INT));
-    impersonateUser = ffm.getFunctionPtr("_impersonateUser", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS));
-    getConsoleSize = ffm.getFunctionPtr("_getConsoleSize", ffm.getFunctionDesciptorVoid());
-    peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
-    peAddString = ffm.getFunctionPtr("_peAddString", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT));
-    tapeClose = ffm.getFunctionPtr("_tapeClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    tapeWrite = ffm.getFunctionPtr("_tapeWrite", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    peBegin = ffm.getFunctionPtr("_peBegin", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
-    peAddIcon = ffm.getFunctionPtr("_peAddIcon", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    tapeOpen = ffm.getFunctionPtr("_tapeOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
     tapeDrive = ffm.getFunctionPtr("_tapeDrive", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     vssInit = ffm.getFunctionPtr("_vssInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     tapeMedia = ffm.getFunctionPtr("_tapeMedia", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
-    tapeRead = ffm.getFunctionPtr("_tapeRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
-    tapeSetpos = ffm.getFunctionPtr("_tapeSetpos", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG));
-    peEnd = ffm.getFunctionPtr("_peEnd", ffm.getFunctionDesciptorVoid(JAVA_LONG));
-    tapeOpen = ffm.getFunctionPtr("_tapeOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    peAddIcon = ffm.getFunctionPtr("_peAddIcon", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
     tapeFormat = ffm.getFunctionPtr("_tapeFormat", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT));
+    tapeSetpos = ffm.getFunctionPtr("_tapeSetpos", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_LONG));
     tapeGetpos = ffm.getFunctionPtr("_tapeGetpos", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG));
+    tapeWrite = ffm.getFunctionPtr("_tapeWrite", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    tapeClose = ffm.getFunctionPtr("_tapeClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    peBegin = ffm.getFunctionPtr("_peBegin", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    peEnd = ffm.getFunctionPtr("_peEnd", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    tapeRead = ffm.getFunctionPtr("_tapeRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    executeSession = ffm.getFunctionPtr("_executeSession", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS));
+    impersonateUser = ffm.getFunctionPtr("_impersonateUser", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS));
+    revertToSelf = ffm.getFunctionPtr("_revertToSelf", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
+    createProcessAsUser = ffm.getFunctionPtr("_createProcessAsUser", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS,ADDRESS,ADDRESS,JAVA_INT));
+    findJDKHome = ffm.getFunctionPtr("_findJDKHome", ffm.getFunctionDesciptor(ADDRESS));
+    enableConsoleMode = ffm.getFunctionPtr("_enableConsoleMode", ffm.getFunctionDesciptorVoid());
+    tapeMediaBlockSize = ffm.getFunctionPtr("_tapeMediaBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
+    tapeDriveMinBlockSize = ffm.getFunctionPtr("_tapeDriveMinBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
+    setInputDesktop = ffm.getFunctionPtr("_setInputDesktop", ffm.getFunctionDesciptorVoid());
+    peAddString = ffm.getFunctionPtr("_peAddString", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT));
+    disableConsoleMode = ffm.getFunctionPtr("_disableConsoleMode", ffm.getFunctionDesciptorVoid());
+    getConsolePos = ffm.getFunctionPtr("_getConsolePos", ffm.getFunctionDesciptorVoid());
+    tapeMediaSize = ffm.getFunctionPtr("_tapeMediaSize", ffm.getFunctionDesciptor(JAVA_LONG));
+    tapeDriveMaxBlockSize = ffm.getFunctionPtr("_tapeDriveMaxBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
+    setSessionID = ffm.getFunctionPtr("_setSessionID", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT));
+    peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
+    writeConsole = ffm.getFunctionPtr("_writeConsole", ffm.getFunctionDesciptorVoid(JAVA_INT));
+    closeSession = ffm.getFunctionPtr("_closeSession", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
+    simulateCtrlAltDel = ffm.getFunctionPtr("_simulateCtrlAltDel", ffm.getFunctionDesciptorVoid());
+    getSessionID = ffm.getFunctionPtr("_getSessionID", ffm.getFunctionDesciptor(JAVA_INT));
+    shellExecute = ffm.getFunctionPtr("_shellExecute", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS));
+    tapeMediaReadOnly = ffm.getFunctionPtr("_tapeMediaReadOnly", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
+    tapeLastError = ffm.getFunctionPtr("_tapeLastError", ffm.getFunctionDesciptor(JAVA_INT));
+    getConsoleSize = ffm.getFunctionPtr("_getConsoleSize", ffm.getFunctionDesciptorVoid());
+    writeConsoleArray = ffm.getFunctionPtr("_writeConsoleArray", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
+    tapeDriveDefaultBlockSize = ffm.getFunctionPtr("_tapeDriveDefaultBlockSize", ffm.getFunctionDesciptor(JAVA_INT));
+    getWindowRect = ffm.getFunctionPtr("_getWindowRect", ffm.getFunctionDesciptorVoid(ADDRESS));
+    vssMountShadow = ffm.getFunctionPtr("_vssMountShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    changerClose = ffm.getFunctionPtr("_changerClose", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    changerOpen = ffm.getFunctionPtr("_changerOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    vssListShadows = ffm.getFunctionPtr("_vssListShadows", ffm.getFunctionDesciptorVoid());
+    vssCreateShadow = ffm.getFunctionPtr("_vssCreateShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS));
+    changerList = ffm.getFunctionPtr("_changerList", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    vssDeleteShadow = ffm.getFunctionPtr("_vssDeleteShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    vssDeleteShadowAll = ffm.getFunctionPtr("_vssDeleteShadowAll", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
+    vssUnmountShadow = ffm.getFunctionPtr("_vssUnmountShadow", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS));
+    changerMove = ffm.getFunctionPtr("_changerMove", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS,ADDRESS,ADDRESS));
+    vssListVols = ffm.getFunctionPtr("_vssListVols", ffm.getFunctionDesciptorVoid());
     if (FFM.debug) JFLog.log("WindowsFFM init complete");
     return true;
   }
