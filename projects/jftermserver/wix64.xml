@@ -23,7 +23,6 @@
           <fire:FirewallException Id="FirewallRule443" Name="jfTermServer443" Protocol="tcp" Port="443" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jftermserver.jar" Source="jftermserver.jar" />
-        <File Id="jficons.jar" Source="jficons.jar" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfTermServer" DisplayName="jfTermServer" Description="jfTermServer" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfTermServer" Wait="yes" />

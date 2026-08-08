@@ -24,7 +24,6 @@
           <fire:FirewallException Id="FirewallRule443" Name="jfAdmin443" Protocol="tcp" Port="443" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="jfadmin.jar" Source="jfadmin.jar" />
-        <File Id="jficons.jar" Source="jficons.jar" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfAdmin" DisplayName="jfAdmin" Description="jfAdmin" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfAdmin" Wait="yes" />

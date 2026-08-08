@@ -10,11 +10,15 @@ import javaforce.*;
  */
 
 public class GenIcons {
+  private static int count = 0;
   public static void main(String[] args) {
     try {
       File[] files = new File("src/javaforce/icons/svg").listFiles();
       for(File svg : files) {
         gen(svg);
+      }
+      if (count > 0) {
+        System.out.println("GenIcons : Generated " + count + " icons.");
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -37,5 +41,6 @@ public class GenIcons {
     ImageConvert.main(new String[] {temp, i32, "scale=50,50", "quiet=true"});
     ImageConvert.main(new String[] {temp, i16, "scale=25,25", "quiet=true"});
     new File(temp).delete();
+    count++;
   }
 }
