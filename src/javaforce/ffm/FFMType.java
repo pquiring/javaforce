@@ -39,7 +39,7 @@ public abstract class FFMType {
 
   public static boolean isType(Class<?> type) {
     try {
-      return (type.isAssignableFrom(FFMType.class));
+      return JF.isDerivedFrom(type, FFMType.class);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -48,7 +48,41 @@ public abstract class FFMType {
   public static boolean isType(Field field) {
     try {
       Class<?> cls = field.getType();
-      return (cls.isAssignableFrom(FFMType.class));
+      return isType(cls);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+  public static boolean isTypeInt(Class<?> cls) {
+    try {
+      return JF.isDerivedFrom(cls, FFMType.Integer.class);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+  public static boolean isTypeInt(Field field) {
+    try {
+      Class<?> cls = field.getType();
+      return isTypeInt(cls);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+  public static boolean isTypeLong(Class<?> cls) {
+    try {
+      return JF.isDerivedFrom(cls, FFMType.Long.class);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return false;
+  }
+  public static boolean isTypeLong(Field field) {
+    try {
+      Class<?> cls = field.getType();
+      return isTypeLong(cls);
     } catch (Exception e) {
       JFLog.log(e);
     }

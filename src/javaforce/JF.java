@@ -2160,4 +2160,8 @@ public class JF {
     String file = getClassFolder("jfadmin") + "/jfadmin.jar";
     return new File(file).exists();
   }
+
+  public static boolean isDerivedFrom(Class<?> superCls, Class<?> baseCls) {
+    return baseCls.isAssignableFrom(superCls);
+  }
 }

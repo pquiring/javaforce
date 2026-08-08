@@ -238,9 +238,9 @@ public class GenFFM {
             } else if (FFMStruct.isStruct(arg)) {
               ValueLayout_type = "ADDRESS";
             } else if (FFMType.isType(arg)) {
-              if (arg == FFMType.Integer.class) {
+              if (FFMType.isTypeInt(arg)) {
                 ValueLayout_type = "JAVA_INT";
-              } else if (arg == FFMType.Long.class) {
+              } else if (FFMType.isTypeLong(arg)) {
                 ValueLayout_type = "JAVA_LONG";
               }
             } else {
@@ -291,10 +291,10 @@ public class GenFFM {
               method.append("FFM.ref_object(" + arg_name + ")");
               object = arg_name;
             } else if (FFMType.isType(arg)) {
-              method.append(arg_name + ".getValue()");
+              method.append(arg_name + " == null ? 0 : " + arg_name + ".getValue()");
             } else if (FFMStruct.isStruct(arg)) {
               struct_names.add(arg_name);
-              method.append(arg_name + ".marshall(arena)");
+              method.append("(MemorySegment)(" + arg_name + " == null ? MemorySegment.NULL : " + arg_name + ".marshall(arena))");
               arena_needed = true;
             } else {
               method.append(arg_name);

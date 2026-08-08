@@ -1,5 +1,6 @@
 package javaforce.ffm;
 
+import java.io.*;
 import java.lang.foreign.*;
 import java.lang.reflect.*;
 import static java.lang.foreign.ValueLayout.*;
@@ -14,6 +15,8 @@ import javaforce.*;
  */
 
 public class FFMStruct {
+
+  public static boolean debug = true;
 
   public static final int FLAG_INLINE = 0x0001;
 
@@ -47,22 +50,64 @@ public class FFMStruct {
   public MemorySegment struct;
 
   private void init() {
+    if (debug) JFLog.log("FFMStruct.init() " + getClass().getName());
     Field[] jfields = getClass().getDeclaredFields();
+    jfields = sort(jfields);
     int cnt = jfields.length;
     fields = new FFMField[cnt];
     int offset = 0;
     for(int i=0;i<cnt;i++) {
-      String name = jfields[i].getName();
+      Field jfield = jfields[i];
+      if (jfield == null) {
+        JFLog.log("Error:Field == null");
+        continue;
+      }
+      String name = jfield.getName();
       int flags = 0;
       if (!name.startsWith("ptr_")) flags |= FLAG_INLINE;
-      int field_size = getFieldSize(jfields[i]);
-      int align_size = getFieldAlignment(jfields[i]);
+      int field_size = getFieldSize(jfield);
+      int align_size = getFieldAlignment(jfield);
       int padding = getPadding(offset, align_size);
       offset += padding;
       fields[i] = new FFMField(offset, name, flags);
       offset += field_size;
     }
+    if (offset == 0) {
+      JFLog.log("FFMStruct.init:Error:size == 0");
+    }
     size = offset;
+  }
+
+  private Field[] sort(Field[] in) {
+    int cnt = in.length;
+    Field[] sorted = new Field[cnt];
+    //load field order meta data
+    String clsName = getClass().getName();
+    String md = "/" + clsName.replace(".", "/") + "-fields.md";
+    try {
+      InputStream is = getClass().getResourceAsStream(md);
+      if (is == null) {
+        JFLog.log("Error:meta data not found:" + md);
+        return in;
+      }
+      String[] lns = new String(is.readAllBytes()).split("\n");
+      int sidx = 0;
+      for(String ln : lns) {
+        for(int iidx = 0;iidx < cnt; iidx++) {
+          Field field = in[iidx];
+          if (field == null) continue;
+          if (field.getName().equals(ln)) {
+            sorted[sidx++] = field;
+            in[iidx] = null;
+            break;
+          }
+        }
+      }
+      return sorted;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
 
   private int getPadding(int offset, int size) {
@@ -106,11 +151,11 @@ public class FFMStruct {
       double[] array = (double[])getValue(jfield);
       return array.length * 8;
     }
-    if (type.isAssignableFrom(FFMStruct.class)) {
+    if (JF.isDerivedFrom(type, FFMStruct.class)) {
       FFMStruct substruct = (FFMStruct)getValue(jfield);
       return substruct.getSize();
     }
-    if (type.isAssignableFrom(FFMStruct[].class)) {
+    if (JF.isDerivedFrom(type, FFMStruct[].class)) {
       FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
       int size = 0;
       for(FFMStruct substruct : substructs) {
@@ -118,21 +163,21 @@ public class FFMStruct {
       }
       return size;
     }
-    if (type.isAssignableFrom(FFMType.Integer.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
       return 4;
     }
-    if (type.isAssignableFrom(FFMType.Long.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Long.class)) {
       return 8;
     }
-    if (type.isAssignableFrom(FFMType.Integer[].class)) {
+    if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
       FFMType.Integer[] types = (FFMType.Integer[])getValue(jfield);
       return types.length * 4;
     }
-    if (type.isAssignableFrom(FFMType.Long[].class)) {
+    if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
       FFMType.Long[] types = (FFMType.Long[])getValue(jfield);
       return types.length * 8;
     }
-    JFLog.log("FFMStruct:Unknown field type:" + type);
+    JFLog.log("FFMStruct.getFieldSize:Unknown field type:" + type + ",name=" + jfield.getName());
     return 0;
   }
 
@@ -152,11 +197,11 @@ public class FFMStruct {
     if (type == long[].class) return 8;
     if (type == float[].class) return 4;
     if (type == double[].class) return 8;
-    if (type.isAssignableFrom(FFMStruct.class)) {
+    if (JF.isDerivedFrom(type, FFMStruct.class)) {
       FFMStruct substruct = (FFMStruct)getValue(jfield);
       return substruct.getLargestFieldAlignment();
     }
-    if (type.isAssignableFrom(FFMStruct[].class)) {
+    if (JF.isDerivedFrom(type, FFMStruct[].class)) {
       FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
       int max_align = 0;
       for(FFMStruct substruct : substructs) {
@@ -167,19 +212,19 @@ public class FFMStruct {
       }
       return max_align;
     }
-    if (type.isAssignableFrom(FFMType.Integer.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
       return 4;
     }
-    if (type.isAssignableFrom(FFMType.Long.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Long.class)) {
       return 8;
     }
-    if (type.isAssignableFrom(FFMType.Integer[].class)) {
+    if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
       return 4;
     }
-    if (type.isAssignableFrom(FFMType.Long[].class)) {
+    if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
       return 8;
     }
-    JFLog.log("FFMStruct:Unknown field type:" + type);
+    JFLog.log("FFMStruct.getFieldAlignment:Unknown field type:" + type);
     return 0;
   }
 
@@ -202,12 +247,19 @@ public class FFMStruct {
   }
 
   public MemorySegment marshall(Arena arena) {
+    if (debug) JFLog.log("FFMStruct.marshall() " + getClass().getName());
     if (size == -1) {
       init();
     }
-    if (fields == null) return MemorySegment.NULL;
+    if (fields == null) {
+      JFLog.log("FFMStruct.marshall:Error:fields == null");
+      return MemorySegment.NULL;
+    }
     struct = alloc(arena);
-    if (struct == null) return MemorySegment.NULL;
+    if (struct == null) {
+      JFLog.log("FFMStruct.marshall:Error:struct == null");
+      return MemorySegment.NULL;
+    }
     for(FFMField sfield : fields) {
       if (sfield.name  == null) continue;
       Field jfield = getField(sfield.name);
@@ -261,7 +313,7 @@ public class FFMStruct {
         }
         continue;
       }
-      if (type.isAssignableFrom(FFMStruct.class)) {
+      if (JF.isDerivedFrom(type, FFMStruct.class)) {
         if (sfield.inline) {
           struct_copy(value, sfield.offset, arena);
         } else {
@@ -271,7 +323,7 @@ public class FFMStruct {
         }
         continue;
       }
-      if (type.isAssignableFrom(FFMStruct[].class)) {
+      if (JF.isDerivedFrom(type, FFMStruct[].class)) {
         FFMStruct[] substructs = (FFMStruct[])value;
         int cnt = substructs.length;
         if (sfield.inline) {
@@ -292,17 +344,17 @@ public class FFMStruct {
         }
         continue;
       }
-      if (type.isAssignableFrom(FFMType.Integer.class)) {
+      if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
         FFMType.Integer ffmtype = (FFMType.Integer)value;
         struct.set(JAVA_INT, sfield.offset, ffmtype.value);
         continue;
       }
-      if (type.isAssignableFrom(FFMType.Long.class)) {
+      if (JF.isDerivedFrom(type, FFMType.Long.class)) {
         FFMType.Long ffmtype = (FFMType.Long)value;
         struct.set(JAVA_LONG, sfield.offset, ffmtype.value);
         continue;
       }
-      if (type.isAssignableFrom(FFMType.Integer[].class)) {
+      if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
         FFMType.Integer[] ffmtypes = (FFMType.Integer[])value;
         if (sfield.inline) {
           //TODO
@@ -311,7 +363,7 @@ public class FFMStruct {
         }
         continue;
       }
-      if (type.isAssignableFrom(FFMType.Long[].class)) {
+      if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
         FFMType.Long[] ffmtype = (FFMType.Long[])value;
         if (sfield.inline) {
           //TODO
@@ -320,8 +372,9 @@ public class FFMStruct {
         }
         continue;
       }
-      JFLog.log("FFMStruct:Unknown field type:" + sfield);
+      JFLog.log("FFMStruct.marshall:Unknown field type:" + sfield);
     }
+    if (debug) JFLog.log("FFMStruct.marshall:struct=" + struct);
     return struct;
   }
 
@@ -372,7 +425,7 @@ public class FFMStruct {
         }
         continue;
       }
-      if (type.isAssignableFrom(FFMStruct.class)) {
+      if (JF.isDerivedFrom(type, FFMStruct.class)) {
         if (sfield.inline) {
           //nop
         } else {
@@ -381,7 +434,7 @@ public class FFMStruct {
         }
         continue;
       }
-      if (type.isAssignableFrom(FFMStruct[].class)) {
+      if (JF.isDerivedFrom(type, FFMStruct[].class)) {
         if (sfield.inline) {
           //nop
         } else {
@@ -392,7 +445,7 @@ public class FFMStruct {
         }
         continue;
       }
-      JFLog.log("FFMStruct:Unknown field type:" + sfield);
+      JFLog.log("FFMStruct.unmarshall:Unknown field type:" + sfield);
     }
   }
 
@@ -505,7 +558,7 @@ public class FFMStruct {
 
   public static boolean isStruct(Class<?> type) {
     try {
-      return (type.isAssignableFrom(FFMStruct.class));
+      return JF.isDerivedFrom(type, FFMStruct.class);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -514,10 +567,65 @@ public class FFMStruct {
   public static boolean isStruct(Field field) {
     try {
       Class<?> cls = field.getType();
-      return (cls.isAssignableFrom(FFMStruct.class));
+      return JF.isDerivedFrom(cls, FFMStruct.class);
     } catch (Exception e) {
       JFLog.log(e);
     }
     return false;
+  }
+
+  //generate field order meta data
+  public static void main(String[] args) {
+    if (args.length != 2) {
+      System.out.println("Usage: FFMStruct source_folder_in class_folder_out");
+      return;
+    }
+    String src = args[0];
+    String dst = args[1];
+    int cnt = 0;
+    try {
+      File[] files = new File(src).listFiles();
+      for(File srcfile : files) {
+        if (!srcfile.getName().endsWith(".java")) continue;
+        String srcfilename = src + "/" + srcfile.getName();
+        String dstfilename = dst + "/" + srcfile.getName().replace(".java", "-fields.md");
+        File dstFile = new File(dstfilename);
+        long srcts = srcfile.lastModified();
+        long dstts = dstFile.exists() ? dstFile.lastModified() : 0;
+        if (dstts > srcts) continue;
+        FileInputStream fis = new FileInputStream(srcfile);
+        String[] lns = new String(fis.readAllBytes()).split("\n");
+        fis.close();
+        boolean struct = false;
+        StringBuilder fields = new StringBuilder();
+        for(String ln : lns) {
+          //find "public class ... extends FFMStruct ..."
+          if (!struct) {
+            if (ln.indexOf(" class ") != -1 && ln.indexOf(" FFMStruct") != -1) {
+              struct = true;
+            }
+            continue;
+          }
+          //find "public T field [=value];
+          String[] fs = ln.trim().replace(";", "").split("[ ]+");
+          if (fs.length < 3) continue;
+          if (!fs[0].equals("public")) continue;
+          String type = fs[1];
+          String name = fs[2];
+          fields.append(name);
+          fields.append("\n");
+        }
+        if (struct) {
+          //output meta data
+          FileOutputStream fos = new FileOutputStream(dstfilename);
+          fos.write(fields.toString().getBytes());
+          fos.close();
+          cnt++;
+        }
+      }
+      if (cnt > 0) System.out.println("Generated meta data for " + cnt + " classes.");
+    } catch (Exception e) {
+      System.out.println(e);
+    }
   }
 }

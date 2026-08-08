@@ -156,10 +156,11 @@
   <target name="jar" depends="depjars,compile" unless="fast-build" description="build jar file">
     <!-- Build jar file from class files -->
     <jar destfile="javaforce.jar" includes="**/*.class" basedir="${build}">
+      <fileset dir="${build}">
+        <include name="**/*.md"/>
+      </fileset>
       <fileset dir="${src}">
         <include name="**/*.png"/>
-        <exclude name="javaforce/icons/16/*.png"/>
-        <exclude name="javaforce/icons/32/*.png"/>
         <include name="**/*.html"/>
         <include name="**/*.js"/>
         <include name="**/*.css"/>
