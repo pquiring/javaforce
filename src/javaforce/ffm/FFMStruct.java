@@ -379,7 +379,11 @@ public class FFMStruct {
   }
 
   public void unmarshall() {
-    if (fields == null) return;
+    if (debug) JFLog.log("FFMStruct.unmarshall() " + getClass().getName());
+    if (fields == null) {
+      JFLog.log("FFMStruct.unmarshall() Error:fields == null");
+      return;
+    }
     for(FFMField sfield : fields) {
       if (sfield.name  == null) continue;
       Field jfield = getField(sfield.name);

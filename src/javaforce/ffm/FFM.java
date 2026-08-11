@@ -444,17 +444,29 @@ public class FFM {
 
   /** Copy back native array after function returns. */
   public static void copyBack(MemorySegment seg, FFMStruct[] structs) {
-    //nop
+    if (structs == null) return;
+    for(FFMStruct struct : structs) {
+      if (struct == null) continue;
+      struct.unmarshall();
+    }
   }
 
   /** Copy back native array after function returns. */
-  public static void copyBack(MemorySegment seg, FFMType.Integer[] structs) {
-    //nop
+  public static void copyBack(MemorySegment seg, FFMType.Integer[] ints) {
+    if (seg == null || ints == null) return;
+    for(int idx=0;idx<ints.length;idx++) {
+      if (ints[idx] == null) continue;
+      ints[idx].setValue(seg.getAtIndex(JAVA_INT, idx));
+    }
   }
 
   /** Copy back native array after function returns. */
-  public static void copyBack(MemorySegment seg, FFMType.Long[] structs) {
-    //nop
+  public static void copyBack(MemorySegment seg, FFMType.Long[] longs) {
+    if (seg == null || longs == null) return;
+    for(int idx=0;idx<longs.length;idx++) {
+      if (longs[idx] == null) continue;
+      longs[idx].setValue(seg.getAtIndex(JAVA_LONG, idx));
+    }
   }
 
   private static ThreadLocal<FFMArray> FFMArrayBin = new ThreadLocal<>();
