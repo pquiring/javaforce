@@ -15,27 +15,27 @@ import javaforce.*;
 
 public abstract class FFMType {
 
-  public static class Integer extends FFMType {
+  public static class Uint32 extends FFMType {
     public int value;
     public String getType() {return "int";}
     public int getValue() {return value;}
     public void setValue(int value) {this.value = value;}
-    public void set(Integer value) {this.value = value.value;}
-    public Integer() {}
-    public Integer(int value) {setValue(value);}
-    public Integer(Integer value) {setValue(value.value);}
+    public void set(Uint32 value) {this.value = value.value;}
+    public Uint32() {}
+    public Uint32(int value) {setValue(value);}
+    public Uint32(Uint32 value) {setValue(value.value);}
     public String toString() {return "0x" + java.lang.Integer.toHexString(value);}
   }
 
-  public static class Long extends FFMType {
+  public static class Uint64 extends FFMType {
     public long value;
     public String getType() {return "long";}
     public long getValue() {return value;}
     public void setValue(long value) {this.value = value;}
-    public void set(Long value) {this.value = value.value;}
-    public Long() {}
-    public Long(long value) {setValue(value);}
-    public Long(Long value) {setValue(value.value);}
+    public void set(Uint64 value) {this.value = value.value;}
+    public Uint64() {}
+    public Uint64(long value) {setValue(value);}
+    public Uint64(Uint64 value) {setValue(value.value);}
     public String toString() {return "0x" + java.lang.Long.toHexString(value);}
   }
 
@@ -58,7 +58,7 @@ public abstract class FFMType {
   }
   public static boolean isTypeInt(Class<?> cls) {
     try {
-      return JF.isDerivedFrom(cls, FFMType.Integer.class);
+      return JF.isDerivedFrom(cls, FFMType.Uint32.class);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -75,7 +75,7 @@ public abstract class FFMType {
   }
   public static boolean isTypeLong(Class<?> cls) {
     try {
-      return JF.isDerivedFrom(cls, FFMType.Long.class);
+      return JF.isDerivedFrom(cls, FFMType.Uint64.class);
     } catch (Exception e) {
       JFLog.log(e);
     }

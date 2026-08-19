@@ -165,18 +165,18 @@ public class FFMStruct {
       }
       return size;
     }
-    if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Uint32.class)) {
       return 4;
     }
-    if (JF.isDerivedFrom(type, FFMType.Long.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Uint64.class)) {
       return 8;
     }
-    if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
-      FFMType.Integer[] types = (FFMType.Integer[])getValue(jfield);
+    if (JF.isDerivedFrom(type, FFMType.Uint32[].class)) {
+      FFMType.Uint32[] types = (FFMType.Uint32[])getValue(jfield);
       return types.length * 4;
     }
-    if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
-      FFMType.Long[] types = (FFMType.Long[])getValue(jfield);
+    if (JF.isDerivedFrom(type, FFMType.Uint64[].class)) {
+      FFMType.Uint64[] types = (FFMType.Uint64[])getValue(jfield);
       return types.length * 8;
     }
     JFLog.log("FFMStruct.getFieldSize:Unknown field type:" + type + ",name=" + jfield.getName());
@@ -214,16 +214,16 @@ public class FFMStruct {
       }
       return max_align;
     }
-    if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Uint32.class)) {
       return 4;
     }
-    if (JF.isDerivedFrom(type, FFMType.Long.class)) {
+    if (JF.isDerivedFrom(type, FFMType.Uint64.class)) {
       return 8;
     }
-    if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
+    if (JF.isDerivedFrom(type, FFMType.Uint32[].class)) {
       return 4;
     }
-    if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
+    if (JF.isDerivedFrom(type, FFMType.Uint64[].class)) {
       return 8;
     }
     JFLog.log("FFMStruct.getFieldAlignment:Unknown field type:" + type);
@@ -362,21 +362,21 @@ public class FFMStruct {
         }
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
-        FFMType.Integer ffmtype = (FFMType.Integer)value;
+      if (JF.isDerivedFrom(type, FFMType.Uint32.class)) {
+        FFMType.Uint32 ffmtype = (FFMType.Uint32)value;
         struct.set(JAVA_INT, sfield.offset, ffmtype.value);
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Long.class)) {
-        FFMType.Long ffmtype = (FFMType.Long)value;
+      if (JF.isDerivedFrom(type, FFMType.Uint64.class)) {
+        FFMType.Uint64 ffmtype = (FFMType.Uint64)value;
         struct.set(JAVA_LONG, sfield.offset, ffmtype.value);
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
-        FFMType.Integer[] ffmtypes = (FFMType.Integer[])value;
+      if (JF.isDerivedFrom(type, FFMType.Uint32[].class)) {
+        FFMType.Uint32[] ffmtypes = (FFMType.Uint32[])value;
         if (sfield.inline) {
           int offset = sfield.offset;
-          for(FFMType.Integer ffmtype : ffmtypes) {
+          for(FFMType.Uint32 ffmtype : ffmtypes) {
             struct.set(JAVA_INT, offset, ffmtype.value);
             offset += 4;
           }
@@ -384,7 +384,7 @@ public class FFMStruct {
           int cnt = ffmtypes.length;
           MemorySegment array = arena.allocate(JAVA_BYTE, cnt * 4);
           for(int i=0;i<cnt;i++) {
-            FFMType.Integer ffmtype = ffmtypes[i];
+            FFMType.Uint32 ffmtype = ffmtypes[i];
             array.setAtIndex(JAVA_INT, i, ffmtype.getValue());
           }
           struct.set(JAVA_LONG, sfield.offset, array.address());
@@ -392,11 +392,11 @@ public class FFMStruct {
         }
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
-        FFMType.Long[] ffmtypes = (FFMType.Long[])value;
+      if (JF.isDerivedFrom(type, FFMType.Uint64[].class)) {
+        FFMType.Uint64[] ffmtypes = (FFMType.Uint64[])value;
         if (sfield.inline) {
           int offset = sfield.offset;
-          for(FFMType.Long ffmtype : ffmtypes) {
+          for(FFMType.Uint64 ffmtype : ffmtypes) {
             struct.set(JAVA_LONG, offset, ffmtype.value);
             offset += 8;
           }
@@ -404,7 +404,7 @@ public class FFMStruct {
           int cnt = ffmtypes.length;
           MemorySegment array = arena.allocate(JAVA_BYTE, cnt * 8);
           for(int i=0;i<cnt;i++) {
-            FFMType.Long ffmtype = ffmtypes[i];
+            FFMType.Uint64 ffmtype = ffmtypes[i];
             array.setAtIndex(JAVA_LONG, i, ffmtype.getValue());
           }
           struct.set(JAVA_LONG, sfield.offset, array.address());
@@ -504,21 +504,21 @@ public class FFMStruct {
         }
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
-        FFMType.Integer ffmtype = (FFMType.Integer)value;
+      if (JF.isDerivedFrom(type, FFMType.Uint32.class)) {
+        FFMType.Uint32 ffmtype = (FFMType.Uint32)value;
         ffmtype.value = struct.get(JAVA_INT, sfield.offset);
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Long.class)) {
-        FFMType.Long ffmtype = (FFMType.Long)value;
+      if (JF.isDerivedFrom(type, FFMType.Uint64.class)) {
+        FFMType.Uint64 ffmtype = (FFMType.Uint64)value;
         ffmtype.value = struct.get(JAVA_LONG, sfield.offset);
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
-        FFMType.Integer[] ffmtypes = (FFMType.Integer[])value;
+      if (JF.isDerivedFrom(type, FFMType.Uint32[].class)) {
+        FFMType.Uint32[] ffmtypes = (FFMType.Uint32[])value;
         if (sfield.inline) {
           int offset = sfield.offset;
-          for(FFMType.Integer ffmtype : ffmtypes) {
+          for(FFMType.Uint32 ffmtype : ffmtypes) {
             ffmtype.setValue(struct.get(JAVA_INT, offset));
             offset += 4;
           }
@@ -526,17 +526,17 @@ public class FFMStruct {
           int cnt = ffmtypes.length;
           MemorySegment array = sfield.array;
           for(int i=0;i<cnt;i++) {
-            FFMType.Integer ffmtype = ffmtypes[i];
+            FFMType.Uint32 ffmtype = ffmtypes[i];
             ffmtype.setValue(array.getAtIndex(JAVA_INT, i));
           }
         }
         continue;
       }
-      if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
-        FFMType.Long[] ffmtypes = (FFMType.Long[])value;
+      if (JF.isDerivedFrom(type, FFMType.Uint64[].class)) {
+        FFMType.Uint64[] ffmtypes = (FFMType.Uint64[])value;
         if (sfield.inline) {
           int offset = sfield.offset;
-          for(FFMType.Long ffmtype : ffmtypes) {
+          for(FFMType.Uint64 ffmtype : ffmtypes) {
             ffmtype.setValue(struct.get(JAVA_LONG, offset));
             offset += 8;
           }
@@ -544,7 +544,7 @@ public class FFMStruct {
           int cnt = ffmtypes.length;
           MemorySegment array = sfield.array;
           for(int i=0;i<cnt;i++) {
-            FFMType.Long ffmtype = ffmtypes[i];
+            FFMType.Uint64 ffmtype = ffmtypes[i];
             ffmtype.setValue(array.getAtIndex(JAVA_LONG, i));
           }
         }
