@@ -67,13 +67,13 @@ public class CLFFM implements CLAPI {
   public boolean clWriteBufferi8(long a1,long a2,byte[] a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);boolean _ret_value_ = (boolean)clWriteBufferi8.invokeExact(a1,a2,_array_a3,a4);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle clCreate;
-  public long clCreate(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clCreate.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long clCreate(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clCreate.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle clCreateBuffer;
   public long clCreateBuffer(long a1,int a2,int a3) { try { long _ret_value_ = (long)clCreateBuffer.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle clKernel;
-  public long clKernel(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clKernel.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long clKernel(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)clKernel.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
 
   private boolean ffm_init() {

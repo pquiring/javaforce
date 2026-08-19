@@ -282,7 +282,7 @@ public class GenFFM {
               method.append("FFM.upcall_UIEvents_dispatchEvent");
               method.insert(before_invoke, "FFM.setUIEvents(" + arg_name + ");");
             } else if (java_type.equals("java.lang.String")) {
-              method.append("arena.allocateFrom(" + arg_name + ")");
+              method.append("(MemorySegment)(" + arg_name + " == null ? MemorySegment.NULL : arena.allocateFrom(" + arg_name + "))");
               arena_needed = true;
             } else if (java_type.equals("javaforce.linux.X11Listener")) {
               method.append("FFM.upcall_X11Listener");
@@ -324,7 +324,7 @@ public class GenFFM {
           method.append("FFM.copyBack(" + segment_name + "," + arg_name + ");");
         }
         for(String arg_name : struct_names) {
-          method.append(arg_name + ".unmarshall();");
+          method.append("if (" + arg_name + "!=null) " + arg_name + ".unmarshall();");
         }
         if (object != null) {
           method.append("FFM.unref_object(" + object + ");");

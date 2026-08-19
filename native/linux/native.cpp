@@ -131,6 +131,10 @@ void sleep_ms(int milliseconds) {
 
 #include "gl.cpp"
 
+#include "../common/vk.cpp"
+
+#include "vk.cpp"
+
 void uiWindowSetIcon(GLFWContextFFM* ctx, const char* filename, jint x, jint y)
 {
   //TODO

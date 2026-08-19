@@ -108,6 +108,10 @@ public class Window implements UIEvents {
     return UIAPI.getInstance().uiWindowCreateSurface(ctx, vkInstance);
   }
 
+  public String[] getRequiredExtensions() {
+    return UIAPI.getInstance().uiWindowGetRequiredExtensions();
+  }
+
   /** Get Framebuffer Size
    *  [0] = width
    *  [1] = height

@@ -149,16 +149,16 @@ public class MediaFFM implements MediaAPI {
   public long getDuration(long a1) { try { long _ret_value_ = (long)getDuration.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputOpenFile;
-  public long inputOpenFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)inputOpenFile.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long inputOpenFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)inputOpenFile.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle inputOpenIO;
   public long inputOpenIO(javaforce.media.MediaIO a1) { try { FFM.setMediaIO(a1);long _ret_value_ = (long)inputOpenIO.invokeExact(FFM.upcall_MediaIO);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle outputCreateFile;
-  public long outputCreateFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)outputCreateFile.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long outputCreateFile(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)outputCreateFile.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle outputCreateIO;
-  public long outputCreateIO(javaforce.media.MediaIO a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); FFM.setMediaIO(a1);long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.upcall_MediaIO,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long outputCreateIO(javaforce.media.MediaIO a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); FFM.setMediaIO(a1);long _ret_value_ = (long)outputCreateIO.invokeExact(FFM.upcall_MediaIO,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle videoDecoderStart;
   public long videoDecoderStart(int a1,int a2,int a3) { try { long _ret_value_ = (long)videoDecoderStart.invokeExact(a1,a2,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }

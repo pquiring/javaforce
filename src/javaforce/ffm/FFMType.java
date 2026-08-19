@@ -8,8 +8,6 @@ import javaforce.*;
  *
  *  Typically stored a native handle or enum type.
  *
- *  TODO : These should be 'value' types when Valhalla is ready.
- *
  * @author pquiring
  */
 

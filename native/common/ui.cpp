@@ -16,6 +16,7 @@ int STYLE_VISIBLE = 1;
 int STYLE_RESIZABLE = 2;
 int STYLE_TITLEBAR = 4;
 int STYLE_FULLSCREEN = 8;
+int STYLE_VULKAN = 16;
 
 struct GLFWContextFFM {
   GLFWwindow *window;
@@ -93,6 +94,10 @@ GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GL
   glfwWindowHint(GLFW_RESIZABLE, (style & STYLE_RESIZABLE ? GL_TRUE : GL_FALSE));
   glfwWindowHint(GLFW_DECORATED, (style & STYLE_TITLEBAR ? GL_TRUE : GL_FALSE));
 
+  if (style & STYLE_VULKAN) {
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  }
+
   GLFWwindow *sharedWin = NULL;
   if (shared != NULL) {
     sharedWin = shared->window;
@@ -107,6 +112,8 @@ GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GL
   }
 
   ctx->window = glfwCreateWindow(x, y, title, monitor, sharedWin);
+
+  glfwDefaultWindowHints();
 
   if (!(style & STYLE_FULLSCREEN)) {
     glfwSetWindowPos(ctx->window, px, py);
@@ -138,8 +145,25 @@ void uiWindowDestroy(GLFWContextFFM* ctx)
 void* uiWindowCreateSurface(GLFWContextFFM* ctx, VkInstance instance)
 {
   VkSurfaceKHR surface;
-  glfwCreateWindowSurface(instance, ctx->window, NULL, &surface);
+  VkResult res = glfwCreateWindowSurface(instance, ctx->window, NULL, &surface);
+  if (res != VK_SUCCESS) {
+    if (res == VK_ERROR_NATIVE_WINDOW_IN_USE_KHR) {
+      printf("glfwCreateWindowSurface = VK_ERROR_NATIVE_WINDOW_IN_USE_KHR\n");
+    } else {
+      printf("glfwCreateWindowSurface = %x\n", res);
+    }
+  }
   return (void*)surface;
+}
+
+jstringArray uiWindowGetRequiredExtensions() {
+  uint32_t cnt;
+  const char** exts = glfwGetRequiredInstanceExtensions(&cnt);
+  jstringArray strs = ffm->newStringArray(cnt);
+  for(int idx = 0;idx<cnt;idx++) {
+    ffm->setString(idx, exts[idx]);
+  }
+  return strs;
 }
 
 int* uiWindowGetFramebufferSize(GLFWContextFFM* ctx)
@@ -235,6 +259,7 @@ extern "C" {
   JNIEXPORT jboolean (*_uiInit)() = &uiInit;
   JNIEXPORT GLFWContextFFM* (*_uiWindowCreate)(jint,const char*,jint,jint,GLFWContextFFM*) = &uiWindowCreate;
   JNIEXPORT void* (*_uiWindowCreateSurface)(GLFWContextFFM*,VkInstance) = &uiWindowCreateSurface;
+  JNIEXPORT jstringArray (*_uiWindowGetRequiredExtensions)() = &uiWindowGetRequiredExtensions;
   JNIEXPORT int* (*_uiWindowGetFramebufferSize)(GLFWContextFFM*) = &uiWindowGetFramebufferSize;
   JNIEXPORT void (*_uiWindowDestroy)(GLFWContextFFM*) = &uiWindowDestroy;
   JNIEXPORT void (*_uiWindowSetCurrent)(GLFWContextFFM*) = &uiWindowSetCurrent;

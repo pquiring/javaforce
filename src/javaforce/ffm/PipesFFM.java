@@ -34,10 +34,10 @@ public class PipesFFM implements PipesAPI {
   public int pipeRead(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)pipeRead.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pipeWrite;
-  public int pipeWrite(java.lang.String a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)pipeWrite.invokeExact(arena.allocateFrom(a1),_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int pipeWrite(java.lang.String a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)pipeWrite.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pipeCreate;
-  public long pipeCreate(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pipeCreate.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long pipeCreate(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pipeCreate.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pipeClose;
   public void pipeClose(long a1) { try { pipeClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }

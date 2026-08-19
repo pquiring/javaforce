@@ -31,7 +31,7 @@ public class LinuxFFM implements LinuxAPI {
   }
 
   private MethodHandle authUser;
-  public boolean authUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)authUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean authUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)authUser.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle peekConsole;
   public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -40,7 +40,7 @@ public class LinuxFFM implements LinuxAPI {
   public char readConsole() { try { char _ret_value_ = (char)readConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return (char)-1;} }
 
   private MethodHandle fileGetMode;
-  public int fileGetMode(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)fileGetMode.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int fileGetMode(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)fileGetMode.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle getUID;
   public int getUID() { try { int _ret_value_ = (int)getUID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -58,13 +58,13 @@ public class LinuxFFM implements LinuxAPI {
   public java.lang.String ptyOpen(long a1) { try { String _ret_value_ = FFM.getString((MemorySegment)ptyOpen.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle fileGetID;
-  public long fileGetID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)fileGetID.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long fileGetID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)fileGetID.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle ptyAlloc;
   public long ptyAlloc() { try { long _ret_value_ = (long)ptyAlloc.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle ptyChildExec;
-  public long ptyChildExec(java.lang.String a1,java.lang.String a2,java.lang.String[] a3,java.lang.String[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);long _ret_value_ = (long)ptyChildExec.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long ptyChildExec(java.lang.String a1,java.lang.String a2,java.lang.String[] a3,java.lang.String[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);long _ret_value_ = (long)ptyChildExec.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle disableConsoleMode;
   public void disableConsoleMode() { try { disableConsoleMode.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
@@ -73,13 +73,13 @@ public class LinuxFFM implements LinuxAPI {
   public void enableConsoleMode() { try { enableConsoleMode.invokeExact(); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle fileSetAccessTime;
-  public void fileSetAccessTime(java.lang.String a1,long a2) { try { Arena arena = Arena.ofAuto(); fileSetAccessTime.invokeExact(arena.allocateFrom(a1),a2); } catch (Throwable t) { JFLog.log(t); } }
+  public void fileSetAccessTime(java.lang.String a1,long a2) { try { Arena arena = Arena.ofAuto(); fileSetAccessTime.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle fileSetMode;
-  public void fileSetMode(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); fileSetMode.invokeExact(arena.allocateFrom(a1),a2); } catch (Throwable t) { JFLog.log(t); } }
+  public void fileSetMode(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); fileSetMode.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle fileSetModifiedTime;
-  public void fileSetModifiedTime(java.lang.String a1,long a2) { try { Arena arena = Arena.ofAuto(); fileSetModifiedTime.invokeExact(arena.allocateFrom(a1),a2); } catch (Throwable t) { JFLog.log(t); } }
+  public void fileSetModifiedTime(java.lang.String a1,long a2) { try { Arena arena = Arena.ofAuto(); fileSetModifiedTime.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle ptyClose;
   public void ptyClose(long a1) { try { ptyClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
@@ -94,7 +94,7 @@ public class LinuxFFM implements LinuxAPI {
   public void ptyWrite(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);ptyWrite.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle setEnv;
-  public void setEnv(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); setEnv.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2)); } catch (Throwable t) { JFLog.log(t); } }
+  public void setEnv(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); setEnv.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2))); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle writeConsole;
   public void writeConsole(int a1) { try { writeConsole.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }

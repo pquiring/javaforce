@@ -164,9 +164,14 @@
 
   <target name="jar" depends="depjars,compile,icons" unless="fast-build" description="build jar file">
     <!-- Build jar file from class files -->
+    <java classpath="${home}/utils.jar" classname="javaforce.Meta" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="src/javaforce/vk"/>
+      <arg value="${build}/javaforce/vk"/>
+    </java>
     <jar destfile="javaforce.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="${build}">
         <include name="**/*.md"/>
+        <include name="**/*.spv"/>
       </fileset>
       <fileset dir="${src}">
         <include name="javaforce/icons/16/*.png"/>
@@ -240,6 +245,12 @@
     <delete dir="jre_base_javac/legal"/>
   </target>
 
+  <target name="glsl" description="compile glsl source to spir-v binaries">
+    <mkdir dir="classes\javaforce\vk\glsl"/>
+    <exec command="glslang -V src\javaforce\vk\glsl\testvk-vert.vert -o classes\javaforce\vk\glsl\testvk-vert.spv"/>
+    <exec command="glslang -V src\javaforce\vk\glsl\testvk-frag.frag -o classes\javaforce\vk\glsl\testvk-frag.spv"/>
+  </target>
+
   <target name="genffm" depends="utils" description="generate FFM sources">
     <java classpath="${home}/utils.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="javaforce.gl.GL"/>
@@ -247,6 +258,13 @@
       <arg value="gl"/>
       <arg value="implements"/>
       <arg value="GL"/>
+    </java>
+    <java classpath="${home}/utils.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
+      <arg value="javaforce.vk.VK"/>
+      <arg value="src/javaforce/ffm/VKFFM.java"/>
+      <arg value="vk"/>
+      <arg value="implements"/>
+      <arg value="VK"/>
     </java>
     <java classpath="${home}/utils.jar" classname="javaforce.ffm.GenFFM" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="javaforce.api.CLAPI"/>

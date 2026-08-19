@@ -31,13 +31,13 @@ public class WindowsFFM implements WindowsAPI {
   }
 
   private MethodHandle changerMove;
-  public boolean changerMove(long a1,java.lang.String a2,java.lang.String a3,java.lang.String a4) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)changerMove.invokeExact(a1,arena.allocateFrom(a2),arena.allocateFrom(a3),arena.allocateFrom(a4));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean changerMove(long a1,java.lang.String a2,java.lang.String a3,java.lang.String a4) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)changerMove.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)),(MemorySegment)(a4 == null ? MemorySegment.NULL : arena.allocateFrom(a4)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle createProcessAsUser;
-  public boolean createProcessAsUser(java.lang.String a1,java.lang.String a2,java.lang.String a3,java.lang.String a4,java.lang.String a5,int a6) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)createProcessAsUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3),arena.allocateFrom(a4),arena.allocateFrom(a5),a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean createProcessAsUser(java.lang.String a1,java.lang.String a2,java.lang.String a3,java.lang.String a4,java.lang.String a5,int a6) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)createProcessAsUser.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)),(MemorySegment)(a4 == null ? MemorySegment.NULL : arena.allocateFrom(a4)),(MemorySegment)(a5 == null ? MemorySegment.NULL : arena.allocateFrom(a5)),a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle impersonateUser;
-  public boolean impersonateUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)impersonateUser.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean impersonateUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)impersonateUser.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle peekConsole;
   public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -49,7 +49,7 @@ public class WindowsFFM implements WindowsAPI {
   public boolean setSessionID(long a1,int a2) { try { boolean _ret_value_ = (boolean)setSessionID.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle shellExecute;
-  public boolean shellExecute(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)shellExecute.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),arena.allocateFrom(a3));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean shellExecute(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)shellExecute.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle tapeDrive;
   public boolean tapeDrive(long a1) { try { boolean _ret_value_ = (boolean)tapeDrive.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -67,10 +67,10 @@ public class WindowsFFM implements WindowsAPI {
   public boolean tapeSetpos(long a1,long a2) { try { boolean _ret_value_ = (boolean)tapeSetpos.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vssCreateShadow;
-  public boolean vssCreateShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssCreateShadow.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vssCreateShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssCreateShadow.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vssDeleteShadow;
-  public boolean vssDeleteShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssDeleteShadow.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vssDeleteShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssDeleteShadow.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vssDeleteShadowAll;
   public boolean vssDeleteShadowAll() { try { boolean _ret_value_ = (boolean)vssDeleteShadowAll.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -79,10 +79,10 @@ public class WindowsFFM implements WindowsAPI {
   public boolean vssInit() { try { boolean _ret_value_ = (boolean)vssInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vssMountShadow;
-  public boolean vssMountShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssMountShadow.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vssMountShadow(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssMountShadow.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vssUnmountShadow;
-  public boolean vssUnmountShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssUnmountShadow.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vssUnmountShadow(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vssUnmountShadow.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle readConsole;
   public char readConsole() { try { char _ret_value_ = (char)readConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return (char)-1;} }
@@ -118,7 +118,7 @@ public class WindowsFFM implements WindowsAPI {
   public int[] getConsoleSize() { try { FFM.createFFMArray();getConsoleSize.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle getWindowRect;
-  public int[] getWindowRect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();getWindowRect.invokeExact(arena.allocateFrom(a1));return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public int[] getWindowRect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();getWindowRect.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle findJDKHome;
   public java.lang.String findJDKHome() { try { String _ret_value_ = FFM.getString((MemorySegment)findJDKHome.invokeExact());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
@@ -133,13 +133,13 @@ public class WindowsFFM implements WindowsAPI {
   public java.lang.String[][] vssListShadows() { try { FFM.createFFMArray();vssListShadows.invokeExact();return (java.lang.String[][])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle changerOpen;
-  public long changerOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)changerOpen.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long changerOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)changerOpen.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle executeSession;
-  public long executeSession(java.lang.String a1,java.lang.String[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);long _ret_value_ = (long)executeSession.invokeExact(arena.allocateFrom(a1),_array_a2);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long executeSession(java.lang.String a1,java.lang.String[] a2) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);long _ret_value_ = (long)executeSession.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),_array_a2);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle peBegin;
-  public long peBegin(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)peBegin.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long peBegin(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)peBegin.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle tapeGetpos;
   public long tapeGetpos(long a1) { try { long _ret_value_ = (long)tapeGetpos.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -148,7 +148,7 @@ public class WindowsFFM implements WindowsAPI {
   public long tapeMediaSize() { try { long _ret_value_ = (long)tapeMediaSize.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle tapeOpen;
-  public long tapeOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)tapeOpen.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long tapeOpen(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)tapeOpen.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle changerClose;
   public void changerClose(long a1) { try { changerClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }

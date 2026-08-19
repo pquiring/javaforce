@@ -363,12 +363,12 @@ public class FFM {
     return array;
   }
 
-  public static MemorySegment toMemory(Arena arena, FFMType.Integer[] types) {
+  public static MemorySegment toMemory(Arena arena, FFMType.Uint32[] types) {
     if (types == null) return MemorySegment.NULL;
     int length = types.length;
     MemorySegment array = arena.allocate(JAVA_INT, length);
     int idx = 0;
-    for(FFMType.Integer type : types) {
+    for(FFMType.Uint32 type : types) {
       if (type == null) {
         idx++;
         continue;
@@ -378,12 +378,12 @@ public class FFM {
     return array;
   }
 
-  public static MemorySegment toMemory(Arena arena, FFMType.Long[] types) {
+  public static MemorySegment toMemory(Arena arena, FFMType.Uint64[] types) {
     if (types == null) return MemorySegment.NULL;
     int length = types.length;
     MemorySegment array = arena.allocate(JAVA_LONG, length);
     int idx = 0;
-    for(FFMType.Long type : types) {
+    for(FFMType.Uint64 type : types) {
       if (type == null) {
         idx++;
         continue;
@@ -457,7 +457,7 @@ public class FFM {
   }
 
   /** Copy back native array after function returns. */
-  public static void copyBack(MemorySegment seg, FFMType.Integer[] ints) {
+  public static void copyBack(MemorySegment seg, FFMType.Uint32[] ints) {
     if (seg == null || ints == null) return;
     for(int idx=0;idx<ints.length;idx++) {
       if (ints[idx] == null) continue;
@@ -466,7 +466,7 @@ public class FFM {
   }
 
   /** Copy back native array after function returns. */
-  public static void copyBack(MemorySegment seg, FFMType.Long[] longs) {
+  public static void copyBack(MemorySegment seg, FFMType.Uint64[] longs) {
     if (seg == null || longs == null) return;
     for(int idx=0;idx<longs.length;idx++) {
       if (longs[idx] == null) continue;

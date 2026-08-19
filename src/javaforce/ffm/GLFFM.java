@@ -37,13 +37,13 @@ public class GLFFM implements GL {
   public int glCreateShader(int a1) { try { int _ret_value_ = (int)glCreateShader.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glGetAttribLocation;
-  public int glGetAttribLocation(int a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)glGetAttribLocation.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int glGetAttribLocation(int a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)glGetAttribLocation.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glGetError;
   public int glGetError() { try { int _ret_value_ = (int)glGetError.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glGetUniformLocation;
-  public int glGetUniformLocation(int a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)glGetUniformLocation.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int glGetUniformLocation(int a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)glGetUniformLocation.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle glShaderSource;
   public int glShaderSource(int a1,int a2,java.lang.String[] a3,int[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)glShaderSource.invokeExact(a1,a2,_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }

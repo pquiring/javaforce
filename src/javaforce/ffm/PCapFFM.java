@@ -31,10 +31,10 @@ public class PCapFFM implements PCapAPI {
   }
 
   private MethodHandle pcapCompile;
-  public boolean pcapCompile(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapCompile.invokeExact(a1,arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean pcapCompile(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapCompile.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle pcapInit;
-  public boolean pcapInit(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapInit.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean pcapInit(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pcapInit.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle pcapWrite;
   public boolean pcapWrite(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);boolean _ret_value_ = (boolean)pcapWrite.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -46,7 +46,7 @@ public class PCapFFM implements PCapAPI {
   public java.lang.String[] pcapListLocalInterfaces() { try { FFM.createFFMArray();pcapListLocalInterfaces.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle pcapStart;
-  public long pcapStart(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pcapStart.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long pcapStart(java.lang.String a1,boolean a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pcapStart.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle pcapStop;
   public void pcapStop(long a1) { try { pcapStop.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }

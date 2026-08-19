@@ -37,7 +37,7 @@ public class ComPortFFM implements ComPortAPI {
   public int comWrite(long a1,byte[] a2,int a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)comWrite.invokeExact(a1,_array_a2,a3);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle comOpen;
-  public long comOpen(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)comOpen.invokeExact(arena.allocateFrom(a1),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long comOpen(java.lang.String a1,int a2) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)comOpen.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle comClose;
   public void comClose(long a1) { try { comClose.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }

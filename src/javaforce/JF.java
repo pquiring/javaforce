@@ -675,6 +675,18 @@ public class JF {
     }
   }
 
+  public static byte[] readResource(String name) {
+    try {
+      InputStream is = JF.class.getResourceAsStream(name);
+      byte[] data = is.readAllBytes();
+      is.close();
+      return data;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   public static int read(InputStream in, byte[] buf, int pos, int len) {
     try {
       return in.read(buf, pos, len);

@@ -32,10 +32,10 @@ public class VMFFM implements VMAPI {
   }
 
   private MethodHandle vmConnect;
-  public boolean vmConnect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmConnect.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmConnect(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmConnect.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmDiskCreate;
-  public boolean vmDiskCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmDiskCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmDiskCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmDiskCreate.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmGetAllStats;
   public boolean vmGetAllStats(int a1,int a2,int a3,int a4,int a5) { try { boolean _ret_value_ = (boolean)vmGetAllStats.invokeExact(a1,a2,a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -44,73 +44,73 @@ public class VMFFM implements VMAPI {
   public boolean vmInit() { try { boolean _ret_value_ = (boolean)vmInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmMigrate;
-  public boolean vmMigrate(java.lang.String a1,java.lang.String a2,boolean a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmMigrate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmMigrate(java.lang.String a1,java.lang.String a2,boolean a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmMigrate.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmPowerOff;
-  public boolean vmPowerOff(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmPowerOff.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmPowerOff(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmPowerOff.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmRegister;
-  public boolean vmRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRegister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRegister.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmRestart;
-  public boolean vmRestart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRestart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmRestart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmRestart.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmResume;
-  public boolean vmResume(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmResume.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmResume(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmResume.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSecretCreate;
-  public boolean vmSecretCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSecretCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmSecretCreate(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSecretCreate.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSnapshotCreate;
-  public boolean vmSnapshotCreate(java.lang.String a1,java.lang.String a2,int a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotCreate.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmSnapshotCreate(java.lang.String a1,java.lang.String a2,int a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotCreate.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSnapshotDelete;
-  public boolean vmSnapshotDelete(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotDelete.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmSnapshotDelete(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotDelete.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSnapshotExists;
-  public boolean vmSnapshotExists(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotExists.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmSnapshotExists(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotExists.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSnapshotRestore;
-  public boolean vmSnapshotRestore(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotRestore.invokeExact(arena.allocateFrom(a1),arena.allocateFrom(a2));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmSnapshotRestore(java.lang.String a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSnapshotRestore.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStart;
-  public boolean vmStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStart.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStop;
-  public boolean vmStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStop.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStop.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStorageRegister;
-  public boolean vmStorageRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageRegister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmStorageRegister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageRegister.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStorageStart;
-  public boolean vmStorageStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStart.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmStorageStart(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStart.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStorageStop;
-  public boolean vmStorageStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStop.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmStorageStop(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageStop.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmStorageUnregister;
-  public boolean vmStorageUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageUnregister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmStorageUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmStorageUnregister.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmSuspend;
-  public boolean vmSuspend(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSuspend.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmSuspend(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmSuspend.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmUnregister;
-  public boolean vmUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmUnregister.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  public boolean vmUnregister(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)vmUnregister.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle vmGetState;
-  public int vmGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmGetState.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int vmGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmGetState.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vmStorageGetState;
-  public int vmStorageGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmStorageGetState.invokeExact(arena.allocateFrom(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int vmStorageGetState(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vmStorageGetState.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vmGet;
-  public java.lang.String vmGet(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmGet.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public java.lang.String vmGet(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmGet.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1))));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmSnapshotGetCurrent;
-  public java.lang.String vmSnapshotGetCurrent(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmSnapshotGetCurrent.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public java.lang.String vmSnapshotGetCurrent(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmSnapshotGetCurrent.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1))));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmStorageGetUUID;
-  public java.lang.String vmStorageGetUUID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmStorageGetUUID.invokeExact(arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public java.lang.String vmStorageGetUUID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)vmStorageGetUUID.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1))));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmDeviceList;
   public java.lang.String[] vmDeviceList(int a1) { try { FFM.createFFMArray();vmDeviceList.invokeExact(a1);return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
@@ -122,7 +122,7 @@ public class VMFFM implements VMAPI {
   public java.lang.String[] vmNetworkListPhys() { try { FFM.createFFMArray();vmNetworkListPhys.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmSnapshotList;
-  public java.lang.String[] vmSnapshotList(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();vmSnapshotList.invokeExact(arena.allocateFrom(a1));return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+  public java.lang.String[] vmSnapshotList(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); FFM.createFFMArray();vmSnapshotList.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
   private MethodHandle vmStorageList;
   public java.lang.String[] vmStorageList() { try { FFM.createFFMArray();vmStorageList.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }

@@ -52,8 +52,11 @@ public class UIFFM implements UIAPI {
   private MethodHandle uiWindowGetFramebufferSize;
   public int[] uiWindowGetFramebufferSize(long a1) { try { FFM.createFFMArray();uiWindowGetFramebufferSize.invokeExact(a1);return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
+  private MethodHandle uiWindowGetRequiredExtensions;
+  public java.lang.String[] uiWindowGetRequiredExtensions() { try { FFM.createFFMArray();uiWindowGetRequiredExtensions.invokeExact();return (java.lang.String[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
+
   private MethodHandle uiWindowCreate;
-  public long uiWindowCreate(int a1,java.lang.String a2,int a3,int a4,long a5) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)uiWindowCreate.invokeExact(a1,arena.allocateFrom(a2),a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public long uiWindowCreate(int a1,java.lang.String a2,int a3,int a4,long a5) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)uiWindowCreate.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),a3,a4,a5);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle uiWindowCreateSurface;
   public long uiWindowCreateSurface(long a1,long a2) { try { long _ret_value_ = (long)uiWindowCreateSurface.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -83,7 +86,7 @@ public class UIFFM implements UIAPI {
   public void uiWindowSetCurrent(long a1) { try { uiWindowSetCurrent.invokeExact(a1); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle uiWindowSetIcon;
-  public void uiWindowSetIcon(long a1,java.lang.String a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); uiWindowSetIcon.invokeExact(a1,arena.allocateFrom(a2),a3,a4); } catch (Throwable t) { JFLog.log(t); } }
+  public void uiWindowSetIcon(long a1,java.lang.String a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); uiWindowSetIcon.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),a3,a4); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle uiWindowSetPos;
   public void uiWindowSetPos(long a1,int a2,int a3) { try { uiWindowSetPos.invokeExact(a1,a2,a3); } catch (Throwable t) { JFLog.log(t); } }
@@ -113,6 +116,7 @@ public class UIFFM implements UIAPI {
     uiLoadJPG = ffm.getFunctionPtr("_uiLoadJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
     uiLoadPNG = ffm.getFunctionPtr("_uiLoadPNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,ADDRESS));
     uiWindowGetFramebufferSize = ffm.getFunctionPtr("_uiWindowGetFramebufferSize", ffm.getFunctionDesciptorVoid(JAVA_LONG));
+    uiWindowGetRequiredExtensions = ffm.getFunctionPtr("_uiWindowGetRequiredExtensions", ffm.getFunctionDesciptorVoid());
     uiWindowCreate = ffm.getFunctionPtr("_uiWindowCreate", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_INT,JAVA_LONG));
     uiWindowCreateSurface = ffm.getFunctionPtr("_uiWindowCreateSurface", ffm.getFunctionDesciptor(JAVA_LONG,JAVA_LONG,JAVA_LONG));
     uiPollEvents = ffm.getFunctionPtr("_uiPollEvents", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,ADDRESS));

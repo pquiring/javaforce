@@ -49,6 +49,10 @@ extern "C" {
 
 #include "gl.cpp"
 
+#include "../common/vk.cpp"
+
+#include "vk.cpp"
+
 //Camera API (only enable one)
 
 #if 0
