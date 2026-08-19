@@ -14,7 +14,7 @@ import static javaforce.vk.VK.*;
  */
 
 public class TestVK implements WindowEvents {
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   public static Window window;
   public static Cube cube;

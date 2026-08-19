@@ -15,7 +15,7 @@ import javaforce.*;
 
 public class FFMStruct {
 
-  public static boolean debug = true;
+  public static boolean debug = false;
   public static boolean debug_struct = false;
 
   public static final int FLAG_INLINE = 0x0001;
