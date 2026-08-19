@@ -1,6 +1,5 @@
 package javaforce.ffm;
 
-import java.io.*;
 import java.lang.foreign.*;
 import java.lang.reflect.*;
 import static java.lang.foreign.ValueLayout.*;
@@ -17,19 +16,26 @@ import javaforce.*;
 public class FFMStruct {
 
   public static boolean debug = true;
+  public static boolean debug_struct = false;
 
   public static final int FLAG_INLINE = 0x0001;
+  public static final int FLAG_PTR_PTRARRAY = 0x0002;
 
   public static class FFMField {
+    public int index;
     public int offset;
     public String name;
     public Object value;
     public long ptr;
     public boolean inline;
+    public boolean ptr_ptrarray;
+    public MemorySegment array;  //for FFMType.Integer[] and FFMType.Long[]
+
     public FFMField(int offset, String name, int flags) {
       this.offset = offset;
       this.name = name;
       inline = (flags & FLAG_INLINE) == FLAG_INLINE;
+      ptr_ptrarray = (flags & FLAG_PTR_PTRARRAY) == FLAG_PTR_PTRARRAY;
     }
     public long pin() {
       if (value == null) return 0;
@@ -47,10 +53,10 @@ public class FFMStruct {
   public FFMField[] fields;
 
   private int size = -1;
-  public MemorySegment struct;
+  private MemorySegment struct;
+  public MemorySegment src, dst;
 
   private void init() {
-    if (debug) JFLog.log("FFMStruct.init() " + getClass().getName());
     Field[] jfields = getClass().getDeclaredFields();
     jfields = sort(jfields);
     int cnt = jfields.length;
@@ -65,11 +71,13 @@ public class FFMStruct {
       String name = jfield.getName();
       int flags = 0;
       if (!name.startsWith("ptr_")) flags |= FLAG_INLINE;
+      if (name.startsWith("ptr_ptrarray_")) flags |= FLAG_PTR_PTRARRAY;
       int field_size = getFieldSize(jfield);
       int align_size = getFieldAlignment(jfield);
       int padding = getPadding(offset, align_size);
       offset += padding;
       fields[i] = new FFMField(offset, name, flags);
+      fields[i].index = i;
       offset += field_size;
     }
     if (offset == 0) {
@@ -83,20 +91,14 @@ public class FFMStruct {
     Field[] sorted = new Field[cnt];
     //load field order meta data
     String clsName = getClass().getName();
-    String md = "/" + clsName.replace(".", "/") + "-fields.md";
+    Meta meta = Meta.getMetaData(clsName);
     try {
-      InputStream is = getClass().getResourceAsStream(md);
-      if (is == null) {
-        JFLog.log("Error:meta data not found:" + md);
-        return in;
-      }
-      String[] lns = new String(is.readAllBytes()).split("\n");
       int sidx = 0;
-      for(String ln : lns) {
+      for(String field_name : meta.fields) {
         for(int iidx = 0;iidx < cnt; iidx++) {
           Field field = in[iidx];
           if (field == null) continue;
-          if (field.getName().equals(ln)) {
+          if (field.getName().equals(field_name)) {
             sorted[sidx++] = field;
             in[iidx] = null;
             break;
@@ -246,8 +248,11 @@ public class FFMStruct {
     return size;
   }
 
+  public MemorySegment getMemorySegment() {
+    return struct;
+  }
+
   public MemorySegment marshall(Arena arena) {
-    if (debug) JFLog.log("FFMStruct.marshall() " + getClass().getName());
     if (size == -1) {
       init();
     }
@@ -260,6 +265,7 @@ public class FFMStruct {
       JFLog.log("FFMStruct.marshall:Error:struct == null");
       return MemorySegment.NULL;
     }
+    if (debug) JFLog.log("FFMStruct.marshall() " + getClass().getName() + "@" + struct);
     for(FFMField sfield : fields) {
       if (sfield.name  == null) continue;
       Field jfield = getField(sfield.name);
@@ -315,7 +321,7 @@ public class FFMStruct {
       }
       if (JF.isDerivedFrom(type, FFMStruct.class)) {
         if (sfield.inline) {
-          struct_copy(value, sfield.offset, arena);
+          struct_copy(value, struct, sfield.offset, arena);
         } else {
           FFMStruct substruct = (FFMStruct)value;
           sfield.ptr = substruct.marshall(arena).address();
@@ -330,17 +336,29 @@ public class FFMStruct {
           int offset = sfield.offset;
           for(int i=0;i<cnt;i++) {
             FFMStruct substruct = substructs[i];
-            struct_copy(substruct, offset, arena);
+            struct_copy(substruct, struct, offset, arena);
             offset += substruct.getSize();
           }
         } else {
-          MemorySegment array = arena.allocate(JAVA_LONG, cnt);
-          for(int i=0;i<cnt;i++) {
-            FFMStruct substruct = substructs[i];
-            long ptr = substruct.marshall(arena).address();
-            array.set(JAVA_LONG, i, ptr);
+          if (sfield.ptr_ptrarray) {
+            MemorySegment array = arena.allocate(JAVA_LONG, cnt);
+            for(int i=0;i<cnt;i++) {
+              FFMStruct substruct = substructs[i];
+              long ptr = substruct.marshall(arena).address();
+              array.setAtIndex(JAVA_LONG, i, ptr);
+            }
+            struct.set(JAVA_LONG, sfield.offset, array.address());
+          } else {
+            int size = substructs[0].getSize();
+            MemorySegment array = arena.allocate(JAVA_BYTE, cnt * size);
+            int offset = 0;
+            for(int i=0;i<cnt;i++) {
+              FFMStruct substruct = substructs[i];
+              struct_copy(substruct, array, offset, arena);
+              offset += substruct.getSize();
+            }
+            struct.set(JAVA_LONG, sfield.offset, array.address());
           }
-          return array;
         }
         continue;
       }
@@ -357,31 +375,59 @@ public class FFMStruct {
       if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
         FFMType.Integer[] ffmtypes = (FFMType.Integer[])value;
         if (sfield.inline) {
-          //TODO
+          int offset = sfield.offset;
+          for(FFMType.Integer ffmtype : ffmtypes) {
+            struct.set(JAVA_INT, offset, ffmtype.value);
+            offset += 4;
+          }
         } else {
-          //TODO
+          int cnt = ffmtypes.length;
+          MemorySegment array = arena.allocate(JAVA_BYTE, cnt * 4);
+          for(int i=0;i<cnt;i++) {
+            FFMType.Integer ffmtype = ffmtypes[i];
+            array.setAtIndex(JAVA_INT, i, ffmtype.getValue());
+          }
+          struct.set(JAVA_LONG, sfield.offset, array.address());
+          sfield.array = array;
         }
         continue;
       }
       if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
-        FFMType.Long[] ffmtype = (FFMType.Long[])value;
+        FFMType.Long[] ffmtypes = (FFMType.Long[])value;
         if (sfield.inline) {
-          //TODO
+          int offset = sfield.offset;
+          for(FFMType.Long ffmtype : ffmtypes) {
+            struct.set(JAVA_LONG, offset, ffmtype.value);
+            offset += 8;
+          }
         } else {
-          //TODO
+          int cnt = ffmtypes.length;
+          MemorySegment array = arena.allocate(JAVA_BYTE, cnt * 8);
+          for(int i=0;i<cnt;i++) {
+            FFMType.Long ffmtype = ffmtypes[i];
+            array.setAtIndex(JAVA_LONG, i, ffmtype.getValue());
+          }
+          struct.set(JAVA_LONG, sfield.offset, array.address());
+          sfield.array = array;
         }
         continue;
       }
-      JFLog.log("FFMStruct.marshall:Unknown field type:" + sfield);
+      JFLog.log("FFMStruct.marshall:Unknown field type:" + type);
     }
-    if (debug) JFLog.log("FFMStruct.marshall:struct=" + struct);
+    if (debug_struct) {
+      print();
+    }
     return struct;
   }
 
   public void unmarshall() {
-    if (debug) JFLog.log("FFMStruct.unmarshall() " + getClass().getName());
+    if (debug) JFLog.log("FFMStruct.unmarshall() " + getClass().getName() + "@" + struct);
     if (fields == null) {
       JFLog.log("FFMStruct.unmarshall() Error:fields == null");
+      return;
+    }
+    if (struct == null) {
+      JFLog.log("FFMStruct.unmarshall() Error:struct == null");
       return;
     }
     for(FFMField sfield : fields) {
@@ -389,6 +435,8 @@ public class FFMStruct {
       Field jfield = getField(sfield.name);
       if (jfield == null) continue;
       Class<?> type = jfield.getType();
+      Object value = getValue(jfield);
+      if (value == null) continue;
       if (type == byte.class) {
         setValue(jfield, struct.get(JAVA_BYTE, sfield.offset));
         continue;
@@ -423,7 +471,7 @@ public class FFMStruct {
       }
       if (isPrimitiveArray(type)) {
         if (sfield.inline) {
-          //nop
+          array_copy_back(value, sfield.offset, type);
         } else {
           sfield.unpin();
         }
@@ -431,7 +479,7 @@ public class FFMStruct {
       }
       if (JF.isDerivedFrom(type, FFMStruct.class)) {
         if (sfield.inline) {
-          //nop
+          struct_copy_back(value);
         } else {
           FFMStruct substruct = (FFMStruct)getValue(jfield);
           substruct.unmarshall();
@@ -442,15 +490,69 @@ public class FFMStruct {
         if (sfield.inline) {
           //nop
         } else {
-          FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
-          for(FFMStruct substruct : substructs) {
-            substruct.unmarshall();
+          if (sfield.ptr_ptrarray) {
+            FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
+            for(FFMStruct substruct : substructs) {
+              substruct.unmarshall();
+            }
+          } else {
+            FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
+            for(FFMStruct substruct : substructs) {
+              struct_copy_back(substruct);
+            }
           }
         }
         continue;
       }
-      JFLog.log("FFMStruct.unmarshall:Unknown field type:" + sfield);
+      if (JF.isDerivedFrom(type, FFMType.Integer.class)) {
+        FFMType.Integer ffmtype = (FFMType.Integer)value;
+        ffmtype.value = struct.get(JAVA_INT, sfield.offset);
+        continue;
+      }
+      if (JF.isDerivedFrom(type, FFMType.Long.class)) {
+        FFMType.Long ffmtype = (FFMType.Long)value;
+        ffmtype.value = struct.get(JAVA_LONG, sfield.offset);
+        continue;
+      }
+      if (JF.isDerivedFrom(type, FFMType.Integer[].class)) {
+        FFMType.Integer[] ffmtypes = (FFMType.Integer[])value;
+        if (sfield.inline) {
+          int offset = sfield.offset;
+          for(FFMType.Integer ffmtype : ffmtypes) {
+            ffmtype.setValue(struct.get(JAVA_INT, offset));
+            offset += 4;
+          }
+        } else {
+          int cnt = ffmtypes.length;
+          MemorySegment array = sfield.array;
+          for(int i=0;i<cnt;i++) {
+            FFMType.Integer ffmtype = ffmtypes[i];
+            ffmtype.setValue(array.getAtIndex(JAVA_INT, i));
+          }
+        }
+        continue;
+      }
+      if (JF.isDerivedFrom(type, FFMType.Long[].class)) {
+        FFMType.Long[] ffmtypes = (FFMType.Long[])value;
+        if (sfield.inline) {
+          int offset = sfield.offset;
+          for(FFMType.Long ffmtype : ffmtypes) {
+            ffmtype.setValue(struct.get(JAVA_LONG, offset));
+            offset += 8;
+          }
+        } else {
+          int cnt = ffmtypes.length;
+          MemorySegment array = sfield.array;
+          for(int i=0;i<cnt;i++) {
+            FFMType.Long ffmtype = ffmtypes[i];
+            ffmtype.setValue(array.getAtIndex(JAVA_LONG, i));
+          }
+        }
+        continue;
+      }
+      JFLog.log("FFMStruct.unmarshall:Unknown field type:" + type);
     }
+    struct = null;
   }
 
   private void array_copy(Object array, int offset, Class<?> type) {
@@ -458,6 +560,7 @@ public class FFMStruct {
     if (type == byte[].class) {
       byte[] src = (byte[])array;
       int len = src.length;
+      if (debug) JFLog.log("array_copy:byte[] " + array + ":offset=" + offset + ":len=" + len);
       for(int i=0;i<len;i++) {
         struct.set(JAVA_BYTE, offset++, src[i]);
       }
@@ -510,13 +613,80 @@ public class FFMStruct {
     }
   }
 
-  private void struct_copy(Object value, int offset, Arena arena) {
+  private void array_copy_back(Object array, int offset, Class<?> type) {
+    //TODO : major optz
+    if (type == byte[].class) {
+      byte[] dst = (byte[])array;
+      int len = dst.length;
+      if (debug) JFLog.log("array_copy_back:byte[]" + array + ":offset=" + offset + ":len=" + len);
+      for(int i=0;i<len;i++) {
+        dst[i] = struct.get(JAVA_BYTE, offset++);
+      }
+      return;
+    }
+    if (type == short[].class) {
+      short[] dst = (short[])array;
+      int len = dst.length;
+      for(int i=0;i<len;i++) {
+        dst[i] = struct.get(JAVA_SHORT, offset);
+        offset += 2;
+      }
+      return;
+    }
+    if (type == int[].class) {
+      int[] dst = (int[])array;
+      int len = dst.length;
+      for(int i=0;i<len;i++) {
+        dst[i] = struct.get(JAVA_INT, offset);
+        offset += 4;
+      }
+      return;
+    }
+    if (type == long[].class) {
+      long[] dst = (long[])array;
+      int len = dst.length;
+      for(int i=0;i<len;i++) {
+        dst[i] = struct.get(JAVA_LONG, offset);
+        offset += 8;
+      }
+      return;
+    }
+    if (type == float[].class) {
+      float[] dst = (float[])array;
+      int len = dst.length;
+      for(int i=0;i<len;i++) {
+        dst[i] = struct.get(JAVA_FLOAT, offset);
+        offset += 4;
+      }
+      return;
+    }
+    if (type == double[].class) {
+      double[] src = (double[])array;
+      int len = src.length;
+      for(int i=0;i<len;i++) {
+        src[i] = struct.get(JAVA_DOUBLE, offset);
+        offset += 8;
+      }
+      return;
+    }
+  }
+
+  private void struct_copy(Object value, MemorySegment dest, int offset, Arena arena) {
     FFMStruct substruct = (FFMStruct)value;
     int length = substruct.getSize();
-    MemorySegment src = substruct.marshall(arena);
-    MemorySegment dst = struct.asSlice(offset, length);
-    dst.copyFrom(src);
+    substruct.src = substruct.marshall(arena);
+    substruct.dst = dest.asSlice(offset, length);
+    substruct.dst.copyFrom(substruct.src);
+//    if (debug) JFLog.log("src=" + Long.toHexString(substruct.src.address()) + ":dst=" + Long.toHexString(substruct.dst.address()));
+  }
+
+  private void struct_copy_back(Object value) {
+    FFMStruct substruct = (FFMStruct)value;
+//    if (debug) JFLog.log("src=" + Long.toHexString(substruct.src.address()) + ":dst=" + Long.toHexString(substruct.dst.address()));
+    substruct.src.copyFrom(substruct.dst);
     substruct.unmarshall();
+    substruct.src = null;
+    substruct.dst = null;
   }
 
   private boolean isPrimitiveArray(Class<?> type) {
@@ -568,6 +738,7 @@ public class FFMStruct {
     }
     return false;
   }
+
   public static boolean isStruct(Field field) {
     try {
       Class<?> cls = field.getType();
@@ -578,58 +749,21 @@ public class FFMStruct {
     return false;
   }
 
-  //generate field order meta data
-  public static void main(String[] args) {
-    if (args.length != 2) {
-      System.out.println("Usage: FFMStruct source_folder_in class_folder_out");
-      return;
-    }
-    String src = args[0];
-    String dst = args[1];
-    int cnt = 0;
-    try {
-      File[] files = new File(src).listFiles();
-      for(File srcfile : files) {
-        if (!srcfile.getName().endsWith(".java")) continue;
-        String srcfilename = src + "/" + srcfile.getName();
-        String dstfilename = dst + "/" + srcfile.getName().replace(".java", "-fields.md");
-        File dstFile = new File(dstfilename);
-        long srcts = srcfile.lastModified();
-        long dstts = dstFile.exists() ? dstFile.lastModified() : 0;
-        if (dstts > srcts) continue;
-        FileInputStream fis = new FileInputStream(srcfile);
-        String[] lns = new String(fis.readAllBytes()).split("\n");
-        fis.close();
-        boolean struct = false;
-        StringBuilder fields = new StringBuilder();
-        for(String ln : lns) {
-          //find "public class ... extends FFMStruct ..."
-          if (!struct) {
-            if (ln.indexOf(" class ") != -1 && ln.indexOf(" FFMStruct") != -1) {
-              struct = true;
-            }
-            continue;
-          }
-          //find "public T field [=value];
-          String[] fs = ln.trim().replace(";", "").split("[ ]+");
-          if (fs.length < 3) continue;
-          if (!fs[0].equals("public")) continue;
-          String type = fs[1];
-          String name = fs[2];
-          fields.append(name);
-          fields.append("\n");
-        }
-        if (struct) {
-          //output meta data
-          FileOutputStream fos = new FileOutputStream(dstfilename);
-          fos.write(fields.toString().getBytes());
-          fos.close();
-          cnt++;
-        }
+  public void print() {
+    if (struct == null) return;
+    StringBuilder buf = new StringBuilder();
+    buf.append("FFMStruct:" + getClass().getName() + ":\r\n");
+    int size = (int)struct.byteSize();
+    for(int idx=0;idx<size;idx++) {
+      byte b = struct.get(JAVA_BYTE, idx);
+      if (idx > 0 && idx % 16 == 0) {
+        buf.append("\r\n");
+      } else {
+        if (idx > 0) buf.append(",");
       }
-      if (cnt > 0) System.out.println("Generated meta data for " + cnt + " classes.");
-    } catch (Exception e) {
-      System.out.println(e);
+      buf.append(String.format("%02x", b & 0xff));
     }
+    buf.append("\r\n");
+    JFLog.log(buf.toString());
   }
 }

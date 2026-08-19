@@ -24,6 +24,7 @@ public abstract class FFMType {
     public Integer() {}
     public Integer(int value) {setValue(value);}
     public Integer(Integer value) {setValue(value.value);}
+    public String toString() {return "0x" + java.lang.Integer.toHexString(value);}
   }
 
   public static class Long extends FFMType {
@@ -35,6 +36,7 @@ public abstract class FFMType {
     public Long() {}
     public Long(long value) {setValue(value);}
     public Long(Long value) {setValue(value.value);}
+    public String toString() {return "0x" + java.lang.Long.toHexString(value);}
   }
 
   public static boolean isType(Class<?> type) {
