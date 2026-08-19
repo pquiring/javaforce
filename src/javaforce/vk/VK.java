@@ -4345,8 +4345,6 @@ public interface VK {
   public int vkAcquireNextImageKHR(VkDevice device, VkSwapchainKHR swapChain, long i_timeout, VkSemaphore semaphore, VkFence fence, int[] pImageIndex);
   public int vkQueuePresentKHR(VkQueue queue, VkPresentInfoKHR pPresentInfo);
 
-  //TODO : add to vk.cpp
-
   public int vkGetBufferMemoryRequirements(VkDevice device, VkBuffer buffer, VkMemoryRequirements pMemoryRequirements);
   public int vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDevice deviceMemory, VkDevice deviceSize);
   public int vkUpdateDescriptorSets(VkDevice device, int descriptorWriteCount, VkWriteDescriptorSet pDescriptorWrites, int descriptorCopyCount, VkCopyDescriptorSet pDescriptorCopies);
