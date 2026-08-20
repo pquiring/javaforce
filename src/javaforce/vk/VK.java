@@ -11,6 +11,10 @@ import javaforce.ffm.*;
  *
  * VkAllocationCallbacks should always be zero.
  *
+ * This implementation is by no means complete.
+ * If you need a function or struct open an issue on github.
+ * Or fork this project, implement it and submit a pull request.
+ *
  * @author pquiring
  *
  */
@@ -4276,6 +4280,8 @@ public interface VK {
   }
 
   //functions here
+  public boolean isVulkanSupported();
+
   public int vkCreateInstance(VkInstanceCreateInfo createInfo, VkAllocationCallbacks callbacks, VkInstance[] instance);
   public int vkCreateRenderPass(VkDevice device, VkRenderPassCreateInfo pCreateInfo, VkAllocationCallbacks callbacks, VkRenderPass[] renderPass);
   public int vkCreateRenderPass2(VkDevice device, VkRenderPassCreateInfo2 pCreateInfo, VkAllocationCallbacks callbacks, VkRenderPass[] renderPass);

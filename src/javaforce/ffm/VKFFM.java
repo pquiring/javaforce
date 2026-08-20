@@ -30,6 +30,9 @@ public class VKFFM implements VK {
     return instance;
   }
 
+  private MethodHandle isVulkanSupported;
+  public boolean isVulkanSupported() { try { boolean _ret_value_ = (boolean)isVulkanSupported.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle vkAcquireNextImageKHR;
   public int vkAcquireNextImageKHR(javaforce.vk.VkDevice a1,javaforce.vk.VkSwapchainKHR a2,long a3,javaforce.vk.VkSemaphore a4,javaforce.vk.VkFence a5,int[] a6) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a6 = FFM.toMemory(arena, a6);int _ret_value_ = (int)vkAcquireNextImageKHR.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3,a4 == null ? 0 : a4.getValue(),a5 == null ? 0 : a5.getValue(),_array_a6);FFM.copyBack(_array_a6,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -270,6 +273,7 @@ public class VKFFM implements VK {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact(libs[0].getPath(arena))) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
+    isVulkanSupported = ffm.getFunctionPtr("_isVulkanSupported", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     vkAcquireNextImageKHR = ffm.getFunctionPtr("_vkAcquireNextImageKHR", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_LONG,ADDRESS));
     vkAllocateCommandBuffers = ffm.getFunctionPtr("_vkAllocateCommandBuffers", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,ADDRESS));
     vkAllocateMemory = ffm.getFunctionPtr("_vkAllocateMemory", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));

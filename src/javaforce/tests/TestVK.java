@@ -28,6 +28,9 @@ public class TestVK implements WindowEvents {
       window.show();
       window.setWindowListener(new TestVK());
       vk = VK.getInstance();
+      boolean supported = vk.isVulkanSupported();
+      JFLog.log("vulkan supported=" + supported);
+      if (!supported) return;
       cube = new Cube(true);
       cube.init();
       while (active) {

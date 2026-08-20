@@ -8,7 +8,13 @@ extern "C" {
 
 JNIEXPORT jboolean JNICALL VKinit(const char* libvulkan_so);
 
+jboolean isVulkanSupported() {
+  return glfwVulkanSupported();
+}
+
 //func args are not required
+JNIEXPORT jboolean (*_isVulkanSupported)() = &isVulkanSupported;
+
 JNIEXPORT void (*_vkCreateInstance)();
 JNIEXPORT void (*_vkCreateRenderPass)();
 JNIEXPORT void (*_vkCreateRenderPass2)();
