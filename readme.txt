@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 115.0
+Version 116.0
 
 Description
 ===========
@@ -48,7 +48,7 @@ Before checking out the source make sure to configure line endings:
 Checkout Javaforce and a specific version:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
-  git checkout tags/115.0
+  git checkout tags/116.0
   ant
 Next build the native loaders.
 
@@ -68,7 +68,7 @@ Pre-built packages are hosted on sourceforge.net which can be installed through 
 
 Native ABI Compatibility
 ------------------------
-This version of JavaForce is compatible with native loaders/library since 114.0
+This version of JavaForce is compatible with native loaders/library since 116.0
 
 JavaForce Ant tasks:
 --------------------

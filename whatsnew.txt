@@ -1,5 +1,14 @@
 What's new...
 
+Aug 20/2026 : JF/116.0
+  - new : added Vulkan support
+    - see javaforce.vk.*
+    - see javaforce.tests.TestVK
+    - implementation is not complete but runs Vulkan tutorial #15
+      - see https://vulkan-tutorial.com/
+  - upgrade : glfw/3.5[.1]
+  - upgrade : llrp/2.2
+
 Jul 27/2026 : JF/115.0
   - fix : DBus : improved dict, struct and variant support
   - new : Linux : added Wifi to control Wifi using wpa-supplicant over DBus
