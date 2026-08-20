@@ -246,9 +246,9 @@
   </target>
 
   <target name="glsl" description="compile glsl source to spir-v binaries">
-    <mkdir dir="classes\javaforce\vk\glsl"/>
-    <exec command="glslang -V src\javaforce\vk\glsl\testvk-vert.vert -o classes\javaforce\vk\glsl\testvk-vert.spv"/>
-    <exec command="glslang -V src\javaforce\vk\glsl\testvk-frag.frag -o classes\javaforce\vk\glsl\testvk-frag.spv"/>
+    <mkdir dir="classes/javaforce/vk/glsl"/>
+    <exec command="glslang -V src/javaforce/vk/glsl/testvk-vert.vert -o classes/javaforce/vk/glsl/testvk-vert.spv"/>
+    <exec command="glslang -V src/javaforce/vk/glsl/testvk-frag.frag -o classes/javaforce/vk/glsl/testvk-frag.spv"/>
   </target>
 
   <target name="genffm" depends="utils" description="generate FFM sources">
