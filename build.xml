@@ -164,12 +164,13 @@
 
   <target name="jar" depends="depjars,compile,icons" unless="fast-build" description="build jar file">
     <!-- Build jar file from class files -->
-    <java classpath="${home}/utils.jar" classname="javaforce.Meta" fork="true" jvm="${user.home}/bin/jfexec">
+    <java classpath="${home}/utils.jar" classname="javaforce.utils.GenMeta" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="src/javaforce/vk"/>
       <arg value="${build}/javaforce/vk"/>
     </java>
-    <jar destfile="javaforce.jar" includes="**/*.class" basedir="${build}">
+    <jar destfile="javaforce.jar">
       <fileset dir="${build}">
+        <include name="**/*.class"/>
         <include name="**/*.md"/>
         <include name="**/*.spv"/>
       </fileset>
