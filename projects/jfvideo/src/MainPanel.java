@@ -21,7 +21,6 @@ public class MainPanel extends javax.swing.JPanel {
     Element.init();
     newProject();
     gl = new Window();
-    gl.init();
     gl.create(0,"jfVideo",1,1,null);  //invisible window
     GL.getInstance();
   }
