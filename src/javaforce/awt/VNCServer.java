@@ -29,7 +29,7 @@ public class VNCServer extends ConfigServlet {
 
   public String getBusName() {return busName;}
 
-  public String getHelpURL() {return "https://pquiring.github.io/javaforce/projects/jfvnc-server/docs/vnc-server.html";}
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce/projects/jfvnc-server/docs/help.html";}
 
   private boolean start() {
     return start(loadConfig(), true);
