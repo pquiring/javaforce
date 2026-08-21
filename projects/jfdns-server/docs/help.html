@@ -13,9 +13,18 @@
 jfDNS
 =====
 
-Options:
+General Options:
 <ul>
-<li>TODO</li>
+<li>[global]</li>
+<li>uplink=8.8.8.8 #DNS uplink server (multiple supported)</li>
+<li>uplinktimeout=2000 #uplink timeout (default 2 seconds)</li>
+<li>cachetimeout=3600000 #cache timeout (default 1 hour)</li>
+<li>[records]</li>
+<li>{name},{type},{ttl},{value}</li>
+<li>#name = full dns name<li>
+<li>#type = a,aaaa,cname,mx,ptr</li>
+<li>#ttl = time to live (seconds) (typically 3600)</li>
+<li>#value = value for DNS (IP4,IP6,DNS Alias)</li>
 </ul>
 
 </pre>
