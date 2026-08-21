@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfProxy</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfProxy</div>
+  </div>
+  <div class=content>
+
+<pre>
+jfProxy
+======
+
+Options:
+<ul>
+<li>[global]</li>
+<li>port=3128</li>
+<li>allow=0.0.0.0/0 #allow all</li>
+<li>#allow=192.168.0.0/24 #allow subnet</li>
+<li>#allow=10.1.2.3/32 #allow single ip</li>
+<li></li>
+<li>[blockdomain]</li>
+<li>.*youtube[.]com  #(multiple allowed)</li>
+<li></li>
+<li>[urlchange]</li>
+<li>www.example.com/test = www.google.com  #(multiple allowed)</li>
+</ul>
+
+</pre>
+
+  </body>
+</html>
