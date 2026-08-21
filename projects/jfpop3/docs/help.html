@@ -13,9 +13,19 @@
 jfPOP3
 ======
 
-Options:
+General Options:
 <ul>
-<li>TODO</li>
+<li>[global]</li>
+<li>port=110  #default port (supports SSL)</li>
+<li>secure=995  #implicit SSL port</li>
+<li>bind=192.168.0.70</li>
+<li>domain=example.com</li>
+<li>ldap_domain=example.com</li>
+<li>ldap_server=192.168.200.2</li>
+<li>admin=user:pass</li>
+<li>account=user:pass (multiple supported)</li>
+<li>src.ipnet=192.168.2.0/255.255.255.0  #limit client IP Subnet (multiple supported)</li>
+<li>src.ip=192.168.3.20 #limit client IP (multiple supported)</li>
 </ul>
 
 </pre>
