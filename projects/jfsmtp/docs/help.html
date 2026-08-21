@@ -15,7 +15,18 @@ jfSMTP
 
 Options:
 <ul>
-<li>TODO</li>
+<li>[global]</li>
+<li>port=25  #default port (supports SSL)</li>
+<li>port=587  #explicit SSL port</li>
+<li>secure=465  #implicit SSL port</li>
+<li>bind=192.168.100.2</li>
+<li>domain=example.com</li>
+<li>ldap_domain=example.org</li>
+<li>ldap_server=192.168.200.2</li>
+<li>account=user:pass  #(multiple allowed)</li>
+<li>digest=true  #digest mode (see POP3/SMTPRelay services)</li>
+<li>src.ipnet=192.168.2.0/255.255.255.0</li>
+<li>src.ip=192.168.3.2</li>
 </ul>
 
 </pre>
