@@ -13,9 +13,28 @@
 jfDHCP
 ======
 
-Options:
+General Options:
 <ul>
-<li>TODO</li>
+<li>[global]</li>
+<li>dns=8.8.8.8 #specify default DNS Server</li>
+<li></li>
+<li>[pool_name] #define a pool (multiple allowed)</li>
+<li>server_ip=192.168.0.2</li>
+<li>bind_ip=0.0.0.0</li>
+<li>pool_first=192.168.0.100</li>
+<li>pool_last=192.168.0.199</li>
+<li>mask=255.255.255.0</li>
+<li>router=192.168.0.1</li>
+<li>dns=8.8.8.8</li>
+<li>lease=86400  #in seconds (24 hrs) (1hr=min 24hrs=max)</li>
+<li>pxe_server=192.168.0.50</li>
+<li>pxe_bootfile=boot/pxelinux</li>
+<li>pxe_proxy=true</li>
+<li>option=128:string:your_string</li>
+<li>option=129:ip4:1.2.3.4</li>
+<li>option=130:int:12345678</li>
+<li>option=131:short:1234</li>
+<li>option=132:byte:12</li>
 </ul>
 
 </pre>
