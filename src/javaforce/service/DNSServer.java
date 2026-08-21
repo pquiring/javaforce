@@ -29,6 +29,8 @@ public class DNSServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfdns-server/docs/help.html";}
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfdns.cfg";
   }

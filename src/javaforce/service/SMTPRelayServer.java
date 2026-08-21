@@ -48,6 +48,8 @@ public class SMTPRelayServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfsmtprelay/docs/help.html";}
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtprelay.cfg";
   }

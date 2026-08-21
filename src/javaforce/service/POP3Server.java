@@ -29,6 +29,8 @@ public class POP3Server extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfpop3/docs/help.html";}
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfpop3.cfg";
   }

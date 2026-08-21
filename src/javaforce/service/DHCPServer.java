@@ -30,6 +30,8 @@ public class DHCPServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfdhcp-server/docs/help.html";}
+
   /** DHCP Notification interface. */
   public static interface Notify {
     /** DHCP Event.

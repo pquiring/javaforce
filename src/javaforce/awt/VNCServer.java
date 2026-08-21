@@ -29,6 +29,8 @@ public class VNCServer extends ConfigServlet {
 
   public String getBusName() {return busName;}
 
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce/docs/vnc-server.html";}
+
   private boolean start() {
     return start(loadConfig(), true);
   }

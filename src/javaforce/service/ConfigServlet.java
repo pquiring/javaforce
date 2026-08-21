@@ -25,6 +25,7 @@ public abstract class ConfigServlet implements WebUIServlet {
 
   public abstract String getAppName();
   public abstract String getBusName();
+  public abstract String getHelpURL();
 
   private class UI {
     TextArea view_log_textarea;
@@ -76,10 +77,17 @@ public abstract class ConfigServlet implements WebUIServlet {
     Button view_log = new Button("View Log");
     tools.add(view_log);
 
+    Button help = new Button("Help");
+    tools.add(help);
+
     TextArea config = new TextArea("");
     config.setMaxWidth();
     config.setFlex(true);
     panel.add(config);
+
+    help.addClickListener((me, cmp) -> {
+      client.openURL(getHelpURL());
+    });
 
     view_log.addClickListener((me, cmp) -> {
       viewLogRefresh(ui);
