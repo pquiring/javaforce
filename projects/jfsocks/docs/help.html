@@ -65,15 +65,16 @@ To set this up follow these steps:
 <ul>
 <li>Run the server config tool.</li>
 <li>Click on Generate Keys to create server SSL Keys.</li>
-<li>Click on Key Manager</li>
+<li>Open a command shell</li>
+<li>Change folder to config folder (Windows:%PROGRAMDATA% Linux:/etc)</li>
+<li>run "jfkeymgr open jfsocks.key password" (requires desktop environment)</li>
 <li>Click on Generate Client Keys, change name to "client" and check "Sign key with root" and click Ok</li>
 <li>Select the "client" row</li>
 <li>Click on "Export Key/Cert to Keystore" to export the key/cert pair to a new keystore.</li>
 <li>Copy the exported keystore to the client system</li>
-<li>There are several options to install keys on client:
-<ul>
+<li>There are several options to install keys on client:<ul>
 <li>Click on Key Manager and click on Import Keystore and select the exported keystore.</li>
-<li>Copy/overwrite this exported keystore to into user home folder / .jfsocks.key  (Windows:%USERPROFILE% Linux:~)</li></ul>
+<li>Copy/overwrite this exported keystore to into user home folder / .jfsocks.key  (Windows:%USERPROFILE% Linux:~)</li></ul></li>
 <li>Now the SOCKS Client App will use the new keys.</li>
 </ul>
 
