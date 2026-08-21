@@ -13,9 +13,26 @@
 jfSMTP Relay
 ============
 
-Options:
+SMTP Relay will retrieve email from a POP3 Server and resend to another SMTP Server on a timer.
+The POP3 server should be in Digest mode so SMTPRelay can retrieve all emails stored.
+
+General Options:
 <ul>
-<li>TODO</li>
+<li>[global]</li>
+<li>pop3_host=1.2.3.4</li>
+<li>pop3_port=995</li>
+<li>pop3_secure=true #(default = false)</li>
+<li>pop3_user=bob</li>
+<li>pop3_pass=secret</li>
+<li>smtp_host=5.6.7.8</li>
+<li>smtp_port=25</li>
+<li>smtp_secure=false #(default = false)</li>
+<li>smtp_user=bob@example.com #optional</li>
+<li>smtp_pass=secret #optional</li>
+<li>smtp_from=bob@example.com #override from email address (optional)</li>
+<li>to_filter=regexp  #regular expression to email must match (multiple supported) (else msg is discarded)</li>
+<li>keepalive=true #keep pop3 connection alive (default = false)</li>
+<li>interval=15 #how often to check for messages (minutes) (default=15)</li>
 </ul>
 
 </pre>
