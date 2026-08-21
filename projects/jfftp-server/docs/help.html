@@ -13,9 +13,22 @@
 jfFTP
 ======
 
-Options:
+General Options:
 <ul>
-<li>TODO</li>
+<li>[global]</li>
+<li>port=21  #default port (supports SSL)</li>
+<li>secure=990  #implicit SSL port</li>
+<li>bind=192.168.0.55</li>
+<li>ldap_domain=example.org</li>
+<li>ldap_server=192.168.0.60</li>
+<li>account={user}:{pass}</li>
+<li>#one root option should be specified</li>
+<li>root=/  #root folder (linux)</li>
+<li>root=c:/  #root folder (windows)</li>
+<li>root=/user/${user}/  #root folder (linux custom)</li>
+<li>root=c:/users/${user}/  #root folder (windows custom)</li>
+<li>src.ipnet=192.168.2.0/255.255.255.0 #limit client IP subnet (multiple supported)</li>
+<li>src.ip=192.168.3.2 #limit client IP Address (multiple supported)</li>
 </ul>
 
 </pre>

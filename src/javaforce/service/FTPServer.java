@@ -147,7 +147,6 @@ public class FTPServer extends ConfigServlet {
     + "#root=c:/\n"  //root folder (windows)
     + "#root=/user/${user}/\n"  //root folder (linux custom)
     + "#root=c:/users/${user}/\n"  //root folder (windows custom)
-    + "#digest=true\n"  //digest mode (see POP3/FTPRelay services)
     + "#src.ipnet=192.168.2.0/255.255.255.0\n"
     + "#src.ip=192.168.3.2\n"
     ;
