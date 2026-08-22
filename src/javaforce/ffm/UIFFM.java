@@ -34,6 +34,9 @@ public class UIFFM implements UIAPI {
   private MethodHandle uiInit;
   public boolean uiInit() { try { boolean _ret_value_ = (boolean)uiInit.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle uiWindowGetFramebufferResized;
+  public boolean uiWindowGetFramebufferResized(long a1) { try { boolean _ret_value_ = (boolean)uiWindowGetFramebufferResized.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle uiSaveJPG;
   public byte[] uiSaveJPG(int[] a1,int a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a1 = FFM.toMemory(arena, a1);FFM.createFFMArray();uiSaveJPG.invokeExact(_array_a1,a2,a3,a4);FFM.copyBack(_array_a1,a1);return (byte[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
@@ -110,6 +113,7 @@ public class UIFFM implements UIAPI {
     try {if (!(boolean)init.invokeExact()) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
     uiInit = ffm.getFunctionPtr("_uiInit", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
+    uiWindowGetFramebufferResized = ffm.getFunctionPtr("_uiWindowGetFramebufferResized", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     uiSaveJPG = ffm.getFunctionPtr("_uiSaveJPG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT,JAVA_INT));
     uiSavePNG = ffm.getFunctionPtr("_uiSavePNG", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
     uiLoadFont = ffm.getFunctionPtr("_uiLoadFont", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS,JAVA_INT,ADDRESS,ADDRESS,ADDRESS,ADDRESS,ADDRESS,JAVA_INT,JAVA_INT));

@@ -120,6 +120,10 @@ public class Window implements UIEvents {
     return UIAPI.getInstance().uiWindowGetFramebufferSize(ctx);
   }
 
+  public boolean getFramebufferResized() {
+    return UIAPI.getInstance().uiWindowGetFramebufferResized(ctx);
+  }
+
   /** Set the OpenGL Context current for this window. */
   public void setCurrent() {
     UIAPI.getInstance().uiWindowSetCurrent(ctx);

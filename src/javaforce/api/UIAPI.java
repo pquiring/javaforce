@@ -43,6 +43,7 @@ public interface UIAPI {
   public long uiWindowCreateSurface(long ctx, long VkInstance);
   public String[] uiWindowGetRequiredExtensions();
   public int[] uiWindowGetFramebufferSize(long ctx);
+  public boolean uiWindowGetFramebufferResized(long ctx);
   public void uiWindowDestroy(long id);
   public void uiWindowSetCurrent(long id);
   public void uiWindowSetIcon(long id, String icon, int x, int y);

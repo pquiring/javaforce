@@ -22,6 +22,7 @@ struct GLFWContextFFM {
   GLFWwindow *window;
   void (*dispatchEvent)(int,int,int);
   //vulkan stuff here
+  bool resized;
 };
 
 static void key_callback_ffm(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -81,6 +82,12 @@ jboolean uiInit()
   return glfwInit() ? JNI_TRUE : JNI_FALSE;
 }
 
+static void framebufferResizeCallback(GLFWwindow* window, int width, int height)
+{
+  GLFWContextFFM *ctx = reinterpret_cast<GLFWContextFFM*>(glfwGetWindowUserPointer(window));
+  ctx->resized = true;
+}
+
 GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GLFWContextFFM* shared)
 {
   GLFWContextFFM *ctx = (GLFWContextFFM*)malloc(sizeof(GLFWContextFFM));
@@ -112,6 +119,9 @@ GLFWContextFFM* uiWindowCreate(jint style, const char* title, jint x, jint y, GL
   }
 
   ctx->window = glfwCreateWindow(x, y, title, monitor, sharedWin);
+
+  glfwSetWindowUserPointer(ctx->window, ctx);
+  glfwSetFramebufferSizeCallback(ctx->window, framebufferResizeCallback);
 
   glfwDefaultWindowHints();
 
@@ -168,12 +178,23 @@ jstringArray uiWindowGetRequiredExtensions() {
 
 int* uiWindowGetFramebufferSize(GLFWContextFFM* ctx)
 {
-  int width, height;
+  int width = 0, height = 0;
   glfwGetFramebufferSize(ctx->window, &width, &height);
+  while (width == 0 || height == 0) {
+    glfwGetFramebufferSize(ctx->window, &width, &height);
+    glfwWaitEvents();
+  }
   jint* size = ffm->newIntArray(2);
   size[0] = width;
   size[1] = height;
   return (int*)size;
+}
+
+jboolean uiWindowGetFramebufferResized(GLFWContextFFM* ctx)
+{
+  jboolean resized = ctx->resized;
+  ctx->resized = JNI_FALSE;
+  return resized;
 }
 
 void uiWindowSetCurrent(GLFWContextFFM* ctx)
@@ -261,6 +282,7 @@ extern "C" {
   JNIEXPORT void* (*_uiWindowCreateSurface)(GLFWContextFFM*,VkInstance) = &uiWindowCreateSurface;
   JNIEXPORT jstringArray (*_uiWindowGetRequiredExtensions)() = &uiWindowGetRequiredExtensions;
   JNIEXPORT int* (*_uiWindowGetFramebufferSize)(GLFWContextFFM*) = &uiWindowGetFramebufferSize;
+  JNIEXPORT jboolean (*_uiWindowGetFramebufferResized)(GLFWContextFFM*) = &uiWindowGetFramebufferResized;
   JNIEXPORT void (*_uiWindowDestroy)(GLFWContextFFM*) = &uiWindowDestroy;
   JNIEXPORT void (*_uiWindowSetCurrent)(GLFWContextFFM*) = &uiWindowSetCurrent;
 //  JNIEXPORT void (*_uiWindowSetIcon)(GLFWContextFFM*, const char*,jint,jint) = &uiWindowSetIcon;

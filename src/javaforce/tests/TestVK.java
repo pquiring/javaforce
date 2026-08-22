@@ -26,7 +26,7 @@ public class TestVK implements WindowEvents {
   public static void main(String args[]) {
     try {
       window = new Window();
-      window.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_VULKAN, "Test", 512, 512, null);
+      window.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE | Window.STYLE_VULKAN, "Test", 512, 512, null);
       window.show();
       window.setWindowListener(new TestVK());
       vk = VK.getInstance();
@@ -119,6 +119,7 @@ public class TestVK implements WindowEvents {
 
     float alpha = 0.5f, alphadir = -0.01f;
 
+    boolean doResize = false;
     boolean doSwap = false;
 
     public Cube(boolean doSwap) {
@@ -857,6 +858,18 @@ public class TestVK implements WindowEvents {
       }
     }
 
+    void recreateSwapChain() {
+      int[] w_h = window.getFramebufferSize();
+
+      vk.vkDeviceWaitIdle(device);
+
+      cleanupSwapChain();
+
+      createSwapChain();
+      createImageViews();
+      createFramebuffers();
+    }
+
     public void init() {
       initVulkan();
 
@@ -903,6 +916,9 @@ public class TestVK implements WindowEvents {
         fpsCounter++;
       }
       synchronized (renderLock) {
+        if (window.getFramebufferResized()) {
+          doResize = true;
+        }
         drawFrame();
         if (doSwap) TestVK.swap();
       }
@@ -1002,6 +1018,18 @@ public class TestVK implements WindowEvents {
       vk.vkDestroyInstance(instance, null);
     }
 
+    void cleanupSwapChain() {
+      for (VkFramebuffer framebuffer : swapChainFramebuffers) {
+        vk.vkDestroyFramebuffer(device, framebuffer, null);
+      }
+
+      for (VkImageView imageView : swapChainImageViews) {
+        vk.vkDestroyImageView(device, imageView, null);
+      }
+
+      vk.vkDestroySwapchainKHR(device, swapChain[0], null);
+    }
+
     void drawFrame() {
       if (debug) JFLog.log("frame=" + current_frame);
       VkFence[] fence = new VkFence[] {new VkFence()};
@@ -1015,7 +1043,15 @@ public class TestVK implements WindowEvents {
 
       int[] imageIndex = new int[1];
       if (debug) JFLog.log("vkAcquireNextImageKHR");
-      vk.vkAcquireNextImageKHR(device, swapChain[0], ULong.MAX_VALUE, imageAvailableSemaphore[current_frame], null, imageIndex);
+      int result = vk.vkAcquireNextImageKHR(device, swapChain[0], ULong.MAX_VALUE, imageAvailableSemaphore[current_frame], null, imageIndex);
+
+      if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+        recreateSwapChain();
+        return;
+      } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        JFLog.log("Failed to acquire swap chain image!");
+        System.exit(1);
+      }
 
       if (debug) JFLog.log("vkResetCommandBuffer");
       vk.vkResetCommandBuffer(commandBuffer[current_frame], /*VkCommandBufferResetFlagBits*/ 0);
@@ -1050,7 +1086,15 @@ public class TestVK implements WindowEvents {
       presentInfo.ptr_pImageIndices = imageIndex;
 
       if (debug) JFLog.log("vkQueuePresentKHR");
-      vk.vkQueuePresentKHR(presentQueue, presentInfo);
+      result = vk.vkQueuePresentKHR(presentQueue, presentInfo);
+
+      if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || doResize) {
+        doResize = false;
+        recreateSwapChain();
+      } else if (result != VK_SUCCESS) {
+        JFLog.log("Failed to present swap chain image!");
+        System.exit(1);
+      }
 
       current_frame = (current_frame + 1) % max_frames;
     }
