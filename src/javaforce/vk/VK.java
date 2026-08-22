@@ -14,7 +14,6 @@ import javaforce.ffm.*;
  * This implementation is by no means complete.
  * If you need a function or struct open an issue on github.
  * Or fork this project, implement it and submit a pull request.
- * Currently supports tutorial #15 at https://vulkan-tutorial.com/
  *
  * @author pquiring
  *
