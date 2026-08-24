@@ -41,6 +41,7 @@ JNIEXPORT void (*_vkDestroyPipeline)();
 JNIEXPORT void (*_vkDestroyPipelineLayout)();
 JNIEXPORT void (*_vkDestroyRenderPass)();
 JNIEXPORT void (*_vkDestroyInstance)();
+JNIEXPORT void (*_vkDestroyBuffer)();
 
 JNIEXPORT void (*_vkEnumeratePhysicalDevices)();
 JNIEXPORT void (*_vkEnumerateDeviceExtensionProperties)();
@@ -53,6 +54,7 @@ JNIEXPORT void (*_vkGetDeviceQueue)();
 JNIEXPORT void (*_vkGetDeviceQueue2)();
 JNIEXPORT void (*_vkAllocateCommandBuffers)();
 JNIEXPORT void (*_vkMapMemory)();
+JNIEXPORT void (*_vkUnmapMemory)();
 JNIEXPORT void (*_vkCreateImage)();
 JNIEXPORT void (*_vkGetImageMemoryRequirements)();
 JNIEXPORT void (*_vkAllocateMemory)();
@@ -60,6 +62,7 @@ JNIEXPORT void (*_vkBindImageMemory)();
 JNIEXPORT void (*_vkQueueWaitIdle)();
 JNIEXPORT void (*_vkResetCommandBuffer)();
 JNIEXPORT void (*_vkFreeCommandBuffers)();
+JNIEXPORT void (*_vkFreeMemory)();
 
 //HKR extensions
 JNIEXPORT void (*_vkCreateSwapchainKHR)();
@@ -132,6 +135,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkDestroyPipelineLayout,"vkDestroyPipelineLayout");
   vkGetFunction((void**)&_vkDestroyRenderPass,"vkDestroyRenderPass");
   vkGetFunction((void**)&_vkDestroyInstance,"vkDestroyInstance");
+  vkGetFunction((void**)&_vkDestroyBuffer,"vkDestroyBuffer");
 
   vkGetFunction((void**)&_vkEnumeratePhysicalDevices,"vkEnumeratePhysicalDevices");
   vkGetFunction((void**)&_vkEnumerateDeviceExtensionProperties,"vkEnumerateDeviceExtensionProperties");
@@ -144,6 +148,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkGetDeviceQueue2,"vkGetDeviceQueue2");
   vkGetFunction((void**)&_vkAllocateCommandBuffers,"vkAllocateCommandBuffers");
   vkGetFunction((void**)&_vkMapMemory,"vkMapMemory");
+  vkGetFunction((void**)&_vkUnmapMemory,"vkUnmapMemory");
   vkGetFunction((void**)&_vkCreateImage,"vkCreateImage");
   vkGetFunction((void**)&_vkGetImageMemoryRequirements,"vkGetImageMemoryRequirements");
   vkGetFunction((void**)&_vkAllocateMemory,"vkAllocateMemory");
@@ -151,6 +156,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkQueueWaitIdle,"vkQueueWaitIdle");
   vkGetFunction((void**)&_vkResetCommandBuffer,"vkResetCommandBuffer");
   vkGetFunction((void**)&_vkFreeCommandBuffers,"vkFreeCommandBuffers");
+  vkGetFunction((void**)&_vkFreeMemory,"vkFreeMemory");
 
   //HKR extensions
   vkGetFunction((void**)&_vkCreateSwapchainKHR,"vkCreateSwapchainKHR");

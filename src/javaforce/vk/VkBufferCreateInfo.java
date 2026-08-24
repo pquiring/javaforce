@@ -18,7 +18,7 @@ public class VkBufferCreateInfo extends FFMStruct {
   /** VkBufferCreateFlags */
   public int flags;
   /** VkDeviceSize */
-  public int size;
+  public VkDeviceSize size = new VkDeviceSize();
   /** VkBufferUsageFlags */
   public int usage;
   /** VkSharingMode enum */

@@ -46,7 +46,7 @@ public class VKFFM implements VK {
   public int vkBeginCommandBuffer(javaforce.vk.VkCommandBuffer a1,javaforce.vk.VkCommandBufferBeginInfo a2) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vkBeginCommandBuffer.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)));if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vkBindBufferMemory;
-  public int vkBindBufferMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkDevice a3,javaforce.vk.VkDevice a4) { try { int _ret_value_ = (int)vkBindBufferMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4 == null ? 0 : a4.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int vkBindBufferMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkDeviceMemory a3,javaforce.vk.VkDeviceSize a4) { try { int _ret_value_ = (int)vkBindBufferMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4 == null ? 0 : a4.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vkBindImageMemory;
   public int vkBindImageMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkImage a2,long a3,long a4) { try { int _ret_value_ = (int)vkBindImageMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -126,6 +126,9 @@ public class VKFFM implements VK {
   private MethodHandle vkCreateSwapchainKHR;
   public int vkCreateSwapchainKHR(javaforce.vk.VkDevice a1,javaforce.vk.VkSwapchainCreateInfoKHR a2,javaforce.vk.VkAllocationCallbacks a3,javaforce.vk.VkSwapchainKHR[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkCreateSwapchainKHR.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)),a3 == null ? 0 : a3.getValue(),_array_a4);FFM.copyBack(_array_a4,a4);if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle vkDestroyBuffer;
+  public int vkDestroyBuffer(javaforce.vk.VkDevice a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkAllocationCallbacks a3) { try { int _ret_value_ = (int)vkDestroyBuffer.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle vkDestroyCommandPool;
   public int vkDestroyCommandPool(javaforce.vk.VkDevice a1,javaforce.vk.VkCommandPool a2,javaforce.vk.VkAllocationCallbacks a3) { try { int _ret_value_ = (int)vkDestroyCommandPool.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -180,6 +183,9 @@ public class VKFFM implements VK {
   private MethodHandle vkFreeCommandBuffers;
   public int vkFreeCommandBuffers(javaforce.vk.VkDevice a1,javaforce.vk.VkCommandPool a2,int a3,javaforce.vk.VkCommandBuffer[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkFreeCommandBuffers.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3,_array_a4);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle vkFreeMemory;
+  public int vkFreeMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkDeviceMemory a2,javaforce.vk.VkAllocationCallbacks a3) { try { int _ret_value_ = (int)vkFreeMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle vkGetBufferMemoryRequirements;
   public int vkGetBufferMemoryRequirements(javaforce.vk.VkDevice a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkMemoryRequirements a3) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vkGetBufferMemoryRequirements.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),(MemorySegment)(a3 == null ? MemorySegment.NULL : a3.marshall(arena)));if (a3!=null) a3.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -220,7 +226,7 @@ public class VKFFM implements VK {
   public int vkGetSwapchainImagesKHR(javaforce.vk.VkDevice a1,javaforce.vk.VkSwapchainKHR a2,int[] a3,javaforce.vk.VkImage[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkGetSwapchainImagesKHR.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),_array_a3,_array_a4);FFM.copyBack(_array_a3,a3);FFM.copyBack(_array_a4,a4);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vkMapMemory;
-  public int vkMapMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkDevice a2,long a3,long a4,int a5,long[] a6) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a6 = FFM.toMemory(arena, a6);int _ret_value_ = (int)vkMapMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3,a4,a5,_array_a6);FFM.copyBack(_array_a6,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+  public int vkMapMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkDeviceMemory a2,long a3,long a4,int a5,long[] a6) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a6 = FFM.toMemory(arena, a6);int _ret_value_ = (int)vkMapMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3,a4,a5,_array_a6);FFM.copyBack(_array_a6,a6);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vkQueuePresentKHR;
   public int vkQueuePresentKHR(javaforce.vk.VkQueue a1,javaforce.vk.VkPresentInfoKHR a2) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vkQueuePresentKHR.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)));if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -236,6 +242,9 @@ public class VKFFM implements VK {
 
   private MethodHandle vkResetFences;
   public int vkResetFences(javaforce.vk.VkDevice a1,int a2,javaforce.vk.VkFence[] a3) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);int _ret_value_ = (int)vkResetFences.invokeExact(a1 == null ? 0 : a1.getValue(),a2,_array_a3);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vkUnmapMemory;
+  public int vkUnmapMemory(javaforce.vk.VkDevice a1,javaforce.vk.VkDeviceMemory a2) { try { int _ret_value_ = (int)vkUnmapMemory.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vkUpdateDescriptorSets;
   public int vkUpdateDescriptorSets(javaforce.vk.VkDevice a1,int a2,javaforce.vk.VkWriteDescriptorSet a3,int a4,javaforce.vk.VkCopyDescriptorSet a5) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)vkUpdateDescriptorSets.invokeExact(a1 == null ? 0 : a1.getValue(),a2,(MemorySegment)(a3 == null ? MemorySegment.NULL : a3.marshall(arena)),a4,(MemorySegment)(a5 == null ? MemorySegment.NULL : a5.marshall(arena)));if (a3!=null) a3.unmarshall();if (a5!=null) a5.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -305,6 +314,7 @@ public class VKFFM implements VK {
     vkCreateSemaphore = ffm.getFunctionPtr("_vkCreateSemaphore", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateShaderModule = ffm.getFunctionPtr("_vkCreateShaderModule", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateSwapchainKHR = ffm.getFunctionPtr("_vkCreateSwapchainKHR", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
+    vkDestroyBuffer = ffm.getFunctionPtr("_vkDestroyBuffer", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroyCommandPool = ffm.getFunctionPtr("_vkDestroyCommandPool", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroyDevice = ffm.getFunctionPtr("_vkDestroyDevice", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG));
     vkDestroyFence = ffm.getFunctionPtr("_vkDestroyFence", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
@@ -323,6 +333,7 @@ public class VKFFM implements VK {
     vkEnumerateDeviceExtensionProperties = ffm.getFunctionPtr("_vkEnumerateDeviceExtensionProperties", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,ADDRESS,ADDRESS));
     vkEnumeratePhysicalDevices = ffm.getFunctionPtr("_vkEnumeratePhysicalDevices", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,ADDRESS));
     vkFreeCommandBuffers = ffm.getFunctionPtr("_vkFreeCommandBuffers", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS));
+    vkFreeMemory = ffm.getFunctionPtr("_vkFreeMemory", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkGetBufferMemoryRequirements = ffm.getFunctionPtr("_vkGetBufferMemoryRequirements", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,ADDRESS));
     vkGetDisplayModePropertiesKHR = ffm.getFunctionPtr("_vkGetDisplayModePropertiesKHR", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,ADDRESS,ADDRESS));
     vkGetDisplayPlaneCapabilitiesKHR = ffm.getFunctionPtr("_vkGetDisplayPlaneCapabilitiesKHR", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS));
@@ -342,6 +353,7 @@ public class VKFFM implements VK {
     vkQueueWaitIdle = ffm.getFunctionPtr("_vkQueueWaitIdle", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG));
     vkResetCommandBuffer = ffm.getFunctionPtr("_vkResetCommandBuffer", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT));
     vkResetFences = ffm.getFunctionPtr("_vkResetFences", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS));
+    vkUnmapMemory = ffm.getFunctionPtr("_vkUnmapMemory", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG));
     vkUpdateDescriptorSets = ffm.getFunctionPtr("_vkUpdateDescriptorSets", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS));
     vkWaitForFences = ffm.getFunctionPtr("_vkWaitForFences", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_LONG));
     vkGetDeviceQueue = ffm.getFunctionPtr("_vkGetDeviceQueue", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS));

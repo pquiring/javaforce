@@ -20,9 +20,9 @@ public class VkPipelineVertexInputStateCreateInfo extends FFMStruct {
   /** */
   public int vertexBindingDescriptionCount;
   /** */
-  public VkVertexInputBindingDescription pVertexBindingDescriptions = new VkVertexInputBindingDescription();
+  public VkVertexInputBindingDescription[] ptr_pVertexBindingDescriptions;
   /** */
   public int vertexAttributeDescriptionCount;
   /** */
-  public VkVertexInputAttributeDescription pVertexAttributeDescriptions = new VkVertexInputAttributeDescription();
+  public VkVertexInputAttributeDescription[] ptr_pVertexAttributeDescriptions;
 }

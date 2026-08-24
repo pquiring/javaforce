@@ -1,5 +1,6 @@
 package javaforce.tests;
 
+import java.lang.foreign.*;
 import java.util.*;
 
 import javaforce.*;
@@ -17,6 +18,7 @@ import static javaforce.vk.VK.*;
 
 public class TestVK implements WindowEvents {
   public static boolean debug = false;
+  public static boolean debug_ext = false;
 
   public static Window window;
   public static Cube cube;
@@ -77,6 +79,46 @@ public class TestVK implements WindowEvents {
 
   public static String[] fullExtensions;
 
+  public static class Vertex {
+    public Vector2 pos;
+    public Vector3 color;
+
+    public Vertex(float[] pos, float[] color) {
+      this.pos = new Vector2(pos);
+      this.color = new Vector3(color);
+    }
+
+    public static VkVertexInputBindingDescription[] getBindingDescriptions() {
+      VkVertexInputBindingDescription bindingDescription = new VkVertexInputBindingDescription();
+      bindingDescription.binding = 0;
+      bindingDescription.stride = 4 * 5;  //sizeof(float) * (2 + 3)
+      bindingDescription.inputRate.setValue(VK_VERTEX_INPUT_RATE_VERTEX);
+
+      return new VkVertexInputBindingDescription[] {bindingDescription};
+    }
+
+    public static VkVertexInputAttributeDescription[] getAttributeDescriptions() {
+      VkVertexInputAttributeDescription[] attributeDescriptions = new VkVertexInputAttributeDescription[2];
+
+      for(int i=0;i<2;i++) {
+        attributeDescriptions[i] = new VkVertexInputAttributeDescription();
+      }
+
+      attributeDescriptions[0].binding = 0;
+      attributeDescriptions[0].location = 0;
+      attributeDescriptions[0].format.setValue(VK_FORMAT_R32G32_SFLOAT);
+      attributeDescriptions[0].offset =  0;
+
+      attributeDescriptions[1].binding = 0;
+      attributeDescriptions[1].location = 1;
+      attributeDescriptions[1].format.setValue(VK_FORMAT_R32G32B32_SFLOAT);
+      attributeDescriptions[1].offset = 4 * 2;
+
+      return attributeDescriptions;
+    }
+
+  }
+
   public static class Cube {
     Object renderLock = new Object();
     java.util.Timer glTimer, fpsTimer;
@@ -108,6 +150,9 @@ public class TestVK implements WindowEvents {
     VkCommandPool[] commandPool;
     VkCommandBuffer[] commandBuffer;
 
+    VkBuffer vertexBuffer;
+    VkDeviceMemory[] vertexBufferMemory;
+
     VkSemaphore[] imageAvailableSemaphore;
     VkSemaphore[] renderFinishedSemaphore;
     VkFence[] inFlightFence;
@@ -121,6 +166,26 @@ public class TestVK implements WindowEvents {
 
     boolean doResize = false;
     boolean doSwap = false;
+
+    Vertex[] vertices = new Vertex[] {
+      new Vertex(new float[] {0.0f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}),
+      new Vertex(new float[] {0.5f, 0.5f}, new float[] {0.0f, 1.0f, 0.0f}),
+      new Vertex(new float[] {-0.5f, 0.5f}, new float[] {0.0f, 0.0f, 1.0f}),
+    };
+
+    public static float[] toArray(Vertex[] vs) {
+      int cnt = vs.length;
+      float[] fs = new float[cnt * 5];
+      int p = 0;
+      for(int i=0;i<cnt;i++) {
+        fs[p++] = vs[i].pos.v[0];
+        fs[p++] = vs[i].pos.v[1];
+        fs[p++] = vs[i].color.v[0];
+        fs[p++] = vs[i].color.v[1];
+        fs[p++] = vs[i].color.v[2];
+      }
+      return fs;
+    }
 
     public Cube(boolean doSwap) {
       this.doSwap = doSwap;
@@ -147,6 +212,8 @@ public class TestVK implements WindowEvents {
       createFramebuffers();
       if (debug) JFLog.log("createCommandPool");
       createCommandPool();
+      if (debug) JFLog.log("createVertexBuffer");
+      createVertexBuffer();
       if (debug) JFLog.log("createCommandBuffer");
       createCommandBuffer();
       if (debug) JFLog.log("createSyncObjects");
@@ -492,7 +559,7 @@ public class TestVK implements WindowEvents {
           continue;
         }
         String extensionName = availableExtension.getExtensionName();
-        if (debug) JFLog.log("extensionName=" + extensionName);
+        if (debug_ext) JFLog.log("extensionName=" + extensionName);
         requiredExtensions.remove(extensionName);
       }
 
@@ -660,8 +727,14 @@ public class TestVK implements WindowEvents {
       VkPipelineShaderStageCreateInfo shaderStages[] = new VkPipelineShaderStageCreateInfo[] {vertShaderStageInfo, fragShaderStageInfo};
 
       VkPipelineVertexInputStateCreateInfo vertexInputInfo = new VkPipelineVertexInputStateCreateInfo();
-      vertexInputInfo.vertexBindingDescriptionCount = 0;
-      vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+      VkVertexInputBindingDescription[] bindDescs = Vertex.getBindingDescriptions();
+      VkVertexInputAttributeDescription[] attrDescs = Vertex.getAttributeDescriptions();
+
+      vertexInputInfo.vertexBindingDescriptionCount = 1;
+      vertexInputInfo.vertexAttributeDescriptionCount = attrDescs.length;
+      vertexInputInfo.ptr_pVertexBindingDescriptions = bindDescs;
+      vertexInputInfo.ptr_pVertexAttributeDescriptions = attrDescs;
 
       VkPipelineInputAssemblyStateCreateInfo inputAssembly = new VkPipelineInputAssemblyStateCreateInfo();
       inputAssembly.topology = new VkPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
@@ -794,6 +867,65 @@ public class TestVK implements WindowEvents {
         JFLog.log("Failed to create command pool!");
         System.exit(1);
       }
+    }
+
+    void createVertexBuffer() {
+      VkBufferCreateInfo bufferInfo = new VkBufferCreateInfo();
+      bufferInfo.size.setValue(4 * 7 * vertices.length);
+      bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+      bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      vertexBuffer = new VkBuffer();
+
+      if (vk.vkCreateBuffer(device, bufferInfo, null, new VkBuffer[] {vertexBuffer}) != VK_SUCCESS) {
+        JFLog.log("Failed to create vertex buffer!");
+        System.exit(1);
+      }
+      if (debug) JFLog.log("vertexBuffer=" + vertexBuffer.toString());
+
+      VkMemoryRequirements memRequirements = new VkMemoryRequirements();
+      vk.vkGetBufferMemoryRequirements(device, vertexBuffer, memRequirements);
+
+      VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo();
+      allocInfo.allocationSize = memRequirements.size;
+      allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+      vertexBufferMemory = new VkDeviceMemory[1];
+      vertexBufferMemory[0] = new VkDeviceMemory();
+      if (vk.vkAllocateMemory(device, allocInfo, null, vertexBufferMemory) != VK_SUCCESS) {
+        JFLog.log("Failed to allocate vertex buffer memory!");
+        System.exit(1);
+      }
+
+      vk.vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory[0], new VkDeviceSize(0));
+
+      float[] vs = toArray(vertices);
+
+      long[] addr = new long[1];
+      vk.vkMapMemory(device, vertexBufferMemory[0], 0, vs.length * 4, 0, addr);
+      if (debug) JFLog.log("addr=0x" + Long.toHexString(addr[0]));
+      MemorySegment buffer = MemorySegment.ofAddress(addr[0]).reinterpret(vs.length * 4);
+      for(int i=0;i<vs.length;i++) {
+        buffer.setAtIndex(ValueLayout.JAVA_FLOAT, i, vs[i]);
+      }
+      vk.vkUnmapMemory(device, vertexBufferMemory[0]);
+    }
+
+    int findMemoryType(int typeFilter, int properties) {
+      if (debug) JFLog.log("findMemoryType:" + typeFilter + "," + properties);
+      VkPhysicalDeviceMemoryProperties2 memProperties = new VkPhysicalDeviceMemoryProperties2();
+      vk.vkGetPhysicalDeviceMemoryProperties2(physicalDevice, memProperties);
+
+      for (int i = 0; i < memProperties.memoryProperties.memoryTypeCount; i++) {
+        if (debug) JFLog.log("findMemoryType:memory=" + i + "," + memProperties.memoryProperties.memoryTypes[i].propertyFlags);
+        if (((typeFilter & (1 << i)) != 0) && (memProperties.memoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+          return i;
+        }
+      }
+
+      JFLog.log("Failed to find suitable memory type!");
+      System.exit(1);
+      return -1;
     }
 
     void createCommandBuffer() {
@@ -980,6 +1112,9 @@ public class TestVK implements WindowEvents {
       if (debug) JFLog.log("cleanup");
       vk.vkDeviceWaitIdle(device);
 
+      vk.vkDestroyBuffer(device, vertexBuffer, null);
+      vk.vkFreeMemory(device, vertexBufferMemory[0], null);
+
       if (debug) JFLog.log("cleanup:semaphores + fences");
       for(int i=0;i<max_frames;i++) {
         if (debug) JFLog.log("cleanup:semaphore[]" + i);
@@ -1141,6 +1276,12 @@ public class TestVK implements WindowEvents {
 
       if (debug) JFLog.log("vkCmdSetScissor");
       vk.vkCmdSetScissor(commandBuffer, 0, 1, new VkRect2D[] {scissor});
+
+      if (debug) JFLog.log("vkCmdBindVertexBuffers");
+      VkBuffer vertexBuffers[] = {vertexBuffer};
+      VkDeviceSize offsets[] = new VkDeviceSize[1];
+      offsets[0] = new VkDeviceSize();
+      vk.vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
       if (debug) JFLog.log("vkCmdDraw");
       vk.vkCmdDraw(commandBuffer, 3, 1, 0, 0);

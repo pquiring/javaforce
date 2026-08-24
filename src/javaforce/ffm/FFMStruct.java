@@ -487,16 +487,19 @@ public class FFMStruct {
         continue;
       }
       if (JF.isDerivedFrom(type, FFMStruct[].class)) {
+        FFMStruct[] substructs = (FFMStruct[])value;
+        int cnt = substructs.length;
         if (sfield.inline) {
-          //nop
+          for(int i=0;i<cnt;i++) {
+            FFMStruct substruct = substructs[i];
+            struct_copy_back(substruct);
+          }
         } else {
           if (sfield.ptr_ptrarray) {
-            FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
             for(FFMStruct substruct : substructs) {
               substruct.unmarshall();
             }
           } else {
-            FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
             for(FFMStruct substruct : substructs) {
               struct_copy_back(substruct);
             }

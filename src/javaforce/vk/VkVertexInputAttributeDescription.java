@@ -12,9 +12,9 @@ import javaforce.ffm.*;
 
 public class VkVertexInputAttributeDescription extends FFMStruct {
   /** */
-  public int width;
+  public int location;
   /** */
-  public int height;
+  public int binding;
   /** */
   public VkFormat format = new VkFormat();
   /** */

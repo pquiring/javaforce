@@ -4377,6 +4377,83 @@ public interface VK {
   // Provided by VK_EXT_nested_command_buffer
   public static int VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_EXT = VK_SUBPASS_CONTENTS_INLINE_AND_SECONDARY_COMMAND_BUFFERS_KHR;
 
+  //VkVertexInputRate
+  public static int VK_VERTEX_INPUT_RATE_VERTEX = 0;
+  public static int VK_VERTEX_INPUT_RATE_INSTANCE = 1;
+
+  //VkBufferUsageFlagBits
+  public static int VK_BUFFER_USAGE_TRANSFER_SRC_BIT = 0x00000001;
+  public static int VK_BUFFER_USAGE_TRANSFER_DST_BIT = 0x00000002;
+  public static int VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000004;
+  public static int VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT = 0x00000008;
+  public static int VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT = 0x00000010;
+  public static int VK_BUFFER_USAGE_STORAGE_BUFFER_BIT = 0x00000020;
+  public static int VK_BUFFER_USAGE_INDEX_BUFFER_BIT = 0x00000040;
+  public static int VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = 0x00000080;
+  public static int VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT = 0x00000100;
+  // Provided by VK_VERSION_1_2
+  public static int VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT = 0x00020000;
+  // Provided by VK_KHR_video_decode_queue
+  public static int VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR = 0x00002000;
+  // Provided by VK_KHR_video_decode_queue
+  public static int VK_BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR = 0x00004000;
+  // Provided by VK_EXT_transform_feedback
+  public static int VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT = 0x00000800;
+  // Provided by VK_EXT_transform_feedback
+  public static int VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT = 0x00001000;
+  // Provided by VK_EXT_conditional_rendering
+  public static int VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT = 0x00000200;
+  // Provided by VK_AMDX_shader_enqueue
+  public static int VK_BUFFER_USAGE_EXECUTION_GRAPH_SCRATCH_BIT_AMDX = 0x02000000;
+  // Provided by VK_EXT_descriptor_heap
+  public static int VK_BUFFER_USAGE_DESCRIPTOR_HEAP_BIT_EXT = 0x10000000;
+  // Provided by VK_KHR_acceleration_structure
+  public static int VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR = 0x00080000;
+  // Provided by VK_KHR_acceleration_structure
+  public static int VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR = 0x00100000;
+  // Provided by VK_KHR_ray_tracing_pipeline
+  public static int VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR = 0x00000400;
+  // Provided by VK_KHR_video_encode_queue
+  public static int VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR = 0x00008000;
+  // Provided by VK_KHR_video_encode_queue
+  public static int VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = 0x00010000;
+  // Provided by VK_EXT_descriptor_buffer
+  public static int VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT = 0x00200000;
+  // Provided by VK_EXT_descriptor_buffer
+  public static int VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT = 0x00400000;
+  // Provided by VK_EXT_descriptor_buffer
+  public static int VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT = 0x04000000;
+  // Provided by VK_EXT_opacity_micromap
+  public static int VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT = 0x00800000;
+  // Provided by VK_EXT_opacity_micromap
+  public static int VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT = 0x01000000;
+  // Provided by VK_QCOM_tile_memory_heap
+  public static int VK_BUFFER_USAGE_TILE_MEMORY_BIT_QCOM = 0x08000000;
+  // Provided by VK_NV_ray_tracing
+  public static int VK_BUFFER_USAGE_RAY_TRACING_BIT_NV = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR;
+  // Provided by VK_EXT_buffer_device_address
+  public static int VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_EXT = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+  // Provided by VK_KHR_buffer_device_address
+  public static int VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+
+  // VkMemoryPropertyFlagBits
+  public static int VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001;
+  public static int VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002;
+  public static int VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004;
+  public static int VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008;
+  public static int VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010;
+  // Provided by VK_VERSION_1_1
+  public static int VK_MEMORY_PROPERTY_PROTECTED_BIT = 0x00000020;
+  // Provided by VK_AMD_device_coherent_memory
+  public static int VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = 0x00000040;
+  // Provided by VK_AMD_device_coherent_memory
+  public static int VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = 0x00000080;
+  // Provided by VK_NV_external_memory_rdma
+  public static int VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = 0x00000100;
+
+  public static final int VK_MAX_MEMORY_TYPES = 32;
+  public static final int VK_MAX_MEMORY_HEAPS = 16;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4413,6 +4490,7 @@ public interface VK {
   public int vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout, VkAllocationCallbacks callbacks);
   public int vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass, VkAllocationCallbacks callbacks);
   public int vkDestroyInstance(VkInstance instance, VkAllocationCallbacks callbacks);
+  public int vkDestroyBuffer(VkDevice device, VkBuffer buffer,VkAllocationCallbacks callbacks);
 
   public int vkEnumeratePhysicalDevices(VkInstance instance, int[] count, VkPhysicalDevice[] physicaldevices);
   public int vkEnumerateDeviceExtensionProperties(VkPhysicalDevice physicaldevice, String pLayerName, int[] pPropertyCount, VkExtensionProperties[] pProperties);
@@ -4424,13 +4502,15 @@ public interface VK {
   public void vkGetDeviceQueue2(VkDevice device, VkDeviceQueueInfo2 pQueueInfo, VkQueue[] queue);
 
   public int vkAllocateCommandBuffers(VkDevice device, VkCommandBufferAllocateInfo pAllocateInfo, VkCommandBuffer[] commandBuffer);
-  public int vkMapMemory(VkDevice device, VkDevice deviceMemory, long offset, long size, int flags, long[] ppData);  //void** ppData
+  public int vkMapMemory(VkDevice device, VkDeviceMemory deviceMemory, long offset, long size, int flags, long[] ppData);  //void** ppData
+  public int vkUnmapMemory(VkDevice device, VkDeviceMemory deviceMemory);
   public int vkGetImageMemoryRequirements(VkDevice device, VkImage image, VkMemoryRequirements pMemoryRequirements);
   public int vkAllocateMemory(VkDevice device, VkMemoryAllocateInfo pAllocateInfo, VkAllocationCallbacks callbacks, VkDeviceMemory[] pMemory);
   public int vkBindImageMemory(VkDevice device, VkImage image, long memory, long memoryOffset);
   public int vkQueueWaitIdle(VkQueue queue);
   public int vkResetCommandBuffer(VkCommandBuffer commandBuffer, int flags);
   public int vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, int commandBufferCount, VkCommandBuffer[] commandBuffer);
+  public int vkFreeMemory(VkDevice device, VkDeviceMemory memory,VkAllocationCallbacks callbacks);
 
   //HKR extensions
   public int vkCreateSwapchainKHR(VkDevice device, VkSwapchainCreateInfoKHR pCreateInfo, VkAllocationCallbacks callbacks, VkSwapchainKHR[] pSwapchain);
@@ -4455,7 +4535,8 @@ public interface VK {
   public int vkQueuePresentKHR(VkQueue queue, VkPresentInfoKHR pPresentInfo);
 
   public int vkGetBufferMemoryRequirements(VkDevice device, VkBuffer buffer, VkMemoryRequirements pMemoryRequirements);
-  public int vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDevice deviceMemory, VkDevice deviceSize);
+  public int vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory deviceMemory, VkDeviceSize deviceSize);
+
   public int vkUpdateDescriptorSets(VkDevice device, int descriptorWriteCount, VkWriteDescriptorSet pDescriptorWrites, int descriptorCopyCount, VkCopyDescriptorSet pDescriptorCopies);
   public int vkWaitForFences(VkDevice device, int fenceCount, VkFence[] fence, int waitAll, long timeout);
   public int vkResetFences(VkDevice device, int fenceCount, VkFence[] fence);
