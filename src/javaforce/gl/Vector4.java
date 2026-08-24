@@ -17,6 +17,14 @@ public class Vector4 {
     this.v[2] = z;
     this.v[3] = w;
   }
+  public Vector4(float[] xyzw) {
+    this.v[0] = xyzw[0];
+    this.v[1] = xyzw[1];
+    this.v[2] = xyzw[2];
+    if (xyzw.length == 4) {
+      this.v[3] = xyzw[3];
+    }
+  }
   public void set(float x, float y, float z) {
     this.v[0] = x;
     this.v[1] = y;
