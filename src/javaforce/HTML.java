@@ -113,6 +113,28 @@ public class HTML {
   public static String select(String name, String id, String[][] options, String selected_value, String selected_text) {
     return select(name, id, options, selected_value, selected_text, true);
   }
+
+  /** Adds an onEvent to HTML element.
+   * @param html = html Element.
+   * @param eventType = on event type (onclick, onchange, etc.)
+   * @param code = code when event fires (will be enclosed in double quotes)
+   */
+  public static String onEvent(String html, String eventType, String code) {
+    int idx = html.indexOf('>');
+    if (idx == -1) return html;  //error
+    String p1 = html.substring(0, idx);
+    String p2 = html.substring(idx);
+    StringBuilder new_html = new StringBuilder();
+    new_html.append(p1);
+    new_html.append(" ");
+    new_html.append(eventType);
+    new_html.append("=\"");
+    new_html.append(code);
+    new_html.append("\"");
+    new_html.append(p2);
+    return new_html.toString();
+  }
+
   /** Generate HTML stack trace of exception.
    */
   public static String toString(Throwable t) {
