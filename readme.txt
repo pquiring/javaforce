@@ -42,6 +42,7 @@ First get some tools installed, all projects are built with Apache Ant (http://a
   debian:apt install git ant
   fedora:yum install git ant
   windows:install git, OpenJDK and ant from various sources (msys2, cygwin, oracle, etc.)
+Note:on Linux ant may depend on older version of Java so you may need to install ant manually. (see /linux for install script)
 Before checking out the source make sure to configure line endings:
   linux/mac : git config --global core.autocrlf input
   windows : git config --global core.autocrlf true
@@ -145,8 +146,7 @@ A minimal pom.xml is required to upload projects to Maven Central (sonatype).
 
 FFM Support
 -----------
-Javaforce now supports using FFM (Foreign Function & Memory API) to access native functions instead of JNI.
-You can call FFM.enable() or FFM.disable() to revert to JNI.
+Javaforce now uses FFM (Foreign Function & Memory API) to access native functions instead of JNI.
 Some JNI is used to pin arrays for better performance.
 See docs/ffm.txt for more details.
 
