@@ -865,44 +865,87 @@ public class TestVK implements WindowEvents {
     }
 
     void createVertexBuffer() {
-      VkBufferCreateInfo bufferInfo = new VkBufferCreateInfo();
-      bufferInfo.size.setValue(4 * 7 * vertices.length);
-      bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-      bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+      VkDeviceSize bufferSize = new VkDeviceSize(4 * 7 * vertices.length);
+
+      float[] vs = toArray(vertices);
+
+      VkBuffer stagingBuffer = new VkBuffer();
+      VkDeviceMemory stagingBufferMemory = new VkDeviceMemory();
+      createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+      long[] addr = new long[1];
+      vk.vkMapMemory(device, stagingBufferMemory, 0, vs.length * 4, 0, addr);
+      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(vs.length * 4);
+      for(int i=0;i<vs.length;i++) {
+        memory.setAtIndex(ValueLayout.JAVA_FLOAT, i, vs[i]);
+      }
+      vk.vkUnmapMemory(device, stagingBufferMemory);
 
       vertexBuffer = new VkBuffer();
+      vertexBufferMemory = new VkDeviceMemory();
+      createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
 
-      if (vk.vkCreateBuffer(device, bufferInfo, null, new VkBuffer[] {vertexBuffer}) != VK_SUCCESS) {
+      copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+      vk.vkDestroyBuffer(device, stagingBuffer, null);
+      vk.vkFreeMemory(device, stagingBufferMemory, null);
+    }
+
+    void createBuffer(VkDeviceSize size, int usage, int properties, VkBuffer buffer, VkDeviceMemory bufferMemory) {
+      VkBufferCreateInfo bufferInfo = new VkBufferCreateInfo();
+      bufferInfo.size.set(size);
+      bufferInfo.usage = usage;
+      bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      if (vk.vkCreateBuffer(device, bufferInfo, null, new VkBuffer[] {buffer}) != VK_SUCCESS) {
         JFLog.log("Failed to create vertex buffer!");
         System.exit(1);
       }
-      if (debug) JFLog.log("vertexBuffer=" + vertexBuffer.toString());
+      if (debug) JFLog.log("vertexBuffer=" + buffer.toString());
 
       VkMemoryRequirements memRequirements = new VkMemoryRequirements();
-      vk.vkGetBufferMemoryRequirements(device, vertexBuffer, memRequirements);
+      vk.vkGetBufferMemoryRequirements(device, buffer, memRequirements);
 
       VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo();
       allocInfo.allocationSize = memRequirements.size;
       allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-      vertexBufferMemory = new VkDeviceMemory();
-      if (vk.vkAllocateMemory(device, allocInfo, null, new VkDeviceMemory[] {vertexBufferMemory}) != VK_SUCCESS) {
+      if (vk.vkAllocateMemory(device, allocInfo, null, new VkDeviceMemory[] {bufferMemory}) != VK_SUCCESS) {
         JFLog.log("Failed to allocate vertex buffer memory!");
         System.exit(1);
       }
 
-      vk.vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, new VkDeviceSize(0));
+      vk.vkBindBufferMemory(device, buffer, bufferMemory, new VkDeviceSize(0));
+    }
 
-      float[] vs = toArray(vertices);
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+      VkCommandBufferAllocateInfo allocInfo = new VkCommandBufferAllocateInfo();
+      allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+      allocInfo.commandPool = commandPool;
+      allocInfo.commandBufferCount = 1;
 
-      long[] addr = new long[1];
-      vk.vkMapMemory(device, vertexBufferMemory, 0, vs.length * 4, 0, addr);
-      if (debug) JFLog.log("addr=0x" + Long.toHexString(addr[0]));
-      MemorySegment buffer = MemorySegment.ofAddress(addr[0]).reinterpret(vs.length * 4);
-      for(int i=0;i<vs.length;i++) {
-        buffer.setAtIndex(ValueLayout.JAVA_FLOAT, i, vs[i]);
-      }
-      vk.vkUnmapMemory(device, vertexBufferMemory);
+      VkCommandBuffer commandBuffer = new VkCommandBuffer();
+      vk.vkAllocateCommandBuffers(device, allocInfo, new VkCommandBuffer[] {commandBuffer});
+
+      VkCommandBufferBeginInfo beginInfo = new VkCommandBufferBeginInfo();
+      beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+      vk.vkBeginCommandBuffer(commandBuffer, beginInfo);
+
+      VkBufferCopy copyRegion = new VkBufferCopy();
+      copyRegion.size = size;
+      vk.vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, new VkBufferCopy[] {copyRegion});
+
+      vk.vkEndCommandBuffer(commandBuffer);
+
+      VkSubmitInfo submitInfo = new VkSubmitInfo();
+      submitInfo.commandBufferCount = 1;
+      submitInfo.ptr_pCommandBuffers = new VkCommandBuffer[] {commandBuffer};
+
+      vk.vkQueueSubmit(graphicsQueue, 1, new VkSubmitInfo[] {submitInfo}, null);
+      vk.vkQueueWaitIdle(graphicsQueue);
+
+      vk.vkFreeCommandBuffers(device, commandPool, 1, new VkCommandBuffer[] {commandBuffer});
     }
 
     int findMemoryType(int typeFilter, int properties) {

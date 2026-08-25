@@ -98,6 +98,7 @@ JNIEXPORT void (*_vkCmdSetViewport)();
 JNIEXPORT void (*_vkCmdSetScissor)();
 JNIEXPORT void (*_vkCmdDraw)();
 JNIEXPORT void (*_vkCmdEndRenderPass)();
+JNIEXPORT void (*_vkCmdCopyBuffer)();
 JNIEXPORT void (*_vkEndCommandBuffer)();
 JNIEXPORT void (*_vkQueueSubmit)();
 JNIEXPORT void (*_vkDeviceWaitIdle)();
@@ -192,6 +193,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkCmdSetScissor,"vkCmdSetScissor");
   vkGetFunction((void**)&_vkCmdDraw,"vkCmdDraw");
   vkGetFunction((void**)&_vkCmdEndRenderPass,"vkCmdEndRenderPass");
+  vkGetFunction((void**)&_vkCmdCopyBuffer,"vkCmdCopyBuffer");
   vkGetFunction((void**)&_vkEndCommandBuffer,"vkEndCommandBuffer");
   vkGetFunction((void**)&_vkQueueSubmit,"vkQueueSubmit");
   vkGetFunction((void**)&_vkDeviceWaitIdle,"vkDeviceWaitIdle");

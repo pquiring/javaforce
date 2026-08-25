@@ -4454,6 +4454,11 @@ public interface VK {
   public static final int VK_MAX_MEMORY_TYPES = 32;
   public static final int VK_MAX_MEMORY_HEAPS = 16;
 
+  // VkCommandBufferUsageFlagBits
+  public static int VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = 0x00000001;
+  public static int VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002;
+  public static int VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = 0x00000004;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4549,6 +4554,7 @@ public interface VK {
   public int vkCmdSetScissor(VkCommandBuffer commandBuffer, int firstScissor, int scissorCount, VkRect2D[] pScissors);
   public int vkCmdDraw(VkCommandBuffer commandBuffer, int vertexCount, int instanceCount, int firstVertex, int firstInstance);
   public int vkCmdEndRenderPass(VkCommandBuffer commandBuffer);
+  public void vkCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer,VkBuffer dstBuffer, int regionCount, VkBufferCopy[] pRegions);
   public int vkEndCommandBuffer(VkCommandBuffer commandBuffer);
   public int vkQueueSubmit(VkQueue queue, int submitCount, VkSubmitInfo[] pSubmits, VkFence fence);
   public int vkDeviceWaitIdle(VkDevice device);
