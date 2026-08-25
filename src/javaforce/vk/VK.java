@@ -4459,6 +4459,20 @@ public interface VK {
   public static int VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002;
   public static int VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = 0x00000004;
 
+  // VkIndexType
+  public static int VK_INDEX_TYPE_UINT16 = 0;
+  public static int VK_INDEX_TYPE_UINT32 = 1;
+  // Provided by VK_VERSION_1_4
+  public static int VK_INDEX_TYPE_UINT8 = 1000265000;
+  // Provided by VK_KHR_acceleration_structure
+  public static int VK_INDEX_TYPE_NONE_KHR = 1000165000;
+  // Provided by VK_NV_ray_tracing
+  public static int VK_INDEX_TYPE_NONE_NV = VK_INDEX_TYPE_NONE_KHR;
+  // Provided by VK_EXT_index_type_uint8
+  public static int VK_INDEX_TYPE_UINT8_EXT = VK_INDEX_TYPE_UINT8;
+  // Provided by VK_KHR_index_type_uint8
+  public static int VK_INDEX_TYPE_UINT8_KHR = VK_INDEX_TYPE_UINT8;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4552,7 +4566,9 @@ public interface VK {
   public int vkCmdBindDescriptorSets(VkCommandBuffer commandBuffer, VkPipelineBindPoint bindPoint, VkPipelineLayout layout, int firstSet, int descriptorSetCount, VkDescriptorSet[] sets, int dynamicOffsetCount, int[] pDynamicOffsets);
   public int vkCmdSetViewport(VkCommandBuffer commandBuffer, int firstViewport, int viewportCount, VkViewport[] pViewports);
   public int vkCmdSetScissor(VkCommandBuffer commandBuffer, int firstScissor, int scissorCount, VkRect2D[] pScissors);
+  public void vkCmdBindIndexBuffer(VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, int indexType);
   public int vkCmdDraw(VkCommandBuffer commandBuffer, int vertexCount, int instanceCount, int firstVertex, int firstInstance);
+  public void vkCmdDrawIndexed(VkCommandBuffer commandBuffer, int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
   public int vkCmdEndRenderPass(VkCommandBuffer commandBuffer);
   public void vkCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer,VkBuffer dstBuffer, int regionCount, VkBufferCopy[] pRegions);
   public int vkEndCommandBuffer(VkCommandBuffer commandBuffer);

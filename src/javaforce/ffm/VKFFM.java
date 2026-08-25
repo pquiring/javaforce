@@ -252,8 +252,14 @@ public class VKFFM implements VK {
   private MethodHandle vkWaitForFences;
   public int vkWaitForFences(javaforce.vk.VkDevice a1,int a2,javaforce.vk.VkFence[] a3,int a4,long a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a3 = FFM.toMemory(arena, a3);int _ret_value_ = (int)vkWaitForFences.invokeExact(a1 == null ? 0 : a1.getValue(),a2,_array_a3,a4,a5);FFM.copyBack(_array_a3,a3);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle vkCmdBindIndexBuffer;
+  public void vkCmdBindIndexBuffer(javaforce.vk.VkCommandBuffer a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkDeviceSize a3,int a4) { try { vkCmdBindIndexBuffer.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle vkCmdCopyBuffer;
   public void vkCmdCopyBuffer(javaforce.vk.VkCommandBuffer a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkBuffer a3,int a4,javaforce.vk.VkBufferCopy[] a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a5 = FFM.toMemory(arena, a5);vkCmdCopyBuffer.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4,_array_a5);FFM.copyBack(_array_a5,a5); } catch (Throwable t) { JFLog.log(t); } }
+
+  private MethodHandle vkCmdDrawIndexed;
+  public void vkCmdDrawIndexed(javaforce.vk.VkCommandBuffer a1,int a2,int a3,int a4,int a5,int a6) { try { vkCmdDrawIndexed.invokeExact(a1 == null ? 0 : a1.getValue(),a2,a3,a4,a5,a6); } catch (Throwable t) { JFLog.log(t); } }
 
   private MethodHandle vkGetDeviceQueue;
   public void vkGetDeviceQueue(javaforce.vk.VkDevice a1,int a2,int a3,javaforce.vk.VkQueue[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);vkGetDeviceQueue.invokeExact(a1 == null ? 0 : a1.getValue(),a2,a3,_array_a4);FFM.copyBack(_array_a4,a4); } catch (Throwable t) { JFLog.log(t); } }
@@ -359,7 +365,9 @@ public class VKFFM implements VK {
     vkUnmapMemory = ffm.getFunctionPtr("_vkUnmapMemory", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG));
     vkUpdateDescriptorSets = ffm.getFunctionPtr("_vkUpdateDescriptorSets", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS));
     vkWaitForFences = ffm.getFunctionPtr("_vkWaitForFences", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_LONG));
+    vkCmdBindIndexBuffer = ffm.getFunctionPtr("_vkCmdBindIndexBuffer", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_INT));
     vkCmdCopyBuffer = ffm.getFunctionPtr("_vkCmdCopyBuffer", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS));
+    vkCmdDrawIndexed = ffm.getFunctionPtr("_vkCmdDrawIndexed", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));
     vkGetDeviceQueue = ffm.getFunctionPtr("_vkGetDeviceQueue", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS));
     vkGetDeviceQueue2 = ffm.getFunctionPtr("_vkGetDeviceQueue2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,ADDRESS));
     vkGetPhysicalDeviceFeatures2 = ffm.getFunctionPtr("_vkGetPhysicalDeviceFeatures2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));

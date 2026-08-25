@@ -152,6 +152,8 @@ public class TestVK implements WindowEvents {
 
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
 
     VkSemaphore[] imageAvailableSemaphores;
     VkSemaphore[] renderFinishedSemaphores;
@@ -168,10 +170,13 @@ public class TestVK implements WindowEvents {
     boolean doSwap = false;
 
     Vertex[] vertices = new Vertex[] {
-      new Vertex(new float[] {0.0f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}),
-      new Vertex(new float[] {0.5f, 0.5f}, new float[] {0.0f, 1.0f, 0.0f}),
-      new Vertex(new float[] {-0.5f, 0.5f}, new float[] {0.0f, 0.0f, 1.0f}),
+      new Vertex(new float[] {-0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f}, new float[] {0.0f, 0.0f, 1.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f}, new float[] {1.0f, 1.0f, 1.0f}),
     };
+
+    int[] indices = new int[] {0, 1, 2, 2, 3, 0};
 
     public static float[] toArray(Vertex[] vs) {
       int cnt = vs.length;
@@ -214,6 +219,8 @@ public class TestVK implements WindowEvents {
       createCommandPool();
       if (debug) JFLog.log("createVertexBuffer");
       createVertexBuffer();
+      if (debug) JFLog.log("createIndexBuffer");
+      createIndexBuffer();
       if (debug) JFLog.log("createCommandBuffer");
       createCommandBuffer();
       if (debug) JFLog.log("createSyncObjects");
@@ -948,6 +955,31 @@ public class TestVK implements WindowEvents {
       vk.vkFreeCommandBuffers(device, commandPool, 1, new VkCommandBuffer[] {commandBuffer});
     }
 
+    void createIndexBuffer() {
+      VkDeviceSize bufferSize = new VkDeviceSize(4 * indices.length);
+
+      VkBuffer stagingBuffer = new VkBuffer();
+      VkDeviceMemory stagingBufferMemory = new VkDeviceMemory();
+      createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+      long[] addr = new long[1];
+      vk.vkMapMemory(device, stagingBufferMemory, 0, indices.length * 4, 0, addr);
+      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(indices.length * 4);
+      for(int i=0;i<indices.length;i++) {
+        memory.setAtIndex(ValueLayout.JAVA_INT, i, indices[i]);
+      }
+      vk.vkUnmapMemory(device, stagingBufferMemory);
+
+      indexBuffer = new VkBuffer();
+      indexBufferMemory = new VkDeviceMemory();
+      createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+      copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+      vk.vkDestroyBuffer(device, stagingBuffer, null);
+      vk.vkFreeMemory(device, stagingBufferMemory, null);
+    }
+
     int findMemoryType(int typeFilter, int properties) {
       if (debug) JFLog.log("findMemoryType:" + typeFilter + "," + properties);
       VkPhysicalDeviceMemoryProperties2 memProperties = new VkPhysicalDeviceMemoryProperties2();
@@ -1152,6 +1184,9 @@ public class TestVK implements WindowEvents {
       vk.vkDestroyBuffer(device, vertexBuffer, null);
       vk.vkFreeMemory(device, vertexBufferMemory, null);
 
+      vk.vkDestroyBuffer(device, indexBuffer, null);
+      vk.vkFreeMemory(device, indexBufferMemory, null);
+
       if (debug) JFLog.log("cleanup:semaphores + fences");
       for(int i=0;i<max_frames;i++) {
         if (debug) JFLog.log("cleanup:semaphore[]" + i);
@@ -1318,8 +1353,11 @@ public class TestVK implements WindowEvents {
       offsets[0] = new VkDeviceSize();
       vk.vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-      if (debug) JFLog.log("vkCmdDraw");
-      vk.vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+      if (debug) JFLog.log("vkCmdBindIndexBuffer");
+      vk.vkCmdBindIndexBuffer(commandBuffer, indexBuffer, new VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+
+      if (debug) JFLog.log("vkCmdDrawIndexed");
+      vk.vkCmdDrawIndexed(commandBuffer, indices.length, 1, 0, 0, 0);
 
       if (debug) JFLog.log("vkCmdEndRenderPass");
       vk.vkCmdEndRenderPass(commandBuffer);
