@@ -2,6 +2,7 @@ package javaforce.tests;
 
 import java.lang.foreign.*;
 import java.util.*;
+import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.ui.*;
@@ -18,6 +19,7 @@ import static javaforce.vk.VK.*;
 
 public class TestVK implements WindowEvents {
   public static boolean debug = false;
+  public static boolean debug_mem = false;
   public static boolean debug_ext = false;
 
   public static Window window;
@@ -107,12 +109,12 @@ public class TestVK implements WindowEvents {
       attributeDescriptions[0].binding = 0;
       attributeDescriptions[0].location = 0;
       attributeDescriptions[0].format.setValue(VK_FORMAT_R32G32_SFLOAT);
-      attributeDescriptions[0].offset =  0;
+      attributeDescriptions[0].offset =  0;  //offset of pos
 
       attributeDescriptions[1].binding = 0;
       attributeDescriptions[1].location = 1;
       attributeDescriptions[1].format.setValue(VK_FORMAT_R32G32B32_SFLOAT);
-      attributeDescriptions[1].offset = 4 * 2;
+      attributeDescriptions[1].offset = 4 * 2;  //offset of color
 
       return attributeDescriptions;
     }
@@ -125,7 +127,7 @@ public class TestVK implements WindowEvents {
     Object fpsLock = new Object();
     int fpsCounter;
 
-    final int FPS = 65;
+    final int FPS = 60;
     final int max_frames = 2;  //# of concurrent frames to keep in the render pipeline (in flight)
     int current_frame = 0;
 
@@ -143,12 +145,19 @@ public class TestVK implements WindowEvents {
     VkImageView[] swapChainImageViews;
     VkFramebuffer[] swapChainFramebuffers;
     VkRenderPass renderPass;
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkDescriptorPool descriptorPool;
+    VkDescriptorSet[] descriptorSets;
 
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
     VkCommandPool commandPool;
     VkCommandBuffer[] commandBuffers;
+
+    VkBuffer[] uniformBuffers;
+    VkDeviceMemory[] uniformBuffersMemory;
+    MemorySegment[] uniformBuffersMapped;
 
     VkBuffer vertexBuffer;
     VkDeviceMemory vertexBufferMemory;
@@ -178,6 +187,40 @@ public class TestVK implements WindowEvents {
 
     int[] indices = new int[] {0, 1, 2, 2, 3, 0};
 
+    public static class UniformBufferObject {
+      public Matrix model = new Matrix();
+      public Matrix view = new Matrix();
+      public Matrix proj = new Matrix();
+
+      public void copy_row_major(float[] s, int sp, float[] d, int dp, int cnt) {
+        for(int row=0;row<4;row++) {
+          for(int col=0;col<4;col++) {
+            d[dp++] = s[col * 4 + row];
+          }
+        }
+      }
+
+      public float[] toArray() {
+        float[] out = new float[16 * 3];
+        if (true) {
+          //copy col major
+          System.arraycopy(model.m, 0, out, 0, 16);
+          System.arraycopy(view.m, 0, out, 16, 16);
+          System.arraycopy(proj.m, 0, out, 32, 16);
+        } else {
+          //copy row major
+          copy_row_major(model.m, 0, out, 0, 16);
+          copy_row_major(view.m, 0, out, 16, 16);
+          copy_row_major(proj.m, 0, out, 32, 16);
+        }
+        return out;
+      }
+
+      public static int sizeof() {
+        return 4 * 16 * 3;  //sizeof(float) * matrix.length * 3
+      }
+    };
+
     public static float[] toArray(Vertex[] vs) {
       int cnt = vs.length;
       float[] fs = new float[cnt * 5];
@@ -199,32 +242,58 @@ public class TestVK implements WindowEvents {
     public void initVulkan() {
       if (debug) JFLog.log("createInstance");
       createInstance();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createSurface");
       createSurface();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("pickPhysicalDevice");
       pickPhysicalDevice();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createLogicalDevice");
       createLogicalDevice();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createSwapChain");
       createSwapChain();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createImageViews");
       createImageViews();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createRenderPass");
       createRenderPass();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createDescriptorSetLayout");
+      createDescriptorSetLayout();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createGraphicsPipeline");
       createGraphicsPipeline();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createFramebuffers");
       createFramebuffers();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createCommandPool");
       createCommandPool();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createVertexBuffer");
       createVertexBuffer();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createIndexBuffer");
       createIndexBuffer();
-      if (debug) JFLog.log("createCommandBuffer");
-      createCommandBuffer();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createUniformBuffers");
+      createUniformBuffers();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createDescriptorPool");
+      createDescriptorPool();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createDescriptorSets");
+      createDescriptorSets();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createCommandBuffers");
+      createCommandBuffers();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createSyncObjects");
       createSyncObjects();
+      if (debug_mem) System.gc();
     }
 
     public void createInstance() {
@@ -234,7 +303,7 @@ public class TestVK implements WindowEvents {
       ArrayList<String> fullExts = new ArrayList<>();
       String[] exts = window.getRequiredExtensions();
       for(int a=0;a<exts.length;a++) {
-        if (debug) JFLog.log("ext=" + exts[a]);
+        if (debug_ext) JFLog.log("ext=" + exts[a]);
         fullExts.add(exts[a]);
       }
       for(int a=0;a<desiredExtensions.length;a++) {
@@ -691,10 +760,32 @@ public class TestVK implements WindowEvents {
       if (debug) JFLog.log("renderPass=0x" + Long.toHexString(renderPass.getValue()));
     }
 
+    void createDescriptorSetLayout() {
+      VkDescriptorSetLayoutBinding uboLayoutBinding = new VkDescriptorSetLayoutBinding();
+      uboLayoutBinding.binding = 0;
+      uboLayoutBinding.descriptorCount = 1;
+      uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
+      VkDescriptorSetLayoutCreateInfo layoutInfo = new VkDescriptorSetLayoutCreateInfo();
+      layoutInfo.bindingCount = 1;
+      layoutInfo.ptr_pBindings = uboLayoutBinding;
+
+      descriptorSetLayout = new VkDescriptorSetLayout();
+
+      if (vk.vkCreateDescriptorSetLayout(device, layoutInfo, null, new VkDescriptorSetLayout[] {descriptorSetLayout}) != VK_SUCCESS) {
+        JFLog.log("Failed to create descriptor set layout!");
+        System.exit(1);
+      }
+      if (debug) JFLog.log("descriptorSetLayout=" + descriptorSetLayout.toString());
+    }
+
     void createGraphicsPipeline() {
       VkPipelineLayoutCreateInfo pipelineLayoutInfo = new VkPipelineLayoutCreateInfo();
       pipelineLayoutInfo.setLayoutCount = 0;
       pipelineLayoutInfo.pushConstantRangeCount = 0;
+      pipelineLayoutInfo.setLayoutCount = 1;
+      pipelineLayoutInfo.ptr_pSetLayouts = new VkDescriptorSetLayout[] {descriptorSetLayout};
 
       pipelineLayout = new VkPipelineLayout();
       if (debug) JFLog.log("vkCreatePipelineLayout");
@@ -736,8 +827,8 @@ public class TestVK implements WindowEvents {
       VkVertexInputAttributeDescription[] attrDescs = Vertex.getAttributeDescriptions();
 
       vertexInputInfo.vertexBindingDescriptionCount = 1;
-      vertexInputInfo.vertexAttributeDescriptionCount = attrDescs.length;
       vertexInputInfo.ptr_pVertexBindingDescriptions = bindDescs;
+      vertexInputInfo.vertexAttributeDescriptionCount = attrDescs.length;
       vertexInputInfo.ptr_pVertexAttributeDescriptions = attrDescs;
 
       VkPipelineInputAssemblyStateCreateInfo inputAssembly = new VkPipelineInputAssemblyStateCreateInfo();
@@ -869,22 +960,25 @@ public class TestVK implements WindowEvents {
         JFLog.log("Failed to create command pool!");
         System.exit(1);
       }
+      if (debug) JFLog.log("vkCreateCommandPool=" + commandPool.toString());
     }
 
     void createVertexBuffer() {
-      VkDeviceSize bufferSize = new VkDeviceSize(4 * 7 * vertices.length);
-
       float[] vs = toArray(vertices);
+
+      VkDeviceSize bufferSize = new VkDeviceSize(4 * vs.length);
 
       VkBuffer stagingBuffer = new VkBuffer();
       VkDeviceMemory stagingBufferMemory = new VkDeviceMemory();
       createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
       long[] addr = new long[1];
-      vk.vkMapMemory(device, stagingBufferMemory, 0, vs.length * 4, 0, addr);
-      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(vs.length * 4);
+      if (debug) JFLog.log("vkMapMemory:" + stagingBufferMemory.toString());
+      vk.vkMapMemory(device, stagingBufferMemory, 0, 4 * vs.length, 0, addr);
+      if (debug) JFLog.log("addr=0x" + Long.toHexString(addr[0]));
+      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(4 * vs.length);
       for(int i=0;i<vs.length;i++) {
-        memory.setAtIndex(ValueLayout.JAVA_FLOAT, i, vs[i]);
+        memory.setAtIndex(JAVA_FLOAT, i, vs[i]);
       }
       vk.vkUnmapMemory(device, stagingBufferMemory);
 
@@ -894,38 +988,46 @@ public class TestVK implements WindowEvents {
 
       copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
 
+      if (debug) JFLog.log("free stagingBuffers");
       vk.vkDestroyBuffer(device, stagingBuffer, null);
       vk.vkFreeMemory(device, stagingBufferMemory, null);
     }
 
     void createBuffer(VkDeviceSize size, int usage, int properties, VkBuffer buffer, VkDeviceMemory bufferMemory) {
+      if (debug) JFLog.log("createBuffer:size=" + size.value);
       VkBufferCreateInfo bufferInfo = new VkBufferCreateInfo();
-      bufferInfo.size.set(size);
+      bufferInfo.size.setValue(size.value);
       bufferInfo.usage = usage;
       bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
+      if (debug) JFLog.log("vkCreateBuffer:size=" + size.value);
       if (vk.vkCreateBuffer(device, bufferInfo, null, new VkBuffer[] {buffer}) != VK_SUCCESS) {
         JFLog.log("Failed to create vertex buffer!");
         System.exit(1);
       }
-      if (debug) JFLog.log("vertexBuffer=" + buffer.toString());
+      if (debug) JFLog.log("buffer=" + buffer.toString());
 
       VkMemoryRequirements memRequirements = new VkMemoryRequirements();
+      if (debug) JFLog.log("vkGetBufferMemoryRequirements");
       vk.vkGetBufferMemoryRequirements(device, buffer, memRequirements);
 
       VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo();
       allocInfo.allocationSize = memRequirements.size;
       allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
+      if (debug) JFLog.log("vkAllocateMemory:size=" + memRequirements.size);
       if (vk.vkAllocateMemory(device, allocInfo, null, new VkDeviceMemory[] {bufferMemory}) != VK_SUCCESS) {
         JFLog.log("Failed to allocate vertex buffer memory!");
         System.exit(1);
       }
+      if (debug) JFLog.log("vkAllocateMemory:memory=" + bufferMemory.toString());
 
-      vk.vkBindBufferMemory(device, buffer, bufferMemory, new VkDeviceSize(0));
+      if (debug) JFLog.log("vkBindBufferMemory");
+      vk.vkBindBufferMemory(device, buffer, bufferMemory, new VkDeviceSize(0) /* offset */);
     }
 
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+      if (debug) JFLog.log("copyBuffer:size=" + size.value);
       VkCommandBufferAllocateInfo allocInfo = new VkCommandBufferAllocateInfo();
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       allocInfo.commandPool = commandPool;
@@ -940,7 +1042,7 @@ public class TestVK implements WindowEvents {
       vk.vkBeginCommandBuffer(commandBuffer, beginInfo);
 
       VkBufferCopy copyRegion = new VkBufferCopy();
-      copyRegion.size = size;
+      copyRegion.size = new VkDeviceSize(size);
       vk.vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, new VkBufferCopy[] {copyRegion});
 
       vk.vkEndCommandBuffer(commandBuffer);
@@ -963,10 +1065,12 @@ public class TestVK implements WindowEvents {
       createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
       long[] addr = new long[1];
-      vk.vkMapMemory(device, stagingBufferMemory, 0, indices.length * 4, 0, addr);
-      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(indices.length * 4);
+      if (debug) JFLog.log("vkMapMemory:" + stagingBufferMemory.toString());
+      vk.vkMapMemory(device, stagingBufferMemory, 0, 4 * indices.length, 0, addr);
+      if (debug) JFLog.log("addr=0x" + Long.toHexString(addr[0]));
+      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(4 * indices.length);
       for(int i=0;i<indices.length;i++) {
-        memory.setAtIndex(ValueLayout.JAVA_INT, i, indices[i]);
+        memory.setAtIndex(JAVA_INT, i, indices[i]);
       }
       vk.vkUnmapMemory(device, stagingBufferMemory);
 
@@ -980,9 +1084,35 @@ public class TestVK implements WindowEvents {
       vk.vkFreeMemory(device, stagingBufferMemory, null);
     }
 
+    void createUniformBuffers() {
+      VkDeviceSize bufferSize = new VkDeviceSize(UniformBufferObject.sizeof());
+      if (debug) JFLog.log("createUniformBuffers:size=" + bufferSize.value);
+
+      uniformBuffers = new VkBuffer[max_frames];
+      uniformBuffersMemory = new VkDeviceMemory[max_frames];
+      uniformBuffersMapped = new MemorySegment[max_frames];
+
+      for (int i = 0; i < max_frames; i++) {
+        uniformBuffers[i] = new VkBuffer();
+        uniformBuffersMemory[i] = new VkDeviceMemory();
+        createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
+        if (debug) JFLog.log("uniformBuffers[]=" + uniformBuffers[i].toString());
+        if (debug) JFLog.log("uniformBuffersMemory[]=" + uniformBuffersMemory[i].toString());
+
+        long[] addr = new long[1];
+        if (debug) JFLog.log("vkMapMemory:" + uniformBuffersMemory[i].toString());
+        vk.vkMapMemory(device, uniformBuffersMemory[i], 0, bufferSize.value, 0, addr);
+        if (debug) JFLog.log("addr=0x" + Long.toHexString(addr[0]));
+        uniformBuffersMapped[i] = MemorySegment.ofAddress(addr[0]).reinterpret(bufferSize.value);
+        if (debug) JFLog.log("uniformBuffersMapped[]=" + uniformBuffersMapped[i].toString());
+      }
+    }
+
     int findMemoryType(int typeFilter, int properties) {
       if (debug) JFLog.log("findMemoryType:" + typeFilter + "," + properties);
       VkPhysicalDeviceMemoryProperties2 memProperties = new VkPhysicalDeviceMemoryProperties2();
+      if (debug) JFLog.log("sizeof(VkPhysicalDeviceMemoryProperties2)=" + memProperties.getSize());
+      if (debug) JFLog.log("vkGetPhysicalDeviceMemoryProperties2");
       vk.vkGetPhysicalDeviceMemoryProperties2(physicalDevice, memProperties);
 
       for (int i = 0; i < memProperties.memoryProperties.memoryTypeCount; i++) {
@@ -997,7 +1127,7 @@ public class TestVK implements WindowEvents {
       return -1;
     }
 
-    void createCommandBuffer() {
+    void createCommandBuffers() {
       VkCommandBufferAllocateInfo allocInfo = new VkCommandBufferAllocateInfo();
       allocInfo.commandPool = commandPool;
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -1014,48 +1144,116 @@ public class TestVK implements WindowEvents {
     }
 
     void createSyncObjects() {
+      if (debug) JFLog.log("createSyncObjects:1");
       VkSemaphoreCreateInfo semaphoreInfo = new VkSemaphoreCreateInfo();
-      VkSemaphore[] semaphore = new VkSemaphore[] {new VkSemaphore()};
-      VkFence[] fence = new VkFence[] {new VkFence()};
 
+      if (debug) JFLog.log("createSyncObjects:2");
       VkFenceCreateInfo fenceInfo = new VkFenceCreateInfo();
       fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
+      if (debug) JFLog.log("createSyncObjects:3");
       imageAvailableSemaphores = new VkSemaphore[max_frames];
       renderFinishedSemaphores = new VkSemaphore[max_frames];
       inFlightFences = new VkFence[max_frames];
 
+      if (debug) JFLog.log("createSyncObjects:4");
       for(int i=0;i<max_frames;i++) {
         imageAvailableSemaphores[i] = new VkSemaphore();
         renderFinishedSemaphores[i] = new VkSemaphore();
         inFlightFences[i] = new VkFence();
 
         if (debug) JFLog.log("vkCreateSemaphore");
-        if (vk.vkCreateSemaphore(device, semaphoreInfo, null, semaphore) != VK_SUCCESS)
+        if (vk.vkCreateSemaphore(device, semaphoreInfo, null, new VkSemaphore[] {imageAvailableSemaphores[i]}) != VK_SUCCESS)
         {
           JFLog.log("Failed to create synchronization objects for a frame!");
           System.exit(1);
         }
-        imageAvailableSemaphores[i].set(semaphore[0]);
-        if (debug) JFLog.log("vkCreateSemaphore=0x" + Long.toHexString(semaphore[0].getValue()));
+        if (debug) JFLog.log("vkCreateSemaphore=0x" + Long.toHexString(imageAvailableSemaphores[i].getValue()));
 
         if (debug) JFLog.log("vkCreateSemaphore");
-        if (vk.vkCreateSemaphore(device, semaphoreInfo, null, semaphore) != VK_SUCCESS)
+        if (vk.vkCreateSemaphore(device, semaphoreInfo, null, new VkSemaphore[] {renderFinishedSemaphores[i]}) != VK_SUCCESS)
         {
             JFLog.log("Failed to create synchronization objects for a frame!");
             System.exit(1);
         }
-        renderFinishedSemaphores[i].set(semaphore[0]);
-        if (debug) JFLog.log("vkCreateSemaphore=0x" + Long.toHexString(semaphore[0].getValue()));
+        if (debug) JFLog.log("vkCreateSemaphore=0x" + Long.toHexString(renderFinishedSemaphores[i].getValue()));
 
         if (debug) JFLog.log("vkCreateFence");
-        if (vk.vkCreateFence(device, fenceInfo, null, fence) != VK_SUCCESS)
+        if (vk.vkCreateFence(device, fenceInfo, null, new VkFence[] {inFlightFences[i]}) != VK_SUCCESS)
         {
             JFLog.log("Failed to create synchronization objects for a frame!");
             System.exit(1);
         }
-        inFlightFences[i].set(fence[0]);
-        if (debug) JFLog.log("vkCreateFence=0x" + Long.toHexString(fence[0].getValue()));
+        if (debug) JFLog.log("vkCreateFence=0x" + Long.toHexString(inFlightFences[i].getValue()));
+      }
+    }
+
+    void createDescriptorPool() {
+      VkDescriptorPoolSize poolSize = new VkDescriptorPoolSize();
+      poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      poolSize.descriptorCount = max_frames;
+
+      VkDescriptorPoolCreateInfo poolInfo = new VkDescriptorPoolCreateInfo();
+      poolInfo.poolSizeCount = 1;
+      poolInfo.ptr_pPoolSizes = new VkDescriptorPoolSize[] {poolSize};
+      poolInfo.maxSets = max_frames;
+
+      descriptorPool = new VkDescriptorPool();
+
+      if (debug) JFLog.log("vkCreateDescriptorPool");
+      if (vk.vkCreateDescriptorPool(device, poolInfo, null, new VkDescriptorPool[] {descriptorPool}) != VK_SUCCESS) {
+        JFLog.log("Failed to create descriptor pool!");
+        System.exit(1);
+      }
+      if (debug) JFLog.log("vkCreateDescriptorPool=" + descriptorPool.toString());
+    }
+
+    void createDescriptorSets() {
+      VkDescriptorSetLayout[] layouts = new VkDescriptorSetLayout[max_frames];
+      for(int i = 0; i < max_frames; i++) {
+        layouts[i] = new VkDescriptorSetLayout();
+        layouts[i].set(descriptorSetLayout);
+      }
+
+      VkDescriptorSetAllocateInfo allocInfo = new VkDescriptorSetAllocateInfo();
+      allocInfo.descriptorPool = descriptorPool;
+      allocInfo.descriptorSetCount = max_frames;
+      allocInfo.ptr_pSetLayouts = layouts;
+
+      descriptorSets = new VkDescriptorSet[max_frames];
+      for(int i = 0; i < max_frames; i++) {
+        descriptorSets[i] = new VkDescriptorSet();
+      }
+
+      if (debug) JFLog.log("vkAllocateDescriptorSets");
+      if (vk.vkAllocateDescriptorSets(device, allocInfo, descriptorSets) != VK_SUCCESS) {
+        JFLog.log("Failed to allocate descriptor sets!");
+        System.exit(1);
+      }
+
+      if (debug) {
+        for(int a=0;a<max_frames;a++) {
+          JFLog.log("descriptorSets[]=" + descriptorSets[a].toString());
+        }
+      }
+
+      for (int i = 0; i < max_frames; i++) {
+        if (debug) JFLog.log("bufferInfo");
+        VkDescriptorBufferInfo bufferInfo = new VkDescriptorBufferInfo();
+        bufferInfo.buffer = uniformBuffers[i];
+        bufferInfo.offset = new VkDeviceSize(0);
+        bufferInfo.range = new VkDeviceSize(UniformBufferObject.sizeof());
+
+        VkWriteDescriptorSet descriptorWrite = new VkWriteDescriptorSet();
+        descriptorWrite.dstSet = descriptorSets[i];
+        descriptorWrite.dstBinding = 0;
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrite.descriptorCount = 1;
+        descriptorWrite.ptr_pBufferInfo = bufferInfo;
+
+      if (debug) JFLog.log("vkUpdateDescriptorSets");
+        vk.vkUpdateDescriptorSets(device, 1, descriptorWrite, 0, null);
       }
     }
 
@@ -1074,14 +1272,17 @@ public class TestVK implements WindowEvents {
     public void init() {
       initVulkan();
 
+      vk.vkQueueWaitIdle(graphicsQueue);
+      vk.vkDeviceWaitIdle(device);
+
       //setup timers
       glTimer = new java.util.Timer();
-      int delay = 1000 / FPS;
+      int frame_rate = 1000 / FPS;
       glTimer.scheduleAtFixedRate(new TimerTask() {
         public void run() {
           render();
         }
-      }, delay, delay);
+      }, 100, frame_rate);
       fpsTimer = new java.util.Timer();
       fpsTimer.scheduleAtFixedRate(new TimerTask() {
         public void run() {
@@ -1091,8 +1292,6 @@ public class TestVK implements WindowEvents {
             fpsCounter = 0;
           }
           JFLog.log("fps=" + cnt);
-  //        JFLog.log("camera=" + scene.m_camera.toString());
-  //        JFLog.log("model=" + scene.m_model.toString());
         }
       }, 1000, 1000);
 
@@ -1179,6 +1378,7 @@ public class TestVK implements WindowEvents {
 
     public void cleanup() {
       if (debug) JFLog.log("cleanup");
+      vk.vkQueueWaitIdle(graphicsQueue);
       vk.vkDeviceWaitIdle(device);
 
       vk.vkDestroyBuffer(device, vertexBuffer, null);
@@ -1187,13 +1387,21 @@ public class TestVK implements WindowEvents {
       vk.vkDestroyBuffer(device, indexBuffer, null);
       vk.vkFreeMemory(device, indexBufferMemory, null);
 
+      vk.vkDestroyDescriptorPool(device, descriptorPool, null);
+
+      for (int i = 0; i < max_frames; i++) {
+        vk.vkDestroyBuffer(device, uniformBuffers[i], null);
+        vk.vkFreeMemory(device, uniformBuffersMemory[i], null);
+      }
+      vk.vkDestroyDescriptorSetLayout(device, descriptorSetLayout, null);
+
       if (debug) JFLog.log("cleanup:semaphores + fences");
       for(int i=0;i<max_frames;i++) {
-        if (debug) JFLog.log("cleanup:semaphore[]" + i);
+        if (debug) JFLog.log("cleanup:semaphore[" + i + "]=" + renderFinishedSemaphores[i]);
         vk.vkDestroySemaphore(device, renderFinishedSemaphores[i], null);
-        if (debug) JFLog.log("cleanup:semaphore[]" + i);
+        if (debug) JFLog.log("cleanup:semaphore[" + i + "]=" + imageAvailableSemaphores[i]);
         vk.vkDestroySemaphore(device, imageAvailableSemaphores[i], null);
-        if (debug) JFLog.log("cleanup:fence[]" + i);
+        if (debug) JFLog.log("cleanup:fence[" + i + "]=" + inFlightFences[i]);
         vk.vkDestroyFence(device, inFlightFences[i], null);
       }
 
@@ -1237,16 +1445,35 @@ public class TestVK implements WindowEvents {
       vk.vkDestroySwapchainKHR(device, swapChain, null);
     }
 
+    float angle = 1.0f;
+    UniformBufferObject ubo = new UniformBufferObject();
+
+    void updateUniformBuffer() {
+      angle += 1.0f;
+      if (angle > 90.0f) angle = 1.0f;
+      if (debug) JFLog.log("angle=" + angle);
+      float ratio = ((float)swapChainExtent.width) / ((float)swapChainExtent.height);
+      if (debug) JFLog.log("ratio=" + ratio);
+
+      ubo.model.addRotate(angle, 0,0,1);
+      //void lookAt(Vector3 eye, Vector3 at, Vector3 up)
+      ubo.view.lookAt(new Vector3(0,0,-3), new Vector3(0,0,0), new Vector3(0,1,0));
+      //void perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar)
+      ubo.proj.perspective(45f, ratio, 0.1f, 10.0f);
+      ubo.proj.m[4*1 + 1] *= -1f;
+      float[] mats = ubo.toArray();
+      for(int i=0;i<mats.length;i++) {
+        uniformBuffersMapped[current_frame].setAtIndex(JAVA_FLOAT, i, mats[i]);
+      }
+    }
+
     void drawFrame() {
+      if (debug) JFLog.log("============ drawFrame ============");
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("frame=" + current_frame);
-      VkFence[] fence = new VkFence[] {new VkFence()};
 
       if (debug) JFLog.log("vkWaitForFences");
-      fence[0] = inFlightFences[current_frame];
-      vk.vkWaitForFences(device, 1, fence, VK_TRUE, ULong.MAX_VALUE);
-      if (debug) JFLog.log("vkResetFences");
-      fence[0] = inFlightFences[current_frame];
-      vk.vkResetFences(device, 1, fence);
+      vk.vkWaitForFences(device, 1, new VkFence[] {inFlightFences[current_frame]}, VK_TRUE, ULong.MAX_VALUE);
 
       int[] imageIndex = new int[1];
       if (debug) JFLog.log("vkAcquireNextImageKHR");
@@ -1259,6 +1486,11 @@ public class TestVK implements WindowEvents {
         JFLog.log("Failed to acquire swap chain image!");
         System.exit(1);
       }
+
+      updateUniformBuffer();
+
+      if (debug) JFLog.log("vkResetFences");
+      vk.vkResetFences(device, 1, new VkFence[] {inFlightFences[current_frame]});
 
       if (debug) JFLog.log("vkResetCommandBuffer");
       vk.vkResetCommandBuffer(commandBuffers[current_frame], /*VkCommandBufferResetFlagBits*/ 0);
@@ -1355,6 +1587,9 @@ public class TestVK implements WindowEvents {
 
       if (debug) JFLog.log("vkCmdBindIndexBuffer");
       vk.vkCmdBindIndexBuffer(commandBuffer, indexBuffer, new VkDeviceSize(0), VK_INDEX_TYPE_UINT32);
+
+      if (debug) JFLog.log("vkCmdBindDescriptorSets");
+      vk.vkCmdBindDescriptorSets(commandBuffer, new VkPipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS), pipelineLayout, 0, 1, new VkDescriptorSet[]{descriptorSets[current_frame]}, 0, null);
 
       if (debug) JFLog.log("vkCmdDrawIndexed");
       vk.vkCmdDrawIndexed(commandBuffer, indices.length, 1, 0, 0, 0);

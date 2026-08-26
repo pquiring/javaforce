@@ -1,6 +1,12 @@
 package javaforce.gl;
 
-/** 4x4 matrix */
+/** 4x4 Matrix.
+ *
+ * Order : column-major
+ *
+ * Compatible with glUniformMatrix4fv()
+ *
+*/
 
 public class Matrix implements Cloneable {
   public float[] m = new float[16];

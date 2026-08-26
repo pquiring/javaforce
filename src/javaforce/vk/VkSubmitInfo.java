@@ -19,7 +19,7 @@ public class VkSubmitInfo extends FFMStruct {
   public int waitSemaphoreCount;
   /** */
   public VkSemaphore[] ptr_pWaitSemaphores;
-  /** VkPipelineStageFlags */
+  /** */
   public int[] ptr_pWaitDstStageMask;
   /** */
   public int commandBufferCount;

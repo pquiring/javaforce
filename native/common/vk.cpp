@@ -42,6 +42,8 @@ JNIEXPORT void (*_vkDestroyPipelineLayout)();
 JNIEXPORT void (*_vkDestroyRenderPass)();
 JNIEXPORT void (*_vkDestroyInstance)();
 JNIEXPORT void (*_vkDestroyBuffer)();
+JNIEXPORT void (*_vkDestroyDescriptorSetLayout)();
+JNIEXPORT void (*_vkDestroyDescriptorPool)();
 
 JNIEXPORT void (*_vkEnumeratePhysicalDevices)();
 JNIEXPORT void (*_vkEnumerateDeviceExtensionProperties)();
@@ -86,10 +88,15 @@ JNIEXPORT void (*_vkQueuePresentKHR)();
 
 JNIEXPORT void (*_vkGetBufferMemoryRequirements)();
 JNIEXPORT void (*_vkBindBufferMemory)();
+JNIEXPORT void (*_vkAllocateDescriptorSets)();
 JNIEXPORT void (*_vkUpdateDescriptorSets)();
 JNIEXPORT void (*_vkWaitForFences)();
 JNIEXPORT void (*_vkResetFences)();
 JNIEXPORT void (*_vkBeginCommandBuffer)();
+JNIEXPORT void (*_vkEndCommandBuffer)();
+JNIEXPORT void (*_vkQueueSubmit)();
+JNIEXPORT void (*_vkDeviceWaitIdle)();
+
 JNIEXPORT void (*_vkCmdBeginRenderPass)();
 JNIEXPORT void (*_vkCmdBindVertexBuffers)();
 JNIEXPORT void (*_vkCmdBindPipeline)();
@@ -101,9 +108,7 @@ JNIEXPORT void (*_vkCmdDraw)();
 JNIEXPORT void (*_vkCmdDrawIndexed)();
 JNIEXPORT void (*_vkCmdEndRenderPass)();
 JNIEXPORT void (*_vkCmdCopyBuffer)();
-JNIEXPORT void (*_vkEndCommandBuffer)();
-JNIEXPORT void (*_vkQueueSubmit)();
-JNIEXPORT void (*_vkDeviceWaitIdle)();
+
 
 #ifdef __cplusplus
 }
@@ -139,6 +144,8 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkDestroyRenderPass,"vkDestroyRenderPass");
   vkGetFunction((void**)&_vkDestroyInstance,"vkDestroyInstance");
   vkGetFunction((void**)&_vkDestroyBuffer,"vkDestroyBuffer");
+  vkGetFunction((void**)&_vkDestroyDescriptorSetLayout,"vkDestroyDescriptorSetLayout");
+  vkGetFunction((void**)&_vkDestroyDescriptorPool,"vkDestroyDescriptorPool");
 
   vkGetFunction((void**)&_vkEnumeratePhysicalDevices,"vkEnumeratePhysicalDevices");
   vkGetFunction((void**)&_vkEnumerateDeviceExtensionProperties,"vkEnumerateDeviceExtensionProperties");
@@ -183,10 +190,15 @@ jboolean VK_get_functions()
 
   vkGetFunction((void**)&_vkGetBufferMemoryRequirements,"vkGetBufferMemoryRequirements");
   vkGetFunction((void**)&_vkBindBufferMemory,"vkBindBufferMemory");
+  vkGetFunction((void**)&_vkAllocateDescriptorSets,"vkAllocateDescriptorSets");
   vkGetFunction((void**)&_vkUpdateDescriptorSets,"vkUpdateDescriptorSets");
   vkGetFunction((void**)&_vkWaitForFences,"vkWaitForFences");
   vkGetFunction((void**)&_vkResetFences,"vkResetFences");
   vkGetFunction((void**)&_vkBeginCommandBuffer,"vkBeginCommandBuffer");
+  vkGetFunction((void**)&_vkEndCommandBuffer,"vkEndCommandBuffer");
+  vkGetFunction((void**)&_vkQueueSubmit,"vkQueueSubmit");
+  vkGetFunction((void**)&_vkDeviceWaitIdle,"vkDeviceWaitIdle");
+
   vkGetFunction((void**)&_vkCmdBeginRenderPass,"vkCmdBeginRenderPass");
   vkGetFunction((void**)&_vkCmdBindVertexBuffers,"vkCmdBindVertexBuffers");
   vkGetFunction((void**)&_vkCmdBindPipeline,"vkCmdBindPipeline");
@@ -198,9 +210,6 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkCmdDrawIndexed,"vkCmdDrawIndexed");
   vkGetFunction((void**)&_vkCmdEndRenderPass,"vkCmdEndRenderPass");
   vkGetFunction((void**)&_vkCmdCopyBuffer,"vkCmdCopyBuffer");
-  vkGetFunction((void**)&_vkEndCommandBuffer,"vkEndCommandBuffer");
-  vkGetFunction((void**)&_vkQueueSubmit,"vkQueueSubmit");
-  vkGetFunction((void**)&_vkDeviceWaitIdle,"vkDeviceWaitIdle");
 
   return JNI_TRUE;
 }

@@ -20,7 +20,7 @@ public class VkPipelineLayoutCreateInfo extends FFMStruct {
   /** */
   public int setLayoutCount;
   /** */
-  public long[] ptr_VkDescriptorSetLayout;
+  public VkDescriptorSetLayout[] ptr_pSetLayouts;
   /** */
   public int pushConstantRangeCount;
   /** */

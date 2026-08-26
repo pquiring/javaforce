@@ -162,7 +162,7 @@
     </jar>
   </target>
 
-  <target name="jar" depends="depjars,compile,icons" unless="fast-build" description="build jar file">
+  <target name="jar" depends="depjars,compile,icons,utils" unless="fast-build" description="build jar file">
     <!-- Build jar file from class files -->
     <java classpath="${home}/utils.jar" classname="javaforce.utils.GenMeta" fork="true" jvm="${user.home}/bin/jfexec">
       <arg value="src/javaforce/vk"/>
@@ -391,9 +391,11 @@
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="classes" includes="**/*.class"/>
-      <fileset dir="${lib}" includes="javaforce-${version}.jar"/>
+      <fileset dir="${lib}" includes="javaforce-*.jar"/>
       <fileset dir="." includes="*.jar"/>
       <fileset dir="." includes="*.asc"/>
+      <fileset dir="." includes="*.zip"/>
+      <fileset dir="." includes="javaforce-*"/>
       <fileset dir="native/headers" includes="*.h"/>
       <fileset dir="src/javaforce/icons/16" includes="*.png"/>
       <fileset dir="src/javaforce/icons/32" includes="*.png"/>

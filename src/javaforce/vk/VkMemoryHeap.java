@@ -12,7 +12,7 @@ import javaforce.ffm.*;
 
 public class VkMemoryHeap extends FFMStruct {
   /** */
-  public int size;
+  public VkDeviceSize size = new VkDeviceSize();
   /** */
   public int flags;
 }

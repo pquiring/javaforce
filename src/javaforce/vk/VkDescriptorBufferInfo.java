@@ -12,9 +12,9 @@ import javaforce.ffm.*;
 
 public class VkDescriptorBufferInfo extends FFMStruct {
   /** VkBuffer */
-  public long buffer;
+  public VkBuffer buffer;
   /** VkDeviceSize */
-  public long offset;
+  public VkDeviceSize offset;
   /** VkDeviceSize */
-  public long range;
+  public VkDeviceSize range;
 }

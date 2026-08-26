@@ -4473,6 +4473,39 @@ public interface VK {
   // Provided by VK_KHR_index_type_uint8
   public static int VK_INDEX_TYPE_UINT8_KHR = VK_INDEX_TYPE_UINT8;
 
+  // VkDescriptorType
+  public static int  VK_DESCRIPTOR_TYPE_SAMPLER = 0;
+  public static int  VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER = 1;
+  public static int  VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE = 2;
+  public static int  VK_DESCRIPTOR_TYPE_STORAGE_IMAGE = 3;
+  public static int  VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER = 4;
+  public static int  VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER = 5;
+  public static int  VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER = 6;
+  public static int  VK_DESCRIPTOR_TYPE_STORAGE_BUFFER = 7;
+  public static int  VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC = 8;
+  public static int  VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC = 9;
+  public static int  VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT = 10;
+  // Provided by VK_VERSION_1_3
+  public static int  VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK = 1000138000;
+  // Provided by VK_KHR_acceleration_structure
+  public static int  VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR = 1000150000;
+  // Provided by VK_NV_ray_tracing
+  public static int  VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV = 1000165000;
+  // Provided by VK_QCOM_image_processing
+  public static int  VK_DESCRIPTOR_TYPE_SAMPLE_WEIGHT_IMAGE_QCOM = 1000440000;
+  // Provided by VK_QCOM_image_processing
+  public static int  VK_DESCRIPTOR_TYPE_BLOCK_MATCH_IMAGE_QCOM = 1000440001;
+  // Provided by VK_ARM_tensors
+  public static int  VK_DESCRIPTOR_TYPE_TENSOR_ARM = 1000460000;
+  // Provided by VK_EXT_mutable_descriptor_type
+  public static int  VK_DESCRIPTOR_TYPE_MUTABLE_EXT = 1000351000;
+  // Provided by VK_NV_partitioned_acceleration_structure
+  public static int  VK_DESCRIPTOR_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_NV = 1000570000;
+  // Provided by VK_EXT_inline_uniform_block
+  public static int  VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT = VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK;
+  // Provided by VK_VALVE_mutable_descriptor_type
+  public static int  VK_DESCRIPTOR_TYPE_MUTABLE_VALVE = VK_DESCRIPTOR_TYPE_MUTABLE_EXT;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4509,7 +4542,9 @@ public interface VK {
   public int vkDestroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout, VkAllocationCallbacks callbacks);
   public int vkDestroyRenderPass(VkDevice device, VkRenderPass renderPass, VkAllocationCallbacks callbacks);
   public int vkDestroyInstance(VkInstance instance, VkAllocationCallbacks callbacks);
-  public int vkDestroyBuffer(VkDevice device, VkBuffer buffer,VkAllocationCallbacks callbacks);
+  public int vkDestroyBuffer(VkDevice device, VkBuffer buffer, VkAllocationCallbacks callbacks);
+  public int vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, VkAllocationCallbacks callbacks);
+  public int vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkAllocationCallbacks callbacks);
 
   public int vkEnumeratePhysicalDevices(VkInstance instance, int[] count, VkPhysicalDevice[] physicaldevices);
   public int vkEnumerateDeviceExtensionProperties(VkPhysicalDevice physicaldevice, String pLayerName, int[] pPropertyCount, VkExtensionProperties[] pProperties);
@@ -4554,7 +4589,8 @@ public interface VK {
   public int vkQueuePresentKHR(VkQueue queue, VkPresentInfoKHR pPresentInfo);
 
   public int vkGetBufferMemoryRequirements(VkDevice device, VkBuffer buffer, VkMemoryRequirements pMemoryRequirements);
-  public int vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory deviceMemory, VkDeviceSize deviceSize);
+  public int vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize offset);
+  public int vkAllocateDescriptorSets(VkDevice device, VkDescriptorSetAllocateInfo pAllocateInfo, VkDescriptorSet[] pDescriptorSets);
 
   public int vkUpdateDescriptorSets(VkDevice device, int descriptorWriteCount, VkWriteDescriptorSet pDescriptorWrites, int descriptorCopyCount, VkCopyDescriptorSet pDescriptorCopies);
   public int vkWaitForFences(VkDevice device, int fenceCount, VkFence[] fence, int waitAll, long timeout);

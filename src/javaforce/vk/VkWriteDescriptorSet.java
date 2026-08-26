@@ -15,8 +15,8 @@ public class VkWriteDescriptorSet extends FFMStruct {
   public int sType = VK.VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   /** pNext */
   public long pNext;
-  /** VkDescriptorSet */
-  public long dstSet;
+  /**  */
+  public VkDescriptorSet dstSet = new VkDescriptorSet();
   /**  */
   public int dstBinding;
   /**  */
@@ -24,11 +24,11 @@ public class VkWriteDescriptorSet extends FFMStruct {
   /**  */
   public int descriptorCount;
   /** VkDescriptorType */
-  public long descriptorType;
+  public int descriptorType;
   /**  */
-  public VkDescriptorImageInfo pImageInfo;
+  public VkDescriptorImageInfo ptr_pImageInfo = new VkDescriptorImageInfo();
   /**  */
-  public VkDescriptorBufferInfo pBufferInfo;
+  public VkDescriptorBufferInfo ptr_pBufferInfo = new VkDescriptorBufferInfo();
   /** VkBufferView */
-  public long pTexelBufferView;
+  public VkBufferView ptr_pTexelBufferView;
 }

@@ -112,7 +112,7 @@ public class FFMStruct {
     }
   }
 
-  private int getPadding(int offset, int size) {
+  private static int getPadding(int offset, int size) {
     if (size == 1) return 0;
     int mod = (offset % size);
     if (mod == 0) return 0;
@@ -159,8 +159,11 @@ public class FFMStruct {
     }
     if (JF.isDerivedFrom(type, FFMStruct[].class)) {
       FFMStruct[] substructs = (FFMStruct[])getValue(jfield);
+      if (substructs.length == 0) return 0;
       int size = 0;
+      int align = substructs[0].getLargestFieldAlignment();
       for(FFMStruct substruct : substructs) {
+        size += getPadding(size, align);
         size += substruct.getSize();
       }
       return size;
@@ -231,6 +234,9 @@ public class FFMStruct {
   }
 
   private int getLargestFieldAlignment() {
+    if (fields == null) {
+      init();
+    }
     int max_align = 0;
     for(FFMField field : fields) {
       int this_align = getFieldAlignment(getField(field.name));
@@ -331,11 +337,14 @@ public class FFMStruct {
       }
       if (JF.isDerivedFrom(type, FFMStruct[].class)) {
         FFMStruct[] substructs = (FFMStruct[])value;
+        if (substructs.length == 0) continue;
+        int align = substructs[0].getLargestFieldAlignment();
         int cnt = substructs.length;
         if (sfield.inline) {
           int offset = sfield.offset;
           for(int i=0;i<cnt;i++) {
             FFMStruct substruct = substructs[i];
+            offset += getPadding(offset, align);
             struct_copy(substruct, struct, offset, arena);
             offset += substruct.getSize();
           }
@@ -354,6 +363,7 @@ public class FFMStruct {
             int offset = 0;
             for(int i=0;i<cnt;i++) {
               FFMStruct substruct = substructs[i];
+              offset += getPadding(offset, align);
               struct_copy(substruct, array, offset, arena);
               offset += substruct.getSize();
             }
