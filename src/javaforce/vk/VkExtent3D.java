@@ -17,4 +17,11 @@ public class VkExtent3D extends FFMStruct {
   public int height;
   /** */
   public int depth;
+
+  public VkExtent3D() {}
+  public VkExtent3D(int width, int height, int depth) {
+    this.width = width;
+    this.height = height;
+    this.depth = depth;
+  }
 }

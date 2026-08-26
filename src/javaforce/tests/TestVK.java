@@ -5,6 +5,7 @@ import java.util.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.ui.*;
 import javaforce.gl.*;
 import javaforce.vk.*;
@@ -12,7 +13,7 @@ import static javaforce.vk.VK.*;
 
 /** Vulkan Test.
  *
- * Currently supports tutorial #16 at https://vulkan-tutorial.com/
+ * See https://vulkan-tutorial.com/
  *
  * @author pquiring
  */
@@ -168,6 +169,9 @@ public class TestVK implements WindowEvents {
     VkSemaphore[] renderFinishedSemaphores;
     VkFence[] inFlightFences;
 
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+
     boolean keys[] = new boolean[1024];
 
     final float speedMove = 2.0f;
@@ -272,6 +276,9 @@ public class TestVK implements WindowEvents {
       if (debug_mem) System.gc();
       if (debug) JFLog.log("createCommandPool");
       createCommandPool();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createTextureImage");
+      createTextureImage();
       if (debug_mem) System.gc();
       if (debug) JFLog.log("createVertexBuffer");
       createVertexBuffer();
@@ -1026,8 +1033,8 @@ public class TestVK implements WindowEvents {
       vk.vkBindBufferMemory(device, buffer, bufferMemory, new VkDeviceSize(0) /* offset */);
     }
 
-    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-      if (debug) JFLog.log("copyBuffer:size=" + size.value);
+    VkCommandBuffer beginSingleTimeCommands() {
+      if (debug) JFLog.log("copyBuffer");
       VkCommandBufferAllocateInfo allocInfo = new VkCommandBufferAllocateInfo();
       allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
       allocInfo.commandPool = commandPool;
@@ -1041,10 +1048,10 @@ public class TestVK implements WindowEvents {
 
       vk.vkBeginCommandBuffer(commandBuffer, beginInfo);
 
-      VkBufferCopy copyRegion = new VkBufferCopy();
-      copyRegion.size = new VkDeviceSize(size);
-      vk.vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, new VkBufferCopy[] {copyRegion});
+      return commandBuffer;
+    }
 
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer) {
       vk.vkEndCommandBuffer(commandBuffer);
 
       VkSubmitInfo submitInfo = new VkSubmitInfo();
@@ -1055,6 +1062,16 @@ public class TestVK implements WindowEvents {
       vk.vkQueueWaitIdle(graphicsQueue);
 
       vk.vkFreeCommandBuffers(device, commandPool, 1, new VkCommandBuffer[] {commandBuffer});
+    }
+
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+        VkBufferCopy copyRegion = new VkBufferCopy();
+        copyRegion.size = size;
+        vk.vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, new VkBufferCopy[] {copyRegion});
+
+        endSingleTimeCommands(commandBuffer);
     }
 
     void createIndexBuffer() {
@@ -1257,6 +1274,148 @@ public class TestVK implements WindowEvents {
       }
     }
 
+    void createTextureImage() {
+      int texWidth, texHeight, texChannels;
+      JFImage image = new JFImage();
+      if (!image.loadPNG("javaforce.png")) {
+        JFLog.log("Failed to load javaforce.png");
+        System.exit(1);
+      }
+      int[] pixels = image.getBuffer();
+      texWidth = image.getWidth();
+      texHeight = image.getHeight();
+
+      VkDeviceSize imageSize = new VkDeviceSize(texWidth * texHeight * 4);
+
+      VkBuffer stagingBuffer = new VkBuffer();
+      VkDeviceMemory stagingBufferMemory = new VkDeviceMemory();
+      createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+      long[] addr = new long[1];
+      vk.vkMapMemory(device, stagingBufferMemory, 0, imageSize.value, 0, addr);
+      MemorySegment memory = MemorySegment.ofAddress(addr[0]).reinterpret(imageSize.value);
+      for(int i=0;i<pixels.length;i++) {
+        memory.setAtIndex(JAVA_INT, i, pixels[i]);
+      }
+      vk.vkUnmapMemory(device, stagingBufferMemory);
+
+      textureImage = new VkImage();
+      textureImageMemory = new VkDeviceMemory();
+
+      createImage(texWidth, texHeight, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+
+      transitionImageLayout(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), new VkImageLayout(VK_IMAGE_LAYOUT_UNDEFINED), new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
+      copyBufferToImage(stagingBuffer, textureImage, texWidth, texHeight);
+      transitionImageLayout(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL), new VkImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL));
+
+      vk.vkDestroyBuffer(device, stagingBuffer, null);
+      vk.vkFreeMemory(device, stagingBufferMemory, null);
+    }
+
+    void createImage(int width, int height, VkFormat format, int tiling, int usage, int properties, VkImage image, VkDeviceMemory imageMemory) {
+      VkImageCreateInfo imageInfo = new VkImageCreateInfo();
+      imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+      imageInfo.imageType = VK_IMAGE_TYPE_2D;
+      imageInfo.extent.width = width;
+      imageInfo.extent.height = height;
+      imageInfo.extent.depth = 1;
+      imageInfo.mipLevels = 1;
+      imageInfo.arrayLayers = 1;
+      imageInfo.format = format;
+      imageInfo.tiling = tiling;
+      imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+      imageInfo.usage = usage;
+      imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+      imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+      if (vk.vkCreateImage(device, imageInfo, null, new VkImage[] {image}) != VK_SUCCESS) {
+        JFLog.log("Failed to create image!");
+        System.exit(1);
+      }
+
+      VkMemoryRequirements memRequirements = new VkMemoryRequirements();
+      vk.vkGetImageMemoryRequirements(device, image, memRequirements);
+
+      VkMemoryAllocateInfo allocInfo = new VkMemoryAllocateInfo();
+      allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+      allocInfo.allocationSize = memRequirements.size;
+      allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+      if (vk.vkAllocateMemory(device, allocInfo, null, new VkDeviceMemory[] {imageMemory}) != VK_SUCCESS) {
+        JFLog.log("failed to allocate image memory!");
+        System.exit(1);
+      }
+
+      vk.vkBindImageMemory(device, image, imageMemory, 0);
+    }
+
+    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+      VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+      VkImageMemoryBarrier barrier = new VkImageMemoryBarrier();
+      barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      barrier.oldLayout = oldLayout;
+      barrier.newLayout = newLayout;
+      barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.image = image;
+      barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      barrier.subresourceRange.baseMipLevel = 0;
+      barrier.subresourceRange.levelCount = 1;
+      barrier.subresourceRange.baseArrayLayer = 0;
+      barrier.subresourceRange.layerCount = 1;
+
+      int sourceStage = -1;
+      int destinationStage = -1;
+
+      if (oldLayout.value == VK_IMAGE_LAYOUT_UNDEFINED && newLayout.value == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+      } else if (oldLayout.value == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout.value == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+      } else {
+        JFLog.log("unsupported layout transition!");
+        System.exit(1);
+      }
+
+      vk.vkCmdPipelineBarrier(
+        commandBuffer,
+        sourceStage, destinationStage,
+        0,
+        0, null,
+        0, null,
+        1, barrier
+      );
+
+      endSingleTimeCommands(commandBuffer);
+    }
+
+    void copyBufferToImage(VkBuffer buffer, VkImage image, int width, int height) {
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+        VkBufferImageCopy region = new VkBufferImageCopy();
+        region.bufferOffset = new VkDeviceSize(0);
+        region.bufferRowLength = 0;
+        region.bufferImageHeight = 0;
+        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        region.imageSubresource.mipLevel = 0;
+        region.imageSubresource.baseArrayLayer = 0;
+        region.imageSubresource.layerCount = 1;
+        region.imageOffset = new VkOffset3D(0,0,0);
+        region.imageExtent = new VkExtent3D(width, height, 1);
+
+        vk.vkCmdCopyBufferToImage(commandBuffer, buffer, image, new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL), 1, new VkBufferImageCopy[] {region});
+
+        endSingleTimeCommands(commandBuffer);
+    }
+
     void recreateSwapChain() {
       int[] w_h = window.getFramebufferSize();
 
@@ -1388,6 +1547,9 @@ public class TestVK implements WindowEvents {
       vk.vkFreeMemory(device, indexBufferMemory, null);
 
       vk.vkDestroyDescriptorPool(device, descriptorPool, null);
+
+      vk.vkDestroyImage(device, textureImage, null);
+      vk.vkFreeMemory(device, textureImageMemory, null);
 
       for (int i = 0; i < max_frames; i++) {
         vk.vkDestroyBuffer(device, uniformBuffers[i], null);

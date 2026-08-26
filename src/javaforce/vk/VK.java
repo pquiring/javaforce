@@ -133,8 +133,10 @@ public interface VK {
   // VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT is a legacy alias
   public static int VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT = VK_INCOMPATIBLE_SHADER_BINARY_EXT;
 
+  //constants
   public static int VK_FALSE = 0;
   public static int VK_TRUE = 1;
+  public static int VK_QUEUE_FAMILY_IGNORED = (~0);
 
   public static FFMType.Uint64 VK_NULL_HANDLE = new FFMType.Uint64();
 
@@ -4506,6 +4508,17 @@ public interface VK {
   // Provided by VK_VALVE_mutable_descriptor_type
   public static int  VK_DESCRIPTOR_TYPE_MUTABLE_VALVE = VK_DESCRIPTOR_TYPE_MUTABLE_EXT;
 
+  //VkImageType
+  public static int VK_IMAGE_TYPE_1D = 0;
+  public static int VK_IMAGE_TYPE_2D = 1;
+  public static int VK_IMAGE_TYPE_3D = 2;
+
+  //VkImageTiling
+  public static int VK_IMAGE_TILING_OPTIMAL = 0;
+  public static int VK_IMAGE_TILING_LINEAR = 1;
+  // Provided by VK_EXT_image_drm_format_modifier
+  public static int VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT = 1000158000;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4545,6 +4558,7 @@ public interface VK {
   public int vkDestroyBuffer(VkDevice device, VkBuffer buffer, VkAllocationCallbacks callbacks);
   public int vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, VkAllocationCallbacks callbacks);
   public int vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkAllocationCallbacks callbacks);
+  public int vkDestroyImage(VkDevice device, VkImage descriptorPool, VkAllocationCallbacks callbacks);
 
   public int vkEnumeratePhysicalDevices(VkInstance instance, int[] count, VkPhysicalDevice[] physicaldevices);
   public int vkEnumerateDeviceExtensionProperties(VkPhysicalDevice physicaldevice, String pLayerName, int[] pPropertyCount, VkExtensionProperties[] pProperties);
@@ -4560,7 +4574,7 @@ public interface VK {
   public int vkUnmapMemory(VkDevice device, VkDeviceMemory deviceMemory);
   public int vkGetImageMemoryRequirements(VkDevice device, VkImage image, VkMemoryRequirements pMemoryRequirements);
   public int vkAllocateMemory(VkDevice device, VkMemoryAllocateInfo pAllocateInfo, VkAllocationCallbacks callbacks, VkDeviceMemory[] pMemory);
-  public int vkBindImageMemory(VkDevice device, VkImage image, long memory, long memoryOffset);
+  public int vkBindImageMemory(VkDevice device, VkImage image, VkDeviceMemory memory, long memoryOffset);
   public int vkQueueWaitIdle(VkQueue queue);
   public int vkResetCommandBuffer(VkCommandBuffer commandBuffer, int flags);
   public int vkFreeCommandBuffers(VkDevice device, VkCommandPool commandPool, int commandBufferCount, VkCommandBuffer[] commandBuffer);
@@ -4607,6 +4621,8 @@ public interface VK {
   public void vkCmdDrawIndexed(VkCommandBuffer commandBuffer, int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
   public int vkCmdEndRenderPass(VkCommandBuffer commandBuffer);
   public void vkCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer,VkBuffer dstBuffer, int regionCount, VkBufferCopy[] pRegions);
+  public void vkCmdPipelineBarrier(VkCommandBuffer commandBuffer, int srcStageMask, int dstStageMask, int dependencyFlags, int emoryBarrierCount, VkMemoryBarrier pMemoryBarriers, int bufferMemoryBarrierCount, VkBufferMemoryBarrier pBufferMemoryBarriers, int imageMemoryBarrierCount, VkImageMemoryBarrier pImageMemoryBarriers);
+  public void vkCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout, int regionCount, VkBufferImageCopy[] pRegions);
   public int vkEndCommandBuffer(VkCommandBuffer commandBuffer);
   public int vkQueueSubmit(VkQueue queue, int submitCount, VkSubmitInfo[] pSubmits, VkFence fence);
   public int vkDeviceWaitIdle(VkDevice device);

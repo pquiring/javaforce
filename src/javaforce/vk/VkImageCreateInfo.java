@@ -20,7 +20,7 @@ public class VkImageCreateInfo extends FFMStruct {
   /** VkImageType enum */
   public int imageType;
   /** VkFormat enum */
-  public int format;
+  public VkFormat format;
   /** VkExtent3D */
   public VkExtent3D extent = new VkExtent3D();
   /** */

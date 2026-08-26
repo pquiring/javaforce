@@ -8,7 +8,7 @@ import javaforce.*;
 
 /** FFMStruct.
  *
- * Provides functions to marshall and unmarshall a C-type struct.
+ * Provides functions to marshall and unmarshall a C-type struct into a MemorySegment.
  *
  * @author pquiring
  */

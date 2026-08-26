@@ -15,4 +15,10 @@ public class VkOffset2D extends FFMStruct {
   public int x;
   /** */
   public int y;
+
+  public VkOffset2D() {}
+  public VkOffset2D(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
 }
