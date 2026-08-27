@@ -55,6 +55,7 @@ JNIEXPORT void (*_vkGetPhysicalDeviceFeatures2)();
 JNIEXPORT void (*_vkGetPhysicalDeviceProperties2)();
 JNIEXPORT void (*_vkGetPhysicalDeviceMemoryProperties2)();
 JNIEXPORT void (*_vkGetPhysicalDeviceQueueFamilyProperties2)();
+JNIEXPORT void (*_vkGetPhysicalDeviceFormatProperties)();
 JNIEXPORT void (*_vkGetDeviceQueue)();
 JNIEXPORT void (*_vkGetDeviceQueue2)();
 JNIEXPORT void (*_vkAllocateCommandBuffers)();
@@ -160,6 +161,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkGetPhysicalDeviceProperties2,"vkGetPhysicalDeviceProperties2");
   vkGetFunction((void**)&_vkGetPhysicalDeviceMemoryProperties2,"vkGetPhysicalDeviceMemoryProperties2");
   vkGetFunction((void**)&_vkGetPhysicalDeviceQueueFamilyProperties2,"vkGetPhysicalDeviceQueueFamilyProperties2");
+  vkGetFunction((void**)&_vkGetPhysicalDeviceFormatProperties,"vkGetPhysicalDeviceFormatProperties");
   vkGetFunction((void**)&_vkGetDeviceQueue,"vkGetDeviceQueue");
   vkGetFunction((void**)&_vkGetDeviceQueue2,"vkGetDeviceQueue2");
   vkGetFunction((void**)&_vkAllocateCommandBuffers,"vkAllocateCommandBuffers");

@@ -16,5 +16,5 @@ public class VkSurfaceFormat2KHR extends FFMStruct {
   /** pNext */
   public long pNext;
   /** */
-  public VkSurfaceFormatKHR surfaceFormat;
+  public VkSurfaceFormatKHR surfaceFormat = new VkSurfaceFormatKHR();
 }

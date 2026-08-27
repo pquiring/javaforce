@@ -13,6 +13,8 @@ import javaforce.ffm.*;
 public class VkPhysicalDeviceFeatures2 extends FFMStruct {
   /** VKStructureType */
   public int sType = VK.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-  /** Array of VkBool32 features [55]. */
+  /** */
+  public long pNext;
+  /** */
   public VkPhysicalDeviceFeatures features = new VkPhysicalDeviceFeatures();
 }

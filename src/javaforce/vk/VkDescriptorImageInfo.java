@@ -12,9 +12,9 @@ import javaforce.ffm.*;
 
 public class VkDescriptorImageInfo extends FFMStruct {
   /**  */
-  public VkSampler sampler;
+  public VkSampler sampler = new VkSampler();
   /** */
-  public VkImageView imageView;
+  public VkImageView imageView = new VkImageView();
   /**  */
-  public VkImageLayout imageLayout;
+  public VkImageLayout imageLayout = new VkImageLayout();
 }

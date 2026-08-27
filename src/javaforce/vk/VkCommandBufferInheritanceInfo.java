@@ -15,12 +15,12 @@ public class VkCommandBufferInheritanceInfo extends FFMStruct {
   public int sType = VK.VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
   /** pNext */
   public long pNext;
-  /** VkRenderPass */
-  public long renderPass;
+  /** */
+  public VkRenderPass renderPass = new VkRenderPass();
   /** */
   public int subpass;
-  /** VkFramebuffer */
-  public int framebuffer;
+  /** */
+  public VkFramebuffer framebuffer;
   /** VkBool32 */
   public int occlusionQueryEnable;
   /** VkQueryControlFlags */

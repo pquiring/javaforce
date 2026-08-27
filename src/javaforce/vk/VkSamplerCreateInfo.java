@@ -38,7 +38,7 @@ public class VkSamplerCreateInfo extends FFMStruct {
   /** VkBool32 */
   public int compareEnable;
   /** */
-  public VkCompareOp compareOp;
+  public VkCompareOp compareOp = new VkCompareOp();
   /** */
   public float minLod;
   /** */

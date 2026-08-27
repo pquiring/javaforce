@@ -294,6 +294,9 @@ public class VKFFM implements VK {
   private MethodHandle vkGetPhysicalDeviceFeatures2;
   public void vkGetPhysicalDeviceFeatures2(javaforce.vk.VkPhysicalDevice a1,javaforce.vk.VkPhysicalDeviceFeatures2 a2) { try { Arena arena = Arena.ofAuto(); vkGetPhysicalDeviceFeatures2.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)));if (a2!=null) a2.unmarshall(); } catch (Throwable t) { JFLog.log(t); } }
 
+  private MethodHandle vkGetPhysicalDeviceFormatProperties;
+  public void vkGetPhysicalDeviceFormatProperties(javaforce.vk.VkPhysicalDevice a1,javaforce.vk.VkFormat a2,javaforce.vk.VkFormatProperties a3) { try { Arena arena = Arena.ofAuto(); vkGetPhysicalDeviceFormatProperties.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),(MemorySegment)(a3 == null ? MemorySegment.NULL : a3.marshall(arena)));if (a3!=null) a3.unmarshall(); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle vkGetPhysicalDeviceMemoryProperties2;
   public void vkGetPhysicalDeviceMemoryProperties2(javaforce.vk.VkPhysicalDevice a1,javaforce.vk.VkPhysicalDeviceMemoryProperties2 a2) { try { Arena arena = Arena.ofAuto(); vkGetPhysicalDeviceMemoryProperties2.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)));if (a2!=null) a2.unmarshall(); } catch (Throwable t) { JFLog.log(t); } }
 
@@ -403,6 +406,7 @@ public class VKFFM implements VK {
     vkGetDeviceQueue = ffm.getFunctionPtr("_vkGetDeviceQueue", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS));
     vkGetDeviceQueue2 = ffm.getFunctionPtr("_vkGetDeviceQueue2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,ADDRESS));
     vkGetPhysicalDeviceFeatures2 = ffm.getFunctionPtr("_vkGetPhysicalDeviceFeatures2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
+    vkGetPhysicalDeviceFormatProperties = ffm.getFunctionPtr("_vkGetPhysicalDeviceFormatProperties", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,ADDRESS));
     vkGetPhysicalDeviceMemoryProperties2 = ffm.getFunctionPtr("_vkGetPhysicalDeviceMemoryProperties2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
     vkGetPhysicalDeviceProperties2 = ffm.getFunctionPtr("_vkGetPhysicalDeviceProperties2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS));
     vkGetPhysicalDeviceQueueFamilyProperties2 = ffm.getFunctionPtr("_vkGetPhysicalDeviceQueueFamilyProperties2", ffm.getFunctionDesciptorVoid(JAVA_LONG,ADDRESS,ADDRESS));

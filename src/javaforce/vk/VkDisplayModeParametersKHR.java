@@ -14,5 +14,5 @@ public class VkDisplayModeParametersKHR extends FFMStruct {
   /** */
   public VkExtent2D visibleRegion = new VkExtent2D();
   /** */
-  public VkDisplayModeParametersKHR refreshRate;
+  public int refreshRate;
 }

@@ -10,8 +10,8 @@ import javaforce.ffm.*;
  * @author pquiring
  */
 
-public class VkStencilOp extends FFMType.Uint64 {
+public class VkStencilOp extends FFMType.Uint32 {
   public VkStencilOp() {}
-  public VkStencilOp(long value) {super(value);}
-  public VkStencilOp(FFMType.Uint64 value) {super(value);}
+  public VkStencilOp(int value) {super(value);}
+  public VkStencilOp(FFMType.Uint32 value) {super(value);}
 }

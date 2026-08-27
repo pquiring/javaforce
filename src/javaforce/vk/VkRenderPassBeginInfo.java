@@ -24,5 +24,5 @@ public class VkRenderPassBeginInfo extends FFMStruct {
   /** */
   public int clearValueCount;
   /** */
-  public VkColor[] ptr_pClearValues;
+  public VkClearValue[] ptr_pClearValues;
 }

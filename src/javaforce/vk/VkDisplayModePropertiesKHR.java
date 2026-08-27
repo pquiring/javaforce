@@ -14,5 +14,5 @@ public class VkDisplayModePropertiesKHR extends FFMStruct {
   /** VkDisplayModeKHR */
   public long displayMode;
   /** VkDisplayModeParametersKHR */
-  public VkDisplayModeParametersKHR parameters;
+  public VkDisplayModeParametersKHR parameters = new VkDisplayModeParametersKHR();
 }

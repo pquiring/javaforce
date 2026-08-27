@@ -15,14 +15,14 @@ public class VkCopyDescriptorSet extends FFMStruct {
   public int sType = VK.VK_STRUCTURE_TYPE_COPY_DESCRIPTOR_SET;
   /** pNext */
   public long pNext;
-  /** VkDescriptorSet */
-  public long srcSet;
+  /** */
+  public VkDescriptorSet srcSet = new VkDescriptorSet();
   /**  */
   public int srcBinding;
   /**  */
   public int srcArrayElement;
-  /** VkDescriptorSet */
-  public long dstSet;
+  /**  */
+  public VkDescriptorSet dstSet = new VkDescriptorSet();
   /**  */
   public int dstBinding;
   /**  */

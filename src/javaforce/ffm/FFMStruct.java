@@ -54,7 +54,14 @@ public class FFMStruct {
 
   private int size = -1;
   private MemorySegment struct;
+  protected boolean union;
   public MemorySegment src, dst;
+
+  public static class Union extends FFMStruct {
+    public Union() {
+      union = true;
+    }
+  }
 
   private void init() {
     Field[] jfields = getClass().getDeclaredFields();
@@ -73,17 +80,28 @@ public class FFMStruct {
       if (!name.startsWith("ptr_")) flags |= FLAG_INLINE;
       if (name.startsWith("ptr_ptrarray_")) flags |= FLAG_PTR_PTRARRAY;
       int field_size = getFieldSize(jfield);
-      int align_size = getFieldAlignment(jfield);
-      int padding = getPadding(offset, align_size);
-      offset += padding;
+      if (!union) {
+        int align_size = getFieldAlignment(jfield);
+        int padding = getPadding(offset, align_size);
+        offset += padding;
+      }
       fields[i] = new FFMField(offset, name, flags);
       fields[i].index = i;
-      offset += field_size;
+      if (!union) {
+        offset += field_size;
+      } else {
+        if (field_size > size) {
+          size = field_size;
+        }
+      }
     }
-    if (offset == 0) {
-      JFLog.log("FFMStruct.init:Error:size == 0");
+    if (!union) {
+      //check for tail padding (compiler does this in case array of struct to ensure each element is properly aligned)
+      int align = getLargestFieldAlignment();
+      int padding = getPadding(offset, align);
+      offset += padding;
+      size = offset;
     }
-    size = offset;
   }
 
   private Field[] sort(Field[] in) {

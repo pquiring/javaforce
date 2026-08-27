@@ -21,4 +21,6 @@ public class VkAttachmentReference2 extends FFMStruct {
   public VkImageLayout layout = new VkImageLayout();
   /** VkImageAspectFlags */
   public int aspectMask;
+  /** ??? */
+  public int padding;
 }

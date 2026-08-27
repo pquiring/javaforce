@@ -29,6 +29,4 @@ public class VkRenderPassCreateInfo extends FFMStruct {
   public int dependencyCount;
   /** */
   public VkSubpassDependency[] ptr_pDependencies;
-  /** */
-  public int correlatedViewMaskCount;
 }

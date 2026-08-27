@@ -1,12 +1,14 @@
 package javaforce.tests;
 
 import java.lang.foreign.*;
+import java.io.*;
 import java.util.*;
 import static java.lang.foreign.ValueLayout.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.ui.*;
+import javaforce.ffm.*;
 import javaforce.gl.*;
 import javaforce.vk.*;
 import static javaforce.vk.VK.*;
@@ -30,7 +32,10 @@ public class TestVK implements WindowEvents {
 
   public static void main(String args[]) {
     try {
-      if (debug) getSizes();
+      if (args.length == 1 && args[0].equals("sizes")) {
+        getSizes();
+        System.exit(1);
+      }
       window = new Window();
       window.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE | Window.STYLE_VULKAN, "Test", 512, 512, null);
       window.show();
@@ -63,14 +68,25 @@ public class TestVK implements WindowEvents {
   }
 
   public static void getSizes() {
-    VkPhysicalDeviceMemoryProperties2 memProperties = new VkPhysicalDeviceMemoryProperties2();
-    JFLog.log("sizeof(VkPhysicalDeviceMemoryProperties2)=" + memProperties.getSize());  //536 (-4)
-    VkPhysicalDeviceFeatures features = new VkPhysicalDeviceFeatures();
-    JFLog.log("sizeof(VkPhysicalDeviceFeatures)=" + features.getSize());  //220
-    VkPhysicalDeviceLimits limits = new VkPhysicalDeviceLimits();
-    JFLog.log("sizeof(VkPhysicalDeviceLimits)=" + limits.getSize());  //504
-    VkSamplerCreateInfo sampler = new VkSamplerCreateInfo();
-    JFLog.log("sizeof(VkSamplerCreateInfo)=" + sampler.getSize());  //80
+    //to generate structs.txt : cd src\javaforce\vk : grep FFMStruct -l > structs.txt : remove .java from structs.txt
+    String _name = null;
+    try {
+      String[] names = null;
+      FileInputStream fis = JF.fileopen("structs.txt");
+      names = new String(JF.readAll(fis)).split("\n");
+      JF.fileclose(fis);
+      for(String name : names) {
+        if (name.length() == 0) continue;
+        _name = name;
+        Class<?> cls = Class.forName("javaforce.vk." + name);
+        FFMStruct struct = (FFMStruct)cls.getConstructors()[0].newInstance();
+        int size = struct.getSize();
+        System.out.println("sizeof(" + name + ")=" + size);
+      }
+    } catch (Exception e) {
+      JFLog.log("struct=" + _name);
+      JFLog.log(e);
+    }
   }
 
   public static class QueueFamilyIndices {
@@ -95,21 +111,21 @@ public class TestVK implements WindowEvents {
   public static String[] fullExtensions;
 
   public static class Vertex {
-    public Vector2 pos;
+    public Vector3 pos;
     public Vector3 color;
     public Vector2 texCoord;
 
     public static int getSize() {
-      return 4 * 7;
+      return 4 * 8;
     }
 
     public Vertex(float[] pos, float[] color) {
-      this.pos = new Vector2(pos);
+      this.pos = new Vector3(pos);
       this.color = new Vector3(color);
     }
 
     public Vertex(float[] pos, float[] color, float[] uv) {
-      this.pos = new Vector2(pos);
+      this.pos = new Vector3(pos);
       this.color = new Vector3(color);
       this.texCoord = new Vector2(uv);
     }
@@ -132,18 +148,18 @@ public class TestVK implements WindowEvents {
 
       attributeDescriptions[0].binding = 0;
       attributeDescriptions[0].location = 0;
-      attributeDescriptions[0].format.setValue(VK_FORMAT_R32G32_SFLOAT);
+      attributeDescriptions[0].format.setValue(VK_FORMAT_R32G32B32_SFLOAT);
       attributeDescriptions[0].offset =  0;  //offset of pos
 
       attributeDescriptions[1].binding = 0;
       attributeDescriptions[1].location = 1;
       attributeDescriptions[1].format.setValue(VK_FORMAT_R32G32B32_SFLOAT);
-      attributeDescriptions[1].offset = 4 * 2;  //offset of color
+      attributeDescriptions[1].offset = 4 * 3;  //offset of color
 
       attributeDescriptions[2].binding = 0;
       attributeDescriptions[2].location = 2;
       attributeDescriptions[2].format.setValue(VK_FORMAT_R32G32_SFLOAT);
-      attributeDescriptions[2].offset = 4 * 5;  //offset of texCoord
+      attributeDescriptions[2].offset = 4 * 6;  //offset of texCoord
 
       return attributeDescriptions;
     }
@@ -202,17 +218,30 @@ public class TestVK implements WindowEvents {
     VkImageView textureImageView;
     VkSampler textureSampler;
 
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
     boolean doResize = false;
     boolean doSwap = false;
 
     Vertex[] vertices = new Vertex[] {
-      new Vertex(new float[] {-0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
-      new Vertex(new float[] { 0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,0.0f}),
-      new Vertex(new float[] { 0.5f,  0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
-      new Vertex(new float[] {-0.5f,  0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] {-0.5f, -0.5f,  0.0f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f,  0.0f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,0.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f,  0.0f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f,  0.0f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,1.0f}),
+
+      new Vertex(new float[] {-0.5f, -0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,0.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f, -0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f, -0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,1.0f}),
     };
 
-    int[] indices = new int[] {0, 1, 2, 2, 3, 0};  //two triangles
+    //sets of triangles (3)
+    int[] indices = new int[] {
+      0, 1, 2, 2, 3, 0,
+      4, 5, 6, 6, 7, 4,
+    };
 
     public static class UniformBufferObject {
       public Matrix model = new Matrix();
@@ -242,11 +271,12 @@ public class TestVK implements WindowEvents {
 
     public static float[] toArray(Vertex[] vs) {
       int cnt = vs.length;
-      float[] fs = new float[cnt * 7];
+      float[] fs = new float[cnt * 8];
       int p = 0;
       for(int i=0;i<cnt;i++) {
         fs[p++] = vs[i].pos.v[0];
         fs[p++] = vs[i].pos.v[1];
+        fs[p++] = vs[i].pos.v[2];
         fs[p++] = vs[i].color.v[0];
         fs[p++] = vs[i].color.v[1];
         fs[p++] = vs[i].color.v[2];
@@ -288,11 +318,14 @@ public class TestVK implements WindowEvents {
       if (debug) JFLog.log("createGraphicsPipeline");
       createGraphicsPipeline();
       if (debug_mem) System.gc();
-      if (debug) JFLog.log("createFramebuffers");
-      createFramebuffers();
-      if (debug_mem) System.gc();
       if (debug) JFLog.log("createCommandPool");
       createCommandPool();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createDepthResources");
+      createDepthResources();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createFramebuffers");
+      createFramebuffers();
       if (debug_mem) System.gc();
       if (debug) JFLog.log("createTextureImage");
       createTextureImage();
@@ -724,7 +757,7 @@ public class TestVK implements WindowEvents {
       swapChainImageViews = new VkImageView[swapChainImages.length];
 
       for (int i = 0; i < swapChainImages.length; i++) {
-        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat);
+        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
       }
     }
 
@@ -739,26 +772,41 @@ public class TestVK implements WindowEvents {
       colorAttachment.initialLayout.setValue(VK_IMAGE_LAYOUT_UNDEFINED);
       colorAttachment.finalLayout.setValue(VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
+      VkAttachmentDescription depthAttachment = new VkAttachmentDescription();
+      depthAttachment.format = findDepthFormat();
+      depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+      depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+      depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+      depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+      depthAttachment.initialLayout = new VkImageLayout(VK_IMAGE_LAYOUT_UNDEFINED);
+      depthAttachment.finalLayout = new VkImageLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
       VkAttachmentReference colorAttachmentRef = new VkAttachmentReference();
       colorAttachmentRef.attachment = 0;
       colorAttachmentRef.layout.setValue(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+      VkAttachmentReference depthAttachmentRef = new VkAttachmentReference();
+      depthAttachmentRef.attachment = 1;
+      depthAttachmentRef.layout = new VkImageLayout(VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
       VkSubpassDescription subpass = new VkSubpassDescription();
       subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
       subpass.colorAttachmentCount = 1;
       subpass.ptr_pColorAttachments = new VkAttachmentReference[] {colorAttachmentRef};
+      subpass.ptr_pDepthStencilAttachment = new VkAttachmentReference[] {depthAttachmentRef};
 
       VkSubpassDependency dependency = new VkSubpassDependency();
       dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
       dependency.dstSubpass = 0;
-      dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      dependency.srcAccessMask = 0;
-      dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-      dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+      dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+      dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
       VkRenderPassCreateInfo renderPassInfo = new VkRenderPassCreateInfo();
-      renderPassInfo.attachmentCount = 1;
-      renderPassInfo.ptr_pAttachments = new VkAttachmentDescription[] {colorAttachment};
+      renderPassInfo.attachmentCount = 2;
+      renderPassInfo.ptr_pAttachments = new VkAttachmentDescription[] {colorAttachment, depthAttachment};
       renderPassInfo.subpassCount = 1;
       renderPassInfo.ptr_pSubpasses = new VkSubpassDescription[] {subpass};
       renderPassInfo.dependencyCount = 1;
@@ -872,6 +920,14 @@ public class TestVK implements WindowEvents {
       multisampling.sampleShadingEnable = VK_FALSE;
       multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
+      VkPipelineDepthStencilStateCreateInfo depthStencil = new VkPipelineDepthStencilStateCreateInfo();
+      depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+      depthStencil.depthTestEnable = VK_TRUE;
+      depthStencil.depthWriteEnable = VK_TRUE;
+      depthStencil.depthCompareOp = new VkCompareOp(VK_COMPARE_OP_LESS);
+      depthStencil.depthBoundsTestEnable = VK_FALSE;
+      depthStencil.stencilTestEnable = VK_FALSE;
+
       VkPipelineColorBlendAttachmentState colorBlendAttachment = new VkPipelineColorBlendAttachmentState();
       colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
       colorBlendAttachment.blendEnable = VK_FALSE;
@@ -904,6 +960,7 @@ public class TestVK implements WindowEvents {
       pipelineInfo.ptr_pViewportState = viewportState;
       pipelineInfo.ptr_pRasterizationState = rasterizer;
       pipelineInfo.ptr_pMultisampleState = multisampling;
+      pipelineInfo.ptr_pDepthStencilState = depthStencil;
       pipelineInfo.ptr_pColorBlendState = colorBlending;
       pipelineInfo.ptr_pDynamicState = dynamicState;
       pipelineInfo.layout = pipelineLayout;
@@ -946,12 +1003,13 @@ public class TestVK implements WindowEvents {
 
       for (int i = 0; i < swapChainImageViews.length; i++) {
         VkImageView attachments[] = {
-          swapChainImageViews[i]
+          swapChainImageViews[i],
+          depthImageView
         };
 
         VkFramebufferCreateInfo framebufferInfo = new VkFramebufferCreateInfo();
         framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.attachmentCount = attachments.length;
         framebufferInfo.ptr_pAttachments = attachments;
         framebufferInfo.width = swapChainExtent.width;
         framebufferInfo.height = swapChainExtent.height;
@@ -1345,7 +1403,7 @@ public class TestVK implements WindowEvents {
     }
 
     void createTextureImageView() {
-      textureImageView = createImageView(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB));
+      textureImageView = createImageView(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), VK_IMAGE_ASPECT_COLOR_BIT);
     }
 
     void createTextureSampler() {
@@ -1374,13 +1432,13 @@ public class TestVK implements WindowEvents {
       }
     }
 
-    VkImageView createImageView(VkImage image, VkFormat format) {
+    VkImageView createImageView(VkImage image, VkFormat format, int aspectFlags) {
       VkImageViewCreateInfo viewInfo = new VkImageViewCreateInfo();
       viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
       viewInfo.image = image;
       viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
       viewInfo.format = format;
-      viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      viewInfo.subresourceRange.aspectMask = aspectFlags;
       viewInfo.subresourceRange.baseMipLevel = 0;
       viewInfo.subresourceRange.levelCount = 1;
       viewInfo.subresourceRange.baseArrayLayer = 0;
@@ -1417,6 +1475,7 @@ public class TestVK implements WindowEvents {
         JFLog.log("Failed to create image!");
         System.exit(1);
       }
+      if (debug) JFLog.log("image=" + image.toString());
 
       VkMemoryRequirements memRequirements = new VkMemoryRequirements();
       vk.vkGetImageMemoryRequirements(device, image, memRequirements);
@@ -1502,6 +1561,46 @@ public class TestVK implements WindowEvents {
         endSingleTimeCommands(commandBuffer);
     }
 
+    void createDepthResources() {
+      VkFormat depthFormat = findDepthFormat();
+
+      depthImage = new VkImage();
+      depthImageMemory = new VkDeviceMemory();
+
+      createImage(swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+      depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+    }
+
+    VkFormat findSupportedFormat(VkFormat[] candidates, VkImageTiling tiling, int features) {
+      for (VkFormat format : candidates) {
+        VkFormatProperties props = new VkFormatProperties();
+        vk.vkGetPhysicalDeviceFormatProperties(physicalDevice, format, props);
+
+        if (tiling.value == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+          return format;
+        } else if (tiling.value == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+          return format;
+        }
+      }
+
+      JFLog.log("Failed to find supported format!");
+      System.exit(1);
+      return null;
+    }
+
+    VkFormat findDepthFormat() {
+      return findSupportedFormat(
+        new VkFormat[] {new VkFormat(VK_FORMAT_D32_SFLOAT), new VkFormat(VK_FORMAT_D32_SFLOAT_S8_UINT), new VkFormat(VK_FORMAT_D24_UNORM_S8_UINT)},
+        new VkImageTiling(VK_IMAGE_TILING_OPTIMAL),
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+      );
+    }
+
+    boolean hasStencilComponent(VkFormat format) {
+      return format.value == VK_FORMAT_D32_SFLOAT_S8_UINT || format.value == VK_FORMAT_D24_UNORM_S8_UINT;
+    }
+
+
     void recreateSwapChain() {
       int[] w_h = window.getFramebufferSize();
 
@@ -1511,6 +1610,7 @@ public class TestVK implements WindowEvents {
 
       createSwapChain();
       createImageViews();
+      createDepthResources();
       createFramebuffers();
     }
 
@@ -1626,6 +1726,8 @@ public class TestVK implements WindowEvents {
       vk.vkQueueWaitIdle(graphicsQueue);
       vk.vkDeviceWaitIdle(device);
 
+      cleanupSwapChain();
+
       vk.vkDestroyBuffer(device, vertexBuffer, null);
       vk.vkFreeMemory(device, vertexBufferMemory, null);
 
@@ -1659,23 +1761,11 @@ public class TestVK implements WindowEvents {
       if (debug) JFLog.log("cleanup:command pool");
       vk.vkDestroyCommandPool(device, commandPool, null);
 
-      if (debug) JFLog.log("cleanup:framebuffers");
-      for (VkFramebuffer framebuffer : swapChainFramebuffers) {
-        vk.vkDestroyFramebuffer(device, framebuffer, null);
-      }
-
       if (debug) JFLog.log("cleanup:pipelines");
       vk.vkDestroyPipeline(device, graphicsPipeline, null);
       vk.vkDestroyPipelineLayout(device, pipelineLayout, null);
       vk.vkDestroyRenderPass(device, renderPass, null);
 
-      if (debug) JFLog.log("cleanup:images");
-      for (VkImageView imageView : swapChainImageViews) {
-        vk.vkDestroyImageView(device, imageView, null);
-      }
-
-      if (debug) JFLog.log("cleanup:swapchain");
-      vk.vkDestroySwapchainKHR(device, swapChain, null);
       vk.vkDestroyDevice(device, null);
 
       if (debug) JFLog.log("cleanup:surface");
@@ -1685,14 +1775,21 @@ public class TestVK implements WindowEvents {
     }
 
     void cleanupSwapChain() {
+      vk.vkDestroyImageView(device, depthImageView, null);
+      vk.vkDestroyImage(device, depthImage, null);
+      vk.vkFreeMemory(device, depthImageMemory, null);
+
+      if (debug) JFLog.log("cleanup:framebuffers");
       for (VkFramebuffer framebuffer : swapChainFramebuffers) {
         vk.vkDestroyFramebuffer(device, framebuffer, null);
       }
 
+      if (debug) JFLog.log("cleanup:images");
       for (VkImageView imageView : swapChainImageViews) {
         vk.vkDestroyImageView(device, imageView, null);
       }
 
+      if (debug) JFLog.log("cleanup:swapchain");
       vk.vkDestroySwapchainKHR(device, swapChain, null);
     }
 
@@ -1797,15 +1894,19 @@ public class TestVK implements WindowEvents {
         System.exit(1);
       }
 
-      VkColor clearColor = new VkColor();
-      clearColor.color[3] = 1.0f;
+      VkClearValue[] clearValues = new VkClearValue[2];
+      clearValues[0] = new VkClearValue();
+      clearValues[0].color.floats = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
+      clearValues[1] = new VkClearValue();
+      clearValues[1].depthStencil.depth = 1.0f;
+      clearValues[1].depthStencil.stencil = 0;
 
       VkRenderPassBeginInfo renderPassInfo = new VkRenderPassBeginInfo();
       renderPassInfo.renderPass = renderPass;
       renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
       renderPassInfo.renderArea.extent = swapChainExtent;
-      renderPassInfo.clearValueCount = 1;
-      renderPassInfo.ptr_pClearValues = new VkColor[] {clearColor};
+      renderPassInfo.clearValueCount = clearValues.length;
+      renderPassInfo.ptr_pClearValues = clearValues;
 
       if (debug) JFLog.log("vkCmdBeginRenderPass");
       vk.vkCmdBeginRenderPass(commandBuffer, renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);

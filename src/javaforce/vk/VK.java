@@ -4564,6 +4564,79 @@ public interface VK {
   public static int VK_SAMPLER_MIPMAP_MODE_NEAREST = 0;
   public static int VK_SAMPLER_MIPMAP_MODE_LINEAR = 1;
 
+  //VkFormatFeatureFlagBits
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT = 0x00000001;
+  public static int VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT = 0x00000002;
+  public static int VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT = 0x00000004;
+  public static int VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000008;
+  public static int VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT = 0x00000010;
+  public static int VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT = 0x00000020;
+  public static int VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT = 0x00000040;
+  public static int VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT = 0x00000080;
+  public static int VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT = 0x00000100;
+  public static int VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT = 0x00000200;
+  public static int VK_FORMAT_FEATURE_BLIT_SRC_BIT = 0x00000400;
+  public static int VK_FORMAT_FEATURE_BLIT_DST_BIT = 0x00000800;
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = 0x00001000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_TRANSFER_SRC_BIT = 0x00004000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_TRANSFER_DST_BIT = 0x00008000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT = 0x00020000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT = 0x00040000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT = 0x00080000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT = 0x00100000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT = 0x00200000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_DISJOINT_BIT = 0x00400000;
+  // Provided by VK_VERSION_1_1
+  public static int VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT = 0x00800000;
+  // Provided by VK_VERSION_1_2
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT = 0x00010000;
+  // Provided by VK_KHR_video_decode_queue
+  public static int VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR = 0x02000000;
+  // Provided by VK_KHR_video_decode_queue
+  public static int VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR = 0x04000000;
+  // Provided by VK_KHR_acceleration_structure
+  public static int VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR = 0x20000000;
+  // Provided by VK_EXT_filter_cubic
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT = 0x00002000;
+  // Provided by VK_EXT_fragment_density_map
+  public static int VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT = 0x01000000;
+  // Provided by VK_KHR_fragment_shading_rate
+  public static int VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = 0x40000000;
+  // Provided by VK_KHR_video_encode_queue
+  public static int VK_FORMAT_FEATURE_VIDEO_ENCODE_INPUT_BIT_KHR = 0x08000000;
+  // Provided by VK_KHR_video_encode_queue
+  public static int VK_FORMAT_FEATURE_VIDEO_ENCODE_DPB_BIT_KHR = 0x10000000;
+  // Provided by VK_IMG_filter_cubic
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG = VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT;
+  // Provided by VK_KHR_maintenance1
+  public static int VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR = VK_FORMAT_FEATURE_TRANSFER_SRC_BIT;
+  // Provided by VK_KHR_maintenance1
+  public static int VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR = VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
+  // Provided by VK_EXT_sampler_filter_minmax
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT_EXT = VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT_KHR = VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT_KHR = VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT_KHR = VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT_KHR = VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT_KHR = VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_DISJOINT_BIT_KHR = VK_FORMAT_FEATURE_DISJOINT_BIT;
+  // Provided by VK_KHR_sampler_ycbcr_conversion
+  public static int VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT_KHR = VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4613,6 +4686,7 @@ public interface VK {
   public void vkGetPhysicalDeviceProperties2(VkPhysicalDevice physicaldevice, VkPhysicalDeviceProperties2 props);
   public void vkGetPhysicalDeviceMemoryProperties2(VkPhysicalDevice physicaldevice, VkPhysicalDeviceMemoryProperties2 props);
   public void vkGetPhysicalDeviceQueueFamilyProperties2(VkPhysicalDevice physicaldevice, int[] count, VkQueueFamilyProperties2[] props);
+  public void vkGetPhysicalDeviceFormatProperties(VkPhysicalDevice physicalDevice, VkFormat format, VkFormatProperties pFormatProperties);
   public void vkGetDeviceQueue(VkDevice device, int queueFamilyIndex, int queueIndex, VkQueue[] queue);
   public void vkGetDeviceQueue2(VkDevice device, VkDeviceQueueInfo2 pQueueInfo, VkQueue[] queue);
 

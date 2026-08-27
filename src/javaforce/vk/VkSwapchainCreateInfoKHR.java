@@ -19,6 +19,7 @@ public class VkSwapchainCreateInfoKHR extends FFMStruct {
   public int flags;
   /** VkSurfaceKHR */
   public VkSurfaceKHR surface = new VkSurfaceKHR();
+  /** */
   public int minImageCount;
   /** VkFormat enum */
   public VkFormat imageFormat = new VkFormat();

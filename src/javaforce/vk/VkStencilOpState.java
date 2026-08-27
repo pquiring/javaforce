@@ -12,13 +12,13 @@ import javaforce.ffm.*;
 
 public class VkStencilOpState extends FFMStruct {
   /** */
-  public VkStencilOp failOp;
+  public VkStencilOp failOp = new VkStencilOp();
   /** */
-  public VkStencilOp passOp;
+  public VkStencilOp passOp = new VkStencilOp();
   /** */
-  public VkStencilOp depthFailOp;
+  public VkStencilOp depthFailOp = new VkStencilOp();
   /** */
-  public VkCompareOp compareOp;
+  public VkCompareOp compareOp = new VkCompareOp();
   /** */
   public int compareMask;
   /** */
