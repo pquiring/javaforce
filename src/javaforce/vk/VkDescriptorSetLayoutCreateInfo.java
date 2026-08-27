@@ -20,5 +20,5 @@ public class VkDescriptorSetLayoutCreateInfo extends FFMStruct {
   /** */
   public int bindingCount;
   /** */
-  public VkDescriptorSetLayoutBinding ptr_pBindings;
+  public VkDescriptorSetLayoutBinding[] ptr_pBindings;
 }

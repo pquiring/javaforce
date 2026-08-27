@@ -4653,7 +4653,7 @@ public interface VK {
   public int vkBindBufferMemory(VkDevice device, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize offset);
   public int vkAllocateDescriptorSets(VkDevice device, VkDescriptorSetAllocateInfo pAllocateInfo, VkDescriptorSet[] pDescriptorSets);
 
-  public int vkUpdateDescriptorSets(VkDevice device, int descriptorWriteCount, VkWriteDescriptorSet pDescriptorWrites, int descriptorCopyCount, VkCopyDescriptorSet pDescriptorCopies);
+  public int vkUpdateDescriptorSets(VkDevice device, int descriptorWriteCount, VkWriteDescriptorSet[] pDescriptorWrites, int descriptorCopyCount, VkCopyDescriptorSet pDescriptorCopies);
   public int vkWaitForFences(VkDevice device, int fenceCount, VkFence[] fence, int waitAll, long timeout);
   public int vkResetFences(VkDevice device, int fenceCount, VkFence[] fence);
   public int vkBeginCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferBeginInfo pBeginInfo);

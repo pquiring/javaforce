@@ -19,6 +19,6 @@ public class VkDescriptorSetLayoutBinding extends FFMStruct {
   public int descriptorCount;
   /** VkShaderStageFlags */
   public int stageFlags;
-  /** VkSampler */
-  public long pImmutableSamplers;
+  /** */
+  public VkSampler ptr_pImmutableSamplers;
 }

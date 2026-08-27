@@ -20,7 +20,7 @@ import static javaforce.vk.VK.*;
 
 public class TestVK implements WindowEvents {
   public static boolean debug = true;
-  public static boolean debug_mem = false;
+  public static boolean debug_mem = true;
   public static boolean debug_ext = false;
 
   public static Window window;
@@ -30,6 +30,7 @@ public class TestVK implements WindowEvents {
 
   public static void main(String args[]) {
     try {
+      if (debug) getSizes();
       window = new Window();
       window.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE | Window.STYLE_VULKAN, "Test", 512, 512, null);
       window.show();
@@ -61,6 +62,17 @@ public class TestVK implements WindowEvents {
     active = false;
   }
 
+  public static void getSizes() {
+    VkPhysicalDeviceMemoryProperties2 memProperties = new VkPhysicalDeviceMemoryProperties2();
+    JFLog.log("sizeof(VkPhysicalDeviceMemoryProperties2)=" + memProperties.getSize());  //536 (-4)
+    VkPhysicalDeviceFeatures features = new VkPhysicalDeviceFeatures();
+    JFLog.log("sizeof(VkPhysicalDeviceFeatures)=" + features.getSize());  //220
+    VkPhysicalDeviceLimits limits = new VkPhysicalDeviceLimits();
+    JFLog.log("sizeof(VkPhysicalDeviceLimits)=" + limits.getSize());  //504
+    VkSamplerCreateInfo sampler = new VkSamplerCreateInfo();
+    JFLog.log("sizeof(VkSamplerCreateInfo)=" + sampler.getSize());  //80
+  }
+
   public static class QueueFamilyIndices {
     Integer graphicsFamily = null;
     Integer presentFamily = null;
@@ -85,25 +97,36 @@ public class TestVK implements WindowEvents {
   public static class Vertex {
     public Vector2 pos;
     public Vector3 color;
+    public Vector2 texCoord;
+
+    public static int getSize() {
+      return 4 * 7;
+    }
 
     public Vertex(float[] pos, float[] color) {
       this.pos = new Vector2(pos);
       this.color = new Vector3(color);
     }
 
+    public Vertex(float[] pos, float[] color, float[] uv) {
+      this.pos = new Vector2(pos);
+      this.color = new Vector3(color);
+      this.texCoord = new Vector2(uv);
+    }
+
     public static VkVertexInputBindingDescription[] getBindingDescriptions() {
       VkVertexInputBindingDescription bindingDescription = new VkVertexInputBindingDescription();
       bindingDescription.binding = 0;
-      bindingDescription.stride = 4 * 5;  //sizeof(float) * (2 + 3)
+      bindingDescription.stride = getSize();
       bindingDescription.inputRate.setValue(VK_VERTEX_INPUT_RATE_VERTEX);
 
       return new VkVertexInputBindingDescription[] {bindingDescription};
     }
 
     public static VkVertexInputAttributeDescription[] getAttributeDescriptions() {
-      VkVertexInputAttributeDescription[] attributeDescriptions = new VkVertexInputAttributeDescription[2];
+      VkVertexInputAttributeDescription[] attributeDescriptions = new VkVertexInputAttributeDescription[3];
 
-      for(int i=0;i<2;i++) {
+      for(int i=0;i<3;i++) {
         attributeDescriptions[i] = new VkVertexInputAttributeDescription();
       }
 
@@ -116,6 +139,11 @@ public class TestVK implements WindowEvents {
       attributeDescriptions[1].location = 1;
       attributeDescriptions[1].format.setValue(VK_FORMAT_R32G32B32_SFLOAT);
       attributeDescriptions[1].offset = 4 * 2;  //offset of color
+
+      attributeDescriptions[2].binding = 0;
+      attributeDescriptions[2].location = 2;
+      attributeDescriptions[2].format.setValue(VK_FORMAT_R32G32_SFLOAT);
+      attributeDescriptions[2].offset = 4 * 5;  //offset of texCoord
 
       return attributeDescriptions;
     }
@@ -174,24 +202,17 @@ public class TestVK implements WindowEvents {
     VkImageView textureImageView;
     VkSampler textureSampler;
 
-    boolean keys[] = new boolean[1024];
-
-    final float speedMove = 2.0f;
-    final float speedRotate = 5.0f;
-
-    float alpha = 0.5f, alphadir = -0.01f;
-
     boolean doResize = false;
     boolean doSwap = false;
 
     Vertex[] vertices = new Vertex[] {
-      new Vertex(new float[] {-0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}),
-      new Vertex(new float[] { 0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}),
-      new Vertex(new float[] { 0.5f,  0.5f}, new float[] {0.0f, 0.0f, 1.0f}),
-      new Vertex(new float[] {-0.5f,  0.5f}, new float[] {1.0f, 1.0f, 1.0f}),
+      new Vertex(new float[] {-0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,0.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,1.0f}),
     };
 
-    int[] indices = new int[] {0, 1, 2, 2, 3, 0};
+    int[] indices = new int[] {0, 1, 2, 2, 3, 0};  //two triangles
 
     public static class UniformBufferObject {
       public Matrix model = new Matrix();
@@ -208,17 +229,9 @@ public class TestVK implements WindowEvents {
 
       public float[] toArray() {
         float[] out = new float[16 * 3];
-        if (true) {
-          //copy col major
-          System.arraycopy(model.m, 0, out, 0, 16);
-          System.arraycopy(view.m, 0, out, 16, 16);
-          System.arraycopy(proj.m, 0, out, 32, 16);
-        } else {
-          //copy row major
-          copy_row_major(model.m, 0, out, 0, 16);
-          copy_row_major(view.m, 0, out, 16, 16);
-          copy_row_major(proj.m, 0, out, 32, 16);
-        }
+        System.arraycopy(model.m, 0, out, 0, 16);
+        System.arraycopy(view.m, 0, out, 16, 16);
+        System.arraycopy(proj.m, 0, out, 32, 16);
         return out;
       }
 
@@ -229,7 +242,7 @@ public class TestVK implements WindowEvents {
 
     public static float[] toArray(Vertex[] vs) {
       int cnt = vs.length;
-      float[] fs = new float[cnt * 5];
+      float[] fs = new float[cnt * 7];
       int p = 0;
       for(int i=0;i<cnt;i++) {
         fs[p++] = vs[i].pos.v[0];
@@ -237,6 +250,8 @@ public class TestVK implements WindowEvents {
         fs[p++] = vs[i].color.v[0];
         fs[p++] = vs[i].color.v[1];
         fs[p++] = vs[i].color.v[2];
+        fs[p++] = vs[i].texCoord.v[0];
+        fs[p++] = vs[i].texCoord.v[1];
       }
       return fs;
     }
@@ -765,9 +780,16 @@ public class TestVK implements WindowEvents {
       uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
       uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 
+      VkDescriptorSetLayoutBinding samplerLayoutBinding = new VkDescriptorSetLayoutBinding();
+      samplerLayoutBinding.binding = 1;
+      samplerLayoutBinding.descriptorCount = 1;
+      samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+      samplerLayoutBinding.ptr_pImmutableSamplers = null;
+      samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
       VkDescriptorSetLayoutCreateInfo layoutInfo = new VkDescriptorSetLayoutCreateInfo();
-      layoutInfo.bindingCount = 1;
-      layoutInfo.ptr_pBindings = uboLayoutBinding;
+      layoutInfo.bindingCount = 2;
+      layoutInfo.ptr_pBindings = new VkDescriptorSetLayoutBinding[] {uboLayoutBinding, samplerLayoutBinding};
 
       descriptorSetLayout = new VkDescriptorSetLayout();
 
@@ -1119,7 +1141,6 @@ public class TestVK implements WindowEvents {
     int findMemoryType(int typeFilter, int properties) {
       if (debug) JFLog.log("findMemoryType:" + typeFilter + "," + properties);
       VkPhysicalDeviceMemoryProperties2 memProperties = new VkPhysicalDeviceMemoryProperties2();
-      if (debug) JFLog.log("sizeof(VkPhysicalDeviceMemoryProperties2)=" + memProperties.getSize());
       if (debug) JFLog.log("vkGetPhysicalDeviceMemoryProperties2");
       vk.vkGetPhysicalDeviceMemoryProperties2(physicalDevice, memProperties);
 
@@ -1197,13 +1218,19 @@ public class TestVK implements WindowEvents {
     }
 
     void createDescriptorPool() {
-      VkDescriptorPoolSize poolSize = new VkDescriptorPoolSize();
-      poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-      poolSize.descriptorCount = max_frames;
+      VkDescriptorPoolSize[] poolSizes = new VkDescriptorPoolSize[2];
+
+      poolSizes[0] = new VkDescriptorPoolSize();
+      poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      poolSizes[0].descriptorCount = max_frames;
+
+      poolSizes[1] = new VkDescriptorPoolSize();
+      poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+      poolSizes[1].descriptorCount = max_frames;
 
       VkDescriptorPoolCreateInfo poolInfo = new VkDescriptorPoolCreateInfo();
-      poolInfo.poolSizeCount = 1;
-      poolInfo.ptr_pPoolSizes = new VkDescriptorPoolSize[] {poolSize};
+      poolInfo.poolSizeCount = 2;
+      poolInfo.ptr_pPoolSizes = poolSizes;
       poolInfo.maxSets = max_frames;
 
       descriptorPool = new VkDescriptorPool();
@@ -1252,16 +1279,30 @@ public class TestVK implements WindowEvents {
         bufferInfo.offset = new VkDeviceSize(0);
         bufferInfo.range = new VkDeviceSize(UniformBufferObject.sizeof());
 
-        VkWriteDescriptorSet descriptorWrite = new VkWriteDescriptorSet();
-        descriptorWrite.dstSet = descriptorSets[i];
-        descriptorWrite.dstBinding = 0;
-        descriptorWrite.dstArrayElement = 0;
-        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptorWrite.descriptorCount = 1;
-        descriptorWrite.ptr_pBufferInfo = bufferInfo;
+        VkDescriptorImageInfo imageInfo = new VkDescriptorImageInfo();
+        imageInfo.imageLayout = new VkImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        imageInfo.imageView = textureImageView;
+        imageInfo.sampler = textureSampler;
 
-      if (debug) JFLog.log("vkUpdateDescriptorSets");
-        vk.vkUpdateDescriptorSets(device, 1, descriptorWrite, 0, null);
+        VkWriteDescriptorSet[] descriptorWrites = new VkWriteDescriptorSet[2];
+        descriptorWrites[0] = new VkWriteDescriptorSet();
+        descriptorWrites[0].dstSet = descriptorSets[i];
+        descriptorWrites[0].dstBinding = 0;
+        descriptorWrites[0].dstArrayElement = 0;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorCount = 1;
+        descriptorWrites[0].ptr_pBufferInfo = bufferInfo;
+
+        descriptorWrites[1] = new VkWriteDescriptorSet();
+        descriptorWrites[1].dstSet = descriptorSets[i];
+        descriptorWrites[1].dstBinding = 1;
+        descriptorWrites[1].dstArrayElement = 0;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[1].descriptorCount = 1;
+        descriptorWrites[1].ptr_pImageInfo = imageInfo;
+
+        if (debug) JFLog.log("vkUpdateDescriptorSets");
+        vk.vkUpdateDescriptorSets(device, 2, descriptorWrites, 0, null);
       }
     }
 
@@ -1355,6 +1396,7 @@ public class TestVK implements WindowEvents {
     }
 
     void createImage(int width, int height, VkFormat format, int tiling, int usage, int properties, VkImage image, VkDeviceMemory imageMemory) {
+      if (debug) JFLog.log("createImage");
       VkImageCreateInfo imageInfo = new VkImageCreateInfo();
       imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
       imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -1370,6 +1412,7 @@ public class TestVK implements WindowEvents {
       imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
       imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
+      if (debug) JFLog.log("vkCreateImage");
       if (vk.vkCreateImage(device, imageInfo, null, new VkImage[] {image}) != VK_SUCCESS) {
         JFLog.log("Failed to create image!");
         System.exit(1);
@@ -1453,6 +1496,7 @@ public class TestVK implements WindowEvents {
         region.imageOffset = new VkOffset3D(0,0,0);
         region.imageExtent = new VkExtent3D(width, height, 1);
 
+        if (debug) JFLog.log("vkCmdCopyBufferToImage");
         vk.vkCmdCopyBufferToImage(commandBuffer, buffer, image, new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL), 1, new VkBufferImageCopy[] {region});
 
         endSingleTimeCommands(commandBuffer);
@@ -1656,7 +1700,7 @@ public class TestVK implements WindowEvents {
     UniformBufferObject ubo = new UniformBufferObject();
 
     void updateUniformBuffer() {
-      angle += 1.0f;
+      //angle += 1.0f;
       if (angle > 90.0f) angle = 1.0f;
       if (debug) JFLog.log("angle=" + angle);
       float ratio = ((float)swapChainExtent.width) / ((float)swapChainExtent.height);
