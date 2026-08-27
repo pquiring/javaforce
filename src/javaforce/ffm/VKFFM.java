@@ -120,6 +120,9 @@ public class VKFFM implements VK {
   private MethodHandle vkCreateRenderPass2;
   public int vkCreateRenderPass2(javaforce.vk.VkDevice a1,javaforce.vk.VkRenderPassCreateInfo2 a2,javaforce.vk.VkAllocationCallbacks a3,javaforce.vk.VkRenderPass[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkCreateRenderPass2.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)),a3 == null ? 0 : a3.getValue(),_array_a4);FFM.copyBack(_array_a4,a4);if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle vkCreateSampler;
+  public int vkCreateSampler(javaforce.vk.VkDevice a1,javaforce.vk.VkSamplerCreateInfo a2,javaforce.vk.VkAllocationCallbacks a3,javaforce.vk.VkSampler[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkCreateSampler.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)),a3 == null ? 0 : a3.getValue(),_array_a4);FFM.copyBack(_array_a4,a4);if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle vkCreateSemaphore;
   public int vkCreateSemaphore(javaforce.vk.VkDevice a1,javaforce.vk.VkSemaphoreCreateInfo a2,javaforce.vk.VkAllocationCallbacks a3,javaforce.vk.VkSemaphore[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkCreateSemaphore.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)),a3 == null ? 0 : a3.getValue(),_array_a4);FFM.copyBack(_array_a4,a4);if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -167,6 +170,9 @@ public class VKFFM implements VK {
 
   private MethodHandle vkDestroyRenderPass;
   public int vkDestroyRenderPass(javaforce.vk.VkDevice a1,javaforce.vk.VkRenderPass a2,javaforce.vk.VkAllocationCallbacks a3) { try { int _ret_value_ = (int)vkDestroyRenderPass.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle vkDestroySampler;
+  public int vkDestroySampler(javaforce.vk.VkDevice a1,javaforce.vk.VkSampler a2,javaforce.vk.VkAllocationCallbacks a3) { try { int _ret_value_ = (int)vkDestroySampler.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle vkDestroySemaphore;
   public int vkDestroySemaphore(javaforce.vk.VkDevice a1,javaforce.vk.VkSemaphore a2,javaforce.vk.VkAllocationCallbacks a3) { try { int _ret_value_ = (int)vkDestroySemaphore.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue());return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -339,6 +345,7 @@ public class VKFFM implements VK {
     vkCreatePipelineLayout = ffm.getFunctionPtr("_vkCreatePipelineLayout", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateRenderPass = ffm.getFunctionPtr("_vkCreateRenderPass", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateRenderPass2 = ffm.getFunctionPtr("_vkCreateRenderPass2", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
+    vkCreateSampler = ffm.getFunctionPtr("_vkCreateSampler", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateSemaphore = ffm.getFunctionPtr("_vkCreateSemaphore", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateShaderModule = ffm.getFunctionPtr("_vkCreateShaderModule", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateSwapchainKHR = ffm.getFunctionPtr("_vkCreateSwapchainKHR", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
@@ -355,6 +362,7 @@ public class VKFFM implements VK {
     vkDestroyPipeline = ffm.getFunctionPtr("_vkDestroyPipeline", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroyPipelineLayout = ffm.getFunctionPtr("_vkDestroyPipelineLayout", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroyRenderPass = ffm.getFunctionPtr("_vkDestroyRenderPass", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
+    vkDestroySampler = ffm.getFunctionPtr("_vkDestroySampler", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroySemaphore = ffm.getFunctionPtr("_vkDestroySemaphore", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroyShaderModule = ffm.getFunctionPtr("_vkDestroyShaderModule", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));
     vkDestroySurfaceKHR = ffm.getFunctionPtr("_vkDestroySurfaceKHR", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_LONG));

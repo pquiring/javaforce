@@ -19,7 +19,7 @@ import static javaforce.vk.VK.*;
  */
 
 public class TestVK implements WindowEvents {
-  public static boolean debug = false;
+  public static boolean debug = true;
   public static boolean debug_mem = false;
   public static boolean debug_ext = false;
 
@@ -171,6 +171,8 @@ public class TestVK implements WindowEvents {
 
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
 
     boolean keys[] = new boolean[1024];
 
@@ -280,6 +282,12 @@ public class TestVK implements WindowEvents {
       if (debug) JFLog.log("createTextureImage");
       createTextureImage();
       if (debug_mem) System.gc();
+      if (debug) JFLog.log("createTextureImageView");
+      createTextureImageView();
+      if (debug_mem) System.gc();
+      if (debug) JFLog.log("createTextureSampler");
+      createTextureSampler();
+      if (debug_mem) System.gc();
       if (debug) JFLog.log("createVertexBuffer");
       createVertexBuffer();
       if (debug_mem) System.gc();
@@ -364,6 +372,7 @@ public class TestVK implements WindowEvents {
       }
 
       VkPhysicalDeviceFeatures deviceFeatures = new VkPhysicalDeviceFeatures();
+      deviceFeatures.samplerAnisotropy = VK_TRUE;
 
       VkDeviceCreateInfo createInfo = new VkDeviceCreateInfo();
 
@@ -570,7 +579,10 @@ public class TestVK implements WindowEvents {
         if (debug) JFLog.log("swapChainAdequte=" + swapChainAdequate);
       }
 
-      return indices.isComplete() && extensionsSupported && swapChainAdequate;
+      VkPhysicalDeviceFeatures2 supportedFeatures = new VkPhysicalDeviceFeatures2();
+      vk.vkGetPhysicalDeviceFeatures2(device, supportedFeatures);
+
+      return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.features.samplerAnisotropy == VK_TRUE;
     }
 
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -697,28 +709,7 @@ public class TestVK implements WindowEvents {
       swapChainImageViews = new VkImageView[swapChainImages.length];
 
       for (int i = 0; i < swapChainImages.length; i++) {
-        VkImageViewCreateInfo createInfo = new VkImageViewCreateInfo();
-        createInfo.image = swapChainImages[i];
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        createInfo.format = swapChainImageFormat;
-        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        createInfo.subresourceRange.baseMipLevel = 0;
-        createInfo.subresourceRange.levelCount = 1;
-        createInfo.subresourceRange.baseArrayLayer = 0;
-        createInfo.subresourceRange.layerCount = 1;
-
-        VkImageView[] imageView = new VkImageView[1];
-        imageView[0] = new VkImageView();
-        if (debug) JFLog.log("vkCreateImageView");
-        if (vk.vkCreateImageView(device, createInfo, null, imageView) != VK_SUCCESS) {
-          JFLog.log("Failed to create image views!");
-          System.exit(1);
-        }
-        swapChainImageViews[i] = imageView[0];
+        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat);
       }
     }
 
@@ -1312,6 +1303,57 @@ public class TestVK implements WindowEvents {
       vk.vkFreeMemory(device, stagingBufferMemory, null);
     }
 
+    void createTextureImageView() {
+      textureImageView = createImageView(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB));
+    }
+
+    void createTextureSampler() {
+      VkPhysicalDeviceProperties2 properties = new VkPhysicalDeviceProperties2();
+      vk.vkGetPhysicalDeviceProperties2(physicalDevice, properties);
+
+      VkSamplerCreateInfo samplerInfo = new VkSamplerCreateInfo();
+      samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+      samplerInfo.magFilter = VK_FILTER_LINEAR;
+      samplerInfo.minFilter = VK_FILTER_LINEAR;
+      samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+      samplerInfo.anisotropyEnable = VK_TRUE;
+      samplerInfo.maxAnisotropy = properties.properties.limits.maxSamplerAnisotropy;
+      samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+      samplerInfo.unnormalizedCoordinates = VK_FALSE;
+      samplerInfo.compareEnable = VK_FALSE;
+      samplerInfo.compareOp = new VkCompareOp(VK_COMPARE_OP_ALWAYS);
+      samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+      textureSampler = new VkSampler();
+      if (vk.vkCreateSampler(device, samplerInfo, null, new VkSampler[] {textureSampler}) != VK_SUCCESS) {
+        JFLog.log("Failed to create texture sampler!");
+        System.exit(1);
+      }
+    }
+
+    VkImageView createImageView(VkImage image, VkFormat format) {
+      VkImageViewCreateInfo viewInfo = new VkImageViewCreateInfo();
+      viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+      viewInfo.image = image;
+      viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+      viewInfo.format = format;
+      viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      viewInfo.subresourceRange.baseMipLevel = 0;
+      viewInfo.subresourceRange.levelCount = 1;
+      viewInfo.subresourceRange.baseArrayLayer = 0;
+      viewInfo.subresourceRange.layerCount = 1;
+
+      VkImageView imageView = new VkImageView();
+      if (vk.vkCreateImageView(device, viewInfo, null, new VkImageView[] {imageView}) != VK_SUCCESS) {
+        JFLog.log("Failed to create image view!");
+        System.exit(1);
+      }
+
+      return imageView;
+    }
+
     void createImage(int width, int height, VkFormat format, int tiling, int usage, int properties, VkImage image, VkDeviceMemory imageMemory) {
       VkImageCreateInfo imageInfo = new VkImageCreateInfo();
       imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -1547,6 +1589,9 @@ public class TestVK implements WindowEvents {
       vk.vkFreeMemory(device, indexBufferMemory, null);
 
       vk.vkDestroyDescriptorPool(device, descriptorPool, null);
+
+      vk.vkDestroySampler(device, textureSampler, null);
+      vk.vkDestroyImageView(device, textureImageView, null);
 
       vk.vkDestroyImage(device, textureImage, null);
       vk.vkFreeMemory(device, textureImageMemory, null);

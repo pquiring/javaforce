@@ -29,6 +29,7 @@ JNIEXPORT void (*_vkCreateShaderModule)();
 JNIEXPORT void (*_vkCreateGraphicsPipelines)();
 JNIEXPORT void (*_vkCreateBuffer)();
 JNIEXPORT void (*_vkCreateDescriptorPool)();
+JNIEXPORT void (*_vkCreateSampler)();
 
 JNIEXPORT void (*_vkDestroyDevice)();
 JNIEXPORT void (*_vkDestroyFence)();
@@ -45,6 +46,7 @@ JNIEXPORT void (*_vkDestroyBuffer)();
 JNIEXPORT void (*_vkDestroyDescriptorSetLayout)();
 JNIEXPORT void (*_vkDestroyDescriptorPool)();
 JNIEXPORT void (*_vkDestroyImage)();
+JNIEXPORT void (*_vkDestroySampler)();
 
 JNIEXPORT void (*_vkEnumeratePhysicalDevices)();
 JNIEXPORT void (*_vkEnumerateDeviceExtensionProperties)();
@@ -119,7 +121,6 @@ JNIEXPORT void (*_vkCmdCopyBufferToImage)();
 jboolean VK_get_functions()
 {
   vkGetFunction((void**)&_vkCreateInstance,"vkCreateInstance");
-
   vkGetFunction((void**)&_vkCreateDescriptorSetLayout,"vkCreateDescriptorSetLayout");
   vkGetFunction((void**)&_vkCreatePipelineLayout,"vkCreatePipelineLayout");
   vkGetFunction((void**)&_vkCreateShaderModule,"vkCreateShaderModule");
@@ -133,6 +134,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkCreateFramebuffer,"vkCreateFramebuffer");
   vkGetFunction((void**)&_vkCreateFence,"vkCreateFence");
   vkGetFunction((void**)&_vkCreateDescriptorPool,"vkCreateDescriptorPool");
+  vkGetFunction((void**)&_vkCreateSampler,"vkCreateSampler");
 
   vkGetFunction((void**)&_vkDestroyDevice,"vkDestroyDevice");
   vkGetFunction((void**)&_vkDestroyFence,"vkDestroyFence");
@@ -149,6 +151,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkDestroyDescriptorSetLayout,"vkDestroyDescriptorSetLayout");
   vkGetFunction((void**)&_vkDestroyDescriptorPool,"vkDestroyDescriptorPool");
   vkGetFunction((void**)&_vkDestroyImage,"vkDestroyImage");
+  vkGetFunction((void**)&_vkDestroySampler,"vkDestroySampler");
 
   vkGetFunction((void**)&_vkEnumeratePhysicalDevices,"vkEnumeratePhysicalDevices");
   vkGetFunction((void**)&_vkEnumerateDeviceExtensionProperties,"vkEnumerateDeviceExtensionProperties");

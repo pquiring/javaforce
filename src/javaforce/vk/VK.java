@@ -4519,6 +4519,51 @@ public interface VK {
   // Provided by VK_EXT_image_drm_format_modifier
   public static int VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT = 1000158000;
 
+  //VkFilter
+  public static int VK_FILTER_NEAREST = 0;
+  public static int VK_FILTER_LINEAR = 1;
+  // Provided by VK_EXT_filter_cubic
+  public static int VK_FILTER_CUBIC_EXT = 1000015000;
+  // Provided by VK_IMG_filter_cubic
+  public static int VK_FILTER_CUBIC_IMG = VK_FILTER_CUBIC_EXT;
+
+  //VkSamplerAddressMode
+  public static int VK_SAMPLER_ADDRESS_MODE_REPEAT = 0;
+  public static int VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT = 1;
+  public static int VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE = 2;
+  public static int VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER = 3;
+  // Provided by VK_VERSION_1_2, VK_KHR_sampler_mirror_clamp_to_edge
+  public static int VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE = 4;
+  // Provided by VK_KHR_sampler_mirror_clamp_to_edge
+  // VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE_KHR is a legacy alias
+  public static int VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE_KHR = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+
+  //VkBorderColor
+  public static int VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK = 0;
+  public static int VK_BORDER_COLOR_INT_TRANSPARENT_BLACK = 1;
+  public static int VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK = 2;
+  public static int VK_BORDER_COLOR_INT_OPAQUE_BLACK = 3;
+  public static int VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE = 4;
+  public static int VK_BORDER_COLOR_INT_OPAQUE_WHITE = 5;
+  // Provided by VK_EXT_custom_border_color
+  public static int VK_BORDER_COLOR_FLOAT_CUSTOM_EXT = 1000287003;
+  // Provided by VK_EXT_custom_border_color
+  public static int VK_BORDER_COLOR_INT_CUSTOM_EXT = 1000287004;
+
+  //VkCompareOp
+  public static int VK_COMPARE_OP_NEVER = 0;
+  public static int VK_COMPARE_OP_LESS = 1;
+  public static int VK_COMPARE_OP_EQUAL = 2;
+  public static int VK_COMPARE_OP_LESS_OR_EQUAL = 3;
+  public static int VK_COMPARE_OP_GREATER = 4;
+  public static int VK_COMPARE_OP_NOT_EQUAL = 5;
+  public static int VK_COMPARE_OP_GREATER_OR_EQUAL = 6;
+  public static int VK_COMPARE_OP_ALWAYS = 7;
+
+  //VkSamplerMipmapMode
+  public static int VK_SAMPLER_MIPMAP_MODE_NEAREST = 0;
+  public static int VK_SAMPLER_MIPMAP_MODE_LINEAR = 1;
+
   //utils
   public static int VK_MAKE_VERSION(int major, int minor, int patch) {
     return (major << 22) | (minor << 12) | (patch);
@@ -4543,6 +4588,7 @@ public interface VK {
   public int vkCreateGraphicsPipelines(VkDevice device, VkPipelineCache cache, int createInfoCount, VkGraphicsPipelineCreateInfo[] pCreateInfos, VkAllocationCallbacks callbacks, VkPipeline[] pipeline);
   public int vkCreateBuffer(VkDevice device, VkBufferCreateInfo createInfo, VkAllocationCallbacks callbacks, VkBuffer[] buffer);
   public int vkCreateDescriptorPool(VkDevice device, VkDescriptorPoolCreateInfo createInfo, VkAllocationCallbacks callbacks, VkDescriptorPool[] pool);
+  public int vkCreateSampler(VkDevice device, VkSamplerCreateInfo pCreateInfo, VkAllocationCallbacks pAllocator, VkSampler[] pSampler);
 
   public int vkDestroyDevice(VkDevice device, VkAllocationCallbacks callbacks);
   public int vkDestroyFence(VkDevice device, VkFence fence, VkAllocationCallbacks callbacks);
@@ -4559,6 +4605,7 @@ public interface VK {
   public int vkDestroyDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout, VkAllocationCallbacks callbacks);
   public int vkDestroyDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool, VkAllocationCallbacks callbacks);
   public int vkDestroyImage(VkDevice device, VkImage descriptorPool, VkAllocationCallbacks callbacks);
+  public int vkDestroySampler(VkDevice device, VkSampler sampler, VkAllocationCallbacks callbacks);
 
   public int vkEnumeratePhysicalDevices(VkInstance instance, int[] count, VkPhysicalDevice[] physicaldevices);
   public int vkEnumerateDeviceExtensionProperties(VkPhysicalDevice physicaldevice, String pLayerName, int[] pPropertyCount, VkExtensionProperties[] pProperties);
