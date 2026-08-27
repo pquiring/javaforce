@@ -136,11 +136,21 @@ public interface VK {
   //constants
   public static int VK_FALSE = 0;
   public static int VK_TRUE = 1;
+  public static final int VK_MAX_MEMORY_TYPES = 32;
+  public static final int VK_MAX_MEMORY_HEAPS = 16;
+  public static final int VK_UUID_SIZE = 16;
   public static int VK_QUEUE_FAMILY_IGNORED = (~0);
+  public static int VK_ATTACHMENT_UNUSED = (~0);
+  public static int VK_REMAINING_ARRAY_LAYERS = (~0);
+  public static int VK_REMAINING_MIP_LEVELS = (~0);
+  public static int VK_SUBPASS_EXTERNAL = (~0);
+  public static long VK_WHOLE_SIZE = (~0);
+  public static float VK_LOD_CLAMP_NONE = 1000.0f;
+  public static int VK_MAX_DESCRIPTION_SIZE = 256;
+  public static int VK_MAX_EXTENSION_NAME_SIZE = 256;
+  public static int VK_MAX_PHYSICAL_DEVICE_NAME_SIZE = 256;
 
   public static FFMType.Uint64 VK_NULL_HANDLE = new FFMType.Uint64();
-
-  public static int VK_SUBPASS_EXTERNAL = (~0);
 
   //VkExtensions
   public static String VK_KHR_swapchain = "VK_KHR_swapchain";
@@ -4453,9 +4463,6 @@ public interface VK {
   // Provided by VK_NV_external_memory_rdma
   public static int VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = 0x00000100;
 
-  public static final int VK_MAX_MEMORY_TYPES = 32;
-  public static final int VK_MAX_MEMORY_HEAPS = 16;
-
   // VkCommandBufferUsageFlagBits
   public static int VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = 0x00000001;
   public static int VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = 0x00000002;
@@ -4744,6 +4751,7 @@ public interface VK {
   public void vkCmdCopyBuffer(VkCommandBuffer commandBuffer, VkBuffer srcBuffer,VkBuffer dstBuffer, int regionCount, VkBufferCopy[] pRegions);
   public void vkCmdPipelineBarrier(VkCommandBuffer commandBuffer, int srcStageMask, int dstStageMask, int dependencyFlags, int emoryBarrierCount, VkMemoryBarrier pMemoryBarriers, int bufferMemoryBarrierCount, VkBufferMemoryBarrier pBufferMemoryBarriers, int imageMemoryBarrierCount, VkImageMemoryBarrier pImageMemoryBarriers);
   public void vkCmdCopyBufferToImage(VkCommandBuffer commandBuffer, VkBuffer srcBuffer, VkImage dstImage, VkImageLayout dstImageLayout, int regionCount, VkBufferImageCopy[] pRegions);
+  public void vkCmdBlitImage(VkCommandBuffer commandBuffer, VkImage srcImage, VkImageLayout srcImageLayout, VkImage dstImage, VkImageLayout dstImageLayout, int regionCount, VkImageBlit ptr_pRegions, VkFilter filter);
   public int vkEndCommandBuffer(VkCommandBuffer commandBuffer);
   public int vkQueueSubmit(VkQueue queue, int submitCount, VkSubmitInfo[] pSubmits, VkFence fence);
   public int vkDeviceWaitIdle(VkDevice device);

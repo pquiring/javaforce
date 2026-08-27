@@ -21,8 +21,8 @@ import static javaforce.vk.VK.*;
  */
 
 public class TestVK implements WindowEvents {
-  public static boolean debug = true;
-  public static boolean debug_mem = true;
+  public static boolean debug = false;
+  public static boolean debug_mem = false;
   public static boolean debug_ext = false;
 
   public static Window window;
@@ -221,6 +221,8 @@ public class TestVK implements WindowEvents {
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
+
+    int mipLevels;
 
     boolean doResize = false;
     boolean doSwap = false;
@@ -757,7 +759,7 @@ public class TestVK implements WindowEvents {
       swapChainImageViews = new VkImageView[swapChainImages.length];
 
       for (int i = 0; i < swapChainImages.length; i++) {
-        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT);
+        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
       }
     }
 
@@ -1364,6 +1366,10 @@ public class TestVK implements WindowEvents {
       }
     }
 
+    public static double log2(double n) {
+      return Math.log(n) / Math.log(2);
+    }
+
     void createTextureImage() {
       int texWidth, texHeight, texChannels;
       JFImage image = new JFImage();
@@ -1376,6 +1382,7 @@ public class TestVK implements WindowEvents {
       texHeight = image.getHeight();
 
       VkDeviceSize imageSize = new VkDeviceSize(texWidth * texHeight * 4);
+      mipLevels = (int)(Math.floor(log2(Math.max(texWidth, texHeight))) + 1);
 
       VkBuffer stagingBuffer = new VkBuffer();
       VkDeviceMemory stagingBufferMemory = new VkDeviceMemory();
@@ -1392,18 +1399,20 @@ public class TestVK implements WindowEvents {
       textureImage = new VkImage();
       textureImageMemory = new VkDeviceMemory();
 
-      createImage(texWidth, texHeight, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+      createImage(texWidth, texHeight, mipLevels, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 
-      transitionImageLayout(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), new VkImageLayout(VK_IMAGE_LAYOUT_UNDEFINED), new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL));
+      transitionImageLayout(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), new VkImageLayout(VK_IMAGE_LAYOUT_UNDEFINED), new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL), mipLevels);
       copyBufferToImage(stagingBuffer, textureImage, texWidth, texHeight);
-      transitionImageLayout(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL), new VkImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL));
+      //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
 
       vk.vkDestroyBuffer(device, stagingBuffer, null);
       vk.vkFreeMemory(device, stagingBufferMemory, null);
+
+      generateMipmaps(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), texWidth, texHeight, mipLevels);
     }
 
     void createTextureImageView() {
-      textureImageView = createImageView(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), VK_IMAGE_ASPECT_COLOR_BIT);
+      textureImageView = createImageView(textureImage, new VkFormat(VK_FORMAT_R8G8B8A8_SRGB), VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
     }
 
     void createTextureSampler() {
@@ -1424,6 +1433,9 @@ public class TestVK implements WindowEvents {
       samplerInfo.compareEnable = VK_FALSE;
       samplerInfo.compareOp = new VkCompareOp(VK_COMPARE_OP_ALWAYS);
       samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+      samplerInfo.minLod = 0.0f;
+      samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+      samplerInfo.mipLodBias = 0.0f;
 
       textureSampler = new VkSampler();
       if (vk.vkCreateSampler(device, samplerInfo, null, new VkSampler[] {textureSampler}) != VK_SUCCESS) {
@@ -1432,7 +1444,7 @@ public class TestVK implements WindowEvents {
       }
     }
 
-    VkImageView createImageView(VkImage image, VkFormat format, int aspectFlags) {
+    VkImageView createImageView(VkImage image, VkFormat format, int aspectFlags, int mipLevels) {
       VkImageViewCreateInfo viewInfo = new VkImageViewCreateInfo();
       viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
       viewInfo.image = image;
@@ -1440,7 +1452,7 @@ public class TestVK implements WindowEvents {
       viewInfo.format = format;
       viewInfo.subresourceRange.aspectMask = aspectFlags;
       viewInfo.subresourceRange.baseMipLevel = 0;
-      viewInfo.subresourceRange.levelCount = 1;
+      viewInfo.subresourceRange.levelCount = mipLevels;
       viewInfo.subresourceRange.baseArrayLayer = 0;
       viewInfo.subresourceRange.layerCount = 1;
 
@@ -1453,7 +1465,7 @@ public class TestVK implements WindowEvents {
       return imageView;
     }
 
-    void createImage(int width, int height, VkFormat format, int tiling, int usage, int properties, VkImage image, VkDeviceMemory imageMemory) {
+    void createImage(int width, int height, int mipLevels, VkFormat format, int tiling, int usage, int properties, VkImage image, VkDeviceMemory imageMemory) {
       if (debug) JFLog.log("createImage");
       VkImageCreateInfo imageInfo = new VkImageCreateInfo();
       imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -1461,7 +1473,7 @@ public class TestVK implements WindowEvents {
       imageInfo.extent.width = width;
       imageInfo.extent.height = height;
       imageInfo.extent.depth = 1;
-      imageInfo.mipLevels = 1;
+      imageInfo.mipLevels = mipLevels;
       imageInfo.arrayLayers = 1;
       imageInfo.format = format;
       imageInfo.tiling = tiling;
@@ -1493,7 +1505,7 @@ public class TestVK implements WindowEvents {
       vk.vkBindImageMemory(device, image, imageMemory, 0);
     }
 
-    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, int mipLevels) {
       VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
       VkImageMemoryBarrier barrier = new VkImageMemoryBarrier();
@@ -1505,7 +1517,7 @@ public class TestVK implements WindowEvents {
       barrier.image = image;
       barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
       barrier.subresourceRange.baseMipLevel = 0;
-      barrier.subresourceRange.levelCount = 1;
+      barrier.subresourceRange.levelCount = mipLevels;
       barrier.subresourceRange.baseArrayLayer = 0;
       barrier.subresourceRange.layerCount = 1;
 
@@ -1567,8 +1579,8 @@ public class TestVK implements WindowEvents {
       depthImage = new VkImage();
       depthImageMemory = new VkDeviceMemory();
 
-      createImage(swapChainExtent.width, swapChainExtent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-      depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+      createImage(swapChainExtent.width, swapChainExtent.height, 1, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+      depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
     }
 
     VkFormat findSupportedFormat(VkFormat[] candidates, VkImageTiling tiling, int features) {
@@ -1600,6 +1612,93 @@ public class TestVK implements WindowEvents {
       return format.value == VK_FORMAT_D32_SFLOAT_S8_UINT || format.value == VK_FORMAT_D24_UNORM_S8_UINT;
     }
 
+    void generateMipmaps(VkImage image, VkFormat imageFormat, int texWidth, int texHeight, int mipLevels) {
+      // Check if image format supports linear blitting
+      VkFormatProperties formatProperties = new VkFormatProperties();
+      vk.vkGetPhysicalDeviceFormatProperties(physicalDevice, imageFormat, formatProperties);
+
+      if ((formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) == 0) {
+        JFLog.log("Texture image format does not support linear blitting!");
+        System.exit(1);
+      }
+
+      VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+      VkImageMemoryBarrier barrier = new VkImageMemoryBarrier();
+      barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      barrier.image = image;
+      barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+      barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      barrier.subresourceRange.baseArrayLayer = 0;
+      barrier.subresourceRange.layerCount = 1;
+      barrier.subresourceRange.levelCount = 1;
+
+      int mipWidth = texWidth;
+      int mipHeight = texHeight;
+
+      for (int i = 1; i < mipLevels; i++) {
+          barrier.subresourceRange.baseMipLevel = i - 1;
+          barrier.oldLayout = new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+          barrier.newLayout = new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+          barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+          barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+          vk.vkCmdPipelineBarrier(commandBuffer,
+              VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+              0, null,
+              0, null,
+              1, barrier);
+
+          VkImageBlit blit = new VkImageBlit();
+          blit.srcOffsets[0] = new VkOffset3D(0, 0, 0);
+          blit.srcOffsets[1] = new VkOffset3D(mipWidth, mipHeight, 1);
+          blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+          blit.srcSubresource.mipLevel = i - 1;
+          blit.srcSubresource.baseArrayLayer = 0;
+          blit.srcSubresource.layerCount = 1;
+          blit.dstOffsets[0] = new VkOffset3D(0, 0, 0);
+          blit.dstOffsets[1] = new VkOffset3D(mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 );
+          blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+          blit.dstSubresource.mipLevel = i;
+          blit.dstSubresource.baseArrayLayer = 0;
+          blit.dstSubresource.layerCount = 1;
+
+          vk.vkCmdBlitImage(commandBuffer,
+              image, new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL),
+              image, new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL),
+              1, blit,
+              new VkFilter(VK_FILTER_LINEAR));
+
+          barrier.oldLayout = new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+          barrier.newLayout = new VkImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+          barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+          barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+          vk.vkCmdPipelineBarrier(commandBuffer,
+              VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+              0, null,
+              0, null,
+              1, barrier);
+
+          if (mipWidth > 1) mipWidth /= 2;
+          if (mipHeight > 1) mipHeight /= 2;
+      }
+
+      barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+      barrier.oldLayout = new VkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+      barrier.newLayout = new VkImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+      barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+      vk.vkCmdPipelineBarrier(commandBuffer,
+          VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+          0, null,
+          0, null,
+          1, barrier);
+
+      endSingleTimeCommands(commandBuffer);
+    }
 
     void recreateSwapChain() {
       int[] w_h = window.getFramebufferSize();

@@ -273,6 +273,9 @@ public class VKFFM implements VK {
   private MethodHandle vkCmdBindIndexBuffer;
   public void vkCmdBindIndexBuffer(javaforce.vk.VkCommandBuffer a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkDeviceSize a3,int a4) { try { vkCmdBindIndexBuffer.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4); } catch (Throwable t) { JFLog.log(t); } }
 
+  private MethodHandle vkCmdBlitImage;
+  public void vkCmdBlitImage(javaforce.vk.VkCommandBuffer a1,javaforce.vk.VkImage a2,javaforce.vk.VkImageLayout a3,javaforce.vk.VkImage a4,javaforce.vk.VkImageLayout a5,int a6,javaforce.vk.VkImageBlit a7,javaforce.vk.VkFilter a8) { try { Arena arena = Arena.ofAuto(); vkCmdBlitImage.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4 == null ? 0 : a4.getValue(),a5 == null ? 0 : a5.getValue(),a6,(MemorySegment)(a7 == null ? MemorySegment.NULL : a7.marshall(arena)),a8 == null ? 0 : a8.getValue());if (a7!=null) a7.unmarshall(); } catch (Throwable t) { JFLog.log(t); } }
+
   private MethodHandle vkCmdCopyBuffer;
   public void vkCmdCopyBuffer(javaforce.vk.VkCommandBuffer a1,javaforce.vk.VkBuffer a2,javaforce.vk.VkBuffer a3,int a4,javaforce.vk.VkBufferCopy[] a5) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a5 = FFM.toMemory(arena, a5);vkCmdCopyBuffer.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3 == null ? 0 : a3.getValue(),a4,_array_a5);FFM.copyBack(_array_a5,a5); } catch (Throwable t) { JFLog.log(t); } }
 
@@ -399,6 +402,7 @@ public class VKFFM implements VK {
     vkUpdateDescriptorSets = ffm.getFunctionPtr("_vkUpdateDescriptorSets", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,ADDRESS));
     vkWaitForFences = ffm.getFunctionPtr("_vkWaitForFences", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_INT,JAVA_LONG));
     vkCmdBindIndexBuffer = ffm.getFunctionPtr("_vkCmdBindIndexBuffer", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_INT));
+    vkCmdBlitImage = ffm.getFunctionPtr("_vkCmdBlitImage", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS,JAVA_INT));
     vkCmdCopyBuffer = ffm.getFunctionPtr("_vkCmdCopyBuffer", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS));
     vkCmdCopyBufferToImage = ffm.getFunctionPtr("_vkCmdCopyBufferToImage", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_LONG,JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS));
     vkCmdDrawIndexed = ffm.getFunctionPtr("_vkCmdDrawIndexed", ffm.getFunctionDesciptorVoid(JAVA_LONG,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT,JAVA_INT));

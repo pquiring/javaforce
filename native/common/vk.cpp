@@ -114,6 +114,7 @@ JNIEXPORT void (*_vkCmdEndRenderPass)();
 JNIEXPORT void (*_vkCmdCopyBuffer)();
 JNIEXPORT void (*_vkCmdPipelineBarrier)();
 JNIEXPORT void (*_vkCmdCopyBufferToImage)();
+JNIEXPORT void (*_vkCmdBlitImage)();
 
 #ifdef __cplusplus
 }
@@ -220,6 +221,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkCmdCopyBuffer,"vkCmdCopyBuffer");
   vkGetFunction((void**)&_vkCmdPipelineBarrier,"vkCmdPipelineBarrier");
   vkGetFunction((void**)&_vkCmdCopyBufferToImage,"vkCmdCopyBufferToImage");
+  vkGetFunction((void**)&_vkCmdBlitImage,"vkCmdBlitImage");
 
   return JNI_TRUE;
 }
