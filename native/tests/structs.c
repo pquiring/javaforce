@@ -5,14 +5,6 @@
 #define getSize(x) \
   printf("sizeof(" #x ")=%d\n", sizeof(x));
 
-struct sTest {
-  int sType;
-  int64_t pNext;
-  int flags;
-};
-
-typedef struct sTest Test;
-
 int main() {
 
   getSize(VkApplicationInfo);
@@ -112,25 +104,4 @@ int main() {
   getSize(VkVertexInputBindingDescription);
   getSize(VkViewport);
   getSize(VkWriteDescriptorSet);
-
-//VkFenceCreateInfo
-  printf("VkFenceCreateInfo:size=%d\n", sizeof(VkFenceCreateInfo));
-  printf("offsetof(sType)=%d\n", offsetof(VkFenceCreateInfo, sType));
-  printf("offsetof(pNext)=%d\n", offsetof(VkFenceCreateInfo, pNext));
-  printf("offsetof(flags)=%d\n", offsetof(VkFenceCreateInfo, flags));
-  VkFenceCreateInfo info;
-  printf("sizeof(sType)=%d\n", sizeof(info.sType));
-  printf("sizeof(sType)=%d\n", sizeof(info.pNext));
-  printf("sizeof(sType)=%d\n", sizeof(info.flags));
-
-//Test
-  printf("Test:size=%d\n", sizeof(Test));
-  printf("offsetof(sType)=%d\n", offsetof(Test, sType));
-  printf("offsetof(pNext)=%d\n", offsetof(Test, pNext));
-  printf("offsetof(flags)=%d\n", offsetof(Test, flags));
-  Test test;
-  printf("sizeof(sType)=%d\n", sizeof(test.sType));
-  printf("sizeof(sType)=%d\n", sizeof(test.pNext));
-  printf("sizeof(sType)=%d\n", sizeof(test.flags));
-  return 0;
 }
