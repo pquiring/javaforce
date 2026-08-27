@@ -1834,58 +1834,6 @@ public class TestVK implements WindowEvents {
       }
     }
 
-    public Object3 makeWall(float x,float y,float z,int side,Object3 obj) {
-      //use counter clock wise triangles
-      float vp[];  //vertex coords (positions)
-      vp = new float[] {
-        (x     ) * 10.0f, (y     ) * 10.0f,  (z     ) * 10.0f,
-        (x+1.0f) * 10.0f, (y     ) * 10.0f,  (z     ) * 10.0f,
-        (x     ) * 10.0f, (y+1.0f) * 10.0f,  (z     ) * 10.0f,
-        (x+1.0f) * 10.0f, (y+1.0f) * 10.0f,  (z     ) * 10.0f,
-        (x     ) * 10.0f, (y     ) * 10.0f,  (z+1.0f) * 10.0f,
-        (x+1.0f) * 10.0f, (y     ) * 10.0f,  (z+1.0f) * 10.0f,
-        (x     ) * 10.0f, (y+1.0f) * 10.0f,  (z+1.0f) * 10.0f,
-        (x+1.0f) * 10.0f, (y+1.0f) * 10.0f,  (z+1.0f) * 10.0f
-      };
-      int off = obj.vpl.size() / 3;  //current vertex count
-      int pts[] = null;
-      float uv[] = new float[8 * 2];
-      switch (side) {
-        case 1:  //top
-          pts = new int[] {2,6,7,3};
-          break;
-        case 2:  //bottom
-          pts = new int[] {5,4,0,1};
-          break;
-        case 3:  //left
-          pts = new int[] {2,0,4,6};
-          break;
-        case 4:  //right
-          pts = new int[] {7,5,1,3};
-          break;
-        case 5:  //front
-          pts = new int[] {6,4,5,7};
-          break;
-        case 6:  //back
-          pts = new int[] {3,1,0,2};
-          break;
-      }
-      float u = 0.0f;
-      float v = 0.0f;
-      for(int a=0;a<4;a++) {
-        uv[pts[a] * 2 + 0] = u;
-        uv[pts[a] * 2 + 1] = v;
-        if (u == 0.0f && v == 0.0f) v = 1.0f;
-        else if (u == 0.0f && v == 1.0f) u = 1.0f;
-        else if (u == 1.0f && v == 1.0f) v = 0.0f;
-  //      else if (tx == 0.0f && ty == 0.0f) tx = 0.0f;  //not needed - end of loop
-      }
-      obj.addVertex(vp, uv);
-      obj.addPoly(new int[] {off + pts[0], off + pts[1], off + pts[2]});
-      obj.addPoly(new int[] {off + pts[0], off + pts[2], off + pts[3]});
-      return obj;
-    }
-
     public void cleanup() {
       if (debug) JFLog.log("cleanup");
       vk.vkQueueWaitIdle(graphicsQueue);
