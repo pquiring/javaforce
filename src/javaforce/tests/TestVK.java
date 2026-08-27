@@ -21,7 +21,7 @@ import static javaforce.vk.VK.*;
  */
 
 public class TestVK implements WindowEvents {
-  public static boolean debug = true;
+  public static boolean debug = false;
   public static boolean debug_mem = false;
   public static boolean debug_ext = false;
 
@@ -233,21 +233,36 @@ public class TestVK implements WindowEvents {
     boolean doSwap = false;
 
     Vertex[] vertices = new Vertex[] {
-      new Vertex(new float[] {-0.5f, -0.5f,  0.0f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
-      new Vertex(new float[] { 0.5f, -0.5f,  0.0f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,0.0f}),
-      new Vertex(new float[] { 0.5f,  0.5f,  0.0f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
-      new Vertex(new float[] {-0.5f,  0.5f,  0.0f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] {-0.5f, -0.5f,  0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f,  0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f,  0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f,  0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {0.0f,0.0f}),
 
-      new Vertex(new float[] {-0.5f, -0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {0.0f,1.0f}),
-      new Vertex(new float[] { 0.5f, -0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,0.0f}),
-      new Vertex(new float[] { 0.5f,  0.5f, -0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {1.0f,0.0f}),
-      new Vertex(new float[] {-0.5f,  0.5f, -0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] {-0.5f, -0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f, -0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {0.0f,0.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f, -0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,0.0f}),
+
+      new Vertex(new float[] {-0.5f,  0.5f,  0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f,  0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f,  0.5f, -0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {0.0f,0.0f}),
+      new Vertex(new float[] {-0.5f,  0.5f, -0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,0.0f}),
+
+      new Vertex(new float[] {-0.5f, -0.5f, -0.5f}, new float[] {1.0f, 0.0f, 0.0f}, new float[] {1.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f, -0.5f}, new float[] {0.0f, 1.0f, 0.0f}, new float[] {0.0f,1.0f}),
+      new Vertex(new float[] { 0.5f, -0.5f,  0.5f}, new float[] {0.0f, 0.0f, 1.0f}, new float[] {0.0f,0.0f}),
+      new Vertex(new float[] {-0.5f, -0.5f,  0.5f}, new float[] {1.0f, 1.0f, 1.0f}, new float[] {1.0f,0.0f}),
     };
 
     //sets of triangles (3)
     int[] indices = new int[] {
-      0, 1, 2, 2, 3, 0,
-      4, 5, 6, 6, 7, 4,
+      5, 4, 7, 7, 6, 5,  //N : north
+      1, 5, 6, 6, 2, 1,  //E : east
+      0, 1, 2, 2, 3, 0,  //S : south
+      4, 0, 3, 3, 7, 4,  //W : west
+      //A,B need special UV coords
+      8, 9,10,10,11, 8,  //A : above
+     12,13,14,14,15,12,  //B : below
     };
 
     public static class UniformBufferObject {
@@ -939,7 +954,7 @@ public class TestVK implements WindowEvents {
       rasterizer.polygonMode = new VkPolygonMode(VK_POLYGON_MODE_FILL);
       rasterizer.lineWidth = 1.0f;
       rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-      rasterizer.frontFace = new VkFrontFace(VK_FRONT_FACE_CLOCKWISE);
+      rasterizer.frontFace = new VkFrontFace(VK_FRONT_FACE_COUNTER_CLOCKWISE);
       rasterizer.depthBiasEnable = VK_FALSE;
 
       VkPipelineMultisampleStateCreateInfo multisampling = new VkPipelineMultisampleStateCreateInfo();
@@ -1947,17 +1962,15 @@ public class TestVK implements WindowEvents {
       vk.vkDestroySwapchainKHR(device, swapChain, null);
     }
 
-    float angle = 1.0f;
     UniformBufferObject ubo = new UniformBufferObject();
 
     void updateUniformBuffer() {
-      //angle += 1.0f;
-      if (angle > 90.0f) angle = 1.0f;
-      if (debug) JFLog.log("angle=" + angle);
       float ratio = ((float)swapChainExtent.width) / ((float)swapChainExtent.height);
       if (debug) JFLog.log("ratio=" + ratio);
 
-      ubo.model.addRotate(angle, 0,0,1);
+      ubo.model.addRotate(3f, 1,0,0);
+      ubo.model.addRotate(2f, 0,1,0);
+      ubo.model.addRotate(1f, 0,0,1);
       //void lookAt(Vector3 eye, Vector3 at, Vector3 up)
       ubo.view.lookAt(new Vector3(0,0,-3), new Vector3(0,0,0), new Vector3(0,1,0));
       //void perspective(float fovyInDegrees, float aspectRatio, float znear, float zfar)
