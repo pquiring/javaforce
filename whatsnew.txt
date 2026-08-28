@@ -1,5 +1,12 @@
 What's new...
 
+Aug 28/2026 : JF/117.0
+  - new : more Vulkan support (Vulkan tutorial completed)
+  - fix : WebUIServer : createServlet() only uses zero arg ctor
+  - new : jfAdmin/0.3
+  - new : jfSocks/0.18
+    - split app into server/client packages
+
 Aug 20/2026 : JF/116.0
   - new : added Vulkan support
     - see javaforce.vk.*

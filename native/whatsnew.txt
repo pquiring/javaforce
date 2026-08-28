@@ -1,5 +1,8 @@
 what's new in native API (since 113.0)
 
+117.0
+  - more Vulkan support
+
 116.0
   - added Vulkan support
 
