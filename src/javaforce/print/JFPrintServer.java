@@ -35,7 +35,7 @@ public class JFPrintServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
-  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfprint/docs/help.html";}
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfprint-server/docs/help.html";}
 
   public String getKeyFilename() {return null;}
 

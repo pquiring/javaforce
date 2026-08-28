@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfprint.ico" />
+    <Icon Id="icon.ico" SourceFile="jfprint-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{1338D0E9-872B-4806-B9CF-D2FBD013E95B}" Bitness="always64">
-        <File Id="jfprint.exe" Source="jfprint.exe" KeyPath="yes">
+        <File Id="jfprint_server.exe" Source="jfprint-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule" Name="jfPrintServer" Protocol="tcp" Port="33202" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
@@ -42,7 +42,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{32A51DD3-EF00-43F9-81A7-31E8D3BCCA2F}">
-        <File Id="jfprint.cfg" Source="jfprint.cfg" />
+        <File Id="jfprint_server.cfg" Source="jfprint-server.cfg" />
       </Component>
     </DirectoryRef>
 
