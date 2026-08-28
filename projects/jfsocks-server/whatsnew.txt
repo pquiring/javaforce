@@ -1,5 +1,8 @@
 Whats new ???
 
+Aug 28, 2026 : 0.18
+  - new : apps split into server/client packages
+
 May 3, 2024 : 0.17
   - fix : KeyMgr issues
 
