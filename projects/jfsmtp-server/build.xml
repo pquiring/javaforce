@@ -1,6 +1,6 @@
-<project name="jfsmtp" basedir=".">
+<project name="jfsmtp-server" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jfsmtp"/>
+  <property name="app" value="jfsmtp-server"/>
   <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
   <property name="version" value="0.1"/>

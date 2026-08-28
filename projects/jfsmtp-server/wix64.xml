@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfsmtp.ico" />
+    <Icon Id="icon.ico" SourceFile="jfsmtp-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{5F416CC0-CD6E-41F6-B049-DF5F47F156D2}" Bitness="always64">
-        <File Id="jfsmtp.exe" Source="jfsmtp.exe" KeyPath="yes">
+        <File Id="jfsmtp_server.exe" Source="jfsmtp-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule110" Name="jfSMTPServer" Protocol="tcp" Port="110" Scope="any" IgnoreFailure="yes" Profile="all" />
           <fire:FirewallException Id="FirewallRule995" Name="jfSMTPServer" Protocol="tcp" Port="995" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
@@ -43,7 +43,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{2CEFCE68-0C72-4B89-BDF2-D7A3EFEEE6B7}">
-        <File Id="jfsmtp.cfg" Source="jfsmtp.cfg" />
+        <File Id="jfsmtp_server.cfg" Source="jfsmtp-server.cfg" />
       </Component>
     </DirectoryRef>
 

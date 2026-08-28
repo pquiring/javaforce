@@ -32,7 +32,7 @@ public class SMTPServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
-  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfsmtp/docs/help.html";}
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfsmtp-server/docs/help.html";}
 
   public String getKeyFilename() {return getKeyFile();}
 

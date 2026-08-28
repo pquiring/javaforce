@@ -1,3 +1,0 @@
-/usr/bin/jfsmtp
-/lib/systemd/system/jfsmtp.service
-/etc/javaforce/admin/jfsmtp.cfg
