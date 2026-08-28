@@ -105,7 +105,7 @@ jstringArray cameraListDevices(jlong ctxptr)
   jstringArray strs = ffm->newStringArray(cnt);
   for(int a=0;a<cnt;a++) {
     AVCaptureDevice *device = [ctx->devices objectAtIndex:a];
-    const char* name = [[device localizedName] UTF8String]);
+    const char* name = [[device localizedName] UTF8String];
     char* str = (char*)malloc(strlen(name) + 1);
     strcpy(str, name);
     ffm->setString(a, str);
