@@ -1,2 +1,3 @@
 /usr/bin/jfpop3
 /lib/systemd/system/jfpop3.service
+/etc/javaforce/admin/jfpop3.cfg

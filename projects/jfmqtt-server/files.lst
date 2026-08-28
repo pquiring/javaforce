@@ -1,2 +1,3 @@
 /usr/bin/jfmqtt-server
 /lib/systemd/system/jfmqtt-server.service
+/etc/javaforce/admin/jfmqtt-server.cfg

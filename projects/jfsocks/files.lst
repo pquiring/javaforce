@@ -2,3 +2,4 @@
 /usr/bin/jfsocks-client
 /lib/systemd/system/jfsocks.service
 /usr/share/java/jfsocks-client.jar
+/etc/javaforce/admin/jfsocks.cfg

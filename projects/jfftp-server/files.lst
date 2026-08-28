@@ -1,2 +1,3 @@
 /usr/bin/jfftp-server
 /lib/systemd/system/jfftp-server.service
+/etc/javaforce/admin/jfftp-server.cfg

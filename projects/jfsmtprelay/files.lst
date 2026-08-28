@@ -1,2 +1,3 @@
 /usr/bin/jfsmtprelay
 /lib/systemd/system/jfsmtprelay.service
+/etc/javaforce/admin/jfsmtprelay.cfg
