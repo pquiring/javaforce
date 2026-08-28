@@ -1,11 +1,10 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/AppKit.h>
 #include <AVFoundation/AVFoundation.h>
+#include <OpenGL/gl.h>
 
 #include <dlfcn.h>
 #include <stdlib.h>
-
-#include <GL/gl.h>
 
 #include <jni.h>
 #include <jawt.h>
