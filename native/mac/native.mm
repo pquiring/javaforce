@@ -5,12 +5,14 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 
-//#include <GL/gl.h>
+#include <GL/gl.h>
 
 #include <jni.h>
 #include <jawt.h>
 #include <jawt_md.h>
 
+#include "../common/string.h"
+#include "../common/array.h"
 #include "../common/library.h"
 
 #ifdef __GNUC__
