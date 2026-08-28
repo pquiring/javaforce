@@ -10,6 +10,8 @@ import javaforce.*;
  *
  * Provides functions to marshall and unmarshall a C-type struct into a MemorySegment.
  *
+ * Any class that is derived from this class will be passed to native FFM methods as a c-style struct.
+ *
  * @author pquiring
  */
 
@@ -18,10 +20,10 @@ public class FFMStruct {
   public static boolean debug = false;
   public static boolean debug_struct = false;
 
-  public static final int FLAG_INLINE = 0x0001;
-  public static final int FLAG_PTR_PTRARRAY = 0x0002;
+  private static final int FLAG_INLINE = 0x0001;
+  private static final int FLAG_PTR_PTRARRAY = 0x0002;
 
-  public static class FFMField {
+  private static class FFMField {
     public int index;
     public int offset;
     public String name;
@@ -50,13 +52,17 @@ public class FFMStruct {
     }
   }
 
-  public FFMField[] fields;
+  private FFMField[] fields;
 
   private int size = -1;
   private MemorySegment struct;
   protected boolean union;
-  public MemorySegment src, dst;
+  private MemorySegment src, dst;
 
+  /** Creates a c-style union.
+   *
+   * Any class that is derived from this class will be passed to native FFM methods as a c-style union.
+   */
   public static class Union extends FFMStruct {
     public Union() {
       union = true;
@@ -276,6 +282,7 @@ public class FFMStruct {
     return struct;
   }
 
+  /** Marshalls this struct into a MemorySegment. */
   public MemorySegment marshall(Arena arena) {
     if (size == -1) {
       init();
@@ -448,6 +455,7 @@ public class FFMStruct {
     return struct;
   }
 
+  /** Unmarshalls this struct from previous marshall() call. */
   public void unmarshall() {
     if (debug) JFLog.log("FFMStruct.unmarshall() " + getClass().getName() + "@" + struct);
     if (fields == null) {
