@@ -226,6 +226,11 @@ public class TestVK implements WindowEvents {
     VkDeviceMemory colorImageMemory;
     VkImageView colorImageView;
 
+    VkDescriptorSetLayout computeDescriptorSetLayout;
+    VkPipelineLayout computePipelineLayout;
+    VkPipeline computePipeline;
+    VkCommandBuffer[] computeCommandBuffers;
+
     int mipLevels;
     int msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -1763,6 +1768,56 @@ public class TestVK implements WindowEvents {
       colorImageMemory = new VkDeviceMemory();
       createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
       colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+    }
+
+    void createComputePipeline() {
+      byte[] computeShaderCode = JF.readResource("/javaforce/vk/glsl/testvk-compute.spv");
+
+      VkShaderModule computeShaderModule = createShaderModule(computeShaderCode);
+
+      VkPipelineShaderStageCreateInfo computeShaderStageInfo = new VkPipelineShaderStageCreateInfo();
+      computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+      computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+      computeShaderStageInfo.module = computeShaderModule;
+      computeShaderStageInfo.ptr_pName = "main";
+
+      VkPipelineLayoutCreateInfo pipelineLayoutInfo = new VkPipelineLayoutCreateInfo();
+      pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+      pipelineLayoutInfo.setLayoutCount = 1;
+      pipelineLayoutInfo.ptr_pSetLayouts = new VkDescriptorSetLayout[] {computeDescriptorSetLayout};
+
+      if (vk.vkCreatePipelineLayout(device, pipelineLayoutInfo, null, new VkPipelineLayout[] {computePipelineLayout}) != VK_SUCCESS) {
+        JFLog.log("Failed to create compute pipeline layout!");
+        System.exit(1);
+      }
+
+      VkComputePipelineCreateInfo pipelineInfo = new VkComputePipelineCreateInfo();
+      pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+      pipelineInfo.layout = computePipelineLayout;
+      pipelineInfo.stage = computeShaderStageInfo;
+
+      computePipeline = new VkPipeline();
+      if (vk.vkCreateComputePipelines(device, null, 1, pipelineInfo, null, new VkPipeline[] {computePipeline}) != VK_SUCCESS) {
+        JFLog.log("failed to create compute pipeline!");
+        System.exit(1);
+      }
+
+      vk.vkDestroyShaderModule(device, computeShaderModule, null);
+    }
+
+    void createComputeCommandBuffers() {
+      computeCommandBuffers = new VkCommandBuffer[max_frames];
+
+      VkCommandBufferAllocateInfo allocInfo = new VkCommandBufferAllocateInfo();
+      allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+      allocInfo.commandPool = commandPool;
+      allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+      allocInfo.commandBufferCount = computeCommandBuffers.length;
+
+      if (vk.vkAllocateCommandBuffers(device, allocInfo, computeCommandBuffers) != VK_SUCCESS) {
+        JFLog.log("Failed to allocate compute command buffers!");
+        System.exit(1);
+      }
     }
 
     void recreateSwapChain() {

@@ -30,6 +30,7 @@ JNIEXPORT void (*_vkCreateGraphicsPipelines)();
 JNIEXPORT void (*_vkCreateBuffer)();
 JNIEXPORT void (*_vkCreateDescriptorPool)();
 JNIEXPORT void (*_vkCreateSampler)();
+JNIEXPORT void (*_vkCreateComputePipelines)();
 
 JNIEXPORT void (*_vkDestroyDevice)();
 JNIEXPORT void (*_vkDestroyFence)();
@@ -137,6 +138,7 @@ jboolean VK_get_functions()
   vkGetFunction((void**)&_vkCreateFence,"vkCreateFence");
   vkGetFunction((void**)&_vkCreateDescriptorPool,"vkCreateDescriptorPool");
   vkGetFunction((void**)&_vkCreateSampler,"vkCreateSampler");
+  vkGetFunction((void**)&_vkCreateComputePipelines,"vkCreateComputePipelines");
 
   vkGetFunction((void**)&_vkDestroyDevice,"vkDestroyDevice");
   vkGetFunction((void**)&_vkDestroyFence,"vkDestroyFence");

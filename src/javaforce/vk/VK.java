@@ -4669,6 +4669,7 @@ public interface VK {
   public int vkCreateBuffer(VkDevice device, VkBufferCreateInfo createInfo, VkAllocationCallbacks callbacks, VkBuffer[] buffer);
   public int vkCreateDescriptorPool(VkDevice device, VkDescriptorPoolCreateInfo createInfo, VkAllocationCallbacks callbacks, VkDescriptorPool[] pool);
   public int vkCreateSampler(VkDevice device, VkSamplerCreateInfo pCreateInfo, VkAllocationCallbacks pAllocator, VkSampler[] pSampler);
+  public int vkCreateComputePipelines(VkDevice device, VkPipelineCache pipelineCache, int createInfoCount, VkComputePipelineCreateInfo pCreateInfos, VkAllocationCallbacks pAllocator, VkPipeline[] pPipelines);
 
   public int vkDestroyDevice(VkDevice device, VkAllocationCallbacks callbacks);
   public int vkDestroyFence(VkDevice device, VkFence fence, VkAllocationCallbacks callbacks);

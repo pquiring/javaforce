@@ -84,6 +84,9 @@ public class VKFFM implements VK {
   private MethodHandle vkCreateCommandPool;
   public int vkCreateCommandPool(javaforce.vk.VkDevice a1,javaforce.vk.VkCommandPoolCreateInfo a2,javaforce.vk.VkAllocationCallbacks a3,javaforce.vk.VkCommandPool[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkCreateCommandPool.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)),a3 == null ? 0 : a3.getValue(),_array_a4);FFM.copyBack(_array_a4,a4);if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle vkCreateComputePipelines;
+  public int vkCreateComputePipelines(javaforce.vk.VkDevice a1,javaforce.vk.VkPipelineCache a2,int a3,javaforce.vk.VkComputePipelineCreateInfo a4,javaforce.vk.VkAllocationCallbacks a5,javaforce.vk.VkPipeline[] a6) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a6 = FFM.toMemory(arena, a6);int _ret_value_ = (int)vkCreateComputePipelines.invokeExact(a1 == null ? 0 : a1.getValue(),a2 == null ? 0 : a2.getValue(),a3,(MemorySegment)(a4 == null ? MemorySegment.NULL : a4.marshall(arena)),a5 == null ? 0 : a5.getValue(),_array_a6);FFM.copyBack(_array_a6,a6);if (a4!=null) a4.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle vkCreateDescriptorPool;
   public int vkCreateDescriptorPool(javaforce.vk.VkDevice a1,javaforce.vk.VkDescriptorPoolCreateInfo a2,javaforce.vk.VkAllocationCallbacks a3,javaforce.vk.VkDescriptorPool[] a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a4 = FFM.toMemory(arena, a4);int _ret_value_ = (int)vkCreateDescriptorPool.invokeExact(a1 == null ? 0 : a1.getValue(),(MemorySegment)(a2 == null ? MemorySegment.NULL : a2.marshall(arena)),a3 == null ? 0 : a3.getValue(),_array_a4);FFM.copyBack(_array_a4,a4);if (a2!=null) a2.unmarshall();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
@@ -339,6 +342,7 @@ public class VKFFM implements VK {
     vkCmdSetViewport = ffm.getFunctionPtr("_vkCmdSetViewport", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_INT,JAVA_INT,ADDRESS));
     vkCreateBuffer = ffm.getFunctionPtr("_vkCreateBuffer", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateCommandPool = ffm.getFunctionPtr("_vkCreateCommandPool", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
+    vkCreateComputePipelines = ffm.getFunctionPtr("_vkCreateComputePipelines", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,JAVA_LONG,JAVA_INT,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateDescriptorPool = ffm.getFunctionPtr("_vkCreateDescriptorPool", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateDescriptorSetLayout = ffm.getFunctionPtr("_vkCreateDescriptorSetLayout", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
     vkCreateDevice = ffm.getFunctionPtr("_vkCreateDevice", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_LONG,ADDRESS));
