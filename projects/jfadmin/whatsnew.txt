@@ -1,3 +1,6 @@
+2026-08-28 : 0.3
+  - new : added log file
+
 2026-06-29 : 0.2
   - new : changes to WebUIServlet API
     - not compatible with older versions

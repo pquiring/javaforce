@@ -18,7 +18,7 @@ import javaforce.webui.panel.*;
 import javaforce.webui.tasks.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.2";
+  public static String version = "0.3";
   public static String appname = "jfAdmin";
   public static boolean debug = false;
   public static boolean debug_api = false;
@@ -28,6 +28,8 @@ public class ConfigService implements WebUIHandler {
   private KeyMgmt keys;
 
   public void start() {
+    JFLog.append(getLogFile(), false);
+    JFLog.setRetention(30);
     initSecureWebKeys();
     server = new WebUIServer();
     server.start(this, 443, keys);
@@ -70,6 +72,10 @@ public class ConfigService implements WebUIHandler {
       //generate random keys
       keys = KeyMgmt.create(keyfile, password, "webserver", params, password);
     }
+  }
+
+  public String getLogFile() {
+    return JF.getLogPath() + "/jfadmin.log";
   }
 
   /** This class holds UI elements to be passed down to sub-panels. */
