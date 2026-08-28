@@ -11,6 +11,8 @@ struct FFMCamContext;  //forward decl
   fromConnection:(AVCaptureConnection *)connection;
 @end
 
+#define FRAME_BUFFER_SIZE 2
+
 struct FFMCamContext {
   NSArray *devices;
   AVCaptureDevice *device;
@@ -66,20 +68,20 @@ struct FFMCamContext {
 }
 @end
 
-FFMCamContext* createFFMCamContext(JNIEnv *e, jobject c) {
+FFMCamContext* createFFMCamContext() {
   FFMCamContext *ctx;
   ctx = FFMCamContext::New();
   return ctx;
 }
 
-void deleteFFMCamContext(JNIEnv *e, jobject c, FFMCamContext *ctx) {
+void deleteFFMCamContext(FFMCamContext *ctx) {
   if (ctx == NULL) return;
   ctx->Delete();
 }
 
 jlong cameraInit()
 {
-  FFMCamContext *ctx = createFFMCamContext(e,c);
+  FFMCamContext *ctx = createFFMCamContext();
   if (ctx == NULL) return 0;
   return (jlong)ctx;
 }
@@ -88,7 +90,7 @@ jboolean cameraUninit(jlong ctxptr)
 {
   FFMCamContext *ctx = (FFMCamContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
-  deleteFFMCamContext(e,c,ctx);
+  deleteFFMCamContext(ctx);
   return JNI_TRUE;
 }
 
