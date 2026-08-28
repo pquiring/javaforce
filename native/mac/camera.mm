@@ -102,10 +102,10 @@ jstringArray cameraListDevices(jlong ctxptr)
     arrayByAddingObjectsFromArray:[AVCaptureDevice devicesWithMediaType:AVMediaTypeMuxed]];
   int cnt = [ctx->devices count];
 
-  jstringArray strs = ffm->newStringArray(ctx->cameraDeviceCount);
+  jstringArray strs = ffm->newStringArray(cnt);
   for(int a=0;a<cnt;a++) {
     AVCaptureDevice *device = [ctx->devices objectAtIndex:a];
-    char* name = [[device localizedName] UTF8String]);
+    const char* name = [[device localizedName] UTF8String]);
     char* str = (char*)malloc(strlen(name) + 1);
     strcpy(str, name);
     ffm->setString(a, str);
@@ -218,8 +218,7 @@ jint* cameraGetFrame(jlong ctxptr)
   if (px == NULL) return NULL;
 
   jint *jfpx = ffm->newIntArray(size);
-  jint *pxptr = jfpx->getBufferInt();
-  memcpy(pxptr, px, size * 4);
+  memcpy(jfpx, px, size * 4);
 
   return jfpx;
 }
