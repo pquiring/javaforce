@@ -1,11 +1,11 @@
-<project name="jfsocks-service" default="jar" basedir=".">
+<project name="jfsocks-server" default="jar" basedir=".">
   <description>SOCKS Server</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfsocks"/>
+  <property name="app" value="jfsocks-server"/>
   <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.17"/>
-  <property name="jre" location="${home}/jre_base_desktop"/>
+  <property name="jre" location="${home}/jre_base"/>
 
   <import file="${home}/base.xml"/>
 

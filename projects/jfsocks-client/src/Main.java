@@ -24,10 +24,10 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     initComponents();
     JFAWT.centerWindow(this);
     JFImage appicon = new JFImage();
-    appicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks.png"));
+    appicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks-client.png"));
     setIconImage(appicon.getImage());
     trayicon = new JFImage();
-    trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks_tray.png"));
+    trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks-tray.png"));
     addTrayIcon();
     try {
       loadConfig();

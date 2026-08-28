@@ -1,0 +1,3 @@
+/usr/bin/jfsocks-server
+/lib/systemd/system/jfsocks-server.service
+/etc/javaforce/admin/jfsocks-server.cfg
