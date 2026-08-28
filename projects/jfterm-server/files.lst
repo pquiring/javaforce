@@ -1,0 +1,3 @@
+/usr/bin/jfterm-server
+/usr/share/java/jfterm-server.jar
+/lib/systemd/system/jfterm-server.service

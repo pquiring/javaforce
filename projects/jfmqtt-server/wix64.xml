@@ -9,7 +9,7 @@
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfmqttserver" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfmqtt-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">

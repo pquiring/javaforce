@@ -1,7 +1,7 @@
-<project name="jftermserver" default="jar" basedir=".">
+<project name="jfterm-server" default="jar" basedir=".">
   <description>kvm</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jftermserver"/>
+  <property name="app" value="jfterm-server"/>
   <property name="apptype" value="service"/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>

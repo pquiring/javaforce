@@ -2,8 +2,8 @@
 Description=jfTermServer
 
 [Service]
-ExecStart=/usr/bin/jftermserver
-ExecStop=/usr/bin/jftermserver --stop
+ExecStart=/usr/bin/jfterm-server
+ExecStop=/usr/bin/jfterm-server --stop
 Restart=always
 
 [Install]

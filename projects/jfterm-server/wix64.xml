@@ -5,12 +5,12 @@
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
     <SetProperty Id="URL" Value="http://localhost" Sequence="execute" Before="CreateShortcuts" />
-    <Icon Id="icon.ico" SourceFile="jftermserver.ico" />
+    <Icon Id="icon.ico" SourceFile="jfterm-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfTermServer" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfterm-server" />
     </StandardDirectory>
     <StandardDirectory Id="ProgramMenuFolder">
     </StandardDirectory>
@@ -18,11 +18,11 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{CC788494-43AC-4BDD-AF96-5F7EB433A2EF}" Bitness="always64">
-        <File Id="jftermserver.exe" Source="jftermserver.exe" KeyPath="yes">
+        <File Id="jfterm_server.exe" Source="jfterm-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule80" Name="jfTermServer80" Protocol="tcp" Port="80" Scope="any" IgnoreFailure="yes" Profile="all" />
           <fire:FirewallException Id="FirewallRule443" Name="jfTermServer443" Protocol="tcp" Port="443" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
-        <File Id="jftermserver.jar" Source="jftermserver.jar" />
+        <File Id="jfterm_server.jar" Source="jfterm-server.jar" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfTermServer" DisplayName="jfTermServer" Description="jfTermServer" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfTermServer" Wait="yes" />

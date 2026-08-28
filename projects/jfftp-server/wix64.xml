@@ -9,7 +9,7 @@
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftpserver" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftp-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{5F416CC0-CD6E-41F6-B049-DF5F47F156D2}" Bitness="always64">
-        <File Id="jfftpserver.exe" Source="jfftp-server.exe" KeyPath="yes">
+        <File Id="jfftp_server.exe" Source="jfftp-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule21" Name="jfFTPServer" Protocol="tcp" Port="21" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />

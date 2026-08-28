@@ -9,7 +9,7 @@
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfproxyserver" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfproxy-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
