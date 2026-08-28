@@ -1,20 +1,20 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-  <Package UpgradeCode="{C424F2E5-71CA-4E27-A592-5AE371E15345}" Version="0.3" Language="1033" Name="jfSMTPRelay" Manufacturer="Peter Quiring" InstallerVersion="300">
+  <Package UpgradeCode="{C424F2E5-71CA-4E27-A592-5AE371E15345}" Version="0.3" Language="1033" Name="jfSMTPRelay Server" Manufacturer="Peter Quiring" InstallerVersion="300">
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfsmtprelay.ico" />
+    <Icon Id="icon.ico" SourceFile="jfsmtprelay-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfsmtprelay" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfsmtprelay-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfSMTPRelay"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfSMTPRelayServer"/> -->
     </StandardDirectory>
 
     <StandardDirectory Id="CommonAppDataFolder">
@@ -26,11 +26,11 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{A2C7F3E6-B48A-4A81-BA65-9D3050F214F5}" Bitness="always64">
-        <File Id="jfsmtprelay.exe" Source="jfsmtprelay.exe" KeyPath="yes">
+        <File Id="jfsmtprelay_server.exe" Source="jfsmtprelay-server.exe" KeyPath="yes">
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
-        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfSMTPRelay" DisplayName="jfSMTPRelay" Description="jf SMTPRelay Server" Start="auto" ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSMTPRelay" Wait="yes" />
+        <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfSMTPRelayServer" DisplayName="jfSMTPRelayServer" Description="jf SMTPRelay Server" Start="auto" ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSMTPRelayServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
@@ -41,7 +41,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{F3D3E0C9-251D-49C6-8F29-0406BB4FF76C}">
-        <File Id="jfsmtprelay.cfg" Source="jfsmtprelay.cfg" />
+        <File Id="jfsmtprelay_server.cfg" Source="jfsmtprelay-server.cfg" />
       </Component>
     </DirectoryRef>
 

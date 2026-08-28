@@ -3,8 +3,8 @@ Description=JavaForce SMTP Relay Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfsmtprelay
-ExecStop=/usr/bin/jfsmtprelay --stop
+ExecStart=/usr/bin/jfsmtprelay-server
+ExecStop=/usr/bin/jfsmtprelay-server --stop
 Restart=always
 
 [Install]

@@ -1,6 +1,6 @@
-<project name="jfsmtprelay" basedir=".">
+<project name="jfsmtprelay-server" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jfsmtprelay"/>
+  <property name="app" value="jfsmtprelay-server"/>
   <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
   <property name="version" value="0.3"/>
