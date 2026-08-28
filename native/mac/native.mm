@@ -12,8 +12,6 @@
 #include <jawt_md.h>
 
 #include "../common/library.h"
-#include "../common/
-h"
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"

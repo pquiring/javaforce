@@ -34,6 +34,8 @@
 #endif
 
 #include <jni.h>
+#include <jawt.h>
+#include <jawt_md.h>
 
 /* Global variables */
 int type;
