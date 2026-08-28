@@ -54,7 +54,9 @@ char link2[MAX_PATH];
 char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
+char xoptions[MAX_PATH];
 char cfgargs[1024];
+bool graal = false;
 char app_path[MAX_PATH];
 char app_name[MAX_PATH];
 bool debug = false;
@@ -76,8 +78,8 @@ void error(char *msg) {
 jobjectArray
 ConvertStringArray(JNIEnv *env, char **strv, int strc)
 {
-  jarray cls;
-  jarray outArray;
+  jclass cls;
+  jobjectArray outArray;
   jstring str;
   int i;
   int cfgargscnt = 0;
@@ -87,17 +89,17 @@ ConvertStringArray(JNIEnv *env, char **strv, int strc)
     cfgargscnt++;
   }
 
-  cls = env->FindClass(env, "java/lang/String");
-  outArray = env->NewObjectArray(env, strc + cfgargscnt, cls, 0);
+  cls = env->FindClass("java/lang/String");
+  outArray = env->NewObjectArray(strc + cfgargscnt, cls, 0);
   for (i = 0; i < cfgargscnt; i++) {
-    str = env->NewStringUTF(env, cfgargs);
-    env->SetObjectArrayElement(env, outArray, p++, str);
-    env->DeleteLocalRef(env, str);
+    str = env->NewStringUTF(cfgargs);
+    env->SetObjectArrayElement(outArray, p++, str);
+    env->DeleteLocalRef(str);
   }
   for (i = 0; i < strc; i++) {
-    str = env->NewStringUTF(env, *strv++);
-    env->SetObjectArrayElement(env, outArray, p++, str);
-    env->DeleteLocalRef(env, str);
+    str = env->NewStringUTF(*strv++);
+    env->SetObjectArrayElement(outArray, p++, str);
+    env->DeleteLocalRef(str);
   }
   return outArray;
 }
@@ -107,14 +109,14 @@ ConvertStringArray(JNIEnv *env, char **strv, int strc)
  */
 jobjectArray
 ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
-  jarray cls;
+  jclass cls;
   jmethodID mid;
-  jarray outArray;
+  jobjectArray outArray;
 
-  cls = env->FindClass(env, "javaforce/JF");
-  mid = env->GetStaticMethodID(env, cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
-  outArray = env->CallStaticObjectMethod(env, cls, mid, inArray);
-  env->DeleteLocalRef(env, inArray);
+  cls = env->FindClass("javaforce/JF");
+  mid = env->GetStaticMethodID(cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
+  outArray = (jobjectArray)env->CallStaticObjectMethod(cls, mid, inArray);
+  env->DeleteLocalRef(inArray);
   return outArray;
 }
 
@@ -137,11 +139,11 @@ char *CreateClassPath() {
 
 void printException(JNIEnv *env) {
   jthrowable exc;
-  exc = env->ExceptionOccurred(env);
+  exc = env->ExceptionOccurred();
   if (exc == NULL) return;
   jclass newExcCls;
-  env->ExceptionDescribe(env);
-  env->ExceptionClear(env);
+  env->ExceptionDescribe();
+  env->ExceptionClear();
 }
 
 JavaVMInitArgs *BuildArgs() {
@@ -224,13 +226,13 @@ int JavaThread(void *ignore) {
     return -1;
   }
 
-  jclass cls = env->FindClass(env, mainclass);
+  jclass cls = env->FindClass(mainclass);
   if (cls == NULL) {
     printException(env);
     error("Unable to find main class");
     return -1;
   }
-  jmethodID mid = env->GetStaticMethodID(env, cls, method, "([Ljava/lang/String;)V");
+  jmethodID mid = env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
   if (mid == NULL) {
     error("Unable to find main method");
     return -1;
@@ -240,8 +242,8 @@ int JavaThread(void *ignore) {
   //skip argv[0]
   argv++;
   argc--;
-  env->CallStaticVoidMethod(env, cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
-  (*jvm)->DestroyJavaVM(jvm);  //waits till all threads are complete
+  env->CallStaticVoidMethod(cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
+  jvm->DestroyJavaVM();  //waits till all threads are complete
   //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
   return 0;
 }
