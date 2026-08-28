@@ -31,6 +31,8 @@ public class POP3Server extends ConfigServlet {
 
   public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfpop3/docs/help.html";}
 
+  public String getKeyFilename() {return getKeyFile();}
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfpop3.cfg";
   }

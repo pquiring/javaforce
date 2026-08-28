@@ -49,6 +49,8 @@ public class SSHServer extends ConfigServlet {
 
   public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfssh/docs/help.html";}
 
+  public String getKeyFilename() {return null;}
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfssh.cfg";
   }

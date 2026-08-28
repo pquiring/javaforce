@@ -34,6 +34,8 @@ public class SMTPServer extends ConfigServlet {
 
   public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfsmtp/docs/help.html";}
 
+  public String getKeyFilename() {return getKeyFile();}
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtp.cfg";
   }

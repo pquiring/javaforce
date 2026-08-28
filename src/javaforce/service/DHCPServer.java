@@ -32,6 +32,8 @@ public class DHCPServer extends ConfigServlet {
 
   public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfdhcp-server/docs/help.html";}
 
+  public String getKeyFilename() {return null;}
+
   /** DHCP Notification interface. */
   public static interface Notify {
     /** DHCP Event.

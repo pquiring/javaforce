@@ -26,9 +26,10 @@ public abstract class ConfigServlet implements WebUIServlet {
   public abstract String getAppName();
   public abstract String getBusName();
   public abstract String getHelpURL();
+  public abstract String getKeyFilename();
 
   private class UI {
-    TextArea view_log_textarea;
+    public TextArea view_log_textarea;
   }
 
   public void init() {
@@ -74,6 +75,11 @@ public abstract class ConfigServlet implements WebUIServlet {
     Button save = new Button("Save Config");
     tools.add(save);
 
+    Button genKeys = new Button("Generate Keys");
+    if (getKeyFilename() != null) {
+      tools.add(genKeys);
+    }
+
     Button view_log = new Button("View Log");
     tools.add(view_log);
 
@@ -103,6 +109,10 @@ public abstract class ConfigServlet implements WebUIServlet {
       String cfg = (String)config.getText();
       if (cfg.length() == 0) return;
       busClient.invoke(busName, "setConfig", cfg);
+    });
+
+    genKeys.addClickListener((me, cmp) -> {
+      busClient.invoke(busName, "genKeys");
     });
 
     return panel;

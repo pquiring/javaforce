@@ -31,6 +31,8 @@ public class VNCServer extends ConfigServlet {
 
   public String getHelpURL() {return "https://pquiring.github.io/javaforce/projects/jfvnc-server/docs/help.html";}
 
+  public String getKeyFilename() {return null;}
+
   private boolean start() {
     return start(loadConfig(), true);
   }

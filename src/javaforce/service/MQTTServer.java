@@ -27,6 +27,8 @@ public class MQTTServer extends ConfigServlet {
 
   public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfmqtt-server/docs/help.html";}
 
+  public String getKeyFilename() {return getKeyFile();}
+
   public static void serviceStart(String[] args) {
     service = new MQTTServer();
     service.start();
