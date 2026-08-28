@@ -3,8 +3,8 @@ Description=JavaForce POP3 Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfpop3
-ExecStop=/usr/bin/jfpop3 --stop
+ExecStart=/usr/bin/jfpop3-server
+ExecStop=/usr/bin/jfpop3-server --stop
 Restart=always
 
 [Install]

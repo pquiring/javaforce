@@ -1,6 +1,6 @@
-<project name="jfpop3" basedir=".">
+<project name="jfpop3-server" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jfpop3"/>
+  <property name="app" value="jfpop3-server"/>
   <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
   <property name="version" value="0.1"/>

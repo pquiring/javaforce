@@ -4,12 +4,12 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfpop3.ico" />
+    <Icon Id="icon.ico" SourceFile="jfpop3-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfpop3server" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfpop3-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{223FF75A-CD8A-47A0-A957-68D9D0127C8A}" Bitness="always64">
-        <File Id="jfpop3.exe" Source="jfpop3.exe" KeyPath="yes">
+        <File Id="jfpop3_server.exe" Source="jfpop3-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule110" Name="jfPOP3Server" Protocol="tcp" Port="110" Scope="any" IgnoreFailure="yes" Profile="all" />
           <fire:FirewallException Id="FirewallRule995" Name="jfPOP3Server" Protocol="tcp" Port="995" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
@@ -43,7 +43,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{D2A452C6-5C48-4F22-8D8A-48BDA959A368}">
-        <File Id="jfpop3.cfg" Source="jfpop3.cfg" />
+        <File Id="jfpop3_server.cfg" Source="jfpop3-server.cfg" />
       </Component>
     </DirectoryRef>
 

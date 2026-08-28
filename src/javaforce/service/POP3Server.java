@@ -29,7 +29,7 @@ public class POP3Server extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
-  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfpop3/docs/help.html";}
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfpop3-server/docs/help.html";}
 
   public String getKeyFilename() {return getKeyFile();}
 
