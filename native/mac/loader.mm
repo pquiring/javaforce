@@ -35,14 +35,6 @@
 
 #include <jni.h>
 
-#include "javaforce_jni_GLJNI.h"
-#include "javaforce_jni_UIJNI.h"
-#include "javaforce_jni_JFNative.h"
-#include "javaforce_jni_MacNative.h"
-#include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_PCapJNI.h"
-#include "javaforce_jni_CLJNI.h"
-
 /* Global variables */
 int type;
 char version[MAX_PATH];
@@ -220,13 +212,6 @@ JavaVMInitArgs *BuildArgs() {
   return args;
 }
 
-#include "../common/register.h"
-
-/** Register natives embedded with executable. */
-void registerAllNatives(JNIEnv *env) {
-  registerCommonNatives(env);
-}
-
 /** Continues loading the JVM in a new Thread. */
 int JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
@@ -344,16 +329,16 @@ int loadProperties() {
 static void dummyTimer(CFRunLoopTimerRef timer, void *info) {}
 
 static void ParkEventLoop() {
-    // RunLoop needs at least one source, and 1e20 is pretty far into the future
-    CFRunLoopTimerRef t = CFRunLoopTimerCreate(kCFAllocatorDefault, 1.0e20, 0.0, 0, 0, dummyTimer, NULL);
-    CFRunLoopAddTimer(CFRunLoopGetCurrent(), t, kCFRunLoopDefaultMode);
-    CFRelease(t);
+  // RunLoop needs at least one source, and 1e20 is pretty far into the future
+  CFRunLoopTimerRef t = CFRunLoopTimerCreate(kCFAllocatorDefault, 1.0e20, 0.0, 0, 0, dummyTimer, NULL);
+  CFRunLoopAddTimer(CFRunLoopGetCurrent(), t, kCFRunLoopDefaultMode);
+  CFRelease(t);
 
-    // Park this thread in the main run loop.
-    int32_t result;
-    do {
-        result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e20, false);
-    } while (result != kCFRunLoopRunFinished);
+  // Park this thread in the main run loop.
+  int32_t result;
+  do {
+    result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e20, false);
+  } while (result != kCFRunLoopRunFinished);
 }
 
 void changeToAppHome(char* path_exe) {
