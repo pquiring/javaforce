@@ -4,12 +4,12 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfssh.ico" />
+    <Icon Id="icon.ico" SourceFile="jfssh-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfsshserver" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfssh-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{95722B2F-DAE7-4C05-B88D-D44850ECEDED}" Bitness="always64">
-        <File Id="jfssh.exe" Source="jfssh.exe" KeyPath="yes">
+        <File Id="jfssh_server.exe" Source="jfssh-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule22" Name="jfSSHServer" Protocol="tcp" Port="22" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
@@ -49,7 +49,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{2A442981-7387-46B0-B91F-503AE951A1EE}">
-        <File Id="jfssh.cfg" Source="jfssh.cfg" />
+        <File Id="jfssh_server.cfg" Source="jfssh-server.cfg" />
       </Component>
     </DirectoryRef>
 

@@ -1,0 +1,3 @@
+/usr/bin/jfssh-server
+/lib/systemd/system/jfssh-server.service
+/etc/javaforce/admin/jfssh-server.cfg

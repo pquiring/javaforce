@@ -3,8 +3,8 @@ Description=JavaForce SSH Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfssh
-ExecStop=/usr/bin/jfssh --stop
+ExecStart=/usr/bin/jfssh-server
+ExecStop=/usr/bin/jfssh-server --stop
 Restart=always
 
 [Install]
