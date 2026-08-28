@@ -24,7 +24,7 @@ public class ProxyServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
-  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfproxy/docs/help.html";}
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfproxy-server/docs/help.html";}
 
   public String getKeyFilename() {return null;}
 

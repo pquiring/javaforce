@@ -4,7 +4,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfproxy.ico" />
+    <Icon Id="icon.ico" SourceFile="jfproxy-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{4716693A-C18D-41B2-88E6-90F0CE287E5A}" Bitness="always64">
-        <File Id="jfproxy.exe" Source="jfproxy.exe" KeyPath="yes">
+        <File Id="jfproxy_server.exe" Source="jfproxy-server.exe" KeyPath="yes">
           <fire:FirewallException Id="FirewallRule" Name="jfProxyServer" Protocol="tcp" Port="3128" Scope="any" IgnoreFailure="yes" Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar" />
@@ -42,7 +42,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{80034CA3-6299-4E0D-A948-62CCF9BF232A}">
-        <File Id="jfproxy.cfg" Source="jfproxy.cfg" />
+        <File Id="jfproxy_server.cfg" Source="jfproxy-server.cfg" />
       </Component>
     </DirectoryRef>
 

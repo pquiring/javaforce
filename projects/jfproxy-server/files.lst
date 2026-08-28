@@ -1,0 +1,3 @@
+/usr/bin/jfproxy-server
+/lib/systemd/system/jfproxy-server.service
+/etc/javaforce/admin/jfproxy-server.cfg
