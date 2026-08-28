@@ -240,10 +240,15 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     JFClassLoader loader = new JFClassLoader(classpath);
     try {
       Class<?> cls = loader.findClass(className);
-      Constructor<?> ctor = cls.getConstructors()[0];
-      Object obj = ctor.newInstance();
-      WebUIServletContext context = new WebUIServletContext(loader, obj);
-      return context;
+      Constructor<?>[] ctors = cls.getConstructors();
+      for(Constructor<?> ctor : ctors) {
+        if (ctor.getParameterCount() == 0) {
+          Object obj = ctor.newInstance();
+          WebUIServletContext context = new WebUIServletContext(loader, obj);
+          return context;
+        }
+      }
+      throw new Exception("WebUIServer.createServlet:Unable to find suitable ctor:" + className);
     } catch (Exception e) {
       JFLog.log(e);
     }
