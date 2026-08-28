@@ -8,14 +8,8 @@
 //#include <GL/gl.h>
 
 #include <jni.h>
-
-#include "javaforce_jni_JFNative.h"
-#include "javaforce_jni_MacNative.h"
-#include "javaforce_jni_GLJNI.h"
-#include "javaforce_jni_CameraJNI.h"
-#include "javaforce_jni_MediaJNI.h"
-#include "javaforce_jni_UIJNI.h"
-#include "javaforce_jni_CLJNI.h"
+#include <jawt.h>
+#include <jawt_md.h>
 
 #include "../common/library.h"
 #include "../common/
@@ -27,8 +21,7 @@ h"
 
 //OpenGL
 
-#include "../common/ui-jni.cpp"
-#include "../common/ui-ffm.cpp"
+#include "../common/ui.cpp"
 
 #include "../common/gl.cpp"
 
@@ -54,41 +47,17 @@ jboolean glGetFunction(void **funcPtr, const char *name)
   }
 }
 
-#include "camera-jni.mm"
+#include "camera.mm"
 
 #include "../common/ffmpeg.cpp"
 
-#include "../common/opencl-jni.cpp"
-#include "../common/opencl-ffm.cpp"
+#include "../common/opencl.cpp"
 
 #include "../common/types.h"
 
-#include "../common/font-jni.cpp"
-#include "../common/font-ffm.cpp"
+#include "../common/font.cpp"
 
-#include "../common/image-jni.cpp"
-#include "../common/image-ffm.cpp"
-
-static JNINativeMethod javaforce_media_Camera[] = {
-  {"cameraInit", "()J", (void *)&Java_javaforce_jni_CameraJNI_cameraInit},
-  {"cameraUninit", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraUninit},
-  {"cameraListDevices", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListDevices},
-  {"cameraListModes", "(JI)[Ljava/lang/String;", (void *)&Java_javaforce_jni_CameraJNI_cameraListModes},
-  {"cameraStart", "(JIII)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStart},
-  {"cameraStop", "(J)Z", (void *)&Java_javaforce_jni_CameraJNI_cameraStop},
-  {"cameraGetFrame", "(J)[I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetFrame},
-  {"cameraGetWidth", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetWidth},
-  {"cameraGetHeight", "(J)I", (void *)&Java_javaforce_jni_CameraJNI_cameraGetHeight},
-};
-
-extern "C" void camera_register(JNIEnv *env);
-
-void camera_register(JNIEnv *env) {
-  jclass cls;
-
-  cls = findClass(env, "javaforce/jni/CameraJNI");
-  registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
-}
+#include "../common/image.cpp"
 
 #include "../common/register.cpp"
 
