@@ -3,8 +3,8 @@ Description=JavaForce ModBus Server
 After=
 
 [Service]
-ExecStart=/usr/bin/jfmodbusserver
-ExecStop=/usr/bin/jfmodbusserver --stop
+ExecStart=/usr/bin/jfmodbus-server
+ExecStop=/usr/bin/jfmodbus-server --stop
 Restart=always
 
 [Install]

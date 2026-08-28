@@ -1,0 +1,2 @@
+/usr/bin/jfmodbus-server
+/usr/lib/systemd/system/jfmodbus-server.service
