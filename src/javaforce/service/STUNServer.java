@@ -38,7 +38,7 @@ public class STUNServer extends ConfigServlet {
 
   public String getBusName() {return serviceBus;}
 
-  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfstun/docs/help.html";}
+  public String getHelpURL() {return "https://pquiring.github.io/javaforce//projects/jfstun-server/docs/help.html";}
 
   public String getKeyFilename() {return null;}
 

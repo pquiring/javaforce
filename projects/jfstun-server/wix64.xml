@@ -4,12 +4,12 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
 
-    <Icon Id="icon.ico" SourceFile="jfstun.ico" />
+    <Icon Id="icon.ico" SourceFile="jfstun-server.ico" />
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
 
     <!-- Step 1: Define the directory structure -->
     <StandardDirectory Id="ProgramFiles64Folder">
-      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfstunserver" />
+      <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfstun-server" />
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
@@ -26,7 +26,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{E6CA49CE-48B5-43CF-950D-49C9D9BA9C4F}" Bitness="always64">
-        <File Id="jfstun.exe" Source="jfstun.exe" KeyPath="yes" />
+        <File Id="jfstun_server.exe" Source="jfstun-server.exe" KeyPath="yes" />
         <File Id="javaforce.jar" Source="javaforce.jar" />
         <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="jfSTUNServer" DisplayName="jfSTUNServer" Description="jf STUN Server" Start="auto" ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSTUNServer" Wait="yes" />
@@ -40,7 +40,7 @@
 
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_JFADMIN">
       <Component Id="adminfiles" Guid="{49078F50-134F-4F04-AA64-A5CACBDD1469}">
-        <File Id="jfstun.cfg" Source="jfstun.cfg" />
+        <File Id="jfstun_server.cfg" Source="jfstun-server.cfg" />
       </Component>
     </DirectoryRef>
 

@@ -1,0 +1,3 @@
+/usr/bin/jfstun-server
+/lib/systemd/system/jfstun-server.service
+/etc/javaforce/admin/jfstun-server.cfg
