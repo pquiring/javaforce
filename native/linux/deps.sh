@@ -60,7 +60,7 @@ function arch {
 }
 
 function freebsd {
-  xargs -d '\n' pkg install -y < pkg-build.deps
+  cat pkg-build.deps | xargs pkg install -y
 }
 
 detectos
