@@ -23,6 +23,12 @@ public class ResourceManager {
     try {
       RandomAccessFile target = new RandomAccessFile(args[0], "rw");
       target.seek(target.length());
+      /*
+        struct Header {
+          char ext[4];  //usually ".cfg"
+          int size;
+        };
+      */
       byte[] header = new byte[8];
       for(int a=1;a<args.length;a++) {
         FileInputStream fis = new FileInputStream(args[a]);
