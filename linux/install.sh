@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# install jfLinux onto pre-installed minimal linux
+# install JavaForce repo
+
+# optionally installs the jfLinux Desktop Environment
 
 DESKTOP=ask
 JAVAFORCE=yes

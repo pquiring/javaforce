@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# install Apache NetBeans
+
 # Netbeans is not available in Debian repo
 
 if [ ! -f /opt/netbeans/bin/netbeans ]; then
-  version=30
+  version=31
 
   zip=netbeans-$version-bin.zip
 

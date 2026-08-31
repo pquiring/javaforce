@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# install Apache ant
+
 # installing ant thru debian repo forces default-jre which is still based on Java 21 so install ant manually
 
 if [ ! -f /opt/ant/bin/ant ]; then

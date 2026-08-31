@@ -56,4 +56,20 @@ some package dep changes may brake some packages which prevents upgrading.
 In most cases the fix is suggested by your package tool.
 Debian : apt --fix-broken install
 
+ant
+---
+Installing ant thru the debian repo depends on default-jre which is still based on Java21 so a script is provided to install ant manually to /opt:
+
+  wget http://pquiring.github.io/javaforce/linux/install-ant.sh
+  chmod +x install-ant.sh
+  ./install-ant.sh
+
+NetBeans
+--------
+NetBeans is not available in the Debian repo so a script is provided to install it manually to /opt:
+
+  wget http://pquiring.github.io/javaforce/linux/install-netbeans.sh
+  chmod +x install-netbeans.sh
+  ./install-netbeans.sh
+
 Thanks!
