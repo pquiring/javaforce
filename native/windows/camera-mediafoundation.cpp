@@ -411,18 +411,15 @@ jint* cameraGetFrame(jlong ctxptr)
   int pxsize = ctx->width * ctx->height;
   jint *px = ffm->newIntArray(pxsize);
 
-  //copy pixels, flip image, set opaque alpha channel
+  //copy pixels, set opaque alpha channel
   jint *pxptr = px;
 
   jint *dst = pxptr;
   jint *src = (jint*)data;
-  src += ctx->width * (ctx->height-1);
-  int w2 = ctx->width * 2;
   for(int y=0;y<ctx->height;y++) {
     for(int x=0;x<ctx->width;x++) {
       *(dst++) = *(src++) | 0xff000000;
     }
-    src -= w2;
   }
 
   buffer->Unlock();
