@@ -97,6 +97,9 @@ jboolean cameraUninit(jlong ctxptr)
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
   cameraReleaseAll(ctx);
+  if (ctx->cameraModes != NULL) {
+    free(ctx->cameraModes);
+  }
   deleteFFMCameraContext(ctx);
   CoUninitialize();
   return JNI_TRUE;

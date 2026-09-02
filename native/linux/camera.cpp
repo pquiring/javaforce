@@ -67,6 +67,14 @@ jlong cameraInit()
 {
   FFMCamContext *ctx = createFFMCamContext();
   if (ctx == NULL) return 0;
+
+  ctx->cameraDeviceCount = 0;
+
+  ctx->cameraModes = (char**)malloc(sizeof(char*) * MAX_NUM_CAMERAS);
+  memset(ctx->cameraModes, 0, sizeof(char*) * MAX_NUM_CAMERAS);
+
+  ctx->cameraModeCount = 0;
+
   return (jlong)ctx;
 }
 
@@ -76,6 +84,9 @@ jboolean cameraUninit(jlong ctxptr)
   if (ctx == NULL) return JNI_FALSE;
   resetFFMCameraList(ctx);
   resetFFMCameraModeList(ctx);
+  if (ctx->cameraModes != NULL) {
+    free(ctx->cameraModes);
+  }
   deleteFFMCamContext(ctx);
   return JNI_TRUE;
 }
