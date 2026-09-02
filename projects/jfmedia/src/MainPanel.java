@@ -1598,6 +1598,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         }
       }
       camera.stop();
+      camera.uninit();
       camera = null;
       if (videoPanel != null) {
         videoPanel.stop();

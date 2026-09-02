@@ -48,7 +48,7 @@ static void ffmResetCameraList(FFMCameraContext* ctx) {
 }
 
 static void ffmResetCameraModeList(FFMCameraContext* ctx) {
-  printf("MF:resetCameraModes\n");
+  printf("MF:ffmResetCameraModes\n");
   for(int a=0;a<ctx->cameraModeCount;a++) {
     char* mode = ctx->cameraModes[a];
     free(mode);
@@ -57,6 +57,8 @@ static void ffmResetCameraModeList(FFMCameraContext* ctx) {
 }
 
 static void cameraReleaseAll(FFMCameraContext* ctx) {
+  ffmResetCameraList(ctx);
+  ffmResetCameraModeList(ctx);
 }
 
 jlong cameraInit()
@@ -74,11 +76,17 @@ jlong cameraInit()
 
   ctx->cameraModeCount = 0;
 
-  BOOL ok = CoInitializeEx(NULL, COINIT_MULTITHREADED) == S_OK;
-  if (!ok) return NULL;
+  int res = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+  if (res < 0) {
+    printf("MF:CoInitializeEx() Failed:0x%x\n", res);
+    return NULL;
+  }
 
-  ok = MFStartup(MF_VERSION, MFSTARTUP_NOSOCKET) == S_OK;
-  if (!ok) return NULL;
+  res = MFStartup(MF_VERSION, MFSTARTUP_NOSOCKET);
+  if (res < 0) {
+    printf("MF:MFStartup() Failed:0x%x\n", res);
+    return NULL;
+  }
 
   return (jlong)ctx;
 }
@@ -98,16 +106,28 @@ void* cameraListDevices(jlong ctxptr)
 {
   printf("MF:CameraListDevices\n");
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
-  if (ctx == NULL) return NULL;
+  if (ctx == NULL) {
+    printf("MF:ctx==NULL\n");
+    return NULL;
+  }
   ffmResetCameraList(ctx);
 
   IMFAttributes* attr;
 
-  if (MFCreateAttributes(&attr, 1) != S_OK) return NULL;
+  if (MFCreateAttributes(&attr, 1) != S_OK) {
+    printf("MF:MFCreateAttributes() Failed\n");
+    return NULL;
+  }
 
-  if (attr->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE, MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID) != S_OK) return NULL;
+  if (attr->SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE, MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID) != S_OK) {
+    printf("MF:SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE) Failed\n");
+    return NULL;
+  }
 
-  if (MFEnumDeviceSources(attr, &ctx->devices, (UINT32*)&ctx->cameraDeviceCount) != S_OK) return NULL;
+  if (MFEnumDeviceSources(attr, &ctx->devices, (UINT32*)&ctx->cameraDeviceCount) != S_OK) {
+    printf("MF:MFEnumDeviceSources() Failed\n");
+    return NULL;
+  }
 
   attr->Release();
 
@@ -171,6 +191,8 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
   FFMCameraContext* ctx = (FFMCameraContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
   HRESULT res;
+
+  cameraListDevices(ctxptr);
 
   if (deviceIdx < 0 || deviceIdx >= ctx->cameraDeviceCount) {
     printf("MF:deviceIdx not found\n");

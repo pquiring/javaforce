@@ -21,7 +21,9 @@ public class GetCameraSourceDialog extends javax.swing.JDialog {
     camera = new Camera();
     camera.init();
     cameraDevs = camera.listDevices();
-    if (cameraDevs != null) {
+    if (cameraDevs == null || cameraDevs.length == 0) {
+      JFLog.log("No cameras found!");
+    } else {
       for(String dev : cameraDevs) {
         JFLog.log("camera=" + dev);
         cameraList.addItem(dev);
@@ -158,9 +160,6 @@ public class GetCameraSourceDialog extends javax.swing.JDialog {
       if (!camera.init()) return null;
       camera.listDevices();
       String[] modes = camera.listModes(idx);
-      camera.uninit();
-      camera.init();
-      camera.listDevices();
       if (modes != null) {
         for(String mode : modes) {
           JFLog.log("mode=" + mode);
@@ -170,7 +169,7 @@ public class GetCameraSourceDialog extends javax.swing.JDialog {
         width = Integer.valueOf(w_h[0]);
         height = Integer.valueOf(w_h[1]);
       } else {
-        JFLog.log("Error:no camrea modes available?");
+        JFLog.log("Error:no camera modes available?");
         width = 640;
         height = 480;
       }
