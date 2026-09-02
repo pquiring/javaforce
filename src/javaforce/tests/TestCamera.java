@@ -180,7 +180,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           boolean f = flip.isSelected();
           int[] px = m ? (f ? camera.getFrameMirrorAndFlip() : camera.getFrameMirror() ) : (f ? camera.getFrameFlip() : camera.getFrame());
           if (px == null) return;  //not ready
-          if (img == null) {
+          if (img == null || img.getWidth() != width || img.getHeight() != height) {
             img = new JFImage(width, height);
           }
           System.arraycopy(px, 0, img.getBuffer(), 0, width * height);
@@ -205,14 +205,15 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   }//GEN-LAST:event_startActionPerformed
 
   private void stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopActionPerformed
-    if (camera == null) {
-      return;
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
     }
-    timer.cancel();
-    timer = null;
-    camera.stop();
-    camera.uninit();
-    camera = null;
+    if (camera != null) {
+      camera.stop();
+      camera.uninit();
+      camera = null;
+    }
     setState(true);
   }//GEN-LAST:event_stopActionPerformed
 
