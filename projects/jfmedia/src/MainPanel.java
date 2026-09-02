@@ -845,14 +845,28 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         System.out.println("file=" + file);
         if (!decoder.open(this)) throw new Exception("Unable to start decoder");
         info = decoder.getCodecInfo();
-        audio_decoder = decoder.createAudioDecoder();
+        JFLog.log("Duration=" + info.duration);
+        mediaLength = info.duration;
+        JFLog.log("video_stream=" + info.video_stream);
+        if (info.video_stream != -1) {
+          JFLog.log("video:bit_rate=" + decoder.getVideoBitRate());
+          JFLog.log("video:fps=" + info.fps);
+          fps = info.fps;
+          width = info.width;
+          height = info.height;
+          JFLog.log("video:frame_size=" + width + "x" + height);
+          video_decoder = decoder.createVideoDecoder(width, height);
+          video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+        }
+        JFLog.log("audio_stream=" + info.audio_stream);
+        if (info.audio_stream != -1) {
+          JFLog.log("audio:bit_rate=" + decoder.getAudioBitRate());
+          JFLog.log("audio:channels=" + info.chs + ",freq=" + info.freq);
+          audio_decoder = decoder.createAudioDecoder();
+        }
         fileLength = new File(file).length();
         String err = null;
-        mediaLength = info.duration;
-        JFLog.log("Duration=" + mediaLength);
-        fps = info.fps;
-        JFLog.log("FPS=" + fps);
-        if (fps > 0) {
+        if (video_decoder != null) {
           videoPanel = new VideoPanel();
           java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -860,18 +874,16 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             }
           });
           videoPanel.start();
+/*
           width = getWidth();
           height = getHeight();
-          video_decoder = decoder.createVideoDecoder(width, height);
-          video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+*/
           playThread = new PlayAudioVideoThread();
           playThread.start();
         } else {
           playThread = new PlayAudioOnlyThread();
           playThread.start();
         }
-        JFLog.log("Video Bit Rate=" + decoder.getVideoBitRate());
-        JFLog.log("Audio Bit Rate=" + decoder.getAudioBitRate());
         int avBitRate = decoder.getVideoBitRate() + decoder.getAudioBitRate();
         if (avBitRate == 0) avBitRate = 64000;
         if (mediaLength <= 0) {
@@ -914,6 +926,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           }
           if (resizeVideo) {
             synchronized(sizeLock) {
+              JFLog.log("resize:" + new_width + "x" + new_height);
               width = new_width;
               height = new_height;
               info.width = width;
@@ -930,21 +943,23 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           }
           if (packet.stream == info.audio_stream) {
             short audio[] = audio_decoder.decode(packet);
+            if (audio == null) continue;
             audio_buffer.add(audio, 0, audio.length);
           }
           if (packet.stream == info.video_stream) {
             int video[] = video_decoder.decode(packet);
+            if (video == null) continue;
             JFImage img = video_buffer.getNewFrame();
             if (img != null) {
               if ((img.getWidth() != width) || (img.getHeight() != height)) {
                 img.setSize(width, height);
               }
+              JFLog.log("putPixels:length=" + video.length + ":frame_size=" + width + "x" + height);
               img.putPixels(video, 0, 0, width, height, 0);
               video_buffer.freeNewFrame();
             } else {
               JFLog.log("Warning : VideoBuffer overflow");
             }
-            break;
           }
         }
         if (err != null) JFAWT.showError("Error", err);
@@ -1689,7 +1704,10 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     synchronized(sizeLock) {
       new_width = width;
       new_height = height;
-      resizeVideo = true;
+      if (debug) {
+        //not working!
+        resizeVideo = true;
+      }
     }
   }
   public void setPanel(JPanel panel) {

@@ -82,7 +82,9 @@ public class MediaInput extends MediaFormat implements MediaIO {
   public CodecInfo getCodecInfo() {
     CodecInfo info = new CodecInfo();
     info.duration = getDuration(ctx);
-    if (getVideoStream() != -1) {
+    info.video_stream = getVideoStream();
+    if (debug) JFLog.log("MediaInput:video_stream=" + info.video_stream);
+    if (info.video_stream != -1) {
       //get video info
       info.width = getVideoWidth(ctx);
       info.height = getVideoHeight(ctx);
@@ -90,16 +92,16 @@ public class MediaInput extends MediaFormat implements MediaIO {
       info.keyFrameInterval = getVideoKeyFrameInterval(ctx);
       info.video_bit_rate = getVideoBitRate();
       info.video_codec = getVideoCodecID();
-      info.video_stream = getVideoStream();
     }
-    if (getAudioStream() != -1) {
+    info.audio_stream = getAudioStream();
+    if (debug) JFLog.log("MediaInput:audio_stream=" + info.audio_stream);
+    if (info.audio_stream != -1) {
       //get audio info
       info.chs = getAudioChannels(ctx);
       info.freq = getAudioSampleRate(ctx);
       info.bits = 16;  //only 16bit supported for now
       info.audio_bit_rate = getAudioBitRate();
       info.audio_codec = getAudioCodecID();
-      info.audio_stream = getAudioStream();
     }
     return info;
   }

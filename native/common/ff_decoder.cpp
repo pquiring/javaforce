@@ -31,16 +31,6 @@ static int decoder_open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, 
 
 
 static jboolean decoder_open_video_codec(FFContext *ctx, int new_width, int new_height) {
-  AVCodecContext *codec_ctx;
-  ctx->video_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO);
-  if (ctx->video_stream_idx < 0) {
-    printf("MediaDecoder:decoder_open_codec_context(video) failed : %d\n", ctx->video_stream_idx);
-    return JNI_FALSE;
-  }
-
-  ctx->video_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->video_stream_idx];
-  ctx->video_codec_ctx = ctx->codec_ctx;
-  ctx->codec_ctx = NULL;
   if (new_width == -1) new_width = ctx->video_codec_ctx->width;
   if (new_height == -1) new_height = ctx->video_codec_ctx->height;
   ctx->width = new_width;
@@ -73,15 +63,6 @@ static jboolean decoder_open_video_codec(FFContext *ctx, int new_width, int new_
 }
 
 static jboolean decoder_open_audio_codec(FFContext *ctx, int new_chs, int new_freq) {
-  ctx->audio_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_AUDIO);
-  if (ctx->audio_stream_idx < 0) {
-    printf("MediaDecoder:decoder_open_codec_context(audio) failed : %d\n", ctx->video_stream_idx);
-    return JNI_FALSE;
-  }
-
-  ctx->audio_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->audio_stream_idx];
-  ctx->audio_codec_ctx = ctx->codec_ctx;
-  ctx->codec_ctx = NULL;
   //create audio conversion context
   ctx->swr_ctx = (*_swr_alloc)();
   if (new_chs == -1) new_chs = ctx->audio_codec_ctx->ch_layout.nb_channels;

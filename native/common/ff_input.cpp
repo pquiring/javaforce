@@ -1,5 +1,25 @@
 //MediaInput
 
+void input_open_streams(FFContext *ctx) {
+  ctx->video_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO);
+  if (ctx->video_stream_idx < 0) {
+    printf("MediaDecoder:input_open_streams() : no video stream found\n");
+  } else {
+    ctx->video_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->video_stream_idx];
+    ctx->video_codec_ctx = ctx->codec_ctx;
+    ctx->codec_ctx = NULL;
+  }
+
+  ctx->audio_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_AUDIO);
+  if (ctx->audio_stream_idx < 0) {
+    printf("MediaDecoder:input_open_streams() : no audio stream found\n");
+  } else {
+    ctx->audio_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->audio_stream_idx];
+    ctx->audio_codec_ctx = ctx->codec_ctx;
+    ctx->codec_ctx = NULL;
+  }
+}
+
 jboolean inputOpenFile_ctx(FFContext *ctx, const char* file, const char* format) {
   if (ctx == NULL) return JNI_FALSE;
 
@@ -25,7 +45,10 @@ jboolean inputOpenFile_ctx(FFContext *ctx, const char* file, const char* format)
     return JNI_FALSE;
   }
 
-  (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
+  input_open_streams(ctx);
+
+  if (ff_debug_log) printf("dump_format\n");
+  (*_av_dump_format)(ctx->fmt_ctx, 0, "file_io", 0);
 
   decoder_alloc_frame(ctx);
   decoder_alloc_packet(ctx);
@@ -42,6 +65,7 @@ FFContext* inputOpenFile(const char* file, const char* format)
     ctx = NULL;
   }
 
+  if (ff_debug_log) printf("inputOpenFile:ctx=%p\n", ctx);
   return ctx;
 }
 
@@ -72,6 +96,9 @@ jboolean inputOpenIO_ctx(FFContext *ctx)
     return JNI_FALSE;
   }
 
+  input_open_streams(ctx);
+
+  if (ff_debug_log) printf("dump_format\n");
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
 
   decoder_alloc_frame(ctx);
@@ -96,6 +123,7 @@ FFContext* inputOpenIO(MediaIO* mio)
     ctx = NULL;
   }
 
+  if (ff_debug_log) printf("inputOpenIO:ctx=%p\n", ctx);
   return ctx;
 }
 
@@ -266,7 +294,7 @@ jint getVideoKeyFrameInterval(FFContext *ctx)
 jint getAudioChannels(FFContext *ctx)
 {
   if (ctx == NULL) return 0;
-  return ctx->dst_nb_channels;
+  return ctx->audio_codec_ctx->ch_layout.nb_channels;
 }
 
 jint getAudioSampleRate(FFContext *ctx)
