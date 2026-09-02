@@ -20,6 +20,9 @@ static int xioctl(int fd, int req, void* arg) {
 struct FFMCamContext {
   int cameraDeviceCount;
   char **cameraDeviceNames;
+  jboolean listModes;
+  int cameraModeCount;
+  char** cameraModes;
   int camerafd;
   int api;
   int *px;
@@ -51,6 +54,15 @@ static void resetFFMCameraList(FFMCamContext *ctx) {
   ctx->cameraDeviceCount = 0;
 }
 
+static void resetFFMCameraModeList(FFMCamContext* ctx) {
+  printf("resetFFMCameraModeList\n");
+  for(int a=0;a<ctx->cameraModeCount;a++) {
+    char* mode = ctx->cameraModes[a];
+    free(mode);
+  }
+  ctx->cameraModeCount = 0;
+}
+
 jlong cameraInit()
 {
   FFMCamContext *ctx = createFFMCamContext();
@@ -62,6 +74,8 @@ jboolean cameraUninit(jlong ctxptr)
 {
   FFMCamContext *ctx = (FFMCamContext*)ctxptr;
   if (ctx == NULL) return JNI_FALSE;
+  resetFFMCameraList(ctx);
+  resetFFMCameraModeList(ctx);
   deleteFFMCamContext(ctx);
   return JNI_TRUE;
 }
@@ -71,6 +85,7 @@ void* cameraListDevices(jlong ctxptr)
   FFMCamContext *ctx = (FFMCamContext*)ctxptr;
   if (ctx == NULL) return NULL;
   resetFFMCameraList(ctx);
+  resetFFMCameraModeList(ctx);
   int size = sizeof(char*) * MAX_NUM_CAMERAS;
   ctx->cameraDeviceNames = (char**)malloc(size);
   memset(ctx->cameraDeviceNames, 0, size);
@@ -99,9 +114,33 @@ void* cameraListDevices(jlong ctxptr)
   return strs;
 }
 
+jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight);
+jboolean cameraStop(jlong ctxptr);
+
 void* cameraListModes(jlong ctxptr, jint deviceIdx)
 {
-  return NULL;
+  FFMCamContext *ctx = (FFMCamContext*)ctxptr;
+  if (ctx == NULL) return JNI_FALSE;
+  if (deviceIdx >= ctx->cameraDeviceCount) return JNI_FALSE;
+  resetFFMCameraModeList(ctx);
+
+  ctx->listModes = JNI_TRUE;
+  cameraStart(ctxptr,deviceIdx,-1,-1);
+  cameraStop(ctxptr);
+  ctx->listModes = JNI_FALSE;
+
+  void* strs = ffm->newStringArray(ctx->cameraModeCount);
+
+  for(int a=0;a<ctx->cameraModeCount;a++) {
+    char* mode = ctx->cameraModes[a];
+    int len8 = strlen(mode);
+    char* str = (char*)malloc(len8+1);
+    strcpy8(str, mode);
+    ffm->setString(a, str);
+    free(str);
+  }
+
+  return strs;
 }
 
 jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desiredHeight)
@@ -136,6 +175,9 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
     }
   }
   //enum formats
+  if (ctx->listModes) {
+    ctx->cameraModeCount = 0;
+  }
   for(int fdi = 0;;fdi++) {
     v4l2_fmtdesc fmtdesc;
     memset(&fmtdesc, 0, sizeof(fmtdesc));
@@ -157,6 +199,12 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
       switch (frmsize.type) {
         case V4L2_FRMSIZE_TYPE_DISCRETE:
           printf("LnxCamera:size=%dx%d\n", frmsize.discrete.width, frmsize.discrete.height);
+          if (ctx->listModes) {
+            ctx->cameraModes[ctx->cameraModeCount] = (char*)malloc(16);
+      			sprintf(ctx->cameraModes[ctx->cameraModeCount], "%dx%d", frmsize.discrete.width, frmsize.discrete.height);
+            ctx->cameraModeCount++;
+            break;
+          }
           break;
         case V4L2_FRMSIZE_TYPE_CONTINUOUS:
         case V4L2_FRMSIZE_TYPE_STEPWISE:
@@ -166,6 +214,9 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
           break;
       }
     }
+  }
+  if (ctx->listModes) {
+    return JNI_TRUE;
   }
   if (desiredWidth == -1 || desiredHeight == -1) {
     desiredWidth = 640;
