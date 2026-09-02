@@ -1001,11 +1001,11 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
               if ((img.getWidth() != width) || (img.getHeight() != height)) {
                 img.setSize(width, height);
               }
-              JFLog.log("putPixels:length=" + video.length + ":frame_size=" + width + "x" + height);
+              if (debug) JFLog.log("putPixels:length=" + video.length + ":frame_size=" + width + "x" + height);
               img.putPixels(video, 0, 0, width, height, 0);
               video_buffer.freeNewFrame();
             } else {
-              JFLog.log("Warning : VideoBuffer overflow");
+              if (debug) JFLog.log("Warning : VideoBuffer overflow");
             }
           }
         }
