@@ -181,7 +181,18 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             img = new JFImage(width, height);
           }
           System.arraycopy(px, 0, img.getBuffer(), 0, width * height);
-          preview.setIcon(img);
+          int dst_width = preview.getWidth();
+          int dst_height = preview.getHeight();
+          if (width == dst_width && height == dst_height) {
+            preview.setIcon(img);
+          } else {
+            //rescale image
+            if (dst_img == null || dst_img.getWidth() != dst_width || dst_img.getHeight() != dst_height) {
+              dst_img = new JFImage(dst_width, dst_height);
+            }
+            dst_img.putJFImageScale(img, 0, 0, dst_width, dst_height);
+            preview.setIcon(dst_img);
+          }
           preview.repaint();
           JFLog.log("addFrame:" + frameCount++);
           JFLog.log("============================");
@@ -243,6 +254,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private int encoderCount = 1;
   private int fps = 10;
   private JFImage img;
+  private JFImage dst_img;
   private int width, height;
   private WebUIClient client;
   private Video video;
