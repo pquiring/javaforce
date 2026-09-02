@@ -59,7 +59,7 @@ public class GetCameraSourceDialog extends javax.swing.JDialog {
     audioList = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-    setTitle("Start Network Source");
+    setTitle("Start Camera Source");
 
     ok.setText("Ok");
     ok.addActionListener(new java.awt.event.ActionListener() {

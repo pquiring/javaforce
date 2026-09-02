@@ -567,6 +567,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     timer.start();
   }
 
+  /** Play local camera. */
   public void play(Camera camera, AudioInput audio) {
     if (playing) {stop(true); return;}
     if (camera == null) {

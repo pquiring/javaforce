@@ -44,6 +44,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     cameraList = new javax.swing.JComboBox<>();
     mirror = new javax.swing.JToggleButton();
     flip = new javax.swing.JToggleButton();
+    modeList = new javax.swing.JComboBox<>();
+    refresh = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Camera Test");
@@ -65,6 +67,11 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     });
 
     cameraList.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+    cameraList.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        cameraListItemStateChanged(evt);
+      }
+    });
 
     mirror.setText("Mirror Image");
     mirror.addActionListener(new java.awt.event.ActionListener() {
@@ -74,6 +81,13 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     });
 
     flip.setText("Flip Image");
+
+    refresh.setText("Refresh");
+    refresh.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        refreshActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -94,7 +108,13 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(flip)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 358, Short.MAX_VALUE))
-              .addComponent(cameraList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+              .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                  .addComponent(cameraList, 0, 461, Short.MAX_VALUE)
+                  .addComponent(modeList, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(refresh)
+                .addGap(0, 0, Short.MAX_VALUE)))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -105,13 +125,17 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           .addComponent(start, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(stop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(cameraList, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(cameraList, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(refresh))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(modeList, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(mirror)
               .addComponent(flip))))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
+        .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
         .addContainerGap())
     );
 
@@ -131,14 +155,20 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       JFAWT.showError("Error", "No camera found");
     }
     int camIdx = cameraList.getSelectedIndex();
-    if (camIdx >= devices.length) {
+    if (camIdx < 0 || camIdx >= devices.length) {
       camIdx = 0;
     }
+    String mode = (String)modeList.getSelectedItem();
+    String[] w_h = mode.split("x");
+    width = Integer.valueOf(w_h[0]);
+    height = Integer.valueOf(w_h[1]);
     JFLog.log("camera=" + devices[camIdx]);
+    JFLog.log("mode=" + mode);
     for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
-    camera.start(camIdx, 640, 480);
+    camera.start(camIdx, width, height);
     width = camera.getWidth();
     height = camera.getHeight();
+    JFLog.log("real mode=" + width + "x" + height);
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {
       public void run() {
@@ -176,6 +206,14 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     // TODO add your handling code here:
   }//GEN-LAST:event_mirrorActionPerformed
 
+  private void cameraListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cameraListItemStateChanged
+    listModes();
+  }//GEN-LAST:event_cameraListItemStateChanged
+
+  private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
+    listCameras();
+  }//GEN-LAST:event_refreshActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -192,7 +230,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private javax.swing.JComboBox<String> cameraList;
   private javax.swing.JToggleButton flip;
   private javax.swing.JToggleButton mirror;
+  private javax.swing.JComboBox<String> modeList;
   private javax.swing.JLabel preview;
+  private javax.swing.JButton refresh;
   private javax.swing.JButton start;
   private javax.swing.JButton stop;
   // End of variables declaration//GEN-END:variables
@@ -210,6 +250,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private byte[] init_segment;
 
   public void listCameras() {
+    cameraList.removeAllItems();
     camera = new Camera();
     if (!camera.init()) {
       JFAWT.showError("Error", "Camera init failed");
@@ -225,6 +266,25 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     for (int a = 0; a < devices.length; a++) {
       JFLog.log("device=" + devices[a]);
       cameraList.addItem(devices[a]);
+    }
+    listModes();
+  }
+
+  public void listModes() {
+    modeList.removeAllItems();
+    int idx = cameraList.getSelectedIndex();
+    if (idx == -1) return;
+    camera = new Camera();
+    if (!camera.init()) {
+      JFAWT.showError("Error", "Camera init failed");
+      return;
+    }
+    camera.listDevices();
+    String[] modes = camera.listModes(idx);
+    camera.uninit();
+    if (modes == null) return;
+    for(String mode : modes) {
+      modeList.addItem(mode);
     }
   }
 
