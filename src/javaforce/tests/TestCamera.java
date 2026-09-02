@@ -159,6 +159,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       camIdx = 0;
     }
     String mode = (String)modeList.getSelectedItem();
+    if (mode == null) {
+      mode = "640x480";
+    }
     String[] w_h = mode.split("x");
     width = Integer.valueOf(w_h[0]);
     height = Integer.valueOf(w_h[1]);
