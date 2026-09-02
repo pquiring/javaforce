@@ -84,7 +84,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     jSeparator3 = new javax.swing.JToolBar.Separator();
     addFolder = new javax.swing.JButton();
     jSeparator4 = new javax.swing.JToolBar.Separator();
-    jButton1 = new javax.swing.JButton();
+    networkSource = new javax.swing.JButton();
+    cameraSource = new javax.swing.JButton();
     time = new javax.swing.JSlider();
 
     jSplitPane1.setResizeWeight(0.5);
@@ -214,16 +215,27 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     jToolBar1.add(addFolder);
     jToolBar1.add(jSeparator4);
 
-    jButton1.setText("Network Source");
-    jButton1.setFocusable(false);
-    jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    networkSource.setText("Network Source");
+    networkSource.setFocusable(false);
+    networkSource.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    networkSource.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    networkSource.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        networkSourceActionPerformed(evt);
       }
     });
-    jToolBar1.add(jButton1);
+    jToolBar1.add(networkSource);
+
+    cameraSource.setText("Camera Source");
+    cameraSource.setFocusable(false);
+    cameraSource.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    cameraSource.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    cameraSource.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cameraSourceActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(cameraSource);
 
     time.setValue(0);
     time.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -237,7 +249,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addComponent(jSplitPane1)
-      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
+      .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
       .addComponent(time, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
@@ -247,7 +259,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(time, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE))
+        .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -315,17 +327,24 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     addFolder();
   }//GEN-LAST:event_addFolderActionPerformed
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void networkSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_networkSourceActionPerformed
     GetNetworkSourceDialog dialog = new GetNetworkSourceDialog(null, true);
     dialog.setVisible(true);
     if (!dialog.accepted) return;
     play(dialog.getURL());
-  }//GEN-LAST:event_jButton1ActionPerformed
+  }//GEN-LAST:event_networkSourceActionPerformed
+
+  private void cameraSourceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cameraSourceActionPerformed
+    GetCameraSourceDialog dialog = new GetCameraSourceDialog(null, true);
+    dialog.setVisible(true);
+    if (!dialog.accepted) return;
+    play(dialog.getCamera(), dialog.getAudio());
+  }//GEN-LAST:event_cameraSourceActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton addFolder;
+  private javax.swing.JButton cameraSource;
   private javax.swing.JButton extract;
-  private javax.swing.JButton jButton1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JToolBar.Separator jSeparator1;
@@ -334,6 +353,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private javax.swing.JToolBar.Separator jSeparator4;
   private javax.swing.JSplitPane jSplitPane1;
   private javax.swing.JToolBar jToolBar1;
+  private javax.swing.JButton networkSource;
   private javax.swing.JButton next;
   private javax.swing.JButton play;
   private javax.swing.JButton prev;
@@ -365,9 +385,13 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private int randomIdx, randomIdxList[];
   private StatusCellRenderer statusCellRenderer = new StatusCellRenderer();
   private JBusClient jbusClient;
+
+  //readers
   private FileReader fileReader;
   private MediaFileReader mediaReader;
   private NetworkReader networkReader;
+  private CameraReader cameraReader;
+
   private Thread playThread;
   private static MainPanel This;
   private long fileLength;
@@ -543,16 +567,31 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     timer.start();
   }
 
+  public void play(Camera camera, AudioInput audio) {
+    if (playing) {stop(true); return;}
+    if (camera == null) {
+      JFAWT.showError("Error", "Invalid Camera");
+      return;
+    }
+    currentIdx = -1;
+    playing = true;
+    cameraReader = new CameraReader(camera, audio);
+    cameraReader.start();
+    play.setIcon(pauseIcon);
+    timer = new javax.swing.Timer(1000, this);
+    timer.start();
+  }
+
   public synchronized void stop(boolean wait) {
     if (!playing) {
       JFLog.log("stop:not playing");
       return;
     }
-    if (decoder == null && video_decoder == null) {
+    if (decoder == null && video_decoder == null && cameraReader == null) {
       JFLog.log("stop:no decoder running");
       return;
     }
-    if (fileReader == null && networkReader == null) {
+    if (fileReader == null && networkReader == null && cameraReader == null) {
       JFLog.log("stop:no reader running");
       return;
     }
@@ -563,12 +602,19 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       JFLog.log("stop:waiting for reader thread to stop");
       if (fileReader != null) {
         try {fileReader.join();} catch (Exception e) {JFLog.log(e);}
+        fileReader = null;
       }
       if (mediaReader != null) {
         try {mediaReader.join();} catch (Exception e) {JFLog.log(e);}
+        mediaReader = null;
       }
       if (networkReader != null) {
         try {networkReader.join();} catch (Exception e) {JFLog.log(e);}
+        networkReader = null;
+      }
+      if (cameraReader != null) {
+        try {cameraReader.join();} catch (Exception e) {JFLog.log(e);}
+        cameraReader = null;
       }
       JFLog.log("stop:reader thread done");
     }
@@ -1511,6 +1557,56 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     public void rtpInactive(RTPChannel rtp) {
     }
   }
+
+  public class CameraReader extends Thread {
+    private Camera camera;
+    private AudioInput audio;
+    public CameraReader(Camera camera, AudioInput audio) {
+      this.camera = camera;
+      this.audio = audio;
+    }
+    public void run() {
+      fps = 30f;
+      width = camera.getWidth();
+      height = camera.getHeight();
+      video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+      videoPanel = new VideoPanel();
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          setPanel(videoPanel);
+        }
+      });
+      videoPanel.start();
+      //TODO : add audio support if available
+      playThread = new PlayVideoOnlyThread();
+      playThread.start();
+      while (playing) {
+        JF.sleep(33);  //~30fps
+        int[] frame = camera.getFrame();
+        if (frame == null) {
+          continue;
+        }
+        JFImage img = video_buffer.getNewFrame();
+        if (img != null) {
+          if ((img.getWidth() != width) || (img.getHeight() != height)) {
+            img.setSize(width, height);
+          }
+          img.putPixels(frame, 0, 0, width, height, 0);
+          video_buffer.freeNewFrame();
+        } else {
+          JFLog.log("Warning : VideoBuffer overflow");
+        }
+      }
+      camera.stop();
+      camera = null;
+      if (videoPanel != null) {
+        videoPanel.stop();
+        videoPanel = null;
+        setPanel(MainPanel.this);
+      }
+    }
+  }
+
   public class PlayAudioVideoThread extends Thread {
     public void run() {
       double frameDelay = -1;

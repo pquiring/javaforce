@@ -19,12 +19,16 @@ public class Camera {
   }
 
   public boolean init() {
+    if (ctx != 0) return false;
     ctx = CameraAPI.getInstance().cameraInit();
     return ctx != 0;
   }
 
   public boolean uninit() {
-    return CameraAPI.getInstance().cameraUninit(ctx);
+    if (ctx == 0) return false;
+    boolean result = CameraAPI.getInstance().cameraUninit(ctx);
+    ctx = 0;
+    return result;
   }
 
   public String[] listDevices() {

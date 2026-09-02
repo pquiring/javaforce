@@ -17,7 +17,7 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="jSplitPane1" alignment="0" max="32767" attributes="0"/>
-          <Component id="jToolBar1" alignment="0" pref="565" max="32767" attributes="0"/>
+          <Component id="jToolBar1" alignment="0" pref="800" max="32767" attributes="0"/>
           <Component id="time" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
@@ -28,7 +28,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="time" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jSplitPane1" pref="657" max="32767" attributes="0"/>
+              <Component id="jSplitPane1" pref="543" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -246,7 +246,7 @@
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator4">
         </Component>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="networkSource">
           <Properties>
             <Property name="text" type="java.lang.String" value="Network Source"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -254,7 +254,18 @@
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="networkSourceActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="cameraSource">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Camera Source"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cameraSourceActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

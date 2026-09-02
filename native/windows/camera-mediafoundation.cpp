@@ -172,7 +172,10 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
   if (ctx == NULL) return JNI_FALSE;
   HRESULT res;
 
-  if (deviceIdx < 0 || deviceIdx >= ctx->cameraDeviceCount) return JNI_FALSE;
+  if (deviceIdx < 0 || deviceIdx >= ctx->cameraDeviceCount) {
+    printf("MF:deviceIdx not found\n");
+    return JNI_FALSE;
+  }
 
   IMFActivate *device = ctx->devices[deviceIdx];
   IMFAttributes* pAttr;
@@ -189,31 +192,37 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
 //  OLECHAR* guidString;
 
   if (device->ActivateObject(IID_PPV_ARGS(&source)) != S_OK) {
+    printf("MF:ActivateObject() Failed\n");
     return JNI_FALSE;
   }
 
   if (MFCreateAttributes(&pAttr, 1) != S_OK) {
+    printf("MF:MFCreateAttributes() Failed\n");
     return JNI_FALSE;
   }
 
   //enable video processing to allow reader to convert camera native format to RGB
   if (pAttr->SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING, TRUE) != S_OK) {
+    printf("MF:SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING) Failed\n");
     return JNI_FALSE;
   }
 
   if (MFCreateSourceReaderFromMediaSource(source, pAttr, &ctx->reader) != S_OK) {
+    printf("MF:MFCreateSourceReaderFromMediaSource() Failed\n");
     return JNI_FALSE;
   }
 
   pAttr->Release();
 
   if (source->CreatePresentationDescriptor(&presDesc) != S_OK) {
+    printf("MF:CreatePresentationDescriptor() Failed\n");
     return JNI_FALSE;
   }
 
   source->Release();
 
   if (presDesc->GetStreamDescriptorCount(&streamCount) != S_OK) {
+    printf("MF:GetStreamDescriptorCount() Failed\n");
     return JNI_FALSE;
   }
 
@@ -295,7 +304,7 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
   }
 
   if (type->GetUINT64(MF_MT_FRAME_SIZE, &size) != S_OK) {
-    printf("MF:GetUINT64:MF_MT_FRAME_SIZE failed!\n");
+    printf("MF:GetUINT64(MF_MT_FRAME_SIZE) failed!\n");
     return JNI_FALSE;
   }
 
@@ -305,14 +314,17 @@ jboolean cameraStart(jlong ctxptr, jint deviceIdx, jint desiredWidth, jint desir
   //change media type of RGB
 
   if (MFCreateMediaType(&type) != S_OK) {
+    printf("MF:MFCreateMediaType() failed!\n");
     return JNI_FALSE;
   }
 
   if (type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video) != S_OK) {
+    printf("MF:SetGUID(MF_MT_MAJOR_TYPE) failed!\n");
     return JNI_FALSE;
   }
 
   if (type->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32) != S_OK) {
+    printf("MF:SetGUID(MF_MT_SUBTYPE) failed!\n");
     return JNI_FALSE;
   }
 
