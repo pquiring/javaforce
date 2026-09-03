@@ -1,7 +1,7 @@
 <project name="jflogon" default="jar" basedir=".">
   <description>jflogon</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfsystem"/>
+  <property name="app" value="jflogon"/>
   <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>

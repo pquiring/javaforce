@@ -1,6 +1,6 @@
 <project name="jflogon-ui" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jflogon"/>
+  <property name="app" value="jflogon-ui"/>
   <property name="apptype" value="window"/>
   <property name="home" value="../.."/>
 

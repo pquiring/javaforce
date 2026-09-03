@@ -114,9 +114,6 @@ function debian {
   fi
   if [ $DESKTOP = "yes" ]; then
     apt --yes install jflogon jfdesktop jfconfig jfapps
-    systemctl enable jflogon.service
-    systemctl enable jfbusserver.service
-    systemctl enable jfnetworkmgr.service
   fi
 }
 
@@ -152,9 +149,6 @@ function fedora {
   fi
   if [ $DESKTOP = "yes" ]; then
     dnf -y install jflogon jfdesktop jfconfig jfapps
-    systemctl enable jflogon.service
-    systemctl enable jfbusserver.service
-    systemctl enable jfnetworkmgr.service
   fi
 }
 
@@ -203,9 +197,6 @@ function arch {
   fi
   if [ $DESKTOP = "yes" ]; then
     pacman -S --noconfirm jflogon jfdesktop jfconfig jfapps
-    systemctl enable jflogon.service
-    systemctl enable jfbusserver.service
-    systemctl enable jfnetworkmgr.service
   fi
 }
 
