@@ -269,9 +269,11 @@ public class Startup implements ShellProcessListener {
       } else {
         env.put("DISPLAY", ":0");
       }
-      String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
-      new File(xdg_runtime_dir).mkdir();
-      Linux.chown(xdg_runtime_dir, user);
+      String xdg_runtime_dir = "/run";    // should be /run/user/{uid} (but wayland-0 socket must be in this folder)
+      if (false) {
+        new File(xdg_runtime_dir).mkdir();
+        Linux.chown(xdg_runtime_dir, user);
+      }
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       if (envs != null) {
         for(String e : envs) {
