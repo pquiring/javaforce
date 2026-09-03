@@ -42,6 +42,7 @@ public class Startup implements ShellProcessListener {
         if (display_mgr.equals("")) {
           display_mgr = "labwc";
         }
+        JFLog.log("wayland:display_manager=" + display_mgr);
       }
       //start jfsystemmgr
       jbusServer = new JBusServer(SystemBusNames.system, new JBusMethods());
@@ -256,8 +257,6 @@ public class Startup implements ShellProcessListener {
         domainLogon ? "/usr/sbin/jflogon-rundomain" : "/usr/sbin/jflogon-runsession",
         session};
       ProcessBuilder pb = new ProcessBuilder(cmd);
-      //sudo doesn't pass environment variables unless -E is used
-      //but leaving these next lines out causes problems
       Map<String,String> env = pb.environment();
       env.put("USER", user);
       env.put("LOGNAME", user);

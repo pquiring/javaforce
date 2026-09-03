@@ -14,7 +14,7 @@ import static javaforce.linux.Linux.*;
 
 public class Startup  implements ShellProcessListener {
   private static Properties props;
-  private static boolean wayland = false;
+  private static boolean is_wayland = false;
   private static String window_mgr = "openbox";
   private static ShellProcess window_mgr_process;
 
@@ -28,19 +28,19 @@ public class Startup  implements ShellProcessListener {
     log_env();
     Linux.init();
     props = Linux.getJFLinuxProperties();
-    wayland = getProperty("wayland").equals("true");
-    if (wayland) {
+    is_wayland = getProperty("wayland").equals("true");
+    if (is_wayland) {
       window_mgr = getProperty("window_manager");
       if (window_mgr.length() == 0) {
         window_mgr = "labwc";
       }
+      JFLog.log("wayland:window_manager=" + window_mgr);
     }
     try {
-      /* Setup display */
-      if (!wayland) {
+      if (!is_wayland) {
+        /* Setup X11 display */
         Monitor cfg[] = Linux.x11_rr_load_user();
         cfg = Linux.x11_rr_get_setup(cfg);
-        /* Start Window Manager */
         Linux.x11_rr_set(cfg);
       }
       start();
@@ -58,18 +58,22 @@ public class Startup  implements ShellProcessListener {
       }
     }
     JFLog.log("jfDesktop:starting UI");
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        try {
-          JFLog.log("Creating Dock");
-          new Dock().setVisible(true);
-          JFLog.log("Creating Desktop");
-          new Desktop().setVisible(true);
-        } catch (Throwable t) {
-          JFLog.log(t);
+    try {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          try {
+            JFLog.log("Creating Dock");
+            new Dock().setVisible(true);
+            JFLog.log("Creating Desktop");
+            new Desktop().setVisible(true);
+          } catch (Throwable t) {
+            JFLog.log(t);
+          }
         }
-      }
-    });
+      });
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
     JF.sleep(1000);
   }
 
@@ -80,9 +84,9 @@ public class Startup  implements ShellProcessListener {
   private static void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
     switch (window_mgr) {
-      case "javaforce": /* TODO */ break;
-      case "sway": /* already running */ break;
-      case "labwc": /* already running */ break;
+      case "javaforce": config_jf_wayland(); /* TODO */ break;
+      case "sway": config_sway(); /* already running */ break;
+      case "labwc": config_labwc(); /* already running */ break;
       case "openbox": config_openbox(); start(new String[] {"/usr/bin/openbox"}, null); break;
     }
   }

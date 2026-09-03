@@ -410,7 +410,7 @@ public class Linux implements X11Listener {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("chown");
-    cmd.add(owner);
+    cmd.add(owner + ":" + owner);
     cmd.add(file);
     String output = sp.run(cmd, false);
     if (output == null) {
