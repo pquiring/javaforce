@@ -4,8 +4,8 @@ Conflicts=getty@tty1.service
 After=systemd-user-sessions.service getty@tty1.service plymouth-quit.service jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfsystem
-ExecStop=/usr/bin/jfsystem --stop
+ExecStart=/usr/bin/jflogon
+ExecStop=/usr/bin/jflogon --stop
 Restart=always
 PAMName=login
 TTYPath=/dev/tty1
