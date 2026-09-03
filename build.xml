@@ -247,9 +247,9 @@
   </target>
 
   <target name="glsl" description="compile glsl source to spir-v binaries">
-    <mkdir dir="classes/javaforce/vk/glsl"/>
-    <exec command="glslang -V src/javaforce/vk/glsl/testvk-vert.vert -o classes/javaforce/vk/glsl/testvk-vert.spv"/>
-    <exec command="glslang -V src/javaforce/vk/glsl/testvk-frag.frag -o classes/javaforce/vk/glsl/testvk-frag.spv"/>
+    <mkdir dir="${build}/javaforce/vk/glsl"/>
+    <exec command="glslang -V src/javaforce/vk/glsl/testvk-vert.vert -o ${build}/javaforce/vk/glsl/testvk-vert.spv"/>
+    <exec command="glslang -V src/javaforce/vk/glsl/testvk-frag.frag -o ${build}/javaforce/vk/glsl/testvk-frag.spv"/>
   </target>
 
   <target name="genffm" depends="utils" description="generate FFM sources">
@@ -390,7 +390,8 @@
 
   <target name="clean" description="deletes compiled files">
     <delete>
-      <fileset dir="classes" includes="**/*.class"/>
+      <fileset dir="${build}" includes="**/*.class"/>
+      <fileset dir="${build}" includes="**/*.spv"/>
       <fileset dir="${lib}" includes="javaforce-*.jar"/>
       <fileset dir="." includes="*.jar"/>
       <fileset dir="." includes="*.asc"/>
