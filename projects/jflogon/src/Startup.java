@@ -266,6 +266,8 @@ public class Startup implements ShellProcessListener {
       env.put("JID", jid);
       if (is_wayland) {
         env.put("WAYLAND_DISPLAY", "wayland-0");
+        //setup insecure wayland socket for now
+        Linux.chmod("/run/wayland-0", 0777);
       } else {
         env.put("DISPLAY", ":0");
       }

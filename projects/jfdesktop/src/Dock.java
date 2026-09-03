@@ -33,12 +33,14 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       arrowImage = IconCache.loadIcon("jfdesktop-arrow");
       loadNetworkIcons();
       dock = this;
-      x11id = Linux.x11_get_id(this);
-      JFLog.log("Dock.window=0x" + Long.toString(x11id, 16));
-      try {
-        Linux.x11_set_dock(x11id);
-      } catch (Throwable t) {
-        JFLog.log(t);
+      if (!Startup.is_wayland) {
+        x11id = Linux.x11_get_id(this);
+        JFLog.log("Dock.window=0x" + Long.toString(x11id, 16));
+        try {
+          Linux.x11_set_dock(x11id);
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
       }
       addTo = buttons;
       loadConfig();
@@ -47,10 +49,12 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       getDimensions();
       loadButtons();
       DisplayMode screen_mode = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-      try {
-        Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
-      } catch (Throwable t) {
-        JFLog.log(t);
+      if (!Startup.is_wayland) {
+        try {
+          Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
       }
       JF.sleep(100);
       getScreenSize();
@@ -95,35 +99,39 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       startTrashListener();
       mkdirs();
       keyboardWindow = new KeyboardWindow();
-      Linux.x11_set_listener(this);
-      new Thread() {
-        public void run() {
-          try {
-            //monitor system tray
-            Linux.x11_tray_main(x11id, sx, trayPos, buttonHeight + 4);
-          } catch (Throwable t) {
-            JFLog.log(t);
+      if (!Startup.is_wayland) {
+        Linux.x11_set_listener(this);
+        new Thread() {
+          public void run() {
+            try {
+              //monitor system tray
+              Linux.x11_tray_main(x11id, sx, trayPos, buttonHeight + 4);
+            } catch (Throwable t) {
+              JFLog.log(t);
+            }
           }
-        }
-      }.start();
-      new Thread() {
-        public void run() {
-          try {
-            //monitor when top-level windows change
-            Linux.x11_window_list_main();
-          } catch (Throwable t) {
-            JFLog.log(t);
+        }.start();
+        new Thread() {
+          public void run() {
+            try {
+              //monitor when top-level windows change
+              Linux.x11_window_list_main();
+            } catch (Throwable t) {
+              JFLog.log(t);
+            }
           }
-        }
-      }.start();
+        }.start();
+      }
       JF.sleep(250);  //wait for threads to start
       if (new File("/usr/bin/acpi").exists()) {
         checkBattery();
       }
-      try {
-        Linux.x11_set_dock(x11id);
-      } catch (Throwable t) {
-        JFLog.log(t);
+      if (!Startup.is_wayland) {
+        try {
+          Linux.x11_set_dock(x11id);
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
       }
       new Thread() {
         public void run() {

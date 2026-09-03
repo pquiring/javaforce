@@ -35,22 +35,26 @@ public class Desktop extends javax.swing.JWindow {
       if (!new File(JF.getUserPath() + "/Desktop/Home.desktop").exists()) {
         browser.createIcon("Home", "jffile " + JF.getUserPath(), "jfdesktop-home", JF.getUserPath() + "/Desktop/Home.desktop", true);
       }
-      x11id = Linux.x11_get_id(this);
-      JFLog.log("Desktop.window=0x" + Long.toString(x11id, 16));
-      try {
-        Linux.x11_set_desktop(x11id);
-      } catch (Throwable t) {
-        JFLog.log(t);
+      if (!Startup.is_wayland) {
+        x11id = Linux.x11_get_id(this);
+        JFLog.log("Desktop.window=0x" + Long.toString(x11id, 16));
+        try {
+          Linux.x11_set_desktop(x11id);
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
       }
       if (!Dock.dock.config.showIcons) {
         newShortcut.setEnabled(false);
         newFolder.setEnabled(false);
         browser.setIconsVisible(false);
       }
-      try {
-        Linux.x11_set_desktop(x11id);
-      } catch (Throwable t) {
-        JFLog.log(t);
+      if (!Startup.is_wayland) {
+        try {
+          Linux.x11_set_desktop(x11id);
+        } catch (Throwable t) {
+          JFLog.log(t);
+        }
       }
       JFLog.log("Desktop init complete");
     } catch (Exception e) {
@@ -206,7 +210,9 @@ public class Desktop extends javax.swing.JWindow {
 
   private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     try {
-      x11_set_desktop();
+      if (!Startup.is_wayland) {
+        x11_set_desktop();
+      }
     } catch (Throwable t) {
       JFLog.log(t);
     }
