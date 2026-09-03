@@ -216,7 +216,7 @@ public class Startup implements ShellProcessListener {
       String user = props.getProperty("user");
       if (user == null) user = "jflive";
       //run session as live user
-      runSession(user, "/usr/bin/jfdesktop", null, null, false);
+      runSession(user, "/usr/bin/jfdesktop", null, false);
       if (!is_wayland) {
         stop();
       }
@@ -229,7 +229,7 @@ public class Startup implements ShellProcessListener {
     }
   }
 
-  public static void runSession(String user, String session, String env_names[], String env_values[], boolean domainLogon) {
+  public static void runSession(String user, String session, String[] envs, boolean domainLogon) {
     try {
       if (is_wayland) {
         //stop();
@@ -264,12 +264,24 @@ public class Startup implements ShellProcessListener {
       env.put("HOME", homePath);
       env.put("XAUTHORITY", homePath + "/.Xauthority");
       env.put("JID", jid);
-      JFLog.log("JID=" + jid);
-      if (env_names != null) {
-        for(int a=0;a<env_names.length;a++) {
-          env.put(env_names[a], env_values[a]);
+      if (is_wayland) {
+        env.put("WAYLAND_DISPLAY", "wayland-0");
+      } else {
+        env.put("DISPLAY", ":0");
+      }
+      String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
+      new File(xdg_runtime_dir).mkdir();
+      env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
+      if (envs != null) {
+        for(String e : envs) {
+          int idx = e.indexOf('=');
+          if (idx == -1) continue;
+          String name = e.substring(0, idx);
+          String value = e.substring(idx + 1);
+          env.put(name, value);
         }
       }
+      JFLog.log("JID=" + jid);
       JFLog.log("Starting session:" + session + " for user " + user);
       Process p = pb.start();
       p.waitFor();

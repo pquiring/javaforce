@@ -401,8 +401,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private ArrayList<String> server = new ArrayList<String>();
   private String errmsg;
-  private String env_names[];
-  private String env_values[];
+  private String envs[];
   private String user, pass, domain;
   private boolean domainLogon;
 
@@ -428,8 +427,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private boolean authUser() {
     errmsg = "Auth failed";
-    env_names = null;
-    env_values = null;
+    envs = null;
     domainLogon = false;
     if (domain.equals("localhost")) {
       return Linux.authUser(user, pass);
@@ -458,9 +456,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
     }
     //create extra env variables
-    env_names = new String[]  {"USERDOMAIN", "DOMAINNAME", "PASSWORD", "SERVER"};
-    env_values = new String[] {domain      , user        , pass      , server.get(computer.getSelectedIndex())};
-    //change local username
+    envs = new String[]  {
+      "USERDOMAIN=" + domain, "DOMAINNAME=" + user, "SERVER=" + server.get(computer.getSelectedIndex())
+    };
     user = domainUser;
     return true;
   }
@@ -470,7 +468,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     new Thread() {
       public void run() {
         try {
-          Startup.runSession(user, "/usr/bin/jfdesktop", env_names, env_values, domainLogon);
+          Startup.runSession(user, "/usr/bin/jfdesktop", envs, domainLogon);
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
