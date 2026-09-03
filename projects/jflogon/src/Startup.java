@@ -14,9 +14,10 @@ import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class Startup implements ShellProcessListener {
-  private static ShellProcess display_mgr;
+  private static ShellProcess window_mgr_process;
   private static boolean rebootFlag, shutdownFlag;
   private static boolean is_wayland = false;
+  private static String window_mgr = "X";
   private static Properties props;
   private static Wayland wayland;
 
@@ -36,6 +37,12 @@ public class Startup implements ShellProcessListener {
       Linux.init();
       props = Linux.getJFLinuxProperties();
       is_wayland = getProperty("wayland").equals("true");
+      if (is_wayland) {
+        window_mgr = getProperty("window_manager");
+        if (window_mgr == null) {
+          window_mgr = "labwc";
+        }
+      }
       //start jfsystemmgr
       jbusServer = new JBusServer(SystemBusNames.system, new JBusMethods());
       jbusServer.connect();
@@ -48,9 +55,6 @@ public class Startup implements ShellProcessListener {
       hidePlymouth();
       create_server_xauth();
       boolean retry;
-      if (is_wayland) {
-        config_wayland();
-      }
       do {
         retry = false;
         try {
@@ -92,59 +96,68 @@ public class Startup implements ShellProcessListener {
     //nop
   }
 
-  private static void start() throws Exception {
-    if (is_wayland) {
-      if (false) {
-        start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"});
-      } else {
-        new Thread() {
-          public void run() {
-            JFLog.log("Starting Wayland...");
-            wayland.start();
-          }
-        }.start();
+  private static void start_jf_wayland() {
+    new Thread() {
+      public void run() {
+        wayland.start();
       }
-    } else {
-      start(new String[] {"/usr/bin/X"}, null);
+    }.start();
+  }
+
+  private static void stop_jf_wayland() {
+    wayland.stop();
+  }
+
+  private static void start() throws Exception {
+    JFLog.log("Starting Window Manager...");
+    switch (window_mgr) {
+      case "X": config_X(); start(new String[] {"/usr/bin/X"}, null); break;
+      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
+      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
+      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
+      case "javaforce": config_jf_wayland(); start_jf_wayland(); break;
     }
   }
 
   private static void start(String[] cmds, String[] env) throws Exception {
     new Thread() {
       public void run() {
-        display_mgr = new ShellProcess();
-        display_mgr.keepOutput(false);
-        display_mgr.addListener(new Startup());
+        window_mgr_process = new ShellProcess();
+        window_mgr_process.keepOutput(false);
+        window_mgr_process.addListener(new Startup());
         if (env != null) {
           for(String e : env) {
             int idx = e.indexOf('=');
             if (idx == -1) continue;
             String name = e.substring(0, idx);
             String value = e.substring(idx + 1);
-            display_mgr.addEnvironmentVariable(name, value);
+            window_mgr_process.addEnvironmentVariable(name, value);
           }
         }
         JFLog.log("Starting Display Server...");
-        display_mgr.run(cmds, true);
+        window_mgr_process.run(cmds, true);
       }
     }.start();
   }
 
   public static void stop() throws Exception {
-    if (display_mgr != null) {
+    if (window_mgr_process != null) {
       JFLog.log("Stopping Display Manager...");
-      display_mgr.destroy();
+      window_mgr_process.destroy();
       JF.sleep(500);
       for(int a=0;a<3;a++) {
-        if (!display_mgr.isAlive()) break;
+        if (!window_mgr_process.isAlive()) break;
         JF.sleep(1000);
       }
-      if (display_mgr.isAlive()) {
-        display_mgr.destroyForcibly();
+      if (window_mgr_process.isAlive()) {
+        window_mgr_process.destroyForcibly();
         JF.sleep(500);
       }
-      display_mgr = null;
+      window_mgr_process = null;
       JFLog.log("Display Manager stopped...");
+    }
+    if (window_mgr.equals("javaforce")) {
+      stop_jf_wayland();
     }
   }
 
@@ -546,6 +559,12 @@ public class Startup implements ShellProcessListener {
     if (prop == null) prop = "";
     return prop.trim();
   }
+  private static void config_X() {
+    //nop
+  }
+  private static void config_weston() {
+    JF.copyAll("/etc/jflogon/weston.ini", "/etc/xdg/weston/weston.ini");
+  }
   private static void config_labwc() {
     String labwc =  JF.getUserPath() + "/.config/labwc";
     new File(labwc).mkdirs();
@@ -558,7 +577,7 @@ public class Startup implements ShellProcessListener {
     JF.copyAll("/etc/jflogon/labwc-rc.xml", sway + "/rc.xml");
     JF.copyAll("/etc/jflogon/labwc-menu.xml", sway + "/menu.xml");
   }
-  private static void config_wayland() {
+  private static void config_jf_wayland() {
     wayland = new Wayland();
   }
   private static void log_env() {
