@@ -39,7 +39,7 @@ public class Startup implements ShellProcessListener {
       is_wayland = getProperty("wayland").equals("true");
       if (is_wayland) {
         window_mgr = getProperty("window_manager");
-        if (window_mgr == null) {
+        if (window_mgr.equals("")) {
           window_mgr = "labwc";
         }
       }
@@ -109,7 +109,7 @@ public class Startup implements ShellProcessListener {
   }
 
   private static void start() throws Exception {
-    JFLog.log("Starting Window Manager...");
+    JFLog.log("Starting Window Manager...{" + window_mgr + "}");
     switch (window_mgr) {
       case "X": config_X(); start(new String[] {"/usr/bin/X"}, null); break;
       case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
