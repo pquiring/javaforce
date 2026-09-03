@@ -593,10 +593,10 @@ public class Startup implements ShellProcessListener {
     wayland = new Wayland();
   }
   private static void log_env() {
-    JFLog.log(LOG_DISPLAY, "Environment:");
+    JFLog.log(LOG_DEFAULT, "Environment:");
     String[] env = JF.getEnvironment();
     for(String e : env) {
-      JFLog.log(LOG_DISPLAY, e);
+      JFLog.log(LOG_DEFAULT, e);
     }
   }
 }

@@ -23,6 +23,7 @@ public class Startup  implements ShellProcessListener {
 
   public static void main(String args[]) {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop.log", true);
+    JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
     JFLog.log("jfDesktop:Startup");
     log_env();
     Linux.init();
@@ -149,10 +150,10 @@ public class Startup  implements ShellProcessListener {
     JF.copyAll("/etc/jfdesktop/openbox-menu.xml", openbox + "/menu.xml");
   }
   private static void log_env() {
-    JFLog.log(LOG_DISPLAY, "Environment:");
+    JFLog.log(LOG_DEFAULT, "Environment:");
     String[] env = JF.getEnvironment();
     for(String e : env) {
-      JFLog.log(LOG_DISPLAY, e);
+      JFLog.log(LOG_DEFAULT, e);
     }
   }
 }
