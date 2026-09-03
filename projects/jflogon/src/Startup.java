@@ -31,6 +31,7 @@ public class Startup implements ShellProcessListener {
     JFLog.init(LOG_DEFAULT, "/var/log/jflogon-system.log", true);
     JFLog.init(LOG_DISPLAY, "/var/log/jflogon-display.log", true);
     JFLog.log("jfLogon:Startup");
+    log_env();
     try {
       fixSudoers();
       Linux.init();
@@ -591,6 +592,7 @@ public class Startup implements ShellProcessListener {
     wayland = new Wayland();
   }
   private static void log_env() {
+    JFLog.log(LOG_DISPLAY, "Environment:");
     String[] env = JF.getEnvironment();
     for(String e : env) {
       JFLog.log(LOG_DISPLAY, e);

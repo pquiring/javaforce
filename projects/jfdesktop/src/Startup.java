@@ -23,6 +23,8 @@ public class Startup  implements ShellProcessListener {
 
   public static void main(String args[]) {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop.log", true);
+    JFLog.log("jfDesktop:Startup");
+    log_env();
     Linux.init();
     props = Linux.getJFLinuxProperties();
     wayland = getProperty("wayland").equals("true");
@@ -54,6 +56,7 @@ public class Startup  implements ShellProcessListener {
         JFLog.log(e);
       }
     }
+    JFLog.log("jfDesktop:starting UI");
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         try {
@@ -144,5 +147,12 @@ public class Startup  implements ShellProcessListener {
     new File(openbox).mkdir();
     JF.copyAll("/etc/jfdesktop/openbox-rc.xml", openbox + "/rc.xml");
     JF.copyAll("/etc/jfdesktop/openbox-menu.xml", openbox + "/menu.xml");
+  }
+  private static void log_env() {
+    JFLog.log(LOG_DISPLAY, "Environment:");
+    String[] env = JF.getEnvironment();
+    for(String e : env) {
+      JFLog.log(LOG_DISPLAY, e);
+    }
   }
 }
