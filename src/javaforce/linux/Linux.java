@@ -403,6 +403,27 @@ public class Linux implements X11Listener {
     return true;
   }
 
+  /**
+   * Sets file owner
+   */
+  public static boolean chown(String file, String owner) {
+    ShellProcess sp = new ShellProcess();
+    ArrayList<String> cmd = new ArrayList<String>();
+    cmd.add("chown");
+    cmd.add(owner);
+    cmd.add(file);
+    String output = sp.run(cmd, false);
+    if (output == null) {
+      JFLog.log("Failed to exec chown");
+      return false;
+    }
+    if (sp.getErrorLevel() > 0 || output.length() > 0) {
+      JFLog.log("Error:" + output);
+      return false;
+    }
+    return true;
+  }
+
   private static String[][] pkgList;  //[count][name,desc,installed]
 
   /*  public static String[][] getPackages() {

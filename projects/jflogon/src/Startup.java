@@ -272,6 +272,7 @@ public class Startup implements ShellProcessListener {
       }
       String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
       new File(xdg_runtime_dir).mkdir();
+      Linux.chown(xdg_runtime_dir, user);
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       if (envs != null) {
         for(String e : envs) {
