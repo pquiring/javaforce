@@ -1,5 +1,4 @@
-/**
- * jfLinux Startup
+/** jfLogon startup.
  *
  * Created : Mar 31, 2012
  *
@@ -14,10 +13,10 @@ import javaforce.bus.*;
 import javaforce.linux.*;
 
 public class Startup implements ShellProcessListener {
-  private static ShellProcess window_mgr_process;
+  private static ShellProcess display_mgr_process;
   private static boolean rebootFlag, shutdownFlag;
   private static boolean is_wayland = false;
-  private static String window_mgr = "X";
+  private static String display_mgr = "X";
   private static Properties props;
   private static Wayland wayland;
 
@@ -38,9 +37,9 @@ public class Startup implements ShellProcessListener {
       props = Linux.getJFLinuxProperties();
       is_wayland = getProperty("wayland").equals("true");
       if (is_wayland) {
-        window_mgr = getProperty("window_manager");
-        if (window_mgr.equals("")) {
-          window_mgr = "labwc";
+        display_mgr = getProperty("display_manager");
+        if (display_mgr.equals("")) {
+          display_mgr = "labwc";
         }
       }
       //start jfsystemmgr
@@ -109,8 +108,8 @@ public class Startup implements ShellProcessListener {
   }
 
   private static void start() throws Exception {
-    JFLog.log("Starting Window Manager...{" + window_mgr + "}");
-    switch (window_mgr) {
+    JFLog.log("Starting Display Manager...{" + display_mgr + "}");
+    switch (display_mgr) {
       case "X": config_X(); start(new String[] {"/usr/bin/X"}, null); break;
       case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
       case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
@@ -122,41 +121,40 @@ public class Startup implements ShellProcessListener {
   private static void start(String[] cmds, String[] env) throws Exception {
     new Thread() {
       public void run() {
-        window_mgr_process = new ShellProcess();
-        window_mgr_process.keepOutput(false);
-        window_mgr_process.addListener(new Startup());
+        display_mgr_process = new ShellProcess();
+        display_mgr_process.keepOutput(false);
+        display_mgr_process.addListener(new Startup());
         if (env != null) {
           for(String e : env) {
             int idx = e.indexOf('=');
             if (idx == -1) continue;
             String name = e.substring(0, idx);
             String value = e.substring(idx + 1);
-            window_mgr_process.addEnvironmentVariable(name, value);
+            display_mgr_process.addEnvironmentVariable(name, value);
           }
         }
-        JFLog.log("Starting Display Server...");
-        window_mgr_process.run(cmds, true);
+        display_mgr_process.run(cmds, true);
       }
     }.start();
   }
 
   public static void stop() throws Exception {
-    if (window_mgr_process != null) {
+    if (display_mgr_process != null) {
       JFLog.log("Stopping Display Manager...");
-      window_mgr_process.destroy();
+      display_mgr_process.destroy();
       JF.sleep(500);
       for(int a=0;a<3;a++) {
-        if (!window_mgr_process.isAlive()) break;
+        if (!display_mgr_process.isAlive()) break;
         JF.sleep(1000);
       }
-      if (window_mgr_process.isAlive()) {
-        window_mgr_process.destroyForcibly();
+      if (display_mgr_process.isAlive()) {
+        display_mgr_process.destroyForcibly();
         JF.sleep(500);
       }
-      window_mgr_process = null;
+      display_mgr_process = null;
       JFLog.log("Display Manager stopped...");
     }
-    if (window_mgr.equals("javaforce")) {
+    if (display_mgr.equals("javaforce")) {
       stop_jf_wayland();
     }
   }
@@ -234,7 +232,7 @@ public class Startup implements ShellProcessListener {
   public static void runSession(String user, String session, String env_names[], String env_values[], boolean domainLogon) {
     try {
       if (is_wayland) {
-        stop();
+        //stop();
       }
       getUserDetails(user);
       String xauthFile = homePath + "/.Xauthority";

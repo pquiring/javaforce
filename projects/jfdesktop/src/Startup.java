@@ -1,4 +1,5 @@
-/**
+/** jfDesktop startup.
+ *
  * Created : July 10, 2012
  *
  * @author pquiring
@@ -12,41 +13,34 @@ import javaforce.linux.*;
 import static javaforce.linux.Linux.*;
 
 public class Startup  implements ShellProcessListener {
-  private static boolean wayland = false;
   private static Properties props;
-  private static ShellProcess display_mgr;
+  private static boolean wayland = false;
+  private static String window_mgr = "openbox";
+  private static ShellProcess window_mgr_process;
 
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
-
 
   public static void main(String args[]) {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop.log", true);
     Linux.init();
     props = Linux.getJFLinuxProperties();
     wayland = getProperty("wayland").equals("true");
+    if (wayland) {
+      window_mgr = getProperty("window_manager");
+      if (window_mgr.length() == 0) {
+        window_mgr = "labwc";
+      }
+    }
     try {
-      if (wayland) {
-        /* Start wayland compositor */
-        config_wayland();
-        JFLog.log("Starting wayland...");
-        start();
-        String[] env = JF.getEnvironment();
-        for(String e : env) {
-          JFLog.log(LOG_DEFAULT, e);
-        }
-      } else {
-        /* Setup display */
+      /* Setup display */
+      if (!wayland) {
         Monitor cfg[] = Linux.x11_rr_load_user();
         cfg = Linux.x11_rr_get_setup(cfg);
-        /* Start openbox */
+        /* Start Window Manager */
         Linux.x11_rr_set(cfg);
-        if (!new File(JF.getUserPath() + "/openbox/rc.xml").exists()) {
-          config_openbox();
-        }
-        JFLog.log("Starting openbox");
-        Runtime.getRuntime().exec(new String[] {"/usr/bin/openbox"});
       }
+      start();
     } catch (Exception e) {
       JFLog.log(e);
       System.exit(0);
@@ -80,48 +74,50 @@ public class Startup  implements ShellProcessListener {
   }
 
   private static void start() throws Exception {
-    if (wayland) {
-      start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"});
-    } else {
-      start(new String[] {"/usr/bin/X"}, null);
+    JFLog.log("Starting window manager:" + window_mgr);
+    switch (window_mgr) {
+      case "javaforce": /* TODO */ break;
+      case "sway": /* already running */ break;
+      case "labwc": /* already running */ break;
+      case "openbox": config_openbox(); start(new String[] {"/usr/bin/openbox"}, null); break;
     }
   }
 
   private static void start(String[] cmds, String[] env) throws Exception {
     new Thread() {
       public void run() {
-        display_mgr = new ShellProcess();
-        display_mgr.keepOutput(false);
-        display_mgr.addListener(new Startup());
+        window_mgr_process = new ShellProcess();
+        window_mgr_process.keepOutput(false);
+        window_mgr_process.addListener(new Startup());
         if (env != null) {
           for(String e : env) {
             int idx = e.indexOf('=');
             if (idx == -1) continue;
             String name = e.substring(0, idx);
             String value = e.substring(idx + 1);
-            display_mgr.addEnvironmentVariable(name, value);
+            window_mgr_process.addEnvironmentVariable(name, value);
           }
         }
-        JFLog.log("Starting Display Server...");
-        display_mgr.run(cmds, true);
+        JFLog.log("Starting Window Manager...");
+        window_mgr_process.run(cmds, true);
       }
     }.start();
   }
 
   public static void stop() throws Exception {
-    if (display_mgr != null) {
+    if (window_mgr_process != null) {
       JFLog.log("Stopping Display Manager...");
-      display_mgr.destroy();
+      window_mgr_process.destroy();
       JF.sleep(500);
       for(int a=0;a<3;a++) {
-        if (!display_mgr.isAlive()) break;
+        if (!window_mgr_process.isAlive()) break;
         JF.sleep(1000);
       }
-      if (display_mgr.isAlive()) {
-        display_mgr.destroyForcibly();
+      if (window_mgr_process.isAlive()) {
+        window_mgr_process.destroyForcibly();
         JF.sleep(500);
       }
-      display_mgr = null;
+      window_mgr_process = null;
       JFLog.log("Display Manager stopped...");
     }
   }
@@ -140,7 +136,7 @@ public class Startup  implements ShellProcessListener {
     JF.copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml");
     JF.copyAll("/etc/jfdesktop/labwc-menu.xml", labwc + "/menu.xml");
   }
-  private static void config_wayland() {
+  private static void config_jf_wayland() {
 
   }
   private static void config_openbox() {
