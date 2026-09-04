@@ -24,7 +24,7 @@ public class Startup  implements ShellProcessListener {
   private static int LOG_DISPLAY = 1;
 
   public static void main(String args[]) {
-    JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop.log", true);
+    JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-system.log", true);
     JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
     JFLog.log("jfDesktop:Startup");
     log_env();

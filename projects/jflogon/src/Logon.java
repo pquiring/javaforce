@@ -24,22 +24,18 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private static Properties props;
   private static boolean is_wayland = false;
 
+  private static int LOG_DEFAULT = 0;
+
   /**
    * Creates new form LogonApp
    */
   public Logon() {
     This = this;
     try {
-      initComponents();
-      loadNetworkIcons();
       props = Linux.getJFLinuxProperties();
       is_wayland = getProperty("wayland").equals("true");
-      if (is_wayland) {
-        String[] env = JF.getEnvironment();
-        for(String e : env) {
-          JFLog.log(LOG_DEFAULT, e);
-        }
-      }
+      initComponents();
+      loadNetworkIcons();
       if (new File("/etc/.lastLogon").exists()) {
         Properties props = new Properties();
         props.load(new FileInputStream("/etc/.lastLogon"));
@@ -83,8 +79,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         jbusServer.connect();
       }
       getWAPList();
-    } catch (Exception e) {
-      JFLog.log(e);
+    } catch (Throwable t) {
+      JFLog.log(t);
     }
   }
 
@@ -737,10 +733,17 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     return prop.trim();
   }
 
-  private static int LOG_DEFAULT = 0;
+  private static void log_env() {
+    JFLog.log(LOG_DEFAULT, "Environment:");
+    String[] env = JF.getEnvironment();
+    for(String e : env) {
+      JFLog.log(LOG_DEFAULT, e);
+    }
+  }
 
   public static void main(String[] args) {
     JFLog.init(LOG_DEFAULT, "/var/log/jflogon-ui.log", true);
+    log_env();
     //execute greeter
     try {
       Logon logon = new Logon();
