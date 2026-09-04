@@ -744,12 +744,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   public static void main(String[] args) {
     JFLog.init(LOG_DEFAULT, "/var/log/jflogon-ui.log", true);
     log_env();
-    //execute greeter
+    //display greeter
     try {
       Logon logon = new Logon();
       logon.setVisible(true);
-    } catch (Exception e) {
-      JFLog.log(e);
+    } catch (Throwable t) {
+      JFLog.log(t);
     }
   }
 }
