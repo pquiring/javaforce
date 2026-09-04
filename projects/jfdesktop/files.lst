@@ -7,6 +7,7 @@
 /etc/jfdesktop/openbox-menu.xml
 /etc/jfdesktop/labwc-rc.xml
 /etc/jfdesktop/labwc-menu.xml
+/etc/jfdesktop/weston.ini
 /usr/share/xsessions/jfdesktop.desktop
 /usr/share/jfhelp/jfdesktop.html
 /usr/share/icons/hicolor/48x48/apps/jfdesktop-arrow.png

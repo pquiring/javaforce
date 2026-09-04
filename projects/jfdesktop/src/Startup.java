@@ -17,6 +17,8 @@ public class Startup  implements ShellProcessListener {
   public static boolean is_wayland = false;
   private static String window_mgr = "openbox";
   private static ShellProcess window_mgr_process;
+  private static Wayland wayland;
+  private static String user;
 
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
@@ -26,6 +28,7 @@ public class Startup  implements ShellProcessListener {
     JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
     JFLog.log("jfDesktop:Startup");
     log_env();
+    user = System.getenv("USER");
     Linux.init();
     props = Linux.getJFLinuxProperties();
     is_wayland = getProperty("wayland").equals("true");
@@ -84,9 +87,10 @@ public class Startup  implements ShellProcessListener {
   private static void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
     switch (window_mgr) {
-      case "javaforce": config_jf_wayland(); /* TODO */ break;
-      case "sway": config_sway(); /* already running */ break;
-      case "labwc": config_labwc(); /* already running */ break;
+      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + user}); break;
+      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + user}); break;
+      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + user}); break;
+      case "javaforce": config_jf_wayland(); start_jf_wayland(); break;
       case "openbox": config_openbox(); start(new String[] {"/usr/bin/openbox"}, null); break;
     }
   }
@@ -134,9 +138,21 @@ public class Startup  implements ShellProcessListener {
     if (prop == null) prop = "";
     return prop.trim();
   }
-  private static void config_sway() {
-    String sway =  JF.getUserPath() + "/.config/sway";
-    new File(sway).mkdirs();
+
+  private static void start_jf_wayland() {
+    new Thread() {
+      public void run() {
+        wayland.start();
+      }
+    }.start();
+  }
+
+  private static void stop_jf_wayland() {
+    wayland.stop();
+  }
+
+  private static void config_weston() {
+    JF.copyAll("/etc/jflogon/weston.ini", "/etc/xdg/weston/weston.ini");
   }
   private static void config_labwc() {
     String labwc =  JF.getUserPath() + "/.config/labwc";
@@ -144,8 +160,12 @@ public class Startup  implements ShellProcessListener {
     JF.copyAll("/etc/jfdesktop/labwc-rc.xml", labwc + "/rc.xml");
     JF.copyAll("/etc/jfdesktop/labwc-menu.xml", labwc + "/menu.xml");
   }
+  private static void config_sway() {
+    String sway =  JF.getUserPath() + "/.config/sway";
+    new File(sway).mkdirs();
+  }
   private static void config_jf_wayland() {
-
+    wayland = new Wayland();
   }
   private static void config_openbox() {
     String openbox =  JF.getUserPath() + "/openbox";

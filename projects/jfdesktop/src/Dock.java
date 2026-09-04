@@ -21,13 +21,15 @@ import javaforce.io.*;
 
 import jffile.*;
 
-public class Dock extends javax.swing.JWindow implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, FileClipboard {
+public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, FileClipboard {
 
   /**
    * Creates new form Dock
    */
   public Dock() {
     try {
+      setUndecorated(true);
+      setTitle("jfDock");
       initComponents();
       IconCache.setPrefix("jfdesktop-");
       arrowImage = IconCache.loadIcon("jfdesktop-arrow");

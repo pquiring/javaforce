@@ -14,13 +14,15 @@ import javaforce.linux.*;
 
 import jffile.*;
 
-public class Desktop extends javax.swing.JWindow {
+public class Desktop extends javax.swing.JFrame {
 
   /**
    * Creates new form Desktop
    */
   public Desktop() {
     try {
+      setUndecorated(true);
+      setTitle("jfDesktop");
       initComponents();
       setPosition();
       desktop = this;

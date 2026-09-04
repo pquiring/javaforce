@@ -110,7 +110,7 @@ public class Startup implements ShellProcessListener {
   }
 
   private static void start() throws Exception {
-    JFLog.log("Starting Display Manager...{" + display_mgr + "}");
+    JFLog.log("Starting Display Manager:" + display_mgr);
     switch (display_mgr) {
       case "X": config_X(); start(new String[] {"/usr/bin/X"}, null); break;
       case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
@@ -219,9 +219,7 @@ public class Startup implements ShellProcessListener {
       if (user == null) user = "jflive";
       //run session as live user
       runSession(user, "/usr/bin/jfdesktop", null, false);
-      if (!is_wayland) {
-        stop();
-      }
+      stop();
       JF.sleep(1000);
       System.out.println("" + (char)0x1b + "[2J");  //clear screen
       System.out.println("\n\n\n\n\n\t\tPlease remove installation media and reboot\n\n\n\n\n");
@@ -234,7 +232,7 @@ public class Startup implements ShellProcessListener {
   public static void runSession(String user, String session, String[] envs, boolean domainLogon) {
     try {
       if (is_wayland) {
-        //stop();
+        stop();
       }
       getUserDetails(user);
       String xauthFile = homePath + "/.Xauthority";
@@ -271,7 +269,7 @@ public class Startup implements ShellProcessListener {
       } else {
         env.put("DISPLAY", ":0");
       }
-      String xdg_runtime_dir = "/run";    // should be /run/user/{uid} (but wayland-0 socket must be in this folder)
+      String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
       if (false) {
         new File(xdg_runtime_dir).mkdir();
         Linux.chown(xdg_runtime_dir, user);
@@ -307,9 +305,7 @@ public class Startup implements ShellProcessListener {
           Startup.shutdown("-P");
           return;
         }
-        if (is_wayland) {
-          start();
-        }
+        start();
       } else {
         JFLog.log("Power functions disabled by security policy.");
       }

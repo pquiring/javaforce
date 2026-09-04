@@ -21,7 +21,7 @@ import javaforce.net.*;
 public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private static Properties props;
-  private static boolean wayland = false;
+  private static boolean is_wayland = false;
 
   /**
    * Creates new form LogonApp
@@ -32,8 +32,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       initComponents();
       loadNetworkIcons();
       props = Linux.getJFLinuxProperties();
-      wayland = getProperty("wayland").equals("true");
-      if (wayland) {
+      is_wayland = getProperty("wayland").equals("true");
+      if (is_wayland) {
         String[] env = JF.getEnvironment();
         for(String e : env) {
           JFLog.log(LOG_DEFAULT, e);
@@ -472,7 +472,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
-        if (!wayland) {
+        if (!is_wayland) {
           Linux.x11_rr_reset("800x600");
         }
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {

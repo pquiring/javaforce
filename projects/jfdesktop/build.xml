@@ -48,6 +48,7 @@
     <copy file="openbox-menu.xml" todir="/etc/jfdesktop"/>
     <copy file="labwc-rc.xml" todir="/etc/jfdesktop"/>
     <copy file="labwc-menu.xml" todir="/etc/jfdesktop"/>
+    <copy file="weston.ini" todir="/etc/jfdesktop"/>
     <copy file="${app}.desktop" todir="/usr/share/xsessions"/>
     <copy todir="/usr/share/icons/hicolor/48x48/apps">
       <fileset dir="." includes="*.png"/>

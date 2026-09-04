@@ -1,8 +1,9 @@
-/usr/bin/jfsystem
 /usr/bin/jflogon
+/usr/bin/jflogon-ui
 /usr/sbin/jflogon-runsession
 /usr/sbin/jflogon-rundomain
-/usr/share/java/jfsystem.jar
-/usr/lib/systemd/system/jfsystem.service
+/usr/share/java/jflogon.jar
+/usr/lib/systemd/system/jflogon.service
 /etc/jflogon/labwc-rc.xml
 /etc/jflogon/labwc-menu.xml
+/etc/jflogon/weston.ini

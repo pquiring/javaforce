@@ -44,6 +44,7 @@
     <mkdir dir="/etc/jflogon/"/>
     <copy file="labwc-rc.xml" todir="/etc/jflogon"/>
     <copy file="labwc-menu.xml" todir="/etc/jflogon"/>
+    <copy file="weston.ini" todir="/etc/jflogon"/>
   </target>
 
   <!-- sudo ant uninstall -->
