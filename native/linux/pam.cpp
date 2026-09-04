@@ -1,8 +1,6 @@
 static const char *pam_user, *pam_pass;
 static struct pam_response* pam_responses;
 
-#define PAM_OPEN_SESSION 0x0001
-
 static int pam_callback(int num_msg, const struct pam_message** _pam_messages, struct pam_response** _pam_responses, void* _appdata_ptr)
 {
   pam_responses = (struct pam_response*)calloc(num_msg, sizeof(pam_response));  //array of pam_response

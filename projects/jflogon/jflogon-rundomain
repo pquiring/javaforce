@@ -23,4 +23,4 @@ if [ -f logon.sh ]; then
   rm logon.sh
 fi
 
-dbus-run-session $1
+$1
