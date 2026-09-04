@@ -5,5 +5,4 @@ unset SUDO_GID
 unset SUDO_USER
 unset SUDO_COMMAND
 
-$1
-
+dbus-run-session $1
