@@ -174,10 +174,15 @@ public class Startup implements ShellProcessListener {
         String name = e.substring(0, idx);
         String value = e.substring(idx + 1);
         process.addEnvironmentVariable(name, value);
+        Linux.setEnv(name, value);
       }
     }
     JFLog.log("Starting Logon Greeter...");
-    process.run(cmds, true);
+    if (false) {
+      process.run(cmds, true);
+    } else {
+      new Logon().setVisible(true);
+    }
   }
 
   public static byte mcookie[] = new byte[16];
