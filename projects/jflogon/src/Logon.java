@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.linux.*;
+import javaforce.api.linux.*;
 import javaforce.bus.*;
 import javaforce.net.*;
 
@@ -404,6 +405,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private String envs[];
   private String user, pass, domain;
   private boolean domainLogon;
+  private LinuxAPI api;
 
   private void doLogon() {
     user = (String)username.getSelectedItem();
@@ -430,7 +432,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     envs = null;
     domainLogon = false;
     if (domain.equals("localhost")) {
-      return Linux.authUser(user, pass);
+      api = LinuxAPI.getInstance();
+      Startup.pam = api.pamOpen(user, pass, LinuxAPI.pamGetBackend());
+      return Startup.pam != 0;
     }
     domainLogon = true;
     String domainUser = domain + "+" + user;

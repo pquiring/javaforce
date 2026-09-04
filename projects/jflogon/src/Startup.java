@@ -11,6 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.bus.*;
 import javaforce.linux.*;
+import javaforce.api.linux.*;
 
 public class Startup implements ShellProcessListener {
   private static ShellProcess display_mgr_process;
@@ -22,6 +23,7 @@ public class Startup implements ShellProcessListener {
 
   public static AutoMounter autoMounter;
   public static JBusServer jbusServer;
+  public static long pam;
 
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
@@ -230,6 +232,7 @@ public class Startup implements ShellProcessListener {
   }
 
   public static void runSession(String user, String session, String[] envs, boolean domainLogon) {
+    LinuxAPI api = LinuxAPI.getInstance();
     try {
       if (is_wayland) {
         stop();
@@ -251,28 +254,36 @@ public class Startup implements ShellProcessListener {
         JF.exec(new String[] {"usermod", "-aG", "video", user});
       }
       String jid = "j" + Math.abs(new Random().nextInt());
-      String cmd[] = new String[] {"/usr/bin/sudo", "-E", "-u", user,
+      if (pam != 0) {
+        api.pamOpenSession(pam);
+      }
+      String cmd[] = new String[] {
         domainLogon ? "/usr/sbin/jflogon-rundomain" : "/usr/sbin/jflogon-runsession",
-        session};
+        session
+      };
       ProcessBuilder pb = new ProcessBuilder(cmd);
       Map<String,String> env = pb.environment();
       env.put("USER", user);
       env.put("LOGNAME", user);
       env.put("SHELL", shellPath);
       env.put("HOME", homePath);
-      env.put("XAUTHORITY", homePath + "/.Xauthority");
       env.put("JID", jid);
       if (is_wayland) {
-        env.put("WAYLAND_DISPLAY", "wayland-0");
-        //setup insecure wayland socket for now
-        Linux.chmod("/run/wayland-0", 0777);
+        if (false) {
+          env.put("WAYLAND_DISPLAY", "wayland-0");
+          //setup insecure wayland socket for now
+          Linux.chmod("/run/wayland-0", 0777);
+        }
       } else {
+        env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
       }
-      String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
-      new File(xdg_runtime_dir).mkdir();
-      Linux.chown(xdg_runtime_dir, user);
-      env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
+      if (false) {
+        String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
+        new File(xdg_runtime_dir).mkdir();
+        Linux.chown(xdg_runtime_dir, user);
+        env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
+      }
       if (envs != null) {
         for(String e : envs) {
           int idx = e.indexOf('=');
@@ -286,6 +297,9 @@ public class Startup implements ShellProcessListener {
       JFLog.log("Starting session:" + session + " for user " + user);
       Process p = pb.start();
       p.waitFor();
+      if (pam != 0) {
+        api.pamCloseSession(pam);
+      }
       JFLog.log("Session has terminated");
       JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
