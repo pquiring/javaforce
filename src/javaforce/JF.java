@@ -40,12 +40,15 @@ public class JF {
   public static void main(String[] args) {
     String lib_ver_str = getVersion();
     float lib_ver = Float.valueOf(lib_ver_str);
-    System.out.println("javaforce/" + lib_ver_str);
+    System.out.println("JAVAFORCE_VERSION=" + lib_ver_str);
     String nat_ver_str = FFM.getInstance().getVersion();
     float nat_ver = Float.valueOf(nat_ver_str);
     String min_ver_str = getMinNativeVersion();
     float min_ver = Float.valueOf(min_ver_str);
-    System.out.println("javaforce.native/" + nat_ver_str + (nat_ver < min_ver ? " (incompatible)" : ""));
+    System.out.println("JAVAFORCE_NATIVE_VERSION=" + nat_ver_str);
+    if (nat_ver < min_ver) {
+      System.out.println("WARNING=\"Native version incompatible\"");
+    }
   }
 
   /** End-of-line character. Each OS has preferred style. */
