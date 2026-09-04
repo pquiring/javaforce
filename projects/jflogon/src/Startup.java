@@ -115,9 +115,9 @@ public class Startup implements ShellProcessListener {
     JFLog.log("Starting Display Manager:" + display_mgr);
     switch (display_mgr) {
       case "X": config_X(); start(new String[] {"/usr/bin/X"}, null); break;
-      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
-      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
-      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run"}); break;
+      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
+      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
+      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
       case "javaforce": config_jf_wayland(); start_jf_wayland(); break;
     }
   }
@@ -299,6 +299,8 @@ public class Startup implements ShellProcessListener {
       p.waitFor();
       if (pam != 0) {
         api.pamCloseSession(pam);
+        api.pamClose(pam);
+        pam = 0;
       }
       JFLog.log("Session has terminated");
       JFLog.log("Killing all processes for user " + user);
@@ -380,7 +382,11 @@ public class Startup implements ShellProcessListener {
       Linux.x11_rr_reset("800x600");
     }
     try {
-      startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XAUTHORITY=/root/.Xauthority", "DISPLAY=:0", "XDG_RUNTIME_DIR=/run", "WAYLAND_DISPLAY=wayland-0"});
+      if (is_wayland) {
+        startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "WAYLAND_DISPLAY=wayland-0"});
+      } else {
+        startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
