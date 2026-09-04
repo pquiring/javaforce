@@ -682,8 +682,8 @@
     <skipWindowSwitcher>yes</skipWindowSwitcher>
     <action name="MoveToEdge" direction="down" />
     <action name="ToggleAlwaysOnTop" />
-    </windowRule>
-  <windowRule title="jfDesktop"
+  </windowRule>
+  <windowRule title="jfDesktop">
     <skipTaskbar>yes</skipTaskbar>
     <skipWindowSwitcher>yes</skipWindowSwitcher>
     <fixedPosition>yes</fixedPosition>
