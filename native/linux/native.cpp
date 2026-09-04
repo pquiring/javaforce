@@ -100,6 +100,8 @@ int (*_v4l2_munmap)(void *_start, size_t length);
 void *pam = NULL;
 int (*_pam_start)(const char *service_name, const char *user, const struct pam_conv *pam_conversation, pam_handle_t **pamh);
 int (*_pam_authenticate)(pam_handle_t *pamh, int flags);
+int (*_pam_open_session)(pam_handle_t *pamh, int flags);
+int (*_pam_close_session)(pam_handle_t *pamh, int flags);
 int (*_pam_end)(pam_handle_t *pamh, int pam_status);
 
 void *ncurses = NULL;
@@ -228,6 +230,8 @@ extern "C" {
       } else {
         getFunction(pam, (void**)&_pam_start, "pam_start");
         getFunction(pam, (void**)&_pam_authenticate, "pam_authenticate");
+        getFunction(pam, (void**)&_pam_open_session, "pam_open_session");
+        getFunction(pam, (void**)&_pam_close_session, "pam_close_session");
         getFunction(pam, (void**)&_pam_end, "pam_end");
       }
     }

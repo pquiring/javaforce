@@ -1,6 +1,7 @@
 package javaforce.api.linux;
 
 import javaforce.ffm.*;
+import javaforce.linux.*;
 
 /** Linux OS specific API.
  *
@@ -25,7 +26,22 @@ public interface LinuxAPI {
   public long ptyChildExec(String slaveName, String cmd, String[] args, String[] env);  //spawn child process
 
   //PAM (Pluggable Authentication Modules)
-  public boolean authUser(String user, String pass, String backend);
+  public long pamOpen(String user, String pass, String backend);
+  public boolean pamClose(long ctx);
+  public boolean pamOpenSession(long ctx);
+  public boolean pamCloseSession(long ctx);
+
+  public static String pamGetBackend() {
+    String backend = "passwd";
+    Linux.detectDistro();
+    // see /etc/pam.d/ for available back ends
+    switch (Linux.distro) {
+      case Debian: backend = "passwd"; break;
+      case Fedora: backend = "password-auth"; break;
+      case Arch: backend = "system-auth"; break;
+    }
+    return backend;
+  }
 
   //setenv
   public void setEnv(String name, String value);

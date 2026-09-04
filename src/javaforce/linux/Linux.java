@@ -1370,28 +1370,6 @@ public class Linux implements X11Listener {
     }
   }
 
-  //PAM functions
-
-  private static final int PAM_SILENT = 0x8000;
-  private static final int PAM_PROMPT_ECHO_ON = 2;
-  private static final int PAM_PROMPT_ECHO_OFF = 1;
-
-  private static String pam_user, pam_pass;
-  private static long pam_responses;
-
-  public static synchronized boolean authUser(String user, String pass) {
-    String backend;
-    detectDistro();
-    // see /etc/pam.d/ for available back ends
-    switch (distro) {
-      case Debian: backend = "passwd"; break;
-      case Fedora: backend = "password-auth"; break;
-      case Arch: backend = "system-auth"; break;
-      default: return false;
-    }
-    return LinuxAPI.getInstance().authUser(user, pass, backend);
-  }
-
   public static void kill(int pid, int signal) {
     try {
       Runtime.getRuntime().exec(new String[] {"kill", "-" + signal, "" + pid});
@@ -1682,8 +1660,14 @@ public class Linux implements X11Listener {
   }
 
   private static void test_pam(String user, String pass) {
-    boolean res = authUser(user, pass);
-    JFLog.log("authUser=" + res);
+    LinuxAPI api = LinuxAPI.getInstance();
+    long ctx = api.pamOpen(user, pass, LinuxAPI.pamGetBackend());
+    if (ctx == 0) {
+      JFLog.log("PAM authentication failed");
+    } else {
+      JFLog.log("PAM authentication successful");
+      api.pamClose(ctx);
+    }
   }
 
   private static void test_x11() {

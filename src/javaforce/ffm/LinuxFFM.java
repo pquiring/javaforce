@@ -30,8 +30,14 @@ public class LinuxFFM implements LinuxAPI {
     return instance;
   }
 
-  private MethodHandle authUser;
-  public boolean authUser(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)authUser.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+  private MethodHandle pamClose;
+  public boolean pamClose(long a1) { try { boolean _ret_value_ = (boolean)pamClose.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle pamCloseSession;
+  public boolean pamCloseSession(long a1) { try { boolean _ret_value_ = (boolean)pamCloseSession.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle pamOpenSession;
+  public boolean pamOpenSession(long a1) { try { boolean _ret_value_ = (boolean)pamOpenSession.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
   private MethodHandle peekConsole;
   public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
@@ -59,6 +65,9 @@ public class LinuxFFM implements LinuxAPI {
 
   private MethodHandle fileGetID;
   public long fileGetID(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)fileGetID.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle pamOpen;
+  public long pamOpen(java.lang.String a1,java.lang.String a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); long _ret_value_ = (long)pamOpen.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)),(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)),(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle ptyAlloc;
   public long ptyAlloc() { try { long _ret_value_ = (long)ptyAlloc.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
@@ -114,7 +123,9 @@ public class LinuxFFM implements LinuxAPI {
     if (init == null) return false;
     try {if (!(boolean)init.invokeExact(libs[0].getPath(arena),libs[1].getPath(arena))) return false;} catch (Throwable t) {JFLog.log(t); return false;}
 
-    authUser = ffm.getFunctionPtr("_authUser", ffm.getFunctionDesciptor(JAVA_BOOLEAN,ADDRESS,ADDRESS,ADDRESS));
+    pamClose = ffm.getFunctionPtr("_pamClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
+    pamCloseSession = ffm.getFunctionPtr("_pamCloseSession", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
+    pamOpenSession = ffm.getFunctionPtr("_pamOpenSession", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
     fileGetMode = ffm.getFunctionPtr("_fileGetMode", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
@@ -124,6 +135,7 @@ public class LinuxFFM implements LinuxAPI {
     getConsoleSize = ffm.getFunctionPtr("_getConsoleSize", ffm.getFunctionDesciptorVoid());
     ptyOpen = ffm.getFunctionPtr("_ptyOpen", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG));
     fileGetID = ffm.getFunctionPtr("_fileGetID", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
+    pamOpen = ffm.getFunctionPtr("_pamOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS,ADDRESS));
     ptyAlloc = ffm.getFunctionPtr("_ptyAlloc", ffm.getFunctionDesciptor(JAVA_LONG));
     ptyChildExec = ffm.getFunctionPtr("_ptyChildExec", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS,ADDRESS,ADDRESS));
     disableConsoleMode = ffm.getFunctionPtr("_disableConsoleMode", ffm.getFunctionDesciptorVoid());
