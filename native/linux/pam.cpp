@@ -93,7 +93,7 @@ jboolean pamCloseSession(jlong ctx) {
 const char* pamGetEnv(jlong ctx, const char *name) {
   if (ctx == 0) return NULL;
   pam_handle_t *handle = (pam_handle_t*)ctx;
-  return (*_pam_getenv)(handle, 0);
+  return (*_pam_getenv)(handle, name);
 }
 
 extern "C" {
