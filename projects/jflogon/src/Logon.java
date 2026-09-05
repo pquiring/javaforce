@@ -27,6 +27,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private static int LOG_DEFAULT = 0;
 
+  private static void load_config() {
+    props = Linux.getJFLinuxProperties();
+    is_wayland = getProperty("wayland").equals("true");
+  }
+
   /**
    * Creates new form LogonApp
    */
@@ -36,8 +41,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       showError(errmsg);
     }
     try {
-      props = Linux.getJFLinuxProperties();
-      is_wayland = getProperty("wayland").equals("true");
+      load_config();
+      Startup.load_config();
       initComponents();
       loadNetworkIcons();
       if (new File("/etc/.lastLogon").exists()) {

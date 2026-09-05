@@ -16,7 +16,7 @@ import javaforce.api.linux.*;
 public class Startup implements ShellProcessListener {
   private static ShellProcess display_mgr_process;
   private static boolean rebootFlag, shutdownFlag;
-  private static boolean is_wayland = false;
+  public static boolean is_wayland = false;
   private static String display_mgr = "X";
   private static Properties props;
   private static Wayland wayland;
@@ -28,6 +28,18 @@ public class Startup implements ShellProcessListener {
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
 
+  public static void load_config() {
+    props = Linux.getJFLinuxProperties();
+    is_wayland = getProperty("wayland").equals("true");
+    if (is_wayland) {
+      display_mgr = getProperty("display_manager");
+      if (display_mgr.equals("")) {
+        display_mgr = "labwc";
+      }
+      JFLog.log("wayland:display_manager=" + display_mgr);
+    }
+  }
+
   /** Main entry point for jfLinux system.*/
   public static void serviceStart(String[] args) {
     JFLog.init(LOG_DEFAULT, "/var/log/jflogon-system.log", true);
@@ -37,15 +49,7 @@ public class Startup implements ShellProcessListener {
     try {
       fixSudoers();
       Linux.init();
-      props = Linux.getJFLinuxProperties();
-      is_wayland = getProperty("wayland").equals("true");
-      if (is_wayland) {
-        display_mgr = getProperty("display_manager");
-        if (display_mgr.equals("")) {
-          display_mgr = "labwc";
-        }
-        JFLog.log("wayland:display_manager=" + display_mgr);
-      }
+      load_config();
       //start jfsystemmgr
       jbusServer = new JBusServer(SystemBusNames.system, new JBusMethods());
       jbusServer.connect();
@@ -276,7 +280,7 @@ public class Startup implements ShellProcessListener {
         }
       }
       JFLog.log("JID=" + jid);
-      JFLog.log("Starting session:" + session + ";user=" + user);
+      JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       try {
         Process p = pb.start();
         p.waitFor();
