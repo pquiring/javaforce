@@ -69,11 +69,7 @@ public class Startup implements ShellProcessListener {
 
         JF.exec(new String[] {"numlockx", "on"});
         try {
-          if (new File("/etc/.live").exists()) {
-            doLiveLogon();
-          } else {
-            createLogon();
-          }
+          createLogon();
         } catch (java.awt.HeadlessException he) {
           JFLog.log(he);
           JF.sleep(500);
@@ -219,29 +215,6 @@ public class Startup implements ShellProcessListener {
     }
   }
 
-  private static void doLiveLogon() {
-    try {
-      FileInputStream fis = new FileInputStream("/etc/.live");
-      Properties props = new Properties();
-      props.load(fis);
-      fis.close();
-      String user = props.getProperty("user");
-      if (user == null) user = "jflive";
-      if (is_wayland) {
-        stop();
-      }
-      //run session as live user
-      runSession(user, "/usr/bin/jfdesktop", null, false);
-      stop();
-      JF.sleep(1000);
-      System.out.println("" + (char)0x1b + "[2J");  //clear screen
-      System.out.println("\n\n\n\n\n\t\tPlease remove installation media and reboot\n\n\n\n\n");
-//      shutdown("-H");
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   public static void runSession(String user, String session, String[] envs, boolean domainLogon) {
     //NOTE : this is running in jflogon-ui process
     LinuxAPI api = LinuxAPI.getInstance();
@@ -271,7 +244,7 @@ public class Startup implements ShellProcessListener {
       int uid = Linux.getUID(user);
       int gid = Linux.getGID(user);
       String cmd[] = new String[] {
-        "/usr/sbin/jffork",
+        "/usr/bin/jffork",
         Integer.toString(uid),
         Integer.toString(gid),
         session
@@ -304,8 +277,12 @@ public class Startup implements ShellProcessListener {
       }
       JFLog.log("JID=" + jid);
       JFLog.log("Starting session:" + session + ";user=" + user);
-      Process p = pb.start();
-      p.waitFor();
+      try {
+        Process p = pb.start();
+        p.waitFor();
+      } catch (Throwable t2) {
+        JFLog.log(t2);
+      }
       if (pam != 0) {
         api.pamCloseSession(pam);
         api.pamClose(pam);
@@ -332,8 +309,8 @@ public class Startup implements ShellProcessListener {
       } else {
         JFLog.log("Power functions disabled by security policy.");
       }
-    } catch (Exception e) {
-      JFLog.log(e);
+    } catch (Throwable t1) {
+      JFLog.log(t1);
     }
   }
 
