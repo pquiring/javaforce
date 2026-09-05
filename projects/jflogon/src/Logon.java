@@ -463,12 +463,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       if (pam != 0) {
         api.pamOpenSession(pam);
       }
-      int uid = Linux.getUID(user);
-      int gid = Linux.getGID(user);
       String cmd[] = new String[] {
         "/usr/bin/jffork",
-        Integer.toString(uid),
-        Integer.toString(gid),
+        uid,
+        gid,
         session
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);

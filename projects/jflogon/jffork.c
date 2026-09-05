@@ -15,11 +15,11 @@ int main(int argc, char**argv) {
   int uid = atoi(argv[1]);
   int gid = atoi(argv[2]);
   char* app = argv[3];
-  setuid(uid);
-  setgid(gid);
   int pid = fork();
   if (pid == 0) {
     setsid();
+    setuid(uid);
+    setgid(gid);
     execv(app, newargv);
   } else {
     int status;
