@@ -23,7 +23,6 @@ public class Startup implements ShellProcessListener {
 
   public static AutoMounter autoMounter;
   public static JBusServer jbusServer;
-  public static long pam;
 
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;

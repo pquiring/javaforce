@@ -465,9 +465,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         api.pamOpenSession(pam);
       }
       String cmd[] = new String[] {
-        "/usr/bin/jffork",
-        uid,
-        gid,
+        "/usr/sbin/runuser",
+        "-u",
+        user,
         session
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
