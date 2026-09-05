@@ -95,8 +95,48 @@ public class Startup implements ShellProcessListener {
     }
   }
 
+/*
+
+  if (rebootFlag) {
+    JFLog.log("Rebooting...");
+    rebootFlag = false;
+    Startup.reboot();
+    return;
+  }
+  if (shutdownFlag) {
+    JFLog.log("Shutting down...");
+    shutdownFlag = false;
+    Startup.shutdown("-P");
+    return;
+  }
+
+ */
+
   public static void serviceStop() {
     //nop
+  }
+
+  public static byte mcookie[] = new byte[16];
+
+  private static void create_server_xauth() throws Exception {
+    //write auth data to /root/.Xauthority
+    Random r = new Random();
+    for(int a=0;a<16;a++) {
+      mcookie[a] = (byte)('a' + (Math.abs(r.nextInt()) % 26));
+    }
+    write_xauth("/root/.Xauthority");
+  }
+
+  private static void write_xauth(String fn) throws Exception {
+    FileOutputStream fos = new FileOutputStream(fn);
+    fos.write(new byte[] { (byte)0xfc, 0x00 });  //uint16 = 252
+    fos.write(new byte[] { 0x00, 0x00 });  //uint16 = 0 (string length)
+    fos.write(new byte[] { 0x00, 0x00 });  //uint16 = 0 (string length)
+    fos.write(new byte[] { 0x12, 0x00 });  //uint16 = 0x12 (string length)
+    fos.write("MIT-MAGIC-COOKIE-1".getBytes());  //magic string
+    fos.write(new byte[] { 0x10, 0x00 });  //uint16 = 0x10 (data length)
+    fos.write(mcookie);  //cookie
+    fos.close();
   }
 
   private static boolean start_jf_wayland() {
@@ -186,159 +226,6 @@ public class Startup implements ShellProcessListener {
     }
     JFLog.log("Starting Logon Greeter...");
     process.run(cmds, true);
-  }
-
-  public static byte mcookie[] = new byte[16];
-
-  private static void create_server_xauth() throws Exception {
-    //write auth data to /root/.Xauthority
-    Random r = new Random();
-    for(int a=0;a<16;a++) {
-      mcookie[a] = (byte)('a' + (Math.abs(r.nextInt()) % 26));
-    }
-    write_xauth("/root/.Xauthority");
-  }
-
-  private static void write_xauth(String fn) throws Exception {
-    FileOutputStream fos = new FileOutputStream(fn);
-    fos.write(new byte[] { (byte)0xfc, 0x00 });  //uint16 = 252
-    fos.write(new byte[] { 0x00, 0x00 });  //uint16 = 0 (string length)
-    fos.write(new byte[] { 0x00, 0x00 });  //uint16 = 0 (string length)
-    fos.write(new byte[] { 0x12, 0x00 });  //uint16 = 0x12 (string length)
-    fos.write("MIT-MAGIC-COOKIE-1".getBytes());  //magic string
-    fos.write(new byte[] { 0x10, 0x00 });  //uint16 = 0x10 (data length)
-    fos.write(mcookie);  //cookie
-    fos.close();
-  }
-
-  private static void chown_xauth(String fn, String user) throws Exception {
-    try {
-      JF.exec(new String[] {"chown", user+":"+user, fn});
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public static void runSession(String user, String session, String[] envs, boolean domainLogon) {
-    //NOTE : this is running in jflogon-ui process
-    LinuxAPI api = LinuxAPI.getInstance();
-    try {
-      getUserDetails(user);
-      if (!is_wayland) {
-        String xauthFile = homePath + "/.Xauthority";
-        write_xauth(xauthFile);
-        chown_xauth(xauthFile, user);
-      }
-      if (!Linux.isMemberOf(user, "audio")) {
-        //pulseaudio requires user to be member of 'audio' group
-        JF.exec(new String[] {"usermod", "-aG", "audio", user});
-      }
-      if (!Linux.isMemberOf(user, "sambashare")) {
-        //net usershare requires user to be member of 'sambashare' group
-        JF.exec(new String[] {"usermod", "-aG", "sambashare", user});
-      }
-      if (!Linux.isMemberOf(user, "video")) {
-        //video4linux requires user to be a member of 'video' group
-        JF.exec(new String[] {"usermod", "-aG", "video", user});
-      }
-      String jid = "j" + Math.abs(new Random().nextInt());
-      if (pam != 0) {
-        api.pamOpenSession(pam);
-      }
-      int uid = Linux.getUID(user);
-      int gid = Linux.getGID(user);
-      String cmd[] = new String[] {
-        "/usr/bin/jffork",
-        Integer.toString(uid),
-        Integer.toString(gid),
-        session
-      };
-      ProcessBuilder pb = new ProcessBuilder(cmd);
-      Map<String,String> env = pb.environment();
-      env.put("USER", user);
-      env.put("LOGNAME", user);
-      env.put("SHELL", shellPath);
-      env.put("HOME", homePath);
-      env.put("JID", jid);
-      if (is_wayland) {
-        env.put("WAYLAND_DISPLAY", "wayland-0");
-        String xdg_runtime_dir = "/run/user/" + uid;
-        new File(xdg_runtime_dir).mkdir();
-        Linux.chown(xdg_runtime_dir, user);
-        env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
-      } else {
-        env.put("XAUTHORITY", homePath + "/.Xauthority");
-        env.put("DISPLAY", ":0");
-      }
-      if (envs != null) {
-        for(String e : envs) {
-          int idx = e.indexOf('=');
-          if (idx == -1) continue;
-          String name = e.substring(0, idx);
-          String value = e.substring(idx + 1);
-          env.put(name, value);
-        }
-      }
-      JFLog.log("JID=" + jid);
-      JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
-      try {
-        Process p = pb.start();
-        p.waitFor();
-      } catch (Throwable t2) {
-        JFLog.log(t2);
-      }
-      if (pam != 0) {
-        api.pamCloseSession(pam);
-        api.pamClose(pam);
-        pam = 0;
-      }
-      JFLog.log("Session has terminated");
-      JFLog.log("Killing all processes for user " + user);
-      JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
-      JF.sleep(1500);  //wait for windows to close
-      if (!globalConfig.disableSleep) {
-        if (rebootFlag) {
-          JFLog.log("Rebooting...");
-          rebootFlag = false;
-          Startup.reboot();
-          return;
-        }
-        if (shutdownFlag) {
-          JFLog.log("Shutting down...");
-          shutdownFlag = false;
-          Startup.shutdown("-P");
-          return;
-        }
-        start();
-      } else {
-        JFLog.log("Power functions disabled by security policy.");
-      }
-    } catch (Throwable t1) {
-      JFLog.log(t1);
-    }
-  }
-
-  public static String homePath, shellPath;
-
-  public static void getUserDetails(String user) throws Exception {
-    //find path from /etc/passwd
-    //passwd = user_name:x:uid:gid:full_name:home_dir:shell
-    FileInputStream fis = new FileInputStream("/etc/passwd");
-    int len = fis.available();
-    byte passwd[] = new byte[len];
-    fis.read(passwd);
-    String text = new String(passwd);
-    String lns[] = text.split("\n");
-    for(int ln=0;ln<lns.length;ln++) {
-      String fs[] = lns[ln].split(":");
-      if (!fs[0].equals(user)) continue;
-      homePath = fs[5];
-      shellPath = fs[6];
-      fis.close();
-      return;
-    }
-    fis.close();
-    throw new Exception("user not found");
   }
 
   /** Reboots PC */

@@ -63,22 +63,33 @@ public class Startup  implements ShellProcessListener {
     }
     JFLog.log("jfDesktop:starting UI");
     try {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          try {
-            JFLog.log("Creating Dock");
-            new Dock().setVisible(true);
-            JFLog.log("Creating Desktop");
-            new Desktop().setVisible(true);
-          } catch (Throwable t) {
-            JFLog.log(t);
-          }
-        }
-      });
+      int uid = LinuxAPI.getInstance().getUID();
+      if (is_wayland) {
+        startUI(new String[] {"/usr/bin/jfdesktop-session"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "WAYLAND_DISPLAY=wayland-0"});
+      } else {
+        startUI(new String[] {"/usr/bin/jfdesktop-session"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
+      }
     } catch (Throwable t) {
       JFLog.log(t);
     }
     JF.sleep(1000);
+  }
+
+  private static void startUI(String[] cmds, String[] envs) throws Exception {
+    ShellProcess process = new ShellProcess();
+    process.keepOutput(false);
+    process.addListener(new Startup());
+    if (envs != null) {
+      for(String e : envs) {
+        int idx = e.indexOf('=');
+        if (idx == -1) continue;
+        String name = e.substring(0, idx);
+        String value = e.substring(idx + 1);
+        process.addEnvironmentVariable(name, value);
+      }
+    }
+    JFLog.log("Starting Desktop Session...");
+    process.run(cmds, true);
   }
 
   public void shellProcessOutput(String out) {

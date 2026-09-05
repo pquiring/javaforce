@@ -42,7 +42,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
     try {
       load_config();
-      Startup.load_config();
       initComponents();
       loadNetworkIcons();
       if (new File("/etc/.lastLogon").exists()) {
@@ -245,7 +244,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       setVisible(true);
       return;
     }
-    Startup.reboot();
+    reboot();
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
@@ -254,7 +253,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       setVisible(true);
       return;
     }
-    Startup.shutdown("-P");
+    shutdown("-P");
   }//GEN-LAST:event_ShutdownActionPerformed
 
   private void SleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SleepActionPerformed
@@ -357,6 +356,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private String envs[];
   private String user, pass;
   private boolean domainLogon;
+  private long pam;
 
   private void doLogon() {
     user = (String)username.getSelectedItem();
@@ -380,8 +380,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     errmsg = "Auth failed";
     envs = null;
     domainLogon = false;
-    Startup.pam = LinuxAPI.getInstance().pamOpen(user, pass, LinuxAPI.pamGetBackend());
-    return Startup.pam != 0;
+    pam = LinuxAPI.getInstance().pamOpen(user, pass, LinuxAPI.pamGetBackend());
+    return pam != 0;
   }
 
   private void runSession() {
@@ -396,7 +396,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     new Thread() {
       public void run() {
         try {
-          Startup.runSession(user, "/usr/bin/jfdesktop", envs, domainLogon);
+          runSession(user, "/usr/bin/jfdesktop", envs, domainLogon);
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
@@ -413,6 +413,135 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         }});
       }
     }.start();
+  }
+
+  public static byte mcookie[] = new byte[16];
+
+  private static void write_xauth(String fn) throws Exception {
+    FileOutputStream fos = new FileOutputStream(fn);
+    fos.write(new byte[] { (byte)0xfc, 0x00 });  //uint16 = 252
+    fos.write(new byte[] { 0x00, 0x00 });  //uint16 = 0 (string length)
+    fos.write(new byte[] { 0x00, 0x00 });  //uint16 = 0 (string length)
+    fos.write(new byte[] { 0x12, 0x00 });  //uint16 = 0x12 (string length)
+    fos.write("MIT-MAGIC-COOKIE-1".getBytes());  //magic string
+    fos.write(new byte[] { 0x10, 0x00 });  //uint16 = 0x10 (data length)
+    fos.write(mcookie);  //cookie
+    fos.close();
+  }
+
+  private static void chown_xauth(String fn, String user) throws Exception {
+    try {
+      JF.exec(new String[] {"chown", user+":"+user, fn});
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  public void runSession(String user, String session, String[] envs, boolean domainLogon) {
+    //NOTE : this is running in jflogon-ui process
+    LinuxAPI api = LinuxAPI.getInstance();
+    try {
+      getUserDetails(user);
+      if (!is_wayland) {
+        String xauthFile = homePath + "/.Xauthority";
+        write_xauth(xauthFile);
+        chown_xauth(xauthFile, user);
+      }
+      if (!Linux.isMemberOf(user, "audio")) {
+        //pulseaudio requires user to be member of 'audio' group
+        JF.exec(new String[] {"usermod", "-aG", "audio", user});
+      }
+      if (!Linux.isMemberOf(user, "sambashare")) {
+        //net usershare requires user to be member of 'sambashare' group
+        JF.exec(new String[] {"usermod", "-aG", "sambashare", user});
+      }
+      if (!Linux.isMemberOf(user, "video")) {
+        //video4linux requires user to be a member of 'video' group
+        JF.exec(new String[] {"usermod", "-aG", "video", user});
+      }
+      String jid = "j" + Math.abs(new Random().nextInt());
+      if (pam != 0) {
+        api.pamOpenSession(pam);
+      }
+      int uid = Linux.getUID(user);
+      int gid = Linux.getGID(user);
+      String cmd[] = new String[] {
+        "/usr/bin/jffork",
+        Integer.toString(uid),
+        Integer.toString(gid),
+        session
+      };
+      ProcessBuilder pb = new ProcessBuilder(cmd);
+      Map<String,String> env = pb.environment();
+      env.put("USER", user);
+      env.put("LOGNAME", user);
+      env.put("SHELL", shellPath);
+      env.put("HOME", homePath);
+      env.put("JID", jid);
+      String xdg_runtime_dir = "/run/user/" + uid;
+      new File(xdg_runtime_dir).mkdir();
+      Linux.chown(xdg_runtime_dir, user);
+      env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
+      if (is_wayland) {
+        //nop
+      } else {
+        env.put("XAUTHORITY", homePath + "/.Xauthority");
+        env.put("DISPLAY", ":0");
+      }
+      if (envs != null) {
+        for(String e : envs) {
+          int idx = e.indexOf('=');
+          if (idx == -1) continue;
+          String name = e.substring(0, idx);
+          String value = e.substring(idx + 1);
+          env.put(name, value);
+        }
+      }
+      JFLog.log("JID=" + jid);
+      JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
+      try {
+        Process p = pb.start();
+        p.waitFor();
+      } catch (Throwable t2) {
+        JFLog.log(t2);
+      }
+      if (pam != 0) {
+        api.pamCloseSession(pam);
+        api.pamClose(pam);
+        pam = 0;
+      }
+      JFLog.log("Session has terminated");
+      JFLog.log("Killing all processes for user " + user);
+      JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
+      JF.sleep(1500);  //wait for windows to close
+    } catch (Throwable t1) {
+      JFLog.log(t1);
+    }
+  }
+
+  public static String uid, gid, homePath, shellPath;
+
+  public static void getUserDetails(String user) throws Exception {
+    //find path from /etc/passwd
+    //passwd = user_name:x:uid:gid:full_name:home_dir:shell
+    FileInputStream fis = new FileInputStream("/etc/passwd");
+    int len = fis.available();
+    byte passwd[] = new byte[len];
+    fis.read(passwd);
+    String text = new String(passwd);
+    String lns[] = text.split("\n");
+    for(int ln=0;ln<lns.length;ln++) {
+      String fs[] = lns[ln].split(":");
+      if (!fs[0].equals(user)) continue;
+      uid = fs[2];
+      gid = fs[3];
+      homePath = fs[5];
+      shellPath = fs[6];
+      fis.close();
+      return;
+    }
+    fis.close();
+    throw new Exception("user not found");
   }
 
   private void showError(String msg) {
@@ -671,6 +800,32 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     String[] envs = JF.getEnvironment();
     for(String e : envs) {
       JFLog.log(LOG_DEFAULT, e);
+    }
+  }
+
+  /** Reboots PC */
+  public static void reboot() {
+    try {
+//      stop();
+//      showPlymouth();
+      JFLog.log("Rebooting...");
+      JF.exec(new String[] {"reboot"});
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  /** Shuts down PC
+   * @param type "-P" = powerdown, "-H"=halt
+   */
+  public static void shutdown(String type) {
+    try {
+//      stop();
+//      showPlymouth();
+      JFLog.log("Shutting down...,type=" + type);
+      JF.exec(new String[] {"shutdown " + type + " now"});
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 

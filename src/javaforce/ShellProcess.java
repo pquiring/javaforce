@@ -154,8 +154,8 @@ public class ShellProcess {
   }
 
   /**
-   * Runs a process, sending responses to stdin and returning all stdout. The
-   * responses should cause the process to terminate.
+   * Runs a process, sending responses to stdin and returning all stdout.
+   * The responses should cause the process to terminate.
    * If cmd[0] is 'sudo' then jfsudo-ask is used if a password is required to run the command.
    * If redirStderr is true then stderr will be redir to stdout.
    */
