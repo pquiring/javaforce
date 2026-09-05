@@ -99,37 +99,42 @@ public class Startup implements ShellProcessListener {
     //nop
   }
 
-  private static void start_jf_wayland() {
+  private static boolean start_jf_wayland() {
     new Thread() {
       public void run() {
         wayland.start();
       }
     }.start();
+    return true;
   }
 
-  private static void stop_jf_wayland() {
+  private static boolean stop_jf_wayland() {
     wayland.stop();
+    return true;
   }
 
-  private static void start() throws Exception {
+  private static boolean start() throws Exception {
     JFLog.log("Starting Display Manager:" + display_mgr);
+    boolean res = false;
     switch (display_mgr) {
-      case "X": config_X(); start(new String[] {"/usr/bin/X"}, null); break;
-      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
-      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
-      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
-      case "javaforce": config_jf_wayland(); start_jf_wayland(); break;
+      case "X": config_X(); res = start(new String[] {"/usr/bin/X"}, null); break;
+      case "weston": config_weston(); res = start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
+      case "labwc": config_labwc(); res = start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
+      case "sway": config_sway(); res = start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0"}); break;
+      case "javaforce": config_jf_wayland(); res = start_jf_wayland(); break;
     }
+    return res;
   }
 
-  private static void start(String[] cmds, String[] env) throws Exception {
+  private static boolean start(String[] cmds, String[] envs) throws Exception {
+    if (display_mgr_process != null) return false;
     new Thread() {
       public void run() {
         display_mgr_process = new ShellProcess();
         display_mgr_process.keepOutput(false);
         display_mgr_process.addListener(new Startup());
-        if (env != null) {
-          for(String e : env) {
+        if (envs != null) {
+          for(String e : envs) {
             int idx = e.indexOf('=');
             if (idx == -1) continue;
             String name = e.substring(0, idx);
@@ -140,9 +145,11 @@ public class Startup implements ShellProcessListener {
         display_mgr_process.run(cmds, true);
       }
     }.start();
+    return true;
   }
 
-  public static void stop() throws Exception {
+  public static boolean stop() throws Exception {
+    if (display_mgr_process == null) return false;
     if (display_mgr_process != null) {
       JFLog.log("Stopping Display Manager...");
       display_mgr_process.destroy();
@@ -159,30 +166,26 @@ public class Startup implements ShellProcessListener {
       JFLog.log("Display Manager stopped...");
     }
     if (display_mgr.equals("javaforce")) {
-      stop_jf_wayland();
+      return stop_jf_wayland();
     }
+    return true;
   }
 
-  private static void startUI(String[] cmds, String[] env) throws Exception {
+  private static void startUI(String[] cmds, String[] envs) throws Exception {
     ShellProcess process = new ShellProcess();
     process.keepOutput(false);
     process.addListener(new Startup());
-    if (env != null) {
-      for(String e : env) {
+    if (envs != null) {
+      for(String e : envs) {
         int idx = e.indexOf('=');
         if (idx == -1) continue;
         String name = e.substring(0, idx);
         String value = e.substring(idx + 1);
         process.addEnvironmentVariable(name, value);
-        Linux.setEnv(name, value);
       }
     }
     JFLog.log("Starting Logon Greeter...");
-    if (false) {
-      process.run(cmds, true);
-    } else {
-      new Logon().setVisible(true);
-    }
+    process.run(cmds, true);
   }
 
   public static byte mcookie[] = new byte[16];
@@ -224,6 +227,9 @@ public class Startup implements ShellProcessListener {
       fis.close();
       String user = props.getProperty("user");
       if (user == null) user = "jflive";
+      if (is_wayland) {
+        stop();
+      }
       //run session as live user
       runSession(user, "/usr/bin/jfdesktop", null, false);
       stop();
@@ -237,15 +243,15 @@ public class Startup implements ShellProcessListener {
   }
 
   public static void runSession(String user, String session, String[] envs, boolean domainLogon) {
+    //NOTE : this is running in jflogon-ui process
     LinuxAPI api = LinuxAPI.getInstance();
     try {
-      if (is_wayland) {
-        stop();
-      }
       getUserDetails(user);
-      String xauthFile = homePath + "/.Xauthority";
-      write_xauth(xauthFile);
-      chown_xauth(xauthFile, user);
+      if (!is_wayland) {
+        String xauthFile = homePath + "/.Xauthority";
+        write_xauth(xauthFile);
+        chown_xauth(xauthFile, user);
+      }
       if (!Linux.isMemberOf(user, "audio")) {
         //pulseaudio requires user to be member of 'audio' group
         JF.exec(new String[] {"usermod", "-aG", "audio", user});
@@ -262,8 +268,12 @@ public class Startup implements ShellProcessListener {
       if (pam != 0) {
         api.pamOpenSession(pam);
       }
+      int uid = Linux.getUID(user);
+      int gid = Linux.getGID(user);
       String cmd[] = new String[] {
-        domainLogon ? "/usr/sbin/jflogon-rundomain" : "/usr/sbin/jflogon-runsession",
+        "/usr/sbin/jffork",
+        Integer.toString(uid),
+        Integer.toString(gid),
         session
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -274,20 +284,14 @@ public class Startup implements ShellProcessListener {
       env.put("HOME", homePath);
       env.put("JID", jid);
       if (is_wayland) {
-        if (false) {
-          env.put("WAYLAND_DISPLAY", "wayland-0");
-          //setup insecure wayland socket for now
-          Linux.chmod("/run/wayland-0", 0777);
-        }
-      } else {
-        env.put("XAUTHORITY", homePath + "/.Xauthority");
-        env.put("DISPLAY", ":0");
-      }
-      if (false) {
-        String xdg_runtime_dir = "/run/user/" + user;    // should be /run/user/{uid}
+        env.put("WAYLAND_DISPLAY", "wayland-0");
+        String xdg_runtime_dir = "/run/user/" + uid;
         new File(xdg_runtime_dir).mkdir();
         Linux.chown(xdg_runtime_dir, user);
         env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
+      } else {
+        env.put("XAUTHORITY", homePath + "/.Xauthority");
+        env.put("DISPLAY", ":0");
       }
       if (envs != null) {
         for(String e : envs) {
@@ -299,7 +303,7 @@ public class Startup implements ShellProcessListener {
         }
       }
       JFLog.log("JID=" + jid);
-      JFLog.log("Starting session:" + session + " for user " + user);
+      JFLog.log("Starting session:" + session + ";user=" + user);
       Process p = pb.start();
       p.waitFor();
       if (pam != 0) {
@@ -587,6 +591,24 @@ public class Startup implements ShellProcessListener {
       jbusServer.invoke("javaforce.jflinux.jfconfig.*", "videoChanged", reason);
       return true;
     }
+    public boolean startDisplayManager() {
+      JFLog.log("startDisplayManager");
+      try {
+        return start();
+      } catch (Throwable t) {
+        JFLog.log(t);
+        return false;
+      }
+    }
+    public boolean stopDisplayManager() {
+      JFLog.log("stopDisplayManager");
+      try {
+        return stop();
+      } catch (Throwable t) {
+        JFLog.log(t);
+        return false;
+      }
+    }
   }
   private static String getProperty(String name) {
     String prop = props.getProperty(name);
@@ -616,8 +638,8 @@ public class Startup implements ShellProcessListener {
   }
   private static void log_env() {
     JFLog.log(LOG_DEFAULT, "Environment:");
-    String[] env = JF.getEnvironment();
-    for(String e : env) {
+    String[] envs = JF.getEnvironment();
+    for(String e : envs) {
       JFLog.log(LOG_DEFAULT, e);
     }
   }

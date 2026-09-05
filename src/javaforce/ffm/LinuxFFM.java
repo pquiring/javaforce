@@ -48,11 +48,26 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle fileGetMode;
   public int fileGetMode(java.lang.String a1) { try { Arena arena = Arena.ofAuto(); int _ret_value_ = (int)fileGetMode.invokeExact((MemorySegment)(a1 == null ? MemorySegment.NULL : arena.allocateFrom(a1)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle getGID;
+  public int getGID() { try { int _ret_value_ = (int)getGID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle getUID;
   public int getUID() { try { int _ret_value_ = (int)getUID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
+  private MethodHandle geteGID;
+  public int geteGID() { try { int _ret_value_ = (int)geteGID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle geteUID;
+  public int geteUID() { try { int _ret_value_ = (int)geteUID.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
   private MethodHandle ptyRead;
   public int ptyRead(long a1,byte[] a2,int a3,int a4) { try { Arena arena = Arena.ofAuto(); MemorySegment _array_a2 = FFM.toMemory(arena, a2);int _ret_value_ = (int)ptyRead.invokeExact(a1,_array_a2,a3,a4);FFM.copyBack(_array_a2,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle setGID;
+  public int setGID(int a1) { try { int _ret_value_ = (int)setGID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
+
+  private MethodHandle setUID;
+  public int setUID(int a1) { try { int _ret_value_ = (int)setUID.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return -1;} }
 
   private MethodHandle getConsolePos;
   public int[] getConsolePos() { try { FFM.createFFMArray();getConsolePos.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
@@ -129,8 +144,13 @@ public class LinuxFFM implements LinuxAPI {
     peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
     fileGetMode = ffm.getFunctionPtr("_fileGetMode", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
+    getGID = ffm.getFunctionPtr("_getGID", ffm.getFunctionDesciptor(JAVA_INT));
     getUID = ffm.getFunctionPtr("_getUID", ffm.getFunctionDesciptor(JAVA_INT));
+    geteGID = ffm.getFunctionPtr("_geteGID", ffm.getFunctionDesciptor(JAVA_INT));
+    geteUID = ffm.getFunctionPtr("_geteUID", ffm.getFunctionDesciptor(JAVA_INT));
     ptyRead = ffm.getFunctionPtr("_ptyRead", ffm.getFunctionDesciptor(JAVA_INT,JAVA_LONG,ADDRESS,JAVA_INT,JAVA_INT));
+    setGID = ffm.getFunctionPtr("_setGID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
+    setUID = ffm.getFunctionPtr("_setUID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
     getConsolePos = ffm.getFunctionPtr("_getConsolePos", ffm.getFunctionDesciptorVoid());
     getConsoleSize = ffm.getFunctionPtr("_getConsoleSize", ffm.getFunctionDesciptorVoid());
     ptyOpen = ffm.getFunctionPtr("_ptyOpen", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG));

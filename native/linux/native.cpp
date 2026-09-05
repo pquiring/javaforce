@@ -200,6 +200,31 @@ jint getUID()
   return getuid();
 }
 
+jint geteUID()
+{
+  return geteuid();
+}
+
+jint getGID()
+{
+  return getgid();
+}
+
+jint geteGID()
+{
+  return getegid();
+}
+
+jint setUID(int uid)
+{
+  return setuid(uid);
+}
+
+jint setGID(int gid)
+{
+  return setgid(gid);
+}
+
 JNI_GetCreatedJavaVMs_t get_JNI_GetCreatedJavaVMs() {
   void* lib = dlopen("libjvm.so", RTLD_NOW | RTLD_GLOBAL);
   if (lib == NULL) {
@@ -220,6 +245,11 @@ JNIEXPORT void* _ignored() {
 extern "C" {
   JNIEXPORT void (*_setEnv)(const char*,const char*) = &setEnv;
   JNIEXPORT jint (*_getUID)() = & getUID;
+  JNIEXPORT jint (*_geteUID)() = & geteUID;
+  JNIEXPORT jint (*_getGID)() = & getGID;
+  JNIEXPORT jint (*_geteGID)() = & geteGID;
+  JNIEXPORT jint (*_setUID)(int) = & setUID;
+  JNIEXPORT jint (*_setGID)(int) = & setGID;
 
   JNIEXPORT jboolean JNICALL LinuxAPIinit(const char* libpam_so, const char* libncurses_so) {
     isWayland = getenv("WAYLAND_DISPLAY") != NULL;

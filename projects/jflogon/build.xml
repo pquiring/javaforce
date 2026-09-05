@@ -32,13 +32,15 @@
     </jar>
   </target>
 
+  <target name="fork" description="compile fork util">
+    <exec command="gcc jffork.c -o jffork"/>
+  </target>
+
   <!-- sudo ant install -->
-  <target name="install" description="install files">
+  <target name="install" depends="fork" description="install files">
     <copy file="${app}.jar" todir="/usr/share/java"/>
-    <copy file="jflogon-runsession" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
-    <copy file="jflogon-rundomain" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
+    <copy file="jffork" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jffork" perm="+x"/>
     <mkdir dir="/usr/lib/systemd/system/"/>
     <copy file="${app}.service" todir="/usr/lib/systemd/system"/>
     <mkdir dir="/etc/jflogon/"/>

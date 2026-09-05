@@ -1372,10 +1372,43 @@ public class Linux implements X11Listener {
 
   public static void kill(int pid, int signal) {
     try {
-      Runtime.getRuntime().exec(new String[] {"kill", "-" + signal, "" + pid});
+      Runtime.getRuntime().exec(new String[] {"kill", "-" + signal, Integer.toString(pid)});
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  private static int getID(String user, int idx) {
+    try {
+      FileInputStream fis = new FileInputStream("/etc/passwd");
+      String[] lns = new String(fis.readAllBytes()).split("\n");
+      fis.close();
+      //user:x:uid:gid:...
+      for(String ln : lns) {
+        String[] fs = ln.split("[:]");
+        if (fs.length < 4) continue;
+        if (fs[0].equals(user)) {
+          return Integer.valueOf(fs[idx]);
+        }
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    return -1;
+  }
+
+  /** getUID.
+   *
+   * Reads /etc/passwd and returns uid for user. */
+  public static int getUID(String user) {
+    return getID(user, 2);
+  }
+
+  /** getGID.
+   *
+   * Reads /etc/passwd and returns gid for user. */
+  public static int getGID(String user) {
+    return getID(user, 3);
   }
 
   public static void setEnv(String name, String value) {

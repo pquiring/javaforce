@@ -1,4 +1,5 @@
-/**
+/** Logon.
+ *
  * Created : Mar 31, 2012
  *
  * @author pquiring
@@ -29,8 +30,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   /**
    * Creates new form LogonApp
    */
-  public Logon() {
+  public Logon(String errmsg) {
     This = this;
+    if (errmsg != null) {
+      showError(errmsg);
+    }
     try {
       props = Linux.getJFLinuxProperties();
       is_wayland = getProperty("wayland").equals("true");
@@ -46,14 +50,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } else {
         lastUser = "";
         lastDomain = "";
-      }
-      if ((!new File("/etc/domains.lst").exists()) || (!new File("/usr/bin/ntlm_auth").exists())) {
-        remove(logonTo);
-        remove(computer);
-        //pack() later
-        computer.addItem("localhost");
-      } else {
-        listComputers();
       }
       listUsers();
       if (lastUser.length() == 0) {
@@ -102,8 +98,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     username = new javax.swing.JComboBox<>();
     lPass = new javax.swing.JLabel();
     password = new javax.swing.JPasswordField();
-    logonTo = new javax.swing.JLabel();
-    computer = new javax.swing.JComboBox<>();
     logon = new javax.swing.JButton();
     shutdown = new javax.swing.JButton();
     jLabel4 = new javax.swing.JLabel();
@@ -159,8 +153,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
     });
 
-    logonTo.setText("Logon to");
-
     logon.setText("Logon");
     logon.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -194,22 +186,20 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addGroup(layout.createSequentialGroup()
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(lUser)
+              .addComponent(lPass))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(password)
+              .addComponent(username, 0, 276, Short.MAX_VALUE)))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addComponent(shutdown)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(network)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(logon))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(lUser)
-              .addComponent(lPass)
-              .addComponent(logonTo))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(computer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(password)
-              .addComponent(username, 0, 306, Short.MAX_VALUE))))
+            .addComponent(logon)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -225,16 +215,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(lPass)
           .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(logonTo)
-          .addComponent(computer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGap(18, 18, 18)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(logon, javax.swing.GroupLayout.Alignment.TRAILING)
-          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(shutdown)
-            .addComponent(network)))
+          .addComponent(logon)
+          .addComponent(shutdown)
+          .addComponent(network))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -320,12 +305,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JMenuItem Reboot;
   private javax.swing.JMenuItem Shutdown;
   private javax.swing.JMenuItem Sleep;
-  private javax.swing.JComboBox<String> computer;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel lPass;
   private javax.swing.JLabel lUser;
   private javax.swing.JButton logon;
-  private javax.swing.JLabel logonTo;
   private javax.swing.JButton network;
   private javax.swing.JPasswordField password;
   private javax.swing.JButton shutdown;
@@ -364,49 +347,15 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  private void listComputers() {
-    computer.removeAllItems();
-    computer.addItem("localhost");
-    server.clear();
-    server.add("localhost");
-    try {
-      File file = new File("/etc/domains.lst");
-      if (!file.exists()) return;
-      FileInputStream fis = new FileInputStream(file);
-      String lst = new String(JF.readAll(fis));
-      String lns[] = lst.split("\n");
-      for(int a=0;a<lns.length;a++) {
-        if (lns[a].length() == 0) continue;
-        String fs[] = lns[a].split(",");
-        String _domain = null, _server = null;
-        for(int f=0;f<fs.length;f++) {
-          if (fs[f].startsWith("domain=")) _domain = fs[f].substring(7);
-          if (fs[f].startsWith("server=")) _server = fs[f].substring(7);
-        }
-        if ((_domain != null) && (_server != null)) {
-          computer.addItem(_domain);
-          server.add(_server);
-          if (_domain.equals(lastDomain)) {
-            computer.setSelectedIndex(computer.getItemCount()-1);
-          }
-        }
-      }
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   private ArrayList<String> server = new ArrayList<String>();
   private String errmsg;
   private String envs[];
-  private String user, pass, domain;
+  private String user, pass;
   private boolean domainLogon;
-  private LinuxAPI api;
 
   private void doLogon() {
     user = (String)username.getSelectedItem();
     pass = new String(password.getPassword());
-    domain = (String)computer.getSelectedItem();
     if (!authUser()) {
       showError("Logon Failed : " + errmsg);
       return;
@@ -415,7 +364,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     try {
       Properties props = new Properties();
       props.setProperty("lastUser", (String)username.getSelectedItem());
-      props.setProperty("lastDomain", domain);
       props.store(new FileOutputStream("/etc/.lastLogon"), "");
     } catch (Exception e) {
       JFLog.log(e);
@@ -427,44 +375,19 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     errmsg = "Auth failed";
     envs = null;
     domainLogon = false;
-    if (domain.equals("localhost")) {
-      api = LinuxAPI.getInstance();
-      Startup.pam = api.pamOpen(user, pass, LinuxAPI.pamGetBackend());
-      return Startup.pam != 0;
-    }
-    domainLogon = true;
-    String domainUser = domain + "+" + user;
-    ShellProcess sp = new ShellProcess();
-    sp.addResponse("password:", pass + "\n", false);
-    sp.run(new String[] {"ntlm_auth", "--domain=" + domain, "--username=" + user}, true);
-    if (sp.getErrorLevel() != 0) return false;
-    //create user and set password
-    if (!new File("/home/" + domainUser + "/.jfdesktop.xml").exists()) {
-      sp = new ShellProcess();
-      sp.run(new String[] {"useradd", "-m", "-U", domainUser}, false);
-      if (sp.getErrorLevel() != 0) {
-        errmsg = "failed to create local user";
-        return false;
-      }
-      sp = new ShellProcess();
-      sp.addResponse("Enter new UNIX password:", pass + "\n", true);
-      sp.addResponse("Retype new UNIX password:", pass + "\n", true);
-      sp.run(new String[] {"passwd", user}, true);  //NOTE : prompts are sent to stderr
-      if (sp.getErrorLevel() != 0) {
-        errmsg = "failed to set local password";
-        return false;
-      }
-    }
-    //create extra env variables
-    envs = new String[]  {
-      "USERDOMAIN=" + domain, "DOMAINNAME=" + user, "SERVER=" + server.get(computer.getSelectedIndex())
-    };
-    user = domainUser;
-    return true;
+    Startup.pam = LinuxAPI.getInstance().pamOpen(user, pass, LinuxAPI.pamGetBackend());
+    return Startup.pam != 0;
   }
 
   private void runSession() {
     dispose();
+    if (is_wayland) {
+      boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager");
+      if (!res) {
+        new Logon("Failed to stop display manager").setVisible(true);
+        return;
+      }
+    }
     new Thread() {
       public void run() {
         try {
@@ -472,11 +395,16 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
-        if (!is_wayland) {
+        if (is_wayland) {
+          boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
+          if (!res) {
+            JFLog.log("startDisplayManager failed!");
+          }
+        } else {
           Linux.x11_rr_reset("800x600");
         }
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
-          new Logon().setVisible(true);
+          new Logon(null).setVisible(true);
         }});
       }
     }.start();
@@ -735,8 +663,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private static void log_env() {
     JFLog.log(LOG_DEFAULT, "Environment:");
-    String[] env = JF.getEnvironment();
-    for(String e : env) {
+    String[] envs = JF.getEnvironment();
+    for(String e : envs) {
       JFLog.log(LOG_DEFAULT, e);
     }
   }
@@ -746,7 +674,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     log_env();
     //display greeter
     try {
-      Logon logon = new Logon();
+      Logon logon = new Logon(null);
       logon.setVisible(true);
     } catch (Throwable t) {
       JFLog.log(t);

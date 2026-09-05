@@ -97,14 +97,14 @@ public class Startup  implements ShellProcessListener {
     }
   }
 
-  private static void start(String[] cmds, String[] env) throws Exception {
+  private static void start(String[] cmds, String[] envs) throws Exception {
     new Thread() {
       public void run() {
         window_mgr_process = new ShellProcess();
         window_mgr_process.keepOutput(false);
         window_mgr_process.addListener(new Startup());
-        if (env != null) {
-          for(String e : env) {
+        if (envs != null) {
+          for(String e : envs) {
             int idx = e.indexOf('=');
             if (idx == -1) continue;
             String name = e.substring(0, idx);
@@ -177,8 +177,8 @@ public class Startup  implements ShellProcessListener {
   }
   private static void log_env() {
     JFLog.log(LOG_DEFAULT, "Environment:");
-    String[] env = JF.getEnvironment();
-    for(String e : env) {
+    String[] envs = JF.getEnvironment();
+    for(String e : envs) {
       JFLog.log(LOG_DEFAULT, e);
     }
   }

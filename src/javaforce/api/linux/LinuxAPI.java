@@ -65,4 +65,9 @@ public interface LinuxAPI {
 
   //user
   public int getUID();
+  public int geteUID();
+  public int getGID();
+  public int geteGID();
+  public int setUID(int uid);
+  public int setGID(int gid);
 }
