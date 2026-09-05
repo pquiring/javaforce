@@ -69,6 +69,13 @@ jboolean pamClose(jlong ctx) {
   return JNI_TRUE;
 }
 
+jboolean pamSetItem(jlong ctx,jint type,void* value) {
+  if (ctx == 0) return JNI_FALSE;
+  pam_handle_t *handle = (pam_handle_t*)ctx;
+  (*_pam_set_item)(handle, type, value);
+  return JNI_TRUE;
+}
+
 jboolean pamOpenSession(jlong ctx) {
   if (ctx == 0) return JNI_FALSE;
   pam_handle_t *handle = (pam_handle_t*)ctx;
@@ -86,6 +93,7 @@ jboolean pamCloseSession(jlong ctx) {
 extern "C" {
   JNIEXPORT jlong (*_pamOpen)(const char* user, const char* pass, const char* backend) = &pamOpen;
   JNIEXPORT jboolean (*_pamClose)(jlong) = &pamClose;
+  JNIEXPORT jboolean (*_pamSetItem)(jlong,jint,void*) = &pamSetItem;
   JNIEXPORT jboolean (*_pamOpenSession)(jlong) = &pamOpenSession;
   JNIEXPORT jboolean (*_pamCloseSession)(jlong) = &pamCloseSession;
 }

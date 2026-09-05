@@ -260,7 +260,7 @@ public class Startup implements ShellProcessListener {
     }
     try {
       if (is_wayland) {
-        startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "WAYLAND_DISPLAY=wayland-0"});
+        startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_SESSION_TYPE=wayland", "WAYLAND_DISPLAY=wayland-0"});
       } else {
         startUI(new String[] {"/usr/bin/jflogon-ui"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
       }

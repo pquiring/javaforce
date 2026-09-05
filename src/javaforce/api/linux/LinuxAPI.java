@@ -28,8 +28,13 @@ public interface LinuxAPI {
   //PAM (Pluggable Authentication Modules)
   public long pamOpen(String user, String pass, String backend);
   public boolean pamClose(long ctx);
+  public boolean pamSetItem(long ctx, int type, String value);
   public boolean pamOpenSession(long ctx);
   public boolean pamCloseSession(long ctx);
+
+  public static final int PAM_SERVICE = 1;
+  public static final int PAM_USER = 2;
+  public static final int PAM_TTY = 3;
 
   public static String pamGetBackend() {
     String backend = "passwd";

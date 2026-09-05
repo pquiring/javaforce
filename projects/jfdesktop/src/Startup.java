@@ -65,7 +65,7 @@ public class Startup  implements ShellProcessListener {
     try {
       int uid = LinuxAPI.getInstance().getUID();
       if (is_wayland) {
-        startUI(new String[] {"/usr/bin/jfdesktop-session"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "WAYLAND_DISPLAY=wayland-0"});
+        startUI(new String[] {"/usr/bin/jfdesktop-session"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_SESSION_TYPE=wayland", "WAYLAND_DISPLAY=wayland-0"});
       } else {
         startUI(new String[] {"/usr/bin/jfdesktop-session"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XAUTHORITY=/root/.Xauthority", "DISPLAY=:0"});
       }

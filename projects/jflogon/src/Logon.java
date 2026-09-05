@@ -461,6 +461,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
       String jid = "j" + Math.abs(new Random().nextInt());
       if (pam != 0) {
+        api.pamSetItem(pam, LinuxAPI.PAM_TTY, "/dev/tty1");
         api.pamOpenSession(pam);
       }
       String cmd[] = new String[] {

@@ -173,4 +173,9 @@ public class LinuxFFM implements LinuxAPI {
     if (FFM.debug) JFLog.log("LinuxFFM init complete");
     return true;
   }
+
+  @Override
+  public boolean pamSetItem(long ctx, int type, String value) {
+    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+  }
 }
