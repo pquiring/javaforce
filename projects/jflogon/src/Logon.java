@@ -479,11 +479,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       if (is_wayland) {
         env.remove("WAYLAND_DISPLAY");  //inherited from parent
-        env.put("XDG_SESSION_ID", api.pamGetEnv(pam, "XDG_SESSION_ID"));
-        env.put("XDG_SEAT", api.pamGetEnv(pam, "XDG_SEAT"));
-        env.put("XDG_VTNR", api.pamGetEnv(pam, "XDG_VTNR"));
-        env.put("XDG_SESSION_CLASS", api.pamGetEnv(pam, "XDG_SESSION_CLASS"));
-        env.put("XDG_SESSION_TYPE", api.pamGetEnv(pam, "XDG_SESSION_TYPE"));
+        env.put("XDG_SESSION_ID", pamGetEnv(api, pam, "XDG_SESSION_ID"));
+        env.put("XDG_SEAT", pamGetEnv(api, pam, "XDG_SEAT"));
+        env.put("XDG_VTNR", pamGetEnv(api, pam, "XDG_VTNR"));
+        env.put("XDG_SESSION_CLASS", pamGetEnv(api, pam, "XDG_SESSION_CLASS"));
+        env.put("XDG_SESSION_TYPE", pamGetEnv(api, pam, "XDG_SESSION_TYPE"));
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
@@ -515,6 +515,18 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     } catch (Throwable t1) {
       JFLog.log(t1);
     }
+  }
+
+  private String pamGetEnv(LinuxAPI api, long pam, String name) {
+    String env = api.pamGetEnv(pam, name);
+    if (env == null) {
+      env = System.getenv(name);
+      if (env == null) {
+        env = "";
+      }
+    }
+    JFLog.log("pamGetEnv:" + name + "=" + env);
+    return env;
   }
 
   public static String uid, gid, homePath, shellPath;
