@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 
 int main(int argc, char**argv) {
-  static char *newargv[] = { NULL, NULL };
+  static char *newargv[] = { NULL, NULL, NULL };
   static char *newenviron[] = { NULL };
 
   if (argc < 3) {
@@ -20,7 +20,9 @@ int main(int argc, char**argv) {
     setsid();
     setuid(uid);
     setgid(gid);
-    execv(app, newargv);
+//    newargv[0] = "/usr/bin/dbus-run-session";
+    newargv[1] = app;
+    execv("/usr/bin/dbus-run-session", newargv);
   } else {
     int status;
     waitpid(pid, &status, 0);
