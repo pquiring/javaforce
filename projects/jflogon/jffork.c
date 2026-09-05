@@ -20,7 +20,7 @@ int main(int argc, char**argv) {
     setsid();
     setuid(uid);
     setgid(gid);
-//    newargv[0] = "/usr/bin/dbus-run-session";
+    newargv[0] = "/usr/bin/dbus-run-session";
     newargv[1] = app;
     execv("/usr/bin/dbus-run-session", newargv);
   } else {
