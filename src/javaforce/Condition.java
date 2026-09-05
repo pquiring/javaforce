@@ -2,7 +2,7 @@ package javaforce;
 
 /** Condition interface.
  *
- * Similar to java.util.concurrent.Callable but only returns primitive boolean type.
+ * Checks for external condition returning boolean type.
  *
  * @author pquiring
  */

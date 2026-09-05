@@ -79,6 +79,10 @@ public class Startup  implements ShellProcessListener {
     ShellProcess process = new ShellProcess();
     process.keepOutput(false);
     process.addListener(new Startup());
+    process.removeEnvironmentVariable("SUDO_UID");
+    process.removeEnvironmentVariable("SUDO_GID");
+    process.removeEnvironmentVariable("SUDO_USER");
+    process.removeEnvironmentVariable("SUDO_COMMAND");
     if (envs != null) {
       for(String e : envs) {
         int idx = e.indexOf('=');

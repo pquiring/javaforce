@@ -461,9 +461,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       api.pamSetItem(pam, LinuxAPI.PAM_TTY, "/dev/tty0");
       api.pamOpenSession(pam);
       String cmd[] = new String[] {
-        "/usr/bin/jffork",
-        uid,
-        gid,
+        "/usr/bin/sudo",
+        "-E",
+        "-u",
+        user,
         session
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
