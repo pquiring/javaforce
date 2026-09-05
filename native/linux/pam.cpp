@@ -90,10 +90,17 @@ jboolean pamCloseSession(jlong ctx) {
   return JNI_TRUE;
 }
 
+const char* pamGetEnv(jlong ctx, const char *name) {
+  if (ctx == 0) return NULL;
+  pam_handle_t *handle = (pam_handle_t*)ctx;
+  return (*_pam_getenv)(handle, 0);
+}
+
 extern "C" {
   JNIEXPORT jlong (*_pamOpen)(const char* user, const char* pass, const char* backend) = &pamOpen;
   JNIEXPORT jboolean (*_pamClose)(jlong) = &pamClose;
   JNIEXPORT jboolean (*_pamSetItem)(jlong,jint,void*) = &pamSetItem;
   JNIEXPORT jboolean (*_pamOpenSession)(jlong) = &pamOpenSession;
   JNIEXPORT jboolean (*_pamCloseSession)(jlong) = &pamCloseSession;
+  JNIEXPORT const char* (*_pamGetEnv)(jlong,const char*) = &pamGetEnv;
 }

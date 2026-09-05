@@ -31,6 +31,7 @@ public interface LinuxAPI {
   public boolean pamSetItem(long ctx, int type, String value);
   public boolean pamOpenSession(long ctx);
   public boolean pamCloseSession(long ctx);
+  public String pamGetEnv(long ctx, String name);
 
   public static final int PAM_SERVICE = 1;
   public static final int PAM_USER = 2;

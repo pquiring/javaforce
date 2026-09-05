@@ -78,6 +78,9 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle getConsoleSize;
   public int[] getConsoleSize() { try { FFM.createFFMArray();getConsoleSize.invokeExact();return (int[])FFM.getArray(); } catch (Throwable t) { JFLog.log(t);  return null;} }
 
+  private MethodHandle pamGetEnv;
+  public java.lang.String pamGetEnv(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); String _ret_value_ = FFM.getString((MemorySegment)pamGetEnv.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2))));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
+
   private MethodHandle ptyOpen;
   public java.lang.String ptyOpen(long a1) { try { String _ret_value_ = FFM.getString((MemorySegment)ptyOpen.invokeExact(a1));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return null;} }
 
@@ -157,6 +160,7 @@ public class LinuxFFM implements LinuxAPI {
     setUID = ffm.getFunctionPtr("_setUID", ffm.getFunctionDesciptor(JAVA_INT,JAVA_INT));
     getConsolePos = ffm.getFunctionPtr("_getConsolePos", ffm.getFunctionDesciptorVoid());
     getConsoleSize = ffm.getFunctionPtr("_getConsoleSize", ffm.getFunctionDesciptorVoid());
+    pamGetEnv = ffm.getFunctionPtr("_pamGetEnv", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG,ADDRESS));
     ptyOpen = ffm.getFunctionPtr("_ptyOpen", ffm.getFunctionDesciptor(ADDRESS,JAVA_LONG));
     fileGetID = ffm.getFunctionPtr("_fileGetID", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS));
     pamOpen = ffm.getFunctionPtr("_pamOpen", ffm.getFunctionDesciptor(JAVA_LONG,ADDRESS,ADDRESS,ADDRESS));

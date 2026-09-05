@@ -355,7 +355,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private String errmsg;
   private String envs[];
   private String user, pass;
-  private boolean domainLogon;
   private long pam;
 
   private void doLogon() {
@@ -379,7 +378,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private boolean authUser() {
     errmsg = "Auth failed";
     envs = null;
-    domainLogon = false;
     pam = LinuxAPI.getInstance().pamOpen(user, pass, LinuxAPI.pamGetBackend());
     return pam != 0;
   }
@@ -396,7 +394,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     new Thread() {
       public void run() {
         try {
-          runSession(user, "/usr/bin/jfdesktop", envs, domainLogon);
+          runSession(user, "/usr/bin/jfdesktop", envs);
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
@@ -437,7 +435,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  public void runSession(String user, String session, String[] envs, boolean domainLogon) {
+  public void runSession(String user, String session, String[] envs) {
     //NOTE : this is running in jflogon-ui process
     LinuxAPI api = LinuxAPI.getInstance();
     try {
@@ -460,14 +458,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         JF.exec(new String[] {"usermod", "-aG", "video", user});
       }
       String jid = "j" + Math.abs(new Random().nextInt());
-      if (pam != 0) {
-        api.pamSetItem(pam, LinuxAPI.PAM_TTY, "/dev/tty0");
-        api.pamOpenSession(pam);
-      }
+      api.pamSetItem(pam, LinuxAPI.PAM_TTY, "/dev/tty0");
+      api.pamOpenSession(pam);
       String cmd[] = new String[] {
-        "/usr/sbin/runuser",
-        "-u",
-        user,
+        "/usr/bin/jffork",
+        uid,
+        gid,
         session
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -483,6 +479,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       if (is_wayland) {
         env.remove("WAYLAND_DISPLAY");  //inherited from parent
+        env.put("XDG_SESSION_ID", api.pamGetEnv(pam, "XDG_SESSION_ID"));
+        env.put("XDG_SEAT", api.pamGetEnv(pam, "XDG_SEAT"));
+        env.put("XDG_VTNR", api.pamGetEnv(pam, "XDG_VTNR"));
+        env.put("XDG_SESSION_CLASS", api.pamGetEnv(pam, "XDG_SESSION_CLASS"));
+        env.put("XDG_SESSION_TYPE", api.pamGetEnv(pam, "XDG_SESSION_TYPE"));
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
@@ -504,11 +505,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } catch (Throwable t2) {
         JFLog.log(t2);
       }
-      if (pam != 0) {
-        api.pamCloseSession(pam);
-        api.pamClose(pam);
-        pam = 0;
-      }
+      api.pamCloseSession(pam);
+      api.pamClose(pam);
+      pam = 0;
       JFLog.log("Session has terminated");
       JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
