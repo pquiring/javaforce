@@ -39,6 +39,9 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle pamOpenSession;
   public boolean pamOpenSession(long a1) { try { boolean _ret_value_ = (boolean)pamOpenSession.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle pamSetItem;
+  public boolean pamSetItem(long a1,int a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pamSetItem.invokeExact(a1,a2,(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle peekConsole;
   public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
@@ -141,6 +144,7 @@ public class LinuxFFM implements LinuxAPI {
     pamClose = ffm.getFunctionPtr("_pamClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     pamCloseSession = ffm.getFunctionPtr("_pamCloseSession", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     pamOpenSession = ffm.getFunctionPtr("_pamOpenSession", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
+    pamSetItem = ffm.getFunctionPtr("_pamSetItem", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,ADDRESS));
     peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
     fileGetMode = ffm.getFunctionPtr("_fileGetMode", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));
@@ -172,10 +176,5 @@ public class LinuxFFM implements LinuxAPI {
     writeConsoleArray = ffm.getFunctionPtr("_writeConsoleArray", ffm.getFunctionDesciptorVoid(ADDRESS,JAVA_INT,JAVA_INT));
     if (FFM.debug) JFLog.log("LinuxFFM init complete");
     return true;
-  }
-
-  @Override
-  public boolean pamSetItem(long ctx, int type, String value) {
-    throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
   }
 }
