@@ -437,13 +437,14 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       try {
         Process p = pb.start();
-        //process stdio
-        OutputStream os = p.getOutputStream();
-        InputStream is = p.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        os.write((user + "\n").getBytes());
-        os.write((pass + "\n").getBytes());
-        os.write((LinuxAPI.pamGetBackend() + "\n").getBytes());
+        OutputStream stdin = p.getOutputStream();
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
+        InputStream stdout = p.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
+        bw.write(user + "\n");
+        bw.write(pass + "\n");
+        bw.write(LinuxAPI.pamGetBackend() + "\n");
+        bw.flush();
         String res = br.readLine();
         if (res.startsWith("ERROR:")) {
           showError(res.substring(6));
@@ -457,9 +458,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
               return;
             }
           }
-          os.write((uid + "\n").getBytes());
-          os.write((gid + "\n").getBytes());
-          os.write((session + "\n").getBytes());
+          bw.write(uid + "\n");
+          bw.write(gid + "\n");
+          bw.write(session + "\n");
+          bw.flush();
         } else {
           showError(res);
           setState(true);
