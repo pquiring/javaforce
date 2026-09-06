@@ -51,41 +51,41 @@ int main(int argc, char**argv) {
     log = fopen("/tmp/jffork.log", "w");
   }
 
-  if (debug) fwrites("reading user\n", log);
+  if (debug) fputs("reading user\n", log);
   fgets(user, 256, stdin);
-  if (debug) fwrites("reading pass\n", log);
+  if (debug) fputs("reading pass\n", log);
   fgets(pwd, 256, stdin);
-  if (debug) fwrites("reading backend\n", log);
+  if (debug) fputs("reading backend\n", log);
   fgets(backend, 256, stdin);
 
-  if (debug) fwrites("pam_start\n", log);
+  if (debug) fputs("pam_start\n", log);
   int res = pam_start(backend, user, &conv, &pam_handle);
   if (res != PAM_SUCCESS) {
     printf("ERROR:pam_start() failed\n");
     return 1;
   }
 
-  if (debug) fwrites("pam_authenticate\n", log);
+  if (debug) fputs("pam_authenticate\n", log);
   res = pam_authenticate(pam_handle, 0);
   if (res != PAM_SUCCESS) {
     pam_end(pam_handle, 0);
-    if (debug) fwrites("pam_authenticate:failed\n", log);
+    if (debug) fputs("pam_authenticate:failed\n", log);
     printf("ERROR:Authentication failed\n");
     return 2;
   }
 
   //signal jflogon to shutdown wayland compositor
-  if (debug) fwrites("pam_authenticate:success\n", log);
+  if (debug) fputs("pam_authenticate:success\n", log);
   printf("OKAY:Authentication accepted\n");
 
-  if (debug) fwrites("reading uid\n", log);
+  if (debug) fputs("reading uid\n", log);
   fgets(uidstr, 256, stdin);
-  if (debug) fwrites("reading gid\n", log);
+  if (debug) fputs("reading gid\n", log);
   fgets(gidstr, 256, stdin);
-  if (debug) fwrites("reading app\n", log);
+  if (debug) fputs("reading app\n", log);
   fgets(app, 256, stdin);
 
-  if (debug) fwrites("pam_setcred\n", log);
+  if (debug) fputs("pam_setcred\n", log);
   res = pam_setcred(pam_handle, PAM_ESTABLISH_CRED);
   if (res != PAM_SUCCESS) {
     pam_end(pam_handle, 0);
@@ -93,7 +93,7 @@ int main(int argc, char**argv) {
     return 1;
   }
 
-  if (debug) fwrites("pam_open_session\n", log);
+  if (debug) fputs("pam_open_session\n", log);
   res = pam_open_session(pam_handle, 0);
   if (res != PAM_SUCCESS) {
     pam_end(pam_handle, 0);
@@ -101,7 +101,7 @@ int main(int argc, char**argv) {
     return 1;
   }
 
-  if (debug) fwrites("fork\n", log);
+  if (debug) fputs("fork\n", log);
   int uid = atoi(uidstr);
   int gid = atoi(gidstr);
   int pid = fork();
@@ -117,13 +117,13 @@ int main(int argc, char**argv) {
   int status;
   waitpid(pid, &status, 0);
 
-  if (debug) fwrites("pam_close_session\n", log);
+  if (debug) fputs("pam_close_session\n", log);
   pam_close_session(pam_handle, 0);
 
-  if (debug) fwrites("pam_setcred\n", log);
+  if (debug) fputs("pam_setcred\n", log);
   pam_setcred(pam_handle, PAM_DELETE_CRED);
 
-  if (debug) fwrites("pam_end\n", log);
+  if (debug) fputs("pam_end\n", log);
   pam_end(pam_handle, 0);
 
   return 0;
