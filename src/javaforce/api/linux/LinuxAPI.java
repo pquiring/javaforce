@@ -50,15 +50,7 @@ public interface LinuxAPI {
   public static final int PAM_REFRESH_CRED = 0x0010;
 
   public static String pamGetBackend() {
-    String backend = "common-password";
-    Linux.detectDistro();
-    // see /etc/pam.d/ for available back ends
-    switch (Linux.distro) {
-      case Debian: backend = "passwd"; break;
-      case Fedora: backend = "password-auth"; break;
-      case Arch: backend = "system-auth"; break;
-    }
-    return backend;
+    return "javaforce";
   }
 
   //setenv

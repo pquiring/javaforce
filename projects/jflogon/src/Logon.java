@@ -429,6 +429,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       new File(xdg_runtime_dir).mkdir();
       Linux.chown(xdg_runtime_dir, user);
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
+      env.put("XDG_SEAT", "seat0");
       if (is_wayland) {
         env.remove("WAYLAND_DISPLAY");  //inherited from parent
       } else {

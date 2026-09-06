@@ -139,7 +139,7 @@ int main(int argc, char**argv) {
       sprintf(msg, "XDG_SESSION_ID=%s\n", xid);
       logmsg(msg);
     }
-    environ = pam_getenvlist(pam_handle);
+//    environ = pam_getenvlist(pam_handle);
     setgid(gid);
     setuid(uid);
     newargv[0] = app;

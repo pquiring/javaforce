@@ -2,3 +2,4 @@
 /usr/bin/javaforce
 /usr/lib/jfnative64.so
 /etc/dbus-1/system.d/javaforce.conf
+/etc/pam.d/javaforce
