@@ -355,15 +355,10 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private String errmsg;
   private String envs[];
   private String user, pass;
-  private long pam;
 
   private void doLogon() {
     user = (String)username.getSelectedItem();
     pass = new String(password.getPassword());
-    if (!authUser()) {
-      showError("Logon Failed : " + errmsg);
-      return;
-    }
     //save lastUser/lastDomain
     try {
       Properties props = new Properties();
@@ -375,40 +370,14 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     runSession();
   }
 
-  private boolean authUser() {
-    errmsg = "Auth failed";
-    envs = null;
-    pam = LinuxAPI.getInstance().pamOpen(user, pass, LinuxAPI.pamGetBackend());
-    return pam != 0;
-  }
-
   private void runSession() {
-    dispose();
-    if (is_wayland) {
-      boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager");
-      if (!res) {
-        new Logon("Failed to stop display manager").setVisible(true);
-        return;
-      }
-    }
     new Thread() {
       public void run() {
         try {
-          runSession(user, "/usr/bin/jfdesktop", envs);
+          runSession("/usr/bin/jfdesktop", envs);
         } catch (Exception e) {
           JFAWT.showError("Session Failed", e.toString());
         }
-        if (is_wayland) {
-          boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
-          if (!res) {
-            JFLog.log("startDisplayManager failed!");
-          }
-        } else {
-          Linux.x11_rr_reset("800x600");
-        }
-        java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
-          new Logon(null).setVisible(true);
-        }});
       }
     }.start();
   }
@@ -435,9 +404,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  public void runSession(String user, String session, String[] envs) {
-    //NOTE : this is running in jflogon-ui process
-    LinuxAPI api = LinuxAPI.getInstance();
+  public void runSession(String session, String[] envs) {
     try {
       getUserDetails(user);
       if (!is_wayland) {
@@ -458,14 +425,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         JF.exec(new String[] {"usermod", "-aG", "video", user});
       }
       String jid = "j" + Math.abs(new Random().nextInt());
-      api.pamSetItem(pam, LinuxAPI.PAM_TTY, "/dev/tty0");
-      api.pamOpenSession(pam);
       String cmd[] = new String[] {
-        "/usr/bin/sudo",
-        "-E",
-        "-u",
-        user,
-        session
+        "/usr/bin/jffork",
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
       Map<String,String> env = pb.environment();
@@ -480,11 +441,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       if (is_wayland) {
         env.remove("WAYLAND_DISPLAY");  //inherited from parent
-        env.put("XDG_SESSION_ID", pamGetEnv(api, pam, "XDG_SESSION_ID"));
-        env.put("XDG_SEAT", pamGetEnv(api, pam, "XDG_SEAT"));
-        env.put("XDG_VTNR", pamGetEnv(api, pam, "XDG_VTNR"));
-        env.put("XDG_SESSION_CLASS", pamGetEnv(api, pam, "XDG_SESSION_CLASS"));
-        env.put("XDG_SESSION_TYPE", pamGetEnv(api, pam, "XDG_SESSION_TYPE"));
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
@@ -502,17 +458,53 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       try {
         Process p = pb.start();
+        //process stdio
+        OutputStream os = p.getOutputStream();
+        InputStream is = p.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        os.write((user + "\n").getBytes());
+        os.write((pass + "\n").getBytes());
+        os.write((LinuxAPI.pamGetBackend() + "\n").getBytes());
+        String res = br.readLine();
+        if (res.startsWith("ERROR:")) {
+          JFAWT.showError("Error", res.substring(6));
+          return;
+        } else if (res.startsWith("OKAY:")) {
+          dispose();
+          if (is_wayland) {
+            boolean bres = (Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager");
+            if (!bres) {
+              new Logon("Failed to stop display manager").setVisible(true);
+              return;
+            }
+          }
+          os.write((uid + "\n").getBytes());
+          os.write((gid + "\n").getBytes());
+          os.write((session + "\n").getBytes());
+        } else {
+          JFAWT.showError("Error", res);
+          return;
+        }
         p.waitFor();
       } catch (Throwable t2) {
         JFLog.log(t2);
       }
-      api.pamCloseSession(pam);
-      api.pamClose(pam);
-      pam = 0;
       JFLog.log("Session has terminated");
       JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
+      if (is_wayland) {
+        boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
+        if (!res) {
+          JFLog.log("startDisplayManager failed!");
+        }
+      } else {
+        Linux.x11_rr_reset("800x600");
+      }
+      JFLog.log("Restarting Logon Greeter");
+      java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
+        new Logon(null).setVisible(true);
+      }});
     } catch (Throwable t1) {
       JFLog.log(t1);
     }

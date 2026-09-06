@@ -1,4 +1,4 @@
-/** Session.
+/** Desktop Session.
  *
  * @author pquiring
  */

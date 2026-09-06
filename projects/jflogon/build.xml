@@ -33,7 +33,7 @@
   </target>
 
   <target name="fork" description="compile fork util">
-    <exec command="gcc jffork.c -o jffork"/>
+    <exec command="gcc jffork.c -lpam -o jffork"/>
   </target>
 
   <!-- sudo ant install -->
