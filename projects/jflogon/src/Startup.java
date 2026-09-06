@@ -28,7 +28,7 @@ public class Startup implements ShellProcessListener {
   private static int LOG_DISPLAY = 1;
 
   public static void load_config() {
-    props = Linux.getJFLinuxProperties();
+    props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
       display_mgr = getProperty("display_manager");

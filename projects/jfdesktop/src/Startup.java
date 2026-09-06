@@ -31,7 +31,7 @@ public class Startup  implements ShellProcessListener {
     log_env();
     user = System.getenv("USER");
     Linux.init();
-    props = Linux.getJFLinuxProperties();
+    props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
       window_mgr = getProperty("window_manager");

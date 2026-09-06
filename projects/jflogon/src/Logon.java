@@ -28,7 +28,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private static int LOG_DEFAULT = 0;
 
   private static void load_config() {
-    props = Linux.getJFLinuxProperties();
+    props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
   }
 
@@ -449,7 +449,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
           showError(res.substring(6));
           setState(true);
           return;
-        } else if (res.startsWith("OKAY:")) {
+        } else if (res.startsWith("SUCCESS:")) {
           dispose();
           if (is_wayland) {
             if (!(Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager")) {

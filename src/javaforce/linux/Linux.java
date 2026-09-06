@@ -1520,10 +1520,10 @@ public class Linux implements X11Listener {
     JFLog.log(output);
   }
 
-  /** Returns /etc/jflinux.props */
-  public static Properties getJFLinuxProperties() {
+  /** Returns /etc/javaforce.conf */
+  public static Properties getJavaForceProperties() {
     try {
-      String file = "/etc/jflinux.props";
+      String file = "/etc/javaforce.conf";
       if (!new File(file).exists()) return new Properties();
       Properties props = new Properties();
       FileInputStream fis = new FileInputStream(file);

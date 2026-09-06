@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <security/pam_appl.h>
@@ -10,6 +11,7 @@ static int debug = 1;
 
 static const char *pam_user, *pam_pass;
 static struct pam_response* pam_responses;
+static FILE *flog;
 
 static int pam_callback(int num_msg, const struct pam_message** _pam_messages, struct pam_response** _pam_responses, void* _appdata_ptr)
 {
@@ -33,12 +35,25 @@ static int pam_callback(int num_msg, const struct pam_message** _pam_messages, s
   return 0;
 }
 
+static void logmsg(const char* msg) {
+  fputs(msg, flog);
+  fflush(flog);
+}
+
+static void clean(char *str) {
+  char* eol = strchr(str, '\n');
+  if (eol == NULL) return;
+  *eol = 0;
+}
+
 int main(int argc, char**argv) {
   char *newargv[] = { NULL, NULL, NULL };
   char *newenviron[] = { NULL };
   pam_handle_t *pam_handle;
   struct pam_conv conv;
-  FILE *log;
+
+  conv.conv = &pam_callback;
+  conv.appdata_ptr = NULL;
 
   char user[256];
   char pwd[256];
@@ -48,44 +63,52 @@ int main(int argc, char**argv) {
   char app[256];
 
   if (debug) {
-    log = fopen("/tmp/jffork.log", "w");
+    flog = fopen("/var/log/jflogon-session.log", "w");
   }
 
-  if (debug) fputs("reading user\n", log);
+  if (debug) logmsg("reading user\n");
   fgets(user, 256, stdin);
-  if (debug) fputs("reading pass\n", log);
+  clean(user);
+  pam_user = user;
+  if (debug) logmsg("reading pass\n");
   fgets(pwd, 256, stdin);
-  if (debug) fputs("reading backend\n", log);
+  clean(pwd);
+  pam_pass = pwd;
+  if (debug) logmsg("reading backend\n");
   fgets(backend, 256, stdin);
+  clean(backend);
 
-  if (debug) fputs("pam_start\n", log);
+  if (debug) logmsg("pam_start\n");
   int res = pam_start(backend, user, &conv, &pam_handle);
   if (res != PAM_SUCCESS) {
     printf("ERROR:pam_start() failed\n");
     return 1;
   }
 
-  if (debug) fputs("pam_authenticate\n", log);
+  if (debug) logmsg("pam_authenticate\n");
   res = pam_authenticate(pam_handle, 0);
   if (res != PAM_SUCCESS) {
     pam_end(pam_handle, 0);
-    if (debug) fputs("pam_authenticate:failed\n", log);
+    if (debug) logmsg("pam_authenticate:failed\n");
     printf("ERROR:Authentication failed\n");
     return 2;
   }
 
   //signal jflogon to shutdown wayland compositor
-  if (debug) fputs("pam_authenticate:success\n", log);
-  printf("OKAY:Authentication accepted\n");
+  if (debug) logmsg("pam_authenticate:success\n");
+  printf("SUCCESS:Authentication accepted\n");
 
-  if (debug) fputs("reading uid\n", log);
+  if (debug) logmsg("reading uid\n");
   fgets(uidstr, 256, stdin);
-  if (debug) fputs("reading gid\n", log);
+  clean(uidstr);
+  if (debug) logmsg("reading gid\n");
   fgets(gidstr, 256, stdin);
-  if (debug) fputs("reading app\n", log);
+  clean(gidstr);
+  if (debug) logmsg("reading app\n");
   fgets(app, 256, stdin);
+  clean(app);
 
-  if (debug) fputs("pam_setcred\n", log);
+  if (debug) logmsg("pam_setcred\n");
   res = pam_setcred(pam_handle, PAM_ESTABLISH_CRED);
   if (res != PAM_SUCCESS) {
     pam_end(pam_handle, 0);
@@ -93,7 +116,7 @@ int main(int argc, char**argv) {
     return 1;
   }
 
-  if (debug) fputs("pam_open_session\n", log);
+  if (debug) logmsg("pam_open_session\n");
   res = pam_open_session(pam_handle, 0);
   if (res != PAM_SUCCESS) {
     pam_end(pam_handle, 0);
@@ -101,7 +124,7 @@ int main(int argc, char**argv) {
     return 1;
   }
 
-  if (debug) fputs("fork\n", log);
+  if (debug) logmsg("fork\n");
   int uid = atoi(uidstr);
   int gid = atoi(gidstr);
   int pid = fork();
@@ -117,13 +140,13 @@ int main(int argc, char**argv) {
   int status;
   waitpid(pid, &status, 0);
 
-  if (debug) fputs("pam_close_session\n", log);
+  if (debug) logmsg("pam_close_session\n");
   pam_close_session(pam_handle, 0);
 
-  if (debug) fputs("pam_setcred\n", log);
+  if (debug) logmsg("pam_setcred\n");
   pam_setcred(pam_handle, PAM_DELETE_CRED);
 
-  if (debug) fputs("pam_end\n", log);
+  if (debug) logmsg("pam_end\n");
   pam_end(pam_handle, 0);
 
   return 0;

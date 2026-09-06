@@ -32,7 +32,6 @@ int type;
 char version[MAX_PATH];
 char javahome[MAX_PATH];
 char dll[MAX_PATH];
-int size = MAX_PATH;
 int (*CreateJavaVM)(void*,void*,void*);
 int thread_handle;
 int thread_id;
@@ -53,6 +52,7 @@ char xoptions[MAX_PATH];
 char cfgargs[1024];
 bool graal = false;
 bool debug = false;
+bool wayland = false;
 int debug_port = 9010;
 char debug_opt[64];
 char errmsg[1024];
@@ -61,6 +61,7 @@ char errmsg[1024];
 void error(const char *msg);
 bool JavaThread(void *ignore);
 bool loadProperties();
+bool loadJavaForceProperties();
 bool InvokeMethodVoid(char *_class, char *_method, char *sign, jobject args);
 jobject InvokeMethodObject(char *_class, char *_method, char *sign, jobject args);
 
@@ -262,6 +263,10 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = "-XX:-UsePerfData";
   }
 
+  if (wayland) {
+    opts[nOpts++] = "-Dawt.toolkit.name=WLToolkit";
+  }
+
   opts[nOpts++] = (char*)"--enable-native-access=ALL-UNNAMED";
   opts[nOpts++] = MakeString("-Djava.app.exec=%s", g_argv[0]);
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
@@ -456,7 +461,7 @@ bool loadProperties() {
     return false;
   }
   lseek(file, fs - 8 - header.size, SEEK_SET);
-  data = (char*)malloc(size + 1);
+  data = (char*)malloc(header.size + 1);
   res = read(file, data, header.size);
   close(file);
   data[header.size] = 0;
@@ -507,6 +512,47 @@ bool loadProperties() {
   return true;
 }
 #endif
+
+bool loadJavaForceProperties() {
+  char app[MAX_PATH];
+  char *data, *ln1, *ln2;
+  int sl, fs;
+  int res;
+  struct Header header;
+
+  int file = open("/etc/javaforce.conf", O_RDONLY);
+  if (file == -1) {
+    return false;
+  }
+  fs = lseek(file, 0, SEEK_END);
+  lseek(file, 0, SEEK_SET);
+  data = (char*)malloc(fs + 1);
+  res = read(file, data, fs);
+  close(file);
+  data[fs] = 0;
+  ln1 = data;
+  while (ln1 != NULL) {
+    ln2 = strstr(ln1, "\r\n");
+    if (ln2 != NULL) {
+      *ln2 = 0;
+      ln2++;
+      *ln2 = 0;
+      ln2++;
+    } else {
+      ln2 = strchr(ln1, '\n');
+      if (ln2 != NULL) {
+        *ln2 = 0;
+        ln2++;
+      }
+    }
+    if (strncmp(ln1, "wayland=", 8) == 0) {
+      wayland = strncmp(ln1 + 8, "true", 4) == 0;
+    }
+    ln1 = ln2;
+  }
+  free(data);
+  return true;
+}
 
 char* strlwr(char* str) {
   for(int i = 0; str[i]; i++){
@@ -618,6 +664,7 @@ int main(int argc, char **argv) {
   _ignored();
 
   loadProperties();
+  loadJavaForceProperties();
 
   replace(mainclass, '/', '.');
 

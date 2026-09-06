@@ -90,10 +90,24 @@ jboolean pamCloseSession(jlong ctx) {
   return JNI_TRUE;
 }
 
+jboolean pamSetCred(jlong ctx,jint flags) {
+  if (ctx == 0) return JNI_FALSE;
+  pam_handle_t *handle = (pam_handle_t*)ctx;
+  (*_pam_setcred)(handle, flags);
+  return JNI_TRUE;
+}
+
 const char* pamGetEnv(jlong ctx, const char *name) {
   if (ctx == 0) return NULL;
   pam_handle_t *handle = (pam_handle_t*)ctx;
   return (*_pam_getenv)(handle, name);
+}
+
+jboolean pamPutEnv(jlong ctx, const char *name_value) {
+  if (ctx == 0) return JNI_FALSE;
+  pam_handle_t *handle = (pam_handle_t*)ctx;
+  (*_pam_putenv)(handle, name_value);
+  return JNI_TRUE;
 }
 
 extern "C" {
@@ -102,5 +116,7 @@ extern "C" {
   JNIEXPORT jboolean (*_pamSetItem)(jlong,jint,void*) = &pamSetItem;
   JNIEXPORT jboolean (*_pamOpenSession)(jlong) = &pamOpenSession;
   JNIEXPORT jboolean (*_pamCloseSession)(jlong) = &pamCloseSession;
+  JNIEXPORT jboolean (*_pamSetCred)(jlong,jint) = &pamSetCred;
   JNIEXPORT const char* (*_pamGetEnv)(jlong,const char*) = &pamGetEnv;
+  JNIEXPORT jboolean (*_pamPutEnv)(jlong,const char*) = &pamPutEnv;
 }

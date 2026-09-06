@@ -104,7 +104,9 @@ int (*_pam_authenticate)(pam_handle_t *pamh, int flags);
 int (*_pam_set_item)(pam_handle_t *pamh, int type, void* value);
 int (*_pam_open_session)(pam_handle_t *pamh, int flags);
 int (*_pam_close_session)(pam_handle_t *pamh, int flags);
+int (*_pam_setcred)(pam_handle_t *pamh, int flags);
 const char* (*_pam_getenv)(pam_handle_t *pamh, const char* name);
+int (*_pam_putenv)(pam_handle_t *pamh, const char* name_value);
 
 void *ncurses = NULL;
 WINDOW* (*_initscr)();

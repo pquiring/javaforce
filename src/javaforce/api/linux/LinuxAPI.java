@@ -31,14 +31,26 @@ public interface LinuxAPI {
   public boolean pamSetItem(long ctx, int type, String value);
   public boolean pamOpenSession(long ctx);
   public boolean pamCloseSession(long ctx);
+  public boolean pamSetCred(long ctx, int flags);
   public String pamGetEnv(long ctx, String name);
+  public boolean pamPutEnv(long ctx, String name_value);
 
   public static final int PAM_SERVICE = 1;
   public static final int PAM_USER = 2;
   public static final int PAM_TTY = 3;
 
+  public static final int PAM_SUCCESS = 0;
+  public static final int PAM_AUTH_ERR = 7;
+
+  public static final int PAM_SILENT = 0x8000;
+
+  public static final int PAM_ESTABLISH_CRED = 0x0002;
+  public static final int PAM_DELETE_CRED = 0x0004;
+  public static final int PAM_REINITIALIZE_CRED = 0x0008;
+  public static final int PAM_REFRESH_CRED = 0x0010;
+
   public static String pamGetBackend() {
-    String backend = "passwd";
+    String backend = "common-password";
     Linux.detectDistro();
     // see /etc/pam.d/ for available back ends
     switch (Linux.distro) {

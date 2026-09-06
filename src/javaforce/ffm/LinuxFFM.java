@@ -39,6 +39,12 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle pamOpenSession;
   public boolean pamOpenSession(long a1) { try { boolean _ret_value_ = (boolean)pamOpenSession.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle pamPutEnv;
+  public boolean pamPutEnv(long a1,java.lang.String a2) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pamPutEnv.invokeExact(a1,(MemorySegment)(a2 == null ? MemorySegment.NULL : arena.allocateFrom(a2)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
+  private MethodHandle pamSetCred;
+  public boolean pamSetCred(long a1,int a2) { try { boolean _ret_value_ = (boolean)pamSetCred.invokeExact(a1,a2);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle pamSetItem;
   public boolean pamSetItem(long a1,int a2,java.lang.String a3) { try { Arena arena = Arena.ofAuto(); boolean _ret_value_ = (boolean)pamSetItem.invokeExact(a1,a2,(MemorySegment)(a3 == null ? MemorySegment.NULL : arena.allocateFrom(a3)));return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
@@ -147,6 +153,8 @@ public class LinuxFFM implements LinuxAPI {
     pamClose = ffm.getFunctionPtr("_pamClose", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     pamCloseSession = ffm.getFunctionPtr("_pamCloseSession", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
     pamOpenSession = ffm.getFunctionPtr("_pamOpenSession", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG));
+    pamPutEnv = ffm.getFunctionPtr("_pamPutEnv", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,ADDRESS));
+    pamSetCred = ffm.getFunctionPtr("_pamSetCred", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT));
     pamSetItem = ffm.getFunctionPtr("_pamSetItem", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,ADDRESS));
     peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
