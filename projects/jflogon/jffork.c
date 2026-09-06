@@ -97,6 +97,7 @@ int main(int argc, char**argv) {
   //signal jflogon to shutdown wayland compositor
   if (debug) logmsg("pam_authenticate:success\n");
   printf("SUCCESS:Authentication accepted\n");
+  fflush(stdout);
 
   if (debug) logmsg("reading uid\n");
   fgets(uidstr, 256, stdin);
@@ -135,7 +136,7 @@ int main(int argc, char**argv) {
     newargv[0] = app;
     execv(app, newargv);
     printf("ERROR:execv() failed");
-    return 0;
+    return 1;
   }
   int status;
   waitpid(pid, &status, 0);

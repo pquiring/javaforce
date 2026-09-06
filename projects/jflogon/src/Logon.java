@@ -22,6 +22,7 @@ import javaforce.net.*;
 
 public class Logon extends javax.swing.JFrame implements ActionListener {
 
+  private static boolean debug = true;
   private static Properties props;
   private static boolean is_wayland = false;
 
@@ -433,10 +434,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
       }
-      JFLog.log("JID=" + jid);
-      JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
+      if (debug) JFLog.log("JID=" + jid);
+      if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       try {
         Process p = pb.start();
+        if (debug) JFLog.log("Writing creds to child session");
         OutputStream stdin = p.getOutputStream();
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
         InputStream stdout = p.getInputStream();
@@ -445,7 +447,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         bw.write(pass + "\n");
         bw.write(LinuxAPI.pamGetBackend() + "\n");
         bw.flush();
+        if (debug) JFLog.log("Reading result from child session");
         String res = br.readLine();
+        if (debug) JFLog.log("child session result=" + res);
         if (res.startsWith("ERROR:")) {
           showError(res.substring(6));
           setState(true);
@@ -471,8 +475,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } catch (Throwable t2) {
         JFLog.log(t2);
       }
-      JFLog.log("Session has terminated");
-      JFLog.log("Killing all processes for user " + user);
+      if (debug) JFLog.log("Session has terminated");
+      if (debug) JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
       if (is_wayland) {
@@ -483,7 +487,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } else {
         Linux.x11_rr_reset("800x600");
       }
-      JFLog.log("Restarting Logon Greeter");
+      if (debug) JFLog.log("Restarting Logon Greeter");
       java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
         new Logon(null).setVisible(true);
       }});
@@ -500,7 +504,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         env = "";
       }
     }
-    JFLog.log("pamGetEnv:" + name + "=" + env);
+    if (debug) JFLog.log("pamGetEnv:" + name + "=" + env);
     return env;
   }
 
@@ -799,7 +803,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     try {
 //      stop();
 //      showPlymouth();
-      JFLog.log("Rebooting...");
+      if (debug) JFLog.log("Rebooting...");
       JF.exec(new String[] {"reboot"});
     } catch (Exception e) {
       JFLog.log(e);
@@ -813,7 +817,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     try {
 //      stop();
 //      showPlymouth();
-      JFLog.log("Shutting down...,type=" + type);
+      if (debug) JFLog.log("Shutting down...,type=" + type);
       JF.exec(new String[] {"shutdown " + type + " now"});
     } catch (Exception e) {
       JFLog.log(e);
