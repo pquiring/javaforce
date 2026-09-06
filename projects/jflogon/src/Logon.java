@@ -353,7 +353,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private ArrayList<String> server = new ArrayList<String>();
   private String errmsg;
-  private String envs[];
   private String user, pass;
 
   private void doLogon() {
@@ -367,19 +366,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     } catch (Exception e) {
       JFLog.log(e);
     }
-    runSession();
-  }
-
-  private void runSession() {
-    new Thread() {
-      public void run() {
-        try {
-          runSession("/usr/bin/jfdesktop", envs);
-        } catch (Exception e) {
-          JFAWT.showError("Session Failed", e.toString());
-        }
-      }
-    }.start();
+    runSession("/usr/bin/jfdesktop");
   }
 
   public static byte mcookie[] = new byte[16];
@@ -404,8 +391,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  public void runSession(String session, String[] envs) {
+  public void runSession(String session) {
     try {
+      setState(false);
       getUserDetails(user);
       if (!is_wayland) {
         String xauthFile = homePath + "/.Xauthority";
@@ -445,15 +433,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
       }
-      if (envs != null) {
-        for(String e : envs) {
-          int idx = e.indexOf('=');
-          if (idx == -1) continue;
-          String name = e.substring(0, idx);
-          String value = e.substring(idx + 1);
-          env.put(name, value);
-        }
-      }
       JFLog.log("JID=" + jid);
       JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       try {
@@ -467,13 +446,13 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         os.write((LinuxAPI.pamGetBackend() + "\n").getBytes());
         String res = br.readLine();
         if (res.startsWith("ERROR:")) {
-          JFAWT.showError("Error", res.substring(6));
+          showError(res.substring(6));
+          setState(true);
           return;
         } else if (res.startsWith("OKAY:")) {
           dispose();
           if (is_wayland) {
-            boolean bres = (Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager");
-            if (!bres) {
+            if (!(Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager")) {
               new Logon("Failed to stop display manager").setVisible(true);
               return;
             }
@@ -482,7 +461,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
           os.write((gid + "\n").getBytes());
           os.write((session + "\n").getBytes());
         } else {
-          JFAWT.showError("Error", res);
+          showError(res);
+          setState(true);
           return;
         }
         p.waitFor();
@@ -731,7 +711,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void showNetworkFailed() {
-    JFAWT.showError("Error", "Connection failed!");
+    showError("Connection failed!");
   }
 
   private void disconnectVPN(String name) {
@@ -790,6 +770,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       stopNetworkTimer();
       return true;
     }
+  }
+
+  private void setState(boolean state) {
+    logon.setEnabled(state);
+    network.setEnabled(state);
+    shutdown.setEnabled(state);
   }
 
   private static String getProperty(String name) {
