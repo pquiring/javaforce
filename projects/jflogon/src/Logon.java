@@ -423,6 +423,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("LOGNAME", user);
       env.put("SHELL", shellPath);
       env.put("HOME", homePath);
+      env.put("MAIL", "/var/mail/" + user);
       env.put("JID", jid);
       String xdg_runtime_dir = "/run/user/" + uid;
       new File(xdg_runtime_dir).mkdir();

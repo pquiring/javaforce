@@ -7,6 +7,8 @@
 #include <sys/wait.h>
 #include <security/pam_appl.h>
 
+extern char **environ;
+
 static int debug = 1;
 
 static const char *pam_user, *pam_pass;
@@ -51,16 +53,17 @@ int main(int argc, char**argv) {
   char *newenviron[] = { NULL };
   pam_handle_t *pam_handle;
   struct pam_conv conv;
-
-  conv.conv = &pam_callback;
-  conv.appdata_ptr = NULL;
-
   char user[256];
   char pwd[256];
   char backend[256];
   char uidstr[256];
   char gidstr[256];
   char app[256];
+  char msg[256];
+  const char* xid;
+
+  conv.conv = &pam_callback;
+  conv.appdata_ptr = NULL;
 
   if (debug) {
     flog = fopen("/var/log/jflogon-session.log", "w");
@@ -131,6 +134,12 @@ int main(int argc, char**argv) {
   int pid = fork();
   if (pid == 0) {
     setsid();
+    if (debug) {
+      xid = pam_getenv(pam_handle, "XDG_SESSION_ID");
+      sprintf(msg, "XDG_SESSION_ID=%s\n", xid);
+      logmsg(msg);
+    }
+    environ = pam_getenvlist(pam_handle);
     setgid(gid);
     setuid(uid);
     newargv[0] = app;
