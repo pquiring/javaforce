@@ -146,7 +146,7 @@ int main(int argc, char**argv) {
         printf("Process Environ\n");
         char ** env = environ;
         while (*env != NULL) {
-          printf("%s", *env);
+          printf("%s\n", *env);
           env++;
         }
       }
@@ -154,7 +154,7 @@ int main(int argc, char**argv) {
         printf("PAM Environ\n");
         char ** env = pam_getenvlist(pam_handle);
         while (*env != NULL) {
-          printf("%s", *env);
+          printf("%s\n", *env);
           env++;
         }
       }
