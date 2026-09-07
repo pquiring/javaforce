@@ -16,6 +16,7 @@ import static javaforce.linux.Linux.*;
 public class Startup  implements ShellProcessListener {
   private static Properties props;
   public static boolean is_wayland = false;
+  public static boolean is_nested = false;
   private static String window_mgr = "openbox";
   private static ShellProcess window_mgr_process;
   private static Wayland wayland;
@@ -24,6 +25,19 @@ public class Startup  implements ShellProcessListener {
   private static int LOG_DEFAULT = 0;
   private static int LOG_DISPLAY = 1;
 
+  private static void load_config() {
+    props = Linux.getJavaForceProperties();
+    is_wayland = getProperty("wayland").equals("true");
+    if (is_wayland) {
+      is_nested = getProperty("nested-compositor").equals("true");
+      window_mgr = getProperty("window_manager");
+      if (window_mgr.length() == 0) {
+        window_mgr = "labwc";
+      }
+      JFLog.log("wayland:window_manager=" + window_mgr);
+    }
+  }
+
   public static void main(String args[]) {
     JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-system.log", true);
     JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
@@ -31,15 +45,7 @@ public class Startup  implements ShellProcessListener {
     log_env();
     user = System.getenv("USER");
     Linux.init();
-    props = Linux.getJavaForceProperties();
-    is_wayland = getProperty("wayland").equals("true");
-    if (is_wayland) {
-      window_mgr = getProperty("window_manager");
-      if (window_mgr.length() == 0) {
-        window_mgr = "labwc";
-      }
-      JFLog.log("wayland:window_manager=" + window_mgr);
-    }
+    load_config();
     try {
       if (!is_wayland) {
         /* Setup X11 display */
@@ -137,7 +143,7 @@ public class Startup  implements ShellProcessListener {
 
   public static void stop() throws Exception {
     if (window_mgr_process != null) {
-      JFLog.log("Stopping Display Manager...");
+      JFLog.log("Stopping Window Manager...");
       window_mgr_process.destroy();
       JF.sleep(500);
       for(int a=0;a<3;a++) {
@@ -149,9 +155,10 @@ public class Startup  implements ShellProcessListener {
         JF.sleep(500);
       }
       window_mgr_process = null;
-      JFLog.log("Display Manager stopped...");
+      JFLog.log("Window Manager stopped...");
     }
   }
+
   private static String getProperty(String name) {
     String prop = props.getProperty(name);
     if (prop == null) prop = "";

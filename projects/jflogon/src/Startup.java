@@ -17,6 +17,7 @@ public class Startup implements ShellProcessListener {
   private static ShellProcess display_mgr_process;
   private static boolean rebootFlag, shutdownFlag;
   public static boolean is_wayland = false;
+  public static boolean is_nested = false;
   private static String display_mgr = "X";
   private static Properties props;
   private static Wayland wayland;
@@ -31,6 +32,7 @@ public class Startup implements ShellProcessListener {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
+      is_nested = getProperty("nested-compositor").equals("true");
       display_mgr = getProperty("display_manager");
       if (display_mgr.equals("")) {
         display_mgr = "labwc";

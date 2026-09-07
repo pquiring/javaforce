@@ -25,12 +25,16 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private static boolean debug = true;
   private static Properties props;
   private static boolean is_wayland = false;
+  private static boolean is_nested = false;
 
   private static int LOG_DEFAULT = 0;
 
   private static void load_config() {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
+    if (is_wayland) {
+      is_nested = getProperty("nested-compositor").equals("true");
+    }
   }
 
   /**
@@ -431,7 +435,9 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       env.put("XDG_SEAT", "seat0");
       if (is_wayland) {
-        env.remove("WAYLAND_DISPLAY");  //inherited from parent
+        if (!is_nested) {
+          env.remove("WAYLAND_DISPLAY");  //inherited from parent
+        }
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
@@ -459,9 +465,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         } else if (res.startsWith("SUCCESS:")) {
           dispose();
           if (is_wayland) {
-            if (!(Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager")) {
-              new Logon("Failed to stop display manager").setVisible(true);
-              return;
+            if (!is_nested) {
+              if (!(Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager")) {
+                new Logon("Failed to stop display manager").setVisible(true);
+                return;
+              }
             }
           }
           bw.write(uid + "\n");
@@ -482,9 +490,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
       if (is_wayland) {
-        boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
-        if (!res) {
-          JFLog.log("startDisplayManager failed!");
+        if (!is_nested) {
+          boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
+          if (!res) {
+            JFLog.log("startDisplayManager failed!");
+          }
         }
       } else {
         Linux.x11_rr_reset("800x600");
