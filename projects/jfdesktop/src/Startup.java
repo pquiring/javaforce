@@ -112,11 +112,11 @@ public class Startup  implements ShellProcessListener {
     JFLog.log("Starting window manager:" + window_mgr);
     int uid = LinuxAPI.getInstance().getUID();
     switch (window_mgr) {
-      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid}); break;
-      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid}); break;
-      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid}); break;
-      case "javaforce": config_jf_wayland(); start_jf_wayland(); break;
       case "openbox": config_openbox(); start(new String[] {"/usr/bin/openbox"}, null); break;
+      case "weston": config_weston(); start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8"}); break;
+      case "labwc": config_labwc(); start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8"}); break;
+      case "sway": config_sway(); start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8"}); break;
+      case "javaforce": config_jf_wayland(); start_jf_wayland(); break;
     }
   }
 
