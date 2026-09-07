@@ -114,6 +114,14 @@ int main(int argc, char**argv) {
 
   pam_set_item(pam_handle, PAM_TTY, "tty1");
 
+  {
+    char ** env = environ;
+    while (*env != NULL) {
+      pam_putenv(pam_handle, *env);
+      env++;
+    }
+  }
+
   if (debug) logmsg("pam_setcred\n");
   res = pam_setcred(pam_handle, PAM_ESTABLISH_CRED);
   if (res != PAM_SUCCESS) {
@@ -164,7 +172,7 @@ int main(int argc, char**argv) {
     setuid(uid);
     newargv[0] = app;
     execv(app, newargv);
-    printf("ERROR:execv() failed");
+    printf("ERROR:execv() failed\n");
     return 1;
   }
   int status;
