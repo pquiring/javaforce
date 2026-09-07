@@ -112,6 +112,8 @@ int main(int argc, char**argv) {
   fgets(app, 256, stdin);
   clean(app);
 
+  pam_set_item(pam_handle, PAM_TTY, "tty1");
+
   if (debug) logmsg("pam_setcred\n");
   res = pam_setcred(pam_handle, PAM_ESTABLISH_CRED);
   if (res != PAM_SUCCESS) {
