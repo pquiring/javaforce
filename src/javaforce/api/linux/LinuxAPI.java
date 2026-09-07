@@ -80,4 +80,7 @@ public interface LinuxAPI {
   public int geteGID();
   public int setUID(int uid);
   public int setGID(int gid);
+
+  //tty
+  public boolean ttySetActiveVT(int number);
 }

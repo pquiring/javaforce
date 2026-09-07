@@ -24,6 +24,7 @@
 #include <X11/Xatom.h>
 #include <security/pam_appl.h>
 #include <ncurses.h>  //wtimeout wgetch
+#include <linux/vt.h>
 
 #include <jni.h>
 #include <jawt.h>
@@ -161,6 +162,8 @@ extern "C" {
 #include "wayland.cpp"
 
 #include "pam.cpp"
+
+#include "tty.cpp"
 
 #ifndef __FreeBSD__
 
