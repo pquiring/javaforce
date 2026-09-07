@@ -438,12 +438,15 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         if (!is_nested) {
           env.remove("WAYLAND_DISPLAY");  //inherited from parent
         }
+        env.put("XDG_VTNR", "8");
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
       }
       if (debug) JFLog.log("JID=" + jid);
       if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
+      //switch to vt8
+      LinuxAPI.getInstance().ttySetActiveVT(8);
       try {
         Process p = pb.start();
         if (debug) JFLog.log("Writing creds to child session");
@@ -485,6 +488,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } catch (Throwable t2) {
         JFLog.log(t2);
       }
+      //switch to vt7
+      LinuxAPI.getInstance().ttySetActiveVT(7);
       if (debug) JFLog.log("Session has terminated");
       if (debug) JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
@@ -499,7 +504,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } else {
         Linux.x11_rr_reset("800x600");
       }
-      if (debug) JFLog.log("Restarting Logon Greeter");
+      if (debug) JFLog.log("Recreating Logon Greeter");
       java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
         new Logon(null).setVisible(true);
       }});
