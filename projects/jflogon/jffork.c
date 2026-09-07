@@ -112,7 +112,7 @@ int main(int argc, char**argv) {
   fgets(app, 256, stdin);
   clean(app);
 
-  pam_set_item(pam_handle, PAM_TTY, "tty1");
+  pam_set_item(pam_handle, PAM_TTY, "/dev/tty1");
 
   {
     char ** env = environ;
