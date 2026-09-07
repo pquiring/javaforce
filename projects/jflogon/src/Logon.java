@@ -419,7 +419,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
       String jid = "j" + Math.abs(new Random().nextInt());
       String cmd[] = new String[] {
-        "/usr/bin/jffork",
+        "/usr/bin/jflogon-session",
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
       Map<String,String> env = pb.environment();

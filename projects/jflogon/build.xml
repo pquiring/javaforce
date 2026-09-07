@@ -32,15 +32,15 @@
     </jar>
   </target>
 
-  <target name="fork" description="compile fork util">
-    <exec command="gcc jffork.c -lpam -o jffork"/>
+  <target name="session" description="compile session util">
+    <exec command="gcc jflogon-session.c -lpam -o jflogon-session"/>
   </target>
 
   <!-- sudo ant install -->
-  <target name="install" depends="fork" description="install files">
+  <target name="install" depends="session" description="install files">
     <copy file="${app}.jar" todir="/usr/share/java"/>
-    <copy file="jffork" todir="/usr/bin"/>
-    <chmod file="/usr/bin/jffork" perm="+x"/>
+    <copy file="jflogon-session" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jflogon-session" perm="+x"/>
     <mkdir dir="/usr/lib/systemd/system/"/>
     <copy file="${app}.service" todir="/usr/lib/systemd/system"/>
     <mkdir dir="/etc/jflogon/"/>
