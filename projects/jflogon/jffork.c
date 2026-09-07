@@ -141,6 +141,24 @@ int main(int argc, char**argv) {
       sprintf(msg, "XDG_SESSION_ID=%s\n", xid);
       logmsg(msg);
     }
+    if (debug) {
+      {
+        printf("Process Environ\n");
+        char ** env = environ;
+        while (*env != NULL) {
+          printf("%s", *env);
+          env++;
+        }
+      }
+      {
+        printf("PAM Environ\n");
+        char ** env = pam_getenvlist(pam_handle);
+        while (*env != NULL) {
+          printf("%s", *env);
+          env++;
+        }
+      }
+    }
 //    environ = pam_getenvlist(pam_handle);
     setgid(gid);
     setuid(uid);
