@@ -206,8 +206,8 @@
 
   <target name="install" description="install files">
     <copy file="javaforce.jar" todir="/usr/share/java"/>
-    <copy file="javaforce.conf" todir="/etc/dbus-1/system.d"/>
-    <copy file="javaforce.pam" tofile="/etc/pam.d/javaforce"/>
+    <copy file="conf/dbus/javaforce.conf" todir="/etc/dbus-1/system.d"/>
+    <copy file="conf/pam/javaforce" tofile="/etc/pam.d/javaforce"/>
   </target>
 
   <target name="jre-all" description="build JRE with all modules included">

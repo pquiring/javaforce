@@ -33,7 +33,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
-      is_nested = getProperty("nested-compositor").equals("true");
+      is_nested = getProperty("nested_compositor").equals("true");
     }
   }
 

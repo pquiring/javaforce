@@ -32,7 +32,7 @@ public class Startup implements ShellProcessListener {
     props = Linux.getJavaForceProperties();
     is_wayland = getProperty("wayland").equals("true");
     if (is_wayland) {
-      is_nested = getProperty("nested-compositor").equals("true");
+      is_nested = getProperty("nested_compositor").equals("true");
       display_mgr = getProperty("display_manager");
       if (display_mgr.equals("")) {
         display_mgr = "labwc";
