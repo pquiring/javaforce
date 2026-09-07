@@ -94,7 +94,15 @@ int main(int argc, char**argv) {
     pam_end(pam_handle, 0);
     if (debug) logmsg("pam_authenticate:failed\n");
     printf("ERROR:Authentication failed\n");
-    return 2;
+    return 1;
+  }
+
+  res = pam_acct_mgmt(pam_handle, 0);
+  if (res != PAM_SUCCESS) {
+    pam_end(pam_handle, 0);
+    if (debug) logmsg("pam_authenticate:failed\n");
+    printf("ERROR:pam_acct_mgmt() failed\n");
+    return 1;
   }
 
   //signal jflogon to shutdown wayland compositor
