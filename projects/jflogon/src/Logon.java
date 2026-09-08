@@ -429,7 +429,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         cmd = new String[] {
           "/usr/bin/systemd-run",
           "--scope",  //inherits environment variables
-          "/usr/bin/runuser",
+          "/usr/sbin/runuser",
           "-p",  //preserve environment variables
           "-u",
           user,
