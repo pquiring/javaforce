@@ -10,8 +10,6 @@
     <action name="Execute"><execute>x-www-browser</execute></action>
   </item>
   <separator />
-  <menu id="client-list-menu" />
-  <separator />
   <item label="Display Properties">
     <action name="Execute"><execute>jfconfig display</execute></action>
   </item>

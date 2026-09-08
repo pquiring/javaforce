@@ -235,7 +235,6 @@
   </keybind>
   <keybind key="A-Escape">
     <action name="Lower"/>
-    <action name="FocusToBottom"/>
     <action name="Unfocus"/>
   </keybind>
   <keybind key="A-space">
@@ -303,34 +302,11 @@
   </keybind>
   <keybind key="C-A-Tab">
     <action name="NextWindow">
-      <panels>yes</panels><desktop>yes</desktop>
       <finalactions>
         <action name="Focus"/>
         <action name="Raise"/>
         <action name="Unshade"/>
       </finalactions>
-    </action>
-  </keybind>
-
-  <!-- Keybindings for window switching with the arrow keys -->
-  <keybind key="W-S-Right">
-    <action name="DirectionalCycleWindows">
-      <direction>right</direction>
-    </action>
-  </keybind>
-  <keybind key="W-S-Left">
-    <action name="DirectionalCycleWindows">
-      <direction>left</direction>
-    </action>
-  </keybind>
-  <keybind key="W-S-Up">
-    <action name="DirectionalCycleWindows">
-      <direction>up</direction>
-    </action>
-  </keybind>
-  <keybind key="W-S-Down">
-    <action name="DirectionalCycleWindows">
-      <direction>down</direction>
     </action>
   </keybind>
 
@@ -376,7 +352,6 @@
 
     <mousebind button="A-Middle" action="Press">
       <action name="Lower"/>
-      <action name="FocusToBottom"/>
       <action name="Unfocus"/>
     </mousebind>
 
@@ -413,7 +388,6 @@
         <shaded>no</shaded>
         <then>
           <action name="Shade"/>
-          <action name="FocusToBottom"/>
           <action name="Unfocus"/>
           <action name="Lower"/>
         </then>
@@ -430,7 +404,7 @@
     </mousebind>
   </context>
 
-  <context name="Titlebar Top Right Bottom Left TLCorner TRCorner BRCorner BLCorner">
+  <context name="Titlebar">
     <mousebind button="Left" action="Press">
       <action name="Focus"/>
       <action name="Raise"/>
@@ -439,7 +413,6 @@
 
     <mousebind button="Middle" action="Press">
       <action name="Lower"/>
-      <action name="FocusToBottom"/>
       <action name="Unfocus"/>
     </mousebind>
 
@@ -447,47 +420,6 @@
       <action name="Focus"/>
       <action name="Raise"/>
       <action name="ShowMenu"><menu>client-menu</menu></action>
-    </mousebind>
-  </context>
-
-  <context name="Top">
-    <mousebind button="Left" action="Drag">
-      <action name="Resize"><edge>top</edge></action>
-    </mousebind>
-  </context>
-
-  <context name="Left">
-    <mousebind button="Left" action="Drag">
-      <action name="Resize"><edge>left</edge></action>
-    </mousebind>
-  </context>
-
-  <context name="Right">
-    <mousebind button="Left" action="Drag">
-      <action name="Resize"><edge>right</edge></action>
-    </mousebind>
-  </context>
-
-  <context name="Bottom">
-    <mousebind button="Left" action="Drag">
-      <action name="Resize"><edge>bottom</edge></action>
-    </mousebind>
-
-    <mousebind button="Right" action="Press">
-      <action name="Focus"/>
-      <action name="Raise"/>
-      <action name="ShowMenu"><menu>client-menu</menu></action>
-    </mousebind>
-  </context>
-
-  <context name="TRCorner BRCorner TLCorner BLCorner">
-    <mousebind button="Left" action="Press">
-      <action name="Focus"/>
-      <action name="Raise"/>
-      <action name="Unshade"/>
-    </mousebind>
-    <mousebind button="Left" action="Drag">
-      <action name="Resize"/>
     </mousebind>
   </context>
 
@@ -627,21 +559,6 @@
     </mousebind>
     <mousebind button="Right" action="Press">
       <action name="ShowMenu"><menu>root-menu</menu></action>
-    </mousebind>
-  </context>
-
-  <context name="MoveResize">
-    <mousebind button="Up" action="Click">
-      <action name="GoToDesktop"><to>previous</to></action>
-    </mousebind>
-    <mousebind button="Down" action="Click">
-      <action name="GoToDesktop"><to>next</to></action>
-    </mousebind>
-    <mousebind button="A-Up" action="Click">
-      <action name="GoToDesktop"><to>previous</to></action>
-    </mousebind>
-    <mousebind button="A-Down" action="Click">
-      <action name="GoToDesktop"><to>next</to></action>
     </mousebind>
   </context>
 </mouse>

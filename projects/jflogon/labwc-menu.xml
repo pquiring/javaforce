@@ -3,6 +3,9 @@
 <labwc_menu>
 
 <menu id="root-menu" label="labwc">
+  <item label="Terminal emulator">
+    <action name="Execute"><execute>jfterm</execute></action>
+  </item>
 </menu>
 
 </labwc_menu>
