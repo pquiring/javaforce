@@ -40,11 +40,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   /**
    * Creates new form LogonApp
    */
-  public Logon(String errmsg) {
+  public Logon() {
     This = this;
-    if (errmsg != null) {
-      showError(errmsg);
-    }
     try {
       load_config();
       initComponents();
@@ -470,8 +467,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       fos.close();
       if (debug) JFLog.log("JID=" + jid);
       if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
-      //switch to vt8
-      LinuxAPI.getInstance().ttySetActiveVT(8);
+      if (is_wayland) {
+        dispose();
+        stop();
+        LinuxAPI.getInstance().ttySetActiveVT(8);
+      }
       try {
         Process p = pb.start();
         if (jflogon_session) {
@@ -511,14 +511,27 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       if (debug) JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
-      LinuxAPI.getInstance().ttySetActiveVT(7);
-      LinuxAPI.getInstance().ttyFreeVT(8);
-      if (!is_wayland) {
+      if (is_wayland) {
+        LinuxAPI.getInstance().ttySetActiveVT(7);
+        LinuxAPI.getInstance().ttyFreeVT(8);
+        if (!is_nested) {
+          start();
+          new Logon().setVisible(true);
+        }
+      } else {
         Linux.x11_rr_reset("800x600");
       }
     } catch (Throwable t1) {
       JFLog.log(t1);
     }
+  }
+
+  private void start() {
+    jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
+  }
+
+  private void stop() {
+    jbusServer.invoke(SystemBusNames.system, "stopDisplayManager");
   }
 
   private String pamGetEnv(LinuxAPI api, long pam, String name) {
@@ -826,8 +839,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   /** Reboots PC */
   public static void reboot() {
     try {
-//      stop();
-//      showPlymouth();
       if (debug) JFLog.log("Rebooting...");
       JF.exec(new String[] {"reboot"});
     } catch (Exception e) {
@@ -840,8 +851,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
    */
   public static void shutdown(String type) {
     try {
-//      stop();
-//      showPlymouth();
       if (debug) JFLog.log("Shutting down...,type=" + type);
       JF.exec(new String[] {"shutdown " + type + " now"});
     } catch (Exception e) {
@@ -854,7 +863,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     log_env();
     //display greeter
     try {
-      Logon logon = new Logon(null);
+      Logon logon = new Logon();
       logon.setVisible(true);
     } catch (Throwable t) {
       JFLog.log(t);
