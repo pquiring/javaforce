@@ -112,7 +112,7 @@ public class Startup  implements ShellProcessListener {
   }
 
   private static void wait_wayland_socket_opened() {
-    String socket = System.getenv("XDG_RUNTIME_DIR") + "/" + System.getenv("WAYLAND_DISPLAY");
+    String socket = System.getenv("XDG_RUNTIME_DIR") + "/wayland-0";
     JFLog.log("Waiting for wayland socket to open:" + socket);
     for(int a=0;a<10;a++) {
       JF.sleep(1000);
@@ -183,7 +183,7 @@ public class Startup  implements ShellProcessListener {
   }
 
   private static void wait_wayland_socket_closed() {
-    String socket = System.getenv("XDG_RUNTIME_DIR") + "/" + System.getenv("WAYLAND_DISPLAY");
+    String socket = System.getenv("XDG_RUNTIME_DIR") + "/wayland-0";
     JFLog.log("Waiting for wayland socket to close:" + socket);
     for(int a=0;a<10;a++) {
       JF.sleep(1000);
