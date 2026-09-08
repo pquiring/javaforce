@@ -70,6 +70,7 @@ public class Startup  implements ShellProcessListener {
     JFLog.log("jfDesktop:starting UI");
     try {
       int uid = LinuxAPI.getInstance().getUID();
+      JFLog.log("uid=" + uid);
       if (is_wayland) {
         startUI(
           new String[] {"/usr/bin/jfdesktop-session"},
@@ -91,12 +92,6 @@ public class Startup  implements ShellProcessListener {
     ShellProcess process = new ShellProcess();
     process.keepOutput(false);
     process.addListener(new Startup());
-/*
-    process.removeEnvironmentVariable("SUDO_UID");
-    process.removeEnvironmentVariable("SUDO_GID");
-    process.removeEnvironmentVariable("SUDO_USER");
-    process.removeEnvironmentVariable("SUDO_COMMAND");
-*/
     if (envs != null) {
       for(String e : envs) {
         int idx = e.indexOf('=');
@@ -108,6 +103,7 @@ public class Startup  implements ShellProcessListener {
     }
     JFLog.log("Starting Desktop Session...");
     process.run(cmds, true);
+    JFLog.log("Desktop Session has ended");
   }
 
   public void shellProcessOutput(String out) {

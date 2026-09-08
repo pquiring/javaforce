@@ -6,7 +6,9 @@
 import javaforce.*;
 
 public class Session {
+  private static int LOG_DEFAULT = 0;
   public static void main(String[] args) {
+    JFLog.init(LOG_DEFAULT, JF.getUserPath() + "/.jfdesktop-session.log", true);
     try {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
