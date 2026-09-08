@@ -156,8 +156,16 @@ public class Startup implements ShellProcessListener {
     return true;
   }
 
+  private static void loginctl() {
+    ShellProcess sp = new ShellProcess();
+    sp.keepOutput(true);
+    String loginctl = sp.run(new String[] {"/usr/bin/loginctl"}, true);
+    JFLog.log(loginctl);
+  }
+
   private static boolean start() throws Exception {
     JFLog.log("Starting Display Manager:" + display_mgr);
+    loginctl();
     boolean res = false;
     switch (display_mgr) {
       case "X": config_X(); res = start(new String[] {"/usr/bin/X"}, null); break;
