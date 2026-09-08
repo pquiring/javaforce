@@ -20,9 +20,11 @@ public class KeyboardWindow extends javax.swing.JWindow implements ActionListene
   public KeyboardWindow() {
     initComponents();
     setLayout(this);
-    x11id = Linux.x11_get_id(this);
-    JFLog.log("Keyboard.window=0x" + Long.toString(x11id, 16));
-    Linux.x11_set_dock(x11id);
+    if (!Session.is_wayland) {
+      x11id = Linux.x11_get_id(this);
+      JFLog.log("Keyboard.window=0x" + Long.toString(x11id, 16));
+      Linux.x11_set_dock(x11id);
+    }
     initTable();
     hide.setIcon(IconCache.loadIcon("jfdesktop-keyboard-down"));
     setAlwaysOnTop(true);
@@ -240,10 +242,12 @@ public class KeyboardWindow extends javax.swing.JWindow implements ActionListene
   }//GEN-LAST:event_modeActionPerformed
 
   private void spaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spaceActionPerformed
-    int keycode = Linux.x11_keysym_to_keycode(' ');
-    Linux.x11_send_event(keycode, true);
-    JF.sleep(10);
-    Linux.x11_send_event(keycode, false);
+    if (!Session.is_wayland) {
+      int keycode = Linux.x11_keysym_to_keycode(' ');
+      Linux.x11_send_event(keycode, true);
+      JF.sleep(10);
+      Linux.x11_send_event(keycode, false);
+    }
   }//GEN-LAST:event_spaceActionPerformed
 
   private void hideActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideActionPerformed
@@ -251,15 +255,19 @@ public class KeyboardWindow extends javax.swing.JWindow implements ActionListene
   }//GEN-LAST:event_hideActionPerformed
 
   private void backspaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backspaceActionPerformed
-    Linux.x11_send_event(22, true);
-    JF.sleep(10);
-    Linux.x11_send_event(22, false);
+    if (!Session.is_wayland) {
+      Linux.x11_send_event(22, true);
+      JF.sleep(10);
+      Linux.x11_send_event(22, false);
+    }
   }//GEN-LAST:event_backspaceActionPerformed
 
   private void enterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enterActionPerformed
-    Linux.x11_send_event(36, true);
-    JF.sleep(10);
-    Linux.x11_send_event(36, false);
+    if (!Session.is_wayland) {
+      Linux.x11_send_event(36, true);
+      JF.sleep(10);
+      Linux.x11_send_event(36, false);
+    }
   }//GEN-LAST:event_enterActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -345,16 +353,18 @@ public class KeyboardWindow extends javax.swing.JWindow implements ActionListene
   }
 
   public void actionPerformed(ActionEvent ae) {
-    Linux.x11_set_dock(x11id);
-    JButton button = (JButton)ae.getSource();
-    String txt = button.getText();
-    int keycode = Linux.x11_keysym_to_keycode(txt.charAt(0));
-    if (!symMode && shift.isSelected()) {
-      keycode += 0x100;  //X11_SHIFT
+    if (!Session.is_wayland) {
+      Linux.x11_set_dock(x11id);
+      JButton button = (JButton)ae.getSource();
+      String txt = button.getText();
+      int keycode = Linux.x11_keysym_to_keycode(txt.charAt(0));
+      if (!symMode && shift.isSelected()) {
+        keycode += 0x100;  //X11_SHIFT
+      }
+      Linux.x11_send_event(keycode, true);
+      JF.sleep(10);
+      Linux.x11_send_event(keycode, false);
     }
-    Linux.x11_send_event(keycode, true);
-    JF.sleep(10);
-    Linux.x11_send_event(keycode, false);
   }
 
   public void setPosition(int keyboadHeight, int dockHeight) {
