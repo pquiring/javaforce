@@ -1,0 +1,35 @@
+name=jbrsdk-25.0.4-openjdk-amd64
+priority=2540
+section=main
+
+hl java /opt/jbrsdk-25.04-amd64/bin/java
+hl jpackage /opt/jbrsdk-25.04-amd64/bin/jpackage
+hl keytool /opt/jbrsdk-25.04-amd64/bin/keytool
+hl rmiregistry /opt/jbrsdk-25.04-amd64/bin/rmiregistry
+hl jexec /opt/jbrsdk-25.04-amd64/lib/jexec
+jdkhl jar /opt/jbrsdk-25.04-amd64/bin/jar
+jdkhl jarsigner /opt/jbrsdk-25.04-amd64/bin/jarsigner
+jdkhl javac /opt/jbrsdk-25.04-amd64/bin/javac
+jdkhl javadoc /opt/jbrsdk-25.04-amd64/bin/javadoc
+jdkhl javap /opt/jbrsdk-25.04-amd64/bin/javap
+jdkhl jcmd /opt/jbrsdk-25.04-amd64/bin/jcmd
+jdkhl jdb /opt/jbrsdk-25.04-amd64/bin/jdb
+jdkhl jdeprscan /opt/jbrsdk-25.04-amd64/bin/jdeprscan
+jdkhl jdeps /opt/jbrsdk-25.04-amd64/bin/jdeps
+jdkhl jfr /opt/jbrsdk-25.04-amd64/bin/jfr
+jdkhl jimage /opt/jbrsdk-25.04-amd64/bin/jimage
+jdkhl jinfo /opt/jbrsdk-25.04-amd64/bin/jinfo
+jdkhl jlink /opt/jbrsdk-25.04-amd64/bin/jlink
+jdkhl jmap /opt/jbrsdk-25.04-amd64/bin/jmap
+jdkhl jmod /opt/jbrsdk-25.04-amd64/bin/jmod
+jdkhl jnativescan /opt/jbrsdk-25.04-amd64/bin/jnativescan
+jdkhl jps /opt/jbrsdk-25.04-amd64/bin/jps
+jdkhl jrunscript /opt/jbrsdk-25.04-amd64/bin/jrunscript
+jdkhl jshell /opt/jbrsdk-25.04-amd64/bin/jshell
+jdkhl jstack /opt/jbrsdk-25.04-amd64/bin/jstack
+jdkhl jstat /opt/jbrsdk-25.04-amd64/bin/jstat
+jdkhl jstatd /opt/jbrsdk-25.04-amd64/bin/jstatd
+jdkhl jwebserver /opt/jbrsdk-25.04-amd64/bin/jwebserver
+jdkhl serialver /opt/jbrsdk-25.04-amd64/bin/serialver
+jdkhl jhsdb /opt/jbrsdk-25.04-amd64/bin/jhsdb
+jdk jconsole /opt/jbrsdk-25.04-amd64/bin/jconsole

@@ -7,9 +7,18 @@ Desc:
   The installation script will install the package repo and optionally install the DE.
   Installing the DE is not required to use other JF apps.
 
-Status:
-  Currently the DE is based on X11.  There are plans to implement Wayland support but that may have to wait
-until Java itself supports Wayland which is in development, see Wakefield project : https://openjdk.org/projects/wakefield/
+Wayland Support (highly experimental):
+  Wayland is now supported using JetBrains Runtime (JBR): https://github.com/JetBrains/JetBrainsRuntime
+  The JBR is a fork of the OpenJDK with Project Wakefield implemented: https://openjdk.org/projects/wakefield/
+  To install the JBRSDK run:
+    wget http://pquiring.github.io/javaforce/linux/install-jbrsdk.sh
+    chmod +x install-jbrsdk.sh
+    ./install-jbrsdk.sh
+  Then install JavaForce including the DE.
+  You'll need to setup a small config file:
+    vi /etc/javaforce.conf
+      wayland=true
+  The DE is very unstable and most X11 features need to be ported to wayland.
 
 Instructions
 ------------
