@@ -119,22 +119,22 @@ public class Startup  implements ShellProcessListener {
       case "weston":
         config_weston();
         start(
-          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8"}
+          new String[] {"/usr/bin/dbus-run-session", "/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
+          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus"}
         );
         break;
       case "labwc":
         config_labwc();
         start(
-          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/labwc"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "WLR_DIRECT_TTY=/dev/tty8"}
+          new String[] {"/usr/bin/dbus-run-session", "/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/labwc"},
+          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus", "WLR_DIRECT_TTY=/dev/tty8"}
         );
         break;
       case "sway":
         config_sway();
         start(
-          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/sway"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "WLR_DIRECT_TTY=/dev/tty8"}
+          new String[] {"/usr/bin/dbus-run-session", "/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/sway"},
+          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus", "WLR_DIRECT_TTY=/dev/tty8"}
         );
         break;
       case "javaforce":
