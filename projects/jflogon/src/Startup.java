@@ -14,6 +14,8 @@ import javaforce.linux.*;
 import javaforce.api.linux.*;
 
 public class Startup implements ShellProcessListener {
+  private static boolean debug = true;
+
   private static ShellProcess display_mgr_process;
   private static boolean rebootFlag, shutdownFlag;
   public static boolean is_wayland = false;
@@ -165,14 +167,38 @@ public class Startup implements ShellProcessListener {
 
   private static boolean start() throws Exception {
     JFLog.log("Starting Display Manager:" + display_mgr);
-    loginctl();
+    if (debug) loginctl();
     boolean res = false;
     switch (display_mgr) {
-      case "X": config_X(); res = start(new String[] {"/usr/bin/X"}, null); break;
-      case "weston": config_weston(); res = start(new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}); break;
-      case "labwc": config_labwc(); res = start(new String[] {"/usr/bin/labwc"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7", "WLR_DIRECT_TTY=/dev/tty7"}); break;
-      case "sway": config_sway(); res = start(new String[] {"/usr/bin/sway"}, new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7", "WLR_DIRECT_TTY=/dev/tty7"}); break;
-      case "javaforce": config_jf_wayland(); res = start_jf_wayland(); break;
+      case "X":
+        config_X();
+        res = start(new String[] {"/usr/bin/X"}, null);
+        break;
+      case "weston":
+        config_weston();
+        res = start(
+          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
+          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
+        );
+        break;
+      case "labwc":
+        config_labwc();
+        res = start(
+          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/labwc"},
+          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7", "WLR_DIRECT_TTY=/dev/tty7"}
+        );
+        break;
+      case "sway":
+        config_sway();
+        res = start(
+          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/sway"},
+          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7", "WLR_DIRECT_TTY=/dev/tty7"}
+        );
+        break;
+      case "javaforce":
+        config_jf_wayland();
+        res = start_jf_wayland();
+        break;
     }
     return res;
   }
