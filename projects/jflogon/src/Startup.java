@@ -74,7 +74,6 @@ public class Startup implements ShellProcessListener {
         } catch (Exception e) {
           JFLog.log(e);
         }
-        JF.sleep(1500);  //wait for display manager to start
 
         JF.exec(new String[] {"numlockx", "on"});
         try {
@@ -165,6 +164,15 @@ public class Startup implements ShellProcessListener {
     JFLog.log(loginctl);
   }
 
+  private static void wait_wayland_socket() {
+    String socket = "/run/user/0/wayland-0";
+    for(int a=0;a<10;a++) {
+      JF.sleep(1000);
+      if (new File(socket).exists()) break;
+    }
+    JF.sleep(1000);
+  }
+
   private static boolean start() throws Exception {
     JFLog.log("Starting Display Manager:" + display_mgr);
     if (debug) loginctl();
@@ -180,6 +188,7 @@ public class Startup implements ShellProcessListener {
           new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
+        wait_wayland_socket();
         break;
       case "labwc":
         config_labwc();
@@ -187,6 +196,7 @@ public class Startup implements ShellProcessListener {
           new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/labwc"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
+        wait_wayland_socket();
         break;
       case "sway":
         config_sway();
@@ -194,6 +204,7 @@ public class Startup implements ShellProcessListener {
           new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/sway"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
+        wait_wayland_socket();
         break;
       case "javaforce":
         config_jf_wayland();

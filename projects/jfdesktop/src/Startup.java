@@ -110,6 +110,15 @@ public class Startup  implements ShellProcessListener {
     JFLog.log(LOG_DISPLAY, out);
   }
 
+  private static void wait_wayland_socket() {
+    String socket = System.getenv("XDG_RUNTIME_DIR") + "/" + System.getenv("WAYLAND_DISPLAY");
+    for(int a=0;a<10;a++) {
+      JF.sleep(1000);
+      if (new File(socket).exists()) break;
+    }
+    JF.sleep(1000);
+  }
+
   private static void start() throws Exception {
     JFLog.log("Starting window manager:" + window_mgr);
     int uid = LinuxAPI.getInstance().getUID();
@@ -124,6 +133,7 @@ public class Startup  implements ShellProcessListener {
           new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
           new String[] {}
         );
+        wait_wayland_socket();
         break;
       case "labwc":
         config_labwc();
@@ -131,6 +141,7 @@ public class Startup  implements ShellProcessListener {
           new String[] {"/usr/bin/labwc"},
           new String[] {}
         );
+        wait_wayland_socket();
         break;
       case "sway":
         config_sway();
@@ -138,6 +149,7 @@ public class Startup  implements ShellProcessListener {
           new String[] {"/usr/bin/sway"},
           new String[] {}
         );
+        wait_wayland_socket();
         break;
       case "javaforce":
         config_jf_wayland();
