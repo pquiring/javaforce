@@ -43,6 +43,7 @@ public class Startup  implements ShellProcessListener {
     JFLog.init(LOG_DISPLAY, JF.getUserPath() + "/.jfdesktop-display.log", true);
     JFLog.log("jfDesktop:Startup");
     log_env();
+    log_runtime_dir();
     user = System.getenv("USER");
     Linux.init();
     load_config();
@@ -114,7 +115,10 @@ public class Startup  implements ShellProcessListener {
     String socket = System.getenv("XDG_RUNTIME_DIR") + "/" + System.getenv("WAYLAND_DISPLAY");
     for(int a=0;a<10;a++) {
       JF.sleep(1000);
-      if (new File(socket).exists()) break;
+      if (new File(socket).exists()) {
+        JFLog.log("WAYLAND socket detected");
+        break;
+      }
     }
     JF.sleep(1000);
   }
@@ -242,6 +246,13 @@ public class Startup  implements ShellProcessListener {
     String[] envs = JF.getEnvironment();
     for(String e : envs) {
       JFLog.log(LOG_DEFAULT, e);
+    }
+  }
+  private static void log_runtime_dir() {
+    String[] files = new File(System.getenv("XDG_RUNTIME_DIR")).list();
+    JFLog.log("XDG_RUNTIME_DIR:");
+    for(String file : files) {
+      JFLog.log(file);
     }
   }
 }

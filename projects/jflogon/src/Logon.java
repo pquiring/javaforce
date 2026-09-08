@@ -451,7 +451,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("XDG_SEAT", "seat0");
       if (is_wayland) {
         env.remove("WAYLAND_DISPLAY");  //inherited from parent
-        env.put("XDG_VTNR", "8");
+        if (is_nested) {
+          env.put("XDG_VTNR", "8");
+        } else {
+          env.put("XDG_VTNR", "7");
+        }
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
@@ -863,7 +867,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   public static void main(String[] args) {
-    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-ui.log", true);
+    JFLog.init(LOG_DEFAULT, "/var/log/jflogon-session.log", true);
     log_env();
     //display greeter
     try {
