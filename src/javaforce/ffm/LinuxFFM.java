@@ -51,6 +51,9 @@ public class LinuxFFM implements LinuxAPI {
   private MethodHandle peekConsole;
   public boolean peekConsole() { try { boolean _ret_value_ = (boolean)peekConsole.invokeExact();return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
+  private MethodHandle ttyFreeVT;
+  public boolean ttyFreeVT(int a1) { try { boolean _ret_value_ = (boolean)ttyFreeVT.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
+
   private MethodHandle ttySetActiveVT;
   public boolean ttySetActiveVT(int a1) { try { boolean _ret_value_ = (boolean)ttySetActiveVT.invokeExact(a1);return _ret_value_; } catch (Throwable t) { JFLog.log(t);  return false;} }
 
@@ -160,6 +163,7 @@ public class LinuxFFM implements LinuxAPI {
     pamSetCred = ffm.getFunctionPtr("_pamSetCred", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT));
     pamSetItem = ffm.getFunctionPtr("_pamSetItem", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_LONG,JAVA_INT,ADDRESS));
     peekConsole = ffm.getFunctionPtr("_peekConsole", ffm.getFunctionDesciptor(JAVA_BOOLEAN));
+    ttyFreeVT = ffm.getFunctionPtr("_ttyFreeVT", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     ttySetActiveVT = ffm.getFunctionPtr("_ttySetActiveVT", ffm.getFunctionDesciptor(JAVA_BOOLEAN,JAVA_INT));
     readConsole = ffm.getFunctionPtr("_readConsole", ffm.getFunctionDesciptor(JAVA_CHAR));
     fileGetMode = ffm.getFunctionPtr("_fileGetMode", ffm.getFunctionDesciptor(JAVA_INT,ADDRESS));

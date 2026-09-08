@@ -24,9 +24,25 @@ jboolean ttySetActiveVT(int number) {
     break;
   }
   close(fd);
+  setsid();
+  return JNI_TRUE;
+}
+
+jboolean ttyFreeVT(int number) {
+  int fd = open(CONSOLE, O_RDONLY | O_NOCTTY, 0);
+  if (fd < 0) {
+    printf("ttySetActiveVT:open(tty) failed\n");
+    return JNI_FALSE;
+  }
+  if (ioctl(fd, VT_DISALLOCATE, number) < 0) {
+    printf("ttySetActiveVT:ioctl(VT_DISALLOCATE) failed\n");
+    return JNI_FALSE;
+  }
+  close(fd);
   return JNI_TRUE;
 }
 
 extern "C" {
   JNIEXPORT jboolean (*_ttySetActiveVT)(int) = &ttySetActiveVT;
+  JNIEXPORT jboolean (*_ttyFreeVT)(int) = &ttyFreeVT;
 }
