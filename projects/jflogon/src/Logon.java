@@ -427,6 +427,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       } else {
         cmd = new String[] {
           "/usr/bin/systemd-run",
+          "--scope",  //inherits environment variables
           "--uid=" + uid,
           "--gid=" + gid,
           "/usr/bin/jfdesktop"
