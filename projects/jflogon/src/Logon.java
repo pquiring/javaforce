@@ -469,8 +469,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       if (is_wayland) {
         dispose();
-        stop();
-        LinuxAPI.getInstance().ttySetActiveVT(8);
+        if (!is_nested) {
+          stop();
+        } else {
+          LinuxAPI.getInstance().ttySetActiveVT(8);
+        }
       }
       try {
         Process p = pb.start();
@@ -512,11 +515,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
       if (is_wayland) {
-        LinuxAPI.getInstance().ttySetActiveVT(7);
-        LinuxAPI.getInstance().ttyFreeVT(8);
         if (!is_nested) {
           start();
           new Logon().setVisible(true);
+        } else {
+          LinuxAPI.getInstance().ttySetActiveVT(7);
+          LinuxAPI.getInstance().ttyFreeVT(8);
         }
       } else {
         Linux.x11_rr_reset("800x600");
