@@ -551,16 +551,18 @@ public class Startup implements ShellProcessListener {
     //nop
   }
   private static void config_weston() {
-    JF.copyAll("/etc/jflogon/weston.ini", "/etc/xdg/weston/weston.ini");
+    String weston =  "/etc/xdg/weston";
+    new File(weston).mkdirs();
+    JF.copyAll("/etc/jflogon/weston.ini", weston + "/weston.ini");
   }
   private static void config_labwc() {
-    String labwc =  JF.getUserPath() + "/.config/labwc";
+    String labwc =  "/etc/xdg/labwc";
     new File(labwc).mkdirs();
     JF.copyAll("/etc/jflogon/labwc-rc.xml", labwc + "/rc.xml");
     JF.copyAll("/etc/jflogon/labwc-menu.xml", labwc + "/menu.xml");
   }
   private static void config_sway() {
-    String sway =  JF.getUserPath() + "/.config/sway";
+    String sway =  "/etc/xdg/sway";
     new File(sway).mkdirs();
     JF.copyAll("/etc/jflogon/labwc-rc.xml", sway + "/rc.xml");
     JF.copyAll("/etc/jflogon/labwc-menu.xml", sway + "/menu.xml");
