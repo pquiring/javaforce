@@ -368,10 +368,12 @@ public class Desktop extends javax.swing.JFrame {
   }
 
   public void x11_set_desktop() {
-     try {
-       Linux.x11_set_desktop(x11id);
-     } catch (Throwable t) {
-        JFLog.log(t);
-     }
+    try {
+      if (!Session.is_wayland) {
+        Linux.x11_set_desktop(x11id);
+      }
+    } catch (Throwable t) {
+      JFLog.log(t);
+    }
   }
 }

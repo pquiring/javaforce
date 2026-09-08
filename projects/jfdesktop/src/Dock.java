@@ -439,7 +439,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }//GEN-LAST:event_DockSettingsActionPerformed
 
   private void MinimizeAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MinimizeAllActionPerformed
-    Linux.x11_minimize_all();
+    if (!Session.is_wayland) {
+      Linux.x11_minimize_all();
+    }
   }//GEN-LAST:event_MinimizeAllActionPerformed
 
   private void TaskMgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskMgrActionPerformed
@@ -611,8 +613,10 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       this.title = title;
     }
     public void show() {
-      Linux.x11_map_window(xid);
-      Linux.x11_raise_window(xid);
+      if (!Session.is_wayland) {
+        Linux.x11_map_window(xid);
+        Linux.x11_raise_window(xid);
+      }
     }
   }
 
@@ -659,6 +663,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   //updates the active windows list
   private synchronized void updateWindowList() {
+    if (Session.is_wayland) return;
     //add buttons
     updatePending = false;
     try {
@@ -1105,7 +1110,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     DisplayMode screen_mode = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
     JFLog.log("updateConfig:screen=" + screen_mode.getWidth() + "x" + screen_mode.getHeight());
     try {
-      Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
+      if (!Session.is_wayland) {
+        Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
+      }
     } catch (Throwable t) {
       JFLog.log(t);
     }
@@ -2148,7 +2155,10 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
           tWidth += halfWidth * 4;
         }
         tWidth += buttonWidth;  //trash
-        int trayWidth = Linux.x11_tray_width();
+        int trayWidth = 32;
+        if (!Session.is_wayland) {
+          trayWidth = Linux.x11_tray_width();
+        }
   //      JFLog.log("dock widths:" + bWidth + "," + trayWidth + "," + tWidth);
         int cnt = 0;
         if (bWidth + trayWidth + tWidth > sx) {
@@ -2201,7 +2211,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         }
         cx = sx - tWidth;
         trayPos = cx;
-        Linux.x11_tray_reposition(sx, trayPos, buttonHeight + trayPad);
+        if (!Session.is_wayland) {
+          Linux.x11_tray_reposition(sx, trayPos, buttonHeight + trayPad);
+        }
         if (config.compact) {
           quad.setBounds(cx, borderSize, buttonWidth, buttonHeight);
           cx += buttonWidth;
@@ -2430,7 +2442,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   public void x11_set_dock() {
     try {
-      Linux.x11_set_dock(x11id);
+      if (!Session.is_wayland) {
+        Linux.x11_set_dock(x11id);
+      }
     } catch (Throwable t) {
       JFLog.log(t);
     }
@@ -2847,7 +2861,9 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         //else udev event : need to call x11_rr_auto first
         java.awt.EventQueue.invokeLater(new Runnable() {
           public void run() {
-            Linux.x11_rr_auto();
+            if (!Session.is_wayland) {
+              Linux.x11_rr_auto();
+            }
             updateConfig();
           }
         });
