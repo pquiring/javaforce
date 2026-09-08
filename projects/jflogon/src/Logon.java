@@ -54,11 +54,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         props.load(new FileInputStream("/etc/.lastLogon"));
         lastUser = props.getProperty("lastUser");
         if (lastUser == null) lastUser = "";
-        lastDomain = props.getProperty("lastDomain");
-        if (lastDomain == null) lastDomain = "";
       } else {
         lastUser = "";
-        lastDomain = "";
       }
       listUsers();
       if (lastUser.length() == 0) {
@@ -327,7 +324,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   public static JBusServer jbusServer;
   public static Logon This;
-  private String lastUser, lastDomain;
+  private String lastUser;
 
   private void listUsers() {
     username.removeAllItems();
@@ -356,14 +353,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
-  private ArrayList<String> server = new ArrayList<String>();
-  private String errmsg;
   private String user, pass;
 
   private void doLogon() {
     user = (String)username.getSelectedItem();
     pass = new String(password.getPassword());
-    //save lastUser/lastDomain
+    //save lastUser
     try {
       Properties props = new Properties();
       props.setProperty("lastUser", (String)username.getSelectedItem());
@@ -396,10 +391,20 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     }
   }
 
+  private static boolean jflogon_session = false;
+
   public void runSession(String session) {
     try {
       setState(false);
       getUserDetails(user);
+      LinuxAPI api = LinuxAPI.getInstance();
+      long pam = api.pamOpen(user, pass, LinuxAPI.pamGetBackend());
+      if (pam == 0) {
+        showError("Authentication failed");
+        setState(true);
+        return;
+      }
+      api.pamClose(pam);
       if (!is_wayland) {
         String xauthFile = homePath + "/.Xauthority";
         write_xauth(xauthFile);
@@ -409,20 +414,24 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         //pulseaudio requires user to be member of 'audio' group
         JF.exec(new String[] {"usermod", "-aG", "audio", user});
       }
-      if (!Linux.isMemberOf(user, "sambashare")) {
-        //net usershare requires user to be member of 'sambashare' group
-        JF.exec(new String[] {"usermod", "-aG", "sambashare", user});
-      }
       if (!Linux.isMemberOf(user, "video")) {
         //video4linux requires user to be a member of 'video' group
         JF.exec(new String[] {"usermod", "-aG", "video", user});
       }
       String jid = "j" + Math.abs(new Random().nextInt());
-      String cmd[] = new String[] {
-        "/usr/bin/systemd-run",
-        "--property=PAMName=javaforce",
-        "/usr/bin/jflogon-session",
-      };
+      String cmd[] = null;
+      if (jflogon_session) {
+        cmd = new String[] {
+          "/usr/bin/jflogon-session",
+        };
+      } else {
+        cmd = new String[] {
+          "/usr/bin/systemd-run",
+          "--uid=" + uid,
+          "--gid=" + gid,
+          "/usr/bin/jfdesktop"
+        };
+      }
       ProcessBuilder pb = new ProcessBuilder(cmd);
       Map<String,String> env = pb.environment();
       env.put("USER", user);
@@ -438,9 +447,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("DBUS_SESSION_BUS_ADDRESS" , "unix:path=" + xdg_runtime_dir + "/bus");
       env.put("XDG_SEAT", "seat0");
       if (is_wayland) {
-        if (!is_nested) {
-          env.remove("WAYLAND_DISPLAY");  //inherited from parent
-        }
+        env.remove("WAYLAND_DISPLAY");  //inherited from parent
         env.put("XDG_VTNR", "8");
       } else {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
@@ -452,66 +459,48 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       LinuxAPI.getInstance().ttySetActiveVT(8);
       try {
         Process p = pb.start();
-        if (debug) JFLog.log("Writing creds to child session");
-        OutputStream stdin = p.getOutputStream();
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
-        InputStream stdout = p.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
-        bw.write(user + "\n");
-        bw.write(pass + "\n");
-        bw.write(LinuxAPI.pamGetBackend() + "\n");
-        bw.flush();
-        if (debug) JFLog.log("Reading result from child session");
-        String res = br.readLine();
-        if (debug) JFLog.log("child session result=" + res);
-        if (res.startsWith("ERROR:")) {
-          showError(res.substring(6));
-          setState(true);
-          return;
-        } else if (res.startsWith("SUCCESS:")) {
-          dispose();
-          if (is_wayland) {
-            if (!is_nested) {
-              if (!(Boolean)jbusServer.invoke(SystemBusNames.system, "stopDisplayManager")) {
-                new Logon("Failed to stop display manager").setVisible(true);
-                return;
-              }
-            }
-          }
-          bw.write(uid + "\n");
-          bw.write(gid + "\n");
-          bw.write(session + "\n");
+        if (jflogon_session) {
+          if (debug) JFLog.log("Writing creds to child session");
+          OutputStream stdin = p.getOutputStream();
+          BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(stdin));
+          InputStream stdout = p.getInputStream();
+          BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
+          bw.write(user + "\n");
+          bw.write(pass + "\n");
+          bw.write(LinuxAPI.pamGetBackend() + "\n");
           bw.flush();
-        } else {
-          showError(res);
-          setState(true);
-          return;
+          if (debug) JFLog.log("Reading result from child session");
+          String res = br.readLine();
+          if (debug) JFLog.log("child session result=" + res);
+          if (res.startsWith("ERROR:")) {
+            showError(res.substring(6));
+            setState(true);
+            return;
+          } else if (res.startsWith("SUCCESS:")) {
+            bw.write(uid + "\n");
+            bw.write(gid + "\n");
+            bw.write(session + "\n");
+            bw.flush();
+          } else {
+            showError(res);
+            setState(true);
+            return;
+          }
         }
         p.waitFor();
       } catch (Throwable t2) {
         JFLog.log(t2);
       }
       //switch to vt7
-      LinuxAPI.getInstance().ttySetActiveVT(7);
       if (debug) JFLog.log("Session has terminated");
       if (debug) JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
+      LinuxAPI.getInstance().ttySetActiveVT(7);
       LinuxAPI.getInstance().ttyFreeVT(8);
-      if (is_wayland) {
-        if (!is_nested) {
-          boolean res = (Boolean)jbusServer.invoke(SystemBusNames.system, "startDisplayManager");
-          if (!res) {
-            JFLog.log("startDisplayManager failed!");
-          }
-        }
-      } else {
+      if (!is_wayland) {
         Linux.x11_rr_reset("800x600");
       }
-      if (debug) JFLog.log("Recreating Logon Greeter");
-      java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
-        new Logon(null).setVisible(true);
-      }});
     } catch (Throwable t1) {
       JFLog.log(t1);
     }
