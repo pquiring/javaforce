@@ -365,14 +365,22 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
-    jbusServer.invoke(SystemBusNames.system, "reboot");
+    try {
+      jbusServer.invoke(SystemBusNames.system, "reboot");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
     if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
-    jbusServer.invoke(SystemBusNames.system, "shutdown");
+    try {
+      jbusServer.invoke(SystemBusNames.system, "shutdown");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_ShutdownActionPerformed
@@ -391,9 +399,13 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
 
   private void SleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SleepActionPerformed
     //disconnect all VPN
-    jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
-    JF.sleep(500);
-    jbusServer.invoke(SystemBusNames.system, "sleep");
+    try {
+      jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
+      JF.sleep(500);
+      jbusServer.invoke(SystemBusNames.system, "sleep");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     //reset clock after 10 seconds (hopefully after we resume from sleep)
     new java.util.Timer().schedule(new TimerTask() {
       public void run() {
@@ -1463,7 +1475,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         return;
       }
       if (action.equals("#wap-disconnect")) {
-        jbusServer.invoke(SystemBusNames.network, "disconnectWAP");
+        try {
+          jbusServer.invoke(SystemBusNames.network, "disconnectWAP");
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
         return;
       }
       Object obj = ae.getSource();
@@ -1560,11 +1576,21 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }
 
   private JFDictionary getWAPList() {
-    return (JFDictionary)jbusServer.invoke(SystemBusNames.network, "getWAPList");
+    try {
+      return (JFDictionary)jbusServer.invoke(SystemBusNames.network, "getWAPList");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
 
   private String getVPNList() {
-    return (String)jbusServer.invoke(SystemBusNames.network, "getVPNList");
+    try {
+      return (String)jbusServer.invoke(SystemBusNames.network, "getVPNList");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
 
   ArrayList<AccessPoint> wapItems = new ArrayList<AccessPoint>();
@@ -2025,7 +2051,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   private void closeAllApps() {
     saveConfig();
     //close open VPN connections
-    jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
+    try {
+      jbusServer.invoke(SystemBusNames.network, "closeAllVPN");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     //close all apps belonging to this user
     //BUG : killall may kill other sessions of same user???
     try {
@@ -2248,7 +2278,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   }
 
   private void disconnectVPN(String name) {
-    jbusServer.invoke(SystemBusNames.network, "disconnectVPN", name);
+    try {
+      jbusServer.invoke(SystemBusNames.network, "disconnectVPN", name);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   private void connectVPN(String name) {
@@ -2256,12 +2290,20 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusServer.invoke(SystemBusNames.network, "connectVPN", name);
+      try {
+        jbusServer.invoke(SystemBusNames.network, "connectVPN", name);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusServer.invoke(SystemBusNames.network, "disconnectWAP", ssid);
+    try {
+      jbusServer.invoke(SystemBusNames.network, "disconnectWAP", ssid);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -2275,7 +2317,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusServer.invoke(SystemBusNames.network, "connectWAP", dev, ssid, encType, key);
+      try {
+        jbusServer.invoke(SystemBusNames.network, "connectWAP", dev, ssid, encType, key);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     }
   }
 
@@ -2382,7 +2428,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
     stopNetworkTimer();
-    jbusServer.invoke(SystemBusNames.network, cancelNetworkMethod);
+    try {
+      jbusServer.invoke(SystemBusNames.network, cancelNetworkMethod);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -2744,7 +2794,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       return true;
     }
     public boolean getWelcome(String bus) {
-      jbusServer.invoke(bus, "setWelcome", config.welcome);
+      try {
+        jbusServer.invoke(bus, "setWelcome", config.welcome);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
       return true;
     }
     public boolean setWelcome(String state) {
@@ -2888,7 +2942,13 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
             Process p = Runtime.getRuntime().exec(new String[] {"gnome-disk-image-mounter", _uri});
             p.waitFor();
             int result = p.exitValue();
-            if (_callback != null) jbusServer.invoke(_callback, result == 0 ? "mountSuccess" : "mountFail", _uri);
+            if (_callback != null) {
+              try {
+                jbusServer.invoke(_callback, result == 0 ? "mountSuccess" : "mountFail", _uri);
+              } catch (Exception e) {
+                JFLog.log(e);
+              }
+            }
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -2910,7 +2970,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
     public boolean getFileSelection(String bus) {
       if (fileSelection == null) return false;
       JFLog.log("getSelection:" + bus);
-      jbusServer.invoke(bus, "getFileSelection", fileSelection);
+      try {
+        jbusServer.invoke(bus, "getFileSelection", fileSelection);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
       return true;
     }
     public boolean clearFileSelection() {

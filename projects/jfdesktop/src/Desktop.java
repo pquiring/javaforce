@@ -233,7 +233,11 @@ public class Desktop extends javax.swing.JFrame {
     try {
       JMenuItem mi = (JMenuItem)evt.getSource();
       JPopupMenu pm = (JPopupMenu)mi.getParent();
-      browser.invoke((JFileIcon)pm.getInvoker());
+      try {
+        browser.invoke((JFileIcon)pm.getInvoker());
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
