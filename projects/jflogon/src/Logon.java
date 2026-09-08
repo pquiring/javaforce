@@ -1,10 +1,3 @@
-/** Logon.
- *
- * Created : Mar 31, 2012
- *
- * @author pquiring
- */
-
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -19,6 +12,13 @@ import javaforce.linux.*;
 import javaforce.api.linux.*;
 import javaforce.bus.*;
 import javaforce.net.*;
+
+/** Logon.
+ *
+ * Created : Mar 31, 2012
+ *
+ * @author pquiring
+ */
 
 public class Logon extends javax.swing.JFrame implements ActionListener {
 

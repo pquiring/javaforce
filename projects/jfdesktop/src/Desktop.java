@@ -37,7 +37,7 @@ public class Desktop extends javax.swing.JFrame {
       if (!new File(JF.getUserPath() + "/Desktop/Home.desktop").exists()) {
         browser.createIcon("Home", "jffile " + JF.getUserPath(), "jfdesktop-home", JF.getUserPath() + "/Desktop/Home.desktop", true);
       }
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         x11id = Linux.x11_get_id(this);
         JFLog.log("Desktop.window=0x" + Long.toString(x11id, 16));
         try {
@@ -51,7 +51,7 @@ public class Desktop extends javax.swing.JFrame {
         newFolder.setEnabled(false);
         browser.setIconsVisible(false);
       }
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         try {
           Linux.x11_set_desktop(x11id);
         } catch (Throwable t) {
@@ -212,7 +212,7 @@ public class Desktop extends javax.swing.JFrame {
 
   private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     try {
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         x11_set_desktop();
       }
     } catch (Throwable t) {

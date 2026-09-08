@@ -1,9 +1,3 @@
-/**
- * Created : Mar 30, 2012
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -21,6 +15,13 @@ import javaforce.io.*;
 
 import jffile.*;
 
+/** Dock.
+ *
+ * Created : Mar 30, 2012
+ *
+ * @author pquiring
+ */
+
 public class Dock extends javax.swing.JFrame implements ActionListener, MouseListener, MouseMotionListener, LayoutManager, X11Listener, FolderListener, FileClipboard {
 
   /**
@@ -35,7 +36,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       arrowImage = IconCache.loadIcon("jfdesktop-arrow");
       loadNetworkIcons();
       dock = this;
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         x11id = Linux.x11_get_id(this);
         JFLog.log("Dock.window=0x" + Long.toString(x11id, 16));
         try {
@@ -51,7 +52,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       getDimensions();
       loadButtons();
       DisplayMode screen_mode = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         try {
           Linux.x11_set_strut(x11id, (config.autoHide ? 1 : panelHeight-borderSize), 0, 0, screen_mode.getWidth(), screen_mode.getHeight());
         } catch (Throwable t) {
@@ -101,7 +102,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       startTrashListener();
       mkdirs();
       keyboardWindow = new KeyboardWindow();
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         Linux.x11_set_listener(this);
         new Thread() {
           public void run() {
@@ -128,7 +129,7 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
       if (new File("/usr/bin/acpi").exists()) {
         checkBattery();
       }
-      if (!Startup.is_wayland) {
+      if (!Session.is_wayland) {
         try {
           Linux.x11_set_dock(x11id);
         } catch (Throwable t) {

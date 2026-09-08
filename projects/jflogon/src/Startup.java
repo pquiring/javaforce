@@ -1,10 +1,3 @@
-/** jfLogon startup.
- *
- * Created : Mar 31, 2012
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -12,6 +5,13 @@ import javaforce.*;
 import javaforce.bus.*;
 import javaforce.linux.*;
 import javaforce.api.linux.*;
+
+/** jfLogon startup.
+ *
+ * Created : Mar 31, 2012
+ *
+ * @author pquiring
+ */
 
 public class Startup implements ShellProcessListener {
   private static boolean debug = true;

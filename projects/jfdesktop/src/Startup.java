@@ -1,10 +1,3 @@
-/** jfDesktop startup.
- *
- * Created : July 10, 2012
- *
- * @author pquiring
- */
-
 import java.io.*;
 import java.util.*;
 
@@ -13,10 +6,17 @@ import javaforce.linux.*;
 import javaforce.api.linux.*;
 import static javaforce.linux.Linux.*;
 
+/** jfDesktop startup.
+ *
+ * Created : July 10, 2012
+ *
+ * @author pquiring
+ */
+
 public class Startup  implements ShellProcessListener {
   private static Properties props;
-  public static boolean is_wayland = false;
-  public static boolean is_nested = false;
+  private static boolean is_wayland = false;
+  private static boolean is_nested = false;
   private static String window_mgr = "openbox";
   private static ShellProcess window_mgr_process;
   private static Wayland wayland;
