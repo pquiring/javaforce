@@ -119,22 +119,22 @@ public class Startup  implements ShellProcessListener {
       case "weston":
         config_weston();
         start(
-          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8"}
+          new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
+          new String[] {}
         );
         break;
       case "labwc":
         config_labwc();
         start(
-          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/labwc"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "WLR_DIRECT_TTY=/dev/tty8"}
+          new String[] {"/usr/bin/labwc"},
+          new String[] {}
         );
         break;
       case "sway":
         config_sway();
         start(
-          new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/sway"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/" + uid, "XDG_VTNR=8", "WLR_DIRECT_TTY=/dev/tty8"}
+          new String[] {"/usr/bin/sway"},
+          new String[] {}
         );
         break;
       case "javaforce":

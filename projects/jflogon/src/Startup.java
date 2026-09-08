@@ -185,14 +185,14 @@ public class Startup implements ShellProcessListener {
         config_labwc();
         res = start(
           new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/labwc"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7", "WLR_DIRECT_TTY=/dev/tty7"}
+          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
         break;
       case "sway":
         config_sway();
         res = start(
           new String[] {"/usr/bin/systemd-run", "--property=PAMName=javaforce", "/usr/bin/sway"},
-          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7", "WLR_DIRECT_TTY=/dev/tty7"}
+          new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
         break;
       case "javaforce":

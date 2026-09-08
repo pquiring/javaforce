@@ -419,6 +419,8 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
       String jid = "j" + Math.abs(new Random().nextInt());
       String cmd[] = new String[] {
+        "/usr/bin/systemd-run",
+        "--property=PAMName=javaforce",
         "/usr/bin/jflogon-session",
       };
       ProcessBuilder pb = new ProcessBuilder(cmd);
