@@ -358,6 +358,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private void doLogon() {
     user = (String)username.getSelectedItem();
     pass = new String(password.getPassword());
+    password.setText("");
     //save lastUser
     try {
       Properties props = new Properties();
@@ -428,9 +429,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         cmd = new String[] {
           "/usr/bin/systemd-run",
           "--scope",  //inherits environment variables
-          "--uid=" + uid,
-          "--gid=" + gid,
-          "/usr/bin/jfdesktop"
+          "/usr/bin/runuser",
+          "-p",  //preserve environment variables
+          "-u",
+          user,
+          "/usr/bin/dbus-run-session",
+          session
         };
       }
       ProcessBuilder pb = new ProcessBuilder(cmd);
