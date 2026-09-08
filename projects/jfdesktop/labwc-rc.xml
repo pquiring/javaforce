@@ -564,7 +564,7 @@
   <!-- show the manage desktops section in the client-list-(combined-)menu -->
 </menu>
 
-<margin bottom="32"/>
+<margin bottom="48"/>
 
 <windowRules>
   <windowRule title="jfDock">
