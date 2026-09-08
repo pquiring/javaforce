@@ -164,12 +164,14 @@ public class Startup implements ShellProcessListener {
     JFLog.log(loginctl);
   }
 
-  private static void wait_wayland_socket() {
+  private static void wait_wayland_socket_opened() {
     String socket = "/run/user/0/wayland-0";
+    JFLog.log("Waiting for wayland socket to open:" + socket);
     for(int a=0;a<10;a++) {
       JF.sleep(1000);
-      if (new File(socket).exists()) break;
+      if (new File(socket).exists()) return;
     }
+    JFLog.log("wayland socket not opened");
     JF.sleep(1000);
   }
 
@@ -188,7 +190,7 @@ public class Startup implements ShellProcessListener {
           new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
-        wait_wayland_socket();
+        wait_wayland_socket_opened();
         break;
       case "labwc":
         config_labwc();
@@ -196,7 +198,7 @@ public class Startup implements ShellProcessListener {
           new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/labwc"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
-        wait_wayland_socket();
+        wait_wayland_socket_opened();
         break;
       case "sway":
         config_sway();
@@ -204,7 +206,7 @@ public class Startup implements ShellProcessListener {
           new String[] {"/usr/bin/systemd-run", "--scope", "/usr/bin/sway"},
           new String[] {"XDG_RUNTIME_DIR=/run/user/0", "XDG_VTNR=7"}
         );
-        wait_wayland_socket();
+        wait_wayland_socket_opened();
         break;
       case "javaforce":
         config_jf_wayland();
@@ -236,6 +238,17 @@ public class Startup implements ShellProcessListener {
     return true;
   }
 
+  private static void wait_wayland_socket_closed() {
+    String socket = "/run/user/0/wayland-0";
+    JFLog.log("Waiting for wayland socket to close:" + socket);
+    for(int a=0;a<10;a++) {
+      JF.sleep(1000);
+      if (!new File(socket).exists()) return;
+    }
+    JFLog.log("wayland socket not closed");
+    JF.sleep(1000);
+  }
+
   public static boolean stop() throws Exception {
     if (display_mgr_process == null) return false;
     if (display_mgr_process != null) {
@@ -245,6 +258,9 @@ public class Startup implements ShellProcessListener {
       for(int a=0;a<3;a++) {
         if (!display_mgr_process.isAlive()) break;
         JF.sleep(1000);
+      }
+      if (is_wayland) {
+        wait_wayland_socket_closed();
       }
       if (display_mgr_process.isAlive()) {
         display_mgr_process.destroyForcibly();

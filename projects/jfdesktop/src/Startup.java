@@ -111,15 +111,14 @@ public class Startup  implements ShellProcessListener {
     JFLog.log(LOG_DISPLAY, out);
   }
 
-  private static void wait_wayland_socket() {
+  private static void wait_wayland_socket_opened() {
     String socket = System.getenv("XDG_RUNTIME_DIR") + "/" + System.getenv("WAYLAND_DISPLAY");
+    JFLog.log("Waiting for wayland socket to open:" + socket);
     for(int a=0;a<10;a++) {
       JF.sleep(1000);
-      if (new File(socket).exists()) {
-        JFLog.log("WAYLAND socket detected");
-        break;
-      }
+      if (new File(socket).exists()) return;
     }
+    JFLog.log("wayland socket not opened");
     JF.sleep(1000);
   }
 
@@ -137,7 +136,7 @@ public class Startup  implements ShellProcessListener {
           new String[] {"/usr/bin/weston", "--modules", "jf-desktop-shell.so"},
           new String[] {}
         );
-        wait_wayland_socket();
+        wait_wayland_socket_opened();
         break;
       case "labwc":
         config_labwc();
@@ -145,7 +144,7 @@ public class Startup  implements ShellProcessListener {
           new String[] {"/usr/bin/labwc"},
           new String[] {}
         );
-        wait_wayland_socket();
+        wait_wayland_socket_opened();
         break;
       case "sway":
         config_sway();
@@ -153,7 +152,7 @@ public class Startup  implements ShellProcessListener {
           new String[] {"/usr/bin/sway"},
           new String[] {}
         );
-        wait_wayland_socket();
+        wait_wayland_socket_opened();
         break;
       case "javaforce":
         config_jf_wayland();
@@ -183,6 +182,17 @@ public class Startup  implements ShellProcessListener {
     }.start();
   }
 
+  private static void wait_wayland_socket_closed() {
+    String socket = System.getenv("XDG_RUNTIME_DIR") + "/" + System.getenv("WAYLAND_DISPLAY");
+    JFLog.log("Waiting for wayland socket to close:" + socket);
+    for(int a=0;a<10;a++) {
+      JF.sleep(1000);
+      if (!new File(socket).exists()) return;
+    }
+    JFLog.log("wayland socket not closed");
+    JF.sleep(1000);
+  }
+
   public static void stop() throws Exception {
     if (window_mgr_process != null) {
       JFLog.log("Stopping Window Manager...");
@@ -192,6 +202,7 @@ public class Startup  implements ShellProcessListener {
         if (!window_mgr_process.isAlive()) break;
         JF.sleep(1000);
       }
+      wait_wayland_socket_closed();
       if (window_mgr_process.isAlive()) {
         window_mgr_process.destroyForcibly();
         JF.sleep(500);
