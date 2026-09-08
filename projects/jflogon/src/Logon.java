@@ -490,6 +490,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       }
       //switch to vt7
       LinuxAPI.getInstance().ttySetActiveVT(7);
+      LinuxAPI.getInstance().ttyFreeVT(8);
       if (debug) JFLog.log("Session has terminated");
       if (debug) JFLog.log("Killing all processes for user " + user);
       JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
