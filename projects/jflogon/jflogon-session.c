@@ -178,8 +178,10 @@ int main(int argc, char**argv) {
 //    environ = pam_getenvlist(pam_handle);
     setgid(gid);
     setuid(uid);
-    newargv[0] = app;
-    execv(app, newargv);
+    char *dbus = "/usr/bin/dbus-run-session";
+    newargv[0] = dbus;
+    newargv[1] = app;
+    execv(dbus, newargv);
     printf("ERROR:execv() failed\n");
     return 1;
   }
