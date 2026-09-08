@@ -142,7 +142,11 @@ public class Dock extends javax.swing.JFrame implements ActionListener, MouseLis
         }
       }.start();
       initDockDND();
-      wapList = getWAPList();
+      new Thread() {
+        public void run() {
+          wapList = getWAPList();
+        }
+      }.start();
       JFLog.log("Dock init complete");
     } catch (Throwable t) {
       JFLog.log(t);
