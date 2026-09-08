@@ -420,19 +420,23 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         JF.exec(new String[] {"usermod", "-aG", "video", user});
       }
       String jid = "j" + Math.abs(new Random().nextInt());
+      String xdg_runtime_dir = "/run/user/" + uid;
+      new File(xdg_runtime_dir).mkdir();
+      Linux.chown(xdg_runtime_dir, user);
+      String envfile = xdg_runtime_dir + "/environ";
       String cmd[] = null;
       if (jflogon_session) {
         cmd = new String[] {
           "/usr/bin/jflogon-session",
         };
       } else {
+        //NOTE : can not use --scope here (does not support PAMName) so must pass environment thru a file
         cmd = new String[] {
           "/usr/bin/systemd-run",
-          "--scope",  //inherits environment variables
-          "/usr/sbin/runuser",
-          "-p",  //preserve environment variables
-          "-u",
-          user,
+          "--property=User=" + uid,
+          "--property=Group=" + gid,
+          "--property=PAMName=javaforce",
+          "--property=EnvironmentFile=" + envfile,
           "/usr/bin/dbus-run-session",
           session
         };
@@ -445,9 +449,6 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       env.put("HOME", homePath);
       env.put("MAIL", "/var/mail/" + user);
       env.put("JID", jid);
-      String xdg_runtime_dir = "/run/user/" + uid;
-      new File(xdg_runtime_dir).mkdir();
-      Linux.chown(xdg_runtime_dir, user);
       env.put("XDG_RUNTIME_DIR", xdg_runtime_dir);
       env.put("DBUS_SESSION_BUS_ADDRESS" , "unix:path=" + xdg_runtime_dir + "/bus");
       env.put("XDG_SEAT", "seat0");
@@ -458,6 +459,15 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         env.put("XAUTHORITY", homePath + "/.Xauthority");
         env.put("DISPLAY", ":0");
       }
+      //write env to envfile
+      FileOutputStream fos = new FileOutputStream(envfile);
+      String[] keys = env.keySet().toArray(JF.StringArrayType);
+      for(String key : keys) {
+        String value = env.get(key);
+        String key_value = key + "=" + value + "\n";
+        fos.write(key_value.getBytes());
+      }
+      fos.close();
       if (debug) JFLog.log("JID=" + jid);
       if (debug) JFLog.log("Starting session:" + session + ";user=" + user + ";uid=" + uid);
       //switch to vt8
